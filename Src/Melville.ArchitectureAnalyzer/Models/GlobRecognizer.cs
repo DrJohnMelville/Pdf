@@ -1,16 +1,22 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace ArchitectureAnalyzer.Models
 {
-    public readonly struct GlobRecognizer
+    public class GlobRecognizer
     {
-        private readonly Regex template;
-
+        private readonly Regex regex;
+        public IList<Rule> UseRules { get; } = new List<Rule>();
+        public IList<Rule> DeclarationRules { get; } = new List<Rule>();
         public GlobRecognizer(string template)
         {
-            this.template = GlobRegexFactory.CreateGlobRegex(template);
+            regex = GlobRegexFactory.CreateGlobRegex(template);
         }
 
-        public bool Matches(string item) => template.IsMatch(item);
+        public bool Matches(string item) => regex.IsMatch(item);
+
+        public void AddUse(Rule rule) => UseRules.Add(rule);
+        public void AddDeclaration(Rule rule) => DeclarationRules.Add(rule);
     }
 }

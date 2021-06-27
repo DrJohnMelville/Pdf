@@ -1,0 +1,10 @@
+﻿<Project>
+    <PropertyGroup>
+        <Version>0.0.1</Version>
+        <Authors>John Melville, MS, MD</Authors>
+        <Company>Melville Computing</Company>
+        <Copyright>2021 John Melville, MS, MD</Copyright>
+        <Nullable>enable</Nullable>
+        <LangVersion>9</LangVersion>
+    </PropertyGroup>
+</Project>
