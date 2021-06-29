@@ -23,7 +23,7 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
                     Sources = {source},
                     AdditionalFiles =
                     {
-                        ("Architecture.adf", "Relying* => ReliedUpon*")
+                        ("Architecture.adf", "NS.Relying* => NS.ReliedUpon*")
                     },
                 }
             };
@@ -42,11 +42,11 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
 
         private static DiagnosticResult MatchToDiagnosticResult(Match match, int i) =>
             new DiagnosticResult(DependencyDiagnostics.RuleViolated).WithLocation(1,
-                (match.Index - (4*i))+1);
+                (match.Index - (4*i))+1).WithArguments("\"NS.ReliedUpon\" may not reference \"NS.Relying\" because \"NS.Relying* => NS.ReliedUpon*\"");
 
         private static string ConstructFileText(string contentOfRelying, string contentOfReliedUpon)
         {
-            return $"class Relying {{ {contentOfRelying} }} class ReliedUpon{{ {contentOfReliedUpon} }}";
+            return $"namespace NS {{class Relying {{ {contentOfRelying} }} class ReliedUpon{{ {contentOfReliedUpon} }} }}";
         }
 
         [Fact]
