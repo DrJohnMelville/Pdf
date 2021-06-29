@@ -5,7 +5,7 @@ namespace Melville.ArchitectureAnalyzer.Test.Models
 {
     public class RuleCollectionTest
     {
-        private readonly RuleCollection sut = new();
+        private readonly DependencyRules sut = new();
         [Fact]
         public void EmptyCollectionAlwaysFalse()
         {

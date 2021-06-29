@@ -3,22 +3,27 @@ using System.Linq;
 
 namespace ArchitectureAnalyzer.Models
 {
-    public class RuleCollection
+    public interface IDependencyRules
+    {
+        string? ErrorFromReference(string useLocation, string declarationLocation);
+    }
+
+    public class DependencyRules : IDependencyRules
     {
         private readonly RecognizerFactory recognizers = new(new());
         private string? defaultRule;
 
-        public RuleCollection()
+        public DependencyRules()
         {
             SetStrictMode();
         }
 
-        public string? ErrorFromReference(string useLcation, string declarationLocation) =>
-            RulesAppliedToUse(useLcation)
+        public string? ErrorFromReference(string useLocation, string declarationLocation) =>
+            RulesAppliedToUse(useLocation)
                 .Intersect(RulesAppliedToDeclaration(declarationLocation))
                 .Select(i=>i.ErrorMessage)
                 .DefaultIfEmpty(defaultRule)
-                .Select(i=>ExpandErrorMessage(i, useLcation, declarationLocation))
+                .Select(i=>ExpandErrorMessage(i, useLocation, declarationLocation))
                 .First();
 
         private static string? ExpandErrorMessage(string? brokenRule, string use, string decl)

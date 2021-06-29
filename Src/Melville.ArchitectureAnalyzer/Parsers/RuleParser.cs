@@ -13,9 +13,9 @@ namespace ArchitectureAnalyzer.Parsers
         {
             tokens = new RuleLexer(input);
         }
-        public RuleCollection Parse()
+        public DependencyRules Parse()
         {
-            var ret = new RuleCollection();
+            var ret = new DependencyRules();
             while (!tokens.Done())
             {
                 ParseToken(ret);
@@ -23,7 +23,7 @@ namespace ArchitectureAnalyzer.Parsers
             return ret;
         }
         
-        private void ParseToken(RuleCollection rules)
+        private void ParseToken(DependencyRules rules)
         {
             switch (tokens.OpCode())
             {
@@ -57,7 +57,7 @@ namespace ArchitectureAnalyzer.Parsers
             tokens.Next();
         }
 
-        private void SetMode(RuleCollection rules, string mode)
+        private void SetMode(DependencyRules rules, string mode)
         {
             switch (mode)
             {
@@ -70,43 +70,43 @@ namespace ArchitectureAnalyzer.Parsers
             }
         }
 
-        private void DeclareDependency(RuleCollection rules)
+        private void DeclareDependency(DependencyRules rules)
         {
             DeclarePositiveRule(rules, tokens.LeftParam(), tokens.RightParam());
             DeclareNegativeRule(rules, tokens.RightParam(), tokens.LeftParam());
         }
 
-        private void DeclarePositiveDependency(RuleCollection rules)
+        private void DeclarePositiveDependency(DependencyRules rules)
         {
             DeclarePositiveRule(rules, tokens.LeftParam(), tokens.RightParam());
         }
 
-        private void DeclareNegativeDependency(RuleCollection rules)
+        private void DeclareNegativeDependency(DependencyRules rules)
         {
             DeclareNegativeRule(rules, tokens.LeftParam(), tokens.RightParam());
         }
 
-        private void DeclareExclusiveDependency(RuleCollection rules)
+        private void DeclareExclusiveDependency(DependencyRules rules)
         {
             DeclarePositiveRule(rules, tokens.LeftParam(), tokens.RightParam());
             DeclareNegativeRule(rules, "*", tokens.RightParam());
         }
 
-        private void DeclareEquivalence(RuleCollection rules)
+        private void DeclareEquivalence(DependencyRules rules)
         {
             DeclarePositiveRule(rules, tokens.LeftParam(), tokens.RightParam());
             DeclarePositiveRule(rules, tokens.RightParam(), tokens.LeftParam());
         }
 
-        private void DeclarePositiveRule(RuleCollection rules, string use, string decl)
+        private void DeclarePositiveRule(DependencyRules rules, string use, string decl)
         {
             rules.DeclareRule(use, decl, "", true);
         }
 
-        private void DeclareNegativeRule(RuleCollection rules, string use, string decl) 
+        private void DeclareNegativeRule(DependencyRules rules, string use, string decl) 
             => rules.DeclareRule(use, decl, tokens.Text(), false);
 
-        private void ParseGroup(RuleCollection rules)
+        private void ParseGroup(DependencyRules rules)
         {
             var groupName = tokens.LeftParam();
             var groupMembers = new List<string>();

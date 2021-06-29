@@ -8,7 +8,7 @@ namespace Melville.ArchitectureAnalyzer.Test.Parsers
 {
     public class RuleParserText
     {
-        private static RuleCollection ParseInput(string input) => new RuleParser(input).Parse();
+        private static DependencyRules ParseInput(string input) => new RuleParser(input).Parse();
 
         [Theory]
         [InlineData("")]
