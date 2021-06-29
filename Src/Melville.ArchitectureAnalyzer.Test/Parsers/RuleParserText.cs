@@ -10,13 +10,20 @@ namespace Melville.ArchitectureAnalyzer.Test.Parsers
     {
         private static RuleCollection ParseInput(string input) => new RuleParser(input).Parse();
 
-        [Fact]
-        public void EmptyParse()
+        [Theory]
+        [InlineData("")]
+        [InlineData("Mode Loose\r\nMode Strict")]
+        public void DefaultsToStrictMode(string text)
         {
-            var rules = ParseInput("");
+            var rules = ParseInput(text);
             Assert.Equal("\"A\" may not reference \"B\" because \"No dependency rule found\"", 
                 rules.ErrorFromReference("A","B"));
-            
+        }
+        [Fact]
+        public void LooseModeAllowsUnSpecifiedDependencies()
+        {
+            var rules = ParseInput("Mode Loose");
+            Assert.Null(rules.ErrorFromReference("A","B"));
         }
 
         [Theory]
@@ -84,6 +91,33 @@ namespace Melville.ArchitectureAnalyzer.Test.Parsers
         {
             Assert.Throws<DslException>(() => ParseInput("Group XXX\r\n  A\r\nGroup XXX"));
         }
-        
+
+        [Theory]
+        [InlineData("Foo", "\"Foo\" is not a rule.")]
+        [InlineData("Foo\r\na=>b", "\"Foo\" is not a rule.")]
+        [InlineData("a=>b\r\nFoo", "\"Foo\" is not a rule.")]
+        [InlineData("a=>b\r\nFoo\r\nGroup XXYY", "\"Foo\" is not a rule.")]
+        [InlineData("  Foo", "Group member \"Foo\" must follow a group definition.")]
+        public void ParserError(string input, string message)
+        {
+            try
+            {
+                ParseInput(input);
+            }
+            catch (DslException e)
+            {
+                Assert.Equal(message, e.Message);
+                return;
+            }
+            Assert.False(true, "Failed to throw exception");
+        }
+
+        [Theory]
+        [InlineData("    ")]
+        [InlineData("#This is a comment")]
+        [InlineData("   #This is a comment")]
+        public void ParsesWithoutError(string input) => ParseInput(input);
+            // if there were an error, this test would fail with a DslException
+
     }
 }

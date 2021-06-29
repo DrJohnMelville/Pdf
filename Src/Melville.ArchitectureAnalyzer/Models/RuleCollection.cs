@@ -6,11 +6,18 @@ namespace ArchitectureAnalyzer.Models
     public class RuleCollection
     {
         private readonly RecognizerFactory recognizers = new(new());
+        private string? defaultRule;
+
+        public RuleCollection()
+        {
+            SetStrictMode();
+        }
+
         public string? ErrorFromReference(string useLcation, string declarationLocation) =>
             RulesAppliedToUse(useLcation)
                 .Intersect(RulesAppliedToDeclaration(declarationLocation))
                 .Select(i=>i.ErrorMessage)
-                .DefaultIfEmpty("No dependency rule found")
+                .DefaultIfEmpty(defaultRule)
                 .Select(i=>ExpandErrorMessage(i, useLcation, declarationLocation))
                 .First();
 
@@ -39,5 +46,8 @@ namespace ArchitectureAnalyzer.Models
         {
             recognizers.DeclareGroup(groupName, groupMembers);
         }
+
+        public void SetStrictMode() => defaultRule = "No dependency rule found";
+        public void SetLooseMode() => defaultRule = null;
     }
 }

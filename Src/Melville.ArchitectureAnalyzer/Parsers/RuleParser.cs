@@ -22,11 +22,12 @@ namespace ArchitectureAnalyzer.Parsers
             }
             return ret;
         }
-
+        
         private void ParseToken(RuleCollection rules)
         {
             switch (tokens.OpCode())
             {
+                case "#": break; // ignore comments
                 case "=>": 
                     DeclareDependency(rules);
                     break;
@@ -45,8 +46,28 @@ namespace ArchitectureAnalyzer.Parsers
                 case "Group":
                     ParseGroup(rules);
                     return;
+                case "Mode":
+                    SetMode(rules, tokens.LeftParam());
+                    break;
+                case var s when IsMemberOpcode(s):
+                    throw new DslException($"Group member \"{tokens.LeftParam()}\" must follow a group definition.");
+                default:
+                    throw new DslException($"Unknown opcode \"{tokens.OpCode()}\"");
             }
             tokens.Next();
+        }
+
+        private void SetMode(RuleCollection rules, string mode)
+        {
+            switch (mode)
+            {
+                case "Strict": 
+                    rules.SetStrictMode();
+                    break;
+                case "Loose": 
+                    rules.SetLooseMode();
+                    break;
+            }
         }
 
         private void DeclareDependency(RuleCollection rules)
@@ -89,14 +110,14 @@ namespace ArchitectureAnalyzer.Parsers
         {
             var groupName = tokens.LeftParam();
             var groupMembers = new List<string>();
-            while (tokens.Next() && IsMemberOpcode())
+            while (tokens.Next() && IsMemberOpcode(tokens.OpCode()))
             {
                 groupMembers.Add(tokens.LeftParam());           
             }
             rules.DefineGroup(groupName, groupMembers);
             rules.DeclareRule(groupName, groupName, "", true);
         }
-        private bool IsMemberOpcode() => tokens.OpCode().Length > 0 && char.IsWhiteSpace(tokens.OpCode()[0]);
+        private bool IsMemberOpcode(string opCode) => opCode.Length > 0 && char.IsWhiteSpace(opCode[0]);
     }
 
     public class DslException : Exception
