@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ArchitectureAnalyzer.Analyzer;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
@@ -43,7 +42,7 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
 
         private static DiagnosticResult MatchToDiagnosticResult(Match match, int i) =>
             new DiagnosticResult(DependencyDiagnostics.RuleViolated).WithLocation(1,
-                (match.Index - (4*i))-3);
+                (match.Index - (4*i))+1);
 
         private static string ConstructFileText(string contentOfRelying, string contentOfReliedUpon)
         {
