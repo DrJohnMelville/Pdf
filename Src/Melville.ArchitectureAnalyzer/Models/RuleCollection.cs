@@ -34,5 +34,10 @@ namespace ArchitectureAnalyzer.Models
             useRule.AddUse(rule);
             declarationRule.AddDeclaration(rule);
         }
+
+        public void DefineGroup(string groupName, IEnumerable<string> groupMembers)
+        {
+            recognizers.DeclareGroup(groupName, groupMembers);
+        }
     }
 }

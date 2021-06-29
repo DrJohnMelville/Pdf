@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ArchitectureAnalyzer.Parsers;
 
 namespace ArchitectureAnalyzer.Models
 {
@@ -17,5 +18,12 @@ namespace ArchitectureAnalyzer.Models
 
         public IEnumerable<GlobRecognizer> MatchingRecognizers(string item) =>
             dict.Values.Where(i => i.Matches(item));
+
+        public void DeclareGroup(string groupName, IEnumerable<string> groupMembers)
+        {
+            if (dict.ContainsKey(groupName))
+                throw new DslException($"Duplicate group definition \"{groupName}\"");
+            dict.Add(groupName, new GlobRecognizer(groupMembers));
+        }
     }
 }

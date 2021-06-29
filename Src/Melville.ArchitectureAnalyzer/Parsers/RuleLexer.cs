@@ -15,8 +15,9 @@ namespace ArchitectureAnalyzer.Parsers
         }
 
         private Regex tokenFinder = new(@"
-^(?'Left'[\w\.\+\*\?]+)\s*(?'Op'[\!\^\<]?=>)\s*(?'Right'[\w\.\+\?\*]+) #dependency
-", RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);
+^(?'Left'[\w\.\+\*\?]+)\s*(?'Op'[\!\^\<\+]?=>)\s*(?'Right'[\w\.\+\?\*]+)| #dependency
+^(?'Op'Group)\s+(?'Left'\w+)|  #Group Declaration
+^(?'Op'\s+)(?'Left'[\w\.\+\*\?]+)", RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);
 
         public Match Current => Tokens[position];
         public string OpCode() => Current.Groups["Op"].Value;
