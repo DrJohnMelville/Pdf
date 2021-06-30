@@ -73,8 +73,5 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
             RunSimpleTest("", "void M([|Relying|] item){}");
         [Fact] public Task CannotCallMethodWithProhibitedReturn() => 
             RunSimpleTest("", "void M(){Common.[|Foo()|];}", "public static Relying Foo(){ return null;}");
-        
-        
-        #warning need to test parsing errors in the ADF file
     }
 }
