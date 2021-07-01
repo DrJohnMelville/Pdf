@@ -62,8 +62,8 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
             return RunSimpleTest("ReliedUpon item;", "");
         }
 
-        [Fact] public Task CannotDeclarePronibitedField() => RunSimpleTest("", "[|Relying|] item;");
-        [Fact] public Task CannotDeclarePronibitedSpecialization() => 
+        [Fact] public Task CannotDeclareProhibitedField() => RunSimpleTest("", "[|Relying|] item;");
+        [Fact] public Task CannotDeclareProhibitedSpecialization() => 
             RunSimpleTest("", "interface I<T> {} I<[|Relying|]> item;");
         [Fact] public Task CannotDeclareProhibitedProperty() =>
             RunSimpleTest("", "[|Relying|] Item {get;}");
@@ -72,6 +72,12 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
         [Fact] public Task CannotDeclareProhibitedParameter() => 
             RunSimpleTest("", "void M([|Relying|] item){}");
         [Fact] public Task CannotCallMethodWithProhibitedReturn() => 
-            RunSimpleTest("", "void M(){Common.[|Foo()|];}", "public static Relying Foo(){ return null;}");
+            RunSimpleTest(
+                "", "void M(){Common.[|Foo|]();}",
+                "public static Relying Foo(){ return null;}");
+        [Fact] public Task CannotCallMethodWithProhibitedParameter() => 
+            RunSimpleTest(
+                "", "void M(){Common.[|Foo|](null);}", 
+                "public static void Foo(Relying d){ }");
     }
 }
