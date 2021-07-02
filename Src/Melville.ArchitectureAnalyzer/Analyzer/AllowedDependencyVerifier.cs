@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using ArchitectureAnalyzer.Models;
-using Microsoft.CodeAnalysis;
+﻿using ArchitectureAnalyzer.Models;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace ArchitectureAnalyzer.Analyzer
@@ -15,7 +12,13 @@ namespace ArchitectureAnalyzer.Analyzer
             this.rules = rules;
         }
 
-        public void CheckTypeAction(SyntaxNodeAnalysisContext obj) => 
-            new SyntaxNodeAnalysisContextParser(obj, rules).CheckReference();
+        public void CheckTypeAction(SyntaxNodeAnalysisContext context)
+        {
+            if (context.EnclosingTypeName() is { } location)
+            {
+                new SingleUsageDependencyVerifier(context, 
+                    i=>rules.ErrorFromReference(location,i)).CheckReference();
+            }
+        }
     }
 }

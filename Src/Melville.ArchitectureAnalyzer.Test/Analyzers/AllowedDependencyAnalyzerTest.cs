@@ -13,10 +13,15 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
     public class AllowedDependencyAnalyzerTest
     {
         private static Task RunSimpleTest(string contentOfRelying, string contentOfReliedUpon,
-            string? commonContent = null)
+            string? commonContent = null, int howManyErrors = 1) =>
+            RunSimpleTest(
+                ConstructFileText(contentOfRelying, contentOfReliedUpon, commonContent ?? ""),
+                howManyErrors);
+
+        private static Task RunSimpleTest(string sourceText, int howManyErrors = 1)
         {
-            var (source, diagnostics) = 
-                ParseSource(ConstructFileText(contentOfRelying, contentOfReliedUpon, commonContent??""));
+            var (source, diagnostics) =
+                ParseSource(sourceText);
             var test = new CSharpAnalyzerTest<AllowedDependencyAnalyzer, XUnitVerifier>()
             {
                 TestState =
@@ -24,11 +29,14 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
                     Sources = {source},
                     AdditionalFiles =
                     {
-                        ("Architecture.adf", "NS.Relying* => NS.ReliedUpon*\r\nNS.R*<=>NS.Common")
+                        ("Architecture.adf", "NS.Relying* => NS.ReliedUpon*\r\nNS.R*<=>NS.Common*")
                     },
                 }
             };
-            test.TestState.ExpectedDiagnostics.AddRange(diagnostics);
+            for (int i = 0; i < howManyErrors; i++)
+            {
+                test.TestState.ExpectedDiagnostics.AddRange(diagnostics);
+            }
             return test.RunAsync();
         }
 
@@ -63,6 +71,7 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
         }
 
         [Fact] public Task CannotDeclareProhibitedField() => RunSimpleTest("", "[|Relying|] item;");
+        [Fact] public Task CannotDeclareProhibitedArray() => RunSimpleTest("", "[|Relying|][] item;");
         [Fact] public Task CannotDeclareProhibitedSpecialization() => 
             RunSimpleTest("", "interface I<T> {} I<[|Relying|]> item;");
         [Fact] public Task CannotDeclareProhibitedProperty() =>
@@ -75,9 +84,27 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
             RunSimpleTest(
                 "", "void M(){Common.[|Foo|]();}",
                 "public static Relying Foo(){ return null;}");
+        [Fact] public Task CannotCallPropertyWithProhibitedReturn() => 
+            RunSimpleTest(
+                "", "void X(object o){} void M(){X(Common.[|Foo|]);}",
+                "public static Relying Foo=> null;");
         [Fact] public Task CannotCallMethodWithProhibitedParameter() => 
             RunSimpleTest(
                 "", "void M(){Common.[|Foo|](null);}", 
                 "public static void Foo(Relying d){ }");
+        [Fact] public Task CannotCallMethodWithProhibitedGenericParameter() => 
+            RunSimpleTest(
+                "", "void M(){Common.[|Foo|](null);}", 
+                "public interface I<T> {} public static void Foo(I<Relying> d){ }");
+        [Fact] public Task CannotAttachEventReturningProhibitedType() => 
+            RunSimpleTest(
+                "", "void M(){Common.[|DelEvent|] += i=>{};}", 
+                "public delegate void Del(Relying r); public static event Del DelEvent;", 2);
+        [Fact] public Task CannotCallStaticOnProhibitedType() => 
+            RunSimpleTest(
+                "public static void M(){}", "void M(){[|Relying|].M();}");
+        [Fact] public Task CannotInheritFromProhibitedType() => 
+            RunSimpleTest("namespace NS { public class ReliedUpon: [|Relying|]{} public class Relying{}}");
+        
     }
 }
