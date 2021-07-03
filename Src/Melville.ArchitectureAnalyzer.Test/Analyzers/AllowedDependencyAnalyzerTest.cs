@@ -88,6 +88,14 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
             RunSimpleTest(
                 "", "void X(object o){} void M(){X(Common.[|Foo|]);}",
                 "public static Relying Foo=> null;");
+        [Fact] public Task CanRelyOnArraysOfAcceptableTypes() => 
+            RunSimpleTest(
+                "", "void X(object o){} void M(){X(Common.Foo);}",
+                "public static byte[] Foo=> null;");
+        [Fact] public Task CannotRelyOnArraysOfProhibitedTypes() => 
+            RunSimpleTest(
+                "", "void X(object o){} void M(){X(Common.[|Foo|]);}",
+                "public static Relying[] Foo=> null;");
         [Fact] public Task CannotCallMethodWithProhibitedParameter() => 
             RunSimpleTest(
                 "", "void M(){Common.[|Foo|](null);}", 
@@ -100,6 +108,14 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
             RunSimpleTest(
                 "", "void M(){Common.[|DelEvent|] += i=>{};}", 
                 "public delegate void Del(Relying r); public static event Del DelEvent;", 2);
+        [Fact] public Task CanDeclareGenerics() => 
+            RunSimpleTest(
+                "", "T M<T>(T input){return input;}", 
+                "");
+        [Fact] public Task CanUseTuples() => 
+            RunSimpleTest(
+                "", "(int, double) M(){return (1,12.3);} void N(){var (x,y) = M();}", 
+                "");
         [Fact] public Task CannotCallStaticOnProhibitedType() => 
             RunSimpleTest(
                 "public static void M(){}", "void M(){[|Relying|].M();}");

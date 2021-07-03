@@ -32,6 +32,8 @@ namespace ArchitectureAnalyzer.Analyzer
         {
             switch (symbol)
             {
+                case ITypeParameterSymbol: 
+                    return; // all type parameters are legal because we are defining a generic
                 case IEventSymbol es:
                     CheckEventUsage(es);
                     break;
@@ -40,6 +42,12 @@ namespace ArchitectureAnalyzer.Analyzer
                     break;
                 case IMethodSymbol ms:
                     CheckMethodCall(ms);
+                    break;
+                case IArrayTypeSymbol ats:
+                    CheckTypeUsage(ats.ElementType);
+                    break;
+                case INamedTypeSymbol {Name:"ValueTuple"} nts:
+                    CheckSymbolList(nts.TypeArguments);
                     break;
                 case ITypeSymbol ts:
                     CheckTypeSymbolUsage(ts);

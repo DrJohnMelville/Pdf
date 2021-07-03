@@ -1,0 +1,6 @@
+﻿Group Parser
+     Melville.Pdf.LowLevel.Parsing.*
+Group Model
+     Melville.Pdf.LowLevel.Model.*
+Parser => Model
+* => System.*

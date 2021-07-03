@@ -38,21 +38,10 @@ namespace ArchitectureAnalyzer.Analyzer
 
         private void RegisterNewVerifier(CompilationStartAnalysisContext context)
         {
-            var verifier = new AllowedDependencyVerifier(CreateRules(context.Options.AdditionalFiles));
+            var verifier = AllowedDependencyVerifierFactory.Create(context.Options.AdditionalFiles);
             context.RegisterSyntaxNodeAction(verifier.CheckTypeAction, SyntaxKind.IdentifierName);
         }
         
-        private IDependencyRules CreateRules(ImmutableArray<AdditionalText> files) => 
-            new RuleParser(CombineArchitectureDefinitionFiles(files)).Parse();
-
-        private string CombineArchitectureDefinitionFiles(ImmutableArray<AdditionalText> files) =>
-            string.Join(Environment.NewLine,
-                files.Where(IsArchitectureDefinitionFile)
-                    .SelectMany(i => i.GetText()?.Lines));
-
-        private bool IsArchitectureDefinitionFile(AdditionalText i) => 
-            i.Path.EndsWith(".adf", StringComparison.InvariantCultureIgnoreCase);
-
          #pragma warning disable RS1013
         //The suppressed warning tells us that if all we do in the start action is register an
         // end action we could just register a compiler action instead.  But in the good path we do
