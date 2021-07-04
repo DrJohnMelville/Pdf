@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model;
 
-namespace Melville.Pdf.LowLevel.Parsing
+namespace Melville.Pdf.LowLevel.Parsing.StringParsing
 {
     public static class HexStringParser
         {
@@ -57,10 +57,10 @@ namespace Melville.Pdf.LowLevel.Parsing
 
         private static int CountChars(ref ReadOnlySpan<byte> digits)
         {
-            int bytes = 0;
-            for (int i = 0; i < digits.Length; i++)
+            var bytes = 0;
+            foreach (var t in digits)
             {
-                if (HexValue(digits[i]) < 255) bytes++;
+                if (HexValue(t) < 255) bytes++;
             }
             return IncrementIfOdd(bytes) / 2;
         }
