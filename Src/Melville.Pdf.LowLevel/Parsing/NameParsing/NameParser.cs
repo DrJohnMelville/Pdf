@@ -8,9 +8,9 @@ using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.NameParsing
 {
-    public class NameParser
+    public class NameParser: IPdfObjectParser
     {
-        public static bool TryParse(ref SequenceReader<byte> bytes,[NotNullWhen(true)] out PdfName? output)
+        public bool TryParse(ref SequenceReader<byte> bytes,[NotNullWhen(true)] out PdfObject? output)
         {
             output = null;
             if (!TrySkipSolidus(ref bytes)) return false;
@@ -78,7 +78,7 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
             CharClassifier.Classify(character) == CharacterClass.Regular?
                 NextCharResult.NonTerminatingChar: NextCharResult.Terminating;
 
-        private static void CreateNovelName(ref SequenceReader<byte> bytes, int length, out PdfName output)
+        private static void CreateNovelName(ref SequenceReader<byte> bytes, int length, out PdfObject output)
         {
             var buffer = new byte[length];
             for (int i = 0; i < length; i++)
@@ -91,10 +91,15 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
         }
 
         private static bool LookupNameByHash(
-            ref SequenceReader<byte> bits, uint hash, int length, [NotNullWhen(true)] out PdfName? name)
+            ref SequenceReader<byte> bits, uint hash, int length, [NotNullWhen(true)] out PdfObject? name0)
         {
-            if (!KnownNames.LookupName(hash, out name)) return false;
-            if (name.Bytes.Length != length) return false;
+            if (!(KnownNames.LookupName(hash, out var name) && name.Bytes.Length == length))
+            {
+                name0 = null;
+                return false;
+            }
+
+            name0 = name;
             var savedBits = bits; // need a save point if we fail.
             if (VerifyEquality(ref bits, name.Bytes)) return true;
             bits = savedBits; // return to the beginning for a third pass to read the name

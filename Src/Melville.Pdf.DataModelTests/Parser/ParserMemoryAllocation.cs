@@ -28,8 +28,9 @@ namespace Melville.Pdf.DataModelTests.Parser
         public void ParsingNamesKnownDoesNotAllocate(string text, int newObjs)
         {
             var src = text.AsSequenceReader();
+            var parser = new PdfObjectParser();
             var cp1 = dotMemory.Check();
-            Assert.True(NameParser.TryParse(ref src, out _));
+            Assert.True(parser.TryParse(ref src, out var obj));
             dotMemory.Check(i =>
             {
                 Assert.Equal(newObjs, i.GetDifference(cp1).GetNewObjects(i=>i.Assembly.Like("Melville*"))

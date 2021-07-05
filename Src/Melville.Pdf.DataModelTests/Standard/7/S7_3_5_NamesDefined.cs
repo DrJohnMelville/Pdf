@@ -36,7 +36,8 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         private static bool TryParseStringToName(string source, out PdfName? name)
         {
             var bytes = new SequenceReader<byte>(new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(source)));
-            var ret = NameParser.TryParse(ref bytes, out name);
+            var ret = new PdfObjectParser().TryParse(ref bytes, out var obj);
+            name = (PdfName?) obj;
             return ret;
         }
 
@@ -64,8 +65,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         public void KnowNamesParseToConstants()
         {
             
-            KnownNames._3D.GetHashCode();
-            var hc = KnownNames.Width.GetHashCode();
+           var hc = KnownNames.Width.GetHashCode();
             TryParseStringToName("/WIDTH /", out var n1);
             TryParseStringToName("/WIDTH /", out var n2);
             Assert.True(ReferenceEquals(KnownNames.Width, n1));

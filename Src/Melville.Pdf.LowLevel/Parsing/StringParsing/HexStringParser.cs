@@ -1,84 +1,62 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Parsing.NameParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.StringParsing
 {
-    public static class HexStringParser
+    public class HexStringParser2: IPdfObjectParser
+    {
+        public bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
         {
-            public static bool TryParse(
-                ref SequenceReader<byte> input, [NotNullWhen(true)] out PdfString? output)
+            reader.Advance(1);
+            var copyOfReader = reader;
+            if (!TryCount(ref reader, out var len))
             {
-            output = null;
-            if (input.Remaining == 0) return false;
-            if (!input.TryReadTo(out ReadOnlySpan<byte> digits, (byte) '>', true)) return false;
-            var buff = ComputeStringAsBuffer(ref digits);
-            output = new PdfString(buff);
-            return NextTokenFinder.SkipToNextToken(ref input);
+                obj = null;
+                return false;
+            }
+
+            obj = ReadString(ref copyOfReader, len);
+            return NextTokenFinder.SkipToNextToken(ref reader);
         }
 
-        private static byte[] ComputeStringAsBuffer(ref ReadOnlySpan<byte> digits)
+        private bool TryCount(ref SequenceReader<byte> reader, out int length)
         {
-            var buff = new byte[CountChars(ref digits)];
-            
-            byte priorDigit = 255;
-            int finalPos = 0;
-            foreach (var rawByte in digits)
+            length = 0;
+            while (true)
             {
-                switch (priorDigit, HexMath.HexValue(rawByte))
+                switch (GetNibble(ref reader))
                 {
-                    case (_, 255): break;
-                    case (255, var first):
-                        priorDigit = first;
-                        break;
-                    case var (_, second):
-                        AddByteToString(buff, finalPos++, priorDigit, second);
-                        priorDigit = 255;
-                        break;
+                    case Nibble.OutOfSpace: return false;
+                    case Nibble.Terminator: return true;
+                }
+                length++;
+                switch (GetNibble(ref reader))
+                {
+                    case Nibble.OutOfSpace: return false;
+                    case Nibble.Terminator: return true;
                 }
             }
-
-            AdjustForTrailingSingleDigit(priorDigit, buff);
-            return buff;
         }
 
-        private static void AddByteToString(byte[] buff, int index, byte priorDigit, byte second) => 
-            buff[index] = HexMath.ByteFromNibbles(priorDigit, second);
-
-        private static void AdjustForTrailingSingleDigit(byte priorDigit, byte[] buff)
+        private PdfObject ReadString(ref SequenceReader<byte> reader, int length)
         {
-            if (priorDigit < 255)
-                AddByteToString(buff, buff.Length-1, priorDigit, 0);
-        }
-
-        private static int CountChars(ref ReadOnlySpan<byte> digits)
-        {
-            var bytes = 0;
-            foreach (var t in digits)
+            var buff = new byte[length];
+            for (int i = 0; i < length; i++)
             {
-                if (HexMath.HexValue(t) < 255) bytes++;
+                buff[i] = HexMath.ByteFromNibbles(GetNibble(ref reader), GetNibble(ref reader));
             }
-            return IncrementIfOdd(bytes) / 2;
+            return new PdfString(buff);
         }
 
-        private static int IncrementIfOdd(int bytes) => bytes + (bytes & 0x1);
-        }
-
-    public static class HexMath
-    {
-        public static byte HexValue(byte digit) =>
-            digit switch
+        private Nibble GetNibble(ref SequenceReader<byte> reader)
+        {
+            while (true)
             {
-                >= (byte) '0' and <= (byte) '9' => (byte) (digit - (byte) '0'),
-                >= (byte) 'A' and <= (byte) 'F' => (byte) (digit - ((byte) 'A' - 10)),
-                _ => 255
-            };
-
-        public static byte ByteFromNibbles(byte mostSig, byte leastSig) => 
-            (byte)((mostSig << 4) | leastSig);
-
-        public static byte ByteFromHexCharPair(byte mostSig, byte leastSig) =>
-            ByteFromNibbles(HexValue(mostSig), HexValue(leastSig));
+                return !reader.TryRead(out var item) ? 
+                    Nibble.OutOfSpace : 
+                    HexMath.ByteToNibble(item);
+            }
+        }
     }
 }

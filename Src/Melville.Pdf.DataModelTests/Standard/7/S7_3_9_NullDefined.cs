@@ -9,8 +9,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
     {
         private static bool ParseNull(out PdfObject? nullObj)
         {
-            var str = "null\\".AsSequenceReader();
-            return LiteralTokenParser.TryParse(ref str, out nullObj);
+            return "null\\".ParseAs(out nullObj);
         }
 
         [Fact]

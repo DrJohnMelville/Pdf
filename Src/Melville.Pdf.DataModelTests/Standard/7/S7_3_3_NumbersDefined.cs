@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Parsing;
 using Xunit;
 
@@ -16,8 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("134.567/", 134, 134.567)]
         public void ParseNumberSucceed(string source, int intValue, double doubleValue)
         {
-            var seq = source.AsSequenceReader();
-            Assert.True(NumberParser.TryParse(ref seq, out var num));
+            Assert.True(source.ParseAs(out PdfNumber? num));
             Assert.Equal(intValue, num!.IntValue);
             Assert.Equal(doubleValue, num.DoubleValue);
         }
@@ -31,8 +31,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("12345.09374 ")]
         public void ParseNumberIncomplete(string num)
         {
-            var seq = num.AsSequenceReader();
-            Assert.False(NumberParser.TryParse(ref seq, out _));
+            Assert.False(num.ParseAs());
         }
     
     }

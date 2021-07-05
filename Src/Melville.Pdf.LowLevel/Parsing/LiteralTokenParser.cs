@@ -1,34 +1,24 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Parsing.NameParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing
 {
-    public static class LiteralTokenParser
+    public class LiteralTokenParser : IPdfObjectParser
     {
-        public static bool TryParse(ref SequenceReader<byte> input, [NotNullWhen(true)] out PdfObject? output)
+        private int length;
+        private PdfObject literal;
+
+        public LiteralTokenParser(int length, PdfObject literal)
         {
-            if (input.TryRead(out var firstChar))
-                return ByteToLiteralObject(ref input, out output, firstChar);
-            output = null;
-            return false;
+            this.length = length;
+            this.literal = literal;
         }
 
-        private static bool ByteToLiteralObject(
-            ref SequenceReader<byte> input, out PdfObject? output, byte firstChar) =>
-            firstChar switch
-            {
-                (byte) 't' => VerifyToken(ref input, 3, PdfBoolean.True, out output),
-                (byte) 'f' => VerifyToken(ref input, 4, PdfBoolean.False, out output),
-                _ => VerifyToken(ref input, 3, PdfNull.Instance, out output)
-            };
-        private static bool VerifyToken(
-            ref SequenceReader<byte> input, int length, PdfObject item, out PdfObject? result )
+        public bool TryParse(ref SequenceReader<byte> reader, out PdfObject obj)
         {
-            result = item;
-            return input.TryAdvance(length) && NextTokenFinder.SkipToNextToken(ref input);
+            obj = literal;
+            return reader.TryAdvance(length) && NextTokenFinder.SkipToNextToken(ref reader);
         }
     }
 }

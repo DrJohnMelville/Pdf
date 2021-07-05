@@ -35,8 +35,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("<01234567ABCDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
         public void ParseHexString(string input, string output)
         {
-            var reader = input.AsSequenceReader();
-            var ret = HexStringParser.TryParse(ref reader, out var str);
+            var ret = input.ParseAs(out PdfString? str);
             Assert.True(ret);
             Assert.Equal(output, str!.ToString());
         }
@@ -48,16 +47,14 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("<AAA")]
         public void FailParseHexString(string data)
         {
-            var seq = data.AsSequenceReader();
-            Assert.False(HexStringParser.TryParse(ref seq, out _));
+            data.ParseAs();
         }
         [Theory]
         [InlineData("")]
         [InlineData("(")]
         public void FailParseLiteralString(string data)
         {
-            var seq = data.AsSequenceReader();
-            Assert.False(LiteralStringParser.TryParse(ref seq, out _));
+            Assert.False(data.ParseAs());
         }
 
         [Theory]
@@ -85,10 +82,8 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("(a\\1212b))", "a\x00512b")]
         public void ParseLiteralString(string source, string result)
         {
-            var seq = source.AsSequenceReader();
-            var ret = LiteralStringParser.TryParse(ref seq, out var parsedString);
-            Assert.True(ret);
-            Assert.Equal(result, parsedString!.ToString());
+            AAssert.True(source.ParseAs( out PdfObject? parsedString));
+            Assert.Equal(result, parsedString.ToString());
         }
     }
 }

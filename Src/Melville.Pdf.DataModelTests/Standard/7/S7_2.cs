@@ -38,11 +38,12 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("true%this is a / % comment true\r\r\r\r\nfalse 1")]
         public void Comment(string twoBoolString)
         {
-            var seq = twoBoolString.AsSequenceReader();
-            Assert.True(LiteralTokenParser.TryParse(ref seq, out var trueItem));
-            Assert.True(LiteralTokenParser.TryParse(ref seq, out var falseItem));
-            Assert.Equal(PdfBoolean.True, trueItem);
-            Assert.Equal(PdfBoolean.False, PdfBoolean.False);
+            Assert.False(true, "Need to text comments");
+            // var seq = twoBoolString.AsSequenceReader();
+            // Assert.True(LiteralTokenParser.TryParse(ref seq, out var trueItem));
+            // Assert.True(LiteralTokenParser.TryParse(ref seq, out var falseItem));
+            // Assert.Equal(PdfBoolean.True, trueItem);
+            // Assert.Equal(PdfBoolean.False, PdfBoolean.False);
         }
     }
 }

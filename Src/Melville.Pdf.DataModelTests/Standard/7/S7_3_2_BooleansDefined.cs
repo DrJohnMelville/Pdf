@@ -8,15 +8,13 @@ namespace Melville.Pdf.DataModelTests.Standard._7
     public sealed class S7_3_2_BooleansDefined
     {
         [Theory]
-        [InlineData("true /", true, 5)]
-        [InlineData("false /", false, 6)]
-        public void ParseBoolSucceed(string text, bool value, int nextPosition)
+        [InlineData("true /", true)]
+        [InlineData("false /", false)]
+        public void ParseBoolSucceed(string text, bool value)
         { 
-            var seq = text.AsSequenceReader();
-            Assert.True(LiteralTokenParser.TryParse(ref seq, out var item));
-            Assert.Equal(nextPosition, seq.Position.GetInteger());
-            Assert.True(item is PdfBoolean);
-            Assert.Equal(value, ((PdfBoolean)item!).Value);
+            AAssert.True(text.ParseAs(out PdfBoolean? item));
+            Assert.Equal(value, item.Value);
+            Assert.True(ReferenceEquals(value?PdfBoolean.True:PdfBoolean.False,item));
         }
 
         [Theory]
@@ -29,8 +27,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("fals")]
         public void ParseBoolIncomplete(string text)
         { 
-            var seq = text.AsSequenceReader();
-            Assert.False(LiteralTokenParser.TryParse(ref seq, out _));
+            Assert.False(text.ParseAs());
         }
     }
 }
