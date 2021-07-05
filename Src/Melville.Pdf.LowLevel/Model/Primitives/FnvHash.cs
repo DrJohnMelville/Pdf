@@ -9,15 +9,23 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
         private const uint prime = 0x01000193;
         public static int ComputeFnvHash( ReadOnlySpan<byte> bytes)
         {
-            unchecked
-            {
                 var hash = offsetBasis;
                 foreach (var item in bytes)
                 {
-                    hash = (hash * prime) ^ item;
+                    hash = SingleHashStep(hash, item);
                 }
+                unchecked
+                {
+                    return (int)hash;
+                }
+        }
 
-                return (int)hash;
+        public static uint EmptyStringHash() => offsetBasis;
+        public static uint SingleHashStep(uint hash, byte item)
+        {
+            unchecked
+            {
+                return (hash * prime) ^ item;
             }
         }
     }

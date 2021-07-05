@@ -26,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             int finalPos = 0;
             foreach (var rawByte in digits)
             {
-                switch (priorDigit, HexValue(rawByte))
+                switch (priorDigit, HexMath.HexValue(rawByte))
                 {
                     case (_, 255): break;
                     case (255, var first):
@@ -44,7 +44,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
         }
 
         private static void AddByteToString(byte[] buff, int index, byte priorDigit, byte second) => 
-            buff[index] = ByteFromNibbles(priorDigit, second);
+            buff[index] = HexMath.ByteFromNibbles(priorDigit, second);
 
         private static void AdjustForTrailingSingleDigit(byte priorDigit, byte[] buff)
         {
@@ -52,27 +52,33 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
                 AddByteToString(buff, buff.Length-1, priorDigit, 0);
         }
 
-        private static byte ByteFromNibbles(byte mostSig, byte leastSig) => 
-            (byte)((mostSig << 4) | leastSig);
-
         private static int CountChars(ref ReadOnlySpan<byte> digits)
         {
             var bytes = 0;
             foreach (var t in digits)
             {
-                if (HexValue(t) < 255) bytes++;
+                if (HexMath.HexValue(t) < 255) bytes++;
             }
             return IncrementIfOdd(bytes) / 2;
         }
 
         private static int IncrementIfOdd(int bytes) => bytes + (bytes & 0x1);
+        }
 
-        private static byte HexValue(byte digit) =>
+    public static class HexMath
+    {
+        public static byte HexValue(byte digit) =>
             digit switch
             {
                 >= (byte) '0' and <= (byte) '9' => (byte) (digit - (byte) '0'),
                 >= (byte) 'A' and <= (byte) 'F' => (byte) (digit - ((byte) 'A' - 10)),
                 _ => 255
             };
+
+        public static byte ByteFromNibbles(byte mostSig, byte leastSig) => 
+            (byte)((mostSig << 4) | leastSig);
+
+        public static byte ByteFromHexCharPair(byte mostSig, byte leastSig) =>
+            ByteFromNibbles(HexValue(mostSig), HexValue(leastSig));
     }
 }

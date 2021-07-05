@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model
 {
-    public sealed class PdfName: PdfByteArrayObject, IEquatable<PdfName>
+    public class PdfName: PdfByteArrayObject, IEquatable<PdfName>
     {
 
         public PdfName(byte[] name):base(name) {}

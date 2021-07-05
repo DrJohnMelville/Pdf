@@ -1,11 +1,10 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Text;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using JetBrains.dotMemoryUnit;
 using Melville.Pdf.LowLevel.Model;
-using Melville.Pdf.LowLevel.Parsing;
 using Melville.Pdf.LowLevel.Parsing.NameParsing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Melville.Pdf.DataModelTests.Standard._7
 {
@@ -44,6 +43,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [Theory]
         [InlineData("/ /", "")]
         [InlineData("/Foo /", "Foo")]
+        [InlineData("/Two#20Words /", "Two Words")]
         public void ParseNameSucceed(string source, string result)
         {
             var ret = TryParseStringToName(source, out var name);
@@ -58,6 +58,18 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         public void ParseNameFail( string text)
         {
             Assert.False(TryParseStringToName(text, out _));
+        }
+
+        [Fact]
+        public void KnowNamesParseToConstants()
+        {
+            
+            KnownNames._3D.GetHashCode();
+            var hc = KnownNames.Width.GetHashCode();
+            TryParseStringToName("/WIDTH /", out var n1);
+            TryParseStringToName("/WIDTH /", out var n2);
+            Assert.True(ReferenceEquals(KnownNames.Width, n1));
+            Assert.True(ReferenceEquals(n1,n2));
         }
     }
 }
