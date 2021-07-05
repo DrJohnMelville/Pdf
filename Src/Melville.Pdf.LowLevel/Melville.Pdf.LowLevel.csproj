@@ -14,5 +14,7 @@
           <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
           <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>
+      <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj"
+        ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
     </ItemGroup>
 </Project>
