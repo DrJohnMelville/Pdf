@@ -4,7 +4,7 @@ namespace Melville.Pdf.LowLevel.Parsing
 {
     public enum CharacterClass
     {
-        Other = 0,
+        Regular = 0,
         White = 1,
         Delimiter = 2
     }
@@ -20,7 +20,7 @@ namespace Melville.Pdf.LowLevel.Parsing
                 (byte)'(' or (byte)')' or (byte)'<' or (byte)'>' or (byte)'[' or (byte)']' or
                     (byte)'{' or (byte)'}' or (byte)'/' or (byte)'%' 
                     => CharacterClass.Delimiter,
-                _ => CharacterClass.Other
+                _ => CharacterClass.Regular
             };
         }
         

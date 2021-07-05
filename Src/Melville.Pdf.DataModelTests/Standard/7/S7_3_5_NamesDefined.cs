@@ -1,4 +1,9 @@
-﻿using Melville.Pdf.LowLevel.Model;
+﻿using System;
+using System.Buffers;
+using System.Text;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Parsing;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard._7
@@ -25,6 +30,33 @@ namespace Melville.Pdf.DataModelTests.Standard._7
             Assert.Equal(matches, (object)nameA.Equals(nameB));
             Assert.Equal(matches, nameA.GetHashCode() == nameB.GetHashCode());
             
+        }
+
+
+        private static bool TryParseStringToName(string source, out PdfName? name)
+        {
+            var bytes = new SequenceReader<byte>(new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(source)));
+            var ret = NameParser.TryParse(ref bytes, out name);
+            return ret;
+        }
+
+        [Theory]
+        [InlineData("/ /", "")]
+        [InlineData("/Foo /", "Foo")]
+        public void ParseNameSucceed(string source, string result)
+        {
+            var ret = TryParseStringToName(source, out var name);
+            Assert.True(ret);
+            Assert.Equal(result, name!.ToString());
+            
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("/")]
+        public void ParseNameFail( string text)
+        {
+            Assert.False(TryParseStringToName(text, out _));
         }
     }
 }

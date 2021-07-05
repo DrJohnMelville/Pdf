@@ -26,7 +26,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData('}', CharacterClass.Delimiter)]
         [InlineData('/', CharacterClass.Delimiter)]
         [InlineData('%', CharacterClass.Delimiter)]
-        [InlineData('J', CharacterClass.Other)]
+        [InlineData('J', CharacterClass.Regular)]
         public void TestCharacterClass(char input, CharacterClass expected) => 
             Assert.Equal(expected, CharClassifier.Classify((byte)input));
 
