@@ -1,6 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics;
+﻿using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Parsing.NameParsing;

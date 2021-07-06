@@ -22,8 +22,8 @@ namespace Melville.Pdf.DataModelTests.Parser
             
         }
         [Theory]
-        [InlineData("/WIDTH %", 0)]
-        [InlineData("/WIDTh %", 1)]
+        [InlineData("/WIDTH /", 0)]
+        [InlineData("/WIDTh /", 1)]
         //eventually expand to more types
         public void ParsingNamesKnownDoesNotAllocate(string text, int newObjs)
         {

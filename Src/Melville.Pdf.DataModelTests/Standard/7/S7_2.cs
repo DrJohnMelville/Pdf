@@ -31,19 +31,17 @@ namespace Melville.Pdf.DataModelTests.Standard._7
             Assert.Equal(expected, CharClassifier.Classify((byte)input));
 
         [Theory]
-        [InlineData("true false 1")]
-        [InlineData("true%this is a / % comment true\rfalse 1")]
-        [InlineData("true%t\nfalse 1")]
-        [InlineData("true%\r\nfalse 1")]
-        [InlineData("true%this is a / % comment true\r\r\r\r\nfalse 1")]
+        [InlineData("[true false] 1")]
+        [InlineData("[    true%this is a / % comment true\rfalse] 1")]
+        [InlineData("[    true%t\nfalse ]1")]
+        [InlineData("[    true%\r\nfalse   ]1")]
+        [InlineData("[    true%this is a / % comment true\r\r\r\r\nfalse ]1")]
         public void Comment(string twoBoolString)
         {
-            Assert.False(true, "Need to text comments");
-            // var seq = twoBoolString.AsSequenceReader();
-            // Assert.True(LiteralTokenParser.TryParse(ref seq, out var trueItem));
-            // Assert.True(LiteralTokenParser.TryParse(ref seq, out var falseItem));
-            // Assert.Equal(PdfBoolean.True, trueItem);
-            // Assert.Equal(PdfBoolean.False, PdfBoolean.False);
+            AAssert.True(twoBoolString.ParseAs(out PdfArray? arr));
+            Assert.Equal(2, arr.Items.Length);
+            Assert.Equal(PdfBoolean.True, arr.Items[0]);
+            Assert.Equal(PdfBoolean.False, arr.Items[1]);
         }
     }
 }
