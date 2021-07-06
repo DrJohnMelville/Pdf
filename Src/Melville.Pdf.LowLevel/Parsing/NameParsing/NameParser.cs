@@ -8,9 +8,9 @@ using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.NameParsing
 {
-    public class NameParser: IPdfObjectParser
+    public class NameParser: PdfAtomParser
     {
-        public bool TryParse(ref SequenceReader<byte> bytes,[NotNullWhen(true)] out PdfObject? output)
+        public override bool TryParse(ref SequenceReader<byte> bytes,[NotNullWhen(true)] out PdfObject? output)
         {
             output = null;
             if (!TrySkipSolidus(ref bytes)) return false;

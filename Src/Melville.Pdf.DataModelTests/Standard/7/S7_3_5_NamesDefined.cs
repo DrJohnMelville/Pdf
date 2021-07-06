@@ -36,7 +36,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         private static bool TryParseStringToName(string source, out PdfName? name)
         {
             var bytes = new SequenceReader<byte>(new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(source)));
-            var ret = new PdfObjectParser().TryParse(ref bytes, out var obj);
+            var ret = new PdfCompositeObjectParser().TryParse(ref bytes, out var obj);
             name = (PdfName?) obj;
             return ret;
         }

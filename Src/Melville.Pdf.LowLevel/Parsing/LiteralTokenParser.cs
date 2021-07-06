@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Parsing.NameParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing
 {
-    public class LiteralTokenParser : IPdfObjectParser
+    public class LiteralTokenParser : PdfAtomParser
     {
         private int length;
         private PdfObject literal;
@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Parsing
             this.literal = literal;
         }
 
-        public bool TryParse(ref SequenceReader<byte> reader, out PdfObject obj)
+        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject obj)
         {
             obj = literal;
             return reader.TryAdvance(length) && NextTokenFinder.SkipToNextToken(ref reader);

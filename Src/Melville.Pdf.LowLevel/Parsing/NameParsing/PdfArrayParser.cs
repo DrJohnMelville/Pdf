@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model;
 
 namespace Melville.Pdf.LowLevel.Parsing.NameParsing
 {
-    public class PdfArrayParser: IPdfObjectParser, IWantRoot
+    public class PdfArrayParser: PdfAtomParser, IWantRoot
     {
         private IPdfObjectParser rootParser;
 
@@ -14,7 +14,7 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
             this.rootParser = this;
         }
 
-        public bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
+        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
         {
             obj = null;
             var items = new List<PdfObject>();
@@ -30,7 +30,7 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
                     return NextTokenFinder.SkipToNextToken(ref reader);
                 }
 
-                if (!rootParser.TryParse(ref reader, out var temp)) return false;
+                if (!((PdfAtomParser)rootParser).TryParse(ref reader, out var temp)) return false;
                 items.Add(temp);
             }
         }

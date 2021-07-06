@@ -5,12 +5,10 @@ using Melville.Pdf.LowLevel.Parsing.NameParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing
 {
-    public class NumberParser: IPdfObjectParser
+    public class NumberParser: PdfAtomParser
     {
-        public bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
-        {
-            return new NumberParsingInstance().InnerTryParse(ref reader, out obj);
-        }
+        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj) => 
+            new NumberParsingInstance().InnerTryParse(ref reader, out obj);
     }
 
     public ref struct NumberParsingInstance

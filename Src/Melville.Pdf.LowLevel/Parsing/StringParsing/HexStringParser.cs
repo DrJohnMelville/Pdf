@@ -4,9 +4,9 @@ using Melville.Pdf.LowLevel.Parsing.NameParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.StringParsing
 {
-    public class HexStringParser2: IPdfObjectParser
+    public class HexStringParser: PdfAtomParser
     {
-        public bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
+        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
         {
             reader.Advance(1);
             var copyOfReader = reader;

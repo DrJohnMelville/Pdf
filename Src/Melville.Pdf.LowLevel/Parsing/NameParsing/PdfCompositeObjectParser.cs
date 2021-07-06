@@ -1,15 +1,19 @@
 ﻿using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Pipelines;
 using System.Linq;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.NameParsing
 {
-    public interface IPdfObjectParser
+    public abstract class IPdfObjectParser
     {
-        bool TryParse(ref SequenceReader<byte> reader, [NotNullWhen(true)] out PdfObject? obj);
+//        bool TryParse(ref SequenceReader<byte> reader, [NotNullWhen(true)] out PdfObject? obj);
+        public abstract Task<PdfObject> ParseAsync(PipeReader pr);
+
     }
 
     public interface IWantRoot
@@ -17,11 +21,11 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
         void SetRoot(IPdfObjectParser rootParser);
     }
 
-    public class PdfObjectParser: IPdfObjectParser
+    public class PdfCompositeObjectParser: PdfAtomParser
     {
         private readonly IDictionary<byte, IPdfObjectParser> catalog;
 
-        public PdfObjectParser(IDictionary<byte, IPdfObjectParser>? catalog = null)
+        public PdfCompositeObjectParser(IDictionary<byte, IPdfObjectParser>? catalog = null)
         {
             this.catalog = catalog ?? DefaultObjectParserCatalog.instance;
             InformChildrenOfRootParser();
@@ -35,10 +39,11 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
             }
         }
 
-        public bool TryParse(ref SequenceReader<byte> reader, [NotNullWhen(true)] out PdfObject? obj)
+        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
         {
+            #warning this is temporary and broken to assume PdfAtomParser
             if (reader.TryPeek(out byte first))
-                return catalog[first].TryParse(ref reader, out obj);
+                return ((PdfAtomParser)catalog[first]).TryParse(ref reader, out obj);
                     
             obj = null;
             return false;
@@ -50,7 +55,7 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
         public static readonly DefaultObjectParserCatalog instance = new();
         private DefaultObjectParserCatalog()
         {
-            Add('<', new HexStringParser2());
+            Add('<', new HexStringParser());
             Add('(', new SyntaxStringParser());
             Add('[', new PdfArrayParser());
             RegisterNumParser();
