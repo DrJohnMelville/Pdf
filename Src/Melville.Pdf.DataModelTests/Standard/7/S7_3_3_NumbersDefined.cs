@@ -19,7 +19,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("134.567/", 134, 134.567)]
         public async Task ParseNumberSucceed(string source, int intValue, double doubleValue)
         {
-            var num = (PdfNumber)await source.ParseTo(); 
+            var num = (PdfNumber)await source.ParseToPdfAsync(); 
             Assert.Equal(intValue, num!.IntValue);
             Assert.Equal(doubleValue, num.DoubleValue);
         }

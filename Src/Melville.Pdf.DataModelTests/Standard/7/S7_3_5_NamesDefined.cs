@@ -34,7 +34,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
 
         private static async Task<PdfName> TryParseStringToName(string source)
         {
-            return (PdfName) await Encoding.UTF8.GetBytes(source).ParseTo();
+            return (PdfName) await Encoding.UTF8.GetBytes(source).ParseToPdfAsync();
         }
 
         [Theory]

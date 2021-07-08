@@ -1,12 +1,24 @@
-﻿namespace Melville.Pdf.LowLevel.Model
+﻿using System.Collections.Generic;
+
+namespace Melville.Pdf.LowLevel.Model
 {
     public class PdfArray : PdfObject
     {
-        public PdfArray(PdfObject[] items)
-        {
-            Items = items;
-        }
+        public PdfObject[] RawItems { get; }
 
-        public PdfObject[] Items { get; }
+        public PdfArray(PdfObject[] rawItems)
+        {
+            RawItems = rawItems;
+        }
+    }
+
+    public class PdfDictionary : PdfObject
+    {
+        public Dictionary<PdfName, PdfObject> RawItems;
+
+        public PdfDictionary(Dictionary<PdfName, PdfObject> rawItems)
+        {
+            RawItems = rawItems;
+        }
     }
 }

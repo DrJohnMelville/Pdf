@@ -43,6 +43,7 @@ namespace Melville.Pdf.LowLevel.Parsing
             }
             return (firstByte, secondByte) switch
             {
+                ((byte) '<', (byte)'<') => Dictionary,
                 ((byte) '<', _) => HexString,
                 ((byte) '(', _) => SyntaxString,
                 ((byte) '[', _) => PdfArray,
@@ -72,12 +73,13 @@ namespace Melville.Pdf.LowLevel.Parsing
         private static readonly HexStringParser HexString = new();
         private static readonly SyntaxStringParser SyntaxString = new();
         private static readonly PdfArrayParser PdfArray = new();
+        private static readonly PdfDictionaryParser Dictionary = new();
         private static readonly NumberParser Number = new();
         private static readonly NameParser Names = new();
-        private static LiteralTokenParser TrueParser = new(4, PdfBoolean.True);
-        private static LiteralTokenParser FalseParser = new(5, PdfBoolean.False);
-        private static LiteralTokenParser NullParser = new(4, PdfNull.Instance);
-        private static LiteralTokenParser ArrayTermination = new(1, PdfNull.ArrayTerminator);
-        private static LiteralTokenParser DictionatryTermination = new(2, PdfNull.ArrayTerminator);
+        private static readonly LiteralTokenParser TrueParser = new(4, PdfBoolean.True);
+        private static readonly LiteralTokenParser FalseParser = new(5, PdfBoolean.False);
+        private static readonly LiteralTokenParser NullParser = new(4, PdfNull.Instance);
+        private static readonly LiteralTokenParser ArrayTermination = new(1, PdfNull.ArrayTerminator);
+        private static readonly LiteralTokenParser DictionatryTermination = new(2, PdfNull.DictionaryTerminator);
     }
 }

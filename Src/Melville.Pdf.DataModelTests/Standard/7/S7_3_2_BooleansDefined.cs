@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("false /", false)]
         public async Task ParseBoolSucceed(string text, bool value)
         {
-            var item = (PdfBoolean) await text.ParseTo();
+            var item = (PdfBoolean) await text.ParseToPdfAsync();
             Assert.Equal(value, item.Value);
             Assert.True(ReferenceEquals(value?PdfBoolean.True:PdfBoolean.False,item));
         }

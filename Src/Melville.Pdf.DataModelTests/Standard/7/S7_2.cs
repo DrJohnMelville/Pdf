@@ -39,10 +39,10 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("[    true%this is a / % comment true\r\r\r\r\nfalse ]1")]
         public async Task Comment(string twoBoolString)
         {
-            var arr = (PdfArray) await twoBoolString.ParseTo();
-            Assert.Equal(2, arr.Items.Length);
-            Assert.Equal(PdfBoolean.True, arr.Items[0]);
-            Assert.Equal(PdfBoolean.False, arr.Items[1]);
+            var arr = (PdfArray) await twoBoolString.ParseToPdfAsync();
+            Assert.Equal(2, arr.RawItems.Length);
+            Assert.Equal(PdfBoolean.True, arr.RawItems[0]);
+            Assert.Equal(PdfBoolean.False, arr.RawItems[1]);
         }
     }
 }

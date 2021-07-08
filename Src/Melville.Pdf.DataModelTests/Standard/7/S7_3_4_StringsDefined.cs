@@ -36,7 +36,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("<01234567ABCDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
         public async Task ParseHexString(string input, string output)
         {
-            var str = (PdfString) await input.ParseTo();
+            var str = (PdfString) await input.ParseToPdfAsync();
             Assert.Equal(output, str!.ToString());
         }
 
@@ -65,7 +65,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("(a\\1212b))", "a\x00512b")]
         public async Task ParseLiteralString(string source, string result)
         {
-            var parsedString = (PdfString) await source.ParseTo();
+            var parsedString = (PdfString) await source.ParseToPdfAsync();
             Assert.Equal(result, parsedString.ToString());
         }
     }

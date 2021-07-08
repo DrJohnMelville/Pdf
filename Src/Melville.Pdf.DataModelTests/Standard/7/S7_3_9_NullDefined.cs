@@ -10,7 +10,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
     {
         private static Task<PdfObject> ParsedNull()
         {
-            return "null ".ParseTo();
+            return "null ".ParseToPdfAsync();
         }
 
         [Fact]

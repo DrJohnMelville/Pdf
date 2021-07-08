@@ -13,9 +13,9 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
     public static class TestParser
     {
-        public static  Task<PdfObject> ParseTo(this string s) => ParseTo(s.AsExtendedAsciiBytes());
+        public static  Task<PdfObject> ParseToPdfAsync(this string s) => ParseToPdfAsync(s.AsExtendedAsciiBytes());
 
-        public static Task<PdfObject> ParseTo(this byte[] bytes)
+        public static Task<PdfObject> ParseToPdfAsync(this byte[] bytes)
         {
             var root = new PdfCompositeObjectParser();
             return root.ParseAsync(new ParsingSource(new OneCharAtAtimeStream(bytes), root));
