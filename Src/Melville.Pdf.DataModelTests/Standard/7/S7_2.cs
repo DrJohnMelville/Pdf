@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Parsing;
@@ -36,9 +37,9 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("[    true%t\nfalse ]1")]
         [InlineData("[    true%\r\nfalse   ]1")]
         [InlineData("[    true%this is a / % comment true\r\r\r\r\nfalse ]1")]
-        public void Comment(string twoBoolString)
+        public async Task Comment(string twoBoolString)
         {
-            AAssert.True(twoBoolString.ParseAs(out PdfArray? arr));
+            var arr = (PdfArray) await twoBoolString.ParseTo();
             Assert.Equal(2, arr.Items.Length);
             Assert.Equal(PdfBoolean.True, arr.Items[0]);
             Assert.Equal(PdfBoolean.False, arr.Items[1]);

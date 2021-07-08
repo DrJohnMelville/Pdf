@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Buffers;
 using System.IO;
-using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Parsing;
 using Melville.Pdf.LowLevel.Parsing.PdfStreamHolders;
+using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
@@ -22,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
             return new MemoryStream(ret);
         }
 
-        private readonly ParsingSource sut = new(IndexedStream());
+        private readonly ParsingSource sut = new(IndexedStream(), Mock.Of<IPdfObjectParser>());
 
         private SequencePosition ConfirmBytes(ReadOnlySequence<byte> seq, params byte[] values)
         {
@@ -41,7 +42,7 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
             var result = await sut.ReadAsync();
             var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
             Assert.Equal(0, sut.Position);
-            sut.AdvanceTo(result.Buffer, sp);
+            sut.AdvanceTo( sp);
             Assert.Equal(5, sut.Position);
         }
         [Fact]
@@ -50,12 +51,12 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
             var result = await sut.ReadAsync();
             var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
             Assert.Equal(0, sut.Position);
-            sut.AdvanceTo(result.Buffer, sp);
+            sut.AdvanceTo(sp);
             Assert.Equal(5, sut.Position);
             sut.Seek(45);
             result = await sut.ReadAsync();
             sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
-            sut.AdvanceTo(result.Buffer, sp);
+            sut.AdvanceTo( sp);
             Assert.Equal(49, sut.Position);
         }
     }

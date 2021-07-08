@@ -10,13 +10,17 @@ namespace Melville.Pdf.LowLevel.Parsing.PdfStreamHolders
 {
     public class ParsingSource
     {
-        private readonly Stream source;
         public long Position { get; private set; }
+        public IPdfObjectParser RootParser { get; }
+        
+        private readonly Stream source;
         private PipeReader reader;
+        private ReadOnlySequence<byte> storedSequence;
 
-        public ParsingSource(Stream source)
+        public ParsingSource(Stream source, IPdfObjectParser rootParser)
         {
             this.source = source;
+            RootParser = rootParser;
             CreatePipeReader();
         }
 
@@ -29,16 +33,33 @@ namespace Melville.Pdf.LowLevel.Parsing.PdfStreamHolders
 
         public ValueTask<ReadResult> ReadAsync(CancellationToken token = default)
         {
-            return reader.ReadAsync(token);
+            var valueTask = reader.ReadAsync(token);
+            if (!valueTask.IsCompleted)
+                return new ValueTask<ReadResult>(WaitForRead(valueTask));
+
+            var res = valueTask.Result;
+            StorePosition(res.Buffer);
+            return new ValueTask<ReadResult>(res);
         }
 
-        public void AdvanceTo(in ReadOnlySequence<byte> sequence, SequencePosition consumed) =>
-            AdvanceTo(sequence, consumed, consumed);
-        public void AdvanceTo(
-            in ReadOnlySequence<byte> sequence, SequencePosition consumed, SequencePosition examined)
+        private async Task<ReadResult> WaitForRead(ValueTask<ReadResult> valueTask)
         {
-            Position += sequence.GetOffset(consumed);
-            reader.AdvanceTo(consumed);
+            var ret = await valueTask;
+            StorePosition(ret.Buffer);
+            return ret;
+        }
+
+        private void StorePosition(ReadOnlySequence<byte> resBuffer)
+        {
+            storedSequence = resBuffer;
+        }
+        
+        public void AdvanceTo(SequencePosition consumed) =>
+            AdvanceTo(consumed, consumed);
+        public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
+        {
+            Position += storedSequence.GetOffset(consumed);
+            reader.AdvanceTo(consumed, examined);
         }
 
         public void Seek(long newPosition)

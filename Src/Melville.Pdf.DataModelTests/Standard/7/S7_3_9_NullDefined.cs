@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.DataModelTests.ParsingTestUtils;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Parsing;
 using Xunit;
@@ -7,26 +8,22 @@ namespace Melville.Pdf.DataModelTests.Standard._7
 {
     public class S7_3_9_NullDefined
     {
-        private static bool ParseNull(out PdfObject? nullObj)
+        private static Task<PdfObject> ParsedNull()
         {
-            return "null\\".ParseAs(out nullObj);
+            return "null ".ParseTo();
         }
 
         [Fact]
-        public void CanParseNull()
+        public async Task CanParseNull()
         {
-            var succeed = ParseNull(out var nullObj);
-            Assert.True(succeed);
-            Assert.Equal(PdfNull.Instance, nullObj);
+            Assert.Equal(PdfNull.Instance, await ParsedNull());
             
         }
 
         [Fact]
-        public void NullIsASingleton()
+        public async Task NullIsASingleton()
         {
-            ParseNull(out var n1);
-            ParseNull(out var n2);
-            Assert.Equal(n1, n2);
+            Assert.True(ReferenceEquals(await ParsedNull(), await ParsedNull()));
             
         }
     }

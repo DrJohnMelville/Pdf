@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Xml.XPath;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
@@ -33,28 +34,10 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("<2020>/", "  ")]
         [InlineData("<202>/", "  ")]
         [InlineData("<01234567ABCDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
-        public void ParseHexString(string input, string output)
+        public async Task ParseHexString(string input, string output)
         {
-            var ret = input.ParseAs(out PdfString? str);
-            Assert.True(ret);
+            var str = (PdfString) await input.ParseTo();
             Assert.Equal(output, str!.ToString());
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("<")]
-        [InlineData("<A")]
-        [InlineData("<AAA")]
-        public void FailParseHexString(string data)
-        {
-            data.ParseAs();
-        }
-        [Theory]
-        [InlineData("")]
-        [InlineData("(")]
-        public void FailParseLiteralString(string data)
-        {
-            Assert.False(data.ParseAs());
         }
 
         [Theory]
@@ -80,9 +63,9 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("(a\\21b))", "a\x0011b")]
         [InlineData("(a\\121b))", "a\x0051b")]
         [InlineData("(a\\1212b))", "a\x00512b")]
-        public void ParseLiteralString(string source, string result)
+        public async Task ParseLiteralString(string source, string result)
         {
-            AAssert.True(source.ParseAs( out PdfObject? parsedString));
+            var parsedString = (PdfString) await source.ParseTo();
             Assert.Equal(result, parsedString.ToString());
         }
     }

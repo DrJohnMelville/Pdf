@@ -17,9 +17,9 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
             var copyOfBytes = bytes;
             if (!TryComputeLengthAndHash(ref bytes, out var length, out var hash)) return false;
             if (LookupNameByHash(ref copyOfBytes, hash, length, out output)) 
-                return NextTokenFinder.SkipToNextToken(ref bytes);
+                return true;
             CreateNovelName(ref copyOfBytes, length, out output);
-            return NextTokenFinder.SkipToNextToken(ref bytes);
+            return true;
         }
 
         private static bool TrySkipSolidus(ref SequenceReader<byte> bytes)

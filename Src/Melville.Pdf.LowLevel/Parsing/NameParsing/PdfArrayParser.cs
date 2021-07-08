@@ -1,40 +1,24 @@
-﻿using System.Buffers;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Parsing.PdfStreamHolders;
 
 namespace Melville.Pdf.LowLevel.Parsing.NameParsing
 {
-    public class PdfArrayParser: PdfAtomParser, IWantRoot
+    public class PdfArrayParser: IPdfObjectParser
     {
-        private IPdfObjectParser rootParser;
-
-        public PdfArrayParser()
+        public async Task<PdfObject> ParseAsync(ParsingSource source)
         {
-            this.rootParser = this;
-        }
-
-        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
-        {
-            obj = null;
+            var reader = await source.ReadAsync();
+            source.AdvanceTo(reader.Buffer.GetPosition(1));
+            //TODO: consider renting these lists
             var items = new List<PdfObject>();
-            if (!reader.TryAdvance(1)) return false;
-            if (!NextTokenFinder.SkipToNextToken(ref reader)) return false;
             while (true)
             {
-                if (!reader.TryPeek(out var peek)) return false;
-                if (peek == (byte) ']')
-                {
-                    reader.Advance(1);
-                    obj = new PdfArray(items.ToArray());
-                    return NextTokenFinder.SkipToNextToken(ref reader);
-                }
-
-                if (!((PdfAtomParser)rootParser).TryParse(ref reader, out var temp)) return false;
-                items.Add(temp);
+                var item = await source.RootParser.ParseAsync(source);
+                if (item == PdfNull.ArrayTerminator) return new PdfArray(items.ToArray());
+                items.Add(item);
             }
         }
-
-        public void SetRoot(IPdfObjectParser rootParser) => this.rootParser = rootParser;
     }
 }

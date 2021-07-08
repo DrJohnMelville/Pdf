@@ -1,37 +1,39 @@
 ﻿using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Parsing.PdfStreamHolders;
 
-namespace Melville.Pdf.LowLevel.Parsing.NameParsing
+namespace Melville.Pdf.LowLevel.Parsing
 {
     public abstract class PdfAtomParser : IPdfObjectParser
     {
         public abstract bool TryParse(
             ref SequenceReader<byte> reader, [NotNullWhen(true)] out PdfObject? obj);
 
-        public override async Task<PdfObject> ParseAsync(PipeReader pr)
+        public async Task<PdfObject> ParseAsync(ParsingSource source)
         {
             while(true)
             {
-                var seq = (await pr.ReadAsync()).Buffer;
+                var seq = (await source.ReadAsync()).Buffer;
                 var finalPosition = Parse(ref seq, out var parsedObject);
                 if (parsedObject != null)
                 {
-                    pr.AdvanceTo(finalPosition);
+                    source.AdvanceTo(finalPosition);
                     return parsedObject;
                 }
-                pr.AdvanceTo(seq.GetPosition(0), finalPosition);
+                source.AdvanceTo(seq.GetPosition(0), seq.End);
             }
         }
 
         private SequencePosition Parse(ref ReadOnlySequence<byte> seq, out PdfObject? parsedObject)
         {
             var reader = new SequenceReader<byte>(seq);
-            TryParse(ref reader, out parsedObject);
+            if (!TryParse(ref reader, out parsedObject))
+            {
+                parsedObject = null;
+            }
             return reader.Position;
         }
     }

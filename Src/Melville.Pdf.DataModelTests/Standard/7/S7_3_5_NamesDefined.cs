@@ -1,10 +1,9 @@
-﻿using System.Buffers;
-using System.Text;
-using JetBrains.dotMemoryUnit;
+﻿using System.Text;
+using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Parsing.NameParsing;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Melville.Pdf.DataModelTests.Standard._7
 {
@@ -33,41 +32,27 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         }
 
 
-        private static bool TryParseStringToName(string source, out PdfName? name)
+        private static async Task<PdfName> TryParseStringToName(string source)
         {
-            var bytes = new SequenceReader<byte>(new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(source)));
-            var ret = new PdfCompositeObjectParser().TryParse(ref bytes, out var obj);
-            name = (PdfName?) obj;
-            return ret;
+            return (PdfName) await Encoding.UTF8.GetBytes(source).ParseTo();
         }
 
         [Theory]
         [InlineData("/ /", "")]
         [InlineData("/Foo /", "Foo")]
         [InlineData("/Two#20Words /", "Two Words")]
-        public void ParseNameSucceed(string source, string result)
+        public async Task ParseNameSucceed(string source, string result)
         {
-            var ret = TryParseStringToName(source, out var name);
-            Assert.True(ret);
+            var name = await TryParseStringToName(source);
             Assert.Equal(result, name!.ToString());
             
         }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("/")]
-        public void ParseNameFail( string text)
-        {
-            Assert.False(TryParseStringToName(text, out _));
-        }
-
+        
         [Fact]
-        public void KnowNamesParseToConstants()
+        public async Task KnowNamesParseToConstants()
         {
-            
-           var hc = KnownNames.Width.GetHashCode();
-            TryParseStringToName("/WIDTH /", out var n1);
-            TryParseStringToName("/WIDTH /", out var n2);
+            var n1 = await TryParseStringToName("/WIDTH ");
+            var n2 = await TryParseStringToName("/WIDTH ");
             Assert.True(ReferenceEquals(KnownNames.Width, n1));
             Assert.True(ReferenceEquals(n1,n2));
         }

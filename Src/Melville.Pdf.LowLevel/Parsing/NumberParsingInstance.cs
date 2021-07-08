@@ -59,7 +59,8 @@ namespace Melville.Pdf.LowLevel.Parsing
                         return TryParseFractionalDigits(ref source);
                     default:
                         source.Rewind(1);
-                        return TryCompleteNumberParse(ref source);
+                        CreateParsedNumber();
+                        return true;
                 }
             }
         }
@@ -83,7 +84,8 @@ namespace Melville.Pdf.LowLevel.Parsing
                         break;
                     default:
                         source.Rewind(1);
-                        return TryCompleteNumberParse(ref source);
+                        CreateParsedNumber();
+                        return true;
                 }
             }
         }
@@ -94,12 +96,7 @@ namespace Melville.Pdf.LowLevel.Parsing
             fractionalPart += placeValue * (character - (byte) '0');
         }
 
-        private bool TryCompleteNumberParse(ref SequenceReader<byte> source)
-        {
-            CreateParsedNumber();
-            return NextTokenFinder.SkipToNextToken(ref source);
-        }
-
+     
         private void CreateParsedNumber() => 
             result= fractionalPart == 0.0 ? 
                 new PdfInteger(sign * value) : 

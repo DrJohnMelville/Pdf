@@ -18,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Parsing
         public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject obj)
         {
             obj = literal;
-            return reader.TryAdvance(length) && NextTokenFinder.SkipToNextToken(ref reader);
+            return reader.TryAdvance(length);
         }
     }
 }

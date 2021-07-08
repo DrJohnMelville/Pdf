@@ -17,7 +17,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             }
 
             obj = ReadString(ref copyOfReader, len);
-            return NextTokenFinder.SkipToNextToken(ref reader);
+            return true;
         }
 
         private bool TryCount(ref SequenceReader<byte> reader, out int length)
