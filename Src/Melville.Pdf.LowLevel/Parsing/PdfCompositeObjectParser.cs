@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model;
@@ -30,7 +31,7 @@ namespace Melville.Pdf.LowLevel.Parsing
                 {
                     return await parser.ParseAsync(source);
                 }
-                source.AdvanceTo(data.Buffer.Start, data.Buffer.End);
+                source.NeedMoreInputToAdvance();
             }
         }
 
@@ -47,28 +48,17 @@ namespace Melville.Pdf.LowLevel.Parsing
                 ((byte) '<', _) => HexString,
                 ((byte) '(', _) => SyntaxString,
                 ((byte) '[', _) => PdfArray,
-                ( >= (byte) '0' and <= (byte)'9', _) => Number,
+                ( >= (byte) '0' and <= (byte)'9', _) => Indirects,
                 ((byte) '+' or (byte)'-', _) => Number,
                 ((byte) '/', _) => Names,
                 ((byte) 't', _) => TrueParser,
                 ((byte) 'f', _) => FalseParser,
+                ((byte) 'n', _) => NullParser,
                 ((byte) ']', _) => ArrayTermination,
                 ((byte) '>', (byte)'>') => DictionatryTermination,
-                _ => NullParser
+                _ => throw new PdfParseException("Unknown Pdf Token")
             };
         }
-
-        /*
-        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj)
-        {
-            #warning this is temporary and broken to assume PdfAtomParser
-            if (reader.TryPeek(out byte first))
-                return ((PdfAtomParser)catalog[first]).TryParse(ref reader, out obj);
-                    
-            obj = null;
-            return false;
-        }
-    */
 
         private static readonly HexStringParser HexString = new();
         private static readonly SyntaxStringParser SyntaxString = new();
@@ -78,8 +68,10 @@ namespace Melville.Pdf.LowLevel.Parsing
         private static readonly NameParser Names = new();
         private static readonly LiteralTokenParser TrueParser = new(4, PdfBoolean.True);
         private static readonly LiteralTokenParser FalseParser = new(5, PdfBoolean.False);
-        private static readonly LiteralTokenParser NullParser = new(4, PdfNull.Instance);
-        private static readonly LiteralTokenParser ArrayTermination = new(1, PdfNull.ArrayTerminator);
-        private static readonly LiteralTokenParser DictionatryTermination = new(2, PdfNull.DictionaryTerminator);
+        private static readonly LiteralTokenParser NullParser = new(4, PdfEmptyConstants.Null);
+        private static readonly LiteralTokenParser ArrayTermination = new(1, PdfEmptyConstants.ArrayTerminator);
+        private static readonly LiteralTokenParser DictionatryTermination = new(2, PdfEmptyConstants.DictionaryTerminator);
+        //the next line must appear after the declaration of Number in the source file
+        private static readonly IndirectObjectParser Indirects = new(Number);
     }
 }

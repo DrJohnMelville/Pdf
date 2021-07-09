@@ -7,7 +7,8 @@ namespace Melville.Pdf.LowLevel.Parsing
 {
     public class NumberParser: PdfAtomParser
     {
-        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject? obj) => 
+        public override bool TryParse(
+            ref SequenceReader<byte> reader, [NotNullWhen(true)] out PdfObject? obj) => 
             new NumberParsingInstance().InnerTryParse(ref reader, out obj);
     }
 

@@ -25,7 +25,7 @@ namespace Melville.Pdf.LowLevel.Parsing
                 source.AdvanceTo(reader.Position);
                 return true;
             }
-            source.AdvanceTo(seqBuffer.Start, seqBuffer.End);
+            source.NeedMoreInputToAdvance();
             return false;
         }
 

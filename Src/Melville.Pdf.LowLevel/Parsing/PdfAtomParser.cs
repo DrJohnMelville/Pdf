@@ -23,7 +23,7 @@ namespace Melville.Pdf.LowLevel.Parsing
                     source.AdvanceTo(finalPosition);
                     return parsedObject;
                 }
-                source.AdvanceTo(seq.GetPosition(0), seq.End);
+                source.NeedMoreInputToAdvance();
             }
         }
 

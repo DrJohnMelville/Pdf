@@ -60,7 +60,10 @@ namespace Melville.Pdf.LowLevel.Parsing.PdfStreamHolders
         {
             Position += storedSequence.GetOffset(consumed);
             reader.AdvanceTo(consumed, examined);
+            storedSequence = default;
         }
+
+        public void NeedMoreInputToAdvance() => AdvanceTo(storedSequence.Start, storedSequence.End);
 
         public void Seek(long newPosition)
         {

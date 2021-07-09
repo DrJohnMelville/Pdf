@@ -18,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Parsing.NameParsing
             while (true)
             {
                 var item = await source.RootParser.ParseAsync(source);
-                if (item == PdfNull.ArrayTerminator) return new PdfArray(items.ToArray());
+                if (item == PdfEmptyConstants.ArrayTerminator) return new PdfArray(items.ToArray());
                 items.Add(item);
             }
         }
