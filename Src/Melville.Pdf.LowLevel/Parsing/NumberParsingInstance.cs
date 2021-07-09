@@ -47,47 +47,36 @@ namespace Melville.Pdf.LowLevel.Parsing
         private bool TryParseWholeDigits(
             ref SequenceReader<byte> source)
         {
-            while (true)
-            {
-                if (!source.TryRead(out var character)) return false;
-                switch (character)
-                {
-                    case >= (byte) '0' and <= (byte) '9':
-                        ConsumeWholeNumberPart(character);
-                        break;
-                    case (int)'.':
-                        return TryParseFractionalDigits(ref source);
-                    default:
-                        source.Rewind(1);
-                        CreateParsedNumber();
-                        return true;
-                }
-            }
+            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref source, out value, out var nextByte))
+                return false;
+            return nextByte == '.' ? 
+                TryParseFractionalDigits(ref source) : 
+                ReturnIntegerResult(ref source);
         }
-        
-        private void ConsumeWholeNumberPart(byte character)
+
+        private bool ReturnIntegerResult(ref SequenceReader<byte> source)
         {
-            value *= 10;
-            value += character - (byte) '0';
+            source.Rewind(1);
+            result = new PdfInteger(sign * value);
+            return true;
         }
-        
+
         private bool TryParseFractionalDigits(ref SequenceReader<byte> source)
         {
             placeValue = 1.0;
             while (true)
             {
                 if (!source.TryRead(out var character)) return false;
-                switch (character)
-                {
-                    case >= (byte) '0' and <= (byte) '9':
-                        ConsumeDecimalNumberPart(character);
-                        break;
-                    default:
-                        source.Rewind(1);
-                        CreateParsedNumber();
-                        return true;
-                }
+                if (!WholeNumberParser.IsDigit(character)) return ReturnDoubleResult(ref source);
+                ConsumeDecimalNumberPart(character);
             }
+        }
+
+        private bool ReturnDoubleResult(ref SequenceReader<byte> source)
+        {
+            source.Rewind(1);
+            result = new PdfDouble(sign * (value + fractionalPart));
+            return true;
         }
 
         private void ConsumeDecimalNumberPart(byte character)
@@ -95,11 +84,5 @@ namespace Melville.Pdf.LowLevel.Parsing
             placeValue /= 10.0;
             fractionalPart += placeValue * (character - (byte) '0');
         }
-
-     
-        private void CreateParsedNumber() => 
-            result= fractionalPart == 0.0 ? 
-                new PdfInteger(sign * value) : 
-                new PdfDouble(sign * (value + fractionalPart));
     }
 }
