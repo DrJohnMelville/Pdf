@@ -23,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [Theory]
         [InlineData("  << >>  ", 0)]
         [InlineData("<</HEIGHT 213 /WIDTH 456 /ASPECT null >>", 2)] // nulls make the entry be ignored
-        [InlineData(" << /DICT << /INNERDICT 121.22 >>>>", 1)]
+        [InlineData(" << /DICT << /INNERDICT 121.22 >>>>", 1)] // dictionary can contain dictionaries
         public async Task SpecialCases(string input, int size)
         {
             var dict = (PdfDictionary)(await input.ParseToPdfAsync());
@@ -34,5 +34,17 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [InlineData("<</HEIGHT 213/WIDTH>>")]
         public Task Exceptions(string input) => 
             Assert.ThrowsAsync<PdfParseException>(input.ParseToPdfAsync);
+
+        [Fact]
+        public async Task DictionaryHandlesIndirectDereferences()
+        {
+            var d = (PdfDictionary) (await "<</HEIGHT true /WIDTH 1 0 R /AC 1 0 obj false endobj>>".ParseToPdfAsync());
+            Assert.Equal(3, d.Count);
+
+            Assert.True(d.ContainsKey(KnownNames.Height));
+            Assert.False(d.ContainsKey(KnownNames.FormType));
+            
+            
+        }
     }
 }

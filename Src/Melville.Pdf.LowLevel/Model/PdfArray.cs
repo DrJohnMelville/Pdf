@@ -1,24 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Melville.Pdf.LowLevel.Model
 {
-    public class PdfArray : PdfObject
+    public sealed class PdfArray : PdfObject, IReadOnlyList<PdfObject>
     {
-        public PdfObject[] RawItems { get; }
+        public IReadOnlyList<PdfObject> RawItems { get; }
 
-        public PdfArray(PdfObject[] rawItems)
+        public PdfArray(IReadOnlyList<PdfObject> rawItems)
         {
             RawItems = rawItems;
         }
-    }
 
-    public class PdfDictionary : PdfObject
-    {
-        public Dictionary<PdfName, PdfObject> RawItems;
+        public IEnumerator<PdfObject> GetEnumerator() => 
+            RawItems.Select(i => i.DirectValue()).GetEnumerator();
 
-        public PdfDictionary(Dictionary<PdfName, PdfObject> rawItems)
-        {
-            RawItems = rawItems;
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public int Count =>  RawItems.Count;
+
+        public PdfObject this[int index] => RawItems[index].DirectValue();
     }
 }

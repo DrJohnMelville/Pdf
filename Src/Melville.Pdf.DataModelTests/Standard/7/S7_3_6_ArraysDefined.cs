@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Xunit;
@@ -17,7 +18,22 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         public async Task ParseArray(string src, int length)
         {
             var obj = (PdfArray) await src.ParseToPdfAsync();
-            Assert.Equal(length, obj.RawItems.Length);
+            Assert.Equal(length, obj.RawItems.Count);
+        }
+
+        [Fact]
+        public async Task ArrayIsAReadOnlyListOfTheDirectObjectsInTheArray()
+        {
+            var sut = (PdfArray)await "[ 1 0 R false null 1 0 obj true endobj ]  ".ParseToPdfAsync();
+            Assert.Equal(4, sut.Count);
+            Assert.Equal(PdfBoolean.True, sut[0]);
+            Assert.Equal(PdfBoolean.False, sut[1]);
+            Assert.Equal(PdfEmptyConstants.Null, sut[2]);
+            Assert.Equal(PdfBoolean.True, sut[3]);
+
+            Assert.Equal(new PdfObject[]
+                    {PdfBoolean.True, PdfBoolean.False, PdfEmptyConstants.Null, PdfBoolean.True},
+                (IEnumerable)sut);
             
         }
     }

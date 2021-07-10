@@ -40,7 +40,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         public async Task Comment(string twoBoolString)
         {
             var arr = (PdfArray) await twoBoolString.ParseToPdfAsync();
-            Assert.Equal(2, arr.RawItems.Length);
+            Assert.Equal(2, arr.RawItems.Count);
             Assert.Equal(PdfBoolean.True, arr.RawItems[0]);
             Assert.Equal(PdfBoolean.False, arr.RawItems[1]);
         }

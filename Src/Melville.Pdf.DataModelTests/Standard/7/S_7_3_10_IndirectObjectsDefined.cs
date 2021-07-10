@@ -39,13 +39,13 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         {
             var obj = await targetAsPdf.ParseToPdfAsync();
             
-            Assert.Equal(obj, obj.DirectValue());
+            Assert.True(ReferenceEquals(obj, obj.DirectValue()));
 
             var indirect = new PdfIndirectObject(1, 0, obj);
-            Assert.Equal(obj, indirect.DirectValue());
+            Assert.True(ReferenceEquals(obj, indirect.DirectValue()));
 
             var reference = new PdfIndirectReference(indirect);
-            Assert.Equal(obj, reference.DirectValue());
+            Assert.True(ReferenceEquals(obj, reference.DirectValue()));
         }
     }
 }
