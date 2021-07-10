@@ -6,12 +6,14 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Melville.Pdf.LowLevel.Parsing.PdfStreamHolders
+namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 {
+    
     public class ParsingSource
     {
         public long Position { get; private set; }
         public IPdfObjectParser RootParser { get; }
+        public IIndirectObjectResolver IndirectResolver { get; } = new IndirectObjectResolver();
         
         private readonly Stream source;
         private PipeReader reader;
@@ -64,6 +66,7 @@ namespace Melville.Pdf.LowLevel.Parsing.PdfStreamHolders
         }
 
         public void NeedMoreInputToAdvance() => AdvanceTo(storedSequence.Start, storedSequence.End);
+        public void AbandonCurrentBuffer() => AdvanceTo(storedSequence.Start);
 
         public void Seek(long newPosition)
         {

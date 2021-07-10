@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Parsing;
-using Melville.Pdf.LowLevel.Parsing.PdfStreamHolders;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;
 using Xunit;
 
