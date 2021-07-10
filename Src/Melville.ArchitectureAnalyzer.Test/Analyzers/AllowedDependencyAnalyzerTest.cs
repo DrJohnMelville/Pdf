@@ -29,7 +29,7 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
                     Sources = {source},
                     AdditionalFiles =
                     {
-                        ("Architecture.adf", "NS.Relying* => NS.ReliedUpon*\r\nNS.R*<=>NS.Common*")
+                        ("Architecture.adf", "NS.Relying* => NS.ReliedUpon*\r\nNS.R*<=>NS.Common*\r\nGroup Com\r\n  NS.Common*")
                     },
                 }
             };
