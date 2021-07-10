@@ -103,8 +103,7 @@ namespace Melville.Pdf.LowLevel.Parsing
                     return NeedMoreChars();
                 if (IsInvalidReferencePart(generation, next)) return NotAReference();
 
-                if (!NextTokenFinder.SkipToNextToken(ref reader)) return NeedMoreChars();
-                if (!reader.TryRead(out var operation)) return NeedMoreChars();
+                if (!NextTokenFinder.SkipToNextToken(ref reader, out var operation)) return NeedMoreChars();
                 switch ((char) operation)
                 {
                     case 'R':

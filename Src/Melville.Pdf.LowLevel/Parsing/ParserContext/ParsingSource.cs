@@ -11,7 +11,9 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
     
     public class ParsingSource
     {
-        public long Position { get; private set; }
+        private long lastSeek;
+        private long lastAdvanceOffset;
+        public long Position => lastSeek + lastAdvanceOffset;
         public IPdfObjectParser RootParser { get; }
         public IIndirectObjectResolver IndirectResolver { get; } = new IndirectObjectResolver();
         
@@ -23,13 +25,15 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         {
             this.source = source;
             RootParser = rootParser;
+            if (!source.CanSeek) throw new PdfParseException("PDF Parsing requires a seekable stream");
             CreatePipeReader();
         }
 
         [MemberNotNull(nameof(reader))]
         private void CreatePipeReader()
         {
-            Position = source.Position;
+            lastSeek = source.Position;
+            lastAdvanceOffset = 0;
             reader = PipeReader.Create(source, new StreamPipeReaderOptions(leaveOpen:true));
         }
 
@@ -60,7 +64,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             AdvanceTo(consumed, consumed);
         public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
         {
-            Position += storedSequence.GetOffset(consumed);
+            lastAdvanceOffset = storedSequence.GetOffset(consumed);
             reader.AdvanceTo(consumed, examined);
             storedSequence = default;
         }
@@ -72,7 +76,6 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         {
             reader.Complete();
             source.Seek(newPosition, SeekOrigin.Begin);
-            Position = newPosition;
             CreatePipeReader();
         }
     }

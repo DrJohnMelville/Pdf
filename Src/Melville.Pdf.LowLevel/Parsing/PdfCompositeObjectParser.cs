@@ -28,6 +28,7 @@ namespace Melville.Pdf.LowLevel.Parsing
                 var parser = PickParser(data.Buffer);
                 if (parser != null)
                 {
+                    source.AdvanceTo(data.Buffer.Start, data.Buffer.GetPosition(2));
                     return await parser.ParseAsync(source);
                 }
                 source.NeedMoreInputToAdvance();
@@ -43,7 +44,7 @@ namespace Melville.Pdf.LowLevel.Parsing
             }
             return (firstByte, secondByte) switch
             {
-                ((byte) '<', (byte)'<') => Dictionary,
+                ((byte) '<', (byte)'<') => dictionaryAndStream,
                 ((byte) '<', _) => HexString,
                 ((byte) '(', _) => SyntaxString,
                 ((byte) '[', _) => PdfArray,
@@ -62,7 +63,7 @@ namespace Melville.Pdf.LowLevel.Parsing
         private static readonly HexStringParser HexString = new();
         private static readonly SyntaxStringParser SyntaxString = new();
         private static readonly PdfArrayParser PdfArray = new();
-        private static readonly PdfDictionaryParser Dictionary = new();
+        private static readonly PdfDictionaryAndStreamParser dictionaryAndStream = new();
         private static readonly NumberParser Number = new();
         private static readonly NameParser Names = new();
         private static readonly LiteralTokenParser TrueParser = new(4, PdfBoolean.True);

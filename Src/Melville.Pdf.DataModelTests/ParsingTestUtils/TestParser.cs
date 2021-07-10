@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
@@ -12,13 +13,19 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
     public static class TestParser
     {
-        public static  Task<PdfObject> ParseToPdfAsync(this string s) => ParseToPdfAsync(s.AsExtendedAsciiBytes());
+        public static Task<PdfObject> ParseToPdfAsync(this string s) =>
+            ParseToPdfAsync(AsParsingSource(s));
 
-        public static Task<PdfObject> ParseToPdfAsync(this byte[] bytes)
-        {
-            var root = new PdfCompositeObjectParser();
-            return root.ParseAsync(new ParsingSource(new OneCharAtAtimeStream(bytes), root));
-        }
+        public static Task<PdfObject> ParseToPdfAsync(this byte[] bytes) => 
+            ParseToPdfAsync(AsParsingSource(bytes));
+
+        public static Task<PdfObject> ParseToPdfAsync(this ParsingSource source) => 
+            source.RootParser.ParseAsync(source);
+
+        public static ParsingSource AsParsingSource(this string str) =>
+            AsParsingSource((str + " /%This simulates an end tag\r\n").AsExtendedAsciiBytes());
+        public static ParsingSource AsParsingSource(this byte[] bytes) => 
+            new(new OneCharAtAtimeStream(bytes), new PdfCompositeObjectParser());
     }
     
     public class OneCharAtAtimeStream: Stream
@@ -56,7 +63,12 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new System.NotSupportedException();
+            return Position = origin switch
+            {
+                SeekOrigin.Begin => offset,
+                SeekOrigin.Current => Position + offset,
+                SeekOrigin.End => data.Length + offset,
+            };
         }
 
         public override void SetLength(long value)
@@ -71,11 +83,11 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 
         public override bool CanRead => true;
 
-        public override bool CanSeek => false;
+        public override bool CanSeek => true;
 
         public override bool CanWrite => throw new System.NotSupportedException();
 
-        public override long Length => throw new System.NotSupportedException();
+        public override long Length => data.Length;
 
         public override long Position { get; set; }
     }

@@ -4,10 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Parsing;
 
 namespace Melville.Pdf.LowLevel.Model
 {
-    public sealed partial class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, PdfObject>
+    public partial class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, PdfObject>
     {
         [DelegateTo()]
         public IReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
@@ -52,5 +53,15 @@ namespace Melville.Pdf.LowLevel.Model
             KnownNames.SubType, out var obj) || TryGetValue(KnownNames.S, out obj)? obj as PdfName : null;
 
         #endregion
+    }
+
+    public class PdfStream : PdfDictionary
+    {
+        public long SourceFilePosition { get; }
+
+        public PdfStream(IReadOnlyDictionary<PdfName, PdfObject> rawItems, long sourceFilePosition) : base(rawItems)
+        {
+            SourceFilePosition = sourceFilePosition;
+        }
     }
 }

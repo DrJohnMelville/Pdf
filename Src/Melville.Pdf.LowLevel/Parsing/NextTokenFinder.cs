@@ -12,11 +12,11 @@ namespace Melville.Pdf.LowLevel.Parsing
         {
             ReadResult seq;
             do
-            { 
+            {
                 seq = await source.ReadAsync();
             } while (!SkipToNextToken(source, seq.Buffer));
         }
-        
+
         private static bool SkipToNextToken(ParsingSource source, ReadOnlySequence<byte> seqBuffer)
         {
             var reader = new SequenceReader<byte>(seqBuffer);
@@ -25,24 +25,31 @@ namespace Melville.Pdf.LowLevel.Parsing
                 source.AdvanceTo(reader.Position);
                 return true;
             }
+
             source.NeedMoreInputToAdvance();
             return false;
         }
 
         public static bool SkipToNextToken(ref SequenceReader<byte> input)
         {
+            if (!SkipToNextToken(ref input, out _)) return false;
+            input.Rewind(1);
+            return true;
+        }
+
+        public static bool SkipToNextToken(ref SequenceReader<byte> input, out byte firstByte)
+        {
             while (true)
             {
-                if (!input.TryRead(out var character)) return false;
-                switch (CharClassifier.Classify(character))
+                if (!input.TryRead(out firstByte)) return false;
+                switch (CharClassifier.Classify(firstByte))
                 {
                     case CharacterClass.White:
                         break;
-                    case CharacterClass.Delimiter when character==(byte)'%':
+                    case CharacterClass.Delimiter when firstByte == (byte) '%':
                         if (!input.TrySkipToEndOfLineMarker()) return false;
                         break;
                     default:
-                        input.Rewind(1);
                         return true;
                 }
             }
