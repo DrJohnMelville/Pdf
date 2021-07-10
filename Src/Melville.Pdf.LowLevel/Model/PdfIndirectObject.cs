@@ -10,24 +10,23 @@
         public int GenerationNumber { get; }
         public PdfObject Value { get; private set; } = PdfEmptyConstants.Null;
 
-        public PdfIndirectObject(int objectNumber, int generationNumber)
+        public PdfIndirectObject(int objectNumber, int generationNumber) : 
+            this(objectNumber, generationNumber, PdfEmptyConstants.Null)
+        {
+        }
+
+        public PdfIndirectObject(int objectNumber, int generationNumber, PdfObject value)
         {
             ObjectNumber = objectNumber;
             GenerationNumber = generationNumber;
+            Value = value;
         }
 
         // users of the library should not be able to mutate the target value, but the
         //parser needs to because the indirect value may be created by a forward reference
         // long before the value is actually know.  Am internal interface lets only this module in.
         void ICanSetIndirectTarget.SetValue(PdfObject value) => Value = value;
-    }
 
-    public class PdfIndirectReference : PdfObject
-    {
-        public PdfIndirectObject Target { get; }
-        public PdfIndirectReference(PdfIndirectObject target)
-        {
-            Target = target;
-        }
+        public override PdfObject DirectValue() => Value.DirectValue();
     }
 }
