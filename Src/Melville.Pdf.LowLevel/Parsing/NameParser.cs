@@ -1,12 +1,12 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
-namespace Melville.Pdf.LowLevel.Parsing.NameParsing
+namespace Melville.Pdf.LowLevel.Parsing
 {
     public class NameParser: PdfAtomParser
     {

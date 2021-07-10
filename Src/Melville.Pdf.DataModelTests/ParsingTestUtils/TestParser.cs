@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing;
-using Melville.Pdf.LowLevel.Parsing.NameParsing;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils

@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing;
-using Melville.Pdf.LowLevel.Parsing.NameParsing;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard._7

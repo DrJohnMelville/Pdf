@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.LowLevel.Parsing.NameParsing
+namespace Melville.Pdf.LowLevel.Model.Conventions
 {
     public static partial class KnownNames
     {

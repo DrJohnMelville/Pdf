@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Model;
-using Melville.Pdf.LowLevel.Parsing.NameParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing
 {

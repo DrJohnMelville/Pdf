@@ -11,7 +11,7 @@ namespace Pdf.KnownNamesGenerator
             return @"
 using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model;
-namespace Melville.Pdf.LowLevel.Parsing.NameParsing
+namespace Melville.Pdf.LowLevel.Model.Conventions
 {
     public static partial class KnownNames
     {

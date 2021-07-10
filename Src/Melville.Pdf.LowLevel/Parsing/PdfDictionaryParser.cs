@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevel.Parsing.NameParsing
+namespace Melville.Pdf.LowLevel.Parsing
 {
     public class PdfDictionaryParser : IPdfObjectParser
     {
