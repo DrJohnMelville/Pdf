@@ -1,10 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using Melville.INPC;
+using Melville.Pdf.LowLevel.Parsing.NameParsing;
 
 namespace Melville.Pdf.LowLevel.Model
 {
-    public sealed class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, PdfObject>
+    public sealed partial class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, PdfObject>
     {
+        [DelegateTo()]
         public IReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
 
         public PdfDictionary(IReadOnlyDictionary<PdfName, PdfObject> rawItems)
@@ -12,29 +17,40 @@ namespace Melville.Pdf.LowLevel.Model
             RawItems = rawItems;
         }
 
-        public IEnumerator<KeyValuePair<PdfName, PdfObject>> GetEnumerator()
+        #region Dictionary Implementation
+
+        public IEnumerator<KeyValuePair<PdfName, PdfObject>> GetEnumerator() =>
+            RawItems
+                .Select(i => new KeyValuePair<PdfName, PdfObject>(i.Key, i.Value.DirectValue()))
+                .GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool TryGetValue(PdfName key, [MaybeNullWhen(false)]out PdfObject value)
         {
-            throw new System.NotImplementedException();
+            if (RawItems.TryGetValue(key, out var ret))
+            {
+                value = ret.DirectValue();
+                return true;
+            }
+
+            value = null;
+            return false;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public PdfObject this[PdfName key] => RawItems[key].DirectValue();
+        
+        public IEnumerable<PdfObject> Values => RawItems.Values.Select(i => i.DirectValue());
 
-        public int Count => RawItems.Count;
+        #endregion
 
-        public bool ContainsKey(PdfName key) => RawItems.ContainsKey(key);
 
-        public bool TryGetValue(PdfName key, out PdfObject value)
-        {
-            throw new System.NotImplementedException();
-        }
+        #region Type and Subtype as definted in the standard 7.3.7
 
-        public PdfObject this[PdfName key] => throw new System.NotImplementedException();
+        public PdfName? Type => TryGetValue(KnownNames.Type, out var obj) ? obj as PdfName : null;
+        public PdfName? SubType => TryGetValue(
+            KnownNames.SubType, out var obj) || TryGetValue(KnownNames.S, out obj)? obj as PdfName : null;
 
-        public IEnumerable<PdfName> Keys => throw new System.NotImplementedException();
-
-        public IEnumerable<PdfObject> Values => throw new System.NotImplementedException();
+        #endregion
     }
 }
