@@ -19,6 +19,13 @@ namespace Melville.ArchitectureAnalyzer.Test.Parsers
             Assert.Equal("\"A\" may not reference \"B\" because \"No dependency rule found\"", 
                 rules.ErrorFromReference("A","B"));
         }
+
+        [Fact]
+        public void NewlinesAreNotWhitespaceToMakeALineGroupMembership()
+        {
+            // there used to be a bug that made this throw a parse error.
+            ParseInput("\r\nMode Strict");
+        }
         [Fact]
         public void LooseModeAllowsUnSpecifiedDependencies()
         {
@@ -82,8 +89,17 @@ namespace Melville.ArchitectureAnalyzer.Test.Parsers
         [InlineData("Echo", "AlRex")] 
         public void DefineLayer(string use, string decl)
         {
-            var rules = ParseInput("Group Vowe1s\r\n  A*\r\n  E*\r\n  I*\r\nVowels => U*");
+            var rules = ParseInput("Group Vowels\r\n  A*\r\n  E*\r\n  I*\r\nVowels => U*");
             Assert.Null(rules.ErrorFromReference(use, decl));
+        }
+        [Theory]
+        [InlineData("Alpha", "Uniform")] // members of group can access dependencies
+        [InlineData("Echo", "Uniform")]
+        [InlineData("Igloo", "Uniform")]
+        public void CanProhibitByLayer(string use, string decl)
+        {
+            var rules = ParseInput("Group Vowels\r\n  A*\r\n  E*\r\n  I*\r\nVowels !=> Uni*\r\nVowels => U*");
+            Assert.NotNull(rules.ErrorFromReference(use, decl));
         }
 
         [Fact]
@@ -119,5 +135,18 @@ namespace Melville.ArchitectureAnalyzer.Test.Parsers
         public void ParsesWithoutError(string input) => ParseInput(input);
             // if there were an error, this test would fail with a DslException
 
+
+        [Fact]
+        public void GroupsAreIndependant()
+        {
+            var rules = ParseInput(@"
+Group Parser
+     A
+Group Model
+     B
+");
+            Assert.NotNull(rules.ErrorFromReference("B",
+               "A"));
+        }
     }
 }

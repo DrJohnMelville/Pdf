@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace ArchitectureAnalyzer.Models
 {
-    public readonly struct Rule
+    public class Rule
     {
         public string? ErrorMessage { get; }
         public bool Allowed => ErrorMessage == null;
