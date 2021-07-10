@@ -7,17 +7,22 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
     {
         private const uint offsetBasis = 0x811c9dc5;
         private const uint prime = 0x01000193;
-        public static int ComputeFnvHash( ReadOnlySpan<byte> bytes)
+        public static int FnvHashAsInt( ReadOnlySpan<byte> bytes)
         {
-                var hash = offsetBasis;
-                foreach (var item in bytes)
-                {
-                    hash = SingleHashStep(hash, item);
-                }
-                unchecked
-                {
-                    return (int)hash;
-                }
+            unchecked
+            {
+                return (int)FnvHashAsUint(bytes);
+            }
+        }
+
+        public static uint FnvHashAsUint(ReadOnlySpan<byte> bytes)
+        {
+            var hash = offsetBasis;
+            foreach (var item in bytes)
+            {
+                hash = SingleHashStep(hash, item);
+            }
+            return hash;
         }
 
         public static uint EmptyStringHash() => offsetBasis;

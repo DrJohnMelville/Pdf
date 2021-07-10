@@ -11,14 +11,14 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
             Bytes = bytes;
         }
         
-        public bool Equals(PdfByteArrayObject? other) =>
+        public virtual bool Equals(PdfByteArrayObject? other) =>
             (!ReferenceEquals(null, other)) &&
             (ReferenceEquals(this, other) || Bytes.AsSpan().SequenceEqual(other.Bytes));
 
         public override bool Equals(object? obj) => 
-            ReferenceEquals(this, obj) || obj is PdfName other && Equals(other);
+            ReferenceEquals(this, obj) || obj is PdfByteArrayObject other && Equals(other);
 
-        public override int GetHashCode() => FnvHash.ComputeFnvHash(Bytes);
+        public override int GetHashCode() => FnvHash.FnvHashAsInt(Bytes);
         public bool TestEqual(ReadOnlySpan<byte> other) => other.SequenceEqual(Bytes);
     }
 }

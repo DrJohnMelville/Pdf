@@ -31,9 +31,14 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         // be broken if clients could make their own KnownPdfNames
         private sealed class KnownPdfName : PdfName
         {
-            public KnownPdfName(byte[] name) : base(name)
+            public KnownPdfName(byte[] name) : base(name, true)
             {
             }
+
+            public override bool Equals(object? obj) => ReferenceEquals(this, obj);
+            public override bool Equals(PdfName? other) => ReferenceEquals(this, other);
+            public override bool Equals(PdfByteArrayObject? other) => ReferenceEquals(this, other);
+
         }
 
         private static void AddTo(Dictionary<int, PdfName> dict, PdfName item) => dict.Add(item.GetHashCode(), item);

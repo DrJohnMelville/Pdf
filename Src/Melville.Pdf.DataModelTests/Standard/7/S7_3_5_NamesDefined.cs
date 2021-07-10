@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
@@ -55,6 +56,13 @@ namespace Melville.Pdf.DataModelTests.Standard._7
             var n2 = await TryParseStringToName("/WIDTH ");
             Assert.True(ReferenceEquals(KnownNames.Width, n1));
             Assert.True(ReferenceEquals(n1,n2));
+        }
+
+        [Fact]
+        public void InDebugModeThrowIfDefiningANameThatMatchesAKnownName()
+        {
+            Assert.Throws<InvalidOperationException>(() => new PdfName("WIDTH"));
+            new PdfName("Not a known name");
         }
     }
 }
