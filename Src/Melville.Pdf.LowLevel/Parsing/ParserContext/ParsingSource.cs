@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 {
@@ -14,17 +15,17 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         private long lastSeek;
         private long lastAdvanceOffset;
         public long Position => lastSeek + lastAdvanceOffset;
-        public IPdfObjectParser RootParser { get; }
+        public IPdfObjectParser RootObjectParser { get; }
         public IIndirectObjectResolver IndirectResolver { get; } = new IndirectObjectResolver();
         
         private readonly Stream source;
         private PipeReader reader;
         private ReadOnlySequence<byte> storedSequence;
 
-        public ParsingSource(Stream source, IPdfObjectParser rootParser)
+        public ParsingSource(Stream source, IPdfObjectParser rootObjectParser)
         {
             this.source = source;
-            RootParser = rootParser;
+            RootObjectParser = rootObjectParser;
             if (!source.CanSeek) throw new PdfParseException("PDF Parsing requires a seekable stream");
             CreatePipeReader();
         }
@@ -38,7 +39,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         }
 
         public ValueTask<ReadResult> ReadAsync(CancellationToken token = default)
-        {
+        {  
             var valueTask = reader.ReadAsync(token);
             if (!valueTask.IsCompleted)
                 return new ValueTask<ReadResult>(WaitForRead(valueTask));
@@ -67,6 +68,17 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             lastAdvanceOffset = storedSequence.GetOffset(consumed);
             reader.AdvanceTo(consumed, examined);
             storedSequence = default;
+        }
+
+        public bool ShouldContinue((bool Success, SequencePosition Position) result)
+        {
+            if (result.Success)
+            {
+                AdvanceTo(result.Position);
+                return false;
+            }
+            NeedMoreInputToAdvance();
+            return true;
         }
 
         public void NeedMoreInputToAdvance() => AdvanceTo(storedSequence.Start, storedSequence.End);

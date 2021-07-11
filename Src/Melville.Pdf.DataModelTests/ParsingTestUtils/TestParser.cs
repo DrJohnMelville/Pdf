@@ -5,27 +5,34 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Model.LowLevel;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing;
+using Melville.Pdf.LowLevel.Parsing.FileParsers;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
     public static class TestParser
     {
-        public static Task<PdfObject> ParseToPdfAsync(this string s) =>
-            ParseToPdfAsync(AsParsingSource(s));
+        public static Task<PdfObject> ParseObjectAsync(this string s) =>
+            ParseObjectAsync(AsParsingSource(s));
 
-        public static Task<PdfObject> ParseToPdfAsync(this byte[] bytes) => 
-            ParseToPdfAsync(AsParsingSource(bytes));
+        public static Task<PdfObject> ParseObjectAsync(this byte[] bytes) => 
+            ParseObjectAsync(AsParsingSource(bytes));
 
-        public static Task<PdfObject> ParseToPdfAsync(this ParsingSource source) => 
-            source.RootParser.ParseAsync(source);
+        public static Task<PdfObject> ParseObjectAsync(this ParsingSource source) => 
+            source.RootObjectParser.ParseAsync(source);
 
         public static ParsingSource AsParsingSource(this string str) =>
             AsParsingSource((str + " /%This simulates an end tag\r\n").AsExtendedAsciiBytes());
         public static ParsingSource AsParsingSource(this byte[] bytes) => 
             new(new OneCharAtAtimeStream(bytes), new PdfCompositeObjectParser());
+        
+        public static Task<PdfLowLevelDocument> ParseDocumentAsync(this string str) => 
+            new RandomAccessFileParser(str.AsParsingSource()).Parse();
     }
     
     public class OneCharAtAtimeStream: Stream

@@ -1,4 +1,5 @@
 ﻿using System;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives
 {

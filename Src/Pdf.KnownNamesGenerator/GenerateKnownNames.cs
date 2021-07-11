@@ -10,7 +10,7 @@ namespace Pdf.KnownNamesGenerator
         {
             return @"
 using System.Collections.Generic;
-using Melville.Pdf.LowLevel.Model;
+using Melville.Pdf.LowLevel.Model.Objects;
 namespace Melville.Pdf.LowLevel.Model.Conventions
 {
     public static partial class KnownNames
