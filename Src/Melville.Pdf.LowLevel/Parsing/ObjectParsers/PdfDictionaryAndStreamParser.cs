@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -18,54 +19,56 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             var dictionary = new Dictionary<PdfName, PdfObject>();
             while (true)
             {
-                var name = await source.RootObjectParser.ParseAsync(source);
-                if (name == PdfEmptyConstants.DictionaryTerminator)
+                var key = await source.RootObjectParser.ParseAsync(source);
+                if (key == PdfEmptyConstants.DictionaryTerminator)
                 {
-                    //TODO: See how much the trim helps in memory and costs in speed.
-                    dictionary.TrimExcess();
-                    while (true)
-                    {
-                        var data = (await source.ReadAsync()).Buffer;
-                        var result = SearchForStream(ref data, out var finalPos);
-                        if (result != SearchForStreamResult.NotEnoughChars)
-                        {
-                            source.AdvanceTo(finalPos);
-                            return result == SearchForStreamResult.Dictionary
-                                ? new PdfDictionary(dictionary)
-                                : new PdfStream(dictionary, source.Position);
-                            //notice that Stream does not advance over the stream data.
-                            // On 7/10/2021 I don't think I am going to need it.
-                        }
-                        source.NeedMoreInputToAdvance();
-                    }
+                    bool isStream;
+                    do {}while (source.ShouldContinue(
+                        CheckForStreamTrailer(await source.ReadAsync(), out isStream)));
+                    return CreateFinalObject(source, dictionary, isStream);
                 }
-                if (name is not PdfName typedAsName)
-                    throw new PdfParseException("Dictionary keys must be names");
+
                 var item = await source.RootObjectParser.ParseAsync(source);
                 if (item == PdfEmptyConstants.Null) continue;
-                if (item == PdfEmptyConstants.DictionaryTerminator)
-                    throw new PdfParseException("Dictionary must have an even number of children.");
-                dictionary[typedAsName] = item;
+                AddItemToDictionary(dictionary, key, item);
             }
         }
 
-        private enum SearchForStreamResult
+        private static PdfObject CreateFinalObject(
+            ParsingSource source, Dictionary<PdfName, PdfObject> dictionary, bool isStream)
         {
-            Dictionary,
-            Stream,
-            NotEnoughChars
+            //TODO: See how much the trim helps in memory and costs in speed.
+            dictionary.TrimExcess();
+            return isStream ? 
+                new PdfStream(dictionary, source.Position) : 
+                new PdfDictionary(dictionary);
         }
-        private SearchForStreamResult SearchForStream(
-            ref ReadOnlySequence<byte> data, out SequencePosition finalPos)
+
+        private static void AddItemToDictionary(Dictionary<PdfName, PdfObject> dictionary, PdfObject key,
+            PdfObject? item)
         {
-            var reader = new SequenceReader<Byte>(data);
-            finalPos = reader.Position;
+            if (item == PdfEmptyConstants.DictionaryTerminator)
+                throw new PdfParseException("Dictionary must have an even number of children.");
+            dictionary[CheckIfKeyIsName(key)] = item;
+        }
+
+        private static PdfName CheckIfKeyIsName(PdfObject? name) =>
+            name is PdfName typedAsName ? typedAsName:
+                throw new PdfParseException("Dictionary keys must be names");
+
+        private (bool success, SequencePosition pos) CheckForStreamTrailer(ReadResult source, out bool isStream)
+        {
+            isStream = false;
+            var reader = new SequenceReader<Byte>(source.Buffer);
             if (!FindStreamSuffix(ref reader, out var datum)) 
-                return SearchForStreamResult.NotEnoughChars;
-            if (!IsStreamSuffix(datum)) return SearchForStreamResult.Dictionary;
-            if (!SkipOverStreamSuffix(ref reader)) return SearchForStreamResult.NotEnoughChars;
-            finalPos = reader.Position;
-            return SearchForStreamResult.Stream;
+                return (false, reader.Position);
+            if (!IsStreamSuffix(datum))
+            {
+                return (true, source.Buffer.Start);
+            }
+            if (!SkipOverStreamSuffix(ref reader)) return (false, reader.Position);
+            isStream = true;
+            return (true, reader.Position);
         }
 
         private static bool FindStreamSuffix(ref SequenceReader<byte> reader, out byte datum) => 

@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -9,24 +10,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     {
         public static async ValueTask SkipToNextToken(ParsingSource source)
         {
-            ReadResult seq;
-            do
-            {
-                seq = await source.ReadAsync();
-            } while (!SkipToNextToken(source, seq.Buffer));
+            do {} while (source.ShouldContinue(SkipToNextToken2(await source.ReadAsync())));
         }
 
-        private static bool SkipToNextToken(ParsingSource source, ReadOnlySequence<byte> seqBuffer)
+        private static (bool Success, SequencePosition Position) SkipToNextToken2(ReadResult source)
         {
-            var reader = new SequenceReader<byte>(seqBuffer);
-            if (SkipToNextToken(ref reader))
-            {
-                source.AdvanceTo(reader.Position);
-                return true;
-            }
-
-            source.NeedMoreInputToAdvance();
-            return false;
+            var reader = new SequenceReader<byte>(source.Buffer);
+            return (SkipToNextToken(ref reader), reader.Position);
         }
 
         public static bool SkipToNextToken(ref SequenceReader<byte> input)
