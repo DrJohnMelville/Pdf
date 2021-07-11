@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.Tracing;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -37,16 +39,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                         ((ICanSetIndirectTarget) reference!.Target).SetValue(
                             await source.RootObjectParser.ParseAsync(source));
                         await NextTokenFinder.SkipToNextToken(source);
-                        while (true)
-                        {
-                            var chars = await source.ReadAsync();
-                            if (chars.Buffer.Length >= 6)
-                            {
-                                source.AdvanceTo(chars.Buffer.GetPosition(6));
-                                break;
-                            }
-                            source.NeedMoreInputToAdvance();
-                        }
+                        do { } while (source.ShouldContinue(SkipEndObj(await source.ReadAsync())));
 
                         return reference.Target;
                     case ParseResult.NeedMoreChars:
@@ -59,6 +52,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                         throw new ArgumentOutOfRangeException();
                 }
             }
+        }
+
+        private (bool Success, SequencePosition Position) SkipEndObj(ReadResult source)
+        {
+            if (source.Buffer.Length < 6) return (false, source.Buffer.Start);
+            return (true, source.Buffer.GetPosition(6));
         }
 
         private (ParseResult, SequencePosition) ParseReference(

@@ -22,16 +22,15 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         public async Task<PdfLowLevelDocument> Parse()
         {
-            var t = new Task<Action>(() => ()=>{ });
-            (await t)();
             CheckBeginAtPositionZero();
-            while (context.ShouldContinue(ParseDocumentHeader(await context.ReadAsync(), out var doc))) ;
-            
-            return null;
+            PdfLowLevelDocument? doc;
+            do { } while (context.ShouldContinue(ParseDocumentHeader(await context.ReadAsync(), out doc)));
+
+            return doc;
         }
 
         private (bool Success, SequencePosition Position) ParseDocumentHeader(
-            ReadResult src, [MaybeNullWhen(false)]out PdfLowLevelDocument result)
+            ReadResult src, out PdfLowLevelDocument result)
         {
             var seq = src.Buffer;
             var reader = new SequenceReader<byte>(seq);
@@ -42,7 +41,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 return (true, reader.Position);
             }
 
-            result = null;
+            result = null!;
             return (false, seq.Start);
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -14,27 +15,15 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 
         public async Task<PdfObject> ParseAsync(ParsingSource source)
         {
-            while(true)
-            {
-                var seq = (await source.ReadAsync()).Buffer;
-                var finalPosition = Parse(ref seq, out var parsedObject);
-                if (parsedObject != null)
-                {
-                    source.AdvanceTo(finalPosition);
-                    return parsedObject;
-                }
-                source.NeedMoreInputToAdvance();
-            }
+            PdfObject result;
+            do{}while(source.ShouldContinue(Parse(await source.ReadAsync(), out result)));
+            return result;
         }
 
-        private SequencePosition Parse(ref ReadOnlySequence<byte> seq, out PdfObject? parsedObject)
+        private (bool Success, SequencePosition Position) Parse(ReadResult source, out PdfObject result)
         {
-            var reader = new SequenceReader<byte>(seq);
-            if (!TryParse(ref reader, out parsedObject))
-            {
-                parsedObject = null;
-            }
-            return reader.Position;
+            var reader = new SequenceReader<byte>(source.Buffer);
+            return (TryParse(ref reader, out result), reader.Position);
         }
     }
 }

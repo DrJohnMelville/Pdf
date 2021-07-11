@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -18,43 +20,43 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         public async Task<PdfObject> ParseAsync(ParsingSource source)
         {
             await NextTokenFinder.SkipToNextToken(source);
-            while (true)
-            {
-                var data = await source.ReadAsync();
-                var parser = PickParser(data.Buffer);
-                if (parser != null)
-                {
-                    source.AdvanceTo(data.Buffer.Start, data.Buffer.GetPosition(2));
-                    return await parser.ParseAsync(source);
-                }
-                source.NeedMoreInputToAdvance();
-            }
+            IPdfObjectParser parser;
+            do{}while(source.ShouldContinue(PickParser2(await source.ReadAsync(), out parser)));
+
+            return await parser!.ParseAsync(source);
         }
 
-        private IPdfObjectParser? PickParser(ReadOnlySequence<byte> dataBuffer)
+        private (bool Success, SequencePosition Position) PickParser2
+            (ReadResult source, out IPdfObjectParser? parser)
         {
-            var reader = new SequenceReader<byte>(dataBuffer);
+            var reader = new SequenceReader<byte>(source.Buffer);
             if (!(reader.TryRead(out var firstByte) && reader.TryRead(out var secondByte)))
             {
-                return null;
+                parser = null;
+                return (false, source.Buffer.Start);
             }
-            return (firstByte, secondByte) switch
+            parser = PickParser( firstByte, secondByte);
+            return (true, source.Buffer.Start);
+        }
+
+        private static IPdfObjectParser? PickParser(byte firstByte, byte secondByte) =>
+            (firstByte, secondByte) switch
             {
-                ((byte) '<', (byte)'<') => dictionaryAndStream,
+                ((byte) '<', (byte) '<') => dictionaryAndStream,
                 ((byte) '<', _) => HexString,
                 ((byte) '(', _) => SyntaxString,
                 ((byte) '[', _) => PdfArray,
-                ( >= (byte) '0' and <= (byte)'9', _) => Indirects,
-                ((byte) '+' or (byte)'-', _) => Number,
+                (>= (byte) '0' and <= (byte) '9', _) => Indirects,
+                ((byte) '+' or (byte) '-', _) => Number,
                 ((byte) '/', _) => Names,
                 ((byte) 't', _) => TrueParser,
                 ((byte) 'f', _) => FalseParser,
                 ((byte) 'n', _) => NullParser,
                 ((byte) ']', _) => ArrayTermination,
-                ((byte) '>', (byte)'>') => DictionatryTermination,
+                ((byte) '>', (byte) '>') => DictionatryTermination,
                 _ => throw new PdfParseException("Unknown Pdf Token")
             };
-        }
+
 
         private static readonly HexStringParser HexString = new();
         private static readonly SyntaxStringParser SyntaxString = new();

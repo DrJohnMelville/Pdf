@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [Fact]
         public async Task ParseIndirectObjectInArray()
         {
-            var arr = (PdfArray) (await "[ 1 0 R 1 0 obj 12 endobj ]   ".ParseObjectAsync());
+            var arr = (PdfArray) (await "[ 1 0 R 1 0 obj 12 endobj ]       ".ParseObjectAsync());
             Assert.Equal(((PdfIndirectReference)arr.RawItems[0]).Target, arr.RawItems[1]);
         }
         [Fact]

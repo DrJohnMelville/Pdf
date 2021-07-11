@@ -11,6 +11,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
     {
         [Theory]
         [InlineData("%PDF-1.0\r\n ", 1, 0)]
+        [InlineData("%PDF-1.1\r\n ", 1, 1)]
+        [InlineData("%PDF-1.2\r\n ", 1, 2)]
+        [InlineData("%PDF-1.3\r\n ", 1, 3)]
+        [InlineData("%PDF-1.4\r\n ", 1, 4)]
+        [InlineData("%PDF-1.5\r\n ", 1, 5)]
+        [InlineData("%PDF-1.6\r\n ", 1, 6)]
+        [InlineData("%PDF-1.7\r\n ", 1, 7)]
         public async Task RecognizeFileVersion(string input, int major, int minor)
         {
             var doc = await input.ParseDocumentAsync();

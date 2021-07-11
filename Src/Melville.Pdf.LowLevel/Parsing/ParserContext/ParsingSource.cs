@@ -65,7 +65,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             AdvanceTo(consumed, consumed);
         public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
         {
-            lastAdvanceOffset = storedSequence.GetOffset(consumed);
+            lastAdvanceOffset += storedSequence.Slice(0, consumed).Length;
             reader.AdvanceTo(consumed, examined);
             storedSequence = default;
         }
