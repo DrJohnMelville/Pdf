@@ -48,6 +48,31 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             StorePosition(res.Buffer);
             return new ValueTask<ReadResult>(res);
         }
+        
+        /// <summary>
+        /// This method enables a very specific pattern that is common with parsing from the PipeReader.
+        ///
+        /// the pattern is do{}while(source.ShouldContinue(Method(await source.ReadAsync)));
+        ///
+        /// Method returns a pair (bool, SequencePosition).  Method can use out parameters for "real"
+        /// return values.
+        ///
+        /// This pattern repeately reads the stream until method successfully parses, then it advances
+        /// the reader to the given sequence position.
+        /// </summary>
+        public bool ShouldContinue((bool Success, SequencePosition Position) result)
+        {
+            if (result.Success)
+            {
+                AdvanceTo(result.Position);
+                return false;
+            }
+            NeedMoreInputToCompleteParsing();
+            return true;
+        }
+
+        private void NeedMoreInputToCompleteParsing() => AdvanceTo(storedSequence.Start, storedSequence.End);
+
 
         private async Task<ReadResult> WaitForRead(ValueTask<ReadResult> valueTask)
         {
@@ -65,25 +90,14 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             AdvanceTo(consumed, consumed);
         public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
         {
-            lastAdvanceOffset += storedSequence.Slice(0, consumed).Length;
+            lastAdvanceOffset += BytesAdvancedBy(consumed);
             reader.AdvanceTo(consumed, examined);
             storedSequence = default;
         }
 
-        public bool ShouldContinue((bool Success, SequencePosition Position) result)
-        {
-            if (result.Success)
-            {
-                AdvanceTo(result.Position);
-                return false;
-            }
-            NeedMoreInputToAdvance();
-            return true;
-        }
-
-        public void NeedMoreInputToAdvance() => AdvanceTo(storedSequence.Start, storedSequence.End);
-        public void AbandonCurrentBuffer() => AdvanceTo(storedSequence.Start);
-
+        private long BytesAdvancedBy(SequencePosition consumed) => 
+            storedSequence.Slice(0, consumed).Length;
+        
         public void Seek(long newPosition)
         {
             reader.Complete();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -24,111 +25,86 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 
         public async Task<PdfObject> ParseAsync(ParsingSource source)
         {
-            while (true)
-            {
-                var input = (await source.ReadAsync()).Buffer;
-                var (result,endPos) = ParseReference(
-                    ref input, source.IndirectResolver, out var reference);
-                switch (result)
-                {
-                    case ParseResult.FoundReference:
-                        source.AdvanceTo(endPos);
-                        return reference!;
-                    case ParseResult.FoundDefinition:
-                        source.AdvanceTo(endPos);
-                        ((ICanSetIndirectTarget) reference!.Target).SetValue(
-                            await source.RootObjectParser.ParseAsync(source));
-                        await NextTokenFinder.SkipToNextToken(source);
-                        do { } while (source.ShouldContinue(SkipEndObj(await source.ReadAsync())));
+            ParseResult kind;
+            PdfIndirectReference? reference;
+            do{}while(source.ShouldContinue(ParseReference(await source.ReadAsync(), source.IndirectResolver, out kind, out reference!)));
 
-                        return reference.Target;
-                    case ParseResult.NeedMoreChars:
-                        source.NeedMoreInputToAdvance();
-                        break;
-                    case ParseResult.NotAReference:
-                        source.AbandonCurrentBuffer();
-                        return await fallbackNumberParser.ParseAsync(source);
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+            switch (kind)
+            {
+                case ParseResult.FoundReference:
+                    return reference;
+                
+                case ParseResult.FoundDefinition:
+                    do { } while (source.ShouldContinue(SkipToObjectBeginning(await source.ReadAsync())));
+                    ((ICanSetIndirectTarget) reference!.Target).SetValue(
+                        await source.RootObjectParser.ParseAsync(source));
+                    await NextTokenFinder.SkipToNextToken(source);
+                    do { } while (source.ShouldContinue(SkipEndObj(await source.ReadAsync())));
+                    return reference.Target;
+                
+                case ParseResult.NotAReference:
+                    return await fallbackNumberParser.ParseAsync(source);
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
+        private (bool Success, SequencePosition Position) SkipToObjectBeginning(ReadResult source)
+        {
+            var reader = new SequenceReader<byte>(source.Buffer);
+            return (reader.TryAdvance(2) && NextTokenFinder.SkipToNextToken(ref reader), reader.Position);
+
+        }
         private (bool Success, SequencePosition Position) SkipEndObj(ReadResult source)
         {
             if (source.Buffer.Length < 6) return (false, source.Buffer.Start);
             return (true, source.Buffer.GetPosition(6));
         }
 
-        private (ParseResult, SequencePosition) ParseReference(
-            ref ReadOnlySequence<byte> text,
-            IIndirectObjectResolver resolver,
-            out PdfIndirectReference? reference)
-        {
-            return new ParseIndirectObjectTripple(text, resolver).ParseReference(out reference);
-        }
-
         private enum ParseResult
         {
             FoundReference,
             FoundDefinition,
-            NeedMoreChars,
             NotAReference,
         }
-
-        private ref struct ParseIndirectObjectTripple
+        
+        
+        private (bool, SequencePosition) ParseReference(ReadResult rr,
+            IIndirectObjectResolver resolver, out ParseResult kind, out PdfIndirectReference? reference)
         {
-            private SequenceReader<byte> reader;
-            private readonly IIndirectObjectResolver resolver;
-
-            public ParseIndirectObjectTripple(ReadOnlySequence<byte> text, IIndirectObjectResolver resolver)
+            var reader = new SequenceReader<byte>(rr.Buffer);
+            reference = null;
+            kind = ParseResult.NotAReference;
+                
+            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out var num, out var next))
+                return (false, reader.Position);
+            if (IsInvalidReferencePart(num, next))
+                return (true, reader.Sequence.Start);
+            if (!NextTokenFinder.SkipToNextToken(ref reader))
+                return (false, reader.Position);
+            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out var generation, out next))
+                return (false, reader.Position);
+            if (IsInvalidReferencePart(generation, next)) 
+                return (true, reader.Sequence.Start);
+            if (!NextTokenFinder.SkipToNextToken(ref reader, out var operation)) 
+                return (false, reader.Position);
+                
+            switch ((char) operation)
             {
-                this.resolver = resolver;
-                reader = new SequenceReader<byte>(text);
+                case 'R':
+                    kind = ParseResult.FoundReference;
+                    reference = resolver.FindIndirect(num, generation);
+                    return (true, reader.Position);
+                case 'o':
+                    kind = ParseResult.FoundDefinition;
+                    reference = resolver.FindIndirect(num, generation);
+                    return (true, reader.Position);
+                default:
+                    return (true, reader.Sequence.Start);
             }
-            
-            public (ParseResult, SequencePosition) ParseReference(out PdfIndirectReference? reference)
-            {
-                reference = null;
-
-                if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out var num, out var next))
-                    return NeedMoreChars();
-                if (IsInvalidReferencePart(num, next)) return NotAReference();
-
-                if (!NextTokenFinder.SkipToNextToken(ref reader)) return NeedMoreChars();
-                if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out var generation, out next))
-                    return NeedMoreChars();
-                if (IsInvalidReferencePart(generation, next)) return NotAReference();
-
-                if (!NextTokenFinder.SkipToNextToken(ref reader, out var operation)) return NeedMoreChars();
-                switch ((char) operation)
-                {
-                    case 'R':
-                        reference = LookupReference(num, generation);
-                        return (ParseResult.FoundReference, reader.Position);
-                    case 'o':
-                        if (!TryAdvanceToReferenceDefinition()) return NeedMoreChars();
-                        reference = LookupReference(num, generation);
-                        return (ParseResult.FoundDefinition,reader.Position);
-                    default:
-                        return NotAReference();
-                }
-            }
-
-            private (ParseResult NeedMoreChars, SequencePosition Position) NeedMoreChars() => 
-                (ParseResult.NeedMoreChars, reader.Position);
-
-            private (ParseResult NotAReference, SequencePosition Start) NotAReference() => 
-                (ParseResult.NotAReference, reader.Sequence.Start);
-
-            private PdfIndirectReference LookupReference(int num, int generation) => 
-                resolver.FindIndirect(num, generation);
-
-            private  bool IsInvalidReferencePart(int num, byte next) =>
-                num < 0 || CharClassifier.Classify(next) != CharacterClass.White;
-
-            private  bool TryAdvanceToReferenceDefinition() =>
-                reader.TryAdvance(2) && NextTokenFinder.SkipToNextToken(ref reader);
         }
+
+        private  bool IsInvalidReferencePart(int num, byte next) =>
+            num < 0 || CharClassifier.Classify(next) != CharacterClass.White;
     }
 }

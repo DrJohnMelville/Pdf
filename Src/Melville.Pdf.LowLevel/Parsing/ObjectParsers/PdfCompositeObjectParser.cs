@@ -54,7 +54,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                 ((byte) 'n', _) => NullParser,
                 ((byte) ']', _) => ArrayTermination,
                 ((byte) '>', (byte) '>') => DictionatryTermination,
-                _ => throw new PdfParseException("Unknown Pdf Token")
+                _ => throw new PdfParseException($"Unknown Pdf Token {(char)firstByte} {(char)secondByte}")
             };
 
 
