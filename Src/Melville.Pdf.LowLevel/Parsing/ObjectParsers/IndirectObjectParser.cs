@@ -12,6 +12,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     public interface IIndirectObjectResolver
     {
         PdfIndirectReference FindIndirect(int number, int generation);
+        void AddLocationHint(int number, int generation, long location);
     }
 
     public class IndirectObjectParser : IPdfObjectParser
@@ -76,13 +77,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             reference = null;
             kind = ParseResult.NotAReference;
                 
-            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out var num, out var next))
+            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out int num, out var next))
                 return (false, reader.Position);
             if (IsInvalidReferencePart(num, next))
                 return (true, reader.Sequence.Start);
             if (!NextTokenFinder.SkipToNextToken(ref reader))
                 return (false, reader.Position);
-            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out var generation, out next))
+            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out int generation, out next))
                 return (false, reader.Position);
             if (IsInvalidReferencePart(generation, next)) 
                 return (true, reader.Sequence.Start);

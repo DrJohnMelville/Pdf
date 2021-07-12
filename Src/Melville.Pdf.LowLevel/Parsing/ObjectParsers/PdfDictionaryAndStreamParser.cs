@@ -56,27 +56,27 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             name is PdfName typedAsName ? typedAsName:
                 throw new PdfParseException("Dictionary keys must be names");
 
+        private static byte[] streamSuffix = {115, 116, 114, 101, 97, 109}; // stream
         private (bool success, SequencePosition pos) CheckForStreamTrailer(ReadResult source, out bool isStream)
         {
             isStream = false;
             var reader = new SequenceReader<Byte>(source.Buffer);
-            if (!FindStreamSuffix(ref reader, out var datum)) 
-                return (false, reader.Position);
-            if (!IsStreamSuffix(datum))
+            if (!FindStreamSuffix(ref reader)) return (false, reader.Position);
+            foreach (var expected in streamSuffix)
             {
-                return (true, source.Buffer.Start);
+                if (!reader.TryRead(out byte found)) return (false, reader.Position);
+                if (found != expected) return (true, source.Buffer.Start);
             }
             if (!SkipOverStreamSuffix(ref reader)) return (false, reader.Position);
             isStream = true;
             return (true, reader.Position);
         }
 
-        private static bool FindStreamSuffix(ref SequenceReader<byte> reader, out byte datum) => 
-            NextTokenFinder.SkipToNextToken(ref reader, out datum);
+        private static bool FindStreamSuffix(ref SequenceReader<byte> reader) => 
+            NextTokenFinder.SkipToNextToken(ref reader);
 
         private static bool SkipOverStreamSuffix(ref SequenceReader<byte> reader) => 
-            reader.TryAdvance(5) && reader.TryAdvanceTo((byte)'\n');
+            reader.TryAdvanceTo((byte)'\n');
 
-        private static bool IsStreamSuffix(byte datum) => datum == (int) 's';
     }
 }

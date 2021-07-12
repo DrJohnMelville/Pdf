@@ -16,5 +16,10 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             index.Add((objectNumber, generation), newReference);
             return newReference;
         }
+
+        public void AddLocationHint(int number, int generation, long location)
+        {
+            
+        }
     }
 }

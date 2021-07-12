@@ -49,7 +49,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public PdfName? Type => TryGetValue(KnownNames.Type, out var obj) ? obj as PdfName : null;
         public PdfName? SubType => TryGetValue(
-            KnownNames.SubType, out var obj) || TryGetValue(KnownNames.S, out obj)? obj as PdfName : null;
+            KnownNames.Subtype, out var obj) || TryGetValue(KnownNames.S, out obj)? obj as PdfName : null;
 
         #endregion
     }

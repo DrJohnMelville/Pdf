@@ -37,9 +37,9 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             lastAdvanceOffset = 0;
             reader = PipeReader.Create(source, new StreamPipeReaderOptions(leaveOpen:true));
         }
-
+        
         public ValueTask<ReadResult> ReadAsync(CancellationToken token = default)
-        {  
+        { 
             var valueTask = reader.ReadAsync(token);
             if (!valueTask.IsCompleted)
                 return new ValueTask<ReadResult>(WaitForRead(valueTask));

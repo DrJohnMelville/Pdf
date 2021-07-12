@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 {
-    public class S_7_5_2FileHeader
+    public class S7_5_2FileHeader
     {
         [Theory]
         [InlineData("%PDF-1.0\r\n ", 1, 0)]
@@ -20,7 +20,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [InlineData("%PDF-1.7\r\n ", 1, 7)]
         public async Task RecognizeFileVersion(string input, int major, int minor)
         {
-            var doc = await input.ParseDocumentAsync();
+            var doc = await MinimalPdfGenerator.MinimalPdf(major,minor).ParseDocumentAsync();
             Assert.Equal(major, doc.MajorVersion);
             Assert.Equal(minor, doc.MinorVersion);
             

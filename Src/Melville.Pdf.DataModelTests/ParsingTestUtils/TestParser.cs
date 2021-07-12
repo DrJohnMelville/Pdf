@@ -75,6 +75,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
                 SeekOrigin.Begin => offset,
                 SeekOrigin.Current => Position + offset,
                 SeekOrigin.End => data.Length + offset,
+                _=> throw new InvalidDataException("Undnown seek origin")
             };
         }
 
