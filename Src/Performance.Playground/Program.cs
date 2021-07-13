@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Melville.Pdf.LowLevel.Writers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Diagnostics.Tracing.Parsers.JScript;
 
 namespace Performance.Playground
@@ -50,8 +51,17 @@ namespace Performance.Playground
             var span = new Span<byte>(new byte[15]);
             for (int i = 0; i < values.Length; i++)
             {
-                var str = values[i].ToString();
-                Encoding.UTF8.GetBytes(str.AsSpan(), span);
+                CopyToSpan(i, ref span);
+            }
+        }
+
+        private void CopyToSpan(int i, ref Span<byte> span)
+        {
+            Span<Char> chars = stackalloc char[20];
+            values[i].TryFormat(chars, out var written);
+            for (int j = 0; j < written; j++)
+            {
+                span[j] = (byte) chars[j];
             }
         }
     }

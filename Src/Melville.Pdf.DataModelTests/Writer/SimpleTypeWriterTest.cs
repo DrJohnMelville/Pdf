@@ -48,5 +48,14 @@ namespace Melville.Pdf.DataModelTests.Writer
         {
             Assert.Equal(dest, await DoWrite(new PdfInteger(source)));
         }
+        [Theory]
+        [InlineData(0, "0")]
+        [InlineData(1234, "1234")]
+        [InlineData(-1234, "-1234")]
+        [InlineData(-1234.54, "-1234.54")]
+        public async Task WriteDoubles(double source, string dest)
+        {
+            Assert.Equal(dest, await DoWrite(new PdfDouble(source)));
+        }
     }
 }

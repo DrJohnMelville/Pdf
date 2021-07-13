@@ -18,9 +18,10 @@ namespace Melville.Pdf.LowLevel.Writers
 
         public override ValueTask<FlushResult> Visit(PdfTokenValues item)
         {
-            var mem = target.GetSpan(5);
+            var tokenLength = item.TokenValue.Length;
+            var mem = target.GetSpan(tokenLength);
             item.TokenValue.AsSpan().CopyTo(mem);
-            target.Advance(item.TokenValue.Length);
+            target.Advance(tokenLength);
             return target.FlushAsync();
         }
 
@@ -30,5 +31,7 @@ namespace Melville.Pdf.LowLevel.Writers
         public override ValueTask<FlushResult> Visit(PdfInteger item) =>
             IntegerWriter.Write(target, item.IntValue);
 
+        public override ValueTask<FlushResult> Visit(PdfDouble item) =>
+            DoubleWriter.Write(target, item.DoubleValue);
     }
 }
