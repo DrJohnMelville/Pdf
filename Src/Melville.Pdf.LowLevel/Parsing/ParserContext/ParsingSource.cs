@@ -16,16 +16,20 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         private long lastAdvanceOffset;
         public long Position => lastSeek + lastAdvanceOffset;
         public IPdfObjectParser RootObjectParser { get; }
-        public IIndirectObjectResolver IndirectResolver { get; } = new IndirectObjectResolver();
+        public IIndirectObjectResolver IndirectResolver { get; }
         
         private readonly Stream source;
         private PipeReader reader;
         private ReadOnlySequence<byte> storedSequence;
 
-        public ParsingSource(Stream source, IPdfObjectParser rootObjectParser)
+        public ParsingSource(
+            Stream source, 
+            IPdfObjectParser? rootObjectParser = null, 
+            IIndirectObjectResolver? resolver = null)
         {
             this.source = source;
-            RootObjectParser = rootObjectParser;
+            RootObjectParser = rootObjectParser ?? new PdfCompositeObjectParser();
+            IndirectResolver = resolver ?? new IndirectObjectResolver();
             if (!source.CanSeek) throw new PdfParseException("PDF Parsing requires a seekable stream");
             CreatePipeReader();
         }

@@ -17,7 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             (PdfDictionary) (await definition.ParseObjectAsync());
 
 
-        private Task<PdfDictionary> IndirectTestDict => CreateDict("<</HEIGHT true /WIDTH 1 0 R /AC 1 0 obj false endobj>>");
+        private Task<PdfDictionary> IndirectTestDict => CreateDict("<</Height true /Width 1 0 R /AC 1 0 obj false endobj>>");
 
         [Fact]
         public async Task CountIsAccurate()
@@ -89,17 +89,17 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [Fact]
         public async Task DictionaryWithType()
         {
-            Assert.Equal(KnownNames.Image, (await CreateDict("<< /TYPE /IMAGE >>")).Type);
+            Assert.Equal(KnownNames.Image, (await CreateDict("<< /Type /Image >>")).Type);
         }
         [Fact]
         public async Task DictionaryWithSubType()
         {
-            Assert.Equal(KnownNames.Image, (await CreateDict("<< /SUBTYPE /IMAGE >>")).SubType);
+            Assert.Equal(KnownNames.Image, (await CreateDict("<< /Subtype /Image >>")).SubType);
         }
         [Fact]
         public async Task DictionaryWithAbbreviatedType()
         {
-            Assert.Equal(KnownNames.Image, (await CreateDict("<< /S /IMAGE >>")).SubType);
+            Assert.Equal(KnownNames.Image, (await CreateDict("<< /S /Image >>")).SubType);
         }
     }
 }

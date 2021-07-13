@@ -62,11 +62,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             isStream = false;
             var reader = new SequenceReader<Byte>(source.Buffer);
             if (!FindStreamSuffix(ref reader)) return (false, reader.Position);
-            foreach (var expected in streamSuffix)
-            {
-                if (!reader.TryRead(out byte found)) return (false, reader.Position);
-                if (found != expected) return (true, source.Buffer.Start);
-            }
+            if (!reader.TryCheckToken(streamSuffix, out isStream)) return (false, reader.Position);
+            if (!isStream) return (true, source.Buffer.Start);
             if (!SkipOverStreamSuffix(ref reader)) return (false, reader.Position);
             isStream = true;
             return (true, reader.Position);

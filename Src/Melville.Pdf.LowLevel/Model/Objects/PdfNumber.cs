@@ -14,6 +14,7 @@
         {
             IntValue = value;
         }
+        public override string ToString() => IntValue.ToString();
     }
     public sealed class PdfDouble : PdfNumber
     {
@@ -23,5 +24,7 @@
         {
             DoubleValue = value;
         }
+
+        public override string ToString() => DoubleValue.ToString();
     }
 }

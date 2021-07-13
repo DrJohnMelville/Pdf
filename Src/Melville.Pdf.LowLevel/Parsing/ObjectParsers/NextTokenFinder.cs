@@ -43,5 +43,17 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                 }
             }
         }
+        public static bool TryCheckToken(
+            this ref SequenceReader<byte> input, byte[] template, out bool result)
+        {
+            result = false;
+            foreach (var expected in template)
+            {
+                if (!input.TryRead(out var actual)) return false;
+                if (expected != actual) return true;
+            }
+            result = true;
+            return true;
+        }
     }
 }

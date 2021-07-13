@@ -53,8 +53,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [Fact]
         public async Task KnowNamesParseToConstants()
         {
-            var n1 = await TryParseStringToName("/WIDTH ");
-            var n2 = await TryParseStringToName("/WIDTH ");
+            var n1 = await TryParseStringToName("/Width ");
+            var n2 = await TryParseStringToName("/Width ");
             Assert.True(ReferenceEquals(KnownNames.Width, n1));
             Assert.True(ReferenceEquals(n1,n2));
         }
@@ -62,7 +62,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [Fact]
         public void InDebugModeThrowIfDefiningANameThatMatchesAKnownName()
         {
-            Assert.Throws<InvalidOperationException>(() => new PdfName("WIDTH"));
+            Assert.Throws<InvalidOperationException>(() => new PdfName("Width"));
             new PdfName("Not a known name");
         }
     }

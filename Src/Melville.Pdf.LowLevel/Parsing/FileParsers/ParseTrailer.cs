@@ -29,8 +29,10 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             if (trailerPosition == 0) throw new PdfParseException("Could not find trailer");
             context.Seek(trailerPosition);
             var dictionary = (PdfDictionary)await context.RootObjectParser.ParseAsync(context);
+
             return dictionary;
         }
+
 
         private static bool SearchForT(ReadResult readResult, ParsingSource source, out bool foundOne)
         {
@@ -52,22 +54,14 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             source.AdvanceTo(readResult.Buffer.End);
             return true;
         }
-        public static readonly byte[] trailerTag = new byte[]{114, 97, 105, 108, 101, 114}; // railer
+        public static readonly byte[] trailerTag = {114, 97, 105, 108, 101, 114}; // railer
         private static (bool Success, SequencePosition Position) TryParseTrailer(
             ReadResult source, out bool validPos)
         {
-            validPos = false;
             var reader = new SequenceReader<byte>(source.Buffer);
-            foreach (var expected in trailerTag)
-            {
-                if (!reader.TryRead(out byte found)) return (false, reader.Position);
-                if (found == expected) continue;
-                reader.Rewind(1);
-                return (true, reader.Position);
-            }
-
-            validPos = true;
-            return (true, reader.Position);
+            return !reader.TryCheckToken(trailerTag, out validPos) ? 
+                (false, reader.Position) : 
+                (true, reader.Position);
         }
     }
 }

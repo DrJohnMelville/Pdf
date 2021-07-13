@@ -27,7 +27,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 0000000409 00000 n
 
 ";
-            await new CrossReferenceTableParser(sampleTale.AsParsingSource(), resolver.Object).Parse();
+            await new CrossReferenceTableParser(sampleTale.AsParsingSource(resolver.Object)).Parse();
             
             resolver.Verify(i=>i.AddLocationHint(1,0,17), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,81), Times.Once);
@@ -48,12 +48,29 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 0000000409 00000 n
 
 ";
-            await new CrossReferenceTableParser(sampleTale.AsParsingSource(), resolver.Object).Parse();
+            await new CrossReferenceTableParser(sampleTale.AsParsingSource(resolver.Object)).Parse();
             
             resolver.Verify(i=>i.AddLocationHint(1,0,17), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,81), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(23,122,331), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(24, 0, 409), Times.Once);
+            resolver.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task LodFileTableWhenLoadingFiles()
+        {
+            var resolver = new Mock<IIndirectObjectResolver>();
+            var ps = MinimalPdfGenerator.MinimalPdf(1,5).AsParsingSource(resolver.Object);
+            await new RandomAccessFileParser(ps).Parse();
+            resolver.Verify(i=>i.AddLocationHint(1,0,9), Times.Once);
+            resolver.Verify(i=>i.AddLocationHint(2,0,74), Times.Once);
+            resolver.Verify(i=>i.AddLocationHint(3,0,119), Times.Once);
+            resolver.Verify(i=>i.AddLocationHint(4,0,176), Times.Once);
+            resolver.Verify(i=>i.AddLocationHint(5,0,295), Times.Once);
+            resolver.Verify(i=>i.AddLocationHint(6,0,376), Times.Once);
+            resolver.Verify(i=>i.FindIndirect(1,0));
+            resolver.VerifyNoOtherCalls();
         }
     }
 }

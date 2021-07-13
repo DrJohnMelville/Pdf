@@ -10,12 +10,10 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
     public class CrossReferenceTableParser
     {
         private readonly ParsingSource source;
-        private readonly IIndirectObjectResolver target;
 
-        public CrossReferenceTableParser(ParsingSource source, IIndirectObjectResolver target)
+        public CrossReferenceTableParser(ParsingSource source)
         {
             this.source = source;
-            this.target = target;
         }
 
         public async Task Parse()
@@ -67,7 +65,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         private void HandleObjectDeclarationLine(byte operation, long rightNum, long leftNum)
         {
-            if (operation == (byte) 'n') target.AddLocationHint(nextItem, (int)rightNum, leftNum);
+            if (operation == (byte) 'n') source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum, leftNum);
             nextItem++;
         }
 

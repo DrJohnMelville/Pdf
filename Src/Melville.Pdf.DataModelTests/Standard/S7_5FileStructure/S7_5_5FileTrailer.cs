@@ -14,6 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             var doc = await MinimalPdfGenerator.MinimalPdf(1, 7).ParseDocumentAsync();
             Assert.NotNull(doc.TrailerDictionary);
             Assert.IsType<PdfDictionary>(doc.TrailerDictionary);
+            
         }
         [Fact]
         public async Task ReadOnlyLastTrailer()
