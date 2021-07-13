@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Writers
             return target.FlushAsync();
         }
 
-        private static int CopyNumberToBuffer(Span<byte> buffer, int item)
+        public static int CopyNumberToBuffer(Span<byte> buffer, int item)
         {
             if (item < 0)
             {
