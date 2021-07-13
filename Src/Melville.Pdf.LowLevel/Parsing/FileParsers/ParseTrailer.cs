@@ -8,35 +8,67 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 {
+    public class SuggestTrailerPosition
+    {
+        private readonly ParsingSource context;
+        private readonly long startPosition;
+        private readonly long fileTrailerSizeHint;
+        private long lastRecommendation;
+
+        public SuggestTrailerPosition(ParsingSource context, long fileTrailerSizeHint)
+        {
+            this.context = context;
+            this.fileTrailerSizeHint = fileTrailerSizeHint;
+            startPosition = context.Position;
+            lastRecommendation = context.StreamLength;
+        }
+
+        public long SeekToNextSearchSegment()
+        {
+            if (lastRecommendation == startPosition)
+                throw new PdfParseException("Could not find trailer");
+            var endOfSearchSegment = lastRecommendation;
+            lastRecommendation = Math.Max(startPosition, lastRecommendation - fileTrailerSizeHint);
+            context.Seek(lastRecommendation);
+            return endOfSearchSegment;
+        }
+    }
     public static class ParseTrailer
     {
         public static async Task<PdfDictionary> Parse(ParsingSource context, int fileTrailerSizeHint)
         {
+            var trailerPositionGuesser = new SuggestTrailerPosition(context, fileTrailerSizeHint);
+            
             long trailerPosition = 0;
-            while (SearchForT(await context.ReadAsync(), context, out var foundPos))
+            do
             {
-                if (!foundPos) continue;
-                bool validTag = false;
-                do { } while (context.ShouldContinue(
-                    TryParseTrailer(await context.ReadAsync(), out validTag)));
-
-                if (validTag)
+                var max = trailerPositionGuesser.SeekToNextSearchSegment();   
+                while (SearchForT(await context.ReadAsync(), context, max, out var foundPos))
                 {
-                    trailerPosition = context.Position;
+                    if (!foundPos) continue;
+                    bool validTag;
+                    do
+                    {
+                    } while (context.ShouldContinue(
+                        TryParseTrailer(await context.ReadAsync(), out validTag)));
+                    if (validTag)
+                    {
+                        trailerPosition = context.Position;
+                    }
                 }
-            }
+            } while (trailerPosition == 0);
 
-            if (trailerPosition == 0) throw new PdfParseException("Could not find trailer");
+            
             context.Seek(trailerPosition);
-            var dictionary = (PdfDictionary)await context.RootObjectParser.ParseAsync(context);
-
-            return dictionary;
+            var possibleDictionary = await context.RootObjectParser.ParseAsync(context);
+            if(possibleDictionary is PdfDictionary dictionary) return dictionary;
+            throw new PdfParseException("Invalid trailer dictionary");
         }
 
 
-        private static bool SearchForT(ReadResult readResult, ParsingSource source, out bool foundOne)
+        private static bool SearchForT(ReadResult readResult, ParsingSource source, long max, out bool foundOne)
         {
-            if (readResult.IsCompleted)
+            if (readResult.IsCompleted || source.Position > max)
             {
                 foundOne = false;
                 return false;

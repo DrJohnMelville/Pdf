@@ -3,6 +3,7 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.LowLevel;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -23,12 +24,11 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             byte major, minor;
             do { } while (context.ShouldContinue(
                 PdfHeaderParser.ParseDocumentHeader(await context.ReadAsync(), out major, out minor)));
-
-            var dictionary = await ParseTrailer.Parse(context, fileTrailerSizeHint);
-            long xrefPos;
-            do {} while (context.ShouldContinue(FindXrePosition(
-                await context.ReadAsync(), out xrefPos))) ;
             
+            var dictionary = await ParseTrailer.Parse(context, fileTrailerSizeHint);
+            
+            long xrefPos;
+            do {} while (context.ShouldContinue(FindXrePosition(await context.ReadAsync(), out xrefPos))) ;
             context.Seek(xrefPos);
             await new CrossReferenceTableParser(context).Parse();
 

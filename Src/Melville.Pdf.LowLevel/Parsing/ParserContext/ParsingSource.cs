@@ -14,6 +14,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
     {
         private long lastSeek;
         private long lastAdvanceOffset;
+        public long StreamLength => source.Length;
         public long Position => lastSeek + lastAdvanceOffset;
         public IPdfObjectParser RootObjectParser { get; }
         public IIndirectObjectResolver IndirectResolver { get; }

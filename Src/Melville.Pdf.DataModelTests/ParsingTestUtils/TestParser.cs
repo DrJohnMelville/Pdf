@@ -33,8 +33,8 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
             IIndirectObjectResolver? indirectObjectResolver =null) => 
             new(new OneCharAtAtimeStream(bytes), new PdfCompositeObjectParser(), indirectObjectResolver);
         
-        public static Task<PdfLowLevelDocument> ParseDocumentAsync(this string str) => 
-            new RandomAccessFileParser(str.AsParsingSource()).Parse();
+        public static Task<PdfLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) => 
+            new RandomAccessFileParser(str.AsParsingSource()).Parse(sizeHint);
     }
     
     public class OneCharAtAtimeStream: Stream
