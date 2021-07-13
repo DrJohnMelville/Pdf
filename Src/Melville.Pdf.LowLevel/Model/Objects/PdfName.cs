@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
@@ -30,5 +31,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public virtual bool Equals(PdfName? other) =>
             ((IEquatable<PdfByteArrayObject>) this).Equals(other);
+        public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+
     }
 }

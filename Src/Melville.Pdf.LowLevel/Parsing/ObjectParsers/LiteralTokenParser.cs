@@ -5,19 +5,19 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public class LiteralTokenParser : PdfAtomParser
     {
-        private int length;
-        private PdfObject literal;
+        private PdfTokenValues literal;
 
-        public LiteralTokenParser(int length, PdfObject literal)
+        public LiteralTokenParser(PdfTokenValues literal)
         {
-            this.length = length;
             this.literal = literal;
         }
 
         public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject obj)
         {
             obj = literal;
-            return reader.TryAdvance(length);
+            if (!reader.TryCheckToken(literal.TokenValue, out var correct)) return false;
+            if (!correct) throw new PdfParseException("Unexpected PDF token.");
+            return true;
         }
     }
 }

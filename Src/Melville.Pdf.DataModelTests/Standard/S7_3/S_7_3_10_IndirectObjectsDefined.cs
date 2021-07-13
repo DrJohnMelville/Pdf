@@ -22,7 +22,7 @@ namespace Melville.Pdf.DataModelTests.Standard._7
             var result = (PdfIndirectReference) await "24 543 R".ParseObjectAsync();
             Assert.Equal(24, result.Target.ObjectNumber);
             Assert.Equal(543, result.Target.GenerationNumber);
-            Assert.Equal(PdfEmptyConstants.Null, result.Target.Value);
+            Assert.Equal(PdfTokenValues.Null, result.Target.Value);
             
         }
 

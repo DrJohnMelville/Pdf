@@ -20,7 +20,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             while (true)
             {
                 var key = await source.RootObjectParser.ParseAsync(source);
-                if (key == PdfEmptyConstants.DictionaryTerminator)
+                if (key == PdfTokenValues.DictionaryTerminator)
                 {
                     bool isStream;
                     do {}while (source.ShouldContinue(
@@ -29,7 +29,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                 }
 
                 var item = await source.RootObjectParser.ParseAsync(source);
-                if (item == PdfEmptyConstants.Null) continue;
+                if (item == PdfTokenValues.Null) continue;
                 AddItemToDictionary(dictionary, key, item);
             }
         }
@@ -47,7 +47,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         private static void AddItemToDictionary(Dictionary<PdfName, PdfObject> dictionary, PdfObject key,
             PdfObject? item)
         {
-            if (item == PdfEmptyConstants.DictionaryTerminator)
+            if (item == PdfTokenValues.DictionaryTerminator)
                 throw new PdfParseException("Dictionary must have an even number of children.");
             dictionary[CheckIfKeyIsName(key)] = item;
         }

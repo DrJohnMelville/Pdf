@@ -17,7 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [Fact]
         public async Task CanParseNull()
         {
-            Assert.Equal(PdfEmptyConstants.Null, await ParsedNull());
+            Assert.Equal(PdfTokenValues.Null, await ParsedNull());
             
         }
 

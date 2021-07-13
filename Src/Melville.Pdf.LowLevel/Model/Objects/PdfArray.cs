@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
@@ -21,5 +22,6 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public int Count =>  RawItems.Count;
 
         public PdfObject this[int index] => RawItems[index].DirectValue();
+        public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }
 }

@@ -3,6 +3,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7
@@ -17,6 +18,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7
             var item = (PdfBoolean) await text.ParseObjectAsync();
             Assert.Equal(value, item.Value);
             Assert.True(ReferenceEquals(value?PdfBoolean.True:PdfBoolean.False,item));
+        }
+
+        [Theory]
+        [InlineData("tRue")]
+        [InlineData("tunk")]
+        [InlineData("fAlse")]
+        public Task LiteralNamesMustBeSpelledCorrectly(string s)
+        {
+            return Assert.ThrowsAsync<PdfParseException>(s.ParseObjectAsync);
         }
     }
 }

@@ -10,15 +10,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
     public class S7_5_2FileHeader
     {
         [Theory]
-        [InlineData("%PDF-1.0\r\n ", 1, 0)]
-        [InlineData("%PDF-1.1\r\n ", 1, 1)]
-        [InlineData("%PDF-1.2\r\n ", 1, 2)]
-        [InlineData("%PDF-1.3\r\n ", 1, 3)]
-        [InlineData("%PDF-1.4\r\n ", 1, 4)]
-        [InlineData("%PDF-1.5\r\n ", 1, 5)]
-        [InlineData("%PDF-1.6\r\n ", 1, 6)]
-        [InlineData("%PDF-1.7\r\n ", 1, 7)]
-        public async Task RecognizeFileVersion(string input, int major, int minor)
+        [InlineData( 1, 0)]
+        [InlineData( 1, 1)]
+        [InlineData( 1, 2)]
+        [InlineData( 1, 3)]
+        [InlineData( 1, 4)]
+        [InlineData( 1, 5)]
+        [InlineData( 1, 6)]
+        [InlineData( 1, 7)]
+        public async Task RecognizeFileVersion(int major, int minor)
         {
             var doc = await MinimalPdfGenerator.MinimalPdf(major,minor).ParseDocumentAsync();
             Assert.Equal(major, doc.MajorVersion);

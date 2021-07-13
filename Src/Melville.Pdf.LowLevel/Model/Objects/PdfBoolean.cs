@@ -1,14 +1,16 @@
-﻿namespace Melville.Pdf.LowLevel.Model.Objects
+﻿using Melville.Pdf.LowLevel.Visitors;
+
+namespace Melville.Pdf.LowLevel.Model.Objects
 {
-    public sealed class PdfBoolean : PdfObject
+    public sealed class PdfBoolean : PdfTokenValues
     {
         public bool Value => this == True;
+        public static readonly PdfBoolean True = new(new byte[]{116, 114, 117, 101}); // true
+        public static readonly PdfBoolean False = new(new byte[]{102, 97, 108, 115, 101}); // false
+        public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
-        private PdfBoolean()
+        public PdfBoolean(byte[] tokenValue) : base(tokenValue)
         {
         }
-
-        public static readonly PdfBoolean True = new();
-        public static readonly PdfBoolean False = new();
     }
 }

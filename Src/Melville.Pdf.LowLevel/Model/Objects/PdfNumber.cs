@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.LowLevel.Model.Objects
+﻿using Melville.Pdf.LowLevel.Visitors;
+
+namespace Melville.Pdf.LowLevel.Model.Objects
 {
     public abstract class PdfNumber: PdfObject
     {
@@ -15,6 +17,7 @@
             IntValue = value;
         }
         public override string ToString() => IntValue.ToString();
+        public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }
     public sealed class PdfDouble : PdfNumber
     {
@@ -26,5 +29,6 @@
         }
 
         public override string ToString() => DoubleValue.ToString();
+        public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }
 }

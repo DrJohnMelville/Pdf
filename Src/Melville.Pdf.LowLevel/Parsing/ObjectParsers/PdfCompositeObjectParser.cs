@@ -64,11 +64,11 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         private static readonly PdfDictionaryAndStreamParser dictionaryAndStream = new();
         private static readonly NumberParser Number = new();
         private static readonly NameParser Names = new();
-        private static readonly LiteralTokenParser TrueParser = new(4, PdfBoolean.True);
-        private static readonly LiteralTokenParser FalseParser = new(5, PdfBoolean.False);
-        private static readonly LiteralTokenParser NullParser = new(4, PdfEmptyConstants.Null);
-        private static readonly LiteralTokenParser ArrayTermination = new(1, PdfEmptyConstants.ArrayTerminator);
-        private static readonly LiteralTokenParser DictionatryTermination = new(2, PdfEmptyConstants.DictionaryTerminator);
+        private static readonly LiteralTokenParser TrueParser = new(PdfBoolean.True);
+        private static readonly LiteralTokenParser FalseParser = new(PdfBoolean.False);
+        private static readonly LiteralTokenParser NullParser = new(PdfTokenValues.Null);
+        private static readonly LiteralTokenParser ArrayTermination = new(PdfTokenValues.ArrayTerminator);
+        private static readonly LiteralTokenParser DictionatryTermination = new(PdfTokenValues.DictionaryTerminator);
         //the next line must appear after the declaration of Number in the source file
         private static readonly IndirectObjectParser Indirects = new(Number);
     }

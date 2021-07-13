@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.LowLevel.Model.Objects
+﻿using Melville.Pdf.LowLevel.Visitors;
+
+namespace Melville.Pdf.LowLevel.Model.Objects
 {
     internal interface ICanSetIndirectTarget
     {
@@ -8,10 +10,10 @@
     {
         public int ObjectNumber { get; }
         public int GenerationNumber { get; }
-        public PdfObject Value { get; private set; } = PdfEmptyConstants.Null;
+        public PdfObject Value { get; private set; } = PdfTokenValues.Null;
 
         public PdfIndirectObject(int objectNumber, int generationNumber) : 
-            this(objectNumber, generationNumber, PdfEmptyConstants.Null)
+            this(objectNumber, generationNumber, PdfTokenValues.Null)
         {
         }
 
@@ -28,5 +30,6 @@
         void ICanSetIndirectTarget.SetValue(PdfObject value) => Value = value;
 
         public override PdfObject DirectValue() => Value.DirectValue();
+        public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }
 }

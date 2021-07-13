@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
@@ -52,15 +53,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             KnownNames.Subtype, out var obj) || TryGetValue(KnownNames.S, out obj)? obj as PdfName : null;
 
         #endregion
+        
+        public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }
-
-    public class PdfStream : PdfDictionary
-    {
-        public long SourceFilePosition { get; }
-
-        public PdfStream(IReadOnlyDictionary<PdfName, PdfObject> rawItems, long sourceFilePosition) : base(rawItems)
-        {
-            SourceFilePosition = sourceFilePosition;
-        }
-    }
-}
+ }

@@ -29,11 +29,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             Assert.Equal(4, sut.Count);
             Assert.Equal(PdfBoolean.True, sut[0]);
             Assert.Equal(PdfBoolean.False, sut[1]);
-            Assert.Equal(PdfEmptyConstants.Null, sut[2]);
+            Assert.Equal(PdfTokenValues.Null, sut[2]);
             Assert.Equal(PdfBoolean.True, sut[3]);
 
             Assert.Equal(new PdfObject[]
-                    {PdfBoolean.True, PdfBoolean.False, PdfEmptyConstants.Null, PdfBoolean.True},
+                    {PdfBoolean.True, PdfBoolean.False, PdfTokenValues.Null, PdfBoolean.True},
                 (IEnumerable)sut);
             
         }
