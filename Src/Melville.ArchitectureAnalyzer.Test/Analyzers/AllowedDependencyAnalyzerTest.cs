@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,10 +19,11 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
                 ConstructFileText(contentOfRelying, contentOfReliedUpon, commonContent ?? ""),
                 howManyErrors);
 
-        private static Task RunSimpleTest(string sourceText, int howManyErrors = 1)
+        private static Task RunSimpleTest(string sourceText, int howManyErrors = 1, string? errorMsg = null)
         {
             var (source, diagnostics) =
-                ParseSource(sourceText);
+                ParseSource(sourceText, errorMsg??
+                    "\"NS.ReliedUpon\" may not reference \"NS.Relying\" because \"NS.Relying* => NS.ReliedUpon*\"");
             var test = new CSharpAnalyzerTest<AllowedDependencyAnalyzer, XUnitVerifier>()
             {
                 TestState =
@@ -41,17 +43,18 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
         }
 
         private static readonly Regex DiagnosticLocator = new(@"\[\|(.+?)\|\]");
-        private static (string Source, List<DiagnosticResult>) ParseSource(string constructFileText)
+        private static (string Source, List<DiagnosticResult>) ParseSource(string constructFileText, string errorMsg)
         {
             var matches = DiagnosticLocator.Matches(constructFileText);
-            var diags = matches.Select(MatchToDiagnosticResult).ToList();
+            var diags = matches.Select((match, i) => MatchToDiagnosticResult(match, i, errorMsg)).ToList();
             
             return (DiagnosticLocator.Replace(constructFileText, "$1"), diags);
         }
 
-        private static DiagnosticResult MatchToDiagnosticResult(Match match, int i) =>
+        private static DiagnosticResult MatchToDiagnosticResult(Match match, int i, string errorMsg) =>
             new DiagnosticResult(DependencyDiagnostics.RuleViolated).WithLocation(1,
-                (match.Index - (4*i))+1).WithArguments("\"NS.ReliedUpon\" may not reference \"NS.Relying\" because \"NS.Relying* => NS.ReliedUpon*\"");
+                (match.Index - (4*i))+1)
+                .WithArguments(errorMsg);
 
         private static string ConstructFileText(string contentOfRelying, string contentOfReliedUpon, string commonContent)
         {
@@ -73,7 +76,10 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
         [Fact] public Task CannotDeclareProhibitedField() => RunSimpleTest("", "[|Relying|] item;");
         [Fact] public Task CannotDeclareProhibitedArray() => RunSimpleTest("", "[|Relying|][] item;");
         [Fact] public Task CannotDeclareProhibitedSpecialization() => 
-            RunSimpleTest("", "interface I<T> {} I<[|Relying|]> item;");
+           Assert.ThrowsAsync<EqualWithMessageException>(
+               ()=> RunSimpleTest("", " Common.[|I<Relying>|] item;", "public interface I<T> {}", 2));
+        [Fact] public Task CanDeclareAllowedSpecialization() => 
+            RunSimpleTest("", " Common.I<int> item;", "public interface I<T> {}");
         [Fact] public Task CannotDeclareProhibitedProperty() =>
             RunSimpleTest("", "[|Relying|] Item {get;}");
         [Fact] public Task CannotDeclareProhibitedLocal() => 
@@ -121,6 +127,9 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
                 "public static void M(){}", "void M(){[|Relying|].M();}");
         [Fact] public Task CannotInheritFromProhibitedType() => 
             RunSimpleTest("namespace NS { public class ReliedUpon: [|Relying|]{} public class Relying{}}");
+        [Fact] public Task CannotInheritFromProhibitedGenericType() => 
+            RunSimpleTest("namespace NS { public class ReliedUpon: [|Relying<int>|]{} public class Relying<T>{}}", 
+                1, "\"NS.ReliedUpon\" may not reference \"NS.Relying<int>\" because \"NS.Relying* => NS.ReliedUpon*\"");
         
     }
 }

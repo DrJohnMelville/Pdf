@@ -14,6 +14,7 @@ namespace Melville.ArchitectureAnalyzer.Test.Models
         [InlineData("Foo*", "Fooggle", "Foart")]
         [InlineData("Foo", "Foo", "Foopostfix")]
         [InlineData("Foo", "Foo", "prefixFoo")]
+        [InlineData("Foo*", "Foo<int>", "prefixFoo")]
         public void TryGlob(string source, string succeeds, string fails)
         {
             var sut = new GlobRecognizer(source);

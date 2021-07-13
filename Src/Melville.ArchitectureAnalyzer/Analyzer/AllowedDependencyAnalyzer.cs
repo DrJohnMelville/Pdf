@@ -40,6 +40,7 @@ namespace ArchitectureAnalyzer.Analyzer
         {
             var verifier = AllowedDependencyVerifierFactory.Create(context.Options.AdditionalFiles);
             context.RegisterSyntaxNodeAction(verifier.CheckTypeAction, SyntaxKind.IdentifierName);
+            context.RegisterSyntaxNodeAction(verifier.CheckTypeAction,  SyntaxKind.GenericName);
         }
         
          #pragma warning disable RS1013
