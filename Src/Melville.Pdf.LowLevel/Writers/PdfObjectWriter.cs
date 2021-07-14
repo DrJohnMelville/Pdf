@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -16,14 +15,8 @@ namespace Melville.Pdf.LowLevel.Writers
             this.target = target;
         }
 
-        public override ValueTask<FlushResult> Visit(PdfTokenValues item)
-        {
-            var tokenLength = item.TokenValue.Length;
-            var mem = target.GetSpan(tokenLength);
-            item.TokenValue.AsSpan().CopyTo(mem);
-            target.Advance(tokenLength);
-            return target.FlushAsync();
-        }
+        public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
+            TokenValueWriter.Write(target, item);
 
         public override ValueTask<FlushResult> Visit(PdfString item) => 
             StringWriter.Write(target, item);
@@ -33,5 +26,12 @@ namespace Melville.Pdf.LowLevel.Writers
 
         public override ValueTask<FlushResult> Visit(PdfDouble item) =>
             DoubleWriter.Write(target, item.DoubleValue);
+
+        public override ValueTask<FlushResult> Visit(PdfIndirectObject item) =>
+            IndirectObjectWriter.Write(target, item, this);
+        public override ValueTask<FlushResult> Visit(PdfIndirectReference item) =>
+            IndirectObjectWriter.Write(target, item);
+        public override ValueTask<FlushResult> Visit(PdfName item) =>
+            NameWriter.Write(target, item);
     }
 }

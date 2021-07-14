@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Xunit;
@@ -41,6 +42,14 @@ namespace Melville.Pdf.DataModelTests.Writer
             Assert.Equal(dest, await DoWrite(new PdfString(source)));
         }
         [Theory]
+        [InlineData("Hello", "/Hello")]
+        [InlineData("Hel#lo", "/Hel#23lo")]
+        [InlineData("Hel lo", "/Hel#20lo")]
+        public async Task WriteName(string source, string dest)
+        {
+            Assert.Equal(dest, await DoWrite(new PdfName(source)));
+        }
+        [Theory]
         [InlineData(0, "0")]
         [InlineData(1234, "1234")]
         [InlineData(-1234, "-1234")]
@@ -56,6 +65,20 @@ namespace Melville.Pdf.DataModelTests.Writer
         public async Task WriteDoubles(double source, string dest)
         {
             Assert.Equal(dest, await DoWrite(new PdfDouble(source)));
+        }
+
+        [Fact]
+        public async Task WriteIndirectObjectReference()
+        {
+            var reference = new PdfIndirectReference(new PdfIndirectObject(34, 555, PdfBoolean.False));
+            Assert.Equal("34 555 R", await DoWrite(reference));
+
+        }
+        [Fact]
+        public async Task WriteIndirectObject()
+        {
+            var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
+            Assert.Equal("34 555 obj false endobj", await DoWrite(reference));
         }
     }
 }

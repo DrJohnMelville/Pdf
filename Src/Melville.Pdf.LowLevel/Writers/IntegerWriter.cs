@@ -48,7 +48,7 @@ namespace Melville.Pdf.LowLevel.Writers
             return div;
         }
 
-        private static int CountDigits(uint value) => value switch
+        public static int CountDigits(uint value) => value switch
         {
             >999999999 => 10,
             >99999999 => 9,

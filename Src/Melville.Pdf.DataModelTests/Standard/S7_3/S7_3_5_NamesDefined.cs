@@ -62,8 +62,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [Fact]
         public void InDebugModeThrowIfDefiningANameThatMatchesAKnownName()
         {
+            #if DEBUG
             Assert.Throws<InvalidOperationException>(() => new PdfName("Width"));
             new PdfName("Not a known name");
+            #endif
         }
     }
 }

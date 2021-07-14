@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace Melville.Pdf.LowLevel.Parsing
+﻿namespace Melville.Pdf.LowLevel.Model.Conventions
 {
     public enum CharacterClass
     {
@@ -23,9 +21,5 @@ namespace Melville.Pdf.LowLevel.Parsing
                 _ => CharacterClass.Regular
             };
         }
-        
-        private static readonly byte[] EndOfLineMarkers = {10, 13};
-        public static bool TrySkipToEndOfLineMarker(this ref SequenceReader<byte> reader) => 
-            reader.TryAdvanceToAny(EndOfLineMarkers, false);
     }
 }

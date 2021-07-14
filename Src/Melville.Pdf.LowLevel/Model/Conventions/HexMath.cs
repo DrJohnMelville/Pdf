@@ -1,4 +1,4 @@
-﻿namespace Melville.Pdf.LowLevel.Parsing.StringParsing
+﻿namespace Melville.Pdf.LowLevel.Model.Conventions
 {
     public enum Nibble 
     {
@@ -21,6 +21,7 @@
         OutOfSpace,
         Terminator = 255
     }
+
     public static class HexMath
     {
 
@@ -42,5 +43,11 @@
             _ => (byte)( ((int)mostSig << 4) | (int)leastSig)
 
         };
+
+    public static byte[] HexDigits =
+    {
+        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+        0x41, 0x42, 0x43, 0x44, 0x45, 0x46
+    };
     }
 }
