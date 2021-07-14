@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -32,8 +33,9 @@ namespace Melville.Pdf.LowLevel.Writers
             NameWriter.Write(target, item);
         public override ValueTask<FlushResult> Visit(PdfArray item) => 
             ArrayWriter.Write(target, this, item.RawItems);
-
         public override ValueTask<FlushResult> Visit(PdfDictionary item) =>
             DictionaryWriter.Write(target, this, item.RawItems);
+        public override ValueTask<FlushResult> Visit(PdfStream item) =>
+            StreamWriter.Write(target, this, item);
     }
 }

@@ -16,11 +16,11 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         public async Task<PdfObject> ParseAsync(ParsingSource source)
         {
             PdfObject result;
-            do{}while(source.ShouldContinue(Parse(await source.ReadAsync(), out result)));
+            do{}while(source.ShouldContinue(Parse(await source.ReadAsync(), out result!)));
             return result;
         }
 
-        private (bool Success, SequencePosition Position) Parse(ReadResult source, out PdfObject result)
+        private (bool Success, SequencePosition Position) Parse(ReadResult source, out PdfObject? result)
         {
             var reader = new SequenceReader<byte>(source.Buffer);
             return (TryParse(ref reader, out result), reader.Position);

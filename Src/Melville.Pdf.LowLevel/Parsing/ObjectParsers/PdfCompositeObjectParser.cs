@@ -21,7 +21,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         {
             await NextTokenFinder.SkipToNextToken(source);
             IPdfObjectParser parser;
-            do{}while(source.ShouldContinue(PickParser2(await source.ReadAsync(), out parser)));
+            do{}while(source.ShouldContinue(PickParser2(await source.ReadAsync(), out parser!)));
 
             return await parser!.ParseAsync(source);
         }

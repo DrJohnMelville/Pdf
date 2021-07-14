@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -9,6 +10,21 @@ using PdfDictionary = Melville.Pdf.LowLevel.Model.Objects.PdfDictionary;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
+    public class InlineStreamSource: IStreamDataSource
+    {
+        private long sourceFilePosition;
+
+        public InlineStreamSource(long sourceFilePosition)
+        {
+            this.sourceFilePosition = sourceFilePosition;
+        }
+
+        public ValueTask<Stream> OpenRawStream(long streamLength)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
     public class PdfDictionaryAndStreamParser : IPdfObjectParser
     {
         public async Task<PdfObject> ParseAsync(ParsingSource source)
@@ -40,12 +56,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             //TODO: See how much the trim helps in memory and costs in speed.
             dictionary.TrimExcess();
             return isStream ? 
-                new PdfStream(dictionary, source.Position) : 
+                new PdfStream(dictionary, new InlineStreamSource(source.Position)) : 
                 new PdfDictionary(dictionary);
         }
 
         private static void AddItemToDictionary(Dictionary<PdfName, PdfObject> dictionary, PdfObject key,
-            PdfObject? item)
+            PdfObject item)
         {
             if (item == PdfTokenValues.DictionaryTerminator)
                 throw new PdfParseException("Dictionary must have an even number of children.");

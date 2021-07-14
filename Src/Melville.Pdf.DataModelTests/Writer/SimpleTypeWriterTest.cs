@@ -99,5 +99,15 @@ namespace Melville.Pdf.DataModelTests.Writer
             });
             Assert.Equal("<</Width 20 /Height 40>>", await DoWrite(array));
         }
+
+        [Fact]
+        public async Task WriteStream()
+        {
+            var array = new PdfStream(new Dictionary<PdfName, PdfObject>()
+            {
+                {KnownNames.Length, new PdfInteger(5)},
+            }, new LiteralStreamSource("Hello"));
+            Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await DoWrite(array));
+        }
     }
 }
