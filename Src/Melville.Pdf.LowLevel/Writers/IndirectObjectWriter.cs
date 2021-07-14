@@ -12,6 +12,20 @@ namespace Melville.Pdf.LowLevel.Writers
         private static byte[] ObjectLabel = {32, 111, 98, 106, 32}; // ' obj '
         private static byte[] ReferenceLabel = {32, 82}; // ' R'
         private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106}; //  endobj
+
+        public static ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectReference item)
+        {
+            target.Advance(WriteObjectHeader(target.GetSpan(25), item.Target, ReferenceLabel));
+            return  target.FlushAsync();
+        }
+
+        private static int WriteObjectHeader(Span<byte> buffer, PdfIndirectObject item, byte[] suffix)
+        {
+            var position = WriteObjectIdDigits(buffer, item);
+            suffix.AsSpan().CopyTo(buffer.Slice(position));
+            return position + suffix.Length;
+        }
+
         public static async ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectObject item,
             ILowLevelVisitor<ValueTask<FlushResult>> innerWriter)
         {
@@ -26,19 +40,6 @@ namespace Melville.Pdf.LowLevel.Writers
         {
             endObjLabel.AsSpan().CopyTo(span);
             return endObjLabel.Length;
-        }
-
-        private static int WriteObjectHeader(Span<byte> buffer, PdfIndirectObject item, byte[] suffix)
-        {
-            var position = WriteObjectIdDigits(buffer, item);
-            suffix.AsSpan().CopyTo(buffer.Slice(position));
-            return position + suffix.Length;
-        }
-
-        public static ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectReference item)
-        {
-            target.Advance(WriteObjectHeader(target.GetSpan(25), item.Target, ReferenceLabel));
-            return  target.FlushAsync();
         }
 
         private static int WriteObjectIdDigits(Span<byte> buffer, PdfIndirectObject pdfIndirectObject)

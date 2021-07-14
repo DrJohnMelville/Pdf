@@ -1,9 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipelines;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Xunit;
@@ -79,6 +79,25 @@ namespace Melville.Pdf.DataModelTests.Writer
         {
             var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
             Assert.Equal("34 555 obj false endobj", await DoWrite(reference));
+        }
+        [Fact]
+        public async Task WriteArray()
+        {
+            var array = new PdfArray(new[]
+            {
+                PdfBoolean.True, PdfBoolean.False, PdfTokenValues.Null
+            });
+            Assert.Equal("[true false null]", await DoWrite(array));
+        }
+        [Fact]
+        public async Task WriteDictionary()
+        {
+            var array = new PdfDictionary(new Dictionary<PdfName, PdfObject>()
+            {
+                {KnownNames.Width, new PdfInteger(20)},
+                {KnownNames.Height, new PdfInteger(40)},
+            });
+            Assert.Equal("<</Width 20 /Height 40>>", await DoWrite(array));
         }
     }
 }
