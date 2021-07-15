@@ -34,7 +34,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
             new(new OneCharAtAtimeStream(bytes), new PdfCompositeObjectParser(), indirectObjectResolver);
         
         public static Task<PdfLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) => 
-            new RandomAccessFileParser(str.AsParsingSource()).Parse(sizeHint);
+             RandomAccessFileParser.Parse(str.AsParsingSource(), sizeHint);
     }
     
     public class OneCharAtAtimeStream: Stream

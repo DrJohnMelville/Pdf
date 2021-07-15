@@ -8,6 +8,10 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
     public class IndirectObjectResolver : IIndirectObjectResolver
     {
         private readonly Dictionary<(int, int), PdfIndirectReference> index = new();
+
+        public IReadOnlyDictionary<(int, int), PdfIndirectReference> GetObjects() =>
+            index;
+
         public PdfIndirectReference FindIndirect(int objectNumber, int generation)
         {
             if (index.TryGetValue((objectNumber, generation), out var existingReference)) 

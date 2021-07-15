@@ -32,7 +32,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             var context = "%PDF-1.0\r\n ".AsParsingSource();
             var result = await context.ReadAsync();
             context.AdvanceTo(result.Buffer.GetPosition(1));
-            await Assert.ThrowsAsync<PdfParseException>(()=>new RandomAccessFileParser(context).Parse());
+            await Assert.ThrowsAsync<PdfParseException>(()=>RandomAccessFileParser.Parse(context));
         }
         
         // check that we start at the beginning

@@ -3,24 +3,18 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.LowLevel;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 {
-    public class RandomAccessFileParser
+    public static class RandomAccessFileParser
     {
-        private readonly ParsingSource context;
-
-        public RandomAccessFileParser(ParsingSource context)
+        public static async Task<PdfLowLevelDocument> Parse(
+            ParsingSource context, int fileTrailerSizeHint = 1024)
         {
-            this.context = context;
-        }
-
-        public async Task<PdfLowLevelDocument> Parse(int fileTrailerSizeHint = 1024)
-        {
-            CheckBeginAtPositionZero();
+            if (context.Position != 0)
+                throw new PdfParseException("Parsing must begin at position 0.");
             byte major, minor;
             do { } while (context.ShouldContinue(
                 PdfHeaderParser.ParseDocumentHeader(await context.ReadAsync(), out major, out minor)));
@@ -32,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             context.Seek(xrefPos);
             await new CrossReferenceTableParser(context).Parse();
 
-            return new PdfLowLevelDocument(major, minor, dictionary);
+            return new PdfLowLevelDocument(major, minor, dictionary, context.IndirectResolver.GetObjects());
         }
         
         private static readonly byte[] startXRef = 
@@ -51,13 +45,6 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 return (false, reader.Position);
             return (true, reader.Position);
 
-        }
-
-        
-        private void CheckBeginAtPositionZero()
-        {
-            if (context.Position != 0)
-                throw new PdfParseException("Parsing must begin at position 0.");
         }
     }
 }

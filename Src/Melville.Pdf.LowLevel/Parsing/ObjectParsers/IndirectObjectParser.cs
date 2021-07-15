@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO.Pipelines;
@@ -12,6 +13,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public interface IIndirectObjectResolver
     {
+        IReadOnlyDictionary<(int, int), PdfIndirectReference> GetObjects();
         PdfIndirectReference FindIndirect(int number, int generation);
         void AddLocationHint(int number, int generation, long location);
     }
