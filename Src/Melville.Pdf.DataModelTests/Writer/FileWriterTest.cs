@@ -1,5 +1,8 @@
-﻿using Melville.Pdf.LowLevel.Model.LowLevel;
+﻿using System.Collections.Generic;
+using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.LowLevel;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer
@@ -9,9 +12,10 @@ namespace Melville.Pdf.DataModelTests.Writer
         [Fact]
         public void EmptyDocument()
         {
-            var doc = new PdfLowLevelDocument(1,7,new PdfDictionary(
-                new Dictionary
-                ))
+            var builder = new LowLevelDocumentBuilder();
+            builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
+            var doc = builder.CreateDocument();
+
         }
     }
 }
