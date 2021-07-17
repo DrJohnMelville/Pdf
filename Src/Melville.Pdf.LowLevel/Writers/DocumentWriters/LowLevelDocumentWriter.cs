@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.LowLevel;
+using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 {
@@ -17,15 +18,29 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         public async Task WriteAsync(PdfLowLevelDocument document)
         {
             HeaderWriter.WriteHeader(target, document.MajorVersion, document.MinorVersion);
-            await ((PipeWriter)target).FlushAsync();
+            await target.FlushAsync();
+            var objectOffsets = await WriteObjectList(document);
+            long xRefStart = target.BytesWritten;
+            await XrefTableWriter.WriteXrefTable(target, objectOffsets);
+            await TrailerWriter.WriteTrailer(target, document.TrailerDictionary, xRefStart);
+        }
 
-            var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
-            var positions = new long[maxObject + 1];
+        private async Task<long[]> WriteObjectList(PdfLowLevelDocument document)
+        {
+            var positions= CreateIndexArray(document);
+            var objectWriter = new PdfObjectWriter(target);
             foreach (var item in document.Objects.Values)
             {
                 positions[item.Target.ObjectNumber] = target.BytesWritten;
-                
+                await item.Target.Visit(objectWriter);
             }
+            return positions;
+        }
+
+        private  long[] CreateIndexArray(PdfLowLevelDocument document)
+        {
+            var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
+            return new long[maxObject + 1];
         }
     }
 }

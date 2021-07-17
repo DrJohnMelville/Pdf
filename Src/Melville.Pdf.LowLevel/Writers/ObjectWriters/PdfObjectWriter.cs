@@ -19,7 +19,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         public override ValueTask<FlushResult> Visit(PdfString item) => 
             StringWriter.Write(target, item);
         public override ValueTask<FlushResult> Visit(PdfInteger item) =>
-            IntegerWriter.Write(target, item.IntValue);
+            IntegerWriter.WriteAndFlush(target, item.IntValue);
         public override ValueTask<FlushResult> Visit(PdfDouble item) =>
             DoubleWriter.Write(target, item.DoubleValue);
         public override ValueTask<FlushResult> Visit(PdfIndirectObject item) =>

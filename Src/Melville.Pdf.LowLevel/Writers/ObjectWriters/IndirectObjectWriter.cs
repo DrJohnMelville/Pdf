@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
     {
         private static byte[] ObjectLabel = {32, 111, 98, 106, 32}; // ' obj '
         private static byte[] ReferenceLabel = {32, 82}; // ' R'
-        private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106}; //  endobj
+        private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106, 13,10}; //  endobj
 
         public static ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectReference item)
         {
@@ -31,21 +31,15 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 
             await target.FlushAsync();
             await item.Value.Visit(innerWriter);
-            target.Advance(WriteEndObj(target.GetSpan(endObjLabel.Length)));
+            target.WriteBytes(endObjLabel);
             return await target.FlushAsync();
         }
-
-        private static int WriteEndObj(Span<byte> span)
-        {
-            endObjLabel.AsSpan().CopyTo(span);
-            return endObjLabel.Length;
-        }
-
+        
         private static int WriteObjectIdDigits(Span<byte> buffer, PdfIndirectObject pdfIndirectObject)
         {
-            int position = IntegerWriter.CopyNumberToBuffer(buffer, pdfIndirectObject.ObjectNumber);
+            int position = IntegerWriter.Write(buffer, pdfIndirectObject.ObjectNumber);
             buffer[position++] = 32; //space
-            position += IntegerWriter.CopyNumberToBuffer(buffer.Slice(position), pdfIndirectObject.GenerationNumber);
+            position += IntegerWriter.Write(buffer.Slice(position), pdfIndirectObject.GenerationNumber);
             return position;
         }
     }

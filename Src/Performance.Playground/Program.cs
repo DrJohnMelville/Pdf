@@ -42,7 +42,7 @@ namespace Performance.Playground
             var span = new Span<byte>(new byte[15]);
             for (int i = 5000; i < values.Length; i++)
             {
-                IntegerWriter.CopyNumberToBuffer(span, values[i]);
+                IntegerWriter.Write(span, values[i]);
             }
         }
 

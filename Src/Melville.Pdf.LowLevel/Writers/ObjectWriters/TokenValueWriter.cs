@@ -9,10 +9,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
     {
         public static ValueTask<FlushResult> Write(PipeWriter target, PdfTokenValues item)
         {
-            var tokenLength = item.TokenValue.Length;
-            var mem = target.GetSpan(tokenLength);
-            item.TokenValue.AsSpan().CopyTo(mem);
-            target.Advance(tokenLength);
+            target.WriteBytes(item.TokenValue);
             return target.FlushAsync();
         }
     }

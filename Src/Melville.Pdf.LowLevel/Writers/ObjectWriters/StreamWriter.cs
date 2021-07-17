@@ -14,18 +14,11 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             PipeWriter target, PdfObjectWriter innerWriter, PdfStream item)
         {
             await DictionaryWriter.Write(target, innerWriter, item);
-            WriteToken(target, streamToken);
+            target.WriteBytes(streamToken);
             await using var rawStream = await item.GetRawStream();
             await rawStream.CopyToAsync(target);
-            WriteToken(target, endStreamToken);
+            target.WriteBytes(endStreamToken);
             return await target.FlushAsync();
-        }
-
-        private static void WriteToken(PipeWriter target, byte[] bytes)
-        {
-            var span = target.GetSpan(bytes.Length);
-            bytes.AsSpan().CopyTo(span);
-            target.Advance(bytes.Length);
         }
     }
 }

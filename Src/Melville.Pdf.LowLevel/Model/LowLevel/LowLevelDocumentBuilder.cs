@@ -76,7 +76,7 @@ namespace Melville.Pdf.LowLevel.Model.LowLevel
         }
         private void AddLengthToTrailerDictionary()
         {
-            AddToTrailerDictionary(KnownNames.Length, new PdfInteger(TrailerLengthValue()));
+            AddToTrailerDictionary(KnownNames.Size, new PdfInteger(TrailerLengthValue()));
         }
         private int TrailerLengthValue() => 1+objects.Max(i=>i.Target.ObjectNumber);
     }

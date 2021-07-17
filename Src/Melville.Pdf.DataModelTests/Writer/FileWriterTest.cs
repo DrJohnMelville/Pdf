@@ -30,6 +30,15 @@ namespace Melville.Pdf.DataModelTests.Writer
             builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
             return await Write(builder.CreateDocument());
         }
+        private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
+        {
+            var builder = new LowLevelDocumentBuilder();
+            builder.SetVersion(majorVersion, minorVersion);
+            builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
+            builder.Add(builder.NewDictionary((KnownNames.Type, KnownNames.Page)));
+            return await Write(builder.CreateDocument());
+        }
 
         [Theory]
         [InlineData(1,7)]
@@ -59,8 +68,33 @@ namespace Melville.Pdf.DataModelTests.Writer
         public async Task OutputsFirstObject()
         {
             var output = await OutputSimpleDocument();
-            Assert.Contains("1 0 obj\r\n<< /Type /Catalog >>", output);
+            Assert.Contains("Melville.Pdf\r\n1 0 obj <</Type /Catalog>> endobj", output);
+        }
+        [Fact]
+        public async Task TwoOutputTowItemFile()
+        {
+            var output = await OutputTwoItemDocument();
+            Assert.Contains("Melville.Pdf\r\n1 0 obj <</Type /Catalog>> endobj\r\n3 0 obj <</Type /Page>> endobj", output);
+        }
+        [Fact]
+        public async Task OutputsXRefTable()
+        {
+            var output = await OutputSimpleDocument();
+            Assert.Contains("endobj\r\nxref\r\n0 2\r\n0000000000 65535 f\r\n0000000043 00000 n\r\n", output);
         }
 
+        [Fact]
+        public async Task OutputXrefWithSkippedItems()
+        {
+            var output = await OutputTwoItemDocument();
+            Assert.Contains("endobj\r\nxref\r\n0 4\r\n0000000002 65535 f\r\n0000000043 00000 n\r\n0000000000 00000 f\r\n0000000078 00000 n\r\n", output);
+        }
+
+        [Fact]
+        public async Task OutputsTrailer()
+        {
+            var output = await OutputSimpleDocument();
+            Assert.Contains("n\r\ntrailer\r\n<</Root 1 0 R /Size 2>>\r\nstartxref\r\n78\r\n%%EOF", output);
+        }
     }
 }

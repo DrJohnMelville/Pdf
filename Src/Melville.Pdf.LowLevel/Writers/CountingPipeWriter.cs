@@ -21,6 +21,9 @@ namespace Melville.Pdf.LowLevel.Writers
             BytesWritten += bytes;
             innerWriter.Advance(bytes);
         }
+        public override ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken = default) => 
+            innerWriter.FlushAsync(cancellationToken);
+
 
     }
 }
