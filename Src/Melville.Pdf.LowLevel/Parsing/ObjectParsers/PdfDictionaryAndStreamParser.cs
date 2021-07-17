@@ -27,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 
     public class PdfDictionaryAndStreamParser : IPdfObjectParser
     {
-        public async Task<PdfObject> ParseAsync(ParsingSource source)
+        public async Task<PdfObject> ParseAsync(IParsingReader source)
         {
             var reader = await source.ReadAsync();
             //This has to succeed because the prior parser looked at the prefix to get here.
@@ -51,7 +51,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         }
 
         private static PdfObject CreateFinalObject(
-            ParsingSource source, Dictionary<PdfName, PdfObject> dictionary, bool isStream)
+            IParsingReader source, Dictionary<PdfName, PdfObject> dictionary, bool isStream)
         {
             //TODO: See how much the trim helps in memory and costs in speed.
             dictionary.TrimExcess();

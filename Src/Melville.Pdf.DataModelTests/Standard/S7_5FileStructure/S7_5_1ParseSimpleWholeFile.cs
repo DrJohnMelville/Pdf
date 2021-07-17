@@ -42,7 +42,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         public async Task RoundTripSimpleDocument()
         {
             await RoundTripPdfAsync(await OutputTwoItemDocument(1, 3));
-
         }
 
         [Fact]

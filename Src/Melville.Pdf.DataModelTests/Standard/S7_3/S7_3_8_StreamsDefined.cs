@@ -25,8 +25,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7
             var parser =  "          <</LENGTH 6>> stream\r\n123456\r\nendstream".AsParsingSource();
             var obj = (PdfStream)await parser.ParseObjectAsync();
             Assert.Equal(32, GetPosition(obj));
-            parser.Seek(5);
-            var obj2 =  (PdfStream) await parser.ParseObjectAsync();
+            var obj2 =  (PdfStream) await parser.ParseObjectAsync(5);
             Assert.Equal(32, GetPosition(obj2));
         }        
         [Fact]

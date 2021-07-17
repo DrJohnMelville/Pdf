@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public static class NextTokenFinder
     {
-        public static async ValueTask SkipToNextToken(ParsingSource source)
+        public static async ValueTask SkipToNextToken(IParsingReader source)
         {
             do {} while (source.ShouldContinue(SkipToNextToken2(await source.ReadAsync())));
         }

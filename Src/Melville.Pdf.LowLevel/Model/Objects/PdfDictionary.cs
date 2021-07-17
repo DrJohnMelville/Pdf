@@ -23,9 +23,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public int Count => RawItems.Count;
 
         public bool ContainsKey(PdfName key) => RawItems.ContainsKey(key);
-        
+
         ValueTask<PdfObject> IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>.this[PdfName key] =>
-            throw new System.NotImplementedException();
+            RawItems[key].DirectValue();
 
         public IEnumerable<PdfName> Keys => RawItems.Keys;
 

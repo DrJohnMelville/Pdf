@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public class PdfArrayParser: IPdfObjectParser
     {
-        public async Task<PdfObject> ParseAsync(ParsingSource source)
+        public async Task<PdfObject> ParseAsync(IParsingReader source)
         {
             var reader = await source.ReadAsync();
             //This has to succeed because the prior parser looked at the prefix to get here.

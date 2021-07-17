@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -9,9 +10,9 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 {
     public class CrossReferenceTableParser
     {
-        private readonly ParsingSource source;
+        private readonly IParsingReader source;
 
-        public CrossReferenceTableParser(ParsingSource source)
+        public CrossReferenceTableParser(IParsingReader source)
         {
             this.source = source;
         }
@@ -52,8 +53,9 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             if (IsXrefLine(firstByte)) return true; 
             if (!GatherTwoNumbers(ref lineReader, out var leftNum, out var rightNum, out var delim)) 
                 return false;
-            if (HandleAsGroupHeader(delim, leftNum)) return true;
+            if (HandleAsGroupHeader(delim, leftNum, rightNum)) return true;
             if (!lineReader.TryPeek(out byte operation)) return false; // empty line
+            if (operation is not ((byte) 'f' or (byte) 'n')) return false;
             HandleObjectDeclarationLine(operation, rightNum, leftNum);
             return true;
         }
@@ -65,13 +67,14 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         private void HandleObjectDeclarationLine(byte operation, long rightNum, long leftNum)
         {
-            if (operation == (byte) 'n') source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum, leftNum);
+            if (operation == (byte) 'n') source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum, 
+                () => new ValueTask<PdfObject>(PdfTokenValues.Null));
             nextItem++;
         }
 
-        private bool HandleAsGroupHeader(byte delim, long leftNum)
+        private bool HandleAsGroupHeader(byte delim, long leftNum, long rightNum)
         {
-            if (delim != 13) return false;
+            if (delim != 13 || rightNum == 0) return false;
             nextItem = (int)leftNum;
             return true;
         }

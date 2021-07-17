@@ -16,13 +16,16 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
         public static Task<PdfObject> ParseObjectAsync(this byte[] bytes) => 
             ParseObjectAsync(AsParsingSource(bytes));
 
-        public static Task<PdfObject> ParseObjectAsync(this ParsingSource source) => 
-            source.RootObjectParser.ParseAsync(source);
+        public static async Task<PdfObject> ParseObjectAsync(this ParsingFileOwner source, long position = 0)
+        {
+            using var reader = await source.RentReader(position);
+            return await source.RootObjectParser.ParseAsync(reader);
+        }
 
-        public static ParsingSource AsParsingSource(this string str, 
+        public static ParsingFileOwner AsParsingSource(this string str, 
             IIndirectObjectResolver? indirectObjectResolver =null) =>
             AsParsingSource((str + " /%This simulates an end tag\r\n").AsExtendedAsciiBytes(), indirectObjectResolver);
-        public static ParsingSource AsParsingSource(this byte[] bytes, 
+        public static ParsingFileOwner AsParsingSource(this byte[] bytes, 
             IIndirectObjectResolver? indirectObjectResolver =null) => 
             new(new OneCharAtAtimeStream(bytes), new PdfCompositeObjectParser(), indirectObjectResolver);
         

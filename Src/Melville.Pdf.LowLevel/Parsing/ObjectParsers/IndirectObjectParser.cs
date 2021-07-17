@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     {
         IReadOnlyDictionary<(int, int), PdfIndirectReference> GetObjects();
         PdfIndirectReference FindIndirect(int number, int generation);
-        void AddLocationHint(int number, int generation, long location);
+        void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor);
     }
 
     public class IndirectObjectParser : IPdfObjectParser
@@ -27,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             this.fallbackNumberParser = fallbackNumberParser;
         }
 
-        public async Task<PdfObject> ParseAsync(ParsingSource source)
+        public async Task<PdfObject> ParseAsync(IParsingReader source)
         {
             ParseResult kind;
             PdfIndirectReference? reference;

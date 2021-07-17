@@ -24,7 +24,8 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
             return new MemoryStream(ret);
         }
 
-        private readonly ParsingSource sut = new(IndexedStream(), Mock.Of<IPdfObjectParser>());
+        private readonly ParsingFileOwner owner = 
+            new(IndexedStream(), Mock.Of<IPdfObjectParser?>(), Mock.Of<IIndirectObjectResolver?>());
 
         private SequencePosition ConfirmBytes(ReadOnlySequence<byte> seq, params byte[] values)
         {
@@ -37,9 +38,11 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
 
             return reader.Position;
         }
+        #warning check the one reader at a time policies here
         [Fact]
         public async Task ReadFiveBytes()
         {
+            var sut = await owner.RentReader(0);
             var result = await sut.ReadAsync();
             var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
             Assert.Equal(0, sut.Position);
@@ -49,16 +52,22 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
         [Fact]
         public async Task ReadThenJump()
         {
-            var result = await sut.ReadAsync();
-            var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
-            Assert.Equal(0, sut.Position);
-            sut.AdvanceTo(sp);
-            Assert.Equal(5, sut.Position);
-            sut.Seek(45);
-            result = await sut.ReadAsync();
-            sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
-            sut.AdvanceTo( sp);
-            Assert.Equal(49, sut.Position);
+            using (var sut = await owner.RentReader(0))
+            {
+                var result = await sut.ReadAsync();
+                var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
+                Assert.Equal(0, sut.Position);
+                sut.AdvanceTo(sp);
+                Assert.Equal(5, sut.Position);
+            }
+
+            using (var sut = await owner.RentReader(45))
+            {
+                var result = await sut.ReadAsync();
+                var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
+                sut.AdvanceTo( sp);
+                Assert.Equal(49, sut.Position);
+            }
         }
     }
 }

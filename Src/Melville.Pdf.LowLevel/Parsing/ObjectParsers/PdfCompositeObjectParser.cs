@@ -10,14 +10,14 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public interface IPdfObjectParser
     {
-        public Task<PdfObject> ParseAsync(ParsingSource source);
+        public Task<PdfObject> ParseAsync(IParsingReader source);
 
     }
 
 
     public class PdfCompositeObjectParser:  IPdfObjectParser
     {
-        public async Task<PdfObject> ParseAsync(ParsingSource source)
+        public async Task<PdfObject> ParseAsync(IParsingReader source)
         {
             await NextTokenFinder.SkipToNextToken(source);
             IPdfObjectParser parser;

@@ -17,7 +17,15 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public int GenerationNumber { get; }
         private Func<ValueTask<PdfObject>>? accessor = null;
         private PdfObject value = PdfTokenValues.Null;
-        
+
+
+        public PdfIndirectObject(
+            int objectNumber, int generationNumber, Func<ValueTask<PdfObject>>? accessor)
+        {
+            this.accessor = accessor;
+            ObjectNumber = objectNumber;
+            GenerationNumber = generationNumber;
+        }
 
         public PdfIndirectObject(int objectNumber, int generationNumber) : 
             this(objectNumber, generationNumber, PdfTokenValues.Null)

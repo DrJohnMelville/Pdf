@@ -17,20 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             Assert.IsType<PdfDictionary>(doc.TrailerDictionary);
             
         }
-        [Fact]
-        public async Task ReadOnlyLastTrailer()
-        {
-            var doc =  await (MinimalPdfGenerator.MinimalPdf(1, 7)+@"trailer
-<< /Size 10 /Root 1 0 R >>
-startxref
-394
-%%EOF").ParseDocumentAsync(2);
-            Assert.NotNull(doc.TrailerDictionary);
-            Assert.IsType<PdfDictionary>(doc.TrailerDictionary);
-            Assert.Equal("10", doc.TrailerDictionary[KnownNames.Size].ToString());
-            
-        }
-
+   
         [Theory]
         [InlineData("%PDF1.5\r\nHeader tag is wrong.")]
         [InlineData("%PdF-1.5\r\nHeader tag is wrong.")]
