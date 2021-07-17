@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
@@ -27,14 +28,14 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         {
             var sut = (PdfArray)await "[ 1 0 R false null 1 0 obj true endobj ]  ".ParseObjectAsync();
             Assert.Equal(4, sut.Count);
-            Assert.Equal(PdfBoolean.True, sut[0]);
-            Assert.Equal(PdfBoolean.False, sut[1]);
-            Assert.Equal(PdfTokenValues.Null, sut[2]);
-            Assert.Equal(PdfBoolean.True, sut[3]);
+            Assert.Equal(PdfBoolean.True, await sut[0]);
+            Assert.Equal(PdfBoolean.False, await sut[1]);
+            Assert.Equal(PdfTokenValues.Null, await sut[2]);
+            Assert.Equal(PdfBoolean.True, await sut[3]);
 
             Assert.Equal(new PdfObject[]
                     {PdfBoolean.True, PdfBoolean.False, PdfTokenValues.Null, PdfBoolean.True},
-                (IEnumerable)sut);
+                (IEnumerable)sut.Select(i=>i.Result));
             
         }
     }

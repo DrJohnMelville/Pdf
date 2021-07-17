@@ -21,6 +21,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             
             var dictionary = await ParseTrailer.Parse(context, fileTrailerSizeHint);
             
+            
             long xrefPos;
             do {} while (context.ShouldContinue(FindXrePosition(await context.ReadAsync(), out xrefPos))) ;
             context.Seek(xrefPos);

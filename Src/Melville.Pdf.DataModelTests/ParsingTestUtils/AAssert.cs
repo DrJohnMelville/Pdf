@@ -13,6 +13,10 @@ using Xunit.Sdk;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
+  /// <summary>
+  /// This method is a thin wrapper arround XUnit.NET's assert class.  It is decorated with attributes so that
+  /// Asserts matter to the C# 8.0 null checker
+  /// </summary>
   public static class AAssert
   {
     /// <summary>Do not call this method.</summary>

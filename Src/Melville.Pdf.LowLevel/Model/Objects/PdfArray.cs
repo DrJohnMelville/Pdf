@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
-    public sealed class PdfArray : PdfObject, IReadOnlyList<PdfObject>
+    public sealed class PdfArray : PdfObject, IReadOnlyList<ValueTask<PdfObject>>
     {
         public IReadOnlyList<PdfObject> RawItems { get; }
 
@@ -14,14 +15,14 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             RawItems = rawItems;
         }
 
-        public IEnumerator<PdfObject> GetEnumerator() => 
+        public IEnumerator<ValueTask<PdfObject>> GetEnumerator() => 
             RawItems.Select(i => i.DirectValue()).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public int Count =>  RawItems.Count;
 
-        public PdfObject this[int index] => RawItems[index].DirectValue();
+        public ValueTask<PdfObject> this[int index] => RawItems[index].DirectValue();
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }
 }

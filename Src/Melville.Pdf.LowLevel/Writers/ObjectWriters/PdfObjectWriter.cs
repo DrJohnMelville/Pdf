@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
     {
         private readonly PipeWriter target;
 
-        public PdfObjectWriter(PipeWriter target) : base(true)
+        public PdfObjectWriter(PipeWriter target) : base()
         {
             this.target = target;
         }

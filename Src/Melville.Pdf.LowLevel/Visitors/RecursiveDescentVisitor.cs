@@ -1,16 +1,11 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects;
+﻿using System;
+using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Visitors
 {
     public abstract class RecursiveDescentVisitor<T>: ILowLevelVisitor<T>
     {
-        private readonly bool traverseRawTree;
-
-        protected RecursiveDescentVisitor(bool traverseRawTree = false)
-        {
-            this.traverseRawTree = traverseRawTree;
-        }
-
         protected virtual T VisitAny(PdfObject item) => default!;
         protected virtual T VisitNumber(PdfNumber item) => VisitAny(item);
 
@@ -33,7 +28,7 @@ namespace Melville.Pdf.LowLevel.Visitors
         public virtual T Visit(PdfArray item)
         {
             var ret = VisitAny(item);
-            foreach (var element in traverseRawTree?item.RawItems:item)
+            foreach (var element in item.RawItems)
             {
                 element.Visit(this);
             }
@@ -44,7 +39,7 @@ namespace Melville.Pdf.LowLevel.Visitors
         public virtual T Visit(PdfDictionary item)
         {
             var ret = VisitAny(item);
-            foreach (var pair in traverseRawTree?item.RawItems:item)
+            foreach (var pair in item.RawItems)
             {
                 VisitDictionaryPair(pair.Key, pair.Value);
             }

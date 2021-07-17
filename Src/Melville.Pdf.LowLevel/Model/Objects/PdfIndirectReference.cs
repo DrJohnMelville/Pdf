@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Visitors;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
@@ -10,7 +11,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             Target = target;
         }
 
-        public override PdfObject DirectValue() => Target.DirectValue();
+
+        public override ValueTask<PdfObject> DirectValue() => Target.DirectValue();
+
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }
 }

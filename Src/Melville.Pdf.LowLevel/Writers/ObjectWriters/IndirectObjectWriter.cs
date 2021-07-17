@@ -30,7 +30,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         {
             target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 
             await target.FlushAsync();
-            await item.Value.Visit(innerWriter);
+            await (await item.DirectValue()).Visit(innerWriter);
             target.WriteBytes(endObjLabel);
             return await target.FlushAsync();
         }

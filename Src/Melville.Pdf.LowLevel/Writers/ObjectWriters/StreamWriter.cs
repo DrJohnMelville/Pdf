@@ -13,7 +13,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         public static async ValueTask<FlushResult> Write(
             PipeWriter target, PdfObjectWriter innerWriter, PdfStream item)
         {
-            await DictionaryWriter.Write(target, innerWriter, item);
+            await DictionaryWriter.Write(target, innerWriter, item.RawItems);
             target.WriteBytes(streamToken);
             await using var rawStream = await item.GetRawStream();
             await rawStream.CopyToAsync(target);

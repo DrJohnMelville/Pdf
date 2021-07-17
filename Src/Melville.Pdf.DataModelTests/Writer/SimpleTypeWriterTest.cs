@@ -79,7 +79,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         public async Task WriteIndirectObject()
         {
             var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
-            Assert.Equal("34 555 obj false endobj", await DoWrite(reference));
+            Assert.Equal("34 555 obj false endobj\r\n", await DoWrite(reference));
         }
         [Fact]
         public async Task WriteArray()

@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
-    public partial class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, PdfObject>
+    public partial class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>
     {
-        [DelegateTo()]
         public IReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
 
         public PdfDictionary(IReadOnlyDictionary<PdfName, PdfObject> rawItems)
@@ -20,37 +20,49 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         #region Dictionary Implementation
 
-        public IEnumerator<KeyValuePair<PdfName, PdfObject>> GetEnumerator() =>
+        public int Count => RawItems.Count;
+
+        public bool ContainsKey(PdfName key) => RawItems.ContainsKey(key);
+        
+        ValueTask<PdfObject> IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>.this[PdfName key] =>
+            throw new System.NotImplementedException();
+
+        public IEnumerable<PdfName> Keys => RawItems.Keys;
+
+        IEnumerable<ValueTask<PdfObject>> IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>.Values =>
+            RawItems.Values.Select(i => i.DirectValue());
+
+        public IEnumerator<KeyValuePair<PdfName, ValueTask<PdfObject>>> GetEnumerator() =>
             RawItems
-                .Select(i => new KeyValuePair<PdfName, PdfObject>(i.Key, i.Value.DirectValue()))
+                .Select(i => new KeyValuePair<PdfName, ValueTask<PdfObject>>(i.Key, i.Value.DirectValue()))
                 .GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public bool TryGetValue(PdfName key, [MaybeNullWhen(false)]out PdfObject value)
+
+        public bool TryGetValue(PdfName key, out ValueTask<PdfObject> value)
         {
             if (RawItems.TryGetValue(key, out var ret))
             {
                 value = ret.DirectValue();
                 return true;
             }
-
-            value = null;
+            value = default;
             return false;
         }
 
-        public PdfObject this[PdfName key] => RawItems[key].DirectValue();
+        public ValueTask<PdfObject> this[PdfName key] => RawItems[key].DirectValue();
         
-        public IEnumerable<PdfObject> Values => RawItems.Values.Select(i => i.DirectValue());
+        public IEnumerable<ValueTask<PdfObject>> Values => RawItems.Values.Select(i => i.DirectValue());
 
         #endregion
 
 
         #region Type and Subtype as definted in the standard 7.3.7
 
-        public PdfName? Type => TryGetValue(KnownNames.Type, out var obj) ? obj as PdfName : null;
-        public PdfName? SubType => TryGetValue(
-            KnownNames.Subtype, out var obj) || TryGetValue(KnownNames.S, out obj)? obj as PdfName : null;
+        public PdfName? Type => RawItems.TryGetValue(KnownNames.Type, out var obj) ? obj as PdfName : null;
+        public PdfName? SubType => RawItems.TryGetValue(KnownNames.Subtype, out var obj) || 
+                                   RawItems.TryGetValue(KnownNames.S, out obj)? obj as PdfName : null;
 
         #endregion
         

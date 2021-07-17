@@ -23,12 +23,12 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
-        public  ValueTask<Stream> GetRawStream()
+        public async ValueTask<Stream> GetRawStream()
         {
-            return source.OpenRawStream(DeclaredLength);
+            return await source.OpenRawStream(await DeclaredLength());
         }
 
-        public long DeclaredLength => 
-            TryGetValue(KnownNames.Length, out var len) && len is PdfNumber num ? num.IntValue : -1;
+        public async ValueTask<long> DeclaredLength() => 
+            TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
     }
 }

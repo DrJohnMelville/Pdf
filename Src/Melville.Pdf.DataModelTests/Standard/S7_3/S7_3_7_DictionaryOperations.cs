@@ -17,7 +17,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             (PdfDictionary) (await definition.ParseObjectAsync());
 
 
-        private Task<PdfDictionary> IndirectTestDict => CreateDict("<</Height true /Width 1 0 R /AC 1 0 obj false endobj>>");
+        private Task<PdfDictionary> IndirectTestDict => 
+            CreateDict("<</Height true /Width 1 0 R /AC 1 0 obj false endobj>>");
 
         [Fact]
         public async Task CountIsAccurate()
@@ -39,9 +40,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             var d = await IndirectTestDict;
 
             Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False, PdfBoolean.False}, 
-                ((IEnumerable)d).OfType<KeyValuePair<PdfName,PdfObject>>().Select(i=>i.Value));
+                ((IEnumerable)d).OfType<KeyValuePair<PdfName,ValueTask<PdfObject>>>()
+                .Select(i=>i.Value.Result));
             Assert.Equal(new []{KnownNames.Height, KnownNames.Width, KnownNames.AC},
-                ((IEnumerable)d).OfType<KeyValuePair<PdfName,PdfObject>>().Select(i=>i.Key));
+                ((IEnumerable)d).OfType<KeyValuePair<PdfName,ValueTask<PdfObject>>>().Select(i=>i.Key));
             
         }
         [Fact]
@@ -55,28 +57,29 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         public async Task IndexerHandlesIndirection()
         {
             var d = await IndirectTestDict;
-            Assert.Equal(PdfBoolean.False, d[KnownNames.Width]);
+            Assert.Equal(PdfBoolean.False, await d[KnownNames.Width]);
         }
         [Fact]
         public async Task TryGetValueSucceed()
         {
             var d = await IndirectTestDict;
             AAssert.True(d.TryGetValue(KnownNames.Width, out var returned));
-            Assert.Equal(PdfBoolean.False,returned);
+            Assert.Equal(PdfBoolean.False, await returned);
         }
         [Fact]
         public async Task TryGetValueFails()
         {
             var d = await IndirectTestDict;
             AAssert.False(d.TryGetValue(KnownNames.Activation, out var returned));
-            Assert.Null(returned);
+            Assert.Equal(default(ValueTask<PdfObject>), returned);
         }
         [Fact]
         public async Task EnumerateValuesHandlesIndirectReferences()
         {
             var d = await IndirectTestDict;
 
-            Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False, PdfBoolean.False}, d.Values);
+            Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False, PdfBoolean.False}, 
+                d.Values.Select(i=>i.Result));
             
         }
 
