@@ -3,7 +3,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Writers
+namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
 {
     public static class StreamWriter
     {

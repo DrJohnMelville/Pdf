@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives
 {
-    public static class ExtendedAsciiEncodig
+    public static class ExtendedAsciiEncoding
     {
         public static byte[] AsExtendedAsciiBytes(this string s)
         {

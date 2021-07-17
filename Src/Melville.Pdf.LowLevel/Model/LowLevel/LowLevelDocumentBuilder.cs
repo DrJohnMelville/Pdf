@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.LowLevel;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Visitors;
 
-namespace Melville.Pdf.LowLevel.Writers
+namespace Melville.Pdf.LowLevel.Model.LowLevel
 {
     public interface ILowLevelDocumentBuilder
     {

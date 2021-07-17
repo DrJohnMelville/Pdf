@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Melville.Pdf.LowLevel.Writers;
+using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Diagnostics.Tracing.Parsers.JScript;
 

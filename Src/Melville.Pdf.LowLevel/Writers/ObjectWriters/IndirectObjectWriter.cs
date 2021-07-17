@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO.Pipelines;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 
-namespace Melville.Pdf.LowLevel.Writers
+namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
 {
     public static class IndirectObjectWriter
     {

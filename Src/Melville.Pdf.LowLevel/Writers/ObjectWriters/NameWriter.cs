@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Data;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing;
 
-namespace Melville.Pdf.LowLevel.Writers
+namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
 {
     public static class NameWriter
     {

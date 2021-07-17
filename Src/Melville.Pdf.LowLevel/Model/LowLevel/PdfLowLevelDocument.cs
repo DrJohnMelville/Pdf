@@ -8,7 +8,8 @@ namespace Melville.Pdf.LowLevel.Model.LowLevel
         public byte MajorVersion {get;}
         public byte MinorVersion {get;}
         public PdfDictionary TrailerDictionary { get; }
-        public IReadOnlyDictionary<(int,int), PdfIndirectReference> Objects { get; }
+        public IReadOnlyDictionary<(int ObjectNumber,int GenerationNumber), PdfIndirectReference> 
+            Objects { get; }
 
         public PdfLowLevelDocument(
             byte majorVersion, byte minorVersion, PdfDictionary trailerDictionary, 
