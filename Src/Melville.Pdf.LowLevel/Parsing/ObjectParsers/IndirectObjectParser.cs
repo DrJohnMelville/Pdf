@@ -31,7 +31,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         {
             ParseResult kind;
             PdfIndirectReference? reference;
-            do{}while(source.ShouldContinue(ParseReference(await source.ReadAsync(), source.IndirectResolver, out kind, out reference!)));
+            do{}while(source.ShouldContinue(ParseReference(await source.ReadAsync(), 
+                source.IndirectResolver, out kind, out reference!)));
 
             switch (kind)
             {
@@ -40,11 +41,10 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                 
                 case ParseResult.FoundDefinition:
                     do { } while (source.ShouldContinue(SkipToObjectBeginning(await source.ReadAsync())));
-                    ((ICanSetIndirectTarget) reference!.Target).SetValue(
-                        await source.RootObjectParser.ParseAsync(source));
+                    var target = await source.RootObjectParser.ParseAsync(source);
                     await NextTokenFinder.SkipToNextToken(source);
                     do { } while (source.ShouldContinue(SkipEndObj(await source.ReadAsync())));
-                    return reference.Target;
+                    return target;
                 
                 case ParseResult.NotAReference:
                     return await fallbackNumberParser.ParseAsync(source);

@@ -51,9 +51,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             Assert.Equal(1, doc.MajorVersion);
             Assert.Equal(7, doc.MinorVersion);
             Assert.Equal(2, doc.Objects.Count);
-            Assert.Equal(2, ((PdfNumber)(await doc.TrailerDictionary[KnownNames.Size])).IntValue);
-            
-            
+            Assert.Equal(4, ((PdfNumber)(await doc.TrailerDictionary[KnownNames.Size])).IntValue);
             
         }
     }

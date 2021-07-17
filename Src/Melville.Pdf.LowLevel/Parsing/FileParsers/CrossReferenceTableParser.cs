@@ -67,8 +67,12 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         private void HandleObjectDeclarationLine(byte operation, long rightNum, long leftNum)
         {
-            if (operation == (byte) 'n') source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum, 
-                () => new ValueTask<PdfObject>(PdfTokenValues.Null));
+            if (operation == (byte) 'n') source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum,
+                async () =>
+                {
+                    using var reader = await source.Owner.RentReader(leftNum);
+                    return await source.RootObjectParser.ParseAsync(reader);
+                } );
             nextItem++;
         }
 

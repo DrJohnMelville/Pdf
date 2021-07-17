@@ -18,7 +18,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
 
 
         private Task<PdfDictionary> IndirectTestDict => 
-            CreateDict("<</Height true /Width 1 0 R /AC 1 0 obj false endobj>>");
+            CreateDict("<</Height true /AC false>>");
 
         [Fact]
         public async Task CountIsAccurate()
@@ -39,10 +39,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         {
             var d = await IndirectTestDict;
 
-            Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False, PdfBoolean.False}, 
+            Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False}, 
                 ((IEnumerable)d).OfType<KeyValuePair<PdfName,ValueTask<PdfObject>>>()
                 .Select(i=>i.Value.Result));
-            Assert.Equal(new []{KnownNames.Height, KnownNames.Width, KnownNames.AC},
+            Assert.Equal(new []{KnownNames.Height, KnownNames.AC},
                 ((IEnumerable)d).OfType<KeyValuePair<PdfName,ValueTask<PdfObject>>>().Select(i=>i.Key));
             
         }
@@ -50,21 +50,21 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         public async Task EnumerateKeys()
         {
             var d = await IndirectTestDict;
-            Assert.Equal(new []{KnownNames.Height, KnownNames.Width, KnownNames.AC},d.Keys);
+            Assert.Equal(new []{KnownNames.Height, KnownNames.AC},d.Keys);
             
         }
         [Fact]
         public async Task IndexerHandlesIndirection()
         {
             var d = await IndirectTestDict;
-            Assert.Equal(PdfBoolean.False, await d[KnownNames.Width]);
+            Assert.Equal(PdfBoolean.True, await d[KnownNames.Height]);
         }
         [Fact]
         public async Task TryGetValueSucceed()
         {
             var d = await IndirectTestDict;
-            AAssert.True(d.TryGetValue(KnownNames.Width, out var returned));
-            Assert.Equal(PdfBoolean.False, await returned);
+            AAssert.True(d.TryGetValue(KnownNames.Height, out var returned));
+            Assert.Equal(PdfBoolean.True, await returned);
         }
         [Fact]
         public async Task TryGetValueFails()
@@ -78,7 +78,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         {
             var d = await IndirectTestDict;
 
-            Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False, PdfBoolean.False}, 
+            Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False}, 
                 d.Values.Select(i=>i.Result));
             
         }
