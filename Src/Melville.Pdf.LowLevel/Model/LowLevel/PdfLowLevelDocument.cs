@@ -21,4 +21,16 @@ namespace Melville.Pdf.LowLevel.Model.LowLevel
             Objects = objects;
         }
     }
+    
+    public class PdfLoadedLowLevelDocument: PdfLowLevelDocument{
+        public long XRefPosition { get; }
+
+        public PdfLoadedLowLevelDocument(
+            byte majorVersion, byte minorVersion, PdfDictionary trailerDictionary, 
+            IReadOnlyDictionary<(int, int), PdfIndirectReference> objects, long xRefPosition) : 
+            base(majorVersion, minorVersion, trailerDictionary, objects)
+        {
+            XRefPosition = xRefPosition;
+        }
+    }
 }

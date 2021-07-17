@@ -11,18 +11,20 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
     public static class RandomAccessFileParser
     {
         public static async Task<PdfLowLevelDocument> Parse(
-            ParsingFileOwner owner, int fileTrailerSizeHint = 1024)
+            ParsingFileOwner owner, int fileTrailerSizeHint = 30)
         {
-                byte major, minor;
+            byte major, minor;
             using (var context = await owner.RentReader(0))
             {
                 do { } while (context.ShouldContinue(
                     PdfHeaderParser.ParseDocumentHeader(await context.ReadAsync(), out major, out minor)));
             }
+
+            var xrefPosition = await FileTrailerLocater.Search(owner, fileTrailerSizeHint);
+            var dictionary = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition);
             
-            var (dictionary, xrefPos) = await ParseTrailer.Parse(owner, fileTrailerSizeHint);
-            
-            return new PdfLowLevelDocument(major, minor, dictionary, owner.IndirectResolver.GetObjects());
+            return new PdfLoadedLowLevelDocument(
+                major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition);
         }
         
     }
