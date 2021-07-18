@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using Melville.Pdf.LowLevel.Model;
@@ -19,9 +20,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         {
             if (index.TryGetValue((objectNumber, generation), out var existingReference)) 
                 return existingReference;
-            var newReference = new PdfIndirectReference(new PdfIndirectObject(objectNumber, generation));
-            index.Add((objectNumber, generation), newReference);
-            return newReference;
+            throw new InvalidDataException($"Cannot find indirect object: ({objectNumber}, {generation})");
         }
 
         public void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor)

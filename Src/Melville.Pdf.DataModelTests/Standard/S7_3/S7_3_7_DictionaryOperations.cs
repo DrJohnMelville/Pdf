@@ -24,7 +24,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         public async Task CountIsAccurate()
         {
             var d = await IndirectTestDict;
-            Assert.Equal(3, d.Count);
+            Assert.Equal(2, d.Count);
         }
         [Fact]
         public async Task ContainsKeyWorks()

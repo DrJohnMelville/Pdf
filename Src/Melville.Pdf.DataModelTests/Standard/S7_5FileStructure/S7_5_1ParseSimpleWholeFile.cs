@@ -39,6 +39,21 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         }
 
         [Fact]
+        public async Task GenerateDocumentWithDelayedIndirect()
+        {
+            var builder = new LowLevelDocumentBuilder();
+            var pointer = builder.AsIndirectReference();
+            builder.AddRootElement(builder.NewDictionary((KnownNames.Width, pointer)));
+            builder.AssignValueToReference(pointer, new PdfInteger(10));
+            builder.Add(pointer.Target);
+            var doc = await Write(builder.CreateDocument());
+            var doc2 = await doc.ParseDocumentAsync();
+            var rootDic = (PdfDictionary)await doc2.TrailerDictionary[KnownNames.Root];
+            Assert.Equal(10, ((PdfNumber)await rootDic[KnownNames.Width]).IntValue);
+            
+        }
+
+        [Fact]
         public async Task RoundTripSimpleDocument()
         {
             await RoundTripPdfAsync(await OutputTwoItemDocument(1, 3));
@@ -52,7 +67,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             Assert.Equal(7, doc.MinorVersion);
             Assert.Equal(2, doc.Objects.Count);
             Assert.Equal(4, ((PdfNumber)(await doc.TrailerDictionary[KnownNames.Size])).IntValue);
-            
+            var dict = (PdfDictionary) (await doc.TrailerDictionary[KnownNames.Root]);
+            Assert.Equal(KnownNames.Catalog, await dict[KnownNames.Type]);
         }
     }
 }

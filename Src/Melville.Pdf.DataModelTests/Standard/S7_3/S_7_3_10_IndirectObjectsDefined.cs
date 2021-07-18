@@ -13,7 +13,10 @@ namespace Melville.Pdf.DataModelTests.Standard._7
         [Fact]
         public async Task ParseReference()
         {
-            var result = (PdfIndirectReference) await "24 543 R".ParseObjectAsync();
+
+            var src = "24 543 R".AsParsingSource();
+            src.IndirectResolver.AddLocationHint(24,543, () => new ValueTask<PdfObject>(PdfTokenValues.Null));
+            var result = (PdfIndirectReference) await src.ParseObjectAsync();
             Assert.Equal(24, result.Target.ObjectNumber);
             Assert.Equal(543, result.Target.GenerationNumber);
             Assert.Equal(PdfTokenValues.Null, await result.DirectValue());

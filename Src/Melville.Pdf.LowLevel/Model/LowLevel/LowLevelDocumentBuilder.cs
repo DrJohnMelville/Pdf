@@ -27,12 +27,12 @@ namespace Melville.Pdf.LowLevel.Model.LowLevel
                 items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value))));
     }
 
-    public class LowLevelDocumentBuilder: ILowLevelDocumentBuilder
+    public partial class LowLevelDocumentBuilder: ILowLevelDocumentBuilder
     {
         private byte major = 1;
         private byte minor = 7;
         private int nextObject = 1;
-        private List<PdfIndirectReference> objects = new List<PdfIndirectReference>();
+        private List<PdfIndirectReference> objects = new();
         private Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
 
         public void SetVersion(byte major, byte minor)
@@ -46,12 +46,13 @@ namespace Melville.Pdf.LowLevel.Model.LowLevel
             {
                 PdfIndirectReference pir => pir,
                 PdfIndirectObject pio => new PdfIndirectReference(pio),
-                _ => new(new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
+                _ => new(new PdfMutableIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
             };
 
-        public void AssignValueToReference(PdfIndirectReference reference, PdfObject value) => 
-            ((ICanSetIndirectTarget)reference.Target).SetValue(value);
-
+        public void AssignValueToReference(PdfIndirectReference reference, PdfObject value)
+        {
+            ((PdfMutableIndirectObject)reference.Target).SetValue(value);
+        }
         public PdfIndirectReference Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
 
         private PdfIndirectReference InnerAdd(PdfIndirectReference item)
