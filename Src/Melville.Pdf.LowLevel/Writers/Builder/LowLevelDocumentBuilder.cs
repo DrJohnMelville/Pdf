@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Model.LowLevel
+namespace Melville.Pdf.LowLevel.Writers.Builder
 {
     public interface ILowLevelDocumentBuilder
     {
@@ -46,12 +47,12 @@ namespace Melville.Pdf.LowLevel.Model.LowLevel
             {
                 PdfIndirectReference pir => pir,
                 PdfIndirectObject pio => new PdfIndirectReference(pio),
-                _ => new(new PdfMutableIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
+                _ => new(new LowLevelDocumentBuilder.PdfMutableIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
             };
 
         public void AssignValueToReference(PdfIndirectReference reference, PdfObject value)
         {
-            ((PdfMutableIndirectObject)reference.Target).SetValue(value);
+            ((LowLevelDocumentBuilder.PdfMutableIndirectObject)reference.Target).SetValue(value);
         }
         public PdfIndirectReference Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
 

@@ -18,4 +18,8 @@
       </ProjectReference>
       <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Model\LowLevel" />
+    </ItemGroup>
 </Project>

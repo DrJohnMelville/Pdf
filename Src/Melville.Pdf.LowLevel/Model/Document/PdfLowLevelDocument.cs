@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Model.LowLevel
+namespace Melville.Pdf.LowLevel.Model.Document
 {
     public class PdfLowLevelDocument
     {
@@ -19,18 +19,6 @@ namespace Melville.Pdf.LowLevel.Model.LowLevel
             MinorVersion = minorVersion;
             TrailerDictionary = trailerDictionary;
             Objects = objects;
-        }
-    }
-    
-    public class PdfLoadedLowLevelDocument: PdfLowLevelDocument{
-        public long XRefPosition { get; }
-
-        public PdfLoadedLowLevelDocument(
-            byte majorVersion, byte minorVersion, PdfDictionary trailerDictionary, 
-            IReadOnlyDictionary<(int, int), PdfIndirectReference> objects, long xRefPosition) : 
-            base(majorVersion, minorVersion, trailerDictionary, objects)
-        {
-            XRefPosition = xRefPosition;
         }
     }
 }

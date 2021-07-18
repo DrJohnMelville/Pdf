@@ -1,12 +1,23 @@
 ﻿using System;
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 {
     public static class PdfHeaderParser
     {
+        public static async ValueTask<(byte Major, byte Minor)> ParseHeadder(IParsingReader context)
+        {
+            byte major, minor;
+            do {} while(context.ShouldContinue(ParseDocumentHeader(await context.ReadAsync(),
+                out major, out minor)));
+
+            return (major, minor);
+        }
+        
         public static (bool Success, SequencePosition Position) ParseDocumentHeader(
             ReadResult src, out byte majorVersion, out byte minorVersion)
         {

@@ -1,7 +1,7 @@
 ﻿using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.LowLevel;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters

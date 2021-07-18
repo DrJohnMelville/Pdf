@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Model.LowLevel
+namespace Melville.Pdf.LowLevel.Writers.Builder
 {
     public partial class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
     {

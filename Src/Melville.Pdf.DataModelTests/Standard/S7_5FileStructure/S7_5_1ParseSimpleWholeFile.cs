@@ -3,11 +3,13 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.LowLevel;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
+using LowLevelDocumentBuilder = Melville.Pdf.LowLevel.Writers.Builder.LowLevelDocumentBuilder;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 {
