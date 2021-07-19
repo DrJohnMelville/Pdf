@@ -1,0 +1,2 @@
+﻿#Composition root can see everything. 
+Melville.Pdf.LowLevelReader.CompositionRoot.* => *

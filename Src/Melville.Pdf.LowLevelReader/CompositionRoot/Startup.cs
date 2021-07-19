@@ -1,8 +1,9 @@
 ﻿using System;
 using Melville.IOC.IocContainers;
+using Melville.Wpf.LowLevelReader.ViewModels;
 using Melville.WpfAppFramework.StartupBases;
 
-namespace Melville.Wpf.LowLevelReader.CompsitionRoot
+namespace Melville.Pdf.LowLevelReader.CompositionRoot
 {
     public class Startup: StartupBase
     {
@@ -14,6 +15,8 @@ namespace Melville.Wpf.LowLevelReader.CompsitionRoot
 
         protected override void RegisterWithIocContainer(IBindableIocService service)
         {
+            service.AddLogging();
+            service.RegisterHomeViewModel<MainDisplay>();
         }
     }
 }

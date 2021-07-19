@@ -4,16 +4,20 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net5.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
-        <RootNamespace>Melville.Wpf.LowLevelReader</RootNamespace>
+        <RootNamespace>Melville.Pdf.LowLevelReader</RootNamespace>
         
     </PropertyGroup>
 
     <ItemGroup>
       <ApplicationDefinition Remove="App.xaml" />
+        <AdditionalFiles Include="Architecture.adf" />
+        <ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <OutputItemType>Analyzer</OutputItemType>
+        </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ViewModels" />
       <Folder Include="Views" />
     </ItemGroup>
 
