@@ -24,6 +24,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => 
             source.ReadAsync(buffer, offset, 1, cancellationToken);
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken) => 
-            source.ReadAsync(buffer[..1], cancellationToken);
+            source.ReadAsync(buffer[..Math.Min(1, buffer.Length)], cancellationToken);
+            
     }
 }

@@ -9,8 +9,5 @@ Group Writers
 Parser => Model
 Writers => Model
 
-#indirect objects are functionally immutable but have a secret interface used in initialization
-Melville.Pdf.LowLevel.Parsing.IndirectObjectParser ^=> Melville.Pdf.LowLevel.Model.ICanSetIndirectObject
-
 #Everyone can use .Net
 * => System.*

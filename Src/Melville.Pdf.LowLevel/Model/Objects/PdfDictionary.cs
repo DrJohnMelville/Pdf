@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -67,5 +68,14 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         #endregion
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+    }
+
+    public static class PdfDictionaryOperations
+    {
+        public static async ValueTask<T> Get<T>(this PdfDictionary source, PdfName key)
+        {
+            if (source.TryGetValue(key, out var obj) && await obj is T ret) return ret;
+            throw new ArgumentException("Expected item is not in dictionary or is wrong type");
+        }
     }
  }
