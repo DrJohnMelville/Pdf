@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <RootNamespace>Melville.Wpf.LowLevelReader</RootNamespace>
+        
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ApplicationDefinition Remove="App.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ViewModels" />
+      <Folder Include="Views" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.5.30" />
+    </ItemGroup>
+
+</Project>

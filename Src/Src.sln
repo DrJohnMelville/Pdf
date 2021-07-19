@@ -20,6 +20,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Performance.Playground", "Performance.Playground\Performance.Playground.csproj", "{78456303-95F1-407D-A810-13826FED7137}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{7808232A-94F8-4390-9D4E-A9CBCC067CBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.LowLevelReader", "Melville.Pdf.LowLevelReader\Melville.Pdf.LowLevelReader.csproj", "{90BBCB23-3170-47F8-96E4-E2469A660C9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,7 @@ Global
 		{1738ADC7-E1BB-477F-A9DB-D5ECC64CA254} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
 		{A0542A96-3DD5-4831-A310-F949F6769F60} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
 		{78456303-95F1-407D-A810-13826FED7137} = {A0542A96-3DD5-4831-A310-F949F6769F60}
+		{90BBCB23-3170-47F8-96E4-E2469A660C9D} = {7808232A-94F8-4390-9D4E-A9CBCC067CBB}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0DC5C5E9-B98F-46BB-B1D9-C3E6E0278D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -59,5 +64,9 @@ Global
 		{78456303-95F1-407D-A810-13826FED7137}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78456303-95F1-407D-A810-13826FED7137}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78456303-95F1-407D-A810-13826FED7137}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90BBCB23-3170-47F8-96E4-E2469A660C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90BBCB23-3170-47F8-96E4-E2469A660C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90BBCB23-3170-47F8-96E4-E2469A660C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90BBCB23-3170-47F8-96E4-E2469A660C9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
