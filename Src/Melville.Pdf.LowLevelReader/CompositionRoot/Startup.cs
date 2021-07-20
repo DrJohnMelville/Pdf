@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Windows;
 using Melville.IOC.IocContainers;
-using Melville.Wpf.LowLevelReader.ViewModels;
+using Melville.MVVM.Wpf.MvvmDialogs;
+using Melville.Pdf.LowLevelReader.MainDisplay;
+using Melville.Pdf.LowLevelReader.Services;
 using Melville.WpfAppFramework.StartupBases;
 
 namespace Melville.Pdf.LowLevelReader.CompositionRoot
@@ -16,7 +19,15 @@ namespace Melville.Pdf.LowLevelReader.CompositionRoot
         protected override void RegisterWithIocContainer(IBindableIocService service)
         {
             service.AddLogging();
-            service.RegisterHomeViewModel<MainDisplay>();
+            service.RegisterHomeViewModel<MainDisplayViewModel>();
+            RegisterMainWindow(service);
+        }
+
+        private static void RegisterMainWindow(IBindableIocService service)
+        {
+            service.Bind<Application>().ToSelf().AsSingleton();
+            service.Bind<ICloseApp>().To<CloseWpfApp>();
+            service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
         }
     }
 }

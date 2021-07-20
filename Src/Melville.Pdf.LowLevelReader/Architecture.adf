@@ -1,2 +1,21 @@
 ﻿#Composition root can see everything. 
 Melville.Pdf.LowLevelReader.CompositionRoot.* => *
+
+
+#Everyone can use global resources
+* => Melville.MVVM.*
+* => Melville.INPC.*
+* => Melville.FileSystem.*
+* => System.*
+
+#Views are only visible to the framework
+* !=> *View
+
+Group MainDisplay
+     Melville.Pdf.LowLevelReader.MainDisplay.*
+Group DocumentParts
+     Melville.Pdf.LowLevelReader.DocumentParts.*
+
+Melville.Pdf.LowLevelReader.Services.* => Melville.Pdf.LowLevelReader.* 
+
+MainDisplay => DocumentParts
