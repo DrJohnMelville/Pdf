@@ -20,7 +20,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [InlineData( 1, 7)]
         public async Task RecognizeFileVersion(int major, int minor)
         {
-            var doc = await MinimalPdfGenerator.MinimalPdf(major,minor).ParseDocumentAsync();
+            var doc = await (await MinimalPdfGenerator.MinimalPdf(major,minor).AsString()).ParseDocumentAsync();
             Assert.Equal(major, doc.MajorVersion);
             Assert.Equal(minor, doc.MinorVersion);
             

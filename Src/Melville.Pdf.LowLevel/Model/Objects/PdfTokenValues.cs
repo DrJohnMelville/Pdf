@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Visitors;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
@@ -10,6 +11,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         {
             TokenValue = tokenValue;
         }
+
+        public override string ToString() => ExtendedAsciiEncoding.ExtendedAsciiString(TokenValue);
+
         public static readonly PdfTokenValues Null = new (new byte[]{110, 117, 108, 108}); // null
         // These are not part of the PDF spec -- they are sentinels for a parser implementation trick;
         public static readonly PdfTokenValues ArrayTerminator = new(new byte[]{93}); // ]
