@@ -63,7 +63,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         public async Task LodFileTableWhenLoadingFiles()
         {
             var resolver = new Mock<IIndirectObjectResolver>();
-            var ps = MinimalPdfGenerator.MinimalPdf(1,5).AsParsingSource(resolver.Object);
+            var ps = (await MinimalPdfGenerator.MinimalPdf(1,5).AsString()).AsParsingSource(resolver.Object);
             await RandomAccessFileParser.Parse(ps);
             resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);

@@ -23,19 +23,22 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         {
             if (item < 0)
             {
-                buffer[0] = (byte) '-';
-                uint value = (uint) (-item);
-                return WritePositiveNumber(buffer.Slice(1), value, CountDigits(value))+1;
+                return WriteNegativeNumber(buffer, item);
             }
+            uint value = (uint)item;
+            return WritePositiveNumber(buffer, value, CountDigits(value));
+        }
 
-            uint value1 = (uint)item;
-            return WritePositiveNumber(buffer, value1, CountDigits(value1));
+        private static int WriteNegativeNumber(Span<byte> buffer, long item)
+        {
+            buffer[0] = (byte) '-';
+            uint value = (uint) (-item);
+            return WritePositiveNumber(buffer.Slice(1), value, CountDigits(value)) + 1;
         }
 
         public static void WriteFixedWidthPositiveNumber(Span<byte> slice, long number, int width)
         {
             VerifyValidWriteRequest(number, width);
-            FillBufferWithZeros(ref slice, width);
             WritePositiveNumber(slice, (ulong)number, width);
         }
 
@@ -44,16 +47,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             if (number < 0 || CountDigits((ulong) number) > width)
                 throw new ArgumentException("Cannot write fixed width positive number here.");
         }
-
-        private static void FillBufferWithZeros(ref Span<byte> slice, int width)
-        {
-            for (var i = 0; i < width; i++)
-            {
-                slice[i] = (byte) '0';
-            }
-
-        }
-
+        
         private static unsafe int WritePositiveNumber(Span<byte> slice, ulong value, int countDigits)
         {
             var digits = countDigits;
@@ -64,7 +58,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
                 {
                     value = DivRem(value, 10, out var remainder);
                     *(--curPos) = (byte) ((byte) '0' + remainder);
-                } while (value != 0);
+                } while (curPos > current);
             }
 
             return digits;

@@ -7,6 +7,7 @@ Melville.Pdf.LowLevelReader.CompositionRoot.* => *
 * => Melville.INPC.*
 * => Melville.FileSystem.*
 * => System.*
+* => Melville.Pdf.LowLevel.*
 
 #Views are only visible to the framework
 * !=> *View
