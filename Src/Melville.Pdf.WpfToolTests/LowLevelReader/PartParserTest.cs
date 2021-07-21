@@ -55,11 +55,11 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
             var model = await BuildSingleElementFile(i=>
                 i.NewStream("The Stream Data", (KnownNames.Type, KnownNames.Page)));
             var stream = (StreamDocumentPart)model[1].Children[0];
-            await stream.LoadBytesAsync();
+            await stream.LoadBytesAsync("");
             Assert.Equal("Stream", stream.Title);
             Assert.Equal("/Type: /Page", stream.Children[0].Title);
             Assert.Equal("/Length: 15", stream.Children[1].Title);
-            Assert.Equal("The Stream Data", ExtendedAsciiEncoding.ExtendedAsciiString(stream.Bytes));
+            Assert.Equal("00000000  54 68 65 20 53 74 72 65 61 6D 20 44 61 74 61      The Stream Data", stream.DisplayContent);
         }
 
         private async Task TestSingleElement(PdfObject item, string renderAs)

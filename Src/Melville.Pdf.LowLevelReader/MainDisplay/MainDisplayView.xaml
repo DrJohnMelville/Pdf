@@ -21,5 +21,8 @@
         </TreeView>
         <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
         <TextBlock Grid.Column="1" FontSize="18" Text="{Binding Selected.Title}"></TextBlock>
+        <ScrollViewer Grid.Row="1" Grid.Column="1">
+            <TextBlock Text="{Binding Selected.DisplayContent}" FontFamily="Consolas"/>
+        </ScrollViewer>
     </Grid>
 </UserControl>
