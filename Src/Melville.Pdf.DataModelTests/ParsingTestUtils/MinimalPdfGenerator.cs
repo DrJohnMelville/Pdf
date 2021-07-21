@@ -1,10 +1,6 @@
-﻿using System.Collections.Immutable;
-using Melville.FileSystem;
-using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {

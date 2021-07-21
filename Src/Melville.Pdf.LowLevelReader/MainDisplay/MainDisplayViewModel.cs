@@ -16,6 +16,7 @@ namespace Melville.Pdf.LowLevelReader.MainDisplay
     public partial class MainDisplayViewModel
     {
         [AutoNotify] private DocumentPart[] root = Array.Empty<DocumentPart>();
+        [AutoNotify] private DocumentPart? selected;
 
         public async Task OpenFile([FromServices]IOpenSaveFile dlg, [FromServices]IPartParser parser, 
             [FromServices] ICloseApp closeApp)
@@ -24,7 +25,7 @@ namespace Melville.Pdf.LowLevelReader.MainDisplay
                 dlg.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open");
             if (file != null)
             {
-                Root = await parser.Parse(file);
+                Root = await parser.ParseAsync(file);
             }
             else
             {

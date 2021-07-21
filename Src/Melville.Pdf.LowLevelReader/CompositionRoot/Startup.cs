@@ -25,7 +25,9 @@ namespace Melville.Pdf.LowLevelReader.CompositionRoot
 
         private static void RegisterMainWindow(IBindableIocService service)
         {
-            service.Bind<Application>().ToSelf().AsSingleton();
+            service.Bind<Application>().ToSelf()
+                .FixResult(i=>i.ShutdownMode=ShutdownMode.OnMainWindowClose)
+                .AsSingleton();
             service.Bind<ICloseApp>().To<CloseWpfApp>();
             service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
         }

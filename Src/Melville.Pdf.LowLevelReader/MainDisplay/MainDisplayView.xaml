@@ -4,9 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Melville.Pdf.LowLevelReader.MainDisplay"
+             xmlns:documentParts="clr-namespace:Melville.Pdf.LowLevelReader.DocumentParts"
+             xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
+             xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        
+    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / Auto, *">
+        <TreeView ItemsSource="{Binding Root}" Margin="0 0 5 0" Grid.RowSpan="2" 
+                  wpfHacks:TreeViewHelper.SelectedItem="{Binding Selected, Mode=TwoWay}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type documentParts:DocumentPart}" 
+                                          ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Title}"/>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
+        <TextBlock Grid.Column="1" FontSize="18" Text="{Binding Selected.Title}"></TextBlock>
     </Grid>
 </UserControl>

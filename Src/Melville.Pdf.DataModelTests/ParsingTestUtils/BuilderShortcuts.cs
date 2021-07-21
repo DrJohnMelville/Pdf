@@ -10,7 +10,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
     public static class BuilderShortcuts
     {
-        public static async Task<byte[]> AsBytes(this ILowLevelDocumentBuilder builder)
+        public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentBuilder builder)
         {
             var doc = builder.CreateDocument();
             var output = new MemoryStream();
@@ -18,11 +18,11 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
             return output.ToArray();
         }
 
-        public static async Task<Stream> AsStream(this ILowLevelDocumentBuilder builder) =>
-            new MemoryStream(await builder.AsBytes());
-        public static async Task<IFile> AsFile(this ILowLevelDocumentBuilder builder) =>
-            new MemoryFile("S:\\d.pdf", await builder.AsBytes());
-        public static async Task<String> AsString(this ILowLevelDocumentBuilder builder) =>
-            ExtendedAsciiEncoding.ExtendedAsciiString(await builder.AsBytes());
+        public static async Task<Stream> AsStreamAsync(this ILowLevelDocumentBuilder builder) =>
+            new MemoryStream(await builder.AsBytesAsync());
+        public static async Task<IFile> AsFileAsync(this ILowLevelDocumentBuilder builder) =>
+            new MemoryFile("S:\\d.pdf", await builder.AsBytesAsync());
+        public static async Task<String> AsStringAsync(this ILowLevelDocumentBuilder builder) =>
+            ExtendedAsciiEncoding.ExtendedAsciiString(await builder.AsBytesAsync());
     }
 }

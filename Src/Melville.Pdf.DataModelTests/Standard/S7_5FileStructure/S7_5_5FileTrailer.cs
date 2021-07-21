@@ -12,7 +12,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task ReadSingleTrailer()
         {
-            var doc = await (await MinimalPdfGenerator.MinimalPdf(1, 7).AsString()).ParseDocumentAsync(2);
+            var doc = await (await MinimalPdfGenerator.MinimalPdf(1, 7).AsStringAsync()).ParseDocumentAsync(2);
             Assert.NotNull(doc.TrailerDictionary);
             Assert.IsType<PdfDictionary>(doc.TrailerDictionary);
             
