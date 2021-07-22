@@ -58,6 +58,19 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             resolver.Verify(i=>i.AddLocationHint(24, 0, It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.VerifyNoOtherCalls();
         }
+        [Fact]
+        public async Task ParseZeroTable()
+        {
+            var sampleTale = @"xref
+0 0
+trailer
+";
+            var parsingReader = await sampleTale.AsParsingSource(resolver.Object).RentReader(0);
+            await new CrossReferenceTableParser(parsingReader).Parse();
+            Assert.Equal(11, parsingReader.Position);
+                        
+            resolver.VerifyNoOtherCalls();
+        }
 
         [Fact]
         public async Task LodFileTableWhenLoadingFiles()

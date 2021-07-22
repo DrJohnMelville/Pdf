@@ -61,6 +61,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
                         Owner.ReturnReader(this);
                         reader = InvalidReader.Instance;
                     }
+
+                    public bool TryAdvanceTo(long offset)
+                    {
+                        return false;
+//                        if (offset - Position > reader.Re)
+                    }
                     
                     public ValueTask<ReadResult> ReadAsync(CancellationToken token = default)
                     {

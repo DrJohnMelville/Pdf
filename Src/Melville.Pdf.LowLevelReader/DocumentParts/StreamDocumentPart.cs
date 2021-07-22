@@ -29,8 +29,8 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
         public async ValueTask LoadBytesAsync(string item)
         {
             if (item.Length > 0) return;
-            var streamData = await source.GetRawStream();
-            var data = new byte[streamData.Length];
+            await using var streamData = await source.GetRawStream();
+            var data = new byte[Math.Min(10240,streamData.Length)];
             await streamData.FillBufferAsync(data, 0, data.Length);
             DisplayContent = string.Join("\r\n", CreateHexDump(data));
         }

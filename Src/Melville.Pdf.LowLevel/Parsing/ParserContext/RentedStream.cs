@@ -25,7 +25,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             }
 
             private int RemainingBytes => (int)(basePosition + length - baseStream.Position);
-            private int MaxBytes(int count) => Math.Max(count, RemainingBytes);
+            private int MaxBytes(int count) => Math.Min(count, RemainingBytes);
 
             #region Read Methods
 

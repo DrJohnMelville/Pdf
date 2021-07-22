@@ -78,7 +78,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         private bool HandleAsGroupHeader(byte delim, long leftNum, long rightNum)
         {
-            if (delim != 13 || rightNum == 0) return false;
+            if (delim != 13) return false;
             nextItem = (int)leftNum;
             return true;
         }

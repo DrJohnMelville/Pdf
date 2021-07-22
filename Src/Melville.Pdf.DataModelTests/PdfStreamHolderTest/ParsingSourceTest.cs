@@ -3,7 +3,6 @@ using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Parsing;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;
@@ -38,7 +37,31 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
 
             return reader.Position;
         }
-        #warning check the one reader at a time policies here
+
+        [Fact]
+        public async Task CannotMakeTwoReaders()
+        {
+            await owner.RentReader(12);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentReader(33).AsTask());
+        }
+        [Fact]
+        public async Task CannotMakeReaderAndStream()
+        {
+            await owner.RentReader(12);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentStream(33,22).AsTask());
+        }
+        [Fact]
+        public async Task CannotMakeStreamAndReader()
+        {
+            await owner.RentStream(12,33);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentReader(33).AsTask());
+        }
+        [Fact]
+        public async Task CannotMakeTwoStreams()
+        {
+            await owner.RentStream(12,22);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentStream(33,22).AsTask());
+        }
         [Fact]
         public async Task ReadFiveBytes()
         {
