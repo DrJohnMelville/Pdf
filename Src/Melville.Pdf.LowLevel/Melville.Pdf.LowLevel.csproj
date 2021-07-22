@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Generators.INPC" Version="0.5.30" />
+      <PackageReference Include="Melville.Generators.INPC" Version="0.5.32" />
       <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
     </ItemGroup>
 

@@ -65,10 +65,9 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
     {
         private byte major = 1;
         private byte minor = 7;
-        private DocumentCreationData data = new DocumentCreationData(1);
-
+        private readonly DocumentCreationData data = new DocumentCreationData(1);
         [DelegateTo]
-        private ILowLevelDocumentBuilder builder => data;
+        private ILowLevelDocumentBuilder Builder => data;
     
         public void SetVersion(byte major, byte minor)
         {
