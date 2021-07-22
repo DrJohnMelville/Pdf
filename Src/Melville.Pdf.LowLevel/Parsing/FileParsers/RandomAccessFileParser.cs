@@ -7,9 +7,9 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 {
     public static class RandomAccessFileParser
     {
-        public static Task<PdfLowLevelDocument> Parse(Stream source) => Parse(new ParsingFileOwner(source));
+        public static Task<PdfLoadedLowLevelDocument> Parse(Stream source) => Parse(new ParsingFileOwner(source));
 
-        public static async Task<PdfLowLevelDocument> Parse(
+        public static async Task<PdfLoadedLowLevelDocument> Parse(
             ParsingFileOwner owner, int fileTrailerSizeHint = 30)
         {
             byte major, minor;

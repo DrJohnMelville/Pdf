@@ -70,9 +70,9 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         }
 
         private async Task<DocumentPart[]> BuildSingleElementFile(
-            Func<ILowLevelDocumentBuilder,PdfObject> item)
+            Func<ILowLevelDocumentCreator,PdfObject> item)
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             builder.Add(item(builder));
             return await sut.ParseAsync(await builder.AsFileAsync());
         }

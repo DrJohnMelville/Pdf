@@ -9,7 +9,6 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
-using LowLevelDocumentBuilder = Melville.Pdf.LowLevel.Writers.Builder.LowLevelDocumentBuilder;
 
 namespace Melville.Pdf.DataModelTests.Writer
 {
@@ -25,14 +24,14 @@ namespace Melville.Pdf.DataModelTests.Writer
 
         private async Task<string> OutputSimpleDocument(byte majorVersion = 1, byte minorVersion = 7)
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
             builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
             return await Write(builder.CreateDocument());
         }
         private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
             builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
             builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
@@ -56,7 +55,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [InlineData(1,60)]
         public Task ThrowWhenWritingInvalidVersionNumber(byte majorVersion, byte minorVersion)
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
             builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
             return Assert.ThrowsAsync<ArgumentException>(

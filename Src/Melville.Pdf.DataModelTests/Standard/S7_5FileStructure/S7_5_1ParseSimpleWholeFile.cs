@@ -9,7 +9,6 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
-using LowLevelDocumentBuilder = Melville.Pdf.LowLevel.Writers.Builder.LowLevelDocumentBuilder;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 {
@@ -24,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         }
         private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
             builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
             builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
@@ -43,7 +42,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task GenerateDocumentWithDelayedIndirect()
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             var pointer = builder.AsIndirectReference();
             builder.AddRootElement(builder.NewDictionary((KnownNames.Width, pointer)));
             builder.AssignValueToReference(pointer, new PdfInteger(10));
@@ -57,7 +56,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task DocumentWithStream()
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             builder.AddRootElement(builder.NewStream("Stream data", 
                 (KnownNames.Type, KnownNames.Image)));
             var doc = builder.CreateDocument();

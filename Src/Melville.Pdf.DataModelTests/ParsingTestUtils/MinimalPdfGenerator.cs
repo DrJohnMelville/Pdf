@@ -6,9 +6,9 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
     public class MinimalPdfGenerator
     {
-        public static ILowLevelDocumentBuilder MinimalPdf(int major, int minor)
+        public static ILowLevelDocumentCreator MinimalPdf(int major, int minor)
         {
-            var builder = new LowLevelDocumentBuilder();
+            var builder = new LowLevelDocumentCreator();
             builder.SetVersion((byte)major, (byte)minor);
             var catalog = builder.AsIndirectReference();
             var outlines = builder.AsIndirectReference(builder.NewDictionary(
