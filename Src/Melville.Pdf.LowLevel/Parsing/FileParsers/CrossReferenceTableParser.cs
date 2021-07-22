@@ -87,10 +87,14 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             ref SequenceReader<byte> lineReader, out long leftNum, out long rightNum, out byte delim)
         {
             rightNum = 0;
-            return WholeNumberParser.TryParsePositiveWholeNumber(
-                       ref lineReader, out leftNum, out delim) &&
-                   WholeNumberParser.TryParsePositiveWholeNumber(
-                       ref lineReader, out rightNum, out delim);
+            if (!WholeNumberParser.TryParsePositiveWholeNumber(
+                ref lineReader, out leftNum, out delim)) return false;
+            if (WholeNumberParser.TryParsePositiveWholeNumber(ref lineReader, out rightNum, out delim))
+                return true;
+            if (delim != 0) return false;
+            delim = (byte) '\r';
+            return true;
+
         }
     }
 }

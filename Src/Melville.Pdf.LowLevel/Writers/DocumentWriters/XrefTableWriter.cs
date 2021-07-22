@@ -52,7 +52,6 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             var position = IntegerWriter.Write(span, 0);
             span[position++] = 32;
             position += IntegerWriter.Write(span.Slice(position), countOfEntries);
-            span[position++] = 13;
             span[position++] = 10;
             target.Advance(position);
         }

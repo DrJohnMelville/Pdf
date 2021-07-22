@@ -80,14 +80,14 @@ namespace Melville.Pdf.DataModelTests.Writer
         public async Task OutputsXRefTable()
         {
             var output = await OutputSimpleDocument();
-            Assert.Contains("endobj\r\nxref\r\n0 2\r\n0000000000 65535 f\r\n0000000043 00000 n\r\n", output);
+            Assert.Contains("endobj\r\nxref\r\n0 2\n0000000000 65535 f\r\n0000000043 00000 n\r\n", output);
         }
 
         [Fact]
         public async Task OutputXrefWithSkippedItems()
         {
             var output = await OutputTwoItemDocument();
-            Assert.Contains("endobj\r\nxref\r\n0 4\r\n0000000002 65535 f\r\n0000000043 00000 n\r\n0000000000 00000 f\r\n0000000078 00000 n\r\n", output);
+            Assert.Contains("endobj\r\nxref\r\n0 4\n0000000002 65535 f\r\n0000000043 00000 n\r\n0000000000 00000 f\r\n0000000078 00000 n\r\n", output);
         }
 
         [Fact]
