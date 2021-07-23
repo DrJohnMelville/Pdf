@@ -68,7 +68,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 
             Assert.Equal("true", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
             Assert.Equal("Free Item. Next = 0", (await ld2.Objects[(2,0)].Target.DirectValue()).ToString());
-
+            Assert.Equal(2, ld2.FirstFreeBlock);
+            
         }
     }
 }

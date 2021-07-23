@@ -33,7 +33,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 
         public async Task<long> FreeListHead()
         {
-            return (index.TryGetValue((0, 65534), out var iRef) &&
+            return (index.TryGetValue((0, 65535), out var iRef) &&
                     (await iRef.DirectValue()) is PdfFreeListObject flo)
                 ? flo.NextItem
                 : 0;
