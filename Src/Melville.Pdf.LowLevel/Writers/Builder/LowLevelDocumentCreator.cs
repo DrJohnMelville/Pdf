@@ -28,20 +28,9 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         }
 
         public PdfLowLevelDocument CreateDocument() => 
-            new(major, minor, CreateTrailerDictionary(), CreateObjectList());
+            new(major, minor, data.CreateTrailerDictionary(), CreateObjectList());
 
         private Dictionary<(int, int), PdfIndirectReference> CreateObjectList() => 
             data.Objects.ToDictionary(item => (item.Target.ObjectNumber, item.Target.GenerationNumber));
-
-        private PdfDictionary CreateTrailerDictionary()
-        {
-            AddLengthToTrailerDictionary();
-            return new(new Dictionary<PdfName, PdfObject>(data.TrailerDictionaryItems));
-        }
-        private void AddLengthToTrailerDictionary()
-        {
-            data.AddToTrailerDictionary(KnownNames.Size, new PdfInteger(TrailerLengthValue()));
-        }
-        private int TrailerLengthValue() => 1+data.Objects.Max(i=>i.Target.ObjectNumber);
     }
 }

@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
 {
     public static class IntegerWriter
     {
-        public static ValueTask<FlushResult> WriteAndFlush(PipeWriter target, int item)
+        public static ValueTask<FlushResult> WriteAndFlush(PipeWriter target, long item)
         {
             var buffer = target.GetSpan(12);
             target.Advance(Write(buffer, item));

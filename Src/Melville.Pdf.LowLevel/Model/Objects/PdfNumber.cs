@@ -4,15 +4,15 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 {
     public abstract class PdfNumber: PdfObject
     {
-        public abstract int IntValue { get; }
+        public abstract long IntValue { get; }
         public abstract double DoubleValue { get; }
     }
 
     public sealed class PdfInteger : PdfNumber
     {
-        public override int IntValue { get; }
+        public override long IntValue { get; }
         public override double DoubleValue => IntValue;
-        public PdfInteger(int value)
+        public PdfInteger(long value)
         {
             IntValue = value;
         }
@@ -21,7 +21,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
     }
     public sealed class PdfDouble : PdfNumber
     {
-        public override int IntValue => (int) DoubleValue;
+        public override long IntValue => (long) DoubleValue;
         public override double DoubleValue { get; }
         public PdfDouble(double value)
         {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Melville.Pdf.LowLevel.Model.Document;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
@@ -9,6 +9,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         PdfIndirectReference AsIndirectReference(PdfObject? value = null);
         void AssignValueToReference(PdfIndirectReference reference, PdfObject value);
         PdfIndirectReference Add(PdfObject item);
+        public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation);
         void AddToTrailerDictionary(PdfName key, PdfObject item);
     }
     
@@ -16,7 +17,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
     {
         private int nextObject;
         public List<PdfIndirectReference> Objects { get;  }= new();
-        public Dictionary<PdfName, PdfObject> TrailerDictionaryItems { get; }= new();
+        private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
 
         public LowLevelDocumentBuilder(int nextObject)
         {
@@ -36,6 +37,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             ((PdfMutableIndirectObject)reference.Target).SetValue(value);
         }
         public PdfIndirectReference Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
+        public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation) => 
+            InnerAdd(new PdfIndirectReference(new PdfMutableIndirectObject(objectNumber, generation, item)));
 
         private PdfIndirectReference InnerAdd(PdfIndirectReference item)
         {
@@ -44,6 +47,17 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         }
 
         public void AddToTrailerDictionary(PdfName key, PdfObject item) => 
-            TrailerDictionaryItems[key] = item;
+            trailerDictionaryItems[key] = item;
+        
+        public PdfDictionary CreateTrailerDictionary()
+        {
+            AddLengthToTrailerDictionary();
+            return new(new Dictionary<PdfName, PdfObject>(trailerDictionaryItems));
+        }
+        private void AddLengthToTrailerDictionary()
+        {
+            AddToTrailerDictionary(KnownNames.Size, new PdfInteger(nextObject));
+        }
+
     }
 }
