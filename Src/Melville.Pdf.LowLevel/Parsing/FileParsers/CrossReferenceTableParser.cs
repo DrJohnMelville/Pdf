@@ -8,13 +8,14 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
     public class CrossReferenceTableParser
     {
         private readonly IParsingReader source;
+        private long firstFreeBlock;
 
         public CrossReferenceTableParser(IParsingReader source)
         {
             this.source = source;
         }
 
-        public async Task Parse()
+        public async Task<long> Parse()
         {
             bool shouldContinue;
             do
@@ -22,6 +23,8 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 var ret = await source.ReadAsync();
                 shouldContinue = TryReadLine(ret.Buffer);
             } while (shouldContinue);
+
+            return firstFreeBlock;
         }
 
         private bool TryReadLine(ReadOnlySequence<byte> input)
@@ -64,13 +67,27 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         private void HandleObjectDeclarationLine(byte operation, long rightNum, long leftNum)
         {
-            if (operation == (byte) 'n') source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum,
+            switch (operation)
+            {
+                case (byte)'n':
+                    RegisterIndirectBlock(rightNum, leftNum);
+                    break;
+                case (byte)'f' when nextItem == 0:
+                    firstFreeBlock = leftNum;
+                    break;
+                
+            }
+            nextItem++;
+        }
+
+        private void RegisterIndirectBlock(long rightNum, long leftNum)
+        {
+            source.IndirectResolver.AddLocationHint(nextItem, (int) rightNum,
                 async () =>
                 {
                     using var reader = await source.Owner.RentReader(leftNum);
                     return await source.RootObjectParser.ParseAsync(reader);
-                } );
-            nextItem++;
+                });
         }
 
         private bool HandleAsGroupHeader(byte delim, long leftNum, long rightNum)

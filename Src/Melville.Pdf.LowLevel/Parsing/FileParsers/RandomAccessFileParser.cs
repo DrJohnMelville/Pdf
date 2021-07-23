@@ -19,10 +19,10 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             }
 
             var xrefPosition = await FileTrailerLocater.Search(owner, fileTrailerSizeHint);
-            var dictionary = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition);
+            var (firstFree,dictionary) = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition);
             
             return new PdfLoadedLowLevelDocument(
-                major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition);
+                major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, firstFree);
         }
         
     }

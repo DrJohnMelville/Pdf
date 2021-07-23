@@ -50,8 +50,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 0000000409 00000 n
 
 ";
-            await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
-            
+           var firstFree =  await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
+
+           Assert.Equal(3, firstFree);
+           
             resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(23,122,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
@@ -66,7 +68,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 trailer
 ";
             var parsingReader = await sampleTale.AsParsingSource(resolver.Object).RentReader(0);
-            await new CrossReferenceTableParser(parsingReader).Parse();
+            var firstFree = await new CrossReferenceTableParser(parsingReader).Parse();
+            Assert.Equal(0, firstFree);
             Assert.Equal(11, parsingReader.Position);
                         
             resolver.VerifyNoOtherCalls();
