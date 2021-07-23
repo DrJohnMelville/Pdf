@@ -6,7 +6,14 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
-    public class PdfIndirectObject: PdfObject
+    internal interface IMultableIndirectObject
+    {
+        bool HasRegisteredAccessor();
+        void SetValue(PdfObject value);
+        void SetValue(Func<ValueTask<PdfObject>> value);
+
+    }
+    public class PdfIndirectObject: PdfObject, IMultableIndirectObject
     {
         public int ObjectNumber { get; }
         public int GenerationNumber { get; }
@@ -39,5 +46,16 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             return value;
         }
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+
+        void IMultableIndirectObject.SetValue(Func<ValueTask<PdfObject>> value) =>
+            accessor = value;
+        void IMultableIndirectObject.SetValue(PdfObject value)
+        {
+            this.value = value;
+            accessor = null;
+        }
+
+        bool IMultableIndirectObject.HasRegisteredAccessor() => 
+            accessor != null && value == PdfTokenValues.Null;
     }
 }

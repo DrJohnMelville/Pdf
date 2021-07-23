@@ -15,5 +15,6 @@ namespace Melville.Pdf.LowLevel.Visitors
         T Visit(PdfDouble item);
         T Visit(PdfString item);
         T Visit(PdfStream item);
+        T Visit(PdfFreeListObject item);
     }
 }

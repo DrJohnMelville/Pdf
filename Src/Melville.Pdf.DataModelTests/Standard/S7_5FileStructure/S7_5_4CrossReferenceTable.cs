@@ -49,13 +49,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 0000000331 00122 n
 0000000409 00000 n
 
-";
-           var firstFree =  await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
+"; 
+            await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
 
-           Assert.Equal(3, firstFree);
-           
+           resolver.Verify(i=>i.AddLocationHint(0,65535,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
+            resolver.Verify(i=>i.AddLocationHint(3,7,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(23,122,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(24, 0, It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.VerifyNoOtherCalls();
@@ -68,8 +68,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 trailer
 ";
             var parsingReader = await sampleTale.AsParsingSource(resolver.Object).RentReader(0);
-            var firstFree = await new CrossReferenceTableParser(parsingReader).Parse();
-            Assert.Equal(0, firstFree);
+             await new CrossReferenceTableParser(parsingReader).Parse();
             Assert.Equal(11, parsingReader.Position);
                         
             resolver.VerifyNoOtherCalls();
@@ -81,6 +80,7 @@ trailer
             var resolver = new Mock<IIndirectObjectResolver>();
             var ps = (await MinimalPdfGenerator.MinimalPdf(1,5).AsStringAsync()).AsParsingSource(resolver.Object);
             await RandomAccessFileParser.Parse(ps);
+            resolver.Verify(i=>i.AddLocationHint(0,65535,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(3,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
@@ -89,6 +89,7 @@ trailer
             resolver.Verify(i=>i.AddLocationHint(6,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.FindIndirect(1,0));
             resolver.Verify(i=>i.GetObjects());
+            resolver.Verify(i=>i.FreeListHead(), Times.Once);
             resolver.VerifyNoOtherCalls();
         }
     }

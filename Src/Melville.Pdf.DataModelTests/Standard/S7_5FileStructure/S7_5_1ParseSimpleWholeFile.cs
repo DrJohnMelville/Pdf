@@ -81,7 +81,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             var doc = await (await OutputTwoItemDocument()).ParseDocumentAsync();
             Assert.Equal(1, doc.MajorVersion);
             Assert.Equal(7, doc.MinorVersion);
-            Assert.Equal(2, doc.Objects.Count);
+            Assert.Equal(4, doc.Objects.Count);
             Assert.Equal(4, ((PdfNumber)(await doc.TrailerDictionary[KnownNames.Size])).IntValue);
             var dict = (PdfDictionary) (await doc.TrailerDictionary[KnownNames.Root]);
             Assert.Equal(KnownNames.Catalog, await dict[KnownNames.Type]);

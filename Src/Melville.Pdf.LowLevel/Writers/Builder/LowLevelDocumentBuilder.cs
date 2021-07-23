@@ -29,16 +29,16 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             {
                 PdfIndirectReference pir => pir,
                 PdfIndirectObject pio => new PdfIndirectReference(pio),
-                _ => new(new PdfMutableIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
+                _ => new(new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
             };
 
         public void AssignValueToReference(PdfIndirectReference reference, PdfObject value)
         {
-            ((PdfMutableIndirectObject)reference.Target).SetValue(value);
+            ((IMultableIndirectObject)reference.Target).SetValue(value);
         }
         public PdfIndirectReference Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
         public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation) => 
-            InnerAdd(new PdfIndirectReference(new PdfMutableIndirectObject(objectNumber, generation, item)));
+            InnerAdd(new PdfIndirectReference(new PdfIndirectObject(objectNumber, generation, item)));
 
         private PdfIndirectReference InnerAdd(PdfIndirectReference item)
         {

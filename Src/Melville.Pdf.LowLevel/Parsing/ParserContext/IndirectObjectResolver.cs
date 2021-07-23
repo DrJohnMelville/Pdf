@@ -18,12 +18,25 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         {
             if (index.TryGetValue((objectNumber, generation), out var existingReference)) 
                 return existingReference;
-            throw new InvalidDataException($"Cannot find indirect object: ({objectNumber}, {generation})");
+            var ret = new PdfIndirectReference(new PdfIndirectObject(objectNumber,
+                generation, PdfTokenValues.Null));
+                index.Add((objectNumber, generation), ret);
+            return ret;
         }
 
         public void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor)
         {
-            index.Add((number, generation), new PdfIndirectReference(new PdfIndirectObject(number, generation, valueAccessor)));
+            var item = (IMultableIndirectObject)(FindIndirect(number, generation).Target);
+            if (item.HasRegisteredAccessor()) return;
+            item.SetValue(valueAccessor);
+        }
+
+        public async Task<long> FreeListHead()
+        {
+            return (index.TryGetValue((0, 65534), out var iRef) &&
+                    (await iRef.DirectValue()) is PdfFreeListObject flo)
+                ? flo.NextItem
+                : 0;
         }
     }
 }

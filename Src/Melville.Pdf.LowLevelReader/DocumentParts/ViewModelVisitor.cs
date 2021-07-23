@@ -90,5 +90,8 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
             var children = await ParseDictionaryChildren(item);
             return new StreamDocumentPart(title, children, item);
         }
+
+        public ValueTask<DocumentPart> Visit(PdfFreeListObject item) =>
+            Terminal($"Deleted Slot. Next: " + item.NextItem);
     }
 }

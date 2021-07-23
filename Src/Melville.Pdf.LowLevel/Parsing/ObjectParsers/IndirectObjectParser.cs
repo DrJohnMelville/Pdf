@@ -16,6 +16,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         IReadOnlyDictionary<(int, int), PdfIndirectReference> GetObjects();
         PdfIndirectReference FindIndirect(int number, int generation);
         void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor);
+        Task<long> FreeListHead();
     }
 
     public class IndirectObjectParser : IPdfObjectParser

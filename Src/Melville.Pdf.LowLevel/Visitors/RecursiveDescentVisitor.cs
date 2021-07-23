@@ -24,7 +24,8 @@ namespace Melville.Pdf.LowLevel.Visitors
         public virtual T Visit(PdfDouble item) => VisitNumber(item);
         public virtual T Visit(PdfString item) => VisitAny(item);
         public virtual T Visit(PdfStream item) => Visit((PdfDictionary)item);
-
+        public virtual T Visit(PdfFreeListObject item) => VisitAny(item);
+        
         public virtual T Visit(PdfArray item)
         {
             var ret = VisitAny(item);

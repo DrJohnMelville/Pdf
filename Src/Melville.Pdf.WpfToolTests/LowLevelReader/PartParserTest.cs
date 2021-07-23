@@ -43,7 +43,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         {
             var model = await BuildSingleElementFile(_=>
                 new PdfArray(PdfBoolean.True, PdfBoolean.False, KnownNames.Max));
-            var array = model[1].Children[0];
+            var array = model[2].Children[0];
             Assert.Equal("Array", array.Title);
             Assert.Equal("[0]: true", array.Children[0].Title);
             Assert.Equal("[1]: false", array.Children[1].Title);
@@ -54,7 +54,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         {
             var model = await BuildSingleElementFile(i=>
                 i.NewStream("The Stream Data", (KnownNames.Type, KnownNames.Page)));
-            var stream = (StreamDocumentPart)model[1].Children[0];
+            var stream = (StreamDocumentPart)model[2].Children[0];
             await stream.LoadBytesAsync("");
             Assert.Equal("Stream", stream.Title);
             Assert.Equal("/Type: /Page", stream.Children[0].Title);
@@ -65,8 +65,8 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         private async Task TestSingleElement(PdfObject item, string renderAs)
         {
             var model = await BuildSingleElementFile(_=>item);
-            Assert.Equal("1 0 obj", model[1].Title);
-            Assert.Equal(renderAs, model[1].Children[0].Title);
+            Assert.Equal("1 0 obj", model[2].Title);
+            Assert.Equal(renderAs, model[2].Children[0].Title);
         }
 
         private async Task<DocumentPart[]> BuildSingleElementFile(

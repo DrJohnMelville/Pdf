@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -8,14 +9,13 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
     public class CrossReferenceTableParser
     {
         private readonly IParsingReader source;
-        private long firstFreeBlock;
-
+        
         public CrossReferenceTableParser(IParsingReader source)
         {
             this.source = source;
         }
 
-        public async Task<long> Parse()
+        public async Task Parse()
         {
             bool shouldContinue;
             do
@@ -23,8 +23,6 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 var ret = await source.ReadAsync();
                 shouldContinue = TryReadLine(ret.Buffer);
             } while (shouldContinue);
-
-            return firstFreeBlock;
         }
 
         private bool TryReadLine(ReadOnlySequence<byte> input)
@@ -72,8 +70,9 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 case (byte)'n':
                     RegisterIndirectBlock(rightNum, leftNum);
                     break;
-                case (byte)'f' when nextItem == 0:
-                    firstFreeBlock = leftNum;
+                case (byte)'f':
+                    source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum,
+                        ()=>new ValueTask<PdfObject>(new PdfFreeListObject(leftNum)));
                     break;
                 
             }

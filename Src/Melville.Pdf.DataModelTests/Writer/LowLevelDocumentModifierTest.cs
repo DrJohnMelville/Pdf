@@ -59,7 +59,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [Fact]
         public Task DeleteOneObject() =>
             DoDocumentModificationTests($"xref\n0 2\n0000000001 65535 f\r\n0000000000 00000 f\r\ntrailer\n<</Root 1 0 R /Size 2 /Prev 83>>\nstartxref\n1234\n%%EOF",
-                (doc, mod) => mod.DeleteObject(doc.Objects.Values.First()), baseDoc,
+                (doc, mod) => mod.DeleteObject(doc.Objects[(1,0)]), baseDoc,
                 1234);
         [Fact]
         public Task AddOneObject() =>
@@ -69,7 +69,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [Fact]
         public Task ReplaceOneObject() =>
             DoDocumentModificationTests($"1 0 obj false endobj\nxref\n1 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R /Size 2 /Prev 83>>\nstartxref\n1255\n%%EOF",
-                (doc, mod) => mod.AssignValueToReference(doc.Objects.Values.First(),PdfBoolean.False), baseDoc,
+                (doc, mod) => mod.AssignValueToReference(doc.Objects[(1,0)],PdfBoolean.False), baseDoc,
                 1234);
 
         private static PdfLowLevelDocument SixItemDocument()

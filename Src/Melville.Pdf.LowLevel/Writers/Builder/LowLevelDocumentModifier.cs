@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,6 +73,9 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             }
        }
 
+        
+        public ValueTask WriteModificationTrailer(Stream stream) =>
+            WriteModificationTrailer(PipeWriter.Create(stream), stream.Position);
         public ValueTask WriteModificationTrailer(PipeWriter cpw, long startPosition) =>
             WriteModificationTrailer(new CountingPipeWriter(cpw, startPosition));
         public async ValueTask WriteModificationTrailer(CountingPipeWriter target)
@@ -86,7 +90,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             }
             var startXref = target.BytesWritten;
             XrefTableElementWriter.WriteXrefTitleLine(target);
-            WriteRevisedXrefTable(target, lines.Concat(DeletedItemLines()));
+            DeletedItemLines(lines);
+            WriteRevisedXrefTable(target, lines);
             await target.FlushAsync();
             builder.AddToTrailerDictionary(KnownNames.Prev, new PdfInteger(priorXref));
             await TrailerWriter.WriteTrailer(target, builder.CreateTrailerDictionary(), startXref);
@@ -105,7 +110,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         }
 
         //If we are writing an empty xref table we still need a 0 0 header for a single empty block.
-        private static int FirstObjectNumber(IList<XrefLine>? segment) => 
+        private static int FirstObjectNumber(IList<XrefLine> segment) => 
             segment.Count > 0?segment[0].ObjectNumber:0;
 
         private void DeletedItemLines(IList<XrefLine> lines)

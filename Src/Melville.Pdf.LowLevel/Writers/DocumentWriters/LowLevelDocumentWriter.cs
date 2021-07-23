@@ -31,6 +31,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             var objectWriter = new PdfObjectWriter(target);
             foreach (var item in document.Objects.Values)
             {
+                if (!(await item.Target.DirectValue()).ShouldWriteToFile()) continue;
                 positions[item.Target.ObjectNumber] = target.BytesWritten;
                 await item.Target.Visit(objectWriter);
             }

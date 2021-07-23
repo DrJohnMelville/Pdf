@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Document;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers
@@ -19,11 +20,12 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             }
 
             var xrefPosition = await FileTrailerLocater.Search(owner, fileTrailerSizeHint);
-            var (firstFree,dictionary) = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition);
-            
+            var dictionary = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition);
+            var firstFree = await owner.IndirectResolver.FreeListHead();
+
             return new PdfLoadedLowLevelDocument(
                 major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, firstFree);
         }
-        
+
     }
 }
