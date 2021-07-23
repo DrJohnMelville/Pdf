@@ -21,7 +21,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             await target.FlushAsync();
             var objectOffsets = await WriteObjectList(document);
             long xRefStart = target.BytesWritten;
-            await XrefTableWriter.WriteXrefTable(target, objectOffsets);
+            await NewXrefTableWriter.WriteXrefsForNewFile(target, objectOffsets);
             await TrailerWriter.WriteTrailer(target, document.TrailerDictionary, xRefStart);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.DataModelTests.PdfStreamHolderTest;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -30,14 +31,16 @@ namespace Melville.Pdf.DataModelTests.Writer
             await baseDoc.WriteTo(ms);
             ms.Seek(0, SeekOrigin.Begin);
             return await RandomAccessFileParser.Parse(ms);
-        } 
+        }
 
         [Fact]
-        public async Task SimpleModification()
+        public async Task NullModification()
         {
+            var target = new TestWriter();
             var doc = await LoadedDocument();
-            Assert.Equal("true", (await doc.TrailerDictionary[KnownNames.Root]).ToString());
-            
+            var sut = new LowLevelDocumentModifier(doc);
+            await sut.WriteModificationTrailer(target.Writer, 0);
+            Assert.Equal("xref\n", target.Result());
         }
     }
 }

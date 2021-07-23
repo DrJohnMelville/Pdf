@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
 {
-    public partial class DocumentCreationData 
+    public partial class LowLevelDocumentBuilder 
     {
 
         private class PdfMutableIndirectObject : PdfIndirectObject

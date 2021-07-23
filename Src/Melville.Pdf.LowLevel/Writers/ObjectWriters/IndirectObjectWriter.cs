@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
     {
         private static byte[] ObjectLabel = {32, 111, 98, 106, 32}; // ' obj '
         private static byte[] ReferenceLabel = {32, 82}; // ' R'
-        private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106, 13,10}; //  endobj
+        private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106, 10}; //  endobj
 
         public static ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectReference item)
         {

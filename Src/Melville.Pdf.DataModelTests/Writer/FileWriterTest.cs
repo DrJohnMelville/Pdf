@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -16,10 +17,10 @@ namespace Melville.Pdf.DataModelTests.Writer
     {
         private async Task<string> Write(PdfLowLevelDocument doc)
         {
-            var target = new MemoryStream();
-            var writer = new LowLevelDocumentWriter(PipeWriter.Create(target));
+            var target = new TestWriter();
+            var writer = new LowLevelDocumentWriter(target.Writer);
             await writer.WriteAsync(doc);
-            return target.ToArray().ExtendedAsciiString();
+            return target.Result();
         }
 
         private async Task<string> OutputSimpleDocument(byte majorVersion = 1, byte minorVersion = 7)
@@ -67,33 +68,33 @@ namespace Melville.Pdf.DataModelTests.Writer
         public async Task OutputsFirstObject()
         {
             var output = await OutputSimpleDocument();
-            Assert.Contains("Melville.Pdf\r\n1 0 obj <</Type /Catalog>> endobj", output);
+            Assert.Contains("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj", output);
         }
         [Fact]
         public async Task TwoOutputTowItemFile()
         {
             var output = await OutputTwoItemDocument();
-            Assert.Contains("Melville.Pdf\r\n1 0 obj <</Type /Catalog>> endobj\r\n3 0 obj <</Type /Page>> endobj", output);
+            Assert.Contains("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj\n3 0 obj <</Type /Page>> endobj", output);
         }
         [Fact]
         public async Task OutputsXRefTable()
         {
             var output = await OutputSimpleDocument();
-            Assert.Contains("endobj\r\nxref\r\n0 2\n0000000000 65535 f\r\n0000000043 00000 n\r\n", output);
+            Assert.Contains("endobj\nxref\n0 2\n0000000000 65535 f\r\n0000000042 00000 n\r\n", output);
         }
 
         [Fact]
         public async Task OutputXrefWithSkippedItems()
         {
             var output = await OutputTwoItemDocument();
-            Assert.Contains("endobj\r\nxref\r\n0 4\n0000000002 65535 f\r\n0000000043 00000 n\r\n0000000000 00000 f\r\n0000000078 00000 n\r\n", output);
+            Assert.Contains("endobj\nxref\n0 4\n0000000002 65535 f\r\n0000000042 00000 n\r\n0000000000 00000 f\r\n0000000076 00000 n\r\n", output);
         }
 
         [Fact]
         public async Task OutputsTrailer()
         {
             var output = await OutputSimpleDocument();
-            Assert.Contains("n\r\ntrailer\r\n<</Root 1 0 R /Size 2>>\r\nstartxref\r\n78\r\n%%EOF", output);
+            Assert.Contains("n\r\ntrailer\n<</Root 1 0 R /Size 2>>\nstartxref\n76\n%%EOF", output);
         }
     }
 }

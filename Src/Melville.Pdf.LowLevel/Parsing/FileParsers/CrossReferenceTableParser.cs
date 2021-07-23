@@ -53,7 +53,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             if (IsXrefLine(firstByte)) return true; 
             if (!GatherTwoNumbers(ref lineReader, out var leftNum, out var rightNum, out var delim)) 
                 return false;
-            if (HandleAsGroupHeader(delim, leftNum, rightNum)) return true;
+            if (HandleAsGroupHeader(delim, leftNum)) return true;
             if (!lineReader.TryPeek(out byte operation)) return false; // empty line
             if (operation is not ((byte) 'f' or (byte) 'n')) return false;
             HandleObjectDeclarationLine(operation, rightNum, leftNum);
@@ -90,7 +90,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 });
         }
 
-        private bool HandleAsGroupHeader(byte delim, long leftNum, long rightNum)
+        private bool HandleAsGroupHeader(byte delim, long leftNum)
         {
             if (delim != 13) return false;
             nextItem = (int)leftNum;
