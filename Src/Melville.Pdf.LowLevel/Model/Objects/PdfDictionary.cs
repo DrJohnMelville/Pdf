@@ -77,5 +77,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             if (source.TryGetValue(key, out var obj) && await obj is T ret) return ret;
             throw new ArgumentException("Expected item is not in dictionary or is wrong type");
         }
+
+        public static async ValueTask<PdfObject> GetOrNull(this PdfDictionary dict, PdfName name) =>
+            dict.TryGetValue(name, out var obj) && 
+            await obj is {} definiteObj? definiteObj: PdfTokenValues.Null;
     }
  }

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
@@ -17,5 +20,16 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 
         public string Result() => ExtendedAsciiEncoding.ExtendedAsciiString(
             target.GetBuffer().AsSpan()[..(int)target.Length]);
+    }
+
+    public static class TestWriterOperations
+    {
+        public static async ValueTask<string> WriteToString(this PdfObject obj)
+        {
+            var writer = new TestWriter();
+            var objWriter = new PdfObjectWriter(writer.Writer);
+            await obj.Visit(objWriter);
+            return writer.Result();
+        }
     }
 }

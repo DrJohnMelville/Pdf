@@ -16,7 +16,6 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
         private static async Task<PdfDictionary> XrefAndTrailer(ParsingFileOwner source, long xrefPosition)
         {
             PdfDictionary? trailerDictionery;
-            long firstFree = 0;
             using (var context = await source.RentReader(xrefPosition))
             {
                 await new CrossReferenceTableParser(context).Parse();

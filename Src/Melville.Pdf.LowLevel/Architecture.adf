@@ -4,6 +4,7 @@ Group Parser
 Group Model
      Melville.Pdf.LowLevel.Model.*
      Melville.Pdf.LowLevel.Visitors.*
+     Melville.Pdf.LowLevel.Filters.*
 Group Writers
      Melville.Pdf.LowLevel.Writers.*
 Parser => Model

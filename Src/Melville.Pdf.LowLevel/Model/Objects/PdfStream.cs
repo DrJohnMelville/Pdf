@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Visitors;
 
@@ -30,5 +31,11 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public async ValueTask<long> DeclaredLength() => 
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
+
+        public async ValueTask<Stream> GetDecodedStream(int desiredFormat = int.MaxValue) =>
+            Decompressor.DecodeStream(await GetRawStream(),
+                (await this.GetOrNull(KnownNames.Filter)).AsList(), 
+                (await this.GetOrNull(KnownNames.Params)).AsList(),
+                desiredFormat);
     }
 }
