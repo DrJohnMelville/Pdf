@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters
 {
-    public interface IDecompressor
+    public interface IDecoder
     {
         Stream WrapStream(Stream inout, PdfObject parameter);
     }
@@ -31,9 +31,9 @@ namespace Melville.Pdf.LowLevel.Filters
         private static Stream DecodeSingleStream(Stream source, PdfObject filter, PdfObject parameter) => 
             decoders[(PdfName) filter].WrapStream(source, parameter);
 
-        private static readonly Dictionary<PdfName, IDecompressor> decoders = new()
+        private static readonly Dictionary<PdfName, IDecoder> decoders = new()
         {
-            {KnownNames.ASCIIHexDecode, new AsciiHexDecompressor()}
+            {KnownNames.ASCIIHexDecode, new AsciiHexDecoder()}
         };
     }
 }

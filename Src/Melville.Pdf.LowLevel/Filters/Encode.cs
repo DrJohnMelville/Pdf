@@ -5,11 +5,11 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters
 {
-    public interface ICompressor
+    public interface IEncoder
     {
-        public byte[] Compress(byte[] data, PdfObject? parameters);
+        public byte[] Encode(byte[] data, PdfObject? parameters);
     }
-    public static class Compressor
+    public static class Encode
     {
         public static byte[] Compress(byte[] data, PdfObject algorithm, PdfObject? parameters)
         {
@@ -21,14 +21,14 @@ namespace Melville.Pdf.LowLevel.Filters
             IReadOnlyList<PdfObject> parameters, int which)
         {
             if (which < 0) return data;
-            return DoCompress(compressors[(PdfName) algorithms[which]].Compress(data,
+            return DoCompress(compressors[(PdfName) algorithms[which]].Encode(data,
                     which < parameters.Count ? parameters[which] : PdfTokenValues.Null),
                 algorithms, parameters, which - 1);
         }
 
-        private static readonly Dictionary<PdfName, ICompressor> compressors = new()
+        private static readonly Dictionary<PdfName, IEncoder> compressors = new()
         {
-            {KnownNames.ASCIIHexDecode, new AsciiHexCompressor()}
+            {KnownNames.ASCIIHexDecode, new AsciiHexEncoder()}
         };
     }
 }

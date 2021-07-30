@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Filters
 {
     public abstract class DecodingAdapter : Stream
     {
-        private readonly PipeReader source;
+        private PipeReader? source;
 
         protected DecodingAdapter(PipeReader source)
         {
@@ -22,9 +22,13 @@ namespace Melville.Pdf.LowLevel.Filters
 
         public override void Close() => source.Complete();
 
-        protected override void Dispose(bool disposing) => source.Complete();
+        protected override void Dispose(bool disposing) => EndStream();
 
-        public override ValueTask DisposeAsync() => source.CompleteAsync();
+        public override ValueTask DisposeAsync()
+        {
+            EndStream();
+            return new ValueTask();
+        }
 
         public override void EndWrite(IAsyncResult asyncResult) =>
             throw new NotSupportedException();
@@ -38,9 +42,16 @@ namespace Melville.Pdf.LowLevel.Filters
             var reader = new SequenceReader<byte>(result.Buffer);
             var (finalPos, bytesWritten, done) = Decode(ref reader, ref buffer);
             source.AdvanceTo(finalPos, result.Buffer.End);
-            if (done) source.Complete();
+            if (done) EndStream();
             Position += bytesWritten;
             return bytesWritten;
+        }
+
+        private void EndStream()
+        {
+            if (source == null) return;
+            source.Complete();
+            source = null; 
         }
 
         public override int Read(byte[] buffer, int offset, int count) =>
@@ -55,14 +66,15 @@ namespace Melville.Pdf.LowLevel.Filters
 
         public async override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (buffer.Length < 1) return 0;
-            int ret = 0;
-            while (ret < 1)
+            if (buffer.Length < 1 ) return 0;
+            var ret = 0;
+            do
             {
+                if (source == null) return 0;
                 var result = await source.ReadAsync();
                 ret = HandleResult(buffer.Span, result);
                 if (result.IsCompleted) return ret;
-            };
+            } while (ret < 1);
             return ret;
         }
 

@@ -31,7 +31,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public static PdfStream NewCompressedStream(this ILowLevelDocumentBuilder _, 
             byte[] data, PdfObject compression, PdfObject? parameters = null)
         {
-            return NewStream(_, Compressor.Compress(data, compression, parameters),
+            return NewStream(_, Encode.Compress(data, compression, parameters),
                 (KnownNames.Filter, compression),
                 (KnownNames.Params, parameters??PdfTokenValues.Null));
         }

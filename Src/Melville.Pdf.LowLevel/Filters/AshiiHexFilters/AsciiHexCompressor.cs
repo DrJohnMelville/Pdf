@@ -3,9 +3,9 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
 {
-    public class AsciiHexCompressor:ICompressor
+    public class AsciiHexEncoder:IEncoder
     {
-        public byte[] Compress(byte[] data, PdfObject? parameters)
+        public byte[] Encode(byte[] data, PdfObject? parameters)
         {
             var result = new byte[2 * data.Length];
             var position = 0;

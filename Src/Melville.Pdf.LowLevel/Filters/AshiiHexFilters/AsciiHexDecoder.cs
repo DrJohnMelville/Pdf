@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
 {
-    public class AsciiHexDecompressor : IDecompressor
+    public class AsciiHexDecoder : IDecoder
     {
         public Stream WrapStream(Stream input, PdfObject parameter)
         {
@@ -25,16 +25,30 @@ namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
                 Decode(ref SequenceReader<byte> source, ref Span<byte> destination)
             {
                 int position = 0;
+                bool done = false;
                 SequencePosition consumed = source.Sequence.Start;
                 while (position < destination.Length&&
-                       source.TryRead(out var highByte) && source.TryRead(out var lowByte))
+                       GetNonWhiteSpaceChar(ref source, out var highByte) && 
+                       GetNonWhiteSpaceChar(ref source, out var lowByte))
                 {
+                    if (highByte == (byte) '>') return (consumed, position, true);
                     destination[position++] = HexMath.ByteFromHexCharPair(highByte, lowByte);
                     consumed = source.Position;
+                    if (lowByte == (byte) '>') return (consumed, position, true);
                 }
 
                 return (consumed, position, false);
 
+            }
+
+            private static bool GetNonWhiteSpaceChar(ref SequenceReader<byte> source, out byte item)
+            {
+                while (true)
+                {
+                    if (!source.TryRead(out item)) return false;
+                    if (CharClassifier.Classify(item) != CharacterClass.White)
+                        return true;
+                }
             }
         }
     }

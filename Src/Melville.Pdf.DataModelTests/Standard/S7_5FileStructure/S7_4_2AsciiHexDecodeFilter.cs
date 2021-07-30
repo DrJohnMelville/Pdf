@@ -44,10 +44,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         }
 
         public static async Task TestContent(
-            string content, string expectedResult, AsciiHexDecompressor decompressor, PdfObject parameters)
+            string content, string expectedResult, AsciiHexDecoder decoder, PdfObject parameters)
         {
             var source = new MemoryStream(ExtendedAsciiEncoding.AsExtendedAsciiBytes(content));
-            var str = decompressor.WrapStream(source, parameters);
+            var str = decoder.WrapStream(source, parameters);
             var decoded = await new StreamReader(str).ReadToEndAsync();
             Assert.Equal(expectedResult, decoded);
             
@@ -65,9 +65,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 
         [Theory]
         [InlineData("2020", "  ")]
+        [InlineData("7>70", "p")]
+        [InlineData("2020>", "  ")]
+        [InlineData("202>", "  ")]
         [InlineData("20 \r\n\t 20", "  ")]
         public Task SpecialCaseqs(string encoded, string decoded) =>
-            StreamTest.TestContent(encoded, decoded, new AsciiHexDecompressor(), PdfTokenValues.Null);
+            StreamTest.TestContent(encoded, decoded, new AsciiHexDecoder(), PdfTokenValues.Null);
 
     }
 }
