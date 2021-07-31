@@ -18,20 +18,11 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             var outlines = builder.AsIndirectReference(builder.NewDictionary(
                 (KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
             var pages = builder.AsIndirectReference();
-            var page = builder.AsIndirectReference();
-            var stream = builder.AsIndirectReference(builder.NewStream("... Page0marking operators ..."));
-            var procset = builder.AsIndirectReference(new PdfArray(KnownNames.PDF));
-            builder.AssignValueToReference(page, builder.NewDictionary(
-                (KnownNames.Type, KnownNames.Page),
-                (KnownNames.Parent, pages),
-                (KnownNames.MediaBox, new PdfArray(
-                    new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))),
-                (KnownNames.Contents, stream),
-                (KnownNames.Resources, builder.NewDictionary((KnownNames.ProcSet, procset)))));
+            var pageGroup = createPages(builder, pages);
             builder.AssignValueToReference(pages, builder.NewDictionary(
                 (KnownNames.Type, KnownNames.Pages),
-                (KnownNames.Kids, new PdfArray(createPages(builder, pages))),
-                (KnownNames.Count, new PdfInteger(1))
+                (KnownNames.Kids, new PdfArray(pageGroup)),
+                (KnownNames.Count, new PdfInteger(pageGroup.Count))
                 ));
             builder.AssignValueToReference(catalog, builder.NewDictionary(
                 (KnownNames.Type, KnownNames.Catalog),
@@ -42,9 +33,6 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             builder.Add(catalog);
             builder.Add(outlines);
             builder.Add(pages);
-            builder.Add(page);
-            builder.Add(stream);
-            builder.Add(procset);
             
             builder.AddToTrailerDictionary(KnownNames.Root, catalog);
             return builder;       

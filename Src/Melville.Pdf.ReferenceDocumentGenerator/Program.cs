@@ -21,9 +21,10 @@ namespace Melville.Pdf.ReferenceDocumentGenerator
         private static IRootParser CreateParser() =>
             new RootArgumentParser(
                 new CompositeParser(new IArgumentParser[]{
+                    new MinimalPdfParser(),
+                    new FiltersGenerator(),
                     new HelpPasrser(),
                     new FileTargetParser(),
-                    new MinimalPdfParser(),
                 }));
     }
 }
