@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Hacks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.AshiiHexFilters;
@@ -10,21 +10,22 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
+namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
 {
     public static class StreamTest
     {
-        private static async Task EncodeStreamTest(string dest, PdfStream str)
+        private static async Task EncodeStreamTest(string dest, PdfStream str, string filterName)
         {
             Assert.Equal(
-                $"<</Filter /ASCIIHexDecode /Length {dest.Length}>> stream\r\n{dest}\r\nendstream",
+                $"<</Filter {filterName} /Length {dest.Length}>> stream\r\n{dest}\r\nendstream",
                 await str.WriteToString());
         }
         private static async Task RoundTripTestAsync(string src, Stream streamToRead)
         {
             var stream = streamToRead;
-            var decoded = await new StreamReader(stream).ReadToEndAsync();
-            Assert.Equal(src, decoded);
+            var buf = new byte[src.Length];
+            await buf.FillBufferAsync(0, buf.Length, stream);
+            Assert.Equal(src, buf.ExtendedAsciiString());
         }
 
         private static async Task<Stream> CreateReadingSingleBytes(PdfStream str) =>
@@ -37,7 +38,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var str = LowLevelDocumentBuilderOperations.NewCompressedStream(
                 null!, src, compression, parameters);
-            await EncodeStreamTest(dest, str);
+            await EncodeStreamTest(dest, str, "/"+compression);
             await RoundTripTestAsync(src, await str.GetDecodedStream());
             await RoundTripTestAsync(src, await CreateReadingSingleBytes(str));
             
@@ -52,25 +53,5 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             Assert.Equal(expectedResult, decoded);
             
         }
-    }
-    
-    public class S7_4_2AsciiHexDecodeFilter
-    {
-        [Fact]
-        public async Task WriteEncodedStream()
-        {
-            await StreamTest.Encoding(KnownNames.ASCIIHexDecode, null, 
-                "Hello World.", "48656C6C6F20576F726C642E");
-        }
-
-        [Theory]
-        [InlineData("2020", "  ")]
-        [InlineData("7>70", "p")]
-        [InlineData("2020>", "  ")]
-        [InlineData("202>", "  ")]
-        [InlineData("20 \r\n\t 20", "  ")]
-        public Task SpecialCaseqs(string encoded, string decoded) =>
-            StreamTest.TestContent(encoded, decoded, new AsciiHexDecoder(), PdfTokenValues.Null);
-
     }
 }

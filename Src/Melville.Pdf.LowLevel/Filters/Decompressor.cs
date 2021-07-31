@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AshiiHexFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -9,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Filters
 {
     public interface IDecoder
     {
-        Stream WrapStream(Stream inout, PdfObject parameter);
+        Stream WrapStream(Stream input, PdfObject parameter);
     }
     public static class Decompressor
     {
@@ -33,7 +34,8 @@ namespace Melville.Pdf.LowLevel.Filters
 
         private static readonly Dictionary<PdfName, IDecoder> decoders = new()
         {
-            {KnownNames.ASCIIHexDecode, new AsciiHexDecoder()}
+            {KnownNames.ASCIIHexDecode, new AsciiHexDecoder()},
+            {KnownNames.ASCII85Decode, new Ascii85Decoder()},
         };
     }
 }

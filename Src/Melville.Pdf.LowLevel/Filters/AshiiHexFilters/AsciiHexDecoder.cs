@@ -10,11 +10,9 @@ namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
 {
     public class AsciiHexDecoder : IDecoder
     {
-        public Stream WrapStream(Stream input, PdfObject parameter)
-        {
-            return new AsciiHexAdapter(PipeReader.Create(input, new StreamPipeReaderOptions()));
-        }
-        
+        public Stream WrapStream(Stream input, PdfObject parameter) => 
+            new AsciiHexAdapter(input.AsPipeReader());
+
         private class AsciiHexAdapter: DecodingAdapter
         {
             public AsciiHexAdapter(PipeReader source) : base(source)
@@ -25,7 +23,6 @@ namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
                 Decode(ref SequenceReader<byte> source, ref Span<byte> destination)
             {
                 int position = 0;
-                bool done = false;
                 SequencePosition consumed = source.Sequence.Start;
                 while (position < destination.Length&&
                        GetNonWhiteSpaceChar(ref source, out var highByte) && 
@@ -36,9 +33,19 @@ namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
                     consumed = source.Position;
                     if (lowByte == (byte) '>') return (consumed, position, true);
                 }
-
                 return (consumed, position, false);
+            }
 
+            public override (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalDecode(ref SequenceReader<byte> source,
+                ref Span<byte> destination)
+            {
+                if (destination.Length > 0 && GetNonWhiteSpaceChar(ref source, out var highByte))
+                {
+                    destination[0] = HexMath.ByteFromHexCharPair(highByte, (byte) '0');
+                    return (source.Position, 1, true);
+                }
+
+                return (source.Sequence.Start, 0, false);
             }
 
             private static bool GetNonWhiteSpaceChar(ref SequenceReader<byte> source, out byte item)
