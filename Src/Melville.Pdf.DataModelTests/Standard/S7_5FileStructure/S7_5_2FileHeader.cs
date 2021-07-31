@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
@@ -20,7 +22,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [InlineData( 1, 7)]
         public async Task RecognizeFileVersion(int major, int minor)
         {
-            var doc = await (await MinimalPdfGenerator.MinimalPdf(major,minor).AsStringAsync()).ParseDocumentAsync();
+            var doc = await (await MinimalPdfParser.MinimalPdf(major, minor).AsStringAsync()).ParseDocumentAsync();
             Assert.Equal(major, doc.MajorVersion);
             Assert.Equal(minor, doc.MinorVersion);
             

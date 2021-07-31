@@ -1,11 +1,22 @@
+﻿using System.IO;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.Pdf.LowLevel.Writers.DocumentWriters;
+using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
-namespace Melville.Pdf.DataModelTests.ParsingTestUtils
+namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 {
-    public class MinimalPdfGenerator
+    public class MinimalPdfParser: CreatePdfParser
     {
+        public MinimalPdfParser() : base("-min")
+        {
+        }
+
+        protected override ValueTask WritePdf(Stream target) =>
+            new(MinimalPdf(1, 7).CreateDocument().WriteTo(target));
+
         public static ILowLevelDocumentCreator MinimalPdf(int major, int minor)
         {
             var builder = new LowLevelDocumentCreator();

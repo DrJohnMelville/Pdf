@@ -3,6 +3,8 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
@@ -12,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task ReadSingleTrailer()
         {
-            var doc = await (await MinimalPdfGenerator.MinimalPdf(1, 7).AsStringAsync()).ParseDocumentAsync(2);
+            var doc = await (await MinimalPdfParser.MinimalPdf(1, 7).AsStringAsync()).ParseDocumentAsync(2);
             Assert.NotNull(doc.TrailerDictionary);
             Assert.IsType<PdfDictionary>(doc.TrailerDictionary);
             

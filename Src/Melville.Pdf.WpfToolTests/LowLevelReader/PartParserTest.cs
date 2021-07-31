@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.LowLevelReader.DocumentParts;
+using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
 using Xunit;
 
 namespace Melville.Pdf.WpfToolTests.LowLevelReader
@@ -23,14 +24,14 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         [InlineData(2,0)]
         public async Task ParseHeader(int major, int minor)
         {
-            var model = await sut.ParseAsync(await MinimalPdfGenerator.MinimalPdf(major, minor).AsFileAsync());
+            var model = await sut.ParseAsync(await MinimalPdfParser.MinimalPdf(major, minor).AsFileAsync());
             Assert.Equal($"PDF-{major}.{minor}", model[0].Title);
         }
 
         [Fact]
         public async Task ParseFinalDictionary()
         {
-            var model = await sut.ParseAsync(await MinimalPdfGenerator.MinimalPdf(1,7).AsFileAsync());
+            var model = await sut.ParseAsync(await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync());
             var trailerNode = model.Last();
             Assert.Equal("Trailer: Dictionary", trailerNode.Title);
             Assert.Equal(2, trailerNode.Children.Count);

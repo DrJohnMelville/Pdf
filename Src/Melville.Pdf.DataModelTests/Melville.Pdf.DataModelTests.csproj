@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.ReferenceDocumentGenerator\Melville.Pdf.ReferenceDocumentGenerator.csproj" />
     </ItemGroup>
 
 </Project>
