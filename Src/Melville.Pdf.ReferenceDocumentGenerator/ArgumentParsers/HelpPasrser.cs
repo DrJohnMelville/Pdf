@@ -18,6 +18,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
             Console.WriteLine(" -V        View the generated file immediately");
             Console.WriteLine("");
             Console.WriteLine("  -Min  Generate a one page blank pdf");
+            Console.WriteLine("  -Filters  Generate a document using all the filter types");
             
             return ValueTask.FromResult((IArgumentParser?) null);
         }

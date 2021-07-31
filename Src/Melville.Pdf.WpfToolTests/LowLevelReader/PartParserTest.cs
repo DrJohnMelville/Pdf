@@ -35,7 +35,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
             var trailerNode = model.Last();
             Assert.Equal("Trailer: Dictionary", trailerNode.Title);
             Assert.Equal(2, trailerNode.Children.Count);
-            Assert.Equal("/Size: 7", trailerNode.Children[1].Title);
+            Assert.Equal("/Size: 10", trailerNode.Children[1].Title);
             Assert.Equal("/Root: 1 0 R", trailerNode.Children[0].Title);
         }
 
