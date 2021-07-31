@@ -13,7 +13,7 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
         public byte[] Encode(byte[] data, PdfObject? parameters)
         {
             // preallocate a StringBuilder with enough room to store the encoded bytes
-            var ret = new OutputBuffer(new byte[data.Length * 5 / 4]);
+            var ret = new OutputBuffer(new byte[(data.Length * 5 / 4)+5]);
 
             // walk the bytes
             int count = 0;
@@ -36,7 +36,7 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 
             // encode any remaining bytes (that weren't a multiple of 4)
             if (count > 0)
-                EncodeValue(ref ret, value, 4 - count);
+                EncodeValue(ref ret, value << (8*(4-count)), count + 1);
 
             return ret.Result();
         }
@@ -46,18 +46,18 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
             if (value == 0)
                 ret.Append('z');
             else
-                EncodeValue(ref ret, value, 0);
+                EncodeValue(ref ret, value, 5);
         }
 
         private static void EncodeValue(ref OutputBuffer buffer, uint value, int paddingBytes)
         {
             for (int index = 4; index >= 0; index--)
             {
-                buffer.Set((value % 85) + firstChar, index);
+                if (index < paddingBytes) buffer.Set((value % 85) + firstChar, index);
                 value /= 85;
             }
 
-            buffer.Increment(5-paddingBytes);
+            buffer.Increment(paddingBytes);
         }
     }
 }

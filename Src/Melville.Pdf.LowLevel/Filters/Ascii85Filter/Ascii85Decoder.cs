@@ -3,7 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Microsoft.VisualBasic.CompilerServices;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {
@@ -43,6 +43,8 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
             }
 
             const byte firstChar = (byte)'!';
+            private const int incompleteGroupPadding = (byte)'u';
+
             private uint ComputeQuad(byte b1, byte b2, byte b3, byte b4, byte b5)
             {
                 uint ret = (uint) b1 - firstChar;
@@ -77,7 +79,26 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
             public override (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalDecode(ref SequenceReader<byte> source,
                 ref Span<byte> destination)
             {
-                return (source.Position, 0, false);
+                int pos = 0;
+                if (!source.TryRead(out var b1)) return (source.Sequence.Start, 0, false);
+                if (!source.TryRead(out var b2))
+                {
+                    throw new InvalidDataException("Single character group in a Ascii85 stream");
+                }
+
+                if (!source.TryRead(out var b3))
+                {
+                    pos = WriteQuad(destination, ComputeQuad(b1, b2, incompleteGroupPadding, incompleteGroupPadding, incompleteGroupPadding), 1, 0);
+                }
+                else if (!source.TryRead(out var b4))
+                {
+                    pos = WriteQuad(destination, ComputeQuad(b1, b2, b3, incompleteGroupPadding, incompleteGroupPadding), 2, 0);
+                }
+                else
+                {
+                    pos = WriteQuad(destination, ComputeQuad(b1, b2, b3, b4, incompleteGroupPadding), 3, 0);
+                }
+                return (source.Position, pos, true);
             }
         }
     }
