@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Buffers;
+using System.Data.SqlTypes;
 using System.IO;
 using System.IO.Pipelines;
+using System.Threading;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -25,27 +27,51 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
                 while (true)
                 {
                     var lastPosition = source.Position;
-                    if (destination.Length - destPosition < 4) return (lastPosition, destPosition, false);
-                    if (!source.TryRead(out byte b1)) return (lastPosition, destPosition, false);
+                    if (destination.Length - destPosition < 4) 
+                        return (lastPosition, destPosition, false);
+                    if (!source.TryReadNonWhitespace(out byte b1)) 
+                        return (lastPosition, destPosition, false);
+                    if (b1 == terminatingChar) return (source.Position, destPosition, true);
                     if (b1 == (byte) 'z')
                     {
                         destPosition = WriteQuad(destination, 0, 4, destPosition);
                     }
                     else
                     {
-                        if (!(source.TryRead(out var b2) && source.TryRead(out var b3) &&
-                              source.TryRead(out var b4) && source.TryRead(out var b5)))
+                        if (!(source.TryReadNonWhitespace(out var b2) && source.TryReadNonWhitespace(out var b3) &&
+                              source.TryReadNonWhitespace(out var b4) && source.TryReadNonWhitespace(out var b5)))
                             return (lastPosition, destPosition, false);
-                        destPosition = WriteQuad(destination, ComputeQuad(b1, b2, b3, b4, b5), 4, destPosition);
+                        bool isDone;
+                        (destPosition, isDone) = HandleQuintuple(b1,b2,b3,b4,b5, ref destination, destPosition);
+                        if (isDone) return (source.Position, destPosition, true);
                     }
-
                 }
             }
 
-            const byte firstChar = (byte)'!';
-            private const int incompleteGroupPadding = (byte)'u';
+            private (int, bool) HandleQuintuple(byte b1, byte b2, byte b3, byte b4, byte b5,
+                ref Span<byte> destination, int destPosition) => (b1, b2, b3, b4, b5) switch
+                {
+                    (_, terminatingChar, _, _, _) => 
+                        (WriteQuad(destination, ComputeQuad(b1), 0, destPosition), true),
+                    (_, _, terminatingChar, _, _) => 
+                        (WriteQuad(destination, ComputeQuad(b1, b2), 1, destPosition), true),
+                    (_, _, _, terminatingChar, _) => 
+                        (WriteQuad(destination, ComputeQuad(b1, b2, b3), 2, destPosition), true),
+                    (_, _, _, _, terminatingChar) => 
+                        (WriteQuad(destination, ComputeQuad(b1, b2, b3, b4), 3, destPosition), true),
+                    _ => (WriteQuad(destination, ComputeQuad(b1, b2, b3, b4, b5), 4, destPosition), false)
+                };
 
-            private uint ComputeQuad(byte b1, byte b2, byte b3, byte b4, byte b5)
+            private const byte firstChar = (byte)'!';
+            private const byte incompleteGroupPadding = (byte)'u';
+            private const byte terminatingChar = (byte)'~';
+
+            private uint ComputeQuad(
+                byte b1 = incompleteGroupPadding, 
+                byte b2 = incompleteGroupPadding, 
+                byte b3 = incompleteGroupPadding, 
+                byte b4 = incompleteGroupPadding, 
+                byte b5 = incompleteGroupPadding)
             {
                 uint ret = (uint) b1 - firstChar;
                 ret *= 85;
@@ -79,26 +105,23 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
             public override (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalDecode(ref SequenceReader<byte> source,
                 ref Span<byte> destination)
             {
-                int pos = 0;
-                if (!source.TryRead(out var b1)) return (source.Sequence.Start, 0, false);
-                if (!source.TryRead(out var b2))
+                if (!source.TryReadNonWhitespace(out var b1) || b1 == terminatingChar) 
+                    return (source.Sequence.Start, 0, false);
+                if (!source.TryReadNonWhitespace(out var b2) || b2 == terminatingChar)
                 {
                     throw new InvalidDataException("Single character group in a Ascii85 stream");
                 }
 
-                if (!source.TryRead(out var b3))
+                if (!source.TryReadNonWhitespace(out var b3))
                 {
-                    pos = WriteQuad(destination, ComputeQuad(b1, b2, incompleteGroupPadding, incompleteGroupPadding, incompleteGroupPadding), 1, 0);
+                    b3 = terminatingChar;
                 }
-                else if (!source.TryRead(out var b4))
+                if (!source.TryReadNonWhitespace(out var b4))
                 {
-                    pos = WriteQuad(destination, ComputeQuad(b1, b2, b3, incompleteGroupPadding, incompleteGroupPadding), 2, 0);
+                    b4 = terminatingChar;
                 }
-                else
-                {
-                    pos = WriteQuad(destination, ComputeQuad(b1, b2, b3, b4, incompleteGroupPadding), 3, 0);
-                }
-                return (source.Position, pos, true);
+                var (pos, done) = HandleQuintuple(b1, b2, b3, b4, terminatingChar, ref destination, 0); 
+                return (source.Position, pos, done);
             }
         }
     }

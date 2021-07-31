@@ -25,8 +25,8 @@ namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
                 int position = 0;
                 SequencePosition consumed = source.Sequence.Start;
                 while (position < destination.Length&&
-                       GetNonWhiteSpaceChar(ref source, out var highByte) && 
-                       GetNonWhiteSpaceChar(ref source, out var lowByte))
+                       source.TryReadNonWhitespace(out var highByte) && 
+                       source.TryReadNonWhitespace(out var lowByte))
                 {
                     if (highByte == (byte) '>') return (consumed, position, true);
                     destination[position++] = HexMath.ByteFromHexCharPair(highByte, lowByte);
@@ -39,23 +39,14 @@ namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
             public override (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalDecode(ref SequenceReader<byte> source,
                 ref Span<byte> destination)
             {
-                if (destination.Length > 0 && GetNonWhiteSpaceChar(ref source, out var highByte))
+                if (destination.Length > 0 && source.TryReadNonWhitespace(out var highByte)
+                  && HexMath.ByteToNibble(highByte) != Nibble.Terminator)
                 {
                     destination[0] = HexMath.ByteFromHexCharPair(highByte, (byte) '0');
                     return (source.Position, 1, true);
                 }
 
                 return (source.Sequence.Start, 0, false);
-            }
-
-            private static bool GetNonWhiteSpaceChar(ref SequenceReader<byte> source, out byte item)
-            {
-                while (true)
-                {
-                    if (!source.TryRead(out item)) return false;
-                    if (CharClassifier.Classify(item) != CharacterClass.White)
-                        return true;
-                }
             }
         }
     }

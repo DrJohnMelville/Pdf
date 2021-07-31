@@ -12,20 +12,16 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 
         public byte[] Encode(byte[] data, PdfObject? parameters)
         {
-            // preallocate a StringBuilder with enough room to store the encoded bytes
             var ret = new OutputBuffer(new byte[(data.Length * 5 / 4)+5]);
 
-            // walk the bytes
             int count = 0;
             uint value = 0;
             foreach (byte b in data)
             {
-                // build a 32-bit value from the bytes
                 value <<= 8;
                 value |= b;
                 count++;
-
-                // every 32 bits, convert the previous 4 bytes into 5 Ascii85 characters
+                
                 if (count == 4)
                 {
                     EncodeCompleteGroup(value, ref ret);

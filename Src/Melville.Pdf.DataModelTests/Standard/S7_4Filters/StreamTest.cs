@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters;
-using Melville.Pdf.LowLevel.Filters.AshiiHexFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -20,12 +19,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
                 $"<</Filter {filterName} /Length {dest.Length}>> stream\r\n{dest}\r\nendstream",
                 await str.WriteToString());
         }
-        private static async Task RoundTripTestAsync(string src, Stream streamToRead)
+        private static async Task VerifyStreamContentAsync(string src, Stream streamToRead)
         {
-            var stream = streamToRead;
-            var buf = new byte[src.Length];
-            await buf.FillBufferAsync(0, buf.Length, stream);
-            Assert.Equal(src, buf.ExtendedAsciiString());
+            var buf = new byte[src.Length+200];
+            var read = await buf.FillBufferAsync(0, buf.Length, streamToRead);
+            Assert.Equal(src, buf[..read].ExtendedAsciiString());
         }
 
         private static async Task<Stream> CreateReadingSingleBytes(PdfStream str) =>
@@ -39,19 +37,16 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             var str = LowLevelDocumentBuilderOperations.NewCompressedStream(
                 null!, src, compression, parameters);
             await EncodeStreamTest(dest, str, "/"+compression);
-            await RoundTripTestAsync(src, await str.GetDecodedStream());
-            await RoundTripTestAsync(src, await CreateReadingSingleBytes(str));
-            
+            await VerifyStreamContentAsync(src, await str.GetDecodedStream());
+            await VerifyStreamContentAsync(src, await CreateReadingSingleBytes(str));
         }
 
-        public static async Task TestContent(
-            string content, string expectedResult, AsciiHexDecoder decoder, PdfObject parameters)
-        {
-            var source = new MemoryStream(ExtendedAsciiEncoding.AsExtendedAsciiBytes(content));
-            var str = decoder.WrapStream(source, parameters);
-            var decoded = await new StreamReader(str).ReadToEndAsync();
-            Assert.Equal(expectedResult, decoded);
-            
-        }
+        public static Task TestContent(
+            string encoded, string decoded, IDecoder decoder, PdfObject parameters) =>
+            VerifyStreamContentAsync(decoded,
+                decoder.WrapStream(StringAsAsciiStream(encoded), parameters));
+
+        private static MemoryStream StringAsAsciiStream(string content) => 
+            new(ExtendedAsciiEncoding.AsExtendedAsciiBytes(content));
     }
 }
