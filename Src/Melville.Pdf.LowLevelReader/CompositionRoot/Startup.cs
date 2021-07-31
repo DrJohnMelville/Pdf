@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.MvvmDialogs;
@@ -13,7 +14,11 @@ namespace Melville.Pdf.LowLevelReader.CompositionRoot
         [STAThread]
         public static void Main(string[] arguments)
         {
-            ApplicationRootImplementation.Run(new Startup());
+            ApplicationRootImplementation.Run(new Startup(arguments));
+        }
+
+        private Startup(string[] arguments) : base(arguments)
+        {
         }
 
         protected override void RegisterWithIocContainer(IBindableIocService service)
@@ -21,6 +26,15 @@ namespace Melville.Pdf.LowLevelReader.CompositionRoot
             service.AddLogging();
             service.RegisterHomeViewModel<MainDisplayViewModel>();
             RegisterMainWindow(service);
+            TryRegistedCommandLine(service);
+        }
+
+        private void TryRegistedCommandLine(IBindableIocService service)
+        {
+            if (CommandLineParameters.Length > 0 && File.Exists(CommandLineParameters[0]))
+            {
+                service.Bind<IOpenSaveFile>().ToConstant(new FakeOpenAdapter(CommandLineParameters[0]));
+            }
         }
 
         private static void RegisterMainWindow(IBindableIocService service)
