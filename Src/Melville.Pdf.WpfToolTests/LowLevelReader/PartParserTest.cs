@@ -56,7 +56,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
             var model = await BuildSingleElementFile(i=>
                 i.NewStream("The Stream Data", (KnownNames.Type, KnownNames.Page)));
             var stream = (StreamDocumentPart)model[2].Children[0];
-            await stream.LoadBytesAsync("");
+            await stream.LoadBytesAsync();
             Assert.Equal("Stream", stream.Title);
             Assert.Equal("/Type: /Page", stream.Children[0].Title);
             Assert.Equal("/Length: 15", stream.Children[1].Title);

@@ -19,7 +19,9 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
         {
             PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(await source.OpenRead());
             GenerateHeaderElement(lowlevel);
-            foreach (var item in lowlevel.Objects.Values)
+            foreach (var item in lowlevel.Objects.Values
+                .OrderBy(i=>i.Target.ObjectNumber)
+                .ToList())
             {
                 items.Add(await item.Target.Visit(generator));
             }

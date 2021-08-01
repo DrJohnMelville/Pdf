@@ -21,8 +21,18 @@
         </TreeView>
         <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
         <TextBlock Grid.Column="1" FontSize="18" Text="{Binding Selected.Title}"></TextBlock>
-        <ScrollViewer Grid.Row="1" Grid.Column="1">
-            <TextBlock Text="{Binding Selected.DisplayContent}" FontFamily="Consolas"/>
+        <ScrollViewer Grid.Row="1" Grid.Column="1" wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected}">
+            <Grid easyGrids:GridOperations.ColsAndRows="* / auto, *">
+                <ListBox wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected.Formats}"
+                         ItemsSource="{Binding Selected.Formats}" SelectedIndex="{Binding Selected.SelectedFormat}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+                <TextBlock Grid.Row="1" Text="{Binding Selected.DisplayContent}" FontFamily="Consolas"/>
+            </Grid>
         </ScrollViewer>
     </Grid>
 </UserControl>
