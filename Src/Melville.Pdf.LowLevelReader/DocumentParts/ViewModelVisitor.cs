@@ -61,7 +61,7 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
         }
 
         private ValueTask<DocumentPart> GenerateDictionaryItem(KeyValuePair<PdfName, PdfObject> item) => 
-            GeneratePart($"/{item.Key}: ", item.Value);
+            GeneratePart($"{item.Key}: ", item.Value);
 
         public ValueTask<DocumentPart> Visit(PdfTokenValues item) => Terminal(item.ToString());
 
@@ -75,7 +75,7 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
         public ValueTask<DocumentPart> Visit(PdfIndirectReference item) => 
             Terminal ($"{item.Target.ObjectNumber} {item.Target.GenerationNumber} R");
 
-        public ValueTask<DocumentPart> Visit(PdfName item) => Terminal("/" + item);
+        public ValueTask<DocumentPart> Visit(PdfName item) => Terminal(item.ToString());
 
         public ValueTask<DocumentPart> Visit(PdfInteger item) => Terminal(item.IntValue.ToString());
 

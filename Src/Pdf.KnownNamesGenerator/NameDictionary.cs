@@ -4,7 +4,16 @@ namespace Pdf.KnownNamesGenerator
 {
     static internal class NameDictionary
     {
-        public static (string Value, string CSharpNape)[] AddAllNames =
+        //ToDo
+        //Need to handle some known PDF names abbreviations such as
+        //ASCIIHexDecode -> AHx
+        // ASCII85Decode -> A85
+        //     LZWDecode -> LZW
+        //     FlateDecode -> Fl
+        //     RunLengthDecode -> RL
+        //     CCITTFaxDecode -> CCF
+        //     DCTDecode -> DCT
+         public static (string Value, string CSharpNape)[] AddAllNames =
         {
             ("3D", "_3D"),
             ("A", "A"),

@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
+namespace Melville.Pdf.DataModelTests.StreamUtilities
 {
     public static class StreamTest
     {
@@ -27,7 +27,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         }
 
         private static async Task<Stream> CreateReadingSingleBytes(PdfStream str) =>
-            Decompressor.DecodeStream(new OneCharAtAtimeStream(await str.GetRawStream()),
+            await Decompressor.DecodeStream(new OneCharAtAtimeStream(await str.GetRawStream()),
                 (await str.GetOrNull(KnownNames.Filter)).AsList(),
                 (await str.GetOrNull(KnownNames.Params)).AsList(), int.MaxValue);
 
@@ -36,15 +36,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         {
             var str = LowLevelDocumentBuilderOperations.NewCompressedStream(
                 null!, src, compression, parameters);
-            await EncodeStreamTest(dest, str, "/"+compression);
-            await VerifyStreamContentAsync(src, await str.GetDecodedStream());
-            await VerifyStreamContentAsync(src, await CreateReadingSingleBytes(str));
+            await EncodeStreamTest(dest, str, compression.ToString()!);
+//            await VerifyStreamContentAsync(src, await str.GetDecodedStream());
+            await VerifyStreamContentAsync(src, new OneCharAtAtimeStream(await CreateReadingSingleBytes(str)));
         }
 
-        public static Task TestContent(
+        public static async Task TestContent(
             string encoded, string decoded, IDecoder decoder, PdfObject parameters) =>
-            VerifyStreamContentAsync(decoded,
-                decoder.WrapStream(StringAsAsciiStream(encoded), parameters));
+            await VerifyStreamContentAsync(decoded,
+                await decoder.WrapStreamAsync(StringAsAsciiStream(encoded), parameters));
 
         private static MemoryStream StringAsAsciiStream(string content) => 
             new(ExtendedAsciiEncoding.AsExtendedAsciiBytes(content));

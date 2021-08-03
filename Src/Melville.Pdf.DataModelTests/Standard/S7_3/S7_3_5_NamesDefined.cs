@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [InlineData("Fo\u1234o")]
         public void NameCanRenderInUtf8(string name)
         {
-            Assert.Equal(name, new PdfName(name).ToString());
+            Assert.Equal("/"+name, new PdfName(name).ToString());
         }
 
         [Theory]
@@ -46,7 +46,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         public async Task ParseNameSucceed(string source, string result)
         {
             var name = await TryParseStringToName(source);
-            Assert.Equal(result, name!.ToString());
+            Assert.Equal("/"+result, name!.ToString());
             
         }
         

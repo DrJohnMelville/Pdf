@@ -27,5 +27,6 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public ValueTask<PdfObject> this[int index] => RawItems[index].DirectValue();
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+        public override string ToString() => "["+string.Join(" ", RawItems) +"]";
     }
 }

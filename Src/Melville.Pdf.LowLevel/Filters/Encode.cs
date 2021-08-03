@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AshiiHexFilters;
+using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -30,7 +31,9 @@ namespace Melville.Pdf.LowLevel.Filters
         private static readonly Dictionary<PdfName, IEncoder> compressors = new()
         {
             {KnownNames.ASCIIHexDecode, new AsciiHexEncoder()},
-            {KnownNames.ASCII85Decode, new Ascii85Encoder()}
+            {KnownNames.ASCII85Decode, new Ascii85Encoder()},
+            {KnownNames.Fl, new FlateEncoder()},
+            {KnownNames.FlateDecode, new FlateEncoder()}
         };
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.AshiiHexFilters
 {
     public class AsciiHexDecoder : IDecoder
     {
-        public Stream WrapStream(Stream input, PdfObject parameter) => 
-            new AsciiHexAdapter(input.AsPipeReader());
+        public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) => 
+             new(new AsciiHexAdapter(input.AsPipeReader()));
 
         private class AsciiHexAdapter: DecodingAdapter
         {

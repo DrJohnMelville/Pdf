@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Buffers;
-using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
-using System.Threading;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {
     public class Ascii85Decoder: IDecoder
     {
-        public Stream WrapStream(Stream input, PdfObject parameter) => 
-            new Ascii85Adapter(input.AsPipeReader());
+        public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) => 
+            new ( new MinimumReadSizeFilter(new Ascii85Adapter(input.AsPipeReader()), 4));
 
         private class Ascii85Adapter: DecodingAdapter
         {
@@ -23,6 +22,7 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
             public override (SequencePosition SourceConsumed, int bytesWritten, bool Done) 
                 Decode(ref SequenceReader<byte> source, ref Span<byte> destination)
             {
+                VerifyMinimimumReadSize(destination.Length);
                 var destPosition = 0;
                 while (true)
                 {
@@ -47,6 +47,11 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
                     }
                 }
             }
+
+            [Conditional("DEBUG")]
+            private void VerifyMinimimumReadSize(int destinationLength) =>
+                Debug.Assert(destinationLength >=4, 
+                    "Cannot read fewer than four bytes at a time, use a MinimumReadSizeFilter.");
 
             private (int, bool) HandleQuintuple(byte b1, byte b2, byte b3, byte b4, byte b5,
                 ref Span<byte> destination, int destPosition) => (b1, b2, b3, b4, b5) switch
@@ -111,7 +116,6 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
                 {
                     throw new InvalidDataException("Single character group in a Ascii85 stream");
                 }
-
                 if (!source.TryReadNonWhitespace(out var b3))
                 {
                     b3 = terminatingChar;

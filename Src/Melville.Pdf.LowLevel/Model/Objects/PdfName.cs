@@ -27,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         }
         public PdfName(string s):this(Encoding.UTF8.GetBytes(s)){}
         
-        public override string ToString() => Encoding.UTF8.GetString(Bytes);
+        public override string ToString() => "/"+Encoding.UTF8.GetString(Bytes);
 
         public virtual bool Equals(PdfName? other) =>
             ((IEquatable<PdfByteArrayObject>) this).Equals(other);
