@@ -37,7 +37,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             var str = LowLevelDocumentBuilderOperations.NewCompressedStream(
                 null!, src, compression, parameters);
             await EncodeStreamTest(dest, str, compression.ToString()!);
-//            await VerifyStreamContentAsync(src, await str.GetDecodedStream());
+            await VerifyStreamContentAsync(src, await str.GetDecodedStream());
             await VerifyStreamContentAsync(src, new OneCharAtAtimeStream(await CreateReadingSingleBytes(str)));
         }
 
