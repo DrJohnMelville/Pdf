@@ -30,9 +30,13 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                         (KnownNames.BaseFont, KnownNames.Helvetica),
                         (KnownNames.Encoding, KnownNames.MacRomanEncoding)
                         ));
-                var page1 = CreatePage(builder, pages, procset, "Ascii Hex", font, KnownNames.ASCIIHexDecode);
-                var page2 = CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode);
-                return new[] {page1, page2};
+                return new[]
+                {
+                    CreatePage(builder, pages, procset,"Ascii Hex", font, KnownNames.ASCIIHexDecode),
+                    CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
+                    CreatePage(builder, pages, procset, "FlateDecode", font, KnownNames.FlateDecode),
+                    CreatePage(builder, pages, procset, "FL", font, KnownNames.Fl),
+                };
             });
         }
 

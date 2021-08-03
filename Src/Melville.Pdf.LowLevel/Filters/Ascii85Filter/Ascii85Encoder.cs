@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 
         public byte[] Encode(byte[] data, PdfObject? parameters)
         {
-            var ret = new OutputBuffer(new byte[(data.Length * 5 / 4)+5]);
+            var ret = new OutputBuffer(new byte[(data.Length * 5 / 4)+7]);
 
             int count = 0;
             uint value = 0;
@@ -34,6 +34,8 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
             if (count > 0)
                 EncodeValue(ref ret, value << (8*(4-count)), count + 1);
 
+            ret.Append('~');
+            ret.Append('>');
             return ret.Result();
         }
 
