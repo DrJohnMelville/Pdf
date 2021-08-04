@@ -70,7 +70,13 @@ namespace ArchitectureAnalyzer.Analyzer
 
         private void CheckTypeSymbolUsage(ITypeSymbol? usedType)
         {
+            
             if (usedType is not {SpecialType: SpecialType.None}) return;
+            if (usedType is INamedTypeSymbol nts && nts.ConstructedFrom.ToString() == "System.Nullable<T>")
+            {
+                CheckTypeSymbolUsage(nts.TypeArguments[0]);
+                return;
+            }
             ComputeUsageDiagnostics(usedType);
             CheckDependantTypes(usedType);
         }

@@ -80,6 +80,8 @@ namespace Melville.ArchitectureAnalyzer.Test.Analyzers
                ()=> RunSimpleTest("", " Common.[|I<Relying>|] item;", "public interface I<T> {}", 2));
         [Fact] public Task CanDeclareAllowedSpecialization() => 
             RunSimpleTest("", " Common.I<int> item;", "public interface I<T> {}");
+            [Fact] public Task CanDeclareAllowedSpecializationWithNullabe() => 
+            RunSimpleTest("", " Common.I<int?> item;", "public interface I<T> {}");
         [Fact] public Task CannotDeclareProhibitedProperty() =>
             RunSimpleTest("", "[|Relying|] Item {get;}");
         [Fact] public Task CannotDeclareProhibitedLocal() => 
