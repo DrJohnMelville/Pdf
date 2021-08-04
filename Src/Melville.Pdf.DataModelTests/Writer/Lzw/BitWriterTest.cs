@@ -13,6 +13,7 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
     {
         
         [Theory]
+        [InlineData("", 4,"")]
         [InlineData("\x01", 4,"\x10")]
         [InlineData("\x07", 4,"\x70")]
         [InlineData("\x07\x07", 4,"\x77")]
@@ -26,15 +27,34 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
         [InlineData("\x07\x07\x07\x07\x07", 5,"\x39\xCE\x73\x80")]
         public async Task BitStringTest(string decoded, int bitsize, string encoded)
         {
+            await WriterTest(decoded, bitsize, encoded);
+            await ReaderTest(decoded, bitsize, encoded);
+        }
+
+        private async Task ReaderTest(string decoded, int bitsize, string encoded)
+        {
+            var source = new MemoryStream(encoded.AsExtendedAsciiBytes());
+            var sut = new BitReader(PipeReader.Create(source));
+            foreach (var character in decoded)
+            {
+                var result = await sut.TryRead(bitsize);
+                Assert.True(result.HasValue);
+                Assert.Equal(character, result!.Value);
+            }
+            Assert.False((await sut.TryRead(9)).HasValue);
+        }  
+        
+        private async Task WriterTest(string decoded, int bitsize, string encoded)
+        {
             var target = new MemoryStream();
             var writer = new BitWriter(PipeWriter.Create(target));
             foreach (var character in decoded)
             {
-                await writer.WriteBits((int) character, bitsize);
+                await writer.WriteBits(character, bitsize);
             }
+
             await writer.FinishWrite();
             Assert.Equal(encoded, target.ToArray().ExtendedAsciiString());
-            
         }
     }
-}
+}   

@@ -34,12 +34,10 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 
         private void WriteBottomBits(int data, int bits)
         {
-            residue |= (byte) ((data & Mask(bits)) << (spotsAvailable - bits));
+            residue |= (byte) ((data & BitUtilities.Mask(bits)) << (spotsAvailable - bits));
             spotsAvailable = (byte) (spotsAvailable - bits);
         }
-
-        private byte Mask(int bits) => (byte) ((1 << bits) - 1);
-
+        
         public ValueTask<FlushResult> FinishWrite()
         {
             if (spotsAvailable > 7) return new ValueTask<FlushResult>(new FlushResult());
@@ -59,5 +57,10 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             residue = 0;
             spotsAvailable = 8;
         }
+    }
+
+    public static class BitUtilities
+    {
+        public static byte Mask(int bits) => (byte) ((1 << bits) - 1);
     }
 }
