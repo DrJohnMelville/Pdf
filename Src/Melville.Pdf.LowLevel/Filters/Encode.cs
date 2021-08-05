@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AshiiHexFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
+using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -33,7 +34,8 @@ namespace Melville.Pdf.LowLevel.Filters
             {KnownNames.ASCIIHexDecode, new AsciiHexEncoder()},
             {KnownNames.ASCII85Decode, new Ascii85Encoder()},
             {KnownNames.Fl, new FlateEncoder()},
-            {KnownNames.FlateDecode, new FlateEncoder()}
+            {KnownNames.FlateDecode, new FlateEncoder()},
+            {KnownNames.LZWDecode, new LzwEncoder()},
         };
     }
 }

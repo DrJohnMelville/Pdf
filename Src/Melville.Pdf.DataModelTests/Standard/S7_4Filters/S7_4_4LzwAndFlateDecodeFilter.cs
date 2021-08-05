@@ -12,9 +12,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
     public class S7_4_4LzwAndFlateDecodeFilter
     {
         [Fact]
-        public Task WriteEncodedStream() =>
+        public Task FlateDecodeStreamRoundTrip() =>
             StreamTest.Encoding(new PdfArray(KnownNames.ASCII85Decode, KnownNames.FlateDecode), null, 
                 "Hello World.", "GhV^Zc,n(/#gY0H8^RV?!!*'!!rs<A\"A8~>");
+        [Fact]
+        public Task LZWDecodeStreamRoundTrip() =>
+            StreamTest.Encoding(new PdfArray(KnownNames.ASCIIHexDecode, KnownNames.LZWDecode), null, 
+                "-----A---B", "800B6050220C8501");
 
         [Fact]
         public void AddlerTest()
