@@ -11,7 +11,6 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
 {
     public class BitWriterTest
     {
-        
         [Theory]
         [InlineData("", 4,"")]
         [InlineData("\x01", 4,"\x10")]
