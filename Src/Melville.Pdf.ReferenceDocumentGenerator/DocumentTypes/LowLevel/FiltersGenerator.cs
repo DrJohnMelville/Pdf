@@ -36,6 +36,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                     CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
                     CreatePage(builder, pages, procset, "FlateDecode", font, KnownNames.FlateDecode),
                     CreatePage(builder, pages, procset, "FL", font, KnownNames.Fl),
+                    CreatePage(builder, pages, procset, "LZW", font, KnownNames.LZWDecode),
                 };
             });
         }

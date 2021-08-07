@@ -20,15 +20,13 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
         {
             private readonly BitWriter output;
             private readonly byte[] input;
-            private int inputPosition;
-            private EncoderDictionary dictionary;
+             private readonly EncoderDictionary dictionary;
             private short currentDictionaryEntry;
 
             public LzwEncodingContext(byte[] input, Stream output)
             {
                 this.input = input;
                 this.output = new BitWriter(PipeWriter.Create(output));
-                inputPosition = 0;
                 dictionary = new EncoderDictionary();
             }
 
@@ -52,7 +50,6 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                             currentDictionaryEntry = input[i];
                         }
                     }
-
                     await output.WriteBits(currentDictionaryEntry, 9);
                 }
                 await output.WriteBits(LZWConstants.EndOfFileCode, 9);

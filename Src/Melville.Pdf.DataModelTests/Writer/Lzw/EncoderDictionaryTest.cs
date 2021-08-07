@@ -9,20 +9,20 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
         [Fact]
         public void GetInitialByteIsTheByte()
         {
-            QueryDictionary(false, 12, 15, 259);
-            QueryDictionary(true, 12, 15, 259);
+            QueryDictionary(false, 12, 15, 258);
+            QueryDictionary(true, 12, 15, 258);
         }
 
         [Fact]
         public void GetGetDifferentStrings()
         {
-            QueryDictionary(false, 12,15,259);
-            QueryDictionary(true, 12,15,259);
-            QueryDictionary(false, 259,1,260);
-            QueryDictionary(false, 259,2,261);
+            QueryDictionary(false, 12,15,258);
+            QueryDictionary(true, 12,15,258);
+            QueryDictionary(false, 259,1,259);
+            QueryDictionary(false, 259,2,260);
 
-            QueryDictionary(true, 259,1,260);
-            QueryDictionary(true, 259,2,261);
+            QueryDictionary(true, 259,1,259);
+            QueryDictionary(true, 259,2,260);
         }
 
         private void QueryDictionary(bool succeed, short rootIndex, byte nextByte, int expectedIndex)

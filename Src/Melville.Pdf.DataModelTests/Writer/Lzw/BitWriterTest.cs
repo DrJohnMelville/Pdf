@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
@@ -54,6 +55,27 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
 
             await writer.FinishWrite();
             Assert.Equal(encoded, target.ToArray().ExtendedAsciiString());
+        }
+
+        [Fact]
+        public async Task MoreThan8Bytes()
+        {
+            var ms = new MemoryStream();
+            var writer = new BitWriter(PipeWriter.Create(ms));
+            await writer.WriteBits(256, 9);
+            await writer.WriteBits(45, 9);
+            await writer.WriteBits(258, 9);
+            await writer.WriteBits(258, 9);
+            await writer.WriteBits(65, 9);
+            await writer.WriteBits(259, 9);
+            await writer.WriteBits(66, 9);
+            await writer.WriteBits(257, 9);
+            await writer.FinishWrite();
+
+            Assert.Equal(new byte []{0x80, 0x0B, 0x60, 0x50, 0x22, 0x0C, 0x0C, 0x85, 0x01}, 
+                ms.ToArray());
+            
+            
         }
     }
 }   
