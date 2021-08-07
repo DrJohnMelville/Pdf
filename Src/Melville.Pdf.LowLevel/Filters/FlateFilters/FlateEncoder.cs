@@ -24,7 +24,7 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
         }
 
         private static byte[] prefix = {0x78, 0xDA};
-        private static void WritePrefix(MemoryStream? ret) => ret.Write(prefix, 0, 2);
+        private static void WritePrefix(MemoryStream ret) => ret.Write(prefix, 0, 2);
 
         private static void WriteCompressedDate(byte[] data, MemoryStream ret)
         {
