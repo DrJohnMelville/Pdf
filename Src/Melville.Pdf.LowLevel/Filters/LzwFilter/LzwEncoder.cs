@@ -33,7 +33,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             public async ValueTask Encode()
             {
                 #warning check if the initial output code is needed
-                await output.WriteBits(LZWConstants.ClearDictionaryCode, 9);
+                await output.WriteBits(LzwConstants.ClearDictionaryCode, 9);
                 if (input.Length > 0)
                 {
                     currentDictionaryEntry = input[0];
@@ -52,7 +52,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                     }
                     await output.WriteBits(currentDictionaryEntry, 9);
                 }
-                await output.WriteBits(LZWConstants.EndOfFileCode, 9);
+                await output.WriteBits(LzwConstants.EndOfFileCode, 9);
                 await output.FinishWrite();
             }
         }

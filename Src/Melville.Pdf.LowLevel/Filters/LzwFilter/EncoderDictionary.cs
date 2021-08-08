@@ -1,18 +1,10 @@
-﻿using System.Reflection.Metadata;
-
-namespace Melville.Pdf.LowLevel.Filters.LzwFilter
+﻿namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
-    public static class LZWConstants
-    {
-        public const int EndOfFileCode = 257;
-        public const int ClearDictionaryCode = 256;
-        public const int MaxTableSize = 4096;
-    }
     public class EncoderDictionary
     {
         // PDF specifies maximum bit length of 12 so maximum code is 4095
-        private readonly Entry[] entries = new Entry[LZWConstants.MaxTableSize];
-        private int nextEntry = LZWConstants.EndOfFileCode + 1;
+        private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
+        private int nextEntry = LzwConstants.EndOfFileCode + 1;
 
         public EncoderDictionary()
         {
