@@ -35,10 +35,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                 while (true)
                 {
                     
-                    var localWrite = codeBeingWritten >= 0?
-                        WriteCurrentCodeToDestionation(destination, destPosition): 0;
-                    destPosition += localWrite;
-                    nextByteToWrite += localWrite;
+                    destPosition = TryWriteCurrentCode(destination, destPosition);
                     if (destPosition >= destination.Length) return destination.Length;
                     var item = await reader.TryRead(9);
                     if (item is null or LzwConstants.EndOfFileCode)
@@ -46,23 +43,51 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                         done = true;
                         return destPosition;
                     }
-
                     if (item.Value == LzwConstants.ClearDictionaryCode) continue;  // todo implement clearing dict
-                    if (dictionary.IsDefined(item.Value))
-                    {
-                        if (codeBeingWritten >= 0)
-                        {
-                            dictionary.AddChild(codeBeingWritten, dictionary.FirstChar((short)item.Value));
-                        }
-                        codeBeingWritten = (short)item.Value;
-                    }
-                    else
-                    {
-                        codeBeingWritten =
-                            dictionary.AddChild(codeBeingWritten, dictionary.FirstChar(codeBeingWritten));
-                    }
-                    nextByteToWrite = 0;
+                    HandleNewCodedGroup((short)item);
                 }
+            }
+
+            private int TryWriteCurrentCode(Memory<byte> destination, int destPosition)
+            {
+                var localWrite = codeBeingWritten >= 0 ? WriteCurrentCodeToDestionation(destination, destPosition) : 0;
+                destPosition += localWrite;
+                nextByteToWrite += localWrite;
+                return destPosition;
+            }
+
+            private void HandleNewCodedGroup(short item)
+            {
+                if (dictionary.IsDefined(item))
+                {
+                    HandleKnownCode(item);
+                }
+                else
+                {
+                    HandleUnknownCode();
+                }
+            }
+
+            private void HandleUnknownCode()
+            {
+                ScheduleNewCodeForOutput(
+                    dictionary.AddChild(codeBeingWritten, dictionary.FirstChar(codeBeingWritten)));
+            }
+
+            private void HandleKnownCode(short item)
+            {
+                if (codeBeingWritten >= 0)
+                {
+                    dictionary.AddChild(codeBeingWritten, dictionary.FirstChar(item));
+                }
+
+                ScheduleNewCodeForOutput(item);
+            }
+
+            private void ScheduleNewCodeForOutput(short code)
+            {
+                codeBeingWritten = code;
+                nextByteToWrite = 0;
             }
 
             private int WriteCurrentCodeToDestionation(Memory<byte> destination, int destPosition)
