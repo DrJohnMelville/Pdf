@@ -18,12 +18,14 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
         {
             private readonly BitReader reader;
             private readonly DecoderDictionary dictionary = new DecoderDictionary();
+            private BitLength bits;
             private short codeBeingWritten = -1;
             private int nextByteToWrite = int.MaxValue;
             private bool done;
 
             public LzwDecodeWrapper(PipeReader input)
             {
+                bits = new BitLength(9);
                 reader = new BitReader(input);
             }
 
@@ -37,7 +39,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                     
                     destPosition = TryWriteCurrentCode(destination, destPosition);
                     if (destPosition >= destination.Length) return destination.Length;
-                    var item = await reader.TryRead(9);
+                    var item = await reader.TryRead(bits.Length);
                     if (item is null or LzwConstants.EndOfFileCode)
                     {
                         done = true;
@@ -70,15 +72,23 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 
             private void HandleUnknownCode()
             {
+                var child = dictionary.AddChild(codeBeingWritten, dictionary.FirstChar(codeBeingWritten));
+                CheckBitLength(child);
                 ScheduleNewCodeForOutput(
-                    dictionary.AddChild(codeBeingWritten, dictionary.FirstChar(codeBeingWritten)));
+                    child);
+            }
+
+            private void CheckBitLength(short child)
+            {
+                // the decoder is always one code behind the encoder, so we add 1 to the switching logic.
+                bits = bits.CheckBitLength(child+1);
             }
 
             private void HandleKnownCode(short item)
             {
                 if (codeBeingWritten >= 0)
                 {
-                    dictionary.AddChild(codeBeingWritten, dictionary.FirstChar(item));
+                    CheckBitLength(dictionary.AddChild(codeBeingWritten, dictionary.FirstChar(item)));
                 }
 
                 ScheduleNewCodeForOutput(item);

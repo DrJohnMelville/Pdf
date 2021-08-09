@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -36,9 +38,21 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                     CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
                     CreatePage(builder, pages, procset, "FlateDecode", font, KnownNames.FlateDecode),
                     CreatePage(builder, pages, procset, "FL", font, KnownNames.Fl),
-                    CreatePage(builder, pages, procset, "LZW", font, KnownNames.LZWDecode),
+                    CreatePage(builder, pages, procset, "LZW -- "+RandomString(350), font, KnownNames.LZWDecode),
                 };
             });
+        }
+
+        private static string RandomString(int length)
+        {
+            var rnd = new Random(10);
+            var ret = new StringBuilder(length);
+            for (int i = 0; i < length; i++)
+            {
+                ret.Append('A' + rnd.Next(26));
+            }
+
+            return ret.ToString();
         }
 
         private static PdfIndirectReference CreatePage(

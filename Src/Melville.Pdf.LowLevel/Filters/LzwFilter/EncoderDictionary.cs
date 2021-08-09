@@ -1,11 +1,13 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.LzwFilter
+﻿using System;
+
+namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
     public class EncoderDictionary
     {
         // PDF specifies maximum bit length of 12 so maximum code is 4095
         private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
         private int nextEntry = LzwConstants.EndOfFileCode + 1;
-
+        
         public EncoderDictionary()
         {
             for (int i = 0; i < 256; i++)
@@ -56,6 +58,7 @@
                 nextByte, out outputItem);
         }
 
+        
         private short CreateItem(byte nextByte)
         {
             var ret = (short)nextEntry++;

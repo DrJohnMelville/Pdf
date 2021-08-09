@@ -22,18 +22,20 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             private readonly byte[] input;
              private readonly EncoderDictionary dictionary;
             private short currentDictionaryEntry;
+            private BitLength bits;
 
             public LzwEncodingContext(byte[] input, Stream output)
             {
                 this.input = input;
                 this.output = new BitWriter(PipeWriter.Create(output));
                 dictionary = new EncoderDictionary();
+                bits = new BitLength(9);
             }
 
             public async ValueTask Encode()
             {
                 #warning check if the initial output code is needed
-                await output.WriteBits(LzwConstants.ClearDictionaryCode, 9);
+                await output.WriteBits(LzwConstants.ClearDictionaryCode, bits.Length);
                 if (input.Length > 0)
                 {
                     currentDictionaryEntry = input[0];
@@ -46,13 +48,14 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                         }
                         else
                         {
-                            await output.WriteBits(currentDictionaryEntry, 9);
-                            currentDictionaryEntry = input[i];
+                            await output.WriteBits(currentDictionaryEntry, bits.Length);
+                            bits = bits.CheckBitLength(nextEntry)
+                                ;                            currentDictionaryEntry = input[i];
                         }
                     }
-                    await output.WriteBits(currentDictionaryEntry, 9);
+                    await output.WriteBits(currentDictionaryEntry, bits.Length);
                 }
-                await output.WriteBits(LzwConstants.EndOfFileCode, 9);
+                await output.WriteBits(LzwConstants.EndOfFileCode, bits.Length);
                 await output.FinishWrite();
             }
         }

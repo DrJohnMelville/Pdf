@@ -14,7 +14,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 
         private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
         private int nextEntry = LzwConstants.EndOfFileCode + 1;
-
+        
         public DecoderDictionary()
         {
             for (int i = 0; i < 256; i++)
@@ -46,8 +46,13 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
         public short AddChild(short parent, byte character)
         {
             var index = (short)nextEntry++;
+            CheckBitLength();
             AddChild(ref entries[index], parent, character);
             return index;
+        }
+
+        private void CheckBitLength()
+        {
         }
 
         private void AddChild(ref Entry entry, short parentIndex, byte character)
