@@ -34,8 +34,6 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 
             public async ValueTask Encode()
             {
-                #warning check if the initial output code is needed
-                await output.WriteBits(LzwConstants.ClearDictionaryCode, bits.Length);
                 if (input.Length > 0)
                 {
                     currentDictionaryEntry = input[0];

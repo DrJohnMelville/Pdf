@@ -21,7 +21,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         [Fact]
         public Task LZWDecodeStreamRoundTrip() =>
             StreamTest.Encoding(new PdfArray(KnownNames.ASCIIHexDecode, KnownNames.LZWDecode), null, 
-                "-----A---B", "800B6050220C0C8501");
+                "-----A---B", "16C0A04418190A02");
 
         [Theory]
         [InlineData(100)]
