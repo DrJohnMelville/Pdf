@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.LzwFilter
+﻿using System;
+
+namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
     public readonly struct BitLength
     {
@@ -7,6 +9,7 @@
 
         public BitLength(int bits)
         {
+            if (bits > 12) throw new ArgumentException("Too big");
             Length = bits;
             nextIncrement = (1 << bits)-1;
         }

@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
-    public class LzwEncoder: IEncoder
+    public class LzwEncoder : IEncoder
     {
         public byte[] Encode(byte[] data, PdfObject? parameters)
         {
@@ -15,12 +15,12 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             writer.Encode().GetAwaiter().GetResult();
             return output.ToArray();
         }
-        
+
         public class LzwEncodingContext
         {
             private readonly BitWriter output;
             private readonly byte[] input;
-             private readonly EncoderDictionary dictionary;
+            private readonly EncoderDictionary dictionary;
             private short currentDictionaryEntry;
             private BitLength bits;
 
@@ -47,14 +47,28 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                         else
                         {
                             await output.WriteBits(currentDictionaryEntry, bits.Length);
-                            bits = bits.CheckBitLength(nextEntry)
-                                ;                            currentDictionaryEntry = input[i];
+                            await CheckBitLength(nextEntry);
+                            currentDictionaryEntry = input[i];
                         }
                     }
+
                     await output.WriteBits(currentDictionaryEntry, bits.Length);
                 }
+
                 await output.WriteBits(LzwConstants.EndOfFileCode, bits.Length);
                 await output.FinishWrite();
+            }
+
+            private async ValueTask CheckBitLength(short nextEntry)
+            {
+                if (nextEntry >= LzwConstants.MaxTableSize-2)
+                {
+                    await output.WriteBits(LzwConstants.ClearDictionaryCode, bits.Length);
+                    dictionary.Reset();
+                    bits = new BitLength(9);
+                }else {
+                    bits = bits.CheckBitLength(nextEntry);
+                }
             }
         }
     }

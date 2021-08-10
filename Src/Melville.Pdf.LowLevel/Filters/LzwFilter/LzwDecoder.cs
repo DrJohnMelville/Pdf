@@ -19,9 +19,10 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             private readonly BitReader reader;
             private readonly DecoderDictionary dictionary = new DecoderDictionary();
             private BitLength bits;
-            private short codeBeingWritten = -1;
+            private short codeBeingWritten = EmptyCode;
             private int nextByteToWrite = int.MaxValue;
             private bool done;
+            private const short EmptyCode = -1;
 
             public LzwDecodeWrapper(PipeReader input)
             {
@@ -45,20 +46,35 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                         done = true;
                         return destPosition;
                     }
-                    if (item.Value == LzwConstants.ClearDictionaryCode) continue;  // todo implement clearing dict
-                    HandleNewCodedGroup((short)item);
+
+                    if (item.Value == LzwConstants.ClearDictionaryCode)
+                    {
+                        ResetDictionary();
+                    }
+                    else
+                    {
+                        HandleCodedGroup((short)item);
+                    }
                 }
+            }
+
+            private void ResetDictionary()
+            {
+                dictionary.Reset();
+                bits = new BitLength(9);
+                codeBeingWritten = EmptyCode;
             }
 
             private int TryWriteCurrentCode(Memory<byte> destination, int destPosition)
             {
-                var localWrite = codeBeingWritten >= 0 ? WriteCurrentCodeToDestionation(destination, destPosition) : 0;
+                if (codeBeingWritten == EmptyCode) return destPosition;
+                var localWrite = WriteCurrentCodeToDestionation(destination, destPosition);
                 destPosition += localWrite;
                 nextByteToWrite += localWrite;
                 return destPosition;
             }
 
-            private void HandleNewCodedGroup(short item)
+            private void HandleCodedGroup(short item)
             {
                 if (dictionary.IsDefined(item))
                 {

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.StreamUtilities;
-using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -24,8 +21,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
                 "-----A---B", "16C0A04418190A02");
 
         [Theory]
+        [InlineData(10)]
         [InlineData(100)]
         [InlineData(499)]
+        [InlineData(10000)]
         public async Task EncodeRandomStream(int length)
         {
             var buffer = new byte[length];
@@ -40,8 +39,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             var destination = new byte[length];
             var decoded = await str.GetDecodedStream();
             await decoded.FillBufferAsync(destination, 0, length);
-            Assert.Equal(buffer, destination);
-            
+            Assert.Equal(buffer.Length, destination.Length);
+
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                Assert.True(buffer[i] == destination[i], $"Position: {i} Expected: {buffer[i]} got {destination[i]}");
+            }
         }
     }
 }

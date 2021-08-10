@@ -34,11 +34,11 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                         ));
                 return new[]
                 {
+                    CreatePage(builder, pages, procset, "LZW -- "+RandomString(9270), font, KnownNames.LZWDecode),
                     CreatePage(builder, pages, procset,"Ascii Hex", font, KnownNames.ASCIIHexDecode),
                     CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
                     CreatePage(builder, pages, procset, "FlateDecode", font, KnownNames.FlateDecode),
                     CreatePage(builder, pages, procset, "FL", font, KnownNames.Fl),
-                    CreatePage(builder, pages, procset, "LZW -- "+RandomString(350), font, KnownNames.LZWDecode),
                 };
             });
         }

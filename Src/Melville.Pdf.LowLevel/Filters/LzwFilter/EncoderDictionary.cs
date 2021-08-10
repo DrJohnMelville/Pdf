@@ -4,25 +4,38 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
     public class EncoderDictionary
     {
-        // PDF specifies maximum bit length of 12 so maximum code is 4095
-        private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
-        private int nextEntry = LzwConstants.EndOfFileCode + 1;
-        
-        public EncoderDictionary()
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                entries[i].Element = (byte) i;
-            }
-        }
-
         private struct Entry
         {
             public byte Element;
             public short FirstChild;
             public short NextSibling;
         }
+
+        // PDF specifies maximum bit length of 12 so maximum code is 4095
+        private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
+        private int nextEntry;
+
+        public EncoderDictionary()
+        {
+            SetupDefaultDictionary();
+        }
+
         
+        private void SetupDefaultDictionary()
+        {
+            for (int i = 0; i < 256; i++)
+            {
+                entries[i].Element = (byte) i;
+            }
+
+            nextEntry = LzwConstants.EndOfFileCode + 1;
+        }
+        public void Reset()
+        {
+            Array.Clear(entries, 0, entries.Length);
+            SetupDefaultDictionary();
+        }
+
         public bool GetOrCreateNode(short rootIndex, byte nextByte, out short outputItem)
         {
             return GetOrCreateNode(ref entries[rootIndex], nextByte, out outputItem);

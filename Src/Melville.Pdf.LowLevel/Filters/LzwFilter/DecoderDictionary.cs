@@ -13,14 +13,26 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
         }
 
         private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
-        private int nextEntry = LzwConstants.EndOfFileCode + 1;
+        private int nextEntry;
         
         public DecoderDictionary()
+        {
+            SetupDefaultDictionary();
+        }
+
+        private void SetupDefaultDictionary()
         {
             for (int i = 0; i < 256; i++)
             {
                 entries[i].Element = (byte) i;
             }
+            nextEntry = LzwConstants.EndOfFileCode + 1;
+        }
+
+        public void Reset()
+        {
+            Array.Clear(entries, 0, entries.Length);
+            SetupDefaultDictionary();
         }
 
         public int WriteChars(int entryIndex, int firstToWrite, ref Span<byte> destination) => 
@@ -46,15 +58,10 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
         public short AddChild(short parent, byte character)
         {
             var index = (short)nextEntry++;
-            CheckBitLength();
             AddChild(ref entries[index], parent, character);
             return index;
         }
-
-        private void CheckBitLength()
-        {
-        }
-
+        
         private void AddChild(ref Entry entry, short parentIndex, byte character)
         {
             entry.Parent = parentIndex;

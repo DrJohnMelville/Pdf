@@ -34,18 +34,21 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
                 baseStream.BeginRead(buffer, offset, MaxBytes(count), callback, state);
             public override int Read(byte[] buffer, int offset, int count) => 
                 baseStream.Read(buffer, offset, MaxBytes(count));
-            public override int Read(Span<byte> buffer) => 
-                baseStream.Read(buffer[..RemainingBytes]);
+            public override int Read(Span<byte> buffer) =>
+                baseStream.Read(buffer[..BytesToRead(buffer.Length)]);
+
+            private int BytesToRead(int bufferLength) => Math.Min(RemainingBytes, bufferLength);
+
             public override Task<int> ReadAsync(
                 byte[] buffer, int offset, int count, CancellationToken cancellationToken) => 
                 baseStream.ReadAsync(buffer, offset, MaxBytes(count), cancellationToken);
             public override ValueTask<int> ReadAsync(
-                Memory<byte> buffer, CancellationToken cancellationToken) => 
-                baseStream.ReadAsync(buffer[..RemainingBytes], cancellationToken);
+                Memory<byte> buffer, CancellationToken cancellationToken) =>
+                baseStream.ReadAsync(buffer[..BytesToRead(buffer.Length)], cancellationToken);
             public override int ReadByte()
             {
                 if (RemainingBytes < 1)
-                    throw new IOException("Read of end of a rented stream"); 
+                    throw new IOException("Read off end of a rented stream"); 
                 return baseStream.ReadByte();
             }
 
