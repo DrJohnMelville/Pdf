@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
-    public class BitReader
+    public class BitReader: IDisposable
     {
         private readonly PipeReader source;
 
@@ -53,5 +53,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             source.AdvanceTo(readResult.Buffer.GetPosition(1));
             return true;
         }
+
+        public void Dispose() => source.Complete();
     }
 }

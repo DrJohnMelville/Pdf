@@ -13,7 +13,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
     {
         public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
             ValueTask.FromResult<Stream>(new LzwDecodeWrapper(PipeReader.Create(input)));
-        
+
         private class LzwDecodeWrapper: SequentialReadFilterStream
         {
             private readonly BitReader reader;
@@ -28,6 +28,11 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             {
                 bits = new BitLength(9);
                 reader = new BitReader(input);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                reader.Dispose();
             }
 
             public async override ValueTask<int> ReadAsync(

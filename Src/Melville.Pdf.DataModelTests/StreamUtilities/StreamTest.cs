@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.Xml;
 using Melville.Hacks;
+using Melville.INPC;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -39,6 +41,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             await EncodeStreamTest(dest, str, compression.ToString()!);
             await VerifyStreamContentAsync(src, await str.GetDecodedStream());
             await VerifyStreamContentAsync(src, new OneCharAtAtimeStream(await CreateReadingSingleBytes(str)));
+            await VerifyDisposal(str);
         }
 
         public static async Task TestContent(
@@ -48,5 +51,38 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 
         private static MemoryStream StringAsAsciiStream(string content) => 
             new(ExtendedAsciiEncoding.AsExtendedAsciiBytes(content));
+        
+        private static async ValueTask VerifyDisposal(PdfStream str)
+        {
+            var source = new StreamDisposeSource(await str.GetRawStream());
+            var str2 = new PdfStream(str.RawItems, source);
+            var wrappedStream = await str2.GetDecodedStream();
+            Assert.False(source.IsDisposed);
+            await wrappedStream.DisposeAsync();
+            Assert.True(source.IsDisposed);
+        }
+
     }
+
+    public partial class StreamDisposeSource : Stream, IStreamDataSource
+    {
+        public bool IsDisposed { get; private set; }
+        [DelegateTo()]
+        private readonly Stream source;
+
+        public StreamDisposeSource(Stream source)
+        {
+            this.source = source;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            IsDisposed = true;
+        }
+
+        public override void Close() => Dispose(true);
+
+        public ValueTask<Stream> OpenRawStream(long streamLength) => new(this);
+    }
+
 }
