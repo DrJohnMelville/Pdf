@@ -78,5 +78,11 @@ namespace Melville.Pdf.LowLevel.Filters
 
         private ValueTask<int> ReadIntoBuffer(Memory<byte> buffer, CancellationToken cancellationToken) => 
             source.ReadAsync(buffer, cancellationToken);
+
+        protected override void Dispose(bool disposing)
+        {
+            source.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }
