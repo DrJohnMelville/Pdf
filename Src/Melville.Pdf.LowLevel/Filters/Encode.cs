@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
-using Melville.Pdf.LowLevel.Filters.AshiiHexFilters;
+using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -12,6 +13,28 @@ namespace Melville.Pdf.LowLevel.Filters
     {
         public byte[] Encode(byte[] data, PdfObject? parameters);
     }
+    public interface IStreamEncoder{
+        public Stream Encode(Stream data, PdfObject? parameters);
+    }
+    public class IseWrapper: IEncoder
+    {
+        private readonly IStreamEncoder inner;
+
+        public IseWrapper(IStreamEncoder inner)
+        {
+            this.inner = inner;
+        }
+
+        public byte[] Encode(byte[] data, PdfObject? parameters)
+        {
+            var input = new MemoryStream(data);
+            var encoded = inner.Encode(input, parameters);
+            var ret = new MemoryStream();
+            encoded.CopyToAsync(ret).GetAwaiter().GetResult();
+            return ret.ToArray();
+        }
+    }
+
     public static class Encode
     {
         public static byte[] Compress(byte[] data, PdfObject algorithm, PdfObject? parameters)
@@ -31,8 +54,8 @@ namespace Melville.Pdf.LowLevel.Filters
 
         private static readonly Dictionary<PdfName, IEncoder> compressors = new()
         {
-            {KnownNames.ASCIIHexDecode, new AsciiHexEncoder()},
-            {KnownNames.ASCII85Decode, new Ascii85Encoder()},
+            {KnownNames.ASCIIHexDecode, new IseWrapper(new AsciiHexEncoder())},
+            {KnownNames.ASCII85Decode, new IseWrapper(new Ascii85Encoder())},
             {KnownNames.Fl, new FlateEncoder()},
             {KnownNames.FlateDecode, new FlateEncoder()},
             {KnownNames.LZWDecode, new LzwEncoder()},

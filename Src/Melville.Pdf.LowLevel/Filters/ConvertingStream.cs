@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters
 {
-    public abstract class DecodingAdapter : SequentialReadFilterStream
+    public abstract class ConvertingStream : SequentialReadFilterStream
     {
         private PipeReader source;
         private bool doneReading = false;
         
-        protected DecodingAdapter(PipeReader source)
+        protected ConvertingStream(PipeReader source)
         {
             this.source = source;
         }
@@ -22,10 +22,12 @@ namespace Melville.Pdf.LowLevel.Filters
 
         public override ValueTask DisposeAsync() => source.CompleteAsync();
 
-        public abstract (SequencePosition SourceConsumed, int bytesWritten, bool Done) Decode(
+        protected abstract (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
             ref SequenceReader<byte> source, ref Span<byte> destination);
-        public abstract (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalDecode(
-            ref SequenceReader<byte> source, ref Span<byte> destination);
+
+        protected virtual (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
+            ref SequenceReader<byte> source, ref Span<byte> destination) =>
+            (source.Position, 0, false);
 
 
         public override async ValueTask<int> ReadAsync(
@@ -46,7 +48,7 @@ namespace Melville.Pdf.LowLevel.Filters
         {
             if (result.IsCanceled || doneReading) return 0;
             var reader = new SequenceReader<byte>(result.Buffer);
-            var (finalPos, bytesWritten, done) = Decode(ref reader, ref buffer);
+            var (finalPos, bytesWritten, done) = Convert(ref reader, ref buffer);
             if (result.IsCompleted)
             {
                 (finalPos, bytesWritten, done) = HandleFinalDecode(buffer, result, finalPos, bytesWritten);
@@ -64,7 +66,7 @@ namespace Melville.Pdf.LowLevel.Filters
             int extrBytes;
             var r2 = new SequenceReader<byte>(result.Buffer.Slice(finalPos));
             var remaining = buffer.Slice(bytesWritten);
-            (finalPos, extrBytes, done) = FinalDecode(ref r2, ref remaining);
+            (finalPos, extrBytes, done) = FinalConvert(ref r2, ref remaining);
             bytesWritten += extrBytes;
             return (finalPos, bytesWritten, done);
         }

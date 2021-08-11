@@ -8,19 +8,26 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {
+    public static class Ascii85Constants
+    {
+        public const byte FirstChar = (byte)'!';
+        public const byte IncompleteGroupPadding = (byte)'u';
+        public const byte FirstTerminatingChar = (byte)'~';
+        public const byte SecondTerminatingChar = (byte)'>';
+    }
     public class Ascii85Decoder: IDecoder
     {
         public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) => 
             new ( new MinimumReadSizeFilter(new Ascii85Adapter(input.AsPipeReader()), 4));
 
-        private class Ascii85Adapter: DecodingAdapter
+        private class Ascii85Adapter: ConvertingStream
         {
             public Ascii85Adapter(PipeReader source) : base(source)
             {
             }
 
-            public override (SequencePosition SourceConsumed, int bytesWritten, bool Done) 
-                Decode(ref SequenceReader<byte> source, ref Span<byte> destination)
+            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done) 
+                Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
             {
                 VerifyMinimimumReadSize(destination.Length);
                 var destPosition = 0;
@@ -31,7 +38,7 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
                         return (lastPosition, destPosition, false);
                     if (!source.TryReadNonWhitespace(out byte b1)) 
                         return (lastPosition, destPosition, false);
-                    if (b1 == terminatingChar) return (source.Position, destPosition, true);
+                    if (b1 == Ascii85Constants.FirstTerminatingChar) return (source.Position, destPosition, true);
                     if (b1 == (byte) 'z')
                     {
                         destPosition = WriteQuad(destination, 0, 4, destPosition);
@@ -56,37 +63,33 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
             private (int, bool) HandleQuintuple(byte b1, byte b2, byte b3, byte b4, byte b5,
                 ref Span<byte> destination, int destPosition) => (b1, b2, b3, b4, b5) switch
                 {
-                    (_, terminatingChar, _, _, _) => 
+                    (_, Ascii85Constants.FirstTerminatingChar, _, _, _) => 
                         (WriteQuad(destination, ComputeQuad(b1), 0, destPosition), true),
-                    (_, _, terminatingChar, _, _) => 
+                    (_, _, Ascii85Constants.FirstTerminatingChar, _, _) => 
                         (WriteQuad(destination, ComputeQuad(b1, b2), 1, destPosition), true),
-                    (_, _, _, terminatingChar, _) => 
+                    (_, _, _, Ascii85Constants.FirstTerminatingChar, _) => 
                         (WriteQuad(destination, ComputeQuad(b1, b2, b3), 2, destPosition), true),
-                    (_, _, _, _, terminatingChar) => 
+                    (_, _, _, _, Ascii85Constants.FirstTerminatingChar) => 
                         (WriteQuad(destination, ComputeQuad(b1, b2, b3, b4), 3, destPosition), true),
                     _ => (WriteQuad(destination, ComputeQuad(b1, b2, b3, b4, b5), 4, destPosition), false)
                 };
 
-            private const byte firstChar = (byte)'!';
-            private const byte incompleteGroupPadding = (byte)'u';
-            private const byte terminatingChar = (byte)'~';
-
             private uint ComputeQuad(
-                byte b1 = incompleteGroupPadding, 
-                byte b2 = incompleteGroupPadding, 
-                byte b3 = incompleteGroupPadding, 
-                byte b4 = incompleteGroupPadding, 
-                byte b5 = incompleteGroupPadding)
+                byte b1 = Ascii85Constants.IncompleteGroupPadding, 
+                byte b2 = Ascii85Constants.IncompleteGroupPadding, 
+                byte b3 = Ascii85Constants.IncompleteGroupPadding, 
+                byte b4 = Ascii85Constants.IncompleteGroupPadding, 
+                byte b5 = Ascii85Constants.IncompleteGroupPadding)
             {
-                uint ret = (uint) b1 - firstChar;
+                uint ret = (uint) b1 - Ascii85Constants.FirstChar;
                 ret *= 85;
-                ret += (uint) b2 - firstChar;
+                ret += (uint) b2 - Ascii85Constants.FirstChar;
                 ret *= 85;
-                ret += (uint) b3 - firstChar;
+                ret += (uint) b3 - Ascii85Constants.FirstChar;
                 ret *= 85;
-                ret += (uint) b4 - firstChar;
+                ret += (uint) b4 - Ascii85Constants.FirstChar;
                 ret *= 85;
-                ret += (uint) b5 - firstChar;
+                ret += (uint) b5 - Ascii85Constants.FirstChar;
                 return ret;
 
             }
@@ -107,24 +110,24 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
                 return destPosition + toWrite;
             }
 
-            public override (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalDecode(ref SequenceReader<byte> source,
+            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(ref SequenceReader<byte> source,
                 ref Span<byte> destination)
             {
-                if (!source.TryReadNonWhitespace(out var b1) || b1 == terminatingChar) 
+                if (!source.TryReadNonWhitespace(out var b1) || b1 == Ascii85Constants.FirstTerminatingChar) 
                     return (source.Sequence.Start, 0, false);
-                if (!source.TryReadNonWhitespace(out var b2) || b2 == terminatingChar)
+                if (!source.TryReadNonWhitespace(out var b2) || b2 == Ascii85Constants.FirstTerminatingChar)
                 {
                     throw new InvalidDataException("Single character group in a Ascii85 stream");
                 }
                 if (!source.TryReadNonWhitespace(out var b3))
                 {
-                    b3 = terminatingChar;
+                    b3 = Ascii85Constants.FirstTerminatingChar;
                 }
                 if (!source.TryReadNonWhitespace(out var b4))
                 {
-                    b4 = terminatingChar;
+                    b4 = Ascii85Constants.FirstTerminatingChar;
                 }
-                var (pos, done) = HandleQuintuple(b1, b2, b3, b4, terminatingChar, ref destination, 0); 
+                var (pos, done) = HandleQuintuple(b1, b2, b3, b4, Ascii85Constants.FirstTerminatingChar, ref destination, 0); 
                 return (source.Position, pos, done);
             }
         }

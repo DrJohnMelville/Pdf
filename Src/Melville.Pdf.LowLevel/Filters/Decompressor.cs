@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
-using Melville.Pdf.LowLevel.Filters.AshiiHexFilters;
+using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;

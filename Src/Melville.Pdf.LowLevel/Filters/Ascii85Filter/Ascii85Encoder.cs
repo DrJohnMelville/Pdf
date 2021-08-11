@@ -1,61 +1,112 @@
 ﻿using System;
+using System.Buffers;
+using System.IO;
+using System.IO.Pipelines;
 using System.Text;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {
-    public class Ascii85Encoder:IEncoder
+    public class Ascii85Encoder : IStreamEncoder
     {
-        // MIT Licensed code borrowed from
-        // https://github.com/LogosBible/Logos.Utility/blob/master/src/Logos.Utility/Ascii85.cs
-        const byte firstChar = (byte)'!';
+        public Stream Encode(Stream data, PdfObject? parameters) =>
+            new MinimumReadSizeFilter(new Ascii85EncodeWrapper(data.AsPipeReader()), 7);
 
-        public byte[] Encode(byte[] data, PdfObject? parameters)
+        private class Ascii85EncodeWrapper : ConvertingStream
         {
-            var ret = new OutputBuffer(new byte[(data.Length * 5 / 4)+7]);
-
-            int count = 0;
-            uint value = 0;
-            foreach (byte b in data)
+            public Ascii85EncodeWrapper(PipeReader source) : base(source)
             {
-                value <<= 8;
-                value |= b;
-                count++;
-                
-                if (count == 4)
+            }
+
+            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done)
+                Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+            {
+                int i;
+                for (i = 0; i + 4 < destination.Length && TryGetQuad(ref source, out uint quad); i += 5)
                 {
-                    EncodeCompleteGroup(value, ref ret);
-                    count = 0;
-                    value = 0;
+                    if (quad == 0)
+                    {
+                        destination[i] = (byte)'z';
+                        i -= 4; // we need to step back to compensate for the shorter code;
+                    }
+                    else
+                    {
+                        EncodeValue(destination.Slice(i, 5), quad, 5);
+                    }
+                }
+
+                return (source.Position, Math.Min(destination.Length, i), false);
+            }
+
+            private bool TryGetQuad(ref SequenceReader<byte> source, out uint readVal)
+            {
+                if (source.Remaining < 4)
+                {
+                    readVal = 0;
+                    return false;
+                }
+                readVal = ReadBigEndianUInt(source.UnreadSpan);
+                source.Advance(4);
+                return true;
+            }
+
+            private static uint ReadBigEndianUInt(ReadOnlySpan<byte> span) => 
+                (uint)((span[0] << 24) | (span[1] << 16) | (span[2] << 8) | span[3]);
+
+            private static void EncodeValue(Span<byte> buffer, uint value, int bytesToWrite)
+            {
+                for (int index = 4; index >= 0; index--)
+                {
+                    if (index < bytesToWrite)
+                        buffer[index] = (byte)((value % 85) + Ascii85Constants.FirstChar);
+                    value /= 85;
                 }
             }
 
-            // encode any remaining bytes (that weren't a multiple of 4)
-            if (count > 0)
-                EncodeValue(ref ret, value << (8*(4-count)), count + 1);
-
-            ret.Append('~');
-            ret.Append('>');
-            return ret.Result();
-        }
-
-        private static void EncodeCompleteGroup(uint value, ref OutputBuffer ret)
-        {
-            if (value == 0)
-                ret.Append('z');
-            else
-                EncodeValue(ref ret, value, 5);
-        }
-
-        private static void EncodeValue(ref OutputBuffer buffer, uint value, int paddingBytes)
-        {
-            for (int index = 4; index >= 0; index--)
+            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done)
+                FinalConvert(ref SequenceReader<byte> source,
+                    ref Span<byte> destination)
             {
-                if (index < paddingBytes) buffer.Set((value % 85) + firstChar, index);
-                value /= 85;
+                if (destination.Length < 7) return (source.Position, 0, false);
+                var (finalBytes, finalQuad) = ReadPartialQuad(source);
+                var lastCodeLen = EncodePartialValue(destination, finalBytes, finalQuad);
+                AddStreamTerminator(ref destination, lastCodeLen);
+                return (source.Position, lastCodeLen + 2, true);
             }
 
-            buffer.Increment(paddingBytes);
+            private static (int count, uint value) ReadPartialQuad(SequenceReader<byte> source)
+            {
+                var count = 0;
+                uint value = 0;
+                for (int i = 0; i < 4; i++)
+                {
+                    value <<= 8;
+                    if (source.TryRead(out byte val))
+                    {
+                        count++;
+                        value |= val;
+                    }
+                }
+                return (count, value);
+            }
+
+            private static int EncodePartialValue(Span<byte> destination, int count, uint value)
+            {
+                int lastCodeLen = 0;
+                if (count > 0)
+                {
+                    lastCodeLen = count + 1;
+                    EncodeValue(destination, value, lastCodeLen);
+                }
+
+                return lastCodeLen;
+            }
+
+            private static void AddStreamTerminator(ref Span<byte> destination, int lastCodeLen)
+            {
+                destination[lastCodeLen] = Ascii85Constants.FirstTerminatingChar;
+                destination[lastCodeLen + 1] = Ascii85Constants.SecondTerminatingChar;
+            }
         }
     }
 }
