@@ -1,44 +1,120 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
+using System.IO.Pipelines;
+using System.Threading;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters
 {
-    public class FlateEncoder:IEncoder
+    public class FlateEncoder:IStreamEncoder
     {
-        public byte[] Encode(byte[] data, PdfObject? parameters)
+        public Stream Encode(Stream data, PdfObject? parameters)
         {
-            var ret = new MemoryStream();
-            WritePrefix(ret);
-            WriteCompressedDate(data, ret);
-            WriteAdlerHash(ret, ComputeChecksum(data));
-            return ret.ToArray();
+            return new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4);
         }
-
-        private static uint ComputeChecksum(byte[] data)
+        
+        private sealed class FlateEncodeWrapper: SequentialReadFilterStream
         {
-            var adler = new Adler32Computer(1);
-            adler.AddData(data);
-            var checksum = adler.GetHash();
-            return checksum;
-        }
 
-        private static byte[] prefix = {0x78, 0xDA};
-        private static void WritePrefix(MemoryStream ret) => ret.Write(prefix, 0, 2);
+            private enum State
+            {
+                WritePrefix,
+                CopyBytes,
+                WriteTrailer,
+                Done
+            }            
+            private State state;
+            private readonly Stream source;
+            private readonly ReadAdlerStream adler;
+            private readonly DeflateStream deflator;
+            private readonly Pipe reverser;
+            private readonly Stream compressedSource;
+            
+            public FlateEncodeWrapper(Stream source)
+            {
+                this.source = source;
+                state = State.WritePrefix;
+                adler = new ReadAdlerStream(source);
+                reverser = new Pipe();
+                deflator = new DeflateStream(reverser.Writer.AsStream(), CompressionLevel.Optimal);
+                InitiateCopyProcess();
+                compressedSource = reverser.Reader.AsStream();
+            }
 
-        private static void WriteCompressedDate(byte[] data, MemoryStream ret)
-        {
-            using var deflate = new DeflateStream(ret, CompressionLevel.Optimal, leaveOpen:true);
-            deflate.Write(data);
-            deflate.Flush();
-        }
+            private async void InitiateCopyProcess()
+            {
+                await adler.CopyToAsync(deflator);
+                await deflator.FlushAsync();
+                await reverser.Writer.CompleteAsync();
+            }
 
-        private static void WriteAdlerHash(MemoryStream ret, uint checksum)
-        {
-            ret.WriteByte((byte) (checksum >> 24));
-            ret.WriteByte((byte) (checksum >> 16));
-            ret.WriteByte((byte) (checksum >> 8));
-            ret.WriteByte((byte) (checksum));
+            protected override void Dispose(bool disposing)
+            {
+                source.Dispose();
+                base.Dispose(disposing);
+            }
+
+            public override ValueTask DisposeAsync()
+            {
+                source.Dispose();
+                return base.DisposeAsync();
+            }
+
+            public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken()) =>
+                state switch
+                {
+                    State.WritePrefix => await TryWritePrefix(buffer, cancellationToken),
+                    State.CopyBytes => await CopyBytes(buffer, cancellationToken),
+                    State.WriteTrailer => await WriteTrailer(buffer),
+                    State.Done => 0,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+            private ValueTask<int> WriteTrailer(Memory<byte> buffer)
+            {
+                WriteBigEndian(adler.GetHash(), buffer.Span);
+                state = State.Done;
+                return new ValueTask<int>(4);
+            }
+
+            private static void WriteBigEndian(uint checksum, in Span<byte> span)
+            {
+                for (var i = 3; i >= 0; i--)
+                {
+                    span[i] = (byte)checksum;
+                    checksum <<= 8;
+                }
+            }
+
+            private async ValueTask<int> CopyBytes(Memory<byte> buffer, CancellationToken cancellationToken)
+            {
+                var ret = await compressedSource.ReadAsync(buffer);
+                if (ret == 0)
+                {
+                    state = State.WriteTrailer;
+                    // we need the "tail call" here so we do not return 0 before we write out the trailer.
+                    return await ReadAsync(buffer, cancellationToken);
+                }
+                return ret;
+            }
+
+            private async ValueTask<int> TryWritePrefix(Memory<byte> destination, CancellationToken cancellationToken)
+            {
+                CopyPrefixToMemory(destination);
+                state = State.CopyBytes;
+                // this is an optimization -- we cold just always return 2 bytes from the first read.
+                // we choose to try and fill the buffer as much as we can.
+                return 2 + await ReadAsync(destination[2..], cancellationToken);
+            }
+
+            private static void CopyPrefixToMemory(in Memory<byte> destination)
+            {
+                var span = destination.Span;
+                span[0] = 0x78;
+                span[1] = 0xDA;
+            }
         }
     }
 }

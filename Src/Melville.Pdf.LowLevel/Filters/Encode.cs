@@ -28,9 +28,12 @@ namespace Melville.Pdf.LowLevel.Filters
         public byte[] Encode(byte[] data, PdfObject? parameters)
         {
             var input = new MemoryStream(data);
-            var encoded = inner.Encode(input, parameters);
             var ret = new MemoryStream();
-            encoded.CopyToAsync(ret).GetAwaiter().GetResult();
+            using (var encoded = inner.Encode(input, parameters))
+            {
+                encoded.CopyToAsync(ret).GetAwaiter().GetResult();
+            }
+
             return ret.ToArray();
         }
     }
@@ -56,8 +59,8 @@ namespace Melville.Pdf.LowLevel.Filters
         {
             {KnownNames.ASCIIHexDecode, new IseWrapper(new AsciiHexEncoder())},
             {KnownNames.ASCII85Decode, new IseWrapper(new Ascii85Encoder())},
-            {KnownNames.Fl, new FlateEncoder()},
-            {KnownNames.FlateDecode, new FlateEncoder()},
+            {KnownNames.Fl, new IseWrapper(new FlateEncoder())},
+            {KnownNames.FlateDecode, new IseWrapper(new FlateEncoder())},
             {KnownNames.LZWDecode, new LzwEncoder()},
         };
     }
