@@ -61,7 +61,7 @@ namespace Melville.Pdf.LowLevel.Filters
             {KnownNames.ASCII85Decode, new IseWrapper(new Ascii85Encoder())},
             {KnownNames.Fl, new IseWrapper(new FlateEncoder())},
             {KnownNames.FlateDecode, new IseWrapper(new FlateEncoder())},
-            {KnownNames.LZWDecode, new LzwEncoder()},
+            {KnownNames.LZWDecode, new IseWrapper(new LzwEncoder())},
         };
     }
 }
