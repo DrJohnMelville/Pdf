@@ -27,7 +27,7 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
         [InlineData("\x07\x07\x07\x07\x07", 5,"\x39\xCE\x73\x80")]
         public async Task BitStringTest(string decoded, int bitsize, string encoded)
         {
-            await WriterTest(decoded, bitsize, encoded);
+            WriterTest(decoded, bitsize, encoded);
             await ReaderTest(decoded, bitsize, encoded);
         }
 
@@ -44,36 +44,38 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
             Assert.False((await sut.TryRead(9)).HasValue);
         }  
         
-        private async Task WriterTest(string decoded, int bitsize, string encoded)
+        private void WriterTest(string decoded, int bitsize, string encoded)
         {
-            var target = new MemoryStream();
-            var writer = new BitWriter(PipeWriter.Create(target));
+            var dest = new byte[50];
+            int pos = 0;
+            var writer = new BitWriter();
             foreach (var character in decoded)
             {
-                await writer.WriteBits(character, bitsize);
+                pos += writer.WriteBits(character, bitsize, dest.AsSpan(pos));
             }
 
-            await writer.FinishWrite();
-            Assert.Equal(encoded, target.ToArray().ExtendedAsciiString());
+            pos += writer.FinishWrite(dest.AsSpan(pos));
+            Assert.Equal(encoded, ExtendedAsciiEncoding.ExtendedAsciiString(dest.AsSpan(0, pos)));
         }
 
         [Fact]
         public async Task MoreThan8Bytes()
         {
-            var ms = new MemoryStream();
-            var writer = new BitWriter(PipeWriter.Create(ms));
-            await writer.WriteBits(256, 9);
-            await writer.WriteBits(45, 9);
-            await writer.WriteBits(258, 9);
-            await writer.WriteBits(258, 9);
-            await writer.WriteBits(65, 9);
-            await writer.WriteBits(259, 9);
-            await writer.WriteBits(66, 9);
-            await writer.WriteBits(257, 9);
-            await writer.FinishWrite();
+            var ms = new byte[9];
+            var pos = 0;
+            var writer = new BitWriter();
+            pos +=  writer.WriteBits(256, 9, ms.AsSpan(pos));
+            pos +=  writer.WriteBits(45, 9, ms.AsSpan(pos));
+            pos +=  writer.WriteBits(258, 9, ms.AsSpan(pos));
+            pos +=  writer.WriteBits(258, 9, ms.AsSpan(pos));
+            pos +=  writer.WriteBits(65, 9, ms.AsSpan(pos));
+            pos +=  writer.WriteBits(259, 9, ms.AsSpan(pos));
+            pos +=  writer.WriteBits(66, 9, ms.AsSpan(pos));
+            pos +=  writer.WriteBits(257, 9, ms.AsSpan(pos));
+            pos +=  writer.FinishWrite(ms.AsSpan(pos));
 
             Assert.Equal(new byte []{0x80, 0x0B, 0x60, 0x50, 0x22, 0x0C, 0x0C, 0x85, 0x01}, 
-                ms.ToArray());
+                ms);
             
             
         }
