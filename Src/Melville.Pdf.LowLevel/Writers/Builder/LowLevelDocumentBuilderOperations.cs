@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Filters;
@@ -23,21 +24,22 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             new(
                 items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
 
-        public static PdfStream NewCompressedStream(this ILowLevelDocumentBuilder _,
-            string data, PdfObject compression, PdfObject? parameters = null) =>
-            _.NewCompressedStream(
-                ExtendedAsciiEncoding.AsExtendedAsciiBytes(data), compression, parameters);
         
         public static PdfStream NewCompressedStream(this ILowLevelDocumentBuilder _, 
-            byte[] data, PdfObject compression, PdfObject? parameters = null)
+            in StreamDataSource data, PdfObject compression, PdfObject? parameters = null)
         {
             return NewStream(_, Encode.Compress(data, compression, parameters),
                 (KnownNames.Filter, compression),
                 (KnownNames.Params, parameters??PdfTokenValues.Null));
         }
-        public static PdfStream NewStream(this ILowLevelDocumentBuilder _, string streamData, params
-            (PdfName Name, PdfObject Value)[] items) =>
-            new(StreamDictionary(items, streamData.Length), new LiteralStreamSource(streamData));
+        public static PdfStream NewStream(this ILowLevelDocumentBuilder _, in StreamDataSource streamData, params
+            (PdfName Name, PdfObject Value)[] items)
+        {
+            var destination = new MemoryStream();
+            streamData.Stream.CopyTo(destination);
+            return new(StreamDictionary(items, (int)destination.Length),
+                new LiteralStreamSource(destination.ToArray()));
+        }
 
         private static Dictionary<PdfName, PdfObject> StreamDictionary(
             (PdfName Name, PdfObject Value)[] items, int length)

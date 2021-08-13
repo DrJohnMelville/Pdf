@@ -59,7 +59,7 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
         }
 
         [Fact]
-        public async Task MoreThan8Bytes()
+        public void MoreThan8Bytes()
         {
             var ms = new byte[9];
             var pos = 0;

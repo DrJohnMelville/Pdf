@@ -15,11 +15,12 @@ namespace Melville.Pdf.LowLevel.Filters
         public override void EndWrite(IAsyncResult asyncResult) =>
             throw new NotSupportedException();
 
-        
+
         public override int Read(byte[] buffer, int offset, int count) =>
-            throw new NotSupportedException("Only Async reads are supported.");
+            ReadAsync(buffer, offset, count).GetAwaiter().GetResult();
 
         public override int Read(Span<byte> buffer) =>
+            
             throw new NotSupportedException("Only Async reads are supported.");
 
         public override Task<int> ReadAsync(

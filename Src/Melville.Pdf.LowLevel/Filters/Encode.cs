@@ -6,47 +6,23 @@ using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.LowLevel.Filters
 {
-    public interface IEncoder
-    {
-        public byte[] Encode(byte[] data, PdfObject? parameters);
-    }
     public interface IStreamEncoder{
         public Stream Encode(Stream data, PdfObject? parameters);
-    }
-    public class IseWrapper: IEncoder
-    {
-        private readonly IStreamEncoder inner;
-
-        public IseWrapper(IStreamEncoder inner)
-        {
-            this.inner = inner;
-        }
-
-        public byte[] Encode(byte[] data, PdfObject? parameters)
-        {
-            var input = new MemoryStream(data);
-            var ret = new MemoryStream();
-            using (var encoded = inner.Encode(input, parameters))
-            {
-                encoded.CopyToAsync(ret).GetAwaiter().GetResult();
-            }
-
-            return ret.ToArray();
-        }
     }
 
     public static class Encode
     {
-        public static byte[] Compress(byte[] data, PdfObject algorithm, PdfObject? parameters)
+        public static Stream Compress(in StreamDataSource data, PdfObject algorithm, PdfObject? parameters)
         {
             var algorithms = algorithm.AsList();
-            return DoCompress(data, algorithms, parameters.AsList(), algorithms.Count - 1);
+            return DoCompress(data.Stream, algorithms, parameters.AsList(), algorithms.Count - 1);
         }
 
-        private static byte[] DoCompress(byte[] data, IReadOnlyList<PdfObject> algorithms, 
+        private static Stream DoCompress(Stream data, IReadOnlyList<PdfObject> algorithms, 
             IReadOnlyList<PdfObject> parameters, int which)
         {
             if (which < 0) return data;
@@ -55,13 +31,13 @@ namespace Melville.Pdf.LowLevel.Filters
                 algorithms, parameters, which - 1);
         }
 
-        private static readonly Dictionary<PdfName, IEncoder> compressors = new()
+        private static readonly Dictionary<PdfName, IStreamEncoder> compressors = new()
         {
-            {KnownNames.ASCIIHexDecode, new IseWrapper(new AsciiHexEncoder())},
-            {KnownNames.ASCII85Decode, new IseWrapper(new Ascii85Encoder())},
-            {KnownNames.Fl, new IseWrapper(new FlateEncoder())},
-            {KnownNames.FlateDecode, new IseWrapper(new FlateEncoder())},
-            {KnownNames.LZWDecode, new IseWrapper(new LzwEncoder())},
+            {KnownNames.ASCIIHexDecode, new AsciiHexEncoder()},
+            {KnownNames.ASCII85Decode, new Ascii85Encoder()},
+            {KnownNames.Fl, new FlateEncoder()},
+            {KnownNames.FlateDecode, new FlateEncoder()},
+            {KnownNames.LZWDecode, new LzwEncoder()},
         };
     }
 }
