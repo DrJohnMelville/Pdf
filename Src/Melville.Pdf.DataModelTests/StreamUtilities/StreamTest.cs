@@ -78,6 +78,13 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         protected override void Dispose(bool disposing)
         {
             IsDisposed = true;
+            source.Dispose();
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            IsDisposed = true;
+            return source.DisposeAsync();
         }
 
         public override void Close() => Dispose(true);

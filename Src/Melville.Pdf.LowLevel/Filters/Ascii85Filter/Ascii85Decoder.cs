@@ -38,7 +38,7 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
                         return (lastPosition, destPosition, false);
                     if (!source.TryReadNonWhitespace(out byte b1)) 
                         return (lastPosition, destPosition, false);
-                    if (b1 == Ascii85Constants.FirstTerminatingChar) return (source.Position, destPosition, true);
+                    if (b1 == Ascii85Constants.FirstTerminatingChar) return (lastPosition, destPosition, true);
                     if (b1 == (byte) 'z')
                     {
                         destPosition = WriteQuad(destination, 0, 4, destPosition);
