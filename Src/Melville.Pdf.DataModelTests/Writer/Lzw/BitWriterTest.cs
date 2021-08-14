@@ -23,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
         [InlineData("\x07", 5,"8")]
         [InlineData("\x07\x07", 5,"\x39\xC0")]
         [InlineData("\x07\x07\x07", 5,"\x39\xCE")]
-        [InlineData("\x07\x07\x07\x07", 5,"\x39\xCE\x70")]
+        [InlineData("\x07\x07\x07\x07", 5,"\x39\xCE\x70")] 
         [InlineData("\x07\x07\x07\x07\x07", 5,"\x39\xCE\x73\x80")]
         public async Task BitStringTest(string decoded, int bitsize, string encoded)
         {

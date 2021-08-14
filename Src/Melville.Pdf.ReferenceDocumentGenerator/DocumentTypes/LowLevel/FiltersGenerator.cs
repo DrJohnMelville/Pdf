@@ -34,6 +34,8 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                         ));
                 return new[]
                 {
+                    await CreatePage(builder, pages, procset, "RunLength AAAAAAAAAAAAAAAAAAAAAA "+RandomString(9270),
+                        font, KnownNames.RunLengthDecode),
                     await CreatePage(builder, pages, procset, "LZW -- LateChange"+RandomString(9270), font, 
                         KnownNames.LZWDecode, builder.NewDictionary((KnownNames.EarlyChange, new PdfInteger(0)))),
                     await CreatePage(builder, pages, procset, "LZW -- "+RandomString(9270), font, KnownNames.LZWDecode),
