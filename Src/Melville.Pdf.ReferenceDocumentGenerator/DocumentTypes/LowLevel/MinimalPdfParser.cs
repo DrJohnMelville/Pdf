@@ -14,12 +14,12 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         {
         }
 
-        protected override ValueTask WritePdf(Stream target) =>
-            new(MinimalPdf(1, 7).CreateDocument().WriteTo(target));
+        protected override async ValueTask WritePdf(Stream target) =>
+            await ( await MinimalPdf(1, 7)).CreateDocument().WriteTo(target);
 
-        public static ILowLevelDocumentCreator MinimalPdf(int major, int minor)
+        public static async ValueTask<ILowLevelDocumentCreator> MinimalPdf(int major, int minor)
         {
-            return SimplePdfShell.Generate(major, minor, (builder, pages) =>
+            return await SimplePdfShell.Generate(major, minor, async (builder, pages) =>
             {
                 var page = builder.AsIndirectReference();
                 var stream = builder.Add(builder.NewStream("... Page0marking operators ..."));

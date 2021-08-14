@@ -2,21 +2,28 @@
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
-    public readonly struct BitLength
+    public class BitLength
     {
-        public int Length { get; }
-        private readonly int nextIncrement;
+        public int Length { get; private set; }
+        private int nextIncrement;
+        private int sizeSwitchFlavorDelta = 1;
 
-        public BitLength(int bits)
+        public BitLength(int bits, int sizeSwitchFlavorDelta)
         {
-            if (bits > 12) throw new ArgumentException("Too big");
-            Length = bits;
-            nextIncrement = (1 << bits)-1;
+            this.sizeSwitchFlavorDelta = sizeSwitchFlavorDelta;
+            SetBitLength(bits);
         }
 
-        public BitLength CheckBitLength(int next)
+        public void SetBitLength(int bits)
         {
-            return (next >= nextIncrement) ? new BitLength(Length + 1) : this;
+            Length = bits;
+            nextIncrement = (1 << bits) - sizeSwitchFlavorDelta;
+        }
+
+        public void CheckBitLength(int next)
+        {
+            if (next < nextIncrement) return;
+            SetBitLength(Length + 1);
         }
     }
 }

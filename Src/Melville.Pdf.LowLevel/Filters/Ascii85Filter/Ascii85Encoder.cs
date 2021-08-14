@@ -3,14 +3,15 @@ using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {
     public class Ascii85Encoder : IStreamEncoder
     {
-        public Stream Encode(Stream data, PdfObject? parameters) =>
-            new MinimumReadSizeFilter(new Ascii85EncodeWrapper(data.AsPipeReader()), 7);
+        public ValueTask<Stream> Encode(Stream data, PdfObject? parameters) =>
+            new (new MinimumReadSizeFilter(new Ascii85EncodeWrapper(data.AsPipeReader()), 7));
 
         private class Ascii85EncodeWrapper : ConvertingStream
         {

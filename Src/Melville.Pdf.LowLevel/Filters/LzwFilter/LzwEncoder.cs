@@ -2,27 +2,41 @@
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
-    public class LzwEncoder : IStreamEncoder
+    public static class LzwParameterParser
     {
-        public Stream Encode(Stream data, PdfObject? parameters)
+        public static async ValueTask<int> EarlySwitchLength(this PdfObject? parameters)
         {
-            return new MinimumReadSizeFilter(new LzwEncodeWrapper(PipeReader.Create(data)), 10);
+            return (parameters is PdfDictionary dict &&
+                    dict.TryGetValue(KnownNames.EarlyChange, out var ec) &&
+                    await ec is PdfNumber num)
+                ? (int)num.IntValue
+                : 1;
         }
 
+    }
+    public class LzwEncoder : IStreamEncoder
+    {
+        public async ValueTask<Stream> Encode(Stream data, PdfObject? parameters) =>
+             new MinimumReadSizeFilter(new 
+                LzwEncodeWrapper(PipeReader.Create(data), await parameters.EarlySwitchLength()), 10);
+        
         public class LzwEncodeWrapper : ConvertingStream
         {
             private readonly BitWriter output = new BitWriter();
             private readonly EncoderDictionary dictionary = new EncoderDictionary();
             private short currentDictionaryEntry = -1;
-            private BitLength bits = new BitLength(9);
+            private readonly BitLength bits;
 
-            public LzwEncodeWrapper(PipeReader source) : base(source)
+            public LzwEncodeWrapper(PipeReader source, int earlySwitchLength) : base(source)
             {
+                bits = new BitLength(9, earlySwitchLength);
             }
 
             protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done)
@@ -65,7 +79,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 
             private int CheckBitLength(short nextEntry)
             {
-                bits = bits.CheckBitLength(nextEntry);
+                bits.CheckBitLength(nextEntry);
                 return 0;
             }
 
@@ -74,7 +88,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                 var len = output.WriteBits(LzwConstants.ClearDictionaryCode, bits.Length,
                     destination[destPos..]);
                 dictionary.Reset();
-                bits = new BitLength(9);
+                bits.SetBitLength(9);
                 return len;
             }
 

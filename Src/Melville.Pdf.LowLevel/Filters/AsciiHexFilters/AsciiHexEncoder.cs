@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -9,8 +10,8 @@ namespace Melville.Pdf.LowLevel.Filters.AsciiHexFilters
 {
     public class AsciiHexEncoder:IStreamEncoder
     {
-        public Stream Encode(Stream data, PdfObject? parameters) => 
-            new MinimumReadSizeFilter(new AsciiHexEncodingAdapter(data.AsPipeReader()), 2);
+        public ValueTask<Stream> Encode(Stream data, PdfObject? parameters) =>
+            new(new MinimumReadSizeFilter(new AsciiHexEncodingAdapter(data.AsPipeReader()), 2));
 
         private class AsciiHexEncodingAdapter : ConvertingStream
         {

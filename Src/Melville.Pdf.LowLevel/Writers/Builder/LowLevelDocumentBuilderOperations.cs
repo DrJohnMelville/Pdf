@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -25,12 +26,12 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
                 items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
 
         
-        public static PdfStream NewCompressedStream(this ILowLevelDocumentBuilder _, 
-            in StreamDataSource data, PdfObject compression, PdfObject? parameters = null)
+        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _, 
+             StreamDataSource data, PdfObject compression, PdfObject? parameters = null)
         {
-            return NewStream(_, Encode.Compress(data, compression, parameters),
+            return NewStream(_, await Encode.Compress(data, compression, parameters),
                 (KnownNames.Filter, compression),
-                (KnownNames.Params, parameters??PdfTokenValues.Null));
+                (KnownNames.DecodeParms, parameters??PdfTokenValues.Null));
         }
         public static PdfStream NewStream(this ILowLevelDocumentBuilder _, in StreamDataSource streamData, params
             (PdfName Name, PdfObject Value)[] items)

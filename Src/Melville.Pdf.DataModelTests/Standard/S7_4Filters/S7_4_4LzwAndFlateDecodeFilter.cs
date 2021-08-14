@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.StreamUtilities;
@@ -21,11 +22,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
                 "-----A---B", "16C0A04418190A02");
 
         [Theory]
-        [InlineData(10)]
-        [InlineData(100)]
-        [InlineData(499)]
-        [InlineData(10000)]
-        public async Task EncodeRandomStream(int length)
+        [InlineData(10, 1)]
+        [InlineData(100, 1)]
+        [InlineData(499, 1)]
+        [InlineData(10000, 1)]
+        [InlineData(10000, 0)]
+        [InlineData(10000, 2)]
+        public async Task EncodeRandomStream(int length, int EarlySwitch)
         {
             var buffer = new byte[length];
             var rnd = new Random(10);
@@ -35,7 +38,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             }
 
             var creator = new LowLevelDocumentCreator();
-            var str = creator.NewCompressedStream(buffer, KnownNames.LZWDecode);
+            var param = new PdfDictionary(new Dictionary<PdfName, PdfObject>()
+            {
+                {KnownNames.EarlyChange, new PdfInteger(EarlySwitch)}
+            });
+            var str = await creator.NewCompressedStream(buffer, KnownNames.LZWDecode,
+                EarlySwitch < 2? param:null);
             var destination = new byte[length];
             var decoded = await str.GetDecodedStream();
             await decoded.FillBufferAsync(destination, 0, length);

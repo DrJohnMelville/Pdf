@@ -36,7 +36,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         public static async Task Encoding(
             PdfObject compression, PdfObject? parameters, string src, string dest)
         {
-            var str = LowLevelDocumentBuilderOperations.NewCompressedStream(
+            var str = await LowLevelDocumentBuilderOperations.NewCompressedStream(
                 null!, src, compression, parameters);
             await EncodeStreamTest(dest, str, compression.ToString()!);
             await VerifyStreamContentAsync(src, await str.GetDecodedStream());

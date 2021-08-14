@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -8,9 +9,10 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 {
     public static class SimplePdfShell
     {
-        public static ILowLevelDocumentCreator Generate(
+        public static async ValueTask<ILowLevelDocumentCreator> Generate(
             int major, int minor, 
-            Func<ILowLevelDocumentCreator,PdfIndirectReference, IReadOnlyList<PdfObject>> createPages)
+            Func<ILowLevelDocumentCreator,PdfIndirectReference, 
+                ValueTask<IReadOnlyList<PdfObject>>> createPages)
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion((byte)major, (byte)minor);
@@ -18,7 +20,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             var outlines = builder.AsIndirectReference(builder.NewDictionary(
                 (KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
             var pages = builder.AsIndirectReference();
-            var pageGroup = createPages(builder, pages);
+            var pageGroup = await createPages(builder, pages);
             builder.AssignValueToReference(pages, builder.NewDictionary(
                 (KnownNames.Type, KnownNames.Pages),
                 (KnownNames.Kids, new PdfArray(pageGroup)),

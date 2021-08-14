@@ -11,22 +11,22 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
     public class LzwDecoder : IDecoder
     {
-        public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
-            ValueTask.FromResult<Stream>(new LzwDecodeWrapper(PipeReader.Create(input)));
+        public async ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
+            new LzwDecodeWrapper(PipeReader.Create(input), await parameter.EarlySwitchLength());
 
         private class LzwDecodeWrapper: SequentialReadFilterStream
         {
             private readonly BitReader reader;
-            private readonly DecoderDictionary dictionary = new DecoderDictionary();
-            private BitLength bits;
+            private readonly DecoderDictionary dictionary = new();
+            private readonly BitLength bits;
             private short codeBeingWritten = EmptyCode;
             private int nextByteToWrite = int.MaxValue;
             private bool done;
             private const short EmptyCode = -1;
 
-            public LzwDecodeWrapper(PipeReader input)
+            public LzwDecodeWrapper(PipeReader input, int sizeSwitchFlavorDelta)
             {
-                bits = new BitLength(9);
+                bits = new BitLength(9, sizeSwitchFlavorDelta);
                 reader = new BitReader(input);
             }
 
@@ -66,7 +66,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             private void ResetDictionary()
             {
                 dictionary.Reset();
-                bits = new BitLength(9);
+                bits.SetBitLength(9);
                 codeBeingWritten = EmptyCode;
             }
 
@@ -102,7 +102,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             private void CheckBitLength(short child)
             {
                 // the decoder is always one code behind the encoder, so we add 1 to the switching logic.
-                bits = bits.CheckBitLength(child+1);
+                bits.CheckBitLength(child+1);
             }
 
             private void HandleKnownCode(short item)

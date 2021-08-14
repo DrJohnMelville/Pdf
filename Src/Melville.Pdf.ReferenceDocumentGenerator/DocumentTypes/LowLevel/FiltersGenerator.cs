@@ -17,12 +17,12 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         {
         }
 
-        protected override ValueTask WritePdf(Stream target) =>
-            new(Filters().CreateDocument().WriteTo(target));
+        protected override async ValueTask WritePdf(Stream target) =>
+            await (await Filters()).CreateDocument().WriteTo(target);
 
-        public static ILowLevelDocumentCreator Filters()
+        public static async ValueTask<ILowLevelDocumentCreator> Filters()
         {
-            return SimplePdfShell.Generate(1, 7, (builder, pages) =>
+            return await SimplePdfShell.Generate(1, 7, async (builder, pages) =>
             {
                 var procset = builder.Add(new PdfArray(KnownNames.PDF));
                 var font = builder.Add(builder.NewDictionary(
@@ -34,11 +34,13 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                         ));
                 return new[]
                 {
-                    CreatePage(builder, pages, procset, "LZW -- "+RandomString(9270), font, KnownNames.LZWDecode),
-                    CreatePage(builder, pages, procset,"Ascii Hex", font, KnownNames.ASCIIHexDecode),
-                    CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
-                    CreatePage(builder, pages, procset, "FlateDecode", font, KnownNames.FlateDecode),
-                    CreatePage(builder, pages, procset, "FL", font, KnownNames.Fl),
+                    await CreatePage(builder, pages, procset, "LZW -- LateChange"+RandomString(9270), font, 
+                        KnownNames.LZWDecode, builder.NewDictionary((KnownNames.EarlyChange, new PdfInteger(0)))),
+                    await CreatePage(builder, pages, procset, "LZW -- "+RandomString(9270), font, KnownNames.LZWDecode),
+                    await CreatePage(builder, pages, procset,"Ascii Hex", font, KnownNames.ASCIIHexDecode),
+                    await CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
+                    await CreatePage(builder, pages, procset, "FlateDecode", font, KnownNames.FlateDecode),
+                    await CreatePage(builder, pages, procset, "FL", font, KnownNames.Fl),
                 };
             });
         }
@@ -55,17 +57,17 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             return ret.ToString();
         }
 
-        private static PdfIndirectReference CreatePage(
+        private static async ValueTask<PdfIndirectReference> CreatePage(
             ILowLevelDocumentCreator builder, 
             PdfIndirectReference pages, 
             PdfIndirectReference procset,
             string text,
             PdfIndirectReference font,
-            PdfObject filters )
+            PdfObject filters , PdfObject? parameters = null)
         {
             var stream = builder.Add(
-                builder.NewCompressedStream($"BT\n/F1 24 Tf\n100 100 Td\n({text}) Tj\nET\n",
-                    filters));
+                await builder.NewCompressedStream($"BT\n/F1 24 Tf\n100 100 Td\n({text}) Tj\nET\n",
+                    filters, parameters));
             return builder.Add(builder.NewDictionary(
                 (KnownNames.Type, KnownNames.Page),
                 (KnownNames.Parent, pages),

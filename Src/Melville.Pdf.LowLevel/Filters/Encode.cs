@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
@@ -11,22 +12,22 @@ using Melville.Pdf.LowLevel.Writers;
 namespace Melville.Pdf.LowLevel.Filters
 {
     public interface IStreamEncoder{
-        public Stream Encode(Stream data, PdfObject? parameters);
+        public ValueTask<Stream> Encode(Stream data, PdfObject? parameters);
     }
 
     public static class Encode
     {
-        public static Stream Compress(in StreamDataSource data, PdfObject algorithm, PdfObject? parameters)
+        public static ValueTask<Stream> Compress(in StreamDataSource data, PdfObject algorithm, PdfObject? parameters)
         {
             var algorithms = algorithm.AsList();
             return DoCompress(data.Stream, algorithms, parameters.AsList(), algorithms.Count - 1);
         }
 
-        private static Stream DoCompress(Stream data, IReadOnlyList<PdfObject> algorithms, 
+        private static async ValueTask<Stream> DoCompress(Stream data, IReadOnlyList<PdfObject> algorithms, 
             IReadOnlyList<PdfObject> parameters, int which)
         {
             if (which < 0) return data;
-            return DoCompress(compressors[(PdfName) algorithms[which]].Encode(data,
+            return await DoCompress(await compressors[(PdfName) algorithms[which]].Encode(data,
                     which < parameters.Count ? parameters[which] : PdfTokenValues.Null),
                 algorithms, parameters, which - 1);
         }

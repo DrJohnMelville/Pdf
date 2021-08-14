@@ -10,11 +10,9 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
 {
     public class FlateEncoder:IStreamEncoder
     {
-        public Stream Encode(Stream data, PdfObject? parameters)
-        {
-            return new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4);
-        }
-        
+        public ValueTask<Stream> Encode(Stream data, PdfObject? parameters) => 
+            new ( new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4));
+
         private sealed class FlateEncodeWrapper: SequentialReadFilterStream
         {
 
