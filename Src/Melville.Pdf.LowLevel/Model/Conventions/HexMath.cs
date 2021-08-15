@@ -30,6 +30,7 @@
             {
                 >= (byte) '0' and <= (byte) '9' => (Nibble) (digit - (byte) '0'),
                 >= (byte) 'A' and <= (byte) 'F' => (Nibble) (digit - ((byte) 'A' - 10)),
+                >= (byte) 'a' and <= (byte) 'f' => (Nibble) (digit - ((byte) 'a' - 10)),
                 _ => Nibble.Terminator
             };
     

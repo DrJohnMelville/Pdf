@@ -11,6 +11,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
     public partial class ParsingFileOwner
     {
         private readonly Stream source;
+        private long preHeaderOffset = 0;
         public long StreamLength => source.Length;
         public IPdfObjectParser RootObjectParser { get; }
         public IIndirectObjectResolver IndirectResolver { get; }
@@ -26,12 +27,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 
         private object? currentReader = null;
 
+        public void SetPreheaderOffset(long offset) => preHeaderOffset = offset;
         private void SeekToRentedOrigin(long offset)
         {
             // we may eventually want a multithreaed version of this so we can load multiple pages on different
             // threads
             if (currentReader != null) throw new InvalidOperationException("May only create one reader at a time");
-            source.Seek(offset, SeekOrigin.Begin);
+            source.Seek(offset + preHeaderOffset, SeekOrigin.Begin);
         }
 
         public ValueTask<IParsingReader> RentReader(long offset)

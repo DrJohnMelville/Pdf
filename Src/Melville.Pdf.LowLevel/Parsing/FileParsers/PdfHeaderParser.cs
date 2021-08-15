@@ -35,16 +35,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 throw new PdfParseException("Invalid pdf version number.");
             return (true, reader.Position);
         }
-
-        private static bool VerifyHeadder(ref ReadOnlySpan<byte> header, out byte major, out byte minor)
-        {
-            major = minor = 0;
-            if (header.Length < 9) return false;
-            if (!header.Slice(0, headerTemplate.Length).SequenceEqual(headerTemplate))
-                throw new PdfParseException("File header does not identify it as a pdf file.");
-            return CheckByte(header[5], out major) && CheckByte(header[7], out minor);
-        }
-
+        
         private static bool CheckByte(byte b, out byte output)
         {
             output = (byte) (b - '0');

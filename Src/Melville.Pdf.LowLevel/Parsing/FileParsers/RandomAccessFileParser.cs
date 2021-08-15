@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers
@@ -16,6 +15,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             byte major, minor;
             using (var context = await owner.RentReader(0))
             {
+                owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffset(context));
                 (major, minor) = await PdfHeaderParser.ParseHeadder(context);
             }
 

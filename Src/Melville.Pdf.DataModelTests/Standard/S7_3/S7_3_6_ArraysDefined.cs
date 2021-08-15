@@ -12,6 +12,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
     {
         [Theory]
         [InlineData("[] /fd", 0)]
+        [InlineData("[.5] sd", 1)] // this is a bug check leading period should invoke number parser
         [InlineData("[123.5] sd", 1)]
         [InlineData("[123.5 (this is a string () inside)]/wdg", 2)]
         [InlineData("[true false null] /", 3)]

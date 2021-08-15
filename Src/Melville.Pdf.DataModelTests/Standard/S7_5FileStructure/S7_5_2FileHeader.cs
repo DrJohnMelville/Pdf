@@ -28,5 +28,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             Assert.Equal(minor, doc.MinorVersion);
             
         }
+
+        [Fact]
+        public async Task ParseWithLeadingWhiteSpace()
+        {
+            var docString = "   \r\n" + (await (await MinimalPdfParser.MinimalPdf(1, 7))
+                .AsStringAsync());
+            var doc = await docString.ParseDocumentAsync();
+            Assert.Equal(1, doc.MajorVersion);
+            Assert.Equal(7, doc.MinorVersion);
+        }
     }
 }
