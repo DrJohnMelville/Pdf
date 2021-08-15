@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -25,23 +26,23 @@ namespace Melville.Pdf.DataModelTests.Writer.Lzw
         [InlineData("\x07\x07\x07", 5,"\x39\xCE")]
         [InlineData("\x07\x07\x07\x07", 5,"\x39\xCE\x70")] 
         [InlineData("\x07\x07\x07\x07\x07", 5,"\x39\xCE\x73\x80")]
-        public async Task BitStringTest(string decoded, int bitsize, string encoded)
+        public void BitStringTest(string decoded, int bitsize, string encoded)
         {
-            WriterTest(decoded, bitsize, encoded);
-            await ReaderTest(decoded, bitsize, encoded);
+            WriterTest(decoded, bitsize, encoded); 
+            ReaderTest(decoded, bitsize, encoded);
         }
 
-        private async Task ReaderTest(string decoded, int bitsize, string encoded)
+        private void ReaderTest(string decoded, int bitsize, string encoded)
         {
-            var source = new MemoryStream(encoded.AsExtendedAsciiBytes());
-            var sut = new BitReader(PipeReader.Create(source));
+            var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(encoded.AsExtendedAsciiBytes()));
+            var sut = new BitReader();
             foreach (var character in decoded)
             {
-                var result = await sut.TryRead(bitsize);
+                var result = sut.TryRead(bitsize, ref source);
                 Assert.True(result.HasValue);
                 Assert.Equal(character, result!.Value);
             }
-            Assert.False((await sut.TryRead(9)).HasValue);
+            Assert.False(sut.TryRead(9, ref source).HasValue);
         }  
         
         private void WriterTest(string decoded, int bitsize, string encoded)

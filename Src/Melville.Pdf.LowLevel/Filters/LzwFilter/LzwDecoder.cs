@@ -14,51 +14,41 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
         public async ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
             new LzwDecodeWrapper(PipeReader.Create(input), await parameter.EarlySwitchLength());
 
-        private class LzwDecodeWrapper: SequentialReadFilterStream
+        private class LzwDecodeWrapper: ConvertingStream
         {
             private readonly BitReader reader;
             private readonly DecoderDictionary dictionary = new();
             private readonly BitLength bits;
             private short codeBeingWritten = EmptyCode;
             private int nextByteToWrite = int.MaxValue;
-            private bool done;
             private const short EmptyCode = -1;
 
-            public LzwDecodeWrapper(PipeReader input, int sizeSwitchFlavorDelta)
+            public LzwDecodeWrapper(PipeReader input, int sizeSwitchFlavorDelta): base(input)
             {
                 bits = new BitLength(9, sizeSwitchFlavorDelta);
-                reader = new BitReader(input);
+                reader = new BitReader();
             }
-
-            protected override void Dispose(bool disposing)
+            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done) 
+                Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
             {
-                reader.Dispose();
-            }
-
-            public async override ValueTask<int> ReadAsync(
-                Memory<byte> destination, CancellationToken cancellationToken = default)
-            {
-                if (done) return 0;
                 var destPosition = 0;
                 while (true)
                 {
-                    
                     destPosition = TryWriteCurrentCode(destination, destPosition);
-                    if (destPosition >= destination.Length) return destination.Length;
-                    var item = await reader.TryRead(bits.Length);
-                    if (item is null or LzwConstants.EndOfFileCode)
+                    if (destPosition >= destination.Length) 
+                        return (source.Position, destination.Length, false);
+                    
+                    switch (reader.TryRead(bits.Length, ref source))
                     {
-                        done = true;
-                        return destPosition;
-                    }
-
-                    if (item.Value == LzwConstants.ClearDictionaryCode)
-                    {
-                        ResetDictionary();
-                    }
-                    else
-                    {
-                        HandleCodedGroup((short)item);
+                        case null: return (source.Position, destPosition, false);
+                        case LzwConstants.EndOfFileCode:
+                            return (source.Position, destPosition, true);
+                        case LzwConstants.ClearDictionaryCode:
+                            ResetDictionary();
+                            break;
+                        case var item:
+                            HandleCodedGroup((short)item);
+                            break;
                     }
                 }
             }
@@ -70,7 +60,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                 codeBeingWritten = EmptyCode;
             }
 
-            private int TryWriteCurrentCode(Memory<byte> destination, int destPosition)
+            private int TryWriteCurrentCode(in Span<byte> destination, int destPosition)
             {
                 if (codeBeingWritten == EmptyCode) return destPosition;
                 var localWrite = WriteCurrentCodeToDestionation(destination, destPosition);
@@ -121,9 +111,9 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                 nextByteToWrite = 0;
             }
 
-            private int WriteCurrentCodeToDestionation(Memory<byte> destination, int destPosition)
+            private int WriteCurrentCodeToDestionation(in Span<byte> destination, int destPosition)
             {
-                var target = destination.Slice(destPosition).Span;
+                var target = destination[destPosition..];
                 var localWrite = dictionary.WriteChars(codeBeingWritten, nextByteToWrite, ref target);
                 return localWrite;
             }

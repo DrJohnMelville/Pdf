@@ -1,30 +1,25 @@
 ﻿using System;
+using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
-    public class BitReader: IDisposable
+    public class BitReader
     {
-        private readonly PipeReader source;
-
-        public BitReader(PipeReader source)
-        {
-            this.source = source;
-        }
-
         private byte residue;
         private int bitsRemaining;
-        public async ValueTask<int?> TryRead(int bits)
+        public int? TryRead(int bits, ref SequenceReader<byte> input)
         {
-            if (!await TryReadByte()) return null;
+            if (bits - bitsRemaining > 8 * input.Remaining) return null; 
+            if (!TryReadByte(ref input)) return null;
             if (bitsRemaining >= bits)
             {
                 return CopyLowBits(bits);
             }
 
             var bitsNeeded = CopyUpperBits(bits, out var firstPart);
-            var lastPart = await TryRead(bitsNeeded);
+            var lastPart = TryRead(bitsNeeded, ref input) ?? 0; // this is guarenteed to succeed
             return firstPart | lastPart;
         }
 
@@ -43,17 +38,12 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             return bitsNeeded;
         }
 
-        private async ValueTask<bool> TryReadByte()
+        private bool TryReadByte(ref SequenceReader<byte> input)
         {
             if (bitsRemaining > 0) return true;
-            var readResult = await source.ReadAsync();
-            if (readResult.IsCompleted && readResult.Buffer.Length == 0) return false;
-            residue = readResult.Buffer.First.Span[0];
+            if (!input.TryRead(out residue)) return false;
             bitsRemaining = 8;
-            source.AdvanceTo(readResult.Buffer.GetPosition(1));
             return true;
         }
-
-        public void Dispose() => source.Complete();
     }
 }
