@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Buffers;
 using System.IO;
-using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Filters.FlateFilters;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
@@ -11,22 +10,23 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
     public class LzwEncoder : IStreamEncoder
     {
         public async ValueTask<Stream> Encode(Stream data, PdfObject? parameters) =>
-             new MinimumReadSizeFilter(new 
-                LzwEncodeWrapper(PipeReader.Create(data), await parameters.EarlySwitchLength()), 10);
+            ReadingFilterStream.Wrap(data, new LzwEncodeFilter(await parameters.EarlySwitchLength()));
         
-        public class LzwEncodeWrapper : ConvertingStream
+        public class LzwEncodeFilter : IStreamFilterDefinition
         {
-            private readonly BitWriter output = new BitWriter();
-            private readonly EncoderDictionary dictionary = new EncoderDictionary();
+            private readonly BitWriter output = new();
+            private readonly EncoderDictionary dictionary = new();
             private short currentDictionaryEntry = -1;
             private readonly BitLength bits;
 
-            public LzwEncodeWrapper(PipeReader source, int earlySwitchLength) : base(source)
+            public LzwEncodeFilter(int earlySwitchLength)
             {
                 bits = new BitLength(9, earlySwitchLength);
             }
 
-            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done)
+            public int MinWriteSize => 10;
+
+            public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
                 Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
             {
                 if (currentDictionaryEntry < 0)
@@ -83,7 +83,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                 nextEntry >= LzwConstants.MaxTableSize - 2;
 
 
-            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
+            public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
                 ref SequenceReader<byte> source,
                 ref Span<byte> destination)
             {
