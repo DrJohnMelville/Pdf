@@ -5,32 +5,36 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Melville.Pdf.LowLevel.Filters
+namespace Melville.Pdf.LowLevel.Filters.StreamFilters
 {
-    [Obsolete("Moving Toward ReadingFilterStream")]
-    public abstract class ConvertingStream : SequentialReadFilterStream
+    public class ReadingFilterStream : SequentialReadFilterStream
     {
+        private readonly IStreamFilterDefinition filter;
         private PipeReader source;
         private bool doneReading = false;
-        
-        protected ConvertingStream(PipeReader source)
+
+        public static Stream Wrap(Stream source, IStreamFilterDefinition filter)
         {
-            this.source = source;
+            var ret = new ReadingFilterStream(source, filter);
+            return EmsureMinimumReadSizes(filter, ret);
+        }
+
+        private static Stream EmsureMinimumReadSizes(
+            IStreamFilterDefinition filter, ReadingFilterStream ret) =>
+            filter.MinWriteSize > 1?
+                new MinimumReadSizeFilter(ret, filter.MinWriteSize):
+                ret;
+
+        private ReadingFilterStream(Stream sourceStream, IStreamFilterDefinition filter)
+        {
+            this.filter = filter;
+            this.source = PipeReader.Create(sourceStream);
         }
         public override void Close() => source.Complete();
-
         protected override void Dispose(bool disposing) => source.Complete();
-
         public override ValueTask DisposeAsync() => source.CompleteAsync();
 
-        protected abstract (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
-            ref SequenceReader<byte> source, ref Span<byte> destination);
-
-        protected virtual (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
-            ref SequenceReader<byte> source, ref Span<byte> destination) =>
-            (source.Position, 0, false);
-
-
+        
         public override async ValueTask<int> ReadAsync(
             Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
@@ -49,7 +53,7 @@ namespace Melville.Pdf.LowLevel.Filters
         {
             if (result.IsCanceled || doneReading) return 0;
             var reader = new SequenceReader<byte>(result.Buffer);
-            var (finalPos, bytesWritten, done) = Convert(ref reader, ref buffer);
+            var (finalPos, bytesWritten, done) = filter.Convert(ref reader, ref buffer);
             if (result.IsCompleted)
             {
                 (finalPos, bytesWritten, done) = HandleFinalDecode(buffer, result, finalPos, bytesWritten);
@@ -67,7 +71,7 @@ namespace Melville.Pdf.LowLevel.Filters
             int extrBytes;
             var r2 = new SequenceReader<byte>(result.Buffer.Slice(finalPos));
             var remaining = buffer.Slice(bytesWritten);
-            (finalPos, extrBytes, done) = FinalConvert(ref r2, ref remaining);
+            (finalPos, extrBytes, done) = filter.FinalConvert(ref r2, ref remaining);
             bytesWritten += extrBytes;
             return (finalPos, bytesWritten, done);
         }

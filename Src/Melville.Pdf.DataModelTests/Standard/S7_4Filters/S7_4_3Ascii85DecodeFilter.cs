@@ -29,9 +29,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         [InlineData("", "")]
         public async Task EncodeString(string plain, string encoded)
         {
-            await StreamTest.Encoding(KnownNames.ASCII85Decode, null, plain, encoded+"~>");
-            await SpecialCases(plain, encoded);
-            await SpecialCases(plain, encoded+"~>this garbage does not matter");
+           await StreamTest.Encoding(KnownNames.ASCII85Decode, null, plain, encoded+"~>");
+           await SpecialCases(plain, encoded);
+           await SpecialCases(plain, encoded+"~>this garbage does not matter");
         }
         
         [Theory]

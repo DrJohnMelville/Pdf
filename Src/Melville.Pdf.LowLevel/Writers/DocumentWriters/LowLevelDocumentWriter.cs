@@ -6,7 +6,6 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 {
-    public static readonly 
     public class LowLevelDocumentWriter
     {
         private readonly CountingPipeWriter target;
