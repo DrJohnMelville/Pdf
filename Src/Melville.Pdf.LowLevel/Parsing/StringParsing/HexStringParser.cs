@@ -55,12 +55,12 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
 
         private Nibble GetNibble(ref SequenceReader<byte> reader)
         {
-            while (true)
+            byte item;
+            do
             {
-                return !reader.TryRead(out var item) ? 
-                    Nibble.OutOfSpace : 
-                    HexMath.ByteToNibble(item);
-            }
+                if (!reader.TryRead(out item)) return Nibble.OutOfSpace;
+            } while (CharClassifier.Classify(item) == CharacterClass.White);
+            return HexMath.ByteToNibble(item);
         }
     }
 }

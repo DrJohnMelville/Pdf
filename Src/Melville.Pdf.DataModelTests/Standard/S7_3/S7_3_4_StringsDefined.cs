@@ -35,6 +35,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [InlineData("<2020>/", "  ")]
         [InlineData("<202>/", "  ")]
         [InlineData("<01234567ABCDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
+        [InlineData("<01 23  4 \r\n567   ABC \tDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
         public async Task ParseHexString(string input, string output)
         {
             var str = (PdfString) await input.ParseObjectAsync();
