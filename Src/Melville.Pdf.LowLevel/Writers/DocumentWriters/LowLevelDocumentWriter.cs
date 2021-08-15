@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 {
+    public static readonly 
     public class LowLevelDocumentWriter
     {
         private readonly CountingPipeWriter target;
@@ -23,6 +24,11 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             long xRefStart = target.BytesWritten;
             await NewXrefTableWriter.WriteXrefsForNewFile(target, objectOffsets);
             await TrailerWriter.WriteTrailer(target, document.TrailerDictionary, xRefStart);
+        }
+
+        public async Task WriteWithReferenceStream(PdfLowLevelDocument document)
+        {
+            await WriteAsync(document);
         }
 
         private async Task<long[]> WriteObjectList(PdfLowLevelDocument document)
