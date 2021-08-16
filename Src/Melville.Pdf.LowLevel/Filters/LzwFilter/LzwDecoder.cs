@@ -5,6 +5,7 @@ using System.IO.Pipelines;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
@@ -12,9 +13,9 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
     public class LzwDecoder : IDecoder
     {
         public async ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
-            new LzwDecodeWrapper(PipeReader.Create(input), await parameter.EarlySwitchLength());
+            ReadingFilterStream.Wrap(input, new LzwDecodeWrapper(await parameter.EarlySwitchLength()));
 
-        private class LzwDecodeWrapper: ConvertingStream
+        private class LzwDecodeWrapper: IStreamFilterDefinition
         {
             private readonly BitReader reader;
             private readonly DecoderDictionary dictionary = new();
@@ -23,12 +24,15 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             private int nextByteToWrite = int.MaxValue;
             private const short EmptyCode = -1;
 
-            public LzwDecodeWrapper(PipeReader input, int sizeSwitchFlavorDelta): base(input)
+            public int MinWriteSize => 1;
+
+            public LzwDecodeWrapper(int sizeSwitchFlavorDelta)
             {
                 bits = new BitLength(9, sizeSwitchFlavorDelta);
                 reader = new BitReader();
             }
-            protected override (SequencePosition SourceConsumed, int bytesWritten, bool Done) 
+
+            public (SequencePosition SourceConsumed, int bytesWritten, bool Done) 
                 Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
             {
                 var destPosition = 0;
@@ -53,6 +57,10 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                 }
             }
 
+            public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
+                FinalConvert(ref SequenceReader<byte> source, ref Span<byte> destination) =>
+                (source.Position, 0, false);
+            
             private void ResetDictionary()
             {
                 dictionary.Reset();

@@ -13,6 +13,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         public Task WriteEncodedStream() =>
             StreamTest.Encoding(KnownNames.ASCIIHexDecode, null, 
                 "Hello World.", "48656C6C6F20576F726C642E");
+        [Fact]
+        public Task BugCheck() =>
+            StreamTest.Encoding(KnownNames.ASCIIHexDecode, null, 
+                "\x16\xc0\xa0\x44\x18\x19\x0a\x02", "16C0A04418190A02");
 
         [Theory]
         [InlineData("2020", "  ")]
