@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters
 {

@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Melville.Pdf.LowLevel.Filters
+namespace Melville.Pdf.LowLevel.Filters.StreamFilters
 {
     // Many of the filters, like ASCII85Decode and RLE can produce more than one
     // byte of output at a certian point in the input.  This wrapper class guarentees that the reads

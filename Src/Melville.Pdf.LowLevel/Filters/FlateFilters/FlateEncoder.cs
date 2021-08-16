@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters
