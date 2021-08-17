@@ -27,7 +27,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         [InlineData("707", "pp")]
         [InlineData("20 \r\n\t 20", "  ")]
         public Task SpecialCases(string encoded, string decoded) =>
-            StreamTest.TestContent(encoded, decoded, new AsciiHexDecoder(), PdfTokenValues.Null);
+            StreamTest.TestContent(encoded, decoded, KnownNames.ASCIIHexDecode, PdfTokenValues.Null);
 
     }
 }

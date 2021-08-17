@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using System.Xml;
 using Melville.Hacks;
 using Melville.INPC;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
@@ -29,7 +28,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         }
 
         private static async Task<Stream> CreateReadingSingleBytes(PdfStream str) =>
-            await Decompressor.DecodeStream(new OneCharAtAtimeStream(await str.GetRawStream()),
+            await Decoder.DecodeStream(new OneCharAtAtimeStream(await str.GetRawStream()),
                 (await str.GetOrNull(KnownNames.Filter)).AsList(),
                 (await str.GetOrNull(KnownNames.Params)).AsList(), int.MaxValue);
 
@@ -45,9 +44,9 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         }
 
         public static async Task TestContent(
-            string encoded, string decoded, IDecoder decoder, PdfObject parameters) =>
+            string encoded, string decoded, PdfName decoder, PdfObject parameters) =>
             await VerifyStreamContentAsync(decoded,
-                await decoder.WrapStreamAsync(StringAsAsciiStream(encoded), parameters));
+                await CodecFactory.CodecFor(decoder).DecodeOnReadStream(StringAsAsciiStream(encoded), parameters));
 
         private static MemoryStream StringAsAsciiStream(string content) => 
             new(ExtendedAsciiEncoding.AsExtendedAsciiBytes(content));

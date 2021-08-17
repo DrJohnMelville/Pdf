@@ -9,12 +9,24 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters
 {
-    public class FlateEncoder:IStreamEncoder
+    public class FlateCodecDefinition: ICodecDefinition
     {
-        public ValueTask<Stream> Encode(Stream data, PdfObject? parameters) => 
-            new ( new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4));
+        public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) => 
+            new(new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4));
 
-        private sealed class FlateEncodeWrapper: SequentialReadFilterStream
+        public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
+        {
+            var buffer = new byte[2];
+            int totalRead = 0;
+            do
+            {
+                var localRead = await input.ReadAsync(buffer, 0, 2 - totalRead);
+                totalRead += localRead;
+            } while (totalRead < 2);
+            return new DeflateStream(input, CompressionMode.Decompress);
+        }
+    }
+        public sealed class FlateEncodeWrapper: SequentialReadFilterStream
         {
 
             private enum State
@@ -115,5 +127,4 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
                 span[1] = 0xDA;
             }
         }
-    }
 }

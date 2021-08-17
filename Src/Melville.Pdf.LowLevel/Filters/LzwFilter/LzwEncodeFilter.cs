@@ -7,11 +7,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
-    public class LzwEncoder : IStreamEncoder
-    {
-        public async ValueTask<Stream> Encode(Stream data, PdfObject? parameters) =>
-            ReadingFilterStream.Wrap(data, new LzwEncodeFilter(await parameters.EarlySwitchLength()));
-        
         public class LzwEncodeFilter : IStreamFilterDefinition
         {
             private readonly BitWriter output = new();
@@ -99,5 +94,4 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
                 return destPosition + 4 < destination.Length;
             }
         }
-    }
 }

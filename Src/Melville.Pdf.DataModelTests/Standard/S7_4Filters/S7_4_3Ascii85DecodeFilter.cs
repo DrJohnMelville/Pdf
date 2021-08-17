@@ -44,6 +44,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         [InlineData("ddd", "A7T3  ~>")]
         [InlineData("ddd", "A7T3~> jsdhlk oky wqo' gdwqj 'ggb3eg2kph rgkj ohe3fgho' ihk tb3")]
         public Task SpecialCases(string decoded, string encoded) =>
-            StreamTest.TestContent(encoded, decoded, new Ascii85Decoder(), PdfTokenValues.Null);
+            StreamTest.TestContent(encoded, decoded, KnownNames.ASCII85Decode, PdfTokenValues.Null);
     }
 }

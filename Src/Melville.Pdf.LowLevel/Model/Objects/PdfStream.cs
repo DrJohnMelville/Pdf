@@ -34,7 +34,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
 
         public async ValueTask<Stream> GetDecodedStream(int desiredFormat = int.MaxValue) =>
-            await Decompressor.DecodeStream(await GetRawStream(),
+            await Decoder.DecodeStream(await GetRawStream(),
                 (await this.GetOrNull(KnownNames.Filter)).AsList(), 
                 (await this.GetOrNull(KnownNames.DecodeParms)).AsList(),
                 desiredFormat);

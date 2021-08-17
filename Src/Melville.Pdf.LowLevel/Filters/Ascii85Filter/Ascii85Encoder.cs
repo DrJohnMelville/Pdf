@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Buffers;
-using System.IO;
-using System.IO.Pipelines;
-using System.Text;
-using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {
-    public class Ascii85Encoder : IStreamEncoder, IStreamFilterDefinition
+    public class Ascii85Encoder : IStreamFilterDefinition
     {
-        public ValueTask<Stream> Encode(Stream data, PdfObject? parameters) =>
-            new(ReadingFilterStream.Wrap(data, this));
-
         public int MinWriteSize => 7;
 
         public (SequencePosition SourceConsumed, int bytesWritten, bool Done)

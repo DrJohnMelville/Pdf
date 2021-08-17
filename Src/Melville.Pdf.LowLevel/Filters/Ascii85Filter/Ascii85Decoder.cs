@@ -17,13 +17,10 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
         public const byte SecondTerminatingChar = (byte)'>';
     }
 
-    public class Ascii85Decoder : IDecoder, IStreamFilterDefinition
+    public class Ascii85Decoder : IStreamFilterDefinition
     {
         public int MinWriteSize => 4;
-
-        public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
-            new(ReadingFilterStream.Wrap(input, this));
-
+        
         public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
             Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
         {

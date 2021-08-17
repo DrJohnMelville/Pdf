@@ -9,11 +9,8 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.AsciiHexFilters
 {
-    public class AsciiHexDecoder : IDecoder, IStreamFilterDefinition
+    public class AsciiHexDecoder : IStreamFilterDefinition
     {
-        public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
-            new(ReadingFilterStream.Wrap(input, this));
-
         public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
             Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
         {

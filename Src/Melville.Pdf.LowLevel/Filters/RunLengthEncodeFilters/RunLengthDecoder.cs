@@ -7,11 +7,8 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters
 {
-    public class RunLengthDecoder : IDecoder, IStreamFilterDefinition
+    public class RunLengthDecoder : IStreamFilterDefinition
     {
-        public ValueTask<Stream> WrapStreamAsync(Stream input, PdfObject parameter) =>
-            new(ReadingFilterStream.Wrap(input, this));
-
         public int MinWriteSize => 128;
 
         public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
