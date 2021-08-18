@@ -35,13 +35,23 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
         }
         
         public uint GetHash() =>(uint) ((s2 << 16) | s1);
+
+        public void CopyHashToBigEndianSpan(Span<byte> destination)
+        {
+            var checksum = GetHash();
+            for (var i = 3; i >= 0; i--)
+            {
+                destination[i] = (byte)checksum;
+                checksum >>= 8;
+            }
+
+        }
     }
 
     public class ReadAdlerStream : SequentialReadFilterStream
     {
-        public uint GetHash() => computer.GetHash();
-        private Adler32Computer computer = new Adler32Computer();
-        private Stream source;
+        public Adler32Computer Computer { get; }= new Adler32Computer();
+        private readonly Stream source;
 
         public ReadAdlerStream(Stream source)
         {
@@ -52,7 +62,7 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
             Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             var ret = await source.ReadAsync(buffer, cancellationToken);
-            computer.AddData(buffer.Span[..ret]);
+            Computer.AddData(buffer.Span[..ret]);
             return ret;
         }
     }

@@ -14,10 +14,8 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
         public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) => 
             new(new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4));
 
-        public ValueTask<Stream> EncodeOnWriteStream(Stream data, PdfObject? parameters)
-        {
-            throw new NotImplementedException();
-        }
+        public ValueTask<Stream> EncodeOnWriteStream(Stream data, PdfObject? parameters) => 
+            new(new FlateEncodeWriteWrapper(data));
 
         public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
         {
@@ -90,18 +88,9 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
 
             private ValueTask<int> WriteTrailer(Memory<byte> buffer)
             {
-                WriteBigEndian(adler.GetHash(), buffer.Span);
+                adler.Computer.CopyHashToBigEndianSpan(buffer.Span);
                 state = State.Done;
                 return new ValueTask<int>(4);
-            }
-
-            private static void WriteBigEndian(uint checksum, in Span<byte> span)
-            {
-                for (var i = 3; i >= 0; i--)
-                {
-                    span[i] = (byte)checksum;
-                    checksum <<= 8;
-                }
             }
 
             private async ValueTask<int> CopyBytes(Memory<byte> buffer, CancellationToken cancellationToken)
