@@ -71,24 +71,20 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         public override void Write(byte[] buffer, int offset, int count)=> 
             WriteAsync(buffer, offset, count).GetAwaiter().GetResult();
 
-        public override void Write(ReadOnlySpan<byte> buffer)=> 
-            throw new NotSupportedException();
-
+        public override void Write(ReadOnlySpan<byte> buffer)
+        {
+            source.Writer.Write(buffer);
+            HandleMultipleWrites();
+        }
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => 
             WriteAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
 
         public override async ValueTask WriteAsync(
             ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
         {
-            CopyDataToInoutBuffer(buffer);
+            await source.Writer.WriteAsync(buffer, cancellationToken);
             HandleMultipleWrites();
-        }
-
-        private void CopyDataToInoutBuffer(ReadOnlyMemory<byte> buffer)
-        {
-            var dest = source.Writer.GetSpan(buffer.Length);
-            buffer.Span.CopyTo(dest);
-            source.Writer.Advance(buffer.Length);
+            await destination.FlushAsync(cancellationToken);
         }
 
         private void HandleMultipleWrites()
@@ -115,8 +111,12 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
             return localWritten;
         }
 
-        public override void WriteByte(byte value)=> 
-            throw new NotSupportedException();
+        public override void WriteByte(byte value)
+        {
+            Span<byte> buffer = stackalloc byte[1];
+            buffer[0] = value;
+            Write(buffer);
+        }
 
         public override bool CanRead => false;
 

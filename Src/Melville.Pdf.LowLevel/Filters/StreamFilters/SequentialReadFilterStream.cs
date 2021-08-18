@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,14 +14,27 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         public override void EndWrite(IAsyncResult asyncResult) =>
             throw new NotSupportedException();
 
-
         public override int Read(byte[] buffer, int offset, int count) =>
             ReadAsync(buffer, offset, count).GetAwaiter().GetResult();
 
-        public override int Read(Span<byte> buffer) =>
-            
-            throw new NotSupportedException("Only Async reads are supported.");
+        public override int ReadByte()
+        {
+            byte[] oneByteArray = ArrayPool<byte>.Shared.Rent(1);
+            int r = Read(oneByteArray, 0, 1);
+            var ret = r == 0 ? -1 : oneByteArray[0];
+            ArrayPool<byte>.Shared.Return(oneByteArray);
+            return ret;
+        }
 
+        public override int Read(Span<byte> buffer)
+        {
+            var array = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            var readLen = Read(array, 0, buffer.Length);
+            array.AsSpan(0, readLen).CopyTo(buffer);
+            ArrayPool<byte>.Shared.Return(array);
+            return readLen;
+        }
+        
         public override Task<int> ReadAsync(
             byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
             ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
