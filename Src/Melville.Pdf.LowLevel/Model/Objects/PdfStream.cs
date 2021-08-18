@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;

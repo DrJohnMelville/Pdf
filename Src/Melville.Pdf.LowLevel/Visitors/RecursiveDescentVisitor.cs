@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Objects;
+﻿using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Visitors
 {

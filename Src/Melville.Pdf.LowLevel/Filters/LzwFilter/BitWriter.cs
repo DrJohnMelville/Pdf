@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {

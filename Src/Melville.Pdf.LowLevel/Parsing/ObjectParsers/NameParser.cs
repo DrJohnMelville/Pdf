@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {

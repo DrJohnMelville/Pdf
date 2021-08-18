@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {

@@ -14,6 +14,11 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
         public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) => 
             new(new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4));
 
+        public ValueTask<Stream> EncodeOnWriteStream(Stream data, PdfObject? parameters)
+        {
+            throw new NotImplementedException();
+        }
+
         public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
         {
             var buffer = new byte[2];

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.INPC;
@@ -37,10 +38,21 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         {
             var str = await LowLevelDocumentBuilderOperations.NewCompressedStream(
                 null!, src, compression, parameters);
+            await EncodeUsingWrite(compression, parameters, src, dest);
             await EncodeStreamTest(dest, str, compression.ToString()!);
             await VerifyStreamContentAsync(src, await str.GetDecodedStream());
             await VerifyStreamContentAsync(src, new OneCharAtAtimeStream(await CreateReadingSingleBytes(str)));
             await VerifyDisposal(str);
+        }
+
+        private static async Task EncodeUsingWrite(PdfObject compression, PdfObject? parameters,
+            string src, string dest)
+        {
+            var target = new MemoryStream();
+            var stream = await Encode.CompressOnWrite(target, compression, parameters);
+            await stream.WriteAsync(src.AsExtendedAsciiBytes().AsMemory());
+            await stream.DisposeAsync();
+            Assert.Equal(dest, target.ToArray().ExtendedAsciiString());
         }
 
         public static async Task TestContent(

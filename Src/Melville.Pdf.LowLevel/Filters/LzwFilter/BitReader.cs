@@ -1,7 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
+﻿using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {

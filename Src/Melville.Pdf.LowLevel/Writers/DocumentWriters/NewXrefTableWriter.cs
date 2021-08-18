@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO.Pipelines;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters

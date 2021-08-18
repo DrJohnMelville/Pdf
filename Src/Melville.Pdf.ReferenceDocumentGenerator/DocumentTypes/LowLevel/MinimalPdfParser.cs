@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -19,7 +20,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public static async ValueTask<ILowLevelDocumentCreator> MinimalPdf(int major, int minor)
         {
-            return await SimplePdfShell.Generate(major, minor, async (builder, pages) =>
+            return await SimplePdfShell.Generate(major, minor, (builder, pages) =>
             {
                 var page = builder.AsIndirectReference();
                 var stream = builder.Add(builder.NewStream("... Page0marking operators ..."));
@@ -32,7 +33,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                     (KnownNames.Contents, stream),
                     (KnownNames.Resources, builder.NewDictionary((KnownNames.ProcSet, procset)))));
                 builder.Add(page);
-                return new[] {page};
+                return new ValueTask<IReadOnlyList<PdfObject>>(new[] {page});
             });
         }
      }

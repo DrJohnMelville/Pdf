@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Melville.Pdf.LowLevel.Filters.LzwFilter
+﻿namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {
     public class BitLength
     {

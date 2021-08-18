@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Buffers;
-using System.IO;
 using System.IO.Pipelines;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
