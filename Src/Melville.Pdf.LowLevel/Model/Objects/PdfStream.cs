@@ -24,7 +24,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
-        public async ValueTask<Stream> GetRawStream()
+        public async ValueTask<Stream> GetEncodedStream()
         {
             return await source.OpenRawStream(await DeclaredLength());
         }
@@ -33,7 +33,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
 
         public async ValueTask<Stream> GetDecodedStream(int desiredFormat = int.MaxValue) =>
-            await Decoder.DecodeStream(await GetRawStream(),
+            await Decoder.DecodeStream(await GetEncodedStream(),
                 (await this.GetOrNull(KnownNames.Filter)).AsList(), 
                 (await this.GetOrNull(KnownNames.DecodeParms)).AsList(),
                 desiredFormat);
