@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -25,12 +26,35 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             Assert.Equal(5, sut.Read(ret, 0, 5));
             Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
         }
+        [Theory]
+        [InlineData((int)'A', 0)]
+        [InlineData((int)'C', 2)]
+        [InlineData((int)'E', 4)]
+        [InlineData(-1, 5)]
+        public void ReadByte(int value, long position)
+        {
+            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            sut.Seek(position, SeekOrigin.Begin);
+            Assert.Equal(value, sut.ReadByte());
+        }
+        [Theory]
+        [InlineData(0)]
+        [InlineData(2)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public void WriteByte(long position)
+        {
+            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            sut.Seek(position, SeekOrigin.Begin);
+            sut.WriteByte((byte)'Z');
+            sut.Seek(position, SeekOrigin.Begin);
+            Assert.Equal('Z', sut.ReadByte());
+        }
         [Fact]
         public void SimpleStreamLength()
         {
             var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
             Assert.Equal(5, sut.Length);
-            
         }
         [Fact]
         public void ReadInTwoParts()

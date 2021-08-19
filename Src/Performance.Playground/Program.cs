@@ -1,11 +1,4 @@
-﻿using System.IO;
-using System.IO.Pipelines;
-using System.Text;
-using System.Threading.Tasks;
-using BenchmarkDotNet.Running;
-using Melville.Pdf.LowLevel.Writers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Diagnostics.Tracing.Parsers.JScript;
+﻿using BenchmarkDotNet.Running;
 using Performance.Playground.Writers;
 
 namespace Performance.Playground
@@ -14,7 +7,7 @@ namespace Performance.Playground
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<Adler32>();
+            var summary = BenchmarkRunner.Run<MemoryStreams>();
         }
     }
 }

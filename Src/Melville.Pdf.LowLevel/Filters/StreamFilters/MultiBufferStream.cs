@@ -32,7 +32,10 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
 
         public override int ReadByte()
         {
-            return base.ReadByte();
+            if (Position < 0 || Position >= Length) return -1;
+            Span<byte> ret = stackalloc byte[1];
+            Read(ret);
+            return ret[0];
         }
         public override void Write(ReadOnlySpan<byte> buffer)
         {
@@ -42,8 +45,10 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         
         public override void WriteByte(byte value)
         {
-            base.WriteByte(value);
-        }
+            Span<byte> buf = stackalloc byte[1];
+            buf[0] = value;
+            Write(buf);
+         }
 
         #region Interface code to implement all of Stream's many interfaces
 
