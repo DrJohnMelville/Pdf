@@ -32,7 +32,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         private static IEnumerable<(PdfName, PdfObject)> AddEncodingValues(
             (PdfName Name, PdfObject Value)[] items, PdfObject encoding, PdfObject? parameters) =>
-            items.Append((KnownNames.Filter, compression: encoding))
+            items.Append((KnownNames.Filter, encoding))
                 .Append((KnownNames.DecodeParms, parameters??PdfTokenValues.Null));
 
         public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _, 

@@ -4,6 +4,10 @@ using Melville.Pdf.LowLevel.Filters.FlateFilters;
 
 namespace Performance.Playground.Writers
 {
+    public class MemoryStreams
+    {
+    }
+
     public class Adler32
     {
         private byte[] data;
