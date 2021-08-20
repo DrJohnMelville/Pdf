@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -16,10 +18,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
     {
         private async Task<string> Write(PdfLowLevelDocument doc)
         {
-            var target = new MemoryStream();
+            var target = new MultiBufferStream();
             var writer = new LowLevelDocumentWriter(PipeWriter.Create(target));
             await writer.WriteAsync(doc);
-            return target.ToArray().ExtendedAsciiString();
+            return target.CreateReader().ReadToArray().ExtendedAsciiString();
         }
         private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
         {

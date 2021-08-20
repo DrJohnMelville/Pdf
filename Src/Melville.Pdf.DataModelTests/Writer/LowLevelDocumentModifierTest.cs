@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -28,10 +29,9 @@ namespace Melville.Pdf.DataModelTests.Writer
 
         private async Task<PdfLoadedLowLevelDocument> LoadedDocument(PdfLowLevelDocument doc)
         {
-            var ms = new MemoryStream();
+            var ms = new MultiBufferStream();
             await doc.WriteTo(ms);
-            ms.Seek(0, SeekOrigin.Begin);
-            return await RandomAccessFileParser.Parse(ms);
+            return await RandomAccessFileParser.Parse(ms.CreateReader());
         }
 
         private async Task DoDocumentModificationTests(

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -39,12 +40,12 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
              Func<Stream, ValueTask> addData, PdfObject encoding, PdfObject? parameters = null,
              params (PdfName Name, PdfObject Value)[] items )
         {
-            var ms = new MemoryStream();
+            var ms = new MultiBufferStream(4096);
             using (var target = await Encode.CompressOnWrite(ms, encoding, parameters))
             {
                 await addData(target);
             }
-            return NewStream(_, ms.ToArray(),
+            return NewStream(_, ms,
                 (KnownNames.Filter, encoding),
                 (KnownNames.DecodeParms, parameters??PdfTokenValues.Null));
         }
@@ -57,10 +58,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             this ILowLevelDocumentBuilder _, in StreamDataSource streamData, 
             IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
-            var destination = new MemoryStream();
-            streamData.Stream.CopyTo(destination);
-            return new(StreamDictionary(items, (int)destination.Length),
-                new LiteralStreamSource(destination.ToArray()));
+            return new(StreamDictionary(items, (int)streamData.Stream.Length),
+                new LiteralStreamSource(streamData.Stream));
         }
 
         private static Dictionary<PdfName, PdfObject> StreamDictionary(

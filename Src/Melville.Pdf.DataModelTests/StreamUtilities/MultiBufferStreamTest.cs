@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities
 {

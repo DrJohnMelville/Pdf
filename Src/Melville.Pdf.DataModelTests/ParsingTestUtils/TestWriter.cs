@@ -2,6 +2,8 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.FileSystem;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
@@ -10,7 +12,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
     public class TestWriter
     {
-        private readonly MemoryStream target = new();
+        private readonly MultiBufferStream target = new();
         public PipeWriter Writer { get; }
 
         public TestWriter()
@@ -19,7 +21,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
         }
 
         public string Result() => ExtendedAsciiEncoding.ExtendedAsciiString(
-            target.GetBuffer().AsSpan()[..(int)target.Length]);
+            target.CreateReader().ReadToArray());
     }
 
     public static class TestWriterOperations

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.FileSystem;
 using Melville.Hacks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -50,9 +52,9 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             var stream = await new LowLevelDocumentBuilder(0).NewCompressedStream(
                 i => i.WriteAsync(src.AsExtendedAsciiBytes().AsMemory()), compression, parameters);
             
-            var target = new MemoryStream();
+            var target = new MultiBufferStream();
             await (await stream.GetEncodedStream()).CopyToAsync(target);
-            Assert.Equal(dest, target.ToArray().ExtendedAsciiString());
+            Assert.Equal(dest, target.CreateReader().ReadToArray().ExtendedAsciiString());
         }
 
         public static async Task TestContent(

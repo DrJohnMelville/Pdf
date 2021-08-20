@@ -9,14 +9,14 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
     {
         private readonly MultiBuffer multiBuffer;
         private MultiBufferPosition position;
-        
+
         private MultiBufferStream(MultiBuffer multiBuffer)
         {
             this.multiBuffer = multiBuffer;
             position = multiBuffer.StartOfStream();
         }
 
-        public MultiBufferStream(int blockLength) : this(new MultiBuffer(blockLength))
+        public MultiBufferStream(int blockLength = 4096) : this(new MultiBuffer(blockLength))
         {
             
         }
@@ -116,5 +116,21 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
             get => position.StreamPosition;
             set => position = multiBuffer.FindPosition(value);
         }
+
+        public MultiBufferStream CreateReader() => new MultiBufferReader(multiBuffer);
+          
+        
+        private class MultiBufferReader : MultiBufferStream
+        {
+            public MultiBufferReader(MultiBuffer multiBuffer) : base(multiBuffer)
+            {
+            }
+
+            public override void Write(ReadOnlySpan<byte> buffer) =>
+                throw new NotSupportedException();
+        
+            public override bool CanWrite => false;
+        }
+
     }
 }

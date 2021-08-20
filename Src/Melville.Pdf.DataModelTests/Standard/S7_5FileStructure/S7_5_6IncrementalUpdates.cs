@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -20,15 +21,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             var creator = new LowLevelDocumentCreator();
             create(creator);
             var doc = creator.CreateDocument();
-            var stream = new MemoryStream();
+            var stream = new MultiBufferStream();
             await doc.WriteTo(stream);
 
-            var ld = await RandomAccessFileParser.Parse(new MemoryStream(stream.ToArray()));
+            var ld = await RandomAccessFileParser.Parse(stream.CreateReader());
             var modifier = new LowLevelDocumentModifier(ld);
             await modify(ld, modifier);
             await modifier.WriteModificationTrailer(stream);
             
-            return await RandomAccessFileParser.Parse(new MemoryStream(stream.ToArray()));
+            return await RandomAccessFileParser.Parse(stream.CreateReader());
         }
         
         [Fact]
