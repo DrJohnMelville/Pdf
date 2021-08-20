@@ -58,7 +58,7 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
 
         public override void Flush()
         {
-            // flush is not meaningful for this stream, all writes are automatic
+            // flush is not meaningful for this stream, all writes are immediately final
         }
 
         public override int Read(byte[] buffer, int offset, int count) => 
@@ -91,12 +91,14 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            return base.WriteAsync(buffer, offset, count, cancellationToken);
+            Write(buffer, offset, count);
+            return Task.CompletedTask;
         }
 
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
         {
-            return base.WriteAsync(buffer, cancellationToken);
+            Write(buffer.Span);
+            return new ValueTask();
         }
         
         public override bool CanRead => true;

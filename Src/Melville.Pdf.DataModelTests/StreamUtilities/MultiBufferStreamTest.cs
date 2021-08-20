@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
@@ -9,7 +10,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 {
     public class MultiBufferStreamTest
     {
-        protected virtual Stream CreateEmptyStream(int blockLength) => 
+        protected virtual MultiBufferStream CreateEmptyStream(int blockLength) => 
             new MultiBufferStream(blockLength);
 
         protected virtual Stream CreateStream(string content) => 
@@ -19,6 +20,23 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         public void ZeroLengthBufferIsAnError()
         {
             Assert.Throws<ArgumentException>(()=>new MultiBufferStream(Array.Empty<byte>()));
+        }
+
+        [Fact]
+        public void AllowedOperations()
+        {
+            var sut = CreateEmptyStream(1);
+            Assert.True(sut.CanRead);
+            Assert.True(sut.CanWrite);
+            Assert.True(sut.CanSeek);
+            Assert.False(sut.CanTimeout);
+
+            var reader = sut.CreateReader();
+            Assert.True(reader.CanRead);
+            Assert.True(reader.CanSeek);
+            Assert.False(reader.CanWrite);
+            Assert.False(reader.CanTimeout);
+            Assert.Throws<NotSupportedException>(() => reader.Write(new byte[1], 0, 1));
         }
 
         [Fact]
@@ -146,6 +164,18 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             sut.Seek(0, SeekOrigin.Begin);
             var ret = new byte[10];
             Assert.Equal(5, sut.Read(ret, 0, 10));
+            Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
+        }
+        [Fact]
+        public async Task WriteAndReadSingleBufferAsync()
+        {
+            var sut = CreateEmptyStream(10);
+            Assert.Equal(0, sut.Length);
+            await sut.WriteAsync("ABCDE".AsExtendedAsciiBytes(), 0, 5);
+            Assert.Equal(5, sut.Length);
+            sut.Seek(0, SeekOrigin.Begin);
+            var ret = new byte[10];
+            Assert.Equal(5, await sut.ReadAsync(ret, 0, 10));
             Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
         }
         
