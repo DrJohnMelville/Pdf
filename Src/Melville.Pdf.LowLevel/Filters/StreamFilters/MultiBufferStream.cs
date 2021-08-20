@@ -8,10 +8,12 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
     public class MultiBufferStream:Stream
     {
         private readonly MultiBuffer multiBuffer;
+        private MultiBufferPosition position;
         
         private MultiBufferStream(MultiBuffer multiBuffer)
         {
             this.multiBuffer = multiBuffer;
+            position = multiBuffer.StartOfStream();
         }
 
         public MultiBufferStream(int blockLength) : this(new MultiBuffer(blockLength))
@@ -23,11 +25,14 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         {
         }
 
-        public override int Read(Span<byte> buffer)
+        public override int Read(Span<byte> buffer) => 
+            UpdatePosition(multiBuffer.Read(position, buffer));
+
+        private int UpdatePosition(in MultiBufferPosition newPosition)
         {
-            int bytesRead = multiBuffer.Read(Position, buffer);
-            Position += bytesRead;
-            return bytesRead;
+            var ret = (int)(newPosition.StreamPosition - position.StreamPosition);
+            position = newPosition;
+            return ret;
         }
 
         public override int ReadByte()
@@ -39,8 +44,7 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         }
         public override void Write(ReadOnlySpan<byte> buffer)
         {
-            multiBuffer.Write(position, buffer);
-            position += buffer.Length;
+            UpdatePosition(multiBuffer.Write(position, buffer));
         }
         
         public override void WriteByte(byte value)
@@ -48,7 +52,7 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
             Span<byte> buf = stackalloc byte[1];
             buf[0] = value;
             Write(buf);
-         }
+        }
 
         #region Interface code to implement all of Stream's many interfaces
 
@@ -107,15 +111,10 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
 
         public override long Length => multiBuffer.Length;
 
-        private long position;
         public override long Position
         {
-            get => position;
-            set
-            {
-                multiBuffer.CheckValidPosition(value);
-                position = value;
-            }
+            get => position.StreamPosition;
+            set => position = multiBuffer.FindPosition(value);
         }
     }
 }

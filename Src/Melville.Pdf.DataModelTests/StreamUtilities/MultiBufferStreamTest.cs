@@ -12,6 +12,12 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 {
     public class MultiBufferStreamTest
     {
+        protected virtual Stream CreateEmptyStream(int blockLength) => 
+            new MultiBufferStream(blockLength);
+
+        protected virtual Stream CreateStream(string content) => 
+            new MultiBufferStream(content.AsExtendedAsciiBytes());
+
         [Fact]
         public void ZeroLengthBufferIsAnError()
         {
@@ -21,11 +27,13 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public void ReadSingleBuffer()
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             var ret = new byte[5];
             Assert.Equal(5, sut.Read(ret, 0, 5));
             Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
         }
+
+
         [Theory]
         [InlineData((int)'A', 0)]
         [InlineData((int)'C', 2)]
@@ -33,7 +41,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [InlineData(-1, 5)]
         public void ReadByte(int value, long position)
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             sut.Seek(position, SeekOrigin.Begin);
             Assert.Equal(value, sut.ReadByte());
         }
@@ -44,7 +52,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [InlineData(5)]
         public void WriteByte(long position)
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             sut.Seek(position, SeekOrigin.Begin);
             sut.WriteByte((byte)'Z');
             sut.Seek(position, SeekOrigin.Begin);
@@ -53,13 +61,13 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public void SimpleStreamLength()
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             Assert.Equal(5, sut.Length);
         }
         [Fact]
         public void ReadInTwoParts()
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             Span<byte> ret = stackalloc byte[3];
             Assert.Equal(3, sut.Read(ret));
             Assert.Equal("ABC", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
@@ -73,7 +81,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [InlineData(-2, SeekOrigin.End)]
         public void SeekTest(int location, SeekOrigin seekOrigin)
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             sut.Seek(2, SeekOrigin.Begin);
             sut.Seek(location, seekOrigin);
             Span<byte> ret2 = stackalloc byte[2];
@@ -93,7 +101,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [InlineData(17, false)]
         public void ValidAndInvalidSeekTest(int location, bool valid)
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             if (valid)
             {
                 sut.Position = location;
@@ -109,7 +117,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public async Task ReadAsyncFromByteArray()
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             var ret = new byte[5];
             Assert.Equal(5, await sut.ReadAsync(ret, 0, 5));
             Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
@@ -117,7 +125,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public async Task ReadAsyncFromMemory()
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             var ret = new byte[5];
             Assert.Equal(5, await sut.ReadAsync(ret.AsMemory()));
             Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
@@ -125,7 +133,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public void ReadUpdatesPosition()
         {
-            var sut = new MultiBufferStream("ABCDE".AsExtendedAsciiBytes());
+            var sut = CreateStream("ABCDE");
             var ret = new byte[5];
             Assert.Equal(0, sut.Position);
             Assert.Equal(5, sut.Read(ret, 0, 5));
@@ -134,7 +142,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public void WriteAndReadSingleBuffer()
         {
-            var sut = new MultiBufferStream(10);
+            var sut = CreateEmptyStream(10);
             Assert.Equal(0, sut.Length);
             sut.Write("ABCDE".AsExtendedAsciiBytes(), 0, 5);
             Assert.Equal(5, sut.Length);
@@ -143,11 +151,11 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             Assert.Equal(5, sut.Read(ret, 0, 10));
             Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret.AsSpan(0,5)));
         }
-
+        
         [Fact]
         public void WriteIntoMultipleBuffers()
         {
-            var sut = new MultiBufferStream(3);
+            var sut = CreateEmptyStream(3);
             for (int i = 0; i < 3; i++)
             {
                 sut.Write("ABCDEFG".AsExtendedAsciiBytes().AsSpan());

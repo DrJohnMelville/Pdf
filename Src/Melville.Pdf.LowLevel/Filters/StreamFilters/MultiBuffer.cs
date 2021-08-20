@@ -1,61 +1,117 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Transactions;
 
 namespace Melville.Pdf.LowLevel.Filters.StreamFilters
 {
-    public class MultiBuffer
+    internal class MultiBufferNode
     {
-        private readonly List<byte[]> blocks = new();
+        public byte[] Data { get; }
+        public long InitialPosition { get; }
+        private MultiBufferNode? Next { get; set; }
+        private long EndPosition => InitialPosition + Data.Length;
+
+        public MultiBufferNode(byte[] data, long initialPosition)
+        {
+            this.Data = data;
+            InitialPosition = initialPosition;
+            Next = null;
+        }
+
+        public MultiBufferNode ForceNextNode()
+        {
+            if (Next == null)
+            {
+                Next = new MultiBufferNode(new byte[Data.Length], EndPosition);
+            }
+            return Next;
+        }
+
+        public MultiBufferPosition FindPosition(long position)
+        {
+            if (position < InitialPosition)
+                throw new ArgumentException("Cannot find a position less than current node");
+            var node = this;
+            while (node.Next is { } next && next.InitialPosition < position) node = next;
+            return new MultiBufferPosition(node, position);
+        }
+    }
+
+    internal readonly struct MultiBufferPosition
+    {
+        public MultiBufferNode Node { get; }
+        public long StreamPosition { get; }
+
+        public MultiBufferPosition(MultiBufferNode node, long streamPosition)
+        {
+            Node = node;
+            StreamPosition = streamPosition;
+        }
+    }
+    internal class MultiBuffer
+    {
+        private readonly MultiBufferNode head;
         public long Length { get; private set; }
         private readonly int blockLength;
 
-        public MultiBuffer(int blockLength)
+        public MultiBufferPosition StartOfStream() => new(head, 0);
+
+        public MultiBuffer(int blockLength): this(new byte[blockLength])
         {
-            if (blockLength < 1)
-                throw new ArgumentException("Buffer length must be > 0");
-            this.blockLength = blockLength;
+            Length = 0; //this was set incorrectly in the called constructor so fixed here
         }
-        public MultiBuffer(byte[] firstBuffer): this (firstBuffer.Length)
+        public MultiBuffer(byte[] firstBuffer)
         {
-            blocks.Add(firstBuffer);
+            if (firstBuffer.Length < 1)
+                throw new ArgumentException("Buffer length must be > 0");
+            head = new MultiBufferNode(firstBuffer, 0);
             Length = firstBuffer.Length;
         }
 
 
-        public int Read(long position, in Span<byte> buffer)
+        public MultiBufferPosition Read(in MultiBufferPosition position, in Span<byte> buffer)
         {
-            var readLen = (int)Math.Min(buffer.Length, Length - position);
-            if (readLen > 0) ReadFromMultiBlock(position, buffer[..readLen]);
-            return readLen;
+            var readLen = (int)Math.Min(buffer.Length, Length - position.StreamPosition);
+            return (readLen > 0) ? ReadFromMultiBlock(position, buffer[..readLen]) : position;
         }
 
-        private void ReadFromMultiBlock(long position, Span<byte> buffer)
+        private MultiBufferPosition ReadFromMultiBlock(in MultiBufferPosition position, Span<byte> buffer)
         {
-            var (block, blockOffset) = StartingPosition(Math.Min(position, Length));
-            for (var bytesRead = 0; bytesRead < buffer.Length;)
+            MultiBufferNode block = position.Node;
+            var blockOffset = (int)(position.StreamPosition - block.InitialPosition);
+            int bytesRead = 0;
+            while (true)
             {
-                bytesRead += CopyBytes(blocks[block].AsSpan(blockOffset), buffer.Slice(bytesRead));
-                block++;
+                bytesRead += CopyBytes(block.Data.AsSpan(blockOffset), buffer.Slice(bytesRead));
+                if (bytesRead >= buffer.Length) break;
+                block = block.ForceNextNode();
                 blockOffset = 0;
             }
+
+            return new MultiBufferPosition(block, position.StreamPosition + buffer.Length);
         }
 
 
-        public void Write(long position, in ReadOnlySpan<byte> buffer)
+        public MultiBufferPosition Write(in MultiBufferPosition position, in ReadOnlySpan<byte> buffer)
         {
-            SetLength(Math.Max(Length, position + buffer.Length));
-            WriteToMultiBlock(position, buffer);
+            SetLength(Math.Max(Length, position.StreamPosition + buffer.Length));
+            return WriteToMultiBlock(position, buffer);
         }
 
-        private void WriteToMultiBlock(long position, ReadOnlySpan<byte> buffer)
+        private MultiBufferPosition WriteToMultiBlock(in MultiBufferPosition position, ReadOnlySpan<byte> buffer)
         {
-            var (block, blockOffset) = StartingPosition(position);
-            for (int bytesWritten = 0; bytesWritten < buffer.Length;)
+            var block = position.Node;
+            var blockOffset = (int)(position.StreamPosition - block.InitialPosition);
+            int bytesWritten = 0;
+            while (true)
             {
-                bytesWritten += CopyBytes(buffer.Slice(bytesWritten), blocks[block].AsSpan(blockOffset));
-                block++;
+                bytesWritten += CopyBytes(buffer.Slice(bytesWritten), block.Data.AsSpan(blockOffset));
+                if (bytesWritten >= buffer.Length) break;
+                block = block.ForceNextNode();
                 blockOffset = 0;
             }
+
+            return new MultiBufferPosition(block, position.StreamPosition + buffer.Length);
         }
 
         private int CopyBytes(in ReadOnlySpan<byte> source, in Span<byte> destination)
@@ -64,32 +120,17 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
             source.Slice(0, readLen).CopyTo(destination);
             return readLen;
         }
-
-
-        private (int BufferNum, int BufferPosition) StartingPosition(long position) =>
-            ((int)position / blockLength, (int)position % blockLength);
-
-        private void EnsureSpaceToWrite(long neededPos)
-        {
-            while (TotalStorage() < neededPos) CreateNewBlock();
-        }
-
-        private void CreateNewBlock() => blocks.Add(new byte[blockLength]);
-
-        private long TotalStorage() => blockLength * blocks.Count;
         
-        public void CheckValidPosition(long value)
-        {
-            if (!IsValidPosition(value)) 
-                throw new ArgumentException("Invalid stream position: " + value);
-        }
-        
-        private bool IsValidPosition(long value) => value >= 0 && value <= Length;
-
         public void SetLength(long value)
         {
-            EnsureSpaceToWrite(value);
             Length = value;
+        }
+
+        public MultiBufferPosition FindPosition(long position)
+        {
+            if (position < 0 || position > Length)
+                throw new ArgumentException("Invalid seek operation");
+            return head.FindPosition(position);
         }
     }
 }
