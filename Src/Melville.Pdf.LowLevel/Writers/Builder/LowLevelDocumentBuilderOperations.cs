@@ -51,11 +51,11 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         }
 
         public static PdfStream NewStream(
-            this ILowLevelDocumentBuilder _, in StreamDataSource streamData,
+            this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
             params (PdfName Name, PdfObject Value)[] items) =>
             NewStream(_, streamData, (IEnumerable<(PdfName, PdfObject)>)items);
         public static PdfStream NewStream(
-            this ILowLevelDocumentBuilder _, in StreamDataSource streamData, 
+            this ILowLevelDocumentBuilder? _, in StreamDataSource streamData, 
             IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
             return new(StreamDictionary(items, (int)streamData.Stream.Length),

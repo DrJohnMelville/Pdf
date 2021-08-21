@@ -17,36 +17,45 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 
         public async Task WriteAsync(PdfLowLevelDocument document)
         {
-            HeaderWriter.WriteHeader(target, document.MajorVersion, document.MinorVersion);
-            await target.FlushAsync();
-            var objectOffsets = await WriteObjectList(document);
+            var objectOffsets = await WriteHeaderAndObjects(document);
             long xRefStart = target.BytesWritten;
             await NewXrefTableWriter.WriteXrefsForNewFile(target, objectOffsets);
-            await TrailerWriter.WriteTrailer(target, document.TrailerDictionary, xRefStart);
+            await TrailerWriter.WriteTrailerWithDictionary(target, document.TrailerDictionary, xRefStart);
         }
 
         public async Task WriteWithReferenceStream(PdfLowLevelDocument document)
         {
-            await WriteAsync(document);
+            document.VerifyCanSupportObjectStreams();
+            var objectOffsets = await WriteHeaderAndObjects(document);
+            long xRefStart = target.BytesWritten;
+            await new ReferenceStreamWriter(target, document, objectOffsets, xRefStart).Write();
+            await TrailerWriter.WriteTerminalStartXrefAndEof(target, xRefStart);
         }
 
-        private async Task<long[]> WriteObjectList(PdfLowLevelDocument document)
+        private async Task<XRefTable> WriteHeaderAndObjects(PdfLowLevelDocument document)
+        {
+            HeaderWriter.WriteHeader(target, document.MajorVersion, document.MinorVersion);
+            var objectOffsets = await WriteObjectList(document);
+            return objectOffsets;
+        }
+
+        private async Task<XRefTable> WriteObjectList(PdfLowLevelDocument document)
         {
             var positions= CreateIndexArray(document);
             var objectWriter = new PdfObjectWriter(target);
             foreach (var item in document.Objects.Values)
             {
                 if (!(await item.Target.DirectValue()).ShouldWriteToFile()) continue;
-                positions[item.Target.ObjectNumber] = target.BytesWritten;
+                positions.DeclareIndirectObject(item.Target.ObjectNumber, target.BytesWritten);
                 await item.Target.Visit(objectWriter);
             }
             return positions;
         }
 
-        private  long[] CreateIndexArray(PdfLowLevelDocument document)
+        private  XRefTable CreateIndexArray(PdfLowLevelDocument document)
         {
             var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
-            return new long[maxObject + 1];
+            return new XRefTable(maxObject + 1);
         }
     }
 }

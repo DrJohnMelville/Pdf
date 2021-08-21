@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -39,6 +40,19 @@ namespace Melville.Pdf.DataModelTests.Writer
             builder.Add(builder.NewDictionary((KnownNames.Type, KnownNames.Page)));
             return await Write(builder.CreateDocument());
         }
+        private async Task<string> OutputTwoItemRefStream(byte majorVersion = 1, byte minorVersion = 7)
+        {
+            var builder = new LowLevelDocumentCreator();
+            builder.SetVersion(majorVersion, minorVersion);
+            builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
+            builder.Add(builder.NewDictionary((KnownNames.Type, KnownNames.Page)));
+            PdfLowLevelDocument doc = builder.CreateDocument();
+            var target = new TestWriter();
+            var writer = new LowLevelDocumentWriter(target.Writer);
+            await writer.WriteWithReferenceStream(doc);
+            return target.Result();
+        }
 
         [Theory]
         [InlineData(1,7)]
@@ -64,37 +78,43 @@ namespace Melville.Pdf.DataModelTests.Writer
             
         }
 
-        [Fact]
-        public async Task OutputsFirstObject()
-        {
-            var output = await OutputSimpleDocument();
-            Assert.Contains("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj", output);
-        }
-        [Fact]
-        public async Task TwoOutputTowItemFile()
-        {
-            var output = await OutputTwoItemDocument();
-            Assert.Contains("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj\n3 0 obj <</Type /Page>> endobj", output);
-        }
-        [Fact]
-        public async Task OutputsXRefTable()
-        {
-            var output = await OutputSimpleDocument();
-            Assert.Contains("endobj\nxref\n0 2\n0000000000 65535 f\r\n0000000042 00000 n\r\n", output);
-        }
+        [Theory]
+        [InlineData("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj")]
+        [InlineData("endobj\nxref\n0 2\n0000000000 65535 f\r\n0000000042 00000 n\r\n")]
+        [InlineData("n\r\ntrailer\n<</Root 1 0 R /Size 2>>\nstartxref\n76\n%%EOF")]
+        public async Task SimpleDocumentContents(string expected) => 
+            Assert.Contains(expected, await OutputSimpleDocument());
 
-        [Fact]
-        public async Task OutputXrefWithSkippedItems()
-        {
-            var output = await OutputTwoItemDocument();
-            Assert.Contains("endobj\nxref\n0 4\n0000000002 65535 f\r\n0000000042 00000 n\r\n0000000000 00000 f\r\n0000000076 00000 n\r\n", output);
-        }
+        [Theory]
+        [InlineData("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj\n3 0 obj <</Type /Page>> endobj")]
+        [InlineData("endobj\nxref\n0 4\n0000000002 65535 f\r\n0000000042 00000 n\r\n0000000000 00000 f\r\n0000000076 00000 n\r\n")]
+        [InlineData("n\r\ntrailer\n<</Root 1 0 R /Size 4>>\nstartxref\n107\n%%EOF")]
+        public async Task TwoItemDocumentContents(string expected) => 
+            Assert.Contains(expected, await OutputTwoItemDocument());
 
-        [Fact]
-        public async Task OutputsTrailer()
+        [Theory]
+        [InlineData("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj\n3 0 obj <</Type /Page>> endobj")]
+        [InlineData("endobj\n4 0 obj <</Root 1 0 R /Type /XRef /Size 5 /Length 10>>")]
+        public async Task RefStreamContents(string expected) => 
+            Assert.Contains(expected, await OutputTwoItemRefStream());
+ 
+        [Theory]
+        [InlineData(1, 1, false)]
+        [InlineData(1, 4, false)]
+        [InlineData(1, 5, true)]
+        [InlineData(1, 6, true)]
+        [InlineData(2, 0, true)]
+        public async Task OnlyWriteRefStreamIfVersionAllows(byte major, byte minor, bool succeed)
         {
-            var output = await OutputSimpleDocument();
-            Assert.Contains("n\r\ntrailer\n<</Root 1 0 R /Size 2>>\nstartxref\n76\n%%EOF", output);
+            try
+            {
+                await OutputTwoItemRefStream(major, minor);
+                Assert.True(succeed);
+            }
+            catch (InvalidOperationException)
+            {
+                Assert.False(succeed);
+            }
         }
     }
 }

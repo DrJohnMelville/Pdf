@@ -12,15 +12,20 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         private static readonly byte[] startXrefTag = 
             {10, 115, 116, 97, 114, 116, 120, 114, 101, 102, 10}; //\nstartxref\n
         private static readonly byte[] eofTag = {10, 37, 37, 69, 79, 70}; //\n%%EOF 
-        public static async Task WriteTrailer(
+        public static async Task WriteTrailerWithDictionary(
             PipeWriter target, PdfDictionary dictionary, long xRefStart)
         {
             target.WriteBytes(trailerTag);
             await dictionary.Visit(new PdfObjectWriter(target));
+            await WriteTerminalStartXrefAndEof(target, xRefStart);
+        }
+
+        public static ValueTask<FlushResult> WriteTerminalStartXrefAndEof(PipeWriter target, long xRefStart)
+        {
             target.WriteBytes(startXrefTag);
             IntegerWriter.Write(target, xRefStart);
             target.WriteBytes(eofTag);
-            await target.FlushAsync();
+            return target.FlushAsync();
         }
     }
 }

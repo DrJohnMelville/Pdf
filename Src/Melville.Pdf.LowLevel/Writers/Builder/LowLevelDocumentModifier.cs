@@ -90,7 +90,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             WriteRevisedXrefTable(target, lines);
             await target.FlushAsync();
             builder.AddToTrailerDictionary(KnownNames.Prev, new PdfInteger(priorXref));
-            await TrailerWriter.WriteTrailer(target, builder.CreateTrailerDictionary(), startXref);
+            await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref);
         }
 
         private void WriteRevisedXrefTable(CountingPipeWriter target, IEnumerable<XrefLine> lines)

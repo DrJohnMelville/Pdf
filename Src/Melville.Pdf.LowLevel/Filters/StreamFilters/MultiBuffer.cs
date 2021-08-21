@@ -52,7 +52,6 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
     {
         private readonly MultiBufferNode head;
         public long Length { get; private set; }
-        private readonly int blockLength;
 
         public MultiBufferPosition StartOfStream() => new(head, 0);
 
