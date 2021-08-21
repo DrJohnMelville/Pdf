@@ -17,6 +17,35 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         Task<long> FreeListHead();
     }
 
+    public static class IndirectObjectResolverOperations
+    {
+        public static void RegistedDeletedBlock(
+            this IIndirectObjectResolver resolver, int number, int next, int generation) =>
+            resolver.AddLocationHint(number, generation,
+                () => new ValueTask<PdfObject>(new PdfFreeListObject(next)));
+        public static void RegistedNullObject(
+            this IIndirectObjectResolver resolver, int number, int next, int generation) =>
+            resolver.AddLocationHint(number, generation,
+                () => new ValueTask<PdfObject>(PdfTokenValues.Null));
+        
+        public static void RegisterIndirectBlock(
+            this IParsingReader reader, int number,long generation, long offset)
+        {
+            RegisterIndirectBlock(reader.Owner, number, generation, offset);
+        }
+
+        public static void RegisterIndirectBlock(
+            this ParsingFileOwner owner, int number, long generation, long offset)
+        {
+            owner.IndirectResolver.AddLocationHint(number, (int)generation,
+                async () =>
+                {
+                    using var rentedReader = await owner.RentReader(offset);
+                    return await rentedReader.RootObjectParser.ParseAsync(rentedReader);
+                });
+        }
+    }
+
     public class IndirectObjectParser : IPdfObjectParser
     {
         private readonly IPdfObjectParser fallbackNumberParser;

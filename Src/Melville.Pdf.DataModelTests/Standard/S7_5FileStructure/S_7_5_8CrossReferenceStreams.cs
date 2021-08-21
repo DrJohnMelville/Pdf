@@ -14,18 +14,18 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
 {
     public class S_7_5_8CrossReferenceStreams
     {
-        // [Fact]
-        // public async Task GenerateAndParseFileWithReferenceStream()
-        // {
-        //     var document = await MinimalPdfParser.MinimalPdf(1, 7);
-        //     var ms = new MultiBufferStream();
-        //     var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms));
-        //     await writer.WriteWithReferenceStream(document.CreateDocument());
-        //     var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
-        //     var doc = await (fileAsString).ParseDocumentAsync();
-        //     Assert.NotNull(doc.TrailerDictionary);
-        //     Assert.IsType<PdfDictionary>(doc.TrailerDictionary);
-        // }
+        [Fact]
+        public async Task GenerateAndParseFileWithReferenceStream()
+        {
+            var document = await MinimalPdfParser.MinimalPdf(1, 7);
+            var ms = new MultiBufferStream();
+            var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms));
+            await writer.WriteWithReferenceStream(document.CreateDocument());
+            var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
+            var doc = await (fileAsString).ParseDocumentAsync();
+            Assert.NotNull(doc.TrailerDictionary);
+            Assert.IsType<PdfStream>(doc.TrailerDictionary);
+        }
 
     }
 }

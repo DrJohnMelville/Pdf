@@ -12,30 +12,40 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
         {
             return await XrefAndTrailer(source, xrefPosition);
         }
-
+        
         private static async Task<PdfDictionary> XrefAndTrailer(ParsingFileOwner source, long xrefPosition)
         {
-            PdfDictionary? trailerDictionery;
+            PdfDictionary? trailerDictionary;
+            
             using (var context = await source.RentReader(xrefPosition))
             {
-                await new CrossReferenceTableParser(context).Parse();
-                await NextTokenFinder.SkipToNextToken(context);
-
-                if (!await TokenChecker.CheckToken(context, trailerTag))
-                    throw new PdfParseException("Trailer does not follow xref");
-                var trailer = await context.RootObjectParser.ParseAsync(context);
-                if (trailer is not PdfDictionary td)
-                    throw new PdfParseException("Trailer dictionary is invalid");
-                trailerDictionery = td;
+                trailerDictionary = await ReadSingleRefTrailerBlock(context);
             }
 
-            if (trailerDictionery.TryGetValue(KnownNames.Prev, out var prev) && (await prev) is PdfNumber offset)
+            trailerDictionary ??= await CrossReferenceStreamParser.Read(source, xrefPosition);
+
+            if (trailerDictionary.TryGetValue(KnownNames.Prev, out var prev) && (await prev) is PdfNumber offset)
             {
                 await XrefAndTrailer(source, offset.IntValue);
             }
-            return  trailerDictionery;
+            return  trailerDictionary;
         }
 
+        private static async Task<PdfDictionary?> ReadSingleRefTrailerBlock(IParsingReader context)
+        {
+            if (!await TokenChecker.CheckToken(context, xrefTag)) return null;
+            await NextTokenFinder.SkipToNextToken(context);
+            await new CrossReferenceTableParser(context).Parse();
+            await NextTokenFinder.SkipToNextToken(context);
+            if (!await TokenChecker.CheckToken(context, trailerTag))
+                throw new PdfParseException("Trailer does not follow xref");
+            var trailer = await context.RootObjectParser.ParseAsync(context);
+            if (trailer is not PdfDictionary td)
+                throw new PdfParseException("Trailer dictionary is invalid");
+            return td;
+        }
+
+        private static readonly byte[] xrefTag = {120, 114, 101, 102}; // xref;
         private static readonly byte[] trailerTag = {(byte)'t',114, 97, 105, 108, 101, 114}; // trailer
     }
 }

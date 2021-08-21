@@ -47,8 +47,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
         private bool ParseLine(ReadOnlySequence<byte> line)
         {
             var lineReader = new SequenceReader<byte>(line);
-            if (!LineHasContent(ref lineReader, out var firstByte)) return false;
-            if (IsXrefLine(firstByte)) return true; 
+            if (!LineHasContent(ref lineReader)) return false;
             if (!GatherTwoNumbers(ref lineReader, out var leftNum, out var rightNum, out var delim)) 
                 return false;
             if (HandleAsGroupHeader(delim, leftNum)) return true;
@@ -58,35 +57,22 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             return true;
         }
 
-        private static bool LineHasContent(ref SequenceReader<byte> lineReader, out byte firstByte) => 
-            lineReader.TryPeek(out firstByte);
-
-        private static bool IsXrefLine(byte peeked) => peeked == 'x';
-
+        private static bool LineHasContent(ref SequenceReader<byte> lineReader) => 
+            lineReader.TryPeek(out _);
+        
         private void HandleObjectDeclarationLine(byte operation, long rightNum, long leftNum)
         {
             switch (operation)
             {
                 case (byte)'n':
-                    RegisterIndirectBlock(rightNum, leftNum);
+                    source.Owner.RegisterIndirectBlock(nextItem, rightNum, leftNum);
                     break;
                 case (byte)'f':
-                    source.IndirectResolver.AddLocationHint(nextItem, (int)rightNum,
-                        ()=>new ValueTask<PdfObject>(new PdfFreeListObject(leftNum)));
+                    source.IndirectResolver.RegistedDeletedBlock(nextItem, (int)leftNum, (int)rightNum);
                     break;
                 
             }
             nextItem++;
-        }
-
-        private void RegisterIndirectBlock(long rightNum, long leftNum)
-        {
-            source.IndirectResolver.AddLocationHint(nextItem, (int) rightNum,
-                async () =>
-                {
-                    using var reader = await source.Owner.RentReader(leftNum);
-                    return await source.RootObjectParser.ParseAsync(reader);
-                });
         }
 
         private bool HandleAsGroupHeader(byte delim, long leftNum)

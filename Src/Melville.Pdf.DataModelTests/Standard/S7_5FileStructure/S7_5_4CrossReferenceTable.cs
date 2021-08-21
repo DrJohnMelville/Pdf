@@ -21,8 +21,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task ParseSimpleTable()
         {
-            var sampleTale = @"xref
-0 6
+            var sampleTale = @"0 6
 0000000003 65535 f
 0000000017 00000 n
 0000000081 00000 n
@@ -41,8 +40,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task ParseCompoundTable()
         {
-            var sampleTale = @"xref
-0 4
+            var sampleTale = @"0 4
 0000000003 65535 f
 0000000017 00000 n
 0000000081 00000 n
@@ -65,13 +63,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task ParseZeroTable()
         {
-            var sampleTale = @"xref
-0 0
+            var sampleTale = @"0 0
 trailer
 ";
             var parsingReader = await sampleTale.AsParsingSource(resolver.Object).RentReader(0);
              await new CrossReferenceTableParser(parsingReader).Parse();
-            Assert.Equal(11, parsingReader.Position);
+            Assert.Equal(5, parsingReader.Position);
                         
             resolver.VerifyNoOtherCalls();
         }
