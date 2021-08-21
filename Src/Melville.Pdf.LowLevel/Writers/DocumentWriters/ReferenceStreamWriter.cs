@@ -40,7 +40,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         private async ValueTask<PdfStream> CreateReferenceStream()
         {
             return await LowLevelDocumentBuilderOperations.NewCompressedStream(
-                null, GenerateXrefStreamAsync, KnownNames.ASCIIHexDecode, PdfTokenValues.Null, DictionaryItems());
+                null, GenerateXrefStreamAsync, KnownNames.FlateDecode, PdfTokenValues.Null, DictionaryItems());
         }
         
         private IEnumerable<(PdfName, PdfObject)> DictionaryItems() =>
