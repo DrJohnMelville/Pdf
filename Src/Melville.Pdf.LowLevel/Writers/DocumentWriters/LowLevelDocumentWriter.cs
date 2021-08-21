@@ -26,22 +26,24 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         public async Task WriteWithReferenceStream(PdfLowLevelDocument document)
         {
             document.VerifyCanSupportObjectStreams();
-            var objectOffsets = await WriteHeaderAndObjects(document);
+            var objectOffsets = await WriteHeaderAndObjects(document, 1);
             long xRefStart = target.BytesWritten;
-            await new ReferenceStreamWriter(target, document, objectOffsets, xRefStart).Write();
+            objectOffsets.DeclareIndirectObject(objectOffsets.Entries.Length-1, xRefStart);
+            await new ReferenceStreamWriter(target, document, objectOffsets).Write();
             await TrailerWriter.WriteTerminalStartXrefAndEof(target, xRefStart);
         }
 
-        private async Task<XRefTable> WriteHeaderAndObjects(PdfLowLevelDocument document)
+        private async Task<XRefTable> WriteHeaderAndObjects(
+            PdfLowLevelDocument document, int extraSlots = 0)
         {
             HeaderWriter.WriteHeader(target, document.MajorVersion, document.MinorVersion);
-            var objectOffsets = await WriteObjectList(document);
+            var objectOffsets = await WriteObjectList(document, extraSlots);
             return objectOffsets;
         }
 
-        private async Task<XRefTable> WriteObjectList(PdfLowLevelDocument document)
+        private async Task<XRefTable> WriteObjectList(PdfLowLevelDocument document, int extraSlots)
         {
-            var positions= CreateIndexArray(document);
+            var positions= CreateIndexArray(document, extraSlots);
             var objectWriter = new PdfObjectWriter(target);
             foreach (var item in document.Objects.Values)
             {
@@ -52,10 +54,10 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             return positions;
         }
 
-        private  XRefTable CreateIndexArray(PdfLowLevelDocument document)
+        private XRefTable CreateIndexArray(PdfLowLevelDocument document, int extraSlots)
         {
             var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
-            return new XRefTable(maxObject + 1);
+            return new XRefTable(maxObject + 1 + extraSlots);
         }
     }
 }

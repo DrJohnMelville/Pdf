@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         /// This method writes out an xref table with the offsets indicated.
         /// this method mutates the refs parameter.
         /// </summary>
-        public static ValueTask<FlushResult> WriteXrefsForNewFile(PipeWriter target, XRefTable refs)
+        public static ValueTask<FlushResult> WriteXrefsForNewFile(PipeWriter target, in XRefTable refs)
         {
             XrefTableElementWriter.WriteXrefTitleLine(target);
             refs.AssembleFreeList();
@@ -19,7 +19,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             return target.FlushAsync();
         }
 
-        private static void WriteAllTableItems(PipeWriter target, XRefTable refs)
+        private static void WriteAllTableItems(PipeWriter target, in XRefTable refs)
         {
             foreach (var item in refs.Entries)
             {

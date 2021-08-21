@@ -24,38 +24,49 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             IEnumerable<(PdfName Name, PdfObject Value)> items) =>
             new(
                 items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
-        
-        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _, 
-             StreamDataSource data, PdfObject encoding, PdfObject? parameters = null, 
-             params (PdfName Name, PdfObject Value)[] items ) =>
+
+        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _,
+            StreamDataSource data, PdfObject encoding, PdfObject? parameters = null,
+            params (PdfName Name, PdfObject Value)[] items) =>
             NewStream(_, await Encode.Compress(data, encoding, parameters),
                 AddEncodingValues(items, encoding, parameters));
 
         private static IEnumerable<(PdfName, PdfObject)> AddEncodingValues(
             (PdfName Name, PdfObject Value)[] items, PdfObject encoding, PdfObject? parameters) =>
             items.Append((KnownNames.Filter, encoding))
-                .Append((KnownNames.DecodeParms, parameters??PdfTokenValues.Null));
+                .Append((KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null));
 
-        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _, 
-             Func<Stream, ValueTask> addData, PdfObject encoding, PdfObject? parameters = null,
-             params (PdfName Name, PdfObject Value)[] items )
+        public static ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _,
+            Func<Stream, ValueTask> addData, PdfObject encoding, PdfObject? parameters = null,
+            params (PdfName Name, PdfObject Value)[] items) =>
+            NewCompressedStream(_, addData, encoding, parameters, items.AsEnumerable());
+
+        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _,
+            Func<Stream, ValueTask> addData, PdfObject encoding, PdfObject? parameters,
+            IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
-            var ms = new MultiBufferStream(4096);
+            var ms = new MultiBufferStream();
             using (var target = await Encode.CompressOnWrite(ms, encoding, parameters))
             {
                 await addData(target);
             }
+
             return NewStream(_, ms,
-                (KnownNames.Filter, encoding),
-                (KnownNames.DecodeParms, parameters??PdfTokenValues.Null));
+                items.Concat(new[]
+                {
+                    (KnownNames.Filter, encoding),
+                    (KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null)
+                })
+            );
         }
 
         public static PdfStream NewStream(
             this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
             params (PdfName Name, PdfObject Value)[] items) =>
-            NewStream(_, streamData, (IEnumerable<(PdfName, PdfObject)>)items);
+            NewStream(_, streamData, items.AsEnumerable());
+
         public static PdfStream NewStream(
-            this ILowLevelDocumentBuilder? _, in StreamDataSource streamData, 
+            this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
             IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
             return new(StreamDictionary(items, (int)streamData.Stream.Length),
@@ -70,8 +81,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         private static bool NotAnEmptyObject((PdfName Name, PdfObject Value) arg) =>
             !(arg.Value == PdfTokenValues.Null ||
-              arg.Value is PdfArray {Count: 0} ||
-              arg.Value is PdfDictionary {Count: 0});
+              arg.Value is PdfArray { Count: 0 } ||
+              arg.Value is PdfDictionary { Count: 0 });
 
         public static PdfStream NewStream(this ILowLevelDocumentBuilder _, byte[] streamData, params
             (PdfName Name, PdfObject Value)[] items) =>
