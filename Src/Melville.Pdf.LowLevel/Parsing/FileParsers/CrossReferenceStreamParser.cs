@@ -106,8 +106,8 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
         private void ParseLine(ref SequenceReader<byte> reader)
         {
             var c0 = GetInt(ref reader, col0Bytes);
-            var c1 = GetInt(ref reader, col0Bytes);
-            var c2 = GetInt(ref reader, col0Bytes);
+            var c1 = GetInt(ref reader, col1Bytes);
+            var c2 = GetInt(ref reader, col2Bytes);
             ProcessLine(c0, c1, c2);
         }
 

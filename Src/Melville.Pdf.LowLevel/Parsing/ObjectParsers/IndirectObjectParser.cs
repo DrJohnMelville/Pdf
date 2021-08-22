@@ -27,12 +27,6 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             this IIndirectObjectResolver resolver, int number, int next, int generation) =>
             resolver.AddLocationHint(number, generation,
                 () => new ValueTask<PdfObject>(PdfTokenValues.Null));
-        
-        public static void RegisterIndirectBlock(
-            this IParsingReader reader, int number,long generation, long offset)
-        {
-            RegisterIndirectBlock(reader.Owner, number, generation, offset);
-        }
 
         public static void RegisterIndirectBlock(
             this ParsingFileOwner owner, int number, long generation, long offset)
