@@ -16,8 +16,15 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 
         private static (bool Success, SequencePosition Position) SkipToNextToken2(ReadResult source)
         {
+            CheckForEndOfStream(source);
             var reader = new SequenceReader<byte>(source.Buffer);
             return (SkipToNextToken(ref reader), reader.Position);
+        }
+
+        private static void CheckForEndOfStream(ReadResult source)
+        {
+            if (source.IsCompleted && source.Buffer.IsEmpty)
+                throw new InvalidOperationException("Read off end of stream.");
         }
 
         public static bool SkipToNextToken(ref SequenceReader<byte> input)
