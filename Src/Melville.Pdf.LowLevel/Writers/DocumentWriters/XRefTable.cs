@@ -21,7 +21,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             {
                 if (Entries[i].IsFreeEntry)
                 {
-                    Entries[i] = XRefTableEntry.FreeEntry(lastFree, ItemGenerationNumber(i));
+                    Entries[i] = XRefTableEntry.FreeEntry(lastFree, 0);
                     lastFree = i;
                 }
             }
@@ -29,8 +29,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         
         //For new files the only non zero generation object is the head of the
         // free list at position zero.  
-        private static int ItemGenerationNumber(int item) => item == 0?65535:0;
-        
+
         public (int,int,int) ColumnByteWidths()
         {
             long col0 = 0;
@@ -49,11 +48,12 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         private int NeededBytes(long value)
         {
             var ret = 0;
-            do
+            while( value > 0)
             {
                 ret++;
                 value >>= 8;
-            } while( value > 0);
+            }
+
             return ret;
         }
     }

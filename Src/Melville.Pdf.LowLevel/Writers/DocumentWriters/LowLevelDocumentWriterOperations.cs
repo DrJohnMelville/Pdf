@@ -10,6 +10,6 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         public static Task WriteTo(this PdfLowLevelDocument doc, Stream s) => 
             new LowLevelDocumentWriter(PipeWriter.Create(s)).WriteAsync(doc);
         public static Task WriteToWithXrefStream(this PdfLowLevelDocument doc, Stream s) => 
-            new LowLevelDocumentWriter(PipeWriter.Create(s)).WriteAsync(doc);
+            new LowLevelDocumentWriter(PipeWriter.Create(s)).WriteWithReferenceStream(doc);
     }
 }

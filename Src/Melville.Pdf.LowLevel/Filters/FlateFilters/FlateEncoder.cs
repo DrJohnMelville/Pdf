@@ -60,7 +60,7 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
             private async void InitiateCopyProcess()
             {
                 await adler.CopyToAsync(deflator);
-                await deflator.FlushAsync();
+                await deflator.DisposeAsync();
                 await reverser.Writer.CompleteAsync();
             }
 

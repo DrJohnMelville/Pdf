@@ -79,7 +79,7 @@ trailer
             var resolver = new Mock<IIndirectObjectResolver>();
             var ps = (await (await MinimalPdfParser.MinimalPdf(1, 5)).AsStringAsync()).AsParsingSource(resolver.Object);
             await RandomAccessFileParser.Parse(ps);
-            resolver.Verify(i=>i.AddLocationHint(0,65535,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
+            resolver.Verify(i=>i.AddLocationHint(0,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(3,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);

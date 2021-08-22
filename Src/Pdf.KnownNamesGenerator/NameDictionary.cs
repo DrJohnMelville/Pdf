@@ -5,7 +5,7 @@ namespace Pdf.KnownNamesGenerator
     static internal class NameDictionary
     {
         //ToDo
-        //Need to handle some known PDF names abbreviations such as
+        #warning Need to handle some known PDF names abbreviations such as
         //ASCIIHexDecode -> AHx
         // ASCII85Decode -> A85
         //     LZWDecode -> LZW

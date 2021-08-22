@@ -26,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
 
         protected override void Dispose(bool disposing)
         {
-            encodingDestination.Flush();
+            encodingDestination.Dispose();
             WriteAdler32Trailer();
             rawDestination.Dispose();
         }

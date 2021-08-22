@@ -77,8 +77,14 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             }
         }
 
-        private static bool DoneReading(ReadResult result) => 
-            result.IsCompleted && result.Buffer.IsEmpty;
+        private bool DoneReading(ReadResult result)
+        {
+            if (!result.IsCompleted) return false;
+            if (result.Buffer.IsEmpty) return true;
+            if (result.Buffer.Length >= rowLength) return false;
+
+            throw new PdfParseException("Reference stream ends with partial reference.");
+        }
 
         private void ParseFromBuffer(in ReadOnlySequence<byte> buffer)
         {
@@ -133,6 +139,8 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
               case 1:
                   parsingReader.RegisterIndirectBlock(nextItemNumber++, c2, c1);
                   break;
+              case 2:
+                  throw new NotImplementedException("Object Streams are not implemented yet");
               default:
                   parsingReader.IndirectResolver.RegistedNullObject(nextItemNumber++, (int)c2, (int)c1);
                   break;

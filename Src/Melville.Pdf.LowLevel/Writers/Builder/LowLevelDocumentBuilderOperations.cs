@@ -46,7 +46,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
             var ms = new MultiBufferStream();
-            using (var target = await Encode.CompressOnWrite(ms, encoding, parameters))
+            await using (var target = await Encode.CompressOnWrite(ms, encoding, parameters))
             {
                 await addData(target);
             }
