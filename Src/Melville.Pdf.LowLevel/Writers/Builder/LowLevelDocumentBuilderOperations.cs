@@ -10,23 +10,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
 {
-    public static class StreamDeclarationMethods
-    {
-        public static  ValueTask<PdfStream> NewObjectStream(this ILowLevelDocumentBuilder _,
-            params PdfIndirectReference[] objectRefs) => 
-            _.NewObjectStream(objectRefs, KnownNames.FlateDecode, PdfTokenValues.Null);
-        public static async ValueTask<PdfStream> NewObjectStream(this ILowLevelDocumentBuilder _,
-           IEnumerable<PdfIndirectReference> objectRefs, PdfObject encoding, PdfObject? parameters = null,
-            params (PdfName Name, PdfObject Value)[] items) =>
-            await _.NewCompressedStream(await CreateContentStream(objectRefs), encoding, parameters);
-
-        private static ValueTask<Stream> CreateContentStream(IEnumerable<PdfIndirectReference> objectRefs)
-        {
-            throw new NotImplementedException();
-        }
-    }
-    
-
     public static class LowLevelDocumentBuilderOperations
     {
         public static void AddRootElement(
@@ -42,14 +25,19 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             new(
                 items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
 
-        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _,
+        public static ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _,
             StreamDataSource data, PdfObject encoding, PdfObject? parameters = null,
             params (PdfName Name, PdfObject Value)[] items) =>
+            _.NewCompressedStream(data, encoding, parameters, items.AsEnumerable());
+      
+        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder? _,
+            StreamDataSource data, PdfObject encoding, PdfObject? parameters,
+            IEnumerable<(PdfName Name, PdfObject Value)> items) =>
             NewStream(_, await Encode.Compress(data, encoding, parameters),
                 AddEncodingValues(items, encoding, parameters));
 
         private static IEnumerable<(PdfName, PdfObject)> AddEncodingValues(
-            (PdfName Name, PdfObject Value)[] items, PdfObject encoding, PdfObject? parameters) =>
+            IEnumerable<(PdfName Name, PdfObject Value)> items, PdfObject encoding, PdfObject? parameters) =>
             items.Append((KnownNames.Filter, encoding))
                 .Append((KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null));
 

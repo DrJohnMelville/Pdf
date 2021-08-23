@@ -24,6 +24,7 @@ namespace Melville.Pdf.LowLevel.Filters
         {
             var ret = new MultiBufferStream(DesiredStreamLength(s));
             s.CopyTo(ret);
+            ret.Seek(0, SeekOrigin.Begin); // the returned steam must be immediately readable.
             return ret;
         }
 

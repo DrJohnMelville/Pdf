@@ -17,7 +17,7 @@ namespace Melville.Pdf.LowLevel.Writers
         }
 
         public override void Advance(int bytes)
-        {
+        { 
             BytesWritten += bytes;
             innerWriter.Advance(bytes);
         }

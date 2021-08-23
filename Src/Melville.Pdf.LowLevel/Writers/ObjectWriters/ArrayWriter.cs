@@ -13,17 +13,17 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 
             IReadOnlyList<PdfObject> items)
         {
-            writer.Advance(WriteByte(writer.GetSpan(1), (byte)'['));
+            writer.WriteByte((byte)'[');
             var count = items.Count;
             for (int i = 0; i < count; i++)
             {
                 if (i > 0)
                 {
-                    writer.Advance(WriteByte(writer.GetSpan(1), (byte)' '));
+                    writer.WriteSpace();
                 }
                 await items[i].Visit(innerWriter);
             }
-            writer.Advance(WriteByte(writer.GetSpan(1), (byte)']'));
+            writer.WriteByte( (byte)']');
             return await writer.FlushAsync();
         }
 

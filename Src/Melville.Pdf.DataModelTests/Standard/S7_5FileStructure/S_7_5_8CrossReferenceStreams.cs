@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.IO.Pipelines;
-using System.Linq;
+﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
