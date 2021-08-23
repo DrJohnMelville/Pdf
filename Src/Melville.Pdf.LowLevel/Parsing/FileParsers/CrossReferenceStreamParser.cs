@@ -25,7 +25,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             await using var decodedStream = await stream.GetDecodedStream(); 
                 await new ParseXRefStream(
                 await stream[KnownNames.W], 
-                await stream.GetOrNull(KnownNames.Index), 
+                await stream.GetOrNullAsync(KnownNames.Index), 
                 decodedStream, owner
                 ).Parse();
             return stream;

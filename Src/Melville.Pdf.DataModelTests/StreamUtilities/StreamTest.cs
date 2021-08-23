@@ -31,8 +31,8 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 
         private static async Task<Stream> CreateReadingSingleBytes(PdfStream str) =>
             await Decoder.DecodeStream(new OneCharAtAtimeStream(await str.GetEncodedStream()),
-                (await str.GetOrNull(KnownNames.Filter)).AsList(),
-                (await str.GetOrNull(KnownNames.Params)).AsList(), int.MaxValue);
+                (await str.GetOrNullAsync(KnownNames.Filter)).AsList(),
+                (await str.GetOrNullAsync(KnownNames.Params)).AsList(), int.MaxValue);
 
         public static async Task Encoding(
             PdfObject compression, PdfObject? parameters, string src, string dest)

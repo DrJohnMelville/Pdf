@@ -10,6 +10,23 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
 {
+    public static class StreamDeclarationMethods
+    {
+        public static  ValueTask<PdfStream> NewObjectStream(this ILowLevelDocumentBuilder _,
+            params PdfIndirectReference[] objectRefs) => 
+            _.NewObjectStream(objectRefs, KnownNames.FlateDecode, PdfTokenValues.Null);
+        public static async ValueTask<PdfStream> NewObjectStream(this ILowLevelDocumentBuilder _,
+           IEnumerable<PdfIndirectReference> objectRefs, PdfObject encoding, PdfObject? parameters = null,
+            params (PdfName Name, PdfObject Value)[] items) =>
+            await _.NewCompressedStream(await CreateContentStream(objectRefs), encoding, parameters);
+
+        private static ValueTask<Stream> CreateContentStream(IEnumerable<PdfIndirectReference> objectRefs)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    
+
     public static class LowLevelDocumentBuilderOperations
     {
         public static void AddRootElement(

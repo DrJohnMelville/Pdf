@@ -16,7 +16,7 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters
         {
             this.rawDestination = rawDestination;
             WritePrefix(rawDestination);
-            encodingDestination = new DeflateStream(rawDestination, CompressionLevel.Optimal);
+            encodingDestination = new DeflateStream(rawDestination, CompressionLevel.Optimal, true);
         }
 
         private static byte[] prefixBytes = { 0x78, 0xDA };

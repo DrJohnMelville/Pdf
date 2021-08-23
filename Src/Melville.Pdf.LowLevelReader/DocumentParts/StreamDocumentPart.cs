@@ -38,7 +38,7 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
 
         public async Task LoadBytesAsync()
         {
-            Formats = (await source.GetOrNull(KnownNames.Filter)).AsList()
+            Formats = (await source.GetOrNullAsync(KnownNames.Filter)).AsList()
                 .Select(i => i.ToString()??"No name")
                 .Prepend("Raw Stream")
                 .ToArray();

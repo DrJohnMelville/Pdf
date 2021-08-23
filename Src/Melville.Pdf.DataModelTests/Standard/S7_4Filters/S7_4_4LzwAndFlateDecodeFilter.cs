@@ -15,7 +15,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         [Fact]
         public Task FlateDecodeStreamRoundTrip() =>
             StreamTest.Encoding(new PdfArray(KnownNames.ASCII85Decode, KnownNames.FlateDecode), null, 
-                "Hello World.", "GhV^Zc,n(/#gY0H8^RV?!!*'!***28~>");
+                "Hello World.", "GhVa[c,n(/#gY0H8^RV?***28~>");
         [Fact]
         public Task LZWDecodeStreamRoundTrip() =>
             StreamTest.Encoding(new PdfArray(KnownNames.ASCIIHexDecode, KnownNames.LZWDecode), null, 

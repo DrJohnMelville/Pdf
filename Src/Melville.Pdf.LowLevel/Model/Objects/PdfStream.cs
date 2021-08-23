@@ -34,8 +34,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public async ValueTask<Stream> GetDecodedStream(int desiredFormat = int.MaxValue) =>
             await Decoder.DecodeStream(await GetEncodedStream(),
-                (await this.GetOrNull(KnownNames.Filter)).AsList(), 
-                (await this.GetOrNull(KnownNames.DecodeParms)).AsList(),
+                (await this.GetOrNullAsync(KnownNames.Filter)).AsList(), 
+                (await this.GetOrNullAsync(KnownNames.DecodeParms)).AsList(),
                 desiredFormat);
     }
 }
