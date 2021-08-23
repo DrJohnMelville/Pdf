@@ -23,6 +23,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator
                 new CompositeParser(new IArgumentParser[]{
                     new MinimalPdfParser(),
                     new FiltersGenerator(),
+                    new ObjectStreamPage(),
                     new HelpPasrser(),
                     new FileTargetParser(),
                 }));

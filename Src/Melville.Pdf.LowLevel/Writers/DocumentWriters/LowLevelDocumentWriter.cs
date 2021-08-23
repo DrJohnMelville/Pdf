@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Document;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
@@ -49,6 +50,15 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             {
                 if (!(await item.Target.DirectValue()).ShouldWriteToFile()) continue;
                 positions.DeclareIndirectObject(item.Target.ObjectNumber, target.BytesWritten);
+                if (await item.DirectValue() is IHasInternalIndirectObjects hiid)
+                {
+                    int streamPosition = 0;
+                    foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbers())
+                    {
+                        positions.DeclareObjectStreamObject(
+                            innerObjectNumber, item.Target.ObjectNumber, streamPosition++);
+                    }
+                }
                 await item.Target.Visit(objectWriter);
             }
             return positions;
@@ -56,6 +66,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 
         private XRefTable CreateIndexArray(PdfLowLevelDocument document, int extraSlots)
         {
+#warning -- this is worng -- the maximum object could be in an object stream
             var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
             return new XRefTable(maxObject + 1 + extraSlots);
         }

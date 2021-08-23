@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
@@ -12,7 +13,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         ValueTask<Stream> OpenRawStream(long streamLength);
     }
     
-    public class PdfStream : PdfDictionary
+    public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     {
         private IStreamDataSource source;
         
@@ -37,5 +38,12 @@ namespace Melville.Pdf.LowLevel.Model.Objects
                 (await this.GetOrNullAsync(KnownNames.Filter)).AsList(), 
                 (await this.GetOrNullAsync(KnownNames.DecodeParms)).AsList(),
                 desiredFormat);
+
+        public async ValueTask<IEnumerable<int>> GetInternalObjectNumbers()
+        {
+            if (await this.GetOrNullAsync(KnownNames.Type) != KnownNames.ObjStm)
+                return Array.Empty<int>();
+            return await this.GetIncludedObjectNumbers();
+        }
     }
 }

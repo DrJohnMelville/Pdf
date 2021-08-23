@@ -4,10 +4,13 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
+    public interface IHasInternalIndirectObjects
+    {
+        ValueTask<IEnumerable<int>> GetInternalObjectNumbers();
+    }
     public static class ObjectStreamOperations
     {
         public static async ValueTask<IList<int>> GetIncludedObjectNumbers(this PdfStream stream)

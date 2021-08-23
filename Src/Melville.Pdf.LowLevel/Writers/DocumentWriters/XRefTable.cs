@@ -14,6 +14,11 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         public void DeclareIndirectObject(int objNumber, long offset, long generation = 0) =>
             Entries[objNumber] = XRefTableEntry.IndirectEntry(offset, generation);
         
+
+        public void DeclareObjectStreamObject(
+            int objectNumber, int streamObjectNumber, int streamOrdinal) =>
+            Entries[objectNumber] = XRefTableEntry.ObjStreamEntry(streamObjectNumber, streamOrdinal);
+
         public void AssembleFreeList()
         {
             long lastFree = 0;
@@ -56,5 +61,6 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 
             return ret;
         }
+
     }
 }
