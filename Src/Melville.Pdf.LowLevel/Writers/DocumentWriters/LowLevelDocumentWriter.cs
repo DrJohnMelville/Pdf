@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -55,6 +56,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
                     int streamPosition = 0;
                     foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbers())
                     {
+                        EnsureOuterGenerationNumberIsZero(item.Target);
                         positions.DeclareObjectStreamObject(
                             innerObjectNumber, item.Target.ObjectNumber, streamPosition++);
                     }
@@ -62,6 +64,12 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
                 await item.Target.Visit(objectWriter);
             }
             return positions;
+        }
+
+        private void EnsureOuterGenerationNumberIsZero(PdfIndirectObject itemTarget)
+        {
+            if (itemTarget.GenerationNumber != 0)
+                throw new InvalidOperationException("Object streams must hae a generation number of 0.");
         }
 
         private XRefTable CreateIndexArray(PdfLowLevelDocument document, int extraSlots)

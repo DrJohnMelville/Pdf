@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -25,6 +26,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         }
 
         [Fact]
+        public async Task RoundTrip()
+        {
+            var doc = await (await DocWithObjectStream()).ParseDocumentAsync();
+        }
+
+        [Fact]
         public Task CannotPutStreamInObjectStream()
         {
             var creator = new LowLevelDocumentCreator();
@@ -34,12 +41,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             );
         }
         [Fact]
-        public Task CannotPutNonZeroGenerationtStream()
+        public Task CannotPutNonZeroGenerationStream()
         {
             var creator = new LowLevelDocumentCreator();
             return Assert.ThrowsAsync<InvalidOperationException>(() =>
                 creator.NewObjectStream(new PdfIndirectReference(new PdfIndirectObject(12,1, KnownNames.All))).AsTask()
-                
             );
         }
         

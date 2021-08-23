@@ -39,6 +39,15 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                     return await rentedReader.RootObjectParser.ParseAsync(rentedReader);
                 });
         }
+        public static void RegisterObjectStreamBlock(
+            this ParsingFileOwner owner, int number, long referredStream, long referredOrdinal)
+        {
+            owner.IndirectResolver.AddLocationHint(number, 0,
+                async () =>
+                {
+                    throw new NotImplementedException("Cannot load out of object strea,s yet;");
+                });
+        }
     }
 
     public class IndirectObjectParser : IPdfObjectParser

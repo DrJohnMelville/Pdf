@@ -140,7 +140,8 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                   parsingReader.RegisterIndirectBlock(nextItemNumber++, c2, c1);
                   break;
               case 2:
-                  throw new NotImplementedException("Object Streams are not implemented yet");
+                  parsingReader.RegisterObjectStreamBlock(nextItemNumber++, c1, c2);
+                  break;
               default:
                   parsingReader.IndirectResolver.RegistedNullObject(nextItemNumber++, (int)c2, (int)c1);
                   break;
