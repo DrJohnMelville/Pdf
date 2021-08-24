@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
-    public interface IIndirectObjectResolver
+    public interface IIndirectObjectResolver: ICanAcceptObjectStreamObject
     {
         IReadOnlyDictionary<(int, int), PdfIndirectReference> GetObjects();
         PdfIndirectReference FindIndirect(int number, int generation);
@@ -45,7 +45,10 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             owner.IndirectResolver.AddLocationHint(number, 0,
                 async () =>
                 {
-                    throw new NotImplementedException("Cannot load out of object strea,s yet;");
+                    var stream = (PdfStream)await owner.IndirectResolver
+                            .FindIndirect((int)referredStream, 0).DirectValue();
+                    ObjectStreamOperations.LoadObjectStream(owner.IndirectResolver, stream);
+                    throw new NotImplementedException("Cannot load out of object stream  s yet;");
                 });
         }
     }

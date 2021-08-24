@@ -22,7 +22,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             }
             if (!(xRefStreamAsPdfObject is PdfStream stream))
                 throw new PdfParseException("Object pointed to by StartXref is not a stream");
-            await using var decodedStream = await stream.GetDecodedStream(); 
+            await using var decodedStream = await stream.GetDecodedStreamAsync(); 
                 await new ParseXRefStream(
                 await stream[KnownNames.W], 
                 await stream.GetOrNullAsync(KnownNames.Index), 

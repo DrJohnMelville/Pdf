@@ -54,11 +54,11 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
                 if (await item.DirectValue() is IHasInternalIndirectObjects hiid)
                 {
                     int streamPosition = 0;
-                    foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbers())
+                    foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbersAsync())
                     {
                         EnsureOuterGenerationNumberIsZero(item.Target);
                         positions.DeclareObjectStreamObject(
-                            innerObjectNumber, item.Target.ObjectNumber, streamPosition++);
+                            innerObjectNumber.ObjectNumber, item.Target.ObjectNumber, streamPosition++);
                     }
                 }
                 await item.Target.Visit(objectWriter);

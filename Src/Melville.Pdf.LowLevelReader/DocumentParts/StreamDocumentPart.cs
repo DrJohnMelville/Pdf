@@ -42,7 +42,7 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
                 .Select(i => i.ToString()??"No name")
                 .Prepend("Raw Stream")
                 .ToArray();
-            await using var streamData = await source.GetDecodedStream(selectedFormat);
+            await using var streamData = await source.GetDecodedStreamAsync(selectedFormat);
             var data = new byte[10240];
             var read = await streamData.FillBufferAsync(data, 0, data.Length);
             DisplayContent = string.Join("\r\n", CreateHexDump(data.Take(read)));

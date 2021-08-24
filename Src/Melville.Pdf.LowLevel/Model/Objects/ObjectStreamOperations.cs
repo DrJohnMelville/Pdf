@@ -1,29 +1,38 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
     public interface IHasInternalIndirectObjects
     {
-        ValueTask<IEnumerable<int>> GetInternalObjectNumbers();
+        ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync();
     }
+
     public static class ObjectStreamOperations
     {
-        public static async ValueTask<IList<int>> GetIncludedObjectNumbers(this PdfStream stream)
+        public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbers(this PdfStream stream)
         {
-            return await PipeReader.Create(await stream.GetDecodedStream()).GetIncludedObjectNumbers(
-                (await stream.GetAsync<PdfNumber>(KnownNames.N)).IntValue,
-                (await stream.GetAsync<PdfNumber>(KnownNames.First)).IntValue);
+            await using var decoded = await stream.GetDecodedStreamAsync();
+            return await GetIncludedObjectNumbers(stream, PipeReader.Create(decoded));
         }
 
-        public static async ValueTask<IList<int>> GetIncludedObjectNumbers(
+        private static async Task<IList<ObjectLocation>> GetIncludedObjectNumbers(
+            PdfStream stream, PipeReader reader) =>
+            await reader.GetIncludedObjectNumbers(
+                (await stream.GetAsync<PdfNumber>(KnownNames.N)).IntValue,
+                (await stream.GetAsync<PdfNumber>(KnownNames.First)).IntValue);
+
+        public static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbers(
             this PipeReader reader, long count, long first)
         {
-            var ret = new int[count];
             var source = await reader.ReadAsync();
             while (source.Buffer.Length < first)
             {
@@ -31,17 +40,37 @@ namespace Melville.Pdf.LowLevel.Model.Objects
                 source = await reader.ReadAsync();
             }
 
-            FillInts(new SequenceReader<byte>(source.Buffer), ret);
+            var ret = FillInts(new SequenceReader<byte>(source.Buffer), count);
+            reader.AdvanceTo(source.Buffer.GetPosition(first));
             return ret;
         }
 
-        private static void FillInts(SequenceReader<byte> seqReader, int[] ret)
+        private static ObjectLocation[] FillInts(SequenceReader<byte> seqReader, long count)
         {
-            for (int i = 0; i < ret.Length; i++)
+            var ret = new ObjectLocation[count];
+            for (int i = 0; i < count; i++)
             {
-                WholeNumberParser.TryParsePositiveWholeNumber(ref seqReader, out ret[i], out _);
-                WholeNumberParser.TryParsePositiveWholeNumber(ref seqReader, out long _, out _);
+                WholeNumberParser.TryParsePositiveWholeNumber(ref seqReader, out ret[i].ObjectNumber, out _);
+                WholeNumberParser.TryParsePositiveWholeNumber(ref seqReader, out ret[i].Offset, out _);
             }
+
+            return ret;
         }
+
+        public static void LoadObjectStream(ICanAcceptObjectStreamObject resolver, PdfStream source)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public interface ICanAcceptObjectStreamObject
+    {
+        void AcceptObject(int objectNumber, PdfObject pdfObject);
+    }
+    
+    public struct ObjectLocation
+    {
+        public int ObjectNumber;
+        public int Offset;
     }
 }

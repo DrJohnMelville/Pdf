@@ -66,7 +66,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             Assert.Contains("Stream data", serialized);
             var doc2 = await serialized.ParseDocumentAsync();
             var stream = (PdfStream) (await doc2.TrailerDictionary[KnownNames.Root]);
-            var value = await new StreamReader(await stream.GetEncodedStream()).ReadToEndAsync();
+            var value = await new StreamReader(await stream.GetEncodedStreamAsync()).ReadToEndAsync();
             Assert.Equal("Stream data", value);
             
         }

@@ -3,6 +3,7 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext
@@ -38,40 +39,27 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
                 private class ParsingReader : IParsingReader
                 {
                     private long lastSeek;
-                    private long lastAdvanceOffset;
-                    public long Position => lastSeek + lastAdvanceOffset;
+                    public long Position => lastSeek + reader.Position;
                     public long StreamLength => Owner.StreamLength;
                     public IPdfObjectParser RootObjectParser => Owner.RootObjectParser;
                     public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;
         
                     public ParsingFileOwner Owner { get; }
-                    private PipeReader reader;
-                    private ReadOnlySequence<byte> storedSequence;
+                    private CountingPipeReader reader;
         
                     public ParsingReader(ParsingFileOwner owner, PipeReader reader, long lastSeek)
                     {
                         this.lastSeek = lastSeek;
-                        this.reader = reader;
+                        this.reader = new CountingPipeReader(reader);
                         Owner = owner;
                     }
         
                     public void Dispose()
                     {
                         Owner.ReturnReader(this);
-                        reader = InvalidReader.Instance;
+                        reader = null!; // we want the exception if we try to touch a disposed reader
                     }
-
-                    public ValueTask<ReadResult> ReadAsync(CancellationToken token = default)
-                    {
-                        var valueTask = reader.ReadAsync(token);
-                        if  (!valueTask.IsCompleted)
-                            return new ValueTask<ReadResult>(WaitForRead(valueTask));
-        
-                        var res = valueTask.Result;
-                        StorePosition(res.Buffer);
-                        return new ValueTask<ReadResult>(res);
-                    }
-        
+                    
                     /// <summary>
                     /// This method enables a very specific pattern that is common with parsing from the PipeReader.
                     ///
@@ -90,38 +78,18 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
                             AdvanceTo(result.Position);
                             return false;
                         }
-        
-                        NeedMoreInputToCompleteParsing();
+                        reader.MarkSequenceAsExamined();
                         return true;
                     }
-        
-                    private void NeedMoreInputToCompleteParsing() => AdvanceTo(storedSequence.Start, storedSequence.End);
-        
-        
-                    private async Task<ReadResult> WaitForRead(ValueTask<ReadResult> valueTask)
-                    {
-                        var ret = await valueTask;
-                        StorePosition(ret.Buffer);
-                        return ret;
-                    }
-        
-                    private void StorePosition(ReadOnlySequence<byte> resBuffer)
-                    {
-                        storedSequence = resBuffer;
-                    }
-        
+
+                    public ValueTask<ReadResult> ReadAsync(CancellationToken token = default) => reader.ReadAsync(token);
                     public void AdvanceTo(SequencePosition consumed) =>
                         AdvanceTo(consumed, consumed);
         
                     public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
                     {
-                        lastAdvanceOffset += BytesAdvancedBy(consumed);
                         reader.AdvanceTo(consumed, examined);
-                        storedSequence = default;
                     }
-        
-                    private long BytesAdvancedBy(SequencePosition consumed) =>
-                        storedSequence.Slice(0, consumed).Length;
                 }
     }
 }

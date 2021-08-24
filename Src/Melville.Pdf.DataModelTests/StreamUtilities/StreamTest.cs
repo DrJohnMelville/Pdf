@@ -30,7 +30,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         }
 
         private static async Task<Stream> CreateReadingSingleBytes(PdfStream str) =>
-            await Decoder.DecodeStream(new OneCharAtAtimeStream(await str.GetEncodedStream()),
+            await Decoder.DecodeStream(new OneCharAtAtimeStream(await str.GetEncodedStreamAsync()),
                 (await str.GetOrNullAsync(KnownNames.Filter)).AsList(),
                 (await str.GetOrNullAsync(KnownNames.Params)).AsList(), int.MaxValue);
 
@@ -41,7 +41,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
                 null!, src, compression, parameters);
             await EncodeUsingWrite(compression, parameters, src, dest);
             await EncodeStreamTest(dest, str, compression.ToString()!);
-            await VerifyStreamContentAsync(src, await str.GetDecodedStream());
+            await VerifyStreamContentAsync(src, await str.GetDecodedStreamAsync());
             await VerifyStreamContentAsync(src, new OneCharAtAtimeStream(await CreateReadingSingleBytes(str)));
             await VerifyDisposal(str);
         }
@@ -53,7 +53,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
                 i => i.WriteAsync(src.AsExtendedAsciiBytes().AsMemory()), compression, parameters);
             
             var target = new MultiBufferStream();
-            await (await stream.GetEncodedStream()).CopyToAsync(target);
+            await (await stream.GetEncodedStreamAsync()).CopyToAsync(target);
             Assert.Equal(dest, target.CreateReader().ReadToArray().ExtendedAsciiString());
         }
 
@@ -67,9 +67,9 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         
         private static async ValueTask VerifyDisposal(PdfStream str)
         {
-            var source = new StreamDisposeSource(await str.GetEncodedStream());
+            var source = new StreamDisposeSource(await str.GetEncodedStreamAsync());
             var str2 = new PdfStream(str.RawItems, source);
-            var wrappedStream = await str2.GetDecodedStream();
+            var wrappedStream = await str2.GetDecodedStreamAsync();
             Assert.False(source.IsDisposed);
             await wrappedStream.DisposeAsync();
             Assert.True(source.IsDisposed);

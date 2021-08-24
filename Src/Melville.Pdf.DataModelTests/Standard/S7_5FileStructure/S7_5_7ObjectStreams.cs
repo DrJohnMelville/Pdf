@@ -29,6 +29,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         public async Task RoundTrip()
         {
             var doc = await (await DocWithObjectStream()).ParseDocumentAsync();
+            Assert.Equal("One", (await doc.Objects[(1,0)].DirectValue()).ToString());
+            
         }
 
         [Fact]
@@ -76,20 +78,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             var str = await builder.NewObjectStream( new []{
                 builder.AsIndirectReference(new PdfString("One")),
                 builder.AsIndirectReference(new PdfString("Two"))
-            }, PdfTokenValues.Null);
-            
-            Assert.Equal(new[]{1,2}, await str.GetIncludedObjectNumbers());
-        }
-        [Fact]
-        public async Task ExtractEncodedObjectReferences()
-        {
-            var builder = new LowLevelDocumentCreator();
-            var str = await builder.NewObjectStream( new []{
-                builder.AsIndirectReference(new PdfString("One")),
-                builder.AsIndirectReference(new PdfString("Two"))
-            }, KnownNames.ASCIIHexDecode);
-            
-            Assert.Equal(new[]{1,2}, await str.GetIncludedObjectNumbers());
+            });
+
+            var output = await str.GetIncludedObjectNumbers();
+            Assert.Equal(1, output[0].ObjectNumber);
+            Assert.Equal(2, output[1].ObjectNumber);
         }
     }
 }
