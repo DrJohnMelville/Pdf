@@ -24,7 +24,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             return await GetIncludedObjectNumbers(stream, PipeReader.Create(decoded));
         }
 
-        private static async Task<IList<ObjectLocation>> GetIncludedObjectNumbers(
+        public static async Task<IList<ObjectLocation>> GetIncludedObjectNumbers(
             PdfStream stream, PipeReader reader) =>
             await reader.GetIncludedObjectNumbers(
                 (await stream.GetAsync<PdfNumber>(KnownNames.N)).IntValue,
@@ -56,18 +56,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
             return ret;
         }
-
-        public static void LoadObjectStream(ICanAcceptObjectStreamObject resolver, PdfStream source)
-        {
-            throw new NotImplementedException();
-        }
     }
-
-    public interface ICanAcceptObjectStreamObject
-    {
-        void AcceptObject(int objectNumber, PdfObject pdfObject);
-    }
-    
     public struct ObjectLocation
     {
         public int ObjectNumber;

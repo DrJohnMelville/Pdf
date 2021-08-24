@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -10,12 +11,15 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 {
     public interface IParsingReader : IDisposable
     {
+        long GlobalPosition { get; }
         long Position { get; }
-        long StreamLength { get; }
         IPdfObjectParser RootObjectParser { get; }
         IIndirectObjectResolver IndirectResolver { get; }
         ParsingFileOwner Owner { get; }
         ValueTask<ReadResult> ReadAsync(CancellationToken token = default);
+
+        void AdvanceTo(SequencePosition consumed);
+        void AdvanceTo(SequencePosition consumed, SequencePosition examined);
 
         /// <summary>
         /// This method enables a very specific pattern that is common with parsing from the PipeReader.
@@ -30,34 +34,31 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         /// </summary>
         bool ShouldContinue((bool Success, SequencePosition Position) result);
 
-        void AdvanceTo(SequencePosition consumed);
-        void AdvanceTo(SequencePosition consumed, SequencePosition examined);
+        PipeReader AsPipeReader();
+        ValueTask AdvanceToPositionAsync(long targetPosition);
     }
 
     public partial class ParsingFileOwner
     {
-                private class ParsingReader : IParsingReader
+                private class ParsingReader : CountingPipeReader, IParsingReader
                 {
                     private long lastSeek;
-                    public long Position => lastSeek + reader.Position;
-                    public long StreamLength => Owner.StreamLength;
+                    public long GlobalPosition => lastSeek + Position;
                     public IPdfObjectParser RootObjectParser => Owner.RootObjectParser;
                     public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;
         
                     public ParsingFileOwner Owner { get; }
-                    private CountingPipeReader reader;
         
-                    public ParsingReader(ParsingFileOwner owner, PipeReader reader, long lastSeek)
+                    public ParsingReader(ParsingFileOwner owner, PipeReader reader, long lastSeek): base(reader)
                     {
                         this.lastSeek = lastSeek;
-                        this.reader = new CountingPipeReader(reader);
                         Owner = owner;
                     }
         
                     public void Dispose()
                     {
                         Owner.ReturnReader(this);
-                        reader = null!; // we want the exception if we try to touch a disposed reader
+                        Complete();
                     }
                     
                     /// <summary>
@@ -78,18 +79,48 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
                             AdvanceTo(result.Position);
                             return false;
                         }
-                        reader.MarkSequenceAsExamined();
+                        MarkSequenceAsExamined();
                         return true;
                     }
 
-                    public ValueTask<ReadResult> ReadAsync(CancellationToken token = default) => reader.ReadAsync(token);
-                    public void AdvanceTo(SequencePosition consumed) =>
-                        AdvanceTo(consumed, consumed);
-        
-                    public void AdvanceTo(SequencePosition consumed, SequencePosition examined)
+                    public PipeReader AsPipeReader() => this;
+
+                    public ValueTask AdvanceToPositionAsync(long targetPosition) =>
+                        BytesToAdvanceBy(targetPosition) switch
+                        {
+                            < 0 => throw new InvalidOperationException("Cannot rewind a pipe reader"),
+                            0 => new ValueTask(),
+                            _ => TryAdvanceFast(BytesToAdvanceBy(targetPosition))
+                        };
+
+                    private long BytesToAdvanceBy(long targetPosition) => targetPosition - Position;
+
+                    private ValueTask TryAdvanceFast(long delta)
                     {
-                        reader.AdvanceTo(consumed, examined);
+                        if (TryRead(out var rr) && rr.Buffer.Length >= delta)
+                        {
+                            AdvanceTo(rr.Buffer.GetPosition(delta));
+                            return new ValueTask();
+                        }
+
+                        return SlowAdvanceToPositionAsync(delta);
                     }
+
+                    private async ValueTask SlowAdvanceToPositionAsync(long delta)
+                    {
+                        while (true)
+                        {
+                            var ret = await ReadAsync();
+                            if (ret.Buffer.Length > delta)
+                            {
+                                AdvanceTo(ret.Buffer.GetPosition(delta));
+                                return;
+                            }
+                            if (ret.IsCompleted) return;
+                            AdvanceTo(ret.Buffer.Start, ret.Buffer.End);
+                        }
+                    }
+
                 }
     }
 }

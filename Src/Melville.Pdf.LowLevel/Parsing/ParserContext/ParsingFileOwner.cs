@@ -37,10 +37,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         public ValueTask<IParsingReader> RentReader(long offset)
         {
             SeekToRentedOrigin(offset);
-            var reader = new ParsingReader(this, PipeReader.Create(source, pipeOptions), offset);
+            var reader = ParsingReaderForStream(source, offset);
             currentReader = reader;
             return new ValueTask<IParsingReader>(reader);
         }
+
+        public IParsingReader ParsingReaderForStream(Stream s, long position) =>
+            new ParsingReader(this, PipeReader.Create(s, pipeOptions), position);
 
         public ValueTask<Stream> RentStream(long position, long length)
         {
@@ -54,8 +57,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 
         private void ReturnReader(object item)
         {
-            if (item != currentReader) throw new InvalidOperationException("Returned reader is not current");
-            currentReader = null;
+            if (item == currentReader) currentReader = null;
         }
 
     }

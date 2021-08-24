@@ -68,7 +68,7 @@ trailer
 ";
             var parsingReader = await sampleTale.AsParsingSource(resolver.Object).RentReader(0);
              await new CrossReferenceTableParser(parsingReader).Parse();
-            Assert.Equal(5, parsingReader.Position);
+            Assert.Equal(5, parsingReader.GlobalPosition);
                         
             resolver.VerifyNoOtherCalls();
         }

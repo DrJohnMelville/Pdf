@@ -68,9 +68,9 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
             var sut = await owner.RentReader(0);
             var result = await sut.ReadAsync();
             var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
-            Assert.Equal(0, sut.Position);
+            Assert.Equal(0, sut.GlobalPosition);
             sut.AdvanceTo( sp);
-            Assert.Equal(5, sut.Position);
+            Assert.Equal(5, sut.GlobalPosition);
         }
         [Fact]
         public async Task ReadThenJump()
@@ -79,9 +79,9 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
             {
                 var result = await sut.ReadAsync();
                 var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
-                Assert.Equal(0, sut.Position);
+                Assert.Equal(0, sut.GlobalPosition);
                 sut.AdvanceTo(sp);
-                Assert.Equal(5, sut.Position);
+                Assert.Equal(5, sut.GlobalPosition);
             }
 
             using (var sut = await owner.RentReader(45))
@@ -89,7 +89,7 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
                 var result = await sut.ReadAsync();
                 var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
                 sut.AdvanceTo( sp);
-                Assert.Equal(49, sut.Position);
+                Assert.Equal(49, sut.GlobalPosition);
             }
         }
     }

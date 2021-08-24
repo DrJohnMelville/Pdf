@@ -53,7 +53,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         private static bool SearchForS(ReadResult readResult, IParsingReader source, long max, out bool foundOne)
         {
-            if (readResult.IsCompleted || source.Position > max)
+            if (readResult.IsCompleted || source.GlobalPosition > max)
             {
                 foundOne = false;
                 return false;

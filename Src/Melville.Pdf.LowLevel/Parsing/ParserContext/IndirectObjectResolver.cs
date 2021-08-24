@@ -22,9 +22,6 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
                 index.Add((objectNumber, generation), ret);
             return ret;
         }
-
-        public void AcceptObject(int objectNumber, PdfObject pdfObject) =>
-            ((IMultableIndirectObject)FindIndirect(objectNumber, 0).Target).SetValue(pdfObject);
         
         public void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor)
         {
