@@ -42,6 +42,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [Theory]
         [InlineData("/ /", "")]
         [InlineData("/Foo /", "Foo")]
+        [InlineData("/Foo", "Foo")]
         [InlineData("/Two#20Words /", "Two Words")]
         public async Task ParseNameSucceed(string source, string result)
         {

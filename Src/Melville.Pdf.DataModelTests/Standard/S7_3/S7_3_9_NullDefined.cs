@@ -15,6 +15,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         }
 
         [Fact]
+        public async Task CanParseArEmd()
+        {
+            Assert.Equal(PdfTokenValues.Null, await "null".ParseObjectAsync());
+            
+        }
+
+        [Fact]
         public async Task CanParseNull()
         {
             Assert.Equal(PdfTokenValues.Null, await ParsedNull());
