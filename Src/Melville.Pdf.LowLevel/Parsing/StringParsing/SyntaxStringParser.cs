@@ -8,11 +8,15 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
     public  class SyntaxStringParser: PdfAtomParser
     {
         public override bool TryParse(
-            ref SequenceReader<byte> input, [NotNullWhen(true)] out PdfObject? output)
+            ref SequenceReader<byte> input, bool final, [NotNullWhen(true)] out PdfObject? output)
         {
             var copyOfInput = input;
             if (!ComputeStringLength(ref input, out var length))
             {
+                if (final)
+                {
+                    throw new PdfParseException("Unterminated Syntax string");
+                }
                 output = null;
                 return false;
             }

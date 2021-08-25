@@ -22,7 +22,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             do
             {
                 var ret = await source.ReadAsync();
-                shouldContinue = TryReadLine(ret.Buffer);
+                shouldContinue = TryReadLine(ret.Buffer) && !ret.IsCompleted;
             } while (shouldContinue);
         }
 

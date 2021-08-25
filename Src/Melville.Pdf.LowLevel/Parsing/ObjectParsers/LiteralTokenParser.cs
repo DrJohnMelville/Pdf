@@ -12,10 +12,10 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             this.literal = literal;
         }
 
-        public override bool TryParse(ref SequenceReader<byte> reader, out PdfObject obj)
+        public override bool TryParse(ref SequenceReader<byte> reader, bool final, out PdfObject obj)
         {
             obj = literal;
-            if (!reader.TryCheckToken(literal.TokenValue, out var correct)) return false;
+            if (!reader.TryCheckToken(literal.TokenValue, final, out var correct)) return false;
             if (!correct) throw new PdfParseException("Unexpected PDF token.");
             return true;
         }

@@ -23,7 +23,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             IPdfObjectParser parser;
             do{}while(source.ShouldContinue(PickParser2(await source.ReadAsync(), out parser!)));
 
-            return await parser!.ParseAsync(source);
+            return await parser.ParseAsync(source);
         }
 
         private (bool Success, SequencePosition Position) PickParser2

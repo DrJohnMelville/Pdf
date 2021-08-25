@@ -8,8 +8,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     public class NumberParser: PdfAtomParser
     {
         public override bool TryParse(
-            ref SequenceReader<byte> reader, [NotNullWhen(true)] out PdfObject? obj) => 
-            new NumberParsingInstance().InnerTryParse(ref reader, out obj);
+            ref SequenceReader<byte> reader, bool final, [NotNullWhen(true)] out PdfObject? obj) => 
+            new NumberParsingInstance().InnerTryParse(ref reader, final, out obj);
     }
 
     public ref struct NumberParsingInstance
@@ -21,9 +21,9 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         private PdfNumber? result;
 
         public bool InnerTryParse(
-            ref SequenceReader<byte> source, [NotNullWhen(true)] out PdfObject? output)
+            ref SequenceReader<byte> source, bool final, [NotNullWhen(true)] out PdfObject? output)
         {
-            var ret = TryReadSign(ref source) && TryParseWholeDigits(ref source);
+            var ret = TryReadSign(ref source) && TryParseWholeDigits(ref source, final);
             output = result;
             return ret;
         }
@@ -45,13 +45,14 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             return true;
         }
 
-        private bool TryParseWholeDigits(
-            ref SequenceReader<byte> source)
+        private bool TryParseWholeDigits(ref SequenceReader<byte> source, bool final)
         {
-            if (!WholeNumberParser.TryParsePositiveWholeNumber(ref source, out value, out var nextByte))
+            if (!
+                (WholeNumberParser.TryParsePositiveWholeNumber(ref source, out value, out var nextByte)
+                || final))
                 return false;
             return nextByte == '.' ? 
-                TryParseFractionalDigits(ref source) : 
+                TryParseFractionalDigits(ref source, final) : 
                 ReturnIntegerResult(ref source);
         }
 
@@ -62,12 +63,15 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             return true;
         }
 
-        private bool TryParseFractionalDigits(ref SequenceReader<byte> source)
+        private bool TryParseFractionalDigits(ref SequenceReader<byte> source, bool final)
         {
             placeValue = 1.0;
             while (true)
             {
-                if (!source.TryRead(out var character)) return false;
+                if (!source.TryRead(out var character))
+                {
+                    return final ? ReturnDoubleResult(ref source): false;
+                }
                 if (!WholeNumberParser.IsDigit(character)) return ReturnDoubleResult(ref source);
                 ConsumeDecimalNumberPart(character);
             }

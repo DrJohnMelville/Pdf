@@ -9,12 +9,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public class NameParser: PdfAtomParser
     {
-        public override bool TryParse(ref SequenceReader<byte> bytes,[NotNullWhen(true)] out PdfObject? output)
+        public override bool TryParse(ref SequenceReader<byte> bytes, bool final,[NotNullWhen(true)] out PdfObject? output)
         {
             output = null;
-            if (!TrySkipSolidus(ref bytes)) return false;
+            if (!TrySkipSolidus(ref bytes)) return final;
             var copyOfBytes = bytes;
-            if (!TryComputeLengthAndHash(ref bytes, out var length, out var hash)) return false;
+            if (!TryComputeLengthAndHash(ref bytes, final, out var length, out var hash)) return false;
             if (LookupNameByHash(ref copyOfBytes, hash, length, out output)) 
                 return true;
             CreateNovelName(ref copyOfBytes, length, out output);
@@ -28,8 +28,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             return true;
         }
 
-        private static bool TryComputeLengthAndHash(
-            ref SequenceReader<byte> bytes, out int length, out uint hash)
+        private static bool TryComputeLengthAndHash(ref SequenceReader<byte> bytes, bool final, out int length,
+            out uint hash)
         {
             length = 0;
             hash = FnvHash.EmptyStringHash();
@@ -38,7 +38,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                 switch (GetNextNameCharacter(ref bytes, out var character))
                 {
                     case NextCharResult.NotEnoughChars:
-                        return false;
+                        return final;
                     case NextCharResult.Terminating:
                         bytes.Rewind(1);
                         return true;

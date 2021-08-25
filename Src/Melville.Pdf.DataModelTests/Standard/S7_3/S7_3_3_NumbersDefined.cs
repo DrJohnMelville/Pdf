@@ -18,6 +18,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [InlineData("-34/", -34, -34)]
         [InlineData("-34./", -34, -34)]
         [InlineData("134.567/", 134, 134.567)]
+        [InlineData("134.567", 134, 134.567)]
+        [InlineData("134", 134, 134)]
         public async Task ParseNumberSucceed(string source, int intValue, double doubleValue)
         {
             var num = (PdfNumber)await source.ParseObjectAsync(); 

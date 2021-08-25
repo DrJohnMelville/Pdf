@@ -9,11 +9,11 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
     public class HexStringParser: PdfAtomParser
     {
         public override bool TryParse(
-            ref SequenceReader<byte> reader, [NotNullWhen(true)]out PdfObject? obj)
+            ref SequenceReader<byte> reader, bool final, [NotNullWhen(true)]out PdfObject? obj)
         {
             reader.Advance(1);
             var copyOfReader = reader;
-            if (!TryCount(ref reader, out var len))
+            if (!TryCount(ref reader, final, out var len))
             {
                 obj = null;
                 return false;
@@ -23,20 +23,20 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             return true;
         }
 
-        private bool TryCount(ref SequenceReader<byte> reader, out int length)
+        private bool TryCount(ref SequenceReader<byte> reader, bool final, out int length)
         {
             length = 0;
             while (true)
             {
                 switch (GetNibble(ref reader))
                 {
-                    case Nibble.OutOfSpace: return false;
+                    case Nibble.OutOfSpace: return final;
                     case Nibble.Terminator: return true;
                 }
                 length++;
                 switch (GetNibble(ref reader))
                 {
-                    case Nibble.OutOfSpace: return false;
+                    case Nibble.OutOfSpace: return final;
                     case Nibble.Terminator: return true;
                 }
             }

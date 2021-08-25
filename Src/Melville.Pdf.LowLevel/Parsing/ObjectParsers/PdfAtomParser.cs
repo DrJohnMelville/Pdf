@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     public abstract class PdfAtomParser : IPdfObjectParser
     {
         public abstract bool TryParse(
-            ref SequenceReader<byte> reader, [NotNullWhen(true)] out PdfObject? obj);
+            ref SequenceReader<byte> reader, bool final, [NotNullWhen(true)] out PdfObject? obj);
 
         public async Task<PdfObject> ParseAsync(IParsingReader source)
         {
@@ -23,7 +23,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         private (bool Success, SequencePosition Position) Parse(ReadResult source, out PdfObject? result)
         {
             var reader = new SequenceReader<byte>(source.Buffer);
-            return (TryParse(ref reader, out result), reader.Position);
+            return (TryParse(ref reader, source.IsCompleted, out result), reader.Position);
         }
     }
 }

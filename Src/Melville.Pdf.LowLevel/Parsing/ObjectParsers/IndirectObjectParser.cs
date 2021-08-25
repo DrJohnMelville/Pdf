@@ -142,17 +142,17 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             kind = ParseResult.NotAReference;
                 
             if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out int num, out var next))
-                return (false, reader.Position);
+                return (rr.IsCompleted, reader.Sequence.Start);
             if (IsInvalidReferencePart(num, next))
                 return (true, reader.Sequence.Start);
             if (!NextTokenFinder.SkipToNextToken(ref reader))
-                return (false, reader.Position);
+                return (rr.IsCompleted, reader.Sequence.Start);
             if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out int generation, out next))
-                return (false, reader.Position);
+                return (rr.IsCompleted, reader.Sequence.Start);
             if (IsInvalidReferencePart(generation, next)) 
                 return (true, reader.Sequence.Start);
             if (!NextTokenFinder.SkipToNextToken(ref reader, out var operation)) 
-                return (false, reader.Position);
+                return (rr.IsCompleted, reader.Sequence.Start);
                 
             switch ((char) operation)
             {

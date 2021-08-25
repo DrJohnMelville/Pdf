@@ -24,7 +24,8 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             var seq = src.Buffer;
             majorVersion = minorVersion = 0;
             var reader = new SequenceReader<byte>(seq);
-            if (!reader.TryCheckToken(headerTemplate, out var hasHeader)) return (false, reader.Position);
+            if (!reader.TryCheckToken(headerTemplate, src.IsCompleted, out var hasHeader)) 
+                return (false, reader.Position);
             if (!hasHeader)
                 throw new PdfParseException("File does not begin with a PDF header");
             if (!(reader.TryRead(out var majorByte) &&

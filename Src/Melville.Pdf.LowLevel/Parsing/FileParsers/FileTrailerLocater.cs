@@ -78,7 +78,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             ReadResult source, byte[] tag, out bool validPos)
         {
             var reader = new SequenceReader<byte>(source.Buffer);
-            return !reader.TryCheckToken(tag, out validPos) ? 
+            return !reader.TryCheckToken(tag, source.IsCompleted, out validPos) ? 
                 (false, reader.Position) : 
                 (true, reader.Position);
         }

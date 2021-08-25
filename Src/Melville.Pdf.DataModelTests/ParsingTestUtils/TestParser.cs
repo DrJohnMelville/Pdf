@@ -24,7 +24,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 
         public static ParsingFileOwner AsParsingSource(this string str, 
             IIndirectObjectResolver? indirectObjectResolver =null) =>
-            AsParsingSource((str + " /%This simulates an end tag\r\n").AsExtendedAsciiBytes(), indirectObjectResolver);
+            AsParsingSource((str /*+ " /%This simulates an end tag\r\n"*/).AsExtendedAsciiBytes(), indirectObjectResolver);
         public static ParsingFileOwner AsParsingSource(this byte[] bytes, 
             IIndirectObjectResolver? indirectObjectResolver =null) => 
             new(new OneCharAtAtimeStream(bytes), new PdfCompositeObjectParser(), indirectObjectResolver);

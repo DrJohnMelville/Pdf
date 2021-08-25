@@ -22,16 +22,16 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             ReadResult source, byte[] template, out bool result)
         {
             var reader = new SequenceReader<byte>(source.Buffer);
-            return (reader.TryCheckToken(template, out result), reader.Position);
+            return (reader.TryCheckToken(template, source.IsCompleted, out result), reader.Position);
         }
 
-        public static bool TryCheckToken(
-            this ref SequenceReader<byte> input, byte[] template, out bool result)
+        public static bool TryCheckToken(this ref SequenceReader<byte> input, byte[] template, bool final,
+            out bool result)
         {
             result = false;
             foreach (var expected in template)
             {
-                if (!input.TryRead(out var actual)) return false;
+                if (!input.TryRead(out var actual)) return final;
                 if (expected != actual) return true;
             }
             result = true;
