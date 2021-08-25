@@ -42,11 +42,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         public static void RegisterObjectStreamBlock(
             this ParsingFileOwner owner, int number, long referredStream, long referredOrdinal)
         {
+            if (number == referredStream) throw new PdfParseException("A object stream may not contain itself");
             owner.IndirectResolver.AddLocationHint(number, 0,
                 async () =>
                 {
-                    var stream = (PdfStream)await owner.IndirectResolver
-                            .FindIndirect((int)referredStream, 0).DirectValue();
+                    var referredObject = await owner.IndirectResolver
+                        .FindIndirect((int)referredStream, 0).DirectValue();
+                    if (referredObject is not PdfStream stream) return PdfTokenValues.Null;
                     return await LoadObjectStream(owner, stream, number);
                 });
         }

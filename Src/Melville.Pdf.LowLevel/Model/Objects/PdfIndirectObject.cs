@@ -49,6 +49,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             accessor = value;
         void IMultableIndirectObject.SetValue(PdfObject value)
         {
+            if (value is PdfIndirectObject)
+                throw new InvalidOperationException("Double indirect references are not allowed.");
             this.value = value;
             accessor = null;
         }
