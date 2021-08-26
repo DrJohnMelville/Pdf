@@ -6,9 +6,11 @@ using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
+using Melville.Hacks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -89,21 +91,6 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
                 value >>= 8;
             }
             Debug.Assert(value == 0, "Field was not wide enough to express value");
-        }
-    }
-
-    public static class ValueTaskStripper
-    {
-        [Obsolete("This belongs in melville.Hacks")]
-        public static ValueTask AsValueTask<T>(this ValueTask<T> valueTask)
-        {
-            if (valueTask.IsCompletedSuccessfully)
-            {
-                valueTask.GetAwaiter().GetResult();
-                return default;
-            }
-
-            return new ValueTask(valueTask.AsTask());
         }
     }
 }

@@ -3,9 +3,7 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives
 {
@@ -20,7 +18,6 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
             this.inner = inner;
         }
 
-#warning -- DelegateTo needs to handle in out and ref parameters as well as obsolete attributes
         public override bool TryRead(out ReadResult result)
         {
             var succeeded = inner.TryRead(out result);
