@@ -26,6 +26,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         }
 
         [Fact]
+        public async Task MaxObjectInObjStream()
+        {
+            Assert.Contains("/Length 21", await DocWithObjectStreamWithHighObjectNumber());
+        }
+
+        [Fact]
         public async Task RoundTrip()
         {
             var doc = await (await DocWithObjectStream()).ParseDocumentAsync();
@@ -57,6 +63,16 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             builder.Add(await builder.NewObjectStream( new []{
             builder.AsIndirectReference(new PdfString("One")),
                 builder.AsIndirectReference(new PdfString("Two"))
+            }, PdfTokenValues.Null));
+            var fileAsString = await DocCreatorToString(builder);
+            return fileAsString;
+        }
+        private static async Task<string> DocWithObjectStreamWithHighObjectNumber()
+        {
+            var builder = new LowLevelDocumentCreator();
+            builder.Add(await builder.NewObjectStream( new []{
+            builder.AsIndirectReference(new PdfString("One")),
+                new PdfIndirectReference(new PdfIndirectObject(20,0, new PdfString("Two")))
             }, PdfTokenValues.Null));
             var fileAsString = await DocCreatorToString(builder);
             return fileAsString;

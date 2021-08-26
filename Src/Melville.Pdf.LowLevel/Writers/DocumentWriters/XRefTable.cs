@@ -2,22 +2,44 @@
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 {
-    public readonly struct XRefTable
+    public class XRefTable
     {
-        public XRefTableEntry[] Entries { get; }
+        private readonly int extraSlots;
+        private XRefTableEntry[] entries;
+        public XRefTableEntry[] Entries => entries;
 
-        public XRefTable(int length) : this()
+        public XRefTable(int maxObject, int extraSlots)
         {
-            Entries = new XRefTableEntry[length];
+            this.extraSlots = extraSlots;
+            entries = new XRefTableEntry[ArraySizeForMaxObject(maxObject)];
         }
 
         public void DeclareIndirectObject(int objNumber, long offset, long generation = 0) =>
-            Entries[objNumber] = XRefTableEntry.IndirectEntry(offset, generation);
+            StoreObjectEntry(objNumber, XRefTableEntry.IndirectEntry(offset, generation));
         
 
         public void DeclareObjectStreamObject(
             int objectNumber, int streamObjectNumber, int streamOrdinal) =>
-            Entries[objectNumber] = XRefTableEntry.ObjStreamEntry(streamObjectNumber, streamOrdinal);
+            StoreObjectEntry(objectNumber, XRefTableEntry.ObjStreamEntry(streamObjectNumber, streamOrdinal));
+
+        private void StoreObjectEntry(int objectNumber, XRefTableEntry item)
+        {
+            EnsureEntriesIsBigEnoughToHoldValue(objectNumber);
+            Entries[objectNumber] = item;
+        }
+
+        private void EnsureEntriesIsBigEnoughToHoldValue(int objectNumber)
+        {
+            // this is a ridiculously slow implementation, but this ought to be a fairly rare problem.  Usually
+            // an object stream will have a higher object number than the objects inside of it and thus the 
+            // default array length will work.
+            if (objectNumber >= Entries.Length)
+            {
+                Array.Resize(ref entries, ArraySizeForMaxObject(objectNumber));
+            }
+        }
+
+        private  int ArraySizeForMaxObject(int objectNumber) => objectNumber + 1 + extraSlots;
 
         public void AssembleFreeList()
         {

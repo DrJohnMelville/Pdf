@@ -74,9 +74,8 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 
         private XRefTable CreateIndexArray(PdfLowLevelDocument document, int extraSlots)
         {
-#warning -- this is worng -- the maximum object could be in an object stream
             var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
-            return new XRefTable(maxObject + 1 + extraSlots);
+            return new XRefTable(maxObject, extraSlots);
         }
     }
 }
