@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [InlineData("Fo\u1234o")]
         public void NameCanRenderInUtf8(string name)
         {
-            Assert.Equal("/"+name, new PdfName(name).ToString());
+            Assert.Equal("/" + name, new PdfName(name).ToString());
         }
 
         [Theory]
@@ -30,13 +30,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             Assert.Equal(matches, nameA.Equals(nameB));
             Assert.Equal(matches, (object)nameA.Equals(nameB));
             Assert.Equal(matches, nameA.GetHashCode() == nameB.GetHashCode());
-            
+
         }
 
 
         private static async Task<PdfName> TryParseStringToName(string source)
         {
-            return (PdfName) await Encoding.UTF8.GetBytes(source).ParseObjectAsync();
+            return (PdfName)await Encoding.UTF8.GetBytes(source).ParseObjectAsync();
         }
 
         [Theory]
@@ -47,26 +47,41 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         public async Task ParseNameSucceed(string source, string result)
         {
             var name = await TryParseStringToName(source);
-            Assert.Equal("/"+result, name!.ToString());
-            
+            Assert.Equal("/" + result, name!.ToString());
+
         }
-        
+
         [Fact]
         public async Task KnowNamesParseToConstants()
         {
-            var n1 = await TryParseStringToName("/Width ");
-            var n2 = await TryParseStringToName("/Width ");
+            var n1 = await TryParseStringToName("/Width");
+            var n2 = await TryParseStringToName("/Width");
             Assert.True(ReferenceEquals(KnownNames.Width, n1));
-            Assert.True(ReferenceEquals(n1,n2));
+            Assert.True(ReferenceEquals(n1, n2));
         }
 
         [Fact]
         public void InDebugModeThrowIfDefiningANameThatMatchesAKnownName()
         {
-            #if DEBUG
+#if DEBUG
             Assert.Throws<InvalidOperationException>(() => new PdfName("Width"));
             new PdfName("Not a known name");
-            #endif
+#endif
+        }
+
+        [Theory]
+        [InlineData("/ASCIIHexDecode", "/AHx")]
+        [InlineData("/ASCII85Decode", "/A85")]
+        [InlineData("/LZWDecode", "/LZW")]
+        [InlineData("/FlateDecode", "/FL")]
+        [InlineData("/RunLengthDecode", "/RL")]
+        [InlineData("/CCITTFaxDecode", "/CCF")]
+        [InlineData("/DCTDecode", "/DCT")]
+        public async Task IsSynonym(string preferredTerm, string synonm)
+        {
+            var preferred = await TryParseStringToName(preferredTerm);
+            var foundSynonym = await TryParseStringToName(synonm);
+            Assert.True(ReferenceEquals(preferred, foundSynonym));
         }
     }
 }

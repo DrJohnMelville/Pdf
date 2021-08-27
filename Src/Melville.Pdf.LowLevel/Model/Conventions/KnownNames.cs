@@ -27,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         // this is private internal class because KnownNames ensures that only one KnownPdfName
         // is created for each value.  This makes KnownPdfNames have object identity.  This would
         // be broken if clients could make their own KnownPdfNames
-        private sealed class KnownPdfName : PdfName
+        private class KnownPdfName : PdfName
         {
             public KnownPdfName(byte[] name) : base(name, true)
             {
@@ -39,6 +39,20 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             public override int GetHashCode() => base.GetHashCode(); // fix a spurious warning
         }
 
-        private static void AddTo(Dictionary<int, PdfName> dict, PdfName item) => dict.Add(item.GetHashCode(), item);
+        private class KnownPdfSynonym : KnownPdfName
+        {
+            private readonly PdfName preferred;
+            public override PdfName PreferredName() => preferred;
+            public KnownPdfSynonym(byte[] name, PdfName preferred) : base(name)
+            {
+                this.preferred = preferred;
+            }
+        }
+
+        private static void AddTo(Dictionary<int, PdfName> dict, PdfName item) => 
+            dict.Add(item.GetHashCode(), item);
+
+        private static void AddSynonym(Dictionary<int, PdfName> dict, PdfName item, byte[] synonym) => 
+            AddTo(dict, new KnownPdfSynonym(synonym, item));
     }
 }

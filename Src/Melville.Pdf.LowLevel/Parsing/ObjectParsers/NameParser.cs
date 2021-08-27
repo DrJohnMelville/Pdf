@@ -91,20 +91,27 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         }
 
         private static bool LookupNameByHash(
-            ref SequenceReader<byte> bits, uint hash, int length, [NotNullWhen(true)] out PdfObject? name0)
+            ref SequenceReader<byte> bits, uint hash, int length, [NotNullWhen(true)] out PdfObject? foundName)
         {
-            if (!(KnownNames.LookupName(hash, out var name) && name.Bytes.Length == length))
-            {
-                name0 = null;
-                return false;
-            }
-
-            name0 = name;
             var savedBits = bits; // need a save point if we fail.
-            if (VerifyEquality(ref bits, name.Bytes)) return true;
+            if (TryFindKnownName(ref bits, hash, length, out var lookupResult))
+            {
+                foundName = lookupResult.PreferredName();
+                return true;
+            }
+            foundName = null;
             bits = savedBits; // return to the beginning for a third pass to read the name
             return false;
         }
+
+        private static bool TryFindKnownName(
+            ref SequenceReader<byte> bits, uint hash, int length, [NotNullWhen(true)]out PdfName? lookupResult) =>
+            KnownNames.LookupName(hash, out lookupResult) && 
+            CandidateHasCorrectLength(length, lookupResult) &&
+            VerifyEquality(ref bits, lookupResult.Bytes);
+
+        private static bool CandidateHasCorrectLength(int length, PdfName lookupResult) => 
+            lookupResult.Bytes.Length == length;
 
         // we guarentee that the known names do not collide with each other, but arbitrary names
         // in a PDF file could collide with the known names, so when we get a hit on the dictionary

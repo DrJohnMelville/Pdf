@@ -32,6 +32,6 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public virtual bool Equals(PdfName? other) =>
             ((IEquatable<PdfByteArrayObject>) this).Equals(other);
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
-
+        public virtual PdfName PreferredName() => this;
     }
 }

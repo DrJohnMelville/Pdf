@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Threading;
 
 namespace Pdf.KnownNamesGenerator
 {
-    static internal class NameDictionary
+    internal static class NameDictionary
     {
-        //ToDo
-        #warning Need to handle some known PDF names abbreviations such as
-        //ASCIIHexDecode -> AHx
-        // ASCII85Decode -> A85
-        //     LZWDecode -> LZW
-        //     FlateDecode -> Fl
-        //     RunLengthDecode -> RL
-        //     CCITTFaxDecode -> CCF
-        //     DCTDecode -> DCT
-         public static (string Value, string CSharpNape)[] AddAllNames =
+        public static readonly (string preferredName, string synonym)[] Synonyms =
+        {
+            ("ASCIIHexDecode", "AHx"),
+            ("ASCII85Decode", "A85"),
+            ("LZWDecode", "LZW"),
+            ("FlateDecode", "FL"),
+            ("RunLengthDecode", "RL"),
+            ("CCITTFaxDecode", "CCF"),
+            ("DCTDecode", "DCT"),
+        };
+
+        internal static readonly (string Value, string CSharpNape)[] AddAllNames =
         {
             ("3D", "_3D"),
             ("A", "A"),
-            ("A85", "A85"),
             ("AA", "AA"),
             ("AbsoluteColorimetric", "AbsoluteColorimetric"),
             ("AC", "AC"),
@@ -36,7 +38,6 @@ namespace Pdf.KnownNamesGenerator
             ("AESV2", "AESV2"),
             ("AESV3", "AESV3"),
             ("AFRelationship", "AFRelationship"),
-            ("AHx", "AHx"),
             ("AIS", "AIS"),
             ("All", "All"),
             ("AllPages", "AllPages"),
@@ -592,7 +593,6 @@ namespace Pdf.KnownNamesGenerator
             ("RichMediaPresentation", "RichMediaPresentation"),
             ("RichMediaSettings", "RichMediaSettings"),
             ("RichMediaWindow", "RichMediaWindow"),
-            ("RL", "RL"),
             ("Role", "Role"),
             ("RO", "RO"),
             ("RoleMap", "RoleMap"),
