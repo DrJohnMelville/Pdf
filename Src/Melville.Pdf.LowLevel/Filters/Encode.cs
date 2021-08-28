@@ -16,8 +16,10 @@ namespace Melville.Pdf.LowLevel.Filters
         {
             for (var i = which; i >= 0; i--)
             {
+                var singleCodecParems = TryGetParam(parameters, i);
+                data = await CodecFactory.PredictionCodec.EncodeOnReadStream(data, singleCodecParems);
                 data = await CodecFactory.CodecFor((PdfName)algorithms[i])
-                    .EncodeOnReadStream(data, TryGetParam(parameters, i));
+                    .EncodeOnReadStream(data, singleCodecParems);
             }
             return data;
         }
@@ -31,8 +33,10 @@ namespace Melville.Pdf.LowLevel.Filters
         {
             for (var i = 0; i < which; i++)
             {
+                var singleCodecParems = TryGetParam(parameters, i);
                 data = await CodecFactory.CodecFor((PdfName)algorithms[i])
-                    .EncodeOnWriteStream(data, TryGetParam(parameters, i));
+                    .EncodeOnWriteStream(data, singleCodecParems);
+                data = await CodecFactory.PredictionCodec.EncodeOnWriteStream(data, singleCodecParems);
             }
             return data;
         }

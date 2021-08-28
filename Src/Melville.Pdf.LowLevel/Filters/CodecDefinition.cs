@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
+using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -18,7 +19,6 @@ namespace Melville.Pdf.LowLevel.Filters
         public ValueTask<Stream>  EncodeOnReadStream(Stream data, PdfObject? parameters);
         public ValueTask<Stream>  EncodeOnWriteStream(Stream data, PdfObject? parameters);
         ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters);
-
     }
 
     public class CodecDefinition: ICodecDefinition
@@ -46,25 +46,21 @@ namespace Melville.Pdf.LowLevel.Filters
 
     public static class CodecFactory
     {
+        public static readonly ICodecDefinition PredictionCodec = new PredictorCodec();
         public static ICodecDefinition CodecFor(PdfName name) => codecs[name];
         
         private static Dictionary<PdfName, ICodecDefinition> codecs = CreateDictionary();
-        private static Dictionary<PdfName, ICodecDefinition> CreateDictionary()
-        {
-            Dictionary<PdfName, ICodecDefinition> ret = new();
-            ret.Add(KnownNames.ASCIIHexDecode, 
-                ConstantCodec(new AsciiHexEncoder(), new AsciiHexDecoder()));
-            ret.Add(KnownNames.ASCII85Decode, 
-                ConstantCodec(new Ascii85Encoder(), new Ascii85Decoder()));
-            ret.Add(KnownNames.RunLengthDecode, 
-                ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()));
-            ret.Add(KnownNames.LZWDecode, new CodecDefinition(
+        private static Dictionary<PdfName, ICodecDefinition> CreateDictionary() =>
+            new()
+            {
+                { KnownNames.ASCIIHexDecode, ConstantCodec(new AsciiHexEncoder(), new AsciiHexDecoder()) },
+                { KnownNames.ASCII85Decode, ConstantCodec(new Ascii85Encoder(), new Ascii85Decoder()) },
+                { KnownNames.RunLengthDecode, ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()) },
+                { KnownNames.LZWDecode, new CodecDefinition(
                     async p => new LzwEncodeFilter(await p.EarlySwitchLength()),
-                    async p => new LzwDecodeFilter(await p.EarlySwitchLength())));
-            ret.Add(KnownNames.FlateDecode, new FlateCodecDefinition());
-            ret.Add(KnownNames.Fl, new FlateCodecDefinition());
-            return ret;
-        }
+                    async p => new LzwDecodeFilter(await p.EarlySwitchLength())) },
+                { KnownNames.FlateDecode, new FlateCodecDefinition() }
+            };
 
         private static CodecDefinition ConstantCodec(
             IStreamFilterDefinition encoder, IStreamFilterDefinition decoder) =>

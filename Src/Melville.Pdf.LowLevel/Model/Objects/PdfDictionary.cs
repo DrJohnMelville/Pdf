@@ -79,5 +79,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public static async ValueTask<PdfObject> GetOrNullAsync(this PdfDictionary dict, PdfName name) =>
             dict.TryGetValue(name, out var obj) && 
             await obj is {} definiteObj? definiteObj: PdfTokenValues.Null;
+        public static async ValueTask<long> GetOrDefaultAsync(
+            this PdfDictionary dict, PdfName name, long defaultValue) =>
+            dict.TryGetValue(name, out var obj) && 
+            await obj is PdfNumber definiteObj? definiteObj.IntValue: defaultValue;
     }
  }

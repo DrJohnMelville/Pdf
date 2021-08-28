@@ -272,7 +272,6 @@ namespace Pdf.KnownNamesGenerator
             ("FitBH", "FitBH"),
             ("FitBV", "FitBV"),
             ("FitWindow", "FitWindow"),
-            ("Fl", "Fl"),
             ("Flags", "Flags"),
             ("Flash", "Flash"),
             ("FlashVars", "FlashVars"),

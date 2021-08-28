@@ -26,7 +26,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 
     public static class TestWriterOperations
     {
-        public static async ValueTask<string> WriteToString(this PdfObject obj)
+        public static async ValueTask<string> WriteToStringAsync(this PdfObject obj)
         {
             var writer = new TestWriter();
             var objWriter = new PdfObjectWriter(writer.Writer);

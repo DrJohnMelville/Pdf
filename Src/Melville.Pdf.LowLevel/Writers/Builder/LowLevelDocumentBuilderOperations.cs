@@ -25,7 +25,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             new(
                 items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
 
-        public static ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _,
+        public static ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder? _,
             StreamDataSource data, PdfObject encoding, PdfObject? parameters = null,
             params (PdfName Name, PdfObject Value)[] items) =>
             _.NewCompressedStream(data, encoding, parameters, items.AsEnumerable());

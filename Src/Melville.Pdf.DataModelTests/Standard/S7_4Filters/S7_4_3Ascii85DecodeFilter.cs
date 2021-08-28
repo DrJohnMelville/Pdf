@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -7,7 +8,25 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
 {
-    public class S7_4_3Ascii85DecodeFilter
+    [MacroItem(@"\0\0\0\0", "z", "FourZeros")]
+    [MacroItem(@"\0", "!!", "OneZero")]
+    [MacroItem(@"\x1", "!<","OneChar")]
+    [MacroItem(@"\x1\x1", "!<E", "TwoChars")]
+    [MacroItem(@"\x1\x1\x1", "!<E3", "ThreeChars")]
+    [MacroItem(@"\x1\x1\x1\x1", "!<E3%", "FourChars")]
+    [MacroItem(@"\xA", "$3", "OneA")]
+    [MacroItem(@"\xA\xA", "$46", "TwoAs")]
+    [MacroItem(@"\xA\xA\xA", "$47+", "ThreeAs")]
+    [MacroItem(@"\xA\xA\xA\xA", "$47+I", "FourAs")]
+    [MacroItem(@"d", "A,", "OneD")]
+    [MacroItem(@"dd", "A7P", "TwoDs")]
+    [MacroItem(@"ddd", "A7T3", "ThreeDs")]
+    [MacroItem(@"dddd", "A7T4]", "FourDs")]
+    [MacroItem(@"\xFF\xFF\xFF\xFF", "s8W-!", "AllOnes")]
+    [MacroItem(@"dddd\0\0\0\0dddd", "A7T4]zA7T4]", "EmbeddedZeros")]
+    [MacroItem(@"", "", "Empty")]
+    [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\"+\"~>\", KnownNames.ASCII85Decode){}}")]
+    public partial class S7_4_3Ascii85DecodeFilter
     {
         [Theory]
         [InlineData("\0\0\0\0", "z")]
@@ -29,7 +48,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
         [InlineData("", "")]
         public async Task EncodeString(string plain, string encoded)
         {
-           await StreamTest.Encoding(KnownNames.ASCII85Decode, null, plain, encoded+"~>");
            await SpecialCases(plain, encoded);
            await SpecialCases(plain, encoded+"~>this garbage does not matter");
         }

@@ -15,7 +15,9 @@ namespace Melville.Pdf.LowLevel.Filters
             desiredFormat = Math.Min(desiredFormat, filters.Count);
             for (var i = 0; i < desiredFormat; i++)
             {
-                source = await DecodeSingleStream(source, filters[i], ComputeParameter(parameters, i));
+                var parameter = ComputeParameter(parameters, i);
+                source = await DecodeSingleStream(source, filters[i], parameter);
+                source = await CodecFactory.PredictionCodec.DecodeOnReadStream(source, parameter);
             }
             return source;
         }

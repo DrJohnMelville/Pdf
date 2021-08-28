@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.INPC;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -10,16 +11,11 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
 {
-    public class S7_4_4LzwAndFlateDecodeFilter
+    [MacroItem("Hello World.", "GhVa[c,n(/#gY0H8^RV?***28~>", "FlateDecode", "KnownNames.FlateDecode")]
+    [MacroItem("-----A---B", "(;QS2(`<Y^~>", "LzwDecode", "KnownNames.LZWDecode")]
+    [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", new PdfArray(KnownNames.ASCII85Decode, ~3~)){}}")]
+    public partial class S7_4_4LzwAndFlateDecodeFilter
     {
-        [Fact]
-        public Task FlateDecodeStreamRoundTrip() =>
-            StreamTest.Encoding(new PdfArray(KnownNames.ASCII85Decode, KnownNames.FlateDecode), null, 
-                "Hello World.", "GhVa[c,n(/#gY0H8^RV?***28~>");
-        [Fact]
-        public Task LZWDecodeStreamRoundTrip() =>
-            StreamTest.Encoding(new PdfArray(KnownNames.ASCIIHexDecode, KnownNames.LZWDecode), null, 
-                "-----A---B", "16C0A04418190A02");
 
         [Theory]
         [InlineData(10, 1)]

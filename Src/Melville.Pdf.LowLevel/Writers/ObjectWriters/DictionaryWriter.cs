@@ -14,6 +14,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         {
             writer.WriteBytes((byte)'<',(byte)'<');
             int position = 0;
+            #warning -- can eliminate the white space in dictionary for better packing.
             foreach (var item in items)
             {
                 if (position++ > 0)

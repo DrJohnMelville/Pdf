@@ -17,11 +17,11 @@ namespace Melville.Pdf.DataModelTests.Writer
         [Fact]
         public async Task WriteTokens()
         {
-            Assert.Equal("true",await PdfBoolean.True.WriteToString());
-            Assert.Equal("false",await PdfBoolean.False.WriteToString());
-            Assert.Equal("null",await PdfTokenValues.Null.WriteToString());
-            Assert.Equal("]",await PdfTokenValues.ArrayTerminator.WriteToString());
-            Assert.Equal(">>",await PdfTokenValues.DictionaryTerminator.WriteToString());
+            Assert.Equal("true",await PdfBoolean.True.WriteToStringAsync());
+            Assert.Equal("false",await PdfBoolean.False.WriteToStringAsync());
+            Assert.Equal("null",await PdfTokenValues.Null.WriteToStringAsync());
+            Assert.Equal("]",await PdfTokenValues.ArrayTerminator.WriteToStringAsync());
+            Assert.Equal(">>",await PdfTokenValues.DictionaryTerminator.WriteToStringAsync());
             
         }
         
@@ -33,7 +33,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [InlineData(@"this is a )Test", @"(this is a \)Test)")]
         public async Task WriteStrings(string source, string dest)
         {
-            Assert.Equal(dest, await new PdfString(source).WriteToString());
+            Assert.Equal(dest, await new PdfString(source).WriteToStringAsync());
         }
         [Theory]
         [InlineData("Hello", "/Hello")]
@@ -41,7 +41,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [InlineData("Hel lo", "/Hel#20lo")]
         public async Task WriteName(string source, string dest)
         {
-            Assert.Equal(dest, await new PdfName(source).WriteToString());
+            Assert.Equal(dest, await new PdfName(source).WriteToStringAsync());
         }
         [Theory]
         [InlineData(0, "0")]
@@ -49,7 +49,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [InlineData(-1234, "-1234")]
         public async Task WriteIntegers(int source, string dest)
         {
-            Assert.Equal(dest, await new PdfInteger(source).WriteToString());
+            Assert.Equal(dest, await new PdfInteger(source).WriteToStringAsync());
         }
         [Theory]
         [InlineData(0, "0")]
@@ -58,21 +58,21 @@ namespace Melville.Pdf.DataModelTests.Writer
         [InlineData(-1234.54, "-1234.54")]
         public async Task WriteDoubles(double source, string dest)
         {
-            Assert.Equal(dest, await new PdfDouble(source).WriteToString());
+            Assert.Equal(dest, await new PdfDouble(source).WriteToStringAsync());
         }
 
         [Fact]
         public async Task WriteIndirectObjectReference()
         {
             var reference = new PdfIndirectReference(new PdfIndirectObject(34, 555, PdfBoolean.False));
-            Assert.Equal("34 555 R", await reference.WriteToString());
+            Assert.Equal("34 555 R", await reference.WriteToStringAsync());
 
         }
         [Fact]
         public async Task WriteIndirectObject()
         {
             var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
-            Assert.Equal("34 555 obj false endobj\n", await reference.WriteToString());
+            Assert.Equal("34 555 obj false endobj\n", await reference.WriteToStringAsync());
         }
         [Fact]
         public async Task WriteArray()
@@ -81,7 +81,7 @@ namespace Melville.Pdf.DataModelTests.Writer
             {
                 PdfBoolean.True, PdfBoolean.False, PdfTokenValues.Null
             });
-            Assert.Equal("[true false null]", await array.WriteToString());
+            Assert.Equal("[true false null]", await array.WriteToStringAsync());
         }
         [Fact]
         public async Task WriteDictionary()
@@ -91,7 +91,7 @@ namespace Melville.Pdf.DataModelTests.Writer
                 {KnownNames.Width, new PdfInteger(20)},
                 {KnownNames.Height, new PdfInteger(40)},
             });
-            Assert.Equal("<</Width 20 /Height 40>>", await array.WriteToString());
+            Assert.Equal("<</Width 20 /Height 40>>", await array.WriteToStringAsync());
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace Melville.Pdf.DataModelTests.Writer
             {
                 {KnownNames.Length, new PdfInteger(5)},
             }, new LiteralStreamSource("Hello"));
-            Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await array.WriteToString());
+            Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await array.WriteToStringAsync());
         }
     }
 }

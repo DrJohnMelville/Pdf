@@ -41,8 +41,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                     await CreatePage(builder, pages, procset, "LZW -- "+RandomString(9270), font, KnownNames.LZWDecode),
                     await CreatePage(builder, pages, procset,"Ascii Hex", font, KnownNames.ASCIIHexDecode),
                     await CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
-                    await CreatePage(builder, pages, procset, "FlateDecode", font, KnownNames.FlateDecode),
-                    await CreatePage(builder, pages, procset, "FL", font, KnownNames.Fl),
+                    await CreatePage(builder, pages, procset, "Flate Decode", font, KnownNames.FlateDecode),
                 };
             });
         }
