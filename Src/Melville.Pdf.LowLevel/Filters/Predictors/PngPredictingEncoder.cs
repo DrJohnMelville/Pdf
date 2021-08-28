@@ -44,7 +44,7 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
 
         public PngPredictingEncoder(byte predictorByte, int strideInBits): base(strideInBits)
         {
-            this.predictorByte = predictorByte;
+            this.predictorByte = predictorByte == 5 ? (byte)1: predictorByte;
             predictor = PredictorFactory.Get(predictorByte);
         }
         
@@ -57,8 +57,15 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
                 return true;
             }
 
-            if (!source.TryRead(out byteToWrite)) return false;
-            (context, byteToWrite) = context.EncodeNext(predictor, buffer[column++], byteToWrite);
+
+            if (!source.TryRead(out var byteRead))
+            {
+                byteToWrite = 0;
+                return false;
+            }
+            (context, byteToWrite) = context.EncodeNext(predictor, buffer[column], byteRead);
+            buffer[column] = byteRead;
+            column++;
             return true;
         }
 

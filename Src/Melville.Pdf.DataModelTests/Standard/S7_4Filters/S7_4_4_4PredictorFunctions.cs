@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿//Rider reports that the usings are unneeded, it does not know the Macro expander uses it.
+using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Filters.Predictors;
@@ -9,8 +9,13 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
 {
-    [MacroItem("ABCDFabcdf", "014101010102016101010102", "Sub")]
-    [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new PdfDictionary( new Dictionary<PdfName, PdfObject>() { { KnownNames.Predictor, new PdfInteger(11) }, { KnownNames.Colors, new PdfInteger(2) }, { KnownNames.BitsPerComponent, new PdfInteger(4) }, { KnownNames.Columns, new PdfInteger(5) }})){}}")]
+    [MacroItem("ABCDFabcdf", "004142434446006162636466", "None", "10")]
+    [MacroItem("ABCDFabcdf", "014101010102016101010102", "Sub", "11")]
+    [MacroItem("ABCDFabcdf", "024142434446022020202020", "Up", "12")]
+    [MacroItem("ABCDFabcdf", "034122222324034111111111", "Average", "13")]
+    [MacroItem("ABCDFabcdf", "044101010102042001010102", "Paeth", "14")]
+    [MacroItem("ABCDFabcdf", "014101010102016101010102", "FakeOptimal", "15")]
+    [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new PdfDictionary( new Dictionary<PdfName, PdfObject>() { { KnownNames.Predictor, new PdfInteger(~3~) }, { KnownNames.Colors, new PdfInteger(2) }, { KnownNames.BitsPerComponent, new PdfInteger(4) }, { KnownNames.Columns, new PdfInteger(5) }})){}}")]
     public partial class S7_4_4_4PredictorFunctions
     {
         [Theory]
@@ -52,7 +57,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             Assert.Equal(result, new PaethPngPredictor().Predict(upperLeft, up, left));
         }
 
-        public static TheoryData<IPngPredictor> Predictors => new TheoryData<IPngPredictor>()
+        public static TheoryData<IPngPredictor> Predictors => new()
         {
             new NonePngPredictor(),
             new SubPngPredictor(),

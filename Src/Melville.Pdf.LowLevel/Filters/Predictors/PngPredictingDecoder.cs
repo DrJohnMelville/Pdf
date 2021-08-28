@@ -1,6 +1,4 @@
-﻿using System;
-using System.Buffers;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
+﻿using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors
 {
@@ -22,9 +20,11 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
                 column = 0;
                 context = new PredictorContext(0, 0);
             }
-
+            
             if (!source.TryRead(out byteToWrite)) return false;
-            (context, byteToWrite) = context.DecodeNext(predictor, buffer[column++], byteToWrite);
+            (context, byteToWrite) = context.DecodeNext(predictor, buffer[column], byteToWrite);
+            buffer[column] = byteToWrite;
+            column++;
             return true;
         }
     }
