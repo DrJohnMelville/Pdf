@@ -18,6 +18,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [InlineData("[true false null] /", 3)]
         [InlineData("[[true false] null] /", 2)]
         [InlineData("[/WIDTH /HGH /X1 /HEIGHT] /aaz", 4)]
+        [InlineData("[/WIDTH /HGH /X1 /HEIGHT]", 4)]
         public async Task ParseArray(string src, int length)
         {
             var obj = (PdfArray) await src.ParseObjectAsync();

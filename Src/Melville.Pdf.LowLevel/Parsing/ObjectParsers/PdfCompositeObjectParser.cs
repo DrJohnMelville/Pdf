@@ -30,13 +30,20 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             (ReadResult source, out IPdfObjectParser? parser)
         {
             var reader = new SequenceReader<byte>(source.Buffer);
-            if (!(reader.TryRead(out var firstByte) && reader.TryRead(out var secondByte)))
+            if (reader.TryRead(out var firstByte))
             {
-                parser = null;
-                return (false, source.Buffer.Start);
+                if (reader.TryRead(out var secondByte))
+                {
+                    parser = PickParser(firstByte, secondByte);
+                    return (true, source.Buffer.Start);
+                } else if ( source.IsCompleted && firstByte == (int)']')
+                {
+                    parser = ArrayTermination;
+                    return (true, source.Buffer.Start);
+                }
             }
-            parser = PickParser( firstByte, secondByte);
-            return (true, source.Buffer.Start);
+            parser = null;
+            return (false, source.Buffer.Start);
         }
 
         private static IPdfObjectParser? PickParser(byte firstByte, byte secondByte) =>
