@@ -27,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                 throw new InvalidOperationException("Read off end of stream.");
         }
 
-        public static bool SkipToNextToken(ref SequenceReader<byte> input)
+        public static bool SkipToNextToken(this ref SequenceReader<byte> input)
         {
             if (!SkipToNextToken(ref input, out _)) return false;
             input.Rewind(1);

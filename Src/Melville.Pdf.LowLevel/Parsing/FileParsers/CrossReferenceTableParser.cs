@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -10,7 +10,9 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
     public class CrossReferenceTableParser
     {
         private readonly IParsingReader source;
-        
+        private int firstUnspecifiedLine = 0;
+        private int line = 1;
+
         public CrossReferenceTableParser(IParsingReader source)
         {
             this.source = source;
@@ -18,83 +20,101 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
 
         public async Task Parse()
         {
-            bool shouldContinue;
-            do
+            while (!ParseNextLine(await source.ReadAsync()))
             {
-                var ret = await source.ReadAsync();
-                shouldContinue = TryReadLine(ret.Buffer) && !ret.IsCompleted;
-            } while (shouldContinue);
+            }       
         }
 
-        private bool TryReadLine(ReadOnlySequence<byte> input)
+        private bool ParseNextLine(ReadResult data)
         {
-            var reader = new SequenceReader<byte>(input);
-            var consumedPoint = input.Start;
-            while (reader.TryReadTo(out ReadOnlySequence<byte> line, (int) '\n'))
+            var reader = new SequenceReader<byte>(data.Buffer);
+            var ret = ParseNextLine(ref reader);
+            source.AdvanceTo(reader.Position, data.Buffer.End);
+            return ret;
+        }
+
+        private bool ParseNextLine(ref SequenceReader<byte> reader)
+        {
+            while (true)
             {
-                if (!ParseLine(line))
+                if (NeedAHeaderLine())
                 {
-                    source.AdvanceTo(consumedPoint);
-                    return false;
-                }
-
-                consumedPoint = reader.Position;
+                    if (IsDoneReadingTable(ref reader)) return true;
+                    if (!HandleHeaderLine(ref reader)) return false;
+                }else if (!HandelXefLine(ref reader)) return false;
             }
-            source.AdvanceTo(consumedPoint, input.End);
-            return true;
         }
+        private bool NeedAHeaderLine() => line >= firstUnspecifiedLine;
 
-        private int nextItem = 0;
-        private bool ParseLine(ReadOnlySequence<byte> line)
+        private bool IsDoneReadingTable(ref SequenceReader<byte> reader) => 
+            reader.TryPeek(out var peek) && !WholeNumberParser.IsDigit(peek);
+
+        private bool HandleHeaderLine(ref SequenceReader<byte> reader)
         {
-            var lineReader = new SequenceReader<byte>(line);
-            if (!LineHasContent(ref lineReader)) return false;
-            if (!GatherTwoNumbers(ref lineReader, out var leftNum, out var rightNum, out var delim)) 
+            var copy = reader;
+            if (!ParseHeaderLine(ref reader, out var first, out var second))
+            {
+                reader = copy;
                 return false;
-            if (HandleAsGroupHeader(delim, leftNum)) return true;
-            if (!lineReader.TryPeek(out byte operation)) return false; // empty line
-            if (operation is not ((byte) 'f' or (byte) 'n')) return false;
-            HandleObjectDeclarationLine(operation, rightNum, leftNum);
+            }
+
+            line = first;
+            firstUnspecifiedLine = first + second;
             return true;
         }
 
-        private static bool LineHasContent(ref SequenceReader<byte> lineReader) => 
-            lineReader.TryPeek(out _);
-        
-        private void HandleObjectDeclarationLine(byte operation, long rightNum, long leftNum)
+        private static bool ParseHeaderLine(ref SequenceReader<byte> reader, out int first, out int second)
+        {
+            second = 0; 
+            return WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out first, out _) &&
+                   reader.SkipToNextToken() &&
+                   WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out second, out _) &&
+                   reader.SkipToNextToken();
+        }
+
+        private bool HandelXefLine(ref SequenceReader<byte> reader)
+        {
+            if (reader.Remaining < 20) return false;
+            var (first, second, operation) = ParseXrefLine(reader);
+            reader.Advance(20);
+            HandleXrefLine(first, second, operation);
+            return true;
+        }
+
+        private (int first, int second, byte operation) ParseXrefLine(SequenceReader<byte> reader)
+        {
+            var first = GetInt(reader.UnreadSequence.Slice(0, 10));
+            var second = GetInt(reader.UnreadSequence.Slice(11, 5));
+            reader.TryPeek(17, out var operation);
+            return (first, second, operation);
+        }
+
+        private int GetInt(ReadOnlySequence<byte> slice)
+        {
+            var reader = new SequenceReader<byte>(slice);
+            var ret = 0;
+            while (reader.TryRead(out byte digit))
+            {
+                ret *= 10;
+                ret += digit - '0';
+            }
+            return ret;
+        }
+
+        private void HandleXrefLine(int first, int second, byte operation)
         {
             switch (operation)
             {
                 case (byte)'n':
-                    source.Owner.RegisterIndirectBlock(nextItem, rightNum, leftNum);
+                    source.Owner.RegisterIndirectBlock(line, second, first);
                     break;
                 case (byte)'f':
-                    source.IndirectResolver.RegistedDeletedBlock(nextItem, (int)leftNum, (int)rightNum);
+                    source.IndirectResolver.RegistedDeletedBlock(line, first, second);
                     break;
-                
+                default: throw new PdfParseException("Invalid Xref Table Operation");
             }
-            nextItem++;
-        }
 
-        private bool HandleAsGroupHeader(byte delim, long leftNum)
-        {
-            if (delim != 13) return false;
-            nextItem = (int)leftNum;
-            return true;
-        }
-
-        private static bool GatherTwoNumbers(
-            ref SequenceReader<byte> lineReader, out long leftNum, out long rightNum, out byte delim)
-        {
-            rightNum = 0;
-            if (!WholeNumberParser.TryParsePositiveWholeNumber(
-                ref lineReader, out leftNum, out delim)) return false;
-            if (WholeNumberParser.TryParsePositiveWholeNumber(ref lineReader, out rightNum, out delim))
-                return true;
-            if (delim != 0) return false;
-            delim = (byte) '\r';
-            return true;
-
+            line++;
         }
     }
 }
