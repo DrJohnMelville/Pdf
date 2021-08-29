@@ -21,6 +21,8 @@ namespace Melville.Pdf.FuzzTest
                 await ParseFile.Do(pdf);
                 Console.WriteLine("... OK");
             }
+
+            Console.WriteLine("Done");
         }
 
         private static IEnumerable<string> GatherPdfs(string cmdLineArg)
