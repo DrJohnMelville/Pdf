@@ -17,6 +17,20 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             RawItems = rawItems;
         }
 
+        public PdfDictionary(params (PdfName, PdfObject)[] items) : this(PairsToDictionary(items))
+        {
+        }
+
+        public PdfDictionary(IEnumerable<(PdfName, PdfObject)> items): this(PairsToDictionary(items))
+        {
+        }
+
+        protected static Dictionary<PdfName, PdfObject> PairsToDictionary(
+            IEnumerable<(PdfName Name, PdfObject Value)> items) =>
+            new(
+                items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
+
+
         #region Dictionary Implementation
 
         public int Count => RawItems.Count;

@@ -16,15 +16,6 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             this ILowLevelDocumentBuilder creator, PdfDictionary rootElt) =>
             creator.AddToTrailerDictionary(KnownNames.Root, creator.Add(rootElt));
 
-        public static PdfDictionary NewDictionary(this ILowLevelDocumentBuilder _, params
-            (PdfName Name, PdfObject Value)[] items) =>
-            new(PairsToDictionary(items));
-
-        private static Dictionary<PdfName, PdfObject> PairsToDictionary(
-            IEnumerable<(PdfName Name, PdfObject Value)> items) =>
-            new(
-                items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
-
         public static ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder? _,
             StreamDataSource data, PdfObject encoding, PdfObject? parameters = null,
             params (PdfName Name, PdfObject Value)[] items) =>
@@ -74,15 +65,14 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
             IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
-            return new(StreamDictionary(items, (int)streamData.Stream.Length),
-                new LiteralStreamSource(streamData.Stream));
+            return new(new LiteralStreamSource(streamData.Stream),
+                StreamDictionary(items, (int)streamData.Stream.Length));
         }
 
-        private static Dictionary<PdfName, PdfObject> StreamDictionary(
-            IEnumerable<(PdfName Name, PdfObject Value)> items, int length) =>
-            PairsToDictionary(items
+        private static IEnumerable<(PdfName Name, PdfObject Value)> StreamDictionary(
+            IEnumerable<(PdfName Name, PdfObject Value)> items, int length) => items
                 .Where(NotAnEmptyObject)
-                .Append((KnownNames.Length, new PdfInteger(length))));
+                .Append((KnownNames.Length, new PdfInteger(length)));
 
         private static bool NotAnEmptyObject((PdfName Name, PdfObject Value) arg) =>
             !(arg.Value == PdfTokenValues.Null ||
@@ -91,6 +81,6 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         public static PdfStream NewStream(this ILowLevelDocumentBuilder _, byte[] streamData, params
             (PdfName Name, PdfObject Value)[] items) =>
-            new(StreamDictionary(items, streamData.Length), new LiteralStreamSource(streamData));
+            new(new LiteralStreamSource(streamData), StreamDictionary(items, streamData.Length));
     }
 }

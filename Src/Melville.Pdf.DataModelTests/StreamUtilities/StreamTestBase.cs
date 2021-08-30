@@ -64,7 +64,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         {
             var str = await EncodedStreamAsync();
             var dispSource = new StreamDisposeSource(await str.GetEncodedStreamAsync());
-            var wrappedStream = await new PdfStream(str.RawItems, dispSource).GetDecodedStreamAsync();
+            var wrappedStream = await new PdfStream(dispSource, str.RawItems).GetDecodedStreamAsync();
             Assert.False(dispSource.IsDisposed);
             await wrappedStream.DisposeAsync();
             Assert.True(dispSource.IsDisposed);
@@ -82,7 +82,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             var inner = await EncodedStreamAsync();
             var src = new PassthroughStreamSource(
                 new OneCharAtAtimeStream(await inner.GetEncodedStreamAsync()));
-            var proxy = new PdfStream(inner.RawItems, src);
+            var proxy = new PdfStream(src, inner.RawItems);
             await VerifyDecodedStream(new OneCharAtAtimeStream(await proxy.GetDecodedStreamAsync()));
         }
         

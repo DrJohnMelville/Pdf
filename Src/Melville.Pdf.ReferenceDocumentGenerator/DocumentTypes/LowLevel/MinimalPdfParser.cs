@@ -25,13 +25,15 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                 var page = builder.AsIndirectReference();
                 var stream = builder.Add(builder.NewStream("... Page0marking operators ..."));
                 var procset = builder.Add(new PdfArray(KnownNames.PDF));
-                builder.AssignValueToReference(page, builder.NewDictionary(
-                    (KnownNames.Type, KnownNames.Page),
-                    (KnownNames.Parent, pages),
-                    (KnownNames.MediaBox, new PdfArray(
-                        new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))),
-                    (KnownNames.Contents, stream),
-                    (KnownNames.Resources, builder.NewDictionary((KnownNames.ProcSet, procset)))));
+                builder.AssignValueToReference(page, 
+                    new PdfDictionary(
+                        (KnownNames.Type, KnownNames.Page), 
+                        (KnownNames.Parent, pages), 
+                        (KnownNames.MediaBox, new PdfArray(
+                               new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))), 
+                        (KnownNames.Contents, stream), 
+                        (KnownNames.Resources, 
+                            new PdfDictionary( (KnownNames.ProcSet, procset) )) ));
                 builder.Add(page);
                 return new ValueTask<IReadOnlyList<PdfObject>>(new[] {page});
             });

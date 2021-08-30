@@ -17,11 +17,23 @@ namespace Melville.Pdf.LowLevel.Model.Objects
     {
         private IStreamDataSource source;
         
-        public PdfStream(IReadOnlyDictionary<PdfName, PdfObject> rawItems, IStreamDataSource source) :
+        public PdfStream(IStreamDataSource source, IReadOnlyDictionary<PdfName, PdfObject> rawItems) :
             base(rawItems)
         {
             this.source = source;
         }
+        
+        public PdfStream(IStreamDataSource source, params (PdfName, PdfObject)[] items) : 
+            this(source, PairsToDictionary(items))
+        {
+        }
+
+        public PdfStream(IStreamDataSource source, IEnumerable<(PdfName, PdfObject)> items): 
+            this(source, PairsToDictionary(items))
+        {
+        }
+
+        
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 

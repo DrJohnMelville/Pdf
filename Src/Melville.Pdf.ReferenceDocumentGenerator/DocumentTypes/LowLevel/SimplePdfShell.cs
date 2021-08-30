@@ -17,20 +17,11 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion((byte)major, (byte)minor);
             var catalog = builder.AsIndirectReference();
-            var outlines = builder.AsIndirectReference(builder.NewDictionary(
-                (KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
+            var outlines = builder.AsIndirectReference(new PdfDictionary((KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
             var pages = builder.AsIndirectReference();
             var pageGroup = await createPages(builder, pages);
-            builder.AssignValueToReference(pages, builder.NewDictionary(
-                (KnownNames.Type, KnownNames.Pages),
-                (KnownNames.Kids, new PdfArray(pageGroup)),
-                (KnownNames.Count, new PdfInteger(pageGroup.Count))
-                ));
-            builder.AssignValueToReference(catalog, builder.NewDictionary(
-                (KnownNames.Type, KnownNames.Catalog),
-                (KnownNames.Outlines, outlines),
-                (KnownNames.Pages, pages)
-                ));
+            builder.AssignValueToReference(pages, new PdfDictionary((KnownNames.Type, KnownNames.Pages), (KnownNames.Kids, new PdfArray(pageGroup)), (KnownNames.Count, new PdfInteger(pageGroup.Count))));
+            builder.AssignValueToReference(catalog, new PdfDictionary((KnownNames.Type, KnownNames.Catalog), (KnownNames.Outlines, outlines), (KnownNames.Pages, pages)));
 
             builder.Add(catalog);
             builder.Add(outlines);

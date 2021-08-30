@@ -42,7 +42,13 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         private async ValueTask<PdfStream> CreateReferenceStream()
         {
             return await LowLevelDocumentBuilderOperations.NewCompressedStream(
-                null, GenerateXrefStreamAsync, KnownNames.FlateDecode, PdfTokenValues.Null, DictionaryItems());
+                null, GenerateXrefStreamAsync, KnownNames.FlateDecode,
+                new PdfDictionary(
+                          (KnownNames.Predictor, new PdfInteger(12)),
+                          (KnownNames.Columns, 
+                              new PdfInteger(columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3))
+                        )
+                , DictionaryItems());
         }
         
         private IEnumerable<(PdfName, PdfObject)> DictionaryItems() =>

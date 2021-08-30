@@ -28,25 +28,25 @@ namespace Melville.Pdf.DataModelTests.Writer
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
             return await Write(builder.CreateDocument());
         }
         private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
             builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
-            builder.Add(builder.NewDictionary((KnownNames.Type, KnownNames.Page)));
+            builder.Add(new PdfDictionary((KnownNames.Type, KnownNames.Page)));
             return await Write(builder.CreateDocument());
         }
         private async Task<string> OutputTwoItemRefStream(byte majorVersion = 1, byte minorVersion = 7)
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
             builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
-            builder.Add(builder.NewDictionary((KnownNames.Type, KnownNames.Page)));
+            builder.Add(new PdfDictionary((KnownNames.Type, KnownNames.Page)));
             PdfLowLevelDocument doc = builder.CreateDocument();
             var target = new TestWriter();
             var writer = new LowLevelDocumentWriter(target.Writer);
@@ -72,7 +72,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(builder.NewDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
             return Assert.ThrowsAsync<ArgumentException>(
                 ()=> OutputSimpleDocument(majorVersion, minorVersion));
             
@@ -94,7 +94,7 @@ namespace Melville.Pdf.DataModelTests.Writer
 
         [Theory]
         [InlineData("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj\n3 0 obj <</Type /Page>> endobj")]
-        [InlineData("endobj\n4 0 obj <</Root 1 0 R /Type /XRef /W [1 1 0] /Size 5 /Filter /FlateDecode /Length 24>> stream\r\n")]
+        [InlineData("endobj\n4 0 obj <</Root 1 0 R /Type /XRef /W [1 1 0] /Size 5 /Filter /FlateDecode /DecodeParms <</Predictor 12 /Columns 2>> /Length 29>> stream\r\n")]
         [InlineData("stream\r\nxÚb")]
         public async Task RefStreamContents(string expected) => 
             Assert.Contains(expected, await OutputTwoItemRefStream());

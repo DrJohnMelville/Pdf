@@ -24,13 +24,13 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             return await SimplePdfShell.Generate(1, 7, async (builder, pages) =>
             {
                 var procset = builder.AsIndirectReference(new PdfArray(KnownNames.PDF));
-                var font = builder.AsIndirectReference(builder.NewDictionary(
-                    (KnownNames.Type, KnownNames.Font ),
-                    (KnownNames.Subtype, KnownNames.Type1),
-                    (KnownNames.Name, new PdfName("F1")),
-                    (KnownNames.BaseFont, KnownNames.Helvetica),
-                    (KnownNames.Encoding, KnownNames.MacRomanEncoding)
-                ));
+                var font = builder.AsIndirectReference(new PdfDictionary(
+                    (KnownNames.Type, KnownNames.Font ), 
+                    (KnownNames.Subtype, KnownNames.Type1), 
+                    (KnownNames.Name, new PdfName("F1")), 
+                    (KnownNames.BaseFont,
+                        KnownNames.Helvetica), 
+                    (KnownNames.Encoding, KnownNames.MacRomanEncoding)));
                 builder.Add(await builder.NewObjectStream(font, procset));
                 return new[]
                 {
@@ -63,15 +63,15 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             var stream = builder.Add(
                 await builder.NewCompressedStream($"BT\n/F1 24 Tf\n100 100 Td\n({text}) Tj\nET\n",
                     filters, parameters));
-            var page = builder.AsIndirectReference(builder.NewDictionary(
+            var page = builder.AsIndirectReference(new PdfDictionary(
                 (KnownNames.Type, KnownNames.Page),
-                (KnownNames.Parent, pages),
-                (KnownNames.MediaBox, new PdfArray(
-                    new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))),
-                (KnownNames.Contents, stream),
-                (KnownNames.Resources, builder.NewDictionary(
-                    (KnownNames.Font, builder.NewDictionary((new PdfName("F1"), font))),
-                    (KnownNames.ProcSet, procset)))));
+                (KnownNames.Parent, pages), (KnownNames.MediaBox, new PdfArray(
+                     new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))), 
+                (KnownNames.Contents, stream), 
+                (KnownNames.Resources,
+                    new PdfDictionary(
+                        (KnownNames.Font, new PdfDictionary((new PdfName("F1"), font))),
+                        (KnownNames.ProcSet, procset)))));
             builder.Add(await builder.NewObjectStream(page));
             return page;
         }

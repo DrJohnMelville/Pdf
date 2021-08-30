@@ -97,10 +97,10 @@ namespace Melville.Pdf.DataModelTests.Writer
         [Fact]
         public async Task WriteStream()
         {
-            var array = new PdfStream(new Dictionary<PdfName, PdfObject>()
+            var array = new PdfStream(new LiteralStreamSource("Hello"), new Dictionary<PdfName, PdfObject>()
             {
                 {KnownNames.Length, new PdfInteger(5)},
-            }, new LiteralStreamSource("Hello"));
+            });
             Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await array.WriteToStringAsync());
         }
     }

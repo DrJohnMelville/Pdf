@@ -40,7 +40,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             //TODO: See how much the trim helps in memory and costs in speed.
             dictionary.TrimExcess();
             return isStream ? 
-                new PdfStream(dictionary, new InlineStreamSource(source.GlobalPosition, source.Owner)) : 
+                new PdfStream(new InlineStreamSource(source.GlobalPosition, source.Owner), dictionary) : 
                 new PdfDictionary(dictionary);
         }
 
