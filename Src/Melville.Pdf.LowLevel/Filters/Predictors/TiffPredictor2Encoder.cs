@@ -15,9 +15,11 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
             // into a byte. So the minimum number of bytes to hold a line is guarentted to be an integer number of
             // groups.
             var bitsPerRow = colors * bitsPerColor * colorsPerRow;
-            var bytesPerRow = (bitsPerRow + 7) / 8;
+            var bytesPerRow = BitsToBytesRoundUp(bitsPerRow);
             return (bytesPerRow * 8) / groupSize;
         }
+
+        public static int BitsToBytesRoundUp(int bitsPerRow) => (bitsPerRow + 7) / 8;
     }
     public abstract class TiffPredictor2Filter: IStreamFilterDefinition
     {

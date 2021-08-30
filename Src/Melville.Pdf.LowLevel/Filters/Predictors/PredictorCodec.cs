@@ -45,22 +45,25 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
                     encoding);
 
         private IStreamFilterDefinition? PredictionFilter(
-            long predictor, int colors, int bitsPerCompnent, int columns, bool encoding) => predictor switch
+            long predictor, int colors, int bitsPerColor, int columns, bool encoding) => predictor switch
             {
                 NoPredictor => null,
-                TiffPredictor2 => encoding?
-                    new TiffPredictor2Encoder(colors, bitsPerCompnent, columns):
-                    new TiffPredictor2Decoder(colors, bitsPerCompnent, columns),
+                TiffPredictor2 => CreateTiffPredictor(colors, bitsPerColor, columns, encoding),
                 >= FirstPngPredictor and <= LastPngPredictor =>
-                    CreatePngFilter((byte)(predictor - FirstPngPredictor), encoding,
-                       ScanLineLengthComputer.ComputeGroupsPerRow(colors, bitsPerCompnent, columns, 8)),
+                    CreatePngPredictor(colors, bitsPerColor, columns, encoding, PredictorIndex(predictor)),
                 _ => throw new InvalidOperationException("Unknown Predictor type")
             };
 
-        private IStreamFilterDefinition? CreatePngFilter(
-            byte predictorIndex, bool encoding, long strideInBytes) =>
-            encoding
-                ? new PngPredictingEncoder(predictorIndex, (int)strideInBytes)
-                : new PngPredictingDecoder((int)strideInBytes);
+        private static byte PredictorIndex(long predictor) => (byte)(predictor - FirstPngPredictor);
+
+        private static IStreamFilterDefinition? CreateTiffPredictor(
+            int colors, int bitsPerColor, int columns, bool encoding) => encoding
+                ? new TiffPredictor2Encoder(colors, bitsPerColor, columns)
+                : new TiffPredictor2Decoder(colors, bitsPerColor, columns);
+
+        private static IStreamFilterDefinition? CreatePngPredictor(
+            int colors, int bitsPerColor, int columns, bool encoding, byte predictorIndex) => encoding
+                ? new PngPredictingEncoder(colors, bitsPerColor, columns, predictorIndex)
+                : new PngPredictingDecoder(colors, bitsPerColor, columns);
     }
 }

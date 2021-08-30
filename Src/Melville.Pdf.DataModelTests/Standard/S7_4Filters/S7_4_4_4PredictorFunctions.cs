@@ -80,6 +80,16 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             }
         }
 
+        [MacroItem("ABCDFabcdf", "0041424344466162636466", "InterlevedNone", "10")]
+        [MacroItem("ABCDFabcdf", "0141420202031D1C020203", "InterlevedSub", "11")]
+        [MacroItem("ABCDFabcdf", "0241424344466162636466", "InterlevedUp", "12")]
+        [MacroItem("ABCDFabcdf", "0341422323253F3F333335", "InterlevedAverage", "13")]
+        [MacroItem("ABCDFabcdf", "0441420202031D1C020203", "InterlevedPaeth", "14")]
+        [MacroItem("ABCDFabcdf", "0141420202031D1C020203", "InterlevedFakeOptimal", "15")]
+        [MacroCode(
+            "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new PdfDictionary( new Dictionary<PdfName, PdfObject>() { { KnownNames.Predictor, new PdfInteger(~3~) }, { KnownNames.Colors, new PdfInteger(2) }, { KnownNames.BitsPerComponent, new PdfInteger(8) }, { KnownNames.Columns, new PdfInteger(5) }})){}}")]
+        public static int InterlevePngTests = 0;
+
         // Input, HexEncoded Output, name, colors, bits per color
         [MacroItem("AAAAAAAAAAAAAAAA", "41410000000000000000414100000000", "Two8BitColors", 2,8)]
         [MacroItem("ABABABABABABABAB", "41420000000000000000414200000000", "AlternatincColors", 2,8)]

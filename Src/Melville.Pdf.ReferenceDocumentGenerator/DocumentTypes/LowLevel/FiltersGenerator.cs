@@ -41,13 +41,26 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                     await CreatePage(builder, pages, procset,"Ascii Hex", font, KnownNames.ASCIIHexDecode),
                     await CreatePage(builder, pages, procset, "Ascii 85", font, KnownNames.ASCII85Decode),
                     await CreatePage(builder, pages, procset, "Flate Decode", font, KnownNames.FlateDecode),
-                    await CreatePage(builder, pages, procset, "Flate Decode With Tiff Predictor2", font, KnownNames.FlateDecode,
-                        new PdfDictionary(
-                            (KnownNames.Colors, new PdfInteger(2)), 
-                            (KnownNames.Columns, new PdfInteger(5)),
-                            (KnownNames.Predictor, new PdfInteger(2)))),
+                    await PredictionPage(builder, pages, procset, font, "Flate Decode With Tiff Predictor 2", 2),
+                    await PredictionPage(builder, pages, procset, font, "Flate Decode With Png Predictor 10", 10),
+                    await PredictionPage(builder, pages, procset, font, "Flate Decode With Png Predictor 11", 11),
+                    await PredictionPage(builder, pages, procset, font, "Flate Decode With Png Predictor 12", 12),
+                    await PredictionPage(builder, pages, procset, font, "Flate Decode With Png Predictor 13", 13),
+                    await PredictionPage(builder, pages, procset, font, "Flate Decode With Png Predictor 14", 14),
+                    await PredictionPage(builder, pages, procset, font, "Flate Decode With Png Predictor 15", 15),
                 };
             });
+        }
+
+        private static async Task<PdfIndirectReference> PredictionPage(
+            ILowLevelDocumentCreator builder, PdfIndirectReference pages, 
+            PdfIndirectReference procset, PdfIndirectReference font, string text, int Predictor)
+        {
+            return await CreatePage(builder, pages, procset, text, font, KnownNames.FlateDecode,
+                new PdfDictionary(
+                    (KnownNames.Colors, new PdfInteger(2)), 
+                    (KnownNames.Columns, new PdfInteger(5)),
+                    (KnownNames.Predictor, new PdfInteger(Predictor))));
         }
 
         private static string RandomString(int length)
