@@ -54,6 +54,14 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             residue = 0;
             spotsAvailable = 8;
         }
+        
+        public int Flush(Span<byte> destination)
+        {
+            if (spotsAvailable >= 8) return 0;
+            WriteByte(destination);
+            return 1;
+        }
+
     }
 
     public static class BitUtilities

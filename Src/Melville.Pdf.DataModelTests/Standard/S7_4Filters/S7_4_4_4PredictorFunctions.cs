@@ -79,6 +79,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
                 }
             }
         }
-        
+
+        // Input, HexEncoded Output, name, colors, bits per color
+        [MacroItem("AAAAAAAAAAAAAAAA", "41410000000000000000414100000000", "Two8BitColors", 2,8)]
+        [MacroItem("ABABABABABABABAB", "41420000000000000000414200000000", "AlternatincColors", 2,8)]
+        [MacroItem("\x01\x23\x45\x67\x89\xAB\xCD", "01233333333333", "ThreeFourBitColors", 3,4)]
+        [MacroItem("\x01\x20\x12\x01\x20\x12\x01\x20\x01\x20\x12\x01\x20\x12\x01\x20", "01200000000000000120000000000000", "LineEndingPadsBytes", 3,4)]
+        [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new PdfDictionary( new Dictionary<PdfName, PdfObject>() { { KnownNames.Predictor, new PdfInteger(2) }, { KnownNames.Colors, new PdfInteger(~3~) }, { KnownNames.BitsPerComponent, new PdfInteger(~4~) }, { KnownNames.Columns, new PdfInteger(5) }})){}}")]
+        private static int TiffPredicter2Tests() => 9;
     }
 }

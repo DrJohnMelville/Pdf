@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
 
         protected PngPredictingFilter(int strideInBits)
         {
-            column = BitsToPaddedBytes(strideInBits);
+            column = strideInBits;
             buffer = new byte[column];
         }
 

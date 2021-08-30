@@ -6,6 +6,13 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
     {
         private byte residue;
         private int bitsRemaining;
+
+        public bool TryRead(int bits, ref SequenceReader<byte> input, out int value)
+        {
+            var ret = TryRead(bits, ref input);
+            value = ret ?? 0;
+            return ret.HasValue;
+        }
         public int? TryRead(int bits, ref SequenceReader<byte> input)
         {
             if (bits - bitsRemaining > 8 * input.Remaining) return null; 
