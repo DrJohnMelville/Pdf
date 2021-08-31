@@ -7,8 +7,11 @@ Group Model
      Melville.Pdf.LowLevel.Filters.*
 Group Writers
      Melville.Pdf.LowLevel.Writers.*
+Group Encryption
+     Melville.Pdf.LowLevel.Encryption.*
 Parser => Model
 Writers => Model
+Encryption=>Model
 
 #Everyone can use .Net
 * => System.*

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Buffers;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Standard.S7_3_3
+namespace Melville.Pdf.DataModelTests.Standard.S7_2
 {
     public class S7_2_CharacterClasses
     {
