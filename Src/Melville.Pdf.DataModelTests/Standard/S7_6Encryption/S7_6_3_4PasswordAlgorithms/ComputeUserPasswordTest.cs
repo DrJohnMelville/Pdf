@@ -1,18 +1,28 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms
 {
     public class ComputeUserPasswordTest
     {
-        // [Theory]
-        // [InlineData("",
-        //     "38ACA54678D67C003A8193381B0FA1CC101112131415161718191A1B1C1D1E1F")] // /filter /standard /v 2 /r 3 /length 128 /P-39004
-        // public void ComputeUserPasswordStream(string input, string output)
-        // {
-        //     var hash = new SecurityHandlerV3().UserPasswordHash(Array.Empty<byte>());
-        //     Assert.Equal(hash.ToString(), input);
-        // }
+        [Theory]
+        [InlineData("", true,@"<</Encrypt <</Filter/Standard/V 2/R 3/Length 128/P -3904/O 
+               <E600ECC20288AD8B0D64A929C6A83EE2517679AA0218BECEEA8B7986726A8CDB>
+            /U <38ACA54678D67C003A8193381B0FA1CC101112131415161718191A1B1C1D1E1F>>> 
+              /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF> ] >>")] 
+        [InlineData("WrongPassword", false,@"<</Encrypt <</Filter/Standard/V 2/R 3/Length 128/P -3904/O 
+               <E600ECC20288AD8B0D64A929C6A83EE2517679AA0218BECEEA8B7986726A8CDB>
+            /U <38ACA54678D67C003A8193381B0FA1CC101112131415161718191A1B1C1D1E1F>>> 
+              /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF> ] >>")] 
+        public async Task VerifyUserPasswordStream(string input, bool succeed,string trailer)
+        {
+
+            var handler = await  SecurityHandlerFactory.CreateSecurityHandler(
+                (PdfDictionary)await trailer.ParseObjectAsync());
+            Assert.Equal(succeed, handler.TryUserPassword(input));
+        }
     }
 }

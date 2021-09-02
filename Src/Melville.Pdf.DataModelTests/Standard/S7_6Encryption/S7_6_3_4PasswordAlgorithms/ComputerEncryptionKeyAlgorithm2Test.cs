@@ -29,9 +29,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
             "<4142434445464748494A4B4C4D4E4F505152535455565758595A616263646566>")]
         public async Task PadBytes(string source, string result)
         {
-            var ret = BytePadder.Pad(((PdfString)await source.ParseObjectAsync()).Bytes);
+            var ret = BytePadder.Pad(await source.PdfStringBytesAsync());
             Assert.Equal(result, Render(ret));
             
         }
+    }
+
+    public static class QuickStringParser
+    {
+        public static async ValueTask<byte[]> PdfStringBytesAsync(this string s) =>
+            ((PdfString)await s.ParseObjectAsync()).Bytes;
     }
 }

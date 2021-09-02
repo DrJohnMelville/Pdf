@@ -4,7 +4,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public class PdfParseException : Exception
     {
-        public PdfParseException(string? message) : base(message)
+        public PdfParseException(string message) : base(message)
         {
         }
     }
