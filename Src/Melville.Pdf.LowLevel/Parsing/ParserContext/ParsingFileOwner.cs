@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext
@@ -43,7 +44,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         }
 
         public IParsingReader ParsingReaderForStream(Stream s, long position) =>
-            new ParsingReader(this, PipeReader.Create(s, pipeOptions), position);
+            new ParsingReader(this, PipeReader.Create(s, pipeOptions), position, NullDecryptor.Instance);
 
         public ValueTask<Stream> RentStream(long position, long length)
         {
@@ -55,7 +56,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 
         private static readonly StreamPipeReaderOptions pipeOptions = new(leaveOpen: true);
 
-        private void ReturnReader(object item)
+        public void ReturnReader(object item)
         {
             if (item == currentReader) currentReader = null;
         }
