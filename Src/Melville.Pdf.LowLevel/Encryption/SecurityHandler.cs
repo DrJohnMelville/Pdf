@@ -38,86 +38,52 @@ namespace Melville.Pdf.LowLevel.Encryption
             {
                 (0 or 3, _) => throw new PdfSecurityException("Undocumented Algorithms are not supported"),
                 (4, _) => throw new PdfSecurityException("Default CryptFilters are not supported."),
-                (1 or 2, 2) => new SecurityHandlerV2( await EncryptionParameters.Create(trailer)),
-                (1 or 2, 3) => new SecurityHandlerV3(await EncryptionParameters.Create(trailer)),
+                (1 or 2, 2) =>  SecurityHandlerV2( await EncryptionParameters.Create(trailer)),
+                (1 or 2, 3) =>  SecurityHandlerV3(await EncryptionParameters.Create(trailer)),
                 (_, 4) => throw new PdfSecurityException(
                     "Standard Security handler V4 requires a encryption value of 4  and is unsupported."),
                 _ => throw new PdfSecurityException("Unrecognized encryption algorithm (V)")
             };
         }
+
+        private static ISecurityHandler SecurityHandlerV2(in EncryptionParameters parameters) =>
+            new SecurityHandler(parameters,
+                new EncryptionKeyComputerV2(), 
+                new ComputeUserPasswordV2());
+
+        private static ISecurityHandler SecurityHandlerV3(in EncryptionParameters parameters) =>
+            new SecurityHandler(parameters,
+                new EncryptionKeyComputerV3(),
+                new ComputeUserPasswordV3());
     }
 
-
-    public class SecurityHandlerV2 : ISecurityHandler
+    public class SecurityHandler : ISecurityHandler
     {
-        protected readonly EncryptionParameters Parameters;
-
-        public SecurityHandlerV2(EncryptionParameters parameters)
+        private readonly EncryptionParameters Parameters;
+        private readonly IEncryptionKeyComputer keyComputer;
+        private readonly IComputeUserPassword userHashComputer;
+        private byte[] encryptionKey;
+        
+        public SecurityHandler(
+            EncryptionParameters parameters, 
+            IEncryptionKeyComputer keyComputer, 
+            IComputeUserPassword userHashComputer)
         {
-            this.Parameters = parameters;
+            Parameters = parameters;
+            this.keyComputer = keyComputer;
+            this.userHashComputer = userHashComputer;
         }
 
         public bool TyyUserPassword(in Span<byte> password)
         {
-            var key = KeyComputer().ComputeKey(password, Parameters);
-            return (CompareUserHash(ComputeUserPasswordHash(key), Parameters.UserPasswordHash));
-        }
-
-        protected virtual bool CompareUserHash(in ReadOnlySpan<byte> a, in ReadOnlySpan<byte> b) => 
-            a.SequenceCompareTo(b) == 0;
-
-        protected virtual byte[] ComputeUserPasswordHash(byte[] encryptionKey)
-        {
-            var rc4 = new RC4(encryptionKey);
-            var ret = new byte[32];
-            rc4.Transform(BytePadder.PdfPasswordPaddingBytes, ret);
-            return ret;
-        }
-
-        protected virtual IEncryptionKeyComputer KeyComputer() =>
-            new EncryptionKeyComputerV2();
-    }
-    
-    public class SecurityHandlerV3 : SecurityHandlerV2
-    {
-        public SecurityHandlerV3(EncryptionParameters parameters) : base(parameters)
-        {
-        }
-
-        protected override IEncryptionKeyComputer KeyComputer() => new EncryptionKeyComputerV3();
-        protected override byte[] ComputeUserPasswordHash(byte[] encryptionKey)
-        {
-            var md5 = MD5.Create();
-            md5.AddData(BytePadder.PdfPasswordPaddingBytes);
-            md5.AddData(Parameters.IdFirstElement);
-            md5.FinalizeHash();
-            var hash = md5.Hash;
-            var rc4 = new RC4(encryptionKey);
-            rc4.TransfromInPlace(hash);
-            for (int i = 1; i <= 19; i++)
+            var key = keyComputer.ComputeKey(password, Parameters);
+            var userHash = userHashComputer.ComputeHash(key, Parameters);
+            if ((userHashComputer.CompareHashes(userHash, Parameters.UserPasswordHash)))
             {
-                var loopRc4 = new RC4(RoundKey(encryptionKey, i));
-                loopRc4.TransfromInPlace(hash);
+                encryptionKey = key;
+                return true;
             }
-
-            var ret = new byte[32];
-            hash.AsSpan().CopyTo(ret);
-            hash.AsSpan().CopyTo(ret.AsSpan(16));
-            return ret;
+            return false;
         }
-
-        private byte[] RoundKey(byte[] encryptionKey, int iteration)
-        {
-            var ret = new byte[encryptionKey.Length];
-            for (int i = 0; i < ret.Length; i++)
-            {
-                ret[i] = (byte) (encryptionKey[i] ^ iteration);
-            }
-
-            return ret;
-        }
-
-        protected override bool CompareUserHash(in ReadOnlySpan<byte> a, in ReadOnlySpan<byte> b) => 
-            base.CompareUserHash(a[..16], b[..16]);
     }
 }
