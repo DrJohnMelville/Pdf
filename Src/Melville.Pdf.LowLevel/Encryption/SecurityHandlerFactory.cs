@@ -41,11 +41,13 @@ namespace Melville.Pdf.LowLevel.Encryption
         private static ISecurityHandler SecurityHandlerV2(in EncryptionParameters parameters) =>
             new SecurityHandler(parameters,
                 new EncryptionKeyComputerV2(), 
-                new ComputeUserPasswordV2());
+                new ComputeUserPasswordV2(),
+                new Rc4DecryptorFactory());
 
         private static ISecurityHandler SecurityHandlerV3(in EncryptionParameters parameters) =>
             new SecurityHandler(parameters,
                 new EncryptionKeyComputerV3(),
-                new ComputeUserPasswordV3());
+                new ComputeUserPasswordV3(),
+                new Rc4DecryptorFactory());
     }
 }

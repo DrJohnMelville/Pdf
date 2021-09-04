@@ -57,8 +57,7 @@ namespace Melville.Pdf.LowLevel.Encryption
             md5.AddData(BytePadder.PdfPasswordPaddingBytes);
             md5.AddData(parameters.IdFirstElement);
             md5.FinalizeHash();
-            var hash = md5.Hash;
-            return hash;
+            return md5.Hash ?? throw new InvalidProgramException("Hash should exist at this point");
         }
 
         private byte[] RoundKey(ReadOnlySpan<byte> encryptionKey, int iteration)

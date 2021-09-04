@@ -25,11 +25,13 @@ namespace Melville.Pdf.LowLevel.Encryption
         public SecurityHandler(
             EncryptionParameters parameters, 
             IEncryptionKeyComputer keyComputer, 
-            IComputeUserPassword userHashComputer)
+            IComputeUserPassword userHashComputer,
+            IDecryptorFactory decryptorFactory)
         {
             this.parameters = parameters;
             this.keyComputer = keyComputer;
             this.userHashComputer = userHashComputer;
+            this.decryptorFactory = decryptorFactory;
         }
 
         private bool TyyUserPassword(in Span<byte> password)
@@ -47,9 +49,9 @@ namespace Melville.Pdf.LowLevel.Encryption
         public ValueTask TryInteactiveLogin(IPasswordSource passwordSource) => 
             TyyUserPassword(Array.Empty<byte>()) ? 
                 new ValueTask() : 
-                InnerTryInteractviceLogin(passwordSource);
+                InnerTryInteractiveLogin(passwordSource);
 
-        private async ValueTask InnerTryInteractviceLogin(IPasswordSource passwordSource)
+        private async ValueTask InnerTryInteractiveLogin(IPasswordSource passwordSource)
         {
             while (true)
             {
@@ -69,7 +71,7 @@ namespace Melville.Pdf.LowLevel.Encryption
         public IDecryptor DecryptorForObject(int objectNumber, int generationNumber)
         {
             if (encryptionKey is null)
-                throw new PdfSecurityException("No decryption key.  Call TryUserPassword before decrypting.");
+                throw new PdfSecurityException("No decryption key.  Call TryInteractiveLogin before decrypting.");
             return decryptorFactory.CreateDecryptor(encryptionKey, objectNumber, generationNumber);
         }
     }
