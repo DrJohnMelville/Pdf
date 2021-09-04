@@ -27,7 +27,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
             AsParsingSource(str.AsExtendedAsciiBytes(), indirectObjectResolver);
         public static ParsingFileOwner AsParsingSource(this byte[] bytes, 
             IIndirectObjectResolver? indirectObjectResolver =null) => 
-            new(new OneCharAtAtimeStream(bytes), new PdfCompositeObjectParser(), indirectObjectResolver);
+            new(new OneCharAtAtimeStream(bytes), null, new PdfCompositeObjectParser(), indirectObjectResolver);
         
         public static Task<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) => 
              RandomAccessFileParser.Parse(str.AsParsingSource(), sizeHint);

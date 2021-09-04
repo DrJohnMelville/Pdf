@@ -1,26 +1,25 @@
 ﻿using System;
+using System.Runtime.InteropServices.ComTypes;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption
 {
     public interface ISecurityHandler
     {
-        bool TyyUserPassword(in Span<byte> password);
         IDecryptor DecryptorForObject(int objectNumber, int generationNumber);
+        ValueTask TryInteactiveLogin(IPasswordSource passwordSource);
     }
 
-    public static class SecurityHandlerOperations
-    {
-        public static bool TryUserPassword(this ISecurityHandler handler, string password) =>
-          handler.TyyUserPassword(password.AsExtendedAsciiBytes());
-    }
 
     public class SecurityHandler : ISecurityHandler
     {
-        private readonly EncryptionParameters Parameters;
+        private readonly EncryptionParameters parameters;
         private readonly IEncryptionKeyComputer keyComputer;
         private readonly IComputeUserPassword userHashComputer;
+        private readonly IDecryptorFactory decryptorFactory;
         private byte[]? encryptionKey;
         
         public SecurityHandler(
@@ -28,16 +27,16 @@ namespace Melville.Pdf.LowLevel.Encryption
             IEncryptionKeyComputer keyComputer, 
             IComputeUserPassword userHashComputer)
         {
-            Parameters = parameters;
+            this.parameters = parameters;
             this.keyComputer = keyComputer;
             this.userHashComputer = userHashComputer;
         }
 
-        public bool TyyUserPassword(in Span<byte> password)
+        private bool TyyUserPassword(in Span<byte> password)
         {
-            var key = keyComputer.ComputeKey(password, Parameters);
-            var userHash = userHashComputer.ComputeHash(key, Parameters);
-            if ((userHashComputer.CompareHashes(userHash, Parameters.UserPasswordHash)))
+            var key = keyComputer.ComputeKey(password, parameters);
+            var userHash = userHashComputer.ComputeHash(key, parameters);
+            if ((userHashComputer.CompareHashes(userHash, parameters.UserPasswordHash)))
             {
                 encryptionKey = key;
                 return true;
@@ -45,9 +44,33 @@ namespace Melville.Pdf.LowLevel.Encryption
             return false;
         }
 
+        public ValueTask TryInteactiveLogin(IPasswordSource passwordSource) => 
+            TyyUserPassword(Array.Empty<byte>()) ? 
+                new ValueTask() : 
+                InnerTryInteractviceLogin(passwordSource);
+
+        private async ValueTask InnerTryInteractviceLogin(IPasswordSource passwordSource)
+        {
+            while (true)
+            {
+                switch (await passwordSource.GetPassword())
+                {
+                    case (null, _):
+                        throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
+                    case (_, PasswordType.Owner):
+                        throw new NotImplementedException("Pdf Owner Password is not implemented yet.");
+                    case (var s, PasswordType.User):
+                        if (TyyUserPassword(s.AsExtendedAsciiBytes())) return;
+                        break;
+                }
+            }
+        }
+
         public IDecryptor DecryptorForObject(int objectNumber, int generationNumber)
         {
-            throw new NotImplementedException();
+            if (encryptionKey is null)
+                throw new PdfSecurityException("No decryption key.  Call TryUserPassword before decrypting.");
+            return decryptorFactory.CreateDecryptor(encryptionKey, objectNumber, generationNumber);
         }
     }
 }

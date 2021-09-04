@@ -2,16 +2,20 @@
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption
 {
     public static class SecurityHandlerFactory
     {
-        public static async ValueTask<IWrapReaderForDecryption> CreateDecryptorFactory(PdfDictionary trailer)
+        public static async ValueTask<IWrapReaderForDecryption> CreateDecryptorFactory(
+            PdfDictionary trailer, IPasswordSource passwordSource)
         {
             if (await trailer.GetOrNullAsync(KnownNames.Encrypt) is not PdfDictionary dict)
                 return NullWrapReaderForDecryption.Instance;
-            return new SecurityHandlerWrapReaderForDecryption(await CreateSecurityHandler(trailer, dict));
+            var securityHandler = await CreateSecurityHandler(trailer, dict);
+            await securityHandler.TryInteactiveLogin(passwordSource);
+            return new SecurityHandlerWrapReaderForDecryption(securityHandler);
         }      
         
         public static async ValueTask<ISecurityHandler> CreateSecurityHandler(PdfDictionary trailer, PdfDictionary dict)

@@ -24,7 +24,7 @@ namespace Melville.Pdf.DataModelTests.PdfStreamHolderTest
         }
 
         private readonly ParsingFileOwner owner = 
-            new(IndexedStream(), Mock.Of<IPdfObjectParser?>(), Mock.Of<IIndirectObjectResolver?>());
+            new(IndexedStream(), Mock.Of<IPasswordSource?>(), Mock.Of<IPdfObjectParser?>(), Mock.Of<IIndirectObjectResolver?>());
 
         private SequencePosition ConfirmBytes(ReadOnlySequence<byte> seq, params byte[] values)
         {

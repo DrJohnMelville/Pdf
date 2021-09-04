@@ -32,7 +32,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             owner.IndirectResolver.AddLocationHint(number, (int)generation,
                 async () =>
                 {
-                    using var rentedReader = await owner.RentReader(offset);
+                    using var rentedReader = await owner.RentReader(offset, number, (int)generation);
                     return await rentedReader.RootObjectParser.ParseAsync(rentedReader);
                 });
         }

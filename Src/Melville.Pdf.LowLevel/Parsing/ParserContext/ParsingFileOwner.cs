@@ -17,11 +17,16 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         public IPdfObjectParser RootObjectParser { get; }
         public IIndirectObjectResolver IndirectResolver { get; }
         private IWrapReaderForDecryption wrapReaderForDecryption = NullWrapReaderForDecryption.Instance;
+        private IPasswordSource passwordSource;
 
         public ParsingFileOwner(
-            Stream source, IPdfObjectParser? rootObjectParser = null, IIndirectObjectResolver? indirectResolver = null)
+            Stream source,
+            IPasswordSource? passwordSource = null,
+            IPdfObjectParser? rootObjectParser = null, 
+            IIndirectObjectResolver? indirectResolver = null)
         {
             this.source = source;
+            this.passwordSource = passwordSource ?? new NullPasswordSource();
             RootObjectParser = rootObjectParser ?? new PdfCompositeObjectParser();
             IndirectResolver = indirectResolver ?? new IndirectObjectResolver();
             if (!source.CanSeek) throw new PdfParseException("PDF Parsing requires a seekable stream");
@@ -42,12 +47,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         {
             SeekToRentedOrigin(offset);
             var reader = ParsingReaderForStream(source, offset);
-            reader = TryWrapWithDecryptor(objectNumber, generation, reader);
             currentReader = reader;
-            return new ValueTask<IParsingReader>(reader);
+            return new ValueTask<IParsingReader>(TryWrapWithDecryptor(objectNumber, generation, reader));
+            
         }
 
-        private IParsingReader? TryWrapWithDecryptor(int objectNumber, int generation, IParsingReader reader)
+        private IParsingReader TryWrapWithDecryptor(int objectNumber, int generation, IParsingReader reader)
         {
             if (objectNumber > 0 && generation >= 0)
             {
@@ -78,7 +83,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         public async ValueTask InitializeDecryption(PdfDictionary trailerDictionary)
         {
             if (AlreadyInitializedDecryption()) return;
-            wrapReaderForDecryption = await SecurityHandlerFactory.CreateDecryptorFactory(trailerDictionary);
+            wrapReaderForDecryption = await 
+                SecurityHandlerFactory.CreateDecryptorFactory(trailerDictionary, passwordSource);
         }
 
         private bool AlreadyInitializedDecryption()
