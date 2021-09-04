@@ -8,6 +8,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.LowLevelReader.DocumentParts;
@@ -21,7 +22,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
     {
         private readonly Mock<IWaitingService> waitingService = new();
         
-        private readonly PartParser sut = new();
+        private readonly PartParser sut = new(Mock.Of<IPasswordSource>());
         [Theory]
         [InlineData(1,7)]
         [InlineData(1,3)]

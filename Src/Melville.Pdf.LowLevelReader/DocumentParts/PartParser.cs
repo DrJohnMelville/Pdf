@@ -5,6 +5,7 @@ using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevelReader.DocumentParts
 {
@@ -16,9 +17,17 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
     {
         private ViewModelVisitor generator = new();
         private List<DocumentPart> items = new();
+        private readonly IPasswordSource passwordSource;
+
+        public PartParser(IPasswordSource passwordSource)
+        {
+            this.passwordSource = passwordSource;
+        }
+
         public async Task<DocumentPart[]> ParseAsync(IFile source, IWaitingService waiting)
         {
-            PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(await source.OpenRead());
+            PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(
+                new ParsingFileOwner(await source.OpenRead(), passwordSource));
             GenerateHeaderElement(lowlevel);
             using var waitHandle = waiting.WaitBlock("Loading File", lowlevel.Objects.Count);
             foreach (var item in lowlevel.Objects.Values

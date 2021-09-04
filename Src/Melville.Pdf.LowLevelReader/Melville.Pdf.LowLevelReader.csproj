@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.5.35" />
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.5.36" />
       <PackageReference Include="Melville.WpfControls" Version="0.5.16" />
     </ItemGroup>
 

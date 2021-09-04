@@ -1,10 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Input;
 using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.MvvmDialogs;
+using Melville.MVVM.Wpf.RootWindows;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelReader.MainDisplay;
+using Melville.Pdf.LowLevelReader.PasswordDialogs;
 using Melville.Pdf.LowLevelReader.Services;
+using Melville.WpfAppFramework.HttpsServices;
 using Melville.WpfAppFramework.StartupBases;
 
 namespace Melville.Pdf.LowLevelReader.CompositionRoot
@@ -42,6 +47,11 @@ namespace Melville.Pdf.LowLevelReader.CompositionRoot
             service.Bind<Application>().ToSelf()
                 .FixResult(i=>i.ShutdownMode=ShutdownMode.OnMainWindowClose)
                 .AsSingleton();
+            service.Bind<IRootNavigationWindow>()
+                .And<Window>()
+                .To<RootNavigationWindow>()
+                .AsSingleton();
+            service.Bind<IPasswordSource>().To<PasswordQuery>();
             service.Bind<ICloseApp>().To<CloseWpfApp>();
             service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
         }
