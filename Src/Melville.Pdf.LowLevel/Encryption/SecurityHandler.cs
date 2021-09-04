@@ -10,9 +10,28 @@ namespace Melville.Pdf.LowLevel.Encryption
     public interface ISecurityHandler
     {
         IDecryptor DecryptorForObject(int objectNumber, int generationNumber);
-        ValueTask TryInteactiveLogin(IPasswordSource passwordSource);
+        bool TyySinglePassword((string?, PasswordType) password);
     }
 
+    public static class SecurityHandlerOperations
+    {
+        public static ValueTask TryInteactiveLogin(
+            this ISecurityHandler handler, IPasswordSource passwordSource) => 
+            handler.TyySinglePassword(("",PasswordType.User)) ? 
+                new ValueTask() : 
+                InnerTryInteractiveLogin(handler,passwordSource);
+
+        private static async ValueTask InnerTryInteractiveLogin(
+            ISecurityHandler handler, IPasswordSource passwordSource)
+        {
+            while (true)
+            {
+                var password = await passwordSource.GetPassword();
+                if (handler.TyySinglePassword(password)) return;
+            }
+        }
+
+    }
 
     public class SecurityHandler : ISecurityHandler
     {
@@ -45,27 +64,21 @@ namespace Melville.Pdf.LowLevel.Encryption
             }
             return false;
         }
-
-        public ValueTask TryInteactiveLogin(IPasswordSource passwordSource) => 
-            TyyUserPassword(Array.Empty<byte>()) ? 
-                new ValueTask() : 
-                InnerTryInteractiveLogin(passwordSource);
-
-        private async ValueTask InnerTryInteractiveLogin(IPasswordSource passwordSource)
+        
+        public bool TyySinglePassword((string?, PasswordType) password)
         {
-            while (true)
+            switch (password)
             {
-                switch (await passwordSource.GetPassword())
-                {
-                    case (null, _):
-                        throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
-                    case (_, PasswordType.Owner):
-                        throw new NotImplementedException("Pdf Owner Password is not implemented yet.");
-                    case (var s, PasswordType.User):
-                        if (TyyUserPassword(s.AsExtendedAsciiBytes())) return;
-                        break;
-                }
+                case (null, _):
+                    throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
+                case (_, PasswordType.Owner):
+                    throw new NotImplementedException("Pdf Owner Password is not implemented yet.");
+                case (var s, PasswordType.User):
+                    if (TyyUserPassword(s.AsExtendedAsciiBytes())) return true;
+                    break;
             }
+
+            return false;
         }
 
         public IDecryptor DecryptorForObject(int objectNumber, int generationNumber)

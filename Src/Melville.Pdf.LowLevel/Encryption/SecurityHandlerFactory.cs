@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
@@ -29,11 +30,11 @@ namespace Melville.Pdf.LowLevel.Encryption
             return (V,R)switch
             {
                 (0 or 3, _) => throw new PdfSecurityException("Undocumented Algorithms are not supported"),
-                (4, _) => throw new PdfSecurityException("Default CryptFilters are not supported."),
+                (4, _) => await SecurityHandlerV4Builder.Create(await EncryptionParameters.Create(trailer), dict),
                 (1 or 2, 2) =>  SecurityHandlerV2( await EncryptionParameters.Create(trailer)),
                 (1 or 2, 3) =>  SecurityHandlerV3(await EncryptionParameters.Create(trailer)),
                 (_, 4) => throw new PdfSecurityException(
-                    "Standard Security handler V4 requires a encryption value of 4  and is unsupported."),
+                    "Standard Security handler V4 requires a encryption value of 4."),
                 _ => throw new PdfSecurityException("Unrecognized encryption algorithm (V)")
             };
         }
@@ -49,5 +50,6 @@ namespace Melville.Pdf.LowLevel.Encryption
                 new EncryptionKeyComputerV3(),
                 new ComputeUserPasswordV3(),
                 new Rc4DecryptorFactory());
+
     }
 }

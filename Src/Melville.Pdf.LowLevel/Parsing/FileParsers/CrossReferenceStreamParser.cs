@@ -20,16 +20,18 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
             {
                 xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context);
             }
-            if (!(xRefStreamAsPdfObject is PdfStream stream))
+            if (!(xRefStreamAsPdfObject is PdfStream crossRefPdfStream))
                 throw new PdfParseException("Object pointed to by StartXref is not a stream");
-            await owner.InitializeDecryption(stream);
-            await using var decodedStream = await stream.GetDecodedStreamAsync(); 
+            await using (var decodedStream = await crossRefPdfStream.GetDecodedStreamAsync())
+            {
                 await new ParseXRefStream(
-                await stream[KnownNames.W], 
-                await stream.GetOrNullAsync(KnownNames.Index), 
-                decodedStream, owner
+                    await crossRefPdfStream[KnownNames.W], 
+                    await crossRefPdfStream.GetOrNullAsync(KnownNames.Index), 
+                    decodedStream, owner
                 ).Parse();
-            return stream;
+            }
+            await owner.InitializeDecryption(crossRefPdfStream);
+            return crossRefPdfStream;
         }
 
         private static bool IsDigit(byte b) => b is >= (byte)'0' and <= (byte)'9';

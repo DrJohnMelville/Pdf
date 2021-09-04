@@ -31,7 +31,6 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 trailerDictionary = await CrossReferenceStreamParser.Read(source, xrefPosition);
             }
 
-
             if (trailerDictionary.TryGetValue(KnownNames.Prev, out var prev) && (await prev) is PdfNumber offset)
             {
                 await XrefAndTrailer(source, offset.IntValue);
