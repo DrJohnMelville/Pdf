@@ -6,15 +6,7 @@ namespace Performance.Playground.Writers
 {
     public class Adler32
     {
-        private byte[] data;
-        public Adler32()
-        {
-            data = new byte[20000];
-            for (int i = 0; i < 20000; i++)
-            {
-                data[i] = (byte) i;
-            }
-        }
+        private byte[] data = Buffers.IncrementedBuffer(20000);
 
         [Benchmark()]
         public void Fast() => new Adler32Computer(1).AddData(data);

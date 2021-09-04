@@ -20,7 +20,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
            /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF>] >>")]
         public async Task CreateSecurityHandler(string trailer)
         { 
-            await  SecurityHandlerFactory.CreateSecurityHandler((PdfDictionary)await trailer.ParseObjectAsync());
+            await  SecurityHandlerFactory.CreateDecryptorFactory((PdfDictionary)await trailer.ParseObjectAsync());
             // test is for absence of an exception
         }
         [Theory]
@@ -44,7 +44,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
         {
             var dict = (PdfDictionary)await trailer.ParseObjectAsync();
             await Assert.ThrowsAsync<PdfSecurityException>(
-                ()=> SecurityHandlerFactory.CreateSecurityHandler(dict).AsTask());
+                ()=> SecurityHandlerFactory.CreateDecryptorFactory(dict).AsTask());
         }
         
         // test with default key length of 40

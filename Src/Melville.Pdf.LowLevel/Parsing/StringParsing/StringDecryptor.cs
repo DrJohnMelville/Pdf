@@ -19,7 +19,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             var ret = await inner.ParseAsync(source);
             if (ret is PdfString pdfString)
             {
-                source.Decryptor.DecryptStringInPlace(pdfString.Bytes);
+                source.Decryptor().DecryptStringInPlace(pdfString.Bytes);
             }
 
             return ret;

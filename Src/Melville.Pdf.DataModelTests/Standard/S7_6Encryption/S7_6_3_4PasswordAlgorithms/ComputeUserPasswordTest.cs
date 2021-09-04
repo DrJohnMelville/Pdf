@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
 
@@ -19,9 +20,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
               /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF> ] >>")] 
         public async Task VerifyUserPasswordStream(string input, bool succeed,string trailer)
         {
-
+            var tDict = (PdfDictionary)await trailer.ParseObjectAsync();
             var handler = await  SecurityHandlerFactory.CreateSecurityHandler(
-                (PdfDictionary)await trailer.ParseObjectAsync());
+                tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
             Assert.Equal(succeed, handler.TryUserPassword(input));
         }
     }

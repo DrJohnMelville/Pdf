@@ -41,7 +41,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             dictionary.TrimExcess();
             return isStream ? 
                 new PdfStream(
-                    new InlineStreamSource(source.GlobalPosition, source.Owner, source.Decryptor),
+                    new InlineStreamSource(source.GlobalPosition, source.Owner, source.Decryptor()),
                     dictionary) : 
                 new PdfDictionary(dictionary);
         }

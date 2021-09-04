@@ -2,25 +2,23 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Filters.Decryptors;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.LowLevel.Writers.Builder;
-using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
 {
-    public class DecryptionInterceptTests
+    public partial class DecryptionInterceptTests
     {
         [Fact]
         public async Task LoadDecodedString()
         {
             var source = new MemoryStream("(AbCd)".AsExtendedAsciiBytes());
-            var reader = new ParsingReader(null!, PipeReader.Create(source), 0,
-                new DecryptorFake());
+            var reader = new ConstDecryptor(new ParsingReader(null!, PipeReader.Create(source), 0));
             Assert.Equal("abcd", (await new PdfCompositeObjectParser().ParseAsync(reader)).ToString());
             
         }
@@ -28,8 +26,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         public async Task LoadDecodedStream()
         {
             var source = new MemoryStream("<</Length 4>> stream\r\nABCD endstream".AsExtendedAsciiBytes());
-            var reader = new ParsingReader(new ParsingFileOwner(new MemoryStream()), PipeReader.Create(source), 0,
-                new DecryptorFake());
+            var reader = new ConstDecryptor(
+                new ParsingReader(new ParsingFileOwner(new MemoryStream()), PipeReader.Create(source), 0));
             var str = (PdfStream)await new PdfCompositeObjectParser().ParseAsync(reader);
             var output = await new StreamReader(await str.GetEncodedStreamAsync()).ReadToEndAsync();
             Assert.Equal("Decoded", output);
@@ -46,6 +44,18 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             }
 
             public Stream WrapRawStream(Stream input) => new MemoryStream("Decoded".AsExtendedAsciiBytes());
+        }
+        
+        private partial class ConstDecryptor: IParsingReader
+        {
+            [DelegateTo] private readonly IParsingReader reader;
+
+            public ConstDecryptor(IParsingReader reader)
+            {
+                this.reader = reader;
+            }
+
+            public IDecryptor Decryptor() => new DecryptorFake();
         }
 
     }

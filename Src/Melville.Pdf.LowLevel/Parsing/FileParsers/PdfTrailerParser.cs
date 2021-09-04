@@ -22,7 +22,15 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers
                 trailerDictionary = await ReadSingleRefTrailerBlock(context);
             }
 
-            trailerDictionary ??= await CrossReferenceStreamParser.Read(source, xrefPosition);
+            if (trailerDictionary != null)
+            {
+                await source.InitializeDecryption(trailerDictionary);
+            }
+            else
+            {
+                trailerDictionary = await CrossReferenceStreamParser.Read(source, xrefPosition);
+            }
+
 
             if (trailerDictionary.TryGetValue(KnownNames.Prev, out var prev) && (await prev) is PdfNumber offset)
             {

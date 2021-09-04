@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Buffers;
 using System.IO.Pipelines;
-using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Filters.Decryptors;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 {
     public interface IParsingReader : IDisposable
     {
-        IDecryptor Decryptor { get; }
         long GlobalPosition { get; }
         long Position { get; }
         IPdfObjectParser RootObjectParser { get; }
@@ -38,6 +35,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 
         PipeReader AsPipeReader();
         ValueTask AdvanceToPositionAsync(long targetPosition);
+        IDecryptor Decryptor();
     }
 
     public class ParsingReader : CountingPipeReader, IParsingReader
@@ -46,16 +44,15 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         public long GlobalPosition => lastSeek + Position;
         public IPdfObjectParser RootObjectParser => Owner.RootObjectParser;
         public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;
-        public IDecryptor Decryptor { get; }
+        public IDecryptor Decryptor ()=> NullDecryptor.Instance;
 
         public ParsingFileOwner Owner { get; }
 
         public ParsingReader(
-            ParsingFileOwner owner, PipeReader reader, long lastSeek, IDecryptor decryptor) :
+            ParsingFileOwner owner, PipeReader reader, long lastSeek) :
             base(reader)
         {
             this.lastSeek = lastSeek;
-            Decryptor = decryptor;
             Owner = owner;
         }
 

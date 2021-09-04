@@ -1,11 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Filters.Decryptors;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3

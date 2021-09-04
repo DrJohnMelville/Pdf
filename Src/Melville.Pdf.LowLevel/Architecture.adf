@@ -1,17 +1,15 @@
 ﻿#Layering
 Group Parser
      Melville.Pdf.LowLevel.Parsing.*
+     Melville.Pdf.LowLevel.Encryption.*
 Group Model
      Melville.Pdf.LowLevel.Model.*
      Melville.Pdf.LowLevel.Visitors.*
      Melville.Pdf.LowLevel.Filters.*
 Group Writers
      Melville.Pdf.LowLevel.Writers.*
-Group Encryption
-     Melville.Pdf.LowLevel.Encryption.*
 Parser => Model
 Writers => Model
-Encryption=>Model
 
 #Everyone can use .Net
 * => System.*

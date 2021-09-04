@@ -1,27 +1,16 @@
 ﻿using System;
 using System.IO;
 
-namespace Melville.Pdf.LowLevel.Filters.Decryptors
+namespace Melville.Pdf.LowLevel.Parsing.Decryptors
 {
-    public interface IDecryptorFactory
-    {
-        IDecryptor CreateFor(int objectNumber, int generationNumber);
-    }
-
     public interface IDecryptor
     {
+#warning this will not work with AES, which pads strings
         void DecryptStringInPlace(in Span<byte> input);
         Stream WrapRawStream(Stream input);
     }
-
-    public class NullDecryptorFactory : IDecryptorFactory
-    {
-        public static NullDecryptorFactory Instance = new();
-
-        private NullDecryptorFactory() { }
-
-        public IDecryptor CreateFor(int objectNumber, int generationNumber) => NullDecryptor.Instance;
-    }
+    
+    
     public class NullDecryptor : IDecryptor
     {
         public static NullDecryptor Instance = new();
@@ -32,4 +21,5 @@ namespace Melville.Pdf.LowLevel.Filters.Decryptors
         }
         public Stream WrapRawStream(Stream input) => input;
     }
+
 }

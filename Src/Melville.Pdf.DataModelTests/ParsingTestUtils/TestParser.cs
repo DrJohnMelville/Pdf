@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Filters.Decryptors;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
