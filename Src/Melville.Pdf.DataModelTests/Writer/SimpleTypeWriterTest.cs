@@ -91,7 +91,7 @@ namespace Melville.Pdf.DataModelTests.Writer
                 {KnownNames.Width, new PdfInteger(20)},
                 {KnownNames.Height, new PdfInteger(40)},
             });
-            Assert.Equal("<</Width 20 /Height 40>>", await array.WriteToStringAsync());
+            Assert.Equal("<</Width 20/Height 40>>", await array.WriteToStringAsync());
         }
 
         [Fact]

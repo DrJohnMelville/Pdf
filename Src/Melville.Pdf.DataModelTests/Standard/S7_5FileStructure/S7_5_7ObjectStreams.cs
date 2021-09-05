@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
     public class S7_5_7ObjectStreams
     {
         [Theory]
-        [InlineData("/Type /ObjStm")]
+        [InlineData("/Type/ObjStm")]
         [InlineData("/N 2")]
         [InlineData("/First 8")]
         [InlineData("1 0 2 6 (One)\n(Two)")]

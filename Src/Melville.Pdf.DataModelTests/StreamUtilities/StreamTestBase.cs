@@ -41,12 +41,12 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 
 
         private string SimulateStreamOutput() => 
-            $"<</Filter {compression}{RenderParams(parameters)} /Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
+            $"<</Filter{compression}{RenderParams(parameters)}/Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
 
         private static string RenderParams(PdfObject? parameters)
         {
             if (parameters is not PdfDictionary dict) return "";
-            return " /DecodeParms <<"+string.Join(" ", dict.RawItems.Select(i => $"{i.Key} {i.Value}"))+">>";
+            return "/DecodeParms<<"+string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}"))+">>";
         }
 
         [Fact]

@@ -79,22 +79,22 @@ namespace Melville.Pdf.DataModelTests.Writer
         }
 
         [Theory]
-        [InlineData("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj")]
+        [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj")]
         [InlineData("endobj\nxref\n0 2\n0000000000 00000 f\r\n0000000042 00000 n\r\n")]
-        [InlineData("n\r\ntrailer\n<</Root 1 0 R /Size 2>>\nstartxref\n76\n%%EOF")]
+        [InlineData("n\r\ntrailer\n<</Root 1 0 R/Size 2>>\nstartxref\n75\n%%EOF")]
         public async Task SimpleDocumentContents(string expected) => 
             Assert.Contains(expected, await OutputSimpleDocument());
 
         [Theory]
-        [InlineData("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj\n3 0 obj <</Type /Page>> endobj")]
-        [InlineData("endobj\nxref\n0 4\n0000000002 00000 f\r\n0000000042 00000 n\r\n0000000000 00000 f\r\n0000000076 00000 n\r\n")]
-        [InlineData("n\r\ntrailer\n<</Root 1 0 R /Size 4>>\nstartxref\n107\n%%EOF")]
+        [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
+        [InlineData("endobj\nxref\n0 4\n0000000002 00000 f\r\n0000000042 00000 n\r\n0000000000 00000 f\r\n0000000075 00000 n\r\n")]
+        [InlineData("n\r\ntrailer\n<</Root 1 0 R/Size 4>>\nstartxref\n105\n%%EOF")]
         public async Task TwoItemDocumentContents(string expected) => 
             Assert.Contains(expected, await OutputTwoItemDocument());
 
         [Theory]
-        [InlineData("Melville.Pdf\n1 0 obj <</Type /Catalog>> endobj\n3 0 obj <</Type /Page>> endobj")]
-        [InlineData("endobj\n4 0 obj <</Root 1 0 R /Type /XRef /W [1 1 0] /Size 5 /Filter /FlateDecode /DecodeParms <</Predictor 12 /Columns 2>> /Length 29>> stream\r\n")]
+        [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
+        [InlineData("endobj\n4 0 obj <</Root 1 0 R/Type/XRef/W[1 1 0]/Size 5/Filter/FlateDecode/DecodeParms<</Predictor 12/Columns 2>>/Length 29>> stream\r\n")]
         [InlineData("stream\r\nxÚb")]
         public async Task RefStreamContents(string expected) => 
             Assert.Contains(expected, await OutputTwoItemRefStream());
