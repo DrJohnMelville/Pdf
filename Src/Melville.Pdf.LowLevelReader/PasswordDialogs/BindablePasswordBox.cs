@@ -31,8 +31,8 @@ namespace Melville.Pdf.LowLevelReader.PasswordDialogs
 
         public string Password
         {
-            get { return GetValue(PasswordProperty) as string; }
-            set { SetValue(PasswordProperty, value); }
+            get => (string) GetValue(PasswordProperty);
+            set => SetValue(PasswordProperty, value);
         }
 
         private static void OnPasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs eventArgs)
