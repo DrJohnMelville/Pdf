@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -42,9 +43,14 @@ namespace Melville.Pdf.LowLevel.Encryption
         //to GC and computation to find a specific key.  We put this off as long as we can by
         //implementing IDecryptor ourself, and then genenrating the real IDecryptor just in time
         //for any operations.  I could cache the decryptor, but do not do that right now.
-        [DelegateTo(true)]
-        private IDecryptor CreateDecryptor() => 
-            handler.DecryptorForObject(objectNumber, generationNumber);
+        private IDecryptor CreateDecryptor(PdfObject target) => 
+            handler.DecryptorForObject(objectNumber, generationNumber, target);
+
+        public void DecryptStringInPlace(PdfString input) =>
+            CreateDecryptor(input).DecryptStringInPlace(input);
+
+        public Stream WrapRawStream(Stream input, PdfStream targetStream) =>
+            CreateDecryptor(targetStream).WrapRawStream(input, targetStream);
     }
 
 }

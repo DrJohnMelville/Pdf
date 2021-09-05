@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -9,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Encryption
 {
     public interface ISecurityHandler
     {
-        IDecryptor DecryptorForObject(int objectNumber, int generationNumber);
+        IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target);
         bool TyySinglePassword((string?, PasswordType) password);
     }
 
@@ -81,7 +82,7 @@ namespace Melville.Pdf.LowLevel.Encryption
             return false;
         }
 
-        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber)
+        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target)
         {
             if (encryptionKey is null)
                 throw new PdfSecurityException("No decryption key.  Call TryInteractiveLogin before decrypting.");

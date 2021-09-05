@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 {
     public interface IStreamDataSource
     {
-        ValueTask<Stream> OpenRawStream(long streamLength);
+        ValueTask<Stream> OpenRawStream(long streamLength, PdfStream stream);
     }
     
     public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
@@ -39,7 +39,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public async ValueTask<Stream> GetEncodedStreamAsync()
         {
-            return await source.OpenRawStream(await DeclaredLengthAsync());
+            return await source.OpenRawStream(await DeclaredLengthAsync(), this);
         }
 
         public async ValueTask<long> DeclaredLengthAsync() => 

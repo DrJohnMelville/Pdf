@@ -43,7 +43,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
                 } 
             }
 
-            public Stream WrapRawStream(Stream input) => new MemoryStream("Decoded".AsExtendedAsciiBytes());
+            public Stream WrapRawStream(Stream input, PdfStream targetStream) => 
+                new MemoryStream("Decoded".AsExtendedAsciiBytes());
         }
         
         private partial class ConstDecryptor: IParsingReader

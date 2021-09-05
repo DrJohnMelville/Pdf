@@ -23,10 +23,41 @@ namespace Melville.Pdf.LowLevel.Encryption
             defaultStreamHandler = handlers[defStreamHandlerName];
         }
 
-        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber)
+        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target)
         {
-            #warning Needs to acutally pick the right filter.
-            return defaultStreamHandler.DecryptorForObject(objectNumber, generationNumber);
+            return PickHandler(target).DecryptorForObject(objectNumber, generationNumber, target);
+        }
+
+        private ISecurityHandler PickHandler(PdfObject pdfObject) => pdfObject switch
+        {
+           PdfString => defaultStringHandler,
+           PdfStream stream => HandlerForStream(stream),
+           _=> throw new ArgumentException("Only strings and streams can be decrypted.")
+        };
+
+        private ISecurityHandler HandlerForStream(PdfStream stream)
+        {
+            #warning need to tesr a stream with a crypt filter.
+            var namedFilter = cryptFilterName(stream).GetAwaiter().GetResult();
+            return (namedFilter is not null && handlers.TryGetValue(namedFilter, out var handler))
+                ? handler
+                : defaultStreamHandler;
+        }
+
+        private async ValueTask<PdfName?> cryptFilterName(PdfStream stream)
+        {
+            var filters = (await stream[KnownNames.Filter]).AsList();
+            var filterParams = (await stream[KnownNames.DecodeParms]).AsList();
+            for (int i = 0; i < filters.Count; i++)
+            {
+                if ((await filters[i].DirectValue()) == KnownNames.Crypt && i < filterParams.Count)
+                {
+                    var paramDict = (PdfDictionary) (await filterParams[i].DirectValue());
+                    return await paramDict.GetOrNullAsync(KnownNames.Name) as PdfName;
+                }
+            }
+
+            return null;
         }
 
         public bool TyySinglePassword((string?, PasswordType) password)
@@ -34,48 +65,11 @@ namespace Melville.Pdf.LowLevel.Encryption
             return handlers.Values.All(i => i.TyySinglePassword(password));
         }
     }
-    
-    public static class SecurityHandlerV4Builder
-    {
-        
-        public static async ValueTask<SecurityHandlerV4> Create(
-            EncryptionParameters encryptionParameters, PdfDictionary encryptionDictionary)
-        {
-            var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF);
-            var finalDictionary = new Dictionary<PdfName, ISecurityHandler>();
-            finalDictionary.Add(KnownNames.Identity, new NullSecurityHandler());
-            foreach (var entry in cfd)
-            {
-                var cryptDictionary = (PdfDictionary)await entry.Value;
-                var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM);
-                var length = await cryptDictionary.GetAsync<PdfNumber>(KnownNames.Length);
-                finalDictionary.Add(entry.Key, CreateSubSecurityHandler(encryptionParameters, cfm, length));
-            }
 
-            return new SecurityHandlerV4(
-                finalDictionary,
-                await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity),
-                await encryptionDictionary.GetOrDefaultAsync(KnownNames.StmF, KnownNames.Identity));
-        }
-
-        private static ISecurityHandler CreateSubSecurityHandler(
-            EncryptionParameters parameters, PdfName cfm, PdfNumber length)
-        {
-            return cfm switch
-            {
-                var i when i == KnownNames.V2 =>
-                    new SecurityHandler(parameters,
-                        new EncryptionKeyComputerV3(),
-                        new ComputeUserPasswordV3(),
-                        new Rc4DecryptorFactory()),
-                _ => throw new PdfSecurityException("Unknown Security Handler Type")
-            };
-        }
-    }
-    
     public class NullSecurityHandler: ISecurityHandler
     {
-        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber) => NullDecryptor.Instance;
+        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target) =>
+            NullDecryptor.Instance;
 
         public bool TyySinglePassword((string?, PasswordType) password) => true;
     }

@@ -20,7 +20,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             this.decryptor = decryptor;
         }
 
-        public async ValueTask<Stream> OpenRawStream(long streamLength) =>
-            decryptor.WrapRawStream(await parsingFileOwner.RentStream(sourceFilePosition, streamLength));
+        public async ValueTask<Stream> OpenRawStream(long streamLength, PdfStream stream) =>
+            decryptor.WrapRawStream(
+                await parsingFileOwner.RentStream(sourceFilePosition, streamLength), stream);
     }
 }

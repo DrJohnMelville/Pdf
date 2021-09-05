@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Parsing.Decryptors
     public interface IDecryptor
     {
         void DecryptStringInPlace(PdfString input);
-        Stream WrapRawStream(Stream input);
+        Stream WrapRawStream(Stream input, PdfStream targetStream);
     }
     
     
@@ -19,7 +19,7 @@ namespace Melville.Pdf.LowLevel.Parsing.Decryptors
         {
             ; // do nothing
         }
-        public Stream WrapRawStream(Stream input) => input;
+        public Stream WrapRawStream(Stream input, PdfStream targetStream) => input;
     }
 
 }

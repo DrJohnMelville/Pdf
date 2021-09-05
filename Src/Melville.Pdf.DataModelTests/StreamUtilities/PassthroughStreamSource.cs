@@ -13,6 +13,6 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             this.data = data;
         }
 
-        public ValueTask<Stream> OpenRawStream(long streamLength) => new(data);
+        public ValueTask<Stream> OpenRawStream(long streamLength, PdfStream stream) => new(data);
     }
 }
