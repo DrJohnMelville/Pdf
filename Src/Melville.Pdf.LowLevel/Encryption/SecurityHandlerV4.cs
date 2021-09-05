@@ -46,8 +46,8 @@ namespace Melville.Pdf.LowLevel.Encryption
 
         private async ValueTask<PdfName?> cryptFilterName(PdfStream stream)
         {
-            var filters = (await stream[KnownNames.Filter]).AsList();
-            var filterParams = (await stream[KnownNames.DecodeParms]).AsList();
+            var filters = (await stream.GetOrNullAsync(KnownNames.Filter)).AsList();
+            var filterParams = (await stream.GetOrNullAsync(KnownNames.DecodeParms)).AsList();
             for (int i = 0; i < filters.Count; i++)
             {
                 if ((await filters[i].DirectValue()) == KnownNames.Crypt && i < filterParams.Count)
