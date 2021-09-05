@@ -35,11 +35,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         
         private class DecryptorFake: IDecryptor
         {
-            public void DecryptStringInPlace(in Span<byte> input)
+            public void DecryptStringInPlace(PdfString input)
             {
-                for (int i = 0; i < input.Length; i++)
+                for (int i = 0; i < input.Bytes.Length; i++)
                 {
-                    input[i] |= 0x20;
+                    input.Bytes[i] |= 0x20;
                 } 
             }
 

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Parsing.Decryptors
 {
     public interface IDecryptor
     {
-#warning this will not work with AES, which pads strings
-        void DecryptStringInPlace(in Span<byte> input);
+        void DecryptStringInPlace(PdfString input);
         Stream WrapRawStream(Stream input);
     }
     
@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Parsing.Decryptors
     {
         public static NullDecryptor Instance = new();
         private NullDecryptor(){}
-        public void DecryptStringInPlace(in Span<byte> input)
+        public void DecryptStringInPlace(PdfString input)
         {
             ; // do nothing
         }

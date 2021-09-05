@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Melville.Pdf.LowLevel.Encryption.Cryptography;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 
 namespace Melville.Pdf.LowLevel.Encryption
@@ -14,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Encryption
             rc4 = new RC4(key);
         }
         
-        public void DecryptStringInPlace(in Span<byte> input) => rc4.TransfromInPlace(input);
+        public void DecryptStringInPlace(PdfString input) => rc4.TransfromInPlace(input.Bytes);
         public Stream WrapRawStream(Stream input) => new Rc4Stream(input, rc4);
     }
 
