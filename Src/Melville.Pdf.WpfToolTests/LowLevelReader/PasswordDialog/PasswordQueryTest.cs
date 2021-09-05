@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 using Melville.Hacks;
 using Melville.MVVM.Wpf.MvvmDialogs;
+using Melville.MVVM.Wpf.RunOnWindowThreads;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelReader.PasswordDialogs;
 using Moq;
@@ -11,12 +14,17 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader.PasswordDialog
     public class PasswordQueryTest
     {
         private readonly Mock<IMvvmDialog> dlgMock = new();
-        private readonly Mock<IStaWorker> staWorkerMock = new();
         private readonly PasswordQuery sut;
 
         public PasswordQueryTest()
         {
-            sut = new PasswordQuery(dlgMock.Object, staWorkerMock.Object);
+            sut = new PasswordQuery(dlgMock.Object, new RunOnWindowThreadStub());
+        }
+
+        private class RunOnWindowThreadStub : IRunOnWindowThread
+        {
+            public void Run(Action action, DispatcherPriority priority = DispatcherPriority.Send) => action();
+            public T Run<T>(Func<T> action, DispatcherPriority priority = DispatcherPriority.Send) => action();
         }
 
         [Fact]
