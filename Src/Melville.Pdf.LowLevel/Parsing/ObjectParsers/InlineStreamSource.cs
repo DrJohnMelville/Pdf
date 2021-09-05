@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -20,8 +21,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             this.decryptor = decryptor;
         }
 
-        public async ValueTask<Stream> OpenRawStream(long streamLength, PdfStream stream) =>
-            decryptor.WrapRawStream(
-                await parsingFileOwner.RentStream(sourceFilePosition, streamLength), stream);
+        public async ValueTask<Stream> OpenRawStream(long streamLength, PdfStream stream)
+        {
+            var source = await parsingFileOwner.RentStream(sourceFilePosition, streamLength);
+            return await ShouldDecrypt(stream)?decryptor.WrapRawStream(source, stream): source;
+        }
+
+        private async ValueTask<bool> ShouldDecrypt(PdfStream stream) => 
+            await stream.GetOrNullAsync(KnownNames.Type) != KnownNames.XRef;
     }
 }

@@ -22,15 +22,17 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             Assert.Equal("abcd", (await new PdfCompositeObjectParser().ParseAsync(reader)).ToString());
             
         }
-        [Fact]
-        public async Task LoadDecodedStream()
+        [Theory]
+        [InlineData("/Page", "Decoded")]
+        [InlineData("/XRef", "ABCD")]
+        public async Task LoadDecodedStream(string type, string result)
         {
-            var source = new MemoryStream("<</Length 4>> stream\r\nABCD endstream".AsExtendedAsciiBytes());
+            var source = new MemoryStream($"<</Length 4/Type{type}>> stream\r\nABCD endstream".AsExtendedAsciiBytes());
             var reader = new ConstDecryptor(
-                new ParsingReader(new ParsingFileOwner(new MemoryStream()), PipeReader.Create(source), 0));
+                new ParsingReader(new ParsingFileOwner(source), PipeReader.Create(source), 0));
             var str = (PdfStream)await new PdfCompositeObjectParser().ParseAsync(reader);
             var output = await new StreamReader(await str.GetEncodedStreamAsync()).ReadToEndAsync();
-            Assert.Equal("Decoded", output);
+            Assert.Equal(result, output);
         }
         
         private class DecryptorFake: IDecryptor
