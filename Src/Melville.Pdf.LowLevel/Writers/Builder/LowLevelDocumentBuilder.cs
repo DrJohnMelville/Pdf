@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -13,7 +14,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         void AddToTrailerDictionary(PdfName key, PdfObject item);
     }
     
-    public partial class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
+    public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
     {
         private int nextObject;
         public List<PdfIndirectReference> Objects { get;  }= new();
@@ -59,5 +60,19 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             AddToTrailerDictionary(KnownNames.Size, new PdfInteger(nextObject));
         }
 
+        public void EnsureDocumentHasId()
+        {
+            if (trailerDictionaryItems.ContainsKey(KnownNames.ID)) return;
+            AddToTrailerDictionary(KnownNames.ID, new PdfArray(
+                IdElement(), IdElement()));
+        }
+
+        private PdfString IdElement()
+        {
+            var ret = new byte[32];
+            Guid.NewGuid().TryWriteBytes(ret);
+            Guid.NewGuid().TryWriteBytes(ret[16..]);
+            return new PdfString(ret);
+        }
     }
 }
