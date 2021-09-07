@@ -60,9 +60,9 @@ namespace Melville.Pdf.LowLevel.Encryption
             return null;
         }
 
-        public bool TyySinglePassword((string?, PasswordType) password)
+        public bool TrySinglePassword((string?, PasswordType) password)
         {
-            return handlers.Values.All(i => i.TyySinglePassword(password));
+            return handlers.Values.All(i => i.TrySinglePassword(password));
         }
     }
 
@@ -71,6 +71,6 @@ namespace Melville.Pdf.LowLevel.Encryption
         public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target) =>
             NullDecryptor.Instance;
 
-        public bool TyySinglePassword((string?, PasswordType) password) => true;
+        public bool TrySinglePassword((string?, PasswordType) password) => true;
     }
 }

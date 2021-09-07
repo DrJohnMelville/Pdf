@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
     {
         // test with default key length of 40
         // test v1 handler
-        private readonly IPasswordSource password = PasswordAttemptFactory.Create();
+        private readonly IPasswordSource password = PasswordAttemptFactory.Create(PasswordType.User);
         
         [Theory]
         [InlineData(@"<</Encrypt <</Filter/Standard/V 2/R 3/Length 128/P -3904

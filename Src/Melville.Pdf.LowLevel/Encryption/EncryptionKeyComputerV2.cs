@@ -6,11 +6,11 @@ namespace Melville.Pdf.LowLevel.Encryption
 {
     public interface IEncryptionKeyComputer
     {
-        byte[] ComputeKey(in Span<byte> userPassword, in EncryptionParameters parameters);
+        byte[] ComputeKey(in ReadOnlySpan<byte> userPassword, in EncryptionParameters parameters);
     }
     public class EncryptionKeyComputerV2: IEncryptionKeyComputer
     {
-        public byte[] ComputeKey(in Span<byte> userPassword, in EncryptionParameters parameters)
+        public byte[] ComputeKey(in ReadOnlySpan<byte> userPassword, in EncryptionParameters parameters)
         {
 
             HashAlgorithm hash = MD5.Create();

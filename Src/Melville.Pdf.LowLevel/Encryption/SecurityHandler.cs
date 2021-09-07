@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
@@ -11,14 +13,14 @@ namespace Melville.Pdf.LowLevel.Encryption
     public interface ISecurityHandler
     {
         IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target);
-        bool TyySinglePassword((string?, PasswordType) password);
+        bool TrySinglePassword((string?, PasswordType) password);
     }
 
     public static class SecurityHandlerOperations
     {
         public static ValueTask TryInteactiveLogin(
             this ISecurityHandler handler, IPasswordSource passwordSource) => 
-            handler.TyySinglePassword(("",PasswordType.User)) ? 
+            handler.TrySinglePassword(("",PasswordType.User)) ? 
                 new ValueTask() : 
                 InnerTryInteractiveLogin(handler,passwordSource);
 
@@ -28,7 +30,7 @@ namespace Melville.Pdf.LowLevel.Encryption
             while (true)
             {
                 var password = await passwordSource.GetPassword();
-                if (handler.TyySinglePassword(password)) return;
+                if (handler.TrySinglePassword(password)) return;
             }
         }
 
@@ -39,6 +41,7 @@ namespace Melville.Pdf.LowLevel.Encryption
         private readonly EncryptionParameters parameters;
         private readonly IEncryptionKeyComputer keyComputer;
         private readonly IComputeUserPassword userHashComputer;
+        private readonly IComputeOwnerPassword ownerHashComputer;
         private readonly IDecryptorFactory decryptorFactory;
         private byte[]? encryptionKey;
         
@@ -46,15 +49,17 @@ namespace Melville.Pdf.LowLevel.Encryption
             EncryptionParameters parameters, 
             IEncryptionKeyComputer keyComputer, 
             IComputeUserPassword userHashComputer,
+            IComputeOwnerPassword ownerHashComputer,
             IDecryptorFactory decryptorFactory)
         {
             this.parameters = parameters;
             this.keyComputer = keyComputer;
             this.userHashComputer = userHashComputer;
+            this.ownerHashComputer = ownerHashComputer;
             this.decryptorFactory = decryptorFactory;
         }
 
-        private bool TyyUserPassword(in Span<byte> password)
+        private bool TryUserPassword(in ReadOnlySpan<byte> password)
         {
             var key = keyComputer.ComputeKey(password, parameters);
             var userHash = userHashComputer.ComputeHash(key, parameters);
@@ -66,20 +71,30 @@ namespace Melville.Pdf.LowLevel.Encryption
             return false;
         }
         
-        public bool TyySinglePassword((string?, PasswordType) password)
+        public bool TrySinglePassword((string?, PasswordType) password)
         {
-            switch (password)
+            var (passwordText, type) = password;
+            if (passwordText == null)
+                throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
+            switch (type)
             {
-                case (null, _):
-                    throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
-                case (_, PasswordType.Owner):
-                    throw new NotImplementedException("Pdf Owner Password is not implemented yet.");
-                case (var s, PasswordType.User):
-                    if (TyyUserPassword(s.AsExtendedAsciiBytes())) return true;
+                case  PasswordType.Owner:
+                    var userPassword = ownerHashComputer.UserKeyFromOwnerKey(passwordText.AsExtendedAsciiBytes(), parameters);
+                    return TrySinglePassword(userPassword, PasswordType.User);
+                case PasswordType.User:
+                    if (TryUserPassword(passwordText.AsExtendedAsciiBytes())) return true;
                     break;
             }
 
             return false;
+        }
+
+        private bool TrySinglePassword(in ReadOnlySpan<byte> password, PasswordType type)
+        {
+            if (type == PasswordType.Owner)
+                return TrySinglePassword(ownerHashComputer.UserKeyFromOwnerKey(password, parameters), PasswordType.User);
+            return TryUserPassword(password);
+
         }
 
         public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target)

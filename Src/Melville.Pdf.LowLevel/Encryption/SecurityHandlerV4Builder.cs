@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -37,6 +38,7 @@ namespace Melville.Pdf.LowLevel.Encryption
                     new SecurityHandler(parameters,
                         new EncryptionKeyComputerV3(),
                         new ComputeUserPasswordV3(),
+                        new ComputeOwnerPasswordV3(),
                         new Rc4DecryptorFactory()),
                 _ => throw new PdfSecurityException("Unknown Security Handler Type")
             };

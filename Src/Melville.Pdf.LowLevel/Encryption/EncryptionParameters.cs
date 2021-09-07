@@ -11,6 +11,7 @@ namespace Melville.Pdf.LowLevel.Encryption
         public byte[] UserPasswordHash {get;}
         public uint Permissions {get;}
         public int KeyLengthInBits {get;}
+        public int KeyLengthInBytes => KeyLengthInBits / 8;
 
         public EncryptionParameters(byte[] idFirstElement, byte[] ownerPasswordHash, byte[] userPasswordHash, uint permissions, int keyLengthInBits)
         {

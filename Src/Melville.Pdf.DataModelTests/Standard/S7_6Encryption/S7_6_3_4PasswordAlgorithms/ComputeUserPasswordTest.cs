@@ -12,12 +12,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
 {
     public static class PasswordAttemptFactory
     {
-        public static IPasswordSource Create(params string[] passwords)
+        public static IPasswordSource Create(PasswordType type, params string[] passwords)
         {
             int currentPassword = 0;
             var ret = new Mock<IPasswordSource>();
             ret.Setup(i => i.GetPassword()).Returns(() => new ValueTask<(string?, PasswordType)>(
-                (NextPassword(), PasswordType.User)));
+                (NextPassword(), type)));
             return ret.Object;
 
             string? NextPassword() => currentPassword >= passwords.Length ? null : passwords[currentPassword++];
@@ -26,24 +26,30 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
     public class ComputeUserPasswordTest
     {
         [Theory]
-        [InlineData(true,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile, "")] 
-        [InlineData(false,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile, "WrongPassword1|WrongPassword2")]
-        [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"")]
-        [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"WrongPassword")]
-        [InlineData(true, V4RC4128CiperWithUserAndOwnerPasswords,"User")]
-        public async Task VerifyUserPasswordStream(bool succeed,string trailer, string passwords)
+        [InlineData(true,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile, "", PasswordType.User)] 
+        [InlineData(false,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile,
+            "WrongPassword1|WrongPassword2", PasswordType.User)]
+        [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"", PasswordType.User)]
+        [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"WrongPassword", PasswordType.User)]
+        [InlineData(true, V4RC4128CiperWithUserAndOwnerPasswords,"User", PasswordType.User)]
+        [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"User", PasswordType.Owner)]
+        [InlineData(true, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.Owner)]
+        [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.User)]
+        public async Task VerifyUserPasswordStream(
+            bool succeed,string trailer, string passwords, PasswordType passwordType)
         {
             var tDict = (PdfDictionary)await trailer.ParseObjectAsync();
             var handler = await  SecurityHandlerFactory.CreateSecurityHandler(
                 tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
             try
             {
-                await handler.TryInteactiveLogin(PasswordAttemptFactory.Create(passwords.Split('|')));
+                await handler.TryInteactiveLogin(
+                    PasswordAttemptFactory.Create(passwordType, passwords.Split('|')));
                 Assert.True(succeed);
             }
             catch (Exception)
             {
-                Assert.False(succeed);
+                if (succeed) throw; // let the exception flow through if we thought it would work;
             }
         }
 
