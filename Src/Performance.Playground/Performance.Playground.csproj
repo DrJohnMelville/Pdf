@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Melville.Pdf.DataModelTests\Melville.Pdf.DataModelTests.csproj" />
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
     </ItemGroup>
 

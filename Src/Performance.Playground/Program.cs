@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
+using Performance.Playground.Encryption;
 using Performance.Playground.Writers;
 
 namespace Performance.Playground
@@ -7,7 +8,7 @@ namespace Performance.Playground
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<MemoryStreams>();
+            var summary = BenchmarkRunner.Run<KeyChecking>();
         }
     }
 }

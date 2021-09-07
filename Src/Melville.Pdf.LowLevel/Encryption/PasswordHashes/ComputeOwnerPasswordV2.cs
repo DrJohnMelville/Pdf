@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Security.Cryptography;
 
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
