@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Encryption
@@ -9,10 +10,16 @@ namespace Melville.Pdf.LowLevel.Encryption
         {
             if (input.Length == 0) return PdfPasswordPaddingBytes;
             var ret = new byte[32];
-            int origBytes = Math.Min(input.Length, 32);
-            input[..origBytes].CopyTo(ret);
-            PdfPasswordPaddingBytes.AsSpan(0, 32-origBytes).CopyTo(ret.AsSpan()[origBytes..]);
+            Pad(input, ret);
             return ret;
+        }
+
+        public static void Pad(in ReadOnlySpan<byte> input, in Span<byte> destination)
+        {
+            Debug.Assert(destination.Length == 32);
+            int origBytes = Math.Min(input.Length, 32);
+            input[..origBytes].CopyTo(destination);
+            PdfPasswordPaddingBytes.AsSpan(0, 32-origBytes).CopyTo(destination[origBytes..]);
         }
 
         public static readonly byte[] PdfPasswordPaddingBytes =

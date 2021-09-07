@@ -33,22 +33,34 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
 
         private byte[] OwnerPasswordHash(in ReadOnlySpan<byte> ownerPassword)
         {
-            var ret = BytePadder.Pad(ownerPassword);
-            for (int i = 0; i < Md5IterationCount(); i++)
-            {
-                #warning see if I can reuse the buffers here
-                ret = MD5.HashData(ret);
-            }
-
-            return ret;
+            Span<byte> paddedPassword = stackalloc byte[32];
+            BytePadder.Pad(ownerPassword, paddedPassword);
+            return ComputeMd5Hash(paddedPassword);
         }
 
-        protected virtual int Md5IterationCount() => 1;
+        protected virtual byte[] ComputeMd5Hash(Span<byte> paddedPassword)
+        {
+            return MD5.HashData(paddedPassword);
+        }
+
     }
 
     public class ComputeOwnerPasswordV3 : ComputeOwnerPasswordV2
     {
-        protected override int Md5IterationCount() => 51;
         protected override int SequentialEncryptionCount() => 20;
+
+        protected override byte[] ComputeMd5Hash(Span<byte> paddedPassword)
+        {
+            Span<byte> source = stackalloc byte[16];
+            Span<byte> dest = stackalloc byte[16];
+            MD5.HashData(paddedPassword, source);
+            for (int i = 0; i < 25; i++) // unroll the loop by two to avoid swaping the arguments
+            {
+                MD5.HashData(source, dest);
+                MD5.HashData(dest, source);
+            }
+
+            return source.ToArray();
+        }
     }
 }

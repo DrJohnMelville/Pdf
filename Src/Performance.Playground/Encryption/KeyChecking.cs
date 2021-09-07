@@ -41,7 +41,7 @@ namespace Performance.Playground.Encryption
         [Benchmark]
         public void ComputeOwnerPassword()
         {
-            handler.TrySinglePassword(("Owner", PasswordType.User));
+            handler.TrySinglePassword(("Owner", PasswordType.Owner));
         }
     }
 }

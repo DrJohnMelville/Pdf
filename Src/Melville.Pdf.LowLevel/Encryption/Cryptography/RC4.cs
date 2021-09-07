@@ -5,10 +5,13 @@ namespace Melville.Pdf.LowLevel.Encryption.Cryptography
 {
     public class RC4
     {
-        public RC4(in ReadOnlySpan<byte> rgbKey)
+        public RC4()
         {
             SBox = new byte[SBoxLength];
-            KeySchedulingAlgorithm(rgbKey);
+        }
+        public RC4(in ReadOnlySpan<byte> rgbKey): this()
+        {
+            ResetWithNewKey(rgbKey);
         }
 
         private readonly byte[] SBox;
@@ -16,11 +19,11 @@ namespace Melville.Pdf.LowLevel.Encryption.Cryptography
         private int secondIndex = 0;
         private const int SBoxLength = byte.MaxValue + 1;
 
-        private void KeySchedulingAlgorithm(in ReadOnlySpan<byte> rgbKey)
+        public void ResetWithNewKey(in ReadOnlySpan<byte> key)
         {
-            var key = new byte[rgbKey.Length];
-            rgbKey.CopyTo(key);
-
+            firstIndex = 0;
+            secondIndex = 0;
+            
             for (int i = 0; i < SBoxLength; i++)
             {
                 SBox[i] = (byte)i;

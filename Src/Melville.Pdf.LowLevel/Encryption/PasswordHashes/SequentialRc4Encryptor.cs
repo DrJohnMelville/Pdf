@@ -5,32 +5,33 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
 {
     public static class SequentialRc4Encryptor
     {
-        public static void EncryptNTimes   (ReadOnlySpan<byte> encryptionKey, byte[] hash, int interationsDesired)
+        public static void EncryptNTimes   (in ReadOnlySpan<byte> encryptionKey, byte[] hash, int interationsDesired)
         {
-            for (int i = 0; i < interationsDesired; i++)
-            {
-                #warning keep the buffer for the key on the stack instead of 20 heap objects
-                new RC4(RoundKey(encryptionKey, i)).TransfromInPlace(hash);
-            }
+            DoWork(encryptionKey, hash, 0, interationsDesired, 1);
         }
-        public static void EncryptDownNTimes(ReadOnlySpan<byte> encryptionKey, byte[] hash, int interationsDesired)
+        public static void EncryptDownNTimes(in ReadOnlySpan<byte> encryptionKey, byte[] hash, int interationsDesired)
         {
-            for (int i = interationsDesired-1; i >= 0; i--)
+            DoWork(encryptionKey, hash, interationsDesired -1, -1, -1);
+        }
+        private static void DoWork(in ReadOnlySpan<byte> encryptionKey, byte[] hash,
+            int first, int terminator, int increment)
+        {
+            var rc4 = new RC4();
+            Span<byte> key = stackalloc byte[encryptionKey.Length];
+            for (int i = first; i != terminator; i+= increment)
             {
-                #warning keep the buffer for the key on the stack instead of 20 heap objects
-                new RC4(RoundKey(encryptionKey, i)).TransfromInPlace(hash);
+                RoundKey(encryptionKey, i, key);
+                rc4.ResetWithNewKey(key);
+                rc4.TransfromInPlace(hash);
             }
         }
 
-        private static byte[] RoundKey(ReadOnlySpan<byte> encryptionKey, int iteration)
+        private static void RoundKey(ReadOnlySpan<byte> encryptionKey, int iteration, Span<byte> output)
         {
-            var ret = new byte[encryptionKey.Length];
-            for (int i = 0; i < ret.Length; i++)
+            for (int i = 0; i < output.Length; i++)
             {
-                ret[i] = (byte) (encryptionKey[i] ^ iteration);
+                output[i] = (byte) (encryptionKey[i] ^ iteration);
             }
-
-            return ret;
         }
     }
 }
