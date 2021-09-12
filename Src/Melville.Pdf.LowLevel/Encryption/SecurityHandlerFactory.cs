@@ -1,26 +1,15 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.Decryptors;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption
 {
     public static class SecurityHandlerFactory
     {
-        public static async ValueTask<IWrapReaderForDecryption> CreateDecryptorFactory(
-            PdfDictionary trailer, IPasswordSource passwordSource)
-        {
-            if (await trailer.GetOrNullAsync(KnownNames.Encrypt) is not PdfDictionary dict)
-                return NullWrapReaderForDecryption.Instance;
-            var securityHandler = await CreateSecurityHandler(trailer, dict);
-            await securityHandler.TryInteactiveLogin(passwordSource);
-            return new SecurityHandlerWrapReaderForDecryption(securityHandler);
-        }      
-        
-        public static async ValueTask<ISecurityHandler> CreateSecurityHandler(PdfDictionary trailer, PdfDictionary dict)
+        public static async ValueTask<ISecurityHandler> CreateSecurityHandler(
+            PdfDictionary trailer, PdfDictionary dict)
         {
             if (await dict.GetAsync<PdfName>(KnownNames.Filter) != KnownNames.Standard)
                 throw new PdfSecurityException("Only standard security handler is supported.");

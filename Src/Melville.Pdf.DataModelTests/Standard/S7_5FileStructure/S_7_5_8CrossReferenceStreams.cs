@@ -19,8 +19,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var document = await MinimalPdfParser.MinimalPdf(1, 7);
             var ms = new MultiBufferStream();
-            var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms));
-            await writer.WriteWithReferenceStream(document.CreateDocument());
+            var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), document.CreateDocument());
+            await writer.WriteWithReferenceStream();
             var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
             Assert.DoesNotContain(fileAsString, "trailer");
             var doc = await (fileAsString).ParseDocumentAsync();

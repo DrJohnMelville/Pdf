@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         [Fact]
         public void EnsureBuilderHasIdentifierTest()
         {
-            var builder = new LowLevelDocumentBuilder(1);
+            var builder = new LowLevelDocumentBuilder();
             Assert.False(builder.CreateTrailerDictionary().TryGetValue(KnownNames.ID, out _));
             builder.EnsureDocumentHasId();
             Assert.True(builder.CreateTrailerDictionary().TryGetValue(KnownNames.ID, out var idObj));
@@ -19,7 +19,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         [Fact]
         public async Task DoNotAddIfAlreadyIdentified()
         {
-            var builder = new LowLevelDocumentBuilder(1);
+            var builder = new LowLevelDocumentBuilder();
             builder.EnsureDocumentHasId();
             Assert.True(builder.CreateTrailerDictionary().TryGetValue(KnownNames.ID, out var idObj));
             builder.EnsureDocumentHasId();
@@ -29,7 +29,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         [Fact]
         public async Task IDHas2ProperStringElements()
         {
-            var builder = new LowLevelDocumentBuilder(1);
+            var builder = new LowLevelDocumentBuilder();
             builder.EnsureDocumentHasId();
             var ary = await builder.CreateTrailerDictionary().GetAsync<PdfArray>(KnownNames.ID);
             Assert.Equal(2, ary.Count);

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;
@@ -13,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
     {
         // test with default key length of 40
         // test v1 handler
-        private readonly IPasswordSource password = PasswordAttemptFactory.Create(PasswordType.User);
+        private readonly IPasswordSource password = new ConstantPasswordSource(PasswordType.User, new string[0]);
         
         [Theory]
         [InlineData(@"<</Encrypt <</Filter/Standard/V 2/R 3/Length 128/P -3904
@@ -22,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
            /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF>] >>")]
         public async Task CreateSecurityHandler(string trailer)
         { 
-            await  SecurityHandlerFactory.CreateDecryptorFactory(
+            await  SecurityHandlerDecryptorFactory.CreateDecryptorFactory(
                 (PdfDictionary)await trailer.ParseObjectAsync(), password);
             // test is for absence of an exception
         }
@@ -47,7 +48,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
         {
             var dict = (PdfDictionary)await trailer.ParseObjectAsync();
             await Assert.ThrowsAsync<PdfSecurityException>(
-                ()=> SecurityHandlerFactory.CreateDecryptorFactory(dict, password).AsTask());
+                ()=> SecurityHandlerDecryptorFactory.CreateDecryptorFactory(dict, password).AsTask());
         }
     }
 }

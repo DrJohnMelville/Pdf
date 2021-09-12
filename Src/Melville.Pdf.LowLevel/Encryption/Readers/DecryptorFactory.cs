@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Security.Cryptography;
+using Melville.Pdf.LowLevel.Encryption.Writers;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
+using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
-    public interface IDecryptorFactory
+    public interface IEncryptorAndDecryptorFactory
     {
         IDecryptor CreateDecryptor(byte[] baseKey, int objectNumber, int generationNumber);
+        IObjectEncryptor CreateEncryptor(byte[] baseKey, int objectNumber, int generationNumber);
     }
 
-    public abstract class DecryptorFactory: IDecryptorFactory
+    public abstract class EncryptorAndDecryptorFactory: IEncryptorAndDecryptorFactory
     {
         public IDecryptor CreateDecryptor(byte[] baseKey, int objectNumber, int generationNumber) => 
             CreateDecryptor(ObjectEncryptionKey(baseKey, objectNumber, generationNumber));
+
+        public IObjectEncryptor CreateEncryptor(byte[] baseKey, int objectNumber, int generationNumber) =>
+            CreateEncryptor(ObjectEncryptionKey(baseKey, objectNumber, generationNumber));
 
         private static Span<byte> ObjectEncryptionKey(byte[] baseKey, int objectNumber, int generationNumber)
         {
@@ -43,11 +49,15 @@ namespace Melville.Pdf.LowLevel.Encryption
         private static int EncryptionKeyLength(int baseKeyLength) => Math.Min(baseKeyLength + 5, 16);
 
         protected abstract IDecryptor CreateDecryptor(in ReadOnlySpan<byte> encryptionKey);
+        protected abstract IObjectEncryptor CreateEncryptor(in ReadOnlySpan<byte> encryptionKey);
     }
 
-    public class Rc4DecryptorFactory : DecryptorFactory
+    public class Rc4DecryptorFactory : EncryptorAndDecryptorFactory
     {
         protected override IDecryptor CreateDecryptor(in ReadOnlySpan<byte> encryptionKey) => 
             new Rc4Decryptor(encryptionKey);
+
+        protected override IObjectEncryptor CreateEncryptor(in ReadOnlySpan<byte> encryptionKey) =>
+            new Rc4Encryptor(encryptionKey);
     }
 }

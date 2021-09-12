@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
     public class PdfSecurityException: Exception
     {

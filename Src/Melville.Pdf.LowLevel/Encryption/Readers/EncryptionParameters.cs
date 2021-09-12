@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
+
+
+    [DebuggerDisplay("IdFirstElt:{IdFirstElement.AsHex()}\r\nOwnerPassword:{OwnerPasswordHash.AsHex()}\r\nUserPasswordHash:{UserPasswordHash.AsHex()}\r\nPermissions:{Permissions}\r\nKeyLength (Bits):{KeyLengthInBits}")]
     public readonly struct EncryptionParameters
     {
         public byte[] IdFirstElement {get;}

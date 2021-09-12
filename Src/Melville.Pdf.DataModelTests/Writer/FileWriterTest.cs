@@ -19,8 +19,8 @@ namespace Melville.Pdf.DataModelTests.Writer
         private async Task<string> Write(PdfLowLevelDocument doc)
         {
             var target = new TestWriter();
-            var writer = new LowLevelDocumentWriter(target.Writer);
-            await writer.WriteAsync(doc);
+            var writer = new LowLevelDocumentWriter(target.Writer, doc);
+            await writer.WriteAsync();
             return target.Result();
         }
 
@@ -49,8 +49,8 @@ namespace Melville.Pdf.DataModelTests.Writer
             builder.Add(new PdfDictionary((KnownNames.Type, KnownNames.Page)));
             PdfLowLevelDocument doc = builder.CreateDocument();
             var target = new TestWriter();
-            var writer = new LowLevelDocumentWriter(target.Writer);
-            await writer.WriteWithReferenceStream(doc);
+            var writer = new LowLevelDocumentWriter(target.Writer, doc);
+            await writer.WriteWithReferenceStream();
             return target.Result();
         }
 

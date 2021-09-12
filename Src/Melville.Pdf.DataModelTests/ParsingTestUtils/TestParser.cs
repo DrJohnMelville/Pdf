@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -31,5 +32,12 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
         
         public static Task<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) => 
              RandomAccessFileParser.Parse(str.AsParsingSource(), sizeHint);
+        public static Task<PdfLoadedLowLevelDocument> ParseWithPassword(
+            this string str, string password, PasswordType type)
+        {
+            var ps = new ParsingFileOwner(new MemoryStream(str.AsExtendedAsciiBytes()), 
+                new ConstantPasswordSource(type, password));
+            return RandomAccessFileParser.Parse(ps);
+        }
     }
 }

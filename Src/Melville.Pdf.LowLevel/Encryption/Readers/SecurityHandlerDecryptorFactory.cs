@@ -1,12 +1,25 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
+    public static class SecurityHandlerDecryptorFactory
+    {
+        public static async ValueTask<IWrapReaderForDecryption> CreateDecryptorFactory(
+            PdfDictionary trailer, IPasswordSource passwordSource)
+        {
+            if (await trailer.GetOrNullAsync(KnownNames.Encrypt) is not PdfDictionary dict)
+                return NullWrapReaderForDecryption.Instance;
+            var securityHandler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, dict);
+            await securityHandler.TryInteactiveLogin(passwordSource);
+            return new SecurityHandlerWrapReaderForDecryption(securityHandler);
+        }
+    }
     public class SecurityHandlerWrapReaderForDecryption : IWrapReaderForDecryption
     {
         private readonly ISecurityHandler securityHandler;

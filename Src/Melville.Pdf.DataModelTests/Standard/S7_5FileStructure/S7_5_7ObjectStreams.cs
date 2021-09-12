@@ -81,8 +81,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         private static async Task<string> DocCreatorToString(LowLevelDocumentCreator builder)
         {
             var ms = new MultiBufferStream();
-            var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms));
-            await writer.WriteWithReferenceStream(builder.CreateDocument());
+            var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());
+            await writer.WriteWithReferenceStream();
             var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
             return fileAsString;
         }

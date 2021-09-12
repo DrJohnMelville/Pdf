@@ -16,7 +16,13 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
     {
         private byte major = 1;
         private byte minor = 7;
-        private readonly LowLevelDocumentBuilder data = new LowLevelDocumentBuilder(1);
+        private readonly LowLevelDocumentBuilder data;
+
+        public LowLevelDocumentCreator(LowLevelDocumentBuilder? data = null)
+        {
+            this.data = data ?? new LowLevelDocumentBuilder();
+        }
+
         [DelegateTo]
         private ILowLevelDocumentBuilder Builder => data;
     

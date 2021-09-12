@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Buffers;
-using System.Runtime.InteropServices.ComTypes;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
     public interface ISecurityHandler
     {
         IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target);
+        IObjectEncryptor EncryptorForObject(PdfIndirectObject parent, PdfObject target);
         bool TrySinglePassword((string?, PasswordType) password);
     }
 
@@ -42,7 +43,7 @@ namespace Melville.Pdf.LowLevel.Encryption
         private readonly IEncryptionKeyComputer keyComputer;
         private readonly IComputeUserPassword userHashComputer;
         private readonly IComputeOwnerPassword ownerHashComputer;
-        private readonly IDecryptorFactory decryptorFactory;
+        private readonly IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory;
         private byte[]? encryptionKey;
         
         public SecurityHandler(
@@ -50,13 +51,13 @@ namespace Melville.Pdf.LowLevel.Encryption
             IEncryptionKeyComputer keyComputer, 
             IComputeUserPassword userHashComputer,
             IComputeOwnerPassword ownerHashComputer,
-            IDecryptorFactory decryptorFactory)
+            IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory)
         {
             this.parameters = parameters;
             this.keyComputer = keyComputer;
             this.userHashComputer = userHashComputer;
             this.ownerHashComputer = ownerHashComputer;
-            this.decryptorFactory = decryptorFactory;
+            this.encryptorAndDecryptorFactory = encryptorAndDecryptorFactory;
         }
 
         private bool TryUserPassword(in ReadOnlySpan<byte> password)
@@ -99,9 +100,22 @@ namespace Melville.Pdf.LowLevel.Encryption
 
         public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfObject target)
         {
+            VerifyEncryptionKeyExists();
+            return encryptorAndDecryptorFactory.CreateDecryptor(encryptionKey, objectNumber, generationNumber);
+        }
+
+        [MemberNotNull(nameof(encryptionKey))]
+        private void VerifyEncryptionKeyExists()
+        {
             if (encryptionKey is null)
                 throw new PdfSecurityException("No decryption key.  Call TryInteractiveLogin before decrypting.");
-            return decryptorFactory.CreateDecryptor(encryptionKey, objectNumber, generationNumber);
+        }
+
+        public IObjectEncryptor EncryptorForObject(PdfIndirectObject parent, PdfObject target)
+        {
+            VerifyEncryptionKeyExists();
+            return encryptorAndDecryptorFactory.CreateEncryptor(
+                encryptionKey, parent.ObjectNumber, parent.GenerationNumber);
         }
     }
 }

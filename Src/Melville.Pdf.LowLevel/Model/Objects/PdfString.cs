@@ -1,8 +1,16 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using System.Diagnostics;
+using System.Linq;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
+    public static class HexStrings
+    {
+        public static string AsHex(this byte[] str) =>
+            string.Join("", str.Select(i => i.ToString("X2")));
+    }
+    [DebuggerDisplay("PdfString <{Bytes.AsHex()}>")]
     public sealed class PdfString : PdfByteArrayObject
     {
         public PdfString(byte[] bytes): base(bytes) { }

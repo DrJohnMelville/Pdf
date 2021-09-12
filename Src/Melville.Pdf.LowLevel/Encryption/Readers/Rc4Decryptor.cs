@@ -4,11 +4,11 @@ using Melville.Pdf.LowLevel.Encryption.Cryptography;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
     public class Rc4Decryptor: IDecryptor
     {
-        private RC4 rc4;
+        private readonly RC4 rc4;
 
         public Rc4Decryptor(in ReadOnlySpan<byte> key)
         {

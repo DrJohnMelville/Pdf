@@ -28,12 +28,19 @@ namespace Melville.Pdf.DataModelTests.Writer
         [Theory]
         [InlineData("Hello", "(Hello)")]
         [InlineData("", "()")]
+        [InlineData("\n", "(\\n)")]
+        [InlineData("\r", "(\\r)")]
+        [InlineData("\t", "(\\t)")]
+        [InlineData("\b", "(\\b)")]
+        [InlineData("\f", "(\\f)")]
         [InlineData(@"this is a \Test", @"(this is a \\Test)")]
         [InlineData(@"this is a (Test", @"(this is a \(Test)")]
         [InlineData(@"this is a )Test", @"(this is a \)Test)")]
         public async Task WriteStrings(string source, string dest)
         {
             Assert.Equal(dest, await new PdfString(source).WriteToStringAsync());
+            Assert.Equal(source, (await dest.ParseObjectAsync()).ToString());
+            
         }
         [Theory]
         [InlineData("Hello", "/Hello")]

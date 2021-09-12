@@ -8,6 +8,7 @@ Group Model
      Melville.Pdf.LowLevel.Filters.*
 Group Writers
      Melville.Pdf.LowLevel.Writers.*
+     Melville.Pdf.LowLevel.Encryption.*
 Parser => Model
 Writers => Model
 

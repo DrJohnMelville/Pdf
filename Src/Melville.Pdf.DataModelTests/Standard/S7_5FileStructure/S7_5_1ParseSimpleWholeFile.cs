@@ -19,8 +19,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         private async Task<string> Write(PdfLowLevelDocument doc)
         {
             var target = new MultiBufferStream();
-            var writer = new LowLevelDocumentWriter(PipeWriter.Create(target));
-            await writer.WriteAsync(doc);
+            var writer = new LowLevelDocumentWriter(PipeWriter.Create(target), doc);
+            await writer.WriteAsync();
             return target.CreateReader().ReadToArray().ExtendedAsciiString();
         }
         private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)

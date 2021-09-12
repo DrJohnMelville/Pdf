@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Security.Cryptography;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
 {
     public interface IComputeOwnerPassword
     {
         byte[] UserKeyFromOwnerKey(in ReadOnlySpan<byte> ownerKey, EncryptionParameters parameters);
+
+        byte[] ComputeOwnerKey(
+            in ReadOnlySpan<byte> ownerKey, in ReadOnlySpan<byte> userKey, int keyLenInBytes);
     }
     public class ComputeOwnerPasswordV2: IComputeOwnerPassword
     {
@@ -19,7 +23,7 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
             return userPass;
         }
 
-        private byte[] ComputeOwnerKey(
+        public byte[] ComputeOwnerKey(
             in ReadOnlySpan<byte> ownerKey, in ReadOnlySpan<byte> userKey, int keyLenInBytes)
         {
             var ownerHash = OwnerPasswordHash(ownerKey);

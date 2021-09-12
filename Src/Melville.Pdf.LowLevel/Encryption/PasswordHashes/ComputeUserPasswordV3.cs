@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
 {

@@ -6,8 +6,9 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
     public class SecurityHandlerV4 : ISecurityHandler
     {
@@ -60,10 +61,11 @@ namespace Melville.Pdf.LowLevel.Encryption
             return null;
         }
 
-        public bool TrySinglePassword((string?, PasswordType) password)
-        {
-            return handlers.Values.All(i => i.TrySinglePassword(password));
-        }
+        public bool TrySinglePassword((string?, PasswordType) password) => 
+            handlers.Values.All(i => i.TrySinglePassword(password));
+
+        public IObjectEncryptor EncryptorForObject(PdfIndirectObject parent, PdfObject target) => 
+            PickHandler(target).EncryptorForObject(parent, target);
     }
 
     public class NullSecurityHandler: ISecurityHandler
@@ -72,5 +74,7 @@ namespace Melville.Pdf.LowLevel.Encryption
             NullDecryptor.Instance;
 
         public bool TrySinglePassword((string?, PasswordType) password) => true;
+        public IObjectEncryptor EncryptorForObject(PdfIndirectObject parent, PdfObject target) =>
+            NullObjectEncryptor.Instance;
     }
 }

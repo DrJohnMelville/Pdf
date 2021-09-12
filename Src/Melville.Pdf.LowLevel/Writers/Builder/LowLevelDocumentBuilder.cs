@@ -12,6 +12,19 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         PdfIndirectReference Add(PdfObject item);
         public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation);
         void AddToTrailerDictionary(PdfName key, PdfObject item);
+        public PdfArray EnsureDocumentHasId();
+    }
+
+    public static class BuildEncryptedDocument
+    {
+        public static void AddEncryption(
+            this ILowLevelDocumentBuilder builder,ILowLevelDocumentEncryptor encryptor)
+        {
+            builder.AddToTrailerDictionary(
+                KnownNames.Encrypt,
+                encryptor.CreateEncryptionDictioanry(builder.EnsureDocumentHasId()));
+        }
+        
     }
     
     public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
@@ -20,7 +33,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public List<PdfIndirectReference> Objects { get;  }= new();
         private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
 
-        public LowLevelDocumentBuilder(int nextObject)
+        public LowLevelDocumentBuilder(int nextObject = 1)
         {
             this.nextObject = nextObject;
         }
@@ -60,19 +73,27 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             AddToTrailerDictionary(KnownNames.Size, new PdfInteger(nextObject));
         }
 
-        public void EnsureDocumentHasId()
+        public PdfArray EnsureDocumentHasId() =>
+            trailerDictionaryItems.TryGetValue(KnownNames.ID, out var val) && val is PdfArray ret
+                ? ret
+                : AddNewIdArray();
+
+        private PdfArray AddNewIdArray()
         {
-            if (trailerDictionaryItems.ContainsKey(KnownNames.ID)) return;
-            AddToTrailerDictionary(KnownNames.ID, new PdfArray(
-                IdElement(), IdElement()));
+            var array = NewIdArray();
+            AddToTrailerDictionary(KnownNames.ID, array);
+            return array;
         }
+
+        private PdfArray NewIdArray() => new(IdElement(), IdElement());
 
         private PdfString IdElement()
         {
             var ret = new byte[32];
             Guid.NewGuid().TryWriteBytes(ret);
-            Guid.NewGuid().TryWriteBytes(ret[16..]);
+            Guid.NewGuid().TryWriteBytes(ret.AsSpan(16));
             return new PdfString(ret);
         }
+
     }
 }

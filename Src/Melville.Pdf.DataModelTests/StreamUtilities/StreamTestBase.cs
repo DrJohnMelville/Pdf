@@ -52,7 +52,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public async Task EncodeUsingWriting()
         {
-            var stream = await new LowLevelDocumentBuilder(0).NewCompressedStream(
+            var stream = await new LowLevelDocumentBuilder().NewCompressedStream(
                 i => i.WriteAsync(source.AsExtendedAsciiBytes().AsMemory()), 
                 compression, parameters);
             await VerifyEncoding(stream);

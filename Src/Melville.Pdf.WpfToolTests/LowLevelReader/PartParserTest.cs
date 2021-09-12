@@ -86,6 +86,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         {
             var model = await BuildSingleElementFile(_=>item);
             Assert.Equal("1 0 obj", model[2].Title);
+            Assert.Equal(renderAs.Length, model[2].Children[0].Title.Length);
             Assert.Equal(renderAs, model[2].Children[0].Title);
         }
 
@@ -103,6 +104,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         [Fact] public Task RenderFalseValue()=>TestSingleElement(PdfBoolean.False, "false");
         [Fact] public Task RenderNullValue()=>TestSingleElement(PdfTokenValues.Null, "null");
         [Fact] public Task RenderStringValue()=>TestSingleElement(new PdfString("Foo"), "(Foo)");
+        [Fact] public Task RenderSpecialtringValue()=>TestSingleElement(new PdfString("o\no"), "(o\no)");
         
     }
 }

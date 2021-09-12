@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -84,7 +85,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         {
             if (AlreadyInitializedDecryption()) return;
             wrapReaderForDecryption = await 
-                SecurityHandlerFactory.CreateDecryptorFactory(trailerDictionary, passwordSource);
+                SecurityHandlerDecryptorFactory.CreateDecryptorFactory(trailerDictionary, passwordSource);
         }
 
         private bool AlreadyInitializedDecryption()

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -21,14 +22,13 @@ namespace Performance.Playground.Encryption
 
         public KeyChecking()
         {
-            Initialize().GetAwaiter().GetResult();
+           handler = Initialize().GetAwaiter().GetResult();
         }
 
-        [MemberNotNull(nameof(handler))]
-        private async ValueTask Initialize()
+        private async ValueTask<ISecurityHandler> Initialize()
         {
             var tDict = (PdfDictionary)await V2R3128RC4CipherWithBlankUserPasswordFromExampleFile.ParseObjectAsync();
-            handler = await  SecurityHandlerFactory.CreateSecurityHandler(
+            return await  SecurityHandlerFactory.CreateSecurityHandler(
                 tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
 
         }

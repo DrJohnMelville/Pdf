@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -10,19 +11,6 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms
 {
-    public static class PasswordAttemptFactory
-    {
-        public static IPasswordSource Create(PasswordType type, params string[] passwords)
-        {
-            int currentPassword = 0;
-            var ret = new Mock<IPasswordSource>();
-            ret.Setup(i => i.GetPassword()).Returns(() => new ValueTask<(string?, PasswordType)>(
-                (NextPassword(), type)));
-            return ret.Object;
-
-            string? NextPassword() => currentPassword >= passwords.Length ? null : passwords[currentPassword++];
-        }
-    }
     public class ComputeUserPasswordTest
     {
         [Theory]
@@ -43,8 +31,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
                 tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
             try
             {
+                string[] passwords1 = passwords.Split('|');
                 await handler.TryInteactiveLogin(
-                    PasswordAttemptFactory.Create(passwordType, passwords.Split('|')));
+                    new ConstantPasswordSource(passwordType, passwords1));
                 Assert.True(succeed);
             }
             catch (Exception)

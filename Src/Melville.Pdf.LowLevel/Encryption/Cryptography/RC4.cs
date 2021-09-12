@@ -47,10 +47,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Cryptography
             }
         }
 
-        public void TransfromInPlace(in Span<byte> cipher)
-        {
-            Transform(cipher, cipher);
-        }
+        public void TransfromInPlace(in Span<byte> cipher) => Transform(cipher, cipher);
 
         public void Transform(in ReadOnlySpan<byte> input, in Span<byte> output)
         {
