@@ -35,7 +35,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             while (state != State.Done)
             {
                 if (!SingleCycle(ref input)) return SyntaxStringResult.EndOfInput;
-                if (returnChar > 0)
+                if (returnChar >= 0)
                 {
                     character = (byte) returnChar;
                     returnChar = -1;

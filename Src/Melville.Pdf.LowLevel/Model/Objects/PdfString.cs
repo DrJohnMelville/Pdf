@@ -8,9 +8,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
     public static class HexStrings
     {
         public static string AsHex(this byte[] str) =>
-            string.Join("", str.Select(i => i.ToString("X2")));
+            string.Join(" ", str.Select(i => i.ToString("X2")));
     }
-    [DebuggerDisplay("PdfString <{Bytes.AsHex()}>")]
+    [DebuggerDisplay("PdfString ({ToString()}) <{Bytes.AsHex()}>")]
     public sealed class PdfString : PdfByteArrayObject
     {
         public PdfString(byte[] bytes): base(bytes) { }

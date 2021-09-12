@@ -33,6 +33,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [InlineData("\t", "(\\t)")]
         [InlineData("\b", "(\\b)")]
         [InlineData("\f", "(\\f)")]
+        [InlineData("\u0000", "(\u0000)")]
         [InlineData(@"this is a \Test", @"(this is a \\Test)")]
         [InlineData(@"this is a (Test", @"(this is a \(Test)")]
         [InlineData(@"this is a )Test", @"(this is a \)Test)")]

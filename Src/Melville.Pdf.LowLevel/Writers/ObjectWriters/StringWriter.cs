@@ -13,7 +13,8 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             PipeWriter writer, PdfString value, IObjectEncryptor encryptor)
         {
             var buffer = writer.GetSpan( MaaximumRenderedStringLength(value));
-            var len = CopyToSpan(ref buffer, encryptor.Encrypt(value.Bytes));
+            var encrypted = encryptor.Encrypt(value.Bytes);
+            var len = CopyToSpan(ref buffer, encrypted);
             writer.Advance(len);
             return writer.FlushAsync();
         }
