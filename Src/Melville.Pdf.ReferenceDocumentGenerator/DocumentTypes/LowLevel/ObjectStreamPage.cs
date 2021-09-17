@@ -12,7 +12,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 {
     public class ObjectStreamPage: CreatePdfParser
     {
-        public ObjectStreamPage() : base("-ObjectStream")
+        public ObjectStreamPage() : base("-ObjectStream", "Document using an object stream.")
         {
         }
 

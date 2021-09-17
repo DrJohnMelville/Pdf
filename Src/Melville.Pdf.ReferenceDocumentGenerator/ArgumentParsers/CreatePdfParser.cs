@@ -6,10 +6,12 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
     public abstract class CreatePdfParser: IArgumentParser
     {
         public string Prefix { get; }
+        public string HelpText { get; }
 
-        protected CreatePdfParser(string prefix)
+        protected CreatePdfParser(string prefix, string helpText)
         {
             Prefix = prefix;
+            HelpText = helpText;
         }
 
         public async ValueTask<IArgumentParser?> ParseArgumentAsync(string argument, IRootParser root)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
@@ -20,12 +22,20 @@ namespace Melville.Pdf.ReferenceDocumentGenerator
 
         private static IRootParser CreateParser() =>
             new RootArgumentParser(
-                new CompositeParser(new IArgumentParser[]{
-                    new MinimalPdfParser(),
-                    new FiltersGenerator(),
-                    new ObjectStreamPage(),
-                    new HelpPasrser(),
-                    new FileTargetParser(),
-                }));
+                new CompositeParser(FindParsers()));
+
+        private static IReadOnlyList<IArgumentParser> FindParsers()
+        {
+            var ret = new List<IArgumentParser>()
+            {
+                new FileTargetParser(),
+                new ViewTargetParser(),
+            };
+            ret.Add(new HelpPasrser(ret));
+            ret.Add(new MinimalPdfParser());
+            ret.Add(new FiltersGenerator());
+            ret.Add(new ObjectStreamPage());
+            return ret;
+        }
     }
 }

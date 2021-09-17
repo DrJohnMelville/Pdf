@@ -1,27 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
 {
     public class HelpPasrser: IArgumentParser
     {
+        private IReadOnlyList<IArgumentParser> parsers;
+        private int PrefixLength => parsers.Max(i => i.Prefix.Length);
+        
+        public HelpPasrser(IReadOnlyList<IArgumentParser> parsers)
+        {
+            this.parsers = parsers;
+        }
+
         public string Prefix => "-h";
+        public string HelpText => "Display this help information";
 
         public ValueTask<IArgumentParser?> ParseArgumentAsync(string argument, IRootParser root)
+        {
+            WriteHeader();
+            WriteCommandHelp();
+            return ValueTask.FromResult((IArgumentParser?) null);
+        }
+
+        private static void WriteHeader()
         {
             Console.WriteLine();
             Console.WriteLine("Help");
             Console.WriteLine("----");
-            Console.WriteLine(" -H        Display this string");
-            Console.WriteLine(" -V        View the output with default pdf viewer. (default)");
-            Console.WriteLine(" -F <path> Set output to a file");
-            Console.WriteLine(" -V        View the generated file immediately");
-            Console.WriteLine("");
-            Console.WriteLine("  -Min  Generate a one page blank pdf");
-            Console.WriteLine("  -Filters  Generate a document using all the filter types");
-            Console.WriteLine("  -ObjectStream Generate a document using an ObjectStream");
-            
-            return ValueTask.FromResult((IArgumentParser?) null);
         }
+
+        private void WriteCommandHelp()
+        {
+            var formatString = FormatString();
+            foreach (var parser in parsers)
+            {
+                Console.WriteLine(TextForParser(parser, formatString));
+            }
+        }
+
+        private string TextForParser(IArgumentParser parser, string formatString) => 
+            string.Format(formatString, parser.Prefix, parser.HelpText);
+
+        private string FormatString() => "  {0," + PrefixLength + "}  {1}";
     }
 }

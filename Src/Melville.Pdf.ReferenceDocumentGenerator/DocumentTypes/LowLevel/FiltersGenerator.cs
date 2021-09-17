@@ -13,7 +13,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 {
     public class FiltersGenerator: CreatePdfParser
     {
-        public FiltersGenerator() : base("-filters")
+        public FiltersGenerator() : base("-filters", "Document using all filter types.")
         {
         }
 

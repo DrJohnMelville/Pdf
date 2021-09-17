@@ -13,6 +13,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
         }
 
         public string Prefix => "";
+        public string HelpText => "";
 
         public ValueTask<IArgumentParser?> ParseArgumentAsync(string argument, IRootParser root)
         {
