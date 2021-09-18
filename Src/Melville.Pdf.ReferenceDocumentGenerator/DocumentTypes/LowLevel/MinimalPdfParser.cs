@@ -20,23 +20,12 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public static async ValueTask<ILowLevelDocumentCreator> MinimalPdf(int major, int minor)
         {
-            return await SimplePdfShell.Generate(major, minor, (builder, pages) =>
-            {
-                var page = builder.AsIndirectReference();
-                var stream = builder.Add(builder.NewStream("... Page0marking operators ..."));
-                var procset = builder.Add(new PdfArray(KnownNames.PDF));
-                builder.AssignValueToReference(page, 
-                    new PdfDictionary(
-                        (KnownNames.Type, KnownNames.Page), 
-                        (KnownNames.Parent, pages), 
-                        (KnownNames.MediaBox, new PdfArray(
-                               new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))), 
-                        (KnownNames.Contents, stream), 
-                        (KnownNames.Resources, 
-                            new PdfDictionary( (KnownNames.ProcSet, procset) )) ));
-                builder.Add(page);
-                return new ValueTask<IReadOnlyList<PdfObject>>(new[] {page});
-            });
+            var builder = new PdfCreator();
+            builder.Creator.Add(builder.DefaultFont);
+            builder.Creator.Add(builder.DefaultProcSet);
+            await builder.CreateAttachedPage("");
+            builder.FinalizePages();
+            return builder.Creator;
         }
      }
 }

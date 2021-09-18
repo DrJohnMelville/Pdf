@@ -26,9 +26,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             var doc = await (fileAsString).ParseDocumentAsync();
             Assert.NotNull(doc.TrailerDictionary);
             Assert.IsType<PdfStream>(doc.TrailerDictionary);
-            var obj  = (PdfDictionary)await doc.Objects[(3, 0)].Target.DirectValue();
-            Assert.Equal(1, (await obj.GetAsync<PdfNumber>(KnownNames.Count)).IntValue);
-            
+            var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
+            var pages = await root.GetAsync<PdfDictionary>(KnownNames.Pages);
+            var kids = await pages.GetAsync<PdfArray>(KnownNames.Kids);
+            await Assert.Single(kids);
         }
 
     }

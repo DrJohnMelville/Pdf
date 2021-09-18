@@ -40,8 +40,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         public void AddPageToPagesCollection(PdfObject page) => 
             pages.Add(Creator.AsIndirectReference(page));
 
-        public PdfDictionary CreateUnattachedPage(PdfIndirectReference content) =>
-            new PdfDictionary(
+        public PdfDictionary CreateUnattachedPage(PdfIndirectReference content) => new(
                 (KnownNames.Type, KnownNames.Page),
                 (KnownNames.Parent, PagesParent), (KnownNames.MediaBox, new PdfArray(
                     new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))),
@@ -61,7 +60,8 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public async ValueTask CreateAttachedPage(StreamDataSource source)
         {
-            Creator.Add(await CreateUnattachedPageAsync(source));
+            var page = await CreateUnattachedPageAsync(source);
+            AddPageToPagesCollection(Creator.Add(page));
         }
 
         public void FinalizePages()

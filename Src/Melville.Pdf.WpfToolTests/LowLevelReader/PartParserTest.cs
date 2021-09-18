@@ -43,8 +43,8 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
             var trailerNode = model.Last();
             Assert.Equal("Trailer: Dictionary", trailerNode.Title);
             Assert.Equal(2, trailerNode.Children.Count);
-            Assert.Equal("/Size: 7", trailerNode.Children[1].Title);
-            Assert.Equal("/Root: 1 0 R", trailerNode.Children[0].Title);
+            Assert.Equal("/Size: 8", trailerNode.Children[1].Title);
+            Assert.Equal("/Root: 6 0 R", trailerNode.Children[0].Title);
         }
 
         [Fact]
@@ -53,8 +53,8 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
             var model = await sut.ParseAsync(
                 await (await MinimalPdfParser.MinimalPdf(1, 7)).AsFileAsync(),
                 waitingService.Object);
-            waitingService.Verify(i=>i.WaitBlock("Loading File", 7, false), Times.Once);
-            waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(7));
+            waitingService.Verify(i=>i.WaitBlock("Loading File", 8, false), Times.Once);
+            waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(8));
             waitingService.VerifyNoOtherCalls();
         }
 

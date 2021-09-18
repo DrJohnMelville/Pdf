@@ -22,6 +22,16 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public static async ValueTask<ILowLevelDocumentCreator> Filters()
         {
+            var builder = new PdfCreator();
+            builder.Creator.Add(builder.DefaultFont);
+            builder.Creator.Add(builder.DefaultProcSet);
+            builder.AddPageToPagesCollection(builder.Creator.Add(
+                builder.CreateUnattachedPage(builder.Creator.Add( await builder.Creator.NewCompressedStream(
+                    $"BT\n/F1 24 Tf\n100 100 Td\n({KnownNames.FlateDecode}) Tj\nET\n",
+                    KnownNames.FlateDecode
+                    )))
+                ));
+            
             return await SimplePdfShell.Generate(1, 7, async (builder, pages) =>
             {
                 var procset = builder.Add(new PdfArray(KnownNames.PDF));
