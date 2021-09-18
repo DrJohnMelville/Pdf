@@ -7,6 +7,54 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 {
+    public class PdfCreator
+    {
+        public ILowLevelDocumentCreator Creator { get; }
+        private List<PdfIndirectReference> pages = new ();
+        public PdfIndirectReference PagesParent { get; }
+
+        private readonly LazyPdfObject defaultProcSet;
+        public PdfIndirectReference DefaultProcSet => defaultProcSet.Value;
+
+        private readonly LazyPdfObject defaultFont;
+        public PdfIndirectReference DefaultFont => defaultFont.Value;
+
+        public PdfCreator(int major = 1, int minor = 7)
+        {
+            Creator = new LowLevelDocumentCreator();
+            Creator.SetVersion((byte)major, (byte)minor);
+            PagesParent = Creator.AsIndirectReference();
+            defaultProcSet = new LazyPdfObject(Creator, () => new PdfArray(KnownNames.PDF));
+            defaultFont = new LazyPdfObject(Creator, () => 
+                new PdfDictionary(
+                    (KnownNames.Type, KnownNames.Font ), 
+                    (KnownNames.Subtype, KnownNames.Type1), 
+                    (KnownNames.Name, new PdfName("F1")), 
+                    (KnownNames.BaseFont,
+                        KnownNames.Helvetica), 
+                    (KnownNames.Encoding, KnownNames.MacRomanEncoding))
+            );
+        }
+
+        public void AddPage(PdfObject page) => pages.Add(Creator.AsIndirectReference(page));
+        
+
+        public void FinalizePages()
+        {
+            var catalog = Creator.AsIndirectReference();
+            var outlines = Creator.AsIndirectReference(new PdfDictionary((KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
+            Creator.AssignValueToReference(PagesParent, new PdfDictionary((KnownNames.Type, KnownNames.Pages), (KnownNames.Kids, new PdfArray(pages)), (KnownNames.Count, new PdfInteger(pages.Count))));
+            Creator.AssignValueToReference(catalog, new PdfDictionary((KnownNames.Type, KnownNames.Catalog), (KnownNames.Outlines, outlines), (KnownNames.Pages, pagesArray: PagesParent)));
+
+            Creator.Add(catalog);
+            Creator.Add(outlines);
+            Creator.Add(PagesParent);
+            
+            Creator.AddToTrailerDictionary(KnownNames.Root, catalog);
+            
+        }
+    }
+
     public static class SimplePdfShell
     {
         public static async ValueTask<ILowLevelDocumentCreator> Generate(

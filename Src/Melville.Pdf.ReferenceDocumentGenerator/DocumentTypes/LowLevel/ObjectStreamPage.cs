@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -21,59 +19,26 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public static async ValueTask<ILowLevelDocumentCreator> Filters()
         {
-            return await SimplePdfShell.Generate(1, 7, async (builder, pages) =>
-            {
-                var procset = builder.AsIndirectReference(new PdfArray(KnownNames.PDF));
-                var font = builder.AsIndirectReference(new PdfDictionary(
-                    (KnownNames.Type, KnownNames.Font ), 
-                    (KnownNames.Subtype, KnownNames.Type1), 
-                    (KnownNames.Name, new PdfName("F1")), 
-                    (KnownNames.BaseFont,
-                        KnownNames.Helvetica), 
-                    (KnownNames.Encoding, KnownNames.MacRomanEncoding)));
-                builder.Add(await builder.NewObjectStream(font, procset));
-                return new[]
-                {
-                    await CreatePage(builder, pages, procset, "RunLength AAAAAAAAAAAAAAAAAAAAAA "+RandomString(9270),
-                        font, KnownNames.RunLengthDecode),
-                };
-            });
-        }
+            var builder = new PdfCreator(1, 7);
+                builder.Creator.Add(await builder.Creator.NewObjectStream(builder.DefaultFont, builder.DefaultProcSet));
+                var stream = builder.Creator.Add(
+                    await builder.Creator.NewCompressedStream($"BT\n/F1 24 Tf\n100 100 Td\n({"Uses Object Stream"}) Tj\nET\n",
+                        KnownNames.FlateDecode));
+               
+                var page = builder.Creator.AsIndirectReference(new PdfDictionary(
+                    (KnownNames.Type, KnownNames.Page),
+                    (KnownNames.Parent, builder.PagesParent), (KnownNames.MediaBox, new PdfArray(
+                        new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))), 
+                    (KnownNames.Contents, stream), 
+                    (KnownNames.Resources,
+                        new PdfDictionary(
+                            (KnownNames.Font, new PdfDictionary((new PdfName("F1"), builder.DefaultFont))),
+                            (KnownNames.ProcSet, builder.DefaultProcSet)))));
+                builder.Creator.Add(await builder.Creator.NewObjectStream(page));
+                builder.AddPage(page);
+                builder.FinalizePages();
+                return builder.Creator;
 
-        private static string RandomString(int length)
-        {
-            var rnd = new Random(10);
-            var ret = new StringBuilder(length);
-            for (int i = 0; i < length; i++)
-            {
-                ret.Append('A' + rnd.Next(26));
-            }
-
-            return ret.ToString();
-        }
-
-        private static async ValueTask<PdfIndirectReference> CreatePage(
-            ILowLevelDocumentCreator builder, 
-            PdfIndirectReference pages, 
-            PdfIndirectReference procset,
-            string text,
-            PdfIndirectReference font,
-            PdfObject filters , PdfObject? parameters = null)
-        {
-            var stream = builder.Add(
-                await builder.NewCompressedStream($"BT\n/F1 24 Tf\n100 100 Td\n({text}) Tj\nET\n",
-                    filters, parameters));
-            var page = builder.AsIndirectReference(new PdfDictionary(
-                (KnownNames.Type, KnownNames.Page),
-                (KnownNames.Parent, pages), (KnownNames.MediaBox, new PdfArray(
-                     new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))), 
-                (KnownNames.Contents, stream), 
-                (KnownNames.Resources,
-                    new PdfDictionary(
-                        (KnownNames.Font, new PdfDictionary((new PdfName("F1"), font))),
-                        (KnownNames.ProcSet, procset)))));
-            builder.Add(await builder.NewObjectStream(page));
-            return page;
         }
     }
 }
