@@ -22,9 +22,16 @@ namespace Melville.Pdf.ReferenceDocumentGenerator
 
         private static IRootParser CreateParser() =>
             new RootArgumentParser(
-                new CompositeParser(FindParsers()));
+                new CompositeParser(AddGeneratorsToList()));
 
-        private static IReadOnlyList<IArgumentParser> FindParsers()
+        private static IReadOnlyList<IArgumentParser> AddGeneratorsToList()
+        {
+            var ret = ListWithCommands();
+            AddGeneratorsToList(ret);
+            return ret;
+        }
+
+        private static List<IArgumentParser> ListWithCommands()
         {
             var ret = new List<IArgumentParser>()
             {
@@ -32,10 +39,25 @@ namespace Melville.Pdf.ReferenceDocumentGenerator
                 new ViewTargetParser(),
             };
             ret.Add(new HelpPasrser(ret));
-            ret.Add(new MinimalPdfParser());
-            ret.Add(new FiltersGenerator());
-            ret.Add(new ObjectStreamPage());
             return ret;
         }
+
+        private static void AddGeneratorsToList(List<IArgumentParser> ret) => 
+            ret.AddRange(QueryTypeSystemForParsers());
+
+        private static IOrderedEnumerable<IArgumentParser> QueryTypeSystemForParsers() =>
+            typeof(Program).Assembly.GetTypes()
+                .Where(IsGeneratorType())
+                .Select(CreateWithDefaultConstructor)
+                .OrderBy(SortByCommand);
+
+        private static Func<Type, bool> IsGeneratorType() => i => 
+            i != typeof(CreatePdfParser) && i.IsAssignableTo(typeof(CreatePdfParser));
+
+        private static IArgumentParser CreateWithDefaultConstructor(Type i) => 
+            (IArgumentParser)(Activator.CreateInstance(i) ?? 
+                              throw new InvalidOperationException("Cannot Create: " + i));
+
+        private static string SortByCommand(IArgumentParser i) => i.Prefix;
     }
 }
