@@ -69,7 +69,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             var catalog = Creator.AsIndirectReference();
             var outlines = Creator.AsIndirectReference(new PdfDictionary((KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
             Creator.AssignValueToReference(PagesParent, new PdfDictionary((KnownNames.Type, KnownNames.Pages), (KnownNames.Kids, new PdfArray(pages)), (KnownNames.Count, new PdfInteger(pages.Count))));
-            Creator.AssignValueToReference(catalog, new PdfDictionary((KnownNames.Type, KnownNames.Catalog), (KnownNames.Outlines, outlines), (KnownNames.Pages, pagesArray: PagesParent)));
+            Creator.AssignValueToReference(catalog, new PdfDictionary((KnownNames.Type, KnownNames.Catalog), (KnownNames.Outlines, outlines), (KnownNames.Pages,  PagesParent)));
 
             Creator.Add(catalog);
             Creator.Add(outlines);

@@ -19,7 +19,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
         {
             foreach (var parser in parsers) 
             {
-                if (argument.StartsWith(parser.Prefix, StringComparison.OrdinalIgnoreCase))
+                if (argument.Equals(parser.Prefix, StringComparison.OrdinalIgnoreCase))
                 {
                     return parser.ParseArgumentAsync(argument, root);
                 }
