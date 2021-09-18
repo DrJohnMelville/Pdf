@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -36,8 +37,32 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             );
         }
 
-        public void AddPage(PdfObject page) => pages.Add(Creator.AsIndirectReference(page));
-        
+        public void AddPageToPagesCollection(PdfObject page) => 
+            pages.Add(Creator.AsIndirectReference(page));
+
+        public PdfDictionary CreateUnattachedPage(PdfIndirectReference content) =>
+            new PdfDictionary(
+                (KnownNames.Type, KnownNames.Page),
+                (KnownNames.Parent, PagesParent), (KnownNames.MediaBox, new PdfArray(
+                    new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))),
+                (KnownNames.Contents, content),
+                (KnownNames.Resources,
+                    new PdfDictionary(
+                        (KnownNames.Font, new PdfDictionary((new PdfName("F1"), DefaultFont))),
+                        (KnownNames.ProcSet, DefaultProcSet))));
+
+        public PdfDictionary CreateUnattachedPage(PdfStream content) =>
+            CreateUnattachedPage(Creator.AsIndirectReference(content));
+
+        public async ValueTask<PdfDictionary> CreateUnattachedPageAsync(StreamDataSource source) =>
+            CreateUnattachedPage(
+                Creator.Add(
+                    await Creator.NewCompressedStream(source, KnownNames.FlateDecode)));
+
+        public async ValueTask CreateAttachedPage(StreamDataSource source)
+        {
+            Creator.Add(await CreateUnattachedPageAsync(source));
+        }
 
         public void FinalizePages()
         {
