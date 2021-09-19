@@ -30,6 +30,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             trailer = docBuilder.CreateTrailerDictionary();
             creator = new LowLevelDocumentCreator(docBuilder);
         }
+
         private async Task<string> Write(PdfLowLevelDocument doc)
         {
             var target = new MultiBufferStream();
@@ -47,20 +48,19 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             var str = await Write(doc);
             Assert.DoesNotContain("Encrypted String", str);
             Assert.DoesNotContain("encrypted stream", str);
-           
+
             var doc2 = await str.ParseWithPassword("User", PasswordType.User);
-            var outstr = await doc2.Objects[(1,0)].DirectValue();
+            var outstr = await doc2.Objects[(1, 0)].DirectValue();
             Assert.Equal("Encrypted String", outstr.ToString());
-            
         }
 
-        [Fact] 
+        [Fact]
         public void EcryptionRequiresAnID()
         {
             Assert.True(trailer.ContainsKey(KnownNames.ID));
         }
 
-        [Fact] 
+        [Fact]
         public async Task EcryptionWithV3Dictionary()
         {
             Assert.True(trailer.ContainsKey(KnownNames.Encrypt));
@@ -72,7 +72,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             Assert.Equal(32, (await dict.GetAsync<PdfString>(KnownNames.U)).Bytes.Length);
             Assert.Equal(32, (await dict.GetAsync<PdfString>(KnownNames.O)).Bytes.Length);
             Assert.Equal(KnownNames.Standard, (await dict.GetAsync<PdfName>(KnownNames.Filter)));
-            
         }
     }
 }

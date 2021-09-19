@@ -26,6 +26,6 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
             return null;
         }
 
-        protected abstract ValueTask WritePdfAsync(Stream target);
+        public abstract ValueTask WritePdfAsync(Stream target);
     }
 }

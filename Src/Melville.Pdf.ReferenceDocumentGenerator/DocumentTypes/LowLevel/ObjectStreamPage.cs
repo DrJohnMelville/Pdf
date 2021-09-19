@@ -14,7 +14,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         {
         }
 
-        protected override async ValueTask WritePdfAsync(Stream target) =>
+        public override async ValueTask WritePdfAsync(Stream target) =>
             await (await FiltersAsync()).CreateDocument().WriteToWithXrefStreamAsync(target);
 
         public static async ValueTask<ILowLevelDocumentCreator> FiltersAsync()

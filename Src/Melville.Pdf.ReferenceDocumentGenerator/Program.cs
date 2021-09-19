@@ -52,7 +52,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator
                 .OrderBy(SortByCommand);
 
         private static Func<Type, bool> IsGeneratorType() => i => 
-            i != typeof(CreatePdfParser) && i.IsAssignableTo(typeof(CreatePdfParser));
+            i != typeof(CreatePdfParser) && i.IsAssignableTo(typeof(CreatePdfParser)) && !i.IsAbstract;
 
         private static IArgumentParser CreateWithDefaultConstructor(Type i) => 
             (IArgumentParser)(Activator.CreateInstance(i) ?? 

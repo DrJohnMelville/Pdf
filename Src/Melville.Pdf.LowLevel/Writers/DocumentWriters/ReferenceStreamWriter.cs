@@ -35,7 +35,9 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 
         public async  ValueTask<FlushResult> Write() =>
             await new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStream())
-                .Visit(new PdfObjectWriter(target));
+                .Visit(UnencryptedPdfObjectWriter());
+
+        private PdfObjectWriter UnencryptedPdfObjectWriter() => new(target);
 
         private int XrefStreamObjectNumber() => objectOffsets.Entries.Length-1;
 
