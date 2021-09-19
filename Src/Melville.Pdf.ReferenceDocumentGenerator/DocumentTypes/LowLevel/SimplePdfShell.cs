@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -66,6 +66,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public void FinalizePages()
         {
+            AddDefaultObjects();
             var catalog = Creator.AsIndirectReference();
             var outlines = Creator.AsIndirectReference(new PdfDictionary((KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
             Creator.AssignValueToReference(PagesParent, new PdfDictionary((KnownNames.Type, KnownNames.Pages), (KnownNames.Kids, new PdfArray(pages)), (KnownNames.Count, new PdfInteger(pages.Count))));
@@ -76,33 +77,26 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             Creator.Add(PagesParent);
             
             Creator.AddToTrailerDictionary(KnownNames.Root, catalog);
-            
         }
-    }
 
-    public static class SimplePdfShell
-    {
-        public static async ValueTask<ILowLevelDocumentCreator> Generate(
-            int major, int minor, 
-            Func<ILowLevelDocumentCreator,PdfIndirectReference, 
-                ValueTask<IReadOnlyList<PdfObject>>> createPages)
+        private bool defaultObjectsSuppressed;
+
+        private void AddDefaultObjects()
         {
-            var builder = new LowLevelDocumentCreator();
-            builder.SetVersion((byte)major, (byte)minor);
-            var catalog = builder.AsIndirectReference();
-            var outlines = builder.AsIndirectReference(new PdfDictionary((KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
-            var pages = builder.AsIndirectReference();
-            var pageGroup = await createPages(builder, pages);
-            builder.AssignValueToReference(pages, new PdfDictionary((KnownNames.Type, KnownNames.Pages), (KnownNames.Kids, new PdfArray(pageGroup)), (KnownNames.Count, new PdfInteger(pageGroup.Count))));
-            builder.AssignValueToReference(catalog, new PdfDictionary((KnownNames.Type, KnownNames.Catalog), (KnownNames.Outlines, outlines), (KnownNames.Pages, pages)));
-
-            builder.Add(catalog);
-            builder.Add(outlines);
-            builder.Add(pages);
-            
-            builder.AddToTrailerDictionary(KnownNames.Root, catalog);
-            return builder;       
+            if (defaultObjectsSuppressed) return;
+            WriteSingleObject(defaultFont);
+            WriteSingleObject(defaultProcSet);
         }
 
+        private void WriteSingleObject(LazyPdfObject lazy)
+        {
+            if (lazy.HasValue)
+                Creator.Add(lazy.Value);
+        }
+
+        public void SuppressDefaultObjectWrite()
+        {
+            defaultObjectsSuppressed = true;
+        }
     }
 }

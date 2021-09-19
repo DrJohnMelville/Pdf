@@ -24,5 +24,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                 return reference;
             }
         }
+
+        public bool HasValue => reference != null;
     }
 }

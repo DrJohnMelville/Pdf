@@ -23,8 +23,6 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         public static async ValueTask<ILowLevelDocumentCreator> Filters()
         {
             var builder = new PdfCreator();
-            builder.Creator.Add(builder.DefaultFont);
-            builder.Creator.Add(builder.DefaultProcSet);
             await CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
                 KnownNames.RunLengthDecode);
             await CreatePage(builder, "LZW -- LateChange" + RandomString(9270), 
@@ -34,7 +32,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             await CreatePage(builder, "Ascii 85", KnownNames.ASCII85Decode);
             await CreatePage(builder, "Flate Decode", KnownNames.FlateDecode);
             await PredictionPage(builder, "Flate Decode With Tiff Predictor 2", 2 );
-            await PredictionPage(builder, "Flate Decode With Png Predictor 10", 10);
+            await PredictionPage(builder, "Flate De                                         code With Png Predictor 10", 10);
             await PredictionPage(builder, "Flate Decode With Png Predictor 11", 11);
             await PredictionPage(builder, "Flate Decode With Png Predictor 12", 12);
             await PredictionPage(builder, "Flate Decode With Png Predictor 13", 13);

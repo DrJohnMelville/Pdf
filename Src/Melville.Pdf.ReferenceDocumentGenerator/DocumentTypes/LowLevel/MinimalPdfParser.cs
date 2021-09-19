@@ -20,9 +20,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public static async ValueTask<ILowLevelDocumentCreator> MinimalPdf(int major, int minor)
         {
-            var builder = new PdfCreator();
-            builder.Creator.Add(builder.DefaultFont);
-            builder.Creator.Add(builder.DefaultProcSet);
+            var builder = new PdfCreator(major, minor);
             await builder.CreateAttachedPage("");
             builder.FinalizePages();
             return builder.Creator;
