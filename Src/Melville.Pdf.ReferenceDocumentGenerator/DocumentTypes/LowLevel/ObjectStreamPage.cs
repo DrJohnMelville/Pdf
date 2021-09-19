@@ -14,10 +14,10 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         {
         }
 
-        protected override async ValueTask WritePdf(Stream target) =>
-            await (await Filters()).CreateDocument().WriteToWithXrefStream(target);
+        protected override async ValueTask WritePdfAsync(Stream target) =>
+            await (await FiltersAsync()).CreateDocument().WriteToWithXrefStreamAsync(target);
 
-        public static async ValueTask<ILowLevelDocumentCreator> Filters()
+        public static async ValueTask<ILowLevelDocumentCreator> FiltersAsync()
         {
             var builder = new PdfCreator(1, 7);
                 builder.Creator.Add(

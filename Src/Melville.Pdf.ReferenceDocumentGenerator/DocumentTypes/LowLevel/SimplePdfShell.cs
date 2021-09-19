@@ -58,7 +58,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                 Creator.Add(
                     await Creator.NewCompressedStream(source, KnownNames.FlateDecode)));
 
-        public async ValueTask CreateAttachedPage(StreamDataSource source)
+        public async ValueTask CreateAttachedPageAsync(StreamDataSource source)
         {
             var page = await CreateUnattachedPageAsync(source);
             AddPageToPagesCollection(Creator.Add(page));

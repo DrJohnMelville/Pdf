@@ -7,9 +7,10 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 {
     public static class LowLevelDocumentWriterOperations
     {
-        public static Task WriteTo(this PdfLowLevelDocument doc, Stream s) => 
-            new LowLevelDocumentWriter(PipeWriter.Create(s), doc).WriteAsync();
-        public static Task WriteToWithXrefStream(this PdfLowLevelDocument doc, Stream s) => 
-            new LowLevelDocumentWriter(PipeWriter.Create(s), doc).WriteWithReferenceStream();
+        public static Task WriteToAsync(this PdfLowLevelDocument doc, Stream s, string userPassword = "") => 
+            new LowLevelDocumentWriter(PipeWriter.Create(s), doc, userPassword).WriteAsync();
+        public static Task WriteToWithXrefStreamAsync(
+            this PdfLowLevelDocument doc, Stream s, string userPassword = "") => 
+            new LowLevelDocumentWriter(PipeWriter.Create(s), doc, userPassword).WriteWithReferenceStream();
     }
 }

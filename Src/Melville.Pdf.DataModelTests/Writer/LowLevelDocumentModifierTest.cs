@@ -30,7 +30,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         private async Task<PdfLoadedLowLevelDocument> LoadedDocument(PdfLowLevelDocument doc)
         {
             var ms = new MultiBufferStream();
-            await doc.WriteTo(ms);
+            await doc.WriteToAsync(ms);
             return await RandomAccessFileParser.Parse(ms.CreateReader());
         }
 

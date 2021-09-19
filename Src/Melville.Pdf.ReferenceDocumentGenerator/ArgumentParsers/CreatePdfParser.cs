@@ -20,12 +20,12 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
             Console.WriteLine("Generating: " + Prefix);
             await using (var targetStream = root.Target.CreateTargetStream())
             {
-                await WritePdf(targetStream);
+                await WritePdfAsync(targetStream);
             }
             root.Target.View();
             return null;
         }
 
-        protected abstract ValueTask WritePdf(Stream target);
+        protected abstract ValueTask WritePdfAsync(Stream target);
     }
 }

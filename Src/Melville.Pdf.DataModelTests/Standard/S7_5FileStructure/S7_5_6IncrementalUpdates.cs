@@ -22,7 +22,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             create(creator);
             var doc = creator.CreateDocument();
             var stream = new MultiBufferStream();
-            await doc.WriteTo(stream);
+            await doc.WriteToAsync(stream);
 
             var ld = await RandomAccessFileParser.Parse(stream.CreateReader());
             var modifier = new LowLevelDocumentModifier(ld);

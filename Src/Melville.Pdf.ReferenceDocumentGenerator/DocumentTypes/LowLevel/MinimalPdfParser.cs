@@ -15,13 +15,13 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         {
         }
 
-        protected override async ValueTask WritePdf(Stream target) =>
-            await ( await MinimalPdf(1, 7)).CreateDocument().WriteTo(target);
+        protected override async ValueTask WritePdfAsync(Stream target) =>
+            await ( await MinimalPdf(1, 7)).CreateDocument().WriteToAsync(target);
 
         public static async ValueTask<ILowLevelDocumentCreator> MinimalPdf(int major, int minor)
         {
             var builder = new PdfCreator(major, minor);
-            await builder.CreateAttachedPage("");
+            await builder.CreateAttachedPageAsync("");
             builder.FinalizePages();
             return builder.Creator;
         }

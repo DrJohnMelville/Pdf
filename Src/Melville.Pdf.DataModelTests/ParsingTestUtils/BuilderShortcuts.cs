@@ -20,7 +20,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
         {
             var doc = creator.CreateDocument();
             var output = new MultiBufferStream();
-            await doc.WriteTo(output);
+            await doc.WriteToAsync(output);
             return output.CreateReader();
         }
         public static async Task<IFile> AsFileAsync(this ILowLevelDocumentCreator creator) =>
