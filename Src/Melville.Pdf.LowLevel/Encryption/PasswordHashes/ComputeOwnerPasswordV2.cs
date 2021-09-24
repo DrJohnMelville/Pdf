@@ -24,7 +24,7 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
             var userPass = new byte[ownerPasswordHash.Length];
             ownerPasswordHash.CopyTo(userPass, 0);
             SequentialRc4Encryptor.EncryptDownNTimes(
-                hash[..Rc4keyLengthBytes(keyLengthInBytes)], userPass, SequentialEncryptionCount());
+                hash[..keyLengthInBytes], userPass, SequentialEncryptionCount());
             return userPass;
         }
 
@@ -34,13 +34,11 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
             var ownerHash = OwnerPasswordHash(ownerKey);
             var ret = BytePadder.Pad(userKey);
             SequentialRc4Encryptor.EncryptNTimes(
-                ownerHash[..Rc4keyLengthBytes(keyLenInBytes)], ret, SequentialEncryptionCount());
+                ownerHash[..keyLenInBytes], ret, SequentialEncryptionCount());
             VerifyOwnerHashCanCreateUserKey(ownerKey, userKey, keyLenInBytes, ret);
             return ret;
         }
-
-        protected virtual int Rc4keyLengthBytes(int keyLenInBytes) => 5;
-
+        
         [Conditional("DEBUG")]
         private void VerifyOwnerHashCanCreateUserKey(ReadOnlySpan<byte> ownerKey, ReadOnlySpan<byte> userKey, int keyLenInBytes, byte[] ret)
         {

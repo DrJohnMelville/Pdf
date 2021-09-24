@@ -6,7 +6,6 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
     public class ComputeOwnerPasswordV3 : ComputeOwnerPasswordV2
     {
         protected override int SequentialEncryptionCount() => 20;
-        protected override int Rc4keyLengthBytes(int keyLenInBytes) => keyLenInBytes;
 
         protected override byte[] ComputeMd5Hash(Span<byte> paddedPassword)
         {
