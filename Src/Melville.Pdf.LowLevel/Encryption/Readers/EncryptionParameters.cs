@@ -25,6 +25,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             UserPasswordHash = userPasswordHash;
             Permissions = permissions;
             KeyLengthInBits = keyLengthInBits;
+            
         }
 
         public static async ValueTask<EncryptionParameters> Create(PdfDictionary trailer) =>

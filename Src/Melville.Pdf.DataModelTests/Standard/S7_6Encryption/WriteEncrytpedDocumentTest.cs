@@ -1,7 +1,9 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -26,7 +28,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             docBuilder.AddToTrailerDictionary(KnownNames.ID, new PdfArray(
                 new PdfString("12345678901234567890123456789012"),
                 new PdfString("12345678901234567890123456789012")));
-            docBuilder.AddEncryption(new DocumentEncryptorV3Rc4128("User", "Owner", PdfPermission.None));
+            docBuilder.AddEncryption(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
             trailer = docBuilder.CreateTrailerDictionary();
             creator = new LowLevelDocumentCreator(docBuilder);
         }

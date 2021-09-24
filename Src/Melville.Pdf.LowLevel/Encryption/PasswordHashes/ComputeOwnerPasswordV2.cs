@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.Readers;
 
@@ -13,13 +14,17 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
     }
     public class ComputeOwnerPasswordV2: IComputeOwnerPassword
     {
-        public byte[] UserKeyFromOwnerKey(in ReadOnlySpan<byte> ownerKey, EncryptionParameters parameters)
+        public byte[] UserKeyFromOwnerKey(in ReadOnlySpan<byte> ownerKey, EncryptionParameters parameters) => 
+            InnerUserKeyFromOwnerKey(ownerKey, parameters.OwnerPasswordHash, parameters.KeyLengthInBytes);
+
+        private byte[] InnerUserKeyFromOwnerKey(
+            ReadOnlySpan<byte> ownerKey, byte[] ownerPasswordHash, int keyLengthInBytes)
         {
             var hash = OwnerPasswordHash(ownerKey);
-
-            var userPass = new byte[parameters.OwnerPasswordHash.Length];
-            parameters.OwnerPasswordHash.CopyTo(userPass, 0);
-            SequentialRc4Encryptor.EncryptDownNTimes(hash[..parameters.KeyLengthInBytes], userPass, 20);
+            var userPass = new byte[ownerPasswordHash.Length];
+            ownerPasswordHash.CopyTo(userPass, 0);
+            SequentialRc4Encryptor.EncryptDownNTimes(
+                hash[..Rc4keyLengthBytes(keyLengthInBytes)], userPass, SequentialEncryptionCount());
             return userPass;
         }
 
@@ -27,10 +32,25 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
             in ReadOnlySpan<byte> ownerKey, in ReadOnlySpan<byte> userKey, int keyLenInBytes)
         {
             var ownerHash = OwnerPasswordHash(ownerKey);
-            var userHash = BytePadder.Pad(userKey);
-            SequentialRc4Encryptor.EncryptNTimes(ownerHash[..keyLenInBytes], userHash, 
-                SequentialEncryptionCount());
-            return userHash;
+            var ret = BytePadder.Pad(userKey);
+            SequentialRc4Encryptor.EncryptNTimes(
+                ownerHash[..Rc4keyLengthBytes(keyLenInBytes)], ret, SequentialEncryptionCount());
+            VerifyOwnerHashCanCreateUserKey(ownerKey, userKey, keyLenInBytes, ret);
+            return ret;
+        }
+
+        protected virtual int Rc4keyLengthBytes(int keyLenInBytes) => 5;
+
+        [Conditional("DEBUG")]
+        private void VerifyOwnerHashCanCreateUserKey(ReadOnlySpan<byte> ownerKey, ReadOnlySpan<byte> userKey, int keyLenInBytes, byte[] ret)
+        {
+            var backCompute = InnerUserKeyFromOwnerKey(ownerKey, ret, keyLenInBytes);
+            var paddedUser = BytePadder.Pad(userKey);
+            for (int i = 0; i < backCompute.Length; i++)
+            {
+                if (backCompute[i] != paddedUser[i])
+                    throw new InvalidProgramException("Owner key is not invertable");
+            }
         }
 
         protected virtual int SequentialEncryptionCount() => 1;
@@ -47,24 +67,5 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
             return MD5.HashData(paddedPassword);
         }
 
-    }
-
-    public class ComputeOwnerPasswordV3 : ComputeOwnerPasswordV2
-    {
-        protected override int SequentialEncryptionCount() => 20;
-
-        protected override byte[] ComputeMd5Hash(Span<byte> paddedPassword)
-        {
-            Span<byte> source = stackalloc byte[16];
-            Span<byte> dest = stackalloc byte[16];
-            MD5.HashData(paddedPassword, source);
-            for (int i = 0; i < 25; i++) // unroll the loop by two to avoid swaping the arguments
-            {
-                MD5.HashData(source, dest);
-                MD5.HashData(dest, source);
-            }
-
-            return source.ToArray();
-        }
     }
 }

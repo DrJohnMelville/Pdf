@@ -33,11 +33,6 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             await TrailerWriter.WriteTrailerWithDictionary(target, document.TrailerDictionary, xRefStart);
         }
 
-        private static ValueTask<IDocumentEncryptor> CreateDocumentEncryptor(
-            PdfLowLevelDocument document, string? userPassword) =>
-            SecurityHandlerEncryptorFactory.CreateDocumentEncryptor(
-                document.TrailerDictionary, userPassword);
-
         public async Task WriteWithReferenceStream()
         {
             document.VerifyCanSupportObjectStreams();

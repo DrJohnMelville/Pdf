@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers.Builder;
 using Moq;
 using Xunit;
 
@@ -13,6 +15,22 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
 {
     public class ComputeUserPasswordTest
     {
+        [Theory]
+        [InlineData(2, 128)]
+        [InlineData(2, 40)]
+        public async Task R3Rc4Ciphers(int V, int keyLengthInBits)
+        {
+            var de = new StandardDocumentEncryptor("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
+                new ComputeOwnerPasswordV3(), new ComputeUserPasswordV3(), new EncryptionKeyComputerV3());
+            var id = new PdfArray(
+                new PdfString("12345678901234567890123456789012"),
+                new PdfString("12345678901234567890123456789012"));
+            var encDict = de.CreateEncryptionDictionary(id);
+            var trailer = new PdfDictionary((KnownNames.ID, id), (KnownNames.Encrypt, encDict));
+            var handler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, encDict);
+            Assert.True(handler.TrySinglePassword(("User", PasswordType.User)));
+            
+        }
         [Theory]
         [InlineData(true,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile, "", PasswordType.User)] 
         [InlineData(false,V2R3128RC4CipherWithBlankUserPasswordFromExampleFile,

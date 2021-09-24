@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
@@ -7,8 +9,10 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 {
     public static class HexStrings
     {
-        public static string AsHex(this byte[] str) =>
+        public static string AsHex(this IEnumerable<byte> str) =>
             string.Join(" ", str.Select(i => i.ToString("X2")));
+        public static string AsHex(in this ReadOnlySpan<byte> str) =>
+            string.Join(" ", str.ToArray().Select(i => i.ToString("X2")));
     }
     [DebuggerDisplay("PdfString ({ToString()}) <{Bytes.AsHex()}>")]
     public sealed class PdfString : PdfByteArrayObject
