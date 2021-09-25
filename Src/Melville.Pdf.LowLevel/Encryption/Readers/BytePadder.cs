@@ -7,7 +7,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
     {
         public static byte[] Pad(in ReadOnlySpan<byte> input)
         {
-            if (input.Length == 0) return PdfPasswordPaddingBytes;
             var ret = new byte[32];
             Pad(input, ret);
             return ret;
