@@ -40,6 +40,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
                         new ComputeUserPasswordV3(),
                         new ComputeOwnerPasswordV3(),
                         new Rc4DecryptorFactory()),
+                var i when i == KnownNames.None => new NullSecurityHandler(),
                 _ => throw new PdfSecurityException("Unknown Security Handler Type")
             };
         }
