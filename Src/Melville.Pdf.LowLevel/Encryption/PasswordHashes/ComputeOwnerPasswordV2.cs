@@ -35,20 +35,7 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
             var ret = BytePadder.Pad(userKey);
             SequentialRc4Encryptor.EncryptNTimes(
                 ownerHash[..keyLenInBytes], ret, SequentialEncryptionCount());
-            VerifyOwnerHashCanCreateUserKey(ownerKey, userKey, keyLenInBytes, ret);
             return ret;
-        }
-        
-        [Conditional("DEBUG")]
-        private void VerifyOwnerHashCanCreateUserKey(ReadOnlySpan<byte> ownerKey, ReadOnlySpan<byte> userKey, int keyLenInBytes, byte[] ret)
-        {
-            var backCompute = InnerUserKeyFromOwnerKey(ownerKey, ret, keyLenInBytes);
-            var paddedUser = BytePadder.Pad(userKey);
-            for (int i = 0; i < backCompute.Length; i++)
-            {
-                if (backCompute[i] != paddedUser[i])
-                    throw new InvalidProgramException("Owner key is not invertable");
-            }
         }
 
         protected virtual int SequentialEncryptionCount() => 1;
