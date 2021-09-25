@@ -6,7 +6,6 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
 {
     public sealed class ComputeUserPasswordV2 : IComputeUserPassword
     {
-        #warning V2 passwords are untested
         public byte[] ComputeHash(in ReadOnlySpan<byte> encryptionKey, EncryptionParameters parameters)
         {
             var rc4 = new RC4(encryptionKey);

@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encryption;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
@@ -16,8 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         private async Task TestEncryptedFile(
             CreatePdfParser gen, int V, int R, int keyLengthInBits)
         {
-            var target = new MultiBufferStream();
-            await gen.WritePdfAsync(target);
+            var target = await gen.AsMultiBuf();
             await VerifyUserPasswordWorks(V, R, keyLengthInBits, target);
             await ParseTarget(target, PasswordType.Owner, "Owner");
         }
@@ -53,5 +53,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         public Task V2R3Rc4Key128Kb40() => TestEncryptedFile(new EncryptedV3Rc4KeyBits40(), 2,3,40);
         [Fact]
         public Task EncRefStr() => TestEncryptedFile(new EncryptedRefStm(), 2, 3, 128);
+        [Fact]
+        public Task SimpleV4Rc4128() => TestEncryptedFile(new Encryptedv4Rc4128(), 4, 4, 128);
+
+        [Fact] public Task V4StreamsPlain() => TestEncryptedFile(new EncryptedV4StreamsPlain(), 4, 4, 128);
     }
 }

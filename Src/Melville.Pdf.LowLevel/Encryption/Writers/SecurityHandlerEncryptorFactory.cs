@@ -18,7 +18,8 @@ namespace Melville.Pdf.LowLevel.Encryption.Writers
             var securityHandler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, dict);
             if (!securityHandler.TrySinglePassword((userPassword, PasswordType.User)))
                 throw new ArgumentException("Incorrect user key for encryption");
-            return new SecurityHandlerDocumentEncryptor(securityHandler);
+            return new SecurityHandlerDocumentEncryptor(securityHandler, 
+                trailer.RawItems[KnownNames.Encrypt]);
         }
     }
     
@@ -26,16 +27,25 @@ namespace Melville.Pdf.LowLevel.Encryption.Writers
     public class SecurityHandlerDocumentEncryptor : IDocumentEncryptor
     {
         private ISecurityHandler handler;
+        private readonly PdfIndirectObject? encryptDictionaryReference;
 
-        public SecurityHandlerDocumentEncryptor(ISecurityHandler handler)
+        public SecurityHandlerDocumentEncryptor(ISecurityHandler handler, 
+            PdfObject encryptDictionaryReference)
         {
             this.handler = handler;
+            this.encryptDictionaryReference = GetEncryptDictReferenceObject(encryptDictionaryReference) ;
         }
 
-        public IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfObject target)
-        {
-            return handler.EncryptorForObject(parentObject, target);
-        }
+        private PdfIndirectObject? GetEncryptDictReferenceObject(PdfObject obj) =>
+            obj is PdfIndirectReference pir ? pir.Target : null;
+
+        public IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfObject target) =>
+            IsEncryptDictionary(parentObject) ?
+                NullObjectEncryptor.Instance : 
+                handler.EncryptorForObject(parentObject, target);
+
+        private bool IsEncryptDictionary(PdfIndirectObject parentObject) => 
+            encryptDictionaryReference == parentObject;
     }
     
     

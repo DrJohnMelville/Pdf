@@ -20,7 +20,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
         [InlineData(2, 40)]
         public async Task R3Rc4Ciphers(int V, int keyLengthInBits)
         {
-            var de = new StandardDocumentEncryptor("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
+            var de = new ComputeEncryptionDictionary("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
                 new ComputeOwnerPasswordV3(), new ComputeUserPasswordV3(), new EncryptionKeyComputerV3());
             var id = new PdfArray(
                 new PdfString("12345678901234567890123456789012"),

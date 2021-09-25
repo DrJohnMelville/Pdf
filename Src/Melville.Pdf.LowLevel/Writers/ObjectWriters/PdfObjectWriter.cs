@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -48,8 +49,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             StreamWriter.Write(target, this, item, CreateEncryptor(item));
         
         private IObjectEncryptor CreateEncryptor(PdfObject target) =>
-            currentIndirectObject is null?
-                NullObjectEncryptor.Instance : 
                 encryptor.CreateEncryptor(currentIndirectObject, target);
+
     }
 }

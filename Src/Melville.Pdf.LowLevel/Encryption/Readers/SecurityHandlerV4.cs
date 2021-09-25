@@ -39,13 +39,13 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         private ISecurityHandler HandlerForStream(PdfStream stream)
         {
             #warning need to tesr a stream with a crypt filter.
-            var namedFilter = cryptFilterName(stream).GetAwaiter().GetResult();
+            var namedFilter = CryptFilterName(stream).GetAwaiter().GetResult();
             return (namedFilter is not null && handlers.TryGetValue(namedFilter, out var handler))
                 ? handler
                 : defaultStreamHandler;
         }
 
-        private async ValueTask<PdfName?> cryptFilterName(PdfStream stream)
+        private async ValueTask<PdfName?> CryptFilterName(PdfStream stream)
         {
             var filters = (await stream.GetOrNullAsync(KnownNames.Filter)).AsList();
             var filterParams = (await stream.GetOrNullAsync(KnownNames.DecodeParms)).AsList();

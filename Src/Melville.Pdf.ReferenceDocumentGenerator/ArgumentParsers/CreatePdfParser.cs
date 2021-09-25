@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
 {
@@ -27,5 +28,17 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
         }
 
         public abstract ValueTask WritePdfAsync(Stream target);
+    }
+
+    public static class CreatePdfParserOperations
+    {
+        public static async ValueTask<MultiBufferStream> AsMultiBuf(this CreatePdfParser source)
+        {
+            var target = new MultiBufferStream();
+            await source.WritePdfAsync(target);
+            return target;
+        }
+        public static async ValueTask<string> AsString(this CreatePdfParser source) => 
+            await new StreamReader((await source.AsMultiBuf()).CreateReader()).ReadToEndAsync();
     }
 }

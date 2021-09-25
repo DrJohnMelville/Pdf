@@ -22,7 +22,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         {
             builder.AddToTrailerDictionary(
                 KnownNames.Encrypt,
-                encryptor.CreateEncryptionDictionary(builder.EnsureDocumentHasId()));
+                builder.Add(
+                    encryptor.CreateEncryptionDictionary(builder.EnsureDocumentHasId())));
         }
         
     }
