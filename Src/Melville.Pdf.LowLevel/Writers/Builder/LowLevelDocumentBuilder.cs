@@ -13,6 +13,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation);
         void AddToTrailerDictionary(PdfName key, PdfObject item);
         public PdfArray EnsureDocumentHasId();
+        public byte[] UserPassword { get; set; }
     }
 
     public static class BuildEncryptedDocument
@@ -20,6 +21,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public static void AddEncryption(
             this ILowLevelDocumentBuilder builder,ILowLevelDocumentEncryptor encryptor)
         {
+            builder.UserPassword = encryptor.UserPassword;
             builder.AddToTrailerDictionary(
                 KnownNames.Encrypt,
                 builder.Add(
@@ -33,6 +35,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         private int nextObject;
         public List<PdfIndirectReference> Objects { get;  }= new();
         private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
+
+        public byte[] UserPassword { get; set; }
 
         public LowLevelDocumentBuilder(int nextObject = 1)
         {

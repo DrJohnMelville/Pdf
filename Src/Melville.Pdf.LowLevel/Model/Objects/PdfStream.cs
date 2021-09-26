@@ -46,13 +46,28 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public async ValueTask<Stream> GetDecodedStreamAsync(int desiredFormat = int.MaxValue) =>
             await Decoder.DecodeStream( await TryDecrypt(await GetEncodedStreamAsync()),
-                (await this.GetOrNullAsync(KnownNames.Filter)).AsList(), 
-                (await this.GetOrNullAsync(KnownNames.DecodeParms)).AsList(),
+                await FilterList(), 
+                await FilterParamList(),
                 desiredFormat, source);
+
+        private async ValueTask<IReadOnlyList<PdfObject>> FilterList() => 
+            (await this.GetOrNullAsync(KnownNames.Filter)).AsList();
+        private async ValueTask<IReadOnlyList<PdfObject>> FilterParamList() => 
+            (await this.GetOrNullAsync(KnownNames.DecodeParms)).AsList();
+
+        public async ValueTask<bool> HasFilterOfType(PdfName filterType)
+        {
+            foreach (var item in await FilterList())
+            {
+                if ((await item.DirectValue()) == filterType) return true;
+            }
+            return false;
+        }
 
         private async ValueTask<Stream> TryDecrypt(Stream s)
         {
-            return await this.GetOrNullAsync(KnownNames.Type) == KnownNames.XRef ? s : source.WrapStreamWithDecryptor(s, KnownNames.StmF);
+            return await this.GetOrNullAsync(KnownNames.Type) == KnownNames.XRef ||
+                await HasFilterOfType(KnownNames.Crypt)? s : source.WrapStreamWithDecryptor(s, KnownNames.StmF);
         }
 
         public async ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync()

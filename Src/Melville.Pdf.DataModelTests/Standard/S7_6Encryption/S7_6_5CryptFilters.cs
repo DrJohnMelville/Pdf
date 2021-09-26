@@ -19,7 +19,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream = null)
         {
             creator.Add(new PdfString("plaintext string"));
-            creator.Add(creator.NewStream("plaintext stream", CreateCryptFilter(cryptFilterTypeForStream)));
+            creator.Add(await InsertedStream(creator, cryptFilterTypeForStream));
             var str = await creator.AsStringAsync();
             Assert.Equal(!hideString, str.Contains("plaintext string"));
             Assert.Equal(!hideStream, str.Contains("plaintext stream"));
@@ -32,15 +32,14 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
                 .ReadAsStringAsync());
         }
 
-        private (PdfName name, PdfObject item)[] CreateCryptFilter(PdfName? filter)
+        private async ValueTask<PdfStream> InsertedStream(
+            LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream)
         {
-            return filter == null ? Array.Empty<(PdfName, PdfObject)>() : new (PdfName name, PdfObject item)[]
-            {
-                (KnownNames.Filter, KnownNames.Crypt),
-                (KnownNames.DecodeParms, new PdfDictionary(
-                    (KnownNames.Type, KnownNames.CryptFilterDecodeParms),
-                    (KnownNames.Name, filter)))
-            };
+            return cryptFilterTypeForStream == null? creator.NewStream("plaintext stream"):
+                    await creator.NewCompressedStream("plaintext stream", KnownNames.Crypt,
+                        new PdfDictionary(
+                            (KnownNames.Type, KnownNames.CryptFilterDecodeParms),
+                            (KnownNames.Name, cryptFilterTypeForStream)));
         }
 
         [Theory]
@@ -66,7 +65,16 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         }
 
         [Fact]
-        public  Task NoneCrptFilterWorks()
+        public Task UseCryptFilterToOptIntoEncryption()
+        {
+            var creator = new LowLevelDocumentCreator();
+            creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
+                KnownNames.Identity, KnownNames.StdCF, new V4CfDictionary(KnownNames.V2, 16)));
+            return VerifyStringAndStreamEncoding(true, true, creator, KnownNames.StdCF);
+        }
+
+        [Fact]
+        public  Task StreamsWithoutCryptFilterGetDefaultEncryption()
         {
             var creator = new LowLevelDocumentCreator();
             creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,

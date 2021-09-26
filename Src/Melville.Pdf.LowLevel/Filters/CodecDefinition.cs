@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
+using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Filters.Predictors;
@@ -59,7 +60,8 @@ namespace Melville.Pdf.LowLevel.Filters
                 { KnownNames.LZWDecode, new CodecDefinition(
                     async p => new LzwEncodeFilter(await p.EarlySwitchLength()),
                     async p => new LzwDecodeFilter(await p.EarlySwitchLength())) },
-                { KnownNames.FlateDecode, new FlateCodecDefinition() }
+                { KnownNames.FlateDecode, new FlateCodecDefinition() },
+                { KnownNames.Crypt, new CryptFilterCodec()}
             };
 
         private static CodecDefinition ConstantCodec(
