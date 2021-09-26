@@ -15,11 +15,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
 {
     public class S7_6_5CryptFilters
     {
-        private static async Task VerifyStringAndStreamEncoding(bool hideStream, bool hideString,
-            LowLevelDocumentCreator creator)
+        private async Task VerifyStringAndStreamEncoding(bool hideStream, bool hideString,
+            LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream = null)
         {
             creator.Add(new PdfString("plaintext string"));
-            creator.Add(creator.NewStream("plaintext stream"));
+            creator.Add(creator.NewStream("plaintext stream", CreateCryptFilter(cryptFilterTypeForStream)));
             var str = await creator.AsStringAsync();
             Assert.Equal(!hideString, str.Contains("plaintext string"));
             Assert.Equal(!hideStream, str.Contains("plaintext stream"));
@@ -30,6 +30,17 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
                     await ((PdfStream)(
                         await doc.Objects[(3, 0)].DirectValue().ConfigureAwait(false))).GetDecodedStreamAsync())
                 .ReadAsStringAsync());
+        }
+
+        private (PdfName name, PdfObject item)[] CreateCryptFilter(PdfName? filter)
+        {
+            return filter == null ? Array.Empty<(PdfName, PdfObject)>() : new (PdfName name, PdfObject item)[]
+            {
+                (KnownNames.Filter, KnownNames.Crypt),
+                (KnownNames.DecodeParms, new PdfDictionary(
+                    (KnownNames.Type, KnownNames.CryptFilterDecodeParms),
+                    (KnownNames.Name, filter)))
+            };
         }
 
         [Theory]
@@ -46,18 +57,25 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         }
 
         [Fact]
-        public async Task NoneCrptFilterWorks()
+        public Task UseIdentityCryptFilterToGEtOutOfStreamEncryption()
+        {
+            var creator = new LowLevelDocumentCreator();
+            creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
+                KnownNames.StdCF, KnownNames.StdCF, new V4CfDictionary(KnownNames.V2, 16)));
+            return VerifyStringAndStreamEncoding(false, true, creator, KnownNames.Identity);
+        }
+
+        [Fact]
+        public  Task NoneCrptFilterWorks()
         {
             var creator = new LowLevelDocumentCreator();
             creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
                 Encoder(true), Encoder(true), new V4CfDictionary(KnownNames.None, 16)));
-            await VerifyStringAndStreamEncoding(false, false, creator);
+            return VerifyStringAndStreamEncoding(false, false, creator);
             
         }
         
-        private static PdfName Encoder(bool hideString)
-        {
-            return hideString?KnownNames.StdCF:KnownNames.Identity;
-        }
+        private static PdfName Encoder(bool hideString) => 
+            hideString?KnownNames.StdCF:KnownNames.Identity;
     }
 }

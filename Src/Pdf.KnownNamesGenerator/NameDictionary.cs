@@ -164,6 +164,7 @@ namespace Pdf.KnownNamesGenerator
             ("CRLs", "CRLs"),
             ("CropBox", "CropBox"),
             ("Crypt", "Crypt"),
+            ("CryptFilterDecodeParms", "CryptFilterDecodeParms"),
             ("CS", "CS"),
             ("CuePoint", "CuePoint"),
             ("CuePoints", "CuePoints"),
