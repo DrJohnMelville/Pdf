@@ -11,6 +11,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
     public interface IStreamDataSource
     {
         ValueTask<Stream> OpenRawStream(long streamLength, PdfStream stream);
+        Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName? cryptFilterName);
     }
     
     public class PdfStream : PdfDictionary, IHasInternalIndirectObjects

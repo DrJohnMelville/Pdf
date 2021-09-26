@@ -45,7 +45,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
                 } 
             }
 
-            public Stream WrapRawStream(Stream input, PdfStream targetStream) => 
+            public Stream WrapRawStream(Stream input, PdfName cryptFilterName) => 
                 new MemoryStream("Decoded".AsExtendedAsciiBytes());
         }
         

@@ -22,11 +22,13 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
                 var length = await cryptDictionary.GetAsync<PdfNumber>(KnownNames.Length);
                 finalDictionary.Add(entry.Key, CreateSubSecurityHandler(encryptionParameters, cfm, length));
             }
+            
+            finalDictionary.Add(KnownNames.StmF, 
+                finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StmF, KnownNames.Identity)]);
+            finalDictionary.Add(KnownNames.StrF, 
+                finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity)]);
 
-            return new SecurityHandlerV4(
-                finalDictionary,
-                await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity),
-                await encryptionDictionary.GetOrDefaultAsync(KnownNames.StmF, KnownNames.Identity));
+            return new SecurityHandlerV4(finalDictionary);
         }
 
         private static ISecurityHandler CreateSubSecurityHandler(

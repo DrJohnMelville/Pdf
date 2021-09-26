@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Parsing.Decryptors
@@ -7,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Parsing.Decryptors
     public interface IDecryptor
     {
         void DecryptStringInPlace(PdfString input);
-        Stream WrapRawStream(Stream input, PdfStream targetStream);
+        Stream WrapRawStream(Stream input, PdfName cryptFilterName);
     }
     
     
@@ -19,7 +20,8 @@ namespace Melville.Pdf.LowLevel.Parsing.Decryptors
         {
             ; // do nothing
         }
-        public Stream WrapRawStream(Stream input, PdfStream targetStream) => input;
+
+        public Stream WrapRawStream(Stream input, PdfName cryptFilterName) => input;
     }
 
 }

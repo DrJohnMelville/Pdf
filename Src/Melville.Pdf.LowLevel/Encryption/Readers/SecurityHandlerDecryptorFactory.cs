@@ -56,14 +56,16 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         //to GC and computation to find a specific key.  We put this off as long as we can by
         //implementing IDecryptor ourself, and then genenrating the real IDecryptor just in time
         //for any operations.  I could cache the decryptor, but do not do that right now.
-        private IDecryptor CreateDecryptor(PdfObject target) => 
-            handler.DecryptorForObject(objectNumber, generationNumber, target);
+        private IDecryptor CreateDecryptor(PdfName cryptFilterName) => 
+            handler.DecryptorForObject(objectNumber, generationNumber, cryptFilterName);
 
         public void DecryptStringInPlace(PdfString input) =>
-            CreateDecryptor(input).DecryptStringInPlace(input);
+            CreateDecryptor(KnownNames.StrF).DecryptStringInPlace(input);
 
-        public Stream WrapRawStream(Stream input, PdfStream targetStream) =>
-            CreateDecryptor(targetStream).WrapRawStream(input, targetStream);
+        public Stream WrapRawStream(Stream input, PdfName cryptFilterName)
+        {
+            return CreateDecryptor(cryptFilterName).WrapRawStream(input, cryptFilterName);
+        }
     }
 
 }

@@ -26,5 +26,8 @@ namespace Melville.Pdf.LowLevel.Writers
           Debug.Assert(streamLength == source.Length);
           return new ValueTask<Stream>(source.CreateReader());
         }
+
+        public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) =>
+            encryptedStream;
     }
 }

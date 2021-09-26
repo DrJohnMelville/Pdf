@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
     public class S7_6_5CryptFilters
     {
         private static async Task VerifyStringAndStreamEncoding(bool hideStream, bool hideString,
-            LowLevelDocumentCreator? creator)
+            LowLevelDocumentCreator creator)
         {
             creator.Add(new PdfString("plaintext string"));
             creator.Add(creator.NewStream("plaintext stream"));

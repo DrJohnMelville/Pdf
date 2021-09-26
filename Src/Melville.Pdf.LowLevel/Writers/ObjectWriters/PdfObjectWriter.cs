@@ -26,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
             TokenValueWriter.Write(target, item);
         public override ValueTask<FlushResult> Visit(PdfString item) => 
-            StringWriter.Write(target, item, CreateEncryptor(item));
+            StringWriter.Write(target, item, CreateEncryptor(KnownNames.StrF));
         public override ValueTask<FlushResult> Visit(PdfInteger item) =>
             IntegerWriter.WriteAndFlush(target, item.IntValue);
         public override ValueTask<FlushResult> Visit(PdfDouble item) =>
@@ -46,10 +46,10 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         public override ValueTask<FlushResult> Visit(PdfDictionary item) =>
             DictionaryWriter.Write(target, this, item.RawItems);
         public override ValueTask<FlushResult> Visit(PdfStream item) =>
-            StreamWriter.Write(target, this, item, CreateEncryptor(item));
+            StreamWriter.Write(target, this, item, CreateEncryptor(KnownNames.StmF));
         
-        private IObjectEncryptor CreateEncryptor(PdfObject target) =>
-                encryptor.CreateEncryptor(currentIndirectObject, target);
+        private IObjectEncryptor CreateEncryptor(PdfName cryptFilterName) =>
+                encryptor.CreateEncryptor(currentIndirectObject, cryptFilterName);
 
     }
 }

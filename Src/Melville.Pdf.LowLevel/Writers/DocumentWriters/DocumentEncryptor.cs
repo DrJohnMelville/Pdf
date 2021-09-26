@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 {
     public interface IDocumentEncryptor
     {
-        IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfObject target);
+        IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfName cryptFilterName);
     }
 
     public interface IObjectEncryptor
@@ -25,7 +25,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         {
         }
 
-        public IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfObject target) =>
+        public IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfName cryptFilterName) =>
             NullObjectEncryptor.Instance;
     }
 
