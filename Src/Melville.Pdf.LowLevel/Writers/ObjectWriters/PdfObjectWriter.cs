@@ -49,6 +49,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             StreamWriter.Write(target, this, item, CreateEncryptor(KnownNames.StmF));
         
         private IObjectEncryptor CreateEncryptor(PdfName cryptFilterName) =>
+            currentIndirectObject == null ? NullObjectEncryptor.Instance : 
                 encryptor.CreateEncryptor(currentIndirectObject, cryptFilterName);
 
     }

@@ -10,10 +10,10 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 {
     public interface IStreamDataSource
     {
-        ValueTask<Stream> OpenRawStream(long streamLength, PdfStream stream);
-        Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName? cryptFilterName);
+        ValueTask<Stream> OpenRawStream(long streamLength);
+        Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName);
     }
-    
+
     public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     {
         private IStreamDataSource source;
@@ -38,19 +38,22 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
-        public async ValueTask<Stream> GetEncodedStreamAsync()
-        {
-            return await source.OpenRawStream(await DeclaredLengthAsync(), this);
-        }
+        public async ValueTask<Stream> GetEncodedStreamAsync() => 
+            await source.OpenRawStream(await DeclaredLengthAsync());
 
         public async ValueTask<long> DeclaredLengthAsync() => 
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
 
         public async ValueTask<Stream> GetDecodedStreamAsync(int desiredFormat = int.MaxValue) =>
-            await Decoder.DecodeStream(await GetEncodedStreamAsync(),
+            await Decoder.DecodeStream( await TryDecrypt(await GetEncodedStreamAsync()),
                 (await this.GetOrNullAsync(KnownNames.Filter)).AsList(), 
                 (await this.GetOrNullAsync(KnownNames.DecodeParms)).AsList(),
-                desiredFormat);
+                desiredFormat, source);
+
+        private async ValueTask<Stream> TryDecrypt(Stream s)
+        {
+            return await this.GetOrNullAsync(KnownNames.Type) == KnownNames.XRef ? s : source.WrapStreamWithDecryptor(s, KnownNames.StmF);
+        }
 
         public async ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync()
         {

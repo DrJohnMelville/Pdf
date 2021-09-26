@@ -8,9 +8,8 @@ namespace Melville.Pdf.LowLevel.Filters
 {
     public static class Decoder
     {
-        public static async ValueTask<Stream> DecodeStream(
-            Stream source, IReadOnlyList<PdfObject> filters, 
-            IReadOnlyList<PdfObject> parameters, int desiredFormat)
+        public static async ValueTask<Stream> DecodeStream(Stream source, IReadOnlyList<PdfObject> filters,
+            IReadOnlyList<PdfObject> parameters, int desiredFormat, IStreamDataSource streamDataSource)
         {
             desiredFormat = Math.Min(desiredFormat, filters.Count);
             for (var i = 0; i < desiredFormat; i++)

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -19,7 +16,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             this.handlers = handlers;
         }
 
-        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfName? cryptFilterForName)
+        public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfName cryptFilterForName)
         {
             return PickHandler(cryptFilterForName)
                 .DecryptorForObject(objectNumber, generationNumber, cryptFilterForName);
