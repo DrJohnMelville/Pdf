@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
@@ -63,7 +64,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         public async Task VerifyDisposal()
         {
             var str = await EncodedStreamAsync();
-            var dispSource = new StreamDisposeSource(await str.GetEncodedStreamAsync());
+            var dispSource = new StreamDisposeSource(await str.GetEncodedStreamAsync(), StreamFormat.DiskRepresentation);
             var wrappedStream = await new PdfStream(dispSource, str.RawItems).GetDecodedStreamAsync();
             Assert.False(dispSource.IsDisposed);
             await wrappedStream.DisposeAsync();
@@ -81,7 +82,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         {
             var inner = await EncodedStreamAsync();
             var src = new PassthroughStreamSource(
-                new OneCharAtAtimeStream(await inner.GetEncodedStreamAsync()));
+                new OneCharAtAtimeStream(await inner.GetEncodedStreamAsync()), StreamFormat.DiskRepresentation);
             var proxy = new PdfStream(src, inner.RawItems);
             await VerifyDecodedStream(new OneCharAtAtimeStream(await proxy.GetDecodedStreamAsync()));
         }

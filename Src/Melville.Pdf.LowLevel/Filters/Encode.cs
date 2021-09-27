@@ -12,7 +12,9 @@ namespace Melville.Pdf.LowLevel.Filters
             var algorithms = algorithm.AsList();
             return DoCompress(data.Stream, algorithms, parameters.AsList(), algorithms.Count - 1);
         }
-        private static async ValueTask<Stream> DoCompress(Stream data, IReadOnlyList<PdfObject> algorithms, IReadOnlyList<PdfObject> parameters, int which)
+        private static async ValueTask<Stream> DoCompress(
+            Stream data, IReadOnlyList<PdfObject> algorithms, IReadOnlyList<PdfObject> parameters, 
+            int which)
         {
             for (var i = which; i >= 0; i--)
             {

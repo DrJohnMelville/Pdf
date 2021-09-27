@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities
@@ -8,9 +9,12 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
     {
         private readonly Stream data;
 
-        public PassthroughStreamSource(Stream data)
+        public StreamFormat SourceFormat { get; }
+
+        public PassthroughStreamSource(Stream data, StreamFormat sourceFormat)
         {
             this.data = data;
+            SourceFormat = sourceFormat;
         }
 
         public ValueTask<Stream> OpenRawStream(long streamLength) => new(data);

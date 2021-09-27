@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -11,6 +12,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         private long sourceFilePosition;
         private readonly ParsingFileOwner parsingFileOwner;
         private readonly IDecryptor decryptor;
+        public StreamFormat SourceFormat => StreamFormat.DiskRepresentation;
 
         public InlineStreamSource(
             long sourceFilePosition, ParsingFileOwner parsingFileOwner, IDecryptor decryptor)

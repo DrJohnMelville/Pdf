@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities
@@ -12,9 +13,12 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [DelegateTo()]
         private readonly Stream source;
 
-        public StreamDisposeSource(Stream source)
+        public StreamFormat SourceFormat { get; }
+
+        public StreamDisposeSource(Stream source, StreamFormat sourceFormat)
         {
             this.source = source;
+            SourceFormat = sourceFormat;
         }
 
         protected override void Dispose(bool disposing)

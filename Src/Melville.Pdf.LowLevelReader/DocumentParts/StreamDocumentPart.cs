@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Melville.FileSystem;
 using Melville.INPC;
 using Melville.Linq;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -18,7 +19,7 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
     {
         private readonly PdfStream source;
         [AutoNotify] private string displayContent = "";
-        [AutoNotify] private int selectedFormat = 0;
+        [AutoNotify] private StreamFormat selectedFormat = StreamFormat.DiskRepresentation;
 
         private string DisplayContentGetFilter(string item)
         {

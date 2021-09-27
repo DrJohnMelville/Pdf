@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -65,7 +66,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
             IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
-            return new(new LiteralStreamSource(streamData.Stream),
+            return new(new LiteralStreamSource(streamData.Stream, StreamFormat.WithoutImplicitEncryption),
                 StreamDictionary(items, (int)streamData.Stream.Length));
         }
 
@@ -81,6 +82,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         public static PdfStream NewStream(this ILowLevelDocumentBuilder _, byte[] streamData, params
             (PdfName Name, PdfObject Value)[] items) =>
-            new(new LiteralStreamSource(streamData), StreamDictionary(items, streamData.Length));
+            new(new LiteralStreamSource(streamData, StreamFormat.WithoutImplicitEncryption),
+                StreamDictionary(items, streamData.Length));
     }
 }

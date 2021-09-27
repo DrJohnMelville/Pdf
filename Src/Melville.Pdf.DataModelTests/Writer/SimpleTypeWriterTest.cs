@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
@@ -105,7 +106,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [Fact]
         public async Task WriteStream()
         {
-            var array = new PdfStream(new LiteralStreamSource("Hello"), new Dictionary<PdfName, PdfObject>()
+            var array = new PdfStream(new LiteralStreamSource("Hello", StreamFormat.PlainText), new Dictionary<PdfName, PdfObject>()
             {
                 {KnownNames.Length, new PdfInteger(5)},
             });
