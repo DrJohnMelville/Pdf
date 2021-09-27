@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -24,9 +23,9 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
 
         private static Stream TryEncrypt(
             Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
-            ShouldEncrypt(sourceFormat, targetFormat) ?
+            ShouldEncrypt(sourceFormat, targetFormat) ? source
                 //innerProcessor.StreamInDesiredEncoding(streamSource.Encrypt(source, ))
-                throw new NotImplementedException("Need to handle stream encryption")
+                //throw new NotImplementedException("Need to handle stream encryption")
                 : source;
 
         private static bool ShouldEncrypt(

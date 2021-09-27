@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.Writers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 

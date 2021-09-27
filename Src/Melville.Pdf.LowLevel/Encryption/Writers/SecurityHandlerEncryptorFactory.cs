@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption.Readers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;

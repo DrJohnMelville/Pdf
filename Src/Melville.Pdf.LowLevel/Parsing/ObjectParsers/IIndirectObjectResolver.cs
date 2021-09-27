@@ -54,7 +54,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             ParsingFileOwner owner, PdfStream source, int objectNumber)
         {
             PdfObject ret = PdfTokenValues.Null;
-            await using var data = await source.GetDecodedStreamAsync();
+            await using var data = await source.StreamContent();
             var reader = owner.ParsingReaderForStream(data, 0);
             var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
                 source, reader.AsPipeReader());

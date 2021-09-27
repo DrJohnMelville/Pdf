@@ -41,7 +41,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             var str = await creator.NewCompressedStream(buffer, KnownNames.LZWDecode,
                 EarlySwitch < 2? param:null);
             var destination = new byte[length];
-            var decoded = await str.GetDecodedStreamAsync();
+            var decoded = await str.StreamContent();
             await decoded.FillBufferAsync(destination, 0, length);
             Assert.Equal(buffer.Length, destination.Length);
 

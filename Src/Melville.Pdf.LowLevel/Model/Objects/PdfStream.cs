@@ -40,13 +40,18 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
-        public async ValueTask<Stream> GetEncodedStreamAsync() => 
-            await source.OpenRawStream(await DeclaredLengthAsync());
+        public  ValueTask<Stream> GetEncodedStreamAsync() =>
+            StreamContent(StreamFormat.DiskRepresentation);
+
+        private async ValueTask<Stream> SourceStreamAsync()
+        {
+            return await source.OpenRawStream(await DeclaredLengthAsync());
+        }
 
         public async ValueTask<long> DeclaredLengthAsync() => 
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
 
-        public async ValueTask<Stream> GetDecodedStreamAsync(StreamFormat desiredFormat = StreamFormat.PlainText)
+        public async ValueTask<Stream> StreamContent(StreamFormat desiredFormat = StreamFormat.PlainText)
         {
             var decoder = new SinglePredictionFilter(new StaticSingleFilter());
             IFilterProcessor processor = new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
@@ -54,7 +59,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             {
                 processor = new DefaultEncryptionFilterProcessor(processor, source);
             }
-            return await processor.StreamInDesiredEncoding(await GetEncodedStreamAsync(),
+            return await processor.StreamInDesiredEncoding(await SourceStreamAsync(),
                 source.SourceFormat, desiredFormat);
         }
 

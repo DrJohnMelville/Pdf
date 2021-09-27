@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;

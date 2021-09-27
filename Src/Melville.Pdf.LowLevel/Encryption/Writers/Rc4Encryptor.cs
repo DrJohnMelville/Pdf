@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Encryption.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.Readers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
 namespace Melville.Pdf.LowLevel.Encryption.Writers

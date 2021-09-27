@@ -28,7 +28,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].DirectValue()).ToString());
             Assert.Equal("plaintext stream", await (
                     await ((PdfStream)(
-                        await doc.Objects[(3, 0)].DirectValue().ConfigureAwait(false))).GetDecodedStreamAsync())
+                        await doc.Objects[(3, 0)].DirectValue().ConfigureAwait(false))).StreamContent())
                 .ReadAsStringAsync());
         }
 
