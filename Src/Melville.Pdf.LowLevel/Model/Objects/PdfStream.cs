@@ -49,8 +49,12 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public async ValueTask<Stream> GetDecodedStreamAsync(StreamFormat desiredFormat = StreamFormat.PlainText)
         {
             var decoder = new SinglePredictionFilter(new StaticSingleFilter());
-            var processor = new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
-            return await processor.StreamInDesiredEncoding(await TryDecrypt(await GetEncodedStreamAsync()),
+            IFilterProcessor processor = new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
+            if (await ShouldApplyDefaultEncryption())
+            {
+                processor = new DefaultEncryptionFilterProcessor(processor, source);
+            }
+            return await processor.StreamInDesiredEncoding(await GetEncodedStreamAsync(),
                 source.SourceFormat, desiredFormat);
         }
 
@@ -63,16 +67,14 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         {
             foreach (var item in await FilterList())
             {
-                if ((await item.DirectValue()) == filterType) return true;
+                if (await item.DirectValue() == filterType) return true;
             }
             return false;
         }
 
-        private async ValueTask<Stream> TryDecrypt(Stream s)
-        {
-            return await this.GetOrNullAsync(KnownNames.Type) == KnownNames.XRef ||
-                await HasFilterOfType(KnownNames.Crypt)? s : source.WrapStreamWithDecryptor(s, KnownNames.StmF);
-        }
+        private async Task<bool> ShouldApplyDefaultEncryption() =>
+            !(await this.GetOrNullAsync(KnownNames.Type) == KnownNames.XRef ||
+              await HasFilterOfType(KnownNames.Crypt));
 
         public async ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync()
         {

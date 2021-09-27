@@ -66,7 +66,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
             IEnumerable<(PdfName Name, PdfObject Value)> items)
         {
-            return new(new LiteralStreamSource(streamData.Stream, StreamFormat.WithoutImplicitEncryption),
+            return new(new LiteralStreamSource(streamData.Stream, StreamFormat.ImplicitEncryption),
                 StreamDictionary(items, (int)streamData.Stream.Length));
         }
 
@@ -82,7 +82,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         public static PdfStream NewStream(this ILowLevelDocumentBuilder _, byte[] streamData, params
             (PdfName Name, PdfObject Value)[] items) =>
-            new(new LiteralStreamSource(streamData, StreamFormat.WithoutImplicitEncryption),
+            new(new LiteralStreamSource(streamData, StreamFormat.ImplicitEncryption),
                 StreamDictionary(items, streamData.Length));
     }
 }

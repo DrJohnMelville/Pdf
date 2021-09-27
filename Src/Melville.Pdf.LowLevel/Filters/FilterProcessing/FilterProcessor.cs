@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
     public enum StreamFormat
     {
         DiskRepresentation = int.MinValue,
-        WithoutImplicitEncryption = -1,
+        ImplicitEncryption = -1,
         PlainText = int.MaxValue
     }
     public interface IFilterProcessor
@@ -18,7 +18,28 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         ValueTask<Stream> StreamInDesiredEncoding(
             Stream src, StreamFormat sourceFormat, StreamFormat desiredEncoding);
     }
-    public class FilterProcessor: IFilterProcessor
+
+    public abstract class FilterProcessorBase: IFilterProcessor
+    {
+        public async ValueTask<Stream> StreamInDesiredEncoding(Stream src, StreamFormat sourceFormat,
+            StreamFormat desiredEncoding)
+        {
+            return sourceFormat.CompareTo(desiredEncoding) switch
+            {
+                < 0 => await Decode(src, sourceFormat, desiredEncoding),
+                0 => src,
+                _ => await Encode(src, sourceFormat, desiredEncoding)
+            };
+        }
+
+        protected abstract ValueTask<Stream> Encode(
+            Stream source, StreamFormat sourceFormat, StreamFormat targetFormat);
+        protected abstract ValueTask<Stream> Decode(
+            Stream source, StreamFormat sourceFormat, StreamFormat targetFormat);
+
+    }
+
+    public class FilterProcessor: FilterProcessorBase
     {
 
         private readonly IReadOnlyList<PdfObject> filters;
@@ -34,18 +55,8 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
             this.singleFilter = singleFilter;
         }
 
-        public async ValueTask<Stream> StreamInDesiredEncoding(Stream src, StreamFormat sourceFormat,
-            StreamFormat desiredEncoding)
-        {
-            return sourceFormat.CompareTo(desiredEncoding) switch
-            {
-                < 0 => await Decode(src, sourceFormat, desiredEncoding),
-                0 => src,
-                _ => await Encode(src, sourceFormat, desiredEncoding)
-            };
-        }
-
-        private async ValueTask<Stream> Encode(Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
+        protected override async ValueTask<Stream> Encode(
+            Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
         {
             var inclusiveUpperBound = Math.Min(filters.Count-1, (int)sourceFormat);
             var exclusiveLowerBound = Math.Max((int)targetFormat, -1);
@@ -57,7 +68,9 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
 
             return ret;
         }
-        private async ValueTask<Stream> Decode(Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
+
+        protected override async ValueTask<Stream> Decode(
+            Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
         {
             var firstFilter = Math.Max(0, (int)sourceFormat+1);
             var oneMoreThanLastFilter = Math.Min((int)targetFormat, filters.Count);
@@ -69,7 +82,6 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
 
             return ret;
         }
-
         private PdfObject TryGetParameter(int i) => i < parameters.Count?parameters[i]:PdfTokenValues.Null;
     }
 }
