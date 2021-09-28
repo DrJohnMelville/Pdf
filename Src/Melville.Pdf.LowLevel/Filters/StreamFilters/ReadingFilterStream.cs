@@ -54,7 +54,7 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
             if (result.IsCanceled || doneReading) return 0;
             var reader = new SequenceReader<byte>(result.Buffer);
             var (finalPos, bytesWritten, done) = filter.Convert(ref reader, ref buffer);
-            if (result.IsCompleted)
+            if (bytesWritten == 0 && result.IsCompleted)
             {
                 (finalPos, bytesWritten, done) = HandleFinalDecode(buffer, result, finalPos, bytesWritten);
             }

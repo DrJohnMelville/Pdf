@@ -18,12 +18,8 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         {
             await DictionaryWriter.Write(target, innerWriter, item.RawItems);
             target.WriteBytes(streamToken);
-            var rawStream = await item.GetEncodedStreamAsync();
-            await using var encryptedStream =
-                (await item.HasFilterOfType(KnownNames.Crypt).ConfigureAwait(false))?
-                    rawStream: 
-                    encryptor.WrapReadingStreamWithEncryption(rawStream);
-            await encryptedStream.CopyToAsync(target);
+            var rawStream = await item.StreamContent(StreamFormat.DiskRepresentation, encryptor);
+            await rawStream.CopyToAsync(target);
             target.WriteBytes(endStreamToken);
             return await target.FlushAsync();
         }

@@ -64,7 +64,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         public async Task VerifyDisposal()
         {
             var str = await EncodedStreamAsync();
-            var dispSource = new StreamDisposeSource(await str.GetEncodedStreamAsync(), StreamFormat.DiskRepresentation);
+            var dispSource = new StreamDisposeSource(await str.StreamContent(), StreamFormat.PlainText);
             var wrappedStream = await new PdfStream(dispSource, str.RawItems).StreamContent();
             Assert.False(dispSource.IsDisposed);
             await wrappedStream.DisposeAsync();
@@ -82,8 +82,8 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         {
             var inner = await EncodedStreamAsync();
             var src = new PassthroughStreamSource(
-                new OneCharAtAtimeStream(await inner.GetEncodedStreamAsync()), StreamFormat.DiskRepresentation);
-            var proxy = new PdfStream(src, inner.RawItems);
+                new OneCharAtAtimeStream(await inner.StreamContent()), StreamFormat.PlainText);
+            var proxy = new PdfStream(src, inner .RawItems);
             await VerifyDecodedStream(new OneCharAtAtimeStream(await proxy.StreamContent()));
         }
         

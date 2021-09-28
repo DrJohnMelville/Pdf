@@ -25,26 +25,44 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
             }
 
             private int RemainingBytes => (int)(basePosition + length - baseStream.Position);
-            private int MaxBytes(int count) => Math.Min(count, RemainingBytes);
+            private int MaxBytes(int count) =>    Math.Min(count, RemainingBytes);
 
             #region Read Methods
 
             public override IAsyncResult BeginRead(
-                byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => 
+                byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) =>
                 baseStream.BeginRead(buffer, offset, MaxBytes(count), callback, state);
-            public override int Read(byte[] buffer, int offset, int count) => 
-                baseStream.Read(buffer, offset, MaxBytes(count));
-            public override int Read(Span<byte> buffer) =>
-                baseStream.Read(buffer[..BytesToRead(buffer.Length)]);
 
-            private int BytesToRead(int bufferLength) => Math.Min(RemainingBytes, bufferLength);
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                var localLength = MaxBytes(count);
+                if (localLength == 0) return 0;
+                return baseStream.Read(buffer, offset, localLength);
+            }
+
+            public override int Read(Span<byte> buffer)
+            {
+                var localLength = MaxBytes(buffer.Length);
+                if (localLength == 0) return 0;
+                return baseStream.Read(buffer[..localLength]);
+            }
 
             public override Task<int> ReadAsync(
-                byte[] buffer, int offset, int count, CancellationToken cancellationToken) => 
-                baseStream.ReadAsync(buffer, offset, MaxBytes(count), cancellationToken);
+                byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            {
+                var localLength = MaxBytes(count);
+                if (localLength == 0) return Task.FromResult(0);
+                return baseStream.ReadAsync(buffer, offset, localLength, cancellationToken);
+            }
+
             public override ValueTask<int> ReadAsync(
-                Memory<byte> buffer, CancellationToken cancellationToken) =>
-                baseStream.ReadAsync(buffer[..BytesToRead(buffer.Length)], cancellationToken);
+                Memory<byte> buffer, CancellationToken cancellationToken)
+            {
+                var localLength = MaxBytes(buffer.Length);
+                if (localLength == 0) return new(0);
+                return baseStream.ReadAsync(buffer[..localLength], cancellationToken);
+            }
+
             public override int ReadByte()
             {
                 if (RemainingBytes < 1)

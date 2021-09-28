@@ -35,29 +35,27 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             this(source, PairsToDictionary(items))
         {
         }
-
-        
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
         public  ValueTask<Stream> GetEncodedStreamAsync() =>
             StreamContent(StreamFormat.DiskRepresentation);
 
-        private async ValueTask<Stream> SourceStreamAsync()
-        {
-            return await source.OpenRawStream(await DeclaredLengthAsync());
-        }
+        private async ValueTask<Stream> SourceStreamAsync() => 
+            await source.OpenRawStream(await DeclaredLengthAsync());
 
         public async ValueTask<long> DeclaredLengthAsync() => 
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
 
-        public async ValueTask<Stream> StreamContent(StreamFormat desiredFormat = StreamFormat.PlainText)
+        public async ValueTask<Stream> StreamContent(StreamFormat desiredFormat = StreamFormat.PlainText,
+            IObjectEncryptor? encryptor = null)
         {
             var decoder = new SinglePredictionFilter(new StaticSingleFilter());
             IFilterProcessor processor = new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
             if (await ShouldApplyDefaultEncryption())
             {
-                processor = new DefaultEncryptionFilterProcessor(processor, source);
+                processor = new DefaultEncryptionFilterProcessor(
+                    processor, source, encryptor ?? ErrorObjectEncryptor.Instance);
             }
             return await processor.StreamInDesiredEncoding(await SourceStreamAsync(),
                 source.SourceFormat, desiredFormat);

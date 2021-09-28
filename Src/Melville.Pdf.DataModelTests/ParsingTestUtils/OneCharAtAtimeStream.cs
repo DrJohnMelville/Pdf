@@ -8,7 +8,6 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
 {
     public partial class OneCharAtAtimeStream : Stream
     {
-        private byte[] singleBuffer = new byte[1];
         [DelegateTo] private Stream source;
         public OneCharAtAtimeStream(byte[] source): this(new MemoryStream(source)){ { }
         }
@@ -20,32 +19,15 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils
             byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) =>
             throw new NotSupportedException();
 
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            var ret = source.Read(singleBuffer, 0, Math.Min(1, buffer.Length));
-            if (ret > 0) buffer[offset] = singleBuffer[0];
-            return ret;
-        }
+        public override int Read(byte[] buffer, int offset, int count) => 
+            source.Read(buffer, offset, 1);
 
-        public override int Read(Span<byte> buffer)
-        {
-            var ret = source.Read(singleBuffer, 0, Math.Min(1, buffer.Length));
-            if (ret > 0) buffer[0] = singleBuffer[0];
-            return ret;
-        }
+        public override int Read(Span<byte> buffer) => source.Read(buffer.Slice(0, 1));
 
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            var ret = await source.ReadAsync(singleBuffer, 0, Math.Min(buffer.Length, 1), cancellationToken);
-            if (ret > 0) buffer[offset] = singleBuffer[0];
-            return ret;
-        }
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => 
+            source.ReadAsync(buffer, offset, 1, cancellationToken);
 
-        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-        {
-            var ret = await source.ReadAsync(singleBuffer, 0, Math.Min(buffer.Length,1), cancellationToken);
-            if (ret > 0) buffer.Span[0] = singleBuffer[0];
-            return ret;
-        }
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => 
+            source.ReadAsync(buffer.Slice(0, 1), cancellationToken);
     }
 }

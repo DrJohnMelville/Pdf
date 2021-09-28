@@ -17,5 +17,17 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
 
         public Stream WrapReadingStreamWithEncryption(Stream stream) => stream;
     }
+    
+    public class ErrorObjectEncryptor: IObjectEncryptor
+    {
+        public ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input) => 
+            throw new NotSupportedException("Should not be encrypting in this context.");
 
+        public Stream WrapReadingStreamWithEncryption(Stream stream) =>
+            throw new NotSupportedException("Should not be encrypting in this context.");
+
+        private ErrorObjectEncryptor() { }
+
+        public static IObjectEncryptor Instance { get; } = new ErrorObjectEncryptor();
+    }
 }

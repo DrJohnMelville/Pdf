@@ -9,11 +9,14 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
     {
         private readonly IFilterProcessor innerProcessor;
         private readonly IStreamDataSource streamSource;
+        private readonly IObjectEncryptor encryptor;
 
-        public DefaultEncryptionFilterProcessor(IFilterProcessor innerProcessor, IStreamDataSource streamSource)
+        public DefaultEncryptionFilterProcessor(IFilterProcessor innerProcessor, IStreamDataSource streamSource,
+            IObjectEncryptor encryptor)
         {
             this.innerProcessor = innerProcessor;
             this.streamSource = streamSource;
+            this.encryptor = encryptor;
         }
 
         protected override ValueTask<Stream> Encode(
@@ -21,11 +24,10 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
             innerProcessor.StreamInDesiredEncoding(TryEncrypt(source, sourceFormat, targetFormat),
                 sourceFormat, targetFormat);
 
-        private static Stream TryEncrypt(
+        private Stream TryEncrypt(
             Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
-            ShouldEncrypt(sourceFormat, targetFormat) ? source
-                //innerProcessor.StreamInDesiredEncoding(streamSource.Encrypt(source, ))
-                //throw new NotImplementedException("Need to handle stream encryption")
+            ShouldEncrypt(sourceFormat, targetFormat) ? 
+                encryptor.WrapReadingStreamWithEncryption(source)
                 : source;
 
         private static bool ShouldEncrypt(
