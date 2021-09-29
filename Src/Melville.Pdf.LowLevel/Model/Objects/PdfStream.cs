@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
+using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Visitors;
@@ -50,8 +51,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public async ValueTask<Stream> StreamContent(StreamFormat desiredFormat = StreamFormat.PlainText,
             IObjectEncryptor? encryptor = null)
         {
-            var decoder = new SinglePredictionFilter(new StaticSingleFilter());
-            IFilterProcessor processor = new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
+            var decoder = new CryptSingleFilter(new SinglePredictionFilter(new StaticSingleFilter()));
+            IFilterProcessor processor = 
+                new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
             if (await ShouldApplyDefaultEncryption())
             {
                 processor = new DefaultEncryptionFilterProcessor(
@@ -83,7 +85,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         {
             if (await this.GetOrNullAsync(KnownNames.Type) != KnownNames.ObjStm)
                 return Array.Empty<ObjectLocation>();
-            return await this.GetIncludedObjectNumbers();
+            return await this.GetIncludedObjectNumbersAsync();
         }
     }
 }

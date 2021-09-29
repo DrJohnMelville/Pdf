@@ -72,8 +72,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         private static IEnumerable<(PdfName Name, PdfObject Value)> StreamDictionary(
             IEnumerable<(PdfName Name, PdfObject Value)> items, int length) => items
-                .Where(NotAnEmptyObject)
-                .Append((KnownNames.Length, new PdfInteger(length)));
+                .Where(NotAnEmptyObject);
 
         private static bool NotAnEmptyObject((PdfName Name, PdfObject Value) arg) =>
             !(arg.Value == PdfTokenValues.Null ||

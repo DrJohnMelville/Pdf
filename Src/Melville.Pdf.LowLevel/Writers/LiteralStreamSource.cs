@@ -28,7 +28,6 @@ namespace Melville.Pdf.LowLevel.Writers
 
         public ValueTask<Stream> OpenRawStream(long streamLength)
         {
-          Debug.Assert(streamLength == source.Length);
           return new ValueTask<Stream>(source.CreateReader());
         }
 

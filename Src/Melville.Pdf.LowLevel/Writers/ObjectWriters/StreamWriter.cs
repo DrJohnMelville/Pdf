@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -16,10 +18,16 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             PipeWriter target, PdfObjectWriter innerWriter, PdfStream item,
             IObjectEncryptor encryptor)
         {
-            await DictionaryWriter.Write(target, innerWriter, item.RawItems);
+            MultiBufferStream diskrep = new MultiBufferStream(2048);
+            using (var rawStream = await item.StreamContent(StreamFormat.DiskRepresentation, encryptor))
+            {
+                await rawStream.CopyToAsync(diskrep);
+            }
+
+            await DictionaryWriter.Write(target, innerWriter, 
+                item.MergeItems((KnownNames.Length, new PdfInteger(diskrep.Length))));
             target.WriteBytes(streamToken);
-            var rawStream = await item.StreamContent(StreamFormat.DiskRepresentation, encryptor);
-            await rawStream.CopyToAsync(target);
+            await diskrep.CreateReader().CopyToAsync(target);
             target.WriteBytes(endStreamToken);
             return await target.FlushAsync();
         }

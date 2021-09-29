@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Visitors;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
@@ -102,5 +104,21 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             this PdfDictionary dict, PdfName name, T defaultValue) where T:PdfObject =>
             dict.TryGetValue(name, out var obj) && 
             await obj is T definiteObj? definiteObj: defaultValue;
+
+        public static IReadOnlyDictionary<PdfName, PdfObject> MergeItems(this PdfDictionary source, params (PdfName, PdfObject)[] items)
+        {
+            var ret = new Dictionary<PdfName, PdfObject>();
+            foreach (var pair in source.RawItems)
+            {
+                ret[pair.Key] = pair.Value;
+            }
+
+            foreach (var (key, value) in items)
+            {
+                ret[key] = value;
+            }
+
+            return ret;
+        }
     }
  }

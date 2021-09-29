@@ -18,13 +18,13 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
     public static class ObjectStreamOperations
     {
-        public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbers(this PdfStream stream)
+        public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(this PdfStream stream)
         {
             await using var decoded = await stream.StreamContent();
             return await GetIncludedObjectNumbers(stream, PipeReader.Create(decoded));
         }
 
-        public static async Task<IList<ObjectLocation>> GetIncludedObjectNumbers(
+        public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbers(
             PdfStream stream, PipeReader reader) =>
             await reader.GetIncludedObjectNumbers(
                 (await stream.GetAsync<PdfNumber>(KnownNames.N)).IntValue,

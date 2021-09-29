@@ -60,8 +60,7 @@ namespace Melville.Pdf.LowLevel.Filters
                 { KnownNames.LZWDecode, new CodecDefinition(
                     async p => new LzwEncodeFilter(await p.EarlySwitchLength()),
                     async p => new LzwDecodeFilter(await p.EarlySwitchLength())) },
-                { KnownNames.FlateDecode, new FlateCodecDefinition() },
-                { KnownNames.Crypt, new CryptFilterCodec()}
+                { KnownNames.FlateDecode, new FlateCodecDefinition() }
             };
 
         private static CodecDefinition ConstantCodec(

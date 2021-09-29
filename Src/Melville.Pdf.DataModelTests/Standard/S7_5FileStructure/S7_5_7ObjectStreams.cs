@@ -96,7 +96,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
                 builder.AsIndirectReference(new PdfString("Two"))
             });
 
-            var output = await str.GetIncludedObjectNumbers();
+            var output = await str.GetIncludedObjectNumbersAsync();
             Assert.Equal(1, output[0].ObjectNumber);
             Assert.Equal(2, output[1].ObjectNumber);
         }
