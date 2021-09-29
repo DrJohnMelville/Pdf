@@ -64,24 +64,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         public static PdfStream NewStream(
             this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
-            IEnumerable<(PdfName Name, PdfObject Value)> items)
-        {
-            return new(new LiteralStreamSource(streamData.Stream, StreamFormat.ImplicitEncryption),
-                StreamDictionary(items, (int)streamData.Stream.Length));
-        }
-
-        private static IEnumerable<(PdfName Name, PdfObject Value)> StreamDictionary(
-            IEnumerable<(PdfName Name, PdfObject Value)> items, int length) => items
-                .Where(NotAnEmptyObject);
-
-        private static bool NotAnEmptyObject((PdfName Name, PdfObject Value) arg) =>
-            !(arg.Value == PdfTokenValues.Null ||
-              arg.Value is PdfArray { Count: 0 } ||
-              arg.Value is PdfDictionary { Count: 0 });
-
-        public static PdfStream NewStream(this ILowLevelDocumentBuilder _, byte[] streamData, params
-            (PdfName Name, PdfObject Value)[] items) =>
-            new(new LiteralStreamSource(streamData, StreamFormat.ImplicitEncryption),
-                StreamDictionary(items, streamData.Length));
+            IEnumerable<(PdfName Name, PdfObject Value)> items) =>
+            new(new LiteralStreamSource(streamData.Stream, StreamFormat.ImplicitEncryption),
+                items.StripTrivialItems());
     }
 }

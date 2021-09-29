@@ -120,5 +120,15 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
             return ret;
         }
+        
+        public static IEnumerable<(PdfName Name, PdfObject Value)> StripTrivialItems(
+            this IEnumerable<(PdfName Name, PdfObject Value)> items) =>
+            items.Where(NotAnEmptyObject);
+
+        private static bool NotAnEmptyObject((PdfName Name, PdfObject Value) arg) =>
+            !(arg.Value == PdfTokenValues.Null ||
+              arg.Value is PdfArray { Count: 0 } ||
+              arg.Value is PdfDictionary { Count: 0 });
+
     }
  }
