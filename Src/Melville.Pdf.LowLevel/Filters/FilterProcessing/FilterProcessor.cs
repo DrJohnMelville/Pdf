@@ -60,7 +60,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
             var inclusiveUpperBound = Math.Min(filters.Count-1, (int)sourceFormat);
             var exclusiveLowerBound = Math.Max((int)targetFormat, -1);
             var ret = source;
-            for (int i = inclusiveUpperBound; i < exclusiveLowerBound; i--)
+            for (int i = inclusiveUpperBound; i > exclusiveLowerBound; i--)
             {
                 ret = await singleFilter.Encode(ret, filters[i], TryGetParameter(i));
             }

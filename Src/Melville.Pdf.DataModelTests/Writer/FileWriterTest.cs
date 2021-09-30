@@ -94,8 +94,8 @@ namespace Melville.Pdf.DataModelTests.Writer
 
         [Theory]
         [InlineData("Melville.Pdf\n1 0 obj <</Type/Catalog>> endobj\n3 0 obj <</Type/Page>> endobj")]
-        [InlineData("endobj\n4 0 obj <</Root 1 0 R/Type/XRef/W[1 1 0]/Size 5/Filter/FlateDecode/DecodeParms<</Predictor 12/Columns 2>>/Length 29>> stream\r\n")]
-        [InlineData("stream\r\nxÚb")]
+        [InlineData("endobj\n4 0 obj <</Root 1 0 R/Type/XRef/W[1 1 0]/Size 5/Filter/FlateDecode/DecodeParms<</Predictor 12/Columns 2>>/Length 23>> stream\r\n")]
+        [InlineData("stream\r\nxÚ")]
         public async Task RefStreamContents(string expected) => 
             Assert.Contains(expected, await OutputTwoItemRefStream());
  

@@ -31,8 +31,10 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         }
 
         private ValueTask<PdfStream> EncodedStreamAsync() =>
+            LowLevelDocumentBuilderOperations.NewCompressedStream(null, source, compression, parameters);
+        private ValueTask<PdfStream> EncodedSingleCharStreamAsync() =>
             LowLevelDocumentBuilderOperations.NewCompressedStream(null,
-                source, compression, parameters);
+                new OneCharAtAtimeStream(new MemoryStream(source.AsExtendedAsciiBytes())), compression, parameters);
 
         [Fact]
         public async Task EncodeUsingReading() => await VerifyEncoding(await EncodedStreamAsync());
@@ -50,15 +52,15 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             return "/DecodeParms<<"+string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}"))+">>";
         }
 
-        [Fact]
-        public async Task EncodeUsingWriting()
-        {
-            var stream = await new LowLevelDocumentBuilder().NewCompressedStream(
-                i => i.WriteAsync(source.AsExtendedAsciiBytes().AsMemory()), 
-                compression, parameters);
-            await VerifyEncoding(stream);
-
-        }
+        // [Fact]
+        // public async Task EncodeUsingWriting()
+        // {
+        //     var stream = await new LowLevelDocumentBuilder().NewCompressedStream(
+        //         i => i.WriteAsync(source.AsExtendedAsciiBytes().AsMemory()), 
+        //         compression, parameters);
+        //     await VerifyEncoding(stream);
+        //
+        // }
 
         [Fact]
         public async Task VerifyDisposal()
@@ -80,11 +82,8 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public async Task ReadSingleCharAtATime()
         {
-            var inner = await EncodedStreamAsync();
-            var src = new PassthroughStreamSource(
-                new OneCharAtAtimeStream(await inner.StreamContent()), StreamFormat.PlainText);
-            var proxy = new PdfStream(src, inner .RawItems);
-            await VerifyDecodedStream(new OneCharAtAtimeStream(await proxy.StreamContent()));
+            var inner = await EncodedSingleCharStreamAsync();
+            await VerifyDecodedStream(new OneCharAtAtimeStream(await inner.StreamContent(StreamFormat.PlainText, NullObjectEncryptor.Instance)));
         }
         
         private async Task VerifyDecodedStream(Stream streamToRead)

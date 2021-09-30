@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -25,37 +22,13 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder? _,
             StreamDataSource data, PdfObject encoding, PdfObject? parameters,
             IEnumerable<(PdfName Name, PdfObject Value)> items) =>
-            NewStream(_, await Encode.Compress(data, encoding, parameters),
+            NewStream(_, data,
                 AddEncodingValues(items, encoding, parameters));
 
         private static IEnumerable<(PdfName, PdfObject)> AddEncodingValues(
             IEnumerable<(PdfName Name, PdfObject Value)> items, PdfObject encoding, PdfObject? parameters) =>
             items.Append((KnownNames.Filter, encoding))
                 .Append((KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null));
-
-        public static ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder _,
-            Func<Stream, ValueTask> addData, PdfObject encoding, PdfObject? parameters = null,
-            params (PdfName Name, PdfObject Value)[] items) =>
-            NewCompressedStream(_, addData, encoding, parameters, items.AsEnumerable());
-
-        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder? _,
-            Func<Stream, ValueTask> addData, PdfObject encoding, PdfObject? parameters,
-            IEnumerable<(PdfName Name, PdfObject Value)> items)
-        {
-            var ms = new MultiBufferStream();
-            await using (var target = await Encode.CompressOnWrite(ms, encoding, parameters))
-            {
-                await addData(target);
-            }
-
-            return NewStream(_, ms,
-                items.Concat(new[]
-                {
-                    (KnownNames.Filter, encoding),
-                    (KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null)
-                })
-            );
-        }
 
         public static PdfStream NewStream(
             this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
@@ -65,7 +38,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public static PdfStream NewStream(
             this ILowLevelDocumentBuilder? _, in StreamDataSource streamData,
             IEnumerable<(PdfName Name, PdfObject Value)> items) =>
-            new(new LiteralStreamSource(streamData.Stream, StreamFormat.ImplicitEncryption),
+            new(new LiteralStreamSource(streamData.Stream, StreamFormat.PlainText),
                 items.StripTrivialItems());
     }
 }

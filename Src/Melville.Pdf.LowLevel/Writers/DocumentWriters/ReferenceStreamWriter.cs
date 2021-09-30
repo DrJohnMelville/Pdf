@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using Melville.Hacks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -43,8 +44,11 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
 
         private async ValueTask<PdfStream> CreateReferenceStream()
         {
+            var data = new MultiBufferStream(2048);
+            await GenerateXrefStreamAsync(data);
+            
             return await LowLevelDocumentBuilderOperations.NewCompressedStream(
-                null, GenerateXrefStreamAsync, KnownNames.FlateDecode,
+                null, data.CreateReader(), KnownNames.FlateDecode,
                 new PdfDictionary(
                           (KnownNames.Predictor, new PdfInteger(12)),
                           (KnownNames.Columns, 
@@ -70,8 +74,11 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
                 new PdfInteger(columnWidths.Item2),
                 new PdfInteger(columnWidths.Item3)
             );
-        private ValueTask GenerateXrefStreamAsync(Stream arg) => 
-            GenerateXrefStream(arg).FlushAsync().AsValueTask();
+        private async ValueTask GenerateXrefStreamAsync(Stream arg)
+        {
+            var w = GenerateXrefStream(arg);
+            await w.FlushAsync();
+        }
 
         private PipeWriter GenerateXrefStream(Stream arg)
         {
@@ -87,7 +94,6 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
                 PutInteger(span.Slice(pos2), entry.Column2, columnWidths.Item3);
                 writer.Advance(rowWidth);
             }
-
             return writer;
         }
 
