@@ -9,26 +9,35 @@ namespace Melville.Pdf.LowLevel.Filters.CryptFilters
     public class CryptSingleFilter: IApplySingleFilter
     {
         private readonly IApplySingleFilter innerFilter;
-        public CryptSingleFilter(IApplySingleFilter innerFilter)
+        private readonly IStreamDataSource streamDataSource;
+        private readonly IObjectEncryptor encryptor;
+
+        public CryptSingleFilter(
+            IApplySingleFilter innerFilter, IStreamDataSource streamDataSource, IObjectEncryptor encryptor)
         {
             this.innerFilter = innerFilter;
+            this.streamDataSource = streamDataSource;
+            this.encryptor = encryptor;
+            
         }
 
-        public ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
+        public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
         {
-            return (filter == KnownNames.Crypt) ? new(source) : innerFilter.Encode(source, filter, parameter);
+            return (filter == KnownNames.Crypt) ? 
+                encryptor.WrapReadingStreamWithEncryption(source, await EncryptionAlg(parameter)) : 
+                await innerFilter.Encode(source, filter, parameter);
         }
 
-        public ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)
+        public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)
         {
-            return (filter == KnownNames.Crypt) ? new(source) : innerFilter.Decode(source, filter, parameter);
+            return (filter == KnownNames.Crypt) ? 
+                streamDataSource.WrapStreamWithDecryptor(source, await EncryptionAlg(parameter)) : 
+                await innerFilter.Decode(source, filter, parameter);
         }
-    }
 
-    public class CryptFilterCodec: ICodecDefinition
-    {
-        public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) => new(data);
-        public ValueTask<Stream> EncodeOnWriteStream(Stream data, PdfObject? parameters) => new(data);
-        public ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters) => new(input);
+        public async ValueTask<PdfName> EncryptionAlg(PdfObject parameter) =>
+            (await parameter.DirectValueAsync()) is PdfDictionary dict
+                ? await dict.GetOrDefaultAsync(KnownNames.Name, KnownNames.Identity)
+                : KnownNames.Identity;
     }
 }

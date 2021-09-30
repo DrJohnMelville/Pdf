@@ -43,7 +43,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Writers
         public IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfName cryptFilterName) =>
             IsEncryptDictionary(parentObject) ?
                 NullObjectEncryptor.Instance : 
-                handler.EncryptorForObject(parentObject, cryptFilterName);
+                handler.EncryptorForObject(parentObject);
 
         private bool IsEncryptDictionary(PdfIndirectObject parentObject) => 
             encryptDictionaryReference == parentObject;

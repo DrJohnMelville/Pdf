@@ -52,7 +52,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
             IObjectEncryptor? encryptor = null)
         {
-            var decoder = new CryptSingleFilter(new SinglePredictionFilter(new StaticSingleFilter()));
+            var decoder = new CryptSingleFilter(new SinglePredictionFilter(new StaticSingleFilter()),
+                source, encryptor);
             IFilterProcessor processor = 
                 new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
             if (await ShouldApplyDefaultEncryption())

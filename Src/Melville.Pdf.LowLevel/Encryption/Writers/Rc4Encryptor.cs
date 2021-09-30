@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Encryption.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
 namespace Melville.Pdf.LowLevel.Encryption.Writers
@@ -23,7 +24,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Writers
             return output;
         }
 
-        public Stream WrapReadingStreamWithEncryption(Stream writableStream) =>
+        public Stream WrapReadingStreamWithEncryption(Stream writableStream, PdfName encryptionAlg) =>
             new Rc4Stream(writableStream, rc4);
     }
 }
