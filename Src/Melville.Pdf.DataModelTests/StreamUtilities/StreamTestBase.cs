@@ -66,8 +66,8 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         public async Task VerifyDisposal()
         {
             var str = await EncodedStreamAsync();
-            var dispSource = new StreamDisposeSource(await str.StreamContent(), StreamFormat.PlainText);
-            var wrappedStream = await new PdfStream(dispSource, str.RawItems).StreamContent();
+            var dispSource = new StreamDisposeSource(await str.StreamContentAsync(), StreamFormat.PlainText);
+            var wrappedStream = await new PdfStream(dispSource, str.RawItems).StreamContentAsync();
             Assert.False(dispSource.IsDisposed);
             await wrappedStream.DisposeAsync();
             Assert.True(dispSource.IsDisposed);
@@ -76,14 +76,14 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public async Task RoundTripStream()
         {
-            await VerifyDecodedStream(await (await EncodedStreamAsync()).StreamContent());
+            await VerifyDecodedStream(await (await EncodedStreamAsync()).StreamContentAsync());
         }
 
         [Fact]
         public async Task ReadSingleCharAtATime()
         {
             var inner = await EncodedSingleCharStreamAsync();
-            await VerifyDecodedStream(new OneCharAtAtimeStream(await inner.StreamContent(StreamFormat.PlainText, NullObjectEncryptor.Instance)));
+            await VerifyDecodedStream(new OneCharAtAtimeStream(await inner.StreamContentAsync(StreamFormat.PlainText, NullObjectEncryptor.Instance)));
         }
         
         private async Task VerifyDecodedStream(Stream streamToRead)

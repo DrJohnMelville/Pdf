@@ -31,7 +31,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             var reader = new ConstDecryptor(
                 new ParsingReader(new ParsingFileOwner(source), PipeReader.Create(source), 0));
             var str = (PdfStream)await new PdfCompositeObjectParser().ParseAsync(reader);
-            var output = await new StreamReader(await str.StreamContent()).ReadToEndAsync();
+            var output = await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync();
             Assert.Equal(result, output);
         }
         

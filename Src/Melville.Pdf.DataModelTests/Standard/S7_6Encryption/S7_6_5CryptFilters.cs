@@ -1,14 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encryption;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
@@ -25,10 +20,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             Assert.Equal(!hideStream, str.Contains("plaintext stream"));
             var doc = await str.ParseDocumentAsync();
             Assert.Equal(4, doc.Objects.Count);
-            Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].DirectValue()).ToString());
+            Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].DirectValueAsync()).ToString());
             Assert.Equal("plaintext stream", await (
                     await ((PdfStream)(
-                        await doc.Objects[(3, 0)].DirectValue().ConfigureAwait(false))).StreamContent())
+                        await doc.Objects[(3, 0)].DirectValueAsync().ConfigureAwait(false))).StreamContentAsync())
                 .ReadAsStringAsync());
         }
 

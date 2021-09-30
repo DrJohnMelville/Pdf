@@ -39,8 +39,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
+        [Obsolete("Need tp get rid of this soon")]
         public  ValueTask<Stream> GetEncodedStreamAsync() =>
-            StreamContent(StreamFormat.DiskRepresentation);
+            StreamContentAsync(StreamFormat.DiskRepresentation);
 
         private async ValueTask<Stream> SourceStreamAsync() => 
             await source.OpenRawStream(await DeclaredLengthAsync());
@@ -48,7 +49,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public async ValueTask<long> DeclaredLengthAsync() => 
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
 
-        public async ValueTask<Stream> StreamContent(StreamFormat desiredFormat = StreamFormat.PlainText,
+        public async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
             IObjectEncryptor? encryptor = null)
         {
             var decoder = new CryptSingleFilter(new SinglePredictionFilter(new StaticSingleFilter()));
@@ -72,7 +73,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         {
             foreach (var item in await FilterList())
             {
-                if (await item.DirectValue() == filterType) return true;
+                if (await item.DirectValueAsync() == filterType) return true;
             }
             return false;
         }

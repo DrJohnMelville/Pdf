@@ -35,7 +35,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         public async Task RoundTrip()
         {
             var doc = await (await DocWithObjectStream()).ParseDocumentAsync();
-            Assert.Equal("One", (await doc.Objects[(1,0)].DirectValue()).ToString());
+            Assert.Equal("One", (await doc.Objects[(1,0)].DirectValueAsync()).ToString());
             
         }
 

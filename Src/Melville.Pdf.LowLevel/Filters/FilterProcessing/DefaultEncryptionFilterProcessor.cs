@@ -19,9 +19,9 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
             this.encryptor = encryptor;
         }
 
-        protected override ValueTask<Stream> Encode(
+        protected override async ValueTask<Stream> Encode(
             Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
-            innerProcessor.StreamInDesiredEncoding(TryEncrypt(source, sourceFormat, targetFormat),
+            TryEncrypt(await innerProcessor.StreamInDesiredEncoding(source, sourceFormat, targetFormat),
                 sourceFormat, targetFormat);
 
         private Stream TryEncrypt(

@@ -69,7 +69,7 @@ namespace Melville.Pdf.LowLevelReader.DocumentParts
         {
             var title = $"{prefix}{item.ObjectNumber} {item.GenerationNumber} obj";
             prefix = "";
-            return new DocumentPart(title, new[] {await (await item.DirectValue()).Visit(this)});
+            return new DocumentPart(title, new[] {await (await item.DirectValueAsync()).Visit(this)});
         }
 
         public ValueTask<DocumentPart> Visit(PdfIndirectReference item) => 

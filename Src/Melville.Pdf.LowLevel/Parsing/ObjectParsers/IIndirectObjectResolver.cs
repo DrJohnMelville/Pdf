@@ -44,7 +44,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                 async () =>
                 {
                     var referredObject = await owner.IndirectResolver
-                        .FindIndirect((int)referredStream, 0).DirectValue();
+                        .FindIndirect((int)referredStream, 0).DirectValueAsync();
                     if (referredObject is not PdfStream stream) return PdfTokenValues.Null;
                     return await LoadObjectStream(owner, stream, number);
                 });
@@ -54,7 +54,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             ParsingFileOwner owner, PdfStream source, int objectNumber)
         {
             PdfObject ret = PdfTokenValues.Null;
-            await using var data = await source.StreamContent();
+            await using var data = await source.StreamContentAsync();
             var reader = owner.ParsingReaderForStream(data, 0);
             var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
                 source, reader.AsPipeReader());

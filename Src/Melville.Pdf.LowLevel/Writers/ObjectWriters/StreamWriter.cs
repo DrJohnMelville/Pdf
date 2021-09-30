@@ -20,7 +20,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             IObjectEncryptor encryptor)
         {
             Stream diskrep;
-            await using var rawStream = await item.StreamContent(StreamFormat.DiskRepresentation, encryptor);
+            await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor);
             diskrep = await EnsureStreamHasKnownLength(rawStream);
             
             await DictionaryWriter.Write(target, innerWriter, 

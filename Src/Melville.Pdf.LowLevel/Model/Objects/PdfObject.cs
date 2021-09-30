@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 {
     public abstract class PdfObject
     {
-        public virtual ValueTask<PdfObject> DirectValue() => new(this);
+        public virtual ValueTask<PdfObject> DirectValueAsync() => new(this);
         public abstract T Visit<T>(ILowLevelVisitor<T> visitor);
         public virtual bool ShouldWriteToFile() => true;
     }

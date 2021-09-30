@@ -34,7 +34,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             this.value = value;
         }
         
-        public override async ValueTask<PdfObject> DirectValue()
+        public override async ValueTask<PdfObject> DirectValueAsync()
         {
             if (accessor != null)
             {

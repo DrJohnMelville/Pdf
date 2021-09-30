@@ -9,12 +9,12 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
     {
         public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter) =>
             await 
-                CodecFactory.CodecFor((PdfName)await filter.DirectValue())
+                CodecFactory.CodecFor((PdfName)await filter.DirectValueAsync())
                     .EncodeOnReadStream(source, parameter);
 
         public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter) =>
             await 
-                CodecFactory.CodecFor((PdfName)await filter.DirectValue())
+                CodecFactory.CodecFor((PdfName)await filter.DirectValueAsync())
                     .DecodeOnReadStream(source, parameter);
     }
 }

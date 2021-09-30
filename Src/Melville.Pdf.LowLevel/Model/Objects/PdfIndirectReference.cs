@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         }
 
 
-        public override ValueTask<PdfObject> DirectValue() => Target.DirectValue();
+        public override ValueTask<PdfObject> DirectValueAsync() => Target.DirectValueAsync();
 
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     }

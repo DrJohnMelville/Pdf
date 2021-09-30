@@ -43,13 +43,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             }, async (ld, modifier) =>
             {
                 Assert.Equal("true", (await ld.TrailerDictionary[KnownNames.Root]).ToString());
-                Assert.Equal("2", (await ld.Objects[(2, 0)].Target.DirectValue()).ToString());
+                Assert.Equal("2", (await ld.Objects[(2, 0)].Target.DirectValueAsync()).ToString());
                 modifier.AssignValueToReference((PdfIndirectReference) ld.TrailerDictionary.RawItems[KnownNames.Root],
                     PdfBoolean.False);
             });
 
             Assert.Equal("false", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
-            Assert.Equal("2", (await ld2.Objects[(2,0)].Target.DirectValue()).ToString());
+            Assert.Equal("2", (await ld2.Objects[(2,0)].Target.DirectValueAsync()).ToString());
 
         }
         [Fact]
@@ -63,12 +63,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             }, async (ld, modifier) =>
             {
                 var item = ld.Objects[(2, 0)];
-                Assert.Equal("200", (await item.Target.DirectValue()).ToString());
+                Assert.Equal("200", (await item.Target.DirectValueAsync()).ToString());
                 modifier.DeleteObject(item);
             });
 
             Assert.Equal("true", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
-            Assert.Equal("Free Item. Next = 0", (await ld2.Objects[(2,0)].Target.DirectValue()).ToString());
+            Assert.Equal("Free Item. Next = 0", (await ld2.Objects[(2,0)].Target.DirectValueAsync()).ToString());
             Assert.Equal(2, ld2.FirstFreeBlock);
             
         }

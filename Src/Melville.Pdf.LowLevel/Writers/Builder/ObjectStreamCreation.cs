@@ -62,7 +62,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         private static async Task WriteObject(PdfIndirectReference item, PdfObjectWriter writingVisitor,
             CountingPipeWriter objectsWriter)
         {
-            var directValue = await item.DirectValue();
+            var directValue = await item.DirectValueAsync();
             VeriftyLegalWrite(item, directValue);
             await directValue.Visit(writingVisitor);
             objectsWriter.WriteLineFeed();

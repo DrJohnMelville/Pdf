@@ -52,7 +52,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             Assert.DoesNotContain("encrypted stream", str);
 
             var doc2 = await str.ParseWithPassword("User", PasswordType.User);
-            var outstr = await doc2.Objects[(2, 0)].DirectValue();
+            var outstr = await doc2.Objects[(2, 0)].DirectValueAsync();
             Assert.Equal("Encrypted String", outstr.ToString());
         }
 

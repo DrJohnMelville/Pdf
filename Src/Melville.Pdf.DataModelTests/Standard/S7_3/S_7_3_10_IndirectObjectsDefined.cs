@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             var result = (PdfIndirectReference) await src.ParseObjectAsync();
             Assert.Equal(24, result.Target.ObjectNumber);
             Assert.Equal(543, result.Target.GenerationNumber);
-            Assert.Equal(PdfTokenValues.Null, await result.DirectValue());
+            Assert.Equal(PdfTokenValues.Null, await result.DirectValueAsync());
             
         }
 
@@ -34,13 +34,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         {
             var obj = await targetAsPdf.ParseObjectAsync();
             
-            Assert.True(ReferenceEquals(obj, await obj.DirectValue()));
+            Assert.True(ReferenceEquals(obj, await obj.DirectValueAsync()));
 
             var indirect = new PdfIndirectObject(1, 0, obj);
-            Assert.True(ReferenceEquals(obj, await indirect.DirectValue()));
+            Assert.True(ReferenceEquals(obj, await indirect.DirectValueAsync()));
 
             var reference = new PdfIndirectReference(indirect);
-            Assert.True(ReferenceEquals(obj, await reference.DirectValue()));
+            Assert.True(ReferenceEquals(obj, await reference.DirectValueAsync()));
         }
     }
 }

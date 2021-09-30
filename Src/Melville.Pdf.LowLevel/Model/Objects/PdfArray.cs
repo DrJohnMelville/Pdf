@@ -19,13 +19,13 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         }
 
         public IEnumerator<ValueTask<PdfObject>> GetEnumerator() => 
-            RawItems.Select(i => i.DirectValue()).GetEnumerator();
+            RawItems.Select(i => i.DirectValueAsync()).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public int Count =>  RawItems.Count;
 
-        public ValueTask<PdfObject> this[int index] => RawItems[index].DirectValue();
+        public ValueTask<PdfObject> this[int index] => RawItems[index].DirectValueAsync();
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
         public override string ToString() => "["+string.Join(" ", RawItems) +"]";
     }

@@ -41,16 +41,16 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public bool ContainsKey(PdfName key) => RawItems.ContainsKey(key);
 
         ValueTask<PdfObject> IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>.this[PdfName key] =>
-            RawItems[key].DirectValue();
+            RawItems[key].DirectValueAsync();
 
         public IEnumerable<PdfName> Keys => RawItems.Keys;
 
         IEnumerable<ValueTask<PdfObject>> IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>.Values =>
-            RawItems.Values.Select(i => i.DirectValue());
+            RawItems.Values.Select(i => i.DirectValueAsync());
 
         public IEnumerator<KeyValuePair<PdfName, ValueTask<PdfObject>>> GetEnumerator() =>
             RawItems
-                .Select(i => new KeyValuePair<PdfName, ValueTask<PdfObject>>(i.Key, i.Value.DirectValue()))
+                .Select(i => new KeyValuePair<PdfName, ValueTask<PdfObject>>(i.Key, i.Value.DirectValueAsync()))
                 .GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -60,16 +60,16 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         {
             if (RawItems.TryGetValue(key, out var ret))
             {
-                value = ret.DirectValue();
+                value = ret.DirectValueAsync();
                 return true;
             }
             value = default;
             return false;
         }
 
-        public ValueTask<PdfObject> this[PdfName key] => RawItems[key].DirectValue();
+        public ValueTask<PdfObject> this[PdfName key] => RawItems[key].DirectValueAsync();
         
-        public IEnumerable<ValueTask<PdfObject>> Values => RawItems.Values.Select(i => i.DirectValue());
+        public IEnumerable<ValueTask<PdfObject>> Values => RawItems.Values.Select(i => i.DirectValueAsync());
 
         #endregion
 
