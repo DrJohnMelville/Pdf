@@ -15,13 +15,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 
         protected virtual Stream CreateStream(string content) => 
             new MultiBufferStream(content.AsExtendedAsciiBytes());
-
-        [Fact]
-        public void ZeroLengthBufferIsAnError()
-        {
-            Assert.Throws<ArgumentException>(()=>new MultiBufferStream(Array.Empty<byte>()));
-        }
-
+        
         [Fact]
         public void AllowedOperations()
         {

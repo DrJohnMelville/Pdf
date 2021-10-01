@@ -2,10 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.INPC;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
@@ -14,6 +18,21 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities
 {
+    public partial class SingleCharSource : IStreamDataSource
+    {
+        [DelegateTo]
+        private readonly IStreamDataSource source;
+
+        public SingleCharSource(IStreamDataSource source)
+        {
+            this.source = source;
+        }
+
+        public async ValueTask<Stream> OpenRawStream(long streamLength)
+        {
+            return new OneCharAtAtimeStream(await source.OpenRawStream(streamLength));
+        }
+    }
     public abstract class StreamTestBase
     {
         private readonly string source;
@@ -32,35 +51,44 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 
         private ValueTask<PdfStream> EncodedStreamAsync() =>
             LowLevelDocumentBuilderOperations.NewCompressedStream(null, source, compression, parameters);
-        private ValueTask<PdfStream> EncodedSingleCharStreamAsync() =>
-            LowLevelDocumentBuilderOperations.NewCompressedStream(null,
-                new OneCharAtAtimeStream(new MemoryStream(source.AsExtendedAsciiBytes())), compression, parameters);
-
+        
         [Fact]
-        public async Task EncodeUsingReading() => await VerifyEncoding(await EncodedStreamAsync());
+        public async Task EncodingTest() => await VerifyEncoding(await EncodedStreamAsync());
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task DecodeTest(bool singleChars)
+        {
+            await VerifyDecodedStream(TrySingleCharStream(await DecodableStream(singleChars).StreamContentAsync(), singleChars));
+        }
+
+        private PdfStream DecodableStream(bool singleCharStream)
+        {
+            return new PdfStream(TrySingleCharSource(new LiteralStreamSource(
+                    new MultiBufferStream(dest.AsExtendedAsciiBytes()),
+                    StreamFormat.DiskRepresentation), singleCharStream),
+                (KnownNames.Length, new PdfInteger(dest.Length)),
+                (KnownNames.Filter, compression),
+                (KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null)
+            );
+        }
+
+        public Stream TrySingleCharStream(Stream source, bool asSingleChars) =>
+            asSingleChars ? new OneCharAtAtimeStream(source) : source;
+        public IStreamDataSource TrySingleCharSource(IStreamDataSource source, bool asSingleChars) =>
+            asSingleChars ? new SingleCharSource(source) : source;
 
         private async Task VerifyEncoding(PdfStream stream) => 
             Assert.Equal(SimulateStreamOutput(), await stream.WriteToStringAsync());
-
-
+        
         private string SimulateStreamOutput() => 
             $"<</Filter{compression}{RenderParams(parameters)}/Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
 
-        private static string RenderParams(PdfObject? parameters)
-        {
-            if (parameters is not PdfDictionary dict) return "";
-            return "/DecodeParms<<"+string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}"))+">>";
-        }
-
-        // [Fact]
-        // public async Task EncodeUsingWriting()
-        // {
-        //     var stream = await new LowLevelDocumentBuilder().NewCompressedStream(
-        //         i => i.WriteAsync(source.AsExtendedAsciiBytes().AsMemory()), 
-        //         compression, parameters);
-        //     await VerifyEncoding(stream);
-        //
-        // }
+        private static string RenderParams(PdfObject? parameters) =>
+            parameters is not PdfDictionary dict
+                ? ""
+                : "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}")) + ">>";
 
         [Fact]
         public async Task VerifyDisposal()
@@ -79,13 +107,6 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             await VerifyDecodedStream(await (await EncodedStreamAsync()).StreamContentAsync());
         }
 
-        [Fact]
-        public async Task ReadSingleCharAtATime()
-        {
-            var inner = await EncodedSingleCharStreamAsync();
-            await VerifyDecodedStream(new OneCharAtAtimeStream(await inner.StreamContentAsync(StreamFormat.PlainText, NullObjectEncryptor.Instance)));
-        }
-        
         private async Task VerifyDecodedStream(Stream streamToRead)
         {
             var buf = new byte[source.Length+200];

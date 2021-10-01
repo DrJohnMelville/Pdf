@@ -7,7 +7,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
 namespace Melville.Pdf.LowLevel.Encryption.Readers
 {

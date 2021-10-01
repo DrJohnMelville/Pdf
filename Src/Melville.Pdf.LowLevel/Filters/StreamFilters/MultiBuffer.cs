@@ -61,8 +61,6 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         }
         public MultiBuffer(byte[] firstBuffer)
         {
-            if (firstBuffer.Length < 1)
-                throw new ArgumentException("Buffer length must be > 0");
             head = new MultiBufferNode(firstBuffer, 0);
             Length = firstBuffer.Length;
         }
