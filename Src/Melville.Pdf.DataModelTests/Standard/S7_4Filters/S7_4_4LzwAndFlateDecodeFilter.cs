@@ -38,7 +38,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             {
                 {KnownNames.EarlyChange, new PdfInteger(EarlySwitch)}
             });
-            var str = await creator.NewCompressedStream(buffer, KnownNames.LZWDecode,
+            var str = creator.NewCompressedStream(buffer, KnownNames.LZWDecode,
                 EarlySwitch < 2? param:null);
             var destination = new byte[length];
             var decoded = await str.StreamContentAsync();

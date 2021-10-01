@@ -36,7 +36,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public List<PdfIndirectReference> Objects { get;  }= new();
         private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
 
-        public byte[] UserPassword { get; set; }
+        public byte[] UserPassword { get; set; } = Array.Empty<byte>();
 
         public LowLevelDocumentBuilder(int nextObject = 1)
         {

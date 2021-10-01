@@ -18,46 +18,46 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         }
 
         public override async ValueTask WritePdfAsync(Stream target) =>
-            await (await Filters()).CreateDocument().WriteToWithXrefStreamAsync(target);
+            await Filters().CreateDocument().WriteToWithXrefStreamAsync(target);
 
-        public static async ValueTask<ILowLevelDocumentCreator> Filters()
+        public static ILowLevelDocumentCreator Filters()
         {
             var builder = new PdfCreator();
-            await CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
+            CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
                 KnownNames.RunLengthDecode);
-            await CreatePage(builder, "LZW -- LateChange" + RandomString(9270), 
+            CreatePage(builder, "LZW -- LateChange" + RandomString(9270), 
                 KnownNames.LZWDecode, new PdfDictionary((KnownNames.EarlyChange, new PdfInteger(0))));
-            await CreatePage(builder, "LZW -- " + RandomString(9270), KnownNames.LZWDecode);
-            await CreatePage(builder, "Ascii Hex", KnownNames.ASCIIHexDecode);
-            await CreatePage(builder, "Ascii 85", KnownNames.ASCII85Decode);
-            await CreatePage(builder, "Flate Decode", KnownNames.FlateDecode);
-            await PredictionPage(builder, "Flate Decode With Tiff Predictor 2", 2 );
-            await PredictionPage(builder, "Flate Decode With Png Predictor 10", 10);
-            await PredictionPage(builder, "Flate Decode With Png Predictor 11", 11);
-            await PredictionPage(builder, "Flate Decode With Png Predictor 12", 12);
-            await PredictionPage(builder, "Flate Decode With Png Predictor 13", 13);
-            await PredictionPage(builder, "Flate Decode With Png Predictor 14", 14);
-            await PredictionPage(builder, "Flate Decode With Png Predictor 15", 15);
+            CreatePage(builder, "LZW -- " + RandomString(9270), KnownNames.LZWDecode);
+            CreatePage(builder, "Ascii Hex", KnownNames.ASCIIHexDecode);
+            CreatePage(builder, "Ascii 85", KnownNames.ASCII85Decode);
+            CreatePage(builder, "Flate Decode", KnownNames.FlateDecode);
+            PredictionPage(builder, "Flate Decode With Tiff Predictor 2", 2 );
+            PredictionPage(builder, "Flate Decode With Png Predictor 10", 10);
+            PredictionPage(builder, "Flate Decode With Png Predictor 11", 11);
+            PredictionPage(builder, "Flate Decode With Png Predictor 12", 12);
+            PredictionPage(builder, "Flate Decode With Png Predictor 13", 13);
+            PredictionPage(builder, "Flate Decode With Png Predictor 14", 14);
+            PredictionPage(builder, "Flate Decode With Png Predictor 15", 15);
 
             builder.FinalizePages();
             return builder.Creator;
         }
 
-        private static async ValueTask CreatePage(PdfCreator builder, string Text, PdfName encoding,
+        private static void CreatePage(PdfCreator builder, string Text, PdfName encoding,
             PdfObject? parameters = null)
         {
             builder.AddPageToPagesCollection(builder.Creator.Add(
-                builder.CreateUnattachedPage(builder.Creator.Add( await builder.Creator.NewCompressedStream(
+                builder.CreateUnattachedPage(builder.Creator.Add( builder.Creator.NewCompressedStream(
                     $"BT\n/F1 24 Tf\n100 100 Td\n(({Text})) Tj\nET\n",
                     encoding,  parameters
                 )))
             ));
         }
 
-        private static ValueTask PredictionPage(
+        private static void PredictionPage(
             PdfCreator builder, string text, int Predictor)
         {
-            return CreatePage(builder, text, KnownNames.FlateDecode,
+             CreatePage(builder, text, KnownNames.FlateDecode,
                 new PdfDictionary(
                     (KnownNames.Colors, new PdfInteger(2)), 
                     (KnownNames.Columns, new PdfInteger(5)),

@@ -47,7 +47,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             var data = new MultiBufferStream(2048);
             await GenerateXrefStreamAsync(data);
             
-            return await LowLevelDocumentBuilderOperations.NewCompressedStream(
+            return LowLevelDocumentBuilderOperations.NewCompressedStream(
                 null, data.CreateReader(), KnownNames.FlateDecode,
                 new PdfDictionary(
                           (KnownNames.Predictor, new PdfInteger(12)),

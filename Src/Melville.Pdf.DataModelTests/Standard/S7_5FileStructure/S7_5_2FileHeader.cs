@@ -22,7 +22,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [InlineData( 1, 7)]
         public async Task RecognizeFileVersion(int major, int minor)
         {
-            var doc = await (await (await MinimalPdfParser.MinimalPdf(major, minor))
+            var doc = await (await MinimalPdfParser.MinimalPdf(major, minor)
                 .AsStringAsync()).ParseDocumentAsync();
             Assert.Equal(major, doc.MajorVersion);
             Assert.Equal(minor, doc.MinorVersion);
@@ -32,7 +32,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task ParseWithLeadingWhiteSpace()
         {
-            var docString = "   \r\n" + (await (await MinimalPdfParser.MinimalPdf(1, 7))
+            var docString = "   \r\n" + (await MinimalPdfParser.MinimalPdf(1, 7)
                 .AsStringAsync());
             var doc = await docString.ParseDocumentAsync();
             Assert.Equal(1, doc.MajorVersion);

@@ -53,14 +53,13 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         public PdfDictionary CreateUnattachedPage(PdfStream content) =>
             CreateUnattachedPage(Creator.AsIndirectReference(content));
 
-        public async ValueTask<PdfDictionary> CreateUnattachedPageAsync(StreamDataSource source) =>
+        public PdfDictionary CreateUnattachedPage(StreamDataSource source) =>
             CreateUnattachedPage(
-                Creator.Add(
-                    await Creator.NewCompressedStream(source, KnownNames.FlateDecode)));
+                Creator.Add(Creator.NewCompressedStream(source, KnownNames.FlateDecode)));
 
-        public async ValueTask CreateAttachedPageAsync(StreamDataSource source)
+        public void CreateAttachedPage(StreamDataSource source)
         {
-            var page = await CreateUnattachedPageAsync(source);
+            var page = CreateUnattachedPage(source);
             AddPageToPagesCollection(Creator.Add(page));
         }
 

@@ -14,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream = null)
         {
             creator.Add(new PdfString("plaintext string"));
-            creator.Add(await InsertedStream(creator, cryptFilterTypeForStream));
+            creator.Add(InsertedStream(creator, cryptFilterTypeForStream));
             var str = await creator.AsStringAsync();
             Assert.Equal(!hideString, str.Contains("plaintext string"));
             Assert.Equal(!hideStream, str.Contains("plaintext stream"));
@@ -27,11 +27,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
                 .ReadAsStringAsync());
         }
 
-        private async ValueTask<PdfStream> InsertedStream(
+        private PdfStream InsertedStream(
             LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream)
         {
             return cryptFilterTypeForStream == null? creator.NewStream("plaintext stream"):
-                    await creator.NewCompressedStream("plaintext stream", KnownNames.Crypt,
+                     creator.NewCompressedStream("plaintext stream", KnownNames.Crypt,
                         new PdfDictionary(
                             (KnownNames.Type, KnownNames.CryptFilterDecodeParms),
                             (KnownNames.Name, cryptFilterTypeForStream)));

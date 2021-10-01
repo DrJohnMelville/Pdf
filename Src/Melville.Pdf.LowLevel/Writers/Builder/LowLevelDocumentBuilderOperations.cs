@@ -14,12 +14,12 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             this ILowLevelDocumentBuilder creator, PdfDictionary rootElt) =>
             creator.AddToTrailerDictionary(KnownNames.Root, creator.Add(rootElt));
 
-        public static ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder? _,
+        public static PdfStream NewCompressedStream(this ILowLevelDocumentBuilder? _,
             StreamDataSource data, PdfObject encoding, PdfObject? parameters = null,
             params (PdfName Name, PdfObject Value)[] items) =>
             _.NewCompressedStream(data, encoding, parameters, items.AsEnumerable());
       
-        public static async ValueTask<PdfStream> NewCompressedStream(this ILowLevelDocumentBuilder? _,
+        public static PdfStream NewCompressedStream(this ILowLevelDocumentBuilder? _,
             StreamDataSource data, PdfObject encoding, PdfObject? parameters,
             IEnumerable<(PdfName Name, PdfObject Value)> items) =>
             NewStream(_, data,

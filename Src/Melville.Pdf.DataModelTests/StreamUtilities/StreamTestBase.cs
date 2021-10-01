@@ -49,11 +49,11 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             this.parameters = parameters;
         }
 
-        private ValueTask<PdfStream> EncodedStreamAsync() =>
+        private PdfStream EncodedStreamAsync() =>
             LowLevelDocumentBuilderOperations.NewCompressedStream(null, source, compression, parameters);
         
         [Fact]
-        public async Task EncodingTest() => await VerifyEncoding(await EncodedStreamAsync());
+        public Task EncodingTest() => VerifyEncoding(EncodedStreamAsync());
 
         [Theory]
         [InlineData(false)]
@@ -93,7 +93,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public async Task VerifyDisposal()
         {
-            var str = await EncodedStreamAsync();
+            var str = EncodedStreamAsync();
             var dispSource = new StreamDisposeSource(await str.StreamContentAsync(), StreamFormat.PlainText);
             var wrappedStream = await new PdfStream(dispSource, str.RawItems).StreamContentAsync();
             Assert.False(dispSource.IsDisposed);
@@ -104,7 +104,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         [Fact]
         public async Task RoundTripStream()
         {
-            await VerifyDecodedStream(await (await EncodedStreamAsync()).StreamContentAsync());
+            await VerifyDecodedStream(await EncodedStreamAsync().StreamContentAsync());
         }
 
         private async Task VerifyDecodedStream(Stream streamToRead)

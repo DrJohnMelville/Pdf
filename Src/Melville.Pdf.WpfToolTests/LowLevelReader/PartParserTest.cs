@@ -29,8 +29,8 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         [InlineData(2,0)]
         public async Task ParseHeader(int major, int minor)
         {
-            var model = await sut.ParseAsync(
-                await (await MinimalPdfParser.MinimalPdf(major, minor)).AsFileAsync(),waitingService.Object);
+            var model =  await sut.ParseAsync(
+                await MinimalPdfParser.MinimalPdf(major, minor).AsFileAsync(),waitingService.Object);
             Assert.Equal($"PDF-{major}.{minor}", model[0].Title);
         }
 
@@ -38,7 +38,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         public async Task ParseFinalDictionary()
         {
             var model = await sut.ParseAsync(
-                await (await MinimalPdfParser.MinimalPdf(1, 7)).AsFileAsync(),
+                await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
                 waitingService.Object);
             var trailerNode = model.Last();
             Assert.Equal("Trailer: Dictionary", trailerNode.Title);
@@ -51,7 +51,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         public async Task ReportWaitingTime()
         {
             var model = await sut.ParseAsync(
-                await (await MinimalPdfParser.MinimalPdf(1, 7)).AsFileAsync(),
+                await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
                 waitingService.Object);
             waitingService.Verify(i=>i.WaitBlock("Loading File", 8, false), Times.Once);
             waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(8));

@@ -17,7 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task GenerateAndParseFileWithReferenceStream()
         {
-            var document = await MinimalPdfParser.MinimalPdf(1, 7);
+            var document = MinimalPdfParser.MinimalPdf(1, 7);
             var ms = new MultiBufferStream();
             var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), document.CreateDocument());
             await writer.WriteWithReferenceStream();

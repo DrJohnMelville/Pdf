@@ -39,10 +39,6 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
-        [Obsolete("Need tp get rid of this soon")]
-        public  ValueTask<Stream> GetEncodedStreamAsync() =>
-            StreamContentAsync(StreamFormat.DiskRepresentation);
-
         private async ValueTask<Stream> SourceStreamAsync() => 
             await source.OpenRawStream(await DeclaredLengthAsync());
 
@@ -53,7 +49,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             IObjectEncryptor? encryptor = null)
         {
             var decoder = new CryptSingleFilter(new SinglePredictionFilter(new StaticSingleFilter()),
-                source, encryptor);
+                source, encryptor ?? ErrorObjectEncryptor.Instance);
             IFilterProcessor processor = 
                 new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
             if (await ShouldApplyDefaultEncryption())

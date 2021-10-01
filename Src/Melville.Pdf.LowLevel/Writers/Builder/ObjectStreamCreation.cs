@@ -22,7 +22,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             params (PdfName Name, PdfObject Value)[] items)
         {
             var contentStreamInfo = await CreateContentStream(objectRefs);
-            return await builder.NewCompressedStream(contentStreamInfo.Data, encoding, parameters,
+            return builder.NewCompressedStream(contentStreamInfo.Data, encoding, parameters,
                 items.Concat(new (PdfName, PdfObject)[]
                 {
                     (KnownNames.Type, KnownNames.ObjStm),
