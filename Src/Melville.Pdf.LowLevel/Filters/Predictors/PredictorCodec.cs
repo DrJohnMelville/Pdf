@@ -20,13 +20,7 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
             var filter = await PredictionFilterAsync(parameters, true);
             return filter == null ? data : ReadingFilterStream.Wrap(data, filter);
         }
-
-        public async ValueTask<Stream> EncodeOnWriteStream(Stream data, PdfObject? parameters)
-        {
-            var filter = await PredictionFilterAsync(parameters, true);
-            return filter == null ? data : new WritingFilterStream(data, filter);
-        }
-
+        
         public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
         {
             var filter = await PredictionFilterAsync(parameters, false);

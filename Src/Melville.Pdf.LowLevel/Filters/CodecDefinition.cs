@@ -16,7 +16,6 @@ namespace Melville.Pdf.LowLevel.Filters
     public interface ICodecDefinition
     {
         public ValueTask<Stream>  EncodeOnReadStream(Stream data, PdfObject? parameters);
-        public ValueTask<Stream>  EncodeOnWriteStream(Stream data, PdfObject? parameters);
         ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters);
     }
 
@@ -38,9 +37,6 @@ namespace Melville.Pdf.LowLevel.Filters
 
         public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters) =>
             ReadingFilterStream.Wrap(input, await decoder(parameters));
-
-        public async ValueTask<Stream> EncodeOnWriteStream(Stream data, PdfObject? parameters) => 
-            new WritingFilterStream(data, await encoder(parameters));
     }
 
     public static class CodecFactory
