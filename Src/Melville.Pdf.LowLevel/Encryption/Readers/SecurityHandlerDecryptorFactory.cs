@@ -64,7 +64,11 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 
         public Stream WrapRawStream(Stream input, PdfName cryptFilterName)
         {
-            return CreateDecryptor(cryptFilterName).WrapRawStream(input, cryptFilterName);
+            return handler.DecryptorForObject(-1,-1, cryptFilterName).WrapRawStream(input, cryptFilterName);
+        }
+        public Stream WrapRawStream(Stream input)
+        {
+            return CreateDecryptor(KnownNames.StmF).WrapRawStream(input, KnownNames.StmF);
         }
     }
 

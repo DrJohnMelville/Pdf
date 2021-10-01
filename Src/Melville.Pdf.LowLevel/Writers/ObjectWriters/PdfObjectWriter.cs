@@ -1,7 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -27,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
             TokenValueWriter.Write(target, item);
         public override ValueTask<FlushResult> Visit(PdfString item) => 
-            StringWriter.Write(target, item, CreateEncryptor(KnownNames.StrF));
+            StringWriter.Write(target, item, CreateEncryptor());
         public override ValueTask<FlushResult> Visit(PdfInteger item) =>
             IntegerWriter.WriteAndFlush(target, item.IntValue);
         public override ValueTask<FlushResult> Visit(PdfDouble item) =>
@@ -47,11 +46,11 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         public override ValueTask<FlushResult> Visit(PdfDictionary item) =>
             DictionaryWriter.Write(target, this, item.RawItems);
         public override ValueTask<FlushResult> Visit(PdfStream item) =>
-            StreamWriter.Write(target, this, item, CreateEncryptor(KnownNames.StmF));
+            StreamWriter.Write(target, this, item, CreateEncryptor());
         
-        private IObjectEncryptor CreateEncryptor(PdfName cryptFilterName) =>
+        private IObjectEncryptor CreateEncryptor() =>
             currentIndirectObject == null ? NullObjectEncryptor.Instance : 
-                encryptor.CreateEncryptor(currentIndirectObject, cryptFilterName);
+                encryptor.CreateEncryptor(currentIndirectObject);
 
     }
 }

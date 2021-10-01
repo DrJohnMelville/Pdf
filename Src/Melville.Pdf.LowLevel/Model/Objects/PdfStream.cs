@@ -14,6 +14,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
     {
         ValueTask<Stream> OpenRawStream(long streamLength);
         Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName);
+        Stream WrapStreamWithDecryptor(Stream encryptedStream);
         StreamFormat SourceFormat { get; }
     }
 

@@ -40,10 +40,10 @@ namespace Melville.Pdf.LowLevel.Encryption.Writers
         private PdfIndirectObject? GetEncryptDictReferenceObject(PdfObject obj) =>
             obj is PdfIndirectReference pir ? pir.Target : null;
 
-        public IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject, PdfName cryptFilterName) =>
+        public IObjectEncryptor CreateEncryptor(PdfIndirectObject parentObject) =>
             IsEncryptDictionary(parentObject) ?
                 NullObjectEncryptor.Instance : 
-                handler.EncryptorForObject(parentObject);
+                handler.EncryptorForObject(parentObject.ObjectNumber, parentObject.GenerationNumber);
 
         private bool IsEncryptDictionary(PdfIndirectObject parentObject) => 
             encryptDictionaryReference == parentObject;

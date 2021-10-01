@@ -23,6 +23,15 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         public static ILowLevelDocumentCreator Filters()
         {
             var builder = new PdfCreator();
+            builder.Creator.AddEncryption(new V4Encryptor("","", 128,
+                PdfPermission.None, KnownNames.Identity, KnownNames.Identity,
+                new V4CfDictionary(KnownNames.V2, 128/8)));
+            CreatePage(builder, "Rc4 Crypt Filter", KnownNames.Crypt,
+                new PdfDictionary((KnownNames.Type, KnownNames.CryptFilterDecodeParms),
+                    (KnownNames.Name, KnownNames.StdCF)));
+          CreatePage(builder, "Identity Crypt Filter", KnownNames.Crypt,
+                new PdfDictionary((KnownNames.Type, KnownNames.CryptFilterDecodeParms),
+                    (KnownNames.Name, KnownNames.Identity)));
             CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
                 KnownNames.RunLengthDecode);
             CreatePage(builder, "LZW -- LateChange" + RandomString(9270), 

@@ -13,7 +13,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
     public interface ISecurityHandler
     {
         IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfName cryptFilterName);
-        IObjectEncryptor EncryptorForObject(PdfIndirectObject parent);
+        IObjectEncryptor EncryptorForObject(int objNum, int generationNumber);
         bool TrySinglePassword((string?, PasswordType) password);
     }
 
@@ -111,11 +111,11 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
                 throw new PdfSecurityException("No decryption key.  Call TryInteractiveLogin before decrypting.");
         }
 
-        public IObjectEncryptor EncryptorForObject(PdfIndirectObject parent)
+        public IObjectEncryptor EncryptorForObject(int objNum, int generationNumber)
         {
             VerifyEncryptionKeyExists();
             return encryptorAndDecryptorFactory.CreateEncryptor(
-                encryptionKey, parent.ObjectNumber, parent.GenerationNumber);
+                encryptionKey, objNum, generationNumber);
         }
     }
 }

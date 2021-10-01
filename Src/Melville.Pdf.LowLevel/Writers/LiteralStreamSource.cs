@@ -33,5 +33,7 @@ namespace Melville.Pdf.LowLevel.Writers
 
         public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) =>
             encryptedStream;
+        public Stream WrapStreamWithDecryptor(Stream encryptedStream) =>
+            encryptedStream;
     }
 }

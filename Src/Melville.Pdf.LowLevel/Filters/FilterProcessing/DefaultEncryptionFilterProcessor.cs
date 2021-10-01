@@ -27,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         private Stream TryEncrypt(
             Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
             ShouldEncrypt(sourceFormat, targetFormat) ? 
-                encryptor.WrapReadingStreamWithEncryption(source, KnownNames.StmF)
+                encryptor.WrapReadingStreamWithEncryption(source)
                 : source;
 
         private static bool ShouldEncrypt(
@@ -42,7 +42,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
 
         private Stream TryDecrypt(Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
             ShouldDecrypt(sourceFormat, targetFormat)
-                ? streamSource.WrapStreamWithDecryptor(source, KnownNames.StmF)
+                ? streamSource.WrapStreamWithDecryptor(source)
                 : source;
 
         private static bool ShouldDecrypt(StreamFormat sourceFormat, StreamFormat targetFormat) =>

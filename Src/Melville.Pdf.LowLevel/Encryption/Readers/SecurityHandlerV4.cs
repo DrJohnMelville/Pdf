@@ -28,29 +28,37 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         public bool TrySinglePassword((string?, PasswordType) password) => 
             handlers.Values.All(i => i.TrySinglePassword(password));
 
-        public IObjectEncryptor EncryptorForObject(PdfIndirectObject parent) => 
-            new InnerEncryptor(this, parent);
+        public IObjectEncryptor EncryptorForObject(int objNum, int generationNumber) => 
+            new InnerEncryptor(this, objNum, generationNumber);
 
         private class InnerEncryptor: IObjectEncryptor
         {
             private readonly SecurityHandlerV4 securityHandler;
-            private readonly PdfIndirectObject parentObject;
+            private readonly int objNum;
+            private readonly int generationNumber;
 
-            public InnerEncryptor(SecurityHandlerV4 securityHandler, PdfIndirectObject parentObject)
+            public InnerEncryptor(SecurityHandlerV4 securityHandler, int objNum, int generationNumber)
             {
                 this.securityHandler = securityHandler;
-                this.parentObject = parentObject;
+                this.objNum = objNum;
+                this.generationNumber = generationNumber;
             }
 
             public ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input) =>
                 securityHandler.PickHandler(KnownNames.StrF)
-                    .EncryptorForObject(parentObject)
+                    .EncryptorForObject(objNum, generationNumber)
                     .Encrypt(input);
 
+            public Stream WrapReadingStreamWithEncryption(Stream stream)
+            {
+               return securityHandler.PickHandler(KnownNames.StmF)
+                    .EncryptorForObject(objNum, generationNumber)
+                    .WrapReadingStreamWithEncryption(stream);
+            }
             public Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg)
             {
-               return securityHandler.PickHandler(encryptionAlg)
-                    .EncryptorForObject(parentObject)
+                return securityHandler.PickHandler(encryptionAlg)
+                    .EncryptorForObject(-1, -1)
                     .WrapReadingStreamWithEncryption(stream, encryptionAlg);
             }
         }
@@ -64,7 +72,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 
         public bool TrySinglePassword((string?, PasswordType) password) => true;
         
-        public IObjectEncryptor EncryptorForObject(PdfIndirectObject parent)
+        public IObjectEncryptor EncryptorForObject(int objNum, int generationNumber)
         {
             return NullObjectEncryptor.Instance;
         }

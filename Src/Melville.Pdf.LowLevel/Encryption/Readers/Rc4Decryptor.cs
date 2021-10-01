@@ -16,7 +16,8 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         }
         
         public void DecryptStringInPlace(PdfString input) => rc4.TransfromInPlace(input.Bytes);
-        public Stream WrapRawStream(Stream input, PdfName? cryptFilterName) => new Rc4Stream(input, rc4);
+        public Stream WrapRawStream(Stream input, PdfName cryptFilterName) => new Rc4Stream(input, rc4);
+        public Stream WrapRawStream(Stream input) => new Rc4Stream(input, rc4);
     }
 
     public class Rc4Stream : Stream

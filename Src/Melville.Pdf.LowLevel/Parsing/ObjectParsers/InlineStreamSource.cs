@@ -29,5 +29,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 
         public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) => 
             decryptor.WrapRawStream(encryptedStream, cryptFilterName);
+        public Stream WrapStreamWithDecryptor(Stream encryptedStream) => 
+            decryptor.WrapRawStream(encryptedStream);
     }
 }

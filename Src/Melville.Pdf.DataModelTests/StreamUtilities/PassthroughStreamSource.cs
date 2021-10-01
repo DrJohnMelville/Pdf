@@ -19,6 +19,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
 
         public ValueTask<Stream> OpenRawStream(long streamLength) => new(data);
         public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName? cryptFilterName) => encryptedStream;
+        public Stream WrapStreamWithDecryptor(Stream encryptedStream) => encryptedStream;
 
     }
 }

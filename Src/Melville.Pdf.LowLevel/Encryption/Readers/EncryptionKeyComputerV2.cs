@@ -18,7 +18,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             hash.AddData(parameters.OwnerPasswordHash);
             AddLittleEndianInt(hash, parameters.Permissions);
             hash.AddData(parameters.IdFirstElement);
-            AddV4Bits(hash);
             var bytesInKey = parameters.KeyLengthInBits/8;
             var bits = V3Spin(hash, bytesInKey);
             return (bits.Length == bytesInKey) ? bits : bits[..bytesInKey];
@@ -28,10 +27,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         {
             hash.FinalizeHash();
             return hash.Hash ?? throw new InvalidProgramException("Should have a hash");
-        }
-
-        protected virtual void AddV4Bits(HashAlgorithm hash)
-        {
         }
 
         private static void AddLittleEndianInt(HashAlgorithm hash, uint localP)

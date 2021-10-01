@@ -7,6 +7,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
     public interface IObjectEncryptor
     {
         ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input);
+        Stream WrapReadingStreamWithEncryption(Stream stream);
         Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg);
     }
     
@@ -16,6 +17,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         private NullObjectEncryptor() { }
         public ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input) => input;
 
+        public Stream WrapReadingStreamWithEncryption(Stream stream) => stream;
         public Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg) => stream;
     }
     
@@ -24,6 +26,8 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         public ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input) => 
             throw new NotSupportedException("Should not be encrypting in this context.");
 
+        public Stream WrapReadingStreamWithEncryption(Stream stream) =>
+            throw new NotSupportedException("Should not be encrypting in this context.");
         public Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg) =>
             throw new NotSupportedException("Should not be encrypting in this context.");
 

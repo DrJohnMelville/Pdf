@@ -25,6 +25,8 @@ namespace Melville.Pdf.LowLevel.Encryption.Writers
         }
 
         public Stream WrapReadingStreamWithEncryption(Stream writableStream, PdfName encryptionAlg) =>
+            WrapReadingStreamWithEncryption(writableStream);
+        public Stream WrapReadingStreamWithEncryption(Stream writableStream) =>
             new Rc4Stream(writableStream, rc4);
     }
 }

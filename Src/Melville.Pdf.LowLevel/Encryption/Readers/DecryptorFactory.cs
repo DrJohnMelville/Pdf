@@ -30,6 +30,12 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 
         private static byte[] ComputeHash(byte[] baseKey, int objectNumber, int generationNumber)
         {
+            if (objectNumber < 0)
+            {
+                var ret = new byte[baseKey.Length];
+                baseKey.CopyTo(ret, 0);
+                return ret;
+            }
             var md5 = MD5.Create();
             md5.AddData(baseKey);
             AddObjectData(objectNumber, generationNumber, md5);
@@ -37,8 +43,9 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             return md5.Hash ?? throw new InvalidProgramException("Should have a hash here.");
         }
 
-        private static void AddObjectData(int objectNumber, int generationNumber, MD5 md5) =>
-            md5.AddData(new byte[]
+        private static void AddObjectData(int objectNumber, int generationNumber, MD5 md5)
+        {
+            md5.AddData(new[]
             {
                 (byte)objectNumber,
                 (byte)(objectNumber >> 8),
@@ -46,6 +53,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
                 (byte)generationNumber,
                 (byte)(generationNumber >> 8),
             });
+        }
 
         private static int EncryptionKeyLength(int baseKeyLength) => Math.Min(baseKeyLength + 5, 16);
 
