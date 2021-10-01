@@ -5,7 +5,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
 {
-#warning eventually this class ought to merge with CddeFactory.PredictionCodec
     public class SinglePredictionFilter : IApplySingleFilter
     {
         private IApplySingleFilter innerFilter;
