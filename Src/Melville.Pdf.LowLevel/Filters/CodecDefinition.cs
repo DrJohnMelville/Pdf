@@ -4,10 +4,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
-using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
-using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -47,7 +45,6 @@ namespace Melville.Pdf.LowLevel.Filters
 
     public static class CodecFactory
     {
-        public static readonly ICodecDefinition PredictionCodec = new PredictorCodec();
         public static ICodecDefinition CodecFor(PdfName name) => codecs[name];
         
         private static Dictionary<PdfName, ICodecDefinition> codecs = CreateDictionary();
