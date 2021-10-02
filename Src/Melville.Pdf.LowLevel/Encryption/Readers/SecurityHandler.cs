@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -12,9 +13,14 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
     public interface ISecurityHandler
     {
+        [Obsolete("Switch to new model")]
         IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfName cryptFilterName);
+        [Obsolete("Switch to new Mode")]
         IObjectEncryptor EncryptorForObject(int objNum, int generationNumber);
+        [Obsolete("Switch to new Mode")]
         bool TrySinglePassword((string?, PasswordType) password);
+        byte[]? TryComputeRootKey(string password, PasswordType type);
+        IDocumentCryptContext CreateCryptContext(byte[] rootKey);
     }
 
     public static class SecurityHandlerOperations
@@ -35,6 +41,18 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             }
         }
 
+        public static async ValueTask<IDocumentCryptContext> InteractiveGetCryptContext(
+            this ISecurityHandler handler, IPasswordSource source)
+        {
+            while (true)
+            {
+                var (password, type) = await source.GetPassword();
+                if (password == null)
+                    throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
+                if (handler.TryComputeRootKey(password, type) is { } rootKey) 
+                    return handler.CreateCryptContext(rootKey);
+            }
+        }
     }
 
     public class SecurityHandler : ISecurityHandler
@@ -44,6 +62,9 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         private readonly IComputeUserPassword userHashComputer;
         private readonly IComputeOwnerPassword ownerHashComputer;
         private readonly IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory;
+        private readonly IKeySpecializer keySpecializer;
+        private readonly ICipherFactory cipherFactory;
+        private readonly RootKeyComputer rootKeyComputer;
         private byte[]? encryptionKey;
         
         public SecurityHandler(
@@ -51,53 +72,47 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             IGlobalEncryptionKeyComputer keyComputer, 
             IComputeUserPassword userHashComputer,
             IComputeOwnerPassword ownerHashComputer,
-            IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory)
+            IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory, 
+            IKeySpecializer keySpecializer, 
+            ICipherFactory cipherFactory)
         {
             this.parameters = parameters;
             this.keyComputer = keyComputer;
             this.userHashComputer = userHashComputer;
             this.ownerHashComputer = ownerHashComputer;
             this.encryptorAndDecryptorFactory = encryptorAndDecryptorFactory;
+            this.keySpecializer = keySpecializer;
+            this.cipherFactory = cipherFactory;
+            rootKeyComputer = new RootKeyComputer(keyComputer, userHashComputer, ownerHashComputer, parameters);
         }
 
-        private bool TryUserPassword(in ReadOnlySpan<byte> password)
+        public IDocumentCryptContext? TryOpenDocumentContext(string password, PasswordType type)
         {
-            var key = keyComputer.ComputeKey(password, parameters);
-            var userHash = userHashComputer.ComputeHash(key, parameters);
-            if ((userHashComputer.CompareHashes(userHash, parameters.UserPasswordHash)))
-            {
-                encryptionKey = key;
-                return true;
-            }
-            return false;
+            return rootKeyComputer.TryComputeRootKey((ReadOnlySpan<byte>)password.AsExtendedAsciiBytes(), type) is { } rootKey
+                ? new DocumentCryptContext(rootKey, keySpecializer, cipherFactory): null;
         }
-        
+
+        public byte[]? TryComputeRootKey(string password, PasswordType type)
+        {
+            return rootKeyComputer.TryComputeRootKey(password.AsExtendedAsciiBytes(), type);
+        }
+
+        public IDocumentCryptContext CreateCryptContext(byte[] rootKey)
+        {
+            return new DocumentCryptContext(rootKey, keySpecializer, cipherFactory);
+        }
+
         public bool TrySinglePassword((string?, PasswordType) password)
         {
             var (passwordText, type) = password;
             if (passwordText == null)
                 throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
-            switch (type)
-            {
-                case  PasswordType.Owner:
-                    var userPassword = ownerHashComputer.UserKeyFromOwnerKey(passwordText.AsExtendedAsciiBytes(), parameters);
-                    return TrySinglePassword(userPassword, PasswordType.User);
-                case PasswordType.User:
-                    if (TryUserPassword(passwordText.AsExtendedAsciiBytes())) return true;
-                    break;
-            }
-
-            return false;
+            if (rootKeyComputer.TryComputeRootKey((ReadOnlySpan<byte>)passwordText.AsExtendedAsciiBytes(), type) is not { } key) return false;
+            encryptionKey = key;
+            return true;
         }
 
-        private bool TrySinglePassword(in ReadOnlySpan<byte> password, PasswordType type)
-        {
-            if (type == PasswordType.Owner)
-                return TrySinglePassword(ownerHashComputer.UserKeyFromOwnerKey(password, parameters), PasswordType.User);
-            return TryUserPassword(password);
-
-        }
-
+        [Obsolete]
         public IDecryptor DecryptorForObject(int objectNumber, int generationNumber, PdfName? cryptFilterName)
         {
             VerifyEncryptionKeyExists();
@@ -111,6 +126,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
                 throw new PdfSecurityException("No decryption key.  Call TryInteractiveLogin before decrypting.");
         }
 
+        [Obsolete]
         public IObjectEncryptor EncryptorForObject(int objNum, int generationNumber)
         {
             VerifyEncryptionKeyExists();

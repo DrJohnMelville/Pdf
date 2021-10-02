@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -34,14 +35,18 @@ namespace Melville.Pdf.LowLevel.Encryption
                 new GlobalEncryptionKeyComputerV2(), 
                 new ComputeUserPasswordV2(),
                 new ComputeOwnerPasswordV2(),
-                new Rc4DecryptorFactory());
+                new Rc4DecryptorFactory(),
+                new Rc4KeySpecializer(),
+                new Rc4CipherFactory());
 
         private static ISecurityHandler SecurityHandlerV3(in EncryptionParameters parameters) =>
             new SecurityHandler(parameters,
                 new GlobalEncryptionKeyComputerV3(),
                 new ComputeUserPasswordV3(),
                 new ComputeOwnerPasswordV3(),
-                new Rc4DecryptorFactory());
+                new Rc4DecryptorFactory(),
+                new Rc4KeySpecializer(),
+                new Rc4CipherFactory());
 
     }
 }

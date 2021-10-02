@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -28,7 +29,12 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             finalDictionary.Add(KnownNames.StrF, 
                 finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity)]);
 
-            return new SecurityHandlerV4(finalDictionary);
+            return new SecurityHandlerV4(
+                new RootKeyComputer(new GlobalEncryptionKeyComputerV3(),
+                    new ComputeUserPasswordV3(),
+                    new ComputeOwnerPasswordV3(),
+                    encryptionParameters)
+                ,finalDictionary);
         }
 
         private static ISecurityHandler CreateSubSecurityHandler(
@@ -41,7 +47,9 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
                         new GlobalEncryptionKeyComputerV3(),
                         new ComputeUserPasswordV3(),
                         new ComputeOwnerPasswordV3(),
-                        new Rc4DecryptorFactory()),
+                        new Rc4DecryptorFactory(),
+                        new Rc4KeySpecializer(),
+                        new Rc4CipherFactory()),
                 var i when i == KnownNames.None => new NullSecurityHandler(),
                 _ => throw new PdfSecurityException("Unknown Security Handler Type")
             };
