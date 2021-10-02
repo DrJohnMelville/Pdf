@@ -16,6 +16,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
     public class DocumentCryptContextV4: IDocumentCryptContext
     {
         private Dictionary<PdfName, IDocumentCryptContext> contexts;
+        
 
         public DocumentCryptContextV4(Dictionary<PdfName, IDocumentCryptContext> contexts)
         {
@@ -25,6 +26,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) =>
             new ObjectContextV4(contexts, objectNumber, generationNumber);
 
+        public bool BlockEncryption(PdfObject item) => contexts.Values.Any(i => i.BlockEncryption(item));
     }
     public class ObjectContextV4: IObjectCryptContext
     {
@@ -52,7 +54,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         public ICipher NamedCipher(PdfName name) =>
             context[name]
                 .ContextForObject(objectNumber, genetrationNumber)
-                .StringCipher();
+                .NamedCipher(name);
     }
 
     public class SecurityHandlerV4 : ISecurityHandler

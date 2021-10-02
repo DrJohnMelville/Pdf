@@ -23,7 +23,8 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         {
             var key = keyComputer.ComputeKey(userPassword, parameters);
             var userHash = userHashComputer.ComputeHash(key, parameters);
-            return userHashComputer.CompareHashes(userHash, parameters.UserPasswordHash) ? key : null;
+            var matches = userHashComputer.CompareHashes(userHash, parameters.UserPasswordHash);
+            return matches ? key : null;
         }
 
         public byte[]? TryComputeRootKey(in ReadOnlySpan<byte> password, PasswordType type)

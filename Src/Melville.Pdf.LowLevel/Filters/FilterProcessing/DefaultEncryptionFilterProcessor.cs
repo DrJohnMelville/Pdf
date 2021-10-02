@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
@@ -9,10 +8,10 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
     {
         private readonly IFilterProcessor innerProcessor;
         private readonly IStreamDataSource streamSource;
-        private readonly IObjectEncryptor encryptor;
+        private readonly IObjectCryptContext encryptor;
 
         public DefaultEncryptionFilterProcessor(IFilterProcessor innerProcessor, IStreamDataSource streamSource,
-            IObjectEncryptor encryptor)
+            IObjectCryptContext encryptor)
         {
             this.innerProcessor = innerProcessor;
             this.streamSource = streamSource;
@@ -27,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         private Stream TryEncrypt(
             Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
             ShouldEncrypt(sourceFormat, targetFormat) ? 
-                encryptor.WrapReadingStreamWithEncryption(source)
+                encryptor.StreamCipher().Encrypt().CryptStream(source)
                 : source;
 
         private static bool ShouldEncrypt(

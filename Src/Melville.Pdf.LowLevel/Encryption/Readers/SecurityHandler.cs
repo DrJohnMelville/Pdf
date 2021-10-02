@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption.New;
-using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -34,6 +33,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         private static async ValueTask InnerTryInteractiveLogin(
             ISecurityHandler handler, IPasswordSource passwordSource)
         {
+            if (handler.TrySinglePassword(("", PasswordType.User))) return;
             while (true)
             {
                 var password = await passwordSource.GetPassword();
@@ -57,59 +57,37 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 
     public class SecurityHandler : ISecurityHandler
     {
-        private readonly EncryptionParameters parameters;
-        private readonly IGlobalEncryptionKeyComputer keyComputer;
-        private readonly IComputeUserPassword userHashComputer;
-        private readonly IComputeOwnerPassword ownerHashComputer;
         private readonly IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory;
         private readonly IKeySpecializer keySpecializer;
         private readonly ICipherFactory cipherFactory;
         private readonly RootKeyComputer rootKeyComputer;
         private byte[]? encryptionKey;
+        private PdfObject? blockEncryption;
         
-        public SecurityHandler(
-            EncryptionParameters parameters, 
-            IGlobalEncryptionKeyComputer keyComputer, 
-            IComputeUserPassword userHashComputer,
-            IComputeOwnerPassword ownerHashComputer,
-            IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory, 
+        public SecurityHandler(IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory, 
             IKeySpecializer keySpecializer, 
-            ICipherFactory cipherFactory)
+            ICipherFactory cipherFactory,
+            RootKeyComputer rootKeyComputer, PdfObject? blockEncryption)
         {
-            this.parameters = parameters;
-            this.keyComputer = keyComputer;
-            this.userHashComputer = userHashComputer;
-            this.ownerHashComputer = ownerHashComputer;
             this.encryptorAndDecryptorFactory = encryptorAndDecryptorFactory;
             this.keySpecializer = keySpecializer;
             this.cipherFactory = cipherFactory;
-            rootKeyComputer = new RootKeyComputer(keyComputer, userHashComputer, ownerHashComputer, parameters);
+            this.rootKeyComputer = rootKeyComputer;
+            this.blockEncryption = blockEncryption;
         }
 
-        public IDocumentCryptContext? TryOpenDocumentContext(string password, PasswordType type)
-        {
-            return rootKeyComputer.TryComputeRootKey((ReadOnlySpan<byte>)password.AsExtendedAsciiBytes(), type) is { } rootKey
-                ? new DocumentCryptContext(rootKey, keySpecializer, cipherFactory): null;
-        }
+        public byte[]? TryComputeRootKey(string password, PasswordType type) => 
+            encryptionKey = rootKeyComputer.TryComputeRootKey(password.AsExtendedAsciiBytes(), type);
 
-        public byte[]? TryComputeRootKey(string password, PasswordType type)
-        {
-            return rootKeyComputer.TryComputeRootKey(password.AsExtendedAsciiBytes(), type);
-        }
-
-        public IDocumentCryptContext CreateCryptContext(byte[] rootKey)
-        {
-            return new DocumentCryptContext(rootKey, keySpecializer, cipherFactory);
-        }
+        public IDocumentCryptContext CreateCryptContext(byte[] rootKey) => 
+            new DocumentCryptContext(rootKey, keySpecializer, cipherFactory, blockEncryption);
 
         public bool TrySinglePassword((string?, PasswordType) password)
         {
             var (passwordText, type) = password;
-            if (passwordText == null)
+            if (passwordText == null) 
                 throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
-            if (rootKeyComputer.TryComputeRootKey((ReadOnlySpan<byte>)passwordText.AsExtendedAsciiBytes(), type) is not { } key) return false;
-            encryptionKey = key;
-            return true;
+            return TryComputeRootKey(passwordText, type) != null;
         }
 
         [Obsolete]

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.New;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -47,16 +49,18 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             TryGetValue(KnownNames.Length, out var len) && await len is PdfNumber num ? num.IntValue : -1;
 
         public async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
-            IObjectEncryptor? encryptor = null)
+            IObjectCryptContext? encryptor = null)
         {
+            var innerEncryptor = encryptor ?? ErrorObjectEncryptor.Instance;
+            
             var decoder = new CryptSingleFilter(new SinglePredictionFilter(new StaticSingleFilter()),
-                source, encryptor ?? ErrorObjectEncryptor.Instance);
+                source, innerEncryptor);
             IFilterProcessor processor = 
                 new FilterProcessor(await FilterList(), await FilterParamList(), decoder);
             if (await ShouldApplyDefaultEncryption())
             {
                 processor = new DefaultEncryptionFilterProcessor(
-                    processor, source, encryptor ?? ErrorObjectEncryptor.Instance);
+                    processor, source, innerEncryptor);
             }
             return await processor.StreamInDesiredEncoding(await SourceStreamAsync(),
                 source.SourceFormat, desiredFormat);

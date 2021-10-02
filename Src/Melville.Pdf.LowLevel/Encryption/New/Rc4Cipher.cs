@@ -1,24 +1,10 @@
 ﻿using System;
 using System.IO;
 using Melville.Pdf.LowLevel.Encryption.Cryptography;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 namespace Melville.Pdf.LowLevel.Encryption.New
 {
-    public interface ICipherOperations
-    {
-        /// <summary>
-        /// Encrypt or decrypt a span of bytes.  If the length of plaintext is the same as the length of the
-        /// ciphertext , then this function is allowed to do the decryption in place and return the original span
-        /// </summary>
-        ReadOnlySpan<byte> CryptSpan(Span<byte> input);
-        Stream CryptStream(Stream input);
-    }
-
-    public interface ICipher
-    {
-        ICipherOperations Encrypt();
-        ICipherOperations Decrypt();
-    }
     public class Rc4Cipher: ICipherOperations, ICipher
     {
         private readonly RC4 cryptoImplementation;

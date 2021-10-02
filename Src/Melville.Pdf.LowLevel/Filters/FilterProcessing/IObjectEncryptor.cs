@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
@@ -11,6 +12,33 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg);
     }
     
+    public interface IObjectCryptContext
+    {
+        public ICipher StringCipher();
+        public ICipher StreamCipher();
+        public ICipher NamedCipher(PdfName name);
+        
+    }
+    
+    public interface ICipherOperations
+    {
+        /// <summary>
+        /// Encrypt or decrypt a span of bytes.  If the length of plaintext is the same as the length of the
+        /// ciphertext , then this function is allowed to do the decryption in place and return the original span
+        /// </summary>
+        ReadOnlySpan<byte> CryptSpan(Span<byte> input);
+        Stream CryptStream(Stream input);
+    }
+
+    public interface ICipher
+    {
+        ICipherOperations Encrypt();
+        ICipherOperations Decrypt();
+    }
+
+
+    
+    
     public class NullObjectEncryptor : IObjectEncryptor
     {
         public static readonly NullObjectEncryptor Instance = new();
@@ -21,18 +49,15 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         public Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg) => stream;
     }
     
-    public class ErrorObjectEncryptor: IObjectEncryptor
+    public class ErrorObjectEncryptor: IObjectCryptContext
     {
-        public ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input) => 
-            throw new NotSupportedException("Should not be encrypting in this context.");
-
-        public Stream WrapReadingStreamWithEncryption(Stream stream) =>
-            throw new NotSupportedException("Should not be encrypting in this context.");
-        public Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg) =>
-            throw new NotSupportedException("Should not be encrypting in this context.");
-
         private ErrorObjectEncryptor() { }
-
-        public static IObjectEncryptor Instance { get; } = new ErrorObjectEncryptor();
+        public static IObjectCryptContext Instance { get; } = new ErrorObjectEncryptor();
+        public ICipher StringCipher()=> 
+            throw new NotSupportedException("Should not be encrypting in this context.");
+        public ICipher StreamCipher()=> 
+            throw new NotSupportedException("Should not be encrypting in this context.");
+        public ICipher NamedCipher(PdfName name)=> 
+            throw new NotSupportedException("Should not be encrypting in this context.");
     }
 }

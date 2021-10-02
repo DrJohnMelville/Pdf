@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -16,17 +17,11 @@ namespace Melville.Pdf.LowLevel.Encryption.New
             new Rc4Cipher(finalKey);
     }
 
-    public interface IObjectCryptContext
-    {
-        public ICipher StringCipher();
-        public ICipher StreamCipher();
-        public ICipher NamedCipher(PdfName name);
-        
-    }
 
     public interface IDocumentCryptContext
     {
         IObjectCryptContext ContextForObject(int objectNumber, int generationNumber);
+        bool BlockEncryption(PdfObject item);
     }
 
     public class DocumentCryptContext : IDocumentCryptContext
@@ -34,13 +29,18 @@ namespace Melville.Pdf.LowLevel.Encryption.New
         private readonly byte[] rootKey;
         private readonly IKeySpecializer keySpecializer;
         private readonly ICipherFactory cipherFactory;
+        private readonly PdfObject? blockEncryption;
 
-        public DocumentCryptContext(byte[] rootKey, IKeySpecializer keySpecializer, ICipherFactory cipherFactory)
+        public DocumentCryptContext(byte[] rootKey, IKeySpecializer keySpecializer, 
+            ICipherFactory cipherFactory, PdfObject? blockEncryption)
         {
             this.rootKey = rootKey;
             this.keySpecializer = keySpecializer;
             this.cipherFactory = cipherFactory;
+            this.blockEncryption = blockEncryption;
         }
+
+        public bool BlockEncryption(PdfObject item) => blockEncryption == item;
 
         public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) =>
             new ObjectCryptContext(this, objectNumber, generationNumber);

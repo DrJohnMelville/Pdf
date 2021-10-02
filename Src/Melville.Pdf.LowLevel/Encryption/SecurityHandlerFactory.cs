@@ -17,36 +17,50 @@ namespace Melville.Pdf.LowLevel.Encryption
         
             var V = (await dict.GetAsync<PdfNumber>(KnownNames.V)).IntValue;
             var R = (await dict.GetAsync<PdfNumber>(KnownNames.R)).IntValue;
+
+            var parameters = await EncryptionParameters.Create(trailer);
             
             return (V,R)switch
             {
                 (0 or 3, _) => throw new PdfSecurityException("Undocumented Algorithms are not supported"),
-                (4, _) => await SecurityHandlerV4Builder.Create(await EncryptionParameters.Create(trailer), dict),
-                (1 or 2, 2) =>  SecurityHandlerV2( await EncryptionParameters.Create(trailer)),
-                (1 or 2, 3) =>  SecurityHandlerV3(await EncryptionParameters.Create(trailer)),
+                (4, _) => await SecurityHandlerV4Builder.Create(RootKeyComputerV3(parameters),dict),
+                (1 or 2, 2) =>  SecurityHandlerV2( parameters, dict),
+                (1 or 2, 3) =>  SecurityHandlerV3(parameters, dict),
                 (_, 4) => throw new PdfSecurityException(
                     "Standard Security handler V4 requires a encryption value of 4."),
                 _ => throw new PdfSecurityException("Unrecognized encryption algorithm (V)")
             };
         }
 
-        private static ISecurityHandler SecurityHandlerV2(in EncryptionParameters parameters) =>
-            new SecurityHandler(parameters,
-                new GlobalEncryptionKeyComputerV2(), 
+        private static ISecurityHandler SecurityHandlerV2(
+            in EncryptionParameters parameters, PdfObject dict) =>
+            new SecurityHandler(new Rc4DecryptorFactory(),
+                new Rc4KeySpecializer(),
+                new Rc4CipherFactory(),
+                RootKeyComputerV2(parameters), dict);
+
+        private static RootKeyComputer RootKeyComputerV2(EncryptionParameters parameters)
+        {
+            return new RootKeyComputer(new GlobalEncryptionKeyComputerV2(),
                 new ComputeUserPasswordV2(),
                 new ComputeOwnerPasswordV2(),
-                new Rc4DecryptorFactory(),
-                new Rc4KeySpecializer(),
-                new Rc4CipherFactory());
+                parameters);
+        }
 
-        private static ISecurityHandler SecurityHandlerV3(in EncryptionParameters parameters) =>
-            new SecurityHandler(parameters,
-                new GlobalEncryptionKeyComputerV3(),
+        private static ISecurityHandler SecurityHandlerV3(
+            in EncryptionParameters parameters, PdfObject dict) =>
+            new SecurityHandler(new Rc4DecryptorFactory(),
+                new Rc4KeySpecializer(),
+                new Rc4CipherFactory(),
+                RootKeyComputerV3(parameters),
+                dict);
+
+        private static RootKeyComputer RootKeyComputerV3(EncryptionParameters parameters)
+        {
+            return new RootKeyComputer( new GlobalEncryptionKeyComputerV3(),
                 new ComputeUserPasswordV3(),
                 new ComputeOwnerPasswordV3(),
-                new Rc4DecryptorFactory(),
-                new Rc4KeySpecializer(),
-                new Rc4CipherFactory());
-
+                parameters);
+        }
     }
 }

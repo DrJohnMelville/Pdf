@@ -8,7 +8,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
 
 
-    [DebuggerDisplay("IdFirstElt:{IdFirstElement.AsHex()}\r\nOwnerPassword:{OwnerPasswordHash.AsHex()}\r\nUserPasswordHash:{UserPasswordHash.AsHex()}\r\nPermissions:{Permissions}\r\nKeyLength (Bits):{KeyLengthInBits}")]
     public readonly struct EncryptionParameters
     {
         public byte[] IdFirstElement {get;}
@@ -25,7 +24,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             UserPasswordHash = userPasswordHash;
             Permissions = permissions;
             KeyLengthInBits = keyLengthInBits;
-            
         }
 
         public static async ValueTask<EncryptionParameters> Create(PdfDictionary trailer) =>
@@ -40,5 +38,14 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
                 new EncryptionParameters(
                     firstId.Bytes, ownerHash.Bytes, userHash.Bytes, (uint)permissions.IntValue, 
                     (int) length.IntValue);
+
+        public override string ToString()
+        {
+            return $"IdFirstElt: {IdFirstElement.AsHex()}\r\n" +
+                   $"Owner: {OwnerPasswordHash.AsHex()}\r\n" +
+                   $"User: {UserPasswordHash.AsHex()}\r\n" +
+                   $"Permissions: {Permissions}\r\n" +
+                   $"KeyLengthInBits: {KeyLengthInBits}";
+        }
     }
 }

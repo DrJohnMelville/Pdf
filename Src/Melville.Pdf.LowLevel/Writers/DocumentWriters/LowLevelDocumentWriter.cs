@@ -54,7 +54,7 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         {
             var positions= CreateIndexArray(document, extraSlots);
             var objectWriter = new PdfObjectWriter(target,
-                await SecurityHandlerEncryptorFactory.CreateDocumentEncryptor(
+                await DocumentCryptContextFactory.CreateCryptContext(
                   document.TrailerDictionary, userPassword));
             foreach (var item in document.Objects.Values)
             {

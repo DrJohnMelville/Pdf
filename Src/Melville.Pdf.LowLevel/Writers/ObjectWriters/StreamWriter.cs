@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -17,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             {13, 10, 101, 110, 100, 115, 116, 114, 101, 97, 109}; //  \r\nendstream
         public static async ValueTask<FlushResult> Write(
             PipeWriter target, PdfObjectWriter innerWriter, PdfStream item,
-            IObjectEncryptor encryptor)
+            IObjectCryptContext encryptor)
         {
             Stream diskrep;
             await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor);

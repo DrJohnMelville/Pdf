@@ -10,10 +10,10 @@ namespace Melville.Pdf.LowLevel.Filters.CryptFilters
     {
         private readonly IApplySingleFilter innerFilter;
         private readonly IStreamDataSource streamDataSource;
-        private readonly IObjectEncryptor encryptor;
+        private readonly IObjectCryptContext encryptor;
 
         public CryptSingleFilter(
-            IApplySingleFilter innerFilter, IStreamDataSource streamDataSource, IObjectEncryptor encryptor)
+            IApplySingleFilter innerFilter, IStreamDataSource streamDataSource, IObjectCryptContext encryptor)
         {
             this.innerFilter = innerFilter;
             this.streamDataSource = streamDataSource;
@@ -24,8 +24,15 @@ namespace Melville.Pdf.LowLevel.Filters.CryptFilters
         public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
         {
             return (filter == KnownNames.Crypt) ? 
-                encryptor.WrapReadingStreamWithEncryption(source, await EncryptionAlg(parameter)) : 
+                (await ComputeCipher(parameter)).Encrypt().CryptStream(source) : 
                 await innerFilter.Encode(source, filter, parameter);
+        }
+
+        private async ValueTask<ICipher> ComputeCipher(PdfObject parameter)
+        {
+            var encryptionAlg = await EncryptionAlg(parameter);
+            var ret = encryptor.NamedCipher(encryptionAlg);
+            return ret;
         }
 
         public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)

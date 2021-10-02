@@ -1,5 +1,7 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.New;
+using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
@@ -10,14 +12,14 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
     public class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
     {
         private readonly PipeWriter target;
-        private IDocumentEncryptor encryptor;
+        private IDocumentCryptContext encryptor;
         private PdfIndirectObject? currentIndirectObject = null;
 
-        public PdfObjectWriter(PipeWriter target) : this(target, NullDocumentEncryptor.Instance)
+        public PdfObjectWriter(PipeWriter target) : this(target, NullSecurityHandler.Instance)
         {
         }
 
-        public PdfObjectWriter(PipeWriter target, IDocumentEncryptor encryptor) : base()
+        public PdfObjectWriter(PipeWriter target, IDocumentCryptContext encryptor) : base()
         {
             this.target = target;
             this.encryptor = encryptor;
@@ -33,7 +35,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             DoubleWriter.Write(target, item.DoubleValue);
         public override ValueTask<FlushResult> Visit(PdfIndirectObject item)
         {
-            currentIndirectObject = item;
+            currentIndirectObject = encryptor.BlockEncryption(item)?null: item;
             return IndirectObjectWriter.Write(target, item, this);
         }
 
@@ -43,14 +45,21 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             NameWriter.Write(target, item);
         public override ValueTask<FlushResult> Visit(PdfArray item) => 
             ArrayWriter.Write(target, this, item.RawItems);
-        public override ValueTask<FlushResult> Visit(PdfDictionary item) =>
-            DictionaryWriter.Write(target, this, item.RawItems);
+        public override ValueTask<FlushResult> Visit(PdfDictionary item)
+        {
+            if (encryptor.BlockEncryption(item))
+            {
+                currentIndirectObject = null;
+            }
+            return DictionaryWriter.Write(target, this, item.RawItems);
+        }
+
         public override ValueTask<FlushResult> Visit(PdfStream item) =>
             StreamWriter.Write(target, this, item, CreateEncryptor());
         
-        private IObjectEncryptor CreateEncryptor() =>
-            currentIndirectObject == null ? NullObjectEncryptor.Instance : 
-                encryptor.CreateEncryptor(currentIndirectObject);
+        private IObjectCryptContext CreateEncryptor() =>
+            currentIndirectObject == null ? NullSecurityHandler.Instance : 
+                encryptor.ContextForObject(currentIndirectObject.ObjectNumber, currentIndirectObject.GenerationNumber);
 
     }
 }

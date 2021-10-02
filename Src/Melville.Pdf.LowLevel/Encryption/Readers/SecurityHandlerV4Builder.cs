@@ -10,18 +10,17 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
     public static class SecurityHandlerV4Builder
     {
         
-        public static async ValueTask<SecurityHandlerV4> Create(
-            EncryptionParameters encryptionParameters, PdfDictionary encryptionDictionary)
+        public static async ValueTask<SecurityHandlerV4> Create(RootKeyComputer rootKeyComputer, PdfDictionary encryptionDictionary)
         {
             var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF);
             var finalDictionary = new Dictionary<PdfName, ISecurityHandler>();
-            finalDictionary.Add(KnownNames.Identity, new NullSecurityHandler());
+            finalDictionary.Add(KnownNames.Identity, NullSecurityHandler.Instance);
             foreach (var entry in cfd)
             {
                 var cryptDictionary = (PdfDictionary)await entry.Value;
                 var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM);
                 var length = await cryptDictionary.GetAsync<PdfNumber>(KnownNames.Length);
-                finalDictionary.Add(entry.Key, CreateSubSecurityHandler(encryptionParameters, cfm, length));
+                finalDictionary.Add(entry.Key, CreateSubSecurityHandler(rootKeyComputer, cfm, encryptionDictionary));
             }
             
             finalDictionary.Add(KnownNames.StmF, 
@@ -29,28 +28,21 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             finalDictionary.Add(KnownNames.StrF, 
                 finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity)]);
 
-            return new SecurityHandlerV4(
-                new RootKeyComputer(new GlobalEncryptionKeyComputerV3(),
-                    new ComputeUserPasswordV3(),
-                    new ComputeOwnerPasswordV3(),
-                    encryptionParameters)
-                ,finalDictionary);
+            return new SecurityHandlerV4(rootKeyComputer ,finalDictionary);
         }
 
         private static ISecurityHandler CreateSubSecurityHandler(
-            EncryptionParameters parameters, PdfName cfm, PdfNumber length)
+            RootKeyComputer rootKeyComputer, PdfName cfm, PdfObject dict)
         {
             return cfm switch
             {
                 var i when i == KnownNames.V2 =>
-                    new SecurityHandler(parameters,
-                        new GlobalEncryptionKeyComputerV3(),
-                        new ComputeUserPasswordV3(),
-                        new ComputeOwnerPasswordV3(),
-                        new Rc4DecryptorFactory(),
+                    new SecurityHandler(new Rc4DecryptorFactory(),
                         new Rc4KeySpecializer(),
-                        new Rc4CipherFactory()),
-                var i when i == KnownNames.None => new NullSecurityHandler(),
+                        new Rc4CipherFactory(),
+                        rootKeyComputer,
+                        dict),
+                var i when i == KnownNames.None => NullSecurityHandler.Instance,
                 _ => throw new PdfSecurityException("Unknown Security Handler Type")
             };
         }
