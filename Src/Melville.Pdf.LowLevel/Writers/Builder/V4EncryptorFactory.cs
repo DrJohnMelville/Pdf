@@ -39,7 +39,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             string userPassword, string ownerPassword, int keyLengthInBits, PdfPermission permissionsRestricted,
             PdfName defStream, PdfName defString, in V4CfDictionary cfs) : 
                 base(userPassword, ownerPassword, 4,4, keyLengthInBits, permissionsRestricted, 
-                    new ComputeOwnerPasswordV3(), new ComputeUserPasswordV3(), new EncryptionKeyComputerV3())
+                    new ComputeOwnerPasswordV3(), new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3())
         {
             this.defStream = defStream;
             this.defString = defString;

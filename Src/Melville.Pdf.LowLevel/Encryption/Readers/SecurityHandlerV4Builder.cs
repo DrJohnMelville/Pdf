@@ -38,7 +38,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             {
                 var i when i == KnownNames.V2 =>
                     new SecurityHandler(parameters,
-                        new EncryptionKeyComputerV3(),
+                        new GlobalEncryptionKeyComputerV3(),
                         new ComputeUserPasswordV3(),
                         new ComputeOwnerPasswordV3(),
                         new Rc4DecryptorFactory()),

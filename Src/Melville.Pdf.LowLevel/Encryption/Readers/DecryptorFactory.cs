@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.Writers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
 namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
@@ -12,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         IDecryptor CreateDecryptor(byte[] baseKey, int objectNumber, int generationNumber);
         IObjectEncryptor CreateEncryptor(byte[] baseKey, int objectNumber, int generationNumber);
     }
-
+    
     public abstract class EncryptorAndDecryptorFactory: IEncryptorAndDecryptorFactory
     {
         public IDecryptor CreateDecryptor(byte[] baseKey, int objectNumber, int generationNumber) => 
@@ -23,6 +22,8 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 
         private static Span<byte> ObjectEncryptionKey(byte[] baseKey, int objectNumber, int generationNumber)
         {
+            #warning -- this line is a hack that needs to go away.  eventually I ought to take
+            if (objectNumber < 0) return baseKey;
             var span = ComputeHash(baseKey, objectNumber, generationNumber).AsSpan();
             var desiredLength = EncryptionKeyLength(baseKey.Length);
             return span[..desiredLength];
@@ -30,12 +31,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 
         private static byte[] ComputeHash(byte[] baseKey, int objectNumber, int generationNumber)
         {
-            if (objectNumber < 0)
-            {
-                var ret = new byte[baseKey.Length];
-                baseKey.CopyTo(ret, 0);
-                return ret;
-            }
             var md5 = MD5.Create();
             md5.AddData(baseKey);
             AddObjectData(objectNumber, generationNumber, md5);
@@ -61,6 +56,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         protected abstract IObjectEncryptor CreateEncryptor(in ReadOnlySpan<byte> encryptionKey);
     }
 
+    #warning get rid of this inheritence as well
     public class Rc4DecryptorFactory : EncryptorAndDecryptorFactory
     {
         protected override IDecryptor CreateDecryptor(in ReadOnlySpan<byte> encryptionKey) => 

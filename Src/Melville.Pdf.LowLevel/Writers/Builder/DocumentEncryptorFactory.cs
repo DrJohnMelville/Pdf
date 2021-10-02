@@ -18,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
                 V, 3, keyLengthInBits, restrictedPermissions,
                 new ComputeOwnerPasswordV3(),
                 new ComputeUserPasswordV3(),
-                new EncryptionKeyComputerV3());
+                new GlobalEncryptionKeyComputerV3());
 
         public static ILowLevelDocumentEncryptor v1R2Rc440(
             string userPassword, string ownerPassword, PdfPermission restrictedPermissions) =>
@@ -31,7 +31,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
                 V, 2, keyLengthInBits, restrictedPermissions,
                 new ComputeOwnerPasswordV2(),
                 new ComputeUserPasswordV2(),
-                new EncryptionKeyComputerV2());
+                new GlobalEncryptionKeyComputerV2());
 
         public static ILowLevelDocumentEncryptor V2R3Rc440(
             string userPassword, string ownerPassword, PdfPermission restrictedPermissions) =>

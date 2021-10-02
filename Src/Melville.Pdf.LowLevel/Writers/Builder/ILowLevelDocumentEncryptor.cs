@@ -21,7 +21,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         private readonly int permissions;
         private readonly IComputeOwnerPassword ownerPasswordComputer;
         private readonly IComputeUserPassword userPasswordComputer;
-        private readonly IEncryptionKeyComputer keyComputer;
+        private readonly IGlobalEncryptionKeyComputer keyComputer;
         private int v;
         private int r;
         private int keyLengthInBits;
@@ -36,7 +36,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             PdfPermission permissionsRestricted, 
             IComputeOwnerPassword ownerPasswordComputer, 
             IComputeUserPassword userPasswordComputer, 
-            IEncryptionKeyComputer keyComputer)
+            IGlobalEncryptionKeyComputer keyComputer)
         {
             this.UserPassword = userPassword.AsExtendedAsciiBytes();
             this.ownerPassword = ownerPassword.AsExtendedAsciiBytes();

@@ -4,11 +4,11 @@ using System.Security.Cryptography;
 
 namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
-    public interface IEncryptionKeyComputer
+    public interface IGlobalEncryptionKeyComputer
     {
         byte[] ComputeKey(in ReadOnlySpan<byte> userPassword, in EncryptionParameters parameters);
     }
-    public class EncryptionKeyComputerV2: IEncryptionKeyComputer
+    public class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
     {
         public byte[] ComputeKey(in ReadOnlySpan<byte> userPassword, in EncryptionParameters parameters)
         {
@@ -42,7 +42,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         }
     }
 
-    public class EncryptionKeyComputerV3 : EncryptionKeyComputerV2
+    public class GlobalEncryptionKeyComputerV3 : GlobalEncryptionKeyComputerV2
     {
         protected override byte[] V3Spin(HashAlgorithm hash, int bytesInKey)
         {

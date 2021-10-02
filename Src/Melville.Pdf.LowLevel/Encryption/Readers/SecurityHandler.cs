@@ -40,7 +40,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
     public class SecurityHandler : ISecurityHandler
     {
         private readonly EncryptionParameters parameters;
-        private readonly IEncryptionKeyComputer keyComputer;
+        private readonly IGlobalEncryptionKeyComputer keyComputer;
         private readonly IComputeUserPassword userHashComputer;
         private readonly IComputeOwnerPassword ownerHashComputer;
         private readonly IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory;
@@ -48,7 +48,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         
         public SecurityHandler(
             EncryptionParameters parameters, 
-            IEncryptionKeyComputer keyComputer, 
+            IGlobalEncryptionKeyComputer keyComputer, 
             IComputeUserPassword userHashComputer,
             IComputeOwnerPassword ownerHashComputer,
             IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory)

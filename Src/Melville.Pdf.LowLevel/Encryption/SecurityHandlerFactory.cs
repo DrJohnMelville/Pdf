@@ -31,14 +31,14 @@ namespace Melville.Pdf.LowLevel.Encryption
 
         private static ISecurityHandler SecurityHandlerV2(in EncryptionParameters parameters) =>
             new SecurityHandler(parameters,
-                new EncryptionKeyComputerV2(), 
+                new GlobalEncryptionKeyComputerV2(), 
                 new ComputeUserPasswordV2(),
                 new ComputeOwnerPasswordV2(),
                 new Rc4DecryptorFactory());
 
         private static ISecurityHandler SecurityHandlerV3(in EncryptionParameters parameters) =>
             new SecurityHandler(parameters,
-                new EncryptionKeyComputerV3(),
+                new GlobalEncryptionKeyComputerV3(),
                 new ComputeUserPasswordV3(),
                 new ComputeOwnerPasswordV3(),
                 new Rc4DecryptorFactory());
