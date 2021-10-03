@@ -28,7 +28,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
             var encDict = de.CreateEncryptionDictionary(id);
             var trailer = new PdfDictionary((KnownNames.ID, id), (KnownNames.Encrypt, encDict));
             var handler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, encDict);
-            Assert.True(handler.TrySinglePassword(("User", PasswordType.User)));
+            Assert.NotNull(handler.TryComputeRootKey("User", PasswordType.User));
             
         }
         [Theory]
@@ -49,9 +49,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
                 tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
             try
             {
-                string[] passwords1 = passwords.Split('|');
-                await handler.TryInteactiveLogin(
-                    new ConstantPasswordSource(passwordType, passwords1));
+                await handler.InteractiveGetCryptContext(
+                    new ConstantPasswordSource(passwordType, passwords.Split('|')));
                 Assert.True(succeed);
             }
             catch (Exception)

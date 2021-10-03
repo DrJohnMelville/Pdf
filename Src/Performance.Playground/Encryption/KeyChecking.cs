@@ -36,12 +36,12 @@ namespace Performance.Playground.Encryption
         [Benchmark]
         public void ComputeUserPassword()
         {
-            handler.TrySinglePassword(("User", PasswordType.User));
+            handler.TryComputeRootKey("User", PasswordType.User);
         }
         [Benchmark]
         public void ComputeOwnerPassword()
         {
-            handler.TrySinglePassword(("Owner", PasswordType.Owner));
+            handler.TryComputeRootKey("Owner", PasswordType.Owner);
         }
     }
 }
