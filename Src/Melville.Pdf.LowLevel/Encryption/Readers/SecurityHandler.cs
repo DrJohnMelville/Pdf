@@ -33,7 +33,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         private static async ValueTask InnerTryInteractiveLogin(
             ISecurityHandler handler, IPasswordSource passwordSource)
         {
-            if (handler.TrySinglePassword(("", PasswordType.User))) return;
             while (true)
             {
                 var password = await passwordSource.GetPassword();
@@ -44,13 +43,24 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         public static async ValueTask<IDocumentCryptContext> InteractiveGetCryptContext(
             this ISecurityHandler handler, IPasswordSource source)
         {
+            return handler.CreateCryptContext(await GetRootKey(handler, source));
+        }
+
+        private static ValueTask<byte[]> GetRootKey(ISecurityHandler handler, IPasswordSource source) =>
+            handler.TryComputeRootKey("", PasswordType.User) is { } rootKey
+                ? new(rootKey)
+                : InteractiveGetRootKey(handler, source);
+        
+        private static async ValueTask<byte[]> InteractiveGetRootKey(
+            ISecurityHandler handler, IPasswordSource source)
+        {
             while (true)
             {
                 var (password, type) = await source.GetPassword();
                 if (password == null)
                     throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
                 if (handler.TryComputeRootKey(password, type) is { } rootKey) 
-                    return handler.CreateCryptContext(rootKey);
+                    return rootKey;
             }
         }
     }

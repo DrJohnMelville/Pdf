@@ -19,7 +19,8 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             var ret = await inner.ParseAsync(source);
             if (ret is PdfString pdfString)
             {
-                source.Decryptor().DecryptStringInPlace(pdfString);
+                #warning this will not work with AES, which cannot decrypt in place.
+                source.ObjectCryptContext().StringCipher().Decrypt().CryptSpan(pdfString.Bytes);
             }
 
             return ret;

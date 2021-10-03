@@ -9,15 +9,4 @@ namespace Melville.Pdf.LowLevel.Parsing.Decryptors
     {
         IParsingReader Wrap(IParsingReader reader, int objectNumber, int generationNumber);
     }
-
-
-    public class NullWrapReaderForDecryption : IWrapReaderForDecryption
-    {
-        public static NullWrapReaderForDecryption Instance = new();
-
-        private NullWrapReaderForDecryption() { }
-
-        public IParsingReader Wrap(IParsingReader reader, int objectNumber, int generationNumber) => 
-            reader;
-    }
 }

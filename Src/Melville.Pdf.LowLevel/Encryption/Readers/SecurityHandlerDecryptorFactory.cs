@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Encryption.New;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
@@ -10,66 +12,28 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 {
     public static class SecurityHandlerDecryptorFactory
     {
-        public static async ValueTask<IWrapReaderForDecryption> CreateDecryptorFactory(
+        public static async ValueTask<IDocumentCryptContext> CreateDecryptorFactory(
             PdfDictionary trailer, IPasswordSource passwordSource)
         {
             if (await trailer.GetOrNullAsync(KnownNames.Encrypt) is not PdfDictionary dict)
-                return NullWrapReaderForDecryption.Instance;
+                return NullSecurityHandler.Instance;
             var securityHandler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, dict);
-            await securityHandler.TryInteactiveLogin(passwordSource);
-            return new SecurityHandlerWrapReaderForDecryption(securityHandler);
+            return await securityHandler.InteractiveGetCryptContext(passwordSource);
         }
     }
-    public class SecurityHandlerWrapReaderForDecryption : IWrapReaderForDecryption
-    {
-        private readonly ISecurityHandler securityHandler;
 
-        public SecurityHandlerWrapReaderForDecryption(ISecurityHandler securityHandler)
-        {
-            this.securityHandler = securityHandler;
-       }
-
-        public IParsingReader Wrap(IParsingReader reader, int objectNumber, int generationNumber) => 
-            new DecryptingParsingReader(reader, securityHandler, objectNumber, generationNumber);
-    }
-    
-    public partial class DecryptingParsingReader : IParsingReader, IDecryptor
+    public partial class EncryptingParsingReader : IParsingReader
     {
-        [DelegateTo()]
+        [DelegateTo]
         private readonly IParsingReader inner;
-        private ISecurityHandler handler;
-        private int objectNumber;
-        private int generationNumber;
+        private readonly IObjectCryptContext cryptContext;
 
-        public DecryptingParsingReader(
-            IParsingReader inner, ISecurityHandler handler, int objectNumber, int generationNumber)
+        public EncryptingParsingReader(IParsingReader inner, IObjectCryptContext cryptContext)
         {
             this.inner = inner;
-            this.handler = handler;
-            this.objectNumber = objectNumber;
-            this.generationNumber = generationNumber;
+            this.cryptContext = cryptContext;
         }
 
-        public IDecryptor Decryptor() => this;
-        
-        //Most indirect objects do not require decryption, creationg a decryptor is both and object
-        //to GC and computation to find a specific key.  We put this off as long as we can by
-        //implementing IDecryptor ourself, and then genenrating the real IDecryptor just in time
-        //for any operations.  I could cache the decryptor, but do not do that right now.
-        private IDecryptor CreateDecryptor(PdfName cryptFilterName) => 
-            handler.DecryptorForObject(objectNumber, generationNumber, cryptFilterName);
-
-        public void DecryptStringInPlace(PdfString input) =>
-            CreateDecryptor(KnownNames.StrF).DecryptStringInPlace(input);
-
-        public Stream WrapRawStream(Stream input, PdfName cryptFilterName)
-        {
-            return handler.DecryptorForObject(-1,-1, cryptFilterName).WrapRawStream(input, cryptFilterName);
-        }
-        public Stream WrapRawStream(Stream input)
-        {
-            return CreateDecryptor(KnownNames.StmF).WrapRawStream(input, KnownNames.StmF);
-        }
+        public IObjectCryptContext ObjectCryptContext() => cryptContext;
     }
-
 }

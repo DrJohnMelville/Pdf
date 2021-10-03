@@ -11,11 +11,11 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     {
         private long sourceFilePosition;
         private readonly ParsingFileOwner parsingFileOwner;
-        private readonly IDecryptor decryptor;
+        private readonly IObjectCryptContext decryptor;
         public StreamFormat SourceFormat => StreamFormat.DiskRepresentation;
 
         public InlineStreamSource(
-            long sourceFilePosition, ParsingFileOwner parsingFileOwner, IDecryptor decryptor)
+            long sourceFilePosition, ParsingFileOwner parsingFileOwner, IObjectCryptContext decryptor)
         {
             this.sourceFilePosition = sourceFilePosition;
             this.parsingFileOwner = parsingFileOwner;
@@ -28,8 +28,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         }
 
         public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) => 
-            decryptor.WrapRawStream(encryptedStream, cryptFilterName);
+            decryptor.NamedCipher(cryptFilterName).Decrypt().CryptStream(encryptedStream);
         public Stream WrapStreamWithDecryptor(Stream encryptedStream) => 
-            decryptor.WrapRawStream(encryptedStream);
+            decryptor.StreamCipher().Decrypt().CryptStream(encryptedStream);
     }
 }

@@ -2,6 +2,8 @@
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.Readers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -35,7 +37,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 
         PipeReader AsPipeReader();
         ValueTask AdvanceToPositionAsync(long targetPosition);
-        IDecryptor Decryptor();
+        IObjectCryptContext ObjectCryptContext();
     }
 
     public class ParsingReader : CountingPipeReader, IParsingReader
@@ -44,7 +46,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         public long GlobalPosition => lastSeek + Position;
         public IPdfObjectParser RootObjectParser => Owner.RootObjectParser;
         public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;
-        public IDecryptor Decryptor ()=> NullDecryptor.Instance;
+        public IObjectCryptContext ObjectCryptContext ()=> NullSecurityHandler.Instance;
 
         public ParsingFileOwner Owner { get; }
 

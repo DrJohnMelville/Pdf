@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption;
+using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
@@ -17,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         public long StreamLength => source.Length;
         public IPdfObjectParser RootObjectParser { get; }
         public IIndirectObjectResolver IndirectResolver { get; }
-        private IWrapReaderForDecryption wrapReaderForDecryption = NullWrapReaderForDecryption.Instance;
+        private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
         private IPasswordSource passwordSource;
 
         public ParsingFileOwner(
@@ -55,12 +56,10 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 
         private IParsingReader TryWrapWithDecryptor(int objectNumber, int generation, IParsingReader reader)
         {
-            if (objectNumber > 0 && generation >= 0)
-            {
-                reader = wrapReaderForDecryption.Wrap(reader, objectNumber, generation);
-            }
-
-            return reader;
+            return objectNumber > 0 && generation >= 0
+                ? new EncryptingParsingReader(reader,
+                    documentCryptContext.ContextForObject(objectNumber, generation))
+                : reader;
         }
 
         public IParsingReader ParsingReaderForStream(Stream s, long position) =>
@@ -84,13 +83,13 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         public async ValueTask InitializeDecryption(PdfDictionary trailerDictionary)
         {
             if (AlreadyInitializedDecryption()) return;
-            wrapReaderForDecryption = await 
+            documentCryptContext = await 
                 SecurityHandlerDecryptorFactory.CreateDecryptorFactory(trailerDictionary, passwordSource);
         }
 
         private bool AlreadyInitializedDecryption()
         {
-            return wrapReaderForDecryption != NullWrapReaderForDecryption.Instance;
+            return documentCryptContext != NullSecurityHandler.Instance;
         }
     }
 }
