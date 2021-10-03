@@ -84,7 +84,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext
         {
             if (AlreadyInitializedDecryption()) return;
             documentCryptContext = await 
-                SecurityHandlerDecryptorFactory.CreateDecryptorFactory(trailerDictionary, passwordSource);
+                TrailerToDocumentCryptContext.CreateDecryptorFactory(trailerDictionary, passwordSource);
         }
 
         private bool AlreadyInitializedDecryption()
