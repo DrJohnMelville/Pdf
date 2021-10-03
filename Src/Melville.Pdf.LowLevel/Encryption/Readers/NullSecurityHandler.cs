@@ -34,7 +34,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             throw new PdfParseException("Should not have a crypt filter in an unencrypted document.");
         public ICipherOperations Encrypt() => this;
         public ICipherOperations Decrypt() => this;
-        public ReadOnlySpan<byte> CryptSpan(Span<byte> input) => input;
+        public byte[] CryptSpan(byte[] input) => input;
         public Stream CryptStream(Stream input) => input;
     }
 }

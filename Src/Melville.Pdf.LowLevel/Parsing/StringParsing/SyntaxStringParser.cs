@@ -2,13 +2,15 @@
 using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.StringParsing
 {
     public  class SyntaxStringParser: PdfAtomParser
     {
         public override bool TryParse(
-            ref SequenceReader<byte> input, bool final, [NotNullWhen(true)] out PdfObject? output)
+            ref SequenceReader<byte> input, bool final, IParsingReader source, 
+            [NotNullWhen(true)] out PdfObject? output)
         {
             var copyOfInput = input;
             if (!ComputeStringLength(ref input, out var length))
@@ -20,7 +22,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
                 output = null;
                 return false;
             }
-            output = CreateString(ref copyOfInput, length);
+            output = CreateString(ref copyOfInput, length, source);
             return true;
         }
 
@@ -41,7 +43,8 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             }
         }
 
-        private static PdfString CreateString(ref SequenceReader<byte> input, int length)
+        private static PdfString CreateString(
+            ref SequenceReader<byte> input, int length, IParsingReader parsingReader)
         {
             var buf = new byte[length];
             int bufpos = 0;
@@ -49,7 +52,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             while (true)
             {
                 if (stateMachine.TryOneParse(ref input, out var item) == SyntaxStringResult.EndOfString) 
-                    return new PdfString(buf);
+                    return parsingReader.CreateDecryptedString(buf);
                 buf[bufpos++] = item;
             }
   

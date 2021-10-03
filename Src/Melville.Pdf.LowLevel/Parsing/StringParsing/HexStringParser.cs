@@ -3,13 +3,15 @@ using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.StringParsing
 {
     public class HexStringParser: PdfAtomParser
     {
         public override bool TryParse(
-            ref SequenceReader<byte> reader, bool final, [NotNullWhen(true)]out PdfObject? obj)
+            ref SequenceReader<byte> reader, bool final, IParsingReader source,
+            [NotNullWhen(true)]out PdfObject? obj)
         {
             reader.Advance(1);
             var copyOfReader = reader;
@@ -19,7 +21,7 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
                 return false;
             }
 
-            obj = ReadString(ref copyOfReader, len);
+            obj = ReadString(ref copyOfReader, len, source);
             return true;
         }
 
@@ -42,14 +44,15 @@ namespace Melville.Pdf.LowLevel.Parsing.StringParsing
             }
         }
 
-        private PdfObject ReadString(ref SequenceReader<byte> reader, int length)
+        private PdfObject ReadString(
+            ref SequenceReader<byte> reader, int length, IParsingReader parsingReader)
         {
             var buff = new byte[length];
             for (int i = 0; i < length; i++)
             {
                 buff[i] = HexMath.ByteFromNibbles(GetNibble(ref reader), GetNibble(ref reader));
             }
-            return new PdfString(buff);
+            return parsingReader.CreateDecryptedString(buff);
         }
 
         private Nibble GetNibble(ref SequenceReader<byte> reader)

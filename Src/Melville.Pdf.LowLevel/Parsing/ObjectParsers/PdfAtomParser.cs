@@ -11,19 +11,26 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     public abstract class PdfAtomParser : IPdfObjectParser
     {
         public abstract bool TryParse(
-            ref SequenceReader<byte> reader, bool final, [NotNullWhen(true)] out PdfObject? obj);
+            ref SequenceReader<byte> reader, bool final, IParsingReader source, [NotNullWhen(true)] out PdfObject? obj);
 
         public async Task<PdfObject> ParseAsync(IParsingReader source)
         {
             PdfObject result;
-            do{}while(source.ShouldContinue(Parse(await source.ReadAsync(), out result!)));
+            do{}while(source.ShouldContinue(Parse(await source.ReadAsync(), source, out result!)));
             return result;
         }
 
-        private (bool Success, SequencePosition Position) Parse(ReadResult source, out PdfObject? result)
+        private (bool Success, SequencePosition Position) Parse(
+            ReadResult source, IParsingReader parsingReader, out PdfObject? result)
         {
             var reader = new SequenceReader<byte>(source.Buffer);
-            return (TryParse(ref reader, source.IsCompleted, out result), reader.Position);
+            return (TryParse(ref reader, source.IsCompleted, parsingReader, out result), reader.Position);
         }
+    }
+
+    public static class DecryptStringOperation
+    {
+        public static PdfString CreateDecryptedString(this IParsingReader reader, byte[] text) =>
+            new(reader.ObjectCryptContext().StringCipher().Decrypt().CryptSpan(text));
     }
 }

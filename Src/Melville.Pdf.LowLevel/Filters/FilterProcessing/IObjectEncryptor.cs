@@ -26,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         /// Encrypt or decrypt a span of bytes.  If the length of plaintext is the same as the length of the
         /// ciphertext , then this function is allowed to do the decryption in place and return the original span
         /// </summary>
-        ReadOnlySpan<byte> CryptSpan(Span<byte> input);
+        byte[] CryptSpan(byte[] input);
         Stream CryptStream(Stream input);
     }
 

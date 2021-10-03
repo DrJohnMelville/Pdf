@@ -14,7 +14,7 @@ namespace Melville.Pdf.LowLevel.Encryption.New
             cryptoImplementation = new RC4(finalKey);
         }
 
-        public ReadOnlySpan<byte> CryptSpan(Span<byte> input)
+        public byte[] CryptSpan(byte[] input)
         {
             cryptoImplementation.TransfromInPlace(input);
             return input;

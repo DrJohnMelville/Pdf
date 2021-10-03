@@ -66,8 +66,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             };
 
 
-        private static readonly IPdfObjectParser HexString = new StringDecryptor(new HexStringParser());
-        private static readonly IPdfObjectParser SyntaxString = new StringDecryptor(new SyntaxStringParser());
+        private static readonly IPdfObjectParser HexString = new HexStringParser();
+        private static readonly IPdfObjectParser SyntaxString = new SyntaxStringParser();
         private static readonly PdfArrayParser PdfArray = new();
         private static readonly PdfDictionaryAndStreamParser dictionaryAndStream = new();
         private static readonly NumberParser Number = new();

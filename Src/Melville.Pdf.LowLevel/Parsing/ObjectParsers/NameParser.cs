@@ -4,12 +4,14 @@ using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     public class NameParser: PdfAtomParser
     {
-        public override bool TryParse(ref SequenceReader<byte> bytes, bool final,[NotNullWhen(true)] out PdfObject? output)
+        public override bool TryParse(
+            ref SequenceReader<byte> bytes, bool final, IParsingReader source,[NotNullWhen(true)] out PdfObject? output)
         {
             output = null;
             if (!TrySkipSolidus(ref bytes)) return final;
