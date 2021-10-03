@@ -15,13 +15,12 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
 {
-    public class WriteEncrytpedDocumentTest
+    public class AddEncryptionItemsToTrailerTest
     {
-        private ILowLevelDocumentCreator creator;
         private LowLevelDocumentBuilder docBuilder;
         private readonly PdfDictionary trailer;
 
-        public WriteEncrytpedDocumentTest()
+        public AddEncryptionItemsToTrailerTest()
         {
             docBuilder = new LowLevelDocumentBuilder();
             docBuilder.AddToTrailerDictionary(KnownNames.ID, new PdfArray(
@@ -29,32 +28,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
                 new PdfString("12345678901234567890123456789012")));
             docBuilder.AddEncryption(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
             trailer = docBuilder.CreateTrailerDictionary();
-            creator = new LowLevelDocumentCreator(docBuilder);
         }
-
-        private async Task<string> Write(PdfLowLevelDocument doc)
-        {
-            var target = new MultiBufferStream();
-            var writer = new LowLevelDocumentWriter(PipeWriter.Create(target), doc, "User");
-            await writer.WriteAsync();
-            return target.CreateReader().ReadToArray().ExtendedAsciiString();
-        }
-
-        [Fact]
-        public async Task WriteRC4V3EncryptedDocument()
-        {
-            docBuilder.Add(new PdfString("Encrypted String"));
-            docBuilder.Add(docBuilder.NewStream("This is an encrypted stream"));
-            var doc = creator.CreateDocument();
-            var str = await Write(doc);
-            Assert.DoesNotContain("Encrypted String", str);
-            Assert.DoesNotContain("encrypted stream", str);
-
-            var doc2 = await str.ParseWithPassword("User", PasswordType.User);
-            var outstr = await doc2.Objects[(2, 0)].DirectValueAsync();
-            Assert.Equal("Encrypted String", outstr.ToString());
-        }
-
+        
         [Fact]
         public void EcryptionRequiresAnID()
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -35,11 +36,10 @@ namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers
         {
             return cfm switch
             {
-                var i when i == KnownNames.V2 =>
-                    new SecurityHandler(new Rc4KeySpecializer(),
-                        new Rc4CipherFactory(),
-                        rootKeyComputer,
-                        dict),
+                var i when i == KnownNames.V2 => new SecurityHandler(
+                    new Rc4KeySpecializer(), new Rc4CipherFactory(), rootKeyComputer, dict),
+                var i when i == KnownNames.AESV2 => new SecurityHandler(
+                    new AesKeySpecializer(), new AesCipherFactory(), rootKeyComputer, dict),
                 var i when i == KnownNames.None => NullSecurityHandler.Instance,
                 _ => throw new PdfSecurityException("Unknown Security Handler Type")
             };

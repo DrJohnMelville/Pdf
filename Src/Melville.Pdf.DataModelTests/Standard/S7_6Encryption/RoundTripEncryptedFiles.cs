@@ -76,6 +76,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         public Task EncRefStr() => TestEncryptedFile(new EncryptedRefStm(), 2, 3, 128);
         [Fact]
         public Task SimpleV4Rc4128() => TestEncryptedFile(new Encryptedv4Rc4128(), 4, 4, 128);
+        [Fact]
+        public Task SimpleV4Aes128() => TestEncryptedFile(new Encryptedv4Aes128(), 4, 4, 128);
 
         [Fact] public Task V4StreamsPlain() => TestEncryptedFile(new EncryptedV4StreamsPlain(), 4, 4, 128);
     }

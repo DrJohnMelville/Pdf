@@ -42,6 +42,11 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encrypt
         public Encryptedv4Rc4128() : base("-EncV4Rc4k128", "Document Encrypted v4 with Rc4 128 bit", 
             DocumentEncryptorFactory.V4("User","Owner", PdfPermission.None, KnownNames.V2, 16)){}
     }
+    public class Encryptedv4Aes128 : EncryptedFileWriter
+    {
+        public Encryptedv4Aes128() : base("-EncV4Aesk128", "Document Encrypted v4 with AES 128 bit", 
+            DocumentEncryptorFactory.V4("User","Owner", PdfPermission.None, KnownNames.AESV2, 16)){}
+    }
     public class EncryptedV4StreamsPlain : EncryptedFileWriter
     {
         public EncryptedV4StreamsPlain() : base("-EncV4StreamsPlain", "Document Encrypted v4 with plaintext streams", 

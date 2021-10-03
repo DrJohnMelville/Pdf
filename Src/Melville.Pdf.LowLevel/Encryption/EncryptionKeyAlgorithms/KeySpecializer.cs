@@ -18,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
             return span[..EncryptionKeyLength(rootKey.Length)];
         }
 
-        private static byte[] ComputeHash(byte[] rootKey, int objectNumber, int generationNumber)
+        private byte[] ComputeHash(byte[] rootKey, int objectNumber, int generationNumber)
         {
             var md5 = MD5.Create();
             md5.AddData(rootKey);
@@ -27,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
             return md5.Hash ?? throw new InvalidProgramException("Should have a hash here.");
         }
 
-        private static void AddObjectData(int objectNumber, int generationNumber, MD5 md5) =>
+        protected virtual void AddObjectData(int objectNumber, int generationNumber, MD5 md5) =>
             md5.AddData(new[]
             {
                 (byte)objectNumber,
@@ -38,5 +38,15 @@ namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
             });
 
         private static int EncryptionKeyLength(int baseKeyLength) => Math.Min(baseKeyLength + 5, 16);
+    }
+
+    public class AesKeySpecializer: Rc4KeySpecializer
+    {
+        private static readonly byte[] aesSalt = {0x73,0x41,0x6c,0x54 };
+        protected override void AddObjectData(int objectNumber, int generationNumber, MD5 md5)
+        {
+            base.AddObjectData(objectNumber, generationNumber, md5);
+            md5.AddData(aesSalt);
+        }
     }
 }
