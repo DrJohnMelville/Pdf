@@ -21,6 +21,12 @@ namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation
             this.decryptor = decryptor;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            input.Dispose();
+            base.Dispose(true);
+        }
+
         public override async ValueTask<int> ReadAsync(
             Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
         {
