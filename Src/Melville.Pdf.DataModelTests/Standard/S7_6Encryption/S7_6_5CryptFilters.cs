@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         private async Task VerifyStringAndStreamEncoding(bool hideStream, bool hideString,
             LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream = null)
         {
-            creator.Add(new PdfString("plaintext string"));
+            creator.Add(PdfString.CreateAscii("plaintext string"));
             creator.Add(InsertedStream(creator, cryptFilterTypeForStream));
             var str = await creator.AsStringAsync();
             Assert.Equal(!hideString, str.Contains("plaintext string"));

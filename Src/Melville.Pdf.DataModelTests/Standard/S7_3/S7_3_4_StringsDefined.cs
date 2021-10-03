@@ -10,7 +10,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [Fact]
         public void StringObjectDefinitions()
         {
-            var str = new PdfString("Foo Bar");
+            var str = PdfString.CreateAscii("Foo Bar");
             Assert.Equal("Foo Bar", str.ToString());
         }
 
@@ -19,7 +19,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
         [InlineData("Foo", "Foos", false)]
         public void StringIsEqualMethod(string a, string b, bool areEqual)
         {
-            var str = new PdfString(a);
+            var str = PdfString.CreateAscii(a);
             Assert.Equal(areEqual, b.Equals(str.ToString()));
             Assert.Equal(areEqual, str.TestEqual(b));
         }

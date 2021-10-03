@@ -24,8 +24,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
             var de = new ComputeEncryptionDictionary("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
                 new ComputeOwnerPasswordV3(), new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3());
             var id = new PdfArray(
-                new PdfString("12345678901234567890123456789012"),
-                new PdfString("12345678901234567890123456789012"));
+                PdfString.CreateAscii("12345678901234567890123456789012"),
+                PdfString.CreateAscii("12345678901234567890123456789012"));
             var encDict = de.CreateEncryptionDictionary(id);
             var trailer = new PdfDictionary((KnownNames.ID, id), (KnownNames.Encrypt, encDict));
             var handler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, encDict);

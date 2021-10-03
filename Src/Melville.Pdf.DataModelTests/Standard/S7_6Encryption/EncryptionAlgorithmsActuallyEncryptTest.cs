@@ -40,12 +40,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         {
             var docBuilder = new LowLevelDocumentBuilder();
             docBuilder.AddToTrailerDictionary(KnownNames.ID, new PdfArray(
-                new PdfString("12345678901234567890123456789012"),
-                new PdfString("12345678901234567890123456789012")));
+                PdfString.CreateAscii("12345678901234567890123456789012"),
+                PdfString.CreateAscii("12345678901234567890123456789012")));
             docBuilder.AddEncryption(encryptionDeclaration);
             var creator = new LowLevelDocumentCreator(docBuilder);
 
-            docBuilder.Add(new PdfString("Encrypted String"));
+            docBuilder.Add(PdfString.CreateAscii("Encrypted String"));
             docBuilder.Add(docBuilder.NewStream("This is an encrypted stream"));
             var doc = creator.CreateDocument();
             var str = await Write(doc);

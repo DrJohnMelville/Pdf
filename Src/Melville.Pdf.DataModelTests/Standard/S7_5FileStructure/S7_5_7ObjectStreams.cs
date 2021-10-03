@@ -61,8 +61,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var builder = new LowLevelDocumentCreator();
             builder.Add(await builder.NewObjectStream( new []{
-            builder.AsIndirectReference(new PdfString("One")),
-                builder.AsIndirectReference(new PdfString("Two"))
+            builder.AsIndirectReference(PdfString.CreateAscii("One")),
+                builder.AsIndirectReference(PdfString.CreateAscii("Two"))
             }, PdfTokenValues.Null));
             var fileAsString = await DocCreatorToString(builder);
             return fileAsString;
@@ -71,8 +71,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var builder = new LowLevelDocumentCreator();
             builder.Add(await builder.NewObjectStream( new []{
-            builder.AsIndirectReference(new PdfString("One")),
-                new PdfIndirectReference(new PdfIndirectObject(20,0, new PdfString("Two")))
+            builder.AsIndirectReference(PdfString.CreateAscii("One")),
+                new PdfIndirectReference(new PdfIndirectObject(20,0, PdfString.CreateAscii("Two")))
             }, PdfTokenValues.Null));
             var fileAsString = await DocCreatorToString(builder);
             return fileAsString;
@@ -92,8 +92,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var builder = new LowLevelDocumentCreator();
             var str = await builder.NewObjectStream( new []{
-                builder.AsIndirectReference(new PdfString("One")),
-                builder.AsIndirectReference(new PdfString("Two"))
+                builder.AsIndirectReference(PdfString.CreateAscii("One")),
+                builder.AsIndirectReference(PdfString.CreateAscii("Two"))
             });
 
             var output = await str.GetIncludedObjectNumbersAsync();

@@ -24,8 +24,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         {
             docBuilder = new LowLevelDocumentBuilder();
             docBuilder.AddToTrailerDictionary(KnownNames.ID, new PdfArray(
-                new PdfString("12345678901234567890123456789012"),
-                new PdfString("12345678901234567890123456789012")));
+                PdfString.CreateAscii("12345678901234567890123456789012"),
+                PdfString.CreateAscii("12345678901234567890123456789012")));
             docBuilder.AddEncryption(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
             trailer = docBuilder.CreateTrailerDictionary();
         }

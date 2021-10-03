@@ -91,9 +91,9 @@ namespace Melville.Pdf.DataModelTests.Writer
                 $"2 0 obj (Two) endobj\n3 0 obj (Three) endobj\n5 0 obj (Five) endobj\nxref\n2 2\n0000005000 00000 n\r\n0000005021 00000 n\r\n5 1\n0000005044 00000 n\r\ntrailer\n<</Size 7/Prev 161>>\nstartxref\n5066\n%%EOF",
                 (doc, mod) =>
                 {
-                    mod.AssignValueToReference(doc.Objects[(2,0)], new PdfString("Two"));
-                    mod.AssignValueToReference(doc.Objects[(3,0)], new PdfString("Three"));
-                    mod.AssignValueToReference(doc.Objects[(5,0)], new PdfString("Five"));
+                    mod.AssignValueToReference(doc.Objects[(2,0)], PdfString.CreateAscii("Two"));
+                    mod.AssignValueToReference(doc.Objects[(3,0)], PdfString.CreateAscii("Three"));
+                    mod.AssignValueToReference(doc.Objects[(5,0)], PdfString.CreateAscii("Five"));
                 }
                 , SixItemDocument(), 5000);
         }

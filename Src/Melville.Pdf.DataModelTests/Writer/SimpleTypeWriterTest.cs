@@ -40,7 +40,7 @@ namespace Melville.Pdf.DataModelTests.Writer
         [InlineData(@"this is a )Test", @"(this is a \)Test)")]
         public async Task WriteStrings(string source, string dest)
         {
-            Assert.Equal(dest, await new PdfString(source).WriteToStringAsync());
+            Assert.Equal(dest, await PdfString.CreateAscii(source).WriteToStringAsync());
             Assert.Equal(source, (await dest.ParseObjectAsync()).ToString());
             
         }

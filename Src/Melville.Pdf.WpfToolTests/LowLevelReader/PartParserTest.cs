@@ -103,8 +103,8 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         [Fact] public Task RenderTrueValue()=>TestSingleElement(PdfBoolean.True, "true");
         [Fact] public Task RenderFalseValue()=>TestSingleElement(PdfBoolean.False, "false");
         [Fact] public Task RenderNullValue()=>TestSingleElement(PdfTokenValues.Null, "null");
-        [Fact] public Task RenderStringValue()=>TestSingleElement(new PdfString("Foo"), "(Foo)");
-        [Fact] public Task RenderSpecialtringValue()=>TestSingleElement(new PdfString("o\no"), "(o\no)");
+        [Fact] public Task RenderStringValue()=>TestSingleElement(PdfString.CreateAscii("Foo"), "(Foo)");
+        [Fact] public Task RenderSpecialtringValue()=>TestSingleElement(PdfString.CreateAscii("o\no"), "(o\no)");
         
     }
 }
