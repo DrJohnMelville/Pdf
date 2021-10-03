@@ -34,8 +34,7 @@ namespace Melville.Pdf.LowLevel.Encryption
 
         private static ISecurityHandler SecurityHandlerV2(
             in EncryptionParameters parameters, PdfObject dict) =>
-            new SecurityHandler(new Rc4DecryptorFactory(),
-                new Rc4KeySpecializer(),
+            new SecurityHandler(new Rc4KeySpecializer(),
                 new Rc4CipherFactory(),
                 RootKeyComputerV2(parameters), dict);
 
@@ -49,8 +48,7 @@ namespace Melville.Pdf.LowLevel.Encryption
 
         private static ISecurityHandler SecurityHandlerV3(
             in EncryptionParameters parameters, PdfObject dict) =>
-            new SecurityHandler(new Rc4DecryptorFactory(),
-                new Rc4KeySpecializer(),
+            new SecurityHandler(new Rc4KeySpecializer(),
                 new Rc4CipherFactory(),
                 RootKeyComputerV3(parameters),
                 dict);

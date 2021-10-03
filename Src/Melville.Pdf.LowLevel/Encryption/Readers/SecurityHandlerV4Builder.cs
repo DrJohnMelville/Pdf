@@ -19,7 +19,6 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             {
                 var cryptDictionary = (PdfDictionary)await entry.Value;
                 var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM);
-                var length = await cryptDictionary.GetAsync<PdfNumber>(KnownNames.Length);
                 finalDictionary.Add(entry.Key, CreateSubSecurityHandler(rootKeyComputer, cfm, encryptionDictionary));
             }
             
@@ -37,8 +36,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
             return cfm switch
             {
                 var i when i == KnownNames.V2 =>
-                    new SecurityHandler(new Rc4DecryptorFactory(),
-                        new Rc4KeySpecializer(),
+                    new SecurityHandler(new Rc4KeySpecializer(),
                         new Rc4CipherFactory(),
                         rootKeyComputer,
                         dict),

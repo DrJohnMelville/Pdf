@@ -45,19 +45,15 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
 
     public class SecurityHandler : ISecurityHandler
     {
-        private readonly IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory;
         private readonly IKeySpecializer keySpecializer;
         private readonly ICipherFactory cipherFactory;
         private readonly RootKeyComputer rootKeyComputer;
-        private byte[]? encryptionKey;
         private PdfObject? blockEncryption;
         
-        public SecurityHandler(IEncryptorAndDecryptorFactory encryptorAndDecryptorFactory, 
-            IKeySpecializer keySpecializer, 
+        public SecurityHandler(IKeySpecializer keySpecializer, 
             ICipherFactory cipherFactory,
             RootKeyComputer rootKeyComputer, PdfObject? blockEncryption)
         {
-            this.encryptorAndDecryptorFactory =encryptorAndDecryptorFactory;
             this.keySpecializer = keySpecializer;
             this.cipherFactory = cipherFactory;
             this.rootKeyComputer = rootKeyComputer;
@@ -65,7 +61,7 @@ namespace Melville.Pdf.LowLevel.Encryption.Readers
         }
 
         public byte[]? TryComputeRootKey(string password, PasswordType type) => 
-            encryptionKey = rootKeyComputer.TryComputeRootKey(password.AsExtendedAsciiBytes(), type);
+            rootKeyComputer.TryComputeRootKey(password.AsExtendedAsciiBytes(), type);
 
         public IDocumentCryptContext CreateCryptContext(byte[] rootKey) => 
             new DocumentCryptContext(rootKey, keySpecializer, cipherFactory, blockEncryption);
