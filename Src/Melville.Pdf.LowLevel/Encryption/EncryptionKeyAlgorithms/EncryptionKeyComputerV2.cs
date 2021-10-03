@@ -2,7 +2,7 @@
 using System.Buffers;
 using System.Security.Cryptography;
 
-namespace Melville.Pdf.LowLevel.Encryption.Readers
+namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
 {
     public interface IGlobalEncryptionKeyComputer
     {

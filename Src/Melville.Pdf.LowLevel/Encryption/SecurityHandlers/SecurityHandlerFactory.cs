@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption.New;
+using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
+using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
-using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Encryption
+namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers
 {
     public static class SecurityHandlerFactory
     {

@@ -1,17 +1,9 @@
 ﻿using System;
 using System.IO;
-using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
 {
-    public interface IObjectEncryptor
-    {
-        ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input);
-        Stream WrapReadingStreamWithEncryption(Stream stream);
-        Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg);
-    }
-    
     public interface IObjectCryptContext
     {
         public ICipher StringCipher();
@@ -36,19 +28,6 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing
         ICipherOperations Decrypt();
     }
 
-
-    
-    
-    public class NullObjectEncryptor : IObjectEncryptor
-    {
-        public static readonly NullObjectEncryptor Instance = new();
-        private NullObjectEncryptor() { }
-        public ReadOnlySpan<byte> Encrypt(in ReadOnlySpan<byte> input) => input;
-
-        public Stream WrapReadingStreamWithEncryption(Stream stream) => stream;
-        public Stream WrapReadingStreamWithEncryption(Stream stream, PdfName encryptionAlg) => stream;
-    }
-    
     public class ErrorObjectEncryptor: IObjectCryptContext
     {
         private ErrorObjectEncryptor() { }

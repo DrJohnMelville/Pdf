@@ -3,7 +3,6 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;

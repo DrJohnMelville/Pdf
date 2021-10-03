@@ -1,5 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
-using Melville.Pdf.LowLevel.Encryption.Readers;
+﻿using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
+using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 

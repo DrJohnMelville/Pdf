@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using Melville.Pdf.LowLevel.Encryption.Cryptography;
 
-namespace Melville.Pdf.LowLevel.Encryption.New
+namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation
 {
     public class Rc4Stream : Stream
     {

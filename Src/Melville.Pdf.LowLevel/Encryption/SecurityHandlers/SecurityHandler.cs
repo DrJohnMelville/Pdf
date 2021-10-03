@@ -1,14 +1,11 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption.New;
-using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
+using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevel.Encryption.Readers
+namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers
 {
     public interface ISecurityHandler
     {

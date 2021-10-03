@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Melville.Pdf.LowLevel.Encryption.Readers
+namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
 {
     public static class BytePadder
     {

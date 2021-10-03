@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption.Readers;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevel.Encryption.New
+namespace Melville.Pdf.LowLevel.Encryption.CryptContexts
 {
     public static class TrailerToDocumentCryptContext
     {

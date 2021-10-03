@@ -2,7 +2,7 @@
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevel.Encryption.Readers
+namespace Melville.Pdf.LowLevel.Encryption.CryptContexts
 {
     public partial class EncryptingParsingReader : IParsingReader
     {

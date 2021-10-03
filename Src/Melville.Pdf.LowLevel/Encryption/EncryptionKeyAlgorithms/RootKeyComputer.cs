@@ -2,7 +2,7 @@ using System;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevel.Encryption.Readers
+namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
 {
     public class RootKeyComputer
     {

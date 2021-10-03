@@ -3,11 +3,12 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption;
-using Melville.Pdf.LowLevel.Encryption.New;
-using Melville.Pdf.LowLevel.Encryption.Readers;
+using Melville.Pdf.LowLevel.Encryption.CryptContexts;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.EncryptingParsingReader;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext
 {

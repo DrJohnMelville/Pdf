@@ -1,29 +1,15 @@
-using System;
-using System.Buffers;
+﻿using System;
+using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Encryption.New
+namespace Melville.Pdf.LowLevel.Encryption.CryptContexts
 {
-    public interface ICipherFactory
-    {
-        ICipher CipherFromName(PdfName name, in ReadOnlySpan<byte> finalKey);
-    }
-
-    public class Rc4CipherFactory : ICipherFactory
-    {
-        public ICipher CipherFromName(PdfName name, in ReadOnlySpan<byte> finalKey) =>
-            new Rc4Cipher(finalKey);
-    }
-
-
     public interface IDocumentCryptContext
     {
         IObjectCryptContext ContextForObject(int objectNumber, int generationNumber);
         bool BlockEncryption(PdfObject item);
     }
-
     public class DocumentCryptContext : IDocumentCryptContext
     {
         private readonly byte[] rootKey;
@@ -59,11 +45,11 @@ namespace Melville.Pdf.LowLevel.Encryption.New
             }
 
             public ICipher StringCipher() => 
-                documentContext.cipherFactory.CipherFromName(KnownNames.StrF, KeyForObject());
+                documentContext.cipherFactory.CipherFromKey(KeyForObject());
             public ICipher StreamCipher() => 
-                documentContext.cipherFactory.CipherFromName(KnownNames.StmF, KeyForObject());
+                documentContext.cipherFactory.CipherFromKey(KeyForObject());
             public ICipher NamedCipher(PdfName name) => 
-                documentContext.cipherFactory.CipherFromName(name, documentContext.rootKey);
+                documentContext.cipherFactory.CipherFromKey(documentContext.rootKey);
  
             private ReadOnlySpan<byte> KeyForObject() => 
                 documentContext.keySpecializer.ComputeKeyForObject(

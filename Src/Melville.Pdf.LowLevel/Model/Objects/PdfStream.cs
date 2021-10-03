@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption.New;
-using Melville.Pdf.LowLevel.Encryption.Readers;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;

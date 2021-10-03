@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption;
-using Melville.Pdf.LowLevel.Encryption.New;
-using Melville.Pdf.LowLevel.Encryption.Readers;
+using Melville.Pdf.LowLevel.Encryption.CryptContexts;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;

@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption.New;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;

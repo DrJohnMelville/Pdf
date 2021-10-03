@@ -2,8 +2,7 @@
 using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption.New;
-using Melville.Pdf.LowLevel.Encryption.Writers;
+using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;

@@ -1,10 +1,9 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Encryption.Readers
+namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
 {
 
 
