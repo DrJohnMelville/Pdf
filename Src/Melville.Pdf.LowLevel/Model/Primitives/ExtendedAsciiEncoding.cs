@@ -17,15 +17,20 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
 
         public static string ExtendedAsciiString(this byte[] source) =>
             ((ReadOnlySpan<byte>) source).ExtendedAsciiString();
-        public static string ExtendedAsciiString(this ReadOnlySpan<byte> source)
-        {
-            var sb = new StringBuilder(source.Length);
-            foreach (var character in source)
-            {
-                sb.Append((char) character);
-            }
 
-            return sb.ToString();
+        public static unsafe string ExtendedAsciiString(this ReadOnlySpan<byte> source)
+        {
+            fixed (byte* srcPtr = source)
+                return string.Create(source.Length, (nint)srcPtr, ExtendedAsciiString);
+        }
+
+        private static unsafe void ExtendedAsciiString(Span<char> span, nint SourcePointerAsNativeInt)
+        {
+            byte* sourcePosition = (byte*)SourcePointerAsNativeInt;
+            for (int i = 0; i < span.Length; i++)
+            {
+                span[i] = (char)*sourcePosition++;
+            }
         }
     }
 }

@@ -21,9 +21,22 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures
         [InlineData("a₧","þÿ\0a §")]
         public void RoundTripUtf16(string text, string utfAscii)
         {
-            Assert.Equal(utfAscii, PdfString.CreateUtf16(text).AsAsciiString());
-            var roundTripped = PdfString.CreateUtf16(text).AsUtf16();
-            Assert.Equal(text, roundTripped);
+            var encoded = PdfString.CreateUtf16(text);
+            Assert.Equal(utfAscii, encoded.AsAsciiString());
+            Assert.Equal(text, encoded.AsUtf16());
+            Assert.Equal(text, encoded.AsTextString());
+        }
+        [Theory]
+        [InlineData("","")]
+        [InlineData("a","a")]
+        [InlineData("akh","akh")]
+        [InlineData("a\u2014b","a—b")]
+        public void RoundTripPdfDoc(string text, string utfAscii)
+        {
+            var encoded = PdfString.CreatePdfEncoding(text);
+            Assert.Equal(text, encoded.AsPdfDocEnccodedString());
+            Assert.Equal(text, encoded.AsTextString());
+            Assert.Equal(utfAscii, encoded.AsAsciiString());
         }
     }
 }

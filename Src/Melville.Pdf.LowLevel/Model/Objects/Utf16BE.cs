@@ -19,13 +19,15 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public static string GetString(byte[] bytes)
         {
-            if (bytes.Length < 2) return "";
-            if (HasUtf16BOM(bytes))
+            if (!HasUtf16BOM(bytes))
+            {
+                if (bytes.Length == 0) return "";
                 throw new ArgumentException("Invalid ByteOrderMark on UtfString");
+            }
             return UtfEncoding.GetString(bytes.AsSpan(2));
         }
 
-        public static bool HasUtf16BOM(byte[] bytes) => 
-            UtfEncoding.Preamble.SequenceCompareTo(bytes.AsSpan(0, 2)) != 0;
+        public static bool HasUtf16BOM(byte[] bytes) =>
+            bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF;
     }
 }
