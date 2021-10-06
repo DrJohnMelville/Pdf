@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Melville.Pdf.LowLevel.Model.Objects
+namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings
 {
     public static class PdfDocEncodingConversion
     {
@@ -13,7 +13,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects
                 return string.Create(source.Length, (nint)srcPtr, PdfDocEncodedString);
         }
 
-        private static unsafe void PdfDocEncodedString(Span<char> span, nint sourcePointerAsNativeInt)
+
+        public static unsafe void PdfDocEncodedString(Span<char> span, nint sourcePointerAsNativeInt)
         {
             byte* sourcePosition = (byte*)sourcePointerAsNativeInt;
             for (int i = 0; i < span.Length; i++)
@@ -25,13 +26,18 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public static byte[] AsPdfDocBytes(this string s)
         {
             var ret = new byte[s.Length];
+            FillPdfDocBytes(s, ret);
+            return ret;
+        }
+
+        public static void FillPdfDocBytes(ReadOnlySpan<char> s, Span<byte> ret)
+        {
             for (int i = 0; i < s.Length; i++)
             {
                 ret[i] = CharToByte(s[i]);
             }
-            return ret;
         }
-        
+
         public static byte CharToByte(char input)
         {
             for (int i = 0; i < 256; i++)
@@ -75,5 +81,14 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             '\u00F0', '\u00F1', '\u00F2', '\u00F3', '\u00F4', '\u00F5', '\u00F6', '\u00F7', 
             '\u00F8', '\u00F9', '\u00FA', '\u00FB', '\u00FC', '\u00FD', '\u00FE', '\u00FF'
         };
+
+        public static int GetChars(in ReadOnlySpan<byte> input, in Span<char> output)
+        {
+            for (var i = 0; i < input.Length; i++)
+            {
+                output[i] = Map[input[i]];
+            }
+            return input.Length;
+        }
     }
 }

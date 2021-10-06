@@ -1,5 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures
@@ -37,6 +41,23 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures
             Assert.Equal(text, encoded.AsPdfDocEnccodedString());
             Assert.Equal(text, encoded.AsTextString());
             Assert.Equal(utfAscii, encoded.AsAsciiString());
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("a")]
+        [InlineData("akh")]
+        [InlineData("a\u2014b")]
+        public async Task TextStreamTest(string text)
+        { 
+            var utf = new PdfStream(new LiteralStreamSource(
+                PdfString.CreateUtf16(text).Bytes, StreamFormat.PlainText));
+            Assert.Equal(text, await (await utf.TextStreamReader()).ReadToEndAsync());
+            
+            var pdfEnc = new PdfStream(new LiteralStreamSource(
+                PdfString.CreatePdfEncoding(text).Bytes, StreamFormat.PlainText));
+            Assert.Equal(text, await (await pdfEnc.TextStreamReader()).ReadToEndAsync());
+            
         }
     }
 }

@@ -40,6 +40,19 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters
         {
             if (localWritten == 0) GetNextSource();
         }
-        private void GetNextSource() => current = items.MoveNext() ? items.Current : null;
+        private void GetNextSource()
+        {
+            current?.Dispose();
+            current = items.MoveNext() ? items.Current : null;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            while (current != null) 
+            {
+                current.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
