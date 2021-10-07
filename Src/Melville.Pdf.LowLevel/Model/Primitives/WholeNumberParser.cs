@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives
 {
@@ -40,6 +41,18 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
                 if (!IsDigit(lastByteRead)) return true;
                 AddDgitToResult(ref value, lastByteRead);
             }
+        }
+
+        public static long ParsePositiveWholeNumber(in ReadOnlySpan<byte> input)
+        {
+            long ret = 0;
+            foreach (var digit in input)
+            {
+                if (!IsDigit(digit))
+                    throw new InvalidOperationException("Trying to parse non digit");
+                AddDgitToResult(ref ret, digit);
+            }
+            return ret;
         }
 
         private static void AddDgitToResult(ref long value, byte lastByteRead)

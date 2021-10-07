@@ -2,7 +2,7 @@
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 
-namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
+namespace Melville.Pdf.LowLevel.Model.Primitives
 {
     public static class IntegerWriter
     {

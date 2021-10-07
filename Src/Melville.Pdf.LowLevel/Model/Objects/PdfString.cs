@@ -28,5 +28,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
 
         public string AsTextString() => 
             Utf16BE.HasUtf16BOM(Bytes)? AsUtf16(): AsPdfDocEnccodedString();
+
+        public PdfTime AsPdfTime() => Bytes.AsPdfTime();
+        public DateTime AsDateTime => AsPdfTime().DateTime;
+        public static PdfString CreateDate(PdfTime time) => new PdfString(time.AsPdfBytes());
     }
 }
