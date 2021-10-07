@@ -6,6 +6,10 @@ namespace Melville.Pdf.LowLevel.Model.Objects
     {
         public abstract long IntValue { get; }
         public abstract double DoubleValue { get; }
+
+        public static implicit operator long(PdfNumber num) => num.IntValue;
+        public static implicit operator int(PdfNumber num) => (int)num.IntValue;
+        public static implicit operator double(PdfNumber num) => num.DoubleValue;
     }
 
     public sealed class PdfInteger : PdfNumber
