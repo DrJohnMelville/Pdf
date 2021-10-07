@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
@@ -50,7 +51,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         void IMultableIndirectObject.SetValue(PdfObject value)
         {
             if (value is PdfIndirectObject)
-                throw new InvalidOperationException("Double indirect references are not allowed.");
+                throw new PdfParseException("Double indirect references are not allowed.");
             this.value = value;
             accessor = null;
         }

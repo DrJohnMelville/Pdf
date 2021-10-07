@@ -112,7 +112,7 @@ namespace Melville.Pdf.DataModelTests.Writer
                 await OutputTwoItemRefStream(major, minor);
                 Assert.True(succeed);
             }
-            catch (InvalidOperationException)
+            catch (PdfParseException)
             {
                 Assert.False(succeed);
             }

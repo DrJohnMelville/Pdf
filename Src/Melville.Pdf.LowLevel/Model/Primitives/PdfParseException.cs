@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
+namespace Melville.Pdf.LowLevel.Model.Primitives
 {
     public class PdfParseException : Exception
     {

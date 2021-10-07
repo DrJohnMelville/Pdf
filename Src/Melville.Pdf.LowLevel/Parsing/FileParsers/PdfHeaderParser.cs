@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 

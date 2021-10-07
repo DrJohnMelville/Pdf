@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using PdfDictionary = Melville.Pdf.LowLevel.Model.Objects.PdfDictionary;
 

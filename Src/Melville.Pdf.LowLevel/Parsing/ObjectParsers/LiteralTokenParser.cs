@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors
 {
@@ -45,7 +46,7 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
                 TiffPredictor2 => CreateTiffPredictor(colors, bitsPerColor, columns, encoding),
                 >= FirstPngPredictor and <= LastPngPredictor =>
                     CreatePngPredictor(colors, bitsPerColor, columns, encoding, PredictorIndex(predictor)),
-                _ => throw new InvalidOperationException("Unknown Predictor type")
+                _ => throw new PdfParseException("Unknown Predictor type")
             };
 
         private static byte PredictorIndex(long predictor) => (byte)(predictor - FirstPngPredictor);

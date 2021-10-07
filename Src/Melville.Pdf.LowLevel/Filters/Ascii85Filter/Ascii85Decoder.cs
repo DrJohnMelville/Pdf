@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
 {
@@ -103,7 +104,7 @@ namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter
                 return (source.Sequence.Start, 0, false);
             if (!source.TryReadNonWhitespace(out var b2) || b2 == Ascii85Constants.FirstTerminatingChar)
             {
-                throw new InvalidDataException("Single character group in a Ascii85 stream");
+                throw new PdfParseException("Single character group in a Ascii85 stream");
             }
 
             if (!source.TryReadNonWhitespace(out var b3))

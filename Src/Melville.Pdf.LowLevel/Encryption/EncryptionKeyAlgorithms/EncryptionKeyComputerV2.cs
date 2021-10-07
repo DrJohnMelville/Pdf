@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
 {
@@ -26,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
         protected virtual byte[] V3Spin(HashAlgorithm hash, int bytesInKey)
         {
             hash.FinalizeHash();
-            return hash.Hash ?? throw new InvalidProgramException("Should have a hash");
+            return hash.Hash ?? throw new PdfSecurityException("Should have a hash");
         }
 
         private static void AddLittleEndianInt(HashAlgorithm hash, uint localP)
@@ -51,7 +52,7 @@ namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms
             {
                 hash.AddData(ret, bytesInKey);
                 hash.FinalizeHash();
-                ret = hash.Hash ?? throw new InvalidProgramException("Hash codes should exist");
+                ret = hash.Hash ?? throw new PdfSecurityException("Hash codes should exist");
             }
             return ret;
         }

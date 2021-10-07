@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Encryption;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.EncryptingParsingReader;

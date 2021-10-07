@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Text;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings
 {
@@ -23,7 +24,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings
             if (!HasUtf16BOM(bytes))
             {
                 if (bytes.Length == 0) return "";
-                throw new ArgumentException("Invalid ByteOrderMark on UtfString");
+                throw new PdfParseException("Invalid ByteOrderMark on UtfString");
             }
             return UtfEncoding.GetString(bytes.AsSpan(2));
         }

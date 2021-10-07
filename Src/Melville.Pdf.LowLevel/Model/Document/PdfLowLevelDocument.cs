@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Document
 {
@@ -25,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Model.Document
         public void VerifyCanSupportObjectStreams()
         {
             if (MajorVersion < 2 && MinorVersion < 5)
-                throw new InvalidOperationException("Object streams unavailable before pdf version 1.5");   
+                throw new PdfParseException("Object streams unavailable before pdf version 1.5");   
 
         }
     }

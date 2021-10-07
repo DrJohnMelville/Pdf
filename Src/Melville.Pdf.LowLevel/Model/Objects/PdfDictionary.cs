@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -90,7 +91,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public static async ValueTask<T> GetAsync<T>(this PdfDictionary source, PdfName key)
         {
             if (source.TryGetValue(key, out var obj) && await obj is T ret) return ret;
-            throw new ArgumentException("Expected item is not in dictionary or is wrong type");
+            throw new PdfParseException("Expected item is not in dictionary or is wrong type");
         }
 
         public static async ValueTask<PdfObject> GetOrNullAsync(this PdfDictionary dict, PdfName name) =>
