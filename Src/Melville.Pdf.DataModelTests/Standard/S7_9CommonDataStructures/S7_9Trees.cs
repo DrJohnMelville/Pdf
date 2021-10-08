@@ -1,9 +1,12 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
@@ -89,5 +92,26 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures
             
         }
 
+        [Theory]
+        [InlineData(1,10)]
+        [InlineData(213,2130)]
+        [InlineData(500,5000)]
+        public async Task IndexerTest(int key, int value)
+        {
+            var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
+            Assert.Equal(value, (PdfInteger)await tree.Search(key));
+        }
+
+        [Theory]
+        [InlineData(-10)]
+        [InlineData(0)]
+        [InlineData(101.5)]
+        [InlineData(501)]
+        [InlineData(1000)]
+        public Task SearchFails(double key)
+        {
+            var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
+            return Assert.ThrowsAsync<PdfParseException>(()=> tree.Search(key).AsTask());
+        }
     }
 }

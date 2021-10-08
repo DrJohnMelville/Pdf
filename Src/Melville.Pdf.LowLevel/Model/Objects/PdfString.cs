@@ -11,7 +11,7 @@ using Melville.Pdf.LowLevel.Visitors;
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
     [DebuggerDisplay("PdfString ({ToString()}) <{Bytes.AsHex()}>")]
-    public sealed class PdfString : PdfByteArrayObject, IPdfTreeKey<PdfString>
+    public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
     {
         public PdfString(byte[] bytes): base(bytes) { }
         public override string ToString() => Bytes.PdfDocEncodedString();
