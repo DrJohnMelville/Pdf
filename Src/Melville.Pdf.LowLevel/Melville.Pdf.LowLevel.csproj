@@ -8,6 +8,7 @@
     <ItemGroup>
       <PackageReference Include="Melville.Generators.INPC" Version="0.5.36" />
       <PackageReference Include="Melville.Hacks" Version="0.5.36" />
+      <PackageReference Include="Melville.Linq" Version="0.5.36" />
       <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
     </ItemGroup>
 

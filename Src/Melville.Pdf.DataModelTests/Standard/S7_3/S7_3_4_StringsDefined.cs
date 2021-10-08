@@ -65,5 +65,14 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             var parsedString = (PdfString) await source.ParseObjectAsync();
             Assert.Equal(result, parsedString.ToString());
         }
+
+        [Theory]
+        [InlineData("","", 0)]
+        [InlineData("a","", 1)]
+        [InlineData("a","b", -1)]
+        public void CompareStrings(string a, string b, int result)
+        {
+            Assert.Equal(result, PdfString.CreateAscii(a).CompareTo(PdfString.CreateAscii(b)));
+        }
     }
 }

@@ -4,13 +4,14 @@ using System.Diagnostics;
 using System.IO.Compression;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
     [DebuggerDisplay("PdfString ({ToString()}) <{Bytes.AsHex()}>")]
-    public sealed class PdfString : PdfByteArrayObject
+    public sealed class PdfString : PdfByteArrayObject, IPdfTreeKey<PdfString>
     {
         public PdfString(byte[] bytes): base(bytes) { }
         public override string ToString() => Bytes.PdfDocEncodedString();
@@ -32,5 +33,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public PdfTime AsPdfTime() => Bytes.AsPdfTime();
         public DateTime AsDateTime => AsPdfTime().DateTime;
         public static PdfString CreateDate(PdfTime time) => new PdfString(time.AsPdfBytes());
+
+        public int CompareTo(PdfString? other) => 
+            other == null ? 1 : Bytes.AsSpan().SequenceCompareTo(other.Bytes);
     }
 }
