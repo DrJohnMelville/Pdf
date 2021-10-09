@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -109,6 +110,16 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures
         {
             var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
             return Assert.ThrowsAsync<PdfParseException>(()=> tree.Search(key).AsTask());
+        }
+
+        [Fact]
+        public async Task IteratorTest()
+        {
+            Assert.Equal(Enumerable.Range(1,500).Select(i=>10*i).ToList(), await 
+                new PdfTree<PdfNumber>(CreateNumberTree(500))
+                    .Select(i=>(int)((PdfNumber)i).IntValue)
+                    .ToListAsync() );
+            
         }
     }
 }

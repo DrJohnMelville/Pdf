@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers
 {
-    public readonly struct PdfTree<T> where T : PdfObject, IComparable<T>
+    public readonly struct PdfTree<T>: IAsyncEnumerable<PdfObject> where T : PdfObject, IComparable<T>
     {
         public PdfDictionary LowLevelSource { get; }
 
@@ -15,5 +17,10 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers
         }
 
         public ValueTask<PdfObject> Search(T key) => new TreeSearcher<T>(LowLevelSource, key).Search();
+
+        public IAsyncEnumerator<PdfObject> GetAsyncEnumerator(
+            CancellationToken cancellationToken = new CancellationToken()) =>
+            new TreeEnumerator<T>(LowLevelSource);
+
     }
 }
