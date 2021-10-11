@@ -1,7 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers
+namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees
 {
     public static class PdfTreeElementNamer
     {

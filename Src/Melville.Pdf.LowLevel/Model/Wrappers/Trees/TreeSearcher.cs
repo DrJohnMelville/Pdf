@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers
+namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees
 {
     public readonly struct TreeSearcher<T> where T:PdfObject, IComparable<T>
     {

@@ -7,6 +7,7 @@ using Melville.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
 {

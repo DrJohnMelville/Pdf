@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers
+namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees
 {
     public class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
     {

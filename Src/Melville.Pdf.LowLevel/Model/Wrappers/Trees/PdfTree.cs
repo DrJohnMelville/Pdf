@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers
+namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees
 {
     public readonly struct PdfTree<T>: IAsyncEnumerable<PdfObject> where T : PdfObject, IComparable<T>
     {
