@@ -63,5 +63,19 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
                 new []{new ClosedInterval(0, 10), new ClosedInterval(0, 100) }
             ).Compute(values).ToArray());
         }
+
+        [Fact]
+        public void GetSingleValue()
+        {
+            var func = new GenericFunction(
+                new[] { new ClosedInterval(0, 10), new ClosedInterval(0, 100) },
+                new[] { ClosedInterval.NoRestriction, ClosedInterval.NoRestriction }
+            );
+            Assert.Equal(5, func.ComputeSingleResult(5));
+            Assert.Equal(0, func.ComputeSingleResult(5,1));
+            Assert.Equal(2, func.ComputeSingleResult(new double[]{5,2},1));
+            Assert.Equal(2, func.Compute(new double[]{5,2})[1]);
+            Assert.Equal(5, func.Compute(5)[0]);
+        }
     }
 }

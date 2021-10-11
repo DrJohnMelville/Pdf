@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using Melville.Pdf.LowLevel.Model.Primitives;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 {
@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
     //    values to be saved.  We do not want to repeat this every time a function is invoked.
     // 2. This allows polymorphism over the function type, which would likely have required a strategy
     //    object anyway.
-    // PdfFunction handles the input and output mapping that is cimmon to all functions and delegates
+    // PdfFunction handles the input and output mapping that is common to all functions and delegates
     // actual computation to its children.
     public abstract class PdfFunction
     {
@@ -21,6 +21,22 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
         {
             this.domain = domain;
             this.range = range;
+        }
+
+        public double ComputeSingleResult(double input, int desired = 0) =>
+            ComputeSingleResult(InputSpan(input, stackalloc double[domain.Length]), desired);
+        public double ComputeSingleResult(in ReadOnlySpan<double> input, int desired = 0)
+        {
+            Span<double> ret = stackalloc double[range.Length];
+            ComputeOverride(input, ret);
+            return ret[desired];
+        }
+        public double[] Compute(double i) => Compute(InputSpan(i, stackalloc double[domain.Length]));
+
+        private ReadOnlySpan<double> InputSpan(double d, in Span<double> span)
+        {
+            span[0] = d;
+            return span;
         }
 
         public double[] Compute(in ReadOnlySpan<double> input)
@@ -60,27 +76,5 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 
         protected abstract void ComputeOverride(in ReadOnlySpan<double> input, in Span<double> result);
         
-    }
-
-    public struct ClosedInterval
-    {
-        private double minValue;
-        private double maxValue;
-
-        public ClosedInterval(double minValue, double maxValue)
-        {
-            if(minValue > maxValue) 
-                throw new PdfParseException("Empty Interval");
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-        }
-
-        public double Clip(double val) =>
-            val > maxValue ? maxValue :
-            val < minValue ? minValue : val;
-
-        public bool OutOfInterval(double value) => value < minValue || value > maxValue;
-
-        public static readonly ClosedInterval NoRestriction = new(double.MinValue, double.MaxValue);
     }
 }
