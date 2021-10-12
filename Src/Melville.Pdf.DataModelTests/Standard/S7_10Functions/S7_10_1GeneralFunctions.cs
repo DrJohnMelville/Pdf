@@ -23,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         }
 
         [Fact]
-        public async Task EvaluateSimpleFunc()
+        public void EvaluateSimpleFunc()
         {
             var values = new double[] {1,2,3};
             Assert.Equal(values, new GenericFunction(

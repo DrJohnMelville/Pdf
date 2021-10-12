@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public static async ValueTask<T> GetAsync<T>(this PdfDictionary source, PdfName key)
         {
             if (source.TryGetValue(key, out var obj) && await obj is T ret) return ret;
-            throw new PdfParseException("Expected item is not in dictionary or is wrong type");
+            throw new PdfParseException($"Item {key} is not in dictionary or is wrong type");
         }
 
         public static async ValueTask<PdfObject> GetOrNullAsync(this PdfDictionary dict, PdfName name) =>
