@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
                 await StaticCodecFactory.CodecFor(decoder)
                     .DecodeOnReadStream(StringAsAsciiStream(encoded), parameters));
 
-        private static async Task VerifyStreamContentAsync(string src, Stream streamToRead)
+        public static async Task VerifyStreamContentAsync(string src, Stream streamToRead)
         {
             var buf = new byte[src.Length+200];
             var read = await buf.FillBufferAsync(0, buf.Length, streamToRead);

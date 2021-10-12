@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
 {
@@ -94,16 +97,63 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
                 ? PdfTokenValues.Null
                 : outputs.Select(i => i.Decode).AsPdfArray(outputs.Count);
 
-        private bool DecodeArrayIsTrivial() => outputs.All(i => i.DecodeTrivial());
+        private bool DecodeArrayIsTrivial() => outputs.All(i => i.DecodeTrivial(bitsPerSample));
+
+        public async ValueTask<MultiBufferStream> SamplesStream()
+        {
+            var ret = new MultiBufferStream();
+            var bitWriter = new BitStreamWriter(ret, bitsPerSample);
+            WriteSamplesToWriter(bitWriter);
+            await bitWriter.FinishAsync();
+            return ret;
+        }
+
+        private void WriteSamplesToWriter(in BitStreamWriter bitWriter) => 
+            RecursiveWriteSample(bitWriter, 
+                stackalloc int[inputs.Count], stackalloc double[inputs.Count], inputs.Count - 1);
+
+        private void RecursiveWriteSample(
+            in BitStreamWriter bitStreamWriter, in Span<int> indices, in Span<double> values, int index)
+        {
+            if (index < 0)
+            {
+                WriteOutputs(bitStreamWriter, values);
+                return;
+            }
+
+            for (int i = 0; i < inputs[index].Sammples; i++)
+            {
+                indices[index] = i;
+                values[index] = inputs[index].InputAtSampleLocation(i);
+                RecursiveWriteSample(bitStreamWriter, indices, values, index - 1);
+            }
+        }
+
+        private void WriteOutputs(in BitStreamWriter bitStreamWriter, in Span<double> values)
+        {
+            foreach (var singleOutput in outputs)
+            {
+                WriteSingleOutput(bitStreamWriter, values, singleOutput);
+            }
+        }
+
+        private void WriteSingleOutput(
+            in BitStreamWriter bitStreamWriter, in Span<double> value, SampledFunctionOutput singleOutput)
+        {
+            var valud = singleOutput.Definition(value);
+            var encodedValue = singleOutput.Range.MapTo(singleOutput.Decode, valud);
+            var clipped = (uint)singleOutput.Decode.Clip(encodedValue);
+            bitStreamWriter.Write(clipped);
+        }
     }
 
-    public static class SampleFunctioBuilderOperations
+    public static class SampleFunctionBuilderOperations
     {
-        public static PdfStream CreateSampledFunction(
+        public static async ValueTask<PdfStream> CreateSampledFunction(
             this ILowLevelDocumentBuilder dBuilder, SampledFunctionBuilder fBuilder,
-            params (PdfName, PdfObject)[] members)
-        {
-            return dBuilder.NewStream("StreamData", members.Concat(fBuilder.DictionaryEntries()));
-        }
+            params (PdfName, PdfObject)[] members) =>
+            dBuilder.NewStream(
+                await fBuilder.SamplesStream(), 
+                members.Concat(fBuilder.DictionaryEntries()));
     }
 }

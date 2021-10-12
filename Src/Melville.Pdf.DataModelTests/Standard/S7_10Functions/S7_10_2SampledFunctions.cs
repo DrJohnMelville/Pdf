@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.StreamUtilities;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -14,8 +16,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         {
             var builder = new SampledFunctionBuilder(8, SampledFunctionOrder.Cubic);
             builder.AddInput(12,(1,10), (1,10));
-            builder.AddOutput(x=>5*x, (5,50), (0,255));
-            var str = new LowLevelDocumentBuilder()
+            builder.AddOutput(x=>5*x, (5,50), (5, 50));
+            var str =await new LowLevelDocumentBuilder()
                 .CreateSampledFunction(builder, (KnownNames.Filter, KnownNames.ASCIIHexDecode));
             Assert.Equal(0, (await str.GetAsync<PdfNumber>(KnownNames.FunctionType)).IntValue);
             await VerifyPdfArray(str, KnownNames.Domain, 1, 10);
@@ -24,17 +26,18 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             Assert.Equal(8, (await str.GetAsync<PdfNumber>(KnownNames.BitsPerSample)).IntValue);
             Assert.Equal(3, (await str.GetAsync<PdfNumber>(KnownNames.Order)).IntValue);
             await VerifyPdfArray(str, KnownNames.Encode, 1, 10);
-            await VerifyPdfArray(str, KnownNames.Decode, 0, 255);
-            
+            await VerifyPdfArray(str, KnownNames.Decode, 5, 50);
+            await StreamTest.VerifyStreamContentAsync(
+                "05050A0F14191E23282D3232", await str.StreamContentAsync(StreamFormat.ImplicitEncryption));
         }
 
         [Fact]
-        public void DoNotStateUnneededOptionalArguments()
+        public async Task DoNotStateUnneededOptionalArguments()
         {
             var builder = new SampledFunctionBuilder(8);
             builder.AddInput(12,(1,10));
-            builder.AddOutput(x=>5*x, (5,50));
-            var str = new LowLevelDocumentBuilder().CreateSampledFunction(builder);
+            builder.AddOutput(x=>5*x, (0, 255));
+            var str = await new LowLevelDocumentBuilder().CreateSampledFunction(builder);
             
             Assert.False(str.ContainsKey(KnownNames.Order));
             Assert.False(str.ContainsKey(KnownNames.Encode));

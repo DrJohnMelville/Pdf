@@ -11,13 +11,19 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
     {
         public double MinValue { get; }
         public double MaxValue { get; }
+        public double Size => MaxValue - MinValue;
 
         public ClosedInterval(double minValue, double maxValue)
         {
-            if(minValue > maxValue) 
-                throw new PdfParseException("Empty Interval");
             this.MinValue = minValue;
             this.MaxValue = maxValue;
+            CheckValue();
+        }
+
+        private void CheckValue()
+        {
+            if (MinValue > MaxValue)
+                throw new PdfParseException("Empty Interval");
         }
 
         public double Clip(double val) =>
@@ -30,6 +36,11 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 
         public static implicit operator ClosedInterval((double Min, double Max) arg) =>
             new(arg.Min, arg.Max);
+        
+        public double MapTo(ClosedInterval other, double value) =>
+            other.MinValue + (OfsetFromMin(value)*(other.Size/Size));
+
+        private double OfsetFromMin(double value) => value - MinValue;
     }
 
     public static class ClosedIntervalOperations

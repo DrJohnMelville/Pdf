@@ -19,6 +19,9 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public bool EncodeTrivial() =>
             DoubleCompare.WithinOne(Encode.MinValue, 0) &&
             DoubleCompare.WithinOne(Encode.MaxValue, Sammples - 1);
+
+        public double InputAtSampleLocation(int sample) =>
+            Encode.MapTo(Domain, sample);
     }
 
     public static class DoubleCompare

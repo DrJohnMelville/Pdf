@@ -13,7 +13,9 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             spotsAvailable = 8;
         }
 
-        public int WriteBits(int data, int bits, Span<byte> target)
+        public int WriteBits(uint data, int bits, in Span<byte> target) =>
+            WriteBits((int)data, bits, target);
+        public int WriteBits(int data, int bits, in Span<byte> target)
         {
             var position = 0;
             if (spotsAvailable == 0)
@@ -37,31 +39,22 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
             spotsAvailable = (byte) (spotsAvailable - bits);
         }
         
-        public int FinishWrite(Span<byte> target) => 
-            NoBitsWaitingToBeWritten() ? 0 : WriteCurrentByte(target);
-
         private bool NoBitsWaitingToBeWritten() => spotsAvailable > 7;
 
-        private int WriteCurrentByte(Span<byte> target)
+        private int WriteCurrentByte(in Span<byte> target)
         {
             WriteByte(target);
             return  1;
         }
 
-        private void WriteByte(Span<byte> span)
+        private void WriteByte(in Span<byte> span)
         {
             span[0] = residue;
             residue = 0;
             spotsAvailable = 8;
         }
-        
-        public int Flush(Span<byte> destination)
-        {
-            if (spotsAvailable >= 8) return 0;
-            WriteByte(destination);
-            return 1;
-        }
-
+        public int FinishWrite(in Span<byte> target) => 
+            NoBitsWaitingToBeWritten() ? 0 : WriteCurrentByte(target);
     }
 
     public static class BitUtilities

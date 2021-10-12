@@ -66,7 +66,7 @@ namespace Melville.Pdf.LowLevel.Filters.Predictors
         {
             if (destination.Length < minBytes) return (source.Position, 0, false);
             Debug.Assert(!source.TryRead(out _));
-            return (source.Position, writer.Flush(destination), true);
+            return (source.Position, writer.FinishWrite(destination), true);
         }
 
         private int ComputeFilterResult(int readValue) => ComputeAdjustedValue(readValue, ref buffer[SelectBufferSlot()]);
