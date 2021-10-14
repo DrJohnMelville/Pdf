@@ -6,7 +6,6 @@ using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
 {

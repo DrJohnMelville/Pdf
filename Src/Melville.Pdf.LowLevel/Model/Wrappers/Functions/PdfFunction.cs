@@ -14,24 +14,24 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
     // actual computation to its children.
     public abstract class PdfFunction
     {
-        private readonly ClosedInterval[] domain;
+        protected ClosedInterval[] Domain { get; }
         private readonly ClosedInterval[] range;
 
         protected PdfFunction(ClosedInterval[] domain, ClosedInterval[] range)
         {
-            this.domain = domain;
+            this.Domain = domain;
             this.range = range;
         }
 
         public double ComputeSingleResult(double input, int desired = 0) =>
-            ComputeSingleResult(InputSpan(input, stackalloc double[domain.Length]), desired);
+            ComputeSingleResult(InputSpan(input, stackalloc double[Domain.Length]), desired);
         public double ComputeSingleResult(in ReadOnlySpan<double> input, int desired = 0)
         {
             Span<double> ret = stackalloc double[range.Length];
             ComputeOverride(input, ret);
             return ret[desired];
         }
-        public double[] Compute(double i) => Compute(InputSpan(i, stackalloc double[domain.Length]));
+        public double[] Compute(double i) => Compute(InputSpan(i, stackalloc double[Domain.Length]));
 
         private ReadOnlySpan<double> InputSpan(double d, in Span<double> span)
         {
@@ -47,19 +47,26 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
         }
         public void Compute(in ReadOnlySpan<double> input, in Span<double> result)
         {
-            Debug.Assert(input.Length == domain.Length);
-            Debug.Assert(result.Length == range.Length);
+            CheckSpanLengths(input.Length, result.Length);
             var clippedInput = OutOfDomain(input) ? 
-                Clip(input, stackalloc double[domain.Length], domain) : input;
+                Clip(input, stackalloc double[Domain.Length], Domain) : input;
             ComputeOverride(clippedInput, result);
             Clip(result, result, range);
         }
 
+        private void CheckSpanLengths(int inputLength, int resultLength)
+        {
+            if (inputLength != Domain.Length)
+                throw new ArgumentException("Incorrect number of arguments");
+            if (resultLength != range.Length)
+                throw new ArgumentException("Incorrect number of return slots");
+        }
+
         private bool OutOfDomain(in ReadOnlySpan<double> input)
         {
-            for (int i = 0; i < domain.Length; i++)
+            for (int i = 0; i < Domain.Length; i++)
             {
-                if (domain[i].OutOfInterval(input[i])) return true;
+                if (Domain[i].OutOfInterval(input[i])) return true;
             }
             return false;
         }
@@ -75,6 +82,5 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
         }
 
         protected abstract void ComputeOverride(in ReadOnlySpan<double> input, in Span<double> result);
-        
     }
 }
