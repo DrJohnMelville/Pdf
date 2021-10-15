@@ -26,13 +26,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         {
             var str = await ComplexSampledFunction();
             Assert.Equal(0, (await str.GetAsync<PdfNumber>(KnownNames.FunctionType)).IntValue);
-            await VerifyPdfArray(str, KnownNames.Domain, 1, 10);
-            await VerifyPdfArray(str, KnownNames.Range, 5, 50);
-            await VerifyPdfArray(str, KnownNames.Size, 12);
-            Assert.Equal(8, (await str.GetAsync<PdfNumber>(KnownNames.BitsPerSample)).IntValue);
-            Assert.Equal(3, (await str.GetAsync<PdfNumber>(KnownNames.Order)).IntValue);
-            await VerifyPdfArray(str, KnownNames.Encode, 1, 10);
-            await VerifyPdfArray(str, KnownNames.Decode, 5, 50);
+            await str.VerifyPdfDoubleArray(KnownNames.Domain, 1, 10);
+            await str.VerifyPdfDoubleArray(KnownNames.Range, 5, 50);
+            await str.VerifyPdfDoubleArray(KnownNames.Size, 12);
+            await str.VerifyNumber(KnownNames.BitsPerSample, 8);
+            await str.VerifyNumber(KnownNames.Order, 3);
+            await str.VerifyPdfDoubleArray(KnownNames.Encode, 1, 10);
+            await str.VerifyPdfDoubleArray(KnownNames.Decode, 5, 50);
             await StreamTest.VerifyStreamContentAsync(
                 "05050A0F14191E23282D3232", await str.StreamContentAsync(StreamFormat.ImplicitEncryption));
         }
@@ -49,7 +49,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         public async Task EvaluateFullySpecifiedFunction(double input, double output)
         {
             var str = await ComplexSampledFunction();
-            var func = await new FunctionFactory(str).CreateSampledFunc();
+            var func = await new FunctionFactory(str).CreateFunction();
             Assert.Equal(output, func.ComputeSingleResult(input));
             
         }
@@ -66,7 +66,25 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
             builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
             var str = await new LowLevelDocumentBuilder().CreateSampledFunction(builder);
-            var func = await new FunctionFactory(str).CreateSampledFunc();
+            var func = await new FunctionFactory(str).CreateFunction();
+            var result = func.Compute(new[] { inputA, inputB });
+            Assert.Equal(2*inputA + 3*inputB, result[0]);
+            Assert.Equal(3*inputA + 4 * inputB, result[1]);
+        }        
+
+        [Theory]
+        [InlineData(1,2)]
+        [InlineData(1.24,3.14)]
+        [InlineData(9,9)]
+        public async Task TwoDimensionalTwoOutputFunctionWithMultiByteSamples(double inputA, double inputB)
+        {
+            var builder = new SampledFunctionBuilder(24);
+            builder.AddInput(10,(0,9));
+            builder.AddInput(10,(0,9));
+            builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
+            builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
+            var str = await new LowLevelDocumentBuilder().CreateSampledFunction(builder);
+            var func = await new FunctionFactory(str).CreateFunction();
             var result = func.Compute(new[] { inputA, inputB });
             Assert.Equal(2*inputA + 3*inputB, result[0]);
             Assert.Equal(3*inputA + 4 * inputB, result[1]);
@@ -83,7 +101,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddInput(11,(0,10));
             builder.AddOutput(x=>x*x, (0, 100));
             var str = await new LowLevelDocumentBuilder().CreateSampledFunction(builder);
-            var func = await new FunctionFactory(str).CreateSampledFunc();
+            var func = await new FunctionFactory(str).CreateFunction();
             Assert.Equal(output, func.ComputeSingleResult(inputA));
         }
         
@@ -101,16 +119,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             Assert.False(str.ContainsKey(KnownNames.Order));
             Assert.False(str.ContainsKey(KnownNames.Encode));
             Assert.False(str.ContainsKey(KnownNames.Decode));
-        }
-
-        private static async Task VerifyPdfArray(PdfDictionary str, PdfName name, params double[] values)
-        {
-            var domain = await str.GetAsync<PdfArray>(name);
-            Assert.Equal(domain.Count, values.Length);
-            for (int i = 0; i < values.Length; i++)
-            {
-                Assert.Equal(values[i], await domain.GetAsync<PdfNumber>(i));
-            }
         }
     }
 }

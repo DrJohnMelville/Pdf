@@ -13,6 +13,9 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public PdfArray(params PdfObject[] rawItems) : this((IReadOnlyList<PdfObject>) rawItems)
         {
         }
+        public PdfArray(IEnumerable<PdfObject> rawItems) : this(rawItems.ToList())
+        {
+        }
         public PdfArray(IReadOnlyList<PdfObject> rawItems)
         {
             RawItems = rawItems;
