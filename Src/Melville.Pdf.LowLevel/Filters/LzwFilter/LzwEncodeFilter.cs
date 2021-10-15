@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter
 {

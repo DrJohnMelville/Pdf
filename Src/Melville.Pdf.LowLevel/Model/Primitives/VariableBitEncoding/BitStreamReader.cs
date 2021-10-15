@@ -4,7 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
+namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding
 {
     public readonly struct BitStreamReader
     {

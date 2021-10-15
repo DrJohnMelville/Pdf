@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 {
@@ -16,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
             this.source = source;
         }
 
-        public async ValueTask<LinearSampledFunction> CreateSampledFunc()
+        public async ValueTask<SampledFunctionBase> CreateSampledFunc()
         {
             var domain = await ReadIntervals(KnownNames.Domain);
             var range = await ReadIntervals(KnownNames.Range);
@@ -25,9 +27,15 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
                 await ReadIntervals(KnownNames.Encode):
                 CreateEncodeFromSize(size);
             VerifyEqualLength(domain, encode);
+            var order = 
+                size.All(i=>i >= 4) &&
+                await source.GetOrNullAsync(KnownNames.Order) is PdfNumber num 
+                ? num.IntValue : 1;
 
-            return new LinearSampledFunction(domain, range, size, encode,
-                await ReadSamples(InputPermutations(size), range));
+            var samples = await ReadSamples(InputPermutations(size), range);
+            return order == 3 ?
+                new CubicSampledFunction(domain, range, size, encode, samples):
+                new LinearSampledFunction(domain, range, size, encode, samples);
         }
         
         private int InputPermutations(int[] size) => size.Aggregate(1, (a, b) => a * b);

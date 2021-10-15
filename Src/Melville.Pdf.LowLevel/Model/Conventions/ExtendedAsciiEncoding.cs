@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Text;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives
+namespace Melville.Pdf.LowLevel.Model.Conventions
 {
     public static class ExtendedAsciiEncoding
     {

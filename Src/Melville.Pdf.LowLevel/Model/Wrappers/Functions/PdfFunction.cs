@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 {
@@ -19,7 +17,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 
         protected PdfFunction(ClosedInterval[] domain, ClosedInterval[] range)
         {
-            this.Domain = domain;
+            Domain = domain;
             this.range = range;
         }
 
@@ -28,7 +26,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
         public double ComputeSingleResult(in ReadOnlySpan<double> input, int desired = 0)
         {
             Span<double> ret = stackalloc double[range.Length];
-            ComputeOverride(input, ret);
+            Compute(input, ret);
             return ret[desired];
         }
         public double[] Compute(double i) => Compute(InputSpan(i, stackalloc double[Domain.Length]));

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Pdf.LowLevel.Filters;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;

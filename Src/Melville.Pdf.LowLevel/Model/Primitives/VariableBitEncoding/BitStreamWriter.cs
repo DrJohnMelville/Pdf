@@ -1,11 +1,10 @@
-﻿using System.Buffers;
-using System.IO;
+﻿using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-namespace Melville.Pdf.LowLevel.Writers.Builder
+namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding
 {
     public readonly struct BitStreamWriter
     {

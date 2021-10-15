@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Melville.Hacks;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
+namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions
 {
     public readonly struct MultiDimensionalArray<T>
     {

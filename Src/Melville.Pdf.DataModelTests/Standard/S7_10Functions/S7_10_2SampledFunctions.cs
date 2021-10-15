@@ -70,7 +70,24 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             var result = func.Compute(new[] { inputA, inputB });
             Assert.Equal(2*inputA + 3*inputB, result[0]);
             Assert.Equal(3*inputA + 4 * inputB, result[1]);
+        }        
+        
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 4)]
+        [InlineData(5.25, 27.75)]
+        [InlineData(9, 81)]
+        public async Task CubicInterpolation(double inputA, double output)
+        {
+            var builder = new SampledFunctionBuilder(8);
+            builder.AddInput(11,(0,10));
+            builder.AddOutput(x=>x*x, (0, 100));
+            var str = await new LowLevelDocumentBuilder().CreateSampledFunction(builder);
+            var func = await new FunctionFactory(str).CreateSampledFunc();
+            Assert.Equal(output, func.ComputeSingleResult(inputA));
         }
+        
+        
 
 
         [Fact]

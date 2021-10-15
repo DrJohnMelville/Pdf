@@ -1,6 +1,7 @@
 ﻿using System;
+using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-namespace Melville.Pdf.LowLevel.Filters.LzwFilter
+namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding
 {
     public class BitWriter
     {
@@ -55,10 +56,5 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter
         }
         public int FinishWrite(in Span<byte> target) => 
             NoBitsWaitingToBeWritten() ? 0 : WriteCurrentByte(target);
-    }
-
-    public static class BitUtilities
-    {
-        public static byte Mask(int bits) => (byte) ((1 << bits) - 1);
     }
 }

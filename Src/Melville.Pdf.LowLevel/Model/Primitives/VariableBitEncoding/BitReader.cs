@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
+using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-namespace Melville.Pdf.LowLevel.Filters.LzwFilter
+namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding
 {
     public class BitReader
     {

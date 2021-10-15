@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Filters

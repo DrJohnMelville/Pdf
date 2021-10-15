@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using Melville.Hacks;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
+namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions
 {
-    public sealed class LinearSampledFunction : PdfFunction
+    public abstract class SampledFunctionBase : PdfFunction
     {
-        private readonly int[] sizes;
         private readonly ClosedInterval[] encode;
         private readonly MultiDimensionalArray<double> values;
-        public LinearSampledFunction(
+        public SampledFunctionBase(
             ClosedInterval[] domain, ClosedInterval[] range, 
             int[] sizes, ClosedInterval[] encode, double[] values) : base(domain, range)
         {
-            this.sizes = sizes;
             this.encode = encode;
             this.values = new MultiDimensionalArray<double>(sizes, range.Length, values);
         }
@@ -33,24 +29,23 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
             }
             var inputAsArrayIndex = Domain[inputIndex].MapTo(encode[inputIndex], input[inputIndex]);
             
-            var lowIndex = (int)Math.Truncate(inputAsArrayIndex);
-            var highIndex = lowIndex+1;
+            InterpolateValueAtPoint(input, sampleIndex, inputIndex, inputAsArrayIndex, result);
+        }
 
-            sampleIndex[inputIndex] = lowIndex;
-            Span<double> lowValue = stackalloc double[result.Length];
-            ComputePartialSpan(input, sampleIndex, inputIndex-1, lowValue);
-            
-            sampleIndex[inputIndex] = highIndex;
+        protected Span<double> EvaluateAtIndex(
+            in ReadOnlySpan<double> input, in Span<int> sampleIndex, int inputIndex,
+            int inputValue, in Span<double> result)
+        {
+            sampleIndex[inputIndex] = inputValue;
             ComputePartialSpan(input, sampleIndex, inputIndex-1, result);
-
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = new ClosedInterval(lowIndex, highIndex)
-                    .MapTo(new ClosedInterval(lowValue[i], result[i]), inputAsArrayIndex);
-            }
+            return result;
         }
 
         private void GetSample(in Span<int> sampleIndex, in Span<double> result) =>
             values.ReadValues(sampleIndex, result);
+
+        protected abstract void InterpolateValueAtPoint(ReadOnlySpan<double> input, Span<int> sampleIndex,
+            int inputIndex,
+            double inputAsArrayIndex, Span<double> result);
     }
 }
