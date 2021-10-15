@@ -13,19 +13,14 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
         public double MaxValue { get; }
         public double Size => MaxValue - MinValue;
 
+        //It is legal for maxValue < minValue -- used in type 3 functions to invert a function.
+        // inverted ranges are always empty and they clip oddly, but the mapto works.
         public ClosedInterval(double minValue, double maxValue)
         {
-            this.MinValue = minValue;
-            this.MaxValue = maxValue;
-            CheckValue();
+            MinValue = minValue;
+            MaxValue = maxValue;
         }
-
-        private void CheckValue()
-        {
-            if (MinValue > MaxValue)
-                throw new PdfParseException("Empty Interval");
-        }
-
+        
         public double Clip(double val) =>
             val > MaxValue ? MaxValue :
             val < MinValue ? MinValue : val;

@@ -53,7 +53,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             new(new PdfDouble(domain.MinValue), new PdfDouble(domain.MaxValue));
 
         private bool RangeIsDefault() => 
-            mappings.All(i => i.Range.MinValue == double.MinValue && i.Range.MaxValue == double.MaxValue);
+            mappings.All(i =>i.Range.Equals(ClosedInterval.NoRestriction));
 
         public void AddFunction(double min, double max) =>
             AddFunction(min, max, (double.MinValue, double.MaxValue));

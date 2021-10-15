@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 {
