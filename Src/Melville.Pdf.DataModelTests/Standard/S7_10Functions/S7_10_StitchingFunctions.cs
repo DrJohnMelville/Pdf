@@ -61,7 +61,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             var builder = new StitchingFunctionBuilder(0);
             builder.AddFunction(innerFunc, 0.5, (0, 1));
             builder.AddFunction(innerFunc, 1.0, (1.0, 0.0));
-            var func = await new FunctionFactory(builder.Create()).CreateFunction();
+            var func = await builder.Create().CreateFunction();
             Assert.Equal(output, func.ComputeSingleResult(input), 3);
             
         }

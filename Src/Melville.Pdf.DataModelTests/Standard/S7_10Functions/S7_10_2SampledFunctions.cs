@@ -49,7 +49,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         public async Task EvaluateFullySpecifiedFunction(double input, double output)
         {
             var str = await ComplexSampledFunction();
-            var func = await new FunctionFactory(str).CreateFunction();
+            var func = await str.CreateFunction();
             Assert.Equal(output, func.ComputeSingleResult(input));
             
         }
@@ -66,7 +66,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
             builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
             var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), new (PdfName, PdfObject)[0]);
-            var func = await new FunctionFactory(str).CreateFunction();
+            var func = await str.CreateFunction();
             var result = func.Compute(new[] { inputA, inputB });
             Assert.Equal(2*inputA + 3*inputB, result[0]);
             Assert.Equal(3*inputA + 4 * inputB, result[1]);
@@ -84,7 +84,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
             builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
             var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), new (PdfName, PdfObject)[0]);
-            var func = await new FunctionFactory(str).CreateFunction();
+            var func = await str.CreateFunction();
             var result = func.Compute(new[] { inputA, inputB });
             Assert.Equal(2*inputA + 3*inputB, result[0]);
             Assert.Equal(3*inputA + 4 * inputB, result[1]);
@@ -101,7 +101,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddInput(11,(0,10));
             builder.AddOutput(x=>x*x, (0, 100));
             var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), new (PdfName, PdfObject)[0]);
-            var func = await new FunctionFactory(str).CreateFunction();
+            var func = await str.CreateFunction();
             Assert.Equal(output, func.ComputeSingleResult(inputA));
         }
         

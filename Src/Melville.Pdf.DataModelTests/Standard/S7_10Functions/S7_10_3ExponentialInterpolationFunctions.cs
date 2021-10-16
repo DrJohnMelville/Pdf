@@ -54,7 +54,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         {
             var builder = new ExponentialFunctionBuilder(1);
             builder.AddFunction(0,1);
-            var func = await new FunctionFactory(builder.Create()).CreateFunction();
+            var func = await builder.Create().CreateFunction();
             Assert.Equal(value, func.ComputeSingleResult(value));
             
         }
@@ -66,7 +66,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         {
             var builder = new ExponentialFunctionBuilder(1);
             builder.AddFunction(5,6);
-            var func = await new FunctionFactory(builder.Create()).CreateFunction();
+            var func = await builder.Create().CreateFunction();
             Assert.Equal(5+value, func.ComputeSingleResult(value));
             
         }
@@ -78,7 +78,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         {
             var builder = new ExponentialFunctionBuilder(1);
             builder.AddFunction(5,55);
-            var func = await new FunctionFactory(builder.Create()).CreateFunction();
+            var func = await builder.Create().CreateFunction();
             Assert.Equal(5+(50*value), func.ComputeSingleResult(value));
             
         }
@@ -90,7 +90,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         {
             var builder = new ExponentialFunctionBuilder(3);
             builder.AddFunction(0, 1);
-            var func = await new FunctionFactory(builder.Create()).CreateFunction();
+            var func = await builder.Create().CreateFunction();
             Assert.Equal(value*value*value, func.ComputeSingleResult(value));
             
         }
