@@ -17,6 +17,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             Range = range;
         }
     }
+
     public class ExponentialFunctionBuilder
     {
         private ClosedInterval domain;

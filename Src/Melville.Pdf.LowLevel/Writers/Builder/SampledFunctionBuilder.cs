@@ -65,9 +65,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public void AddOutput(SampledFunctionOutput sfo) => outputs.Add(sfo);
 
 
-        public IEnumerable<(PdfName, PdfObject)> DictionaryEntries()
-        {
-            return new (PdfName, PdfObject)[]
+        private IEnumerable<(PdfName, PdfObject)> DictionaryEntries() =>
+            new[]
             {
                 (KnownNames.FunctionType, new PdfInteger(0)),
                 (KnownNames.Domain, inputs.Select(i=>i.Domain).AsPdfArray(inputs.Count)),
@@ -78,7 +77,6 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
                 (KnownNames.Encode, EncodeArray()),
                 (KnownNames.Decode, DecodeArray()),
             };
-        }
 
         private PdfArray SizeArray() => new(inputs.Select(i=>new PdfInteger(i.Sammples)).ToList());
 
@@ -99,7 +97,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         private bool DecodeArrayIsTrivial() => outputs.All(i => i.DecodeTrivial(bitsPerSample));
 
-        public async ValueTask<MultiBufferStream> SamplesStream()
+        private async ValueTask<MultiBufferStream> SamplesStream()
         {
             var ret = new MultiBufferStream();
             var bitWriter = new BitStreamWriter(ret, bitsPerSample);
@@ -145,15 +143,9 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             var clipped = (uint)singleOutput.Decode.Clip(encodedValue);
             bitStreamWriter.Write(clipped);
         }
-    }
 
-    public static class SampleFunctionBuilderOperations
-    {
-        public static async ValueTask<PdfStream> CreateSampledFunction(
-            this ILowLevelDocumentBuilder dBuilder, SampledFunctionBuilder fBuilder,
-            params (PdfName, PdfObject)[] members) =>
-            dBuilder.NewStream(
-                await fBuilder.SamplesStream(), 
-                members.Concat(fBuilder.DictionaryEntries()));
+        public async ValueTask<PdfStream> CreateSampledFunction(
+            ILowLevelDocumentBuilder builder, params (PdfName, PdfObject)[] members) =>
+            builder.NewStream(await SamplesStream(), members.Concat(DictionaryEntries()));
     }
 }
