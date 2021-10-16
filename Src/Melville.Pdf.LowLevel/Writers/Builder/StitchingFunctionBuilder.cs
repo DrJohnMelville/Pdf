@@ -36,7 +36,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
                 (KnownNames.FunctionType, new PdfInteger(3)),
                 (KnownNames.Domain, DomainArray()),
                 (KnownNames.Bounds, BoundsArray()),
-                (KnownNames.Encode, functions.Select(i=>i.Encode).AsPdfArray(functions.Count))
+                (KnownNames.Encode, functions.Select(i=>i.Encode).AsPdfArray(functions.Count)),
+                (KnownNames.Functions, new PdfArray(functions.Select(i=>i.Function)))
             );
 
         private PdfArray BoundsArray() =>

@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 {
+    public struct St
     public readonly struct FunctionFactory
     {
         private readonly PdfDictionary source;
@@ -25,8 +26,42 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
             {
                 0 => await ReadSampledFunction(),
                 2 => await ReadExponentialFunction(),
+                3 => await ReadStitchedFunction(),
                 var type => throw new PdfParseException("Unknown function type: "+ type)
             };
+        }
+
+        private async ValueTask<PdfFunction> ReadStitchedFunction()
+        {
+            var domain = await ReadIntervals(KnownNames.Domain);
+            var encode = await ReadIntervals(KnownNames.Encode);
+            var bounds = await source.GetAsync<PdfArray>(KnownNames.Bounds);
+            var functionDecls = await source.GetAsync<PdfArray>(KnownNames.Functions);
+            var functions = await CreateFunctionSegments(functionDecls, domain, bounds, encode);
+
+            var range = await ReadOptionalRanges(functions[0].NumberOfOutputs);
+            return new StitchedFunction(domain, range, functions);
+        }
+
+        private async Task<StitchedFunctionSegment[]> CreateFunctionSegments(
+            PdfArray functionDecls, ClosedInterval[] domain, PdfArray bounds, ClosedInterval[] encode)
+        {
+            var functions = new StitchedFunctionSegment[functionDecls.Count];
+            for (int i = 0; i < functionDecls.Count; i++)
+            {
+                functions[i] = new StitchedFunctionSegment(
+                    await SegmentDomain(domain, bounds, i),
+                    encode[i],
+                    await new FunctionFactory(await functionDecls.GetAsync<PdfDictionary>(i)).CreateFunction());
+            }
+
+            return functions;
+        }
+
+        private async Task<ClosedInterval> SegmentDomain(ClosedInterval[] domain, PdfArray bounds, int i)
+        {
+            return new ClosedInterval(i == 0 ? domain[0].MinValue : (await bounds.GetAsync<PdfNumber>(i - 1)).DoubleValue,
+                i >= bounds.Count ? domain[0].MaxValue : (await bounds.GetAsync<PdfNumber>(i)).DoubleValue);
         }
 
         private async ValueTask<PdfFunction> ReadExponentialFunction()
@@ -36,20 +71,30 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
             var c1 = await ReadArrayWithDefault(KnownNames.C1, 1);
             if (domain.Length != 1) throw new PdfParseException("Type 2 functions must have a single input");
             if (c0.Count != c1.Count) throw new PdfParseException("C0 and C1 must have same number of elements");
+            var transforms = await CreateExponentialTransforms(c0, c1);
+            var n = await source.GetAsync<PdfNumber>(KnownNames.N);
+            var range = await ReadOptionalRanges(c1.Count);
+            if (transforms.Length != range.Length) 
+                throw new PdfParseException("Must have a range for each function");
+            return new ExponentialInterpolationFunction(domain, range, transforms, n.DoubleValue);
+        }
+
+        private static async Task<ClosedInterval[]> CreateExponentialTransforms(PdfArray c0, PdfArray c1)
+        {
             var transforms = new ClosedInterval[c0.Count];
             for (int i = 0; i < c0.Count; i++)
             {
                 transforms[i] = new ClosedInterval(
                     (await c0.GetAsync<PdfNumber>(i)).DoubleValue, (await c1.GetAsync<PdfNumber>(i)).DoubleValue);
             }
-            var n = await source.GetAsync<PdfNumber>(KnownNames.N);
-            var range = source.ContainsKey(KnownNames.Range)
-                ? await ReadIntervals(KnownNames.Range)
-                : Enumerable.Repeat(new ClosedInterval(double.MinValue, double.MaxValue), c1.Count).ToArray();
-            if (transforms.Length != range.Length) 
-                throw new PdfParseException("Must have a range for each function");
-            return new ExponentialInterpolationFunction(domain, range, transforms, n.DoubleValue);
+
+            return transforms;
         }
+
+        private async ValueTask<ClosedInterval[]> ReadOptionalRanges(int numberOfOutputs) =>
+            source.ContainsKey(KnownNames.Range)
+                ? await ReadIntervals(KnownNames.Range)
+                : Enumerable.Repeat(new ClosedInterval(double.MinValue, double.MaxValue), numberOfOutputs).ToArray();
 
         private async Task<PdfArray> ReadArrayWithDefault(PdfName name, int defaultValue) =>
             source.ContainsKey(name)

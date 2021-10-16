@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
 using Xunit;
@@ -44,6 +46,24 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             var builder = new StitchingFunctionBuilder(0);
             builder.AddFunction(new PdfDictionary(), 0.5);
             Assert.Throws<ArgumentException>(() => builder.AddFunction(new PdfDictionary(), 0.25));
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(0.1, 0.2)]
+        [InlineData(0.25, 0.5)]
+        [InlineData(0.75, 0.5)]
+        [InlineData(0.9, 0.2)]
+        [InlineData(1, 0)]
+        public async Task TriangleFunction(double input, double output)
+        {
+            var innerFunc = LinearMapping(0, 1);
+            var builder = new StitchingFunctionBuilder(0);
+            builder.AddFunction(innerFunc, 0.5, (0, 1));
+            builder.AddFunction(innerFunc, 1.0, (1.0, 0.0));
+            var func = await new FunctionFactory(builder.Create()).CreateFunction();
+            Assert.Equal(output, func.ComputeSingleResult(input), 3);
+            
         }
     }
 }

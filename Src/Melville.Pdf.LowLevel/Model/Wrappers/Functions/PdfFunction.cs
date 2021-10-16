@@ -13,23 +13,25 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
     public abstract class PdfFunction
     {
         protected ClosedInterval[] Domain { get; }
-        private readonly ClosedInterval[] range;
+        public ClosedInterval[] Range { get; }
 
         protected PdfFunction(ClosedInterval[] domain, ClosedInterval[] range)
         {
             Domain = domain;
-            this.range = range;
+            Range = range;
         }
 
         public double ComputeSingleResult(double input, int desired = 0) =>
             ComputeSingleResult(InputSpan(input, stackalloc double[Domain.Length]), desired);
         public double ComputeSingleResult(in ReadOnlySpan<double> input, int desired = 0)
         {
-            Span<double> ret = stackalloc double[range.Length];
+            Span<double> ret = stackalloc double[Range.Length];
             Compute(input, ret);
             return ret[desired];
         }
         public double[] Compute(double i) => Compute(InputSpan(i, stackalloc double[Domain.Length]));
+        public void Compute(double i, Span<double> result) => 
+            Compute(InputSpan(i, stackalloc double[Domain.Length]), result);
 
         private ReadOnlySpan<double> InputSpan(double d, in Span<double> span)
         {
@@ -39,7 +41,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 
         public double[] Compute(in ReadOnlySpan<double> input)
         {
-            var result = new double[range.Length];
+            var result = new double[Range.Length];
             Compute(input, result);
             return result;
         }
@@ -49,14 +51,14 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
             var clippedInput = OutOfDomain(input) ? 
                 Clip(input, stackalloc double[Domain.Length], Domain) : input;
             ComputeOverride(clippedInput, result);
-            Clip(result, result, range);
+            Clip(result, result, Range);
         }
 
         private void CheckSpanLengths(int inputLength, int resultLength)
         {
             if (inputLength != Domain.Length)
                 throw new ArgumentException("Incorrect number of arguments");
-            if (resultLength != range.Length)
+            if (resultLength != Range.Length)
                 throw new ArgumentException("Incorrect number of return slots");
         }
 

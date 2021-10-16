@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
 {
-    public struct ClosedInterval
+    public readonly struct ClosedInterval
     {
         public double MinValue { get; }
         public double MaxValue { get; }
@@ -33,9 +34,9 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
             new(arg.Min, arg.Max);
         
         public double MapTo(ClosedInterval other, double value) =>
-            other.MinValue + (OfsetFromMin(value)*(other.Size/Size));
-
-        private double OfsetFromMin(double value) => value - MinValue;
+            other.MinValue + (OffsetFromMin(value)*(other.Size/Size));
+        
+        private double OffsetFromMin(double value) => value - MinValue;
     }
 
     public static class ClosedIntervalOperations
