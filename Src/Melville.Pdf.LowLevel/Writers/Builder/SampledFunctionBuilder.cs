@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Linq;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -145,7 +147,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         }
 
         public async ValueTask<PdfStream> CreateSampledFunction(
-            ILowLevelDocumentBuilder builder, params (PdfName, PdfObject)[] members) =>
-            builder.NewStream(await SamplesStream(), members.Concat(DictionaryEntries()));
+            params (PdfName, PdfObject)[] members) =>
+            new(new LiteralStreamSource(await SamplesStream(), StreamFormat.PlainText),
+                members.Concat(DictionaryEntries()).StripTrivialItems());
     }
 }

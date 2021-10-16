@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddInput(12, (1, 10), (1, 10));
             builder.AddOutput(x => 5 * x, (5, 50), (5, 50));
             var members = new (PdfName, PdfObject)[] { (KnownNames.Filter, KnownNames.ASCIIHexDecode) };
-            var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), members);
+            var str = await builder.CreateSampledFunction(members);
             return str;
         }
 
@@ -65,7 +66,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddInput(10,(0,9));
             builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
             builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
-            var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), new (PdfName, PdfObject)[0]);
+            var str = await builder.CreateSampledFunction();
             var func = await str.CreateFunction();
             var result = func.Compute(new[] { inputA, inputB });
             Assert.Equal(2*inputA + 3*inputB, result[0]);
@@ -83,7 +84,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             builder.AddInput(10,(0,9));
             builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
             builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
-            var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), new (PdfName, PdfObject)[0]);
+            var str = await builder.CreateSampledFunction();
             var func = await str.CreateFunction();
             var result = func.Compute(new[] { inputA, inputB });
             Assert.Equal(2*inputA + 3*inputB, result[0]);
@@ -100,7 +101,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             var builder = new SampledFunctionBuilder(8);
             builder.AddInput(11,(0,10));
             builder.AddOutput(x=>x*x, (0, 100));
-            var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), new (PdfName, PdfObject)[0]);
+            var str = await builder.CreateSampledFunction();
             var func = await str.CreateFunction();
             Assert.Equal(output, func.ComputeSingleResult(inputA));
         }
@@ -114,7 +115,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             var builder = new SampledFunctionBuilder(8);
             builder.AddInput(12,(1,10));
             builder.AddOutput(x=>5*x, (0, 255));
-            var str = await builder.CreateSampledFunction(new LowLevelDocumentBuilder(), new (PdfName, PdfObject)[0]);
+            var str = await builder.CreateSampledFunction();
             
             Assert.False(str.ContainsKey(KnownNames.Order));
             Assert.False(str.ContainsKey(KnownNames.Encode));

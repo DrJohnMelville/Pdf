@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
 {
-    public class S7_10_StitchingFunctions
+    public class S7_10_4StitchingFunctions
     {
         private PdfDictionary LinearMapping(int min, int max)
         {

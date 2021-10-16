@@ -23,5 +23,6 @@
 
     <ItemGroup>
       <Folder Include="Filters\Decryptors" />
+      <Folder Include="Model\Wrappers\FunctionParser" />
     </ItemGroup>
 </Project>

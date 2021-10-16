@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions
+namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser
 {
     public static class FunctionParsingMethods
     {
