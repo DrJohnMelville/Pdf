@@ -1,8 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
