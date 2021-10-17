@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace Pdf.KnownNamesGenerator
+﻿namespace Pdf.KnownNamesGenerator.KnownNames
 {
     internal static class NameDictionary
     {

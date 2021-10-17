@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser
 {
@@ -14,6 +15,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser
                 0 => await SampledFunctionParser.Parse(AsStream(source)),
                 2 => await ExponentialFunctionParser.Parse(source),
                 3 => await StitchedFunctionParser.Parse(source),
+                4 => await PostscriptFunctionParser.Parse(AsStream(source)),
                 var type => throw new PdfParseException("Unknown function type: "+ type)
             };
         }

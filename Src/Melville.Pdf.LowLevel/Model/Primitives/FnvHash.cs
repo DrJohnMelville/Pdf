@@ -7,6 +7,18 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
     {
         private const uint offsetBasis = 0x811c9dc5;
         private const uint prime = 0x01000193;
+
+        public static uint HasStringAsLowerCase(string s)
+        {
+            var hash = offsetBasis;
+            foreach (var character in s)
+            {
+                hash = SingleHashStep(hash, (byte)Char.ToLower(character));
+            }
+
+            return hash;
+        }
+        
         public static int FnvHashAsInt( ReadOnlySpan<byte> bytes)
         {
             unchecked

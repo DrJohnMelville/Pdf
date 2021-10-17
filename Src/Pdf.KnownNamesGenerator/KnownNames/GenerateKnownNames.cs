@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
-namespace Pdf.KnownNamesGenerator
+namespace Pdf.KnownNamesGenerator.KnownNames
 {
     public static class GenerateKnownNames
     {
