@@ -19,9 +19,9 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
             CopyStackToOutputs(result, stack);
         }
 
-        private static Stack<double> StackWithInputs(ReadOnlySpan<double> input)
+        private static PostscriptStack StackWithInputs(ReadOnlySpan<double> input)
         {
-            var stack = new Stack<double>();
+            var stack = new PostscriptStack();
             foreach (var inp in input)
             {
                 stack.Push(inp);
@@ -30,12 +30,9 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
             return stack;
         }
 
-        private static void CopyStackToOutputs(Span<double> result, Stack<double> stack)
+        private static void CopyStackToOutputs(Span<double> result, PostscriptStack stack)
         {
-            for (int i = result.Length - 1; i >= 0; i--)
-            {
-                result[i] = stack.Pop();
-            }
+            stack.AsSpan()[..result.Length].CopyTo(result);
         }
     }
 }

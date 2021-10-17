@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Pdf.KnownNamesGenerator.PostScriptOps
 {
@@ -6,10 +7,50 @@ namespace Pdf.KnownNamesGenerator.PostScriptOps
     {
         private static (string name, string code )[] operations = new (string name, string code)[]
         {
+            // arithmetic operators
             ("Abs", "s.Push(Math.Abs(s.Pop()));"),
             ("Add", "s.Push(s.Pop()+s.Pop());"),
-            ("Atan", "var den = s.Pop();var num = s.Pop(); s.Push(180.0 * Math.Atan2(num, den)/Math.PI);"),
+            ("Atan", "var den = s.Pop();var num = s.Pop(); s.Push(CanonicalDegrees(RadToDeg( Math.Atan2(num, den))));"),
+            ("Ceiling", "s.Push(Math.Ceiling(s.Pop()));"),
+            ("Cos", "s.Push(Math.Cos(DegToRad(s.Pop())));"),
+            ("Cvi", "s.Push((int)s.Pop());"),
+            ("Cvr", ""),
+            ("Div", "var den = s.Pop();var num = s.Pop(); s.Push(num/den);"),
+            ("Exp", "var exp = s.Pop();var @base = s.Pop(); s.Push(Math.Pow(@base, exp));"),
+            ("Floor", "s.Push(Math.Floor(s.Pop()));"),
+            ("Idiv", "var den = (long)s.Pop();var num = (long)s.Pop(); s.Push(num/den);"),
+            ("ln", "s.Push(Math.Log(s.Pop()));"),
+            ("log", "s.Push(Math.Log10(s.Pop()));"),
+            ("Mod", "var den = (long)s.Pop();var num = (long)s.Pop(); s.Push(num%den);"),
             ("Mul", "s.Push(s.Pop()*s.Pop());"),
+            ("Neg", "s.Push(-s.Pop());"),
+            ("Round", "s.Push(PostscriptRound(s.Pop()));"),
+            ("Sin", "s.Push(Math.Sin(DegToRad(s.Pop())));"),
+            ("Sqrt", "s.Push(Math.Sqrt(s.Pop()));"),
+            ("Sub", "var den = s.Pop();var num = s.Pop(); s.Push(num - den);"),
+            ("Truncate", "s.Push(Math.Truncate(s.Pop()));"),
+            
+            // relational boolean and butwise operators
+            ("And", "var b = (long) s.Pop(); var a = (long)s.Pop(); s.Push(a&b);"),
+            ("Or", "var b = (long) s.Pop(); var a = (long)s.Pop(); s.Push(a|b);"),
+            ("Xor", "var b = (long) s.Pop(); var a = (long)s.Pop(); s.Push(a^b);"),
+            ("Not", "s.Push(~(long)s.Pop());"),
+            ("BitShift", "var b = (int) s.Pop(); var a = (long)s.Pop(); s.Push(PostscriptBitShift(a,b));"),
+            ("Eq", "s.Push(PostscriptEqual(s.Pop(),s.Pop()));"),
+            ("Ne", "s.Push(PostscriptNotEqual(s.Pop(),s.Pop()));"),
+            ("True", "s.Push(-1.0);"),
+            ("False", "s.Push(0.0);"),
+            ("Ge", "var b = s.Pop(); var a = s.Pop(); s.Push(a>=b?-1:0);"),
+            ("Gt", "var b = s.Pop(); var a = s.Pop(); s.Push(a> b?-1:0);"),
+            ("Le", "var b = s.Pop(); var a = s.Pop(); s.Push(a<=b?-1:0);"),
+            ("Lt", "var b = s.Pop(); var a = s.Pop(); s.Push(a< b?-1:0);"),
+            
+            // stack operators
+            ("copy", "PostscriptCopy(s);"),
+            ("dup", "s.Push(s.Peek());"),
+            ("exch", "s.Exchange();"),
+            ("Index", "s.Push(s.Peek((int)s.Pop()));"),
+            ("Pop", "s.Pop();"),
         };
 
         public static string ClassText()
@@ -47,16 +88,16 @@ namespace Pdf.KnownNamesGenerator.PostScriptOps
             sb.AppendLine("      }");
         }
 
-        private static void GenerateClasses(StringBuilder? sb)
+        private static void GenerateClasses(StringBuilder sb)
         {
             foreach (var (name, code) in operations)
             {
-                sb.AppendLine($"      private sealed class Operation{name}:IPostScriptOperation {{ public void Do(Stack<double> s) {{ {code} }} }} ");
+                sb.AppendLine($"      private sealed class Operation{name}:IPostScriptOperation {{ public void Do(PostscriptStack s) {{ {code} }} }} ");
             }
         }
-        private static void GenerateVariables(StringBuilder? sb)
+        private static void GenerateVariables(StringBuilder sb)
         {
-            foreach (var (name, code) in operations)
+            foreach (var (name, _) in operations)
             {
                 sb.AppendLine($"      public static readonly IPostScriptOperation {name} = new Operation{name}(); ");
             }
