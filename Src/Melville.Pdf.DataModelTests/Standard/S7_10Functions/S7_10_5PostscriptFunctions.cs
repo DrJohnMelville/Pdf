@@ -123,6 +123,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         [InlineData("5,6,7,3,-1", "6,7,5", "{roll}")]
         [InlineData("5,6,7,3,1", "7,5,6", "{roll}")]
         [InlineData("5,6,7,3,0", "5,6,7", "{roll}")]
+        [InlineData("5,6,7,3,-7", "6,7,5", "{roll}")]
+        [InlineData("5,6,7,3,7", "7,5,6", "{roll}")]
+        [InlineData("5,6,7,3,9", "5,6,7", "{roll}")]
+        [InlineData("5,6,7,3,2", "6,7,5", "{roll}")]
+        [InlineData("5,6,7,3,-2", "7,5,6", "{roll}")]
         public Task PostScriptTest(string inputs, string outputs, string code) => 
             InnerPostScriptTest(GetDoubles(inputs), GetDoubles(outputs), code);
 

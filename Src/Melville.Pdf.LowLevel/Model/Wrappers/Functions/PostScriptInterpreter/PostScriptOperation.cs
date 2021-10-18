@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Microsoft.Win32.SafeHandles;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
 {
@@ -67,6 +68,20 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
             {
                 s.Push(item);
             }
+        }
+
+        private static void RollSpan(Span<double> span, int delta)
+        {
+            int initialSpot = delta > 0 ? 
+                delta % span.Length : 
+                span.Length - ((-delta) % span.Length) % span.Length;
+            if (initialSpot == 0) return;
+            Span<double> buffer = stackalloc double[span.Length];
+            for (int i = 0; i < span.Length; i++)
+            {
+                buffer[(i + initialSpot) % span.Length] = span[i];
+            }
+            buffer.CopyTo(span);
         }
     }
 

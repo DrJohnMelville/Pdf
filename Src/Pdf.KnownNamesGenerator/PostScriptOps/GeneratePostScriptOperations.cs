@@ -51,6 +51,7 @@ namespace Pdf.KnownNamesGenerator.PostScriptOps
             ("exch", "s.Exchange();"),
             ("Index", "s.Push(s.Peek((int)s.Pop()));"),
             ("Pop", "s.Pop();"),
+            ("Roll", "var delta= (int) s.Pop(); var count = (int)s.Pop(); RollSpan(s.AsSpan()[^count..], delta);"),
         };
 
         public static string ClassText()
