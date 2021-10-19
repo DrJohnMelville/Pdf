@@ -7,7 +7,8 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
-    public class PdfName: PdfByteArrayObject, IEquatable<PdfName>
+//    public class NameOrOperatorParent: PdfByteArrayObject
+    public class PdfName: PdfByteArrayObject
     {
 
         protected PdfName(byte[] name, bool creatingKnownName): base(name){}
@@ -29,8 +30,6 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         
         public override string ToString() => "/"+Encoding.UTF8.GetString(Bytes);
 
-        public virtual bool Equals(PdfName? other) =>
-            ((IEquatable<PdfByteArrayObject>) this).Equals(other);
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
         public virtual PdfName PreferredName() => this;
     }

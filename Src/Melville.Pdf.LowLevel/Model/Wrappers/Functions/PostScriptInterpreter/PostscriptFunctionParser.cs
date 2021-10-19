@@ -138,7 +138,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
         }
         private bool TryRead(ref SequenceReader<byte> reader, out IPostScriptOperation result)
         {
-            result = PostScriptOperations.Out_Of_Chars;
+            result = PostScriptOperations.If;
             if (!reader.SkipToNextToken()) return false;
             if (!reader.TryPeek(out byte peeked)) return false;
             switch (peeked)

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -34,8 +36,6 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             }
 
             public override bool Equals(object? obj) => ReferenceEquals(this, obj);
-            public override bool Equals(PdfName? other) => ReferenceEquals(this, other);
-            public override bool Equals(PdfByteArrayObject? other) => ReferenceEquals(this, other);
             public override int GetHashCode() => base.GetHashCode(); // fix a spurious warning
         }
 
