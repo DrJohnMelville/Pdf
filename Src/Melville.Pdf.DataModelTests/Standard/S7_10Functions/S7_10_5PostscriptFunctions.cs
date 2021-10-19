@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Linq;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
@@ -128,6 +130,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         [InlineData("5,6,7,3,9", "5,6,7", "{roll}")]
         [InlineData("5,6,7,3,2", "6,7,5", "{roll}")]
         [InlineData("5,6,7,3,-2", "7,5,6", "{roll}")]
+        [InlineData("10, -1", "10,12", "{ {12} if}")]
+        [InlineData("10, 0", "10", "{ {12} if}")]
+        [InlineData("10, -1", "10,12", "{ {12} {20} ifelse}")]
+        [InlineData("10, 0", "10,20", "{ {12} {20} ifelse}")]
+        [InlineData("3,4", "5", "{ dup mul exch dup mul add sqrt}")]
         public Task PostScriptTest(string inputs, string outputs, string code) => 
             InnerPostScriptTest(GetDoubles(inputs), GetDoubles(outputs), code);
 
@@ -158,5 +165,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
                 .Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .Select(i => double.Parse(i))
                 .ToArray();
+
+        [Theory]
+        [InlineData("{12 if}")]
+        [InlineData("{12 ifelse}")]
+        [InlineData("{12 {1} {2} if}")]
+        [InlineData("{12 {1}  ifelse}")]
+        [InlineData("{12 {1}  add}")]
+        [InlineData("{12")]
+        public Task PostscriptCompilerError(string code) => 
+            Assert.ThrowsAsync<PdfParseException>(() => CreateFunction(code, 1, 1).CreateFunction().AsTask());
     }
 }

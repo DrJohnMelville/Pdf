@@ -7,6 +7,11 @@ namespace Pdf.KnownNamesGenerator.PostScriptOps
     {
         private static (string name, string code )[] operations = new (string name, string code)[]
         {
+            // sentinels
+            ("Open_Brace", "throw new NotSupportedException();"),
+            ("Close_Brace", "throw new NotSupportedException();"),
+            ("If", "throw new NotSupportedException();"),
+            ("IfElse", ""),
             // arithmetic operators
             ("Abs", "s.Push(Math.Abs(s.Pop()));"),
             ("Add", "s.Push(s.Pop()+s.Pop());"),
@@ -46,9 +51,9 @@ namespace Pdf.KnownNamesGenerator.PostScriptOps
             ("Lt", "var b = s.Pop(); var a = s.Pop(); s.Push(a< b?-1:0);"),
             
             // stack operators
-            ("copy", "PostscriptCopy(s);"),
-            ("dup", "s.Push(s.Peek());"),
-            ("exch", "s.Exchange();"),
+            ("Copy", "PostscriptCopy(s);"),
+            ("Dup", "s.Push(s.Peek());"),
+            ("Exch", "s.Exchange();"),
             ("Index", "s.Push(s.Peek((int)s.Pop()));"),
             ("Pop", "s.Pop();"),
             ("Roll", "var delta= (int) s.Pop(); var count = (int)s.Pop(); RollSpan(s.AsSpan()[^count..], delta);"),
@@ -93,7 +98,7 @@ namespace Pdf.KnownNamesGenerator.PostScriptOps
         {
             foreach (var (name, code) in operations)
             {
-                sb.AppendLine($"      private sealed class Operation{name}:IPostScriptOperation {{ public void Do(PostscriptStack s) {{ {code} }} }} ");
+                sb.AppendLine($"      public sealed class Operation{name}:IPostScriptOperation {{ public void Do(PostscriptStack s) {{ {code} }} }} ");
             }
         }
         private static void GenerateVariables(StringBuilder sb)

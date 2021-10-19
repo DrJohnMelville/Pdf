@@ -37,8 +37,14 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
         public async Task<CompositeOperation> ParseCompositeAsync()
         {
             var open = await reader.ReadToken();
-            if (open != PostScriptSpecialOperations.OpenBrace)
+            if (open != PostScriptOperations.Open_Brace)
                 throw new PdfParseException("Postscript function must start with {");
+            var ret = await OpenCompositeOperation();
+            return ret;
+        }
+
+        private async Task<CompositeOperation> OpenCompositeOperation()
+        {
             var ret = new CompositeOperation();
             composites.Push(ret);
             await ParseInsideComposite(ret);
@@ -47,12 +53,50 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
 
         private async Task ParseInsideComposite(CompositeOperation ret)
         {
+            CompositeOperation? ifBranch = null;
+            CompositeOperation? elseBranch = null;
             while (true)
             {
-                var op = await reader.ReadToken();
-                if (op == PostScriptSpecialOperations.CloseBrace) return;
-                ret.AddOperation(op);
+                switch (await reader.ReadToken(), ifBranch, elseBRanch: elseBranch)
+                {
+                    case (PostScriptOperations.OperationOpen_Brace, null, null):
+                        ifBranch = await OpenCompositeOperation();
+                        break;
+                    case (PostScriptOperations.OperationOpen_Brace, not null, null):
+                        elseBranch = await OpenCompositeOperation();
+                        break;
+                    case (PostScriptOperations.OperationIfElse, { }ib, {}eb):
+                        ret.AddOperation(new IfOperation(ib,eb));
+                        ifBranch = elseBranch = null;
+                        break;
+                    case (PostScriptOperations.OperationIf, {} ib, null):
+                        ret.AddOperation(new IfOperation(ib));
+                        ifBranch = null;
+                        break;
+                    case (PostScriptOperations.OperationIf or PostScriptOperations.OperationIfElse, _,_):
+                        throw new PdfParseException("If or ifelse must be preceeded by correct number of blocks");
+                    case (_,_,not null):
+                    case (_,not null, _):
+                        throw new PdfParseException(
+                            "Blocks in Postscript functions must be followed by if or ifelse");
+                    case (PostScriptOperations.OperationClose_Brace, null, null): return;
+                    case (var op1, null, null):
+                        ret.AddOperation(op1);
+                        break;
+                }
             }
+        }
+
+        private void GenerateIfInstruction(CompositeOperation ret)
+        {
+            ret.AddOperation(new IfOperation(composites.Pop()));
+        }
+
+        private void GenerateIfElseInstruction(CompositeOperation ret)
+        {
+            var elseOp = composites.Pop();
+            var ifOp = composites.Pop();
+            ret.AddOperation(new IfOperation(ifOp, elseOp));
         }
     }
     
@@ -69,13 +113,13 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
         {
             while (true)
             {
-                if (TryRead((await reader.ReadAsync()).Buffer, out var ret)) return ret;
+                if (TryRead((await reader.ReadAsync()), out var ret)) return ret;
             }
         }
 
-        private bool TryRead(ReadOnlySequence<byte> buffer, out IPostScriptOperation result)
+        private bool TryRead(ReadResult readResult, out IPostScriptOperation result)
         {
-            var sequenceReader = new SequenceReader<byte>(buffer);
+            var sequenceReader = new SequenceReader<byte>(readResult.Buffer);
             var ret = TryRead(ref sequenceReader, out result);
             if (ret)
             {
@@ -83,24 +127,28 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter
             }
             else
             {
-                reader.AdvanceTo(buffer.Start, buffer.End);
+                if (readResult.IsCompleted)
+                {
+                    throw new PdfParseException("Ran out of input before end of PDF function");
+                }
+                reader.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
             }
 
             return ret;
         }
         private bool TryRead(ref SequenceReader<byte> reader, out IPostScriptOperation result)
         {
-            result = PostScriptSpecialOperations.OutOfChars;
+            result = PostScriptOperations.Out_Of_Chars;
             if (!reader.SkipToNextToken()) return false;
             if (!reader.TryPeek(out byte peeked)) return false;
             switch (peeked)
             {
                 case (byte) '{':
-                    result = PostScriptSpecialOperations.OpenBrace;
+                    result = PostScriptOperations.Open_Brace;
                     reader.Advance(1);
                     return true;
                 case (byte) '}':
-                    result = PostScriptSpecialOperations.CloseBrace;
+                    result = PostScriptOperations.Close_Brace;
                     reader.Advance(1);
                     return true;
                 case (byte) '0':
