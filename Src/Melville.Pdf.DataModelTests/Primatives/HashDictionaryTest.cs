@@ -1,4 +1,5 @@
 ﻿using System;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
 
@@ -51,7 +52,7 @@ namespace Melville.Pdf.DataModelTests.Primatives
         public void Synonym()
         {
             var target = sut.GetOrCreate("xxyy21");
-            sut.AddSynonym(ColidingName1, target);
+            sut.AddSynonym(ColidingName1.AsExtendedAsciiBytes(), target);
             Assert.Equal(target, sut.GetOrCreate(ColidingName1));
         }
     }

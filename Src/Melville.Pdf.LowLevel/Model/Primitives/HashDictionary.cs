@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives
 {
     public abstract class HashDictionary<T> where T : class
     {
-        // the dictionary either holds the value, a synonym delcaration, or a linkedListPair
+        // the dictionary either holds the value, a synonym declaration, or a linkedListPair
+        // The idea of this class is that FNV-1 is a very good hash, so there will be very, very
+        // few colisions.  Because of this when there is only one item in the bucket then we
+        // have no allocations and pay nothing other than a single is operation.  If there is more
+        // than one item in a bucket we degrade to a linked list.  This also lets us handle
+        // synonyms.  We give up type safety to do this.
         private readonly Dictionary<uint, object> store = new();
         
         public T GetOrCreate(in ReadOnlySpan<byte> key) => GetOrCreate(key, null);
+        internal T DonateKey(byte[] key) => GetOrCreate(key, key);
         internal T GetOrCreate(in ReadOnlySpan<byte> key, byte[]? keyAsArray)
         {
             var hash = FnvHash.FnvHashAsUint(key);
@@ -36,7 +41,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
                 SingleLinkedList sll =>
                     DoComparison(key, sll.Datum, out ret) ||
                     SearchLinkedList(sll.Next, key, out ret),
-                _=> throw new InvalidProgramException("source should be one of the prior 2 cases")
+                _=> throw new InvalidProgramException("source should be one of the prior 3 cases")
             };
 
         private bool DoComparison(
@@ -76,9 +81,8 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
             }
         }
         
-        public void AddSynonym(string synonym, T target)
+        public void AddSynonym(byte[] key, T target)
         {
-            var key = synonym.AsExtendedAsciiBytes();
             var hash = FnvHash.FnvHashAsUint(key);
             // we set the synonyms first and there is no colision between the synonyms.
             // this means that a synonym will always be the end of its linked list and

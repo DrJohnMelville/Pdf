@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Xml.Schema;
 
 namespace Pdf.KnownNamesGenerator.KnownNames
 {
@@ -7,8 +8,10 @@ namespace Pdf.KnownNamesGenerator.KnownNames
         public static string ClassText()
         {
             return @"
+#nullable enable
 using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 namespace Melville.Pdf.LowLevel.Model.Conventions
 {
     public static partial class KnownNames
@@ -31,9 +34,14 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         {
             foreach (var (value, name) in NameDictionary.AddAllNames)
             {
+                sb.Append("        private static readonly PdfName? _");
+                sb.Append(name);
+                sb.AppendLine(";");
                 sb.Append("        public static readonly PdfName ");
                 sb.Append(name);
-                sb.Append(" = new KnownPdfName(");
+                sb.Append(" = _");
+                sb.Append(name);
+                sb.Append(" ??= allKnownNames.DonateKey(");
                 WriteStringAsByteArray(sb, value);
                 sb.Append("); //");
                 sb.AppendLine(value);
@@ -55,14 +63,8 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         private static void AddConstantsToDictionary(StringBuilder sb)
         {
             sb.AppendLine();
-            sb.AppendLine("        public static void AddItemsToDict(Dictionary<int, PdfName> dict) ");
+            sb.AppendLine("        public static void AddItemsToDict(NameDictionay dict) ");
             sb.AppendLine("        {");
-            foreach (var (_, name) in NameDictionary.AddAllNames)
-            {
-                sb.Append("            AddTo(dict, ");
-                sb.Append(name);
-                sb.AppendLine(");");
-            }
 
             foreach (var (preferred, synonym) in NameDictionary.Synonyms)
             {
