@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -12,30 +10,23 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
     {
         // the dictionary either holds the value, a synonym delcaration, or a linkedListPair
         private readonly Dictionary<uint, object> store = new();
-        public T GetOrCreate(string name)
-        {
-            Span<byte> item = stackalloc byte[name.Length];
-            for (int i = 0; i < item.Length; i++)
-            {
-                item[i] = (byte)name[i];
-            }
-            return GetOrCreate(item);
-        }
-        public T GetOrCreate(in ReadOnlySpan<byte> key)
+        
+        public T GetOrCreate(in ReadOnlySpan<byte> key) => GetOrCreate(key, null);
+        internal T GetOrCreate(in ReadOnlySpan<byte> key, byte[]? keyAsArray)
         {
             var hash = FnvHash.FnvHashAsUint(key);
             if (!store.TryGetValue(hash, out var found))
             {
-                var ret = Create(key);
+                var ret = Create(key, keyAsArray);
                 store.Add(hash, ret);
                 return ret;
             }
             if (SearchLinkedList(found, key, out var foundRet)) return foundRet;
-            var newHead = new SingleLinkedList(Create(key), found);
+            var newHead = new SingleLinkedList(Create(key, keyAsArray), found);
             store[hash] = newHead;
             return newHead.Datum;
         }
-
+        
         private bool SearchLinkedList(
             object source, in ReadOnlySpan<byte> key, [NotNullWhen(true)] out T? ret) =>
             source switch
@@ -54,10 +45,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
             target = item;
             return Matches(key, item);
         }
-
-        protected abstract bool Matches(in ReadOnlySpan<byte> key, T item);
-        protected abstract T Create(in ReadOnlySpan<byte> key);
-
+        
         private class SingleLinkedList
         {
             public readonly T Datum;
@@ -98,11 +86,15 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
             store.Add(hash, new Synonym(key, target));
         }
 
+        protected abstract bool Matches(in ReadOnlySpan<byte> key, T item);
+        protected abstract T Create(byte[] key);
+        private T Create(ReadOnlySpan<byte> key, byte[]? keyAsArray) => 
+            Create(keyAsArray ?? key.ToArray());
     }
 
     public class NameDictionay : HashDictionary<PdfName>
     {
-        protected override PdfName Create(in ReadOnlySpan<byte> key) => new(key.ToArray());
+        protected override PdfName Create(byte[] key) => new(key);
         protected override bool Matches(in ReadOnlySpan<byte> key, PdfName item) => 
             key.SequenceEqual(item.Bytes);
     }
