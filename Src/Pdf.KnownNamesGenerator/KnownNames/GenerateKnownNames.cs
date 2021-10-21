@@ -42,15 +42,15 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 sb.Append(" = _");
                 sb.Append(name);
                 sb.Append(" ??= allKnownNames.GetOrCreate(");
-                WriteStringAsByteArray(sb, value);
+                WriteStringAsByteArray(sb, value, "stackalloc");
                 sb.Append("); //");
                 sb.AppendLine(value);
             }
         }
 
-        private static void WriteStringAsByteArray(StringBuilder sb, string value)
+        private static void WriteStringAsByteArray(StringBuilder sb, string value, string creationMethod)
         {
-            sb.Append("stackalloc byte[]{");
+            sb.Append(creationMethod+" byte[]{");
             foreach (var character in value)
             {
                 sb.Append(((byte)character).ToString());
@@ -71,7 +71,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 sb.Append("            AddSynonym(dict, ");
                 sb.Append(preferred);
                 sb.Append(", ");
-                WriteStringAsByteArray(sb, synonym);
+                WriteStringAsByteArray(sb, synonym, "new");
                 sb.Append("); //");
                 sb.AppendLine(synonym);
 
