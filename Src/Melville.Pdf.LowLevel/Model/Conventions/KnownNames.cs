@@ -17,5 +17,12 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
              dict.AddSynonym(synonym, item);
 
          public static PdfName Get(ReadOnlySpan<byte> nameText) => allKnownNames.GetOrCreate(nameText);
+
+         public static PdfName Get(string nameText)
+         {
+             Span<byte> span = stackalloc byte[nameText.Length];
+             ExtendedAsciiEncoding.EncodeToSpan(nameText, span);
+             return Get(span);
+         }
     }
 }

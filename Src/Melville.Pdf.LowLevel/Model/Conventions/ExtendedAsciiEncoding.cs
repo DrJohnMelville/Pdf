@@ -7,11 +7,16 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         public static byte[] AsExtendedAsciiBytes(this string s)
         {
             var ret = new byte[s.Length];
+            EncodeToSpan(s, ret);
+            return ret;
+        }
+
+        public static void EncodeToSpan(string s, in Span<byte> ret)
+        {
             for (int i = 0; i < s.Length; i++)
             {
-                ret[i] = (byte) s[i];
+                ret[i] = (byte)s[i];
             }
-            return ret;
         }
 
         public static string ExtendedAsciiString(this byte[] source) =>

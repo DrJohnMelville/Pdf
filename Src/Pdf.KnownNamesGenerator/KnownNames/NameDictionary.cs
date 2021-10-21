@@ -745,7 +745,7 @@
             // ("VAlign", "VAlign"),
             // ("VE", "VE"),
             // ("VeriSign_PPKVS", "VeriSignPPKVS"),
-            // ("Version", "Version"),
+            ("Version", "Version"),
             // ("Vertices", "Vertices"),
             // ("Video", "Video"),
             // ("View", "View"),

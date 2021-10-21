@@ -1,0 +1,5 @@
+﻿#Everyone can use .Net
+* => System.*
+
+#Everyone can use the LowLevel Model
+* => Melville.Pdf.LowLevel.*
