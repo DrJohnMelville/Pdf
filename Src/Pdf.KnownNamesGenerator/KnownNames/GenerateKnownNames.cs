@@ -41,7 +41,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 sb.Append(name);
                 sb.Append(" = _");
                 sb.Append(name);
-                sb.Append(" ??= allKnownNames.DonateKey(");
+                sb.Append(" ??= allKnownNames.GetOrCreate(");
                 WriteStringAsByteArray(sb, value);
                 sb.Append("); //");
                 sb.AppendLine(value);
@@ -50,7 +50,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
 
         private static void WriteStringAsByteArray(StringBuilder sb, string value)
         {
-            sb.Append("new byte[]{");
+            sb.Append("stackalloc byte[]{");
             foreach (var character in value)
             {
                 sb.Append(((byte)character).ToString());
