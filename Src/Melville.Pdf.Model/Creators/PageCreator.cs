@@ -2,24 +2,29 @@
 using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Microsoft.VisualBasic;
 
 namespace Melville.Pdf.Model.Creators;
 
-public class PageCreator: IPageTreeNodeChild
+public class PageCreator: PageTreeNodeChildCreator
 {
-    private readonly Dictionary<PdfName, PdfObject> dictionary = new();
-    public PageCreator()
+    public PageCreator() : base(new())
     {
-        dictionary.Add(KnownNames.Type, KnownNames.Page);
+        MetaData.Add(KnownNames.Type, KnownNames.Page);
     }
 
-    public (PdfIndirectReference Reference, int PageCount) 
+    public override (PdfIndirectReference Reference, int PageCount) 
         ConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectReference? parent,
             int maxNodeSize)
     {
         if (parent is null) throw new ArgumentException("Pages must have a parent.");
-        dictionary.Add(KnownNames.Parent, parent);
-        return (creator.Add(new PdfDictionary(dictionary)), 1);
+        MetaData.Add(KnownNames.Parent, parent);
+        TryAddResources(creator);
+        return (creator.Add(new PdfDictionary(MetaData)), 1);
     }
+    
+    public void AddLastModifiedTime(PdfTime dateAndTime) => 
+        MetaData.Add(KnownNames.LastModified, PdfString.CreateDate(dateAndTime));
 }
