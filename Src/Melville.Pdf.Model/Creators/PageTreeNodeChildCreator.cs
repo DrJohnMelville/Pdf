@@ -4,6 +4,7 @@ using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.Model.Documents;
 
@@ -42,4 +43,10 @@ public abstract class PageTreeNodeChildCreator
 
     public void AddXrefObjectResource(PdfName name, PdfObject obj) =>
         Resources[(KnownNames.XObject, name)] = obj;
+
+    public void AddMediaBox(in PdfRect pdfRect) => MetaData.Add(KnownNames.MediaBox, pdfRect.ToPdfArray);
+    public void AddCropBox(in PdfRect pdfRect) => MetaData.Add(KnownNames.CropBox, pdfRect.ToPdfArray);
+    public void AddBleedBox(in PdfRect pdfRect) => MetaData.Add(KnownNames.BleedBox, pdfRect.ToPdfArray);
+    public void AddTrimBox(in PdfRect pdfRect) => MetaData.Add(KnownNames.TrimBox, pdfRect.ToPdfArray);
+    public void AddArtBox(in PdfRect pdfRect) => MetaData.Add(KnownNames.ArtBox, pdfRect.ToPdfArray);
 }

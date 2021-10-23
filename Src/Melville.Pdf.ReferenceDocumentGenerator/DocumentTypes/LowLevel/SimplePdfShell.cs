@@ -31,8 +31,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                     (KnownNames.Type, KnownNames.Font ), 
                     (KnownNames.Subtype, KnownNames.Type1), 
                     (KnownNames.Name, new PdfName("F1")), 
-                    (KnownNames.BaseFont,
-                        KnownNames.Helvetica), 
+                    (KnownNames.BaseFont, KnownNames.Helvetica), 
                     (KnownNames.Encoding, KnownNames.MacRomanEncoding))
             );
         }
