@@ -7,19 +7,22 @@ namespace Melville.Pdf.Model.Documents
 {
     public readonly struct PdfDocument
     {
-        public PdfLowLevelDocument LowLevelDocument { get; }
+        public PdfLowLevelDocument LowLevel { get; }
 
-        public PdfDocument(PdfLowLevelDocument lowLevelDocument)
+        public PdfDocument(PdfLowLevelDocument lowLevel)
         {
-            LowLevelDocument = lowLevelDocument;
+            LowLevel = lowLevel;
         }
 
         private ValueTask<PdfDictionary> CatalogAsync() => 
-            LowLevelDocument.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
+            LowLevel.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
 
         public async ValueTask<PdfName> VersionAsync() =>
             (await CatalogAsync()).TryGetValue(KnownNames.Version, out var task) &&
                 (await task) is PdfName version?
-                version: KnownNames.Get($"{LowLevelDocument.MajorVersion}.{LowLevelDocument.MinorVersion}");
+                version: KnownNames.Get($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
+
+        public async ValueTask<PageTree> PagesAsync() =>
+            new(await (await CatalogAsync()).GetAsync<PdfDictionary>(KnownNames.Pages));
     }
 }

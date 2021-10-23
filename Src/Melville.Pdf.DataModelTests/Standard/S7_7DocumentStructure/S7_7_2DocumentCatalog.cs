@@ -1,10 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure
