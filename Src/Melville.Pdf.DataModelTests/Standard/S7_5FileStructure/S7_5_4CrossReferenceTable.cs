@@ -84,11 +84,7 @@ trailer
             resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
             resolver.Verify(i=>i.AddLocationHint(3,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-            resolver.Verify(i=>i.AddLocationHint(4,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-            resolver.Verify(i=>i.AddLocationHint(5,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-            resolver.Verify(i=>i.AddLocationHint(6,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-            resolver.Verify(i=>i.AddLocationHint(7,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-           resolver.Verify(i=>i.FindIndirect(6,0));
+           resolver.Verify(i=>i.FindIndirect(3,0));
             resolver.Verify(i=>i.GetObjects());
             resolver.Verify(i=>i.FreeListHead(), Times.Once);
             resolver.VerifyNoOtherCalls();

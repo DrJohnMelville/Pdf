@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
+using Melville.Pdf.Model.Creators;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
@@ -20,10 +21,11 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public static ILowLevelDocumentCreator MinimalPdf(int major, int minor)
         {
-            var builder = new PdfCreator(major, minor);
-            builder.CreateAttachedPage("");
-            builder.FinalizePages();
-            return builder.Creator;
+            var builder = new PdfDocumentCreator();
+            builder.LowLevelCreator.SetVersion((byte)major, (byte)minor);
+            builder.Pages.CreatePage();
+            builder.CreateDocument();
+            return builder.LowLevelCreator;
         }
      }
 }

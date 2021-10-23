@@ -49,10 +49,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                     new PdfDictionary(
                         (KnownNames.Font, new PdfDictionary((new PdfName("F1"), DefaultFont))),
                         (KnownNames.ProcSet, DefaultProcSet))));
-
-        public PdfDictionary CreateUnattachedPage(PdfStream content) =>
-            CreateUnattachedPage(Creator.AsIndirectReference(content));
-
+        
         public PdfDictionary CreateUnattachedPage(StreamDataSource source) =>
             CreateUnattachedPage(
                 Creator.Add(Creator.NewCompressedStream(source, KnownNames.FlateDecode)));
