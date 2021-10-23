@@ -60,15 +60,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3
             Assert.True(ReferenceEquals(n1, n2));
         }
 
-        [Fact]
-        public void InDebugModeThrowIfDefiningANameThatMatchesAKnownName()
-        {
-#if DEBUG
-            Assert.Throws<InvalidOperationException>(() => new PdfName("Width"));
-            new PdfName("Not a known name");
-#endif
-        }
-
         [Theory]
         [InlineData("/ASCIIHexDecode", "/AHx")]
         [InlineData("/ASCII85Decode", "/A85")]

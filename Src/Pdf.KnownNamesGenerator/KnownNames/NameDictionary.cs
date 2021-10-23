@@ -111,6 +111,7 @@
             ("Version", "Version"),
             ("W", "W"),
             ("Width", "Width"),
+            ("XObject", "XObject"),
             ("XRef", "XRef"),
             ("XRefStm", "XRefStm"),
         };
