@@ -68,7 +68,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
 
         private IEnumerable<(PdfName, PdfObject)> DictionaryEntries() =>
-            new[]
+            new (PdfName, PdfObject)[]
             {
                 (KnownNames.FunctionType, new PdfInteger(0)),
                 (KnownNames.Domain, inputs.Select(i=>i.Domain).AsPdfArray(inputs.Count)),

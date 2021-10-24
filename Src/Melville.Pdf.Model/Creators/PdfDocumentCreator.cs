@@ -24,7 +24,7 @@ public class PdfDocumentCreator
     }
 
     public void SetVersionInCatalog(byte major, byte minor) =>
-        SetVersionInCatalog(KnownNames.Get($"{major}.{minor}"));
+        SetVersionInCatalog(NameDirectory.Get($"{major}.{minor}"));
     public void SetVersionInCatalog(PdfName version)
     {
         catalogItems[KnownNames.Version] = version;

@@ -22,7 +22,7 @@ namespace Melville.Pdf.Model.Documents
         public async ValueTask<PdfName> VersionAsync() =>
             (await CatalogAsync()).TryGetValue(KnownNames.Version, out var task) &&
                 (await task) is PdfName version?
-                version: KnownNames.Get($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
+                version: NameDirectory.Get($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
 
         public async ValueTask<PageTree> PagesAsync() =>
             new(await (await CatalogAsync()).GetAsync<PdfDictionary>(KnownNames.Pages));

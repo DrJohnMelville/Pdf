@@ -6,6 +6,7 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 
 namespace Melville.Pdf.Model.Documents
@@ -75,7 +76,7 @@ namespace Melville.Pdf.Model.Documents
                 .DefaultIfEmpty(PdfTokenValues.Null)
                 .FirstOrDefaultAsync();
 
-        private static ValueTask<PdfRect?> GetBoxAsync(PdfDictionary item, PdfName name) =>
+        private static ValueTask<PdfRect?> GetSingleBoxAsync(PdfDictionary item, PdfName name) =>
             InheritedPageProperties(item, name)
                 .OfType<PdfArray>()
                 .SelectAwait(PdfRect.CreateAsync)
@@ -86,16 +87,17 @@ namespace Melville.Pdf.Model.Documents
         // In the PDF Spec Version 7.7.3.3 Table 30, only mediabox and cropbpx are inheritable
         // for symmetry we implement them all is inheritable.  This is harmless, because a writer
         // would have no reason to put a noninheritable property anywhere but in the page node.
-        [MacroItem("Crop", "Media")]
-        [MacroItem("Bleed", "Crop")]
-        [MacroItem("Trim", "Crop")]
-        [MacroItem("Art", "Crop")]
-        [MacroCode(@"public static async ValueTask<PdfRect?> Get~0~BoxAsync<T>(this T item)
-        where T : IHasPageAttributes => 
-        (await GetBoxAsync(item.LowLevel, KnownNames.~0~Box))?? await Get~1~BoxAsync(item);
-")]
-        public static ValueTask<PdfRect?> GetMediaBoxAsync<T>(this T item)
-            where T : IHasPageAttributes => GetBoxAsync(item.LowLevel, KnownNames.MediaBox);
+        public static async ValueTask<PdfRect?> GetBoxAsync<T>(this T item, BoxName boxType)
+            where T : IHasPageAttributes => 
+            await GetSingleBoxAsync(item.LowLevel, boxType) ??
+            await item.GetBoxAsync(FallbackBox(boxType));
+
+        private static BoxName FallbackBox(BoxName boxType)
+        {
+            if (boxType == BoxNames.MediaBox) throw new PdfParseException("Media box is required.");
+            if (boxType == BoxNames.CropBox) return BoxNames.MediaBox;
+            return BoxNames.CropBox;
+        }
     }
 
     public readonly struct PdfPageParent : IHasPageAttributes

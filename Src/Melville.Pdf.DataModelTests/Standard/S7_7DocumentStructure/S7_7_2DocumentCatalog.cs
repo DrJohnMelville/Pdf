@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
 using Xunit;
@@ -26,7 +27,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure
             var creator = new PdfDocumentCreator();
             creator.SetVersionInCatalog(3,4);
             var doc = new PdfDocument(creator.CreateDocument());
-            Assert.Equal(KnownNames.Get("3.4"), await doc.VersionAsync());
+            Assert.Equal(NameDirectory.Get("3.4"), await doc.VersionAsync());
         }
     }
 }

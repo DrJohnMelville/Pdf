@@ -14,9 +14,14 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
         // than one item in a bucket we degrade to a linked list.  This also lets us handle
         // synonyms.  We give up type safety to do this.
         private readonly Dictionary<uint, object> store = new();
+
+        public void ForceAdd(in ReadOnlySpan<byte> key, T item)
+        {
+            uint hash = FnvHash.FnvHashAsUint(key);
+            store.Add(hash, item);
+        }
         
         public T GetOrCreate(in ReadOnlySpan<byte> key) => GetOrCreate(key, null);
-        internal T DonateKey(byte[] key) => GetOrCreate(key, key);
         internal T GetOrCreate(in ReadOnlySpan<byte> key, byte[]? keyAsArray)
         {
             var hash = FnvHash.FnvHashAsUint(key);
@@ -92,6 +97,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
 
         protected abstract bool Matches(in ReadOnlySpan<byte> key, T item);
         protected abstract T Create(byte[] key);
+        
         private T Create(ReadOnlySpan<byte> key, byte[]? keyAsArray) => 
             Create(keyAsArray ?? key.ToArray());
     }

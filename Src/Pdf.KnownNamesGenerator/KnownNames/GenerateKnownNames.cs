@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Xml.Schema;
 
 namespace Pdf.KnownNamesGenerator.KnownNames
@@ -14,8 +15,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 namespace Melville.Pdf.LowLevel.Model.Conventions
 {
-    public static partial class KnownNames
-    {
 "+ AllDecls()+@"
     }
 
@@ -26,25 +25,34 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         {
             var sb = new StringBuilder();
             GenerateNameConstants(sb);
+            sb.Append(@"    public static partial class KnownNames
+            {
+                ");
             AddConstantsToDictionary(sb);
             return sb.ToString();
         }
 
         private static void GenerateNameConstants(StringBuilder sb)
         {
-            foreach (var (value, name) in NameDictionary.AddAllNames)
+            foreach (var items in NameDictionary.AddAllNames.GroupBy(i => i.type))
             {
-                sb.Append("        private static readonly PdfName? _");
-                sb.Append(name);
-                sb.AppendLine(";");
-                sb.Append("        public static readonly PdfName ");
-                sb.Append(name);
-                sb.Append(" = _");
-                sb.Append(name);
-                sb.Append(" ??= allKnownNames.GetOrCreate(");
-                WriteStringAsByteArray(sb, value, "stackalloc");
-                sb.Append("); //");
-                sb.AppendLine(value);
+                sb.AppendLine($"      //{items.Key}Names");
+                sb.AppendLine(
+                    $"      public class {items.Key}Name: PdfName {{ internal {items.Key}Name(byte[] name):base(name){{}} }}");
+                sb.AppendLine($"      public static partial class {items.Key}Names {{");
+                foreach (var (name, value, type) in items)
+                {
+                    sb.Append($"        public static readonly {type}Name ");
+                    sb.Append(name);
+                    sb.Append($" = NameDirectory.ForceAdd(new {type}Name(");
+                    WriteStringAsByteArray(sb, value, "new");
+                    sb.Append(")); //");
+                    sb.AppendLine(value);
+                    
+                }
+
+                sb.AppendLine("              public static void EnsureStaticConstructorCalled(){}");
+                sb.AppendLine("          }");
             }
         }
 
@@ -63,12 +71,12 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         private static void AddConstantsToDictionary(StringBuilder sb)
         {
             sb.AppendLine();
-            sb.AppendLine("        public static void AddItemsToDict(NameDictionay dict) ");
+            sb.AppendLine("        public static void AddItemsToDict() ");
             sb.AppendLine("        {");
 
             foreach (var (preferred, synonym) in NameDictionary.Synonyms)
             {
-                sb.Append("            AddSynonym(dict, ");
+                sb.Append("            NameDirectory.AddSynonym(");
                 sb.Append(preferred);
                 sb.Append(", ");
                 WriteStringAsByteArray(sb, synonym, "new");

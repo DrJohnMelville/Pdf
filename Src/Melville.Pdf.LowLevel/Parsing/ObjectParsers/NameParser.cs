@@ -37,7 +37,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
         }
 
         private static PdfName LookupName(in Span<byte> name, int length) => 
-            KnownNames.Get(name[..length]);
+            NameDirectory.Get(name[..length]);
 
         private static bool TrySkipSolidus(ref SequenceReader<byte> bytes)
         {
