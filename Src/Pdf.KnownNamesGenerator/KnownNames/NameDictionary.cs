@@ -2,16 +2,16 @@
 {
     internal static class NameDictionary
     {
-        public static readonly (string preferredName, string synonym)[] Synonyms =
+        public static readonly (string preferredName, string synonym, string Type)[] Synonyms =
         {
-            ("ASCIIHexDecode", "AHx"),
-            ("ASCII85Decode", "A85"),
-            ("LZWDecode", "LZW"),
-            ("FlateDecode", "FL"),
-            ("RunLengthDecode", "RL"),
-            ("CCITTFaxDecode", "CCF"),
-            ("DCTDecode", "DCT"),
-            ("Subtype", "S")
+            ("ASCIIHexDecode", "AHx", "Filter"),
+            ("ASCII85Decode", "A85", "Filter"),
+            ("LZWDecode", "LZW", "Filter"),
+            ("FlateDecode", "FL", "Filter"),
+            ("RunLengthDecode", "RL", "Filter"),
+            ("CCITTFaxDecode", "CCF", "Filter"),
+            ("DCTDecode", "DCT", "Filter"),
+            ("Subtype", "S", "Known")
         };
 
         internal static readonly (string Value, string CSharpName, string type)[] AddAllNames =
@@ -23,14 +23,21 @@
             ("MediaBox", "MediaBox", "Box"),
             ("TrimBox", "TrimBox", "Box"),
             
+            // filters
+            ("ASCII85Decode", "ASCII85Decode", "Filter"),
+            ("ASCIIHexDecode", "ASCIIHexDecode", "Filter"),
+            ("CCITTFaxDecode", "CCITTFaxDecode", "Filter"),
+            ("DCTDecode", "DCTDecode", "Filter"),
+            ("FlateDecode", "FlateDecode", "Filter"),
+            ("LZWDecode", "LZWDecode", "Filter"),
+            ("RunLengthDecode", "RunLengthDecode", "Filter"),
+            
             //Known
             ("AC", "AC", "Known"),
             ("Activation", "Activation", "Known"),
             ("AESV2", "AESV2", "Known"),
             ("AESV3", "AESV3", "Known"),
             ("All", "All", "Known"),
-            ("ASCII85Decode", "ASCII85Decode", "Known"),
-            ("ASCIIHexDecode", "ASCIIHexDecode", "Known"),
             ("AuthEvent", "AuthEvent", "Known"),
             ("BaseFont", "BaseFont", "Known"),
             ("BitsPerComponent", "BitsPerComponent", "Known"),
@@ -39,7 +46,6 @@
             ("C0", "C0", "Known"),
             ("C1", "C1", "Known"),
             ("Catalog", "Catalog", "Known"),
-            ("CCITTFaxDecode", "CCITTFaxDecode", "Known"),
             ("CF", "CF", "Known"),
             ("CFM", "CFM", "Known"),
             ("Colors", "Colors", "Known"),
@@ -48,7 +54,6 @@
             ("Count", "Count", "Known"),
             ("Crypt", "Crypt", "Known"),
             ("CryptFilterDecodeParms", "CryptFilterDecodeParms", "Known"),
-            ("DCTDecode", "DCTDecode", "Known"),
             ("Decode", "Decode", "Known"),
             ("DecodeParms", "DecodeParms", "Known"),
             ("DocOpen", "DocOpen", "Known"),
@@ -59,7 +64,6 @@
             ("Encrypt", "Encrypt", "Known"),
             ("Filter", "Filter", "Known"),
             ("First", "First", "Known"),
-            ("FlateDecode", "FlateDecode", "Known"),
             ("Font", "Font", "Known"),
             ("FormType", "FormType", "Known"),
             ("Functions", "Functions", "Known"),
@@ -77,7 +81,6 @@
             ("LastModified", "LastModified", "Known"),
             ("Length", "Length", "Known"),
             ("Limits", "Limits", "Known"),
-            ("LZWDecode", "LZWDecode", "Known"),
             ("MacRomanEncoding", "MacRomanEncoding", "Known"),
             ("Max", "Max", "Known"),
             ("N", "N", "Known"),
@@ -101,7 +104,6 @@
             ("Range", "Range", "Known"),
             ("Resources", "Resources", "Known"),
             ("Root", "Root", "Known"),
-            ("RunLengthDecode", "RunLengthDecode", "Known"),
             ("Size", "Size", "Known"),
             ("Standard", "Standard", "Known"),
             ("StdCF", "StdCF", "Known"),

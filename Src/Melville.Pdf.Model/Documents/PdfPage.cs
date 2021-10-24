@@ -94,9 +94,9 @@ namespace Melville.Pdf.Model.Documents
 
         private static BoxName FallbackBox(BoxName boxType)
         {
-            if (boxType == BoxNames.MediaBox) throw new PdfParseException("Media box is required.");
-            if (boxType == BoxNames.CropBox) return BoxNames.MediaBox;
-            return BoxNames.CropBox;
+            if (boxType == KnownNames.MediaBox) throw new PdfParseException("Media box is required.");
+            if (boxType == KnownNames.CropBox) return KnownNames.MediaBox;
+            return KnownNames.CropBox;
         }
     }
 

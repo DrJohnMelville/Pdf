@@ -72,17 +72,17 @@ public class S7_7_3_3PageAttributes
         var art = new PdfRect(1,3,5,7);
         var doc = await RoundTripPageWith(i =>
         {
-            i.AddBox(BoxNames.MediaBox, media);
-            i.AddBox(BoxNames.CropBox, crop);
-            i.AddBox(BoxNames.BleedBox, bleed);
-            i.AddBox(BoxNames.TrimBox, trim);
-            i.AddBox(BoxNames.ArtBox, art);
+            i.AddBox(KnownNames.MediaBox, media);
+            i.AddBox(KnownNames.CropBox, crop);
+            i.AddBox(KnownNames.BleedBox, bleed);
+            i.AddBox(KnownNames.TrimBox, trim);
+            i.AddBox(KnownNames.ArtBox, art);
         });
-        Assert.Equal(media, await doc.GetBoxAsync(BoxNames.MediaBox));
-        Assert.Equal(crop, await doc.GetBoxAsync(BoxNames.CropBox));
-        Assert.Equal(bleed, await doc.GetBoxAsync(BoxNames.BleedBox));
-        Assert.Equal(trim, await doc.GetBoxAsync(BoxNames.TrimBox));
-        Assert.Equal(art, await doc.GetBoxAsync(BoxNames.ArtBox));
+        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.MediaBox));
+        Assert.Equal(crop, await doc.GetBoxAsync(KnownNames.CropBox));
+        Assert.Equal(bleed, await doc.GetBoxAsync(KnownNames.BleedBox));
+        Assert.Equal(trim, await doc.GetBoxAsync(KnownNames.TrimBox));
+        Assert.Equal(art, await doc.GetBoxAsync(KnownNames.ArtBox));
     }
     [Fact]
     public async Task IndirectBoxes()
@@ -94,17 +94,17 @@ public class S7_7_3_3PageAttributes
         var art = new PdfRect(1,3,5,7);
         var doc = await RoundTripPageWith(i => { }, i =>
             {
-                i.AddBox(BoxNames.MediaBox, media);
-                i.AddBox(BoxNames.CropBox, crop);
-                i.AddBox(BoxNames.BleedBox, bleed);
-                i.AddBox(BoxNames.TrimBox, trim);
-                i.AddBox(BoxNames.ArtBox, art);
+                i.AddBox(KnownNames.MediaBox, media);
+                i.AddBox(KnownNames.CropBox, crop);
+                i.AddBox(KnownNames.BleedBox, bleed);
+                i.AddBox(KnownNames.TrimBox, trim);
+                i.AddBox(KnownNames.ArtBox, art);
             });
-        Assert.Equal(media, await doc.GetBoxAsync(BoxNames.MediaBox));
-        Assert.Equal(crop, await doc.GetBoxAsync(BoxNames.CropBox));
-        Assert.Equal(bleed, await doc.GetBoxAsync(BoxNames.BleedBox));
-        Assert.Equal(trim, await doc.GetBoxAsync(BoxNames.TrimBox));
-        Assert.Equal(art, await doc.GetBoxAsync(BoxNames.ArtBox));
+        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.MediaBox));
+        Assert.Equal(crop, await doc.GetBoxAsync(KnownNames.CropBox));
+        Assert.Equal(bleed, await doc.GetBoxAsync(KnownNames.BleedBox));
+        Assert.Equal(trim, await doc.GetBoxAsync(KnownNames.TrimBox));
+        Assert.Equal(art, await doc.GetBoxAsync(KnownNames.ArtBox));
     }
     [Fact]
     public async Task BoxDefaults()
@@ -112,13 +112,13 @@ public class S7_7_3_3PageAttributes
         var media = new PdfRect(1, 2, 3, 4);
         var doc = await RoundTripPageWith(i =>
         {
-            i.AddBox(BoxNames.MediaBox, media);
+            i.AddBox(KnownNames.MediaBox, media);
         });
-        Assert.Equal(media, await doc.GetBoxAsync(BoxNames.MediaBox));
-        Assert.Equal(media, await doc.GetBoxAsync(BoxNames.CropBox));
-        Assert.Equal(media, await doc.GetBoxAsync(BoxNames.BleedBox));
-        Assert.Equal(media, await doc.GetBoxAsync(BoxNames.TrimBox));
-        Assert.Equal(media, await doc.GetBoxAsync(BoxNames.ArtBox));
+        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.MediaBox));
+        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.CropBox));
+        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.BleedBox));
+        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.TrimBox));
+        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.ArtBox));
     }
 
     // [Fact]

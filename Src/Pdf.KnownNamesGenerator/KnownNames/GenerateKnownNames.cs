@@ -39,7 +39,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 sb.AppendLine($"      //{items.Key}Names");
                 sb.AppendLine(
                     $"      public class {items.Key}Name: PdfName {{ internal {items.Key}Name(byte[] name):base(name){{}} }}");
-                sb.AppendLine($"      public static partial class {items.Key}Names {{");
+                sb.AppendLine($"      public static partial class KnownNames {{");
                 foreach (var (name, value, type) in items)
                 {
                     sb.Append($"        public static readonly {type}Name ");
@@ -51,7 +51,6 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     
                 }
 
-                sb.AppendLine("              public static void EnsureStaticConstructorCalled(){}");
                 sb.AppendLine("          }");
             }
         }
@@ -74,9 +73,10 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.AppendLine("        public static void AddItemsToDict() ");
             sb.AppendLine("        {");
 
-            foreach (var (preferred, synonym) in NameDictionary.Synonyms)
+            foreach (var (preferred, synonym, type) in NameDictionary.Synonyms)
             {
                 sb.Append("            NameDirectory.AddSynonym(");
+                sb.Append("KnownNames.");
                 sb.Append(preferred);
                 sb.Append(", ");
                 WriteStringAsByteArray(sb, synonym, "new");

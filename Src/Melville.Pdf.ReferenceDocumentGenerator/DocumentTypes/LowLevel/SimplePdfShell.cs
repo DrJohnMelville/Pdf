@@ -41,7 +41,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
 
         public PdfDictionary CreateUnattachedPage(PdfIndirectReference content) => new(
                 (KnownNames.Type, KnownNames.Page),
-                (KnownNames.Parent, PagesParent), (BoxNames.MediaBox, new PdfArray(
+                (KnownNames.Parent, PagesParent), (KnownNames.MediaBox, new PdfArray(
                     new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))),
                 (KnownNames.Contents, content),
                 (KnownNames.Resources,
