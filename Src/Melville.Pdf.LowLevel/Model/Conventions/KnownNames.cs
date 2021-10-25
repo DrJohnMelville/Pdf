@@ -9,6 +9,10 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
     {
         private static readonly NameDictionay allKnownNames = new ();
 
+        static NameDirectory()
+        {
+            KnownNames.ForceInitialization();
+        }
         public static T ForceAdd<T>(T item) where T:PdfName
         {
             allKnownNames.ForceAdd(item.Bytes, item);
@@ -30,12 +34,14 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
     }
     public static partial class KnownNames
     {
-        [ModuleInitializer]
-        internal static void EnsureAllItesDeclared()
+        static KnownNames()
         {
-            // we want to declare all the standard names first to ensure that our simple allocator for subtyped
-            // names does not collide with a parsed version of the same name.
             AddItemsToDict();
+        }
+
+        public static void ForceInitialization()
+        {
+            //calling any method of a static class calls the static constructor if necessary
         }
     }
 }

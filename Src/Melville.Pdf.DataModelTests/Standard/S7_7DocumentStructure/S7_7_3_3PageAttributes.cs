@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
@@ -119,15 +120,31 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.BleedBox));
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.TrimBox));
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.ArtBox));
+        Assert.False(doc.LowLevel.ContainsKey(KnownNames.Contents));
     }
 
     [Fact]
     public async Task AddBuiltinFont()
     {
-        var doc = RoundTripPageWith(i =>
-            i.AddStandardFont("F1", BuiltInFontName.CourierBoldOblique, KnownNames.WinAnsiEncoding));
-        
+        PdfName fontName = KnownNames.Type;
+        var page = await RoundTripPageWith(i =>
+            fontName = i.AddStandardFont("F1", BuiltInFontName.CourierBoldOblique, KnownNames.WinAnsiEncoding));
+        var res = await page.LowLevel.GetAsync<PdfDictionary>(KnownNames.Resources);
+        var fonts = await res.GetAsync<PdfDictionary>(KnownNames.Font);
+        var font = await fonts.GetAsync<PdfDictionary>(fontName);
+        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Type), KnownNames.Font);
+        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Subtype), KnownNames.Type1);
+        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Name), fontName);
+        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Encoding), FontEncodingName.WinAnsiEncoding);  
     }
-    // make a name type for the standard resource types
+
+    [Fact] public async Task LiteratContentStream()
+    {
+        var doc = await RoundTripPageWith(i => i.AddToContentStream("xxyyy"));
+        var stream = await (await doc.LowLevel.GetAsync<PdfStream>(KnownNames.Contents)).StreamContentAsync();
+        var dat = await stream.ReadAsStringAsync();
+        Assert.Equal("xxyyy", dat);
+    }
+    
     
 }
