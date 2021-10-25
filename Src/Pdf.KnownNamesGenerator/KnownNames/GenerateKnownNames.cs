@@ -37,8 +37,11 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             foreach (var items in NameDictionary.AddAllNames.GroupBy(i => i.type))
             {
                 sb.AppendLine($"      //{items.Key}Names");
-                sb.AppendLine(
-                    $"      public class {items.Key}Name: PdfName {{ internal {items.Key}Name(byte[] name):base(name){{}} }}");
+                if (items.Key != "Pdf")
+                {
+                    sb.AppendLine(
+                        $"      public class {items.Key}Name: PdfName {{ internal {items.Key}Name(byte[] name):base(name){{}} }}");
+                }
                 sb.AppendLine($"      public static partial class KnownNames {{");
                 foreach (var (name, value, type) in items)
                 {

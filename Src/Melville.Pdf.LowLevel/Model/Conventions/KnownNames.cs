@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -29,9 +30,11 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
     }
     public static partial class KnownNames
     {
-
-        static KnownNames()
+        [ModuleInitializer]
+        internal static void EnsureAllItesDeclared()
         {
+            // we want to declare all the standard names first to ensure that our simple allocator for subtyped
+            // names does not collide with a parsed version of the same name.
             AddItemsToDict();
         }
     }
