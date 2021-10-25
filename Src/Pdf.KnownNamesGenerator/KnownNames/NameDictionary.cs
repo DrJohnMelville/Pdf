@@ -32,6 +32,29 @@
             ("LZWDecode", "LZWDecode", "Filter"),
             ("RunLengthDecode", "RunLengthDecode", "Filter"),
             
+            //BuiltinFonts
+            ("TimesRoman", "Times-Roman", "BuiltInFont"),
+            ("Helvetica", "Helvetica", "BuiltInFont"),
+            ("Courier", "Courier", "BuiltInFont"),
+            ("Symbol", "Symbol", "BuiltInFont"),
+            ("ZapfDingbats","ZapfDingbats","BuiltInFont"),
+            ("TimesBold", "Times-Bold", "BuiltInFont"),
+            ("HelveticaBold", "Helvetica-Bold", "BuiltInFont"),
+            ("CourierBold", "Courier-Bold", "BuiltInFont"),
+            ("TimesOblique", "Times-Oblique", "BuiltInFont"),
+            ("HelveticaOblique", "Helvetica-Oblique", "BuiltInFont"),
+            ("CourierOblique", "Courier-Oblique", "BuiltInFont"),
+            ("TimesBoldOblique", "Times-BoldOblique", "BuiltInFont"),
+            ("HelveticaBoldOblique", "Helvetica-BoldOblique", "BuiltInFont"),
+            ("CourierBoldOblique", "Courier-BoldOblique", "BuiltInFont"),
+            
+            //Font encodings
+            ("StandardEncoding", "StandardEncoding", "FontEncoding"),
+            ("MacRomanEncoding", "MacRomanEncoding", "FontEncoding"),
+            ("WinAnsiEncoding", "WinAnsiEncoding", "FontEncoding"),
+            ("PdfDocEncoding", "PdfDocEncoding", "FontEncoding"),
+            ("MacExpertEncoding", "MacExpertEncoding", "FontEncoding"),
+            
             //Known
             ("AC", "AC", "Pdf"),
             ("Activation", "Activation", "Pdf"),
@@ -69,7 +92,6 @@
             ("Functions", "Functions", "Pdf"),
             ("FunctionType", "FunctionType", "Pdf"),
             ("Height", "Height", "Pdf"),
-            ("Helvetica", "Helvetica", "Pdf"),
             ("ID", "ID", "Pdf"),
             ("Identity", "Identity", "Pdf"),
             ("Image", "Image", "Pdf"),
@@ -81,7 +103,6 @@
             ("LastModified", "LastModified", "Pdf"),
             ("Length", "Length", "Pdf"),
             ("Limits", "Limits", "Pdf"),
-            ("MacRomanEncoding", "MacRomanEncoding", "Pdf"),
             ("Max", "Max", "Pdf"),
             ("N", "N", "Pdf"),
             ("Name", "Name", "Pdf"),

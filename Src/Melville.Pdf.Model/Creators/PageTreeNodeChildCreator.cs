@@ -42,4 +42,21 @@ public abstract class PageTreeNodeChildCreator
         Resources[(KnownNames.XObject, name)] = obj;
 
     public void AddBox(BoxName name, in PdfRect rect) => MetaData.Add(name, rect.ToPdfArray);
+
+    public PdfName AddStandardFont(
+        string assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
+        AddStandardFont(NameDirectory.Get(assignedName), baseFont, encoding);
+    public PdfName AddStandardFont(
+        PdfName assignedName, BuiltInFontName baseFont, FontEncodingName encoding)
+    {
+        Resources[(KnownNames.Font, assignedName)] = new PdfDictionary(new Dictionary<PdfName, PdfObject>
+        {
+            { KnownNames.Type, KnownNames.Font },
+            { KnownNames.Subtype, KnownNames.Type1 },
+            { KnownNames.Name, assignedName },
+            { KnownNames.BaseFont, baseFont },
+            { KnownNames.Encoding, encoding }
+        });
+        return assignedName;
+    }
 }

@@ -40,7 +40,13 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 if (items.Key != "Pdf")
                 {
                     sb.AppendLine(
-                        $"      public class {items.Key}Name: PdfName {{ internal {items.Key}Name(byte[] name):base(name){{}} }}");
+                        $"      public class {items.Key}Name: PdfName {{ internal {items.Key}Name(byte[] name):base(name){{ }} ");
+                    foreach (var (name, value,type) in items)
+                    {
+                        sb.AppendLine($"        public static {type}Name {name} => KnownNames.{name};");
+                    }
+                    sb.AppendLine(
+                        "      }");
                 }
                 sb.AppendLine($"      public static partial class KnownNames {{");
                 foreach (var (name, value, type) in items)

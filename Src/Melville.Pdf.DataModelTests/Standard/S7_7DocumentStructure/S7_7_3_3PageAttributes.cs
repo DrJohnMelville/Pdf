@@ -114,17 +114,20 @@ public class S7_7_3_3PageAttributes
         {
             i.AddBox(KnownNames.MediaBox, media);
         });
-        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.MediaBox));
-        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.CropBox));
-        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.BleedBox));
-        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.TrimBox));
-        Assert.Equal(media, await doc.GetBoxAsync(KnownNames.ArtBox));
+        Assert.Equal(media, await doc.GetBoxAsync(BoxName.MediaBox));
+        Assert.Equal(media, await doc.GetBoxAsync(BoxName.CropBox));
+        Assert.Equal(media, await doc.GetBoxAsync(BoxName.BleedBox));
+        Assert.Equal(media, await doc.GetBoxAsync(BoxName.TrimBox));
+        Assert.Equal(media, await doc.GetBoxAsync(BoxName.ArtBox));
     }
 
-    // [Fact]
-    // public async Task AddBuiltinFont()
-    // {
-    //     var doc = RoundTripPageWith(i=>i.DeclareBuiltInFont("F1"))
-    // }
+    [Fact]
+    public async Task AddBuiltinFont()
+    {
+        var doc = RoundTripPageWith(i =>
+            i.AddStandardFont("F1", BuiltInFontName.CourierBoldOblique, KnownNames.WinAnsiEncoding));
+        
+    }
+    // make a name type for the standard resource types
     
 }
