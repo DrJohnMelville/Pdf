@@ -145,6 +145,4 @@ public class S7_7_3_3PageAttributes
         var dat = await stream.ReadAsStringAsync();
         Assert.Equal("xxyyy", dat);
     }
-    
-    
 }

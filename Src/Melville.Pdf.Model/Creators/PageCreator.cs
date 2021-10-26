@@ -42,8 +42,8 @@ public class PageCreator: PageTreeNodeChildCreator
             ? CreateStreamSegment(creator, streamSegments[0])
             : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i)));
 
-    private PdfStream CreateStreamSegment(ILowLevelDocumentCreator creator, StreamDataSource source) => 
-        creator.NewCompressedStream(source, KnownNames.FlateDecode);
+    private PdfIndirectReference CreateStreamSegment(ILowLevelDocumentCreator creator, StreamDataSource source) => 
+        creator.Add(creator.NewCompressedStream(source, KnownNames.FlateDecode));
 
     public void AddLastModifiedTime(PdfTime dateAndTime) => 
         MetaData.Add(KnownNames.LastModified, PdfString.CreateDate(dateAndTime));
