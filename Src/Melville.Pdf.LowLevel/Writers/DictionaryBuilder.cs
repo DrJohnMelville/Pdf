@@ -22,15 +22,7 @@ namespace Melville.Pdf.LowLevel.Writers
             attributes.Add(name, value);
             return this;
         }
-
-        public DictionaryBuilder WithFilter(FilterName? filter) => WithItem(KnownNames.Filter, filter);
-        public DictionaryBuilder WithFilter(params FilterName[] filters) => 
-            WithItem(KnownNames.Filter, new PdfArray((IReadOnlyList<FilterName>)filters));
-        public DictionaryBuilder WithFilterParam(PdfObject? param) =>
-            WithItem(KnownNames.DecodeParms, param);
-        public DictionaryBuilder WithFilterParam(params PdfObject[] param) =>
-            WithItem(KnownNames.DecodeParms, new PdfArray(param));
-
+        
         public DictionaryBuilder WithMultiItem(IEnumerable<KeyValuePair<PdfName, PdfObject>> items) => 
             items.Aggregate(this, (agg, item) => agg.WithItem(item.Key, item.Value));
 

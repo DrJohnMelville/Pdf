@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects
 {
-    public partial class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>
+    public class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>
     {
         public IReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
 
