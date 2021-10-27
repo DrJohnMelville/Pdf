@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
@@ -51,7 +52,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         
         public PdfDictionary CreateUnattachedPage(StreamDataSource source) =>
             CreateUnattachedPage(
-                Creator.Add(Creator.NewCompressedStream(source, KnownNames.FlateDecode)));
+                Creator.Add(source.AsStream()));
 
         public void CreateAttachedPage(StreamDataSource source)
         {

@@ -15,21 +15,22 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 {
     public static class ObjectStreamCreation
     {
-        public static  ValueTask<PdfStream> NewObjectStream(this ILowLevelDocumentBuilder? builder,
-            params PdfIndirectReference[] objectRefs) => 
-            builder.NewObjectStream(objectRefs, KnownNames.FlateDecode, PdfTokenValues.Null);
-        public static async ValueTask<PdfStream> NewObjectStream(this ILowLevelDocumentBuilder? builder,
-            IEnumerable<PdfIndirectReference> objectRefs, PdfObject encoding, PdfObject? parameters = null,
+        public static  ValueTask<PdfStream> NewObjectStream(params PdfIndirectReference[] objectRefs) => 
+            NewObjectStream(objectRefs, KnownNames.FlateDecode, PdfTokenValues.Null);
+        
+        public static async ValueTask<PdfStream> NewObjectStream(
+            IEnumerable<PdfIndirectReference> objectRefs, FilterName? encoding, PdfObject? parameters = null,
             params (PdfName Name, PdfObject Value)[] items)
         {
             var contentStreamInfo = await CreateContentStream(objectRefs);
-            return builder.NewCompressedStream(contentStreamInfo.Data, encoding, parameters,
-                items.Concat(new (PdfName, PdfObject)[]
-                {
-                    (KnownNames.Type, KnownNames.ObjStm),
-                    (KnownNames.N, new PdfInteger(contentStreamInfo.N)),
-                    (KnownNames.First, new PdfInteger(contentStreamInfo.First))
-                }));
+
+            return new StreamDataSource(contentStreamInfo.Data)
+                .WithFilter(encoding)
+                .WithFilterParam(parameters)
+                .WithItem(KnownNames.Type, KnownNames.ObjStm)
+                .WithItem(KnownNames.N, new PdfInteger(contentStreamInfo.N))
+                .WithItem(KnownNames.First, new PdfInteger(contentStreamInfo.First))
+                .AsStream();
         }
 
         private static async ValueTask<ObjectStringInfo> CreateContentStream(IEnumerable<PdfIndirectReference> objectRefs)

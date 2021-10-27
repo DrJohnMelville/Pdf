@@ -4,6 +4,7 @@ using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
@@ -140,7 +141,7 @@ public class S7_7_3_3PageAttributes
 
     [Fact] public async Task LiteratContentStream()
     {
-        var doc = await RoundTripPageWith(i => i.AddToContentStream("xxyyy"));
+        var doc = await RoundTripPageWith(i => i.AddToContentStream(new StreamDataSource("xxyyy")));
         var stream = await (await doc.LowLevel.GetAsync<PdfStream>(KnownNames.Contents)).StreamContentAsync();
         var dat = await stream.ReadAsStringAsync();
         Assert.Equal("xxyyy", dat);

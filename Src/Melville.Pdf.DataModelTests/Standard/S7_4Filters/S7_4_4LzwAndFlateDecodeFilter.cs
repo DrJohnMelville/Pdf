@@ -6,6 +6,7 @@ using Melville.INPC;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -38,8 +39,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             {
                 {KnownNames.EarlyChange, new PdfInteger(EarlySwitch)}
             });
-            var str = creator.NewCompressedStream(buffer, KnownNames.LZWDecode,
-                EarlySwitch < 2? param:null);
+            var str = new StreamDataSource(buffer)
+                .WithFilter(FilterName.LZWDecode)
+                .WithFilterParam(EarlySwitch < 2 ? param : null)
+                .AsStream();
             var destination = new byte[length];
             var decoded = await str.StreamContentAsync();
             await decoded.FillBufferAsync(destination, 0, length);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
@@ -30,7 +31,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.HighLevel
                 content.Append($"BT\n{font} 24 Tf\n 100 {ypos} Td\n (This is {font}) Tj\nET\n");
                 ypos -= 25;
             }
-            p1.AddToContentStream(content.ToString());
+            p1.AddToContentStream(new StreamDataSource(content.ToString()));
             return new(creator.CreateDocument().WriteToAsync(target));
         }
 

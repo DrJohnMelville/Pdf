@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.LowLevelReader.DocumentParts;
@@ -43,8 +44,8 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
             var trailerNode = model.Last();
             Assert.Equal("Trailer: Dictionary", trailerNode.Title);
             Assert.Equal(2, trailerNode.Children.Count);
-            Assert.Equal("/Size: 4", trailerNode.Children[1].Title);
-            Assert.Equal("/Root: 3 0 R", trailerNode.Children[0].Title);
+            Assert.Equal("/Size: 5", trailerNode.Children[1].Title);
+            Assert.Equal("/Root: 4 0 R", trailerNode.Children[0].Title);
         }
 
         [Fact]
@@ -53,8 +54,8 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
             var model = await sut.ParseAsync(
                 await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
                 waitingService.Object);
-            waitingService.Verify(i=>i.WaitBlock("Loading File", 4, false), Times.Once);
-            waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(4));
+            waitingService.Verify(i=>i.WaitBlock("Loading File", 5, false), Times.Once);
+            waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(5));
             waitingService.VerifyNoOtherCalls();
         }
 
@@ -73,7 +74,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         public async Task ParseSteam()
         {
             var model = await BuildSingleElementFile(i=>
-                i.NewStream("The Stream Data", (KnownNames.Type, KnownNames.Page)));
+                new StreamDataSource("The Stream Data").WithItem(KnownNames.Type, KnownNames.Page).AsStream());
             var stream = (StreamDocumentPart)model[2].Children[0];
             await stream.LoadBytesAsync();
             Assert.Equal("Stream", stream.Title);

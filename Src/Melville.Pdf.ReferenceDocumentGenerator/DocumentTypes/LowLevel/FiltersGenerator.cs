@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
@@ -52,15 +53,15 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             return builder.Creator;
         }
 
-        private static void CreatePage(PdfCreator builder, string Text, PdfName encoding,
+        private static void CreatePage(PdfCreator builder, string Text, FilterName encoding,
             PdfObject? parameters = null)
         {
             builder.AddPageToPagesCollection(builder.Creator.Add(
-                builder.CreateUnattachedPage(builder.Creator.Add( builder.Creator.NewCompressedStream(
-                    $"BT\n/F1 24 Tf\n100 100 Td\n(({Text})) Tj\nET\n",
-                    encoding,  parameters
+                builder.CreateUnattachedPage(builder.Creator.Add( new StreamDataSource(
+                    $"BT\n/F1 24 Tf\n100 100 Td\n(({Text})) Tj\nET\n")
+                    .WithFilter(encoding).WithFilterParam(parameters).AsStream()
                 )))
-            ));
+            );
         }
 
         private static void PredictionPage(

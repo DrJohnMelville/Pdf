@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
@@ -60,8 +61,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         public async Task DocumentWithStream()
         {
             var builder = new LowLevelDocumentCreator();
-            builder.AddRootElement(builder.NewStream("Stream data", 
-                (KnownNames.Type, KnownNames.Image)));
+            builder.AddRootElement(new StreamDataSource("Stream data")
+                    .WithItem(KnownNames.Type, KnownNames.Image).AsStream());
             var doc = builder.CreateDocument();
             var serialized = await Write(doc);
             Assert.Contains("Stream data", serialized);

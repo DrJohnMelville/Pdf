@@ -16,6 +16,13 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public byte[] UserPassword { get; set; }
     }
 
+    public static class LowLevelDocumentBuilderOperations
+    {
+        public static void AddRootElement(
+            this ILowLevelDocumentBuilder creator, PdfDictionary rootElt) =>
+            creator.AddToTrailerDictionary(KnownNames.Root, creator.Add(rootElt));
+    }
+
     public static class BuildEncryptedDocument
     {
         public static void AddEncryption(

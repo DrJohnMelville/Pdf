@@ -46,8 +46,11 @@ namespace Melville.Pdf.LowLevel.Model.Objects
             items.Where(NotAnEmptyObject);
 
         private static bool NotAnEmptyObject((PdfName Name, PdfObject Value) arg) =>
-            !(arg.Value == PdfTokenValues.Null ||
-              arg.Value is PdfArray { Count: 0 } ||
-              arg.Value is PdfDictionary { Count: 0 });
+            !IsEmptyObject(arg.Value);
+
+        public static bool IsEmptyObject(this PdfObject value) =>
+            value == PdfTokenValues.Null ||
+            value is PdfArray { Count: 0 } ||
+            value is PdfDictionary { Count: 0 };
     }
 }

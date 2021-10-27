@@ -3,6 +3,7 @@ using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -30,11 +31,17 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         private PdfStream InsertedStream(
             LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream)
         {
-            return cryptFilterTypeForStream == null? creator.NewStream("plaintext stream"):
-                     creator.NewCompressedStream("plaintext stream", KnownNames.Crypt,
-                        new PdfDictionary(
-                            (KnownNames.Type, KnownNames.CryptFilterDecodeParms),
-                            (KnownNames.Name, cryptFilterTypeForStream)));
+            var builder = new StreamDataSource("plaintext stream");
+            if (cryptFilterTypeForStream != null)
+            {
+                builder = builder
+                    .WithFilter(FilterName.Crypt)
+                    .WithFilterParam(new PdfDictionary(
+                    (KnownNames.Type, KnownNames.CryptFilterDecodeParms),
+                    (KnownNames.Name, cryptFilterTypeForStream)));
+            }
+
+            return builder.AsStream();
         }
 
         [Theory]

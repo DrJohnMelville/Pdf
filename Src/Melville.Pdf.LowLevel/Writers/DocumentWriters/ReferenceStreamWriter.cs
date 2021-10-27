@@ -46,27 +46,20 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
         {
             var data = new MultiBufferStream(2048);
             await GenerateXrefStreamAsync(data);
-            
-            return LowLevelDocumentBuilderOperations.NewCompressedStream(
-                null, data.CreateReader(), KnownNames.FlateDecode,
-                new PdfDictionary(
-                          (KnownNames.Predictor, new PdfInteger(12)),
-                          (KnownNames.Columns, 
-                              new PdfInteger(columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3))
-                        )
-                , DictionaryItems());
+
+            return new StreamDataSource(data)
+                .WithMultiItem(document.TrailerDictionary.RawItems.Where(i => i.Key != KnownNames.Size))
+                .WithItem(KnownNames.Type, KnownNames.XRef)
+                .WithItem(KnownNames.W, WidthsAsArray())
+                .WithItem(KnownNames.Size, new PdfInteger(objectOffsets.Entries.Length))
+                .WithFilter(FilterName.FlateDecode)
+                .WithFilterParam(FilterParam())
+                .AsStream();
         }
-        
-        private IEnumerable<(PdfName, PdfObject)> DictionaryItems() =>
-            document.TrailerDictionary.RawItems
-                .Where(i=>i.Key != KnownNames.Size)
-                .Select(i=>(i.Key, i.Value))
-                .Concat(new (PdfName, PdfObject)[]
-                {
-                    (KnownNames.Type, KnownNames.XRef),
-                    (KnownNames.W, WidthsAsArray()),
-                    (KnownNames.Size, new PdfInteger(objectOffsets.Entries.Length))
-                });
+
+        private PdfDictionary FilterParam() => new
+            ((KnownNames.Predictor, new PdfInteger(12)),
+            (KnownNames.Columns, new PdfInteger(columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)));
 
         private PdfObject WidthsAsArray() =>
             new PdfArray(

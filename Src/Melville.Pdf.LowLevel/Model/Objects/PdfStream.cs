@@ -19,7 +19,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         Stream WrapStreamWithDecryptor(Stream encryptedStream);
         StreamFormat SourceFormat { get; }
     }
-
+    
     public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     {
         private IStreamDataSource source;

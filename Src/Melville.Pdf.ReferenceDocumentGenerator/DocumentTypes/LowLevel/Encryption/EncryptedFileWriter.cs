@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
@@ -19,7 +20,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encrypt
         { 
             var builder = new PdfCreator(1, 7);
             builder.Creator.AddEncryption(encryptor);
-            builder.CreateAttachedPage($"BT\n/F1 12 Tf\n100 100 Td\n({HelpText}) Tj\nET\n");
+            builder.CreateAttachedPage(new StreamDataSource($"BT\n/F1 12 Tf\n100 100 Td\n({HelpText}) Tj\nET\n"));
             builder.FinalizePages();
             await WriteFile(target, builder);
         }

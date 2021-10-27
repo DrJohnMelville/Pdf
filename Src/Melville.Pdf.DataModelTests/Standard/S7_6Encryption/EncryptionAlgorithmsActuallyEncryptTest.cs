@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
@@ -46,7 +47,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             var creator = new LowLevelDocumentCreator(docBuilder);
 
             docBuilder.Add(PdfString.CreateAscii("Encrypted String"));
-            docBuilder.Add(docBuilder.NewStream("This is an encrypted stream"));
+            docBuilder.Add(new StreamDataSource("This is an encrypted stream").AsStream());
             var doc = creator.CreateDocument();
             var str = await Write(doc);
             Assert.DoesNotContain("Encrypted String", str);

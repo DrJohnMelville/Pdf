@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
@@ -39,11 +40,11 @@ public class PageCreator: PageTreeNodeChildCreator
     private PdfObject CreateContents(ILowLevelDocumentCreator creator) =>
 
         streamSegments.Count == 1
-            ? CreateStreamSegment(creator, streamSegments[0])
-            : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i)));
+            ? CreateStreamSegment(creator, streamSegments[0].AsStream())
+            : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i.AsStream())));
 
-    private PdfIndirectReference CreateStreamSegment(ILowLevelDocumentCreator creator, StreamDataSource source) => 
-        creator.Add(creator.NewCompressedStream(source, KnownNames.FlateDecode));
+    private PdfIndirectReference CreateStreamSegment(ILowLevelDocumentCreator creator, PdfStream stream) => 
+        creator.Add(stream);
 
     public void AddLastModifiedTime(PdfTime dateAndTime) => 
         MetaData.Add(KnownNames.LastModified, PdfString.CreateDate(dateAndTime));

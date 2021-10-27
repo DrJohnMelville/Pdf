@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
@@ -7,6 +8,7 @@ using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
@@ -44,8 +46,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var creator = new LowLevelDocumentCreator();
             return Assert.ThrowsAsync<InvalidOperationException>(() =>
-                creator.NewObjectStream(creator.AsIndirectReference(
-                    creator.NewStream("Hello"))).AsTask()
+                ObjectStreamCreation.NewObjectStream(creator.AsIndirectReference(
+                    new StreamDataSource("Hello").AsStream())).AsTask()
             );
         }
         [Fact]
@@ -53,27 +55,27 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var creator = new LowLevelDocumentCreator();
             return Assert.ThrowsAsync<InvalidOperationException>(() =>
-                creator.NewObjectStream(new PdfIndirectReference(new PdfIndirectObject(12,1, KnownNames.All))).AsTask()
+                ObjectStreamCreation.NewObjectStream(new PdfIndirectReference(new PdfIndirectObject(12,1, KnownNames.All))).AsTask()
             );
         }
         
         private static async Task<string> DocWithObjectStream()
         {
             var builder = new LowLevelDocumentCreator();
-            builder.Add(await builder.NewObjectStream( new []{
+            builder.Add(await ObjectStreamCreation.NewObjectStream( new []{
             builder.AsIndirectReference(PdfString.CreateAscii("One")),
                 builder.AsIndirectReference(PdfString.CreateAscii("Two"))
-            }, PdfTokenValues.Null));
+            }, null));
             var fileAsString = await DocCreatorToString(builder);
             return fileAsString;
         }
         private static async Task<string> DocWithObjectStreamWithHighObjectNumber()
         {
             var builder = new LowLevelDocumentCreator();
-            builder.Add(await builder.NewObjectStream( new []{
+            builder.Add(await ObjectStreamCreation.NewObjectStream( new []{
             builder.AsIndirectReference(PdfString.CreateAscii("One")),
                 new PdfIndirectReference(new PdfIndirectObject(20,0, PdfString.CreateAscii("Two")))
-            }, PdfTokenValues.Null));
+            }.AsEnumerable(), null));
             var fileAsString = await DocCreatorToString(builder);
             return fileAsString;
         }
@@ -91,7 +93,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         public async Task ExtractIncludedObjectReferences()
         {
             var builder = new LowLevelDocumentCreator();
-            var str = await builder.NewObjectStream( new []{
+            var str = await ObjectStreamCreation.NewObjectStream( new []{
                 builder.AsIndirectReference(PdfString.CreateAscii("One")),
                 builder.AsIndirectReference(PdfString.CreateAscii("Two"))
             });
