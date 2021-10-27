@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
-using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder
@@ -19,8 +17,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             NewObjectStream(objectRefs, KnownNames.FlateDecode, PdfTokenValues.Null);
         
         public static async ValueTask<PdfStream> NewObjectStream(
-            IEnumerable<PdfIndirectReference> objectRefs, FilterName? encoding, PdfObject? parameters = null,
-            params (PdfName Name, PdfObject Value)[] items)
+            IEnumerable<PdfIndirectReference> objectRefs, FilterName? encoding, PdfObject? parameters = null)
         {
             var contentStreamInfo = await CreateContentStream(objectRefs);
 
@@ -33,7 +30,8 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
                 .AsStream(contentStreamInfo.Data);
         }
 
-        private static async ValueTask<ObjectStringInfo> CreateContentStream(IEnumerable<PdfIndirectReference> objectRefs)
+        private static async ValueTask<ObjectStringInfo> CreateContentStream(
+            IEnumerable<PdfIndirectReference> objectRefs)
         {
             int n = 0;
             var refs = new MultiBufferStream();

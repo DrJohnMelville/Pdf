@@ -49,13 +49,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures
         [InlineData("akh")]
         [InlineData("a\u2014b")]
         public async Task TextStreamTest(string text)
-        { 
-            var utf = new PdfStream(new LiteralStreamSource(
-                PdfString.CreateUtf16(text).Bytes, StreamFormat.PlainText));
+        {
+            var utf = new DictionaryBuilder().AsStream(PdfString.CreateUtf16(text).Bytes);
             Assert.Equal(text, await (await utf.TextStreamReader()).ReadToEndAsync());
             
-            var pdfEnc = new PdfStream(new LiteralStreamSource(
-                PdfString.CreatePdfEncoding(text).Bytes, StreamFormat.PlainText));
+            var pdfEnc = new DictionaryBuilder().AsStream(PdfString.CreatePdfEncoding(text).Bytes);
             Assert.Equal(text, await (await pdfEnc.TextStreamReader()).ReadToEndAsync());
             
         }

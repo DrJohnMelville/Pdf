@@ -16,17 +16,14 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public void AddArgument(ClosedInterval domain) => domains.Add(domain);
         public void AddOutput(ClosedInterval range) => ranges.Add(range);
 
-        public PdfStream Create(string code, params (PdfName, PdfObject)[] members) =>
-            new(new LiteralStreamSource(code, StreamFormat.PlainText),
-                members.Concat(FunctionItems()).StripTrivialItems());
+        public PdfStream Create(string code) => Create(code, new DictionaryBuilder());
+        public PdfStream Create(string code, DictionaryBuilder members) =>
+            AddFunctionItems(members).AsStream(code);
 
-        private (PdfName, PdfObject)[] FunctionItems()
-        {
-            return new(PdfName, PdfObject)[]
-            {
-                (KnownNames.FunctionType, new PdfInteger(4)),
-                (KnownNames.Domain, domains.AsPdfArray()),
-                (KnownNames.Range, ranges.AsPdfArray()), };
-        }
+        private DictionaryBuilder AddFunctionItems(in DictionaryBuilder builder) =>
+            builder
+                .WithItem(KnownNames.FunctionType, new PdfInteger(4))
+                .WithItem(KnownNames.Domain, domains.AsPdfArray())
+                .WithItem(KnownNames.Range, ranges.AsPdfArray());
     }
 }

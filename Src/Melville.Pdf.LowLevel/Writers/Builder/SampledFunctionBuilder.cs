@@ -67,18 +67,16 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         public void AddOutput(SampledFunctionOutput sfo) => outputs.Add(sfo);
 
 
-        private IEnumerable<(PdfName, PdfObject)> DictionaryEntries() =>
-            new (PdfName, PdfObject)[]
-            {
-                (KnownNames.FunctionType, new PdfInteger(0)),
-                (KnownNames.Domain, inputs.Select(i=>i.Domain).AsPdfArray(inputs.Count)),
-                (KnownNames.Range, outputs.Select(i=>i.Range).AsPdfArray(outputs.Count)),
-                (KnownNames.Size, SizeArray()),
-                (KnownNames.BitsPerSample, new PdfInteger(bitsPerSample)),
-                (KnownNames.Order, OrderIfNotLinear()),
-                (KnownNames.Encode, EncodeArray()),
-                (KnownNames.Decode, DecodeArray()),
-            };
+        private DictionaryBuilder DictionaryEntries(in DictionaryBuilder members) =>
+            members
+                .WithItem(KnownNames.FunctionType, new PdfInteger(0))
+                .WithItem(KnownNames.Domain, inputs.Select(i => i.Domain).AsPdfArray(inputs.Count))
+                .WithItem(KnownNames.Range, outputs.Select(i => i.Range).AsPdfArray(outputs.Count))
+                .WithItem(KnownNames.Size, SizeArray())
+                .WithItem(KnownNames.BitsPerSample, new PdfInteger(bitsPerSample))
+                .WithItem(KnownNames.Order, OrderIfNotLinear())
+                .WithItem(KnownNames.Encode, EncodeArray())
+                .WithItem(KnownNames.Decode, DecodeArray());
 
         private PdfArray SizeArray() => new(inputs.Select(i=>new PdfInteger(i.Sammples)).ToList());
 
@@ -146,9 +144,10 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             bitStreamWriter.Write(clipped);
         }
 
-        public async ValueTask<PdfStream> CreateSampledFunction(
-            params (PdfName, PdfObject)[] members) =>
-            new(new LiteralStreamSource(await SamplesStream(), StreamFormat.PlainText),
-                members.Concat(DictionaryEntries()).StripTrivialItems());
+        public ValueTask<PdfStream> CreateSampledFunction() =>
+            CreateSampledFunction(new DictionaryBuilder());
+
+        public async ValueTask<PdfStream> CreateSampledFunction(DictionaryBuilder members) =>
+            DictionaryEntries(members).AsStream(await SamplesStream());
     }
 }

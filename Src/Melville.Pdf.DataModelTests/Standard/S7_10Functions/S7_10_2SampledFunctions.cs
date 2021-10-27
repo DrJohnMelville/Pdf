@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -17,9 +18,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             var builder = new SampledFunctionBuilder(8, SampledFunctionOrder.Cubic);
             builder.AddInput(12, (1, 10), (1, 10));
             builder.AddOutput(x => 5 * x, (5, 50), (5, 50));
-            var members = new (PdfName, PdfObject)[] { (KnownNames.Filter, KnownNames.ASCIIHexDecode) };
-            var str = await builder.CreateSampledFunction(members);
-            return str;
+            return await builder.CreateSampledFunction(new DictionaryBuilder().WithFilter(FilterName.ASCIIHexDecode));
         }
 
         [Fact]

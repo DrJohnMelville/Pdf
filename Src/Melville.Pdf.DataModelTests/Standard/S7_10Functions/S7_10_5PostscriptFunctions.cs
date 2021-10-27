@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -23,7 +24,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
             var builder = new PostscriptFunctionBuilder();
             builder.AddArgument((0,10));
             builder.AddOutput((0,20));
-            var dict = builder.Create("2 mul", (KnownNames.Decode, KnownNames.FlateDecode));
+            var dict = builder.Create("2 mul", 
+                new DictionaryBuilder().WithItem(KnownNames.Decode, KnownNames.FlateDecode));
             Assert.Equal(KnownNames.FlateDecode, await dict.GetAsync<PdfName>(KnownNames.Decode));
             await dict.VerifyNumber(KnownNames.FunctionType, 4);
             await dict.VerifyPdfDoubleArray(KnownNames.Domain, 0, 10);

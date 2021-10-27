@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -71,9 +72,12 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
             return new PdfStream(TrySingleCharSource(new LiteralStreamSource(
                     new MultiBufferStream(dest.AsExtendedAsciiBytes()),
                     StreamFormat.DiskRepresentation), singleCharStream),
-                (KnownNames.Length, new PdfInteger(dest.Length)),
-                (KnownNames.Filter, compression),
-                (KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null)
+                new Dictionary<PdfName, PdfObject>()
+                    {
+                        {KnownNames.Length, new PdfInteger(dest.Length)},
+                        {KnownNames.Filter, compression},
+                        {KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null}
+                    }
             );
         }
 

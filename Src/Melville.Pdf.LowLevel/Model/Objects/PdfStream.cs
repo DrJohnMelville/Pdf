@@ -26,17 +26,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         {
             this.source = source;
         }
-        
-        public PdfStream(IStreamDataSource source, params (PdfName, PdfObject)[] items) : 
-            this(source, PairsToDictionary(items))
-        {
-        }
 
-        public PdfStream(IStreamDataSource source, IEnumerable<(PdfName, PdfObject)> items): 
-            this(source, PairsToDictionary(items))
-        {
-        }
-        
         public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
         private async ValueTask<Stream> SourceStreamAsync() => 
