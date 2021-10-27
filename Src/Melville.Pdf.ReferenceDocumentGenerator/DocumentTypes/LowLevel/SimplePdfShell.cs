@@ -28,27 +28,32 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             PagesParent = Creator.AsIndirectReference();
             defaultProcSet = new LazyPdfObject(Creator, () => new PdfArray(KnownNames.PDF));
             defaultFont = new LazyPdfObject(Creator, () => 
-                new PdfDictionary(
-                    (KnownNames.Type, KnownNames.Font ), 
-                    (KnownNames.Subtype, KnownNames.Type1), 
-                    (KnownNames.Name, new PdfName("F1")), 
-                    (KnownNames.BaseFont, KnownNames.Helvetica), 
-                    (KnownNames.Encoding, KnownNames.MacRomanEncoding))
-            );
+                new DictionaryBuilder()
+                    .WithItem(KnownNames.Type, KnownNames.Font ) 
+                    .WithItem(KnownNames.Subtype, KnownNames.Type1) 
+                    .WithItem(KnownNames.Name, new PdfName("F1")) 
+                    .WithItem(KnownNames.BaseFont, KnownNames.Helvetica) 
+                    .WithItem(KnownNames.Encoding, KnownNames.MacRomanEncoding)
+                    .AsDictionary()
+                );
         }
 
         public void AddPageToPagesCollection(PdfObject page) => 
             pages.Add(Creator.AsIndirectReference(page));
 
-        public PdfDictionary CreateUnattachedPage(PdfIndirectReference content) => new(
-                (KnownNames.Type, KnownNames.Page),
-                (KnownNames.Parent, PagesParent), (KnownNames.MediaBox, new PdfArray(
-                    new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792))),
-                (KnownNames.Contents, content),
-                (KnownNames.Resources,
-                    new PdfDictionary(
-                        (KnownNames.Font, new PdfDictionary((new PdfName("F1"), DefaultFont))),
-                        (KnownNames.ProcSet, DefaultProcSet))));
+        public PdfDictionary CreateUnattachedPage(PdfIndirectReference content) => new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Page)
+            .WithItem(KnownNames.Parent, PagesParent)
+            .WithItem(KnownNames.MediaBox, 
+                new PdfArray(new PdfInteger(0), new PdfInteger(0), new PdfInteger(612), new PdfInteger(792)))
+            .WithItem(KnownNames.Contents, content)
+            .WithItem(KnownNames.Resources,
+                    new DictionaryBuilder()
+                        .WithItem(KnownNames.Font, 
+                            new DictionaryBuilder().WithItem(new PdfName("F1"), DefaultFont).AsDictionary())
+                        .WithItem(KnownNames.ProcSet, DefaultProcSet)
+                        .AsDictionary())
+            .AsDictionary();
         
         public PdfDictionary CreateUnattachedPage(PdfStream source) =>
             CreateUnattachedPage(
@@ -64,9 +69,20 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
         {
             AddDefaultObjects();
             var catalog = Creator.AsIndirectReference();
-            var outlines = Creator.AsIndirectReference(new PdfDictionary((KnownNames.Type, KnownNames.Outlines), (KnownNames.Count, new PdfInteger(0))));
-            Creator.AssignValueToReference(PagesParent, new PdfDictionary((KnownNames.Type, KnownNames.Pages), (KnownNames.Kids, new PdfArray(pages)), (KnownNames.Count, new PdfInteger(pages.Count))));
-            Creator.AssignValueToReference(catalog, new PdfDictionary((KnownNames.Type, KnownNames.Catalog), (KnownNames.Outlines, outlines), (KnownNames.Pages,  PagesParent)));
+            var outlines = Creator.AsIndirectReference(new DictionaryBuilder()
+                .WithItem(KnownNames.Type, KnownNames.Outlines)
+                .WithItem(KnownNames.Count, new PdfInteger(0))
+                .AsDictionary());
+            Creator.AssignValueToReference(PagesParent, new DictionaryBuilder()
+                .WithItem(KnownNames.Type, KnownNames.Pages)
+                .WithItem(KnownNames.Kids, new PdfArray(pages))
+                .WithItem(KnownNames.Count, new PdfInteger(pages.Count))
+                .AsDictionary());
+            Creator.AssignValueToReference(catalog, new DictionaryBuilder()
+                .WithItem(KnownNames.Type, KnownNames.Catalog)
+                .WithItem(KnownNames.Outlines, outlines)
+                .WithItem(KnownNames.Pages,  PagesParent)
+                .AsDictionary());
 
             Creator.Add(catalog);
             Creator.Add(outlines);

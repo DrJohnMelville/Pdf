@@ -28,15 +28,19 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                 PdfPermission.None, KnownNames.Identity, KnownNames.Identity,
                 new V4CfDictionary(KnownNames.V2, 128/8)));
             CreatePage(builder, "Rc4 Crypt Filter", KnownNames.Crypt,
-                new PdfDictionary((KnownNames.Type, KnownNames.CryptFilterDecodeParms),
-                    (KnownNames.Name, KnownNames.StdCF)));
+                new DictionaryBuilder()
+                    .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
+                    .WithItem(KnownNames.Name, KnownNames.StdCF)
+                    .AsDictionary());
           CreatePage(builder, "Identity Crypt Filter", KnownNames.Crypt,
-                new PdfDictionary((KnownNames.Type, KnownNames.CryptFilterDecodeParms),
-                    (KnownNames.Name, KnownNames.Identity)));
+                new DictionaryBuilder()
+                    .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
+                    .WithItem(KnownNames.Name, KnownNames.Identity)
+                    .AsDictionary());
             CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
                 KnownNames.RunLengthDecode);
-            CreatePage(builder, "LZW -- LateChange" + RandomString(9270), 
-                KnownNames.LZWDecode, new PdfDictionary((KnownNames.EarlyChange, new PdfInteger(0))));
+            CreatePage(builder, "LZW -- LateChange" + RandomString(9270), KnownNames.LZWDecode, 
+                new DictionaryBuilder().WithItem(KnownNames.EarlyChange, new PdfInteger(0)).AsDictionary());
             CreatePage(builder, "LZW -- " + RandomString(9270), KnownNames.LZWDecode);
             CreatePage(builder, "Ascii Hex", KnownNames.ASCIIHexDecode);
             CreatePage(builder, "Ascii 85", KnownNames.ASCII85Decode);
@@ -68,10 +72,11 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             PdfCreator builder, string text, int Predictor)
         {
              CreatePage(builder, text, KnownNames.FlateDecode,
-                new PdfDictionary(
-                    (KnownNames.Colors, new PdfInteger(2)), 
-                    (KnownNames.Columns, new PdfInteger(5)),
-                    (KnownNames.Predictor, new PdfInteger(Predictor))));
+                new DictionaryBuilder()
+                    .WithItem(KnownNames.Colors, new PdfInteger(2)) 
+                    .WithItem(KnownNames.Columns, new PdfInteger(5))
+                    .WithItem(KnownNames.Predictor, new PdfInteger(Predictor))
+                    .AsDictionary());
         }
         
         

@@ -29,9 +29,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(
+                new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
             builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
-            builder.Add(new PdfDictionary((KnownNames.Type, KnownNames.Page)));
+            builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
             return await Write(builder.CreateDocument());
         }
 
@@ -48,7 +49,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         {
             var builder = new LowLevelDocumentCreator();
             var pointer = builder.AsIndirectReference();
-            builder.AddRootElement(new PdfDictionary((KnownNames.Width, pointer)));
+            builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.Width, pointer).AsDictionary());
             builder.AssignValueToReference(pointer, new PdfInteger(10));
             builder.Add(pointer.Target);
             var doc = await Write(builder.CreateDocument());

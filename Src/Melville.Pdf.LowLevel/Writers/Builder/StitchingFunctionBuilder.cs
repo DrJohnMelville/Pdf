@@ -32,13 +32,13 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         }
 
         public PdfDictionary Create() =>
-            new(
-                (KnownNames.FunctionType, new PdfInteger(3)),
-                (KnownNames.Domain, DomainArray()),
-                (KnownNames.Bounds, BoundsArray()),
-                (KnownNames.Encode, functions.Select(i=>i.Encode).AsPdfArray(functions.Count)),
-                (KnownNames.Functions, new PdfArray(functions.Select(i=>i.Function)))
-            );
+            new DictionaryBuilder()
+                .WithItem(KnownNames.FunctionType, new PdfInteger(3))
+                .WithItem(KnownNames.Domain, DomainArray())
+                .WithItem(KnownNames.Bounds, BoundsArray())
+                .WithItem(KnownNames.Encode, functions.Select(i => i.Encode).AsPdfArray(functions.Count))
+                .WithItem(KnownNames.Functions, new PdfArray(functions.Select(i => i.Function)))
+                .AsDictionary();
 
         private PdfArray BoundsArray() =>
             new(functions.Select(i=>new PdfDouble(i.ExclusiveMaximum)).SkipLast(1));

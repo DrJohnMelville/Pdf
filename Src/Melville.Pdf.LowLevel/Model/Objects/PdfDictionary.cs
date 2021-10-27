@@ -15,21 +15,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         {
             RawItems = rawItems;
         }
-
-        public PdfDictionary(params (PdfName, PdfObject)[] items) : this(PairsToDictionary(items))
-        {
-        }
-
-        public PdfDictionary(IEnumerable<(PdfName, PdfObject)> items): this(PairsToDictionary(items))
-        {
-        }
-
-        protected static Dictionary<PdfName, PdfObject> PairsToDictionary(
-            IEnumerable<(PdfName Name, PdfObject Value)> items) =>
-            new(
-                items.Select(i => new KeyValuePair<PdfName, PdfObject>(i.Name, i.Value)));
-
-
+        
         #region Dictionary Implementation
 
         public int Count => RawItems.Count;
@@ -68,8 +54,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects
         public IEnumerable<ValueTask<PdfObject>> Values => RawItems.Values.Select(i => i.DirectValueAsync());
 
         #endregion
-
-
+        
         #region Type and Subtype as definted in the standard 7.3.7
 
         public PdfName? Type => RawItems.TryGetValue(KnownNames.Type, out var obj) ? obj as PdfName : null;

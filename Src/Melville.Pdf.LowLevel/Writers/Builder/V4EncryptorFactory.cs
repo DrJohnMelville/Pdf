@@ -21,11 +21,12 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             items.Add(name, CreateDefinition(cfm, lengthInBytes, authEvent??KnownNames.DocOpen));
         }
 
-        private PdfObject CreateDefinition(PdfName cfm, int lengthInBytes, PdfName authEvent)
-        {
-            return new PdfDictionary((KnownNames.AuthEvent, authEvent),
-                (KnownNames.CFM, cfm), (KnownNames.Length, new PdfInteger(lengthInBytes)));
-        }
+        private PdfObject CreateDefinition(PdfName cfm, int lengthInBytes, PdfName authEvent) =>
+            new DictionaryBuilder()
+                .WithItem(KnownNames.AuthEvent, authEvent)
+                .WithItem(KnownNames.CFM, cfm)
+                .WithItem(KnownNames.Length, new PdfInteger(lengthInBytes))
+                .AsDictionary();
 
         public PdfDictionary Build() => new(items);
     }

@@ -30,20 +30,20 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             this.domain = domain ?? new ClosedInterval(0,1);
         }
 
-        public PdfDictionary Create() => new(DictionaryItems());
+        public PdfDictionary Create() => DictionaryItems().AsDictionary();
 
-        private IEnumerable<(PdfName, PdfObject)> DictionaryItems()
+        private DictionaryBuilder DictionaryItems()
         {
-            var ret = new List<(PdfName, PdfObject)>();
-            ret.Add((KnownNames.FunctionType, new PdfInteger(2)));
-            ret.Add((KnownNames.Domain, DomainArray()));
-            ret.Add((KnownNames.N, new PdfDouble(exponent)));
+            var ret = new DictionaryBuilder();
+            ret.WithItem(KnownNames.FunctionType, new PdfInteger(2));
+            ret.WithItem(KnownNames.Domain, DomainArray());
+            ret.WithItem(KnownNames.N, new PdfDouble(exponent));
             if (!RangeIsDefault()) 
-                ret.Add((KnownNames.Range, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count)));
+                ret.WithItem(KnownNames.Range, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count));
             if (!TrivialC0())
-                ret.Add((KnownNames.C0, new PdfArray(mappings.Select(i=>new PdfDouble(i.Bounds.MinValue)))));
+                ret.WithItem(KnownNames.C0, new PdfArray(mappings.Select(i=>new PdfDouble(i.Bounds.MinValue))));
             if (!TrivialC1())
-                ret.Add((KnownNames.C1, new PdfArray(mappings.Select(i=>new PdfDouble(i.Bounds.MaxValue)))));
+                ret.WithItem(KnownNames.C1, new PdfArray(mappings.Select(i=>new PdfDouble(i.Bounds.MaxValue))));
             return ret;
         }
 

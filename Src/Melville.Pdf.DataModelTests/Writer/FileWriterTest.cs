@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
@@ -28,25 +29,28 @@ namespace Melville.Pdf.DataModelTests.Writer
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(
+                new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
             return await Write(builder.CreateDocument());
         }
         private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(
+                new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
             builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
-            builder.Add(new PdfDictionary((KnownNames.Type, KnownNames.Page)));
+            builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
             return await Write(builder.CreateDocument());
         }
         private async Task<string> OutputTwoItemRefStream(byte majorVersion = 1, byte minorVersion = 7)
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(
+                new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
             builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
-            builder.Add(new PdfDictionary((KnownNames.Type, KnownNames.Page)));
+            builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
             PdfLowLevelDocument doc = builder.CreateDocument();
             var target = new TestWriter();
             var writer = new LowLevelDocumentWriter(target.Writer, doc);
@@ -72,7 +76,8 @@ namespace Melville.Pdf.DataModelTests.Writer
         {
             var builder = new LowLevelDocumentCreator();
             builder.SetVersion(majorVersion, minorVersion);
-            builder.AddRootElement(new PdfDictionary((KnownNames.Type, KnownNames.Catalog)));
+            builder.AddRootElement(
+                new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
             return Assert.ThrowsAsync<ArgumentException>(
                 ()=> OutputSimpleDocument(majorVersion, minorVersion));
             

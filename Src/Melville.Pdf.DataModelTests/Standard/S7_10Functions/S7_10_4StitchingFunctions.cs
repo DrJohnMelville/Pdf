@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
@@ -36,14 +37,14 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
         public void CannotAddBelowMinimum()
         {
             var builder = new StitchingFunctionBuilder(0);
-            Assert.Throws<ArgumentException>(() => builder.AddFunction(new PdfDictionary(), -1));
+            Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), -1));
         }
         [Fact]
         public void CannotAddBelowLast()
         {
             var builder = new StitchingFunctionBuilder(0);
-            builder.AddFunction(new PdfDictionary(), 0.5);
-            Assert.Throws<ArgumentException>(() => builder.AddFunction(new PdfDictionary(), 0.25));
+            builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.5);
+            Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.25));
         }
 
         [Theory]

@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Moq;
 using Xunit;
@@ -27,7 +28,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAl
                 PdfString.CreateAscii("12345678901234567890123456789012"),
                 PdfString.CreateAscii("12345678901234567890123456789012"));
             var encDict = de.CreateEncryptionDictionary(id);
-            var trailer = new PdfDictionary((KnownNames.ID, id), (KnownNames.Encrypt, encDict));
+            var trailer = new DictionaryBuilder()
+                .WithItem(KnownNames.ID, id)
+                .WithItem(KnownNames.Encrypt, encDict)
+                .AsDictionary();
             var handler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, encDict);
             Assert.NotNull(handler.TryComputeRootKey("User", PasswordType.User));
             

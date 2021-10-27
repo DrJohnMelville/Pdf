@@ -3,6 +3,7 @@ using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
@@ -24,19 +25,23 @@ public abstract class PageTreeNodeChildCreator
     protected void TryAddResources(ILowLevelDocumentCreator creator)
     {
         if (Resources.Count == 0) return;
-        var res = new Dictionary<PdfName, PdfObject>();
+        var res = new DictionaryBuilder();
         foreach (var subDictionary in Resources.GroupBy(i=>i.Key.DictionaryName))
         {
-            res.Add(subDictionary.Key, DictionaryValues(creator, subDictionary));
+            res.WithItem(subDictionary.Key, DictionaryValues(creator, subDictionary));
         }
-        MetaData.Add(KnownNames.Resources, new PdfDictionary(res));
+        MetaData.Add(KnownNames.Resources, res.AsDictionary());
     }
 
-    private static PdfObject DictionaryValues(ILowLevelDocumentCreator creator, IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), PdfObject>> subDictionary) =>
-        subDictionary.Key == KnownNames.ProcSet? 
-            subDictionary.First().Value:
-            new PdfDictionary(subDictionary
-                .Select(i => (i.Key.ItemName, creator.Add(i.Value) as PdfObject)).ToList());
+    private static PdfObject DictionaryValues(
+        ILowLevelDocumentCreator creator, 
+        IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), PdfObject>> subDictionary) =>
+        subDictionary.Key == KnownNames.ProcSet
+            ? subDictionary.First().Value
+            : subDictionary
+                .Aggregate(new DictionaryBuilder(),
+                    (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value)))
+                .AsDictionary();
 
     public void AddXrefObjectResource(PdfName name, PdfObject obj) =>
         Resources[(KnownNames.XObject, name)] = obj;
@@ -49,14 +54,13 @@ public abstract class PageTreeNodeChildCreator
     public PdfName AddStandardFont(
         PdfName assignedName, BuiltInFontName baseFont, FontEncodingName encoding)
     {
-        Resources[(KnownNames.Font, assignedName)] = new PdfDictionary(new Dictionary<PdfName, PdfObject>
-        {
-            { KnownNames.Type, KnownNames.Font },
-            { KnownNames.Subtype, KnownNames.Type1 },
-            { KnownNames.Name, assignedName },
-            { KnownNames.BaseFont, baseFont },
-            { KnownNames.Encoding, encoding }
-        });
+        Resources[(KnownNames.Font, assignedName)] = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.Name, assignedName)
+            .WithItem(KnownNames.BaseFont, baseFont)
+            .WithItem(KnownNames.Encoding, encoding)
+            .AsDictionary();
         return assignedName;
     }
 }

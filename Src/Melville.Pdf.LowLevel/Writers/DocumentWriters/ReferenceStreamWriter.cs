@@ -57,9 +57,10 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
                 .AsStream(data);
         }
 
-        private PdfDictionary FilterParam() => new
-            ((KnownNames.Predictor, new PdfInteger(12)),
-            (KnownNames.Columns, new PdfInteger(columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)));
+        private PdfDictionary FilterParam() => new DictionaryBuilder()
+            .WithItem(KnownNames.Predictor, new PdfInteger(12))
+            .WithItem(KnownNames.Columns, new PdfInteger(columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3))
+            .AsDictionary();
 
         private PdfObject WidthsAsArray() =>
             new PdfArray(
