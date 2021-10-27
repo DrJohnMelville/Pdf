@@ -31,7 +31,9 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.HighLevel
                 content.Append($"BT\n{font} 24 Tf\n 100 {ypos} Td\n (This is {font}) Tj\nET\n");
                 ypos -= 25;
             }
-            p1.AddToContentStream(new StreamDataSource(content.ToString()));
+            p1.AddToContentStream(new DictionaryBuilder()
+                .WithFilter(FilterName.FlateDecode)
+                .AsStream(content.ToString()));
             return new(creator.CreateDocument().WriteToAsync(target));
         }
 

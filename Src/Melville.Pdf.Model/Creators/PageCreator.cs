@@ -14,7 +14,7 @@ namespace Melville.Pdf.Model.Creators;
 
 public class PageCreator: PageTreeNodeChildCreator
 {
-    private readonly List<StreamDataSource> streamSegments = new();
+    private readonly List<PdfStream> streamSegments = new();
     public PageCreator() : base(new())
     {
         MetaData.Add(KnownNames.Type, KnownNames.Page);
@@ -40,8 +40,8 @@ public class PageCreator: PageTreeNodeChildCreator
     private PdfObject CreateContents(ILowLevelDocumentCreator creator) =>
 
         streamSegments.Count == 1
-            ? CreateStreamSegment(creator, streamSegments[0].AsStream())
-            : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i.AsStream())));
+            ? CreateStreamSegment(creator, streamSegments[0])
+            : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i)));
 
     private PdfIndirectReference CreateStreamSegment(ILowLevelDocumentCreator creator, PdfStream stream) => 
         creator.Add(stream);
@@ -49,5 +49,5 @@ public class PageCreator: PageTreeNodeChildCreator
     public void AddLastModifiedTime(PdfTime dateAndTime) => 
         MetaData.Add(KnownNames.LastModified, PdfString.CreateDate(dateAndTime));
 
-    public void AddToContentStream(StreamDataSource data) => streamSegments.Add(data);
+    public void AddToContentStream(PdfStream data) => streamSegments.Add(data);
 }

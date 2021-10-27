@@ -50,11 +50,11 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                         (KnownNames.Font, new PdfDictionary((new PdfName("F1"), DefaultFont))),
                         (KnownNames.ProcSet, DefaultProcSet))));
         
-        public PdfDictionary CreateUnattachedPage(StreamDataSource source) =>
+        public PdfDictionary CreateUnattachedPage(PdfStream source) =>
             CreateUnattachedPage(
-                Creator.Add(source.AsStream()));
+                Creator.Add(source));
 
-        public void CreateAttachedPage(StreamDataSource source)
+        public void CreateAttachedPage(PdfStream source)
         {
             var page = CreateUnattachedPage(source);
             AddPageToPagesCollection(Creator.Add(page));

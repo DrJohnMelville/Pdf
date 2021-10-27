@@ -47,7 +47,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
             var creator = new LowLevelDocumentCreator();
             return Assert.ThrowsAsync<InvalidOperationException>(() =>
                 ObjectStreamCreation.NewObjectStream(creator.AsIndirectReference(
-                    new StreamDataSource("Hello").AsStream())).AsTask()
+                    new DictionaryBuilder().AsStream("Hello"))).AsTask()
             );
         }
         [Fact]

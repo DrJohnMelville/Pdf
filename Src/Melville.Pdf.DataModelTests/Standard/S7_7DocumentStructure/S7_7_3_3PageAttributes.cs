@@ -141,7 +141,7 @@ public class S7_7_3_3PageAttributes
 
     [Fact] public async Task LiteratContentStream()
     {
-        var doc = await RoundTripPageWith(i => i.AddToContentStream(new StreamDataSource("xxyyy")));
+        var doc = await RoundTripPageWith(i => i.AddToContentStream(new DictionaryBuilder().AsStream("xxyyy")));
         var stream = await (await doc.LowLevel.GetAsync<PdfStream>(KnownNames.Contents)).StreamContentAsync();
         var dat = await stream.ReadAsStringAsync();
         Assert.Equal("xxyyy", dat);

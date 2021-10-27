@@ -47,14 +47,14 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters
             var data = new MultiBufferStream(2048);
             await GenerateXrefStreamAsync(data);
 
-            return new StreamDataSource(data)
+            return new DictionaryBuilder()
                 .WithMultiItem(document.TrailerDictionary.RawItems.Where(i => i.Key != KnownNames.Size))
                 .WithItem(KnownNames.Type, KnownNames.XRef)
                 .WithItem(KnownNames.W, WidthsAsArray())
                 .WithItem(KnownNames.Size, new PdfInteger(objectOffsets.Entries.Length))
                 .WithFilter(FilterName.FlateDecode)
                 .WithFilterParam(FilterParam())
-                .AsStream();
+                .AsStream(data);
         }
 
         private PdfDictionary FilterParam() => new

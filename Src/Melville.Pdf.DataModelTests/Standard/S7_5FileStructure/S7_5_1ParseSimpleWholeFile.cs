@@ -61,8 +61,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         public async Task DocumentWithStream()
         {
             var builder = new LowLevelDocumentCreator();
-            builder.AddRootElement(new StreamDataSource("Stream data")
-                    .WithItem(KnownNames.Type, KnownNames.Image).AsStream());
+            builder.AddRootElement(new DictionaryBuilder()
+                    .WithItem(KnownNames.Type, KnownNames.Image).AsStream("Stream data"));
             var doc = builder.CreateDocument();
             var serialized = await Write(doc);
             Assert.Contains("Stream data", serialized);

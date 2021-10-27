@@ -74,7 +74,7 @@ namespace Melville.Pdf.WpfToolTests.LowLevelReader
         public async Task ParseSteam()
         {
             var model = await BuildSingleElementFile(i=>
-                new StreamDataSource("The Stream Data").WithItem(KnownNames.Type, KnownNames.Page).AsStream());
+                new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsStream("The Stream Data"));
             var stream = (StreamDocumentPart)model[2].Children[0];
             await stream.LoadBytesAsync();
             Assert.Equal("Stream", stream.Title);

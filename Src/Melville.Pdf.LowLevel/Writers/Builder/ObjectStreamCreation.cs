@@ -24,13 +24,13 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         {
             var contentStreamInfo = await CreateContentStream(objectRefs);
 
-            return new StreamDataSource(contentStreamInfo.Data)
+            return new DictionaryBuilder()
                 .WithFilter(encoding)
                 .WithFilterParam(parameters)
                 .WithItem(KnownNames.Type, KnownNames.ObjStm)
                 .WithItem(KnownNames.N, new PdfInteger(contentStreamInfo.N))
                 .WithItem(KnownNames.First, new PdfInteger(contentStreamInfo.First))
-                .AsStream();
+                .AsStream(contentStreamInfo.Data);
         }
 
         private static async ValueTask<ObjectStringInfo> CreateContentStream(IEnumerable<PdfIndirectReference> objectRefs)

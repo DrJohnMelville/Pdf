@@ -47,7 +47,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
             var creator = new LowLevelDocumentCreator(docBuilder);
 
             docBuilder.Add(PdfString.CreateAscii("Encrypted String"));
-            docBuilder.Add(new StreamDataSource("This is an encrypted stream").AsStream());
+            docBuilder.Add(new DictionaryBuilder().AsStream("This is an encrypted stream"));
             var doc = creator.CreateDocument();
             var str = await Write(doc);
             Assert.DoesNotContain("Encrypted String", str);

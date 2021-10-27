@@ -31,17 +31,20 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption
         private PdfStream InsertedStream(
             LowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream)
         {
-            var builder = new StreamDataSource("plaintext stream");
-            if (cryptFilterTypeForStream != null)
-            {
-                builder = builder
-                    .WithFilter(FilterName.Crypt)
-                    .WithFilterParam(new PdfDictionary(
-                    (KnownNames.Type, KnownNames.CryptFilterDecodeParms),
-                    (KnownNames.Name, cryptFilterTypeForStream)));
-            }
+            var builder = cryptFilterTypeForStream == null ?
+                new DictionaryBuilder():
+                EncryptedStreamBuilder(cryptFilterTypeForStream);
 
-            return builder.AsStream();
+            return builder.AsStream("plaintext stream");
+        }
+
+        private static DictionaryBuilder EncryptedStreamBuilder(PdfName cryptFilterTypeForStream)
+        {
+            return new DictionaryBuilder()
+                .WithFilter(FilterName.Crypt)
+                .WithFilterParam(new DictionaryBuilder()
+                    .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
+                    .WithItem(KnownNames.Name, cryptFilterTypeForStream).AsDictionary());
         }
 
         [Theory]

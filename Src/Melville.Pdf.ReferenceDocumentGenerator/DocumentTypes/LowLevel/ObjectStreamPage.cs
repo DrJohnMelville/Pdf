@@ -26,7 +26,8 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                         builder.DefaultProcSet));
                 builder.SuppressDefaultObjectWrite();
                 var page = builder.Creator.AsIndirectReference(
-                     builder.CreateUnattachedPage(new StreamDataSource("BT\n/F1 24 Tf\n100 100 Td\n(Uses Object Stream) Tj\nET\n")));
+                     builder.CreateUnattachedPage(new DictionaryBuilder()
+                         .AsStream("BT\n/F1 24 Tf\n100 100 Td\n(Uses Object Stream) Tj\nET\n")));
                 builder.Creator.Add(await ObjectStreamCreation.NewObjectStream(page));
                 builder.AddPageToPagesCollection(page);
                 builder.FinalizePages();

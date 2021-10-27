@@ -39,10 +39,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters
             {
                 {KnownNames.EarlyChange, new PdfInteger(EarlySwitch)}
             });
-            var str = new StreamDataSource(buffer)
+            var str = new DictionaryBuilder()
                 .WithFilter(FilterName.LZWDecode)
                 .WithFilterParam(EarlySwitch < 2 ? param : null)
-                .AsStream();
+                .AsStream(buffer);
             var destination = new byte[length];
             var decoded = await str.StreamContentAsync();
             await decoded.FillBufferAsync(destination, 0, length);

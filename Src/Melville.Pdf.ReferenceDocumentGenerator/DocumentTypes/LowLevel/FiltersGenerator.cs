@@ -57,9 +57,9 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             PdfObject? parameters = null)
         {
             builder.AddPageToPagesCollection(builder.Creator.Add(
-                builder.CreateUnattachedPage(builder.Creator.Add( new StreamDataSource(
-                    $"BT\n/F1 24 Tf\n100 100 Td\n(({Text})) Tj\nET\n")
-                    .WithFilter(encoding).WithFilterParam(parameters).AsStream()
+                builder.CreateUnattachedPage(builder.Creator.Add( new DictionaryBuilder()
+                    .WithFilter(encoding).WithFilterParam(parameters)
+                    .AsStream($"BT\n/F1 24 Tf\n100 100 Td\n(({Text})) Tj\nET\n")
                 )))
             );
         }

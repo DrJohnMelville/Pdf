@@ -50,10 +50,10 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities
         }
 
         private PdfStream EncodedStreamAsync() =>
-            new StreamDataSource(source)
+            new DictionaryBuilder()
                 .WithItem(KnownNames.Filter, compression)
                 .WithItem(KnownNames.DecodeParms, parameters)
-                .AsStream();
+                .AsStream(source);
         
         [Fact]
         public Task EncodingTest() => VerifyEncoding(EncodedStreamAsync());
