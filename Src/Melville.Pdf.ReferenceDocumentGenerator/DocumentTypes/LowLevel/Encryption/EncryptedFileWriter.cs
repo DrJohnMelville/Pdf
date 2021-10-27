@@ -1,8 +1,10 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
+using Melville.Pdf.Model.Creators;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encryption
@@ -16,18 +18,16 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encrypt
             this.encryptor = encryptor;
         }
 
-        public override async ValueTask WritePdfAsync(Stream target)
+        public override ValueTask WritePdfAsync(Stream target)
         { 
-            var builder = new PdfCreator(1, 7);
-            builder.Creator.AddEncryption(encryptor);
-            builder.CreateAttachedPage(new DictionaryBuilder().AsStream($"BT\n/F1 12 Tf\n100 100 Td\n({HelpText}) Tj\nET\n"));
-            builder.FinalizePages();
-            await WriteFile(target, builder);
-        }
-
-        protected virtual Task WriteFile(Stream target, PdfCreator builder)
-        {
-            return builder.Creator.CreateDocument().WriteToAsync(target, "User");
+            var builder = new PdfDocumentCreator();
+            builder.LowLevelCreator.AddEncryption(encryptor);
+            var page = builder.Pages.CreatePage();
+            page.AddStandardFont("F1", BuiltInFontName.TimesRoman, FontEncodingName.WinAnsiEncoding);
+            page.AddToContentStream(new DictionaryBuilder()
+                .WithFilter(FilterName.FlateDecode)
+                .AsStream($"BT\n/F1 12 Tf\n100 700 Td\n({HelpText}) Tj\nET\n"));
+            return new(builder.CreateDocument().WriteToAsync(target, "User"));
         }
     }
 }
