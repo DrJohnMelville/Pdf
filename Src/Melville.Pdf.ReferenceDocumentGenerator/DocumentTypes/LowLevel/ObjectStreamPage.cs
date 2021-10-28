@@ -31,22 +31,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
                 page.AddToContentStream(new DictionaryBuilder().AsStream(
                     "BT\n/F1 24 Tf\n100 700 Td\n(Uses Object Stream) Tj\nET\n"));
             }
-
             return creator.CreateDocument();
-            // var builder = new PdfCreator(1, 7);
-            // await using (builder.Creator.ObjectStreamContext(new DictionaryBuilder()))
-            // {
-            //     builder.Creator.Add(builder.DefaultFont);
-            //     builder.Creator.Add(builder.DefaultProcSet);
-            // }
-            //     builder.SuppressDefaultObjectWrite();
-            //     var page = builder.Creator.AsIndirectReference(
-            //          builder.CreateUnattachedPage(new DictionaryBuilder()
-            //              .AsStream("BT\n/F1 24 Tf\n100 700 Td\n(Uses Object Stream) Tj\nET\n")));
-            //     builder.Creator.Add(await ObjectStreamCreation.NewObjectStream(page));
-            //     builder.AddPageToPagesCollection(page);
-            //     builder.FinalizePages();
-//                return builder.Creator;
         }
     }
 }
