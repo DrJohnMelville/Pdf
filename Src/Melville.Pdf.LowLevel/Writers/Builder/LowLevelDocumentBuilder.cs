@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -14,6 +15,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         void AddToTrailerDictionary(PdfName key, PdfObject item);
         public PdfArray EnsureDocumentHasId();
         public byte[] UserPassword { get; set; }
+        IAsyncDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
     }
 
     public static class LowLevelDocumentBuilderOperations
@@ -42,6 +44,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
         private int nextObject;
         public List<PdfIndirectReference> Objects { get;  }= new();
         private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
+        private ObjectStreamBuilder? objectStreamBuilder;
 
         public byte[] UserPassword { get; set; } = Array.Empty<byte>();
 
@@ -68,9 +71,15 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
 
         private PdfIndirectReference InnerAdd(PdfIndirectReference item)
         {
-            Objects.Add(item);
+            if (!TryWriteToObjectStream(item))
+            {
+                Objects.Add(item);
+            }
             return item;
         }
+
+        private bool TryWriteToObjectStream(PdfIndirectReference item) =>
+            objectStreamBuilder is not null && objectStreamBuilder.TryAddRef(item.Target);
 
         public void AddToTrailerDictionary(PdfName key, PdfObject item) => 
             trailerDictionaryItems[key] = item;
@@ -107,5 +116,36 @@ namespace Melville.Pdf.LowLevel.Writers.Builder
             return new PdfString(ret);
         }
 
+        public IAsyncDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null)
+        {
+            if (objectStreamBuilder != null)
+                throw new InvalidOperationException("Cannot nest object stream contents");
+            objectStreamBuilder = new ObjectStreamBuilder();
+            return new ObjectStreamContextImpl(this, 
+                ExpandDefaultBuilder(dictionaryBuilder));
+        }
+
+        private static DictionaryBuilder ExpandDefaultBuilder(DictionaryBuilder? dictionaryBuilder) => 
+            dictionaryBuilder?? new DictionaryBuilder().WithFilter(FilterName.FlateDecode);
+
+        private class ObjectStreamContextImpl : IAsyncDisposable
+        {
+            private readonly LowLevelDocumentBuilder parent;
+            private readonly DictionaryBuilder dictionaryBuilder;
+
+            public ObjectStreamContextImpl(LowLevelDocumentBuilder parent, DictionaryBuilder dictionaryBuilder)
+            {
+                this.parent = parent;
+                this.dictionaryBuilder = dictionaryBuilder;
+            }
+
+            public async ValueTask DisposeAsync()
+            {
+                var obs = parent.objectStreamBuilder ??
+                          throw new InvalidOperationException("No parent object stream builder");
+                parent.objectStreamBuilder = null;
+                parent.Add(await obs.CreateStream(dictionaryBuilder));
+            }
+        }
     }
 }

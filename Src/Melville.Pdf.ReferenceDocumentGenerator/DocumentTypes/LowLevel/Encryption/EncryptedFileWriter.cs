@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -27,7 +28,13 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encrypt
             page.AddToContentStream(new DictionaryBuilder()
                 .WithFilter(FilterName.FlateDecode)
                 .AsStream($"BT\n/F1 12 Tf\n100 700 Td\n({HelpText}) Tj\nET\n"));
-            return new(builder.CreateDocument().WriteToAsync(target, "User"));
+            var doc = builder.CreateDocument();
+            return new(WriteFile(target, doc));
+        }
+
+        protected virtual Task WriteFile(Stream target, PdfLowLevelDocument doc)
+        {
+            return doc.WriteToAsync(target, "User");
         }
     }
 }

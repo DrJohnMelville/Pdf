@@ -59,12 +59,6 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel
             CreateUnattachedPage(
                 Creator.Add(source));
 
-        public void CreateAttachedPage(PdfStream source)
-        {
-            var page = CreateUnattachedPage(source);
-            AddPageToPagesCollection(Creator.Add(page));
-        }
-
         public void FinalizePages()
         {
             AddDefaultObjects();

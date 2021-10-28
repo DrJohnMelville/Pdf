@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
@@ -13,9 +14,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encrypt
         {
         }
 
-        protected override Task WriteFile(Stream target, PdfCreator builder)
-        {
-            return builder.Creator.CreateDocument().WriteToWithXrefStreamAsync(target, "User");
-        }
+        protected override Task WriteFile(Stream target, PdfLowLevelDocument doc) => 
+            doc.WriteToWithXrefStreamAsync(target, "User");
     }
 }

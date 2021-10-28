@@ -42,40 +42,36 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         }
 
         [Fact]
-        public Task CannotPutStreamInObjectStream()
+        public void CannotPutStreamInObjectStream()
         {
-            var creator = new LowLevelDocumentCreator();
-            return Assert.ThrowsAsync<InvalidOperationException>(() =>
-                ObjectStreamCreation.NewObjectStream(creator.AsIndirectReference(
-                    new DictionaryBuilder().AsStream("Hello"))).AsTask()
-            );
+            Assert.False(new ObjectStreamBuilder().TryAddRef(
+                new PdfIndirectObject(2,0,new DictionaryBuilder().AsStream("Hello"))));
         }
         [Fact]
-        public Task CannotPutNonZeroGenerationStream()
+        public void CannotPutNonZeroGenerationStream()
         {
-            var creator = new LowLevelDocumentCreator();
-            return Assert.ThrowsAsync<InvalidOperationException>(() =>
-                ObjectStreamCreation.NewObjectStream(new PdfIndirectReference(new PdfIndirectObject(12,1, KnownNames.All))).AsTask()
-            );
+            Assert.False(new ObjectStreamBuilder().TryAddRef(new PdfIndirectObject(12,1, KnownNames.All)));
         }
         
         private static async Task<string> DocWithObjectStream()
         {
             var builder = new LowLevelDocumentCreator();
-            builder.Add(await ObjectStreamCreation.NewObjectStream( new []{
-            builder.AsIndirectReference(PdfString.CreateAscii("One")),
-                builder.AsIndirectReference(PdfString.CreateAscii("Two"))
-            }, null));
+            await using (builder.ObjectStreamContext(new DictionaryBuilder()))
+            {
+                builder.Add(PdfString.CreateAscii("One"));
+                builder.Add(PdfString.CreateAscii("Two"));
+            }
             var fileAsString = await DocCreatorToString(builder);
             return fileAsString;
         }
         private static async Task<string> DocWithObjectStreamWithHighObjectNumber()
         {
             var builder = new LowLevelDocumentCreator();
-            builder.Add(await ObjectStreamCreation.NewObjectStream( new []{
-            builder.AsIndirectReference(PdfString.CreateAscii("One")),
-                new PdfIndirectReference(new PdfIndirectObject(20,0, PdfString.CreateAscii("Two")))
-            }.AsEnumerable(), null));
+            await using (builder.ObjectStreamContext(new DictionaryBuilder()))
+            {
+                builder.Add(PdfString.CreateAscii("One"));
+                builder.Add(new PdfIndirectObject(20, 0, PdfString.CreateAscii("Two")));
+            }
             var fileAsString = await DocCreatorToString(builder);
             return fileAsString;
         }
@@ -92,11 +88,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure
         [Fact]
         public async Task ExtractIncludedObjectReferences()
         {
-            var builder = new LowLevelDocumentCreator();
-            var str = await ObjectStreamCreation.NewObjectStream( new []{
-                builder.AsIndirectReference(PdfString.CreateAscii("One")),
-                builder.AsIndirectReference(PdfString.CreateAscii("Two"))
-            });
+            var builder = new ObjectStreamBuilder();
+            builder.TryAddRef(new PdfIndirectObject(1,0,PdfString.CreateAscii("One")));
+            builder.TryAddRef(new PdfIndirectObject(2,0,PdfString.CreateAscii("Two")));
+            var str = await builder.CreateStream(new DictionaryBuilder());
 
             var output = await str.GetIncludedObjectNumbersAsync();
             Assert.Equal(1, output[0].ObjectNumber);

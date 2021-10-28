@@ -20,18 +20,16 @@ public class PageTreeNodeCreator: PageTreeNodeChildCreator
     {
     }
 
-    public PageCreator CreatePage()
+    public PageCreator CreatePage() => AddAndReturn(new PageCreator());
+    public PageCreator CreatePageInObjectStream() => AddAndReturn(new ObjectStreamPageCreator());
+    public PageTreeNodeCreator CreateNode() => AddAndReturn(new PageTreeNodeCreator());
+
+    private T AddAndReturn<T>(T ret) where T:PageTreeNodeChildCreator
     {
-        var ret = new PageCreator();
         children.Add(ret);
         return ret;
     }
-    public PageTreeNodeCreator CreateNode()
-    {
-        var ret = new PageTreeNodeCreator();
-        children.Add(ret);
-        return ret;
-    }
+
 
 
     public override (PdfIndirectReference Reference, int PageCount)
