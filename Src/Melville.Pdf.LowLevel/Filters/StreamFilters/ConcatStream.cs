@@ -40,7 +40,7 @@ public abstract class ConcatStreamBase : SequentialReadFilterStream
         {
             var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken);
             bytesWritten += localWritten;
-            await ComputeNextSource(localWritten);
+            await PrepareForNextRead(localWritten);
         }
 
         return bytesWritten;
@@ -55,24 +55,18 @@ public abstract class ConcatStreamBase : SequentialReadFilterStream
     [MemberNotNullWhen(false, nameof(current))]
     private bool AtEndOfStream() => current is null;
 
-    private ValueTask ComputeNextSource(int localWritten)
+    private async ValueTask PrepareForNextRead(int localWritten)
     {
-        return (localWritten == 0)?GetNextSource():new ValueTask();
-    }
-
-    private async ValueTask GetNextSource()
-    {
+        if (PriorReadSucceeded(localWritten)) return;
         if (current != null) await current.DisposeAsync();
         current = await GetNextStream();;
     }
 
+    private static bool PriorReadSucceeded(int localWritten) => localWritten > 0;
+
     protected override void Dispose(bool disposing)
     {
-        while (current != null)
-        {
-            current.Dispose();
-        }
-
+        current?.Dispose();
         base.Dispose(disposing);
     }
 
