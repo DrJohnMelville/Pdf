@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -7,52 +6,75 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Melville.Pdf.LowLevel.Filters.StreamFilters
+namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
+
+public class ConcatStream : ConcatStreamBase
 {
-    public class ConcatStream : SequentialReadFilterStream
+    private IEnumerator<Stream> items;
+
+    public ConcatStream(params Stream[] items) : this(items.AsEnumerable())
     {
-        private Stream? current = null;
-        private IEnumerator<Stream> items;
-
-        public ConcatStream(params Stream[] items) : this(items.AsEnumerable()) { }
-        public ConcatStream(IEnumerable<Stream> items)
-        {
-            this.items = items.GetEnumerator();
-            GetNextSource();
-        }
-        public override async ValueTask<int> ReadAsync(
-            Memory<byte> buffer, CancellationToken cancellationToken = default)
-        {
-            var bytesWritten = 0;
-            while (!AtEndOfStream() && bytesWritten < buffer.Length)
-            {
-                var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken);
-                bytesWritten += localWritten;
-                ComputeNextSource(localWritten);
-            }
-
-            return bytesWritten;
-        }
-
-        [MemberNotNullWhen(false, nameof(current))]
-        private bool AtEndOfStream() => current is null;
-        private void ComputeNextSource(int localWritten)
-        {
-            if (localWritten == 0) GetNextSource();
-        }
-        private void GetNextSource()
-        {
-            current?.Dispose();
-            current = items.MoveNext() ? items.Current : null;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            while (current != null) 
-            {
-                current.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
+
+    public ConcatStream(IEnumerable<Stream> items)
+    {
+        this.items = items.GetEnumerator();
+    }
+    protected override ValueTask<Stream?> GetNextStream() => new(items.MoveNext() ? items.Current : null);
+}
+public abstract class ConcatStreamBase : SequentialReadFilterStream
+{
+    private Stream? current = null;
+
+    protected ConcatStreamBase()
+    {
+        current = this;
+    }
+
+    public override async ValueTask<int> ReadAsync(
+        Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        await TryLoadFirstSource();
+        var bytesWritten = 0;
+        while (!AtEndOfStream() && bytesWritten < buffer.Length)
+        {
+            var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken);
+            bytesWritten += localWritten;
+            await ComputeNextSource(localWritten);
+        }
+
+        return bytesWritten;
+    }
+
+    private async ValueTask TryLoadFirstSource()
+    {
+        // we use this as a sentinel to mean we have not gotten the first source yet
+        current = (current == this) ? await GetNextStream(): current;
+    }
+    
+    [MemberNotNullWhen(false, nameof(current))]
+    private bool AtEndOfStream() => current is null;
+
+    private ValueTask ComputeNextSource(int localWritten)
+    {
+        return (localWritten == 0)?GetNextSource():new ValueTask();
+    }
+
+    private async ValueTask GetNextSource()
+    {
+        if (current != null) await current.DisposeAsync();
+        current = await GetNextStream();;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        while (current != null)
+        {
+            current.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    protected abstract ValueTask<Stream?> GetNextStream();
 }

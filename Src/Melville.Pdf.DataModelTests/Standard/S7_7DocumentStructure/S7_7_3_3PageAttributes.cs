@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -139,11 +140,24 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Encoding), FontEncodingName.WinAnsiEncoding);  
     }
 
-    [Fact] public async Task LiteratContentStream()
+    [Fact] 
+    public async Task LiteratContentStream()
     {
         var doc = await RoundTripPageWith(i => i.AddToContentStream(new DictionaryBuilder().AsStream("xxyyy")));
-        var stream = await (await doc.LowLevel.GetAsync<PdfStream>(KnownNames.Contents)).StreamContentAsync();
-        var dat = await stream.ReadAsStringAsync();
+        var stream = await doc.GetContentBytes();
+        var dat = await new StreamReader(stream).ReadToEndAsync();
+        Assert.Equal("xxyyy", dat);
+    }
+    [Fact] 
+    public async Task TwoContentStreams()
+    {
+        var doc = await RoundTripPageWith(i =>
+        {
+            i.AddToContentStream(new DictionaryBuilder().AsStream("xx"));
+            i.AddToContentStream(new DictionaryBuilder().AsStream("yyy"));
+        });
+        var stream = await doc.GetContentBytes();
+        var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xxyyy", dat);
     }
 }
