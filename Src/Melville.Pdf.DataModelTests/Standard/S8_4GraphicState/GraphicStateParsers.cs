@@ -46,4 +46,11 @@ public class GraphicStateParsers
         target.Verify(i=>i.RestoreGraphicsState());
         target.VerifyNoOtherCalls();
     }
+    [Fact]
+    public async Task ModifyTransformMatrixTest()
+    {
+        await ParseString("1.000 2 03 +4 5.5 -6 cm");
+        target.Verify(i=>i.ModifyTransformMatrix(1, 2, 3, 4, 5.5, -6));
+        target.VerifyNoOtherCalls();
+    }
 }

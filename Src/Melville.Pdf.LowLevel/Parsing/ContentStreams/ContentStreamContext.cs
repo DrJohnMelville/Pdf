@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -8,11 +7,19 @@ namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 public readonly struct ContentStreamContext
 {
     private readonly IContentStreamOperations target;
+    private readonly List<double> doubles;
 
     public ContentStreamContext(IContentStreamOperations target)
     {
         this.target = target;
+        doubles = new List<double>();
     }
+
+    public void HandleNumber(double doubleValue)
+    {
+        doubles.Add(doubleValue);
+    }
+
 
     public void HandleOpCode(ContentStreamOperatorValue opCode)
     {
@@ -39,6 +46,8 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.c:
                 break;
             case ContentStreamOperatorValue.cm:
+                target.ModifyTransformMatrix(
+                    doubles[0], doubles[1], doubles[2], doubles[3], doubles[4], doubles[5]);
                 break;
             case ContentStreamOperatorValue.CS:
                 break;
@@ -159,6 +168,12 @@ public readonly struct ContentStreamContext
             default:
                 throw new PdfParseException("Unknown content stream operator");
         }
+
+        ClearStacks();
     }
 
+    private void ClearStacks()
+    {
+        doubles.Clear();
+    }
 }
