@@ -54,27 +54,13 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     sb.Append($"        public static readonly {type}Name ");
                     sb.Append(name);
                     sb.Append($" = NameDirectory.ForceAdd(new {type}Name(");
-                    WriteStringAsByteArray(sb, value, "new");
-                    sb.Append(")); //");
-                    sb.AppendLine(value);
-                    
+                    ByteStreamWriter.WriteByteDecl(sb, value);
                 }
 
                 sb.AppendLine("          }");
             }
         }
 
-        private static void WriteStringAsByteArray(StringBuilder sb, string value, string creationMethod)
-        {
-            sb.Append(creationMethod+" byte[]{");
-            foreach (var character in value)
-            {
-                sb.Append(((byte)character).ToString());
-                sb.Append(", ");
-            }
-
-            sb.Append("}");
-        }
 
         private static void AddConstantsToDictionary(StringBuilder sb)
         {
@@ -88,7 +74,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 sb.Append("KnownNames.");
                 sb.Append(preferred);
                 sb.Append(", ");
-                WriteStringAsByteArray(sb, synonym, "new");
+                ByteStreamWriter.WriteStringAsByteArray(sb, synonym, "new");
                 sb.Append("); //");
                 sb.AppendLine(synonym);
 

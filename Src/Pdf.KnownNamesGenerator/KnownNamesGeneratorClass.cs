@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
+using Pdf.KnownNamesGenerator.ContentStreamOperations;
 using Pdf.KnownNamesGenerator.KnownNames;
 using Pdf.KnownNamesGenerator.PostScriptOps;
 
@@ -19,6 +20,8 @@ namespace Pdf.KnownNamesGenerator
                 GenerateKnownNames.ClassText());
             context.AddSource("PostScriptOperations.Generated.cs",
                 GeneratePostScriptOperations.ClassText());
+            context.AddSource("ContentStreamOperations.Generated.cs",
+                GenerateContentStreamOperations.ClassText());
         }
     }
 }

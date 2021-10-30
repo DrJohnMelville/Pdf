@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-
 namespace Melville.Pdf.Model.Documents;
 
 public class PdfArrayConcatStream : ConcatStreamBase
 {
     private readonly IEnumerator<ValueTask<PdfObject>> source;
-    private Stream? currentSource;
 
     public PdfArrayConcatStream(PdfArray source)
     {
