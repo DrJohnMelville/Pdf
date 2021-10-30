@@ -1,4 +1,7 @@
-﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
+﻿using System;
+using System.Runtime.InteropServices;
+
+namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
 public interface IStateChangingCSOperations
 {
@@ -23,9 +26,32 @@ public interface IStateChangingCSOperations
     void SetLineWidth(double width);
 
     /// <summary>
-    /// Content stream operator J
+    /// Content stream operator linecap J
     /// </summary>
     void SetLineCap(LineCap cap);
+
+    /// <summary>
+    /// Content stream operator lineJoinStyle j
+    /// </summary>
+    void SetLineJoinStyle(LineJoinStyle cap);
+
+    /// <summary>
+    /// Content stream operator miterLimit M
+    /// </summary>
+    void SetMiterLimit(double miter);
+
+    /// <summary>
+    /// Content stream operator dashArray dashphase
+    /// Note the parameters are flipped from the PDF representation to accomodate a params extension method.
+    /// </summary>
+    void SetLineDashPattern(double dashPhase, ReadOnlySpan<double> dashArray);
+}
+
+public static class ContentStreamExtendedOperations
+{
+    public static void SetLineDashPattern(
+        this IStateChangingCSOperations target, double dashPhase = 0, params double[] dashArray) =>
+        target.SetLineDashPattern(dashPhase, dashArray.AsSpan());
 }
 
 public interface IStatePreservingCSOperations

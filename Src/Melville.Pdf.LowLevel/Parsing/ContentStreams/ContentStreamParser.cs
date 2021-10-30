@@ -42,13 +42,24 @@ public class ContentStreamParser
 
     private bool ParseReader(ref SequenceReader<byte> reader, bool bufferIsCompleted)
     {
-        if (!NextTokenFinder.SkipToNextToken(ref reader)) return false;
+        if (!SkipWhiteSpaceAndBrackets(ref reader)) return false;
         if (!reader.TryPeek(out var character)) return false;
         return (char)character switch
         {
             '.' or '+' or '-' or (>= '0' and <= '9') => ParseNumber(ref reader, bufferIsCompleted),
             _ => ParseOperator(ref reader, bufferIsCompleted)
         };
+    }
+
+    private static bool SkipWhiteSpaceAndBrackets(ref SequenceReader<byte> reader)
+    {
+        while (true)
+        {
+            if (!reader.TryPeek(out var peeked)) return false;
+            if (CharClassifier.Classify(peeked) != CharacterClass.White &&
+                (char)peeked is not ('[' or ']')) return true;
+            reader.Advance(1);
+        }
     }
 
     private bool ParseNumber(ref SequenceReader<byte> reader, bool bufferIsCompleted)

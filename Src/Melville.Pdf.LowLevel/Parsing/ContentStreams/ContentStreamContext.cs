@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -57,6 +58,8 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.cs:
                 break;
             case ContentStreamOperatorValue.d:
+                var span = CollectionsMarshal.AsSpan(doubles);
+                target.SetLineDashPattern(span[^1],span[..^1]);
                 break;
             case ContentStreamOperatorValue.d0:
                 break;
@@ -94,6 +97,7 @@ public readonly struct ContentStreamContext
                 target.SetLineCap((LineCap)longs[0]);
                 break;
             case ContentStreamOperatorValue.j:
+                target.SetLineJoinStyle((LineJoinStyle)longs[0]);
                 break;
             case ContentStreamOperatorValue.K:
                 break;

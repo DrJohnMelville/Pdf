@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -59,12 +60,51 @@ public class GraphicStateWriters
         Assert.Equal("43 w\n", await WrittenText());
     }
     [Theory]
-    [InlineData(LineCap.Butt)]
-    [InlineData(LineCap.Round)]
-    [InlineData(LineCap.Square)]
-    public async Task SetLineCap(LineCap cap)
+    [InlineData(LineCap.Butt, 0)]
+    [InlineData(LineCap.Round,1)]
+    [InlineData(LineCap.Square,2 )]
+    public async Task SetLineCap(LineCap cap, int num)
     {
         sut.SetLineCap(cap);
-        Assert.Equal($"{(int)cap} J\n", await WrittenText());
+        Assert.Equal($"{num} J\n", await WrittenText());
+    }
+    [Theory]
+    [InlineData(LineJoinStyle.Miter, 0)]
+    [InlineData(LineJoinStyle.Round, 1)]
+    [InlineData(LineJoinStyle.Bevel, 2)]
+    public async Task SetLineJoinStyle(LineJoinStyle cap, int num)
+    {
+        sut.SetLineJoinStyle(cap);
+        Assert.Equal($"{num} j\n", await WrittenText());
+    }
+    [Fact]
+    public async Task SetMiterLimit()
+    {
+        sut.SetMiterLimit(1.4223);
+        Assert.Equal("1.4223 M\n", await WrittenText());
+    }
+    [Fact]
+    public async Task SetLineDashPattern()
+    {
+        sut.SetLineDashPattern(6, new double[]{1,2,3,4,5});
+        Assert.Equal("[1 2 3 4 5] 6 d\n", await WrittenText());
+    }
+    [Fact]
+    public async Task SetLineDashPattern0()
+    {
+        sut.SetLineDashPattern(0, new double[]{});
+        Assert.Equal("[] 0 d\n", await WrittenText());
+    }
+    [Fact]
+    public async Task SetLineDashPattern1()
+    {
+        sut.SetLineDashPattern(0, new double[]{0.54});
+        Assert.Equal("[0.54] 0 d\n", await WrittenText());
+    }
+    [Fact]
+    public async Task SetLineDashPattern2()
+    {
+        sut.SetLineDashPattern(0, new double[]{0.54, 10});
+        Assert.Equal("[0.54 10] 0 d\n", await WrittenText());
     }
 }
