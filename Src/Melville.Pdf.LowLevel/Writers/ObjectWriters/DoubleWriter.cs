@@ -40,10 +40,10 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
             frac = Math.Abs(item - truncated);
             if (!ShouldWriteMoreFractionalDigits()) return length;
             WriteFractionalPart();
-            if (frac >= 0.5) RoundUp();
+            FixupAfterPrinting();
             return length;
         }
-
+        
         private bool ShouldWriteMoreFractionalDigits() =>
             LengthLessThanDoublePrecision() && length < span.Length && frac > double.Epsilon;
 
@@ -65,7 +65,14 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
                 span[length++] = (byte)('0' + (int)digit);
             }
         }
-
+        private void FixupAfterPrinting()
+        {
+            if (frac >= 0.5) 
+                RoundUp();
+            else
+                PruneZeros();
+        }
+        
         private void RoundUp()
         {
             while (true)
@@ -116,11 +123,21 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
         private bool RoundUpPastFirstDigit(int currentDigit) => 
             currentDigit < 0 || span[currentDigit] == (byte)'-';
 
-        private void ShiftSpanRight(in Span<byte> slice)
+        private void ShiftSpanRight(in Span<byte> slice) => slice[..^1].CopyTo(slice[1..]);
+
+        private void PruneZeros()
         {
-            for (var i = slice.Length-1; i > 0; i--)
+            while (length > 1)
             {
-                span[i] = span[i - 1];
+                switch ((char)span[length - 1])
+                {
+                    case '.': 
+                        length--;
+                        return;
+                    case '0': length--;
+                        break;
+                    default: return;
+                }
             }
         }
     }

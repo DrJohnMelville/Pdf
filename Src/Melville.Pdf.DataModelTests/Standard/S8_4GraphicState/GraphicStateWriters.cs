@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -46,11 +45,11 @@ public class GraphicStateWriters
         sut.RestoreGraphicsState();
         Assert.Equal("q\nQ\n", await WrittenText());
     }
-    // [Fact]
-    // public async Task ModifyTransformMatrix()
-    // {
-    //     sut.ModifyTransformMatrix(1,2,3,4,5,6);
-    //     Assert.Equal("1 2 3 4 5 6 cm\n", await WrittenText());
-    // }
+    [Fact]
+    public async Task ModifyTransformMatrix()
+    {
+        sut.ModifyTransformMatrix(1,2.45,3,4,-500.1234,6);
+        Assert.Equal("1 2.45 3 4 -500.1234 6 cm\n", await WrittenText());
+    }
 
 }
