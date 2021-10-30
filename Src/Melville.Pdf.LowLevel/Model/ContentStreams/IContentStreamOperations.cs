@@ -21,6 +21,11 @@ public interface IStateChangingCSOperations
     /// Content stream operator lineWidth w
     /// </summary>
     void SetLineWidth(double width);
+
+    /// <summary>
+    /// Content stream operator J
+    /// </summary>
+    void SetLineCap(LineCap cap);
 }
 
 public interface IStatePreservingCSOperations

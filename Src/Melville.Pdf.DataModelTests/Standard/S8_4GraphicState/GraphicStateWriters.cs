@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Xunit;
 
@@ -56,5 +57,14 @@ public class GraphicStateWriters
     {
         sut.SetLineWidth(43);
         Assert.Equal("43 w\n", await WrittenText());
+    }
+    [Theory]
+    [InlineData(LineCap.Butt)]
+    [InlineData(LineCap.Round)]
+    [InlineData(LineCap.Square)]
+    public async Task SetLineCap(LineCap cap)
+    {
+        sut.SetLineCap(cap);
+        Assert.Equal($"{(int)cap} J\n", await WrittenText());
     }
 }

@@ -49,4 +49,11 @@ public class ContentStreamWriter: IContentStreamOperations
         WriteSpace();
         WriteOperator(ContentStreamOperatorNames.w);
     }
+
+    public void SetLineCap(LineCap cap)
+    {
+        WriteDouble((double)cap);
+        WriteSpace();
+        WriteOperator(ContentStreamOperatorNames.J);
+    }
 }

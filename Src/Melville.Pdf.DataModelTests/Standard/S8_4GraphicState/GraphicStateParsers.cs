@@ -60,4 +60,14 @@ public class GraphicStateParsers
         target.Verify(i=>i.SetLineWidth(256));
         target.VerifyNoOtherCalls();
     }
+    [Theory]
+    [InlineData(LineCap.Butt)]
+    [InlineData(LineCap.Round)]
+    [InlineData(LineCap.Square)]
+    public async Task SetLineCap(LineCap cap)
+    {
+        await ParseString($"{(int)cap} J");
+        target.Verify(i=>i.SetLineCap(cap));
+        target.VerifyNoOtherCalls();
+    }
 }

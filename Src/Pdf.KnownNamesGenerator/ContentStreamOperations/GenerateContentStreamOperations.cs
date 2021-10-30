@@ -74,6 +74,7 @@ namespace Pdf.KnownNamesGenerator.ContentStreamOperations
             ("i", "i"),
             ("ID", "ID"),
             ("j", "j"),
+            ("J", "J"),
             ("K", "K"),
             ("k", "k"),
             ("l", "l"),

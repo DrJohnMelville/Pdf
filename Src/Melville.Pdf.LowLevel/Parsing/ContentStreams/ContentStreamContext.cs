@@ -90,6 +90,9 @@ public readonly struct ContentStreamContext
                 break;
             case ContentStreamOperatorValue.ID:
                 break;
+            case ContentStreamOperatorValue.J:
+                target.SetLineCap((LineCap)longs[0]);
+                break;
             case ContentStreamOperatorValue.j:
                 break;
             case ContentStreamOperatorValue.K:
