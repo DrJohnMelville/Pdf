@@ -8,16 +8,19 @@ public readonly struct ContentStreamContext
 {
     private readonly IContentStreamOperations target;
     private readonly List<double> doubles;
+    private readonly List<long> longs;
 
     public ContentStreamContext(IContentStreamOperations target)
     {
         this.target = target;
         doubles = new List<double>();
+        longs = new List<long>();
     }
 
-    public void HandleNumber(double doubleValue)
+    public void HandleNumber(double doubleValue, long longValue)
     {
         doubles.Add(doubleValue);
+        longs.Add(longValue);
     }
 
 
@@ -154,6 +157,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.v:
                 break;
             case ContentStreamOperatorValue.w:
+                target.SetLineWidth(doubles[0]);
                 break;
             case ContentStreamOperatorValue.W:
                 break;
@@ -175,5 +179,6 @@ public readonly struct ContentStreamContext
     private void ClearStacks()
     {
         doubles.Clear();
+        longs.Clear();
     }
 }

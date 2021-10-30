@@ -51,5 +51,10 @@ public class GraphicStateWriters
         sut.ModifyTransformMatrix(1,2.45,3,4,-500.1234,6);
         Assert.Equal("1 2.45 3 4 -500.1234 6 cm\n", await WrittenText());
     }
-
+    [Fact]
+    public async Task SetLineWidth()
+    {
+        sut.SetLineWidth(43);
+        Assert.Equal("43 w\n", await WrittenText());
+    }
 }

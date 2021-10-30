@@ -55,7 +55,7 @@ public class ContentStreamParser
     {
         var parser = new NumberWtihFractionParser();
         if (!parser.InnerTryParse(ref reader, bufferIsCompleted)) return false;
-        target.HandleNumber(parser.DoubleValue());
+        target.HandleNumber(parser.DoubleValue(), parser.IntegerValue());
         return true;
     }
 

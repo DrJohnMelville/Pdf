@@ -45,6 +45,8 @@ public class ContentStreamWriter: IContentStreamOperations
     
     public void SetLineWidth(double width)
     {
-        throw new System.NotImplementedException();
+        WriteDouble(width);
+        WriteSpace();
+        WriteOperator(ContentStreamOperatorNames.w);
     }
 }

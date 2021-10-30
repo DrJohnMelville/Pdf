@@ -53,4 +53,11 @@ public class GraphicStateParsers
         target.Verify(i=>i.ModifyTransformMatrix(1, 2, 3, 4, 5.5, -6));
         target.VerifyNoOtherCalls();
     }
+    [Fact]
+    public async Task SetLineWidthTest()
+    {
+        await ParseString("256 w");
+        target.Verify(i=>i.SetLineWidth(256));
+        target.VerifyNoOtherCalls();
+    }
 }
