@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Primitives;
 

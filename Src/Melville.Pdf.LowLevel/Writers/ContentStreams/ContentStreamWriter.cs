@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -13,21 +14,21 @@ public class ContentStreamWriter: IContentStreamOperations
     }
 
     private void WriteOperator(in ReadOnlySpan<byte> name)
-    {  
-        int length = name.Length + 1;
-        var span = destPipe.GetSpan(length);
-        name.CopyTo(span);
-        span[name.Length] = (byte)'\n';
-        destPipe.Advance(length);
+    {
+        destPipe.WriteBytes(name);
+        WriteNewLine();
     }
+    
+    private void WriteNewLine() => destPipe.WriteByte((byte)'\n');
+    private void WriteSpace() => destPipe.WriteByte((byte)' ');
 
     public void SaveGraphicsState() => WriteOperator(ContentStreamOperatorNames.q);
 
     public void RestoreGraphicsState() => WriteOperator(ContentStreamOperatorNames.Q);
 
-    public void ModifyTransformMatrix(params double[] xFromParameters)
+    public void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f)
     {
-        throw new System.NotImplementedException();
+        WriteOperator(ContentStreamOperatorNames.cm);
     }
 
     public void SetLineWidth(double width)

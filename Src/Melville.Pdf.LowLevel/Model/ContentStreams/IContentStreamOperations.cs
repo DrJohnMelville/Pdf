@@ -15,7 +15,7 @@ public interface IStateChangingCSOperations
     /// <summary>
     /// Content Stream Operator a b c d e f cm
     /// </summary>
-    void ModifyTransformMatrix(params double[] xFromParameters);
+    void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f);
 
     /// <summary>
     /// Content stream operator lineWidth w

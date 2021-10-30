@@ -1,15 +1,21 @@
 ﻿using System;
 using System.IO.Pipelines;
 
-namespace Melville.Pdf.LowLevel.Writers
+namespace Melville.Pdf.LowLevel.Writers;
+
+public static class PipeWriterExtension
 {
-    public static class PipeWriterExtension
+    public static void WriteBytes(this PipeWriter pw, ReadOnlySpan<byte> text)
     {
-        public static void WriteBytes(this PipeWriter pw, byte[] text)
-        {
-            var span = pw.GetSpan(text.Length);
-            text.AsSpan().CopyTo(span);
-            pw.Advance(text.Length);
-        }
+        var span = pw.GetSpan(text.Length);
+        text.CopyTo(span);
+        pw.Advance(text.Length);
+    }
+
+    public static void WriteByte(this PipeWriter pw, byte b)
+    {
+        var span = pw.GetSpan(1);
+        span[0] = b;
+        pw.Advance(1);
     }
 }

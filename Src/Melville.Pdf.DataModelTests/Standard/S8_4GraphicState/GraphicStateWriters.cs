@@ -45,7 +45,12 @@ public class GraphicStateWriters
         sut.SaveGraphicsState();
         sut.RestoreGraphicsState();
         Assert.Equal("q\nQ\n", await WrittenText());
-        
     }
+    // [Fact]
+    // public async Task ModifyTransformMatrix()
+    // {
+    //     sut.ModifyTransformMatrix(1,2,3,4,5,6);
+    //     Assert.Equal("1 2 3 4 5 6 cm\n", await WrittenText());
+    // }
 
 }

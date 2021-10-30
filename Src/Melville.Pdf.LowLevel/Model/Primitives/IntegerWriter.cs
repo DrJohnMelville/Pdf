@@ -18,7 +18,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
             target.Advance(Write(buffer, item));
         }
 
-        public static int Write(Span<byte> buffer, long item)
+        public static int Write(in Span<byte> buffer, long item)
         {
             if (item < 0)
             {
@@ -28,14 +28,14 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
             return WritePositiveNumber(buffer, value, CountDigits(value));
         }
 
-        private static int WriteNegativeNumber(Span<byte> buffer, long item)
+        private static int WriteNegativeNumber(in Span<byte> buffer, long item)
         {
             buffer[0] = (byte) '-';
             uint value = (uint) (-item);
             return WritePositiveNumber(buffer.Slice(1), value, CountDigits(value)) + 1;
         }
 
-        public static void WriteFixedWidthPositiveNumber(Span<byte> slice, long number, int width)
+        public static void WriteFixedWidthPositiveNumber(in Span<byte> slice, long number, int width)
         {
             VerifyValidWriteRequest(number, width);
             WritePositiveNumber(slice, (ulong)number, width);
@@ -47,7 +47,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives
                 throw new ArgumentException("Cannot write fixed width positive number here.");
         }
         
-        private static unsafe int WritePositiveNumber(Span<byte> slice, ulong value, int countDigits)
+        private static unsafe int WritePositiveNumber(in Span<byte> slice, ulong value, int countDigits)
         {
             var digits = countDigits;
             fixed (byte* current = slice)
