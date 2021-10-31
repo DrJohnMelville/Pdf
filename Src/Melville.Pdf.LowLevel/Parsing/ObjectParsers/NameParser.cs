@@ -10,7 +10,16 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
     public class NameParser: PdfAtomParser
     {
         public override bool TryParse(
-            ref SequenceReader<byte> bytes, bool final, IParsingReader source,[NotNullWhen(true)] out PdfObject? output)
+            ref SequenceReader<byte> bytes, bool final, IParsingReader source,
+            [NotNullWhen(true)] out PdfObject? output)
+        {
+            var ret = TryParse(ref bytes, final, out var name);
+            output = name;
+            return ret;
+        }
+
+        public static bool TryParse(
+            ref SequenceReader<byte> bytes, bool final, [NotNullWhen(true)]out PdfName? output)
         {
             output = null;
             if (!TrySkipSolidus(ref bytes)) return final;
@@ -18,7 +27,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
             return output is not null;
         }
 
-        private PdfName? GetNameText(ref SequenceReader<byte> bytes, bool final)
+        private static PdfName? GetNameText(ref SequenceReader<byte> bytes, bool final)
         {
             var length = 0;
             Span<byte> name = stackalloc byte[128]; // longest possible name per Annex C + 1

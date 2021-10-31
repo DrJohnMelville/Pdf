@@ -47,8 +47,16 @@ public class ContentStreamParser
         return (char)character switch
         {
             '.' or '+' or '-' or (>= '0' and <= '9') => ParseNumber(ref reader, bufferIsCompleted),
+            '/' => ParseName(ref reader, ref bufferIsCompleted),
             _ => ParseOperator(ref reader, bufferIsCompleted)
         };
+    }
+
+    private bool ParseName(ref SequenceReader<byte> reader, ref bool bufferIsCompleted)
+    {
+        if (!NameParser.TryParse(ref reader, bufferIsCompleted, out var name)) return false;
+        target.HandleName(name);
+        return true;
     }
 
     private static bool SkipWhiteSpaceAndBrackets(ref SequenceReader<byte> reader)

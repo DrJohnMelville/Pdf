@@ -10,11 +10,16 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
     {
         public static ValueTask<FlushResult> Write(PipeWriter target, PdfName name)
         {
+            WriteWithoutlush(target, name);
+            return target.FlushAsync();
+        }
+
+        public static void WriteWithoutlush(PipeWriter target, PdfName name)
+        {
             var length = 1 + CountBytes(name.Bytes);
             var span = target.GetSpan(length);
             Fill(span, name.Bytes, length);
             target.Advance(length);
-            return target.FlushAsync();
         }
 
         private static void Fill(Span<byte> span, byte[] nameBytes, int length)

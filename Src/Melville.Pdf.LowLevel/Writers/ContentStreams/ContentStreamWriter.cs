@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
@@ -81,5 +82,12 @@ public class ContentStreamWriter : IContentStreamOperations
         {
             WriteDoubleAndSpace(value);
         }
+    }
+
+    public void SetRenderIntent(RenderingIntentName intent)
+    {
+        NameWriter.WriteWithoutlush(destPipe, intent);
+        WriteSpace();
+        WriteOperator(ContentStreamOperatorNames.ri);
     }
 }

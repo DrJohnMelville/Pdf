@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Xunit;
 
@@ -106,5 +107,11 @@ public class GraphicStateWriters
     {
         sut.SetLineDashPattern(0, new double[]{0.54, 10});
         Assert.Equal("[0.54 10] 0 d\n", await WrittenText());
+    }
+    [Fact]
+    public async Task SetRenderingIntent()
+    {
+        sut.SetRenderIntent(RenderingIntentName.Perceptual);
+        Assert.Equal("/Perceptual ri\n", await WrittenText());
     }
 }

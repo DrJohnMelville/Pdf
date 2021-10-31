@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -45,6 +46,12 @@ public interface IStateChangingCSOperations
     /// Note the parameters are flipped from the PDF representation to accomodate a params extension method.
     /// </summary>
     void SetLineDashPattern(double dashPhase, ReadOnlySpan<double> dashArray);
+
+    /// <summary>
+    /// Content stream operator renderingIntent ri
+    /// </summary>
+    /// <param name="intent"></param>
+    void SetRenderIntent(RenderingIntentName intent);
 }
 
 public static class ContentStreamExtendedOperations

@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Moq;
 using Xunit;
@@ -85,6 +86,14 @@ public class GraphicStateParsers
         TestInput("[] 3 d",
             i => i.TestSetLineDashPattern(3, new double[0]));
 
+    [Fact]
+    public Task ParseRenderingIntent() =>
+        TestInput("/Perceptual ri", i => i.SetRenderIntent(RenderingIntentName.Perceptual));
+    [Fact]
+    public Task ParseRenderingIntentFail() =>
+        Assert.ThrowsAsync<PdfParseException>(()=>
+        TestInput("/Pages ri", i => i.SetRenderIntent(RenderingIntentName.Perceptual)));
+
     public class ConcreteCSO: IContentStreamOperations
     {
         public virtual void SaveGraphicsState()
@@ -122,5 +131,9 @@ public class GraphicStateParsers
         public void SetLineDashPattern(
             double dashPhase, ReadOnlySpan<double> dashArray) =>
             TestSetLineDashPattern(dashPhase, dashArray.ToArray());
+
+        public virtual void SetRenderIntent(RenderingIntentName intent)
+        {
+        }
     }
 }

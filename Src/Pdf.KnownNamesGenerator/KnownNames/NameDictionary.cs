@@ -56,6 +56,12 @@
             ("PdfDocEncoding", "PdfDocEncoding", "FontEncoding"),
             ("MacExpertEncoding", "MacExpertEncoding", "FontEncoding"),
             
+            //RenderingIntents
+            ("AbsoluteColoriMetric", "AbsoluteColoriMetric", "RenderingIntent"),
+            ("RelativeColoriMetric", "RelativeColoriMetric", "RenderingIntent"),
+            ("Saturation", "Saturation", "RenderingIntent"),
+            ("Perceptual", "Perceptual", "RenderingIntent"),
+            
             //Known
             ("AC", "AC", "Pdf"),
             ("Activation", "Activation", "Pdf"),
