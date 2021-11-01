@@ -22,8 +22,7 @@ public readonly struct ContentStreamPipeWriter
 
     public void WriteOperator(byte[] @operator, PdfName name)
     {
-        NameWriter.WriteWithoutlush(destPipe, name);
-        WriteSpace();
+        WriteName(name);
         WriteOperator(@operator);
     }
 
@@ -33,13 +32,21 @@ public readonly struct ContentStreamPipeWriter
         WriteOperator(operation);
     }
 
-    public void WriteOperator(in ReadOnlySpan<byte> operation, params double[] values)
+    public void WriteOperator(in ReadOnlySpan<byte> operation, params double[] values) =>
+        WriteOperator(operation, new ReadOnlySpan<double>(values));
+
+    public void WriteOperator(in ReadOnlySpan<byte> operation, in ReadOnlySpan<double> values)
+    {
+        WriteDoubleSpan(values);
+        WriteOperator(operation);
+    }
+
+    public void WriteDoubleSpan(in ReadOnlySpan<double> values)
     {
         foreach (var value in values)
         {
             WriteDoubleAndSpace(value);
         }
-        WriteOperator(operation);
     }
 
     public void WriteDoubleAndSpace(double d)
@@ -49,6 +56,12 @@ public readonly struct ContentStreamPipeWriter
     }
 
     public void WriteDouble(double d) => destPipe.Advance(DoubleWriter.Write(d, destPipe.GetSpan(25)));
+
+    public void WriteName(PdfName name)
+    {
+        NameWriter.WriteWithoutlush(destPipe, name);
+        WriteSpace();
+    }
 
     public void WriteNewLine() => destPipe.WriteByte((byte)'\n');
     public void WriteSpace() => destPipe.WriteByte((byte)' ');

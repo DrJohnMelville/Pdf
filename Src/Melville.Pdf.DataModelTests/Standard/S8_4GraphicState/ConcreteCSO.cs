@@ -84,4 +84,36 @@ public partial class ConcreteCSO: IContentStreamOperations
         double finalX, double finalY) {}
     
     public virtual void Rectangle(double x, double y, double width, double height){}
+    
+    public virtual void SetStrokingColorSpace(PdfName colorSpace){}
+    public virtual void SetNonstrokingColorSpace(PdfName colorSpace){}
+
+    public virtual void SetStrokeColor(in ReadOnlySpan<double> components) =>
+        TestSetStrokeColor(components.ToArray());
+    public virtual void TestSetStrokeColor(double[] components) { }
+
+    public virtual void SetStrokeColorExtended(PdfName? patternName, ReadOnlySpan<double> colors) =>
+        TestSetStrokeColorExtended(patternName, colors.ToArray());
+
+    public virtual void TestSetStrokeColorExtended(PdfName? pdfName, double[] toArray)
+    {
+    }
+    public virtual void SetNonstrokingColor(in ReadOnlySpan<double> components) =>
+        TestSetNonstrokingColor(components.ToArray());
+    public virtual void TestSetNonstrokingColor(double[] components) { }
+
+    public virtual void SetNonstrokingColorExtended(PdfName? patternName, ReadOnlySpan<double> colors) =>
+        TestSetNonstrokingColorExtended(patternName, colors.ToArray());
+
+    public virtual void TestSetNonstrokingColorExtended(PdfName? pdfName, double[] toArray)
+    {
+    }
+
+    public virtual void SetStrokeGray(double grayLevel){}
+    public virtual void SetStrokeRGB(double red, double green, double blue){}
+    public virtual void SetStrokeCMYK(double cyan, double magenta, double yellow, double black){}
+    public virtual void SetNonstrokingGray(double grayLevel){}
+    public virtual void SetNonstrokingRGB(double red, double green, double blue){}
+    public virtual void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black){}
+
 }

@@ -11,6 +11,7 @@ public static class ContentStreamExtendedOperations
     public static void SetLineDashPattern(
         this IStateChangingCSOperations target, double dashPhase = 0, params double[] dashArray) =>
         target.SetLineDashPattern(dashPhase, dashArray.AsSpan());
+ 
     public static PdfName LoadGraphicStateDictionary(
         this IStateChangingCSOperations target, string dictName)
     {
@@ -18,108 +19,119 @@ public static class ContentStreamExtendedOperations
         target.LoadGraphicStateDictionary(name);
         return name;
     }
+
+
+    public static void SetStandardStrokingColorSpace(
+        this IColorCSOperations target, ColorSpaceName colorSpace) =>
+        target.SetStrokingColorSpace(colorSpace);
+    public static void SetStandardNonstrokingColorSpace(
+        this IColorCSOperations target, ColorSpaceName colorSpace) =>
+        target.SetNonstrokingColorSpace(colorSpace);
+    
+    public static PdfName SetStrokingColorSpace(this IColorCSOperations target, string colorSpace)
+    {
+        var name = NameDirectory.Get(colorSpace);
+        target.SetStrokingColorSpace(name);
+        return name;
+    }
+    public static PdfName SetNonstrokingColorSpace(this IColorCSOperations target, string colorSpace)
+    {
+        var name = NameDirectory.Get(colorSpace);
+        target.SetNonstrokingColorSpace(name);
+        return name;
+    }
+
+    public static void SetStrokeColor(this IColorCSOperations target, params double[] colors) =>
+        target.SetStrokeColor(new ReadOnlySpan<double>(colors));
+    public static void SetStrokeColorExtended(this IColorCSOperations target, params double[] colors) =>
+        target.SetStrokeColorExtended(null, new ReadOnlySpan<double>(colors));
+    public static PdfName SetStrokeColorExtended(
+        this IColorCSOperations target, string name, params double[] colors)
+    {
+        var pdfName = NameDirectory.Get(name);
+        target.SetStrokeColorExtended(pdfName, new ReadOnlySpan<double>(colors));
+        return pdfName;
+    }
+    
+    public static void SetNonstrokingColor(this IColorCSOperations target, params double[] colors) =>
+        target.SetNonstrokingColor(new ReadOnlySpan<double>(colors));
+    public static void SetNonstrokingColorExtended(this IColorCSOperations target, params double[] colors) =>
+        target.SetNonstrokingColorExtended(null, new ReadOnlySpan<double>(colors));
+    public static PdfName SetNonstrokingColorExtended(
+        this IColorCSOperations target, string name, params double[] colors)
+    {
+        var pdfName = NameDirectory.Get(name);
+        target.SetNonstrokingColorExtended(pdfName, new ReadOnlySpan<double>(colors));
+        return pdfName;
+    }
+
 }
 
-public interface IDrawingCSOperations
+public interface IColorCSOperations
 {
     /// <summary>
-    /// Content stream operator x y m
+    /// Content stream operator CS
     /// </summary>
-    void MoveTo(double x, double y);
+    void SetStrokingColorSpace(PdfName colorSpace);
 
     /// <summary>
-    /// Content stream operator x y l
+    /// Content stream operator cs
     /// </summary>
-    void LineTo(double x, double y);
+    void SetNonstrokingColorSpace(PdfName colorSpace);
 
     /// <summary>
-    /// Content stream operator control1X control1Y control2X control2Y finalX finalY c
+    /// Content stream operator SC
     /// </summary>
-    void CurveTo(
-        double control1X, double control1Y,
-        double control2X, double control2Y,
-        double finalX, double finalY);
-
-    /// <summary>
-    /// Content stream operator control2X control2Y finalX finalY v
-    /// </summary>
-    void CurveToWithoutInitialControl(
-        double control2X, double control2Y,
-        double finalX, double finalY);
-
-    /// <summary>
-    /// Content stream operator control2X control2Y finalX finalY y
-    /// </summary>
-    void CurveToWithoutFinalControl(
-        double control1X, double control1Y,
-        double finalX, double finalY);
-
-    /// <summary>
-    /// Content stream operator h
-    /// </summary>
-    void ClosePath();
-
-    /// <summary>
-    /// Content stream operator x y width height re
-    /// </summary>
-    void Rectangle(double x, double y, double width, double height);
+    void SetStrokeColor(in ReadOnlySpan<double> components);
     
     /// <summary>
-    /// Content stream operator S
+    /// Content stream operator SCN
     /// </summary>
-    void StrokePath();
-    
-    /// <summary>
-    /// Content stream operator s
-    /// </summary>
-    void CloseAndStrokePath();
-    
-    /// <summary>
-    /// Content stream operator f
-    /// </summary>
-    void FillPath();
-    
-    /// <summary>
-    /// Content stream operator f*
-    /// </summary>
-    void FillPathEvenOdd();
-    
-    /// <summary>
-    /// Content stream operator B
-    /// </summary>
-    void FillAndStrokePath();
-    
-    /// <summary>
-    /// Content stream operator B*
-    /// </summary>
-    void FillAndStrokePathEvenOdd();
-    
-    /// <summary>
-    /// Content stream operator b
-    /// </summary>
-    void CloseFillAndStrokePath();
-    
-    /// <summary>
-    /// Content stream operator b*
-    /// </summary>
-    void CloseFillAndStrokePathEvenOdd();
+    void SetStrokeColorExtended(PdfName? patternName, ReadOnlySpan<double> colors);
 
     /// <summary>
-    /// Content stream operator n
+    /// Content stream operator sc
     /// </summary>
-    void EndPathWithNoOp();
+    void SetNonstrokingColor(in ReadOnlySpan<double> components);
+    
+    /// <summary>
+    /// Content stream operator scn
+    /// </summary>
+    void SetNonstrokingColorExtended(PdfName? patternName, ReadOnlySpan<double> colors);
+    
+    /// <summary>
+    /// Content stream operator G
+    /// </summary>
+    void SetStrokeGray(double grayLevel);
 
     /// <summary>
-    /// Content stream operator W
+    /// Content stream operator RG
     /// </summary>
-    void ClipToPath();
+    void SetStrokeRGB(double red, double green, double blue);
 
     /// <summary>
-    /// Content stream operator W*
+    /// Content stream operator K
     /// </summary>
-    void ClipToPathEvenOdd();
+    void SetStrokeCMYK(double cyan, double magenta, double yellow, double black);
+    
+    /// <summary>
+    /// Content stream operator g
+    /// </summary>
+    void SetNonstrokingGray(double grayLevel);
+
+    /// <summary>
+    /// Content stream operator rg
+    /// </summary>
+    void SetNonstrokingRGB(double red, double green, double blue);
+
+    /// <summary>
+    /// Content stream operator k
+    /// </summary>
+    void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black);
+
 }
 
-public interface IContentStreamOperations: IStateChangingCSOperations, IDrawingCSOperations
+public interface IContentStreamOperations: 
+    IStateChangingCSOperations, IDrawingCSOperations, IColorCSOperations
 {
 }

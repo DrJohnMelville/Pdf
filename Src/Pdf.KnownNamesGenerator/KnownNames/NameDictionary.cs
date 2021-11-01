@@ -62,6 +62,12 @@
             ("Saturation", "Saturation", "RenderingIntent"),
             ("Perceptual", "Perceptual", "RenderingIntent"),
             
+            //Standard ColorSpaces
+            ("DeviceGray", "DeviceGray", "ColorSpace"),
+            ("DeviceRGB", "DeviceRGB", "ColorSpace"),
+            ("DeviceCMYK", "DeviceCMYK", "ColorSpace"),
+            ("DevicePattern", "DevicePattern", "ColorSpace"),
+            
             //Known
             ("AC", "AC", "Pdf"),
             ("Activation", "Activation", "Pdf"),
