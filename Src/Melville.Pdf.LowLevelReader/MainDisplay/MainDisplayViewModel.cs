@@ -7,31 +7,30 @@ using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevelReader.DocumentParts;
 
-namespace Melville.Pdf.LowLevelReader.MainDisplay
-{
-    public interface ICloseApp
-    {
-        public void Close();
-    }
-    [OnDisplayed(nameof(OpenFile))]
-    public partial class MainDisplayViewModel
-    {
-        [AutoNotify] private DocumentPart[] root = Array.Empty<DocumentPart>();
-        [AutoNotify] private DocumentPart? selected;
+namespace Melville.Pdf.LowLevelReader.MainDisplay;
 
-        public async Task OpenFile([FromServices]IOpenSaveFile dlg, [FromServices]IPartParser parser, 
-            [FromServices] ICloseApp closeApp, IWaitingService wait)
+public interface ICloseApp
+{
+    public void Close();
+}
+[OnDisplayed(nameof(OpenFile))]
+public partial class MainDisplayViewModel
+{
+    [AutoNotify] private DocumentPart[] root = Array.Empty<DocumentPart>();
+    [AutoNotify] private DocumentPart? selected;
+
+    public async Task OpenFile([FromServices]IOpenSaveFile dlg, [FromServices]IPartParser parser, 
+        [FromServices] ICloseApp closeApp, IWaitingService wait)
+    {
+        var file = 
+            dlg.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open");
+        if (file != null)
         {
-            var file = 
-                dlg.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open");
-            if (file != null)
-            {
-                Root = await parser.ParseAsync(file, wait);
-            }
-            else
-            {
-                closeApp.Close();
-            }
+            Root = await parser.ParseAsync(file, wait);
+        }
+        else
+        {
+            closeApp.Close();
         }
     }
 }

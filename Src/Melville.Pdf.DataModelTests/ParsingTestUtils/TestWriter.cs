@@ -9,30 +9,29 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-namespace Melville.Pdf.DataModelTests.ParsingTestUtils
+namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
+
+public class TestWriter
 {
-    public class TestWriter
+    private readonly MultiBufferStream target = new();
+    public PipeWriter Writer { get; }
+
+    public TestWriter()
     {
-        private readonly MultiBufferStream target = new();
-        public PipeWriter Writer { get; }
-
-        public TestWriter()
-        {
-            Writer = PipeWriter.Create(target);
-        }
-
-        public string Result() => ExtendedAsciiEncoding.ExtendedAsciiString(
-            target.CreateReader().ReadToArray());
+        Writer = PipeWriter.Create(target);
     }
 
-    public static class TestWriterOperations
+    public string Result() => ExtendedAsciiEncoding.ExtendedAsciiString(
+        target.CreateReader().ReadToArray());
+}
+
+public static class TestWriterOperations
+{
+    public static async ValueTask<string> WriteToStringAsync(this PdfObject obj)
     {
-        public static async ValueTask<string> WriteToStringAsync(this PdfObject obj)
-        {
-            var writer = new TestWriter();
-            var objWriter = new PdfObjectWriter(writer.Writer);
-            await obj.Visit(objWriter);
-            return writer.Result();
-        }
+        var writer = new TestWriter();
+        var objWriter = new PdfObjectWriter(writer.Writer);
+        await obj.Visit(objWriter);
+        return writer.Result();
     }
 }

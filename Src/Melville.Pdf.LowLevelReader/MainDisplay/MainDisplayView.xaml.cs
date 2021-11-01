@@ -1,12 +1,11 @@
 ﻿using System.Windows.Controls;
 
-namespace Melville.Pdf.LowLevelReader.MainDisplay
+namespace Melville.Pdf.LowLevelReader.MainDisplay;
+
+public partial class MainDisplayView : UserControl
 {
-    public partial class MainDisplayView : UserControl
+    public MainDisplayView()
     {
-        public MainDisplayView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

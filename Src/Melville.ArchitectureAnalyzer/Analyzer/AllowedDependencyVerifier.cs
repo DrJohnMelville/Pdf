@@ -1,24 +1,23 @@
 ﻿using ArchitectureAnalyzer.Models;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace ArchitectureAnalyzer.Analyzer
+namespace ArchitectureAnalyzer.Analyzer;
+
+public class AllowedDependencyVerifier
 {
-    public class AllowedDependencyVerifier
+    private readonly IDependencyRules rules;
+
+    public AllowedDependencyVerifier(IDependencyRules rules)
     {
-        private readonly IDependencyRules rules;
+        this.rules = rules;
+    }
 
-        public AllowedDependencyVerifier(IDependencyRules rules)
+    public void CheckTypeAction(SyntaxNodeAnalysisContext context)
+    {
+        if (context.EnclosingTypeName() is { } location)
         {
-            this.rules = rules;
-        }
-
-        public void CheckTypeAction(SyntaxNodeAnalysisContext context)
-        {
-            if (context.EnclosingTypeName() is { } location)
-            {
-                new SingleUsageDependencyVerifier(context, 
-                    i=>rules.ErrorFromReference(location,i)).CheckReference();
-            }
+            new SingleUsageDependencyVerifier(context, 
+                i=>rules.ErrorFromReference(location,i)).CheckReference();
         }
     }
 }

@@ -3,33 +3,32 @@ using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
-namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation
+namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
+
+public class AesEncryptor : ICipherOperations
 {
-    public class AesEncryptor : ICipherOperations
+    private readonly Aes encryptor;
+
+    public AesEncryptor(Aes encryptor)
     {
-        private readonly Aes encryptor;
+        this.encryptor = encryptor;
+    }
 
-        public AesEncryptor(Aes encryptor)
-        {
-            this.encryptor = encryptor;
-        }
+    public byte[] CryptSpan(byte[] input)
+    {
+        using var ms = new MemoryStream();
+        ms.Write(encryptor.IV);
+        using var cryptStream = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write);
+        cryptStream.Write(input);
+        cryptStream.FlushFinalBlock();
+        return ms.ToArray();
+    }
 
-        public byte[] CryptSpan(byte[] input)
-        {
-            using var ms = new MemoryStream();
-            ms.Write(encryptor.IV);
-            using var cryptStream = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write);
-            cryptStream.Write(input);
-            cryptStream.FlushFinalBlock();
-            return ms.ToArray();
-        }
-
-        public Stream CryptStream(Stream input)
-        {
-            return new ConcatStream(
-                new MemoryStream(encryptor.IV),
-                new CryptoStream(input, encryptor.CreateEncryptor(), CryptoStreamMode.Read)
-            );
-        }
+    public Stream CryptStream(Stream input)
+    {
+        return new ConcatStream(
+            new MemoryStream(encryptor.IV),
+            new CryptoStream(input, encryptor.CreateEncryptor(), CryptoStreamMode.Read)
+        );
     }
 }

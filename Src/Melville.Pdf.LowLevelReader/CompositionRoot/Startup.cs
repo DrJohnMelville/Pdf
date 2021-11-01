@@ -12,48 +12,47 @@ using Melville.Pdf.LowLevelReader.Services;
 using Melville.WpfAppFramework.HttpsServices;
 using Melville.WpfAppFramework.StartupBases;
 
-namespace Melville.Pdf.LowLevelReader.CompositionRoot
+namespace Melville.Pdf.LowLevelReader.CompositionRoot;
+
+public class Startup: StartupBase
 {
-    public class Startup: StartupBase
+    [STAThread]
+    public static void Main(string[] arguments)
     {
-        [STAThread]
-        public static void Main(string[] arguments)
-        {
-            ApplicationRootImplementation.Run(new Startup(arguments));
-        }
+        ApplicationRootImplementation.Run(new Startup(arguments));
+    }
 
-        private Startup(string[] arguments) : base(arguments)
-        {
-        }
+    private Startup(string[] arguments) : base(arguments)
+    {
+    }
 
-        protected override void RegisterWithIocContainer(IBindableIocService service)
-        {
-            service.AddLogging();
-            service.RegisterHomeViewModel<MainDisplayViewModel>();
-            RegisterMainWindow(service);
-            TryRegistedCommandLine(service);
-        }
+    protected override void RegisterWithIocContainer(IBindableIocService service)
+    {
+        service.AddLogging();
+        service.RegisterHomeViewModel<MainDisplayViewModel>();
+        RegisterMainWindow(service);
+        TryRegistedCommandLine(service);
+    }
 
-        private void TryRegistedCommandLine(IBindableIocService service)
+    private void TryRegistedCommandLine(IBindableIocService service)
+    {
+        if (CommandLineParameters.Length > 0 && File.Exists(CommandLineParameters[0]))
         {
-            if (CommandLineParameters.Length > 0 && File.Exists(CommandLineParameters[0]))
-            {
-                service.Bind<IOpenSaveFile>().ToConstant(new FakeOpenAdapter(CommandLineParameters[0]));
-            }
+            service.Bind<IOpenSaveFile>().ToConstant(new FakeOpenAdapter(CommandLineParameters[0]));
         }
+    }
 
-        private static void RegisterMainWindow(IBindableIocService service)
-        {
-            service.Bind<Application>().ToSelf()
-                .FixResult(i=>i.ShutdownMode=ShutdownMode.OnMainWindowClose)
-                .AsSingleton();
-            service.Bind<IRootNavigationWindow>()
-                .And<Window>()
-                .To<RootNavigationWindow>()
-                .AsSingleton();
-            service.Bind<IPasswordSource>().To<PasswordQuery>();
-            service.Bind<ICloseApp>().To<CloseWpfApp>();
-            service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
-        }
+    private static void RegisterMainWindow(IBindableIocService service)
+    {
+        service.Bind<Application>().ToSelf()
+            .FixResult(i=>i.ShutdownMode=ShutdownMode.OnMainWindowClose)
+            .AsSingleton();
+        service.Bind<IRootNavigationWindow>()
+            .And<Window>()
+            .To<RootNavigationWindow>()
+            .AsSingleton();
+        service.Bind<IPasswordSource>().To<PasswordQuery>();
+        service.Bind<ICloseApp>().To<CloseWpfApp>();
+        service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
     }
 }

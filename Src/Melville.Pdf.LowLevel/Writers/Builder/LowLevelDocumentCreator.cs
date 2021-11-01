@@ -4,38 +4,37 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Writers.Builder
+namespace Melville.Pdf.LowLevel.Writers.Builder;
+
+public interface ILowLevelDocumentCreator: ILowLevelDocumentBuilder
 {
-    public interface ILowLevelDocumentCreator: ILowLevelDocumentBuilder
+    PdfLowLevelDocument CreateDocument();
+    void SetVersion(byte major, byte minor);
+}
+
+public partial class LowLevelDocumentCreator: ILowLevelDocumentCreator
+{
+    private byte major = 1;
+    private byte minor = 7;
+    private readonly LowLevelDocumentBuilder data;
+
+    public LowLevelDocumentCreator(LowLevelDocumentBuilder? data = null)
     {
-        PdfLowLevelDocument CreateDocument();
-        void SetVersion(byte major, byte minor);
+        this.data = data ?? new LowLevelDocumentBuilder();
     }
 
-    public partial class LowLevelDocumentCreator: ILowLevelDocumentCreator
-    {
-        private byte major = 1;
-        private byte minor = 7;
-        private readonly LowLevelDocumentBuilder data;
-
-        public LowLevelDocumentCreator(LowLevelDocumentBuilder? data = null)
-        {
-            this.data = data ?? new LowLevelDocumentBuilder();
-        }
-
-        [DelegateTo]
-        private ILowLevelDocumentBuilder Builder => data;
+    [DelegateTo]
+    private ILowLevelDocumentBuilder Builder => data;
     
-        public void SetVersion(byte major, byte minor)
-        {
-            this.major = major;
-            this.minor = minor;
-        }
-
-        public PdfLowLevelDocument CreateDocument() => 
-            new(major, minor, data.CreateTrailerDictionary(), CreateObjectList());
-
-        private Dictionary<(int, int), PdfIndirectReference> CreateObjectList() => 
-            data.Objects.ToDictionary(item => (item.Target.ObjectNumber, item.Target.GenerationNumber));
+    public void SetVersion(byte major, byte minor)
+    {
+        this.major = major;
+        this.minor = minor;
     }
+
+    public PdfLowLevelDocument CreateDocument() => 
+        new(major, minor, data.CreateTrailerDictionary(), CreateObjectList());
+
+    private Dictionary<(int, int), PdfIndirectReference> CreateObjectList() => 
+        data.Objects.ToDictionary(item => (item.Target.ObjectNumber, item.Target.GenerationNumber));
 }

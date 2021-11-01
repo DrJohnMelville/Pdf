@@ -1,62 +1,61 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Melville.Pdf.LowLevelReader.PasswordDialogs
+namespace Melville.Pdf.LowLevelReader.PasswordDialogs;
+
+public class BindablePasswordBox : Decorator
 {
-    public class BindablePasswordBox : Decorator
+    public static readonly DependencyProperty PasswordProperty;
+
+    private bool isPreventCallback;
+    private RoutedEventHandler savedCallback;
+
+    static BindablePasswordBox()
     {
-        public static readonly DependencyProperty PasswordProperty;
+        PasswordProperty = DependencyProperty.Register(
+            "Password",
+            typeof(string),
+            typeof(BindablePasswordBox),
+            new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordPropertyChanged))
+        );
+    }
 
-        private bool isPreventCallback;
-        private RoutedEventHandler savedCallback;
+    public BindablePasswordBox()
+    {
+        savedCallback = HandlePasswordChanged;
 
-        static BindablePasswordBox()
+        PasswordBox passwordBox = new PasswordBox();
+        passwordBox.PasswordChanged += savedCallback;
+        Child = passwordBox;
+    }
+
+    public string Password
+    {
+        get => (string) GetValue(PasswordProperty);
+        set => SetValue(PasswordProperty, value);
+    }
+
+    private static void OnPasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs eventArgs)
+    {
+        BindablePasswordBox bindablePasswordBox = (BindablePasswordBox) d;
+        PasswordBox passwordBox = (PasswordBox) bindablePasswordBox.Child;
+
+        if (bindablePasswordBox.isPreventCallback)
         {
-            PasswordProperty = DependencyProperty.Register(
-                "Password",
-                typeof(string),
-                typeof(BindablePasswordBox),
-                new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordPropertyChanged))
-            );
+            return;
         }
 
-        public BindablePasswordBox()
-        {
-            savedCallback = HandlePasswordChanged;
+        passwordBox.PasswordChanged -= bindablePasswordBox.savedCallback;
+        passwordBox.Password = (eventArgs.NewValue != null) ? eventArgs.NewValue.ToString() : "";
+        passwordBox.PasswordChanged += bindablePasswordBox.savedCallback;
+    }
 
-            PasswordBox passwordBox = new PasswordBox();
-            passwordBox.PasswordChanged += savedCallback;
-            Child = passwordBox;
-        }
+    private void HandlePasswordChanged(object sender, RoutedEventArgs eventArgs)
+    {
+        PasswordBox passwordBox = (PasswordBox) sender;
 
-        public string Password
-        {
-            get => (string) GetValue(PasswordProperty);
-            set => SetValue(PasswordProperty, value);
-        }
-
-        private static void OnPasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs eventArgs)
-        {
-            BindablePasswordBox bindablePasswordBox = (BindablePasswordBox) d;
-            PasswordBox passwordBox = (PasswordBox) bindablePasswordBox.Child;
-
-            if (bindablePasswordBox.isPreventCallback)
-            {
-                return;
-            }
-
-            passwordBox.PasswordChanged -= bindablePasswordBox.savedCallback;
-            passwordBox.Password = (eventArgs.NewValue != null) ? eventArgs.NewValue.ToString() : "";
-            passwordBox.PasswordChanged += bindablePasswordBox.savedCallback;
-        }
-
-        private void HandlePasswordChanged(object sender, RoutedEventArgs eventArgs)
-        {
-            PasswordBox passwordBox = (PasswordBox) sender;
-
-            isPreventCallback = true;
-            Password = passwordBox.Password;
-            isPreventCallback = false;
-        }
+        isPreventCallback = true;
+        Password = passwordBox.Password;
+        isPreventCallback = false;
     }
 }

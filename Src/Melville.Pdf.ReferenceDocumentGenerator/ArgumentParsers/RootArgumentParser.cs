@@ -1,24 +1,23 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.ReferenceDocumentGenerator.Targets;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers
-{
-    public interface IRootParser
-    {
-        ValueTask Parse(string argument);
-        ITarget Target { get; set; }
-    }
-    public class RootArgumentParser: IRootParser
-    {
-        private readonly IArgumentParser defaultParser;
-        private IArgumentParser nextParser;
-        public ITarget Target { get; set; } = new ViewTarget();
+namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
-        public RootArgumentParser(IArgumentParser defaultParser)
-        {
-            this.nextParser = this.defaultParser = defaultParser;
-        }
-        public async ValueTask Parse(string argument) => 
-            nextParser = (await nextParser.ParseArgumentAsync(argument, this)) ?? defaultParser;
+public interface IRootParser
+{
+    ValueTask Parse(string argument);
+    ITarget Target { get; set; }
+}
+public class RootArgumentParser: IRootParser
+{
+    private readonly IArgumentParser defaultParser;
+    private IArgumentParser nextParser;
+    public ITarget Target { get; set; } = new ViewTarget();
+
+    public RootArgumentParser(IArgumentParser defaultParser)
+    {
+        this.nextParser = this.defaultParser = defaultParser;
     }
+    public async ValueTask Parse(string argument) => 
+        nextParser = (await nextParser.ParseArgumentAsync(argument, this)) ?? defaultParser;
 }

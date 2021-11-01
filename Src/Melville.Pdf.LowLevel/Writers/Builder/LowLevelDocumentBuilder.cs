@@ -4,148 +4,147 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Writers.Builder
+namespace Melville.Pdf.LowLevel.Writers.Builder;
+
+public interface ILowLevelDocumentBuilder
 {
-    public interface ILowLevelDocumentBuilder
-    {
-        PdfIndirectReference AsIndirectReference(PdfObject? value = null);
-        void AssignValueToReference(PdfIndirectReference reference, PdfObject value);
-        PdfIndirectReference Add(PdfObject item);
-        public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation);
-        void AddToTrailerDictionary(PdfName key, PdfObject item);
-        public PdfArray EnsureDocumentHasId();
-        public byte[] UserPassword { get; set; }
-        IAsyncDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
-    }
+    PdfIndirectReference AsIndirectReference(PdfObject? value = null);
+    void AssignValueToReference(PdfIndirectReference reference, PdfObject value);
+    PdfIndirectReference Add(PdfObject item);
+    public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation);
+    void AddToTrailerDictionary(PdfName key, PdfObject item);
+    public PdfArray EnsureDocumentHasId();
+    public byte[] UserPassword { get; set; }
+    IAsyncDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
+}
 
-    public static class LowLevelDocumentBuilderOperations
-    {
-        public static void AddRootElement(
-            this ILowLevelDocumentBuilder creator, PdfDictionary rootElt) =>
-            creator.AddToTrailerDictionary(KnownNames.Root, creator.Add(rootElt));
-    }
+public static class LowLevelDocumentBuilderOperations
+{
+    public static void AddRootElement(
+        this ILowLevelDocumentBuilder creator, PdfDictionary rootElt) =>
+        creator.AddToTrailerDictionary(KnownNames.Root, creator.Add(rootElt));
+}
 
-    public static class BuildEncryptedDocument
+public static class BuildEncryptedDocument
+{
+    public static void AddEncryption(
+        this ILowLevelDocumentBuilder builder,ILowLevelDocumentEncryptor encryptor)
     {
-        public static void AddEncryption(
-            this ILowLevelDocumentBuilder builder,ILowLevelDocumentEncryptor encryptor)
-        {
-            builder.UserPassword = encryptor.UserPassword;
-            builder.AddToTrailerDictionary(
-                KnownNames.Encrypt,
-                builder.Add(
-                    encryptor.CreateEncryptionDictionary(builder.EnsureDocumentHasId())));
-        }
+        builder.UserPassword = encryptor.UserPassword;
+        builder.AddToTrailerDictionary(
+            KnownNames.Encrypt,
+            builder.Add(
+                encryptor.CreateEncryptionDictionary(builder.EnsureDocumentHasId())));
+    }
         
-    }
+}
     
-    public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
+public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
+{
+    private int nextObject;
+    public List<PdfIndirectReference> Objects { get;  }= new();
+    private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
+    private ObjectStreamBuilder? objectStreamBuilder;
+
+    public byte[] UserPassword { get; set; } = Array.Empty<byte>();
+
+    public LowLevelDocumentBuilder(int nextObject = 1)
     {
-        private int nextObject;
-        public List<PdfIndirectReference> Objects { get;  }= new();
-        private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
-        private ObjectStreamBuilder? objectStreamBuilder;
-
-        public byte[] UserPassword { get; set; } = Array.Empty<byte>();
-
-        public LowLevelDocumentBuilder(int nextObject = 1)
-        {
-            this.nextObject = nextObject;
-        }
+        this.nextObject = nextObject;
+    }
         
-        public PdfIndirectReference AsIndirectReference(PdfObject? value = null) =>
-            value switch
-            {
-                PdfIndirectReference pir => pir,
-                PdfIndirectObject pio => new PdfIndirectReference(pio),
-                _ => new(new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
-            };
-
-        public void AssignValueToReference(PdfIndirectReference reference, PdfObject value)
+    public PdfIndirectReference AsIndirectReference(PdfObject? value = null) =>
+        value switch
         {
-            ((IMultableIndirectObject)reference.Target).SetValue(value);
-        }
-        public PdfIndirectReference Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
-        public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation) => 
-            InnerAdd(new PdfIndirectReference(new PdfIndirectObject(objectNumber, generation, item)));
+            PdfIndirectReference pir => pir,
+            PdfIndirectObject pio => new PdfIndirectReference(pio),
+            _ => new(new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
+        };
 
-        private PdfIndirectReference InnerAdd(PdfIndirectReference item)
+    public void AssignValueToReference(PdfIndirectReference reference, PdfObject value)
+    {
+        ((IMultableIndirectObject)reference.Target).SetValue(value);
+    }
+    public PdfIndirectReference Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
+    public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation) => 
+        InnerAdd(new PdfIndirectReference(new PdfIndirectObject(objectNumber, generation, item)));
+
+    private PdfIndirectReference InnerAdd(PdfIndirectReference item)
+    {
+        if (!TryWriteToObjectStream(item))
         {
-            if (!TryWriteToObjectStream(item))
-            {
-                Objects.Add(item);
-            }
-            return item;
+            Objects.Add(item);
         }
+        return item;
+    }
 
-        private bool TryWriteToObjectStream(PdfIndirectReference item) =>
-            objectStreamBuilder is not null && objectStreamBuilder.TryAddRef(item.Target);
+    private bool TryWriteToObjectStream(PdfIndirectReference item) =>
+        objectStreamBuilder is not null && objectStreamBuilder.TryAddRef(item.Target);
 
-        public void AddToTrailerDictionary(PdfName key, PdfObject item) => 
-            trailerDictionaryItems[key] = item;
+    public void AddToTrailerDictionary(PdfName key, PdfObject item) => 
+        trailerDictionaryItems[key] = item;
         
-        public PdfDictionary CreateTrailerDictionary()
+    public PdfDictionary CreateTrailerDictionary()
+    {
+        AddLengthToTrailerDictionary();
+        return new(new Dictionary<PdfName, PdfObject>(trailerDictionaryItems));
+    }
+    private void AddLengthToTrailerDictionary()
+    {
+        AddToTrailerDictionary(KnownNames.Size, new PdfInteger(nextObject));
+    }
+
+    public PdfArray EnsureDocumentHasId() =>
+        trailerDictionaryItems.TryGetValue(KnownNames.ID, out var val) && val is PdfArray ret
+            ? ret
+            : AddNewIdArray();
+
+    private PdfArray AddNewIdArray()
+    {
+        var array = NewIdArray();
+        AddToTrailerDictionary(KnownNames.ID, array);
+        return array;
+    }
+
+    private PdfArray NewIdArray() => new(IdElement(), IdElement());
+
+    private PdfString IdElement()
+    {
+        var ret = new byte[32];
+        Guid.NewGuid().TryWriteBytes(ret);
+        Guid.NewGuid().TryWriteBytes(ret.AsSpan(16));
+        return new PdfString(ret);
+    }
+
+    public IAsyncDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null)
+    {
+        if (objectStreamBuilder != null)
+            throw new InvalidOperationException("Cannot nest object stream contents");
+        objectStreamBuilder = new ObjectStreamBuilder();
+        return new ObjectStreamContextImpl(this, 
+            ExpandDefaultBuilder(dictionaryBuilder));
+    }
+
+    private static DictionaryBuilder ExpandDefaultBuilder(DictionaryBuilder? dictionaryBuilder) => 
+        dictionaryBuilder?? new DictionaryBuilder().WithFilter(FilterName.FlateDecode);
+
+    private class ObjectStreamContextImpl : IAsyncDisposable
+    {
+        private readonly LowLevelDocumentBuilder parent;
+        private readonly DictionaryBuilder dictionaryBuilder;
+
+        public ObjectStreamContextImpl(LowLevelDocumentBuilder parent, DictionaryBuilder dictionaryBuilder)
         {
-            AddLengthToTrailerDictionary();
-            return new(new Dictionary<PdfName, PdfObject>(trailerDictionaryItems));
+            this.parent = parent;
+            this.dictionaryBuilder = dictionaryBuilder;
         }
-        private void AddLengthToTrailerDictionary()
+
+        public async ValueTask DisposeAsync()
         {
-            AddToTrailerDictionary(KnownNames.Size, new PdfInteger(nextObject));
-        }
-
-        public PdfArray EnsureDocumentHasId() =>
-            trailerDictionaryItems.TryGetValue(KnownNames.ID, out var val) && val is PdfArray ret
-                ? ret
-                : AddNewIdArray();
-
-        private PdfArray AddNewIdArray()
-        {
-            var array = NewIdArray();
-            AddToTrailerDictionary(KnownNames.ID, array);
-            return array;
-        }
-
-        private PdfArray NewIdArray() => new(IdElement(), IdElement());
-
-        private PdfString IdElement()
-        {
-            var ret = new byte[32];
-            Guid.NewGuid().TryWriteBytes(ret);
-            Guid.NewGuid().TryWriteBytes(ret.AsSpan(16));
-            return new PdfString(ret);
-        }
-
-        public IAsyncDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null)
-        {
-            if (objectStreamBuilder != null)
-                throw new InvalidOperationException("Cannot nest object stream contents");
-            objectStreamBuilder = new ObjectStreamBuilder();
-            return new ObjectStreamContextImpl(this, 
-                ExpandDefaultBuilder(dictionaryBuilder));
-        }
-
-        private static DictionaryBuilder ExpandDefaultBuilder(DictionaryBuilder? dictionaryBuilder) => 
-            dictionaryBuilder?? new DictionaryBuilder().WithFilter(FilterName.FlateDecode);
-
-        private class ObjectStreamContextImpl : IAsyncDisposable
-        {
-            private readonly LowLevelDocumentBuilder parent;
-            private readonly DictionaryBuilder dictionaryBuilder;
-
-            public ObjectStreamContextImpl(LowLevelDocumentBuilder parent, DictionaryBuilder dictionaryBuilder)
-            {
-                this.parent = parent;
-                this.dictionaryBuilder = dictionaryBuilder;
-            }
-
-            public async ValueTask DisposeAsync()
-            {
-                var obs = parent.objectStreamBuilder ??
-                          throw new InvalidOperationException("No parent object stream builder");
-                parent.objectStreamBuilder = null;
-                parent.Add(await obs.CreateStream(dictionaryBuilder));
-            }
+            var obs = parent.objectStreamBuilder ??
+                      throw new InvalidOperationException("No parent object stream builder");
+            parent.objectStreamBuilder = null;
+            parent.Add(await obs.CreateStream(dictionaryBuilder));
         }
     }
 }

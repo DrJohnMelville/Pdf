@@ -5,54 +5,53 @@ using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives
+namespace Melville.Pdf.LowLevel.Model.Primitives;
+
+public partial class CountingPipeReader : PipeReader
 {
-    public partial class CountingPipeReader : PipeReader
+    [DelegateTo()] private PipeReader inner;
+    public long Position { get; private set; }
+    private ReadOnlySequence<byte> currentSequence;
+
+    public CountingPipeReader(PipeReader inner)
     {
-        [DelegateTo()] private PipeReader inner;
-        public long Position { get; private set; }
-        private ReadOnlySequence<byte> currentSequence;
+        this.inner = inner;
+    }
 
-        public CountingPipeReader(PipeReader inner)
+    public override bool TryRead(out ReadResult result)
+    {
+        var succeeded = inner.TryRead(out result);
+        if (succeeded)
         {
-            this.inner = inner;
+            currentSequence = result.Buffer;
         }
+        return succeeded;
+    }
+    public override async ValueTask<ReadResult> ReadAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var ret = await inner.ReadAsync(cancellationToken);
+        currentSequence = ret.Buffer;
+        return ret;
+    }
 
-        public override bool TryRead(out ReadResult result)
-        {
-            var succeeded = inner.TryRead(out result);
-            if (succeeded)
-            {
-                currentSequence = result.Buffer;
-            }
-            return succeeded;
-        }
-        public override async ValueTask<ReadResult> ReadAsync(
-            CancellationToken cancellationToken = default)
-        {
-            var ret = await inner.ReadAsync(cancellationToken);
-            currentSequence = ret.Buffer;
-            return ret;
-        }
+    public void MarkSequenceAsExamined() =>
+        AdvanceTo(currentSequence.Start, currentSequence.End);
 
-        public void MarkSequenceAsExamined() =>
-            AdvanceTo(currentSequence.Start, currentSequence.End);
+    public override void AdvanceTo(SequencePosition consumed)
+    {
+        IncrementPosition(consumed);
+        inner.AdvanceTo(consumed);
+    }
 
-        public override void AdvanceTo(SequencePosition consumed)
-        {
-            IncrementPosition(consumed);
-            inner.AdvanceTo(consumed);
-        }
+    public override void AdvanceTo(SequencePosition consumed, SequencePosition examined)
+    {
+        IncrementPosition(consumed);
+        inner.AdvanceTo(consumed, examined);
+    }
 
-        public override void AdvanceTo(SequencePosition consumed, SequencePosition examined)
-        {
-            IncrementPosition(consumed);
-            inner.AdvanceTo(consumed, examined);
-        }
-
-        private void IncrementPosition(SequencePosition consumed)
-        {
-            Position += currentSequence.Slice(0, consumed).Length;
-        }
+    private void IncrementPosition(SequencePosition consumed)
+    {
+        Position += currentSequence.Slice(0, consumed).Length;
     }
 }

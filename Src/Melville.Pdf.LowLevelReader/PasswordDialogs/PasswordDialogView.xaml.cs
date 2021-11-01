@@ -1,12 +1,11 @@
 ﻿using System.Windows.Controls;
 
-namespace Melville.Pdf.LowLevelReader.PasswordDialogs
+namespace Melville.Pdf.LowLevelReader.PasswordDialogs;
+
+public partial class PasswordDialogView : UserControl
 {
-    public partial class PasswordDialogView : UserControl
+    public PasswordDialogView()
     {
-        public PasswordDialogView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

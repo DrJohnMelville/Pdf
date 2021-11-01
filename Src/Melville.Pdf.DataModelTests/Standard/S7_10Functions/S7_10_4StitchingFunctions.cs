@@ -8,61 +8,60 @@ using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions
+namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
+
+public class S7_10_4StitchingFunctions
 {
-    public class S7_10_4StitchingFunctions
+    private PdfDictionary LinearMapping(int min, int max)
     {
-        private PdfDictionary LinearMapping(int min, int max)
-        {
-            var builder = new ExponentialFunctionBuilder(1);
-            builder.AddFunction(min, max);
-            return builder.Create();
-        }
+        var builder = new ExponentialFunctionBuilder(1);
+        builder.AddFunction(min, max);
+        return builder.Create();
+    }
 
-        [Fact]
-        public async Task SimpleStitch()
-        {
-            var builder = new StitchingFunctionBuilder(0);
+    [Fact]
+    public async Task SimpleStitch()
+    {
+        var builder = new StitchingFunctionBuilder(0);
 
-            builder.AddFunction(LinearMapping(0, 1), 0.5);
-            builder.AddFunction(LinearMapping(2,3), 1.0, (2,3));
-            var stitched = builder.Create();
-            await stitched.VerifyNumber(KnownNames.FunctionType, 3);
-            await stitched.VerifyPdfDoubleArray(KnownNames.Domain, 0, 1.0);
-            await stitched.VerifyPdfDoubleArray(KnownNames.Bounds, 0.5);
-            await stitched.VerifyPdfDoubleArray(KnownNames.Encode, 0, 0.5, 2, 3);
-        }
+        builder.AddFunction(LinearMapping(0, 1), 0.5);
+        builder.AddFunction(LinearMapping(2,3), 1.0, (2,3));
+        var stitched = builder.Create();
+        await stitched.VerifyNumber(KnownNames.FunctionType, 3);
+        await stitched.VerifyPdfDoubleArray(KnownNames.Domain, 0, 1.0);
+        await stitched.VerifyPdfDoubleArray(KnownNames.Bounds, 0.5);
+        await stitched.VerifyPdfDoubleArray(KnownNames.Encode, 0, 0.5, 2, 3);
+    }
 
-        [Fact]
-        public void CannotAddBelowMinimum()
-        {
-            var builder = new StitchingFunctionBuilder(0);
-            Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), -1));
-        }
-        [Fact]
-        public void CannotAddBelowLast()
-        {
-            var builder = new StitchingFunctionBuilder(0);
-            builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.5);
-            Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.25));
-        }
+    [Fact]
+    public void CannotAddBelowMinimum()
+    {
+        var builder = new StitchingFunctionBuilder(0);
+        Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), -1));
+    }
+    [Fact]
+    public void CannotAddBelowLast()
+    {
+        var builder = new StitchingFunctionBuilder(0);
+        builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.5);
+        Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.25));
+    }
 
-        [Theory]
-        [InlineData(0, 0)]
-        [InlineData(0.1, 0.2)]
-        [InlineData(0.25, 0.5)]
-        [InlineData(0.75, 0.5)]
-        [InlineData(0.9, 0.2)]
-        [InlineData(1, 0)]
-        public async Task TriangleFunction(double input, double output)
-        {
-            var innerFunc = LinearMapping(0, 1);
-            var builder = new StitchingFunctionBuilder(0);
-            builder.AddFunction(innerFunc, 0.5, (0, 1));
-            builder.AddFunction(innerFunc, 1.0, (1.0, 0.0));
-            var func = await builder.Create().CreateFunction();
-            Assert.Equal(output, func.ComputeSingleResult(input), 3);
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(0.1, 0.2)]
+    [InlineData(0.25, 0.5)]
+    [InlineData(0.75, 0.5)]
+    [InlineData(0.9, 0.2)]
+    [InlineData(1, 0)]
+    public async Task TriangleFunction(double input, double output)
+    {
+        var innerFunc = LinearMapping(0, 1);
+        var builder = new StitchingFunctionBuilder(0);
+        builder.AddFunction(innerFunc, 0.5, (0, 1));
+        builder.AddFunction(innerFunc, 1.0, (1.0, 0.0));
+        var func = await builder.Create().CreateFunction();
+        Assert.Equal(output, func.ComputeSingleResult(input), 3);
             
-        }
     }
 }

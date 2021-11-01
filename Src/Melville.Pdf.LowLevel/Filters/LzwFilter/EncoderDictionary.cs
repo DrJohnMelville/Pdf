@@ -1,82 +1,81 @@
 ﻿using System;
 
-namespace Melville.Pdf.LowLevel.Filters.LzwFilter
+namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
+
+public class EncoderDictionary
 {
-    public class EncoderDictionary
+    private struct Entry
     {
-        private struct Entry
-        {
-            public byte Element;
-            public short FirstChild;
-            public short NextSibling;
-        }
+        public byte Element;
+        public short FirstChild;
+        public short NextSibling;
+    }
 
-        // PDF specifies maximum bit length of 12 so maximum code is 4095
-        private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
-        private int nextEntry;
+    // PDF specifies maximum bit length of 12 so maximum code is 4095
+    private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
+    private int nextEntry;
 
-        public EncoderDictionary()
-        {
-            SetupDefaultDictionary();
-        }
+    public EncoderDictionary()
+    {
+        SetupDefaultDictionary();
+    }
 
         
-        private void SetupDefaultDictionary()
+    private void SetupDefaultDictionary()
+    {
+        for (int i = 0; i < 256; i++)
         {
-            for (int i = 0; i < 256; i++)
-            {
-                entries[i].Element = (byte) i;
-            }
-
-            nextEntry = LzwConstants.EndOfFileCode + 1;
-        }
-        public void Reset()
-        {
-            Array.Clear(entries, 0, entries.Length);
-            SetupDefaultDictionary();
+            entries[i].Element = (byte) i;
         }
 
-        public bool GetOrCreateNode(short rootIndex, byte nextByte, out short outputItem)
+        nextEntry = LzwConstants.EndOfFileCode + 1;
+    }
+    public void Reset()
+    {
+        Array.Clear(entries, 0, entries.Length);
+        SetupDefaultDictionary();
+    }
+
+    public bool GetOrCreateNode(short rootIndex, byte nextByte, out short outputItem)
+    {
+        return GetOrCreateNode(ref entries[rootIndex], nextByte, out outputItem);
+    }
+
+    private bool GetOrCreateNode(ref Entry entry, byte nextByte, out short outputItem)
+    {
+        if (entry.FirstChild == 0)
         {
-            return GetOrCreateNode(ref entries[rootIndex], nextByte, out outputItem);
+            outputItem = CreateItem(nextByte);
+            entry.FirstChild = outputItem;
+            return false;
         }
 
-        private bool GetOrCreateNode(ref Entry entry, byte nextByte, out short outputItem)
-        {
-            if (entry.FirstChild == 0)
-            {
-                outputItem = CreateItem(nextByte);
-                entry.FirstChild = outputItem;
-                return false;
-            }
+        return SearchLinkedList(ref entries[entry.FirstChild], entry.FirstChild, nextByte, out outputItem);
+    }
 
-            return SearchLinkedList(ref entries[entry.FirstChild], entry.FirstChild, nextByte, out outputItem);
+    private bool SearchLinkedList(ref Entry entry, short thisIndex, byte nextByte, out short outputItem)
+    {
+        if (nextByte == entry.Element)
+        {
+            outputItem = thisIndex;
+            return true;
         }
 
-        private bool SearchLinkedList(ref Entry entry, short thisIndex, byte nextByte, out short outputItem)
+        if (entry.NextSibling == 0)
         {
-            if (nextByte == entry.Element)
-            {
-                outputItem = thisIndex;
-                return true;
-            }
-
-            if (entry.NextSibling == 0)
-            {
-                entry.NextSibling = outputItem = CreateItem(nextByte);
-                return false;
-            }
-
-            return SearchLinkedList(ref entries[entry.NextSibling], entry.NextSibling,
-                nextByte, out outputItem);
+            entry.NextSibling = outputItem = CreateItem(nextByte);
+            return false;
         }
+
+        return SearchLinkedList(ref entries[entry.NextSibling], entry.NextSibling,
+            nextByte, out outputItem);
+    }
 
         
-        private short CreateItem(byte nextByte)
-        {
-            var ret = (short)nextEntry++;
-            entries[ret].Element = nextByte;
-            return ret;
-        }
+    private short CreateItem(byte nextByte)
+    {
+        var ret = (short)nextEntry++;
+        entries[ret].Element = nextByte;
+        return ret;
     }
 }

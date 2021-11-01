@@ -1,11 +1,10 @@
 ﻿using System;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes
+namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes;
+
+public interface IComputeUserPassword
 {
-    public interface IComputeUserPassword
-    {
-        byte[] ComputeHash(in ReadOnlySpan<byte> encryptionKey, EncryptionParameters parameters);
-        bool CompareHashes(in ReadOnlySpan<byte> a, in ReadOnlySpan<byte> b);
-    }
+    byte[] ComputeHash(in ReadOnlySpan<byte> encryptionKey, EncryptionParameters parameters);
+    bool CompareHashes(in ReadOnlySpan<byte> a, in ReadOnlySpan<byte> b);
 }

@@ -5,32 +5,31 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 
-namespace Melville.Pdf.LowLevel.Writers.ObjectWriters
-{
-    public static class ArrayWriter
-    {
-        public static async ValueTask<FlushResult> Write(
-            PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 
-            IReadOnlyList<PdfObject> items)
-        {
-            writer.WriteByte((byte)'[');
-            var count = items.Count;
-            for (int i = 0; i < count; i++)
-            {
-                if (i > 0)
-                {
-                    writer.WriteSpace();
-                }
-                await items[i].Visit(innerWriter);
-            }
-            writer.WriteByte( (byte)']');
-            return await writer.FlushAsync();
-        }
+namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-        private static int WriteByte(Span<byte> target, byte c)
+public static class ArrayWriter
+{
+    public static async ValueTask<FlushResult> Write(
+        PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 
+        IReadOnlyList<PdfObject> items)
+    {
+        writer.WriteByte((byte)'[');
+        var count = items.Count;
+        for (int i = 0; i < count; i++)
         {
-            target[0] = c;
-            return 1;
+            if (i > 0)
+            {
+                writer.WriteSpace();
+            }
+            await items[i].Visit(innerWriter);
         }
+        writer.WriteByte( (byte)']');
+        return await writer.FlushAsync();
+    }
+
+    private static int WriteByte(Span<byte> target, byte c)
+    {
+        target[0] = c;
+        return 1;
     }
 }

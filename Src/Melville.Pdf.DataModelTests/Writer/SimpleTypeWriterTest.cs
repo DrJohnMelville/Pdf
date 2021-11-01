@@ -11,106 +11,105 @@ using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Writer
+namespace Melville.Pdf.DataModelTests.Writer;
+
+public class SimpleTypeWriterTest
 {
-    public class SimpleTypeWriterTest
+    [Fact]
+    public async Task WriteTokens()
     {
-        [Fact]
-        public async Task WriteTokens()
-        {
-            Assert.Equal("true",await PdfBoolean.True.WriteToStringAsync());
-            Assert.Equal("false",await PdfBoolean.False.WriteToStringAsync());
-            Assert.Equal("null",await PdfTokenValues.Null.WriteToStringAsync());
-            Assert.Equal("]",await PdfTokenValues.ArrayTerminator.WriteToStringAsync());
-            Assert.Equal(">>",await PdfTokenValues.DictionaryTerminator.WriteToStringAsync());
+        Assert.Equal("true",await PdfBoolean.True.WriteToStringAsync());
+        Assert.Equal("false",await PdfBoolean.False.WriteToStringAsync());
+        Assert.Equal("null",await PdfTokenValues.Null.WriteToStringAsync());
+        Assert.Equal("]",await PdfTokenValues.ArrayTerminator.WriteToStringAsync());
+        Assert.Equal(">>",await PdfTokenValues.DictionaryTerminator.WriteToStringAsync());
             
-        }
+    }
         
-        [Theory]
-        [InlineData("Hello", "(Hello)")]
-        [InlineData("", "()")]
-        [InlineData("\n", "(\\n)")]
-        [InlineData("\r", "(\\r)")]
-        [InlineData("\t", "(\\t)")]
-        [InlineData("\b", "(\\b)")]
-        [InlineData("\f", "(\\f)")]
-        [InlineData("\u0000", "(\u0000)")]
-        [InlineData(@"this is a \Test", @"(this is a \\Test)")]
-        [InlineData(@"this is a (Test", @"(this is a \(Test)")]
-        [InlineData(@"this is a )Test", @"(this is a \)Test)")]
-        public async Task WriteStrings(string source, string dest)
-        {
-            Assert.Equal(dest, await PdfString.CreateAscii(source).WriteToStringAsync());
-            Assert.Equal(source, (await dest.ParseObjectAsync()).ToString());
+    [Theory]
+    [InlineData("Hello", "(Hello)")]
+    [InlineData("", "()")]
+    [InlineData("\n", "(\\n)")]
+    [InlineData("\r", "(\\r)")]
+    [InlineData("\t", "(\\t)")]
+    [InlineData("\b", "(\\b)")]
+    [InlineData("\f", "(\\f)")]
+    [InlineData("\u0000", "(\u0000)")]
+    [InlineData(@"this is a \Test", @"(this is a \\Test)")]
+    [InlineData(@"this is a (Test", @"(this is a \(Test)")]
+    [InlineData(@"this is a )Test", @"(this is a \)Test)")]
+    public async Task WriteStrings(string source, string dest)
+    {
+        Assert.Equal(dest, await PdfString.CreateAscii(source).WriteToStringAsync());
+        Assert.Equal(source, (await dest.ParseObjectAsync()).ToString());
             
-        }
-        [Theory]
-        [InlineData("Hello", "/Hello")]
-        [InlineData("Hel#lo", "/Hel#23lo")]
-        [InlineData("Hel lo", "/Hel#20lo")]
-        public async Task WriteName(string source, string dest)
-        {
-            Assert.Equal(dest, await new PdfName(source).WriteToStringAsync());
-        }
-        [Theory]
-        [InlineData(0, "0")]
-        [InlineData(1234, "1234")]
-        [InlineData(-1234, "-1234")]
-        public async Task WriteIntegers(int source, string dest)
-        {
-            Assert.Equal(dest, await new PdfInteger(source).WriteToStringAsync());
-        }
-        [Theory]
-        [InlineData(0, "0")]
-        [InlineData(1234, "1234")]
-        [InlineData(-1234, "-1234")]
-        [InlineData(-1234.54, "-1234.54")]
-        public async Task WriteDoubles(double source, string dest)
-        {
-            Assert.Equal(dest, await new PdfDouble(source).WriteToStringAsync());
-        }
+    }
+    [Theory]
+    [InlineData("Hello", "/Hello")]
+    [InlineData("Hel#lo", "/Hel#23lo")]
+    [InlineData("Hel lo", "/Hel#20lo")]
+    public async Task WriteName(string source, string dest)
+    {
+        Assert.Equal(dest, await new PdfName(source).WriteToStringAsync());
+    }
+    [Theory]
+    [InlineData(0, "0")]
+    [InlineData(1234, "1234")]
+    [InlineData(-1234, "-1234")]
+    public async Task WriteIntegers(int source, string dest)
+    {
+        Assert.Equal(dest, await new PdfInteger(source).WriteToStringAsync());
+    }
+    [Theory]
+    [InlineData(0, "0")]
+    [InlineData(1234, "1234")]
+    [InlineData(-1234, "-1234")]
+    [InlineData(-1234.54, "-1234.54")]
+    public async Task WriteDoubles(double source, string dest)
+    {
+        Assert.Equal(dest, await new PdfDouble(source).WriteToStringAsync());
+    }
 
-        [Fact]
-        public async Task WriteIndirectObjectReference()
-        {
-            var reference = new PdfIndirectReference(new PdfIndirectObject(34, 555, PdfBoolean.False));
-            Assert.Equal("34 555 R", await reference.WriteToStringAsync());
+    [Fact]
+    public async Task WriteIndirectObjectReference()
+    {
+        var reference = new PdfIndirectReference(new PdfIndirectObject(34, 555, PdfBoolean.False));
+        Assert.Equal("34 555 R", await reference.WriteToStringAsync());
 
-        }
-        [Fact]
-        public async Task WriteIndirectObject()
+    }
+    [Fact]
+    public async Task WriteIndirectObject()
+    {
+        var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
+        Assert.Equal("34 555 obj false endobj\n", await reference.WriteToStringAsync());
+    }
+    [Fact]
+    public async Task WriteArray()
+    {
+        var array = new PdfArray(new[]
         {
-            var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
-            Assert.Equal("34 555 obj false endobj\n", await reference.WriteToStringAsync());
-        }
-        [Fact]
-        public async Task WriteArray()
+            PdfBoolean.True, PdfBoolean.False, PdfTokenValues.Null
+        });
+        Assert.Equal("[true false null]", await array.WriteToStringAsync());
+    }
+    [Fact]
+    public async Task WriteDictionary()
+    {
+        var array = new PdfDictionary(new Dictionary<PdfName, PdfObject>()
         {
-            var array = new PdfArray(new[]
-            {
-                PdfBoolean.True, PdfBoolean.False, PdfTokenValues.Null
-            });
-            Assert.Equal("[true false null]", await array.WriteToStringAsync());
-        }
-        [Fact]
-        public async Task WriteDictionary()
-        {
-            var array = new PdfDictionary(new Dictionary<PdfName, PdfObject>()
-            {
-                {KnownNames.Width, new PdfInteger(20)},
-                {KnownNames.Height, new PdfInteger(40)},
-            });
-            Assert.Equal("<</Width 20/Height 40>>", await array.WriteToStringAsync());
-        }
+            {KnownNames.Width, new PdfInteger(20)},
+            {KnownNames.Height, new PdfInteger(40)},
+        });
+        Assert.Equal("<</Width 20/Height 40>>", await array.WriteToStringAsync());
+    }
 
-        [Fact]
-        public async Task WriteStream()
+    [Fact]
+    public async Task WriteStream()
+    {
+        var array = new PdfStream(new LiteralStreamSource("Hello", StreamFormat.PlainText), new Dictionary<PdfName, PdfObject>()
         {
-            var array = new PdfStream(new LiteralStreamSource("Hello", StreamFormat.PlainText), new Dictionary<PdfName, PdfObject>()
-            {
-                {KnownNames.Length, new PdfInteger(5)},
-            });
-            Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await array.WriteToStringAsync());
-        }
+            {KnownNames.Length, new PdfInteger(5)},
+        });
+        Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await array.WriteToStringAsync());
     }
 }

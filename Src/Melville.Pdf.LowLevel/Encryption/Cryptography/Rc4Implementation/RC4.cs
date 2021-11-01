@@ -1,67 +1,66 @@
 using System;
 
-namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation
+namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
+
+static class SwapExt
 {
-    static class SwapExt
+    public static void Swap<T>(this T[] array, int index1, int index2) => 
+        (array[index1], array[index2]) = (array[index2], array[index1]);
+}
+
+public class RC4
+{
+    public RC4()
     {
-        public static void Swap<T>(this T[] array, int index1, int index2) => 
-            (array[index1], array[index2]) = (array[index2], array[index1]);
+        SBox = new byte[SBoxLength];
+    }
+    public RC4(in ReadOnlySpan<byte> rgbKey): this()
+    {
+        ResetWithNewKey(rgbKey);
     }
 
-    public class RC4
+    private readonly byte[] SBox;
+    private int firstIndex = 0;
+    private int secondIndex = 0;
+    private const int SBoxLength = byte.MaxValue + 1;
+
+    public void ResetWithNewKey(in ReadOnlySpan<byte> key)
     {
-        public RC4()
-        {
-            SBox = new byte[SBoxLength];
-        }
-        public RC4(in ReadOnlySpan<byte> rgbKey): this()
-        {
-            ResetWithNewKey(rgbKey);
-        }
-
-        private readonly byte[] SBox;
-        private int firstIndex = 0;
-        private int secondIndex = 0;
-        private const int SBoxLength = byte.MaxValue + 1;
-
-        public void ResetWithNewKey(in ReadOnlySpan<byte> key)
-        {
-            firstIndex = 0;
-            secondIndex = 0;
+        firstIndex = 0;
+        secondIndex = 0;
             
-            for (int i = 0; i < SBoxLength; i++)
-            {
-                SBox[i] = (byte)i;
-            }
-
-            for (int i = 0, j = 0; i < SBoxLength; i++)
-            {
-                j = (j + SBox[i] + key[i % key.Length]) % SBoxLength;
-                SBox.Swap(i, j);
-            }
+        for (int i = 0; i < SBoxLength; i++)
+        {
+            SBox[i] = (byte)i;
         }
 
-        private byte PsuedoRandoNumber()
+        for (int i = 0, j = 0; i < SBoxLength; i++)
         {
-            unchecked
-            {
-                firstIndex = (firstIndex + 1) % SBoxLength;
-                secondIndex = (secondIndex + SBox[firstIndex]) % SBoxLength;
-                SBox.Swap(firstIndex, secondIndex);
-                return SBox[(SBox[firstIndex] + SBox[secondIndex]) % SBoxLength];
-            }
+            j = (j + SBox[i] + key[i % key.Length]) % SBoxLength;
+            SBox.Swap(i, j);
         }
+    }
 
-        public void TransfromInPlace(in Span<byte> cipher) => Transform(cipher, cipher);
-
-        public void Transform(in ReadOnlySpan<byte> input, in Span<byte> output)
+    private byte PsuedoRandoNumber()
+    {
+        unchecked
         {
-            unchecked
+            firstIndex = (firstIndex + 1) % SBoxLength;
+            secondIndex = (secondIndex + SBox[firstIndex]) % SBoxLength;
+            SBox.Swap(firstIndex, secondIndex);
+            return SBox[(SBox[firstIndex] + SBox[secondIndex]) % SBoxLength];
+        }
+    }
+
+    public void TransfromInPlace(in Span<byte> cipher) => Transform(cipher, cipher);
+
+    public void Transform(in ReadOnlySpan<byte> input, in Span<byte> output)
+    {
+        unchecked
+        {
+            for (int k = 0; k < input.Length; k++)
             {
-                for (int k = 0; k < input.Length; k++)
-                {
-                    output[k] = (byte)(input[k] ^ PsuedoRandoNumber());
-                }
+                output[k] = (byte)(input[k] ^ PsuedoRandoNumber());
             }
         }
     }

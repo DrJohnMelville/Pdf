@@ -5,34 +5,33 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing;
 using Xunit;
 
-namespace Melville.Pdf.DataModelTests.Standard.S7_3
+namespace Melville.Pdf.DataModelTests.Standard.S7_3;
+
+public class S7_3_9_NullDefined
 {
-    public class S7_3_9_NullDefined
+    private static Task<PdfObject> ParsedNull()
     {
-        private static Task<PdfObject> ParsedNull()
-        {
-            return "null ".ParseObjectAsync();
-        }
+        return "null ".ParseObjectAsync();
+    }
 
-        [Fact]
-        public async Task CanParseArEmd()
-        {
-            Assert.Equal(PdfTokenValues.Null, await "null".ParseObjectAsync());
+    [Fact]
+    public async Task CanParseArEmd()
+    {
+        Assert.Equal(PdfTokenValues.Null, await "null".ParseObjectAsync());
             
-        }
+    }
 
-        [Fact]
-        public async Task CanParseNull()
-        {
-            Assert.Equal(PdfTokenValues.Null, await ParsedNull());
+    [Fact]
+    public async Task CanParseNull()
+    {
+        Assert.Equal(PdfTokenValues.Null, await ParsedNull());
             
-        }
+    }
 
-        [Fact]
-        public async Task NullIsASingleton()
-        {
-            Assert.True(ReferenceEquals(await ParsedNull(), await ParsedNull()));
+    [Fact]
+    public async Task NullIsASingleton()
+    {
+        Assert.True(ReferenceEquals(await ParsedNull(), await ParsedNull()));
             
-        }
     }
 }

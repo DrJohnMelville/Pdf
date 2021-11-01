@@ -3,35 +3,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Melville.Pdf.FuzzTest
+namespace Melville.Pdf.FuzzTest;
+
+public static class Program
 {
-    public static class Program
+    public static async Task Main(string[] cmdLineArgs)
     {
-        public static async Task Main(string[] cmdLineArgs)
+        if (cmdLineArgs.Length < 1)
         {
-            if (cmdLineArgs.Length < 1)
-            {
-                Console.WriteLine("Must Pass a root path to find PDF files");
-            }
-
-            var pdfs = GatherPdfs(cmdLineArgs[0]);
-            foreach (var pdf in pdfs)
-            {
-                Console.Write(pdf);
-                await ParseFile.Do(pdf);
-                Console.WriteLine("... OK");
-            }
-
-            Console.WriteLine("Done");
+            Console.WriteLine("Must Pass a root path to find PDF files");
         }
 
-        private static IEnumerable<string> GatherPdfs(string cmdLineArg)
+        var pdfs = GatherPdfs(cmdLineArgs[0]);
+        foreach (var pdf in pdfs)
         {
-            foreach (var file in Directory.EnumerateFiles(cmdLineArg, "*.pdf",
-                new EnumerationOptions(){ IgnoreInaccessible = true, RecurseSubdirectories = true, ReturnSpecialDirectories = false}))
-            {
-                yield return file;
-            }
+            Console.Write(pdf);
+            await ParseFile.Do(pdf);
+            Console.WriteLine("... OK");
+        }
+
+        Console.WriteLine("Done");
+    }
+
+    private static IEnumerable<string> GatherPdfs(string cmdLineArg)
+    {
+        foreach (var file in Directory.EnumerateFiles(cmdLineArg, "*.pdf",
+                     new EnumerationOptions(){ IgnoreInaccessible = true, RecurseSubdirectories = true, ReturnSpecialDirectories = false}))
+        {
+            yield return file;
         }
     }
 }
