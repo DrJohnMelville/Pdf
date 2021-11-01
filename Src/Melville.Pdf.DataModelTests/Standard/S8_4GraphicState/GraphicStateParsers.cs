@@ -23,7 +23,8 @@ public class GraphicStateParsers
     }
 
     private ValueTask ParseString(string s) => sut.Parse(PipeReaderFromString(s));
-    private static PipeReader PipeReaderFromString(string s) => 
+
+    private static PipeReader PipeReaderFromString(string s) =>
         PipeReader.Create(new MemoryStream(s.AsExtendedAsciiBytes()));
 
     private async Task TestInput(
@@ -40,28 +41,29 @@ public class GraphicStateParsers
     [Fact]
     public Task PopGraphicsState() => TestInput(
         "Q", i => i.RestoreGraphicsState());
-    
+
     [Fact]
     public async Task CompositeOperatorsWithWhiteSpace()
     {
         await ParseString("   q\r\n  Q  ");
-        target.Verify(i=>i.SaveGraphicsState());
-        target.Verify(i=>i.RestoreGraphicsState());
+        target.Verify(i => i.SaveGraphicsState());
+        target.Verify(i => i.RestoreGraphicsState());
         target.VerifyNoOtherCalls();
     }
-    [Fact]
-    public Task ModifyTransformMatrixTest() => TestInput(
-        "1.000 2 03 +4 5.5 -6 cm",i=>i.ModifyTransformMatrix(1, 2, 3, 4, 5.5, -6));
 
     [Fact]
-    public Task SetLineWidthTest() => TestInput("256 w", i=>i.SetLineWidth(256));
-    
+    public Task ModifyTransformMatrixTest() => TestInput(
+        "1.000 2 03 +4 5.5 -6 cm", i => i.ModifyTransformMatrix(1, 2, 3, 4, 5.5, -6));
+
+    [Fact]
+    public Task SetLineWidthTest() => TestInput("256 w", i => i.SetLineWidth(256));
+
     [Theory]
     [InlineData(LineCap.Butt)]
     [InlineData(LineCap.Round)]
     [InlineData(LineCap.Square)]
     public Task SetLineCap(LineCap cap) => TestInput(
-        $"{(int)cap} J", i=>i.SetLineCap(cap));
+        $"{(int)cap} J", i => i.SetLineCap(cap));
 
     [Theory]
     [InlineData(LineJoinStyle.Miter, 0)]
@@ -73,12 +75,12 @@ public class GraphicStateParsers
     [Fact]
     public Task SetDashPattern2() =>
         TestInput("[1 2] 3 d",
-            i => i.TestSetLineDashPattern(3, new double[]{1,2}));
+            i => i.TestSetLineDashPattern(3, new double[] { 1, 2 }));
 
     [Fact]
     public Task SetDashPattern1() =>
         TestInput("[1] 3 d",
-            i => i.TestSetLineDashPattern(3, new double[]{1}));
+            i => i.TestSetLineDashPattern(3, new double[] { 1 }));
 
     [Fact]
     public Task SetDashPattern0() =>
@@ -88,51 +90,18 @@ public class GraphicStateParsers
     [Fact]
     public Task ParseRenderingIntent() =>
         TestInput("/Perceptual ri", i => i.SetRenderIntent(RenderingIntentName.Perceptual));
+
     [Fact]
     public Task ParseRenderingIntentFail() =>
-        Assert.ThrowsAsync<PdfParseException>(()=>
-        TestInput("/Pages ri", i => i.SetRenderIntent(RenderingIntentName.Perceptual)));
-
-    public class ConcreteCSO: IContentStreamOperations
+        Assert.ThrowsAsync<PdfParseException>(() =>
+            TestInput("/Pages ri", i => i.SetRenderIntent(RenderingIntentName.Perceptual)));
+    [Fact]
+    public Task ParseFlatnessTolerance() =>
+            TestInput("27 i", i => i.SetFlatnessTolerance(27));
+    [Fact]
+    public Task LoadGsDictionary()
     {
-        public virtual void SaveGraphicsState()
-        {
-        }
-
-        public virtual void RestoreGraphicsState()
-        {
-        }
-
-        public virtual void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f)
-        {
-        }
-
-        public virtual void SetLineWidth(double width)
-        {
-        }
-
-        public virtual void SetLineCap(LineCap cap)
-        {
-        }
-
-        public virtual void SetLineJoinStyle(LineJoinStyle cap)
-        {
-        }
-
-        public virtual void SetMiterLimit(double miter)
-        {
-        }
-
-        public virtual void TestSetLineDashPattern(double dashPhase, double[] dashArray)
-        {
-        }
-
-        public void SetLineDashPattern(
-            double dashPhase, ReadOnlySpan<double> dashArray) =>
-            TestSetLineDashPattern(dashPhase, dashArray.ToArray());
-
-        public virtual void SetRenderIntent(RenderingIntentName intent)
-        {
-        }
+        var name = NameDirectory.Get("JdmState");
+        return TestInput("/JdmState gs", i => i.LoadGraphicStateDictionary(name));
     }
 }

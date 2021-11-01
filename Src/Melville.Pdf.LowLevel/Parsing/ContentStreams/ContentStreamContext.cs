@@ -94,10 +94,12 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.g:
                 break;
             case ContentStreamOperatorValue.gs:
+                target.LoadGraphicStateDictionary(names[0]);
                 break;
             case ContentStreamOperatorValue.h:
                 break;
             case ContentStreamOperatorValue.i:
+                target.SetFlatnessTolerance(doubles[0]);
                 break;
             case ContentStreamOperatorValue.ID:
                 break;

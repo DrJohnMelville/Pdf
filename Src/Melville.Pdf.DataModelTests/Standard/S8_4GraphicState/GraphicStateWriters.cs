@@ -1,32 +1,13 @@
 ﻿using System;
-using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.FileSystem;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
-public class GraphicStateWriters
+public class GraphicStateWriters:WriterTest
 {
-    private readonly MultiBufferStream destStream = new ();
-    private readonly PipeWriter destPipe;
-    private readonly ContentStreamWriter sut;
-
-    public GraphicStateWriters()
-    {
-        destPipe = PipeWriter.Create(destStream);
-        sut = new ContentStreamWriter(destPipe);
-    }
-    private async Task<string> WrittenText()
-    {
-        await destPipe.FlushAsync();
-        return await destStream.CreateReader().ReadAsStringAsync();
-    }
-
     [Fact]
     public async Task PushGraphicState()
     {
@@ -113,5 +94,19 @@ public class GraphicStateWriters
     {
         sut.SetRenderIntent(RenderingIntentName.Perceptual);
         Assert.Equal("/Perceptual ri\n", await WrittenText());
+    }
+
+    [Fact]
+    public async Task SetFlatnessTolerence()
+    {
+        sut.SetFlatnessTolerance(52);
+        Assert.Equal("52 i\n", await WrittenText());
+    }
+
+    [Fact]
+    public async Task LoadGraphicStateDictionary()
+    {
+        sut.LoadGraphicStateDictionary("JdmGState");
+        Assert.Equal("/JdmGState gs\n", await WrittenText());
     }
 }
