@@ -1,20 +1,28 @@
 ﻿using System;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
-public class ConcreteCSO: IContentStreamOperations
+[MacroItem("q", "SaveGraphicsState")]
+[MacroItem("Q", "RestoreGraphicsState")]
+[MacroItem("h", "ClosePath")]
+[MacroItem("S", "StrokePath")]
+[MacroItem("s", "CloseAndStrokePath")]
+[MacroItem("f", "FillPath")]
+[MacroItem("fStar", "FillPathEvenOdd")]
+[MacroItem("B", "FillAndStrokePath")]
+[MacroItem("BStar", "FillAndStrokePathEvenOdd")]
+[MacroItem("b", "CloseFillAndStrokePath")]
+[MacroItem("bStar", "CloseFillAndStrokePathEvenOdd")]
+[MacroItem("n","EndPathWithNoOp")]
+[MacroItem("W","ClipToPath")]
+[MacroItem("WStar","ClipToPathEvenOdd")]
+[MacroCode("public virtual void ~1~(){}")]
+public partial class ConcreteCSO: IContentStreamOperations
 {
-    public virtual void SaveGraphicsState()
-    {
-    }
-
-    public virtual void RestoreGraphicsState()
-    {
-    }
-
     public virtual void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f)
     {
     }
@@ -54,4 +62,26 @@ public class ConcreteCSO: IContentStreamOperations
     public virtual void LoadGraphicStateDictionary(PdfName dictionaryName)
     {
     }
+
+    public virtual void MoveTo(double x, double y)
+    {
+    }
+
+    public virtual void LineTo(double x, double y)
+    {
+    }
+
+    public virtual void CurveTo(double control1X, double control1Y, double control2X, double control2Y, double finalX, double finalY)
+    {
+    }
+    
+    public virtual void CurveToWithoutInitialControl(
+        double control2X, double control2Y,
+        double finalX, double finalY) {}
+    
+    public virtual void CurveToWithoutFinalControl(
+        double control1X, double control1Y,
+        double finalX, double finalY) {}
+    
+    public virtual void Rectangle(double x, double y, double width, double height){}
 }

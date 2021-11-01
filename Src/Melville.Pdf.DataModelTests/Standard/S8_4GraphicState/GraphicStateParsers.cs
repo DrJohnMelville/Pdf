@@ -1,40 +1,13 @@
-﻿using System;
-using System.IO;
-using System.IO.Pipelines;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.ContentStreams;
-using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
-public class GraphicStateParsers
+public class GraphicStateParsers: ParserTest
 {
-    private readonly Mock<ConcreteCSO> target = new();
-    private readonly ContentStreamParser sut;
-
-    public GraphicStateParsers()
-    {
-        sut = new ContentStreamParser(target.Object);
-    }
-
-    private ValueTask ParseString(string s) => sut.Parse(PipeReaderFromString(s));
-
-    private static PipeReader PipeReaderFromString(string s) =>
-        PipeReader.Create(new MemoryStream(s.AsExtendedAsciiBytes()));
-
-    private async Task TestInput(
-        string input, Expression<Action<ConcreteCSO>> action)
-    {
-        await ParseString(input);
-        target.Verify(action);
-        target.VerifyNoOtherCalls();
-    }
-
     [Fact]
     public Task PushGraphicsState() => TestInput("q", i => i.SaveGraphicsState());
 
@@ -46,9 +19,9 @@ public class GraphicStateParsers
     public async Task CompositeOperatorsWithWhiteSpace()
     {
         await ParseString("   q\r\n  Q  ");
-        target.Verify(i => i.SaveGraphicsState());
-        target.Verify(i => i.RestoreGraphicsState());
-        target.VerifyNoOtherCalls();
+        Target.Verify(i => i.SaveGraphicsState());
+        Target.Verify(i => i.RestoreGraphicsState());
+        Target.VerifyNoOtherCalls();
     }
 
     [Fact]

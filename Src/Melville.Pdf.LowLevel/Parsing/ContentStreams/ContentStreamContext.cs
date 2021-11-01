@@ -38,12 +38,16 @@ public readonly struct ContentStreamContext
         switch (opCode)
         {
             case ContentStreamOperatorValue.b:
+                target.CloseFillAndStrokePath();
                 break;
             case ContentStreamOperatorValue.B:
+                target.FillAndStrokePath();
                 break;
             case ContentStreamOperatorValue.bStar:
+                target.CloseFillAndStrokePathEvenOdd();
                 break;
             case ContentStreamOperatorValue.BStar:
+                target.FillAndStrokePathEvenOdd();
                 break;
             case ContentStreamOperatorValue.BDC:
                 break;
@@ -56,6 +60,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.BX:
                 break;
             case ContentStreamOperatorValue.c:
+                target.CurveTo(doubles[0], doubles[1], doubles[2], doubles[3], doubles[4], doubles[5]);
                 break;
             case ContentStreamOperatorValue.cm:
                 target.ModifyTransformMatrix(
@@ -84,10 +89,11 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.ET:
                 break;
             case ContentStreamOperatorValue.f:
-                break;
-            case ContentStreamOperatorValue.F:
+            case ContentStreamOperatorValue.F: // pdf spec requires this synonym for backward compatability
+                target.FillPath();
                 break;
             case ContentStreamOperatorValue.fStar:
+                target.FillPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.G:
                 break;
@@ -97,6 +103,7 @@ public readonly struct ContentStreamContext
                 target.LoadGraphicStateDictionary(names[0]);
                 break;
             case ContentStreamOperatorValue.h:
+                target.ClosePath();
                 break;
             case ContentStreamOperatorValue.i:
                 target.SetFlatnessTolerance(doubles[0]);
@@ -114,14 +121,17 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.k:
                 break;
             case ContentStreamOperatorValue.l:
+                target.LineTo(doubles[0], doubles[1]);
                 break;
             case ContentStreamOperatorValue.m:
+                target.MoveTo(doubles[0], doubles[1]);
                 break;
             case ContentStreamOperatorValue.M:
                 break;
             case ContentStreamOperatorValue.MP:
                 break;
             case ContentStreamOperatorValue.n:
+                target.EndPathWithNoOp();
                 break;
             case ContentStreamOperatorValue.q:
                 target.SaveGraphicsState();
@@ -130,6 +140,7 @@ public readonly struct ContentStreamContext
                 target.RestoreGraphicsState();
                 break;
             case ContentStreamOperatorValue.re:
+                target.Rectangle(doubles[0], doubles[1], doubles[2], doubles[3]);
                 break;
             case ContentStreamOperatorValue.RG:
                 break;
@@ -139,8 +150,10 @@ public readonly struct ContentStreamContext
                 target.SetRenderIntent(NameAs<RenderingIntentName>());
                 break;
             case ContentStreamOperatorValue.s:
+                target.CloseAndStrokePath();
                 break;
             case ContentStreamOperatorValue.S:
+                target.StrokePath();
                 break;
             case ContentStreamOperatorValue.SC:
                 break;
@@ -173,15 +186,19 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.Tz:
                 break;
             case ContentStreamOperatorValue.v:
+                target.CurveToWithoutInitialControl(doubles[0], doubles[1], doubles[2], doubles[3]);
                 break;
             case ContentStreamOperatorValue.w:
                 target.SetLineWidth(doubles[0]);
                 break;
             case ContentStreamOperatorValue.W:
+                target.ClipToPath();
                 break;
             case ContentStreamOperatorValue.WStar:
+                target.ClipToPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.y:
+                target.CurveToWithoutFinalControl(doubles[0], doubles[1], doubles[2], doubles[3]);
                 break;
             case ContentStreamOperatorValue.SingleQuote:
                 break;
