@@ -32,7 +32,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetMiterLimit(double miter) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.M, miter);
 
-    public void SetLineDashPattern(double dashPhase, ReadOnlySpan<double> dashArray)
+    public void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray)
     {
         destPipe.WriteDoubleArray(dashArray);
         destPipe.WriteOperator(ContentStreamOperatorNames.d, dashPhase);
@@ -106,7 +106,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetStrokeColor(in ReadOnlySpan<double> components) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.SC, components);
 
-    public void SetStrokeColorExtended(PdfName? patternName, ReadOnlySpan<double> colors)
+    public void SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);
@@ -116,7 +116,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetNonstrokingColor(in ReadOnlySpan<double> components) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.sc, components);
 
-    public void SetNonstrokingColorExtended(PdfName? patternName, ReadOnlySpan<double> colors)
+    public void SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);

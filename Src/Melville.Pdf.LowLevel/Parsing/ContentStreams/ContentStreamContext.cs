@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -96,8 +97,10 @@ public readonly struct ContentStreamContext
                 target.FillPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.G:
+                target.SetStrokeGray(doubles[0]);
                 break;
             case ContentStreamOperatorValue.g:
+                target.SetNonstrokingGray(doubles[0]);
                 break;
             case ContentStreamOperatorValue.gs:
                 target.LoadGraphicStateDictionary(names[0]);
@@ -117,8 +120,10 @@ public readonly struct ContentStreamContext
                 target.SetLineJoinStyle((LineJoinStyle)longs[0]);
                 break;
             case ContentStreamOperatorValue.K:
+                target.SetStrokeCMYK(doubles[0], doubles[1], doubles[2], doubles[3]);
                 break;
             case ContentStreamOperatorValue.k:
+                target.SetNonstrokingCMYK(doubles[0], doubles[1], doubles[2], doubles[3]);
                 break;
             case ContentStreamOperatorValue.l:
                 target.LineTo(doubles[0], doubles[1]);
@@ -143,8 +148,10 @@ public readonly struct ContentStreamContext
                 target.Rectangle(doubles[0], doubles[1], doubles[2], doubles[3]);
                 break;
             case ContentStreamOperatorValue.RG:
+                target.SetStrokeRGB(doubles[0], doubles[1], doubles[2]);
                 break;
             case ContentStreamOperatorValue.rg:
+                target.SetNonstrokingRGB(doubles[0], doubles[1], doubles[2]);
                 break;
             case ContentStreamOperatorValue.ri:
                 target.SetRenderIntent(NameAs<RenderingIntentName>());
@@ -155,9 +162,17 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.S:
                 target.StrokePath();
                 break;
+            case ContentStreamOperatorValue.sc:
+                target.SetNonstrokingColor(CollectionsMarshal.AsSpan(doubles));
+                break;
             case ContentStreamOperatorValue.SC:
+                target.SetStrokeColor(CollectionsMarshal.AsSpan(doubles));
                 break;
             case ContentStreamOperatorValue.SCN:
+                target.SetStrokeColorExtended(TryGetFirstName(), CollectionsMarshal.AsSpan(doubles));
+                break;
+            case ContentStreamOperatorValue.scn:
+                target.SetNonstrokingColorExtended(TryGetFirstName(), CollectionsMarshal.AsSpan(doubles));
                 break;
             case ContentStreamOperatorValue.sh:
                 break;
@@ -209,6 +224,11 @@ public readonly struct ContentStreamContext
         }
 
         ClearStacks();
+    }
+
+    private PdfName? TryGetFirstName()
+    {
+        return names.Count > 0 ? names[0] : null;
     }
 
     private void ClearStacks()

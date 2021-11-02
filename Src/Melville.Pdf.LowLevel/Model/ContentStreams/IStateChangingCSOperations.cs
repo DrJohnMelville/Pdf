@@ -45,7 +45,7 @@ public interface IStateChangingCSOperations
     /// Content stream operator dashArray dashphase
     /// Note the parameters are flipped from the PDF representation to accomodate a params extension method.
     /// </summary>
-    void SetLineDashPattern(double dashPhase, ReadOnlySpan<double> dashArray);
+    void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray);
 
     /// <summary>
     /// Content stream operator renderingIntent ri

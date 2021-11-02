@@ -87,7 +87,7 @@ public interface IColorCSOperations
     /// <summary>
     /// Content stream operator SCN
     /// </summary>
-    void SetStrokeColorExtended(PdfName? patternName, ReadOnlySpan<double> colors);
+    void SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
 
     /// <summary>
     /// Content stream operator sc
@@ -97,7 +97,7 @@ public interface IColorCSOperations
     /// <summary>
     /// Content stream operator scn
     /// </summary>
-    void SetNonstrokingColorExtended(PdfName? patternName, ReadOnlySpan<double> colors);
+    void SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator G

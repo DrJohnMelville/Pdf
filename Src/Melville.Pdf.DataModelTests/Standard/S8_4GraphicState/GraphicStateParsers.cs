@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -6,7 +8,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
-public class GraphicStateParsers: ParserTest
+public partial class GraphicStateParsers: ParserTest
 {
     [Fact]
     public Task PushGraphicsState() => TestInput("q", i => i.SaveGraphicsState());
@@ -45,20 +47,40 @@ public class GraphicStateParsers: ParserTest
     public Task SetLineJoinStyle(LineJoinStyle joinStyle, int num) =>
         TestInput($"{num} j", i => i.SetLineJoinStyle(joinStyle));
 
+    private partial class DashArrayMock:MockBase, IContentStreamOperations
+    {
+        [DelegateTo] private IContentStreamOperations fake = null!;
+        private readonly double phase;
+        private readonly double[] dots;
+
+        public DashArrayMock(double phase, double[] dots)
+        {
+            this.phase = phase;
+            this.dots = dots;
+        }
+
+        public void SetLineDashPattern(double delta, in ReadOnlySpan<double> dashes)
+        {
+            Assert.Equal(phase, delta);
+            Assert.Equal(dots, dashes.ToArray());
+            SetCalled();
+            
+        }
+    }
+    
     [Fact]
     public Task SetDashPattern2() =>
         TestInput("[1 2] 3 d",
-            i => i.TestSetLineDashPattern(3, new double[] { 1, 2 }));
-
+            new DashArrayMock(3, new double[] { 1, 2 }));
+    
     [Fact]
     public Task SetDashPattern1() =>
         TestInput("[1] 3 d",
-            i => i.TestSetLineDashPattern(3, new double[] { 1 }));
-
+            new DashArrayMock(3, new double[] { 1 }));
+    
     [Fact]
     public Task SetDashPattern0() =>
-        TestInput("[] 3 d",
-            i => i.TestSetLineDashPattern(3, new double[0]));
+        TestInput("[] 3 d", new DashArrayMock(3, new double[0]));
 
     [Fact]
     public Task ParseRenderingIntent() =>
