@@ -80,6 +80,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.d1:
                 break;
             case ContentStreamOperatorValue.Do:
+                target.Do(names[0]);
                 break;
             case ContentStreamOperatorValue.DP:
                 break;

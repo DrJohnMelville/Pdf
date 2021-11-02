@@ -141,4 +141,6 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.k, cyan, magenta, yellow, black);
 
+    public void Do(PdfName name) => destPipe.WriteOperator(
+        ContentStreamOperatorNames.Do, name);
 }

@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
+﻿using Melville.Pdf.LowLevel.Model.Objects;
+
+namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
 public interface IDrawingCSOperations
 {
@@ -98,4 +100,9 @@ public interface IDrawingCSOperations
     /// Content stream operator W*
     /// </summary>
     void ClipToPathEvenOdd();
+
+    /// <summary>
+    /// Content stream operator name Do
+    /// </summary>
+    void Do(PdfName name);
 }
