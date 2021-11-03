@@ -88,6 +88,7 @@ public static class ContentStreamExtendedOperations
 }
 
 public interface IContentStreamOperations: 
-    IStateChangingCSOperations, IDrawingCSOperations, IColorCSOperations
+    IStateChangingCSOperations, IDrawingCSOperations, IColorCSOperations, 
+    ITextObjectOperations, ITextBlockOperations
 {
 }

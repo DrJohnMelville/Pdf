@@ -151,4 +151,42 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void Do(PdfName name) => destPipe.WriteOperator(
         ContentStreamOperatorNames.Do, name);
     #endregion
+
+    #region Text Block
+
+    void ITextBlockOperations.BeginTextObject() => destPipe.WriteOperator(ContentStreamOperatorNames.BT);
+
+    void ITextBlockOperations.EndTextObject() => destPipe.WriteOperator(ContentStreamOperatorNames.ET);
+
+    public TextBlock StartTextBlock() => new(this);
+
+    public readonly partial struct TextBlock: IDisposable, ITextObjectOperations
+    {
+        private readonly ContentStreamWriter parent;
+
+        [DelegateTo()]
+        private ITextObjectOperations Inner() => parent;
+
+        public TextBlock(ContentStreamWriter parent)
+        {
+            this.parent = parent;
+            ((ITextBlockOperations)parent).BeginTextObject();
+        }
+
+        public void Dispose() => ((ITextBlockOperations)parent).EndTextObject();
+    }
+
+    void ITextObjectOperations.MovePositionBy(double x, double y) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.Td, x, y);
+    void ITextObjectOperations.MovePositionByWithLeading(double x, double y) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.TD, x, y);
+
+    void ITextObjectOperations.SetTextMatrix(
+        double a, double b, double c, double d, double e, double f) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.Tm, a, b, c, d, e, f);
+
+    void ITextObjectOperations.MoveToNextTextLine() =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.TStar);
+
+    #endregion
 }

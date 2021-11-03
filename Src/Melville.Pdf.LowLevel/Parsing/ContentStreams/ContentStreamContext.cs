@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Microsoft.CodeAnalysis.Operations;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
@@ -57,6 +58,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.BMC:
                 break;
             case ContentStreamOperatorValue.BT:
+                target.BeginTextObject();
                 break;
             case ContentStreamOperatorValue.BX:
                 break;
@@ -89,6 +91,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.EMC:
                 break;
             case ContentStreamOperatorValue.ET:
+                target.EndTextObject();
                 break;
             case ContentStreamOperatorValue.f:
             case ContentStreamOperatorValue.F: // pdf spec requires this synonym for backward compatability
@@ -178,13 +181,16 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.sh:
                 break;
             case ContentStreamOperatorValue.TStar:
+                target.MoveToNextTextLine();
                 break;
             case ContentStreamOperatorValue.Tc:
                 target.SetCharSpace(doubles[0]);
                 break;
             case ContentStreamOperatorValue.Td:
+                target.MovePositionBy(doubles[0], doubles[1]);
                 break;
             case ContentStreamOperatorValue.TD:
+                target.MovePositionByWithLeading(doubles[0], doubles[1]);
                 break;
             case ContentStreamOperatorValue.Tf:
                 target.SetFont(names[0], doubles[0]);
@@ -197,6 +203,7 @@ public readonly struct ContentStreamContext
                 target.SetTextLeading(doubles[0]);
                 break;
             case ContentStreamOperatorValue.Tm:
+                target.SetTextMatrix(doubles[0],doubles[1],doubles[2],doubles[3],doubles[4],doubles[5]);
                 break;
             case ContentStreamOperatorValue.Tr:
                 target.SetTextRender((TextRendering)longs[0]);
