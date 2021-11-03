@@ -9,25 +9,27 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 public static class StringWriter
 {
- 
     public static ValueTask<FlushResult> Write(
         PipeWriter writer, PdfString value, IObjectCryptContext encryptor)
     {
-        var buffer = writer.GetSpan( MaaximumRenderedStringLength(value));
         var encrypted = encryptor.StringCipher().Encrypt().CryptSpan(value.Bytes);
-        var len = CopyToSpan(ref buffer, encrypted);
-        writer.Advance(len);
+        WriteSpanAsString(writer, encrypted);
         return writer.FlushAsync();
     }
 
-    private const int SpaceForOpenAndClosedParens = 2;
-    private static int MaaximumRenderedStringLength(PdfString value)
+    public static void WriteSpanAsString(PipeWriter writer, in ReadOnlySpan<byte> encrypted)
     {
-        //every character could be special and therefore require 2 bytes to render.
-        return SpaceForOpenAndClosedParens+(2*value.Bytes.Length);
+        var buffer = writer.GetSpan(MaximumRenderedStringLength(encrypted.Length));
+        var len = CopyToSpan(ref buffer, encrypted);
+        writer.Advance(len);
     }
 
-    private static int CopyToSpan(ref Span<byte> buffer, ReadOnlySpan<byte> valueBytes)
+    private const int SpaceForOpenAndClosedParens = 2;
+    //every character could be special and therefore require 2 bytes to render.
+    private static int MaximumRenderedStringLength(int stringLength) => 
+        SpaceForOpenAndClosedParens+(2*stringLength);
+
+    private static int CopyToSpan(ref Span<byte> buffer, in ReadOnlySpan<byte> valueBytes)
     {
         int pos = 0;
         buffer[pos++] = (byte)'(';

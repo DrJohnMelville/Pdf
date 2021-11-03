@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
@@ -52,5 +53,14 @@ public class TextObjectOperationsTest : WriterTest
             block.MoveToNextTextLine();
         }
         Assert.Equal("BT\nT*\nET\n", await WrittenText() );
+    }
+    [Fact]
+    public async Task ShowString()
+    {
+        using (var block = sut.StartTextBlock())
+        {
+            block.ShowString("ABC");
+        }
+        Assert.Equal("BT\n(ABC) Tj\nET\n", await WrittenText() );
     }
 }

@@ -172,6 +172,9 @@ public partial class ContentStreamWriter : IContentStreamOperations
             this.parent = parent;
             ((ITextBlockOperations)parent).BeginTextObject();
         }
+        
+        public void ShowString(string decodedString) =>
+            Inner().ShowString(decodedString.AsExtendedAsciiBytes()); // eventually handle encodings here.
 
         public void Dispose() => ((ITextBlockOperations)parent).EndTextObject();
     }
@@ -187,6 +190,9 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     void ITextObjectOperations.MoveToNextTextLine() =>
         destPipe.WriteOperator(ContentStreamOperatorNames.TStar);
+
+    void ITextObjectOperations.ShowString(ReadOnlySpan<byte> decodedString) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.Tj, decodedString);
 
     #endregion
 }

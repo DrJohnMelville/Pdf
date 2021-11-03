@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
+﻿using System;
+
+namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
 public interface ITextObjectOperations
 {
@@ -21,6 +23,8 @@ public interface ITextObjectOperations
     /// Content stream operator T*
     /// </summary>
     void MoveToNextTextLine();
+
+    void ShowString(ReadOnlySpan<byte> decodedString);
 }
 
 public interface ITextBlockOperations

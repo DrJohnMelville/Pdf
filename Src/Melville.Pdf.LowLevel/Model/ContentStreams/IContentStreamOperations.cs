@@ -84,7 +84,7 @@ public static class ContentStreamExtendedOperations
         target.Do(pdfName);
         return pdfName;
     }
-
+    
 }
 
 public interface IContentStreamOperations: 

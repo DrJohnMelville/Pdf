@@ -40,6 +40,12 @@ public readonly struct ContentStreamPipeWriter
         WriteDoubleSpan(values);
         WriteOperator(operation);
     }
+    public void WriteOperator(byte[] operation, ReadOnlySpan<byte> stringValue)
+    {
+        StringWriter.WriteSpanAsString(destPipe, stringValue);
+        WriteSpace();
+        WriteOperator(operation);
+    }
 
     public void WriteDoubleSpan(in ReadOnlySpan<double> values)
     {
