@@ -24,6 +24,9 @@ public interface ITextObjectOperations
     /// </summary>
     void MoveToNextTextLine();
 
+    /// <summary>
+    /// Content stream operator Tj
+    /// </summary>
     void ShowString(in ReadOnlyMemory<byte> decodedString);
 }
 

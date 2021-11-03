@@ -49,14 +49,14 @@ public class ContentStreamParser
         {
             '.' or '+' or '-' or (>= '0' and <= '9') => ParseNumber(ref reader, bufferIsCompleted),
             '/' => ParseName(ref reader, bufferIsCompleted),
-            '(' => ParseSyntaxString(ref reader, bufferIsCompleted),
+            '(' => HandleParsedString(SyntaxStringParser.TryParseToBytes(ref reader, bufferIsCompleted)),
+            '<' => HandleParsedString(HexStringParser.TryParseToBytes(ref reader, bufferIsCompleted)),
             _ => ParseOperator(ref reader, bufferIsCompleted)
         };
     }
 
-    private bool ParseSyntaxString(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    private bool HandleParsedString(byte[]? str)
     {
-        var str = SyntaxStringParser.TryParseToBytes(ref reader, bufferIsCompleted);
         if (str == null) return false;
         target.HandleString(str);
         return true;

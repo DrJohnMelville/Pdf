@@ -21,11 +21,21 @@ public class HexStringParser: PdfAtomParser
             return false;
         }
 
-        obj = ReadString(ref copyOfReader, len, source);
+        var stringBytes = ReadString(ref copyOfReader, len);
+        obj = source.CreateDecryptedString(stringBytes);
         return true;
     }
 
-    private bool TryCount(ref SequenceReader<byte> reader, bool final, out int length)
+    public static byte[]? TryParseToBytes(ref SequenceReader<byte> reader, bool final)
+    {
+        reader.Advance(1);
+        var copyOfReader = reader;
+        return TryCount(ref reader, final, out var len) ? 
+            ReadString(ref copyOfReader, len) : 
+            null;
+    }
+        
+    private static bool TryCount(ref SequenceReader<byte> reader, bool final, out int length)
     {
         length = 0;
         while (true)
@@ -44,18 +54,19 @@ public class HexStringParser: PdfAtomParser
         }
     }
 
-    private PdfObject ReadString(
-        ref SequenceReader<byte> reader, int length, IParsingReader parsingReader)
+    private static byte[] ReadString(
+        ref SequenceReader<byte> reader, int length)
     {
         var buff = new byte[length];
         for (int i = 0; i < length; i++)
         {
             buff[i] = HexMath.ByteFromNibbles(GetNibble(ref reader), GetNibble(ref reader));
         }
-        return parsingReader.CreateDecryptedString(buff);
+
+        return buff;
     }
 
-    private Nibble GetNibble(ref SequenceReader<byte> reader)
+    private static Nibble GetNibble(ref SequenceReader<byte> reader)
     {
         byte item;
         do

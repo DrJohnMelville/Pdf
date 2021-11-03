@@ -5,8 +5,6 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Writers.ContentStreams;
-using Microsoft.CodeAnalysis.Operations;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
