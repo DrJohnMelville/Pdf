@@ -85,33 +85,33 @@ public interface IStateChangingCSOperations
     void SetCharSpace(double value);
 
     /// <summary>
-    /// Content stream operator charSpace Tw
+    /// Content stream operator wordSpace Tw
     /// </summary>
     void SetWordSpace(double value);
 
     /// <summary>
-    /// Content stream operator charSpace Tz
+    /// Content stream operator scale Tz
     /// </summary>
     void SetHorizontalTextScaling(double value);
 
     /// <summary>
-    /// Content stream operator charSpace Tl
+    /// Content stream operator leading Tl
     /// </summary>
     void SetTextLeading(double value);
 
     /// <summary>
-    /// Content stream operator charSpace Tf
+    /// Content stream operator font fontSize Tf
     /// </summary>
-    void SetTextSize(double value);
+    void SetFont(PdfName font, double size);
 
     /// <summary>
-    /// Context stream operator Tr
+    /// Context stream textRendering Tr
     /// </summary>
     /// <param name="rendering"></param>
     void SetTextRender(TextRendering rendering);
 
     /// <summary>
-    /// Content stream operator charSpace Ts
+    /// Content stream operator rise Ts
     /// </summary>
     void SetTextRise(double value);
 

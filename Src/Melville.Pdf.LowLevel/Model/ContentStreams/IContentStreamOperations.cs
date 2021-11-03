@@ -41,6 +41,19 @@ public static class ContentStreamExtendedOperations
         return name;
     }
 
+    public static PdfName SetFont(this IStateChangingCSOperations target, string fontName, double size)
+    {
+        var pdfName = NameDirectory.Get(fontName);
+        target.SetFont(pdfName, size);
+        return pdfName;
+    }
+
+    //This extension method is essentially a no-op it exists only to add a hint to the
+    //intellisense that we might want to use a built in font name for this method
+    public static void SetFont(
+        this IStateChangingCSOperations target, BuiltInFontName fontName, double size) =>
+        target.SetFont((PdfName)fontName, size);
+
     public static void SetStrokeColor(this IColorCSOperations target, params double[] colors) =>
         target.SetStrokeColor(new ReadOnlySpan<double>(colors));
     public static void SetStrokeColorExtended(this IColorCSOperations target, params double[] colors) =>

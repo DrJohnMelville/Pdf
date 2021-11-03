@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
@@ -22,7 +23,6 @@ public class TextStateOperatorsWriteTest: WriterTest
             SimpleTextStateOperator("Tw", i => i.SetWordSpace(55)),
             SimpleTextStateOperator("Tz", i => i.SetHorizontalTextScaling(55)),
             SimpleTextStateOperator("TL", i => i.SetTextLeading(55)),
-            SimpleTextStateOperator("Tf", i => i.SetTextSize(55)),
             SimpleTextStateOperator("Ts", i => i.SetTextRise(55)),
         };
 
@@ -32,6 +32,21 @@ public class TextStateOperatorsWriteTest: WriterTest
     {
         op(sut);
         Assert.Equal($"55 {code}\n", await WrittenText());
+    }
+
+    [Fact]
+    public async Task SetFont()
+    {
+        sut.SetFont(BuiltInFontName.Helvetica, 12);
+        Assert.Equal("/Helvetica 12 Tf\n", await WrittenText());
+        
+    }
+    [Fact]
+    public async Task SetFontString()
+    {
+        sut.SetFont("Jdm", 12);
+        Assert.Equal("/Jdm 12 Tf\n", await WrittenText());
+        
     }
 
     [Theory]

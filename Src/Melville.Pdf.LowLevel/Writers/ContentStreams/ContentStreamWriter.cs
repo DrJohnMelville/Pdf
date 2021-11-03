@@ -25,7 +25,6 @@ public partial class ContentStreamWriter : IContentStreamOperations
     [MacroItem("Tw","WordSpace")]
     [MacroItem("Tz","HorizontalTextScaling")]
     [MacroItem("TL","TextLeading")]
-    [MacroItem("Tf","TextSize")]
     [MacroItem("Ts","TextRise")]
     [MacroCode("public void Set~1~(double value) => destPipe.WriteOperator(ContentStreamOperatorNames.~0~, value);")]
     public void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f) =>
@@ -49,6 +48,11 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void LoadGraphicStateDictionary(PdfName dictionaryName) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.gs, dictionaryName);
 
+    public void SetFont(PdfName font, double size)
+    {
+        destPipe.WriteName(font);
+        destPipe.WriteOperator(ContentStreamOperatorNames.Tf, size);
+    }
 
     public void SetTextRender(TextRendering rendering) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.Tr, (double)rendering);

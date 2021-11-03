@@ -187,7 +187,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.TD:
                 break;
             case ContentStreamOperatorValue.Tf:
-                target.SetTextSize(doubles[0]);
+                target.SetFont(names[0], doubles[0]);
                 break;
             case ContentStreamOperatorValue.Tj:
                 break;
