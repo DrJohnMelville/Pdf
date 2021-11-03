@@ -180,26 +180,35 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.TStar:
                 break;
             case ContentStreamOperatorValue.Tc:
+                target.SetCharSpace(doubles[0]);
                 break;
             case ContentStreamOperatorValue.Td:
                 break;
             case ContentStreamOperatorValue.TD:
+                break;
+            case ContentStreamOperatorValue.Tf:
+                target.SetTextSize(doubles[0]);
                 break;
             case ContentStreamOperatorValue.Tj:
                 break;
             case ContentStreamOperatorValue.TJ:
                 break;
             case ContentStreamOperatorValue.TL:
+                target.SetTextLeading(doubles[0]);
                 break;
             case ContentStreamOperatorValue.Tm:
                 break;
             case ContentStreamOperatorValue.Tr:
+                target.SetTextRender((TextRendering)longs[0]);
                 break;
             case ContentStreamOperatorValue.Ts:
+                target.SetTextRise(doubles[0]);
                 break;
             case ContentStreamOperatorValue.Tw:
+                target.SetWordSpace(doubles[0]);
                 break;
             case ContentStreamOperatorValue.Tz:
+                target.SetHorizontalTextScaling(doubles[0]);
                 break;
             case ContentStreamOperatorValue.v:
                 target.CurveToWithoutInitialControl(doubles[0], doubles[1], doubles[2], doubles[3]);

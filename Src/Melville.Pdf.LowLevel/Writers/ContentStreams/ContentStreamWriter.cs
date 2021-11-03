@@ -18,20 +18,25 @@ public partial class ContentStreamWriter : IContentStreamOperations
     }
 
     #region Graphic State Operations
+    [MacroItem("w","LineWidth")]
+    [MacroItem("M","MiterLimit")]
+    [MacroItem("i","FlatnessTolerance")]
+    [MacroItem("Tc","CharSpace")]
+    [MacroItem("Tw","WordSpace")]
+    [MacroItem("Tz","HorizontalTextScaling")]
+    [MacroItem("TL","TextLeading")]
+    [MacroItem("Tf","TextSize")]
+    [MacroItem("Ts","TextRise")]
+    [MacroCode("public void Set~1~(double value) => destPipe.WriteOperator(ContentStreamOperatorNames.~0~, value);")]
     public void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.cm, a, b, c, d, e, f);
-
-    public void SetLineWidth(double width) => destPipe.WriteOperator(ContentStreamOperatorNames.w, width);
-
+    
     public void SetLineCap(LineCap cap) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.J, (double)cap);
 
     public void SetLineJoinStyle(LineJoinStyle cap) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.j, (double)cap);
-
-    public void SetMiterLimit(double miter) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.M, miter);
-
+    
     public void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray)
     {
         destPipe.WriteDoubleArray(dashArray);
@@ -41,12 +46,12 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetRenderIntent(RenderingIntentName intent) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.ri, intent);
 
-    public void SetFlatnessTolerance(double flatness) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.i, flatness);
-
     public void LoadGraphicStateDictionary(PdfName dictionaryName) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.gs, dictionaryName);
 
+
+    public void SetTextRender(TextRendering rendering) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.Tr, (double)rendering);
     #endregion
 
     #region Drawing Operations
@@ -100,9 +105,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     public void SetNonstrokingColorSpace(PdfName colorSpace) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.cs, colorSpace);
-
-    #endregion
-
+    
     public void SetStrokeColor(in ReadOnlySpan<double> components) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.SC, components);
 
@@ -143,4 +146,5 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     public void Do(PdfName name) => destPipe.WriteOperator(
         ContentStreamOperatorNames.Do, name);
+    #endregion
 }

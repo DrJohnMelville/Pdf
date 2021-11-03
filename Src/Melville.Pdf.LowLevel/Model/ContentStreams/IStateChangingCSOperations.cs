@@ -4,8 +4,20 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+public enum TextRendering
+{
+    Fill = 0,
+    Stroke = 1,
+    FillAndStroke = 2,
+    Invisible = 3,
+    FillAndClip = 4,
+    StrokeAndClip = 5
+}
+
 public interface IStateChangingCSOperations
 {
+    #region Non Text EXclusive operators
+
     /// <summary>
     /// Content Stream Operator q
     /// </summary>
@@ -59,5 +71,49 @@ public interface IStateChangingCSOperations
     /// <param name="flatness"></param>
     void SetFlatnessTolerance(double flatness);
 
+    /// <summary>
+    /// Content stream operator gs
+    /// </summary>
     void LoadGraphicStateDictionary(PdfName dictionaryName);
+
+    #endregion
+
+    #region TextAttribute
+    /// <summary>
+    /// Content stream operator charSpace Tc
+    /// </summary>
+    void SetCharSpace(double value);
+
+    /// <summary>
+    /// Content stream operator charSpace Tw
+    /// </summary>
+    void SetWordSpace(double value);
+
+    /// <summary>
+    /// Content stream operator charSpace Tz
+    /// </summary>
+    void SetHorizontalTextScaling(double value);
+
+    /// <summary>
+    /// Content stream operator charSpace Tl
+    /// </summary>
+    void SetTextLeading(double value);
+
+    /// <summary>
+    /// Content stream operator charSpace Tf
+    /// </summary>
+    void SetTextSize(double value);
+
+    /// <summary>
+    /// Context stream operator Tr
+    /// </summary>
+    /// <param name="rendering"></param>
+    void SetTextRender(TextRendering rendering);
+
+    /// <summary>
+    /// Content stream operator charSpace Ts
+    /// </summary>
+    void SetTextRise(double value);
+
+    #endregion
 }

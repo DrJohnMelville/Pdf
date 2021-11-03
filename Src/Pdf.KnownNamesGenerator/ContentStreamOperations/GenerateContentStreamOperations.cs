@@ -97,7 +97,7 @@ public class GenerateContentStreamOperations
         ("Tc", "Tc"),
         ("Td", "Td"),
         ("TD", "TD"),
-        ("Td", "Tf"),
+        ("Tf", "Tf"),
         ("Tj", "Tj"),
         ("TJ", "TJ"),
         ("TL", "TL"),
