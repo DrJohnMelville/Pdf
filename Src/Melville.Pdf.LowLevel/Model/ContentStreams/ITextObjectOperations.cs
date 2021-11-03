@@ -28,6 +28,20 @@ public interface ITextObjectOperations
     /// Content stream operator Tj
     /// </summary>
     void ShowString(in ReadOnlyMemory<byte> decodedString);
+
+    /// <summary>
+    /// Content stream operator '
+    /// </summary>
+    /// <param name="decodedString"></param>
+    void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> decodedString);
+
+    /// <summary>
+    /// Content stream operator "
+    /// </summary>
+    /// <param name="decodedString"></param>
+    void MoveToNextLineAndShowString(
+        double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString);
+
 }
 
 public interface ITextBlockOperations

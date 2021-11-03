@@ -30,9 +30,19 @@ public partial class TextObjectOperationsParserTest : ParserTest
     {
         [DelegateTo()] private IContentStreamOperations op = null!;
 
-        public void ShowString(in ReadOnlyMemory<byte> input)
+        public void ShowString(in ReadOnlyMemory<byte> input) => AssertResult(input, "ABC");
+        public void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> input) => AssertResult(input, "def");
+        public void MoveToNextLineAndShowString(
+            double wordSpace, double charSpace,in ReadOnlyMemory<byte> input)
         {
-            Assert.Equal("ABC", input.Span.ExtendedAsciiString());
+            Assert.Equal(7, wordSpace);
+            Assert.Equal(8, charSpace);
+            AssertResult(input, "IJK");
+        }
+
+        private void AssertResult(ReadOnlyMemory<byte> input, string expected)
+        {
+            Assert.Equal(expected, input.Span.ExtendedAsciiString());
             SetCalled();
         }
     }
@@ -40,4 +50,9 @@ public partial class TextObjectOperationsParserTest : ParserTest
     public Task ParseShowSyntaxString() => TestInput("(ABC) Tj", new TjMock());
     [Fact]
     public Task ParseShowHexString() => TestInput("<4142 43> Tj", new TjMock());
+    [Fact]
+    public Task MoveToNextLineAndShow() => TestInput("(def)'", new TjMock());
+    [Fact]
+    public Task MoveToNextLineAndShow2() => TestInput("7 8(IJK)\"", new TjMock());
+    
 }

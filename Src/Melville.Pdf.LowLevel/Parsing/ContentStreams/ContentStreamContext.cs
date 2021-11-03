@@ -236,8 +236,10 @@ public readonly struct ContentStreamContext
                 target.CurveToWithoutFinalControl(doubles[0], doubles[1], doubles[2], doubles[3]);
                 break;
             case ContentStreamOperatorValue.SingleQuote:
+                target.MoveToNextLineAndShowString(strings[0]);
                 break;
             case ContentStreamOperatorValue.DoubleQuote:
+                target.MoveToNextLineAndShowString(doubles[0], doubles[1], strings[0]);
                 break;
             default:
                 throw new PdfParseException("Unknown content stream operator");

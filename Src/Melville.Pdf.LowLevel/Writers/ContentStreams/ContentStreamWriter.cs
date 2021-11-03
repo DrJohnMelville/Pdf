@@ -175,6 +175,11 @@ public partial class ContentStreamWriter : IContentStreamOperations
         
         public void ShowString(string decodedString) =>
             Inner().ShowString(decodedString.AsExtendedAsciiBytes()); // eventually handle encodings here.
+        public void MoveToNextLineAndShowString(string decodedString) =>
+            Inner().MoveToNextLineAndShowString(decodedString.AsExtendedAsciiBytes()); // eventually handle encodings here.
+        public void MoveToNextLineAndShowString(double wordSpace, double charSpace, string decodedString) =>
+            Inner().MoveToNextLineAndShowString(
+                wordSpace, charSpace, decodedString.AsExtendedAsciiBytes()); // eventually handle encodings here.
 
         public void Dispose() => ((ITextBlockOperations)parent).EndTextObject();
     }
@@ -193,6 +198,17 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     void ITextObjectOperations.ShowString(in ReadOnlyMemory<byte> decodedString) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.Tj, decodedString.Span);
+    void ITextObjectOperations.MoveToNextLineAndShowString(in ReadOnlyMemory<byte> decodedString) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.SingleQuote, decodedString.Span);
+
+    void ITextObjectOperations.MoveToNextLineAndShowString(
+        double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString)
+    {
+        destPipe.WriteDoubleAndSpace(wordSpace);
+        destPipe.WriteDouble(charSpace);
+        destPipe.WriteOperator(ContentStreamOperatorNames.DoubleQuote, decodedString.Span);
+
+    }
 
     #endregion
 }

@@ -43,7 +43,6 @@ public readonly struct ContentStreamPipeWriter
     public void WriteOperator(byte[] operation, ReadOnlySpan<byte> stringValue)
     {
         StringWriter.WriteSpanAsString(destPipe, stringValue);
-        WriteSpace();
         WriteOperator(operation);
     }
 

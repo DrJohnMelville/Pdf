@@ -61,6 +61,24 @@ public class TextObjectOperationsTest : WriterTest
         {
             block.ShowString("ABC");
         }
-        Assert.Equal("BT\n(ABC) Tj\nET\n", await WrittenText() );
+        Assert.Equal("BT\n(ABC)Tj\nET\n", await WrittenText() );
+    }
+    [Fact]
+    public async Task NextLineAndShowString()
+    {
+        using (var block = sut.StartTextBlock())
+        {
+            block.MoveToNextLineAndShowString("ABC");
+        }
+        Assert.Equal("BT\n(ABC)'\nET\n", await WrittenText() );
+    }
+    [Fact]
+    public async Task NextLineAndShowString2()
+    {
+        using (var block = sut.StartTextBlock())
+        {
+            block.MoveToNextLineAndShowString(2, 3, "ABC");
+        }
+        Assert.Equal("BT\n2 3(ABC)\"\nET\n", await WrittenText() );
     }
 }
