@@ -13,6 +13,18 @@ public  class SyntaxStringParser: PdfAtomParser
         ref SequenceReader<byte> input, bool final, IParsingReader source, 
         [NotNullWhen(true)] out PdfObject? output)
     {
+        var outputBytes = TryParseToBytes(ref input, final);
+        if (outputBytes == null)
+        {
+            output = null;
+            return false;
+        }
+        output = source.CreateDecryptedString(outputBytes);
+        return true;
+    }
+
+    public static byte[]? TryParseToBytes(ref SequenceReader<byte> input, bool final)
+    {
         var copyOfInput = input;
         if (!ComputeStringLength(ref input, out var length))
         {
@@ -20,11 +32,9 @@ public  class SyntaxStringParser: PdfAtomParser
             {
                 throw new PdfParseException("Unterminated Syntax string");
             }
-            output = null;
-            return false;
+            return null;
         }
-        output = CreateString(ref copyOfInput, length, source);
-        return true;
+        return CreateString(ref copyOfInput, length);
     }
 
     private static bool ComputeStringLength(ref SequenceReader<byte> input, out int length)
@@ -44,16 +54,16 @@ public  class SyntaxStringParser: PdfAtomParser
         }
     }
 
-    private static PdfString CreateString(
-        ref SequenceReader<byte> input, int length, IParsingReader parsingReader)
+    private static byte[] CreateString(
+        ref SequenceReader<byte> input, int length)
     {
         var buf = new byte[length];
         int bufpos = 0;
         var stateMachine = new SyntaxStringStateMachine();
         while (true)
         {
-            if (stateMachine.TryOneParse(ref input, out var item) == SyntaxStringResult.EndOfString) 
-                return parsingReader.CreateDecryptedString(buf);
+            if (stateMachine.TryOneParse(ref input, out var item) == SyntaxStringResult.EndOfString)
+                return buf;
             buf[bufpos++] = item;
         }
   

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -15,6 +16,7 @@ public readonly struct ContentStreamContext
     private readonly List<double> doubles;
     private readonly List<long> longs;
     private readonly List<PdfName> names;
+    private readonly List<Memory<byte>> strings;
 
     public ContentStreamContext(IContentStreamOperations target)
     {
@@ -22,6 +24,7 @@ public readonly struct ContentStreamContext
         doubles = new List<double>();
         longs = new List<long>();
         names = new List<PdfName>();
+        strings = new List<Memory<byte>>();
     }
 
     public void HandleNumber(double doubleValue, long longValue)
@@ -31,6 +34,7 @@ public readonly struct ContentStreamContext
     }
 
     public void HandleName(PdfName name) => names.Add(name);
+    public void HandleString(in Memory<byte> str) => strings.Add(str);
 
     private T NameAs<T>(int pos = 0) where T : PdfName =>
         names[pos] as T ?? throw new PdfParseException($"Pdf Name of subtype {typeof(T).Name} expectes");
@@ -196,6 +200,7 @@ public readonly struct ContentStreamContext
                 target.SetFont(names[0], doubles[0]);
                 break;
             case ContentStreamOperatorValue.Tj:
+                target.ShowString(strings[0]);
                 break;
             case ContentStreamOperatorValue.TJ:
                 break;
@@ -253,5 +258,6 @@ public readonly struct ContentStreamContext
         doubles.Clear();
         longs.Clear();
         names.Clear();
+        strings.Clear();
     }
 }

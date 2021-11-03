@@ -1,10 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 
-public class TextObjectOperationsParserTest : ParserTest
+public partial class TextObjectOperationsParserTest : ParserTest
 {
     [Fact]
     public Task BeginTextObject() => TestInput("BT", i => i.BeginTextObject());
@@ -21,4 +25,19 @@ public class TextObjectOperationsParserTest : ParserTest
     [Fact]
     public Task MoveToNextLine() => 
         TestInput("T*", i => i.MoveToNextTextLine());
+
+    private partial class TjMock : MockBase, IContentStreamOperations
+    {
+        [DelegateTo()] private IContentStreamOperations op = null!;
+
+        public void ShowString(in ReadOnlyMemory<byte> input)
+        {
+            Assert.Equal("ABC", input.Span.ExtendedAsciiString());
+            SetCalled();
+        }
+    }
+    [Fact]
+    public Task ParseShowSyntaxString() => TestInput("(ABC) Tj", new TjMock());
+    [Fact]
+    public Task ParseShowHexString() => TestInput("<4142 43> Tj", new TjMock());
 }

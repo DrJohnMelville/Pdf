@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -47,12 +48,21 @@ public class ContentStreamParser
         return (char)character switch
         {
             '.' or '+' or '-' or (>= '0' and <= '9') => ParseNumber(ref reader, bufferIsCompleted),
-            '/' => ParseName(ref reader, ref bufferIsCompleted),
+            '/' => ParseName(ref reader, bufferIsCompleted),
+            '(' => ParseSyntaxString(ref reader, bufferIsCompleted),
             _ => ParseOperator(ref reader, bufferIsCompleted)
         };
     }
 
-    private bool ParseName(ref SequenceReader<byte> reader, ref bool bufferIsCompleted)
+    private bool ParseSyntaxString(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    {
+        var str = SyntaxStringParser.TryParseToBytes(ref reader, bufferIsCompleted);
+        if (str == null) return false;
+        target.HandleString(str);
+        return true;
+    }
+
+    private bool ParseName(ref SequenceReader<byte> reader, bool bufferIsCompleted)
     {
         if (!NameParser.TryParse(ref reader, bufferIsCompleted, out var name)) return false;
         target.HandleName(name);

@@ -191,8 +191,8 @@ public partial class ContentStreamWriter : IContentStreamOperations
     void ITextObjectOperations.MoveToNextTextLine() =>
         destPipe.WriteOperator(ContentStreamOperatorNames.TStar);
 
-    void ITextObjectOperations.ShowString(ReadOnlySpan<byte> decodedString) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.Tj, decodedString);
+    void ITextObjectOperations.ShowString(in ReadOnlyMemory<byte> decodedString) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.Tj, decodedString.Span);
 
     #endregion
 }

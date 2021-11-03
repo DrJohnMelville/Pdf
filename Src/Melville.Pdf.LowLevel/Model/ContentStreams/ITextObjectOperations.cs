@@ -24,7 +24,7 @@ public interface ITextObjectOperations
     /// </summary>
     void MoveToNextTextLine();
 
-    void ShowString(ReadOnlySpan<byte> decodedString);
+    void ShowString(in ReadOnlyMemory<byte> decodedString);
 }
 
 public interface ITextBlockOperations
