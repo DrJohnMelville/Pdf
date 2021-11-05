@@ -181,6 +181,29 @@ public partial class ContentStreamWriter : IContentStreamOperations
             Inner().MoveToNextLineAndShowString(
                 wordSpace, charSpace, decodedString.AsExtendedAsciiBytes()); // eventually handle encodings here.
 
+        public void ShowSpacedString(params object[] values)
+        {
+            parent.destPipe.WriteChar('[');
+            foreach (var value in values)
+            {
+                switch (value)
+                {
+                    case double d: parent.destPipe.WriteDoubleAndSpace(d); break;
+                    case int d: parent.destPipe.WriteDoubleAndSpace(d); break;
+                    case uint d: parent.destPipe.WriteDoubleAndSpace(d); break;
+                    case long d: parent.destPipe.WriteDoubleAndSpace(d); break;
+                    case ulong d: parent.destPipe.WriteDoubleAndSpace(d); break;
+                    case short d: parent.destPipe.WriteDoubleAndSpace(d); break;
+                    case ushort d: parent.destPipe.WriteDoubleAndSpace(d); break;
+                    case byte [] d: parent.destPipe.WriteString(d); break;
+                    default: parent.destPipe.WriteString(
+                        (value.ToString()??"").AsExtendedAsciiBytes()); break;
+                }
+            }
+            parent.destPipe.WriteChar(']');
+            parent.destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
+        }
+
         public void Dispose() => ((ITextBlockOperations)parent).EndTextObject();
     }
 
@@ -209,6 +232,26 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.DoubleQuote, decodedString.Span);
 
     }
+
+    void ITextObjectOperations.ShowSpacedString(in InterleavedArray<Memory<byte>, double> values)
+    {
+        destPipe.WriteChar('[');
+        values.Iterate(new ShowSpacedStringIterator(this));
+        destPipe.WriteChar(']');
+        destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
+    }
+    
+    private readonly struct ShowSpacedStringIterator: IInterleavedTarget<Memory<byte>, double>
+    {
+        private readonly ContentStreamWriter writer;
+        public ShowSpacedStringIterator(ContentStreamWriter writer)
+        {
+            this.writer = writer;
+        }
+        public void Handle(Memory<byte> item) => writer.destPipe.WriteString(item.Span);
+        public void Handle(double item) => writer.destPipe.WriteDoubleAndSpace(item);
+    }
+    
 
     #endregion
 }

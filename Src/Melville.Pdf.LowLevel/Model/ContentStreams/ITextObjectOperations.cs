@@ -42,6 +42,11 @@ public interface ITextObjectOperations
     void MoveToNextLineAndShowString(
         double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString);
 
+    /// <summary>
+    /// Context stream operator TJ
+    /// </summary>
+    void ShowSpacedString(in InterleavedArray<Memory<byte>, double> values);
+
 }
 
 public interface ITextBlockOperations
@@ -54,5 +59,4 @@ public interface ITextBlockOperations
     /// Content stream operator ET
     /// </summary>
     void EndTextObject();
-    
 }

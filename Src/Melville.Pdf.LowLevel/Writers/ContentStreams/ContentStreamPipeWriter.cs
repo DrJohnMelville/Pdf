@@ -42,8 +42,13 @@ public readonly struct ContentStreamPipeWriter
     }
     public void WriteOperator(byte[] operation, ReadOnlySpan<byte> stringValue)
     {
-        StringWriter.WriteSpanAsString(destPipe, stringValue);
+        WriteString(stringValue);
         WriteOperator(operation);
+    }
+
+    public void WriteString(ReadOnlySpan<byte> stringValue)
+    {
+        StringWriter.WriteSpanAsString(destPipe, stringValue);
     }
 
     public void WriteDoubleSpan(in ReadOnlySpan<double> values)
@@ -68,18 +73,21 @@ public readonly struct ContentStreamPipeWriter
         WriteSpace();
     }
 
-    public void WriteNewLine() => destPipe.WriteByte((byte)'\n');
-    public void WriteSpace() => destPipe.WriteByte((byte)' ');
+    public void WriteChar(char c) => destPipe.WriteByte((byte)c);
+    public void WriteNewLine() => WriteChar('\n');
+
+
+    public void WriteSpace() => WriteChar(' ');
 
     public void WriteDoubleArray(ReadOnlySpan<double> dashArray)
     {
-        destPipe.WriteByte((byte)'[');
+        WriteChar('[');
         if (dashArray.Length > 0)
         { 
             WriteDoublesWithSpaces(dashArray[..^1]);
             WriteDouble(dashArray[^1]);
         }
-        destPipe.WriteByte((byte)']');
+        WriteChar(']');
         WriteSpace();
     }
     private void WriteDoublesWithSpaces(ReadOnlySpan<double> values)

@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
@@ -80,5 +82,35 @@ public class TextObjectOperationsTest : WriterTest
             block.MoveToNextLineAndShowString(2, 3, "ABC");
         }
         Assert.Equal("BT\n2 3(ABC)\"\nET\n", await WrittenText() );
+    }
+
+    [Fact]
+    public async Task ShowSpacedString()
+    {
+        using (var block = sut.StartTextBlock())
+        {
+            block.ShowSpacedString("A", 2, "B", 3, "C", "D", 4, 5);
+        }
+        Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenText() );
+        
+    }
+    [Fact]
+    public async Task ShowSpacedString2()
+    {
+        using (var block = sut.StartTextBlock())
+        {
+            var builder = new InterleavedArrayBuilder<Memory<byte>, double>();
+            builder.Handle("A".AsExtendedAsciiBytes().AsMemory());
+            builder.Handle(2);
+            builder.Handle("B".AsExtendedAsciiBytes().AsMemory());
+            builder.Handle(3);
+            builder.Handle("C".AsExtendedAsciiBytes().AsMemory());
+            builder.Handle("D".AsExtendedAsciiBytes().AsMemory());
+            builder.Handle(4);
+            builder.Handle(5);
+            block.ShowSpacedString(builder.GetInterleavedArray());
+        }
+        Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenText() );
+        
     }
 }
