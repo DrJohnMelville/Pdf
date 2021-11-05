@@ -4,6 +4,7 @@ using Melville.INPC;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
@@ -40,6 +41,25 @@ public partial class TextObjectOperationsParserTest : ParserTest
             AssertResult(input, "IJK");
         }
 
+        public void ShowSpacedString(in InterleavedArray<Memory<byte>, double> values)
+        {
+            var target = new Mock<IInterleavedTarget<Memory<byte>, double>>(MockBehavior.Strict);
+            var seq = new MockSequence();
+            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
+            target.InSequence(seq).Setup(i => i.Handle(2.0));
+            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
+            target.InSequence(seq).Setup(i => i.Handle(3.0));
+            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
+            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
+            target.InSequence(seq).Setup(i => i.Handle(4.0));
+            target.InSequence(seq).Setup(i => i.Handle(5.0));
+            values.Iterate(target.Object);
+            target.Verify(i => i.Handle(It.IsAny<Memory<byte>>()), Times.Exactly(4));
+            target.Verify(i => i.Handle(It.IsAny<double>()), Times.Exactly(4));
+            target.VerifyNoOtherCalls();
+            SetCalled();
+        }
+
         private void AssertResult(ReadOnlyMemory<byte> input, string expected)
         {
             Assert.Equal(expected, input.Span.ExtendedAsciiString());
@@ -54,5 +74,7 @@ public partial class TextObjectOperationsParserTest : ParserTest
     public Task MoveToNextLineAndShow() => TestInput("(def)'", new TjMock());
     [Fact]
     public Task MoveToNextLineAndShow2() => TestInput("7 8(IJK)\"", new TjMock());
+    [Fact]
+    public Task ShowSpacedString() => TestInput("[(a)2(b)3(c)(s)4 5]TJ", new TjMock());
     
 }

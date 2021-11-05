@@ -67,5 +67,8 @@ public class InterleavedArrayBuilder<T1, T2>
     }
 
     public InterleavedArray<T1, T2> GetInterleavedArray() => new(
-        CollectionsMarshal.AsSpan(t1s), CollectionsMarshal.AsSpan(t2s), CollectionsMarshal.AsSpan(order));
+        GetT1Span(), GetT2Span(), CollectionsMarshal.AsSpan(order));
+    
+    public Span<T1> GetT1Span() => CollectionsMarshal.AsSpan(t1s);
+    public Span<T2> GetT2Span() => CollectionsMarshal.AsSpan(t2s);
 }
