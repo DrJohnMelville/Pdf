@@ -107,14 +107,3 @@ public interface IDrawingCSOperations
     /// </summary>
     void Do(PdfName name);
 }
-
-public static class DrawingCSOperatorHelpers
-{
-    public static PdfName Do(this IDrawingCSOperations target, string name)
-    {
-        var pdfName = NameDirectory.Get(name);
-        target.Do(pdfName);
-        return pdfName;
-    }
-
-}

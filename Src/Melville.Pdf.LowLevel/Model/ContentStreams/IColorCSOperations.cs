@@ -70,28 +70,28 @@ public interface IColorCSOperations
 
 public static class ColorCSOperationsHelpers
 {
+    // the next two methods are no-ops than hint the intellisense to the specific
+    // subclass of pdfName
+    public static void SetStandardStrokingColorSpace(
+        this IColorCSOperations target, ColorSpaceName colorSpace) =>
+        target.SetStrokingColorSpace(colorSpace);
+    public static void SetStandardNonstrokingColorSpace(
+        this IColorCSOperations target, ColorSpaceName colorSpace) =>
+        target.SetNonstrokingColorSpace(colorSpace);
+
     public static void SetStrokeColor(this IColorCSOperations target, params double[] colors) =>
         target.SetStrokeColor(new ReadOnlySpan<double>(colors));
     public static void SetStrokeColorExtended(this IColorCSOperations target, params double[] colors) =>
         target.SetStrokeColorExtended(null, new ReadOnlySpan<double>(colors));
-    public static PdfName SetStrokeColorExtended(
-        this IColorCSOperations target, string name, params double[] colors)
-    {
-        var pdfName = NameDirectory.Get(name);
-        target.SetStrokeColorExtended(pdfName, new ReadOnlySpan<double>(colors));
-        return pdfName;
-    }
-    
+    public static void SetStrokeColorExtended(
+        this IColorCSOperations target, PdfName name, params double[] colors) =>
+        target.SetStrokeColorExtended(name, new ReadOnlySpan<double>(colors));
+
     public static void SetNonstrokingColor(this IColorCSOperations target, params double[] colors) =>
         target.SetNonstrokingColor(new ReadOnlySpan<double>(colors));
     public static void SetNonstrokingColorExtended(this IColorCSOperations target, params double[] colors) =>
         target.SetNonstrokingColorExtended(null, new ReadOnlySpan<double>(colors));
-    public static PdfName SetNonstrokingColorExtended(
-        this IColorCSOperations target, string name, params double[] colors)
-    {
-        var pdfName = NameDirectory.Get(name);
-        target.SetNonstrokingColorExtended(pdfName, new ReadOnlySpan<double>(colors));
-        return pdfName;
-    }
-
+    public static void SetNonstrokingColorExtended(
+        this IColorCSOperations target, PdfName name, params double[] colors) =>
+        target.SetNonstrokingColorExtended(name, new ReadOnlySpan<double>(colors));
 }

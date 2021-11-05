@@ -120,42 +120,6 @@ public interface IStateChangingCSOperations
 
 public static class StateChangingCSOperationsHelpers
 {
-    
-    public static PdfName LoadGraphicStateDictionary(
-        this IStateChangingCSOperations target, string dictName)
-    {
-        var name = NameDirectory.Get(dictName);
-        target.LoadGraphicStateDictionary(name);
-        return name;
-    }
-
-
-    public static void SetStandardStrokingColorSpace(
-        this IColorCSOperations target, ColorSpaceName colorSpace) =>
-        target.SetStrokingColorSpace(colorSpace);
-    public static void SetStandardNonstrokingColorSpace(
-        this IColorCSOperations target, ColorSpaceName colorSpace) =>
-        target.SetNonstrokingColorSpace(colorSpace);
-    
-    public static PdfName SetStrokingColorSpace(this IColorCSOperations target, string colorSpace)
-    {
-        var name = NameDirectory.Get(colorSpace);
-        target.SetStrokingColorSpace(name);
-        return name;
-    }
-    public static PdfName SetNonstrokingColorSpace(this IColorCSOperations target, string colorSpace)
-    {
-        var name = NameDirectory.Get(colorSpace);
-        target.SetNonstrokingColorSpace(name);
-        return name;
-    }
-
-    public static PdfName SetFont(this IStateChangingCSOperations target, string fontName, double size)
-    {
-        var pdfName = NameDirectory.Get(fontName);
-        target.SetFont(pdfName, size);
-        return pdfName;
-    }
 
     //This extension method is essentially a no-op it exists only to add a hint to the
     //intellisense that we might want to use a built in font name for this method
