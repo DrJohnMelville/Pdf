@@ -14,17 +14,13 @@ public readonly struct ContentStreamContext
     private readonly List<long> longs;
     private readonly List<PdfName> names;
     private readonly InterleavedArrayBuilder<Memory<byte>, double> interleavedArray;
- //   private readonly List<double> doubles;
- //   private readonly List<Memory<byte>> strings;
 
     public ContentStreamContext(IContentStreamOperations target)
     {
         this.target = target;
         interleavedArray = new();
-//        doubles = new List<double>();
         longs = new List<long>();
         names = new List<PdfName>();
-  //      strings = new List<Memory<byte>>();
     }
 
     public void HandleNumber(double doubleValue, long longValue)
@@ -89,6 +85,7 @@ public readonly struct ContentStreamContext
                 target.Do(names[0]);
                 break;
             case ContentStreamOperatorValue.DP:
+                target.MarkedContentPoint(names[0], names[1]);
                 break;
             case ContentStreamOperatorValue.EI:
                 break;
@@ -142,6 +139,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.M:
                 break;
             case ContentStreamOperatorValue.MP:
+                target.MarkedContentPoint(names[0]);
                 break;
             case ContentStreamOperatorValue.n:
                 target.EndPathWithNoOp();

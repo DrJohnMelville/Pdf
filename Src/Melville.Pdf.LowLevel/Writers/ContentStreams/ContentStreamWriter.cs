@@ -254,4 +254,13 @@ public partial class ContentStreamWriter : IContentStreamOperations
     
 
     #endregion
+
+    #region Marked Content Operations
+
+    public void MarkedContentPoint(PdfName tag) => destPipe.WriteOperator(ContentStreamOperatorNames.MP, tag);
+
+    public void MarkedContentPoint(PdfName tag, PdfName properties) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.DP, tag, properties);
+
+    #endregion
 }

@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects;
+﻿using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -105,4 +106,15 @@ public interface IDrawingCSOperations
     /// Content stream operator name Do
     /// </summary>
     void Do(PdfName name);
+}
+
+public static class DrawingCSOperatorHelpers
+{
+    public static PdfName Do(this IDrawingCSOperations target, string name)
+    {
+        var pdfName = NameDirectory.Get(name);
+        target.Do(pdfName);
+        return pdfName;
+    }
+
 }

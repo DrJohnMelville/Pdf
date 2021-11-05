@@ -20,10 +20,18 @@ public readonly struct ContentStreamPipeWriter
         WriteNewLine();
     }
 
-    public void WriteOperator(byte[] @operator, PdfName name)
+    public void WriteOperator(byte[] op, PdfName name)
     {
         WriteName(name);
-        WriteOperator(@operator);
+        WriteOperator(op);
+    }
+    public void WriteOperator(in ReadOnlySpan<byte> op, params PdfName[] names)
+    {
+        foreach (var name in names)
+        {
+            WriteName(name);
+        }
+        WriteOperator(op);
     }
 
     public void WriteOperator(in ReadOnlySpan<byte> operation, double value)
