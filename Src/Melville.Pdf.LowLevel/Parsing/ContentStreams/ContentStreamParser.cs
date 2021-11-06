@@ -130,8 +130,6 @@ public class ContentStreamParser
         var skipper = new DictionarySkipper(ref reader);
         if (!skipper.TrySkipDictionary()) return false;
         var clippedseq = reader.UnreadSequence.Slice(0, skipper.CurrentPosition);
-
-        clippedseq = clippedseq.Slice(0, clippedseq.Length - 1);
         target.HandleString(clippedseq.ToArray());
         reader.Advance(clippedseq.Length);
         return true;

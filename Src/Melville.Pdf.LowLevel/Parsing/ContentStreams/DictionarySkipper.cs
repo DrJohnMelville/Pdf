@@ -22,7 +22,7 @@ public ref struct DictionarySkipper
     {
         source.TryRead(out current);
         current = next;
-        return source.TryPeek(out next);
+        return source.TryPeek(1, out next);
     }
 
     public bool TrySkipDictionary()
