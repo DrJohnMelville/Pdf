@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 
-public partial class ContentStreamWriter : IContentStreamOperationses
+public partial class ContentStreamWriter : IContentStreamOperations
 {
     private readonly ContentStreamPipeWriter destPipe;
 

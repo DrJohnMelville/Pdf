@@ -59,7 +59,7 @@ public class DrawOperationWriters : WriterTest
     }
 
     public static object[] PaintingOperator(
-        string code, Action<IContentStreamOperationses> op) =>
+        string code, Action<IContentStreamOperations> op) =>
         new object[] { code, op };
 
     public static IEnumerable<object[]> PaintinOperators() =>
@@ -80,7 +80,7 @@ public class DrawOperationWriters : WriterTest
 
     [Theory]
     [MemberData(nameof(PaintinOperators))]
-    public async Task EmptyOperator(string code, Action<IContentStreamOperationses> op)
+    public async Task EmptyOperator(string code, Action<IContentStreamOperations> op)
     {
         op(sut);
         Assert.Equal(code+"\n", await WrittenText());

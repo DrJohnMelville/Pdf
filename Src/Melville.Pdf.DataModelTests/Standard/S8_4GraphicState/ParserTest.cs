@@ -13,10 +13,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
 public abstract class ParserTest
 {
-    protected Mock<IContentStreamOperationses> Target { get; } = new();
+    protected Mock<IContentStreamOperations> Target { get; } = new();
 
     protected ValueTask ParseString(
-        string s, IContentStreamOperationses? target = null)
+        string s, IContentStreamOperations? target = null)
     {
         var sut = new ContentStreamParser(target ?? Target.Object);
         return sut.Parse(PipeReaderFromString(s));
@@ -26,17 +26,20 @@ public abstract class ParserTest
         PipeReader.Create(new MemoryStream(s.AsExtendedAsciiBytes()));
 
     protected async Task TestInput(
-        string input, Expression<Action<IContentStreamOperationses>> action)
+        string input, params Expression<Action<IContentStreamOperations>>[] actions)
     {
         await ParseString(input);
-        Target.Verify(action);
+        foreach (var action in actions)
+        {
+            Target.Verify(action);
+        }
         Target.VerifyNoOtherCalls();
     }
 
     protected async Task TestInput(
         string input, MockBase mock)
     {
-        await ParseString(input, (IContentStreamOperationses)mock);
+        await ParseString(input, (IContentStreamOperations)mock);
         mock.Verify();
     }
 

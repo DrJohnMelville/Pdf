@@ -32,7 +32,7 @@ public class DrawOperationParsers: ParserTest
     public Task ParseRectangle() => TestInput("1 2 3 4 re", i => i.Rectangle(1,2,3,4));
     
     public static object[] PaintingOperator(
-        string code, Expression<Action<IContentStreamOperationses>> op) =>
+        string code, Expression<Action<IContentStreamOperations>> op) =>
         new object[] { code, op };
 
     public static IEnumerable<object[]> PaintinOperators() =>
@@ -53,7 +53,7 @@ public class DrawOperationParsers: ParserTest
         };
     [Theory]
     [MemberData(nameof(PaintinOperators))]
-    public Task EmptyOperator(string code, Expression<Action<IContentStreamOperationses>> op) =>
+    public Task EmptyOperator(string code, Expression<Action<IContentStreamOperations>> op) =>
         TestInput(code+"\n", op);
 
     [Fact]

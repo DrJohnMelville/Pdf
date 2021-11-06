@@ -27,9 +27,9 @@ public partial class MarkedContentParser : ParserTest
     public Task EndMarkedRange() =>
         TestInput("EMC", i => i.EndMarkedRange());
 
-    private partial class MarkedContentPointMock: MockBase, IContentStreamOperationses 
+    private partial class MarkedContentPointMock: MockBase, IContentStreamOperations 
     {
-        [DelegateTo()] private readonly IContentStreamOperationses fake = null!;
+        [DelegateTo()] private readonly IContentStreamOperations fake = null!;
         private readonly string expected;
 
         public MarkedContentPointMock(string expected)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -10,12 +9,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
 public readonly struct ContentStreamContext
 {
-    private readonly IContentStreamOperationses target;
+    private readonly IContentStreamOperations target;
     private readonly List<long> longs;
     private readonly List<PdfName> names;
     private readonly InterleavedArrayBuilder<Memory<byte>, double> interleavedArray;
 
-    public ContentStreamContext(IContentStreamOperationses target)
+    public ContentStreamContext(IContentStreamOperations target)
     {
         this.target = target;
         interleavedArray = new();

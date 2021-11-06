@@ -8,7 +8,7 @@ public interface ICompatibilityOperations
     void BeginCompatibilitySection();
     void EndCompatibilitySection();
 }
-public interface IContentStreamOperationses: 
+public interface IContentStreamOperations: 
     IStateChangingOperations, IDrawingOperations, IColorOperations, 
     ITextObjectOperations, ITextBlockOperations, IMarkedContentCSOperations, ICompatibilityOperations
 {

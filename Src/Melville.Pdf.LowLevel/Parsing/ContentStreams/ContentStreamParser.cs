@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections;
-using System.ComponentModel.Design;
 using System.IO.Pipelines;
-using System.Threading;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
-using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
@@ -20,7 +14,7 @@ public class ContentStreamParser
 {
     private readonly ContentStreamContext target;
 
-    public ContentStreamParser(IContentStreamOperationses target)
+    public ContentStreamParser(IContentStreamOperations target)
     {
         this.target = new ContentStreamContext(target);
     }
