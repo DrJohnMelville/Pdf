@@ -1,12 +1,13 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.IO.Pipelines;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -21,48 +22,64 @@ public readonly struct ContentStreamParser
 
     public async ValueTask Parse(PipeReader source)
     {
-        ReadResult result;
+        bool done = false;
         do
         {
-            result = await source.ReadAsync();
-            ParseReadResult(source, result);
-        }while (!result.IsCompleted);
+            var bfp = await BufferFromPipe.Create(source);
+            done = (! await ParseReadResult(bfp)) && bfp.Done;
+            
+        }while (!done);
     }
 
-    private void ParseReadResult(PipeReader source, ReadResult buffer)
+    private async ValueTask<bool> ParseReadResult(BufferFromPipe bfp)
     {
-        var reader = new SequenceReader<byte>(buffer.Buffer);
-        SequencePosition position;
-        do
-        {
-            position = reader.Position;
-        } while (ParseReader(ref reader, buffer.IsCompleted));
-
-        source.AdvanceTo(position, buffer.Buffer.End);
+        if (await ParseReader(bfp)) return true;
+        bfp.NeedMoreBytes();
+        return false;
     }
 
-    private bool ParseReader(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    
+    private ValueTask<bool> ParseReader(in BufferFromPipe bfp)
     {
-        if (!SkipWhiteSpaceAndBrackets(ref reader)) return false;
-        if (!reader.TryPeek(out var character)) return false;
+        var reader = bfp.CreateReader();
+        if (!SkipWhiteSpaceAndBrackets(ref reader)) return ValueTask.FromResult(false);
+        if (!reader.TryPeek(out var character)) return ValueTask.FromResult(false);
         return (char)character switch
         {
-            '.' or '+' or '-' or (>= '0' and <= '9') => ParseNumber(ref reader, bufferIsCompleted),
-            '/' => ParseName(ref reader, bufferIsCompleted),
-            '(' => HandleParsedString(SyntaxStringParser.TryParseToBytes(ref reader, bufferIsCompleted)),
-            '<' => HandleInitialOpenWakka(ref reader, bufferIsCompleted),
-            _ => ParseOperator(ref reader, bufferIsCompleted)
+            '.' or '+' or '-' or (>= '0' and <= '9') => 
+                ValueTask.FromResult(ParseNumber(bfp.WithStartingPosition(reader.Position))),
+            '/' => ValueTask.FromResult(ParseName(bfp.WithStartingPosition(reader.Position))),
+            '(' => ValueTask.FromResult(ParseSyntaxString(bfp.WithStartingPosition(reader.Position))),
+            '<' => HandleInitialOpenWakka(bfp.WithStartingPosition(reader.Position)),
+            _ => ValueTask.FromResult(ParseOperator(bfp.WithStartingPosition(reader.Position)))
         };
     }
 
-    private bool HandleInitialOpenWakka(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    private bool ParseSyntaxString(BufferFromPipe bfp)
     {
-        if (!reader.TryPeek(1, out var b2)) return false;
-        return b2 == (byte)'<'?
-            TryParseDictionary(ref reader): 
-            HandleParsedString(HexStringParser.TryParseToBytes(ref reader, bufferIsCompleted));
+        var reader = bfp.CreateReader();
+        return bfp.LogSuccess(
+            HandleParsedString(SyntaxStringParser.TryParseToBytes(ref reader, bfp.Done)),
+            ref reader);
     }
-    
+
+    private ValueTask<bool> HandleInitialOpenWakka(in BufferFromPipe bpc)
+    {
+        var reader = bpc.CreateReader();
+        if (!reader.TryPeek(1, out var b2)) return ValueTask.FromResult(false);
+        return b2 == (byte)'<'?
+            TryParseDictionary(bpc): 
+            ParseHexString(bpc);
+    }
+
+    private ValueTask<bool> ParseHexString(BufferFromPipe bpc)
+    {
+        var reader = bpc.CreateReader();
+        return ValueTask.FromResult(bpc.LogSuccess(
+            HandleParsedString(HexStringParser.TryParseToBytes(ref reader, bpc.Done)),
+            ref reader));
+    }
+
     private bool HandleParsedString(byte[]? str)
     {
         if (str == null) return false;
@@ -70,9 +87,12 @@ public readonly struct ContentStreamParser
         return true;
     }
 
-    private bool ParseName(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    private bool ParseName(in BufferFromPipe bfp )
     {
-        if (!NameParser.TryParse(ref reader, bufferIsCompleted, out var name)) return false;
+        var reader = bfp.CreateReader();
+        if (!NameParser.TryParse(ref reader, bfp.Done, out var name)) 
+            return false;
+        bfp.Consume(reader.Position);
         target.HandleName(name);
         return true;
     }
@@ -88,27 +108,31 @@ public readonly struct ContentStreamParser
         }
     }
 
-    private bool ParseNumber(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    private bool ParseNumber(in BufferFromPipe bfp)
     {
+        var reader = bfp.CreateReader();
         var parser = new NumberWtihFractionParser();
-        if (!parser.InnerTryParse(ref reader, bufferIsCompleted)) return false;
+        if (!parser.InnerTryParse(ref reader, bfp.Done)) return false;
+        bfp.Consume(reader.Position);
         target.HandleNumber(parser.DoubleValue(), parser.IntegerValue());
         return true;
     }
 
-    private bool ParseOperator(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    private bool ParseOperator(in BufferFromPipe bfp)
     {
+        var reader = bfp.CreateReader();
         uint opCode = 0;
         while (true)
         {
             if (!reader.TryPeek(out var character))
             {
-                if (bufferIsCompleted && opCode != 0) HandleOpCode(opCode);
-                return bufferIsCompleted;
+                if (bfp.Done && opCode != 0) HandleOpCode(opCode);
+                return bfp.LogSuccess(bfp.Done, ref reader);
             }
             if (CharClassifier.Classify(character) != CharacterClass.Regular)
             {
                 HandleOpCode(opCode);
+                bfp.Consume(reader.Position);
                 return true;
             }
             reader.Advance(1);
@@ -119,14 +143,16 @@ public readonly struct ContentStreamParser
 
     private void HandleOpCode(uint opCode) => target.HandleOpCode((ContentStreamOperatorValue)opCode);
     
-    private bool TryParseDictionary(ref SequenceReader<byte> reader)
+    private ValueTask<bool> TryParseDictionary(in BufferFromPipe bfp)
     {
+        var reader = bfp.CreateReader();
         var skipper = new DictionarySkipper(ref reader);
-        if (!skipper.TrySkipDictionary()) return false;
+        if (!skipper.TrySkipDictionary()) return ValueTask.FromResult(false);
         var clippedseq = reader.UnreadSequence.Slice(0, skipper.CurrentPosition);
         target.HandleString(clippedseq.ToArray());
         reader.Advance(clippedseq.Length);
-        return true;
+        bfp.Consume(reader.Position);
+        return ValueTask.FromResult(true);
     }
 
 }

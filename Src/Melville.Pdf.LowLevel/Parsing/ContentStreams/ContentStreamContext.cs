@@ -272,7 +272,7 @@ public class ContentStreamContext
                 HandleUnknownOperation();
                 break;
         }
-
+        
         ClearStacks();
     }
 
