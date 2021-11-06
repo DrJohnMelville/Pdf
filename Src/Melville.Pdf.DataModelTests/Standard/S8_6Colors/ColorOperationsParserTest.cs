@@ -104,5 +104,11 @@ public partial class ColorOperationsParserTest: ParserTest
     public Task SetNonstrokingRGB() => TestInput("4 5 6 rg", i => i.SetNonstrokingRGB(4,5, 6));
     [Fact]
     public Task SetNonstrokingCMYK() => TestInput("4 5 6 7 k", i => i.SetNonstrokingCMYK(4,5, 6, 7));
+    [Fact]
+    public Task StrokingColorSpace() => 
+        TestInput("/DeviceGray CS", i => i.SetStrokingColorSpace(ColorSpaceName.DeviceGray));
+    [Fact]
+    public Task NonstrokingColorSpace() => 
+        TestInput("/DeviceGray cs", i => i.SetNonstrokingColorSpace(ColorSpaceName.DeviceGray));
 
 }

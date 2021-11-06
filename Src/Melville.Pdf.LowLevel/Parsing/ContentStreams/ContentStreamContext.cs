@@ -80,8 +80,10 @@ public class ContentStreamContext
                     DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3), DoubleStack(4), DoubleStack(5));
                 break;
             case ContentStreamOperatorValue.CS:
+                target.SetStrokingColorSpace(names[0]);
                 break;
             case ContentStreamOperatorValue.cs:
+                target.SetNonstrokingColorSpace(names[0]);
                 break;
             case ContentStreamOperatorValue.d:
                 var span = interleavedArray.GetT2Span();
