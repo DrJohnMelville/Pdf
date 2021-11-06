@@ -14,6 +14,9 @@ public class ContentStreamContext
     private readonly List<PdfName> names;
     private readonly InterleavedArrayBuilder<Memory<byte>, double> interleavedArray;
     private int compatibilitySectionCount;
+
+    private double DoubleStack(int n) => interleavedArray.GetT2(n);
+    private Memory<byte> StringStack(int n) => interleavedArray.GetT1(n);
     
     public ContentStreamContext(IContentStreamOperations target)
     {
@@ -55,7 +58,7 @@ public class ContentStreamContext
                 if (names.Count > 1)
                     target.BeginMarkedRange(names[0], names[1]);
                 else
-                    target.BeginMarkedRange(names[0], new UnparsedDictionary(interleavedArray.GetT1(0)));
+                    target.BeginMarkedRange(names[0], new UnparsedDictionary(StringStack(0)));
                 break;
             case ContentStreamOperatorValue.BI:
                 break;
@@ -70,11 +73,11 @@ public class ContentStreamContext
                 compatibilitySectionCount++;
                 break;
             case ContentStreamOperatorValue.c:
-                target.CurveTo(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3), interleavedArray.GetT2(4), interleavedArray.GetT2(5));
+                target.CurveTo(DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3), DoubleStack(4), DoubleStack(5));
                 break;
             case ContentStreamOperatorValue.cm:
                 target.ModifyTransformMatrix(
-                    interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3), interleavedArray.GetT2(4), interleavedArray.GetT2(5));
+                    DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3), DoubleStack(4), DoubleStack(5));
                 break;
             case ContentStreamOperatorValue.CS:
                 break;
@@ -85,8 +88,12 @@ public class ContentStreamContext
                 target.SetLineDashPattern(span[^1],span[..^1]);
                 break;
             case ContentStreamOperatorValue.d0:
+                target.SetColoredGlyphMetrics(DoubleStack(0), DoubleStack(1));
                 break;
             case ContentStreamOperatorValue.d1:
+                target.SetUncoloredGlyphMetrics(
+                    DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3), DoubleStack(4),
+                    DoubleStack(5));
                 break;
             case ContentStreamOperatorValue.Do:
                 target.Do(names[0]);
@@ -96,7 +103,7 @@ public class ContentStreamContext
                     target.MarkedContentPoint(names[0], names[1]);
                 else
                     target.MarkedContentPoint(
-                        names[0], new UnparsedDictionary(interleavedArray.GetT1(0)));
+                        names[0], new UnparsedDictionary(StringStack(0)));
                 break;
             case ContentStreamOperatorValue.EI:
                 break;
@@ -118,10 +125,10 @@ public class ContentStreamContext
                 target.FillPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.G:
-                target.SetStrokeGray(interleavedArray.GetT2(0));
+                target.SetStrokeGray(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.g:
-                target.SetNonstrokingGray(interleavedArray.GetT2(0));
+                target.SetNonstrokingGray(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.gs:
                 target.LoadGraphicStateDictionary(names[0]);
@@ -130,7 +137,7 @@ public class ContentStreamContext
                 target.ClosePath();
                 break;
             case ContentStreamOperatorValue.i:
-                target.SetFlatnessTolerance(interleavedArray.GetT2(0));
+                target.SetFlatnessTolerance(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.ID:
                 break;
@@ -141,18 +148,19 @@ public class ContentStreamContext
                 target.SetLineJoinStyle((LineJoinStyle)longs[0]);
                 break;
             case ContentStreamOperatorValue.K:
-                target.SetStrokeCMYK(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3));
+                target.SetStrokeCMYK(DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3));
                 break;
             case ContentStreamOperatorValue.k:
-                target.SetNonstrokingCMYK(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3));
+                target.SetNonstrokingCMYK(DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3));
                 break;
             case ContentStreamOperatorValue.l:
-                target.LineTo(interleavedArray.GetT2(0), interleavedArray.GetT2(1));
+                target.LineTo(DoubleStack(0), DoubleStack(1));
                 break;
             case ContentStreamOperatorValue.m:
-                target.MoveTo(interleavedArray.GetT2(0), interleavedArray.GetT2(1));
+                target.MoveTo(DoubleStack(0), DoubleStack(1));
                 break;
             case ContentStreamOperatorValue.M:
+                target.SetMiterLimit(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.MP:
                 target.MarkedContentPoint(names[0]);
@@ -167,13 +175,13 @@ public class ContentStreamContext
                 target.RestoreGraphicsState();
                 break;
             case ContentStreamOperatorValue.re:
-                target.Rectangle(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3));
+                target.Rectangle(DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3));
                 break;
             case ContentStreamOperatorValue.RG:
-                target.SetStrokeRGB(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2));
+                target.SetStrokeRGB(DoubleStack(0), DoubleStack(1), DoubleStack(2));
                 break;
             case ContentStreamOperatorValue.rg:
-                target.SetNonstrokingRGB(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2));
+                target.SetNonstrokingRGB(DoubleStack(0), DoubleStack(1), DoubleStack(2));
                 break;
             case ContentStreamOperatorValue.ri:
                 target.SetRenderIntent(NameAs<RenderingIntentName>());
@@ -202,46 +210,46 @@ public class ContentStreamContext
                 target.MoveToNextTextLine();
                 break;
             case ContentStreamOperatorValue.Tc:
-                target.SetCharSpace(interleavedArray.GetT2(0));
+                target.SetCharSpace(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.Td:
-                target.MovePositionBy(interleavedArray.GetT2(0), interleavedArray.GetT2(1));
+                target.MovePositionBy(DoubleStack(0), DoubleStack(1));
                 break;
             case ContentStreamOperatorValue.TD:
-                target.MovePositionByWithLeading(interleavedArray.GetT2(0), interleavedArray.GetT2(1));
+                target.MovePositionByWithLeading(DoubleStack(0), DoubleStack(1));
                 break;
             case ContentStreamOperatorValue.Tf:
-                target.SetFont(names[0], interleavedArray.GetT2(0));
+                target.SetFont(names[0], DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.Tj:
-                target.ShowString(interleavedArray.GetT1(0));
+                target.ShowString(StringStack(0));
                 break;
             case ContentStreamOperatorValue.TJ:
                 target.ShowSpacedString(interleavedArray.GetInterleavedArray());
                 break;
             case ContentStreamOperatorValue.TL:
-                target.SetTextLeading(interleavedArray.GetT2(0));
+                target.SetTextLeading(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.Tm:
-                target.SetTextMatrix(interleavedArray.GetT2(0),interleavedArray.GetT2(1),interleavedArray.GetT2(2),interleavedArray.GetT2(3),interleavedArray.GetT2(4),interleavedArray.GetT2(5));
+                target.SetTextMatrix(DoubleStack(0),DoubleStack(1),DoubleStack(2),DoubleStack(3),DoubleStack(4),DoubleStack(5));
                 break;
             case ContentStreamOperatorValue.Tr:
                 target.SetTextRender((TextRendering)longs[0]);
                 break;
             case ContentStreamOperatorValue.Ts:
-                target.SetTextRise(interleavedArray.GetT2(0));
+                target.SetTextRise(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.Tw:
-                target.SetWordSpace(interleavedArray.GetT2(0));
+                target.SetWordSpace(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.Tz:
-                target.SetHorizontalTextScaling(interleavedArray.GetT2(0));
+                target.SetHorizontalTextScaling(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.v:
-                target.CurveToWithoutInitialControl(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3));
+                target.CurveToWithoutInitialControl(DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3));
                 break;
             case ContentStreamOperatorValue.w:
-                target.SetLineWidth(interleavedArray.GetT2(0));
+                target.SetLineWidth(DoubleStack(0));
                 break;
             case ContentStreamOperatorValue.W:
                 target.ClipToPath();
@@ -250,13 +258,13 @@ public class ContentStreamContext
                 target.ClipToPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.y:
-                target.CurveToWithoutFinalControl(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3));
+                target.CurveToWithoutFinalControl(DoubleStack(0), DoubleStack(1), DoubleStack(2), DoubleStack(3));
                 break;
             case ContentStreamOperatorValue.SingleQuote:
-                target.MoveToNextLineAndShowString(interleavedArray.GetT1(0));
+                target.MoveToNextLineAndShowString(StringStack(0));
                 break;
             case ContentStreamOperatorValue.DoubleQuote:
-                target.MoveToNextLineAndShowString(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT1(0));
+                target.MoveToNextLineAndShowString(DoubleStack(0), DoubleStack(1), StringStack(0));
                 break;
             default:
                 HandleUnknownOperation();

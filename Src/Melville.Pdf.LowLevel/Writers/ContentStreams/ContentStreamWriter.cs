@@ -332,4 +332,16 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.EX);
 
     #endregion
+
+    #region Type 3 Font Glyph Metrics
+
+    public void SetColoredGlyphMetrics(double wX, double wY) => 
+        destPipe.WriteOperator(ContentStreamOperatorNames.d0, wX, wY);
+
+    public void SetUncoloredGlyphMetrics(double wX, double wY, double llX, double llY, double urX, double urY)
+    {
+        destPipe.WriteOperator(ContentStreamOperatorNames.d1, wX, wY, llX, llY, urX, urY);
+    }
+
+    #endregion
 }

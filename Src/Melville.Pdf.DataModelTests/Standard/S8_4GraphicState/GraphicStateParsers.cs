@@ -33,6 +33,10 @@ public partial class GraphicStateParsers: ParserTest
     [Fact]
     public Task SetLineWidthTest() => TestInput("256 w", i => i.SetLineWidth(256));
 
+    [Fact]
+    public Task SetMiterLimit() => 
+        TestInput("10 M", i => i.SetMiterLimit(10));
+
     [Theory]
     [InlineData(LineCap.Butt)]
     [InlineData(LineCap.Round)]
