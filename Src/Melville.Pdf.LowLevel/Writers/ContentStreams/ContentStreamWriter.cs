@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Buffers;
 using System.IO.Pipelines;
 using System.Security.Cryptography;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
+using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -204,6 +207,25 @@ public partial class ContentStreamWriter : IContentStreamOperations
             parent.destPipe.WriteChar(']');
             parent.destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
         }
+        
+        public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
+        {
+            parent.destPipe.WriteChar('[');
+            foreach (var value in values)
+            {
+                switch (value.Type)
+                {
+                    case ContentStreamValueType.Number:
+                        parent.destPipe.WriteDoubleAndSpace(value.Floating);
+                        break;
+                    case ContentStreamValueType.Memory:
+                        parent.destPipe.WriteString(value.Bytes.Span);
+                        break;
+                }
+            }
+            parent.destPipe.WriteChar(']');
+            parent.destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
+        }
 
         public void Dispose() => ((ITextBlockOperations)parent).EndTextObject();
     }
@@ -234,10 +256,21 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     }
 
-    void ITextObjectOperations.ShowSpacedString(in InterleavedArray<Memory<byte>, double> values)
+    void ITextObjectOperations.ShowSpacedString(in Span<ContentStreamValueUnion> values)
     {
         destPipe.WriteChar('[');
-        values.Iterate(new ShowSpacedStringIterator(this));
+        foreach (var value in values)
+        {
+            switch (value.Type)
+            {
+                case ContentStreamValueType.Number:
+                    destPipe.WriteDoubleAndSpace(value.Floating);
+                    break;
+                case ContentStreamValueType.Memory:
+                    destPipe.WriteString(value.Bytes.Span);
+                    break;
+            }
+        }
         destPipe.WriteChar(']');
         destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
     }

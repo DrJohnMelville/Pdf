@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
+using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -39,36 +40,10 @@ public ref struct InterleavedArray<T1,T2>
     }
 }
 
-public class InterleavedArrayBuilder<T1, T2>
+public readonly struct InterleavedArrayBuilder
 {
-    private List<T1> t1s = new();
-    private List<T2> t2s = new();
-    private List<byte> order = new();
-    public void Handle(T1 item)
-    {
-        order.Add(1);
-        t1s.Add(item);
-    }
-
-    public void Handle(T2 item)
-    {
-        order.Add(2);
-        t2s.Add(item);
-    }
-
-    public T1 GetT1(int position) => t1s[position];
-    public T2 GetT2(int position) => t2s[position];
-
-    public void Clear()
-    {
-        t1s.Clear();
-        t2s.Clear();
-        order.Clear();
-    }
-
-    public InterleavedArray<T1, T2> GetInterleavedArray() => new(
-        GetT1Span(), GetT2Span(), CollectionsMarshal.AsSpan(order));
-    
-    public Span<T1> GetT1Span() => CollectionsMarshal.AsSpan(t1s);
-    public Span<T2> GetT2Span() => CollectionsMarshal.AsSpan(t2s);
+    private readonly List<ContentStreamValueUnion> items = new();
+    public void Handle(double item) => items.Add(new(item, (long)item));
+    public void Handle(in Memory<byte> item) => items.Add(new(item));
+    public Span<ContentStreamValueUnion> GetInterleavedArray() => CollectionsMarshal.AsSpan(items);
 }

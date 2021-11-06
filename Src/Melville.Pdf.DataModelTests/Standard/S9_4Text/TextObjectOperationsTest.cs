@@ -99,7 +99,7 @@ public class TextObjectOperationsTest : WriterTest
     {
         using (var block = sut.StartTextBlock())
         {
-            var builder = new InterleavedArrayBuilder<Memory<byte>, double>();
+            var builder = new InterleavedArrayBuilder();
             builder.Handle("A".AsExtendedAsciiBytes().AsMemory());
             builder.Handle(2);
             builder.Handle("B".AsExtendedAsciiBytes().AsMemory());

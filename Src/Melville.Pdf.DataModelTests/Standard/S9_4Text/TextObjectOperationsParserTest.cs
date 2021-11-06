@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Buffers;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Moq;
 using Xunit;
 
@@ -41,22 +43,18 @@ public partial class TextObjectOperationsParserTest : ParserTest
             AssertResult(input, "IJK");
         }
 
-        public void ShowSpacedString(in InterleavedArray<Memory<byte>, double> values)
+        public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
         {
-            var target = new Mock<IInterleavedTarget<Memory<byte>, double>>(MockBehavior.Strict);
-            var seq = new MockSequence();
-            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
-            target.InSequence(seq).Setup(i => i.Handle(2.0));
-            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
-            target.InSequence(seq).Setup(i => i.Handle(3.0));
-            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
-            target.InSequence(seq).Setup(i => i.Handle(It.IsAny<Memory<byte>>()));
-            target.InSequence(seq).Setup(i => i.Handle(4.0));
-            target.InSequence(seq).Setup(i => i.Handle(5.0));
-            values.Iterate(target.Object);
-            target.Verify(i => i.Handle(It.IsAny<Memory<byte>>()), Times.Exactly(4));
-            target.Verify(i => i.Handle(It.IsAny<double>()), Times.Exactly(4));
-            target.VerifyNoOtherCalls();
+            //[(a)2(b)3(c)(s)4 5]TJ
+            Assert.Equal("a", ExtendedAsciiEncoding.ExtendedAsciiString(values[0].Bytes.Span));
+            Assert.Equal(2, values[1].Integer);
+            Assert.Equal("b", ExtendedAsciiEncoding.ExtendedAsciiString(values[2].Bytes.Span));
+            Assert.Equal(3, values[3].Integer);
+            Assert.Equal("c", ExtendedAsciiEncoding.ExtendedAsciiString(values[4].Bytes.Span));
+            Assert.Equal("s", ExtendedAsciiEncoding.ExtendedAsciiString(values[5].Bytes.Span));
+            Assert.Equal(4, values[6].Integer);
+            Assert.Equal(5, values[7].Integer);
+
             SetCalled();
         }
 

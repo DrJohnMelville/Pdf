@@ -1,4 +1,6 @@
 ﻿using System;
+using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
+using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -45,7 +47,7 @@ public interface ITextObjectOperations
     /// <summary>
     /// Context stream operator TJ
     /// </summary>
-    void ShowSpacedString(in InterleavedArray<Memory<byte>, double> values);
+    void ShowSpacedString(in Span<ContentStreamValueUnion> values);
 
 }
 
