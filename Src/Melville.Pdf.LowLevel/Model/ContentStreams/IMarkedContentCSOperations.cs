@@ -30,4 +30,24 @@ public interface IMarkedContentCSOperations
     /// Content stream operator tag dictionaru MP
     /// </summary>
     void MarkedContentPoint(PdfName tag, in UnparsedDictionary dict);
+
+    /// <summary>
+    /// Content stream operator tag BMC
+    /// </summary>
+    void BeginMarkedRange(PdfName tag);
+
+    /// <summary>
+    /// Content stream operator tag dictName BDC
+    /// </summary>
+    void BeginMarkedRange(PdfName tag, PdfName dictName);
+
+    /// <summary>
+    /// Content stream operator tag  inlineDicitionary BDC
+    /// </summary>
+    void BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary);
+
+    /// <summary>
+    /// Content stream operator EMC
+    /// </summary>
+    void EndMarkedRange();
 }

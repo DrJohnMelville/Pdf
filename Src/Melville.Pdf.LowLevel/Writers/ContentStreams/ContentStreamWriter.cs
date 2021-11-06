@@ -268,5 +268,51 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteBytes(dict.Text.Span);
         destPipe.WriteOperator(ContentStreamOperatorNames.DP);
     }
+
+    public CloseMarkedRange BeginMarkedRange(PdfName tag)
+    {
+        ((IMarkedContentCSOperations)this).BeginMarkedRange(tag);
+        return new CloseMarkedRange(this);
+    }
+
+    public CloseMarkedRange BeginMarkedRange(PdfName tag, PdfName dictName)
+    {
+        ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictName);
+        return new CloseMarkedRange(this);
+    }
+    public CloseMarkedRange BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary)
+    {
+        ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictionary);
+        return new CloseMarkedRange(this);
+    }
+
+    void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag) => 
+        destPipe.WriteOperator(ContentStreamOperatorNames.BMC, tag);
+
+    void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag, PdfName dictName) => 
+        destPipe.WriteOperator(ContentStreamOperatorNames.BDC,tag,dictName);
+
+    void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary)
+    {
+        destPipe.WriteName(tag);
+        destPipe.WriteBytes(dictionary.Text.Span);
+        destPipe.WriteOperator(ContentStreamOperatorNames.BDC);
+    }
+
+    void IMarkedContentCSOperations.EndMarkedRange() => 
+        destPipe.WriteOperator(ContentStreamOperatorNames.EMC);
+
+    public struct CloseMarkedRange: IDisposable
+    {
+        private IMarkedContentCSOperations parent;
+
+        public CloseMarkedRange(IMarkedContentCSOperations parent)
+        {
+            this.parent = parent;
+        }
+
+        public void Dispose() => parent.EndMarkedRange();
+    }
+
     #endregion
 }

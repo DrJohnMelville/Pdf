@@ -52,10 +52,15 @@ public readonly struct ContentStreamContext
                 target.FillAndStrokePathEvenOdd();
                 break;
             case ContentStreamOperatorValue.BDC:
+                if (names.Count > 1)
+                    target.BeginMarkedRange(names[0], names[1]);
+                else
+                    target.BeginMarkedRange(names[0], new UnparsedDictionary(interleavedArray.GetT1(0)));
                 break;
             case ContentStreamOperatorValue.BI:
                 break;
             case ContentStreamOperatorValue.BMC:
+                target.BeginMarkedRange(names[0]);
                 break;
             case ContentStreamOperatorValue.BT:
                 target.BeginTextObject();
@@ -94,6 +99,7 @@ public readonly struct ContentStreamContext
             case ContentStreamOperatorValue.EI:
                 break;
             case ContentStreamOperatorValue.EMC:
+                target.EndMarkedRange();
                 break;
             case ContentStreamOperatorValue.ET:
                 target.EndTextObject();

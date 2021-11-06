@@ -34,5 +34,36 @@ public class MarkedContentWriterTest: WriterTest
         Assert.Equal("/M1 <</Type/Catalog>>DP\n", await WrittenText());
         
     }
+
+    [Fact]
+    public async Task NamedMarkRange()
+    {
+        using (sut.BeginMarkedRange("M2"))
+        {
+            sut.MarkedContentPoint("M1");
+        }
+        Assert.Equal("/M2 BMC\n/M1 MP\nEMC\n", await WrittenText());
+    }
  
+    [Fact]
+    public async Task NamedMarkRangeWithDictName()
+    {
+        using (sut.BeginMarkedRange("M2", KnownNames.All))
+        {
+            sut.MarkedContentPoint("M1");
+        }
+        Assert.Equal("/M2 /All BDC\n/M1 MP\nEMC\n", await WrittenText());
+    }
+    
+        [Fact]
+    public async Task NamedMarkRangeWithInlineDict()
+    {
+        using (sut.BeginMarkedRange("M2", new UnparsedDictionary("<</Type/Type>>")))
+        {
+            sut.MarkedContentPoint("M1");
+        }
+        Assert.Equal("/M2 <</Type/Type>>BDC\n/M1 MP\nEMC\n", await WrittenText());
+    }
+    
+    
 }

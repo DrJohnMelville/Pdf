@@ -1,12 +1,9 @@
-﻿using System;
-using System.Buffers;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Moq;
 using Xunit;
 
@@ -20,6 +17,15 @@ public partial class MarkedContentParser : ParserTest
     [Fact]
     public Task MarkedContentPointWithNamedParam() =>
         TestInput("/M1 /M2 DP", i => i.MarkedContentPoint("M1", "M2"));
+    [Fact]
+    public Task BeginMarkedRangeWithTag() =>
+        TestInput("/M1 BMC", i => i.BeginMarkedRange("M1"));
+    [Fact]
+    public Task BeginMarkedRangeWithTagAndDictName() =>
+        TestInput("/M1 /M2 BDC", i => i.BeginMarkedRange("M1", "M2"));
+    [Fact]
+    public Task EndMarkedRange() =>
+        TestInput("EMC", i => i.EndMarkedRange());
 
     private partial class MarkedContentPointMock: MockBase, IContentStreamOperations 
     {
@@ -33,9 +39,13 @@ public partial class MarkedContentParser : ParserTest
 
         public void MarkedContentPoint(PdfName tag, in UnparsedDictionary dict)
         {
+            Assert.Equal("/M1", tag.ToString());
             Assert.Equal(expected, StringFromDict(dict));
             SetCalled();
         }
+
+        public void BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary) =>
+            MarkedContentPoint(tag, dictionary);
 
         private static string StringFromDict(UnparsedDictionary dict) => 
             ExtendedAsciiEncoding.ExtendedAsciiString(dict.Text.Span);
@@ -46,32 +56,10 @@ public partial class MarkedContentParser : ParserTest
     [InlineData("<</Type<</Type/Catalog>>>>")]
     public Task MarkedContentPointWithInlineDict(string dictStr) => 
         TestInput($"/M1{dictStr}DP", new MarkedContentPointMock(dictStr));
-
     [Theory]
     [InlineData("<</Type/Catalog>>")]
-    [InlineData("<</Type <11223344>>>")]
-    [InlineData("<</Type (>>)>>")]
-    [InlineData("<</Type ((hello)>>)>>")]
-    [InlineData("<</Type ((\\()>>)>>")]
-    [InlineData("<</Type ((\\))>>)>>")]
     [InlineData("<</Type<</Type/Catalog>>>>")]
-    public void TestSkipper(string s)
-    {
-        var span = (s+"  ").AsExtendedAsciiBytes().AsMemory();
-        Assert.Equal(s.Length+1, ExtractedLength(span));
-        for (int i = 2; i < span.Length-1; i++)
-        {
-            Assert.Equal(-1, ExtractedLength(span[..i]));
-            
-        }
-    }
+    public Task MarkedContentRangeWithInlineDict(string dictStr) => 
+        TestInput($"/M1{dictStr}BDC", new MarkedContentPointMock(dictStr));
 
-    private long ExtractedLength(in Memory<byte> span)
-    {
-        var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(span));
-        var skipper = new DictionarySkipper(ref reader);
-        if (!skipper.TrySkipDictionary()) return -1;
-        return reader.UnreadSequence.Slice(reader.Position, 
-            skipper.CurrentPosition).Length;
-    }
 }
