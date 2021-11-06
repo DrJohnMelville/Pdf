@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Net.Mail;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
@@ -7,21 +8,21 @@ namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 public ref struct DictionarySkipper
 {
     private SequenceReader<byte> source;
+    private byte next;
     private byte current;
-    private byte prior;
 
     public DictionarySkipper(ref SequenceReader<byte> source)
     {
         this.source = source;
-        source.TryPeek(out prior);
-        source.TryPeek(1, out current);
+        source.TryPeek(out current);
+        source.TryPeek(1, out next);
     }
 
     private bool Advance()
     {
-        source.TryRead(out prior);
-        prior = current;
-        return source.TryPeek(out current);
+        source.TryRead(out current);
+        current = next;
+        return source.TryPeek(out next);
     }
 
     public bool TrySkipDictionary()
@@ -30,12 +31,18 @@ public ref struct DictionarySkipper
         if (!(Advance()&&Advance())) return false;
         while (true)
         {
-            switch ((char)prior, (char) current)
+            switch ((char)current, (char) next)
             {
                 case ('>', '>'):
                     return Advance() && Advance();
                 case ('<','<'):
-                    TrySkipDictionary();
+                    if (!TrySkipDictionary()) return false;
+                    break;
+                case ('<', _):
+                    if (!TrySkipHexString()) return false;
+                    break;
+                case ('(',_):
+                    if (!TrySkipSyntaxString()) return false;
                     break;
                 default:
                     if (!Advance()) return false;
@@ -43,9 +50,40 @@ public ref struct DictionarySkipper
             }
         }
     }
-    
+
+    private bool TrySkipHexString()
+    {
+        while (current != (byte)'>')
+        {
+            if (!Advance()) return false;
+        }
+        return Advance();
+    }
+
+    private bool TrySkipSyntaxString()
+    {
+        Advance();
+        while (true)
+        {
+            switch ((char)current)
+            {
+                case '\\':
+                    if (!(Advance() && Advance())) return false;
+                    break;
+                case ')':
+                    return Advance();
+                case '(':
+                    if (!TrySkipSyntaxString()) return false;
+                    break;
+                default:
+                    if (!Advance()) return false;
+                    break;
+            }
+        }
+    }
+
     private bool Check(char expectedPrior, char expectedCurrent) => 
-        expectedCurrent == current && expectedPrior == prior;
+        expectedCurrent == next && expectedPrior == current;
 
     public SequencePosition CurrentPosition => source.Position;
 }

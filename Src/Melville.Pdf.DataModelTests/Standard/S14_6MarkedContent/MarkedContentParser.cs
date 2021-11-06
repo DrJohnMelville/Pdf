@@ -49,16 +49,29 @@ public partial class MarkedContentParser : ParserTest
 
     [Theory]
     [InlineData("<</Type/Catalog>>")]
+    [InlineData("<</Type <11223344>>>")]
+    [InlineData("<</Type (>>)>>")]
+    [InlineData("<</Type ((hello)>>)>>")]
+    [InlineData("<</Type ((\\()>>)>>")]
+    [InlineData("<</Type ((\\))>>)>>")]
     [InlineData("<</Type<</Type/Catalog>>>>")]
     public void TestSkipper(string s)
     {
-        var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(
-            (s+"  ").AsExtendedAsciiBytes()));
+        var span = (s+"  ").AsExtendedAsciiBytes().AsMemory();
+        Assert.Equal(s.Length+1, ExtractedLength(span));
+        for (int i = 2; i < span.Length-1; i++)
+        {
+            Assert.Equal(-1, ExtractedLength(span[..i]));
+            
+        }
+    }
+
+    private long ExtractedLength(in Memory<byte> span)
+    {
+        var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(span));
         var skipper = new DictionarySkipper(ref reader);
-        Assert.True(skipper.TrySkipDictionary());
-        Assert.Equal(s.Length+1, 
-            reader.UnreadSequence.Slice(reader.Position, 
-                    skipper.CurrentPosition).Length);
-        
+        if (!skipper.TrySkipDictionary()) return -1;
+        return reader.UnreadSequence.Slice(reader.Position, 
+            skipper.CurrentPosition).Length;
     }
 }
