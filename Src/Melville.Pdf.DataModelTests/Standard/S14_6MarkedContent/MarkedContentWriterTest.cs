@@ -55,7 +55,7 @@ public class MarkedContentWriterTest: WriterTest
         Assert.Equal("/M2 /All BDC\n/M1 MP\nEMC\n", await WrittenText());
     }
     
-        [Fact]
+    [Fact]
     public async Task NamedMarkRangeWithInlineDict()
     {
         using (sut.BeginMarkedRange("M2", new UnparsedDictionary("<</Type/Type>>")))

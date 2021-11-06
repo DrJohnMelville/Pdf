@@ -269,21 +269,21 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.DP);
     }
 
-    public CloseMarkedRange BeginMarkedRange(PdfName tag)
+    public DeferedClosingTask BeginMarkedRange(PdfName tag)
     {
         ((IMarkedContentCSOperations)this).BeginMarkedRange(tag);
-        return new CloseMarkedRange(this);
+        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
 
-    public CloseMarkedRange BeginMarkedRange(PdfName tag, PdfName dictName)
+    public DeferedClosingTask BeginMarkedRange(PdfName tag, PdfName dictName)
     {
         ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictName);
-        return new CloseMarkedRange(this);
+        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
-    public CloseMarkedRange BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary)
+    public DeferedClosingTask BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary)
     {
         ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictionary);
-        return new CloseMarkedRange(this);
+        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
 
     void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag) => 
@@ -302,16 +302,18 @@ public partial class ContentStreamWriter : IContentStreamOperations
     void IMarkedContentCSOperations.EndMarkedRange() => 
         destPipe.WriteOperator(ContentStreamOperatorNames.EMC);
 
-    public struct CloseMarkedRange: IDisposable
+    public struct DeferedClosingTask: IDisposable
     {
-        private IMarkedContentCSOperations parent;
+        private readonly ContentStreamPipeWriter writer;
+        private readonly byte[] closingOperator;
 
-        public CloseMarkedRange(IMarkedContentCSOperations parent)
+        public DeferedClosingTask(ContentStreamPipeWriter writer, byte[] closingOperator)
         {
-            this.parent = parent;
+            this.writer = writer;
+            this.closingOperator = closingOperator;
         }
 
-        public void Dispose() => parent.EndMarkedRange();
+        public void Dispose() => writer.WriteOperator(closingOperator);
     }
 
     #endregion

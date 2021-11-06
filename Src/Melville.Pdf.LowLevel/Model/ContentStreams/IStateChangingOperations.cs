@@ -14,7 +14,7 @@ public enum TextRendering
     StrokeAndClip = 5
 }
 
-public interface IStateChangingCSOperations
+public interface IStateChangingOperations
 {
     #region Non Text EXclusive operators
 
@@ -124,11 +124,11 @@ public static class StateChangingCSOperationsHelpers
     //This extension method is essentially a no-op it exists only to add a hint to the
     //intellisense that we might want to use a built in font name for this method
     public static void SetFont(
-        this IStateChangingCSOperations target, BuiltInFontName fontName, double size) =>
+        this IStateChangingOperations target, BuiltInFontName fontName, double size) =>
         target.SetFont((PdfName)fontName, size);
     
     public static void SetLineDashPattern(
-        this IStateChangingCSOperations target, double dashPhase = 0, params double[] dashArray) =>
+        this IStateChangingOperations target, double dashPhase = 0, params double[] dashArray) =>
         target.SetLineDashPattern(dashPhase, dashArray.AsSpan());
     
 }

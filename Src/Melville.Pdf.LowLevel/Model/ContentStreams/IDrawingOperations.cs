@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
-public interface IDrawingCSOperations
+public interface IDrawingOperations
 {
     /// <summary>
     /// Content stream operator x y m

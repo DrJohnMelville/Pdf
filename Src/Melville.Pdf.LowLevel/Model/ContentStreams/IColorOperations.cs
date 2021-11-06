@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
-public interface IColorCSOperations
+public interface IColorOperations
 {
     /// <summary>
     /// Content stream operator CS
@@ -73,25 +73,25 @@ public static class ColorCSOperationsHelpers
     // the next two methods are no-ops than hint the intellisense to the specific
     // subclass of pdfName
     public static void SetStandardStrokingColorSpace(
-        this IColorCSOperations target, ColorSpaceName colorSpace) =>
+        this IColorOperations target, ColorSpaceName colorSpace) =>
         target.SetStrokingColorSpace(colorSpace);
     public static void SetStandardNonstrokingColorSpace(
-        this IColorCSOperations target, ColorSpaceName colorSpace) =>
+        this IColorOperations target, ColorSpaceName colorSpace) =>
         target.SetNonstrokingColorSpace(colorSpace);
 
-    public static void SetStrokeColor(this IColorCSOperations target, params double[] colors) =>
+    public static void SetStrokeColor(this IColorOperations target, params double[] colors) =>
         target.SetStrokeColor(new ReadOnlySpan<double>(colors));
-    public static void SetStrokeColorExtended(this IColorCSOperations target, params double[] colors) =>
+    public static void SetStrokeColorExtended(this IColorOperations target, params double[] colors) =>
         target.SetStrokeColorExtended(null, new ReadOnlySpan<double>(colors));
     public static void SetStrokeColorExtended(
-        this IColorCSOperations target, PdfName name, params double[] colors) =>
+        this IColorOperations target, PdfName name, params double[] colors) =>
         target.SetStrokeColorExtended(name, new ReadOnlySpan<double>(colors));
 
-    public static void SetNonstrokingColor(this IColorCSOperations target, params double[] colors) =>
+    public static void SetNonstrokingColor(this IColorOperations target, params double[] colors) =>
         target.SetNonstrokingColor(new ReadOnlySpan<double>(colors));
-    public static void SetNonstrokingColorExtended(this IColorCSOperations target, params double[] colors) =>
+    public static void SetNonstrokingColorExtended(this IColorOperations target, params double[] colors) =>
         target.SetNonstrokingColorExtended(null, new ReadOnlySpan<double>(colors));
     public static void SetNonstrokingColorExtended(
-        this IColorCSOperations target, PdfName name, params double[] colors) =>
+        this IColorOperations target, PdfName name, params double[] colors) =>
         target.SetNonstrokingColorExtended(name, new ReadOnlySpan<double>(colors));
 }
