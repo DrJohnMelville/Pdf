@@ -6,13 +6,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_8ContentStreams;
 
 public class CompatibilitySectionWriterTest:WriterTest
 {
-    // [Fact]
-    // public async Task CompatibilitySection()
-    // {
-    //     using (sut.BeginCompatibilitySection("M2"))
-    //     {
-    //         sut.MarkedContentPoint("M1");
-    //     }
-    //     Assert.Equal("/M2 BMC\n/M1 MP\nEMC\n", await WrittenText());
-    // }
+    [Fact]
+    public async Task CompatibilitySection()
+    {
+        using (sut.BeginCompatibilitySection())
+        {
+            sut.MarkedContentPoint("M1");
+        }
+        Assert.Equal("BX\n/M1 MP\nEX\n", await WrittenText());
+    }
 }

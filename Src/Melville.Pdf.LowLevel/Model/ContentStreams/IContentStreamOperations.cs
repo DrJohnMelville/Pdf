@@ -3,13 +3,13 @@ using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
-public interface ICompatibilityOperation
+public interface ICompatibilityOperations
 {
-    // void BeginCompatibilitySection();
-    // void EndCompatibilitySection();
+    void BeginCompatibilitySection();
+    void EndCompatibilitySection();
 }
-public interface IContentStreamOperations: 
+public interface IContentStreamOperationses: 
     IStateChangingOperations, IDrawingOperations, IColorOperations, 
-    ITextObjectOperations, ITextBlockOperations, IMarkedContentCSOperations, ICompatibilityOperation
+    ITextObjectOperations, ITextBlockOperations, IMarkedContentCSOperations, ICompatibilityOperations
 {
 }

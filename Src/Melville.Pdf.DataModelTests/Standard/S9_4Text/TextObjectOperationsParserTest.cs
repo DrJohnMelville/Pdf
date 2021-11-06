@@ -27,9 +27,9 @@ public partial class TextObjectOperationsParserTest : ParserTest
     public Task MoveToNextLine() => 
         TestInput("T*", i => i.MoveToNextTextLine());
 
-    private partial class TjMock : MockBase, IContentStreamOperations
+    private partial class TjMock : MockBase, IContentStreamOperationses
     {
-        [DelegateTo()] private IContentStreamOperations op = null!;
+        [DelegateTo()] private IContentStreamOperationses op = null!;
 
         public void ShowString(in ReadOnlyMemory<byte> input) => AssertResult(input, "ABC");
         public void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> input) => AssertResult(input, "def");

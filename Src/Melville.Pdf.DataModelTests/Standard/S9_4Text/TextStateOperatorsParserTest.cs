@@ -12,7 +12,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 public class TextStateOperatorsParserTest : ParserTest
 {
     public static object[] SimpleTextStateOperator(
-        string code, Expression<Action<IContentStreamOperations>> op) =>
+        string code, Expression<Action<IContentStreamOperationses>> op) =>
         new object[] { code, op };
 
     public static IEnumerable<object[]> SimpleTextStateOperators() =>
@@ -28,7 +28,7 @@ public class TextStateOperatorsParserTest : ParserTest
 
     [Theory]
     [MemberData(nameof(SimpleTextStateOperators))]
-    public Task EmptyOperator(string code, Expression<Action<IContentStreamOperations>> op) =>
+    public Task EmptyOperator(string code, Expression<Action<IContentStreamOperationses>> op) =>
         TestInput($"55 {code}\n", op);
 
     [Theory]

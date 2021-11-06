@@ -13,7 +13,7 @@ public class TextStateOperatorsWriteTest: WriterTest
 {
     
     public static object[] SimpleTextStateOperator(
-        string code, Action<IContentStreamOperations> op) =>
+        string code, Action<IContentStreamOperationses> op) =>
         new object[] { code, op };
 
     public static IEnumerable<object[]> SimpleTextStateOperators() =>
@@ -28,7 +28,7 @@ public class TextStateOperatorsWriteTest: WriterTest
 
     [Theory]
     [MemberData(nameof(SimpleTextStateOperators))]
-    public async Task WriteTextStateOperators(string code, Action<IContentStreamOperations> op)
+    public async Task WriteTextStateOperators(string code, Action<IContentStreamOperationses> op)
     {
         op(sut);
         Assert.Equal($"55 {code}\n", await WrittenText());

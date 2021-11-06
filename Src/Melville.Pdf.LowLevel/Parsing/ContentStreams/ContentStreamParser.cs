@@ -20,7 +20,7 @@ public class ContentStreamParser
 {
     private readonly ContentStreamContext target;
 
-    public ContentStreamParser(IContentStreamOperations target)
+    public ContentStreamParser(IContentStreamOperationses target)
     {
         this.target = new ContentStreamContext(target);
     }

@@ -12,9 +12,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 
 public partial class ColorOperationsParserTest: ParserTest
 {
-    private partial class StrokeColorMock : MockBase, IContentStreamOperations
+    private partial class StrokeColorMock : MockBase, IContentStreamOperationses
     {
-        [DelegateTo()] private IContentStreamOperations fake = null!;
+        [DelegateTo()] private IContentStreamOperationses fake = null!;
 
         public void SetStrokeColor(in ReadOnlySpan<double> color)
         {
@@ -27,9 +27,9 @@ public partial class ColorOperationsParserTest: ParserTest
     [Fact]
     public Task SetColor() => TestInput("1 2 3 SC", new StrokeColorMock());
     
-    private partial class NonStrokeColorMock : MockBase, IContentStreamOperations
+    private partial class NonStrokeColorMock : MockBase, IContentStreamOperationses
     {
-        [DelegateTo()] private IContentStreamOperations fake = null!;
+        [DelegateTo()] private IContentStreamOperationses fake = null!;
 
         public void SetNonstrokingColor(in ReadOnlySpan<double> color)
         {
@@ -42,9 +42,9 @@ public partial class ColorOperationsParserTest: ParserTest
     [Fact]
     public Task SetNonstrokinColor() => TestInput("1 2 3 sc", new NonStrokeColorMock());
 
-    private partial class StrokeColorExtendedMock : MockBase, IContentStreamOperations
+    private partial class StrokeColorExtendedMock : MockBase, IContentStreamOperationses
     {
-        [DelegateTo()] private IContentStreamOperations fake = null!;
+        [DelegateTo()] private IContentStreamOperationses fake = null!;
 
         private PdfName? expectedName;
 
@@ -67,9 +67,9 @@ public partial class ColorOperationsParserTest: ParserTest
     public Task SetStrokingExtended2() => TestInput("1 2 3 /P1 SCN", 
         new StrokeColorExtendedMock(NameDirectory.Get("P1")));
 
-    private partial class NonStrokeColorExtendedMock : MockBase, IContentStreamOperations
+    private partial class NonStrokeColorExtendedMock : MockBase, IContentStreamOperationses
     {
-        [DelegateTo()] private IContentStreamOperations fake = null!;
+        [DelegateTo()] private IContentStreamOperationses fake = null!;
 
         private PdfName? expectedName;
 

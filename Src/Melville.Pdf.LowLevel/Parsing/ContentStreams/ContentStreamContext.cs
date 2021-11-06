@@ -10,12 +10,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
 public readonly struct ContentStreamContext
 {
-    private readonly IContentStreamOperations target;
+    private readonly IContentStreamOperationses target;
     private readonly List<long> longs;
     private readonly List<PdfName> names;
     private readonly InterleavedArrayBuilder<Memory<byte>, double> interleavedArray;
 
-    public ContentStreamContext(IContentStreamOperations target)
+    public ContentStreamContext(IContentStreamOperationses target)
     {
         this.target = target;
         interleavedArray = new();

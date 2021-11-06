@@ -62,6 +62,7 @@ public class GenerateContentStreamOperations
         ("EI", "EI"),
         ("EMC", "EMC"),
         ("ET", "ET"),
+        ("EX", "EX"),
         ("f", "f"),
         ("F", "F"),
         ("f*", "fStar"),

@@ -47,9 +47,9 @@ public partial class GraphicStateParsers: ParserTest
     public Task SetLineJoinStyle(LineJoinStyle joinStyle, int num) =>
         TestInput($"{num} j", i => i.SetLineJoinStyle(joinStyle));
 
-    private partial class DashArrayMock:MockBase, IContentStreamOperations
+    private partial class DashArrayMock:MockBase, IContentStreamOperationses
     {
-        [DelegateTo] private IContentStreamOperations fake = null!;
+        [DelegateTo] private IContentStreamOperationses fake = null!;
         private readonly double phase;
         private readonly double[] dots;
 

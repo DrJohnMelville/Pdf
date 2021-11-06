@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Pipelines;
+using System.Security.Cryptography;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -8,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 
-public partial class ContentStreamWriter : IContentStreamOperations
+public partial class ContentStreamWriter : IContentStreamOperationses
 {
     private readonly ContentStreamPipeWriter destPipe;
 
@@ -315,6 +316,20 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
         public void Dispose() => writer.WriteOperator(closingOperator);
     }
+    #endregion
+
+    #region Compatibility Regions
+
+    public DeferedClosingTask BeginCompatibilitySection()
+    {
+        ((ICompatibilityOperations)this).BeginCompatibilitySection();
+        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EX);
+    }
+    void ICompatibilityOperations.BeginCompatibilitySection() =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.BX);
+
+    void ICompatibilityOperations.EndCompatibilitySection() => 
+        destPipe.WriteOperator(ContentStreamOperatorNames.EX);
 
     #endregion
 }
