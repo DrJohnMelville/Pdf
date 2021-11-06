@@ -274,18 +274,6 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteChar(']');
         destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
     }
-    
-    private readonly struct ShowSpacedStringIterator: IInterleavedTarget<Memory<byte>, double>
-    {
-        private readonly ContentStreamWriter writer;
-        public ShowSpacedStringIterator(ContentStreamWriter writer)
-        {
-            this.writer = writer;
-        }
-        public void Handle(Memory<byte> item) => writer.destPipe.WriteString(item.Span);
-        public void Handle(double item) => writer.destPipe.WriteDoubleAndSpace(item);
-    }
-    
 
     #endregion
 

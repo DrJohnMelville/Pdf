@@ -99,16 +99,16 @@ public class TextObjectOperationsTest : WriterTest
     {
         using (var block = sut.StartTextBlock())
         {
-            var builder = new InterleavedArrayBuilder();
-            builder.Handle("A".AsExtendedAsciiBytes().AsMemory());
-            builder.Handle(2);
-            builder.Handle("B".AsExtendedAsciiBytes().AsMemory());
-            builder.Handle(3);
-            builder.Handle("C".AsExtendedAsciiBytes().AsMemory());
-            builder.Handle("D".AsExtendedAsciiBytes().AsMemory());
-            builder.Handle(4);
-            builder.Handle(5);
-            block.ShowSpacedString(builder.GetInterleavedArray());
+            var builder = new SpacedStringContentBuilder();
+            builder.Add("A".AsExtendedAsciiBytes().AsMemory());
+            builder.Add(2);
+            builder.Add("B".AsExtendedAsciiBytes().AsMemory());
+            builder.Add(3);
+            builder.Add("C".AsExtendedAsciiBytes().AsMemory());
+            builder.Add("D".AsExtendedAsciiBytes().AsMemory());
+            builder.Add(4);
+            builder.Add(5);
+            block.ShowSpacedString(builder.GetAllValues());
         }
         Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenText() );
         
