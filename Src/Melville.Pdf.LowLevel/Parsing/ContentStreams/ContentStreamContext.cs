@@ -7,13 +7,14 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-public readonly struct ContentStreamContext
+public class ContentStreamContext
 {
     private readonly IContentStreamOperations target;
     private readonly List<long> longs;
     private readonly List<PdfName> names;
     private readonly InterleavedArrayBuilder<Memory<byte>, double> interleavedArray;
-
+    private int compatibilitySectionCount;
+    
     public ContentStreamContext(IContentStreamOperations target)
     {
         this.target = target;
@@ -65,6 +66,8 @@ public readonly struct ContentStreamContext
                 target.BeginTextObject();
                 break;
             case ContentStreamOperatorValue.BX:
+                target.BeginCompatibilitySection();
+                compatibilitySectionCount++;
                 break;
             case ContentStreamOperatorValue.c:
                 target.CurveTo(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT2(2), interleavedArray.GetT2(3), interleavedArray.GetT2(4), interleavedArray.GetT2(5));
@@ -102,6 +105,10 @@ public readonly struct ContentStreamContext
                 break;
             case ContentStreamOperatorValue.ET:
                 target.EndTextObject();
+                break;
+            case ContentStreamOperatorValue.EX:
+                target.EndCompatibilitySection();
+                compatibilitySectionCount--;
                 break;
             case ContentStreamOperatorValue.f:
             case ContentStreamOperatorValue.F: // pdf spec requires this synonym for backward compatability
@@ -252,10 +259,18 @@ public readonly struct ContentStreamContext
                 target.MoveToNextLineAndShowString(interleavedArray.GetT2(0), interleavedArray.GetT2(1), interleavedArray.GetT1(0));
                 break;
             default:
-                throw new PdfParseException("Unknown content stream operator");
+                HandleUnknownOperation();
+                break;
         }
 
         ClearStacks();
+    }
+
+    private void HandleUnknownOperation()
+    {
+        if (compatibilitySectionCount < 1) 
+            throw new PdfParseException("Unknown content stream operator");
+        // otherwise just ignore the unknown operator
     }
 
     private PdfName? TryGetFirstName()

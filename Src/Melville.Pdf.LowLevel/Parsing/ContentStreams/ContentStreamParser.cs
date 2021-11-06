@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-public class ContentStreamParser
+public readonly struct ContentStreamParser
 {
     private readonly ContentStreamContext target;
 
