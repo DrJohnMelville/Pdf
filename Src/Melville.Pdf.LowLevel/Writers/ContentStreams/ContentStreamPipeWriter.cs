@@ -16,11 +16,13 @@ public readonly struct ContentStreamPipeWriter
 
     public void WriteOperator(in ReadOnlySpan<byte> name)
     {
-        destPipe.WriteBytes(name);
+        WriteBytes(name);
         WriteNewLine();
     }
 
-    public void WriteOperator(byte[] op, PdfName name)
+    public void WriteBytes(ReadOnlySpan<byte> name) => destPipe.WriteBytes(name);
+
+    public void WriteOperator(in ReadOnlySpan<byte> op, PdfName name)
     {
         WriteName(name);
         WriteOperator(op);
@@ -54,10 +56,8 @@ public readonly struct ContentStreamPipeWriter
         WriteOperator(operation);
     }
 
-    public void WriteString(ReadOnlySpan<byte> stringValue)
-    {
+    public void WriteString(in ReadOnlySpan<byte> stringValue) => 
         StringWriter.WriteSpanAsString(destPipe, stringValue);
-    }
 
     public void WriteDoubleSpan(in ReadOnlySpan<double> values)
     {
@@ -87,7 +87,7 @@ public readonly struct ContentStreamPipeWriter
 
     public void WriteSpace() => WriteChar(' ');
 
-    public void WriteDoubleArray(ReadOnlySpan<double> dashArray)
+    public void WriteDoubleArray(in ReadOnlySpan<double> dashArray)
     {
         WriteChar('[');
         if (dashArray.Length > 0)
@@ -98,11 +98,18 @@ public readonly struct ContentStreamPipeWriter
         WriteChar(']');
         WriteSpace();
     }
-    private void WriteDoublesWithSpaces(ReadOnlySpan<double> values)
+    private void WriteDoublesWithSpaces(in ReadOnlySpan<double> values)
     {
         foreach (var value in values)
         {
             WriteDoubleAndSpace(value);
         }
+    }
+
+    public void WriteOperator(in ReadOnlySpan<byte> operation, PdfDictionary dictionary)
+    {
+        DictionaryWriter.WriteAsync(destPipe, new PdfObjectWriter(destPipe), dictionary.RawItems)
+            .ConfigureAwait(false).GetAwaiter().GetResult();
+        WriteOperator(operation);
     }
 }

@@ -262,5 +262,11 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void MarkedContentPoint(PdfName tag, PdfName properties) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.DP, tag, properties);
 
+    public void MarkedContentPoint(PdfName tag, in UnparsedDictionary dict)
+    {
+        destPipe.WriteName(tag);
+        destPipe.WriteBytes(dict.Text.Span);
+        destPipe.WriteOperator(ContentStreamOperatorNames.DP);
+    }
     #endregion
 }

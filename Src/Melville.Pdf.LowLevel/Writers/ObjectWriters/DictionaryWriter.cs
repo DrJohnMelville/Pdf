@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 public static class DictionaryWriter
 {
-    public static async ValueTask<FlushResult> Write(
+    public static async ValueTask<FlushResult> WriteAsync(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 
         IReadOnlyDictionary<PdfName, PdfObject> items)
     {

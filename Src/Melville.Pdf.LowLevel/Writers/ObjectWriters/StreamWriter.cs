@@ -23,7 +23,7 @@ public static class StreamWriter
         await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor);
         diskrep = await EnsureStreamHasKnownLength(rawStream);
             
-        await DictionaryWriter.Write(target, innerWriter, 
+        await DictionaryWriter.WriteAsync(target, innerWriter, 
             item.MergeItems((KnownNames.Length, new PdfInteger(diskrep.Length))));
         target.WriteBytes(streamToken);
         await diskrep.CopyToAsync(target);

@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections;
+using System.ComponentModel.Design;
 using System.IO.Pipelines;
+using System.Threading;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
@@ -50,11 +56,19 @@ public class ContentStreamParser
             '.' or '+' or '-' or (>= '0' and <= '9') => ParseNumber(ref reader, bufferIsCompleted),
             '/' => ParseName(ref reader, bufferIsCompleted),
             '(' => HandleParsedString(SyntaxStringParser.TryParseToBytes(ref reader, bufferIsCompleted)),
-            '<' => HandleParsedString(HexStringParser.TryParseToBytes(ref reader, bufferIsCompleted)),
+            '<' => HandleInitialOpenWakka(ref reader, bufferIsCompleted),
             _ => ParseOperator(ref reader, bufferIsCompleted)
         };
     }
 
+    private bool HandleInitialOpenWakka(ref SequenceReader<byte> reader, bool bufferIsCompleted)
+    {
+        if (!reader.TryPeek(1, out var b2)) return false;
+        return b2 == (byte)'<'?
+            TryParseDictionary(ref reader): 
+            HandleParsedString(HexStringParser.TryParseToBytes(ref reader, bufferIsCompleted));
+    }
+    
     private bool HandleParsedString(byte[]? str)
     {
         if (str == null) return false;
@@ -110,4 +124,17 @@ public class ContentStreamParser
     }
 
     private void HandleOpCode(uint opCode) => target.HandleOpCode((ContentStreamOperatorValue)opCode);
+    
+    private bool TryParseDictionary(ref SequenceReader<byte> reader)
+    {
+        var skipper = new DictionarySkipper(ref reader);
+        if (!skipper.TrySkipDictionary()) return false;
+        var clippedseq = reader.UnreadSequence.Slice(0, skipper.CurrentPosition);
+
+        clippedseq = clippedseq.Slice(0, clippedseq.Length - 1);
+        target.HandleString(clippedseq.ToArray());
+        reader.Advance(clippedseq.Length);
+        return true;
+    }
+
 }

@@ -44,8 +44,7 @@ public abstract class ParserTest
     {
         private bool called = false;
         protected void SetCalled() => called = true;
-        public void Verify() =>
-            Assert.True(called);
+        public void Verify() => Assert.True(called);
     }
 
 }

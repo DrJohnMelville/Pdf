@@ -52,7 +52,7 @@ public class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
         {
             currentIndirectObject = null;
         }
-        return DictionaryWriter.Write(target, this, item.RawItems);
+        return DictionaryWriter.WriteAsync(target, this, item.RawItems);
     }
 
     public override ValueTask<FlushResult> Visit(PdfStream item) =>

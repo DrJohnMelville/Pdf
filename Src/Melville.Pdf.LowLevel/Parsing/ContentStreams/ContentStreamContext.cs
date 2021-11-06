@@ -85,7 +85,11 @@ public readonly struct ContentStreamContext
                 target.Do(names[0]);
                 break;
             case ContentStreamOperatorValue.DP:
-                target.MarkedContentPoint(names[0], names[1]);
+                if (names.Count > 1)
+                    target.MarkedContentPoint(names[0], names[1]);
+                else
+                    target.MarkedContentPoint(
+                        names[0], new UnparsedDictionary(interleavedArray.GetT1(0)));
                 break;
             case ContentStreamOperatorValue.EI:
                 break;

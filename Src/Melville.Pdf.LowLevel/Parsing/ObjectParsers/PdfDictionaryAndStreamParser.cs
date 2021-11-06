@@ -77,5 +77,4 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
 
     private static bool SkipOverStreamSuffix(ref SequenceReader<byte> reader) => 
         reader.TryAdvanceTo((byte)'\n');
-
 }
