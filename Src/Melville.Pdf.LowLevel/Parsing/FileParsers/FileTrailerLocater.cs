@@ -21,14 +21,15 @@ public static class FileTrailerLocater
         {
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
             using var context = await source.RentReader(start);
-            while (SearchForS(await context.ReadAsync(), context, end, out var foundPos))
+            var reader = context.Reader;
+            while (SearchForS(await reader.ReadAsync(), reader, end, out var foundPos))
             {
                 if (!foundPos) continue;
-                if (await TokenChecker.CheckToken(context, startXRef))
+                if (await TokenChecker.CheckToken(context.Reader, startXRef))
                 {
-                    await NextTokenFinder.SkipToNextToken(context);
-                    do { } while (context.ShouldContinue(
-                                      GetLong(await context.ReadAsync(), out xrefPosition)));
+                    await NextTokenFinder.SkipToNextToken(reader);
+                    do { } while (reader.ShouldContinue(
+                                      GetLong(await reader.ReadAsync(), out xrefPosition)));
                     return xrefPosition;
                 }
             }
@@ -52,7 +53,7 @@ public static class FileTrailerLocater
     }
         
 
-    private static bool SearchForS(ReadResult readResult, IParsingReader source, long max, out bool foundOne)
+    private static bool SearchForS(ReadResult readResult, IPipeReaderWithPosition source, long max, out bool foundOne)
     {
         if (readResult.IsCompleted || source.GlobalPosition > max)
         {

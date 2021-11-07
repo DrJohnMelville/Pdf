@@ -58,11 +58,11 @@ public static class IndirectObjectResolverOperations
         await using var data = await source.StreamContentAsync();
         var reader = owner.ParsingReaderForStream(data, 0);
         var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
-            source, reader);
+            source, reader.Reader);
         var first = (await source.GetAsync<PdfNumber>(KnownNames.First)).IntValue;
         foreach (var location in objectLocations)
         {
-            await reader.AdvanceToLocalPositionAsync(first + location.Offset);
+            await reader.Reader.AdvanceToLocalPositionAsync(first + location.Offset);
             var obj = await owner.RootObjectParser.ParseAsync(reader);
             if (objectNumber == location.ObjectNumber)
                 ret = obj;

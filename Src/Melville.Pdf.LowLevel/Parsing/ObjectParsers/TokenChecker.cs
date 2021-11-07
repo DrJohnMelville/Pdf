@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 public static class TokenChecker
 {
-    public static async ValueTask<bool> CheckToken(IParsingReader reader, byte[] template)
+    public static async ValueTask<bool> CheckToken(IPipeReaderWithPosition reader, byte[] template)
     {
         bool result = false;
         do

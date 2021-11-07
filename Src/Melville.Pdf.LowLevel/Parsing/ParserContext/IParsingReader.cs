@@ -12,12 +12,12 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-public interface IParsingReader : IDisposable, IPipeReaderWithPosition
+public interface IParsingReader : IDisposable
 {
     IPdfObjectParser RootObjectParser { get; }
     IIndirectObjectResolver IndirectResolver { get; }
     ParsingFileOwner Owner { get; }
-
+    IPipeReaderWithPosition Reader { get; }
     IObjectCryptContext ObjectCryptContext();
 }
 
@@ -27,16 +27,15 @@ public partial class ParsingReader : IParsingReader
     public IPdfObjectParser RootObjectParser => Owner.RootObjectParser;
     public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;
     public IObjectCryptContext ObjectCryptContext ()=> NullSecurityHandler.Instance;
-
-    [DelegateTo()] private IPipeReaderWithPosition reader;
+    
+    public IPipeReaderWithPosition Reader { get; }
 
     public ParsingFileOwner Owner { get; }
 
-    public ParsingReader(
-        ParsingFileOwner owner, PipeReader reader, long lastSeek)
+    public ParsingReader(ParsingFileOwner owner, PipeReader reader, long lastSeek)
     {
         Owner = owner;
-        this.reader = new PipeReaderWithPosition(reader, lastSeek);
+        this.Reader = new PipeReaderWithPosition(reader, lastSeek);
     }
 
     public void Dispose()

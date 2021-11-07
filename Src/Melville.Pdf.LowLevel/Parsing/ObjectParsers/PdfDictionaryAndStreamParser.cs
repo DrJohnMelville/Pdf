@@ -15,9 +15,9 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        var reader = await source.ReadAsync();
+        var reader = await source.Reader.ReadAsync();
         //This has to succeed because the prior parser looked at the prefix to get here.
-        source.AdvanceTo(reader.Buffer.GetPosition(2));
+        source.Reader.AdvanceTo(reader.Buffer.GetPosition(2));
         var dictionary = new Dictionary<PdfName, PdfObject>();
         while (true)
         {
@@ -25,8 +25,8 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
             if (key == PdfTokenValues.DictionaryTerminator)
             {
                 bool isStream;
-                do {}while (source.ShouldContinue(
-                                CheckForStreamTrailer(await source.ReadAsync(), out isStream)));
+                do {}while (source.Reader.ShouldContinue(
+                                CheckForStreamTrailer(await source.Reader.ReadAsync(), out isStream)));
                 return CreateFinalObject(source, dictionary, isStream);
             }
 
@@ -43,7 +43,7 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
         dictionary.TrimExcess();
         return isStream ? 
             new PdfStream(
-                new InlineStreamSource(source.GlobalPosition, source.Owner, source.ObjectCryptContext()),
+                new InlineStreamSource(source.Reader.GlobalPosition, source.Owner, source.ObjectCryptContext()),
                 dictionary) : 
             new PdfDictionary(dictionary);
     }

@@ -41,11 +41,11 @@ public static class PdfTrailerParser
 
     private static async Task<PdfDictionary?> ReadSingleRefTrailerBlock(IParsingReader context)
     {
-        if (!await TokenChecker.CheckToken(context, xrefTag)) return null;
-        await NextTokenFinder.SkipToNextToken(context);
+        if (!await TokenChecker.CheckToken(context.Reader, xrefTag)) return null;
+        await NextTokenFinder.SkipToNextToken(context.Reader);
         await new CrossReferenceTableParser(context).Parse();
-        await NextTokenFinder.SkipToNextToken(context);
-        if (!await TokenChecker.CheckToken(context, trailerTag))
+        await NextTokenFinder.SkipToNextToken(context.Reader);
+        if (!await TokenChecker.CheckToken(context.Reader, trailerTag))
             throw new PdfParseException("Trailer does not follow xref");
         var trailer = await context.RootObjectParser.ParseAsync(context);
         if (trailer is not PdfDictionary td)

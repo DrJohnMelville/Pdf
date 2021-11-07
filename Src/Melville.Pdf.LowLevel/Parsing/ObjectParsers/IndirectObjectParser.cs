@@ -23,7 +23,7 @@ public class IndirectObjectParser : IPdfObjectParser
     {
         ParseResult kind;
         PdfIndirectReference? reference;
-        do{}while(source.ShouldContinue(ParseReference(await source.ReadAsync(), 
+        do{}while(source.Reader.ShouldContinue(ParseReference(await source.Reader.ReadAsync(), 
                       source.IndirectResolver, out kind, out reference!)));
 
         switch (kind)
@@ -32,10 +32,10 @@ public class IndirectObjectParser : IPdfObjectParser
                 return reference;
                 
             case ParseResult.FoundDefinition:
-                do { } while (source.ShouldContinue(SkipToObjectBeginning(await source.ReadAsync())));
+                do { } while (source.Reader.ShouldContinue(SkipToObjectBeginning(await source.Reader.ReadAsync())));
                 var target = await source.RootObjectParser.ParseAsync(source);
-                await NextTokenFinder.SkipToNextToken(source);
-                do { } while (source.ShouldContinue(SkipEndObj(await source.ReadAsync())));
+                await NextTokenFinder.SkipToNextToken(source.Reader);
+                do { } while (source.Reader.ShouldContinue(SkipEndObj(await source.Reader.ReadAsync())));
                 return target;
                 
             case ParseResult.NotAReference:

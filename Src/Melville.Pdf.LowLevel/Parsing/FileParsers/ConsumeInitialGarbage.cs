@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 public static class ConsumeInitialGarbage
 {
-    public static async ValueTask<int> CheckForOffset(IParsingReader context)
+    public static async ValueTask<int> CheckForOffset(IPipeReaderWithPosition context)
     {
         int offset;
         do {} while(context.ShouldContinue(SkipGarbage(await context.ReadAsync(), out offset)));

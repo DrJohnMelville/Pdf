@@ -21,9 +21,9 @@ public class PdfCompositeObjectParser:  IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        await NextTokenFinder.SkipToNextToken(source);
+        await NextTokenFinder.SkipToNextToken(source.Reader);
         IPdfObjectParser parser;
-        do{}while(source.ShouldContinue(PickParser2(await source.ReadAsync(), out parser!)));
+        do{}while(source.Reader.ShouldContinue(PickParser2(await source.Reader.ReadAsync(), out parser!)));
 
         return await parser.ParseAsync(source);
     }

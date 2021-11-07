@@ -65,7 +65,7 @@ public class ParsingSourceTest
     [Fact]
     public async Task ReadFiveBytes()
     {
-        var sut = await owner.RentReader(0);
+        var sut = (await owner.RentReader(0)).Reader;
         var result = await sut.ReadAsync();
         var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
         Assert.Equal(0, sut.GlobalPosition);
@@ -77,19 +77,19 @@ public class ParsingSourceTest
     {
         using (var sut = await owner.RentReader(0))
         {
-            var result = await sut.ReadAsync();
+            var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
-            Assert.Equal(0, sut.GlobalPosition);
-            sut.AdvanceTo(sp);
-            Assert.Equal(5, sut.GlobalPosition);
+            Assert.Equal(0, sut.Reader.GlobalPosition);
+            sut.Reader.AdvanceTo(sp);
+            Assert.Equal(5, sut.Reader.GlobalPosition);
         }
 
         using (var sut = await owner.RentReader(45))
         {
-            var result = await sut.ReadAsync();
+            var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
-            sut.AdvanceTo( sp);
-            Assert.Equal(49, sut.GlobalPosition);
+            sut.Reader.AdvanceTo( sp);
+            Assert.Equal(49, sut.Reader.GlobalPosition);
         }
     }
 }
