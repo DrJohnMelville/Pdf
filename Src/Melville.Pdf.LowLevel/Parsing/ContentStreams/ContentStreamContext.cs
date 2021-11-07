@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -9,49 +7,12 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-public readonly struct ContentStreamValueStack
-{
-    private readonly List<ContentStreamValueUnion> values = new();
-    public int Count => values.Count;
-    
-    public void Add(object item) => values.Add(new ContentStreamValueUnion(item));
-    public void Add(in Memory<byte> item) => values.Add(new ContentStreamValueUnion(item));
-    public void Add(double floating, long integer) => 
-        values.Add(new ContentStreamValueUnion(floating, integer));
-
-    public void Clear() => values.Clear();
-
-    public double DoubleAt(int x) => values[x].Floating;
-    public long LongAt(int x) => values[x].Integer;
-    public Memory<byte> BytesAt(int x) => values[x].Bytes;
-    public ContentStreamValueType TypeAt(int x) => values[x].Type;
-    public T ObjectAt<T>(int x)  where T: class => values[x].Object as T ??
-                                                   throw new PdfParseException("Wrong type in Content Stream Parser");
-
-    public PdfName NamaAt(int x) => ObjectAt<PdfName>(x);
-
-    public void FillSpan(in Span<double> target)
-    {
-        for (int i = 0; i < target.Length; i++)
-        {
-            target[i] = values[i].Floating;
-        }
-    }
-
-    public Span<ContentStreamValueUnion> NativeSpan() => CollectionsMarshal.AsSpan(values);
-}
-
 public class ContentStreamContext
 {
     private readonly IContentStreamOperations target;
     private readonly ContentStreamValueStack arguments = new();
     private int compatibilitySectionCount;
 
-    private double GetDouble(int n) => arguments.DoubleAt(n);
-    private double GetInteger(int n) => arguments.LongAt(n);
-    private Memory<byte> GetString(int n) => arguments.BytesAt(n);
-    private PdfName GetName(int n) => arguments.NamaAt(n);
-    
     public ContentStreamContext(IContentStreamOperations target)
     {
         this.target = target;
@@ -62,9 +23,6 @@ public class ContentStreamContext
 
     public void HandleName(PdfName name) => arguments.Add(name);
     public void HandleString(in Memory<byte> str) => arguments.Add(str);
-
-    private T NameAs<T>(int pos = 0) where T : PdfName =>
-        GetName(pos) as T ?? throw new PdfParseException($"Pdf Name of subtype {typeof(T).Name} expectes");
 
     public void HandleOpCode(ContentStreamOperatorValue opCode)
     {
@@ -84,14 +42,15 @@ public class ContentStreamContext
                 break;
             case ContentStreamOperatorValue.BDC:
                 if (arguments.TypeAt(1) == ContentStreamValueType.Object)
-                    target.BeginMarkedRange(GetName(0), GetName(1));
+                    target.BeginMarkedRange(arguments.NamaAt(0), arguments.NamaAt(1));
                 else
-                    target.BeginMarkedRange(GetName(0), new UnparsedDictionary(GetString(1)));
+                    target.BeginMarkedRange(arguments.NamaAt(0), 
+                        new UnparsedDictionary(arguments.BytesAt(1)));
                 break;
             case ContentStreamOperatorValue.BI:
                 break;
             case ContentStreamOperatorValue.BMC:
-                target.BeginMarkedRange(GetName(0));
+                target.BeginMarkedRange(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.BT:
                 target.BeginTextObject();
@@ -101,17 +60,19 @@ public class ContentStreamContext
                 compatibilitySectionCount++;
                 break;
             case ContentStreamOperatorValue.c:
-                target.CurveTo(GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3), GetDouble(4), GetDouble(5));
+                target.CurveTo(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                    arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.cm:
                 target.ModifyTransformMatrix(
-                    GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3), GetDouble(4), GetDouble(5));
+                    arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                    arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.CS:
-                target.SetStrokingColorSpace(GetName(0));
+                target.SetStrokingColorSpace(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.cs:
-                target.SetNonstrokingColorSpace(GetName(0));
+                target.SetNonstrokingColorSpace(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.d:
                 Span<double> span = stackalloc double[arguments.Count];
@@ -119,25 +80,25 @@ public class ContentStreamContext
                 target.SetLineDashPattern(span[^1],span[..^1]);
                 break;
             case ContentStreamOperatorValue.d0:
-                target.SetColoredGlyphMetrics(GetDouble(0), GetDouble(1));
+                target.SetColoredGlyphMetrics(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.d1:
                 target.SetUncoloredGlyphMetrics(
-                    GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3), GetDouble(4),
-                    GetDouble(5));
+                    arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                    arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.Do:
-                target.Do(GetName(0));
+                target.Do(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.DP:
                 switch (arguments.TypeAt(1))
                 {
                     case ContentStreamValueType.Object:
-                       target.MarkedContentPoint(GetName(0), GetName(1));
+                       target.MarkedContentPoint(arguments.NamaAt(0), arguments.NamaAt(1));
                        break;
                     case ContentStreamValueType.Memory:
                         target.MarkedContentPoint(
-                            GetName(0), new UnparsedDictionary(arguments.BytesAt(1)));
+                            arguments.NamaAt(0), new UnparsedDictionary(arguments.BytesAt(1)));
                         break;
                 }
                 break;
@@ -154,52 +115,55 @@ public class ContentStreamContext
                 compatibilitySectionCount--;
                 break;
             case ContentStreamOperatorValue.f:
-            case ContentStreamOperatorValue.F: // pdf spec requires this synonym for backward compatability
+                // pdf spec requires this synonym for backward compatability
+            case ContentStreamOperatorValue.F: 
                 target.FillPath();
                 break;
             case ContentStreamOperatorValue.fStar:
                 target.FillPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.G:
-                target.SetStrokeGray(GetDouble(0));
+                target.SetStrokeGray(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.g:
-                target.SetNonstrokingGray(GetDouble(0));
+                target.SetNonstrokingGray(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.gs:
-                target.LoadGraphicStateDictionary(GetName(0));
+                target.LoadGraphicStateDictionary(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.h:
                 target.ClosePath();
                 break;
             case ContentStreamOperatorValue.i:
-                target.SetFlatnessTolerance(GetDouble(0));
+                target.SetFlatnessTolerance(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.ID:
                 break;
             case ContentStreamOperatorValue.J:
-                target.SetLineCap((LineCap)GetInteger(0));
+                target.SetLineCap((LineCap)(double)arguments.LongAt(0));
                 break;
             case ContentStreamOperatorValue.j:
-                target.SetLineJoinStyle((LineJoinStyle)GetInteger(0));
+                target.SetLineJoinStyle((LineJoinStyle)(double)arguments.LongAt(0));
                 break;
             case ContentStreamOperatorValue.K:
-                target.SetStrokeCMYK(GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3));
+                target.SetStrokeCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                    arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.k:
-                target.SetNonstrokingCMYK(GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3));
+                target.SetNonstrokingCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                    arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.l:
-                target.LineTo(GetDouble(0), GetDouble(1));
+                target.LineTo(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.m:
-                target.MoveTo(GetDouble(0), GetDouble(1));
+                target.MoveTo(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.M:
-                target.SetMiterLimit(GetDouble(0));
+                target.SetMiterLimit(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.MP:
-                target.MarkedContentPoint(GetName(0));
+                target.MarkedContentPoint(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.n:
                 target.EndPathWithNoOp();
@@ -211,13 +175,15 @@ public class ContentStreamContext
                 target.RestoreGraphicsState();
                 break;
             case ContentStreamOperatorValue.re:
-                target.Rectangle(GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3));
+                target.Rectangle(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                    arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.RG:
-                target.SetStrokeRGB(GetDouble(0), GetDouble(1), GetDouble(2));
+                target.SetStrokeRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.rg:
-                target.SetNonstrokingRGB(GetDouble(0), GetDouble(1), GetDouble(2));
+                target.SetNonstrokingRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                    arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.ri:
                 target.SetRenderIntent(NameAs<RenderingIntentName>());
@@ -246,46 +212,48 @@ public class ContentStreamContext
                 target.MoveToNextTextLine();
                 break;
             case ContentStreamOperatorValue.Tc:
-                target.SetCharSpace(GetDouble(0));
+                target.SetCharSpace(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.Td:
-                target.MovePositionBy(GetDouble(0), GetDouble(1));
+                target.MovePositionBy(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.TD:
-                target.MovePositionByWithLeading(GetDouble(0), GetDouble(1));
+                target.MovePositionByWithLeading(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.Tf:
-                target.SetFont(GetName(0), GetDouble(1));
+                target.SetFont(arguments.NamaAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.Tj:
-                target.ShowString(GetString(0));
+                target.ShowString(arguments.BytesAt(0));
                 break;
             case ContentStreamOperatorValue.TJ:
                 target.ShowSpacedString(arguments.NativeSpan());
                 break;
             case ContentStreamOperatorValue.TL:
-                target.SetTextLeading(GetDouble(0));
+                target.SetTextLeading(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.Tm:
-                target.SetTextMatrix(GetDouble(0),GetDouble(1),GetDouble(2),GetDouble(3),GetDouble(4),GetDouble(5));
+                target.SetTextMatrix(arguments.DoubleAt(0),arguments.DoubleAt(1),arguments.DoubleAt(2),
+                    arguments.DoubleAt(3),arguments.DoubleAt(4),arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.Tr:
-                target.SetTextRender((TextRendering)GetInteger(0));
+                target.SetTextRender((TextRendering)(double)arguments.LongAt(0));
                 break;
             case ContentStreamOperatorValue.Ts:
-                target.SetTextRise(GetDouble(0));
+                target.SetTextRise(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.Tw:
-                target.SetWordSpace(GetDouble(0));
+                target.SetWordSpace(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.Tz:
-                target.SetHorizontalTextScaling(GetDouble(0));
+                target.SetHorizontalTextScaling(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.v:
-                target.CurveToWithoutInitialControl(GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3));
+                target.CurveToWithoutInitialControl(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                    arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.w:
-                target.SetLineWidth(GetDouble(0));
+                target.SetLineWidth(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.W:
                 target.ClipToPath();
@@ -294,48 +262,53 @@ public class ContentStreamContext
                 target.ClipToPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.y:
-                target.CurveToWithoutFinalControl(GetDouble(0), GetDouble(1), GetDouble(2), GetDouble(3));
+                target.CurveToWithoutFinalControl(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                    arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.SingleQuote:
-                target.MoveToNextLineAndShowString(GetString(0));
+                target.MoveToNextLineAndShowString(arguments.BytesAt(0));
                 break;
             case ContentStreamOperatorValue.DoubleQuote:
-                target.MoveToNextLineAndShowString(GetDouble(0), GetDouble(1), GetString(2));
+                target.MoveToNextLineAndShowString(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                    arguments.BytesAt(2));
                 break;
             default:
                 HandleUnknownOperation();
                 break;
         }
-        
         arguments.Clear();
+    }
+
+    private T NameAs<T>(int pos = 0) where T : PdfName =>
+        arguments.NamaAt(pos) as T ?? throw new PdfParseException($"Pdf Name of subtype {typeof(T).Name} expectes");
+
+    private (int argsCount, PdfName? name) ExtendedSetColorParams()
+    {
+        var argsCount = arguments.Count;
+        PdfName? name = null;
+        if (arguments.TypeAt(argsCount - 1) == ContentStreamValueType.Object)
+        {
+            argsCount--;
+            name = arguments.NamaAt(argsCount);
+        }
+
+        return (argsCount, name);
     }
 
     private void SetNonstrokingColorExtended()
     {
-        var argsCount = arguments.Count;
-        PdfName? name = null;
-        if (arguments.TypeAt(argsCount - 1) == ContentStreamValueType.Object)
-        {
-            argsCount--;
-            name = GetName(argsCount);
-        }
+        var (argsCount, name) = ExtendedSetColorParams();
         Span<double> span = stackalloc double[argsCount];
         arguments.FillSpan(span);
-           target.SetNonstrokingColorExtended(name, span);
+        target.SetNonstrokingColorExtended(name, span);
     }
 
     private void SetStrokingColorExtended()
     {
-        var argsCount = arguments.Count;
-        PdfName? name = null;
-        if (arguments.TypeAt(argsCount - 1) == ContentStreamValueType.Object)
-        {
-            argsCount--;
-            name = GetName(argsCount);
-        }
+        var (argsCount, name) = ExtendedSetColorParams();
         Span<double> span = stackalloc double[argsCount];
         arguments.FillSpan(span);
-            target.SetStrokeColorExtended(name, span);
+        target.SetStrokeColorExtended(name, span);
     }
 
     private void SetStrokingColor()
