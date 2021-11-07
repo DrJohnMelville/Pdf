@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Primitives.PipeReaderWithPositions;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
@@ -47,7 +48,7 @@ public class PdfCompositeObjectParser:  IPdfObjectParser
         return (false, source.Buffer.Start);
     }
 
-    private static IPdfObjectParser? PickParser(byte firstByte, byte secondByte) =>
+    private IPdfObjectParser? PickParser(byte firstByte, byte secondByte) =>
         (firstByte, secondByte) switch
         {
             ((byte) '<', (byte) '<') => dictionaryAndStream,

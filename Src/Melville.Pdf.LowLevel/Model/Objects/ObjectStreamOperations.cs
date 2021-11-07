@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Primitives.PipeReaderWithPositions;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
@@ -21,17 +23,18 @@ public static class ObjectStreamOperations
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(this PdfStream stream)
     {
         await using var decoded = await stream.StreamContentAsync();
-        return await GetIncludedObjectNumbers(stream, PipeReader.Create(decoded));
+        return await GetIncludedObjectNumbers(stream, 
+            new PipeReaderWithPosition(PipeReader.Create(decoded), 0));
     }
 
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbers(
-        PdfStream stream, PipeReader reader) =>
+        PdfStream stream, IPipeReaderWithPosition reader) =>
         await reader.GetIncludedObjectNumbers(
             (await stream.GetAsync<PdfNumber>(KnownNames.N)).IntValue,
             (await stream.GetAsync<PdfNumber>(KnownNames.First)).IntValue);
 
     public static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbers(
-        this PipeReader reader, long count, long first)
+        this IPipeReaderWithPosition reader, long count, long first)
     {
         var source = await reader.ReadAsync();
         while (source.Buffer.Length < first)
