@@ -131,7 +131,8 @@ public readonly struct ContentStreamParser
                     bfp.Consume(reader.Position);
                     return RunOpcode(opCode);
                 case (false, _, _, _):
-                    return ValueTask.FromResult(bfp.ConsumeIfSucceeded(false, ref reader));
+                    bfp.NeedMoreBytes();
+                    return ValueTask.FromResult(false);
             }
             reader.Advance(1);
             opCode <<= 8;
