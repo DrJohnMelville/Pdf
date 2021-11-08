@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -26,13 +27,13 @@ public class ContentStreamContext
 
     public void HandleString(in Memory<byte> str) => arguments.Add(str);
 
-    public void HandleOpCode(ContentStreamOperatorValue opCode)
+    public async ValueTask HandleOpCode(ContentStreamOperatorValue opCode)
     {
-        DispatchByOpCode(opCode);
+        await DispatchByOpCode(opCode);
         arguments.Clear();
     }
 
-    private void DispatchByOpCode(ContentStreamOperatorValue opCode)
+    private async ValueTask DispatchByOpCode(ContentStreamOperatorValue opCode)
     {
         switch (opCode)
         {
@@ -79,9 +80,7 @@ public class ContentStreamContext
                 target.SetNonstrokingColorSpace(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.d:
-                Span<double> span = stackalloc double[arguments.Count];
-                arguments.FillSpan(span);
-                target.SetLineDashPattern(span[^1], span[..^1]);
+                SetLineDashPattern();
                 break;
             case ContentStreamOperatorValue.d0:
                 target.SetColoredGlyphMetrics(arguments.DoubleAt(0), arguments.DoubleAt(1));
@@ -271,6 +270,13 @@ public class ContentStreamContext
                 HandleUnknownOperation();
                 break;
         }
+    }
+
+    private void SetLineDashPattern()
+    {
+        Span<double> span = stackalloc double[arguments.Count];
+        arguments.FillSpan(span);
+        target.SetLineDashPattern(span[^1], span[..^1]);
     }
 
     private T NameAs<T>(int pos = 0) where T : PdfName =>

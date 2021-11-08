@@ -8,7 +8,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -52,14 +51,14 @@ public readonly struct ContentStreamParser
             '/' => ValueTask.FromResult(ParseName(bfp.WithStartingPosition(reader.Position))),
             '(' => ValueTask.FromResult(ParseSyntaxString(bfp.WithStartingPosition(reader.Position))),
             '<' => HandleInitialOpenWakka(bfp.WithStartingPosition(reader.Position)),
-            _ => ValueTask.FromResult(ParseOperator(bfp.WithStartingPosition(reader.Position)))
+            _ => ParseOperator(bfp.WithStartingPosition(reader.Position))
         };
     }
 
     private bool ParseSyntaxString(BufferFromPipe bfp)
     {
         var reader = bfp.CreateReader();
-        return bfp.LogSuccess(
+        return bfp.ConsumeIfSucceeded(
             HandleParsedString(SyntaxStringParser.TryParseToBytes(ref reader, bfp.Done)),
             ref reader);
     }
@@ -76,7 +75,7 @@ public readonly struct ContentStreamParser
     private ValueTask<bool> ParseHexString(BufferFromPipe bpc)
     {
         var reader = bpc.CreateReader();
-        return ValueTask.FromResult(bpc.LogSuccess(
+        return ValueTask.FromResult(bpc.ConsumeIfSucceeded(
             HandleParsedString(HexStringParser.TryParseToBytes(ref reader, bpc.Done)),
             ref reader));
     }
@@ -119,22 +118,20 @@ public readonly struct ContentStreamParser
         return true;
     }
 
-    private bool ParseOperator(in BufferFromPipe bfp)
+    private ValueTask<bool> ParseOperator(BufferFromPipe bfp)
     {
         var reader = bfp.CreateReader();
         uint opCode = 0;
         while (true)
         {
-            if (!reader.TryPeek(out var character))
+            switch (reader.TryPeek(out var character), CharClassifier.Classify(character), bfp.Done, opCode)
             {
-                if (bfp.Done && opCode != 0) HandleOpCode(opCode);
-                return bfp.LogSuccess(bfp.Done, ref reader);
-            }
-            if (CharClassifier.Classify(character) != CharacterClass.Regular)
-            {
-                HandleOpCode(opCode);
-                bfp.Consume(reader.Position);
-                return true;
+                case (false,_, true, not 0):
+                case (true, not CharacterClass.Regular, _, _):    
+                    bfp.Consume(reader.Position);
+                    return RunOpcode(opCode);
+                case (false, _, _, _):
+                    return ValueTask.FromResult(bfp.ConsumeIfSucceeded(false, ref reader));
             }
             reader.Advance(1);
             opCode <<= 8;
@@ -142,7 +139,13 @@ public readonly struct ContentStreamParser
         }
     }
 
-    private void HandleOpCode(uint opCode) => target.HandleOpCode((ContentStreamOperatorValue)opCode);
+    private async ValueTask<bool> RunOpcode(uint opCode)
+    {
+        await HandleOpCode(opCode);
+        return true;
+    }
+
+    private ValueTask HandleOpCode(uint opCode) => target.HandleOpCode((ContentStreamOperatorValue)opCode);
     
     private async ValueTask<bool> TryParseDictionary(BufferFromPipe bfp)
     {

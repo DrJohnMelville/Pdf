@@ -41,7 +41,7 @@ public readonly struct BufferFromPipe
 
     public BufferFromPipe WithStartingPosition(SequencePosition sp) => new(reader, result, sp);
 
-    public bool LogSuccess(bool succeed, ref SequenceReader<byte> reader)
+    public bool ConsumeIfSucceeded(bool succeed, ref SequenceReader<byte> reader)
     {
         if (succeed)
         {
