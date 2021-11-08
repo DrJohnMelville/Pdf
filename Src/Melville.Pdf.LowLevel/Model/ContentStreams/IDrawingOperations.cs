@@ -106,4 +106,9 @@ public interface IDrawingOperations
     /// Content stream operator name Do
     /// </summary>
     void Do(PdfName name);
+
+    /// <summary>
+    /// Context stream operatord BI, ID, and EI
+    /// </summary>
+    void Do(PdfStream inlineImage);
 }

@@ -153,8 +153,12 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.k, cyan, magenta, yellow, black);
 
-    public void Do(PdfName name) => destPipe.WriteOperator(
-        ContentStreamOperatorNames.Do, name);
+    public void Do(PdfName name) => destPipe.WriteOperator(ContentStreamOperatorNames.Do, name);
+
+    public void Do(PdfStream inlineImage)
+    {
+        throw new NotImplementedException();
+    }
     #endregion
 
     #region Text Block
