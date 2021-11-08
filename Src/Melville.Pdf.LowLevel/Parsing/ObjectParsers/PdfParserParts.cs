@@ -20,8 +20,8 @@ public static class PdfParserParts
     public static readonly LiteralTokenParser ArrayTermination = new(PdfTokenValues.ArrayTerminator);
     public static readonly LiteralTokenParser DictionatryTermination = new(PdfTokenValues.DictionaryTerminator);
 // order is important, declarations after this comment rely on others.
-    public static readonly PdfDictionaryParser Dictionary = new(Names, Composite);
+    public static readonly PdfDictionaryParser Dictionary = new(ContentStreamComposite, Composite);
     public static readonly IndirectObjectParser Indirects = new(Number);
     public static readonly PdfDictionaryParser EmbeddedDictionaryParser =
-        new(Names, ContentStreamComposite);
+        new(ContentStreamComposite, ContentStreamComposite);
 }

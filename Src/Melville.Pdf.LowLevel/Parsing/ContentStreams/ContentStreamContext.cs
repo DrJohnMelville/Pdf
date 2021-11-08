@@ -22,9 +22,17 @@ public class ContentStreamContext
         arguments.Add(doubleValue, longValue);
 
     public void HandleName(PdfName name) => arguments.Add(name);
+    public void HandleDictionary(PdfObject dict) => arguments.Add(dict);
+
     public void HandleString(in Memory<byte> str) => arguments.Add(str);
 
     public void HandleOpCode(ContentStreamOperatorValue opCode)
+    {
+        DispatchByOpCode(opCode);
+        arguments.Clear();
+    }
+
+    private void DispatchByOpCode(ContentStreamOperatorValue opCode)
     {
         switch (opCode)
         {
@@ -41,11 +49,7 @@ public class ContentStreamContext
                 target.FillAndStrokePathEvenOdd();
                 break;
             case ContentStreamOperatorValue.BDC:
-                if (arguments.TypeAt(1) == ContentStreamValueType.Object)
-                    target.BeginMarkedRange(arguments.NamaAt(0), arguments.NamaAt(1));
-                else
-                    target.BeginMarkedRange(arguments.NamaAt(0), 
-                        new UnparsedDictionary(arguments.BytesAt(1)));
+                BeginMarkedRange();
                 break;
             case ContentStreamOperatorValue.BI:
                 break;
@@ -60,12 +64,12 @@ public class ContentStreamContext
                 compatibilitySectionCount++;
                 break;
             case ContentStreamOperatorValue.c:
-                target.CurveTo(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                target.CurveTo(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2),
                     arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.cm:
                 target.ModifyTransformMatrix(
-                    arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                    arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2),
                     arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.CS:
@@ -77,30 +81,21 @@ public class ContentStreamContext
             case ContentStreamOperatorValue.d:
                 Span<double> span = stackalloc double[arguments.Count];
                 arguments.FillSpan(span);
-                target.SetLineDashPattern(span[^1],span[..^1]);
+                target.SetLineDashPattern(span[^1], span[..^1]);
                 break;
             case ContentStreamOperatorValue.d0:
                 target.SetColoredGlyphMetrics(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.d1:
                 target.SetUncoloredGlyphMetrics(
-                    arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                    arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2),
                     arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.Do:
                 target.Do(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.DP:
-                switch (arguments.TypeAt(1))
-                {
-                    case ContentStreamValueType.Object:
-                       target.MarkedContentPoint(arguments.NamaAt(0), arguments.NamaAt(1));
-                       break;
-                    case ContentStreamValueType.Memory:
-                        target.MarkedContentPoint(
-                            arguments.NamaAt(0), new UnparsedDictionary(arguments.BytesAt(1)));
-                        break;
-                }
+                MarkedContentPoint();
                 break;
             case ContentStreamOperatorValue.EI:
                 break;
@@ -115,8 +110,8 @@ public class ContentStreamContext
                 compatibilitySectionCount--;
                 break;
             case ContentStreamOperatorValue.f:
-                // pdf spec requires this synonym for backward compatability
-            case ContentStreamOperatorValue.F: 
+            // pdf spec requires this synonym for backward compatability
+            case ContentStreamOperatorValue.F:
                 target.FillPath();
                 break;
             case ContentStreamOperatorValue.fStar:
@@ -146,11 +141,11 @@ public class ContentStreamContext
                 target.SetLineJoinStyle((LineJoinStyle)(double)arguments.LongAt(0));
                 break;
             case ContentStreamOperatorValue.K:
-                target.SetStrokeCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                target.SetStrokeCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.k:
-                target.SetNonstrokingCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                target.SetNonstrokingCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.l:
@@ -175,14 +170,14 @@ public class ContentStreamContext
                 target.RestoreGraphicsState();
                 break;
             case ContentStreamOperatorValue.re:
-                target.Rectangle(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2), 
+                target.Rectangle(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2),
                     arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.RG:
                 target.SetStrokeRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.rg:
-                target.SetNonstrokingRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                target.SetNonstrokingRGB(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.ri:
@@ -233,8 +228,8 @@ public class ContentStreamContext
                 target.SetTextLeading(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.Tm:
-                target.SetTextMatrix(arguments.DoubleAt(0),arguments.DoubleAt(1),arguments.DoubleAt(2),
-                    arguments.DoubleAt(3),arguments.DoubleAt(4),arguments.DoubleAt(5));
+                target.SetTextMatrix(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2),
+                    arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.Tr:
                 target.SetTextRender((TextRendering)(double)arguments.LongAt(0));
@@ -249,7 +244,7 @@ public class ContentStreamContext
                 target.SetHorizontalTextScaling(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.v:
-                target.CurveToWithoutInitialControl(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                target.CurveToWithoutInitialControl(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.w:
@@ -262,25 +257,51 @@ public class ContentStreamContext
                 target.ClipToPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.y:
-                target.CurveToWithoutFinalControl(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                target.CurveToWithoutFinalControl(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.SingleQuote:
                 target.MoveToNextLineAndShowString(arguments.BytesAt(0));
                 break;
             case ContentStreamOperatorValue.DoubleQuote:
-                target.MoveToNextLineAndShowString(arguments.DoubleAt(0), arguments.DoubleAt(1), 
+                target.MoveToNextLineAndShowString(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.BytesAt(2));
                 break;
             default:
                 HandleUnknownOperation();
                 break;
         }
-        arguments.Clear();
     }
 
     private T NameAs<T>(int pos = 0) where T : PdfName =>
         arguments.NamaAt(pos) as T ?? throw new PdfParseException($"Pdf Name of subtype {typeof(T).Name} expectes");
+
+    private void MarkedContentPoint()
+    {
+        switch (arguments.ObjectAt<PdfObject>(1))
+        {
+            case PdfName name:
+                target.MarkedContentPoint(arguments.NamaAt(0), name);
+                break;
+            case PdfDictionary dict:
+                target.MarkedContentPoint(
+                    arguments.NamaAt(0), dict);
+                break;
+        }
+    }
+
+    private void BeginMarkedRange()
+    {
+        switch (arguments.ObjectAt<PdfObject>(1))
+        {
+            case PdfName name:
+                target.BeginMarkedRange(arguments.NamaAt(0), name);
+                break;
+            case PdfDictionary dict:
+                target.BeginMarkedRange(arguments.NamaAt(0), dict);
+                break;
+        }        
+    }
 
     private (int argsCount, PdfName? name) ExtendedSetColorParams()
     {

@@ -4,16 +4,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
-public readonly struct UnparsedDictionary
-{
-    public Memory<byte> Text { get; }
-
-    public UnparsedDictionary(Memory<byte> text)
-    {
-        Text = text;
-    }
-    public UnparsedDictionary(string s): this(s.AsExtendedAsciiBytes()){}
-}
 public interface IMarkedContentCSOperations
 {
     /// <summary>
@@ -29,7 +19,7 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag dictionaru MP
     /// </summary>
-    void MarkedContentPoint(PdfName tag, in UnparsedDictionary dict);
+    void MarkedContentPoint(PdfName tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator tag BMC
@@ -44,7 +34,7 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag  inlineDicitionary BDC
     /// </summary>
-    void BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary);
+    void BeginMarkedRange(PdfName tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator EMC

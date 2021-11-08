@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
@@ -143,16 +144,11 @@ public readonly struct ContentStreamParser
 
     private void HandleOpCode(uint opCode) => target.HandleOpCode((ContentStreamOperatorValue)opCode);
     
-    private ValueTask<bool> TryParseDictionary(in BufferFromPipe bfp)
+    private async ValueTask<bool> TryParseDictionary(BufferFromPipe bfp)
     {
-        var reader = bfp.CreateReader();
-        var skipper = new DictionarySkipper(ref reader);
-        if (!skipper.TrySkipDictionary()) return ValueTask.FromResult(false);
-        var clippedseq = reader.UnreadSequence.Slice(0, skipper.CurrentPosition);
-        target.HandleString(clippedseq.ToArray());
-        reader.Advance(clippedseq.Length);
-        bfp.Consume(reader.Position);
-        return ValueTask.FromResult(true);
+        var dict = await PdfParserParts.EmbeddedDictionaryParser.ParseAsync(bfp.CreateParsingReader());
+        target.HandleDictionary(dict);
+        return true;
     }
 
 }

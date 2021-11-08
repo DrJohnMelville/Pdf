@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -284,10 +285,10 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void MarkedContentPoint(PdfName tag, PdfName properties) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.DP, tag, properties);
 
-    public void MarkedContentPoint(PdfName tag, in UnparsedDictionary dict)
+    public void MarkedContentPoint(PdfName tag, PdfDictionary dict)
     {
         destPipe.WriteName(tag);
-        destPipe.WriteBytes(dict.Text.Span);
+        destPipe.WriteDictionary(dict);
         destPipe.WriteOperator(ContentStreamOperatorNames.DP);
     }
 
@@ -302,7 +303,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
         ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictName);
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
-    public DeferedClosingTask BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary)
+    public DeferedClosingTask BeginMarkedRange(PdfName tag, in PdfDictionary dictionary)
     {
         ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictionary);
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
@@ -314,10 +315,10 @@ public partial class ContentStreamWriter : IContentStreamOperations
     void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag, PdfName dictName) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.BDC,tag,dictName);
 
-    void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary)
+    void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag, PdfDictionary dictionary)
     {
         destPipe.WriteName(tag);
-        destPipe.WriteBytes(dictionary.Text.Span);
+        destPipe.WriteDictionary(dictionary);
         destPipe.WriteOperator(ContentStreamOperatorNames.BDC);
     }
 

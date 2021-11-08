@@ -2,6 +2,11 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Primitives.PipeReaderWithPositions;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -45,5 +50,33 @@ public readonly struct BufferFromPipe
         }
         NeedMoreBytes();
         return false;
+    }
+
+    public IParsingReader CreateParsingReader()
+    {
+        reader.AdvanceTo(startAt);
+        return new ContentStreamParsingReader(reader);
+    }
+}
+
+public class ContentStreamParsingReader : IParsingReader
+{
+    public void Dispose()
+    {
+    }
+
+    public IPdfObjectParser RootObjectParser => PdfParserParts.ContentStreamComposite;
+
+    public IIndirectObjectResolver IndirectResolver => throw new NotSupportedException();
+
+    public ParsingFileOwner Owner => throw new NotSupportedException();
+
+    public IPipeReaderWithPosition Reader {get;}
+
+    public IObjectCryptContext ObjectCryptContext() => NullSecurityHandler.Instance;
+
+    public ContentStreamParsingReader(PipeReader reader)
+    {
+        Reader = new PipeReaderWithPosition(reader, 0);
     }
 }

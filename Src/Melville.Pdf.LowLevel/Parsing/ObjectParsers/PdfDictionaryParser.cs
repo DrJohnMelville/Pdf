@@ -29,7 +29,7 @@ public class PdfDictionaryParser : IPdfObjectParser
         var dictionary = new Dictionary<PdfName, PdfObject>();
         while (true)
         {
-            var key = await source.RootObjectParser.ParseAsync(source);
+            var key = await nameParser.ParseAsync(source);
             if (key == PdfTokenValues.DictionaryTerminator)
             {
                 //TODO: See how much the trim helps in memory and costs in speed.
@@ -38,7 +38,7 @@ public class PdfDictionaryParser : IPdfObjectParser
                 return dictionary;
             }
 
-            var item = await source.RootObjectParser.ParseAsync(source);
+            var item = await valueParser.ParseAsync(source);
             if (item == PdfTokenValues.Null) continue;
             CheckValueIsNotTerminator(item);
             dictionary[CheckIfKeyIsName(key)] = item;

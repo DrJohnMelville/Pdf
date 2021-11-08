@@ -37,18 +37,16 @@ public partial class MarkedContentParser : ParserTest
             this.expected = expected;
         }
 
-        public void MarkedContentPoint(PdfName tag, in UnparsedDictionary dict)
+        public void MarkedContentPoint(PdfName tag, PdfDictionary dict)
         {
             Assert.Equal("/M1", tag.ToString());
-            Assert.Equal(expected, StringFromDict(dict));
+            Assert.Single(dict);
+            
             SetCalled();
         }
 
-        public void BeginMarkedRange(PdfName tag, in UnparsedDictionary dictionary) =>
+        public void BeginMarkedRange(PdfName tag, PdfDictionary dictionary) =>
             MarkedContentPoint(tag, dictionary);
-
-        private static string StringFromDict(UnparsedDictionary dict) => 
-            ExtendedAsciiEncoding.ExtendedAsciiString(dict.Text.Span);
     }
     
     [Theory]
