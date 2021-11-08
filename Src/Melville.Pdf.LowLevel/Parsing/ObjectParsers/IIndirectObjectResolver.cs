@@ -63,7 +63,7 @@ public static class IndirectObjectResolverOperations
         foreach (var location in objectLocations)
         {
             await reader.Reader.AdvanceToLocalPositionAsync(first + location.Offset);
-            var obj = await owner.RootObjectParser.ParseAsync(reader);
+            var obj = await PdfParserParts.Composite.ParseAsync(reader);
             if (objectNumber == location.ObjectNumber)
                 ret = obj;
             AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);

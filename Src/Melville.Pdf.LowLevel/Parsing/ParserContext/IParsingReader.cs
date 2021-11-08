@@ -1,13 +1,8 @@
 ﻿using System;
 using System.IO.Pipelines;
-using System.Threading;
-using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Primitives.PipeReaderWithPositions;
-using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -22,9 +17,9 @@ public interface IParsingReader : IDisposable
 }
 
 
-public partial class ParsingReader : IParsingReader
+public class ParsingReader : IParsingReader
 {
-    public IPdfObjectParser RootObjectParser => Owner.RootObjectParser;
+    public IPdfObjectParser RootObjectParser => PdfParserParts.Composite;
     public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;
     public IObjectCryptContext ObjectCryptContext ()=> NullSecurityHandler.Instance;
     

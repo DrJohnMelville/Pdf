@@ -18,20 +18,15 @@ public partial class ParsingFileOwner
     private readonly Stream source;
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
-    public IPdfObjectParser RootObjectParser { get; }
     public IIndirectObjectResolver IndirectResolver { get; }
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private IPasswordSource passwordSource;
 
-    public ParsingFileOwner(
-        Stream source,
-        IPasswordSource? passwordSource = null,
-        IPdfObjectParser? rootObjectParser = null, 
+    public ParsingFileOwner(Stream source, IPasswordSource? passwordSource = null,
         IIndirectObjectResolver? indirectResolver = null)
     {
         this.source = source;
         this.passwordSource = passwordSource ?? new NullPasswordSource();
-        RootObjectParser = rootObjectParser ?? new PdfCompositeObjectParser();
         IndirectResolver = indirectResolver ?? new IndirectObjectResolver();
         if (!source.CanSeek) throw new PdfParseException("PDF Parsing requires a seekable stream");
     }

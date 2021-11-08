@@ -37,6 +37,6 @@ public readonly struct ContentStreamValueUnion
         Bytes = Memory<byte>.Empty;
     }
 
-    public PdfName AsName() => (PdfName)Object??
-                               throw new PdfParseException("Should be a PdfName");
+    public PdfName AsName() => (PdfName)(Object??
+                               throw new PdfParseException("Should be a PdfName"));
 }

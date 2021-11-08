@@ -26,7 +26,7 @@ public class S7_3_7_DictionaryDefined
     }
     [Theory]
     [InlineData("  << >>  ", 0)]
-    [InlineData("<</Height 213 /Width 456 /ASPECT null >>", 2)] // nulls make the entry be ignored
+    [InlineData("<</Height 213 /Width 456 /ASPECT null >>", 2)] // PDF Spec  nulls make the entry be ignored
     [InlineData(" << /DICT << /InnerDict 121.22 >>>>", 1)] // dictionary can contain dictionaries
     public async Task SpecialCases(string input, int size)
     {

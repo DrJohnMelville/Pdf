@@ -21,7 +21,7 @@ public static class TestParser
     public static async Task<PdfObject> ParseObjectAsync(this ParsingFileOwner source, long position = 0)
     {
         using var reader = await source.RentReader(position);
-        return await source.RootObjectParser.ParseAsync(reader);
+        return await PdfParserParts.Composite.ParseAsync(reader);
     }
 
     public static ParsingFileOwner AsParsingSource(this string str, 
@@ -29,7 +29,7 @@ public static class TestParser
         AsParsingSource(str.AsExtendedAsciiBytes(), indirectObjectResolver);
     public static ParsingFileOwner AsParsingSource(this byte[] bytes, 
         IIndirectObjectResolver? indirectObjectResolver =null) => 
-        new(new OneCharAtAtimeStream(bytes), null, new PdfCompositeObjectParser(), indirectObjectResolver);
+        new(new OneCharAtAtimeStream(bytes), null, indirectObjectResolver);
         
     public static Task<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) => 
         RandomAccessFileParser.Parse(str.AsParsingSource(), sizeHint);
