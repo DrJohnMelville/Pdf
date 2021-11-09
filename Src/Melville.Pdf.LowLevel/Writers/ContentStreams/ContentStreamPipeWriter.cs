@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
+using Melville.Hacks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -113,10 +115,9 @@ public readonly struct ContentStreamPipeWriter
         WriteOperator(operation);
     }
 
-    public void WriteDictionary(PdfDictionary dict)
+    public ValueTask WriteDictionary(PdfDictionary dict)
     {
-        #warning Once ContentStreamOperations are async, we ought to be able to take out the getawaiter here.
         var writer = new PdfObjectWriter(destPipe);
-        writer.Visit(dict).GetAwaiter().GetResult();
+        return writer.Visit(dict).AsValueTask();
     }
 }

@@ -50,7 +50,7 @@ public class ContentStreamContext
                 target.FillAndStrokePathEvenOdd();
                 break;
             case ContentStreamOperatorValue.BDC:
-                BeginMarkedRange();
+                await BeginMarkedRange();
                 break;
             case ContentStreamOperatorValue.BI:
                 break;
@@ -94,7 +94,7 @@ public class ContentStreamContext
                 target.Do(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.DP:
-                MarkedContentPoint();
+                await MarkedContentPoint();
                 break;
             case ContentStreamOperatorValue.EI:
                 break;
@@ -282,32 +282,21 @@ public class ContentStreamContext
     private T NameAs<T>(int pos = 0) where T : PdfName =>
         arguments.NamaAt(pos) as T ?? throw new PdfParseException($"Pdf Name of subtype {typeof(T).Name} expectes");
 
-    private void MarkedContentPoint()
-    {
-        switch (arguments.ObjectAt<PdfObject>(1))
+    private ValueTask MarkedContentPoint() =>
+        arguments.ObjectAt<PdfObject>(1) switch
         {
-            case PdfName name:
-                target.MarkedContentPoint(arguments.NamaAt(0), name);
-                break;
-            case PdfDictionary dict:
-                target.MarkedContentPoint(
-                    arguments.NamaAt(0), dict);
-                break;
-        }
-    }
+            PdfName name => target.MarkedContentPoint(arguments.NamaAt(0), name),
+            PdfDictionary dict => target.MarkedContentPoint(arguments.NamaAt(0), dict),
+            _ => throw new PdfParseException("Invalid MarkedContentPoint parameter.")
+        };
 
-    private void BeginMarkedRange()
-    {
-        switch (arguments.ObjectAt<PdfObject>(1))
+    private ValueTask BeginMarkedRange() =>
+        arguments.ObjectAt<PdfObject>(1) switch
         {
-            case PdfName name:
-                target.BeginMarkedRange(arguments.NamaAt(0), name);
-                break;
-            case PdfDictionary dict:
-                target.BeginMarkedRange(arguments.NamaAt(0), dict);
-                break;
-        }        
-    }
+            PdfName name => target.BeginMarkedRange(arguments.NamaAt(0), name),
+            PdfDictionary dict => target.BeginMarkedRange(arguments.NamaAt(0), dict),
+            _ => throw new PdfParseException("Invalid BeginMarkedRange parameter")
+        };
 
     private (int argsCount, PdfName? name) ExtendedSetColorParams()
     {

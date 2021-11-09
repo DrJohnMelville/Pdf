@@ -37,16 +37,21 @@ public partial class MarkedContentParser : ParserTest
             this.expected = expected;
         }
 
-        public void MarkedContentPoint(PdfName tag, PdfDictionary dict)
+        public ValueTask MarkedContentPoint(PdfName tag, PdfDictionary dict)
         {
             Assert.Equal("/M1", tag.ToString());
             Assert.Single(dict);
             
             SetCalled();
+            return ValueTask.CompletedTask;
+
         }
 
-        public void BeginMarkedRange(PdfName tag, PdfDictionary dictionary) =>
+        public ValueTask BeginMarkedRange(PdfName tag, PdfDictionary dictionary)
+        {
             MarkedContentPoint(tag, dictionary);
+            return ValueTask.CompletedTask;
+        }
     }
     
     [Theory]

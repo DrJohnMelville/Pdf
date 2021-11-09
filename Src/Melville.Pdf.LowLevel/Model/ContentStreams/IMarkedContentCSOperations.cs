@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -14,12 +15,12 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag properties MP
     /// </summary>
-    void MarkedContentPoint(PdfName tag, PdfName properties);
+    ValueTask MarkedContentPoint(PdfName tag, PdfName properties);
 
     /// <summary>
     /// Content stream operator tag dictionaru MP
     /// </summary>
-    void MarkedContentPoint(PdfName tag, PdfDictionary dictionary);
+    ValueTask MarkedContentPoint(PdfName tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator tag BMC
@@ -29,12 +30,12 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag dictName BDC
     /// </summary>
-    void BeginMarkedRange(PdfName tag, PdfName dictName);
+    ValueTask BeginMarkedRange(PdfName tag, PdfName dictName);
 
     /// <summary>
     /// Content stream operator tag  inlineDicitionary BDC
     /// </summary>
-    void BeginMarkedRange(PdfName tag, PdfDictionary dictionary);
+    ValueTask BeginMarkedRange(PdfName tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator EMC
