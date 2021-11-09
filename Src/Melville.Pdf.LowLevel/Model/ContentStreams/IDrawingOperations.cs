@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -105,10 +106,10 @@ public interface IDrawingOperations
     /// <summary>
     /// Content stream operator name Do
     /// </summary>
-    void Do(PdfName name);
+    ValueTask DoAsync(PdfName name);
 
     /// <summary>
     /// Context stream operatord BI, ID, and EI
     /// </summary>
-    void Do(PdfStream inlineImage);
+    ValueTask DoAsync(PdfStream inlineImage);
 }

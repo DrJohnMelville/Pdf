@@ -60,7 +60,7 @@ public class DrawOperationParsers: ParserTest
     public Task DoOperationTest()
     {
         var name = NameDirectory.Get("BBB");
-        return TestInput("/BBB Do", i=>i.Do(name));
+        return TestInput("/BBB Do", i=>i.DoAsync(name));
         
     }
 }

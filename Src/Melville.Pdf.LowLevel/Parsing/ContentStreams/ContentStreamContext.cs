@@ -29,12 +29,6 @@ public class ContentStreamContext
 
     public async ValueTask HandleOpCode(ContentStreamOperatorValue opCode)
     {
-        await DispatchByOpCode(opCode);
-        arguments.Clear();
-    }
-
-    private async ValueTask DispatchByOpCode(ContentStreamOperatorValue opCode)
-    {
         switch (opCode)
         {
             case ContentStreamOperatorValue.b:
@@ -91,7 +85,7 @@ public class ContentStreamContext
                     arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.Do:
-                target.Do(arguments.NamaAt(0));
+                await target.DoAsync(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.DP:
                 await MarkedContentPoint();
@@ -270,6 +264,7 @@ public class ContentStreamContext
                 HandleUnknownOperation();
                 break;
         }
+        arguments.Clear();
     }
 
     private void SetLineDashPattern()
@@ -285,16 +280,16 @@ public class ContentStreamContext
     private ValueTask MarkedContentPoint() =>
         arguments.ObjectAt<PdfObject>(1) switch
         {
-            PdfName name => target.MarkedContentPoint(arguments.NamaAt(0), name),
-            PdfDictionary dict => target.MarkedContentPoint(arguments.NamaAt(0), dict),
+            PdfName name => target.MarkedContentPointAsync(arguments.NamaAt(0), name),
+            PdfDictionary dict => target.MarkedContentPointAsync(arguments.NamaAt(0), dict),
             _ => throw new PdfParseException("Invalid MarkedContentPoint parameter.")
         };
 
     private ValueTask BeginMarkedRange() =>
         arguments.ObjectAt<PdfObject>(1) switch
         {
-            PdfName name => target.BeginMarkedRange(arguments.NamaAt(0), name),
-            PdfDictionary dict => target.BeginMarkedRange(arguments.NamaAt(0), dict),
+            PdfName name => target.BeginMarkedRangeAsync(arguments.NamaAt(0), name),
+            PdfDictionary dict => target.BeginMarkedRangeAsync(arguments.NamaAt(0), dict),
             _ => throw new PdfParseException("Invalid BeginMarkedRange parameter")
         };
 

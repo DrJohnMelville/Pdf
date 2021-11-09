@@ -90,7 +90,7 @@ public class DrawOperationWriters : WriterTest
     [Fact]
     public async Task name()
     {
-        sut.Do("N1");
+        await sut.DoAsync("N1");
         Assert.Equal("/N1 Do\n", await WrittenText());
         
     }

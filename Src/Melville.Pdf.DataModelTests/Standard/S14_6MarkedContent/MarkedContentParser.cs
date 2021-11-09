@@ -16,13 +16,13 @@ public partial class MarkedContentParser : ParserTest
         TestInput("/M1 MP", i => i.MarkedContentPoint(NameDirectory.Get("M1")));
     [Fact]
     public Task MarkedContentPointWithNamedParam() =>
-        TestInput("/M1 /M2 DP", i => i.MarkedContentPoint("M1", "M2"));
+        TestInput("/M1 /M2 DP", i => i.MarkedContentPointAsync("M1", "M2"));
     [Fact]
     public Task BeginMarkedRangeWithTag() =>
         TestInput("/M1 BMC", i => i.BeginMarkedRange("M1"));
     [Fact]
     public Task BeginMarkedRangeWithTagAndDictName() =>
-        TestInput("/M1 /M2 BDC", i => i.BeginMarkedRange("M1", "M2"));
+        TestInput("/M1 /M2 BDC", i => i.BeginMarkedRangeAsync("M1", "M2"));
     [Fact]
     public Task EndMarkedRange() =>
         TestInput("EMC", i => i.EndMarkedRange());
@@ -37,7 +37,7 @@ public partial class MarkedContentParser : ParserTest
             this.expected = expected;
         }
 
-        public ValueTask MarkedContentPoint(PdfName tag, PdfDictionary dict)
+        public ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dict)
         {
             Assert.Equal("/M1", tag.ToString());
             Assert.Single(dict);
@@ -47,9 +47,9 @@ public partial class MarkedContentParser : ParserTest
 
         }
 
-        public ValueTask BeginMarkedRange(PdfName tag, PdfDictionary dictionary)
+        public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
         {
-            MarkedContentPoint(tag, dictionary);
+            MarkedContentPointAsync(tag, dictionary);
             return ValueTask.CompletedTask;
         }
     }

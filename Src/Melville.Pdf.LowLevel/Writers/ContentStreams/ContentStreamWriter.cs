@@ -154,9 +154,13 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.k, cyan, magenta, yellow, black);
 
-    public void Do(PdfName name) => destPipe.WriteOperator(ContentStreamOperatorNames.Do, name);
+    public ValueTask DoAsync(PdfName name)
+    {
+        destPipe.WriteOperator(ContentStreamOperatorNames.Do, name);
+        return ValueTask.CompletedTask;
+    }
 
-    public void Do(PdfStream inlineImage)
+    public ValueTask DoAsync(PdfStream inlineImage)
     {
         throw new NotImplementedException();
     }
@@ -287,13 +291,13 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     public void MarkedContentPoint(PdfName tag) => destPipe.WriteOperator(ContentStreamOperatorNames.MP, tag);
 
-    public ValueTask MarkedContentPoint(PdfName tag, PdfName properties)
+    public ValueTask MarkedContentPointAsync(PdfName tag, PdfName properties)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.DP, tag, properties);
         return ValueTask.CompletedTask;
     }
 
-    public async ValueTask MarkedContentPoint(PdfName tag, PdfDictionary dict)
+    public async ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dict)
     {
         destPipe.WriteName(tag);
         await destPipe.WriteDictionary(dict);
@@ -306,27 +310,27 @@ public partial class ContentStreamWriter : IContentStreamOperations
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
 
-    public DeferedClosingTask BeginMarkedRange(PdfName tag, PdfName dictName)
+    public async ValueTask<DeferedClosingTask> BeginMarkedRange(PdfName tag, PdfName dictName)
     {
-        ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictName);
+        await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictName);
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
-    public DeferedClosingTask BeginMarkedRange(PdfName tag, in PdfDictionary dictionary)
+    public async ValueTask<DeferedClosingTask> BeginMarkedRange(PdfName tag, PdfDictionary dictionary)
     {
-        ((IMarkedContentCSOperations)this).BeginMarkedRange(tag, dictionary);
+        await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictionary);
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
 
     void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.BMC, tag);
 
-    ValueTask IMarkedContentCSOperations.BeginMarkedRange(PdfName tag, PdfName dictName)
+    ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.BDC, tag, dictName);
         return ValueTask.CompletedTask;
     }
 
-    async ValueTask IMarkedContentCSOperations.BeginMarkedRange(PdfName tag, PdfDictionary dictionary)
+    async ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
     {
         destPipe.WriteName(tag);
         await destPipe.WriteDictionary(dictionary);

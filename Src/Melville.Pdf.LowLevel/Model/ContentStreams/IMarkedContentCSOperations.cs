@@ -15,12 +15,12 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag properties MP
     /// </summary>
-    ValueTask MarkedContentPoint(PdfName tag, PdfName properties);
+    ValueTask MarkedContentPointAsync(PdfName tag, PdfName properties);
 
     /// <summary>
     /// Content stream operator tag dictionaru MP
     /// </summary>
-    ValueTask MarkedContentPoint(PdfName tag, PdfDictionary dictionary);
+    ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator tag BMC
@@ -30,12 +30,12 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag dictName BDC
     /// </summary>
-    ValueTask BeginMarkedRange(PdfName tag, PdfName dictName);
+    ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName);
 
     /// <summary>
     /// Content stream operator tag  inlineDicitionary BDC
     /// </summary>
-    ValueTask BeginMarkedRange(PdfName tag, PdfDictionary dictionary);
+    ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator EMC
