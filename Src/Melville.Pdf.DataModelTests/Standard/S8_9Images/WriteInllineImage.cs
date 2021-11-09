@@ -6,6 +6,23 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
+public class ParseInlineImage:ParserTest
+{  
+    
+    // [Theory]
+    // [InlineData("/ASCIIHexDecode", "/AHx")]
+    // [InlineData("/ASCII85Decode", "/A85")]
+    // [InlineData("/LZWDecode", "/LZW")]
+    // [InlineData("/FlateDecode", "/FL")]
+    // [InlineData("/RunLengthDecode", "/RL")]
+    // [InlineData("/CCITTFaxDecode", "/CCF")]
+    // [InlineData("/DCTDecode", "/DCT")]
+    // public async Task ParseImageSynonyms(string preferredTerm, string synonm)
+    // {
+    //     Assert.True(false);
+    // }
+    
+}
 public class WriteInllineImage:WriterTest
 {
     [Fact]

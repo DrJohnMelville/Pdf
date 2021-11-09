@@ -4,13 +4,6 @@
     {
         public static readonly (string preferredName, string synonym, string Type)[] Synonyms =
         {
-            ("ASCIIHexDecode", "AHx", "Filter"),
-            ("ASCII85Decode", "A85", "Filter"),
-            ("LZWDecode", "LZW", "Filter"),
-            ("FlateDecode", "FL", "Filter"),
-            ("RunLengthDecode", "RL", "Filter"),
-            ("CCITTFaxDecode", "CCF", "Filter"),
-            ("DCTDecode", "DCT", "Filter"),
             ("Subtype", "S", "Pdf")
         };
 
@@ -32,6 +25,15 @@
             ("FlateDecode", "FlateDecode", "Filter"),
             ("LZWDecode", "LZWDecode", "Filter"),
             ("RunLengthDecode", "RunLengthDecode", "Filter"),
+
+            //Inline Inage FilterNames
+            ("AHx", "AHx", "InlineImageFilter"),
+            ("A85", "A85", "InlineImageFilter"),
+            ("LZW", "LZW", "InlineImageFilter"),
+            ("FL", "FL", "InlineImageFilter"),
+            ("RL", "RL", "InlineImageFilter"),
+            ("CCF", "CCF", "InlineImageFilter"),
+            ("DCT", "DCT", "InlineImageFilter"),
             
             //BuiltinFonts
             ("TimesRoman", "Times-Roman", "BuiltInFont"),

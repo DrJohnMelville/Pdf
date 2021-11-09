@@ -61,13 +61,7 @@ public class S7_3_5_NamesDefined
     }
 
     [Theory]
-    [InlineData("/ASCIIHexDecode", "/AHx")]
-    [InlineData("/ASCII85Decode", "/A85")]
-    [InlineData("/LZWDecode", "/LZW")]
-    [InlineData("/FlateDecode", "/FL")]
-    [InlineData("/RunLengthDecode", "/RL")]
-    [InlineData("/CCITTFaxDecode", "/CCF")]
-    [InlineData("/DCTDecode", "/DCT")]
+    [InlineData("/Subtype", "/S")]
     public async Task IsSynonym(string preferredTerm, string synonm)
     {
         var preferred = await TryParseStringToName(preferredTerm);
