@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Buffers;
+using System.IO;
 using System.IO.Pipelines;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -160,10 +163,20 @@ public partial class ContentStreamWriter : IContentStreamOperations
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask DoAsync(PdfStream inlineImage)
+    public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        throw new NotImplementedException();
+        await destPipe.WriteInlineImageDict(inlineImage);
+        await using (var str = await DiskRepresentation(inlineImage))
+        {
+            await destPipe.WriteStreamContent(str);
+        }
+        destPipe.WriteBytes(inlineImageTerminator);
     }
+
+    private static ValueTask<Stream> DiskRepresentation(PdfStream inlineImage) => 
+        inlineImage.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance);
+
+    private static readonly byte[] inlineImageTerminator = { (byte)'E', (byte)'I' };  
     #endregion
 
     #region Text Block

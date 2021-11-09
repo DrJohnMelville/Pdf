@@ -8,11 +8,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
 public class WriteInllineImage:WriterTest
 {
-    // [Fact]
-    // public async Task WriteSimpleImage()
-    // {
-    //      sut.Do(new DictionaryBuilder()
-    //          .WithItem(KnownNames.Width, 12)
-    //          .AsStream("StreamData"));
-    // }
+    [Fact]
+    public async Task WriteSimpleImage()
+    {
+         await sut.DoAsync(new DictionaryBuilder()
+             .WithItem(KnownNames.Width, 12)
+             .WithItem(KnownNames.Height, 24)
+             .AsStream("StreamData"));
+
+         Assert.Equal("BI/Width 12/Height 24\nID\nStreamDataEI", await WrittenText());
+         
+    }
 }

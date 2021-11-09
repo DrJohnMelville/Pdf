@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
+using StringWriter = Melville.Pdf.LowLevel.Writers.ObjectWriters.StringWriter;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -115,9 +117,12 @@ public readonly struct ContentStreamPipeWriter
         WriteOperator(operation);
     }
 
-    public ValueTask WriteDictionary(PdfDictionary dict)
-    {
-        var writer = new PdfObjectWriter(destPipe);
-        return writer.Visit(dict).AsValueTask();
-    }
+    public ValueTask WriteDictionary(PdfDictionary dict) => 
+        new PdfObjectWriter(destPipe).Visit(dict).AsValueTask();
+
+    public ValueTask WriteInlineImageDict(PdfDictionary dict) =>
+        DictionaryWriter.WriteInlineImageDict(destPipe, new PdfObjectWriter(destPipe),
+            dict.RawItems).AsValueTask();
+
+    public Task WriteStreamContent(Stream str) => str.CopyToAsync(destPipe);
 }
