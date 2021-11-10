@@ -342,4 +342,6 @@ public class ContentStreamContext
             throw new PdfParseException("Unknown content stream operator");
         // otherwise just ignore the unknown operator
     }
+
+    public ValueTask HandleInlineImage(PdfStream inlineImage) => target.DoAsync(inlineImage);
 }

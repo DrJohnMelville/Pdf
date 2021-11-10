@@ -15,12 +15,21 @@ public readonly struct BufferFromPipe
     private readonly PipeReader reader;
     private readonly ReadResult result;
     private readonly SequencePosition startAt;
+    public ReadOnlySequence<byte> Buffer => result.Buffer;
 
     public static async ValueTask<BufferFromPipe> Create(PipeReader reader)
     {
         var readResult = await reader.ReadAsync();
         return new BufferFromPipe(reader, readResult, readResult.Buffer.Start);
     }
+
+    public ValueTask<BufferFromPipe> Refresh() => Create(reader);
+    public ValueTask<BufferFromPipe> InvalidateAndRefresh()
+    {
+        NeedMoreBytes();
+        return Refresh();
+    }
+
 
     private BufferFromPipe(PipeReader reader, ReadResult result, SequencePosition startAt)
     {

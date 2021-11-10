@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -24,12 +25,12 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
         IPdfObjectParser parser;
         do
         {
-        } while (source.Reader.ShouldContinue(PickParser2(await source.Reader.ReadAsync(), out parser!)));
+        } while (source.Reader.ShouldContinue(PickParser(await source.Reader.ReadAsync(), out parser!)));
 
         return await parser.ParseAsync(source);
     }
 
-    private (bool Success, SequencePosition Position) PickParser2
+    private (bool Success, SequencePosition Position) PickParser
         (ReadResult source, out IPdfObjectParser? parser)
     {
         var reader = new SequenceReader<byte>(source.Buffer);
@@ -37,7 +38,7 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
         {
             if (reader.TryRead(out var secondByte))
             {
-                parser = PickParser((char)firstByte, (char)secondByte);
+                parser = PickParserOverride((char)firstByte, (char)secondByte);
                 return (true, source.Buffer.Start);
             }
             if (source.IsCompleted && firstByte == ']')
@@ -51,7 +52,7 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
         return (false, source.Buffer.Start);
     }
 
-    protected virtual IPdfObjectParser? PickParser(char firstByte, char secondByte) =>
+    protected virtual IPdfObjectParser? PickParserOverride(char firstByte, char secondByte) =>
         (firstByte, secondByte) switch
         {
             ('<', '<') =>  PdfParserParts.Dictionary,
@@ -69,13 +70,43 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
         };
 }
 
+public class InlineImageNameParser : PdfCompositeObjectParserBase
+{
+    private static readonly LiteralTokenParser term = new(PdfTokenValues.InlineImageDictionaryTerminator);
+    
+    protected override IPdfObjectParser? PickParserOverride(char firstByte, char secondByte) =>
+        (firstByte, secondByte) switch
+        {
+            ('I', 'D') => term, 
+            _ => base.PickParserOverride(firstByte, secondByte)
+        };
+}
+
+public class ExpandSynonymsParser : IPdfObjectParser
+{
+    private readonly IPdfObjectParser inner;
+    private IDictionary<PdfObject, PdfObject> expansions;
+
+    public ExpandSynonymsParser(IPdfObjectParser inner, IDictionary<PdfObject, PdfObject> expansions)
+    {
+        this.inner = inner;
+        this.expansions = expansions;
+    }
+
+    public async Task<PdfObject> ParseAsync(IParsingReader source)
+    {
+        var ret = await inner.ParseAsync(source);
+        return expansions.TryGetValue(ret, out var expansion) ? expansion : ret;
+    }
+}
+
 public class PdfCompositeObjectParser : PdfCompositeObjectParserBase
 {
-    protected override IPdfObjectParser? PickParser(char firstByte, char secondByte) =>
+    protected override IPdfObjectParser? PickParserOverride(char firstByte, char secondByte) =>
         (firstByte, secondByte) switch
         {
             ('<', '<') =>  PdfParserParts.dictionaryAndStream,
             (>= '0' and <= '9', _) =>  PdfParserParts.Indirects,
-            _ => base.PickParser(firstByte, secondByte)
+            _ => base.PickParserOverride(firstByte, secondByte)
         };
 }

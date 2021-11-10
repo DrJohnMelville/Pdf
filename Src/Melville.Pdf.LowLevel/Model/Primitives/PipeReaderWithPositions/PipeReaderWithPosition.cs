@@ -100,7 +100,7 @@ public class PipeReaderWithPosition: IPipeReaderWithPosition
             AdvanceTo(ret.Buffer.Start, ret.Buffer.End);
         }
     }
-
+    
 }
 
 public static class PipeReaderWithPositionOperations

@@ -18,5 +18,7 @@ public class PdfTokenValues: PdfObject
     // These are not part of the PDF spec -- they are sentinels for a parser implementation trick;
     public static readonly PdfTokenValues ArrayTerminator = new(new byte[]{93}); // ]
     public static readonly PdfTokenValues DictionaryTerminator = new(new byte[]{62,62});//>>
+    public static readonly PdfTokenValues InlineImageDictionaryTerminator =
+        new(new byte[] { (byte)'I', (byte)'D' });
     public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 }

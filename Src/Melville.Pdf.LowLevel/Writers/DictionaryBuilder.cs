@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StreamDataSources;
 
 namespace Melville.Pdf.LowLevel.Writers;
 

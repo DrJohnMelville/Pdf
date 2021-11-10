@@ -109,7 +109,7 @@ public interface IDrawingOperations
     ValueTask DoAsync(PdfName name);
 
     /// <summary>
-    /// Context stream operatord BI, ID, and EI
+    /// Context stream operators BI, ID, and EI
     /// </summary>
     ValueTask DoAsync(PdfStream inlineImage);
 }
