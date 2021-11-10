@@ -69,6 +69,13 @@
             ("DeviceRGB", "DeviceRGB", "ColorSpace"),
             ("DeviceCMYK", "DeviceCMYK", "ColorSpace"),
             ("DevicePattern", "DevicePattern", "ColorSpace"),
+            ("Indexed", "Indexed", "ColorSpace"),
+            
+            //InlineImagesColorSpaces
+            ("G", "G", "InlineImageColorSpace"),
+            ("RGB", "RGB", "InlineImageColorSpace"),
+            ("CMYK", "CMYK", "InlineImageColorSpace"),
+            ("I", "I", "PDF"),
             
             //Known
             ("AC", "AC", "Pdf"),

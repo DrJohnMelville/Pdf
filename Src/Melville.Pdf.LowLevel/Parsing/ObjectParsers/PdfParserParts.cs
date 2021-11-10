@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
@@ -28,10 +29,25 @@ public static class PdfParserParts
         new(ContentStreamComposite, ContentStreamComposite, PdfDictionaryParser.InlineImagePrefix);
 
     public static readonly PdfDictionaryParser InlineImageDictionaryParser =
-        new PdfDictionaryParser(new ExpandSynonymsParser(
+        new(new ExpandSynonymsParser(
             new InlineImageNameParser(),
             new Dictionary<PdfObject, PdfObject>()
             {
                 {PdfTokenValues.InlineImageDictionaryTerminator, PdfTokenValues.DictionaryTerminator}
-            }), ContentStreamComposite, PdfDictionaryParser.InlineImagePrefix);
+            }), 
+            new ExpandSynonymsParser(ContentStreamComposite,
+                new Dictionary<PdfObject, PdfObject>()
+                {
+                    {InlineImageFilterName.AHx, FilterName.ASCIIHexDecode},
+                    {InlineImageFilterName.A85, FilterName.ASCII85Decode},
+                    {InlineImageFilterName.LZW, FilterName.LZWDecode},
+                    {InlineImageFilterName.FL, FilterName.FlateDecode},
+                    {InlineImageFilterName.RL, FilterName.RunLengthDecode},
+                    {InlineImageFilterName.CCF, FilterName.CCITTFaxDecode},
+                    {InlineImageFilterName.DCT, FilterName.DCTDecode},
+                    {InlineImageColorSpaceName.G, ColorSpaceName.DeviceGray},
+                    {InlineImageColorSpaceName.RGB, ColorSpaceName.DeviceRGB},
+                    {InlineImageColorSpaceName.CMYK, ColorSpaceName.DeviceCMYK},
+                    {KnownNames.I, ColorSpaceName.Indexed},
+                }), PdfDictionaryParser.InlineImagePrefix);
 }
