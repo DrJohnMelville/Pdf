@@ -70,4 +70,25 @@ public partial class ParseInlineImage : ParserTest
                     await i[KnownNames.Filter]);
 
             }));
+
+    [Theory]
+    [InlineData("BitsPerComponent", "BPC")]
+    [InlineData("ColorSpace", "CS")]
+    [InlineData("Decode", "D")]
+    [InlineData("DecodeParms", "DP")]
+    [InlineData("Filter", "F")]
+    [InlineData("Height", "H")]
+    [InlineData("ImageMask", "IM")]
+    [InlineData("Interpolate", "I")]
+    [InlineData("Width", "W")]
+    public Task ParseImageEntrySynonyms(string preferredTerm, string synonym) =>
+        TestInput($"BI/{synonym} 1234\nID\nStreamDataEI",
+            new DoImpl(async i =>
+            {
+                Assert.Single(i);
+                Assert.Equal(1234,
+                        (await i.GetAsync<PdfNumber>(NameDirectory.Get(preferredTerm))).
+                        IntValue);
+
+            }));
 }

@@ -33,7 +33,16 @@ public static class PdfParserParts
             new InlineImageNameParser(),
             new Dictionary<PdfObject, PdfObject>()
             {
-                {PdfTokenValues.InlineImageDictionaryTerminator, PdfTokenValues.DictionaryTerminator}
+                {PdfTokenValues.InlineImageDictionaryTerminator, PdfTokenValues.DictionaryTerminator},
+                {InlineImageFieldName.BPC, KnownNames.BitsPerComponent},
+                {InlineImageFieldName.CS, KnownNames.ColorSpace},
+                {InlineImageFieldName.D, KnownNames.Decode},
+                {InlineImageFieldName.DP, KnownNames.DecodeParms},
+                {InlineImageFieldName.F, KnownNames.Filter},
+                {InlineImageFieldName.H, KnownNames.Height},
+                {InlineImageFieldName.IM, KnownNames.ImageMask},
+                {KnownNames.I, KnownNames.Interpolate},
+                {KnownNames.W, KnownNames.Width}
             }), 
             new ExpandSynonymsParser(ContentStreamComposite,
                 new Dictionary<PdfObject, PdfObject>()

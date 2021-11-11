@@ -35,6 +35,15 @@
             ("CCF", "CCF", "InlineImageFilter"),
             ("DCT", "DCT", "InlineImageFilter"),
             
+            //InlineImage Fields abbreviations
+            ("BPC","BPC","InlineImageField"),
+            ("CS","CS","InlineImageField"),
+            ("D","D","InlineImageField"),
+            ("DP","DP","InlineImageField"),
+            ("F","F","InlineImageField"),
+            ("H","H","InlineImageField"),
+            ("IM","IM","InlineImageField"),
+            
             //BuiltinFonts
             ("TimesRoman", "Times-Roman", "BuiltInFont"),
             ("Helvetica", "Helvetica", "BuiltInFont"),
@@ -94,6 +103,7 @@
             ("CF", "CF", "Pdf"),
             ("CFM", "CFM", "Pdf"),
             ("Colors", "Colors", "Pdf"),
+            ("ColorSpace", "ColorSpace", "Pdf"),
             ("Columns", "Columns", "Pdf"),
             ("Contents", "Contents", "Pdf"),
             ("Count", "Count", "Pdf"),
@@ -119,6 +129,8 @@
             ("ImageB", "ImageB", "Pdf"),
             ("ImageC", "ImageC", "Pdf"),
             ("ImageI", "ImageI", "Pdf"),
+            ("ImageMask", "ImageMask", "Pdf"),
+            ("Interpolate", "Interpolate", "Pdf"),
             ("Index", "Index", "Pdf"),
             ("Kids", "Kids", "Pdf"),
             ("LastModified", "LastModified", "Pdf"),
