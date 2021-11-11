@@ -29,8 +29,7 @@ public static class PdfParserParts
         new(ContentStreamComposite, ContentStreamComposite, PdfDictionaryParser.InlineImagePrefix);
 
     public static readonly PdfDictionaryParser InlineImageDictionaryParser =
-        new(new ExpandSynonymsParser(
-            new InlineImageNameParser(),
+        new(new ExpandSynonymsParser(new InlineImageNameParser(),
             new Dictionary<PdfObject, PdfObject>()
             {
                 {PdfTokenValues.InlineImageDictionaryTerminator, PdfTokenValues.DictionaryTerminator},

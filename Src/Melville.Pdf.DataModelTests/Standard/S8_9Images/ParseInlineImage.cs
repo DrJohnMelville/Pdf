@@ -39,13 +39,17 @@ public partial class ParseInlineImage : ParserTest
         }
     }
 
-    [Fact]
-    public Task ParseSimpleInlineImage() =>
-        TestInput("BI/Width 12/Height 24\nID\nStreamDataEI",
+    [Theory]
+    [InlineData("StreamData", "StreamData")]
+    [InlineData("StreamEI!Data", "StreamEI!Data")]
+    [InlineData("StreamEIData!", "StreamEIData!")]
+    [InlineData("StreamEIData!", "StreamEIData!")]
+    public Task ParseSimpleInlineImage(string onDisk, string parsed) =>
+        TestInput($"BI/Width 12/Height 24\nID\n{onDisk}EI",
             new DoImpl(async i =>
             {
                 Assert.Equal(2, i.Count);
-                Assert.Equal("StreamData",
+                Assert.Equal(parsed,
                     await (await i.StreamContentAsync()).ReadAsStringAsync());
             }));
 
