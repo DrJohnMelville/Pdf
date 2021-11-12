@@ -168,6 +168,7 @@ public readonly struct ContentStreamParser
     {
         var dict = await PdfParserParts.InlineImageDictionaryParser
             .ParseDictionaryItemsAsync(bfp.CreateParsingReader());
+        SetTypeAsImage(dict);
         bfp = await bfp.Refresh();
         SequencePosition endPos;
         while (!(SearchForEndSequence(bfp, out endPos)))
@@ -178,7 +179,13 @@ public readonly struct ContentStreamParser
         await target.HandleInlineImage(CreateStream(GrabStreamContent(bfp, endPos), dict));
         return true;
     }
-    
+
+     private static void SetTypeAsImage(Dictionary<PdfName, PdfObject> dict)
+    {
+        dict[KnownNames.Type] = KnownNames.XObject;
+        dict[KnownNames.Subtype] = KnownNames.Image;
+    }
+
     private static PdfStream CreateStream(byte[] data, Dictionary<PdfName, PdfObject> dict)
     {
         return new PdfStream(

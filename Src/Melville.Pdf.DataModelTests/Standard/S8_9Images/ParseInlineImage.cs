@@ -39,6 +39,18 @@ public partial class ParseInlineImage : ParserTest
         }
     }
 
+    [Fact]
+    public Task ParseInlineImageDictionary()=>
+        TestInput($"BI/Width 12/Height 24\nID\nxxEI",
+            new DoImpl(async i =>
+            {
+                Assert.Equal(4, i.Count);
+                Assert.Equal(KnownNames.XObject, (await i.GetAsync<PdfName>(KnownNames.Type)));
+                Assert.Equal(KnownNames.Image, (await i.GetAsync<PdfName>(KnownNames.Subtype)));
+                Assert.Equal(12, (await i.GetAsync<PdfNumber>(KnownNames.Width)).IntValue);
+                Assert.Equal(24, (await i.GetAsync<PdfNumber>(KnownNames.Height)).IntValue);
+            }));
+
     [Theory]
     [InlineData("StreamData", "StreamData")]
     [InlineData("StreamEI!Data", "StreamEI!Data")]
@@ -49,12 +61,8 @@ public partial class ParseInlineImage : ParserTest
     [InlineData("StreamEI\tData!", "StreamEI\tData!")]
     public Task ParseSimpleInlineImage(string onDisk, string parsed) =>
         TestInput($"BI/Width 12/Height 24\nID\n{onDisk}EI",
-            new DoImpl(async i =>
-            {
-                Assert.Equal(2, i.Count);
-                Assert.Equal(parsed,
-                    await (await i.StreamContentAsync()).ReadAsStringAsync());
-            }));
+            new DoImpl(async i => Assert.Equal(parsed,
+                await (await i.StreamContentAsync()).ReadAsStringAsync())));
 
     [Theory]
     [InlineData("ASCIIHexDecode", "/AHx")]
@@ -72,7 +80,6 @@ public partial class ParseInlineImage : ParserTest
         TestInput($"BI/Filter {synonym}\nID\nStreamDataEI",
             new DoImpl(async i =>
             {
-                Assert.Single(i);
                 Assert.Equal(NameDirectory.Get(preferredTerm), 
                     await i[KnownNames.Filter]);
 
@@ -92,7 +99,6 @@ public partial class ParseInlineImage : ParserTest
         TestInput($"BI/{synonym} 1234\nID\nStreamDataEI",
             new DoImpl(async i =>
             {
-                Assert.Single(i);
                 Assert.Equal(1234,
                         (await i.GetAsync<PdfNumber>(NameDirectory.Get(preferredTerm))).
                         IntValue);
