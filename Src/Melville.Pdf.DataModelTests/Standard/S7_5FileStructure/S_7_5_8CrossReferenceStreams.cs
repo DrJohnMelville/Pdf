@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
+using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;

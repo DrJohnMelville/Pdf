@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
+using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Moq;
 using Xunit;
 

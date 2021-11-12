@@ -1,0 +1,12 @@
+﻿global using Melville.Pdf.LowLevel.Filters.StreamFilters;
+global using System;
+global using System.Threading.Tasks;
+global using System.Text;
+global using Melville.Pdf.LowLevel.Model.Conventions;
+global using Melville.Pdf.LowLevel.Model.Document;
+global using Melville.Pdf.LowLevel.Model.Objects;
+global using Melville.Pdf.LowLevel.Writers;
+global using Melville.Pdf.LowLevel.Writers.Builder;
+global using Melville.Pdf.LowLevel.Writers.DocumentWriters;
+global using Melville.Pdf.Model.Creators;
+global using Melville.Pdf.ReferenceDocuments.Infrastructure;

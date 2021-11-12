@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator;
 
@@ -52,11 +51,11 @@ class Program
             .OrderBy(SortByCommand);
 
     private static Func<Type, bool> IsGeneratorType() => i => 
-        i != typeof(CreatePdfParser) && i.IsAssignableTo(typeof(CreatePdfParser)) && !i.IsAbstract;
+        i != typeof(CreatePdfParser) && i.IsAssignableTo(typeof(IPdfGenerator)) && !i.IsAbstract;
 
     private static IArgumentParser CreateWithDefaultConstructor(Type i) => 
-        (IArgumentParser)(Activator.CreateInstance(i) ?? 
-                          throw new InvalidOperationException("Cannot Create: " + i));
+        new PdfGenerationParser((IPdfGenerator)(Activator.CreateInstance(i) ?? 
+                          throw new InvalidOperationException("Cannot Create: " + i)));
 
     private static string SortByCommand(IArgumentParser i) => i.Prefix;
 }

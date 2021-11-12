@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.FuzzTest", "Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.Model", "Melville.Pdf.Model\Melville.Pdf.Model.csproj", "{AA7A3439-597D-404B-AE56-C6C056D32273}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.ReferenceDocuments", "Melville.Pdf.ReferenceDocuments\Melville.Pdf.ReferenceDocuments.csproj", "{A60A0525-20CB-4147-AA41-161963B80057}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,7 @@ Global
 		{E2E63284-44F6-4209-AC2C-2592C2CF51F9} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
 		{E1E7D6E0-CC8F-45F3-ABA7-94FC4D09F071} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
 		{AA7A3439-597D-404B-AE56-C6C056D32273} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
+		{A60A0525-20CB-4147-AA41-161963B80057} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0DC5C5E9-B98F-46BB-B1D9-C3E6E0278D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -96,5 +99,9 @@ Global
 		{AA7A3439-597D-404B-AE56-C6C056D32273}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA7A3439-597D-404B-AE56-C6C056D32273}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA7A3439-597D-404B-AE56-C6C056D32273}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A60A0525-20CB-4147-AA41-161963B80057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60A0525-20CB-4147-AA41-161963B80057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60A0525-20CB-4147-AA41-161963B80057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60A0525-20CB-4147-AA41-161963B80057}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

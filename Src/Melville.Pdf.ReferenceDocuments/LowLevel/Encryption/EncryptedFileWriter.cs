@@ -1,14 +1,11 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.Model.Creators;
-using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
+using Melville.Pdf.ReferenceDocuments.Infrastructure;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encryption;
+namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 
 public abstract class EncryptedFileWriter : CreatePdfParser
 {
@@ -22,7 +19,7 @@ public abstract class EncryptedFileWriter : CreatePdfParser
     public override ValueTask WritePdfAsync(Stream target)
     { 
         var builder = new PdfDocumentCreator();
-        builder.LowLevelCreator.AddEncryption(encryptor);
+        BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, encryptor);
         var page = builder.Pages.CreatePage();
         page.AddStandardFont("F1", BuiltInFontName.TimesRoman, FontEncodingName.WinAnsiEncoding);
         page.AddToContentStream(new DictionaryBuilder()

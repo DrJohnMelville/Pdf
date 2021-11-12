@@ -1,43 +1,26 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
+﻿namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
-
-public abstract class CreatePdfParser: IArgumentParser
+public class PdfGenerationParser: IArgumentParser
 {
-    public string Prefix { get; }
-    public string HelpText { get; }
+    private readonly IPdfGenerator generator;
 
-    protected CreatePdfParser(string prefix, string helpText)
+    public PdfGenerationParser(IPdfGenerator generator)
     {
-        Prefix = prefix;
-        HelpText = helpText;
+        this.generator = generator;
     }
+
+    public string Prefix => generator.Prefix;
+    public string HelpText => generator.HelpText;
 
     public async ValueTask<IArgumentParser?> ParseArgumentAsync(string argument, IRootParser root)
     {
         Console.WriteLine("Generating: " + Prefix);
         await using (var targetStream = root.Target.CreateTargetStream())
         {
-            await WritePdfAsync(targetStream);
+            await generator.WritePdfAsync(targetStream);
         }
         root.Target.View();
         return null;
+        
     }
-
-    public abstract ValueTask WritePdfAsync(Stream target);
-}
-
-public static class CreatePdfParserOperations
-{
-    public static async ValueTask<MultiBufferStream> AsMultiBuf(this CreatePdfParser source)
-    {
-        var target = new MultiBufferStream();
-        await source.WritePdfAsync(target);
-        return target;
-    }
-    public static async ValueTask<string> AsString(this CreatePdfParser source) => 
-        await new StreamReader((await source.AsMultiBuf()).CreateReader()).ReadToEndAsync();
 }

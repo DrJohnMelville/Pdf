@@ -1,8 +1,7 @@
-﻿using System;
-using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encryption;
+namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 
 public class EncryptedR3Rc4: EncryptedFileWriter
 {

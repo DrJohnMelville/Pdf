@@ -4,7 +4,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
+using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;

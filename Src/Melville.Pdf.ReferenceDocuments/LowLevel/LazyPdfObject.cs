@@ -1,8 +1,7 @@
-﻿using System;
-using Melville.Pdf.LowLevel.Model.Objects;
+﻿using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
+namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class LazyPdfObject
 {

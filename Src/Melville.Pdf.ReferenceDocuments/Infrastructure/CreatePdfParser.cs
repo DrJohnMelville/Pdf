@@ -1,0 +1,28 @@
+﻿namespace Melville.Pdf.ReferenceDocuments.Infrastructure;
+
+public abstract class CreatePdfParser : IPdfGenerator
+{
+    public string Prefix { get; }
+    public string HelpText { get; }
+
+    protected CreatePdfParser(string prefix, string helpText)
+    {
+        Prefix = prefix;
+        HelpText = helpText;
+    }
+
+    public abstract ValueTask WritePdfAsync(Stream target);
+}
+
+public static class CreatePdfParserOperations
+{
+    public static async ValueTask<MultiBufferStream> AsMultiBuf(this CreatePdfParser source)
+    {
+        var target = new MultiBufferStream();
+        await source.WritePdfAsync(target);
+        return target;
+    }
+
+    public static async ValueTask<string> AsString(this CreatePdfParser source) =>
+        await new StreamReader((await source.AsMultiBuf()).CreateReader()).ReadToEndAsync();
+}

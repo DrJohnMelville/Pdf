@@ -11,7 +11,8 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encryption;
+using Melville.Pdf.ReferenceDocuments.Infrastructure;
+using Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Xunit;
 

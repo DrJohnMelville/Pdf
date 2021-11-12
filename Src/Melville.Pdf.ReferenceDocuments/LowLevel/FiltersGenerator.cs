@@ -1,17 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Writers;
-using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.Model.Creators;
-using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
-
-namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
+﻿namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class FiltersGenerator : CreatePdfParser
 {
@@ -27,7 +14,7 @@ public class FiltersGenerator : CreatePdfParser
         var builder = new PdfDocumentCreator();
         builder.Pages.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.StandardEncoding);
 
-        builder.LowLevelCreator.AddEncryption(new V4Encryptor("", "", 128,
+        BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, new V4Encryptor("", "", 128,
             PdfPermission.None, KnownNames.Identity, KnownNames.Identity,
             new V4CfDictionary(KnownNames.V2, 128 / 8)));
 

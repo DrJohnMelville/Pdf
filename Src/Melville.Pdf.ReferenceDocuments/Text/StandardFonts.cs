@@ -1,16 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.Model.Creators;
-using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
+using Melville.Pdf.ReferenceDocuments.Infrastructure;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.HighLevel;
+namespace Melville.Pdf.ReferenceDocuments.Text;
 
 public class StandardFonts: CreatePdfParser
 {
@@ -34,7 +29,7 @@ public class StandardFonts: CreatePdfParser
         p1.AddToContentStream(new DictionaryBuilder()
             .WithFilter(FilterName.FlateDecode)
             .AsStream(content.ToString()));
-        return new(creator.CreateDocument().WriteToAsync(target));
+        return new(LowLevelDocumentWriterOperations.WriteToAsync(creator.CreateDocument(), target));
     }
 
     private IEnumerable<BuiltInFontName> AllFonts() => new BuiltInFontName[]

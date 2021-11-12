@@ -13,7 +13,7 @@ using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.LowLevelReader.DocumentParts;
-using Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
+using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Moq;
 using Xunit;
 

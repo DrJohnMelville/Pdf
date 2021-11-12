@@ -1,14 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Writers.Builder;
+﻿using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.Model.Creators;
-using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
+using Melville.Pdf.ReferenceDocuments.Infrastructure;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel;
+namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class MinimalPdfParser: CreatePdfParser
 {

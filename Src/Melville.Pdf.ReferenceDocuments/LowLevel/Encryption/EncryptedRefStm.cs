@@ -1,10 +1,8 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Document;
+﻿using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-namespace Melville.Pdf.ReferenceDocumentGenerator.DocumentTypes.LowLevel.Encryption;
+namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 
 public class EncryptedRefStm: EncryptedFileWriter
 {
