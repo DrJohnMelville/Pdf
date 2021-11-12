@@ -16,17 +16,21 @@ public abstract class EncryptedFileWriter : CreatePdfParser
         this.encryptor = encryptor;
     }
 
-    public override ValueTask WritePdfAsync(Stream target)
+    public override async ValueTask WritePdfAsync(Stream target)
     { 
         var builder = new PdfDocumentCreator();
         BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, encryptor);
         var page = builder.Pages.CreatePage();
-        page.AddStandardFont("F1", BuiltInFontName.TimesRoman, FontEncodingName.WinAnsiEncoding);
-        page.AddToContentStream(new DictionaryBuilder()
-            .WithFilter(FilterName.FlateDecode)
-            .AsStream($"BT\n/F1 12 Tf\n100 700 Td\n({HelpText}) Tj\nET\n"));
+        var font = page.AddStandardFont("F1", BuiltInFontName.TimesRoman, FontEncodingName.WinAnsiEncoding);
+        await page.AddToContentStreamAsync(i =>
+        {
+            i.SetFont(font, 12);
+            using var block = i.StartTextBlock();
+            block.MovePositionBy(100, 700);
+            block.ShowString(HelpText);
+        });
         var doc = builder.CreateDocument();
-        return new(WriteFile(target, doc));
+        await WriteFile(target, doc);
     }
 
     protected virtual Task WriteFile(Stream target, PdfLowLevelDocument doc)

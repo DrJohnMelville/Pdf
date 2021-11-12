@@ -4,26 +4,14 @@ using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using Melville.Pdf.LowLevel.Filters;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
-using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
-public class ObjectStreamPageCreator : PageCreator
-{
-    public override (PdfIndirectReference Reference, int PageCount) 
-        ConstructPageTree(ILowLevelDocumentCreator creator,
-        PdfIndirectReference? parent, int maxNodeSize)
-    {
-        var builder = creator.ObjectStreamContext();
-        var ret = base.ConstructPageTree(creator, parent, maxNodeSize);
-        builder.DisposeAsync().GetAwaiter().GetResult();
-        return ret;
-    }
-}
 public class PageCreator: PageTreeNodeChildCreator
 {
     private readonly List<PdfStream> streamSegments = new();

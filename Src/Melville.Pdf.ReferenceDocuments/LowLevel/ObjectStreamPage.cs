@@ -22,9 +22,15 @@ public class ObjectStreamPage: CreatePdfParser
                          new DictionaryBuilder()))
         {
             var page = creator.Pages.CreatePageInObjectStream();
-            page.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);
-            page.AddToContentStream(new DictionaryBuilder().AsStream(
-                "BT\n/F1 24 Tf\n100 700 Td\n(Uses Object Stream) Tj\nET\n"));
+            var fontName = 
+                page.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);
+            await page.AddToContentStreamAsync(i=>
+            {
+                using var block = i.StartTextBlock();
+                i.SetFont(fontName, 24);
+                block.MovePositionBy(100,700);
+                block.ShowString("Uses Object String");
+            });
         }
         return creator.CreateDocument();
     }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator;
@@ -45,7 +43,7 @@ class Program
         ret.AddRange(QueryTypeSystemForParsers());
 
     private static IOrderedEnumerable<IArgumentParser> QueryTypeSystemForParsers() =>
-        typeof(Program).Assembly.GetTypes()
+        typeof(IPdfGenerator).Assembly.GetTypes()
             .Where(IsGeneratorType())
             .Select(CreateWithDefaultConstructor)
             .OrderBy(SortByCommand);

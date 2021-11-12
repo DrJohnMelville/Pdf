@@ -13,23 +13,26 @@ public class StandardFonts: CreatePdfParser
     {
     }
 
-    public override ValueTask WritePdfAsync(Stream target)
+    public override async ValueTask WritePdfAsync(Stream target)
     {
         var creator = new PdfDocumentCreator();
         var p1 = creator.Pages.CreatePage();
         creator.Pages.AddBox(BoxName.MediaBox, new PdfRect(0, 0, 612, 792));
         int ypos = 775;
-        var content = new StringBuilder();
-        foreach (var font in AllFonts())
+        await p1.AddToContentStreamAsync(i =>
         {
-            creator.Pages.AddStandardFont(font, font, FontEncodingName.WinAnsiEncoding);
-            content.Append($"BT\n{font} 24 Tf\n 100 {ypos} Td\n (This is {font}) Tj\nET\n");
-            ypos -= 25;
-        }
-        p1.AddToContentStream(new DictionaryBuilder()
-            .WithFilter(FilterName.FlateDecode)
-            .AsStream(content.ToString()));
-        return new(LowLevelDocumentWriterOperations.WriteToAsync(creator.CreateDocument(), target));
+            foreach (var font in AllFonts())
+            {
+                using var block = i.StartTextBlock();
+                creator.Pages.AddStandardFont(font, font, FontEncodingName.WinAnsiEncoding);
+                i.SetFont(font, 24);
+                block.MovePositionBy(100, ypos);
+                block.ShowString($"This is {font}");
+                ypos -= 25;
+            }
+            
+        });
+        await LowLevelDocumentWriterOperations.WriteToAsync(creator.CreateDocument(), target);
     }
 
     private IEnumerable<BuiltInFontName> AllFonts() => new BuiltInFontName[]
