@@ -43,7 +43,10 @@ public partial class ParseInlineImage : ParserTest
     [InlineData("StreamData", "StreamData")]
     [InlineData("StreamEI!Data", "StreamEI!Data")]
     [InlineData("StreamEIData!", "StreamEIData!")]
-    [InlineData("StreamEIData!", "StreamEIData!")]
+    [InlineData("StreamEI Data!", "StreamEI Data!")]
+    [InlineData("StreamEI\rData!", "StreamEI\rData!")]
+    [InlineData("StreamEI\nData!", "StreamEI\nData!")]
+    [InlineData("StreamEI\tData!", "StreamEI\tData!")]
     public Task ParseSimpleInlineImage(string onDisk, string parsed) =>
         TestInput($"BI/Width 12/Height 24\nID\n{onDisk}EI",
             new DoImpl(async i =>

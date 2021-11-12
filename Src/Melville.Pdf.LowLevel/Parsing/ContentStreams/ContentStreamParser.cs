@@ -251,6 +251,7 @@ public readonly struct ContentStreamParser
             >= 'A' and <= 'Z' => true,
             >= 'a' and <= 'z' => true,
             >= '0' and <= '9' => true,
+            '\0' or '\x09' or '\x0A' or '\x0C' or '\x0D' or '\x20' => true,
             '+' => true,
             '-' => true,
             '*' => true,
