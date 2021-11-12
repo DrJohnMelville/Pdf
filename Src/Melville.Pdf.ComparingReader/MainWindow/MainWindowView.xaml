@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="Melville.Pdf.ComparingReader.MainWindow.MainWindowView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mainWindow="clr-namespace:Melville.Pdf.ComparingReader.MainWindow"
+             xmlns:referenceDocumentTree="clr-namespace:Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree"
+             xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
+             xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / ayto">
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type referenceDocumentTree:ReferenceDocumentLeaf}">
+                <TextBlock Text="{Binding ShortName}" ToolTip="{Binding LongName}"></TextBlock>
+            </DataTemplate>
+            <HierarchicalDataTemplate ItemsSource="{Binding Children}" 
+                                      DataType="{x:Type referenceDocumentTree:ReferenceDocumentFolder}">
+                <TextBlock Text="{Binding ShortName}"/>
+            </HierarchicalDataTemplate>
+        </Grid.Resources>
+        <TreeView ItemsSource="{Binding Nodes}" Margin="0 0 5 0"
+                  wpfHacks:TreeViewHelper.SelectedItem="{Binding SelectedNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Grid.Column="1" Text="{Binding SelectedNode.ShortName}"></TextBlock>
+        <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
+    </Grid>
+</UserControl>

@@ -43,17 +43,9 @@ class Program
         ret.AddRange(QueryTypeSystemForParsers());
 
     private static IOrderedEnumerable<IArgumentParser> QueryTypeSystemForParsers() =>
-        typeof(IPdfGenerator).Assembly.GetTypes()
-            .Where(IsGeneratorType())
-            .Select(CreateWithDefaultConstructor)
+        GeneratorFactory.AllGenerators
+            .Select(i=>new PdfGenerationParser(i))
             .OrderBy(SortByCommand);
-
-    private static Func<Type, bool> IsGeneratorType() => i => 
-        i != typeof(CreatePdfParser) && i.IsAssignableTo(typeof(IPdfGenerator)) && !i.IsAbstract;
-
-    private static IArgumentParser CreateWithDefaultConstructor(Type i) => 
-        new PdfGenerationParser((IPdfGenerator)(Activator.CreateInstance(i) ?? 
-                          throw new InvalidOperationException("Cannot Create: " + i)));
 
     private static string SortByCommand(IArgumentParser i) => i.Prefix;
 }
