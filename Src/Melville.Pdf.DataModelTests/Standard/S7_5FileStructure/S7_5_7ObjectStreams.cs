@@ -91,7 +91,7 @@ public class S7_5_7ObjectStreams
         var builder = new ObjectStreamBuilder();
         builder.TryAddRef(new PdfIndirectObject(1,0,PdfString.CreateAscii("One")));
         builder.TryAddRef(new PdfIndirectObject(2,0,PdfString.CreateAscii("Two")));
-        var str = await builder.CreateStream(new DictionaryBuilder());
+        var str = (PdfStream)await builder.CreateStream(new DictionaryBuilder());
 
         var output = await str.GetIncludedObjectNumbersAsync();
         Assert.Equal(1, output[0].ObjectNumber);

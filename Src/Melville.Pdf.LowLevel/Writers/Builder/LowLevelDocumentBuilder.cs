@@ -45,8 +45,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
     public List<PdfIndirectReference> Objects { get;  }= new();
     private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
     private ObjectStreamBuilder? objectStreamBuilder;
-    private PdfIndirectReference reference;
-
+        
     public byte[] UserPassword { get; set; } = Array.Empty<byte>();
 
     public LowLevelDocumentBuilder(int nextObject = 1)
@@ -72,7 +71,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 
     public PdfIndirectReference AddDelayedObject(Func<ValueTask<PdfObject>> creator)
     {
-        reference = new PdfIndirectReference(new PdfIndirectObject(nextObject++, 0, creator));
+        var reference = new PdfIndirectReference(new PdfIndirectObject(nextObject++, 0, creator));
         Objects.Add(reference);
         return reference;
     }
@@ -152,7 +151,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
             var obs = parent.objectStreamBuilder ??
                       throw new InvalidOperationException("No parent object stream builder");
             parent.objectStreamBuilder = null;
-            parent.AddDelayedObject(async ()=> await obs.CreateStream(dictionaryBuilder));
+            parent.AddDelayedObject(()=> obs.CreateStream(dictionaryBuilder));
         }
     }
 }
