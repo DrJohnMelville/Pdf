@@ -63,6 +63,14 @@ public class RuleParserText
     }
 
     [Fact]
+    public void NotRule()
+    {
+        var rules = ParseInput("!C* => B*");
+        Assert.Null(rules.ErrorFromReference("Alpha", "Bravo"));
+        Assert.Equal("\"C\" may not reference \"B\" because \"No dependency rule found\""
+            ,rules.ErrorFromReference("C","B"));
+    }
+    [Fact]
     public void ExclusiveRule()
     {
         var rules = ParseInput("C* ^=> B*");
@@ -70,10 +78,14 @@ public class RuleParserText
         Assert.Equal("\"A\" may not reference \"B\" because \"C* ^=> B*\"", 
             rules.ErrorFromReference("A","B"));
     }
-    [Fact]
-    public void ExclusiveRule2()
+    [Theory]
+    [InlineData("* => System*\r\nC* ^=> B*")]
+    [InlineData("C* ^=> B*\r\n* => System*")]
+    [InlineData("system* => *\r\nC* ^=> B*")]
+    [InlineData("C* ^=> B*")]
+    public void ExclusiveRule2(string brokenRule)
     {
-        var rules = ParseInput("* => System*\r\nC* ^=> B*");
+        var rules = ParseInput(brokenRule);
         Assert.Null(rules.ErrorFromReference("Charlie", "Bravo"));
         Assert.Equal("\"A\" may not reference \"B\" because \"C* ^=> B*\"", 
             rules.ErrorFromReference("A","B"));

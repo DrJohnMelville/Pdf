@@ -20,11 +20,12 @@ public class DependencyRules : IDependencyRules
 
     public string? ErrorFromReference(string useLocation, string declarationLocation) =>
         RulesAppliedToUse(useLocation)
-            .Intersect(RulesAppliedToDeclaration(declarationLocation))
-            .Select(i=>i.ErrorMessage)
+            .ToList()
+            .Intersect(RulesAppliedToDeclaration(declarationLocation).ToList())
+            .Select(i => i.ErrorMessage)
             .DefaultIfEmpty(defaultRule)
             .Select(i=>ExpandErrorMessage(i, useLocation, declarationLocation))
-            .First();
+            .FirstOrDefault(i => i!=null);
 
     private static string? ExpandErrorMessage(string? brokenRule, string use, string decl)
     {

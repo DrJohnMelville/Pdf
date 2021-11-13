@@ -18,9 +18,9 @@ public class RuleLexer
     }
 
     private Regex tokenFinder = new(@"
-^(?'Left'[\w\.\+\*\?]+)\s*(?'Op'[\!\^\<\+]?=>)\s*(?'Right'[\w\.\+\?\*]+)| #dependency
+^(?'Left'\!*[\w\.\+\*\?]+)\s*(?'Op'[\!\^\<\+]?=>)\s*(?'Right'\!*[\w\.\+\?\*]+)| #dependency
 ^(?'Op'Group)\s+(?'Left'\w+)|  #Group Declaration
-^(?'Op'[\ \t]+)(?'Left'[\w\.\+\*\?]+)| #Group member declaration
+^(?'Op'[\ \t]+)(?'Left'\!*[\w\.\+\*\?]+)| #Group member declaration
 ^(?'Op'Mode)\s+(?'Left'Loose|Strict) |
 (?'Op'\#).*$ # comment
 ", RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);

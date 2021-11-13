@@ -89,7 +89,7 @@ public readonly struct RuleParser
     private void DeclareExclusiveDependency(DependencyRules rules)
     {
         DeclarePositiveRule(rules, tokens.LeftParam(), tokens.RightParam());
-        DeclareNegativeRule(rules, "*", tokens.RightParam());
+        DeclareNegativeRule(rules, "!"+tokens.LeftParam(), tokens.RightParam());
     }
 
     private void DeclareEquivalence(DependencyRules rules)

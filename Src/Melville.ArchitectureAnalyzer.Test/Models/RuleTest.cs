@@ -40,12 +40,4 @@ public class RuleCollectionTest
         sut.DeclareRule("A.B.*", "B.*", "A.B.* !=> B.*", true);
         Assert.Equal("\"A.B.C\" may not reference \"B.E.F\" because \"A.* !=> B.*\"", sut.ErrorFromReference("A.B.C", "B.E.F"));
     }
-
-    [Fact]
-    public void OrderDecidesPrecedenceSucceed()
-    {
-        sut.DeclareRule("A.B.*", "B.*", "A.B.* !=> B.*", true);
-        sut.DeclareRule("A.*", "B.*", "A.* !=> B.*", false);
-        Assert.Null(sut.ErrorFromReference("A.B.C", "B.E.F"));
-    }
 }
