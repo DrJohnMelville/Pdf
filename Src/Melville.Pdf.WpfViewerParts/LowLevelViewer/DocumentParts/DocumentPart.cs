@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Melville.INPC;
+﻿using Melville.INPC;
 
-namespace Melville.Pdf.LowLevelReader.DocumentParts;
+namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 
 public partial class DocumentPart
 {

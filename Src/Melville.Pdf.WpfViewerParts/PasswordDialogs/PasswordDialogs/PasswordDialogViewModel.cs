@@ -1,6 +1,6 @@
 ﻿using Melville.INPC;
 
-namespace Melville.Pdf.LowLevelReader.PasswordDialogs;
+namespace Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
 
 public sealed partial class PasswordDialogViewModel
 {

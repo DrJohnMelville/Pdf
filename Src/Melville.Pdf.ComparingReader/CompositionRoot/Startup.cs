@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Melville.IOC.IocContainers;
 using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
 using Melville.WpfAppFramework.StartupBases;
 
 namespace Melville.Pdf.ComparingReader.CompositionRoot
@@ -21,9 +23,11 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
 
         protected override void RegisterWithIocContainer(IBindableIocService service)
         {
+            service.AddLogging();
             service.RegisterHomeViewModel<MainWindowViewModel>();
             service.Bind<IList<ReferenceDocumentNode>>().ToMethod(ReferenceDocumentFactory.Create);
             service.Bind<ICommandLineSelection>().ToMethod(() => new CommandLineSelection(this.CommandLineParameters));
+            service.Bind<IPasswordSource>().To<PasswordQuery>();
         }
     }
 }

@@ -8,6 +8,7 @@ Melville.Pdf.LowLevelReader.CompositionRoot.* => *
 * => System.*
 * => Melville.Pdf.LowLevel.*
 * => Melville.Hacks.*
+* => Melville.Pdf.WpfViewerParts.LowLevelViewer.*
 
 #Views are only visible to the framework
 * !=> *View

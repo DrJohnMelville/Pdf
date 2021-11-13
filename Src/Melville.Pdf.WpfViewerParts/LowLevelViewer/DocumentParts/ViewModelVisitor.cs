@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Data.Common;
-using System.Globalization;
-using System.Threading.Tasks;
-using Melville.FileSystem;
+﻿using System.Globalization;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 
-namespace Melville.Pdf.LowLevelReader.DocumentParts;
+namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 
 public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
 {

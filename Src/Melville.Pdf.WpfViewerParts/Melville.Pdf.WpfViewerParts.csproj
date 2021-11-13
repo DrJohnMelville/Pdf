@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UseWpf>true</UseWpf>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="Melville.WpfControls, Version=0.5.16.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\..\..\.nuget\packages\melville.wpfcontrols\0.5.16\lib\net5.0-windows7.0\Melville.WpfControls.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Melville.MVVM.Wpf" Version="0.5.37" />
+    </ItemGroup>
+
+</Project>

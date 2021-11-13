@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using System.Windows.Forms;
-using Melville.FileSystem;
+﻿using Melville.FileSystem;
 using Melville.INPC;
 using Melville.Linq;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.LowLevelReader.DocumentParts;
+namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 
 public partial class StreamDocumentPart : DocumentPart
 {

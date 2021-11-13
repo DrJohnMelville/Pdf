@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mainWindow="clr-namespace:Melville.Pdf.ComparingReader.MainWindow"
              xmlns:referenceDocumentTree="clr-namespace:Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree"
              xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
+             xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / ayto">
+    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / *">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type referenceDocumentTree:ReferenceDocumentLeaf}">
                 <TextBlock Text="{Binding ShortName}" ToolTip="{Binding LongName}"></TextBlock>
@@ -21,7 +21,7 @@
         </Grid.Resources>
         <TreeView ItemsSource="{Binding Nodes}" Margin="0 0 5 0"
                   wpfHacks:TreeViewHelper.SelectedItem="{Binding SelectedNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock Grid.Column="1" Text="{Binding SelectedNode.ShortName}"></TextBlock>
+        <viewFrames:ViewFrame Grid.Column="1" Content="{Binding LowLevelModel}"/> 
         <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
     </Grid>
 </UserControl>

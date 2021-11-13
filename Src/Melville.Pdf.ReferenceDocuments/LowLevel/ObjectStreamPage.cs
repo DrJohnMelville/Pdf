@@ -18,7 +18,7 @@ public class ObjectStreamPage: CreatePdfParser
     public static async ValueTask<PdfLowLevelDocument> FiltersAsync()
     {
         var creator = new PdfDocumentCreator();
-        await using (creator.LowLevelCreator.ObjectStreamContext(
+        using (creator.LowLevelCreator.ObjectStreamContext(
                          new DictionaryBuilder()))
         {
             var page = creator.Pages.CreatePageInObjectStream();

@@ -11,7 +11,7 @@ public class ObjectStreamPageCreator : PageCreator
     {
         var builder = creator.ObjectStreamContext();
         var ret = base.ConstructPageTree(creator, parent, maxNodeSize);
-        builder.DisposeAsync().GetAwaiter().GetResult();
+        builder.Dispose();
         return ret;
     }
 }

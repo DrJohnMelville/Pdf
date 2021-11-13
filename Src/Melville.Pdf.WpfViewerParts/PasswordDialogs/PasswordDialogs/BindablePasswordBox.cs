@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Melville.Pdf.LowLevelReader.PasswordDialogs;
+namespace Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
 
 public class BindablePasswordBox : Decorator
 {

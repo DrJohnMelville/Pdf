@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevelReader.DocumentParts;
+namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 
 public interface IPartParser
 {
     Task<DocumentPart[]> ParseAsync(IFile source, IWaitingService waiting);
+    public Task<DocumentPart[]> ParseAsync(Stream source, IWaitingService waiting);
 }
 public class PartParser: IPartParser
 {
@@ -24,10 +23,13 @@ public class PartParser: IPartParser
         this.passwordSource = passwordSource;
     }
 
-    public async Task<DocumentPart[]> ParseAsync(IFile source, IWaitingService waiting)
+    public async Task<DocumentPart[]> ParseAsync(IFile source, IWaitingService waiting) => 
+        await ParseAsync(await source.OpenRead(), waiting);
+
+    public async Task<DocumentPart[]> ParseAsync(Stream source, IWaitingService waiting)
     {
         PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(
-            new ParsingFileOwner(await source.OpenRead(), passwordSource));
+            new ParsingFileOwner(source, passwordSource));
         GenerateHeaderElement(lowlevel);
         using var waitHandle = waiting.WaitBlock("Loading File", lowlevel.Objects.Count);
         foreach (var item in lowlevel.Objects.Values

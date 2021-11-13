@@ -56,7 +56,7 @@ public class S7_5_7ObjectStreams
     private static async Task<string> DocWithObjectStream()
     {
         var builder = new LowLevelDocumentCreator();
-        await using (builder.ObjectStreamContext(new DictionaryBuilder()))
+        using (builder.ObjectStreamContext(new DictionaryBuilder()))
         {
             builder.Add(PdfString.CreateAscii("One"));
             builder.Add(PdfString.CreateAscii("Two"));
@@ -67,7 +67,7 @@ public class S7_5_7ObjectStreams
     private static async Task<string> DocWithObjectStreamWithHighObjectNumber()
     {
         var builder = new LowLevelDocumentCreator();
-        await using (builder.ObjectStreamContext(new DictionaryBuilder()))
+        using (builder.ObjectStreamContext(new DictionaryBuilder()))
         {
             builder.Add(PdfString.CreateAscii("One"));
             builder.Add(new PdfIndirectObject(20, 0, PdfString.CreateAscii("Two")));

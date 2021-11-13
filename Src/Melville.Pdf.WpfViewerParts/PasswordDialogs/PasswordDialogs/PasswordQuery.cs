@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using Melville.Hacks;
-using Melville.MVVM.Wpf.MvvmDialogs;
+﻿using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RunOnWindowThreads;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevelReader.PasswordDialogs;
+namespace Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
 
 public class PasswordQuery:IPasswordSource
 {

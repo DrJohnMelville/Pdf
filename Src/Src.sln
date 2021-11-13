@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.ReferenceDocum
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.ComparingReader", "Melville.Pdf.ComparingReader\Melville.Pdf.ComparingReader.csproj", "{DEF98F68-C5B1-4C4A-99D4-BA48517FF30E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.WpfViewerParts", "Melville.Pdf.WpfViewerParts\Melville.Pdf.WpfViewerParts.csproj", "{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,7 @@ Global
 		{AA7A3439-597D-404B-AE56-C6C056D32273} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
 		{A60A0525-20CB-4147-AA41-161963B80057} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
 		{DEF98F68-C5B1-4C4A-99D4-BA48517FF30E} = {7808232A-94F8-4390-9D4E-A9CBCC067CBB}
+		{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F} = {7808232A-94F8-4390-9D4E-A9CBCC067CBB}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0DC5C5E9-B98F-46BB-B1D9-C3E6E0278D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -110,5 +113,9 @@ Global
 		{DEF98F68-C5B1-4C4A-99D4-BA48517FF30E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEF98F68-C5B1-4C4A-99D4-BA48517FF30E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEF98F68-C5B1-4C4A-99D4-BA48517FF30E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

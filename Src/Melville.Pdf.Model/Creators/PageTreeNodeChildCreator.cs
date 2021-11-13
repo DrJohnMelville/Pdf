@@ -33,15 +33,19 @@ public abstract class PageTreeNodeChildCreator
         MetaData.Add(KnownNames.Resources, res.AsDictionary());
     }
 
-    private static PdfObject DictionaryValues(
+    private PdfObject DictionaryValues(
         ILowLevelDocumentCreator creator, 
         IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), PdfObject>> subDictionary) =>
         subDictionary.Key == KnownNames.ProcSet
             ? subDictionary.First().Value
-            : subDictionary
-                .Aggregate(new DictionaryBuilder(),
-                    (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value)))
-                .AsDictionary();
+            : CreateDictionary(subDictionary, creator);
+
+    private PdfDictionary CreateDictionary(
+        IEnumerable<KeyValuePair<(PdfName DictionaryName, PdfName ItemName), PdfObject>> items,
+        ILowLevelDocumentCreator creator) => items
+            .Aggregate(new DictionaryBuilder(),
+                (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value)))
+            .AsDictionary();
 
     public void AddXrefObjectResource(PdfName name, PdfObject obj) =>
         Resources[(KnownNames.XObject, name)] = obj;

@@ -4,12 +4,12 @@ namespace Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 
 public class ReferenceDocumentLeaf: ReferenceDocumentNode
 {
-    private IPdfGenerator document;
-    public override string ShortName => document.Prefix[1..];
-    public string LongName => document.HelpText;
+    public IPdfGenerator Document { get; }
+    public override string ShortName => Document.Prefix[1..];
+    public string LongName => Document.HelpText;
 
     public ReferenceDocumentLeaf(IPdfGenerator document)
     {
-        this.document = document;
+        this.Document = document;
     }
 }

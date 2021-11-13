@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -16,6 +17,7 @@ public class ObjectStreamBuilder
     private readonly MultiBufferStream objects = new();
     private readonly CountingPipeWriter objectStreamWriter;
     private readonly PdfObjectWriter objectWriter;
+    private readonly List<PdfIndirectObject> members = new();
 
     public ObjectStreamBuilder()
     {
@@ -24,16 +26,19 @@ public class ObjectStreamBuilder
         objectWriter = new PdfObjectWriter(objectStreamWriter);
     }
 
-    public bool TryAddRef(PdfIndirectObject obj) => TryAddRefAsync(obj).GetAwaiter().GetResult();
+    public bool TryAddRef(PdfIndirectObject obj)
+    {
+        if (!IsLegalWrite(obj, obj.DirectValueAsync().GetAwaiter().GetResult())) return false;
+        members.Add(obj);
+        return true;
+    }
 
-    private async ValueTask<bool> TryAddRefAsync(PdfIndirectObject obj)
+    private async ValueTask TryAddRefAsync(PdfIndirectObject obj)
     {
         var direcetValue = await obj.DirectValueAsync();
-        if (!IsLegalWrite(obj, direcetValue)) return false;
         count++;
         WriteObjectPosition(obj);
         await WriteObject(direcetValue);
-        return true;
     }
 
     private bool IsLegalWrite(PdfIndirectObject pdfIndirectObject, PdfObject direcetValue) => 
@@ -53,9 +58,13 @@ public class ObjectStreamBuilder
         await directValue.Visit(objectWriter);
         objectStreamWriter.WriteLineFeed();
     }
-
+#warning need to clean up this class --> move fields into a method
     public async ValueTask<PdfStream> CreateStream(DictionaryBuilder builder)
     {
+        foreach (var member in members)
+        {
+            await TryAddRefAsync(member);
+        }
         await referenceStreamWriter.FlushAsync();
         await objectStreamWriter.FlushAsync();
         return builder

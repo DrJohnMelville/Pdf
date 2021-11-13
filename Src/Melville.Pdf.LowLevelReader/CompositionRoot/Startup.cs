@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Input;
 using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelReader.MainDisplay;
-using Melville.Pdf.LowLevelReader.PasswordDialogs;
 using Melville.Pdf.LowLevelReader.Services;
-using Melville.WpfAppFramework.HttpsServices;
+using Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
 using Melville.WpfAppFramework.StartupBases;
 
 namespace Melville.Pdf.LowLevelReader.CompositionRoot;
