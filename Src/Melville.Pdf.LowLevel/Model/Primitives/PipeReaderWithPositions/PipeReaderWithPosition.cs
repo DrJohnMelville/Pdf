@@ -33,9 +33,21 @@ public class PipeReaderWithPosition: IPipeReaderWithPosition
     public long Position { get; private set; } = 0;
     public  async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default)
     {
-        Debug.Assert(!currentBuffer.HasValue);
+        if (currentBuffer.HasValue) return currentBuffer.Value;
         currentBuffer = await source.ReadAsync(cancellationToken);
         return currentBuffer.Value;
+    }
+
+    public bool TryRead(out ReadResult result)
+    {
+        if (currentBuffer.HasValue)
+        {
+            result = currentBuffer.Value;
+            return true;
+        }
+        if (!source.TryRead(out result)) return false;
+        currentBuffer = result;
+        return true;
     }
 
     public void MarkSequenceAsExamined()
@@ -66,7 +78,7 @@ public class PipeReaderWithPosition: IPipeReaderWithPosition
     
     public ValueTask AdvanceToLocalPositionAsync(long targetPosition) =>
         BytesToAdvanceBy(targetPosition) switch
-        {
+         {
             < 0 => throw new InvalidOperationException("Cannot rewind a pipe reader"),
             0 => new ValueTask(),
             _ => TryAdvanceFast(BytesToAdvanceBy(targetPosition))
@@ -76,13 +88,10 @@ public class PipeReaderWithPosition: IPipeReaderWithPosition
 
     private ValueTask TryAdvanceFast(long delta)
     {
-        if (source.TryRead(out var rr) && rr.Buffer.Length >= delta)
-        {
-            AdvanceTo(rr.Buffer.GetPosition(delta));
-            return new ValueTask();
-        }
+        if (!TryRead(out var rr) || rr.Buffer.Length < delta) return SlowAdvanceToPositionAsync(delta);
+        AdvanceTo(rr.Buffer.GetPosition(delta));
+        return new ValueTask();
 
-        return SlowAdvanceToPositionAsync(delta);
     }
 
     private async ValueTask SlowAdvanceToPositionAsync(long delta)

@@ -1,5 +1,6 @@
 ﻿
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,7 +46,8 @@ namespace Melville.Pdf.ComparingReader.MainWindow
             return node switch
             {
                 ReferenceDocumentLeaf leaf => leaf.ShortName.Equals(commandLineTag) ? leaf : null,
-                ReferenceDocumentFolder tree => SearchRecusive(tree.Children, commandLineTag)
+                ReferenceDocumentFolder tree => SearchRecusive(tree.Children, commandLineTag),
+                _=> throw new InvalidProgramException("Unknown Tree member")
             };
         }
     }
