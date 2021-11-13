@@ -44,6 +44,13 @@ public class PdfIndirectObject: PdfObject, IMultableIndirectObject
         } 
         return value;
     }
+
+    public bool TryGetDirectValue(out PdfObject result)
+    {
+        result = value;
+        return accessor == null;
+    }
+    
     public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     void IMultableIndirectObject.SetValue(Func<ValueTask<PdfObject>> value) =>

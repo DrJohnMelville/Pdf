@@ -10,7 +10,7 @@ public class ObjectStreamBuilder
     
     public bool TryAddRef(PdfIndirectObject obj)
     {
-        if (!IsLegalWrite(obj, obj.DirectValueAsync().GetAwaiter().GetResult())) return false;
+        if (!(obj.TryGetDirectValue(out var directValue) && IsLegalWrite(obj, directValue))) return false;
         members.Add(obj);
         return true;
     }
