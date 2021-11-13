@@ -4,6 +4,7 @@ using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevelReader.MainDisplay;
+using Melville.Pdf.WpfViewerParts.LowLevelViewer;
 using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 using Melville.TestHelpers.InpcTesting;
 using Moq;
@@ -20,22 +21,19 @@ public class MainDisplayViewModelTest
     private readonly Mock<ICloseApp> closer = new();
     private readonly Mock<IWaitingService> waiting = new();
         
-    private readonly MainDisplayViewModel sut = new();
+    private readonly MainDisplayViewModel sut = new(new LowLevelViewModel());
 
     [Fact]
-    public void RootTest() => sut.AssertProperty(i=>i.Root, new DocumentPart[1]);
+    public void RootTest() => sut.Model.AssertProperty(i=>i.Root, new DocumentPart[1]);
     [Fact]
-    public void SelectedTest() => sut.AssertProperty(i=>i.Selected, new DocumentPart("s"));
+    public void SelectedTest() => sut.Model.AssertProperty(i=>i.Selected, new DocumentPart("s"));
 
     [Fact]
     public async Task ShowFileDisplaySucceed()
     {
-        var result = new DocumentPart[1];
         dlg.Setup(i => i.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open"))
             .Returns(file.Object);
-        parser.Setup(i => i.ParseAsync(file.Object, waiting.Object)).ReturnsAsync(result);
-        await sut.OpenFile(dlg.Object, parser.Object, closer.Object, waiting.Object);
-        Assert.Equal(result, sut.Root);
+        await sut.OpenFile(dlg.Object, closer.Object, waiting.Object);
         closer.VerifyNoOtherCalls();
         waiting.VerifyNoOtherCalls();
     }
@@ -44,7 +42,7 @@ public class MainDisplayViewModelTest
     {
         dlg.Setup(i => i.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open"))
             .Returns((IFile?)null);
-        await sut.OpenFile(dlg.Object, parser.Object, closer.Object, waiting.Object);
+        await sut.OpenFile(dlg.Object, closer.Object, waiting.Object);
         closer.Verify(i=>i.Close());
         parser.VerifyNoOtherCalls();
         waiting.VerifyNoOtherCalls();
