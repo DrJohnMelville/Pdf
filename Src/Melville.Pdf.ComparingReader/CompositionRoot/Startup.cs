@@ -5,6 +5,7 @@ using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
+using Melville.Pdf.ComparingReader.MainWindow.Renderers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
 using Melville.WpfAppFramework.StartupBases;
@@ -27,6 +28,19 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
         {
             service.AddLogging();
             service.RegisterHomeViewModel<MainWindowViewModel>();
+            RegisterRenderers(service);
+            RegisterRootWindows(service);
+        }
+
+        private static void RegisterRenderers(IBindableIocService service)
+        {
+            service.Bind<IRenderer>().To<LowLevelRenderer>();
+
+            service.Bind<IMultiRenderer>().To<TabMultiRendererViewModel>();
+        }
+
+        private void RegisterRootWindows(IBindableIocService service)
+        {
             service.Bind<IList<ReferenceDocumentNode>>().ToMethod(ReferenceDocumentFactory.Create);
             service.Bind<ICommandLineSelection>().ToMethod(() => new CommandLineSelection(this.CommandLineParameters));
             service.Bind<IPasswordSource>().To<PasswordQuery>();

@@ -2,12 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
+using Melville.Pdf.ComparingReader.MainWindow.Renderers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer;
 
 namespace Melville.Pdf.ComparingReader.MainWindow
 {
@@ -15,7 +14,7 @@ namespace Melville.Pdf.ComparingReader.MainWindow
     {
         public IList<ReferenceDocumentNode> Nodes { get; }
         [AutoNotify] private ReferenceDocumentNode? selectedNode;
-        public LowLevelViewModel LowLevelModel { get; }
+        public IMultiRenderer Renderer { get; }
 
         private async void OnSelectedNodeChanged(ReferenceDocumentNode? newValue)
         {
@@ -23,15 +22,16 @@ namespace Melville.Pdf.ComparingReader.MainWindow
             {
                 var stream = new MultiBufferStream();
                 await leaf.Document.WritePdfAsync(stream);
-                LowLevelModel.SetStream(stream.CreateReader());
+                Renderer.SetTarget(stream);
             }
         }
 
         public MainWindowViewModel(
-            IList<ReferenceDocumentNode> nodes, ICommandLineSelection commandLine, LowLevelViewModel lowLevelModel)
+            IList<ReferenceDocumentNode> nodes, ICommandLineSelection commandLine, 
+            IMultiRenderer renderer)
         {
             Nodes = nodes;
-            LowLevelModel = lowLevelModel;
+            Renderer = renderer;
             SelectedNode = SearchRecusive(nodes, commandLine.CommandLineTag());
         }
 

@@ -21,7 +21,7 @@
         </Grid.Resources>
         <TreeView ItemsSource="{Binding Nodes}" Margin="0 0 5 0"
                   wpfHacks:TreeViewHelper.SelectedItem="{Binding SelectedNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <viewFrames:ViewFrame Grid.Column="1" Content="{Binding LowLevelModel}"/> 
+        <viewFrames:ViewFrame Grid.Column="1" Content="{Binding Renderer.RenderTarget}"/> 
         <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
     </Grid>
 </UserControl>

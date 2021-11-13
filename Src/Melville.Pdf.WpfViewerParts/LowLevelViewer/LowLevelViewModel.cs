@@ -2,8 +2,6 @@
 using Melville.INPC;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.DiParameterSources;
-using Melville.MVVM.Wpf.EventBindings.SearchTree;
-using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 
 namespace Melville.Pdf.WpfViewerParts.LowLevelViewer;
