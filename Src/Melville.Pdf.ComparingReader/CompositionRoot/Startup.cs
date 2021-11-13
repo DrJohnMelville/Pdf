@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using Melville.IOC.IocContainers;
+using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -28,6 +30,7 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
             service.Bind<IList<ReferenceDocumentNode>>().ToMethod(ReferenceDocumentFactory.Create);
             service.Bind<ICommandLineSelection>().ToMethod(() => new CommandLineSelection(this.CommandLineParameters));
             service.Bind<IPasswordSource>().To<PasswordQuery>();
+            service.Bind<Window>().And<IRootNavigationWindow>().To<RootNavigationWindow>().AsSingleton();
         }
     }
 }
