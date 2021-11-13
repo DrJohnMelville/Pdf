@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
-using Melville.Pdf.ComparingReader.MainWindow.Renderers;
+using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.ComparingReader.MainWindow
@@ -20,9 +20,7 @@ namespace Melville.Pdf.ComparingReader.MainWindow
         {
             if (newValue is ReferenceDocumentLeaf leaf)
             {
-                var stream = new MultiBufferStream();
-                await leaf.Document.WritePdfAsync(stream);
-                Renderer.SetTarget(stream);
+                Renderer.SetTarget(await leaf.GetDocument());
             }
         }
 

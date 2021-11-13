@@ -1,15 +1,24 @@
-﻿using Melville.Pdf.ReferenceDocuments.Infrastructure;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Pdf.ReferenceDocuments.Infrastructure;
 
 namespace Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 
 public class ReferenceDocumentLeaf: ReferenceDocumentNode
 {
-    public IPdfGenerator Document { get; }
-    public override string ShortName => Document.Prefix[1..];
-    public string LongName => Document.HelpText;
+    private readonly IPdfGenerator document;
+    public override string ShortName => document.Prefix[1..];
+    public string LongName => document.HelpText;
 
     public ReferenceDocumentLeaf(IPdfGenerator document)
     {
-        this.Document = document;
+        this.document = document;
+    }
+
+    public async ValueTask<MultiBufferStream> GetDocument()
+    {
+        var stream = new MultiBufferStream();
+        await document.WritePdfAsync(stream);
+        return stream;
     }
 }

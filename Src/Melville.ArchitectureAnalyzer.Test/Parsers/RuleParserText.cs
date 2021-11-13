@@ -70,6 +70,14 @@ public class RuleParserText
         Assert.Equal("\"A\" may not reference \"B\" because \"C* ^=> B*\"", 
             rules.ErrorFromReference("A","B"));
     }
+    [Fact]
+    public void ExclusiveRule2()
+    {
+        var rules = ParseInput("* => System*\r\nC* ^=> B*");
+        Assert.Null(rules.ErrorFromReference("Charlie", "Bravo"));
+        Assert.Equal("\"A\" may not reference \"B\" because \"C* ^=> B*\"", 
+            rules.ErrorFromReference("A","B"));
+    }
 
     [Fact]
     public void EquivalenceClass()

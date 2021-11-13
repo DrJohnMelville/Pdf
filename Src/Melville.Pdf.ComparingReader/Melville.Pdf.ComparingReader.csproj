@@ -13,6 +13,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AdditionalFiles Include="Architecture.adf" />
+        <ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <OutputItemType>Analyzer</OutputItemType>
+        </ProjectReference>
       <ProjectReference Include="..\Melville.Pdf.ReferenceDocuments\Melville.Pdf.ReferenceDocuments.csproj" />
       <ProjectReference Include="..\Melville.Pdf.WpfViewerParts\Melville.Pdf.WpfViewerParts.csproj" />
     </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Melville.Pdf.ComparingReader.MainWindow.Renderers;
+namespace Melville.Pdf.ComparingReader.Renderers;
 
 public partial class TabMultiRendererView : UserControl
 {

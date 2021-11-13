@@ -1,14 +1,8 @@
 ﻿using System.IO;
+using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.WpfViewerParts.LowLevelViewer;
 
-namespace Melville.Pdf.ComparingReader.MainWindow.Renderers;
-
-public interface IRenderer
-{
-    string DisplayName { get; }
-    object RenderTarget { get; }
-    void SetTarget(Stream pdfBits);
-}
+namespace Melville.Pdf.ComparingReader.Viewers.LowLevel;
 
 public class LowLevelRenderer : IRenderer
 {

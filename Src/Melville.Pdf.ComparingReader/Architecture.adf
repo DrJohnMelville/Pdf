@@ -1,0 +1,22 @@
+﻿#Composition root can see everything. 
+Melville.Pdf.ComparingReader.CompositionRoot.* => *
+
+#Everyone can use global resources
+#Everyone can use global resources
+* => Melville.MVVM.*
+* => Melville.INPC.*
+* => Melville.FileSystem.*
+* => System.*
+* => Melville.Pdf.LowLevel.*
+* => Melville.Hacks.*
+
+Group MainWindow
+    Melville.Pdf.ComparingReader.MainWindow.*
+Group Renderers
+    Melville.Pdf.ComparingReader.Renderers.*
+    
+MainWindow => Renderers
+
+Melville.Pdf.ComparingReader.Viewers.* => Renderers
+Melville.Pdf.ComparingReader.Viewers.LowLevel.LowLevelRenderer => Melville.Pdf.WpfViewerParts.LowLevelViewer.*
+Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree.* => Melville.Pdf.ReferenceDocuments.Infrastructure.*

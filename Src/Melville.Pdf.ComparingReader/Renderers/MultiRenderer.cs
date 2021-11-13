@@ -1,7 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
-namespace Melville.Pdf.ComparingReader.MainWindow.Renderers;
+namespace Melville.Pdf.ComparingReader.Renderers;
+public interface IRenderer
+{
+    string DisplayName { get; }
+    object RenderTarget { get; }
+    void SetTarget(Stream pdfBits);
+}
 
 public interface IMultiRenderer
 {
@@ -26,12 +33,5 @@ public abstract class MultiRenderer : IMultiRenderer
         {
             renderer.SetTarget(pdfBits.CreateReader());
         }
-    }
-}
-
-public class TabMultiRendererViewModel : MultiRenderer
-{
-    public TabMultiRendererViewModel(IList<IRenderer> renderers) : base((IReadOnlyList<IRenderer>)renderers)
-    {
     }
 }
