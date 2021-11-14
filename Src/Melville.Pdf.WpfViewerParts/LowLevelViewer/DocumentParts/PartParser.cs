@@ -28,6 +28,7 @@ public class PartParser: IPartParser
 
     public async Task<DocumentPart[]> ParseAsync(Stream source, IWaitingService waiting)
     {
+        items.Clear();
         PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(
             new ParsingFileOwner(source, passwordSource));
         GenerateHeaderElement(lowlevel);

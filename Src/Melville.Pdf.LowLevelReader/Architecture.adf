@@ -1,5 +1,5 @@
 ﻿#Composition root can see everything. 
-Melville.Pdf.LowLevelReader.CompositionRoot.* => *
+Melville.Pdf.LowLevelReader.CompositionRoot.* +=> *
 
 #Everyone can use global resources
 * => Melville.MVVM.*
@@ -20,6 +20,6 @@ Group DocumentParts
 Group Passwords
      Melville.Pdf.LowLevelReader.PasswordDialogs.*
 
-Melville.Pdf.LowLevelReader.Services.* => Melville.Pdf.LowLevelReader.* 
+Melville.Pdf.LowLevelReader.Services.* +=> Melville.Pdf.LowLevelReader.* 
 
 MainDisplay => DocumentParts

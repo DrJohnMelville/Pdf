@@ -7,9 +7,11 @@
              xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
              xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:mainWindow="clr-namespace:Melville.Pdf.ComparingReader.MainWindow"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / *">
+    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / auto, *">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type referenceDocumentTree:ReferenceDocumentLeaf}">
                 <TextBlock Text="{Binding ShortName}" ToolTip="{Binding LongName}"></TextBlock>
@@ -19,9 +21,18 @@
                 <TextBlock Text="{Binding ShortName}"/>
             </HierarchicalDataTemplate>
         </Grid.Resources>
-        <TreeView ItemsSource="{Binding Nodes}" Margin="0 0 5 0"
+        <StackPanel>
+            <ComboBox SelectedIndex="{Binding PasswordBox.Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
+               Converter={x:Static mainWindow:MainWindowConverters.PasswordTypeConverter} }"
+                      IsSynchronizedWithCurrentItem="True">
+                <system:String>User Password</system:String>
+                <system:String>Owner Password</system:String>
+            </ComboBox>
+            <TextBox Text="{Binding PasswordBox.Password}"></TextBox>
+        </StackPanel>
+        <viewFrames:ViewFrame Grid.Column="1" Grid.RowSpan="2" Content="{Binding Renderer.RenderTarget}"/> 
+        <GridSplitter HorizontalAlignment="Right" Grid.RowSpan="2" VerticalAlignment="Stretch" Width="5"/>
+        <TreeView ItemsSource="{Binding Nodes}" Margin="0 0 5 0" Grid.Row="1"
                   wpfHacks:TreeViewHelper.SelectedItem="{Binding SelectedNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <viewFrames:ViewFrame Grid.Column="1" Content="{Binding Renderer.RenderTarget}"/> 
-        <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5"/>
     </Grid>
 </UserControl>

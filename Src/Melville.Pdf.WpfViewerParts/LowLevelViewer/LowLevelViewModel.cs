@@ -11,17 +11,20 @@ public partial class LowLevelViewModel
     [AutoNotify] private DocumentPart[] root = Array.Empty<DocumentPart>();
     [AutoNotify] private DocumentPart? selected;
     private IWaitingService? waiter;
-    private IPartParser? parser;
+    private readonly IPartParser parser;
 
-    public void SetVisualTreeRunner(IWaitingService waiter, [FromServices] IPartParser parser)
+    public LowLevelViewModel(IPartParser? parser)
+    {
+        this.parser = parser;
+    }
+
+    public void SetVisualTreeRunner(IWaitingService waiter)
     {
         this.waiter = waiter;
-        this.parser = parser;
     }
 
     public async void SetStream(Stream source)
     {
-        if (parser is null || waiter is null) return;
-        Root = await parser.ParseAsync(source, waiter);
+        Root = await parser.ParseAsync(source, waiter ?? new FakeWaitingService());
     }
 }

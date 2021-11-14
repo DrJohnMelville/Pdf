@@ -21,7 +21,12 @@ public class MainDisplayViewModelTest
     private readonly Mock<ICloseApp> closer = new();
     private readonly Mock<IWaitingService> waiting = new();
         
-    private readonly MainDisplayViewModel sut = new(new LowLevelViewModel());
+    private readonly MainDisplayViewModel sut;
+
+    public MainDisplayViewModelTest()
+    {
+        sut = new(new LowLevelViewModel(parser.Object));
+    }
 
     [Fact]
     public void RootTest() => sut.Model.AssertProperty(i=>i.Root, new DocumentPart[1]);
