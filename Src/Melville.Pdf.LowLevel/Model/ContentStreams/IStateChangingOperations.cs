@@ -46,7 +46,7 @@ public interface IStateChangingOperations
     /// <summary>
     /// Content stream operator lineJoinStyle j
     /// </summary>
-    void SetLineJoinStyle(LineJoinStyle cap);
+    void SetLineJoinStyle(LineJoinStyle lineJoinStyle);
 
     /// <summary>
     /// Content stream operator miterLimit M

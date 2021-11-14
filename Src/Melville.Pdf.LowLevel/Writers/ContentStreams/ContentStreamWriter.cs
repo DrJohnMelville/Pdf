@@ -42,8 +42,8 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetLineCap(LineCap cap) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.J, (double)cap);
 
-    public void SetLineJoinStyle(LineJoinStyle cap) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.j, (double)cap);
+    public void SetLineJoinStyle(LineJoinStyle lineJoinStyle) =>
+        destPipe.WriteOperator(ContentStreamOperatorNames.j, (double)lineJoinStyle);
     
     public void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray)
     {
