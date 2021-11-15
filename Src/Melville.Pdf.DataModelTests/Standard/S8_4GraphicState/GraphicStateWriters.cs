@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -32,8 +33,8 @@ public class GraphicStateWriters:WriterTest
     [Fact]
     public async Task ModifyTransformMatrix()
     {
-        sut.ModifyTransformMatrix(1,2.45,3,4,-500.1234,6);
-        Assert.Equal("1 2.45 3 4 -500.1234 6 cm\n", await WrittenText());
+        sut.ModifyTransformMatrix(new Matrix3x2(1,2.45f,3,4,-500.1234f,6));
+        Assert.Equal("1 2.450000047683716 3 4 -500.123413085938 6 cm\n", await WrittenText());
     }
     [Fact]
     public async Task SetLineWidth()

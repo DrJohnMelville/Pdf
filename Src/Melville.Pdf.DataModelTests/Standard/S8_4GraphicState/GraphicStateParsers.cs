@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -28,7 +29,7 @@ public partial class GraphicStateParsers: ParserTest
 
     [Fact]
     public Task ModifyTransformMatrixTest() => TestInput(
-        "1.000 2 03 +4 5.5 -6 cm", i => i.ModifyTransformMatrix(1, 2, 3, 4, 5.5, -6));
+        "1.000 2 03 +4 5.5 -6 cm", i => i.ModifyTransformMatrix(new Matrix3x2(1, 2, 3, 4, 5.5f, -6)));
 
     [Fact]
     public Task SetLineWidthTest() => TestInput("256 w", i => i.SetLineWidth(256));

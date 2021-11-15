@@ -20,6 +20,7 @@ public readonly struct ContentStreamValueStack
     public void Clear() => values.Clear();
 
     public double DoubleAt(int x) => values[x].Floating;
+    public float FloatAt(int x) => (float)values[x].Floating;
     public long LongAt(int x) => values[x].Integer;
     public Memory<byte> BytesAt(int x) => values[x].Bytes;
     public ContentStreamValueType TypeAt(int x) => values[x].Type;

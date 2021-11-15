@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -9,6 +10,7 @@ namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
 public partial class GraphicsState: IStateChangingOperations
 {
+    [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("double", "LineWidth", "1.0")]
     [MacroItem("double", "MiterLimit", "10.0")]
     [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter")]
@@ -18,11 +20,13 @@ public partial class GraphicsState: IStateChangingOperations
     public void SaveGraphicsState() { }
     public void RestoreGraphicsState() { }
 
-    public void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f)
+    public void ModifyTransformMatrix(in Matrix3x2 newTransform)
     {
-        throw new NotImplementedException();
+        TransformMatrix = newTransform * TransformMatrix;
     }
 
+    public Vector2 ApplyCurrentTransform(in Vector2 point) => Vector2.Transform(point, TransformMatrix);
+    
     public void SetLineWidth(double width) => LineWidth = width;
     public void SetLineCap(LineCap cap) => LineCap = cap;
     public void SetLineJoinStyle(LineJoinStyle lineJoinStyle) => LineJoinStyle = lineJoinStyle;

@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -36,9 +37,17 @@ public partial class ContentStreamWriter : IContentStreamOperations
     [MacroItem("TL","TextLeading")]
     [MacroItem("Ts","TextRise")]
     [MacroCode("public void Set~1~(double value) => destPipe.WriteOperator(ContentStreamOperatorNames.~0~, value);")]
-    public void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.cm, a, b, c, d, e, f);
-    
+    public void ModifyTransformMatrix(in Matrix3x2 newTransform)
+    {
+        destPipe.WriteDoubleAndSpace(newTransform.M11);
+        destPipe.WriteDoubleAndSpace(newTransform.M12);
+        destPipe.WriteDoubleAndSpace(newTransform.M21);
+        destPipe.WriteDoubleAndSpace(newTransform.M22);
+        destPipe.WriteDoubleAndSpace(newTransform.M31);
+        destPipe.WriteDoubleAndSpace(newTransform.M32);
+        destPipe.WriteOperator(ContentStreamOperatorNames.cm);
+    }
+
     public void SetLineCap(LineCap cap) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.J, (double)cap);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -63,9 +64,10 @@ public class ContentStreamContext
                     arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.cm:
-                target.ModifyTransformMatrix(
-                    arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2),
-                    arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
+                target.ModifyTransformMatrix(new Matrix3x2(
+                    arguments.FloatAt(0), arguments.FloatAt(1), 
+                    arguments.FloatAt(2), arguments.FloatAt(3), 
+                    arguments.FloatAt(4), arguments.FloatAt(5)));
                 break;
             case ContentStreamOperatorValue.CS:
                 target.SetStrokingColorSpace(arguments.NamaAt(0));

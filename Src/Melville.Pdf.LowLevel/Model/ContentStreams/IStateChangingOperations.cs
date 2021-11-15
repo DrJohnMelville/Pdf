@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -31,7 +32,7 @@ public interface IStateChangingOperations
     /// <summary>
     /// Content Stream Operator a b c d e f cm
     /// </summary>
-    void ModifyTransformMatrix(double a, double b, double c, double d, double e, double f);
+    void ModifyTransformMatrix(in Matrix3x2 newTransform);
 
     /// <summary>
     /// Content stream operator lineWidth w
