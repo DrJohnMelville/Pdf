@@ -1,8 +1,12 @@
-﻿using System.Windows;
+﻿using System.IO.Pipelines;
+using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
 
@@ -21,16 +25,15 @@ public class RenderToDrawingGroup
 
     private async ValueTask Render(PdfPage page, DrawingContext dc)
     {
+        var stateStack = new GraphicsStateStack();
+        var renderTarget = new WpfRenderTarget(dc, stateStack, page);
+        var engine = new RenderEngine(page, renderTarget, stateStack);
+        
         var rect = await page.GetBoxAsync(BoxName.CropBox);
         if (!rect.HasValue) return;
-        SetupBackgroundRect(dc, rect.Value);
-    }
+        renderTarget.SetBackgroundRect(rect.Value);
 
-    private void SetupBackgroundRect(DrawingContext dc, in PdfRect rect)
-    {
-        var clipRectangle = new Rect(0,0, rect.Width, rect.Height);
-        dc.DrawRectangle(Brushes.White, null, clipRectangle);
-        dc.PushClip(new RectangleGeometry(clipRectangle));
-        
+        var csp = new ContentStreamParser(engine);
+        await csp.Parse(PipeReader.Create(await page.GetContentBytes()));
     }
 }

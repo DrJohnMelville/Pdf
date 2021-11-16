@@ -6,7 +6,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers;
 
 public readonly record struct PdfRect (double Left, double Bottom, double Right, double Top)
 {
-    public PdfArray ToPdfArray => new PdfArray(
+    public PdfArray ToPdfArray => new(
         new PdfDouble(Left), new PdfDouble(Bottom), new PdfDouble(Right), new PdfDouble(Top));
 
     public static async ValueTask<PdfRect> CreateAsync(PdfArray array)
