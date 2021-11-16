@@ -1,8 +1,6 @@
 ﻿using System.IO.Pipelines;
-using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;

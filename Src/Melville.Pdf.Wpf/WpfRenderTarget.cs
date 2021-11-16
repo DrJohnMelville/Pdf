@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Numerics;
+using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
@@ -32,6 +33,10 @@ public class WpfRenderTarget: IRenderTarget
         dc.DrawRectangle(Brushes.White, null, clipRectangle);
         dc.PushClip(new RectangleGeometry(clipRectangle));
         // setup the userSpace to device space transform
+        var xform = Matrix3x2.CreateTranslation((float)-rect.Left, (float)-rect.Bottom) *
+                    Matrix3x2.CreateScale(1, -1) *
+                    Matrix3x2.CreateTranslation(0, (float)rect.Height);
+        state.ModifyTransformMatrix(xform);
     }
 
     #region Path Building
@@ -64,8 +69,10 @@ public class WpfRenderTarget: IRenderTarget
 
     void IRenderTarget.StrokePath()
     {
+        dc.PushTransform(state.Current().Transform());
         dc.DrawGeometry(null, state.Current().Pen(), geometry);
         ((IRenderTarget) this).ClearPath();
+        dc.Pop(); // transform
     }
 
     void IRenderTarget.ClearPath()
