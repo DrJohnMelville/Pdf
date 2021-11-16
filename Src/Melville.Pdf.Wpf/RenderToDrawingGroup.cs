@@ -8,9 +8,9 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
 
-public class RenderToDrawingGroup
+public static class RenderToDrawingGroup
 {
-    public async ValueTask<DrawingGroup> Render(PdfPage page)
+    public static async ValueTask<DrawingGroup> Render(PdfPage page)
     {
         var dg = new DrawingGroup();
         using (var dc = dg.Open())
@@ -21,7 +21,7 @@ public class RenderToDrawingGroup
         return dg;
     }
 
-    private async ValueTask Render(PdfPage page, DrawingContext dc)
+    private static async ValueTask Render(PdfPage page, DrawingContext dc)
     {
         var stateStack = new GraphicsStateStack();
         var renderTarget = new WpfRenderTarget(dc, stateStack, page);

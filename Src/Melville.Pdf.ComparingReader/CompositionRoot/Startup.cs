@@ -9,6 +9,7 @@ using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.ComparingReader.Viewers.LowLevel;
+using Melville.Pdf.ComparingReader.Viewers.SkiaViewer;
 using Melville.Pdf.ComparingReader.Viewers.SystemViewers;
 using Melville.Pdf.ComparingReader.Viewers.WindowsViewer;
 using Melville.Pdf.ComparingReader.Viewers.WpfViewers;
@@ -39,14 +40,17 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
 
         private static void RegisterRenderers(IBindableIocService service)
         {
-            service.Bind<IRenderer>().To<ImageViewerViewModel>()
-                .WithParameters(new WindowsImageRenderer(), "Reference");
-            service.Bind<IRenderer>().To<ImageViewerViewModel>()
-                .WithParameters(new WpfDrawingGroupRenderer(), "WPF");
+            BindImageRenderer(service, "Reference", new WindowsImageRenderer());
+            BindImageRenderer(service, "WPF", new WpfDrawingGroupRenderer());
+            BindImageRenderer(service, "Skia", new SkiaRenderer());
             service.Bind<IRenderer>().To<LowLevelRenderer>();
             service.Bind<IRenderer>().To<SystemRenderViewModel>();
             service.Bind<IMultiRenderer>().To<TabMultiRendererViewModel>();
         }
+
+        private static void BindImageRenderer(
+            IBindableIocService service, string name, IImageRenderer renderer) =>
+            service.Bind<IRenderer>().To<ImageViewerViewModel>().WithParameters(renderer, name);
 
         private void RegisterRootWindows(IBindableIocService service)
         {

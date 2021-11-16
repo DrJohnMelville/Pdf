@@ -6,12 +6,29 @@ using System.Windows.Threading;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 
 public interface IImageRenderer
 {
     ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password);
+}
+
+public abstract class MelvillePdfRenderer : IImageRenderer
+{
+    public async ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password)
+    {
+        var doc = await PdfDocument.ReadAsync(pdfBits);
+        var pages = await doc.PagesAsync();
+        var ret = (await pages.CountAsync()) > 0
+            ? await Render(await pages.GetPageAsync(0))
+            : new DrawingImage();
+        ret.Freeze();
+        return ret;
+    }
+
+    protected abstract ValueTask<ImageSource> Render(PdfPage page);
 }
 
 public partial class ImageViewerViewModel : IRenderer
