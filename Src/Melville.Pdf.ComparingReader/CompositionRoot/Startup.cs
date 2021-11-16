@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Windows;
 using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
+using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.ComparingReader.Viewers.LowLevel;
 using Melville.Pdf.ComparingReader.Viewers.SystemViewers;
 using Melville.Pdf.ComparingReader.Viewers.WindowsViewer;
+using Melville.Pdf.ComparingReader.Viewers.WpfViewers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.WpfAppFramework.StartupBases;
 
@@ -36,7 +39,10 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
 
         private static void RegisterRenderers(IBindableIocService service)
         {
-            service.Bind<IRenderer>().To<WindowsRendererViewModel>();
+            service.Bind<IRenderer>().To<ImageViewerViewModel>()
+                .WithParameters(new WindowsImageRenderer(), "Reference");
+            service.Bind<IRenderer>().To<ImageViewerViewModel>()
+                .WithParameters(new WpfDrawingGroupRenderer(), "WPF");
             service.Bind<IRenderer>().To<LowLevelRenderer>();
             service.Bind<IRenderer>().To<SystemRenderViewModel>();
             service.Bind<IMultiRenderer>().To<TabMultiRendererViewModel>();

@@ -20,16 +20,13 @@
         </ProjectReference>
       <ProjectReference Include="..\Melville.Pdf.ReferenceDocuments\Melville.Pdf.ReferenceDocuments.csproj" />
       <ProjectReference Include="..\Melville.Pdf.WpfViewerParts\Melville.Pdf.WpfViewerParts.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Reference Include="Melville.WpfControls, Version=0.5.16.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>..\..\..\..\.nuget\packages\melville.wpfcontrols\0.5.16\lib\net5.0-windows7.0\Melville.WpfControls.dll</HintPath>
       </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="WindowsViewer" />
     </ItemGroup>
 
 </Project>

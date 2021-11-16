@@ -20,4 +20,7 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
 
     private static (PdfNumber min, PdfNumber max) MinMax(PdfNumber a, PdfNumber b) => 
         (a.DoubleValue > b.DoubleValue) ? (b, a) : (a, b);
+
+    public double Width => Right - Left;
+    public double Height => Top - Bottom;
 }

@@ -16,14 +16,19 @@ MainWindow => Renderers
 MainWindow => Melville.MVVM.*
 Melville.Pdf.ComparingReader.Viewers.* => Renderers
 Melville.Pdf.ComparingReader.Viewers.* => Melville.Pdf.LowLevel.Parsing.ParserContext.*
+Melville.Pdf.ComparingReader.Viewers.* => Melville.Pdf.Model.*
 MainWindow => Melville.Pdf.LowLevel.Parsing.ParserContext.*
+
+#External Dependency for the documents
+Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree.* ^=> Melville.Pdf.ReferenceDocuments.*
 
 #External Dependency for the Low Level Pdf Viewer
 Melville.Pdf.ComparingReader.Viewers.LowLevel.LowLevelRenderer ^=> Melville.Pdf.WpfViewerParts.LowLevelViewer.*
 
+Melville.Pdf.ComparingReader.Viewers.* +=> Melville.Pdf.ComparingReader.Viewers.GenericImageViewers.*
 #External dependency for windows PDF renderer
 Melville.Pdf.ComparingReader.Viewers.WindowsViewer.* ^=> Windows.Data.Pdf.*
 Melville.Pdf.ComparingReader.Viewers.WindowsViewer.* => Windows.*
 
-#External Dependency for the documents
-Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree.* ^=> Melville.Pdf.ReferenceDocuments.*
+#External Dependency for the Wpf Viewer
+Melville.Pdf.ComparingReader.Viewers.WpfViewers.* ^=> Melville.Pdf.Wpf.*
