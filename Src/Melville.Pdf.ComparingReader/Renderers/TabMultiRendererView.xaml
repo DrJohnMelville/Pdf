@@ -8,16 +8,31 @@
              xmlns:renderers="clr-namespace:Melville.Pdf.ComparingReader.Renderers"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <TabControl ItemsSource="{Binding Renderers}">
-        <TabControl.ItemContainerStyle>
-            <Style TargetType="TabItem">
-                <Setter Property="Header" Value="{Binding DisplayName}"></Setter>
-            </Style>
-        </TabControl.ItemContainerStyle>
-        <TabControl.ContentTemplate>
-            <DataTemplate DataType="{x:Type renderers:IRenderer}">
-                <viewFrames:ViewFrame Content="{Binding RenderTarget}"/> 
+    <UniformGrid Columns="2">
+        <UniformGrid.Resources>
+            <DataTemplate x:Key="FramePresenter">
+                <Grid>
+                    <viewFrames:ViewFrame Content="{Binding}"></viewFrames:ViewFrame>
+                    <TextBlock Text="{Binding DisplayName}" 
+                               HorizontalAlignment="Left" VerticalAlignment="Top"
+                               FontSize="24"/>
+                </Grid>
             </DataTemplate>
-        </TabControl.ContentTemplate>
-    </TabControl>
+        </UniformGrid.Resources>
+        <ContentPresenter Content="{Binding First}" ContentTemplate="{StaticResource FramePresenter}"/>
+        <ContentPresenter Content="{Binding Second}" ContentTemplate="{StaticResource FramePresenter}"/>
+        <ContentPresenter Content="{Binding Third}" ContentTemplate="{StaticResource FramePresenter}"/>
+        <TabControl ItemsSource="{Binding Remaining}">
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem">
+                    <Setter Property="Header" Value="{Binding DisplayName}"></Setter>
+                </Style>
+            </TabControl.ItemContainerStyle>
+            <TabControl.ContentTemplate>
+                <DataTemplate DataType="{x:Type renderers:IRenderer}">
+                    <viewFrames:ViewFrame Content="{Binding RenderTarget}"/> 
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </UniformGrid>
 </UserControl>
