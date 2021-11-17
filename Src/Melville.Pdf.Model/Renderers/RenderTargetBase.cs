@@ -37,7 +37,7 @@ public abstract class RenderTargetBase<T>
     {
         var xform = Matrix3x2.CreateTranslation((float)-rect.Left, (float)-rect.Bottom) *
                     Matrix3x2.CreateScale((float)(xPixels/rect.Width), (float)(-yPixels/rect.Height)) *
-                    Matrix3x2.CreateTranslation(0, (float)rect.Height);
+                    Matrix3x2.CreateTranslation(0, (float)yPixels);
         State.ModifyTransformMatrix(xform);
     }
 }

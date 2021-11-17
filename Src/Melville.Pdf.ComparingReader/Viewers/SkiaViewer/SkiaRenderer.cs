@@ -13,7 +13,7 @@ public class SkiaRenderer: MelvillePdfRenderer
     protected override async ValueTask<ImageSource> Render(PdfPage page)
     {
         var buffer = new MultiBufferStream();
-        await RenderWithSkia.ToPngStream(page, buffer);
+        await RenderWithSkia.ToPngStream(page, buffer, -1, 1024);
         return BitmapFrame.Create(
             buffer.CreateReader(), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
     }

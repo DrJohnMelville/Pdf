@@ -16,10 +16,20 @@ public static class WpfStateInterpreter
             StartLineCap = lineCap,
             DashCap = lineCap,
             DashStyle = ComputeDashStyle(state),
+            LineJoin = ComputeLineJoin(state.LineJoinStyle)
         };
         return pen;
     }
 
+    private static PenLineJoin ComputeLineJoin(LineJoinStyle joinStyle) => joinStyle switch
+    {
+        LineJoinStyle.Miter => PenLineJoin.Miter,
+        LineJoinStyle.Round => PenLineJoin.Round,
+        LineJoinStyle.Bevel => PenLineJoin.Bevel,
+        _ => throw new ArgumentOutOfRangeException(nameof(joinStyle), joinStyle, null)
+    };
+     
+   
     private static DashStyle ComputeDashStyle(GraphicsState state) => 
         state.IsDashedStroke() ?
             CustomDashStyle(state.DashArray, state.DashPhase, state.LineWidth):

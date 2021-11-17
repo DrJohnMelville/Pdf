@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.GraphicProperties;
 
-public class Dashes: Card3x5
+public class Dashes : Card3x5
 {
     public Dashes() : base("3 Horizontal Lines of Different dash styles")
     {
@@ -12,17 +12,16 @@ public class Dashes: Card3x5
 
     protected override void DoPainting(ContentStreamWriter csw)
     {
-        // default should be butt caps
-        csw.SetLineDashPattern(0, 20.0,20.0);
+        csw.SetLineDashPattern(0, 20.0, 20.0);
         csw.SetLineWidth(5);
         HorizontalLine(csw);
-        
+
         csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 72));
-        csw.SetLineDashPattern(0, 50.0,20.0,10.0, 20.0);
+        csw.SetLineDashPattern(0, 50.0, 20.0, 10.0, 20.0);
         HorizontalLine(csw);
-        
+
         csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 72));
-        csw.SetLineDashPattern(20, 50.0,20.0,10.0, 20.0);
+        csw.SetLineDashPattern(20, 50.0, 20.0, 10.0, 20.0);
         csw.SetLineCap(LineCap.Round);
         HorizontalLine(csw);
     }

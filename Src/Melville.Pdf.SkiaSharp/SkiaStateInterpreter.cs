@@ -13,10 +13,14 @@ public static class SkiaStateInterpreter
             Color = SKColors.Black,
             StrokeWidth = (float)state.LineWidth,
             StrokeCap = StrokeCap(state.LineCap),
+            StrokeJoin = CreateStrokeJoin(state.LineJoinStyle),
         };
         SetDashState(state, paint);
         return paint;
     }
+
+    //By coincidence these two enums are equivilent, so a simple cast works.
+    private static SKStrokeJoin CreateStrokeJoin(LineJoinStyle joinStyle) => (SKStrokeJoin)joinStyle;
 
     private static void SetDashState(GraphicsState state, SKPaint paint)
     {
