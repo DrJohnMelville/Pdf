@@ -8,7 +8,7 @@ namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class ObjectStreamPage: CreatePdfParser
 {
-    public ObjectStreamPage() : base("-ObjectStream", "Document using an object stream.")
+    public ObjectStreamPage() : base("Document using an object stream.")
     {
     }
 

@@ -9,7 +9,7 @@ namespace Melville.Pdf.ReferenceDocuments.Text;
 
 public class StandardFonts: CreatePdfParser
 {
-    public StandardFonts() : base("-StdFont", "Display the 14 standard fonts")
+    public StandardFonts() : base("Display the 14 standard fonts")
     {
     }
 

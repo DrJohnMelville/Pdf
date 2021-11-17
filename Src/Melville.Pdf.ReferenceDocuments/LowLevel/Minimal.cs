@@ -6,7 +6,7 @@ namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class MinimalPdfParser: CreatePdfParser
 {
-    public MinimalPdfParser() : base("-min", "Minimal pdf with a single blank page.")
+    public MinimalPdfParser() : base("Minimal pdf with a single blank page.")
     {
     }
 

@@ -10,8 +10,8 @@ namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 public abstract class EncryptedFileWriter : CreatePdfParser
 {
     private ILowLevelDocumentEncryptor encryptor;
-    protected EncryptedFileWriter(string prefix, string helpText, ILowLevelDocumentEncryptor encryptor) : 
-        base(prefix, helpText)
+    protected EncryptedFileWriter(string helpText, ILowLevelDocumentEncryptor encryptor) : 
+        base(helpText)
     {
         this.encryptor = encryptor;
     }

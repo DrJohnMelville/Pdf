@@ -2,7 +2,7 @@
 
 public class FiltersGenerator : CreatePdfParser
 {
-    public FiltersGenerator() : base("-filters", "Document using all filter types.")
+    public FiltersGenerator() : base("Document using all filter types.")
     {
     }
 

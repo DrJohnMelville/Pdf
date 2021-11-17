@@ -6,8 +6,7 @@ namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 
 public class EncryptedRefStm: EncryptedFileWriter
 {
-    public EncryptedRefStm() : base(
-        "-EncRefStm", "Encrypted file using a reference stream.",
+    public EncryptedRefStm() : base("Encrypted file using a reference stream.",
         DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None))
     {
     }

@@ -5,9 +5,9 @@ public abstract class CreatePdfParser : IPdfGenerator
     public string Prefix { get; }
     public string HelpText { get; }
 
-    protected CreatePdfParser(string prefix, string helpText)
+    protected CreatePdfParser(string helpText)
     {
-        Prefix = prefix;
+        Prefix = "-"+this.GetType().Name;
         HelpText = helpText;
     }
 

@@ -6,7 +6,7 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics;
 
 public abstract class Card3x5: CreatePdfParser
 {
-    protected Card3x5(string prefix, string helpText) : base(prefix, helpText)
+    protected Card3x5(string helpText) : base(helpText)
     {
     }
 
