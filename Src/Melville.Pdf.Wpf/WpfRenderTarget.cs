@@ -8,35 +8,26 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
 
-public class WpfRenderTarget: IRenderTarget
+public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 {
-    private readonly DrawingContext dc;
-    private readonly GraphicsStateStack state;
-    private PdfPage page;
-
     //path building
     private PathGeometry? geometry = null;
     private PathFigure? figure = null;
     private Point startPoint;
 
 
-    public WpfRenderTarget(DrawingContext dc, GraphicsStateStack state, PdfPage page)
+    public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
+        base(target, state, page)
     {
-        this.dc = dc;
-        this.state = state;
-        this.page = page;
     }
 
     public void SetBackgroundRect(PdfRect rect)
     {
         var clipRectangle = new Rect(0,0, rect.Width, rect.Height);
-        dc.DrawRectangle(Brushes.White, null, clipRectangle);
-        dc.PushClip(new RectangleGeometry(clipRectangle));
+        Target.DrawRectangle(Brushes.White, null, clipRectangle);
+        Target.PushClip(new RectangleGeometry(clipRectangle));
         // setup the userSpace to device space transform
-        var xform = Matrix3x2.CreateTranslation((float)-rect.Left, (float)-rect.Bottom) *
-                    Matrix3x2.CreateScale(1, -1) *
-                    Matrix3x2.CreateTranslation(0, (float)rect.Height);
-        state.ModifyTransformMatrix(xform);
+        MapUserSpaceToBitmapSpace(rect, rect.Width, rect.Height);
     }
 
     #region Path Building
@@ -69,10 +60,10 @@ public class WpfRenderTarget: IRenderTarget
 
     void IRenderTarget.StrokePath()
     {
-        dc.PushTransform(state.Current().Transform());
-        dc.DrawGeometry(null, state.Current().Pen(), geometry);
+        Target.PushTransform(State.Current().Transform());
+        Target.DrawGeometry(null, State.Current().Pen(), geometry);
         ((IRenderTarget) this).ClearPath();
-        dc.Pop(); // transform
+        Target.Pop(); // transform
     }
 
     void IRenderTarget.ClearPath()

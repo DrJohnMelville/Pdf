@@ -5,25 +5,17 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public interface IRenderTarget
-{
-    void MoveTo(double x, double y);
-    void LineTo(double x, double y);
-    void StrokePath();
-    void ClearPath();
-}
 public partial class RenderEngine: IContentStreamOperations
 {
     private readonly PdfPage page;
     private readonly IRenderTarget target;
-    public RenderEngine(PdfPage page, IRenderTarget target, IStateChangingOperations stateStack)
+    public RenderEngine(PdfPage page, IRenderTarget target)
     {
         this.page = page;
         this.target = target;
-        stateOps = stateStack;
     }
 
-    [DelegateTo] private readonly IStateChangingOperations stateOps;
+    [DelegateTo] private IStateChangingOperations StateOps => target.GrapicsStateChange;
     [DelegateTo]
     private IDrawingOperations Drawing => throw new NotImplementedException("Drawing not implemented");
     [DelegateTo]
