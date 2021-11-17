@@ -15,15 +15,18 @@ public static class WpfStateInterpreter
             EndLineCap = lineCap,
             StartLineCap = lineCap,
             DashCap = lineCap,
-            DashStyle = ComputeDashStyle(state.DashPhase, state.DashArray, state.LineWidth),
+            DashStyle = ComputeDashStyle(state),
         };
         return pen;
     }
 
-    private static DashStyle ComputeDashStyle(double phase, double[] dashes, double width) => 
-        dashes.Length == 0 ?
-            DashStyles.Solid : 
-            new DashStyle(dashes.Select(i=>i/width).ToArray(), phase/width);
+    private static DashStyle ComputeDashStyle(GraphicsState state) => 
+        state.IsDashedStroke() ?
+            CustomDashStyle(state.DashArray, state.DashPhase, state.LineWidth):
+            DashStyles.Solid;
+
+    private static DashStyle CustomDashStyle(double[] dashes, double phase, double width) =>
+        new(dashes.Select(i => i / width).ToArray(), phase / width);
 
     private static PenLineCap ConvertLineCap(LineCap stateLineCap) => stateLineCap switch
       {

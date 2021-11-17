@@ -92,3 +92,9 @@ public partial class GraphicsState: IStateChangingOperations
         throw new NotImplementedException();
     }
 }
+
+public static class GraphicsStateHelpers
+{
+    public static bool IsDashedStroke(this GraphicsState gs) =>
+        gs.DashArray.Length > 0;
+}
