@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Melville.Pdf.LowLevel.Model.Wrappers;
+﻿using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -41,20 +40,4 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     }
 
     #endregion
-}
-
-public static class SkiaStateInterpreter
-{
-    public static SKPaint Pen(this GraphicsState state) => new()
-        {
-            Style = SKPaintStyle.Stroke,
-            Color = SKColors.Black,
-            StrokeWidth = (float)state.LineWidth
-        };
-
-    public static SKMatrix Transform(this GraphicsState gs) =>
-        Transform(gs.TransformMatrix);
-
-    private static SKMatrix Transform(Matrix3x2 tm) => new(
-        tm.M11, tm.M21, tm.M31, tm.M12, tm.M22, tm.M32, 0, 0, 1);
 }

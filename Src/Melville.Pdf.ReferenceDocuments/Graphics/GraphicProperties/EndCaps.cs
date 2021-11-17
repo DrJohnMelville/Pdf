@@ -1,29 +1,8 @@
-﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.GraphicProperties;
-
-public class LineWidths: Card3x5
-{
-    public LineWidths() : base("3 Horizontal Lines of Different Widths")
-    {
-    }
-
-    protected override void DoPainting(ContentStreamWriter csw)
-    {
-        HorizontalLine(csw, 2.5);
-        csw.SetLineWidth(5);
-        HorizontalLine(csw, 1.5);
-        csw.SetLineWidth(15);
-        HorizontalLine(csw, 0.5);
-    }
-
-    private static void HorizontalLine(ContentStreamWriter csw, double yPosition)
-    {
-        csw.MoveTo(0.5 * 72, yPosition * 72);
-        csw.LineTo(4.5 * 72, yPosition * 72);
-        csw.StrokePath();
-    }
-}
 
 public class EndCaps: Card3x5
 {
@@ -33,17 +12,21 @@ public class EndCaps: Card3x5
 
     protected override void DoPainting(ContentStreamWriter csw)
     {
-        HorizontalLine(csw, 2.5);
-        csw.SetLineWidth(5);
-        HorizontalLine(csw, 1.5);
+        // default should be butt caps
         csw.SetLineWidth(15);
-        HorizontalLine(csw, 0.5);
+        HorizontalLine(csw);
+        csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 72));
+        csw.SetLineCap(LineCap.Round);
+        HorizontalLine(csw);
+        csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 72));
+        csw.SetLineCap(LineCap.Square);
+        HorizontalLine(csw);
     }
 
-    private static void HorizontalLine(ContentStreamWriter csw, double yPosition)
+    private static void HorizontalLine(ContentStreamWriter csw)
     {
-        csw.MoveTo(0.5 * 72, yPosition * 72);
-        csw.LineTo(4.5 * 72, yPosition * 72);
+        csw.MoveTo(0.5 * 72, 0.5 * 72);
+        csw.LineTo(4.5 * 72, 0.5 * 72);
         csw.StrokePath();
     }
 }
