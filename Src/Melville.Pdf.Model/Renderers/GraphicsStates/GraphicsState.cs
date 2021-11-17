@@ -15,6 +15,8 @@ public partial class GraphicsState: IStateChangingOperations
     [MacroItem("double", "MiterLimit", "10.0")]
     [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter")]
     [MacroItem("LineCap", "LineCap", "LineCap.Butt")]
+    [MacroItem("double", "DashPhase", "0.0")]
+    [MacroItem("double[]", "DashArray", "Array.Empty<double>()")]
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
     public void SaveGraphicsState() { }
@@ -34,7 +36,10 @@ public partial class GraphicsState: IStateChangingOperations
 
     public void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray)
     {
-        throw new NotImplementedException();
+        DashPhase = dashPhase;
+        // this copies the dasharray on write, which is unavoidable, but then it reuses the array object when
+        // we duplicate the graphicsstate, which we expect to happen frequently.
+        DashArray = dashArray.ToArray(); 
     }
 
     public void SetRenderIntent(RenderingIntentName intent)

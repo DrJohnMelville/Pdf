@@ -29,8 +29,14 @@ public class GraphicStateTest
     [Fact] public void MiterLimitTest() => PropTest(nameof(sut.MiterLimit), 10.0, 5.0, i => i.SetMiterLimit(5));
     [Fact] public void LineJoinTest() => PropTest(nameof(sut.LineJoinStyle), 
         LineJoinStyle.Miter, LineJoinStyle.Bevel, i=>i.SetLineJoinStyle(LineJoinStyle.Bevel));
-    [Fact] public void LineCapTest() => PropTest(nameof(sut.LineCap), LineCap.Square, LineCap.Round,
+    [Fact] public void LineCapTest() => PropTest(nameof(sut.LineCap), LineCap.Butt, LineCap.Round,
         i=>i.SetLineCap(LineCap.Round));
+
+    [Fact]
+    public void DashPhase() => PropTest(nameof(sut.DashPhase), 0.0, 20, i => i.SetLineDashPattern(20, 1, 2, 3, 4));
+    [Fact]
+    public void DashArray() => PropTest(nameof(sut.DashArray), Array.Empty<double>(), new double[]{1,2,3,4},
+        i => i.SetLineDashPattern(20, 1, 2, 3, 4));
 
     [Fact]
     public void ModifyTransformMatrix()
