@@ -4,9 +4,9 @@ using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.GraphicProperties;
 
-public class LineJoin : Card3x5
+public class MiterLimit: Card3x5
 {
-    public LineJoin() : base("3 Corners with different line join styles.")
+    public MiterLimit() : base("MiterLimitation.")
     {
     }
 
@@ -15,21 +15,25 @@ public class LineJoin : Card3x5
         csw.ModifyTransformMatrix(Matrix3x2.CreateScale(1.5f, 1.5f));
         csw.SetLineWidth(10);
         DrawCorner(csw);
-
-        csw.SetLineJoinStyle(LineJoinStyle.Round);
-        csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 72f * 1f));
+        
+        csw.SetMiterLimit(2);
+        csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 72f*1f));
         DrawCorner(csw);
 
-        csw.SetLineJoinStyle(LineJoinStyle.Bevel);
-        csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(72f * 1.5f, 0));
+        csw.SetMiterLimit(1);
+        csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(72f*1.5f, 0));
         DrawCorner(csw);
     }
 
     private static void DrawCorner(ContentStreamWriter csw)
     {
-        csw.MoveTo(0.25 * 72, 0.25 * 72);
-        csw.LineTo(0.75 * 72, 0.75 * 72);
-        csw.LineTo(1.25 * 72, 0.25 * 72);
+        var bottom = 0.25 * 72;
+        var top = 0.75 * 72;
+        csw.MoveTo(0.25 * 72, bottom);
+        csw.LineTo(0.35 * 72, top);
+        csw.LineTo(0.5 * 72, bottom);
+        csw.LineTo(0.75 * 72, top);
+        csw.LineTo(1.25 * 72, bottom);
         csw.StrokePath();
     }
 }

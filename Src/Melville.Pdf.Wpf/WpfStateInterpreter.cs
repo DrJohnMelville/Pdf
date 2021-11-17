@@ -16,7 +16,8 @@ public static class WpfStateInterpreter
             StartLineCap = lineCap,
             DashCap = lineCap,
             DashStyle = ComputeDashStyle(state),
-            LineJoin = ComputeLineJoin(state.LineJoinStyle)
+            LineJoin = ComputeLineJoin(state.LineJoinStyle),
+            MiterLimit = state.MiterLimit,
         };
         return pen;
     }

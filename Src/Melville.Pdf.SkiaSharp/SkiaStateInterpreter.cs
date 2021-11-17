@@ -14,6 +14,7 @@ public static class SkiaStateInterpreter
             StrokeWidth = (float)state.LineWidth,
             StrokeCap = StrokeCap(state.LineCap),
             StrokeJoin = CreateStrokeJoin(state.LineJoinStyle),
+            StrokeMiter = (float)state.MiterLimit
         };
         SetDashState(state, paint);
         return paint;
