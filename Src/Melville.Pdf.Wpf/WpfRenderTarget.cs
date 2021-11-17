@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -60,7 +61,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     void IRenderTarget.StrokePath()
     {
-        Target.PushTransform(State.Current().Transform());
+        Target.PushTransform(State.Current().Transform()); 
         Target.DrawGeometry(null, State.Current().Pen(), geometry);
         ((IRenderTarget) this).ClearPath();
         Target.Pop(); // transform
