@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.Wpf", "Melvill
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.SkiaSharp", "Melville.Pdf.SkiaSharp\Melville.Pdf.SkiaSharp.csproj", "{3881E4A3-0EF2-4D5A-8993-0A7F39F5F2ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Wpf.IntegrationTesting", "Melville.Wpf.IntegrationTesting\Melville.Wpf.IntegrationTesting.csproj", "{1839A2B9-FEAA-4D4C-B922-58793818E960}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,7 @@ Global
 		{5114C86E-5BF8-4501-894B-EE7AD0E4E47A} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
 		{9BDE0D38-CC37-4F2E-8622-CF038837B9CF} = {5114C86E-5BF8-4501-894B-EE7AD0E4E47A}
 		{3881E4A3-0EF2-4D5A-8993-0A7F39F5F2ED} = {5114C86E-5BF8-4501-894B-EE7AD0E4E47A}
+		{1839A2B9-FEAA-4D4C-B922-58793818E960} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0DC5C5E9-B98F-46BB-B1D9-C3E6E0278D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -134,5 +137,9 @@ Global
 		{3881E4A3-0EF2-4D5A-8993-0A7F39F5F2ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3881E4A3-0EF2-4D5A-8993-0A7F39F5F2ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3881E4A3-0EF2-4D5A-8993-0A7F39F5F2ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1839A2B9-FEAA-4D4C-B922-58793818E960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1839A2B9-FEAA-4D4C-B922-58793818E960}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1839A2B9-FEAA-4D4C-B922-58793818E960}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1839A2B9-FEAA-4D4C-B922-58793818E960}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

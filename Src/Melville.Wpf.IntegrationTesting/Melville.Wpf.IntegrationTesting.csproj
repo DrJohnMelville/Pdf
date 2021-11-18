@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="3.1.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Xunit.StaFact" Version="1.0.37" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Pdf.ReferenceDocuments\Melville.Pdf.ReferenceDocuments.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.SkiaSharp\Melville.Pdf.SkiaSharp.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
+    </ItemGroup>
+
+</Project>

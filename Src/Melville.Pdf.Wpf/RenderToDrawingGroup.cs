@@ -1,4 +1,7 @@
-﻿using System.Windows.Media;
+﻿using System.IO;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -8,6 +11,19 @@ namespace Melville.Pdf.Wpf;
 
 public static class RenderToDrawingGroup
 {
+    public static async ValueTask RenderToPngStream(PdfPage page, Stream stream)
+    {
+        var doc = await Render(page);
+        var img = new Image() { Source = new DrawingImage(doc) };
+        int width = (int)doc.Bounds.Width;
+        int height = (int)doc.Bounds.Width;
+        img.Arrange(doc.Bounds);
+        var rtb = new RenderTargetBitmap(width, height, 72, 72, PixelFormats.Pbgra32);
+        rtb.Render(img);
+        var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+        encoder.Save(stream);
+    }
     public static async ValueTask<DrawingGroup> Render(PdfPage page)
     {
         var dg = new DrawingGroup();
