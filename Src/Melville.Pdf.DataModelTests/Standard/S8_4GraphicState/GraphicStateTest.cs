@@ -2,6 +2,7 @@
 using System.Numerics;
 using Melville.Hacks.Reflection;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Xunit;
 
@@ -47,4 +48,8 @@ public class GraphicStateTest
         sut.ModifyTransformMatrix(Matrix3x2.CreateScale(0.1f, 0.01f));
         Assert.Equal(new Vector2(0,0), sut.ApplyCurrentTransform(new Vector2(10, 200)));
     }
+    [Fact] public void Flatness() => PropTest(nameof(sut.FlatnessTolerance), 0, 5.0, i => i.SetFlatnessTolerance(5));
+    [Fact] public void RenderingIntent() => PropTest(nameof(sut.RenderIntent), RenderingIntentName.RelativeColoriMetric, 
+        RenderingIntentName.Perceptual, i => i.SetRenderIntent(RenderingIntentName.Perceptual));
+
 } 

@@ -15,7 +15,9 @@ public partial class GraphicsState: IStateChangingOperations
     [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter")]
     [MacroItem("LineCap", "LineCap", "LineCap.Butt")]
     [MacroItem("double", "DashPhase", "0.0")]
+    [MacroItem("double", "FlatnessTolerance", "0.0")]
     [MacroItem("double[]", "DashArray", "Array.Empty<double>()")]
+    [MacroItem("RenderingIntentName", "RenderIntent", "RenderingIntentName.RelativeColoriMetric")]
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
     public void SaveGraphicsState() { }
@@ -41,16 +43,12 @@ public partial class GraphicsState: IStateChangingOperations
         DashArray = dashArray.ToArray(); 
     }
 
-    public void SetRenderIntent(RenderingIntentName intent)
-    {
-        throw new NotImplementedException();
-    }
+    public void SetRenderIntent(RenderingIntentName intent) => RenderIntent = intent;
 
-    public void SetFlatnessTolerance(double flatness)
-    {
-        throw new NotImplementedException();
-    }
-
+    // as of 11/18/2021 this parameter is ignored by both the Pdf and Skia renderers, but
+    // we will preserve the property.
+    public void SetFlatnessTolerance(double flatness) => FlatnessTolerance = flatness;
+    
     public void LoadGraphicStateDictionary(PdfName dictionaryName)
     {
         throw new NotImplementedException();
