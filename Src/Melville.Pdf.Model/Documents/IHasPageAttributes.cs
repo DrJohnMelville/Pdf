@@ -86,11 +86,19 @@ public static partial class PdfPageAttributes
     public static async ValueTask<PdfRect?> GetBoxAsync<T>(this T item, BoxName boxType)
         where T : IHasPageAttributes =>
         await GetSingleBoxAsync(item.LowLevel, boxType) ??
-        await item.GetBoxAsync(FallbackBox(boxType));
+        await GetBoxOrDefaultAsync(item, FallbackBox(boxType));
+    
+    // Standard 7.7.3.3 states that media box is required, however Adobe reader parses files without mediaboxes
+    // without complaining -- so we just default to letter size peper.
+    private static ValueTask<PdfRect?> GetBoxOrDefaultAsync<T>(T item, BoxName? boxType)
+        where T : IHasPageAttributes =>
+        boxType == null ? new(UsLetterSizedBox<T>()): item.GetBoxAsync(boxType);
 
-    private static BoxName FallbackBox(BoxName boxType)
+    private static PdfRect UsLetterSizedBox<T>() where T : IHasPageAttributes => new(0, 0, 612, 792);
+
+    private static BoxName? FallbackBox(BoxName boxType)
     {
-        if (boxType == KnownNames.MediaBox) throw new PdfParseException("Media box is required.");
+        if (boxType == KnownNames.MediaBox) return null;
         if (boxType == KnownNames.CropBox) return KnownNames.MediaBox;
         return KnownNames.CropBox;
     }

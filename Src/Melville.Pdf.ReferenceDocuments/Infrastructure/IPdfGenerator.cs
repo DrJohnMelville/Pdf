@@ -4,6 +4,7 @@
     {
         public string Prefix { get; }
         public string HelpText { get; }
+        public string Password { get; }
         public ValueTask WritePdfAsync(Stream target);
     }
 }

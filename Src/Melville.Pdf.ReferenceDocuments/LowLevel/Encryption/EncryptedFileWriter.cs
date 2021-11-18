@@ -1,15 +1,10 @@
-﻿using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Writers;
-using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.ReferenceDocuments.Infrastructure;
-
-namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
+﻿namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 
 public abstract class EncryptedFileWriter : CreatePdfParser
 {
     private ILowLevelDocumentEncryptor encryptor;
+    public override string Password => "User";
+
     protected EncryptedFileWriter(string helpText, ILowLevelDocumentEncryptor encryptor) : 
         base(helpText)
     {

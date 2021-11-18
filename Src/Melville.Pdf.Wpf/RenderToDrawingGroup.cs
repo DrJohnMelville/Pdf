@@ -2,10 +2,12 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Wpf;
 
@@ -20,9 +22,12 @@ public static class RenderToDrawingGroup
         img.Arrange(doc.Bounds);
         var rtb = new RenderTargetBitmap(width, height, 72, 72, PixelFormats.Pbgra32);
         rtb.Render(img);
-        var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(rtb));
-        encoder.Save(stream);
+        var encoder = new JpegBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(rtb));
+        var mbs = new MultiBufferStream();
+        encoder.Save(mbs);
+        await mbs.CreateReader().CopyToAsync(stream);
+        
     }
     public static async ValueTask<DrawingGroup> Render(PdfPage page)
     {

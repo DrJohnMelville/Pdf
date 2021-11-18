@@ -4,6 +4,7 @@ public abstract class CreatePdfParser : IPdfGenerator
 {
     public string Prefix { get; }
     public string HelpText { get; }
+    public virtual string Password => "";
 
     protected CreatePdfParser(string helpText)
     {

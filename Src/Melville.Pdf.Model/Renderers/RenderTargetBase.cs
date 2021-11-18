@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System.IO;
+using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -44,8 +45,7 @@ public abstract class RenderTargetBase<T>
 
 public static class RenderTargetOperations
 {
-    public static async ValueTask RenderTo(
-        this PdfPage page, IRenderTarget target) =>
+    public static async ValueTask RenderTo(this PdfPage page, IRenderTarget target) =>
         await new ContentStreamParser(
                 new RenderEngine(page, target))
             .Parse(
