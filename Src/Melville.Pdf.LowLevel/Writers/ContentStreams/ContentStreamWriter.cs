@@ -60,7 +60,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.d, dashPhase);
     }
 
-    public void SetRenderIntent(RenderingIntentName intent) =>
+    public void SetRenderIntent(RenderIntentName intent) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.ri, intent);
 
     public void LoadGraphicStateDictionary(PdfName dictionaryName) =>

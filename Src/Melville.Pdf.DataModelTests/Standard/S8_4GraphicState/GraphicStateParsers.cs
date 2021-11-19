@@ -89,12 +89,12 @@ public partial class GraphicStateParsers: ParserTest
 
     [Fact]
     public Task ParseRenderingIntent() =>
-        TestInput("/Perceptual ri", i => i.SetRenderIntent(RenderingIntentName.Perceptual));
+        TestInput("/Perceptual ri", i => i.SetRenderIntent(RenderIntentName.Perceptual));
 
     [Fact]
     public Task ParseRenderingIntentFail() =>
         Assert.ThrowsAsync<PdfParseException>(() =>
-            TestInput("/Pages ri", i => i.SetRenderIntent(RenderingIntentName.Perceptual)));
+            TestInput("/Pages ri", i => i.SetRenderIntent(RenderIntentName.Perceptual)));
     [Fact]
     public Task ParseFlatnessTolerance() =>
             TestInput("27 i", i => i.SetFlatnessTolerance(27));

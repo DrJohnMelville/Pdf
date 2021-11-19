@@ -68,10 +68,10 @@
             ("MacExpertEncoding", "MacExpertEncoding", "FontEncoding"),
             
             //RenderingIntents
-            ("AbsoluteColoriMetric", "AbsoluteColoriMetric", "RenderingIntent"),
-            ("RelativeColoriMetric", "RelativeColoriMetric", "RenderingIntent"),
-            ("Saturation", "Saturation", "RenderingIntent"),
-            ("Perceptual", "Perceptual", "RenderingIntent"),
+            ("AbsoluteColoriMetric", "AbsoluteColoriMetric", "RenderIntent"),
+            ("RelativeColoriMetric", "RelativeColoriMetric", "RenderIntent"),
+            ("Saturation", "Saturation", "RenderIntent"),
+            ("Perceptual", "Perceptual", "RenderIntent"),
             
             //Standard ColorSpaces
             ("DeviceGray", "DeviceGray", "ColorSpace"),

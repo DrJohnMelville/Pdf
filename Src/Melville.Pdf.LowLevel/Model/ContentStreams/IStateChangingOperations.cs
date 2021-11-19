@@ -64,7 +64,7 @@ public interface IStateChangingOperations
     /// Content stream operator renderingIntent ri
     /// </summary>
     /// <param name="intent"></param>
-    void SetRenderIntent(RenderingIntentName intent);
+    void SetRenderIntent(RenderIntentName intent);
 
     /// <summary>
     /// Content stream operator tolerance i

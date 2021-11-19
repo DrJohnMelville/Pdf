@@ -93,7 +93,7 @@ public class GraphicStateWriters:WriterTest
     [Fact]
     public async Task SetRenderingIntent()
     {
-        sut.SetRenderIntent(RenderingIntentName.Perceptual);
+        sut.SetRenderIntent(RenderIntentName.Perceptual);
         Assert.Equal("/Perceptual ri\n", await WrittenText());
     }
 

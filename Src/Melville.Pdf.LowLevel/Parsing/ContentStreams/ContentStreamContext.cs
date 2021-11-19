@@ -176,7 +176,7 @@ public class ContentStreamContext
                     arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.ri:
-                target.SetRenderIntent(NameAs<RenderingIntentName>());
+                target.SetRenderIntent(NameAs<RenderIntentName>());
                 break;
             case ContentStreamOperatorValue.s:
                 target.CloseAndStrokePath();
