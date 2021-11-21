@@ -7,14 +7,14 @@ using Pdf.KnownNamesGenerator.PostScriptOps;
 namespace Pdf.KnownNamesGenerator
 {
     [Generator]
-    public class KnownNamesGeneratorClass: ISourceGenerator
+    public class KnownNamesGeneratorClass: IIncrementalGenerator
     {
-        public void Initialize(GeneratorInitializationContext context)
+        public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            // do nothing
+            context.RegisterPostInitializationOutput(Generate);
         }
 
-        public void Execute(GeneratorExecutionContext context)
+        private void Generate(IncrementalGeneratorPostInitializationContext context)
         {
             context.AddSource("KnownNames.Generated.cs",
                 GenerateKnownNames.ClassText());
