@@ -13,7 +13,7 @@ public partial class LowLevelViewModel
     private IWaitingService? waiter;
     private readonly IPartParser parser;
 
-    public LowLevelViewModel(IPartParser? parser)
+    public LowLevelViewModel(IPartParser parser)
     {
         this.parser = parser;
     }

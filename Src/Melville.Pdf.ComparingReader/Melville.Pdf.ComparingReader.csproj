@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.5.37" />
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.5.38" />
     </ItemGroup>
 
     <ItemGroup>
