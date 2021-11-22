@@ -35,8 +35,6 @@ namespace Performance.Playground.Writers
                     s2 %= AdlerBase;
                 }
             }
-
-
             public uint GetHash() =>(uint) ((s2 << 16) | s1);
         }
     }

@@ -50,7 +50,7 @@ public class Adler32Computer
 
 public class ReadAdlerStream : SequentialReadFilterStream
 {
-    public Adler32Computer Computer { get; }= new Adler32Computer();
+    public Adler32Computer Computer { get; }= new();
     private readonly Stream source;
 
     public ReadAdlerStream(Stream source)

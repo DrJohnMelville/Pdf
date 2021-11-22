@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -59,26 +60,59 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         private void GenerateNameConstants(StringBuilder sb)
         {
             var allNames = ReadNames().ToList();
+            RenderPdfNameSubsets(sb, allNames);
+            RenderPdfNameDeclarations(sb, allNames);
+            RenderPdfNameKeyDeclarations(sb, allNames);
+        }
+
+        private static void RenderPdfNameSubsets(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
+        {
             foreach (var items in allNames.GroupBy(i => i.type))
             {
-                sb.AppendLine($"      //{items.Key}Names");
                 RenderPdfNameGroup(sb, items);
             }
-            RenderPdfNameDeclarations(sb, allNames);
         }
 
         private static void RenderPdfNameDeclarations(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
         {
             sb.AppendLine("      public static partial class KnownNames {");
-            foreach (var (value, name, _) in allNames
-                         .GroupBy(i => i.CSharpName).Select(i => i.First())
-                         .OrderBy(i=>i.CSharpName))
+            foreach (var (value, name, _) in UniquePdfNames(allNames))
             {
                 RenderPdfNameCreation(sb, name, value);
             }
 
             sb.AppendLine("          }");
         }
+        private static void RenderPdfNameKeyDeclarations(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
+        {
+            sb.AppendLine("      public static partial class KnownNameKeys {");
+            foreach (var (value, name, _) in UniquePdfNames(allNames))
+            {
+                sb.AppendLine($"        public const uint {name} = {AddlerForString(value)};");
+            }
+
+            sb.AppendLine("          }");
+        }
+
+        private static uint AddlerForString(string s)
+        {
+            // notice this is version of adler only works for strings < 5552 characters.  The general
+            // versionf of this algorithm is in Adler32Computer.
+            ulong s1 = 1;
+            ulong s2 = 0;
+            foreach (var character in s)
+            {
+                s1 += (ulong)(character & 0xFF);
+                s2 += s1;
+            }
+            
+            return (uint)((s1<<16)|s1);
+        }
+
+        private static IOrderedEnumerable<(string Value, string CSharpName, string type)> UniquePdfNames(List<(string Value, string CSharpName, string type)> allNames) =>
+            allNames
+                .GroupBy(i => i.CSharpName).Select(i => i.First())
+                .OrderBy(i=>i.CSharpName);
 
         private static void RenderPdfNameCreation(StringBuilder sb, string name, string value)
         {
