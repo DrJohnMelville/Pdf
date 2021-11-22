@@ -29,6 +29,8 @@ InlineImageField:DP
 InlineImageField:F
 InlineImageField:H
 InlineImageField:IM
+InlineImageField:I
+InlineImageField:W
 
 BuiltInFont:TimesRoman!Times-Roman
 BuiltInFont:Helvetica
@@ -66,7 +68,7 @@ InlineImageColorSpace:G
 InlineImageColorSpace:RGB
 InlineImageColorSpace:CMYK
 //fixthis need to share
-Pdf:I
+InlineImageColorSpace:I
 
 ResourceType:ExtGState
 ResourceType:ColorSpace

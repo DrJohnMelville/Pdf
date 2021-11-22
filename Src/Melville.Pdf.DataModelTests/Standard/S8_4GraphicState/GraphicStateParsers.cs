@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
 
@@ -95,9 +96,6 @@ public partial class GraphicStateParsers: ParserTest
     public Task ParseFlatnessTolerance() =>
             TestInput("27 i", i => i.SetFlatnessTolerance(27));
     [Fact]
-    public Task LoadGsDictionary()
-    {
-        var name = NameDirectory.Get("JdmState");
-        return TestInput("/JdmState gs", i => i.LoadGraphicStateDictionary(name));
-    }
+    public Task LoadGsDictionary() => 
+        TestInput("/JdmState gs", i => i.LoadGraphicStateDictionary(NameDirectory.Get("JdmState")));
 }

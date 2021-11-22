@@ -40,8 +40,8 @@ public static class PdfParserParts
                 {InlineImageFieldName.F, KnownNames.Filter},
                 {InlineImageFieldName.H, KnownNames.Height},
                 {InlineImageFieldName.IM, KnownNames.ImageMask},
-                {KnownNames.I, KnownNames.Interpolate},
-                {KnownNames.W, KnownNames.Width}
+                {InlineImageFieldName.I, KnownNames.Interpolate},
+                {InlineImageFieldName.W, KnownNames.Width}
             }), 
             new ExpandSynonymsParser(ContentStreamComposite,
                 new Dictionary<PdfObject, PdfObject>()
@@ -56,6 +56,6 @@ public static class PdfParserParts
                     {InlineImageColorSpaceName.G, ColorSpaceName.DeviceGray},
                     {InlineImageColorSpaceName.RGB, ColorSpaceName.DeviceRGB},
                     {InlineImageColorSpaceName.CMYK, ColorSpaceName.DeviceCMYK},
-                    {KnownNames.I, ColorSpaceName.Indexed},
+                    {InlineImageColorSpaceName.I, ColorSpaceName.Indexed},
                 }), PdfDictionaryParser.InlineImagePrefix);
 }

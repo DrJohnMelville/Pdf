@@ -58,34 +58,54 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
 
         private void GenerateNameConstants(StringBuilder sb)
         {
-            foreach (var items in ReadNames().GroupBy(i => i.type))
+            var allNames = ReadNames().ToList();
+            foreach (var items in allNames.GroupBy(i => i.type))
             {
                 sb.AppendLine($"      //{items.Key}Names");
-                if (items.Key != "Pdf")
-                {
-                    sb.AppendLine(
-                        @$"      public readonly struct {items.Key}Name 
+                RenderPdfNameGroup(sb, items);
+            }
+            RenderPdfNameDeclarations(sb, allNames);
+        }
+
+        private static void RenderPdfNameDeclarations(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
+        {
+            sb.AppendLine("      public static partial class KnownNames {");
+            foreach (var (value, name, _) in allNames
+                         .GroupBy(i => i.CSharpName).Select(i => i.First())
+                         .OrderBy(i=>i.CSharpName))
+            {
+                RenderPdfNameCreation(sb, name, value);
+            }
+
+            sb.AppendLine("          }");
+        }
+
+        private static void RenderPdfNameCreation(StringBuilder sb, string name, string value)
+        {
+            sb.Append($"        public static readonly PdfName ");
+            sb.Append(name);
+            sb.Append($" = NameDirectory.ForceAdd(new PdfName(");
+            ByteStreamWriter.WriteByteDecl(sb, value);
+        }
+
+        private static void RenderPdfNameGroup(StringBuilder sb, 
+            IGrouping<string, (string Value, string CSharpName, string type)> items)
+        {
+            if (items.Key != "Pdf")
+            {
+                sb.AppendLine(
+                    @$"      public readonly struct {items.Key}Name 
       {{
          private readonly PdfName name;
          internal {items.Key}Name(PdfName name){{ this.name = name;}}
          public static implicit operator PdfName({items.Key}Name wrapper) => wrapper.name; ");
-                    foreach (var (value, name,type) in items)
-                    {
-                        sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name});");
-                    }
-                    sb.AppendLine(
-                        "      }");
-                }
-                sb.AppendLine($"      public static partial class KnownNames {{");
                 foreach (var (value, name, type) in items)
                 {
-                    sb.Append($"        public static readonly PdfName ");
-                    sb.Append(name);
-                    sb.Append($" = NameDirectory.ForceAdd(new PdfName(");
-                    ByteStreamWriter.WriteByteDecl(sb, value);
+                    sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name});");
                 }
 
-                sb.AppendLine("          }");
+                sb.AppendLine(
+                    "      }");
             }
         }
 
