@@ -92,14 +92,14 @@ public static partial class PdfPageAttributes
     // without complaining -- so we just default to letter size peper.
     private static ValueTask<PdfRect?> GetBoxOrDefaultAsync<T>(T item, BoxName? boxType)
         where T : IHasPageAttributes =>
-        boxType == null ? new(UsLetterSizedBox<T>()): item.GetBoxAsync(boxType);
+        boxType.HasValue ? item.GetBoxAsync(boxType.Value): new(UsLetterSizedBox<T>());
 
     private static PdfRect UsLetterSizedBox<T>() where T : IHasPageAttributes => new(0, 0, 612, 792);
 
     private static BoxName? FallbackBox(BoxName boxType)
     {
-        if (boxType == KnownNames.MediaBox) return null;
-        if (boxType == KnownNames.CropBox) return KnownNames.MediaBox;
-        return KnownNames.CropBox;
+        if ((PdfName)boxType == KnownNames.MediaBox) return null;
+        if ((PdfName)boxType == KnownNames.CropBox) return BoxName.MediaBox;
+        return BoxName.CropBox;
     }
 }

@@ -176,7 +176,7 @@ public class ContentStreamContext
                     arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.ri:
-                target.SetRenderIntent(NameAs<RenderIntentName>());
+                target.SetRenderIntent(new RenderIntentName(arguments.NamaAt(0)));
                 break;
             case ContentStreamOperatorValue.s:
                 target.CloseAndStrokePath();
@@ -275,9 +275,6 @@ public class ContentStreamContext
         arguments.FillSpan(span);
         target.SetLineDashPattern(span[^1], span[..^1]);
     }
-
-    private T NameAs<T>(int pos = 0) where T : PdfName =>
-        arguments.NamaAt(pos) as T ?? throw new PdfParseException($"Pdf Name of subtype {typeof(T).Name} expectes");
 
     private ValueTask MarkedContentPoint() =>
         arguments.ObjectAt<PdfObject>(1) switch

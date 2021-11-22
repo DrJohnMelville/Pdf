@@ -18,24 +18,24 @@ public class FiltersGenerator : CreatePdfParser
             PdfPermission.None, KnownNames.Identity, KnownNames.Identity,
             new V4CfDictionary(KnownNames.V2, 128 / 8)));
 
-        await CreatePage(builder, "Rc4 Crypt Filter", KnownNames.Crypt,
+        await CreatePage(builder, "Rc4 Crypt Filter", FilterName.Crypt,
             new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
                 .WithItem(KnownNames.Name, KnownNames.StdCF)
                 .AsDictionary());
-        await CreatePage(builder, "Identity Crypt Filter", KnownNames.Crypt,
+        await CreatePage(builder, "Identity Crypt Filter", FilterName.Crypt,
             new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
                 .WithItem(KnownNames.Name, KnownNames.Identity)
                 .AsDictionary());
         await CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
-            KnownNames.RunLengthDecode);
-        await CreatePage(builder, "LZW -- LateChange" + RandomString(9270), KnownNames.LZWDecode,
+            FilterName.RunLengthDecode);
+        await CreatePage(builder, "LZW -- LateChange" + RandomString(9270), FilterName.LZWDecode,
             new DictionaryBuilder().WithItem(KnownNames.EarlyChange, new PdfInteger(0)).AsDictionary());
-        await CreatePage(builder, "LZW -- " + RandomString(9270), KnownNames.LZWDecode);
-        await CreatePage(builder, "Ascii Hex", KnownNames.ASCIIHexDecode);
-        await CreatePage(builder, "Ascii 85", KnownNames.ASCII85Decode);
-        await CreatePage(builder, "Flate Decode", KnownNames.FlateDecode);
+        await CreatePage(builder, "LZW -- " + RandomString(9270), FilterName.LZWDecode);
+        await CreatePage(builder, "Ascii Hex", FilterName.ASCIIHexDecode);
+        await CreatePage(builder, "Ascii 85", FilterName.ASCII85Decode);
+        await CreatePage(builder, "Flate Decode", FilterName.FlateDecode);
         await PredictionPage(builder, "Flate Decode With Tiff Predictor 2", 2);
         await PredictionPage(builder, "Flate Decode With Png Predictor 10", 10);
         await PredictionPage(builder, "Flate Decode With Png Predictor 11", 11);
@@ -60,7 +60,7 @@ public class FiltersGenerator : CreatePdfParser
             });
 
     private static ValueTask PredictionPage(PdfDocumentCreator builder, string text, int Predictor) =>
-        CreatePage(builder, text, KnownNames.FlateDecode,
+        CreatePage(builder, text, FilterName.FlateDecode,
             new DictionaryBuilder()
                 .WithItem(KnownNames.Colors, new PdfInteger(2))
                 .WithItem(KnownNames.Columns, new PdfInteger(5))

@@ -1,11 +1,22 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.Differencing;
 
 namespace Pdf.KnownNamesGenerator.KnownNames
 {
-    public static class GenerateKnownNames
+    public  class GenerateKnownNames
     {
-        public static string ClassText()
+        private string data;
+
+        public GenerateKnownNames(string data)
+        {
+            this.data = data;
+        }
+
+        public string ClassText()
         {
             return @"
 #nullable enable
@@ -20,7 +31,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
 }";
         }
 
-        private static string AllDecls()
+        private string AllDecls()
         {
             var sb = new StringBuilder();
             GenerateNameConstants(sb);
@@ -31,28 +42,46 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             return sb.ToString();
         }
 
-        private static void GenerateNameConstants(StringBuilder sb)
+        private static readonly Regex NameFinder = new(@"^\s*([^:\s]+)\:([^!\s]*)(?:\!([^\s]*))?",
+            RegexOptions.Multiline);
+
+        private (string Value, string CSharpName, string type)[] ReadNames() =>
+            NameFinder.Matches(data).OfType<Match>()
+                .Select(i => (
+                    Value: TryString(i.Groups[3].Value, i.Groups[2].Value), 
+                    CSharpName: i.Groups[2].Value,
+                    i.Groups[1].Value)).ToArray();
+
+        private string TryString(string value, string fallBack) =>
+            String.IsNullOrWhiteSpace(value) ? fallBack : value;
+        
+
+        private void GenerateNameConstants(StringBuilder sb)
         {
-            foreach (var items in NameDictionary.AddAllNames.GroupBy(i => i.type))
+            foreach (var items in ReadNames().GroupBy(i => i.type))
             {
                 sb.AppendLine($"      //{items.Key}Names");
                 if (items.Key != "Pdf")
                 {
                     sb.AppendLine(
-                        $"      public class {items.Key}Name: PdfName {{ internal {items.Key}Name(byte[] name):base(name){{ }} ");
-                    foreach (var (name, value,type) in items)
+                        @$"      public readonly struct {items.Key}Name 
+      {{
+         private readonly PdfName name;
+         internal {items.Key}Name(PdfName name){{ this.name = name;}}
+         public static implicit operator PdfName({items.Key}Name wrapper) => wrapper.name; ");
+                    foreach (var (value, name,type) in items)
                     {
-                        sb.AppendLine($"        public static {type}Name {name} => KnownNames.{name};");
+                        sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name});");
                     }
                     sb.AppendLine(
                         "      }");
                 }
                 sb.AppendLine($"      public static partial class KnownNames {{");
-                foreach (var (name, value, type) in items)
+                foreach (var (value, name, type) in items)
                 {
-                    sb.Append($"        public static readonly {type}Name ");
+                    sb.Append($"        public static readonly PdfName ");
                     sb.Append(name);
-                    sb.Append($" = NameDirectory.ForceAdd(new {type}Name(");
+                    sb.Append($" = NameDirectory.ForceAdd(new PdfName(");
                     ByteStreamWriter.WriteByteDecl(sb, value);
                 }
 
@@ -61,13 +90,13 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         }
 
 
-        private static void AddConstantsToDictionary(StringBuilder sb)
+        private void AddConstantsToDictionary(StringBuilder sb)
         {
             sb.AppendLine();
             sb.AppendLine("        public static void AddItemsToDict() ");
             sb.AppendLine("        {");
 
-            foreach (var (preferred, synonym, type) in NameDictionary.Synonyms)
+            foreach (var (preferred, synonym) in Synonyms())
             {
                 sb.Append("            NameDirectory.AddSynonym(");
                 sb.Append("KnownNames.");
@@ -80,5 +109,11 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             }
             sb.AppendLine("        }");
         }
+
+        private static readonly Regex synonymFinder = new Regex(
+            @"^\s*([^\=\>\s]+)\=\>\s*([^\s]+)", RegexOptions.Multiline);
+        private IEnumerable<(string, string)> Synonyms() =>
+            synonymFinder.Matches(data).OfType<Match>()
+                .Select(i => (i.Groups[2].Value, i.Groups[1].Value));
     }
 }

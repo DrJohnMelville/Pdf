@@ -47,8 +47,8 @@ public abstract class PageTreeNodeChildCreator
                 (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value)))
             .AsDictionary();
 
-    public void AddXrefObjectResource(PdfName name, PdfObject obj) =>
-        Resources[(KnownNames.XObject, name)] = obj;
+    public void AddResourceObject(ResourceTypeName resourceType, PdfName name, PdfObject obj) => 
+        Resources[(resourceType, name)] = obj;
 
     public void AddBox(BoxName name, in PdfRect rect) => MetaData.Add(name, rect.ToPdfArray);
 
