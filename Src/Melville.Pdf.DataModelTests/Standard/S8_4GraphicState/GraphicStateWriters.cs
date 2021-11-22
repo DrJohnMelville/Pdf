@@ -107,7 +107,7 @@ public class GraphicStateWriters:WriterTest
     [Fact]
     public async Task LoadGraphicStateDictionary()
     {
-        sut.LoadGraphicStateDictionary("JdmGState");
+        await sut.LoadGraphicStateDictionary("JdmGState");
         Assert.Equal("/JdmGState gs\n", await WrittenText());
     }
 }

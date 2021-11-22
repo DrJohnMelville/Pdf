@@ -29,6 +29,6 @@ public readonly struct PdfPage : IHasPageAttributes
         {
             PdfStream strm => await strm.StreamContentAsync(),
             PdfArray array => new PdfArrayConcatStream(array),
-            _ => throw new PdfParseException("Could not find content stream")
+            var x  => throw new PdfParseException("Could not find content stream")
         };
 }

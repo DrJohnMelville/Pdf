@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.Differencing;
 
 namespace Pdf.KnownNamesGenerator.KnownNames
 {
@@ -88,25 +86,27 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.AppendLine("      public static partial class KnownNameKeys {");
             foreach (var (value, name, _) in UniquePdfNames(allNames))
             {
-                sb.AppendLine($"        public const uint {name} = {AddlerForString(value)};");
+                sb.AppendLine($"        public const int {name} = {FnvForString(value)};");
             }
 
             sb.AppendLine("          }");
         }
 
-        private static uint AddlerForString(string s)
+        private const uint offsetBasis = 0x811c9dc5;
+        private const uint prime = 0x01000193;
+        private static int FnvForString(string s)
         {
-            // notice this is version of adler only works for strings < 5552 characters.  The general
-            // versionf of this algorithm is in Adler32Computer.
-            ulong s1 = 1;
-            ulong s2 = 0;
-            foreach (var character in s)
+            unchecked
             {
-                s1 += (ulong)(character & 0xFF);
-                s2 += s1;
+                var hash = offsetBasis;
+                foreach (var character in s)
+                {
+                    hash = (hash * prime) ^ (uint)(character & 0xFF);
+                }
+
+                return (int)hash;
+                
             }
-            
-            return (uint)((s1<<16)|s1);
         }
 
         private static IOrderedEnumerable<(string Value, string CSharpName, string type)> UniquePdfNames(List<(string Value, string CSharpName, string type)> allNames) =>
@@ -131,7 +131,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     @$"      public readonly struct {items.Key}Name 
       {{
          private readonly PdfName name;
-         internal {items.Key}Name(PdfName name){{ this.name = name;}}
+         public {items.Key}Name(PdfName name){{ this.name = name;}}
          public static implicit operator PdfName({items.Key}Name wrapper) => wrapper.name; ");
                 foreach (var (value, name, type) in items)
                 {

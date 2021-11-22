@@ -119,7 +119,7 @@ public class ContentStreamContext
                 target.SetNonstrokingGray(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.gs:
-                target.LoadGraphicStateDictionary(arguments.NamaAt(0));
+                await target.LoadGraphicStateDictionary(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.h:
                 target.ClosePath();

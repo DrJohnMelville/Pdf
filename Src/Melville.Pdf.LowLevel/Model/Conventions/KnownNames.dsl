@@ -78,15 +78,26 @@ ResourceType:XObject
 ResourceType:Font
 ResourceType:ProcSet
 
-//fixthis missing some
 GraphicStateParameter:LW
 GraphicStateParameter:LC
 GraphicStateParameter:LJ
 GraphicStateParameter:ML
+GraphicStateParameter:D
 GraphicStateParameter:RI
 GraphicStateParameter:OP
 GraphicStateParameter:op
 GraphicStateParameter:OPM
+GraphicStateParameter:Font
+GraphicStateParameter:BG
+GraphicStateParameter:BG2
+GraphicStateParameter:UCB
+GraphicStateParameter:UCR
+GraphicStateParameter:UCR2
+GraphicStateParameter:TR
+GraphicStateParameter:TR2
+GraphicStateParameter:HT
+GraphicStateParameter:FL
+GraphicStateParameter:SM
 
 
 Pdf:AC

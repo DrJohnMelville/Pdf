@@ -51,5 +51,5 @@ public static class PdfDictionaryOperations
     public static bool IsEmptyObject(this PdfObject value) =>
         value == PdfTokenValues.Null ||
         value is PdfArray { Count: 0 } ||
-        value is PdfDictionary { Count: 0 };
+        value is PdfDictionary { Count: 0 } and not PdfStream;
 }

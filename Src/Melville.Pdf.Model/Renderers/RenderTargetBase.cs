@@ -12,7 +12,7 @@ namespace Melville.Pdf.Model.Renderers;
 
 public interface IRenderTarget
 {
-    IStateChangingOperations GrapicsStateChange { get; }
+    IGraphiscState GrapicsStateChange { get; }
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
     void StrokePath();
@@ -25,7 +25,7 @@ public abstract class RenderTargetBase<T>
     protected GraphicsStateStack State { get; }
     protected PdfPage Page { get; }
 
-    public IStateChangingOperations GrapicsStateChange => State;
+    public IGraphiscState GrapicsStateChange => State;
 
     protected RenderTargetBase(T target, GraphicsStateStack state, PdfPage page)
     {

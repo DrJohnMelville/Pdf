@@ -63,8 +63,11 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetRenderIntent(RenderIntentName intent) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.ri, intent);
 
-    public void LoadGraphicStateDictionary(PdfName dictionaryName) =>
+    public ValueTask LoadGraphicStateDictionary(PdfName dictionaryName)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.gs, dictionaryName);
+        return ValueTask.CompletedTask;
+    }
 
     public void SetFont(PdfName font, double size)
     {

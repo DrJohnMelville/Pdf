@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -8,4 +10,8 @@ public interface IContentStreamOperations:
     ITextObjectOperations, ITextBlockOperations, IMarkedContentCSOperations, ICompatibilityOperations,
     IFontMetricsOperations
 {
+    /// <summary>
+    /// Content stream operator gs
+    /// </summary>
+    ValueTask LoadGraphicStateDictionary(PdfName dictionaryName);
 }

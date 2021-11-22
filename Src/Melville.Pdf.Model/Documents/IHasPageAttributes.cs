@@ -58,10 +58,10 @@ public static partial class PdfPageAttributes
         return await InheritedResourceItem(item.LowLevel, KnownNames.ProcSet).OfType<PdfArray>()
             .FirstOrDefaultAsync();
     }
-
-    public static ValueTask<PdfObject?> GetXrefObjectAsync<T>(this T item, PdfName name)
-        where T : IHasPageAttributes =>
-        TwoLevelResourceDictionaryAccess(item.LowLevel, KnownNames.XObject, name);
+    
+    public static ValueTask<PdfObject?> GetResourceObject<T>(
+        this T item, ResourceTypeName resourceType, PdfName name) where T : IHasPageAttributes =>
+        TwoLevelResourceDictionaryAccess(item.LowLevel, resourceType, name);
 
     private static ValueTask<PdfObject?> TwoLevelResourceDictionaryAccess(
         PdfDictionary item, PdfName subDictionaryName, PdfName name) =>

@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
-
-public enum TextRendering
-{
-    Fill = 0,
-    Stroke = 1,
-    FillAndStroke = 2,
-    Invisible = 3,
-    FillAndClip = 4,
-    StrokeAndClip = 5
-}
 
 public interface IStateChangingOperations
 {
@@ -71,12 +62,6 @@ public interface IStateChangingOperations
     /// </summary>
     /// <param name="flatness"></param>
     void SetFlatnessTolerance(double flatness);
-
-    /// <summary>
-    /// Content stream operator gs
-    /// </summary>
-    void LoadGraphicStateDictionary(PdfName dictionaryName);
-
     #endregion
 
     #region TextAttribute
@@ -119,6 +104,11 @@ public interface IStateChangingOperations
     #endregion
 }
 
+public interface IGraphiscState : IStateChangingOperations
+{
+    ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
+}
+
 public static class StateChangingCSOperationsHelpers
 {
 
@@ -126,7 +116,7 @@ public static class StateChangingCSOperationsHelpers
     //intellisense that we might want to use a built in font name for this method
     public static void SetFont(
         this IStateChangingOperations target, BuiltInFontName fontName, double size) =>
-        target.SetFont((PdfName)fontName, size);
+        target.SetFont(fontName, size);
     
     public static void SetLineDashPattern(
         this IStateChangingOperations target, double dashPhase = 0, params double[] dashArray) =>

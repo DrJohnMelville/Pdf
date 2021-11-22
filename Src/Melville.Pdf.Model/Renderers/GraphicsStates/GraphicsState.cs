@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -7,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public partial class GraphicsState: IStateChangingOperations
+public partial class GraphicsState: IGraphiscState
 {
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("double", "LineWidth", "1.0")]
@@ -42,6 +44,19 @@ public partial class GraphicsState: IStateChangingOperations
         // we duplicate the graphicsstate, which we expect to happen frequently.
         DashArray = dashArray.ToArray(); 
     }
+    
+    private async ValueTask SetLineDashPattern(PdfArray entryValue)
+    {
+        DashPhase = (await entryValue.GetAsync<PdfNumber>(1)).DoubleValue;
+        var pattern = await entryValue.GetAsync<PdfArray>(0);
+        var patternNums = new double[pattern.Count];
+        for (int i = 0; i < pattern.Count; i++)
+        {
+            patternNums[i] = (await pattern.GetAsync<PdfNumber>(i)).DoubleValue;
+        }
+        DashArray = patternNums;
+    }
+
 
     public void SetRenderIntent(RenderIntentName intent) => RenderIntent = intent;
 
@@ -49,9 +64,42 @@ public partial class GraphicsState: IStateChangingOperations
     // we will preserve the property.
     public void SetFlatnessTolerance(double flatness) => FlatnessTolerance = flatness;
     
-    public void LoadGraphicStateDictionary(PdfName dictionaryName)
+    public async ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary)
     {
-        throw new NotImplementedException();
+        foreach (var entry in dictionary.RawItems)
+        {
+            var hashCode = entry.Key.GetHashCode();
+            switch (hashCode)
+            {
+                case KnownNameKeys.LW:
+                    SetLineWidth((await EntryValue<PdfNumber>(entry)).DoubleValue);
+                    break;
+                case KnownNameKeys.FL:
+                    SetFlatnessTolerance((await EntryValue<PdfNumber>(entry)).DoubleValue);
+                    break;
+                case KnownNameKeys.LC:
+                    SetLineCap((LineCap)(await EntryValue<PdfNumber>(entry)).IntValue);
+                    break;
+                case KnownNameKeys.LJ:
+                    SetLineJoinStyle((LineJoinStyle)(await EntryValue<PdfNumber>(entry)).IntValue);
+                    break;
+                case KnownNameKeys.ML:
+                    SetMiterLimit((await EntryValue<PdfNumber>(entry)).DoubleValue);
+                    break;
+                case KnownNameKeys.D:
+                    await SetLineDashPattern(await EntryValue<PdfArray>(entry));
+                    break;
+                case KnownNameKeys.RI:
+                    SetRenderIntent(new RenderIntentName(await EntryValue<PdfName>(entry)));
+                    break;
+            }
+        }
+    }
+    
+    private static async ValueTask<T> EntryValue<T>(KeyValuePair<PdfName, PdfObject> entry)
+        where T:PdfObject
+    {
+        return (T) await entry.Value.DirectValueAsync();
     }
 
     public void SetCharSpace(double value)

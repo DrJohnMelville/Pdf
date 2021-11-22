@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public partial class GraphicsStateStack: IStateChangingOperations
+public partial class GraphicsStateStack: IGraphiscState
 {
     private readonly Stack<GraphicsState> states;
     public GraphicsState Current() => states.Peek();
@@ -25,5 +25,5 @@ public partial class GraphicsStateStack: IStateChangingOperations
     public void RestoreGraphicsState() => states.Pop();
 
     [DelegateTo]
-    private IStateChangingOperations topState => states.Peek();
+    private IGraphiscState topState => states.Peek();
 }
