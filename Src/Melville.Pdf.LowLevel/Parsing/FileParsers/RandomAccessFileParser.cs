@@ -13,11 +13,9 @@ public static class RandomAccessFileParser
         ParsingFileOwner owner, int fileTrailerSizeHint = 30)
     {
         byte major, minor;
-        using (var context = await owner.RentReader(0))
-        {
-            owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffset(context.Reader));
-            (major, minor) = await PdfHeaderParser.ParseHeadder(context.Reader);
-        }
+        var context = await owner.RentReader(0);
+        owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffset(context.Reader));
+        (major, minor) = await PdfHeaderParser.ParseHeadder(context.Reader);
 
         var xrefPosition = await FileTrailerLocater.Search(owner, fileTrailerSizeHint);
         var dictionary = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition);

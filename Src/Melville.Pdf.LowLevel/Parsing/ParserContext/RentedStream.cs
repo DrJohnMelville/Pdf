@@ -8,6 +8,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 public partial class ParsingFileOwner
 {
+    #warning -- see if I can fold this into MultiplexedReader
     public partial class RentedStream : Stream
     {
         [DelegateTo()]
@@ -79,10 +80,6 @@ public partial class ParsingFileOwner
             Close();
             return ValueTask.CompletedTask;
         }
-        protected override void Dispose(bool disposing) => Close();
-        public override void Close() => owner.ReturnReader(this);
-            
-
         #endregion
 
         #region Seek, Position and Length

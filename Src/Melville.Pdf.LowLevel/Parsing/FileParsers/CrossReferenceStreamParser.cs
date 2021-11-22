@@ -17,10 +17,8 @@ public static class CrossReferenceStreamParser
     public static async Task<PdfDictionary> Read(ParsingFileOwner owner, long offset)
     {
         PdfObject? xRefStreamAsPdfObject ;
-        using (var context = await owner.RentReader(offset))
-        {
-            xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context);
-        }
+        var context = await owner.RentReader(offset);
+        xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context);
         if (!(xRefStreamAsPdfObject is PdfStream crossRefPdfStream))
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
         await using (var decodedStream = await crossRefPdfStream.StreamContentAsync())

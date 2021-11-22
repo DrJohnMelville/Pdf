@@ -33,7 +33,7 @@ public static class IndirectObjectResolverOperations
         owner.IndirectResolver.AddLocationHint(number, (int)generation,
             async () =>
             {
-                using var rentedReader = await owner.RentReader(offset, number, (int)generation);
+                var rentedReader = await owner.RentReader(offset, number, (int)generation);
                 return await rentedReader.RootObjectParser.ParseAsync(rentedReader);
             });
     }

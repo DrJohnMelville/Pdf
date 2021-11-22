@@ -37,31 +37,7 @@ public class ParsingSourceTest
 
         return reader.Position;
     }
-
-    [Fact]
-    public async Task CannotMakeTwoReaders()
-    {
-        await owner.RentReader(12);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentReader(33).AsTask());
-    }
-    [Fact]
-    public async Task CannotMakeReaderAndStream()
-    {
-        await owner.RentReader(12);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentStream(33,22).AsTask());
-    }
-    [Fact]
-    public async Task CannotMakeStreamAndReader()
-    {
-        await owner.RentStream(12,33);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentReader(33).AsTask());
-    }
-    [Fact]
-    public async Task CannotMakeTwoStreams()
-    {
-        await owner.RentStream(12,22);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => owner.RentStream(33,22).AsTask());
-    }
+    
     [Fact]
     public async Task ReadFiveBytes()
     {
@@ -75,8 +51,8 @@ public class ParsingSourceTest
     [Fact]
     public async Task ReadThenJump()
     {
-        using (var sut = await owner.RentReader(0))
         {
+            var sut = await owner.RentReader(0);
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
             Assert.Equal(0, sut.Reader.GlobalPosition);
@@ -84,8 +60,8 @@ public class ParsingSourceTest
             Assert.Equal(5, sut.Reader.GlobalPosition);
         }
 
-        using (var sut = await owner.RentReader(45))
         {
+            var sut = await owner.RentReader(45);
             var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
             sut.Reader.AdvanceTo( sp);
