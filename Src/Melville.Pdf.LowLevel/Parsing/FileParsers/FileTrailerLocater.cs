@@ -20,7 +20,7 @@ public static class FileTrailerLocater
         while (true)
         {
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
-            using var context = await source.RentReader(start);
+            var context = await source.RentReader(start);
             var reader = context.Reader;
             while (SearchForS(await reader.ReadAsync(), reader, end, out var foundPos))
             {

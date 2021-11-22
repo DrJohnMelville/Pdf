@@ -17,11 +17,9 @@ public static class PdfTrailerParser
     private static async Task<PdfDictionary> XrefAndTrailer(ParsingFileOwner source, long xrefPosition)
     {
         PdfDictionary? trailerDictionary;
-            
-        using (var context = await source.RentReader(xrefPosition))
-        {
-            trailerDictionary = await ReadSingleRefTrailerBlock(context);
-        }
+
+        var context = await source.RentReader(xrefPosition);
+        trailerDictionary = await ReadSingleRefTrailerBlock(context);
 
         if (trailerDictionary != null)
         {

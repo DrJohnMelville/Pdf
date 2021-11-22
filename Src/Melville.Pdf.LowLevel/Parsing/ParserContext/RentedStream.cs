@@ -1,4 +1,6 @@
-﻿using System;
+﻿  \
+  
+  using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,15 +14,14 @@ public partial class ParsingFileOwner
     {
         [DelegateTo()]
         private readonly Stream baseStream;
-        private readonly ParsingFileOwner owner;
+
         private readonly long basePosition;
         private readonly long length;
 
-        public RentedStream(Stream baseStream, long length, ParsingFileOwner owner)
+        public RentedStream(Stream baseStream, long length)
         {
             this.baseStream = baseStream;
             this.length = length;
-            this.owner = owner;
             basePosition = baseStream.Position;
         }
 
@@ -79,10 +80,6 @@ public partial class ParsingFileOwner
             Close();
             return ValueTask.CompletedTask;
         }
-        protected override void Dispose(bool disposing) => Close();
-        public override void Close() => owner.ReturnReader(this);
-            
-
         #endregion
 
         #region Seek, Position and Length

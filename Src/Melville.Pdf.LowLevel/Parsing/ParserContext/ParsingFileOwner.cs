@@ -1,21 +1,19 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Encryption;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.Decryptors;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext.MultiplexedStreams;
 using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.EncryptingParsingReader;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 public partial class ParsingFileOwner
 {
-    private readonly Stream source;
+    private readonly MultiplexedStream source;
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
     public IIndirectObjectResolver IndirectResolver { get; }
@@ -25,30 +23,27 @@ public partial class ParsingFileOwner
     public ParsingFileOwner(Stream source, IPasswordSource? passwordSource = null,
         IIndirectObjectResolver? indirectResolver = null)
     {
-        this.source = source;
+        this.source = new MultiplexedStream(source);
         this.passwordSource = passwordSource ?? new NullPasswordSource();
         IndirectResolver = indirectResolver ?? new IndirectObjectResolver();
         if (!source.CanSeek) throw new PdfParseException("PDF Parsing requires a seekable stream");
     }
-
-    private object? currentReader = null;
-
+    
     public void SetPreheaderOffset(long offset) => preHeaderOffset = offset;
-    private void SeekToRentedOrigin(long offset)
-    {
-        // we may eventually want a multithreaed version of this so we can load multiple pages on different
-        // threads
-        if (currentReader != null) throw new InvalidOperationException("May only create one reader at a time");
-        source.Seek(offset + preHeaderOffset, SeekOrigin.Begin);
-    }
+
+    private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
     public ValueTask<IParsingReader> RentReader(long offset, int objectNumber=-1, int generation = -1)
     {
-        SeekToRentedOrigin(offset);
-        var reader = ParsingReaderForStream(source, offset);
-        currentReader = reader;
+        var reader = ParsingReaderForStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(offset)), offset);
         return new ValueTask<IParsingReader>(TryWrapWithDecryptor(objectNumber, generation, reader));
             
+    }
+
+    public ValueTask<Stream> RentStream(long position, long length)
+    {
+        var ret = new RentedStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(position)), length);
+        return new ValueTask<Stream>(ret);
     }
 
     private IParsingReader TryWrapWithDecryptor(int objectNumber, int generation, IParsingReader reader)
@@ -62,21 +57,8 @@ public partial class ParsingFileOwner
     public IParsingReader ParsingReaderForStream(Stream s, long position) =>
         new ParsingReader(this, PipeReader.Create(s, pipeOptions), position);
 
-    public ValueTask<Stream> RentStream(long position, long length)
-    {
-        SeekToRentedOrigin(position);
-        var ret = new RentedStream(source, length, this);
-        currentReader = ret;
-        return new ValueTask<Stream>(ret);
-    }
-
     private static readonly StreamPipeReaderOptions pipeOptions = new(leaveOpen: true);
-
-    public void ReturnReader(object item)
-    {
-        if (item == currentReader) currentReader = null;
-    }
-
+    
     public async ValueTask InitializeDecryption(PdfDictionary trailerDictionary)
     {
         if (AlreadyInitializedDecryption()) return;

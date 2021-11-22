@@ -20,7 +20,7 @@ public static class TestParser
 
     public static async Task<PdfObject> ParseObjectAsync(this ParsingFileOwner source, long position = 0)
     {
-        using var reader = await source.RentReader(position);
+        var reader = await source.RentReader(position);
         return await PdfParserParts.Composite.ParseAsync(reader);
     }
 
