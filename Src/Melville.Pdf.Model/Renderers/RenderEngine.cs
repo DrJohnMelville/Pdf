@@ -90,7 +90,11 @@ public partial class RenderEngine: IContentStreamOperations
 
     public void Rectangle(double x, double y, double width, double height)
     {
-        throw new NotImplementedException();
+        target.MoveTo(x,y);
+        target.LineTo(x+width,y);
+        target.LineTo(x+width,y+height);
+        target.LineTo(x,y+height);
+        target.ClosePath();
     }
 
     public void StrokePath() => target.StrokePath();

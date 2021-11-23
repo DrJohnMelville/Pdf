@@ -40,3 +40,5 @@ RenderingTest.cs_wpf-RestrictedBezier|1413146246
 RenderingTest.cs_Skia-RestrictedBezier|3818975670
 RenderingTest.cs_wpf-ClosedPath|2332488482
 RenderingTest.cs_Skia-ClosedPath|4265236402
+RenderingTest.cs_wpf-Rectangle|629940930
+RenderingTest.cs_Skia-Rectangle|118517860
