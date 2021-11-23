@@ -8,6 +8,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 public partial class ParsingFileOwner
 {
+    #warning -- see if I can fold this into MultiplexedReader
     public partial class RentedStream : Stream
     {
         [DelegateTo()]
