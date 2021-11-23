@@ -27,17 +27,27 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 
     void IRenderTarget.LineTo(double x, double y) => CurrentPath.LineTo((float)x, (float)y);
 
+    void IRenderTarget.ClosePath()
+    {
+        CurrentPath.Close();
+    }
+
+    void IRenderTarget.CurveTo(double control1X, double control1Y, double control2X, double control2Y,
+        double finalX, double finalY) =>
+        CurrentPath.CubicTo(
+            (float)control1X, (float)control1Y, (float)control2X, (float)control2Y, (float)finalX, (float)finalY);
+
+    #endregion
+
+    #region PathDrawing
     void IRenderTarget.StrokePath()
     {
         Target.SetMatrix(State.Current().Transform());
         Target.DrawPath(CurrentPath, State.Current().Pen());
-        ((IRenderTarget)this).ClearPath();
+        ((IRenderTarget)this).EndPathWithNoOp();
     }
 
-    void IRenderTarget.ClearPath()
-    {
-        currentPath = null;
-    }
+    void IRenderTarget.EndPathWithNoOp() => currentPath = null;
 
     #endregion
 }

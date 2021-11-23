@@ -32,3 +32,11 @@ RenderingTest.cs_Skia-EndCaps|1722909896
 RenderingTest.cs_Skia-LineJoin|2740546776
 RenderingTest.cs_Skia-LineWidths|2510735896
 RenderingTest.cs_Skia-MiterLimit|3703859452
+RenderingTest.cs_wpf-GraphicsStateDictionary|2186937026
+RenderingTest.cs_wpf-GeneralBezier|1510486423
+RenderingTest.cs_Skia-GraphicsStateDictionary|725956146
+RenderingTest.cs_Skia-GeneralBezier|1477577509
+RenderingTest.cs_wpf-RestrictedBezier|1413146246
+RenderingTest.cs_Skia-RestrictedBezier|3818975670
+RenderingTest.cs_wpf-ClosedPath|2332488482
+RenderingTest.cs_Skia-ClosedPath|4265236402

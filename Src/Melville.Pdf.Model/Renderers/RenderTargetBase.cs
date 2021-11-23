@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Wrappers;
@@ -15,8 +16,11 @@ public interface IRenderTarget
     IGraphiscState GrapicsStateChange { get; }
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
+    void CurveTo(double control1X, double control1Y, double control2X, double control2Y, 
+        double finalX, double finalY);
+    void ClosePath();
     void StrokePath();
-    void ClearPath();
+    void EndPathWithNoOp();
 }
 
 public abstract class RenderTargetBase<T>

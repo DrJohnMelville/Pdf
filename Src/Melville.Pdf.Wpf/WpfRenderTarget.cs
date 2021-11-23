@@ -11,10 +11,6 @@ namespace Melville.Pdf.Wpf;
 
 public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 {
-    //path building
-    private PathGeometry? geometry = null;
-    private PathFigure? figure = null;
-    private Point startPoint;
 
 
     public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
@@ -32,6 +28,10 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
     }
 
     #region Path Building
+    //path building
+    private PathGeometry? geometry = null;
+    private PathFigure? figure = null;
+    private Point startPoint;
 
 
     private PathGeometry CurrentGeometry() => geometry ??= new PathGeometry();
@@ -54,7 +54,15 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
     void IRenderTarget.LineTo(double x, double y) => 
         CurrentFigure().Segments.Add(new LineSegment(new Point(x,y), true));
 
-    
+    void IRenderTarget.CurveTo(double control1X, double control1Y, double control2X, double control2Y,
+        double finalX, double finalY) => CurrentFigure().Segments.Add(
+        new BezierSegment(
+            new Point(control1X, control1Y), new Point(control2X, control2Y), new Point(finalX, finalY), true));
+
+    void IRenderTarget.ClosePath()
+    {
+        CurrentFigure().IsClosed = true;
+    }
     #endregion
 
     #region Path Painting
@@ -63,11 +71,11 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
     {
         Target.PushTransform(State.Current().Transform()); 
         Target.DrawGeometry(null, State.Current().Pen(), geometry);
-        ((IRenderTarget) this).ClearPath();
+        ((IRenderTarget) this).EndPathWithNoOp();
         Target.Pop(); // transform
     }
 
-    void IRenderTarget.ClearPath()
+    void IRenderTarget.EndPathWithNoOp()
     {
         geometry = null;
         figure = null;
