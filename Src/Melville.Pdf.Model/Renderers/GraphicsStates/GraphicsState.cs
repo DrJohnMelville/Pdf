@@ -6,6 +6,7 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -20,6 +21,9 @@ public partial class GraphicsState: IGraphiscState
     [MacroItem("double", "FlatnessTolerance", "0.0")]
     [MacroItem("double[]", "DashArray", "Array.Empty<double>()")]
     [MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric")]
+    [MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance")]
+    [MacroItem("DeviceColor", "StrokeColor", "DeviceColor.Black")]
+    [MacroItem("DeviceColor", "FillColor", "DeviceColor.Black")]
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
     public void SaveGraphicsState() { }
