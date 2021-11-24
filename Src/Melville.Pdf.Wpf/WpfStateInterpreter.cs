@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
@@ -18,9 +19,17 @@ public static class WpfStateInterpreter
             DashStyle = ComputeDashStyle(state),
             LineJoin = ComputeLineJoin(state.LineJoinStyle),
             MiterLimit = state.MiterLimit,
+            Brush = state.StrokeColor.AsSolidBrush()
         };
         return pen;
     }
+
+    public static Brush AsSolidBrush(in this DeviceColor dc) => new SolidColorBrush(dc.AsWpfColor());
+
+    private static Color AsWpfColor(in this DeviceColor dc) => 
+        Color.FromRgb(dc.RedByte, dc.BlueByte, dc.GreenByte);
+
+    private static byte MapToByte(double value) => (byte)(255*value);
 
     private static PenLineJoin ComputeLineJoin(LineJoinStyle joinStyle) => joinStyle switch
     {

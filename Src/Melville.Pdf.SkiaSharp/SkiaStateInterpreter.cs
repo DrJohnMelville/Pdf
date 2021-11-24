@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
@@ -10,7 +11,7 @@ public static class SkiaStateInterpreter
         var paint = new SKPaint()
         {
             Style = SKPaintStyle.Stroke,
-            Color = SKColors.Black,
+            Color = state.StrokeColor.AsSkColor(),
             StrokeWidth = (float)state.LineWidth,
             StrokeCap = StrokeCap(state.LineCap),
             StrokeJoin = CreateStrokeJoin(state.LineJoinStyle),
@@ -19,6 +20,9 @@ public static class SkiaStateInterpreter
         SetDashState(state, paint);
         return paint;
     }
+
+    public static SKColor AsSkColor(in this DeviceColor dc) => 
+        new(dc.RedByte, dc.GreenByte, dc.BlueByte);
 
     //By coincidence these two enums are equivilent, so a simple cast works.
     private static SKStrokeJoin CreateStrokeJoin(LineJoinStyle joinStyle) => (SKStrokeJoin)joinStyle;

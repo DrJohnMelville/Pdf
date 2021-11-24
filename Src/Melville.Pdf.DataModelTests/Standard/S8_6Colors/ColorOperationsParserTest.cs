@@ -53,11 +53,12 @@ public partial class ColorOperationsParserTest: ParserTest
             this.expectedName = expectedName;
         }
 
-        public void SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+        public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
         {
             Assert.Equal(expectedName, patternName);
             Assert.Equal(new double[]{1,2,3}, colors.ToArray());
             SetCalled();
+            return ValueTask.CompletedTask;
         }
     }
     [Fact]
@@ -78,11 +79,12 @@ public partial class ColorOperationsParserTest: ParserTest
             this.expectedName = expectedName;
         }
 
-        public void SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+        public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
         {
             Assert.Equal(expectedName, patternName);
             Assert.Equal(new double[]{1,2,3}, colors.ToArray());
             SetCalled();
+            return ValueTask.CompletedTask;
         }
     }
     [Fact]

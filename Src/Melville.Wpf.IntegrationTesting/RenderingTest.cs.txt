@@ -42,3 +42,7 @@ RenderingTest.cs_wpf-ClosedPath|2332488482
 RenderingTest.cs_Skia-ClosedPath|4265236402
 RenderingTest.cs_wpf-Rectangle|629940930
 RenderingTest.cs_Skia-Rectangle|118517860
+RenderingTest.cs_wpf-DeviceGray|1701406008
+RenderingTest.cs_Skia-DeviceGray|1436802409
+RenderingTest.cs_wpf-DeviceRGB|1361613820
+RenderingTest.cs_Skia-DeviceRGB|487708149

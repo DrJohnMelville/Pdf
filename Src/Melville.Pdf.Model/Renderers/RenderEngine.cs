@@ -6,6 +6,8 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
 
@@ -18,9 +20,7 @@ public partial class RenderEngine: IContentStreamOperations
         this.page = page;
         this.target = target;
     }
-
-    [DelegateTo]
-    private IColorOperations Color => throw new NotImplementedException("Color not implemented");
+    
     [DelegateTo]
     private ITextObjectOperations TextObject => throw new NotImplementedException("Text Object not implemented");
     [DelegateTo]
@@ -151,6 +151,60 @@ public partial class RenderEngine: IContentStreamOperations
     }
 
     public ValueTask DoAsync(PdfStream inlineImage)
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion
+
+    #region Color Implementation
+    
+    public async ValueTask SetStrokingColorSpace(PdfName colorSpace) =>
+        target.GrapicsStateChange.SetStrokeColorSpace(
+            await ColorSpaceFactory.ParseColorSpace(colorSpace, page));
+
+    public async ValueTask SetNonstrokingColorSpace(PdfName colorSpace) =>
+        target.GrapicsStateChange.SetNonstrokeColorSpace(
+            await ColorSpaceFactory.ParseColorSpace(colorSpace, page));
+    
+//    private ValueTask<(IColorSpace, DeviceColor)> SetNamespace(PdfName ns)
+
+    public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetStrokeGray(double grayLevel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetStrokeRGB(double red, double green, double blue)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetNonstrokingGray(double grayLevel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetNonstrokingRGB(double red, double green, double blue)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
     {
         throw new NotImplementedException();
     }

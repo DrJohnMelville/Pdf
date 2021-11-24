@@ -70,10 +70,10 @@ public class ContentStreamContext
                     arguments.FloatAt(4), arguments.FloatAt(5)));
                 break;
             case ContentStreamOperatorValue.CS:
-                target.SetStrokingColorSpace(arguments.NamaAt(0));
+                await target.SetStrokingColorSpace(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.cs:
-                target.SetNonstrokingColorSpace(arguments.NamaAt(0));
+                await target.SetNonstrokingColorSpace(arguments.NamaAt(0));
                 break;
             case ContentStreamOperatorValue.d:
                 SetLineDashPattern();
@@ -191,10 +191,10 @@ public class ContentStreamContext
                 SetStrokingColor();
                 break;
             case ContentStreamOperatorValue.SCN:
-                SetStrokingColorExtended();
+                await SetStrokingColorExtended();
                 break;
             case ContentStreamOperatorValue.scn:
-                SetNonstrokingColorExtended();
+                await SetNonstrokingColorExtended();
                 break;
             case ContentStreamOperatorValue.sh:
                 break;
@@ -305,20 +305,22 @@ public class ContentStreamContext
         return (argsCount, name);
     }
 
-    private void SetNonstrokingColorExtended()
+    private ValueTask SetNonstrokingColorExtended()
     {
         var (argsCount, name) = ExtendedSetColorParams();
-        Span<double> span = stackalloc double[argsCount];
+        // have to allocate here because the last call could be async
+        var span = new double[argsCount];
         arguments.FillSpan(span);
-        target.SetNonstrokingColorExtended(name, span);
+        return target.SetNonstrokingColorExtended(name, span);
     }
 
-    private void SetStrokingColorExtended()
+    private ValueTask SetStrokingColorExtended()
     {
         var (argsCount, name) = ExtendedSetColorParams();
-        Span<double> span = stackalloc double[argsCount];
+        // have to allocate here because the last call could be async
+        var span = new double[argsCount];
         arguments.FillSpan(span);
-        target.SetStrokeColorExtended(name, span);
+        return target.SetStrokeColorExtended(name, span);
     }
 
     private void SetStrokingColor()

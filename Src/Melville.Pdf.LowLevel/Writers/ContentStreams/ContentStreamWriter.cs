@@ -125,30 +125,38 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     #region Color Operations
 
-    public void SetStrokingColorSpace(PdfName colorSpace) => 
+    public ValueTask SetStrokingColorSpace(PdfName colorSpace)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.CS, colorSpace);
+        return ValueTask.CompletedTask;
+    }
 
-    public void SetNonstrokingColorSpace(PdfName colorSpace) => 
+    public ValueTask SetNonstrokingColorSpace(PdfName colorSpace)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.cs, colorSpace);
-    
+        return ValueTask.CompletedTask;
+    }
+
     public void SetStrokeColor(in ReadOnlySpan<double> components) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.SC, components);
 
-    public void SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);
         destPipe.WriteOperator(ContentStreamOperatorNames.SCN);
+        return ValueTask.CompletedTask;
     }
 
     public void SetNonstrokingColor(in ReadOnlySpan<double> components) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.sc, components);
 
-    public void SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);
         destPipe.WriteOperator(ContentStreamOperatorNames.scn);
+        return ValueTask.CompletedTask;
     }
 
     public void SetStrokeGray(double grayLevel) =>

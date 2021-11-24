@@ -6,9 +6,17 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+// needed in rendering code.
 using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
+
+public interface IGraphiscState : IStateChangingOperations
+{
+    ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
+    void SetStrokeColorSpace(IColorSpace colorSpace);
+    void SetNonstrokeColorSpace(IColorSpace colorSpace);
+}
 
 public partial class GraphicsState: IGraphiscState
 {
@@ -22,8 +30,9 @@ public partial class GraphicsState: IGraphiscState
     [MacroItem("double[]", "DashArray", "Array.Empty<double>()")]
     [MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric")]
     [MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance")]
+    [MacroItem("IColorSpace", "NonstrokeColorSpace", "DeviceGray.Instance")]
     [MacroItem("DeviceColor", "StrokeColor", "DeviceColor.Black")]
-    [MacroItem("DeviceColor", "FillColor", "DeviceColor.Black")]
+    [MacroItem("DeviceColor", "NonstrokeColor", "DeviceColor.Black")]
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
     public void SaveGraphicsState() { }
@@ -35,7 +44,9 @@ public partial class GraphicsState: IGraphiscState
     }
 
     public Vector2 ApplyCurrentTransform(in Vector2 point) => Vector2.Transform(point, TransformMatrix);
-    
+
+    #region Drawing
+
     public void SetLineWidth(double width) => LineWidth = width;
     public void SetLineCap(LineCap cap) => LineCap = cap;
     public void SetLineJoinStyle(LineJoinStyle lineJoinStyle) => LineJoinStyle = lineJoinStyle;
@@ -60,13 +71,13 @@ public partial class GraphicsState: IGraphiscState
         }
         DashArray = patternNums;
     }
-
-
-    public void SetRenderIntent(RenderIntentName intent) => RenderIntent = intent;
-
+    
     // as of 11/18/2021 this parameter is ignored by both the Pdf and Skia renderers, but
     // we will preserve the property.
     public void SetFlatnessTolerance(double flatness) => FlatnessTolerance = flatness;
+    
+
+    #endregion    
     
     public async ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary)
     {
@@ -106,6 +117,8 @@ public partial class GraphicsState: IGraphiscState
         return (T) await entry.Value.DirectValueAsync();
     }
 
+    #region Text
+
     public void SetCharSpace(double value)
     {
         throw new NotImplementedException();
@@ -140,6 +153,18 @@ public partial class GraphicsState: IGraphiscState
     {
         throw new NotImplementedException();
     }
+
+    #endregion
+
+    #region Color
+    public void SetRenderIntent(RenderIntentName intent) => RenderIntent = intent;
+    public void SetStrokeColorSpace(IColorSpace colorSpace) => StrokeColorSpace = colorSpace;
+    public void SetNonstrokeColorSpace(IColorSpace colorSpace) => NonstrokeColorSpace = colorSpace;
+    public void SetStrokeColor(in ReadOnlySpan<double> color) => 
+        StrokeColor = StrokeColorSpace.SetColor(color);
+    public void SetNonstrokingColor(in ReadOnlySpan<double> color) => 
+        NonstrokeColor = NonstrokeColorSpace.SetColor(color);
+    #endregion
 }
 
 public static class GraphicsStateHelpers

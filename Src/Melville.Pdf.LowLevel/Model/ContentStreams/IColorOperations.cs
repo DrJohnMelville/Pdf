@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -9,32 +10,23 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator CS
     /// </summary>
-    void SetStrokingColorSpace(PdfName colorSpace);
+    ValueTask SetStrokingColorSpace(PdfName colorSpace);
 
     /// <summary>
     /// Content stream operator cs
     /// </summary>
-    void SetNonstrokingColorSpace(PdfName colorSpace);
+    ValueTask SetNonstrokingColorSpace(PdfName colorSpace);
 
-    /// <summary>
-    /// Content stream operator SC
-    /// </summary>
-    void SetStrokeColor(in ReadOnlySpan<double> components);
     
     /// <summary>
     /// Content stream operator SCN
     /// </summary>
-    void SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
-
-    /// <summary>
-    /// Content stream operator sc
-    /// </summary>
-    void SetNonstrokingColor(in ReadOnlySpan<double> components);
+    ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator scn
     /// </summary>
-    void SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
+    ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator G
@@ -79,15 +71,15 @@ public static class ColorCSOperationsHelpers
         this IColorOperations target, ColorSpaceName colorSpace) =>
         target.SetNonstrokingColorSpace(colorSpace);
 
-    public static void SetStrokeColor(this IColorOperations target, params double[] colors) =>
+    public static void SetStrokeColor(this IStateChangingOperations target, params double[] colors) =>
         target.SetStrokeColor(new ReadOnlySpan<double>(colors));
-    public static void SetStrokeColorExtended(this IColorOperations target, params double[] colors) =>
+    public static ValueTask SetStrokeColorExtended(this IColorOperations target, params double[] colors) =>
         target.SetStrokeColorExtended(null, new ReadOnlySpan<double>(colors));
-    public static void SetStrokeColorExtended(
+    public static ValueTask SetStrokeColorExtended(
         this IColorOperations target, PdfName name, params double[] colors) =>
         target.SetStrokeColorExtended(name, new ReadOnlySpan<double>(colors));
 
-    public static void SetNonstrokingColor(this IColorOperations target, params double[] colors) =>
+    public static void SetNonstrokingColor(this IStateChangingOperations target, params double[] colors) =>
         target.SetNonstrokingColor(new ReadOnlySpan<double>(colors));
     public static void SetNonstrokingColorExtended(this IColorOperations target, params double[] colors) =>
         target.SetNonstrokingColorExtended(null, new ReadOnlySpan<double>(colors));
