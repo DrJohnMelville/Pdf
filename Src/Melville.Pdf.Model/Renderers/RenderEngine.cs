@@ -159,55 +159,70 @@ public partial class RenderEngine: IContentStreamOperations
 
     #region Color Implementation
     
-    public async ValueTask SetStrokingColorSpace(PdfName colorSpace) =>
+    public async ValueTask SetStrokingColorSpace(PdfName colorSpace)
+    {
         target.GrapicsStateChange.SetStrokeColorSpace(
             await ColorSpaceFactory.ParseColorSpace(colorSpace, page));
+    }
 
     public async ValueTask SetNonstrokingColorSpace(PdfName colorSpace) =>
         target.GrapicsStateChange.SetNonstrokeColorSpace(
             await ColorSpaceFactory.ParseColorSpace(colorSpace, page));
     
-//    private ValueTask<(IColorSpace, DeviceColor)> SetNamespace(PdfName ns)
-
     public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
-        throw new NotImplementedException();
+        if (patternName != null) throw new NotImplementedException("Patterns not implemented yet");
+        SetStrokeColor(colors);
+        return ValueTask.CompletedTask;
     }
     
     public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
-        throw new NotImplementedException();
+        if (patternName != null) throw new NotImplementedException("Patterns not implemented yet");
+        SetNonstrokingColor(colors);
+        return ValueTask.CompletedTask;
     }
 
     public void SetStrokeGray(double grayLevel)
     {
-        throw new NotImplementedException();
+        target.GrapicsStateChange.SetStrokeColorSpace(DeviceGray.Instance);
+        Span<double> color = stackalloc double[] { grayLevel };
+        SetStrokeColor(color);
     }
 
     public void SetStrokeRGB(double red, double green, double blue)
     {
-        throw new NotImplementedException();
+        target.GrapicsStateChange.SetStrokeColorSpace(DeviceRgb.Instance);
+        Span<double> color = stackalloc double[] { red, green, blue };
+        SetStrokeColor(color);
     }
 
     public void SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
     {
-        throw new NotImplementedException();
+        target.GrapicsStateChange.SetStrokeColorSpace(DeviceCmyk.Instance);
+        Span<double> color = stackalloc double[] { cyan, magenta, yellow, black };
+        SetStrokeColor(color);
     }
 
     public void SetNonstrokingGray(double grayLevel)
     {
-        throw new NotImplementedException();
+        target.GrapicsStateChange.SetNonstrokeColorSpace(DeviceGray.Instance);
+        Span<double> color = stackalloc double[] { grayLevel };
+        SetNonstrokingColor(color);
     }
 
     public void SetNonstrokingRGB(double red, double green, double blue)
     {
-        throw new NotImplementedException();
+        target.GrapicsStateChange.SetNonstrokeColorSpace(DeviceRgb.Instance);
+        Span<double> color = stackalloc double[] { red, green, blue };
+        SetNonstrokingColor(color);
     }
 
     public void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
     {
-        throw new NotImplementedException();
+        target.GrapicsStateChange.SetNonstrokeColorSpace(DeviceCmyk.Instance);
+        Span<double> color = stackalloc double[] { cyan, magenta, yellow, black };
+        SetNonstrokingColor(color);
     }
-
     #endregion
 }

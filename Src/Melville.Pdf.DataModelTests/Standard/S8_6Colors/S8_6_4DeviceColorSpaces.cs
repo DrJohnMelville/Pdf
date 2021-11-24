@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.Model.Renderers.Colors;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.Model.Renderers.Colors;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;

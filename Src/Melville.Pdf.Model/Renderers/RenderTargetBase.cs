@@ -1,9 +1,6 @@
-﻿using System.IO;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 using System.Numerics;
-using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
