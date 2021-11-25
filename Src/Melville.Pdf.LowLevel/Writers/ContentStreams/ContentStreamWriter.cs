@@ -414,4 +414,6 @@ public partial class ContentStreamWriter : IContentStreamOperations
     }
 
     #endregion
+
+    public void WriteLiteral(string contentStream) => destPipe.WriteLiteral(contentStream);
 }

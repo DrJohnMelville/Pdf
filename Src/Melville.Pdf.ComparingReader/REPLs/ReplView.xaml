@@ -1,0 +1,141 @@
+﻿<UserControl x:Class="Melville.Pdf.ComparingReader.REPLs.ReplView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Melville.Pdf.ComparingReader.REPLs"
+             xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid easyGrids:GridOperations.ColsAndRows="*,* /1*, 4*">
+        <TextBox Grid.Row="1" Text = "{Binding ContentStreamText, UpdateSourceTrigger=PropertyChanged}" 
+                 AcceptsReturn="True" AcceptsTab="true"/>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                      Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <local:TwoColumnList >
+                <TextBlock FontWeight="Bold">Graphics State</TextBlock><TextBlock />
+                <TextBlock>q</TextBlock>
+                <TextBlock>Save Graphics State</TextBlock>
+                <TextBlock>Q</TextBlock>
+                <TextBlock>Restore Graphics State</TextBlock>
+                <TextBlock>a b c d e f cm</TextBlock>
+                <TextBlock>Transform</TextBlock>
+                <TextBlock>width w</TextBlock>
+                <TextBlock>Set line width</TextBlock>
+                <TextBlock>linecap J</TextBlock>
+                <TextBlock>Set Line Cap</TextBlock>
+                <TextBlock>limit M</TextBlock>
+                <TextBlock>Set Miter Limit</TextBlock>
+                <TextBlock>[element] phase d</TextBlock>
+                <TextBlock>Set Line dash pattern</TextBlock>
+                <TextBlock>/Name ri</TextBlock>
+                <TextBlock>Set Rendering Intent</TextBlock>
+                <TextBlock>tolerance i</TextBlock>
+                <TextBlock>Set flatness tolerance</TextBlock>
+                <TextBlock>/Name gs</TextBlock>
+                <TextBlock>Load graphic state dictionary</TextBlock>
+                <TextBlock FontWeight="Bold" Margin="0 10 0 0">Text State</TextBlock><TextBlock />
+                <TextBlock>space Tc</TextBlock>
+                <TextBlock>Set Character Space</TextBlock>
+                <TextBlock>space Tw</TextBlock>
+                <TextBlock>Set word space</TextBlock>
+                <TextBlock>scale Tz</TextBlock>
+                <TextBlock>Set horizontal scaling</TextBlock>
+                <TextBlock>leading Tl</TextBlock>
+                <TextBlock>Set text leading</TextBlock>
+                <TextBlock>/Name size Tf</TextBlock>
+                <TextBlock>Set font and size</TextBlock>
+                <TextBlock>rendering Tr</TextBlock>
+                <TextBlock>Set Text Rendering</TextBlock>
+                <TextBlock>rise Ts</TextBlock>
+                <TextBlock>Set text rise</TextBlock>
+                <TextBlock FontWeight="Bold" Margin="0 10 0 0">Color</TextBlock><TextBlock />
+                <TextBlock>/Name CS</TextBlock>
+                <TextBlock>Set stroke color space</TextBlock>
+                <TextBlock>/Name cs</TextBlock>
+                <TextBlock>Set nonstroke color space</TextBlock>
+                <TextBlock>values SC</TextBlock>
+                <TextBlock>Set stroke color</TextBlock>
+                <TextBlock>values sc</TextBlock>
+                <TextBlock>Set Nonstroke color</TextBlock>
+                <TextBlock>/Name? values SCN</TextBlock>
+                <TextBlock>Set stroke color extended</TextBlock>
+                <TextBlock>/Name? values scn</TextBlock>
+                <TextBlock>Set Nonstroke color extended</TextBlock>
+                <TextBlock>gray G</TextBlock>
+                <TextBlock>Set stroke to grayscale</TextBlock>
+                <TextBlock>r g b RG</TextBlock>
+                <TextBlock>Set stroke to rgb</TextBlock>
+                <TextBlock>c m y b K </TextBlock>
+                <TextBlock>Set stroke to CMYK </TextBlock>
+                <TextBlock>gray g</TextBlock>
+                <TextBlock>Set nonstroke to grayscale</TextBlock>
+                <TextBlock>r g b rg</TextBlock>
+                <TextBlock>Set nonstroke to rgb</TextBlock>
+                <TextBlock>c m y b k </TextBlock>
+                <TextBlock>Set nonstroke to CMYK </TextBlock>
+                <TextBlock FontWeight="Bold" Margin="0 10 0 0">Drawing Operations</TextBlock><TextBlock />
+                <TextBlock>x y m</TextBlock>
+                <TextBlock>Move current point</TextBlock>
+                <TextBlock>x y l</TextBlock>
+                <TextBlock>Line to point</TextBlock>
+                <TextBlock>c1x c1y c2x c2y fx fy c</TextBlock>
+                <TextBlock>Curve to</TextBlock>
+                <TextBlock>c2x c2y f2x f2 v</TextBlock>
+                <TextBlock>Curve without initial control point</TextBlock>
+                <TextBlock>c1x c1y fx fy y</TextBlock>
+                <TextBlock>Curve without final control point</TextBlock>
+                <TextBlock>h</TextBlock>
+                <TextBlock>Close Path</TextBlock>
+                <TextBlock>x yx width height</TextBlock>
+                <TextBlock>Rectangle</TextBlock>
+                <TextBlock>S</TextBlock>
+                <TextBlock>Stroke path</TextBlock>
+                <TextBlock>s</TextBlock>
+                <TextBlock>Close and stroke path</TextBlock>
+                <TextBlock>f</TextBlock>
+                <TextBlock>Fill Path winding</TextBlock>
+                <TextBlock>f*</TextBlock>
+                <TextBlock>Fill path even odd</TextBlock>
+                <TextBlock>B</TextBlock>
+                <TextBlock>Fill and stroke path winding</TextBlock>
+                <TextBlock>B*</TextBlock>
+                <TextBlock>Fill and strode even odd</TextBlock>
+                <TextBlock>b</TextBlock>
+                <TextBlock>Close, fill, stroke winding</TextBlock>
+                <TextBlock>b*</TextBlock>
+                <TextBlock>Close, fill, stroke even odd</TextBlock>
+                <TextBlock>n</TextBlock>
+                <TextBlock>Remove path</TextBlock>
+                <TextBlock>W</TextBlock>
+                <TextBlock>Clip to path winding</TextBlock>
+                <TextBlock>W*</TextBlock>
+                <TextBlock>Clip to path even odd</TextBlock>
+                <TextBlock>/Name Do</TextBlock>
+                <TextBlock>Display an XObject</TextBlock>
+                <TextBlock FontWeight="Bold" Margin="0 10 0 0">Text</TextBlock><TextBlock />
+                <TextBlock>BT</TextBlock>
+                <TextBlock>Begin Text Block</TextBlock>
+                <TextBlock>ET</TextBlock>
+                <TextBlock>End Text Block</TextBlock>
+                <TextBlock>x y Td</TextBlock>
+                <TextBlock>Move Text Position</TextBlock>
+                <TextBlock>x y TD</TextBlock>
+                <TextBlock>Move text position with leading</TextBlock>
+                <TextBlock>a b c d e f Tm</TextBlock>
+                <TextBlock>Set Text Matrix</TextBlock>
+                <TextBlock>T*</TextBlock>
+                <TextBlock>Move to next line</TextBlock>
+                <TextBlock>(string) Tj</TextBlock>
+                <TextBlock>Show string</TextBlock>
+                <TextBlock>(string)'</TextBlock>
+                <TextBlock>Move to next line and show string</TextBlock>
+                <TextBlock>wordSpace textSpace (string) "</TextBlock>
+                <TextBlock>Move to next line and show with spacing.</TextBlock>
+                <TextBlock>[strings and numbers] TJ</TextBlock>
+                <TextBlock>Show Spaced Text</TextBlock>
+            </local:TwoColumnList>
+
+        </ScrollViewer>
+    </Grid>
+</UserControl>

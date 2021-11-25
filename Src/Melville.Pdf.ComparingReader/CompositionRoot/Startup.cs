@@ -35,6 +35,18 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
             service.RegisterHomeViewModel<MainWindowViewModel>();
             RegisterRenderers(service);
             RegisterRootWindows(service);
+            RegisterRepl(service);
+        }
+
+        private void RegisterRepl(IBindableIocService service)
+        {
+            service.Bind<Func<object, IRootNavigationWindow>>().ToConstant(o =>
+            {
+                var navWindow = new NavigationWindow();
+                navWindow.NavigateTo(o);
+                return new RootNavigationWindow(navWindow);
+            });
+            
         }
 
         private static void RegisterRenderers(IBindableIocService service)

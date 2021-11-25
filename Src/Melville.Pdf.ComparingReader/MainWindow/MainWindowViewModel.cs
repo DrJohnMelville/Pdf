@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
+using ABI.System.Collections.Generic;
 using Melville.INPC;
 using Melville.MVVM.Wpf.Bindings;
+using Melville.MVVM.Wpf.DiParameterSources;
+using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
+using Melville.Pdf.ComparingReader.REPLs;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.ComparingReader.MainWindow;
@@ -50,6 +54,10 @@ public partial class MainWindowViewModel
             _=> throw new InvalidProgramException("Unknown Tree member")
         };
     }
+
+    public void ShowPdfRepl([FromServices] ReplViewModel model,
+        [FromServices] Func<object, IRootNavigationWindow> factory) =>
+        factory(model).Show();
 }
 
 public static class MainWindowConverters

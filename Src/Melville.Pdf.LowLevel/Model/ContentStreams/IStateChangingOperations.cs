@@ -46,7 +46,7 @@ public interface IStateChangingOperations
     void SetMiterLimit(double miter);
 
     /// <summary>
-    /// Content stream operator dashArray dashphase
+    /// Content stream operator dashArray dashphase d
     /// Note the parameters are flipped from the PDF representation to accomodate a params extension method.
     /// </summary>
     void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray);

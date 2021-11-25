@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using StringWriter = Melville.Pdf.LowLevel.Writers.ObjectWriters.StringWriter;
@@ -125,4 +126,11 @@ public readonly struct ContentStreamPipeWriter
             dict.RawItems).AsValueTask();
 
     public Task WriteStreamContent(Stream str) => str.CopyToAsync(destPipe);
+
+    public void WriteLiteral(string contentStream)
+    {
+        var data = destPipe.GetSpan(contentStream.Length);
+        ExtendedAsciiEncoding.EncodeToSpan(contentStream, data);
+        destPipe.Advance(contentStream.Length);
+    }
 }
