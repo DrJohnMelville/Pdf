@@ -87,7 +87,7 @@
                 <TextBlock>Curve without final control point</TextBlock>
                 <TextBlock>h</TextBlock>
                 <TextBlock>Close Path</TextBlock>
-                <TextBlock>x yx width height</TextBlock>
+                <TextBlock>x y width height re</TextBlock>
                 <TextBlock>Rectangle</TextBlock>
                 <TextBlock>S</TextBlock>
                 <TextBlock>Stroke path</TextBlock>

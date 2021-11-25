@@ -57,7 +57,11 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     private void SetCurrentFillRule(bool evenOddFillRule) => 
         GetOrCreatePath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
 
-    void IRenderTarget.EndPath() => currentPath = null;
+    void IRenderTarget.EndPath()
+    {
+        currentPath?.Dispose();
+        currentPath = null;
+    }
 
     #endregion
 }
