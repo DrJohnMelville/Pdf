@@ -57,6 +57,6 @@ public static class WpfStateInterpreter
           _ => throw new ArgumentOutOfRangeException(nameof(stateLineCap), stateLineCap, null)
       };
    
-    public static MatrixTransform Transform(this GraphicsState state) => Transform(state.TransformMatrix);
-    private static MatrixTransform Transform(Matrix3x2 m) => new(m.M11, m.M12, m.M21, m.M22, m.M31, m.M32);
+    public static MatrixTransform Transform(this GraphicsState state) => WpfTransform(state.TransformMatrix);
+    public static MatrixTransform WpfTransform(this Matrix3x2 m) => new(m.M11, m.M12, m.M21, m.M22, m.M31, m.M32);
 }

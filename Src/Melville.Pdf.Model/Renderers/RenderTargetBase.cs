@@ -18,6 +18,11 @@ public interface IRenderTarget
     void ClosePath();
     void PaintPath(bool stroke, bool fill, bool evenOddFillRule);
     void EndPath();
+
+    void SaveTransformAndClip();
+    void RestoreTransformAndClip();
+    void Transform();
+    void CombineClip(bool evenOddRule);
 }
 
 public abstract class RenderTargetBase<T>
@@ -41,7 +46,10 @@ public abstract class RenderTargetBase<T>
                     Matrix3x2.CreateScale((float)(xPixels/rect.Width), (float)(-yPixels/rect.Height)) *
                     Matrix3x2.CreateTranslation(0, (float)yPixels);
         State.ModifyTransformMatrix(xform);
+        Transform();
     }
+
+    public abstract void Transform();
 }
 
 public static class RenderTargetOperations

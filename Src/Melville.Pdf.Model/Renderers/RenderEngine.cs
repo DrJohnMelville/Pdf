@@ -37,6 +37,25 @@ public partial class RenderEngine: IContentStreamOperations
 
     #region Graphics State
     [DelegateTo] private IGraphiscState StateOps => target.GrapicsStateChange;
+    
+    public void SaveGraphicsState()
+    {
+        StateOps.SaveGraphicsState();
+        target.SaveTransformAndClip();
+    }
+
+    public void RestoreGraphicsState()
+    {
+        StateOps.RestoreGraphicsState();
+        target.RestoreTransformAndClip();
+    }
+
+    public void ModifyTransformMatrix(in System.Numerics.Matrix3x2 newTransform)
+    {
+        StateOps.ModifyTransformMatrix(in newTransform);
+        target.Transform();
+    }
+
 
     public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
         await StateOps.LoadGraphicStateDictionary(
@@ -122,12 +141,12 @@ public partial class RenderEngine: IContentStreamOperations
 
     public void ClipToPath()
     {
-        throw new NotImplementedException();
+        target.CombineClip(false);
     }
 
     public void ClipToPathEvenOdd()
     {
-        throw new NotImplementedException();
+        target.CombineClip(true);
     }
 
     public ValueTask DoAsync(PdfName name)

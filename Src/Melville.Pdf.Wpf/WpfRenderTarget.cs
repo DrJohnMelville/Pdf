@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -17,7 +16,46 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
     public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
         base(target, state, page)
     {
+        SaveTransformAndClip();
     }
+
+    #region Path and transform state
+
+    private Stack<int> savePoints = new Stack<int>();
+    public void SaveTransformAndClip()
+    {
+        savePoints.Push(0);
+    }
+
+    public void RestoreTransformAndClip()
+    {
+        var pops = savePoints.Pop();
+        for (int i = 0; i < pops; i++)
+        {
+            Target.Pop();
+        }
+    }
+
+    public override void Transform()
+    {
+        IncrementSavePoints();
+        Target.PushTransform(State.Current().Transform());
+   }
+
+    private void IncrementSavePoints()
+    {
+        savePoints.Push(1+savePoints.Pop());
+    }
+
+    public void CombineClip(bool evenOddRule)
+    {
+        if (geometry is null) return;
+         IncrementSavePoints();
+         SetCurrentFillRule(evenOddRule);
+         Target.PushClip(geometry);
+    }
+
+    #endregion
 
     public void SetBackgroundRect(PdfRect rect)
     {
@@ -60,12 +98,14 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
     void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         if (geometry == null) return;
-        geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
-        Target.PushTransform(State.Current().Transform());
+        SetCurrentFillRule(evenOddFillRule);
         Target.DrawGeometry(fill?State.Current().Brush(): null, 
                             stroke?State.Current().Pen():null, geometry);
-        
-        Target.Pop(); // transform
+    }
+
+    private void SetCurrentFillRule(bool evenOddFillRule)
+    {
+        geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
     }
 
     void IRenderTarget.EndPath()

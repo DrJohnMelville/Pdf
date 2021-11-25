@@ -17,6 +17,22 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
         MapUserSpaceToBitmapSpace(rect, width, height);
     }
 
+    #region Path and Transform state
+
+    public void SaveTransformAndClip() => Target.Save();
+
+    public void RestoreTransformAndClip() => Target.Restore();
+
+    public override void Transform() => Target.SetMatrix(State.Current().Transform());
+
+    public void CombineClip(bool evenOddRule)
+    {
+        if (currentPath is null) return;
+        SetCurrentFillRule(evenOddRule);
+        Target.ClipPath(currentPath);
+    }
+    #endregion
+
     
     #region Path Building
 
@@ -42,7 +58,6 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     #region PathDrawing
     void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        Target.SetMatrix(State.Current().Transform());
         if (fill)
         {
             SetCurrentFillRule(evenOddFillRule); 
@@ -62,6 +77,5 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
         currentPath?.Dispose();
         currentPath = null;
     }
-
     #endregion
 }
