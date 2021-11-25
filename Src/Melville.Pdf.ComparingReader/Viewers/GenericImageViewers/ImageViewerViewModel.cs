@@ -36,6 +36,7 @@ public partial class ImageViewerViewModel : IRenderer
     public string DisplayName { get; }
     public object RenderTarget => this;
     [AutoNotify] private ImageSource? image;
+    [AutoNotify] private string? exception;
     private readonly IPasswordSource passwords;
     private readonly IImageRenderer renderer;
 
@@ -53,11 +54,12 @@ public partial class ImageViewerViewModel : IRenderer
             var (password, _) = await passwords.GetPassword();
             pdfBits.Seek(0, SeekOrigin.Begin);
             Image = await renderer.LoadFirstPage(pdfBits, password ??"");
+            Exception = null;
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Image = null;
+            Exception = $"{e.Message}\r\n\r\n{e.StackTrace}";
         }
     }
-
 }

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Melville.Pdf.ComparingReader.Viewers.GenericImageViewers"
+             xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Background>
@@ -16,5 +17,9 @@
             </DrawingBrush.Drawing>
         </DrawingBrush>
     </UserControl.Background>
-    <Image Stretch="Uniform" Source="{Binding Image}" />
+    <Grid>
+        <Image Stretch="Uniform" Source="{Binding Image}" />
+        <TextBlock Text="{Binding Exception}" Background="Pink"
+                   wpfHacks:VisibilityHack.CollapseIfWhitespace="{Binding Exception}"/>
+    </Grid>
 </UserControl>
