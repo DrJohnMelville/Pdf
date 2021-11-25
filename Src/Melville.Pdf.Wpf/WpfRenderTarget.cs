@@ -67,15 +67,16 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     #region Path Painting
 
-    void IRenderTarget.StrokePath()
+    void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         Target.PushTransform(State.Current().Transform()); 
-        Target.DrawGeometry(null, State.Current().Pen(), geometry);
-        ((IRenderTarget) this).EndPathWithNoOp();
+        Target.DrawGeometry(fill?State.Current().Brush(): null, 
+                            stroke?State.Current().Pen():null, geometry);
+        
         Target.Pop(); // transform
     }
 
-    void IRenderTarget.EndPathWithNoOp()
+    void IRenderTarget.EndPath()
     {
         geometry = null;
         figure = null;

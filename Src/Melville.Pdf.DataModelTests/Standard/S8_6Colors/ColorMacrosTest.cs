@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -15,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 public class ColorMacrosTest
 {
     private readonly GraphicsStateStack state = new();
-    private readonly Mock<IRenderTarget> target = new Mock<IRenderTarget>();
+    private readonly Mock<IRenderTarget> target = new();
     private readonly RenderEngine sut;
 
     public ColorMacrosTest()

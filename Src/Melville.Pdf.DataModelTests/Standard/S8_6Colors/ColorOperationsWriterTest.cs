@@ -72,25 +72,25 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetNonstrokingColor1Extended()
     {
-        sut.SetNonstrokingColorExtended(1);
+        await sut.SetNonstrokingColorExtended(1);
         Assert.Equal("1 scn\n", await WrittenText());
     }
     [Fact]
     public async Task SetNonstrokingColor4Extended()
     {
-        sut.SetNonstrokingColorExtended(1, 2, 3, 4);
+        await sut.SetNonstrokingColorExtended(1, 2, 3, 4);
         Assert.Equal("1 2 3 4 scn\n", await WrittenText());
     }
     [Fact]
     public async Task SetNonstrokingColor1ExtendedPattern()
     {
-        sut.SetNonstrokingColorExtended("pat", 1);
+        await sut.SetNonstrokingColorExtended("pat", 1);
         Assert.Equal("1 /pat scn\n", await WrittenText());
     }
     [Fact]
     public async Task SetNonstrokingColor4ExtendedPattern()
     {
-        sut.SetNonstrokingColorExtended("pat", 1, 2, 3, 4);
+        await sut.SetNonstrokingColorExtended("pat", 1, 2, 3, 4);
         Assert.Equal("1 2 3 4 /pat scn\n", await WrittenText());
     }
 

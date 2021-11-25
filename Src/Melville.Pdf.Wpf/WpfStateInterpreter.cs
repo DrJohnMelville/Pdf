@@ -8,6 +8,8 @@ namespace Melville.Pdf.Wpf;
 
 public static class WpfStateInterpreter
 {
+    public static Brush Brush(this GraphicsState state) => state.NonstrokeColor.AsSolidBrush();
+    
     public static Pen Pen(this GraphicsState state)
     {
         var lineCap = ConvertLineCap(state.LineCap);
@@ -38,8 +40,7 @@ public static class WpfStateInterpreter
         LineJoinStyle.Bevel => PenLineJoin.Bevel,
         _ => throw new ArgumentOutOfRangeException(nameof(joinStyle), joinStyle, null)
     };
-     
-   
+    
     private static DashStyle ComputeDashStyle(GraphicsState state) => 
         state.IsDashedStroke() ?
             CustomDashStyle(state.DashArray, state.DashPhase, state.LineWidth):

@@ -40,14 +40,20 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     #endregion
 
     #region PathDrawing
-    void IRenderTarget.StrokePath()
+    void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         Target.SetMatrix(State.Current().Transform());
-        Target.DrawPath(CurrentPath, State.Current().Pen());
-        ((IRenderTarget)this).EndPathWithNoOp();
+        if (fill)
+        {
+            Target.DrawPath(CurrentPath, State.Current().Brush());
+        }
+        if (stroke)
+        {
+            Target.DrawPath(CurrentPath, State.Current().Pen());
+        }
     }
 
-    void IRenderTarget.EndPathWithNoOp() => currentPath = null;
+    void IRenderTarget.EndPath() => currentPath = null;
 
     #endregion
 }

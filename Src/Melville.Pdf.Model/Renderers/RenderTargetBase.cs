@@ -16,8 +16,8 @@ public interface IRenderTarget
     void CurveTo(double control1X, double control1Y, double control2X, double control2Y, 
         double finalX, double finalY);
     void ClosePath();
-    void StrokePath();
-    void EndPathWithNoOp();
+    void PaintPath(bool stroke, bool fill, bool evenOddFillRule);
+    void EndPath();
 }
 
 public abstract class RenderTargetBase<T>

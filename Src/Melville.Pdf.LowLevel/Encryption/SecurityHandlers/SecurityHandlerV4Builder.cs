@@ -41,7 +41,7 @@ public static class SecurityHandlerV4Builder
             var i when i == KnownNames.AESV2 => new SecurityHandler(
                 new AesKeySpecializer(), new AesCipherFactory(), rootKeyComputer, dict),
             var i when i == KnownNames.None => NullSecurityHandler.Instance,
-            _ => throw new PdfSecurityException("Unknown Security Handler Type")
+            _ => throw new PdfSecurityException("Unknown Security Handler Type: " + cfm)
         };
     }
 }

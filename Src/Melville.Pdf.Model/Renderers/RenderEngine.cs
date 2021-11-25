@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -97,42 +98,26 @@ public partial class RenderEngine: IContentStreamOperations
         target.ClosePath();
     }
 
-    public void StrokePath() => target.StrokePath();
-    public void EndPathWithNoOp() => target.EndPathWithNoOp();
+    public void EndPathWithNoOp() => target.EndPath();
+    public void StrokePath() => PaintPath(true, false, false);
+    public void CloseAndStrokePath() => CloseAndPaintPath(true, false, false);
+    public void FillPath() => PaintPath(false, true, false);
+    public void FillPathEvenOdd() => PaintPath(false, true, true);
+    public void FillAndStrokePath() => PaintPath(true, true, false);
+    public void FillAndStrokePathEvenOdd() => PaintPath(true, true, true);
+    public void CloseFillAndStrokePath() => CloseAndPaintPath(true, true, false);
+    public void CloseFillAndStrokePathEvenOdd() => CloseAndPaintPath(true, true, true);
+
     
-    public void CloseAndStrokePath()
+    private void CloseAndPaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        throw new NotImplementedException();
+        ClosePath();
+        PaintPath(stroke, fill, evenOddFillRule);
     }
-
-    public void FillPath()
+    private void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        throw new NotImplementedException();
-    }
-
-    public void FillPathEvenOdd()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void FillAndStrokePath()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void FillAndStrokePathEvenOdd()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void CloseFillAndStrokePath()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void CloseFillAndStrokePathEvenOdd()
-    {
-        throw new NotImplementedException();
+        target.PaintPath(stroke, fill, evenOddFillRule);
+        EndPathWithNoOp();
     }
 
     public void ClipToPath()
@@ -154,7 +139,6 @@ public partial class RenderEngine: IContentStreamOperations
     {
         throw new NotImplementedException();
     }
-
     #endregion
 
     #region Color Implementation
@@ -187,7 +171,7 @@ public partial class RenderEngine: IContentStreamOperations
     {
         target.GrapicsStateChange.SetStrokeColorSpace(DeviceGray.Instance);
         Span<double> color = stackalloc double[] { grayLevel };
-        SetStrokeColor(color);
+            SetStrokeColor(color);
     }
 
     public void SetStrokeRGB(double red, double green, double blue)
