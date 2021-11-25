@@ -20,21 +20,21 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     
     #region Path Building
 
-    private SKPath? currentPath = null;
-    private SKPath CurrentPath => currentPath ??= new SKPath();
+    private SKPath? currentPath;
+    private SKPath GetOrCreatePath => currentPath ??= new SKPath();
 
-    void IRenderTarget.MoveTo(double x, double y) => CurrentPath.MoveTo((float)x,(float)y);
+    void IRenderTarget.MoveTo(double x, double y) => GetOrCreatePath.MoveTo((float)x,(float)y);
 
-    void IRenderTarget.LineTo(double x, double y) => CurrentPath.LineTo((float)x, (float)y);
+    void IRenderTarget.LineTo(double x, double y) => currentPath?.LineTo((float)x, (float)y);
 
     void IRenderTarget.ClosePath()
     {
-        CurrentPath.Close();
+        currentPath?.Close();
     }
 
     void IRenderTarget.CurveTo(double control1X, double control1Y, double control2X, double control2Y,
         double finalX, double finalY) =>
-        CurrentPath.CubicTo(
+        currentPath?.CubicTo(
             (float)control1X, (float)control1Y, (float)control2X, (float)control2Y, (float)finalX, (float)finalY);
 
     #endregion
@@ -46,18 +46,16 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
         if (fill)
         {
             SetCurrentFillRule(evenOddFillRule); 
-            Target.DrawPath(CurrentPath, State.Current().Brush());
+            Target.DrawPath(GetOrCreatePath, State.Current().Brush());
         }
         if (stroke)
         {
-            Target.DrawPath(CurrentPath, State.Current().Pen());
+            Target.DrawPath(GetOrCreatePath, State.Current().Pen());
         }
     }
 
-    private SKPathFillType SetCurrentFillRule(bool evenOddFillRule)
-    {
-        return CurrentPath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
-    }
+    private void SetCurrentFillRule(bool evenOddFillRule) => 
+        GetOrCreatePath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
 
     void IRenderTarget.EndPath() => currentPath = null;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Principal;
 using System.Windows;
 using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.RootWindows;
@@ -45,7 +44,7 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
             BindImageRenderer(service, "Skia", new SkiaRenderer());
             service.Bind<IRenderer>().To<LowLevelRenderer>();
             service.Bind<IRenderer>().To<SystemRenderViewModel>();
-            service.Bind<IMultiRenderer>().To<TabMultiRendererViewModel>();
+            service.Bind<IMultiRenderer>().To<TabMultiRendererViewModel>().AsSingleton();
         }
 
         private static void BindImageRenderer(

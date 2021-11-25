@@ -9,6 +9,7 @@
              xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:mainWindow="clr-namespace:Melville.Pdf.ComparingReader.MainWindow"
+             xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid easyGrids:GridOperations.ColsAndRows="*,3* / auto, *">
@@ -22,6 +23,7 @@
             </HierarchicalDataTemplate>
         </Grid.Resources>
         <StackPanel>
+            <Button Click="{eventBindings:EventBinding ShowPdfRel}">Show Pdf REPL</Button>
             <ComboBox SelectedIndex="{Binding PasswordBox.Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
                Converter={x:Static mainWindow:MainWindowConverters.PasswordTypeConverter} }"
                       IsSynchronizedWithCurrentItem="True">

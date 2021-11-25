@@ -20,8 +20,8 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
     public RenderingTest(StringTestDatabase hashes)
     {
-        this.hashes = hashes;
-  //      hashes.Recording = true;
+        this.hashes = hashes; 
+        //hashes.Recording = true;
     }
 
     private static IEnumerable<object[]> GeneratorTests() =>
