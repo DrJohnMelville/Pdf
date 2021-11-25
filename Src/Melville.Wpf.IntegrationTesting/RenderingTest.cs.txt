@@ -44,5 +44,9 @@ RenderingTest.cs_wpf-Rectangle|629940930
 RenderingTest.cs_Skia-Rectangle|118517860
 RenderingTest.cs_wpf-DeviceGray|1701406008
 RenderingTest.cs_Skia-DeviceGray|1436802409
-RenderingTest.cs_wpf-DeviceRGB|1361613820
+RenderingTest.cs_wpf-DeviceRGB|1076585126
 RenderingTest.cs_Skia-DeviceRGB|487708149
+RenderingTest.cs_wpf-StrokeAndFill|560322167
+RenderingTest.cs_Skia-StrokeAndFill|269933207
+RenderingTest.cs_wpf-FillRules|1036377199
+RenderingTest.cs_Skia-FillRules|2373482460

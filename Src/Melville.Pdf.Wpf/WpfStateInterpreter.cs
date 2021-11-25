@@ -29,7 +29,7 @@ public static class WpfStateInterpreter
     public static Brush AsSolidBrush(in this DeviceColor dc) => new SolidColorBrush(dc.AsWpfColor());
 
     private static Color AsWpfColor(in this DeviceColor dc) => 
-        Color.FromRgb(dc.RedByte, dc.BlueByte, dc.GreenByte);
+        Color.FromRgb(dc.RedByte, dc.GreenByte, dc.BlueByte);
 
     private static byte MapToByte(double value) => (byte)(255*value);
 

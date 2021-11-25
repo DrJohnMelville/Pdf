@@ -45,12 +45,18 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
         Target.SetMatrix(State.Current().Transform());
         if (fill)
         {
+            SetCurrentFillRule(evenOddFillRule); 
             Target.DrawPath(CurrentPath, State.Current().Brush());
         }
         if (stroke)
         {
             Target.DrawPath(CurrentPath, State.Current().Pen());
         }
+    }
+
+    private SKPathFillType SetCurrentFillRule(bool evenOddFillRule)
+    {
+        return CurrentPath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
     }
 
     void IRenderTarget.EndPath() => currentPath = null;

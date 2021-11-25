@@ -69,7 +69,9 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        Target.PushTransform(State.Current().Transform()); 
+        if (geometry == null) return;
+        geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
+        Target.PushTransform(State.Current().Transform());
         Target.DrawGeometry(fill?State.Current().Brush(): null, 
                             stroke?State.Current().Pen():null, geometry);
         
