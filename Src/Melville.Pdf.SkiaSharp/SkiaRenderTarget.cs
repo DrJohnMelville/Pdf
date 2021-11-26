@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Wrappers;
+﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -23,7 +24,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 
     public void RestoreTransformAndClip() => Target.Restore();
 
-    public override void Transform() => Target.SetMatrix(State.Current().Transform());
+    public override void Transform(in Matrix3x2 newTransform) => Target.SetMatrix(State.Current().Transform());
 
     public void CombineClip(bool evenOddRule)
     {

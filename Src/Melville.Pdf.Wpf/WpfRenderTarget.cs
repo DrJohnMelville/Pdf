@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -36,10 +37,10 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
         }
     }
 
-    public override void Transform()
+    public override void Transform(in Matrix3x2 newTransform)
     {
         IncrementSavePoints();
-        Target.PushTransform(State.Current().Transform());
+        Target.PushTransform(newTransform.WpfTransform());
    }
 
     private void IncrementSavePoints()

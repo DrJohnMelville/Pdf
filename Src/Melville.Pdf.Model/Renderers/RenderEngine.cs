@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -53,7 +52,7 @@ public partial class RenderEngine: IContentStreamOperations
     public void ModifyTransformMatrix(in System.Numerics.Matrix3x2 newTransform)
     {
         StateOps.ModifyTransformMatrix(in newTransform);
-        target.Transform();
+        target.Transform(newTransform);
     }
 
 
@@ -139,15 +138,9 @@ public partial class RenderEngine: IContentStreamOperations
         EndPathWithNoOp();
     }
 
-    public void ClipToPath()
-    {
-        target.CombineClip(false);
-    }
+    public void ClipToPath() => target.CombineClip(false);
 
-    public void ClipToPathEvenOdd()
-    {
-        target.CombineClip(true);
-    }
+    public void ClipToPathEvenOdd() => target.CombineClip(true);
 
     public ValueTask DoAsync(PdfName name)
     {
