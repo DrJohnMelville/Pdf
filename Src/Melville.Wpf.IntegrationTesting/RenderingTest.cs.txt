@@ -56,3 +56,5 @@ RenderingTest.cs_Skia-MoveToIsRequired|3812351403
 RenderingTest.cs_Skia-TransformedLineWidth|3694971280
 RenderingTest.cs_wpf-Clipping|590935290
 RenderingTest.cs_Skia-Clipping|4257757955
+RenderingTest.cs_wpf-DeviceCMYK|1994066414
+RenderingTest.cs_Skia-DeviceCMYK|869060027

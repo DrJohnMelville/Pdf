@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
@@ -106,6 +107,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     private void SetCurrentFillRule(bool evenOddFillRule)
     {
+        Debug.Assert(geometry != null);
         geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
     }
 
