@@ -97,5 +97,4 @@ public sealed class MultiplexedReader : DefaultBaseStream
 
     public override long Length => source.Length;
 
-    public override long Position { get; set; }
 }

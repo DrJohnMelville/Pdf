@@ -1,14 +1,18 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
-public class Rc4Stream : Stream
+public class Rc4Stream : DefaultBaseStream
 {
     private readonly Stream innerStream;
     private readonly RC4 encryptor;
 
-    public Rc4Stream(Stream innerStream, RC4 encryptor)
+    public Rc4Stream(Stream innerStream, RC4 encryptor):
+        base(innerStream.CanRead, innerStream.CanWrite, false)
     {
         this.innerStream = innerStream;
         this.encryptor = encryptor;
@@ -23,13 +27,22 @@ public class Rc4Stream : Stream
         base.Dispose(disposing);
         innerStream.Dispose();
     }
-
-    public override int Read(byte[] buffer, int offset, int count)
+    
+    public override int Read(Span<byte> buffer)
     {
-        var readSize = innerStream.Read(buffer, offset, count);
-        encryptor.TransfromInPlace(buffer.AsSpan(offset, readSize));
-        return readSize;
+        var ret = innerStream.Read(buffer);
+        encryptor.TransfromInPlace(buffer[..ret]);
+        return ret;
     }
+
+    public override async ValueTask<int> ReadAsync(
+        Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
+    {
+        var ret = await innerStream.ReadAsync(buffer, cancellationToken);
+        encryptor.TransfromInPlace(buffer.Span[..ret]);
+        return ret;
+    }
+
 
     public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
