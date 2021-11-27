@@ -12,7 +12,7 @@ public static class NextTokenFinder
 {
     public static async ValueTask SkipToNextToken(IPipeReaderWithPosition source)
     {
-        do {} while (source.ShouldContinue(SkipToNextToken2(await source.ReadAsync())));
+        do {} while (source.Source.ShouldContinue(SkipToNextToken2(await source.Source.ReadAsync())));
     }
 
     private static (bool Success, SequencePosition Position) SkipToNextToken2(ReadResult source)

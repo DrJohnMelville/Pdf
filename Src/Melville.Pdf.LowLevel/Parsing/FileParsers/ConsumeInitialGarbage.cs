@@ -12,7 +12,7 @@ public static class ConsumeInitialGarbage
     public static async ValueTask<int> CheckForOffset(IPipeReaderWithPosition context)
     {
         int offset;
-        do {} while(context.ShouldContinue(SkipGarbage(await context.ReadAsync(), out offset)));
+        do {} while(context.Source.ShouldContinue(SkipGarbage(await context.Source.ReadAsync(), out offset)));
 
         return offset;
 

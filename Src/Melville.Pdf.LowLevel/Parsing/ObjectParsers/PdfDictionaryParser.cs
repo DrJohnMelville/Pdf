@@ -28,9 +28,9 @@ public class PdfDictionaryParser : IPdfObjectParser
 
     public async Task<Dictionary<PdfName, PdfObject>> ParseDictionaryItemsAsync(IParsingReader source)
     {
-        var reader = await source.Reader.ReadAsync();
+        var reader = await source.Reader.Source.ReadAsync();
         //This has to succeed because the prior parser looked at the prefix to get here.
-        source.Reader.AdvanceTo(reader.Buffer.GetPosition(2));
+        source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(2));
         var dictionary = new Dictionary<PdfName, PdfObject>();
         while (true)
         {

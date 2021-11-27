@@ -13,7 +13,7 @@ public static class TokenChecker
         bool result = false;
         do
         {
-        } while (reader.ShouldContinue(VerifyTag(await reader.ReadAsync(), template, out result)));
+        } while (reader.Source.ShouldContinue(VerifyTag(await reader.Source.ReadAsync(), template, out result)));
 
         return result;
     }

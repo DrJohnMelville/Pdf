@@ -14,7 +14,7 @@ public static class PdfHeaderParser
     public static async ValueTask<(byte Major, byte Minor)> ParseHeadder(IPipeReaderWithPosition context)
     {
         byte major, minor;
-        do {} while(context.ShouldContinue(ParseDocumentHeader(await context.ReadAsync(),
+        do {} while(context.Source.ShouldContinue(ParseDocumentHeader(await context.Source.ReadAsync(),
                         out major, out minor)));
 
         return (major, minor);

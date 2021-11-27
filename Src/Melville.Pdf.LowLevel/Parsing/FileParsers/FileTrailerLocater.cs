@@ -22,14 +22,13 @@ public static class FileTrailerLocater
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
             var context = await source.RentReader(start);
             var reader = context.Reader;
-            while (SearchForS(await reader.ReadAsync(), reader, end, out var foundPos))
+            while (SearchForS(await reader.Source.ReadAsync(), reader, end, out var foundPos))
             {
                 if (!foundPos) continue;
                 if (await TokenChecker.CheckToken(context.Reader, startXRef))
                 {
                     await NextTokenFinder.SkipToNextToken(reader);
-                    do { } while (reader.ShouldContinue(
-                                      GetLong(await reader.ReadAsync(), out xrefPosition)));
+                    do { } while (reader.Source.ShouldContinue(GetLong(await reader.Source.ReadAsync(), out xrefPosition)));
                     return xrefPosition;
                 }
             }
@@ -63,14 +62,14 @@ public static class FileTrailerLocater
         var reader = new SequenceReader<byte>(readResult.Buffer);
         if (reader.TryAdvanceTo((byte) 's'))
         {
-            source.AdvanceTo(reader.Position);
+            source.Source.AdvanceTo(reader.Position);
             foundOne = true;
             return true;
         }
             
 
         foundOne = false;
-        source.AdvanceTo(readResult.Buffer.End);
+        source.Source.AdvanceTo(readResult.Buffer.End);
         return true;
     }
     private static readonly byte[] startXRef = 

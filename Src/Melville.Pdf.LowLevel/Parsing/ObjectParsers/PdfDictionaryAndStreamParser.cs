@@ -15,8 +15,7 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
     {
         var dictionary = await PdfParserParts.Dictionary.ParseDictionaryItemsAsync(source);
         bool isStream;
-        do {}while (source.Reader.ShouldContinue(
-                        CheckForStreamTrailer(await source.Reader.ReadAsync(), out isStream)));
+        do {}while (source.Reader.Source.ShouldContinue(CheckForStreamTrailer(await source.Reader.Source.ReadAsync(), out isStream)));
         return CreateFinalObject(source, dictionary, isStream);
     }
 

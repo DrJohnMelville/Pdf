@@ -9,9 +9,9 @@ public class PdfArrayParser: IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        var reader = await source.Reader.ReadAsync();
+        var reader = await source.Reader.Source.ReadAsync();
         //This has to succeed because the prior parser looked at the prefix to get here.
-        source.Reader.AdvanceTo(reader.Buffer.GetPosition(1));
+        source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(1));
         //TODO: consider renting these lists
         var items = new List<PdfObject>();
         while (true)

@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Hacks.Reflection;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -36,15 +37,15 @@ public static class ObjectStreamOperations
     public static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbers(
         this IPipeReaderWithPosition reader, long count, long first)
     {
-        var source = await reader.ReadAsync();
+        var source = await reader.Source.ReadAsync();
         while (source.Buffer.Length < first)
         {
-            reader.AdvanceTo(source.Buffer.Start, source.Buffer.End);
-            source = await reader.ReadAsync();
+            reader.Source.AdvanceTo(source.Buffer.Start, source.Buffer.End);
+            source = await reader.Source.ReadAsync();
         }
 
         var ret = FillInts(new SequenceReader<byte>(source.Buffer), count);
-        reader.AdvanceTo(source.Buffer.GetPosition(first));
+        reader.Source.AdvanceTo(source.Buffer.GetPosition(first));
         return ret;
     }
 

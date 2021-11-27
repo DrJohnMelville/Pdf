@@ -17,7 +17,7 @@ public abstract class PdfAtomParser : IPdfObjectParser
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
         PdfObject result;
-        do{}while(source.Reader.ShouldContinue(Parse(await source.Reader.ReadAsync(), source, out result!)));
+        do{}while(source.Reader.Source.ShouldContinue(Parse(await source.Reader.Source.ReadAsync(), source, out result!)));
         return result;
     }
 
