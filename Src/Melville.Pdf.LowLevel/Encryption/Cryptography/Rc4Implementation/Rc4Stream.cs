@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,18 +48,22 @@ public class Rc4Stream : DefaultBaseStream
     public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
     public override void SetLength(long value) => throw new NotSupportedException();
-
-    public override void Write(byte[] buffer, int offset, int count)
+    
+    public override void Write(ReadOnlySpan<byte> buffer)
     {
-        encryptor.TransfromInPlace(buffer.AsSpan(offset, count));
-        innerStream.Write(buffer, offset, count);
+        var copy = ArrayPool<byte>.Shared.Rent(buffer.Length);
+        encryptor.Transform(buffer, copy);
+        innerStream.Write(copy[..buffer.Length]);
+        ArrayPool<byte>.Shared.Return(copy);
     }
-
-    public override bool CanRead => innerStream.CanRead;
-
-    public override bool CanSeek => false;
-
-    public override bool CanWrite => innerStream.CanWrite;
+    
+    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
+    {
+        var copy = ArrayPool<byte>.Shared.Rent(buffer.Length);
+        encryptor.Transform(buffer.Span, copy);
+        await innerStream.WriteAsync(copy.AsMemory(0, buffer.Length), cancellationToken);
+        ArrayPool<byte>.Shared.Return(copy);
+    }
 
     public override long Length => innerStream.Length;
 
