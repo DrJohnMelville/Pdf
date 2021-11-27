@@ -18,11 +18,7 @@ public class Rc4Stream : DefaultBaseStream
         this.innerStream = innerStream;
         this.encryptor = encryptor;
     }
-
-    public override void Flush()
-    {
-    }
-
+    
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
@@ -43,11 +39,6 @@ public class Rc4Stream : DefaultBaseStream
         encryptor.TransfromInPlace(buffer.Span[..ret]);
         return ret;
     }
-
-
-    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
-
-    public override void SetLength(long value) => throw new NotSupportedException();
     
     public override void Write(ReadOnlySpan<byte> buffer)
     {
