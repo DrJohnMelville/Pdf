@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 

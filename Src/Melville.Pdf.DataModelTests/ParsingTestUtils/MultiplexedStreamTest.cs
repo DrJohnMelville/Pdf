@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Parsing.ParserContext.MultiplexedStreams;
+using Melville.Parsing.Streams;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;

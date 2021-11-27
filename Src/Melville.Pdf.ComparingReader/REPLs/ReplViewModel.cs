@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;

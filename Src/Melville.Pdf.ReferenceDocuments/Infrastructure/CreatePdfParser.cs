@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.Infrastructure;
+﻿using Melville.Parsing.Streams;
+
+namespace Melville.Pdf.ReferenceDocuments.Infrastructure;
 
 public abstract class CreatePdfParser : IPdfGenerator
 {

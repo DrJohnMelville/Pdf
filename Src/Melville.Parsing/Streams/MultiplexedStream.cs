@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
-
-namespace Melville.Pdf.LowLevel.Parsing.ParserContext.MultiplexedStreams;
+﻿namespace Melville.Parsing.Streams;
 
 public sealed class MultiplexedStream: IDisposable
 {

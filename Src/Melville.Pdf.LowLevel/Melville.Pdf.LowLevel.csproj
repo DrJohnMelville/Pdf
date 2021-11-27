@@ -27,5 +27,6 @@
 
     <ItemGroup>
       <Folder Include="Model\Primitives\PipeReaderWithPositions" />
+      <Folder Include="Parsing\ParserContext\MultiplexedStreams" />
     </ItemGroup>
 </Project>

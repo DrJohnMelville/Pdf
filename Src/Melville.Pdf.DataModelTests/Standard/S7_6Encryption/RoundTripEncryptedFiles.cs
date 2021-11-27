@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;

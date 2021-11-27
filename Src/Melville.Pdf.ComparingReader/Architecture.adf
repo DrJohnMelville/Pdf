@@ -4,7 +4,7 @@ Melville.Pdf.ComparingReader.CompositionRoot.* +=> *
 #Everyone can use global resources
 * => Melville.INPC.IExternalNotifyPropertyChanged
 * => System.*
-* => Melville.Pdf.LowLevel.Filters.StreamFilters.MultiBufferStream
+* => Melville.Parsing.*
 
 #Renderers plug into the Main Window and Viewers plug into renderers.
 Group MainWindow

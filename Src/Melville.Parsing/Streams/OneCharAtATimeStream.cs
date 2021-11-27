@@ -1,10 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Melville.INPC;
+﻿using Melville.INPC;
 
-namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
+namespace Melville.Parsing.Streams;
 
 public partial class OneCharAtAtimeStream : Stream
 {
