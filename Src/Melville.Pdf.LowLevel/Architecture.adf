@@ -12,5 +12,6 @@ Group Writers
 Parser => Model
 Writers => Model
 
-#Everyone can use .Net
+#Everyone can use various external resources
 * => System.*
+* => Melville.Parsing.*

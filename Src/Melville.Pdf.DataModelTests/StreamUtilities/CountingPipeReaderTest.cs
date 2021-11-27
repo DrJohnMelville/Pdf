@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
 

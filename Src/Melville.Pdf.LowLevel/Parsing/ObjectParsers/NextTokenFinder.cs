@@ -2,8 +2,8 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Primitives.PipeReaderWithPositions;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;

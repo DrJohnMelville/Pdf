@@ -1,17 +1,14 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.IO.Pipelines;
-using System.Threading;
-using System.Threading.Tasks;
 using Melville.INPC;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives;
+namespace Melville.Parsing.CountingReaders;
 
 public partial class CountingPipeReader : PipeReader
 {
     [DelegateTo()] private PipeReader inner;
     public long Position { get; private set; }
-    private ReadOnlySequence<byte> currentSequence;
+    private ReadResult? currentBuffer;
 
     public CountingPipeReader(PipeReader inner)
     {
@@ -23,7 +20,7 @@ public partial class CountingPipeReader : PipeReader
         var succeeded = inner.TryRead(out result);
         if (succeeded)
         {
-            currentSequence = result.Buffer;
+            currentBuffer = result;
         }
         return succeeded;
     }
@@ -31,12 +28,15 @@ public partial class CountingPipeReader : PipeReader
         CancellationToken cancellationToken = default)
     {
         var ret = await inner.ReadAsync(cancellationToken);
-        currentSequence = ret.Buffer;
+        currentBuffer = ret;
         return ret;
     }
 
-    public void MarkSequenceAsExamined() =>
-        AdvanceTo(currentSequence.Start, currentSequence.End);
+    public void MarkSequenceAsExamined()
+    {
+        if (currentBuffer.HasValue) 
+            AdvanceTo(currentBuffer.Value.Buffer.Start, currentBuffer.Value.Buffer.End);
+    }
 
     public override void AdvanceTo(SequencePosition consumed)
     {
@@ -52,6 +52,7 @@ public partial class CountingPipeReader : PipeReader
 
     private void IncrementPosition(SequencePosition consumed)
     {
-        Position += currentSequence.Slice(0, consumed).Length;
+        if (!currentBuffer.HasValue) throw new InvalidOperationException("No buffer to advance within");
+        Position += currentBuffer.Value.Buffer.Slice(0, consumed).Length;
     }
 }
