@@ -1,10 +1,11 @@
-﻿namespace Melville.Icc.Model;
+﻿using System.Buffers;
+using Melville.Icc.Parser;
 
-public record struct XyzNumber(float X, float Y, float Z);
+namespace Melville.Icc.Model;
 
 //The order of fields in this type is their order in the header, which facilitates parsing.
 public record struct IccHeader(
-    uint Size, 
+    uint Size,
     uint CmmType,
     uint Version,
     ProfileClass ProfileClass,
