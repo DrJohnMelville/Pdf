@@ -1,4 +1,6 @@
-﻿namespace Melville.Parsing.Streams;
+﻿using Melville.Parsing.Streams.Bases;
+
+namespace Melville.Parsing.Streams;
 
 public sealed class MultiplexedStream: IDisposable
 {
@@ -57,35 +59,22 @@ public sealed class MultiplexedStream: IDisposable
     public Stream ReadFrom(long position) => new MultiplexedReader(this, position);
 }
 
-public sealed class MultiplexedReader : Stream
+public sealed class MultiplexedReader : DefaultBaseStream
 {
     private readonly MultiplexedStream source;
 
-    public MultiplexedReader(MultiplexedStream source, long position)
+    public MultiplexedReader(MultiplexedStream source, long position):
+        base(true, false, true)
     {
         this.source = source;
         Position = position;
     }
-
-    public override void Flush()
-    {
-    }
-
-    public override int Read(byte[] buffer, int offset, int count) =>
-        Read(buffer.AsSpan(offset, count));
-    
-
     public override int Read(Span<byte> buffer)
     {
         var ret = source.Read(Position, buffer);
         Position += ret;
         return ret;
     }
-
-    public override Task<int> ReadAsync(
-        byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-        ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
-    
 
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
@@ -106,13 +95,6 @@ public sealed class MultiplexedReader : Stream
             _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null)
         };
 
-    public override void SetLength(long value) => throw new NotSupportedException();
-
-    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-
-    public override bool CanRead => true;
-    public override bool CanSeek => true;
-    public override bool CanWrite => false;
     public override long Length => source.Length;
 
     public override long Position { get; set; }

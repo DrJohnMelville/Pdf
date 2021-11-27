@@ -36,8 +36,8 @@ public abstract class ReadWriteStreamBase: Stream
     public override int ReadByte()
     {
         Span<byte> b = stackalloc byte[1];
-        Read(b);
-        return b[0];
+        var ret = Read(b);
+        return ret == 0? -1:b[0];
     }
 
     public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => 
