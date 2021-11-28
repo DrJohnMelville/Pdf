@@ -28,7 +28,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
     private static IEnumerable<object[]> GeneratorTests() =>
         GeneratorFactory.AllGenerators.Select(i => new object[] { i.Prefix, i });
 
-    [WpfTheory]
+    [WpfTheory]                                                         
     [MemberData(nameof(GeneratorTests))]
     public async Task WpfRenderingTest(string shortName, IPdfGenerator generator) =>
         hashes.AssertDatabase(await ComputeWpfHash(generator), "wpf" + shortName);
