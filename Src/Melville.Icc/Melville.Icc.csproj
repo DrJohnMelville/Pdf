@@ -11,4 +11,8 @@
       <PackageReference Include="System.IO.Pipelines" Version="6.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+    </ItemGroup>
+
 </Project>

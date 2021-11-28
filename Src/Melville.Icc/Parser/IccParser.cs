@@ -1,16 +1,17 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using Melville.Icc.Model;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Icc.Parser;
 
 public readonly struct IccParser
 {
-    public readonly PipeReader source;
+    public readonly CountingPipeReader source;
 
     public IccParser(PipeReader source)
     {
-        this.source = source;
+        this.source = source.AsCountingPipeReader();
     }
 
     public async ValueTask<IccProfile> ParseAsync()
