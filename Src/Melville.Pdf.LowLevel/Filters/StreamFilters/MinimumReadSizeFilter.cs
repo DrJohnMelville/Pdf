@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
 
@@ -13,7 +14,7 @@ namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
 // to a class will be at least a minimum size, this means that the inner streams do not need to
 // worry about dividing the output accross multiple reads, because you will eventually get a buffer
 // big enough to hold the entire unit.
-public class MinimumReadSizeFilter : SequentialReadFilterStream
+public class MinimumReadSizeFilter : DefaultBaseStream
 {
     private readonly Stream source;
     private readonly int minReadSize;
@@ -22,7 +23,7 @@ public class MinimumReadSizeFilter : SequentialReadFilterStream
     private int priorDataLength;
     private int UnusedPriorDataLength() => priorDataLength - priorDataStart;
 
-    public MinimumReadSizeFilter(Stream source, int minReadSize)
+    public MinimumReadSizeFilter(Stream source, int minReadSize): base(true, false, false)
     {
         this.source = source;
         this.minReadSize = minReadSize;

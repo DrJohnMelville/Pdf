@@ -4,18 +4,19 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 
-public class AesDecodeStream : SequentialReadFilterStream
+public class AesDecodeStream : DefaultBaseStream
         
 {
     private readonly Stream input;
     private readonly Aes decryptor;
     private CryptoStream? decryptedSource;
 
-    public AesDecodeStream(Stream input, Aes decryptor)
+    public AesDecodeStream(Stream input, Aes decryptor): base(true, false, false)
     {
         this.input = input;
         this.decryptor = decryptor;

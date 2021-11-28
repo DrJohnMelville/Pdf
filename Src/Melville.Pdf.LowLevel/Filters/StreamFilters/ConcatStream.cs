@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
 
@@ -22,11 +23,11 @@ public class ConcatStream : ConcatStreamBase
     }
     protected override ValueTask<Stream?> GetNextStream() => new(items.MoveNext() ? items.Current : null);
 }
-public abstract class ConcatStreamBase : SequentialReadFilterStream
+public abstract class ConcatStreamBase : DefaultBaseStream
 {
     private Stream? current = null;
 
-    protected ConcatStreamBase()
+    protected ConcatStreamBase(): base(true, false, false)
     {
         current = this;
     }

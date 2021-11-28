@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Xunit;
@@ -10,8 +11,12 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
 public sealed class MinimumReadFitlerTest
 {
-    private class SizeReportingStream: SequentialReadFilterStream
+    private class SizeReportingStream: DefaultBaseStream
     {
+        public SizeReportingStream() : base(true, false, false)
+        {
+        }
+
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
         {
             var datum = (byte) Math.Min(255, buffer.Length);

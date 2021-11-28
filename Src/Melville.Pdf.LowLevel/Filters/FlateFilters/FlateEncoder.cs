@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -26,7 +27,7 @@ public class FlateCodecDefinition: ICodecDefinition
         return new DeflateStream(input, CompressionMode.Decompress);
     }
 }
-public sealed class FlateEncodeWrapper: SequentialReadFilterStream
+public sealed class FlateEncodeWrapper: DefaultBaseStream
 {
 
     private enum State
@@ -43,7 +44,7 @@ public sealed class FlateEncodeWrapper: SequentialReadFilterStream
     private readonly Pipe reverser;
     private readonly Stream compressedSource;
             
-    public FlateEncodeWrapper(Stream source)
+    public FlateEncodeWrapper(Stream source): base(true, false,false)
     {
         this.source = source;
         state = State.WritePrefix;

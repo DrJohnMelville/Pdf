@@ -4,10 +4,11 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
 
-public class ReadingFilterStream : SequentialReadFilterStream
+public class ReadingFilterStream : DefaultBaseStream
 {
     private readonly IStreamFilterDefinition filter;
     private PipeReader source;
@@ -25,7 +26,8 @@ public class ReadingFilterStream : SequentialReadFilterStream
             new MinimumReadSizeFilter(ret, filter.MinWriteSize):
             ret;
 
-    private ReadingFilterStream(Stream sourceStream, IStreamFilterDefinition filter)
+    private ReadingFilterStream(Stream sourceStream, IStreamFilterDefinition filter):
+        base(true, false, false)
     {
         this.filter = filter;
         this.source = PipeReader.Create(sourceStream);

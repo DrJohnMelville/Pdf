@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
@@ -48,12 +50,12 @@ public class Adler32Computer
     }
 }
 
-public class ReadAdlerStream : SequentialReadFilterStream
+public class ReadAdlerStream : DefaultBaseStream
 {
     public Adler32Computer Computer { get; }= new();
     private readonly Stream source;
 
-    public ReadAdlerStream(Stream source)
+    public ReadAdlerStream(Stream source): base(true, false, false)
     {
         this.source = source;
     }
