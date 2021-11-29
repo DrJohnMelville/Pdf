@@ -44,6 +44,14 @@ public static class SequenceReaderExtensions
     public static XyzNumber ReadXyzNumber(this ref SequenceReader<byte> source) =>
         new XyzNumber(source.Reads15Fixed16(), source.Reads15Fixed16(), source.Reads15Fixed16());
 
+    public static XyzNumber ReadXyzFromUint16s(this ref SequenceReader<byte> source) =>
+        new(source.ReadUshortasFloat0To1(),
+            source.ReadUshortasFloat0To1(),
+            source.ReadUshortasFloat0To1());
+
+    public static float ReadUshortasFloat0To1(this ref SequenceReader<byte> source) => 
+        source.ReadBigEndianUint16() / ((float)ushort.MaxValue);
+
     public static DateTime ReadDateTimeNumber(this ref SequenceReader<byte> reader) => new(
             reader.ReadBigEndianUint16(), 
             reader.ReadBigEndianUint16(), 
@@ -53,7 +61,7 @@ public static class SequenceReaderExtensions
             reader.ReadBigEndianUint16(), 
             0, DateTimeKind.Utc);
 
-    public static string ReadFixedString(this ref SequenceReader<byte> reader, int length)
+    public static string ReadFixedAsciiString(this ref SequenceReader<byte> reader, int length)
     {
         Span<char> buffer= stackalloc char[length];
         int endPoos = length;
@@ -67,6 +75,7 @@ public static class SequenceReaderExtensions
 
     public static ushort[] ReadUshortArray(this ref SequenceReader<byte> reader, int len)
     {
+        if (len == 0) return Array.Empty<ushort>();
         var ret = new ushort[len];
         for (int i = 0; i < ret.Length; i++)
         {
@@ -86,4 +95,8 @@ public static class SequenceReaderExtensions
         }
         return ret;
     }
+
+    public static void Skip32BitPad(ref this SequenceReader<byte> reader) => reader.ReadBigEndianUint32();
+    public static void Skip16BitPad(ref this SequenceReader<byte> reader) => reader.ReadBigEndianUint16();
+    public static void Skip8BitPad(ref this SequenceReader<byte> reader) => reader.ReadBigEndianUint8();
 }

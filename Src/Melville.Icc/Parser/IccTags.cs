@@ -11,4 +11,7 @@ public static class IccTags
     public const uint mft2 = 0x6d667432;
     public const uint mft1 = 0x6d667431;
     public const uint meas = 0x6d656173;
+    public const uint mluc = 0x6d6c7563;
+    public const uint ncl2 = 0x6e636c32;
+    public const uint para = 0x70617261;
 }

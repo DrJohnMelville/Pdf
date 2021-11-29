@@ -9,7 +9,7 @@ public class CurveTag: ProfileData
 
      public CurveTag(ref SequenceReader<byte> reader)
      {
-          reader.ReadBigEndianUint32(); // padding
+          reader.Skip32BitPad();
           Values = reader.ReadUshortArray((int)reader.ReadBigEndianUint32());
      }
 }

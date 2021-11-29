@@ -241,7 +241,7 @@ public class ICCParserTest
     [Fact]
     public async Task MeasurementTypeTest()
     {
-        var tag = await ParseTag<MeasurementTYpeTag>("<6d65617300000000 00000001 " +
+        var tag = await ParseTag<MeasurementTypeTag>("<6d65617300000000 00000001 " +
                                                      "0001 0000 00020000 00030000" +
                                                      "00000002 00010000 00000005>");
 
@@ -252,5 +252,77 @@ public class ICCParserTest
         Assert.Equal(MeasurmentGeomenty.a0, tag.Geometry);
         Assert.Equal(MeasurmentFlare.f100, tag.Flare);
         Assert.Equal(StandardIllumination.D55, tag.Illumination);
+    }
+
+    [Fact]
+    public async Task MultiLocalizedString()
+    {
+        var tag = await ParseTag<MultiLocalizedUnicodeTag>(
+            "<6d6c7563 00000000 00000003 0000000C" +
+            "00010004 0000000A 00000034" +
+            "00020007 0000000E 00000044" +
+            "00010009 0000000A 00000034" +
+            "00610062 00630064 00650000 00000000" +
+            "00410042 00430044 00450046 0047>");
+        Assert.Equal(3, tag.Encodings.Count);
+        Assert.Equal(1, tag.Encodings[0].Langugae);
+        Assert.Equal(4, tag.Encodings[0].Country);
+        Assert.Equal("abcde", tag.Encodings[0].Value);
+        Assert.Equal(2, tag.Encodings[1].Langugae);
+        Assert.Equal(7, tag.Encodings[1].Country);
+        Assert.Equal("ABCDEFG", tag.Encodings[1].Value);
+        Assert.Equal(1, tag.Encodings[2].Langugae);
+        Assert.Equal(9, tag.Encodings[2].Country);
+        Assert.Equal("abcde", tag.Encodings[2].Value);
+    }
+
+    [Fact]
+    public async Task NamedColorTag()
+    {
+        var tag = await ParseTag<NamedColorTag>(
+            "<6e636c32 00000000 ffff0000 00000002 00000003" +
+             "61620000 00000000 00000000 00000000 00000000 00000000 00000000 00000000" + // prefix
+             "62610000 00000000 00000000 00000000 00000000 00000000 00000000 00000000" + // postfix
+             "41424300 00000000 00000000 00000000 00000000 00000000 00000000 00000000" + // first color name
+             "ffff0000 ffff7777 66665555" +          // first color values
+             "46474800 00000000 00000000 00000000 00000000 00000000 00000000 00000000" + // Second color name
+             "0000ffff ffff1111 22221234" +          // Second color values
+            ">");
+        Assert.Equal(0xffff0000u, tag.VendorSpecificFlag);
+        Assert.Equal(2, tag.Colors.Count);
+        Assert.Equal("abABCba", tag.Colors[0].Name);
+        Assert.Equal("abFGHba", tag.Colors[1].Name);
+        Assert.Equal(1.0f, tag.Colors[0].PcsValue.X);
+        Assert.Equal(0.0f, tag.Colors[0].PcsValue.Y);
+        Assert.Equal(1.0f, tag.Colors[0].PcsValue.Z);
+        Assert.Equal(0x7777, tag.Colors[0].DeviceValue[0]);
+        Assert.Equal(0x6666, tag.Colors[0].DeviceValue[1]);
+        Assert.Equal(0x5555, tag.Colors[0].DeviceValue[2]);
+        Assert.Equal(0.0f, tag.Colors[1].PcsValue.X);
+        Assert.Equal(1.0f, tag.Colors[1].PcsValue.Y);
+        Assert.Equal(1.0f, tag.Colors[1].PcsValue.Z);
+        Assert.Equal(0x1111, tag.Colors[1].DeviceValue[0]);
+        Assert.Equal(0x2222, tag.Colors[1].DeviceValue[1]);
+        Assert.Equal(0x1234, tag.Colors[1].DeviceValue[2]);
+    }
+
+    [Theory]
+    [InlineData("<70617261 00000000 00000000 000F0000>", 15, 1, 0, 0, float.MinValue, 0,0)]
+    [InlineData("<70617261 00000000 00010000 000F0000 000E0000 000D0000>", 15, 14, 13, 0, -13f/14, 0,0)]
+    [InlineData("<70617261 00000000 00020000 000F0000 000E0000 000D0000 000C0000>", 15, 14, 13, 12, -13f/14, 0,0)]
+    [InlineData("<70617261 00000000 00030000 000F0000 000E0000 000D0000 000C0000 000B0000>", 15, 14, 13, 0, 11, 12,0)]
+    [InlineData("<70617261 00000000 00040000 000F0000 000E0000 000D0000 000C0000 000B0000 000A0000 00090000>",
+        15, 14, 13, 12, 11, 10,9)]
+    public async Task ParametricCurveTag(string text, 
+        float g, float a, float b, float c, float d, float e, float f)
+    {
+        var tag = await ParseTag<ParametricCurveTag>(text);
+        Assert.Equal(g, tag.G);
+        Assert.Equal(a, tag.A);
+        Assert.Equal(b, tag.B);
+        Assert.Equal(c, tag.C);
+        Assert.Equal(d, tag.D);
+        Assert.Equal(e, tag.E);
+        Assert.Equal(f, tag.F);
     }
 }

@@ -19,7 +19,10 @@ public static class TagParser
             IccTags.dtim => new DateTimeTag(ref reader),
             IccTags.mft2 => new LutXTag(ref reader, 2),
             IccTags.mft1 => new LutXTag(ref reader, 1),
-            IccTags.meas => new MeasurementTYpeTag(ref reader),
+            IccTags.meas => new MeasurementTypeTag(ref reader),
+            IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader),
+            IccTags.ncl2 => new NamedColorTag(ref reader),
+            IccTags.para => new ParametricCurveTag(ref reader),
             _ => throw new InvalidDataException("Unknown ICC object type")
         };
     }

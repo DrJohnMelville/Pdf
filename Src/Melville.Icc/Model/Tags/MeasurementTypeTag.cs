@@ -36,7 +36,7 @@ public enum StandardIllumination : uint
     F8 = 8
 }
 
-public class MeasurementTYpeTag: ProfileData
+public class MeasurementTypeTag: ProfileData
 {
     public StandardObserver Observer { get; }
     public XyzNumber MeasurementBacking { get; }
@@ -44,10 +44,10 @@ public class MeasurementTYpeTag: ProfileData
     public MeasurmentFlare Flare { get; }
     public StandardIllumination Illumination { get; }
     
-    public MeasurementTYpeTag(ref SequenceReader<byte> reader)
+    public MeasurementTypeTag(ref SequenceReader<byte> reader)
     {
 
-        reader.ReadBigEndianUint32(); // padding
+        reader.Skip32BitPad();
         Observer = (StandardObserver)reader.ReadBigEndianUint32();
         MeasurementBacking = reader.ReadXyzNumber();
         Geometry = (MeasurmentGeomenty)reader.ReadBigEndianUint32();

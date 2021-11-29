@@ -14,7 +14,7 @@ public class ColorantTableTag : ProfileData
         var cols = new ColorantTableEntry[reader.ReadBigEndianUint32()];
         for (int i = 0; i < cols.Length; i++)
         {
-            cols[i] = new ColorantTableEntry(reader.ReadFixedString(32),
+            cols[i] = new ColorantTableEntry(reader.ReadFixedAsciiString(32),
                 reader.ReadBigEndianUint16(), reader.ReadBigEndianUint16(), reader.ReadBigEndianUint16());
         }
         Colorants = cols;

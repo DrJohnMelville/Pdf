@@ -16,11 +16,11 @@ public class LutXTag : ProfileData
     public IReadOnlyList<float> OutputTables { get; }
     public LutXTag(ref SequenceReader<byte> reader, int teblePrecisionInBytes)
     {
-        reader.ReadBigEndianUint32(); // padding
+        reader.Skip32BitPad();
         Inputs = reader.ReadBigEndianUint8();
         Outputs = reader.ReadBigEndianUint8();
         GridPoints = reader.ReadBigEndianUint8();
-        reader.ReadBigEndianUint8(); // padding
+        reader.Skip8BitPad();
         Matrix = new Matrix3x3(
             reader.Reads15Fixed16(),
             reader.Reads15Fixed16(),

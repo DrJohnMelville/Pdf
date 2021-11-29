@@ -16,7 +16,7 @@ public class DataTag: ProfileData{
 
      public DataTag(ref SequenceReader<byte> reader)
      {
-         reader.ReadBigEndianUint32(); // pad
+         reader.Skip32BitPad();
          Type = (DataType)reader.ReadBigEndianUint32();
          data = new byte[reader.Length - 12];
          for (int i = 0; i < data.Length; i++)

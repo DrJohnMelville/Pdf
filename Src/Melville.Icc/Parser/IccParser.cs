@@ -2,12 +2,12 @@
 using System.IO.Pipelines;
 using Melville.Icc.Model;
 using Melville.Parsing.CountingReaders;
-
 namespace Melville.Icc.Parser;
 
 public readonly struct IccParser
 {
-    public readonly CountingPipeReader source;
+    private readonly CountingPipeReader source;
+    
 
     public IccParser(PipeReader source)
     {
