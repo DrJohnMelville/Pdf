@@ -14,4 +14,6 @@ public static class IccTags
     public const uint mluc = 0x6d6c7563;
     public const uint ncl2 = 0x6e636c32;
     public const uint para = 0x70617261;
+    public const uint pseq = 0x70736571;
+    public const uint psid = 0x70736964;
 }

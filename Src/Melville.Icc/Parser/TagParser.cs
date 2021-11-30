@@ -23,6 +23,8 @@ public static class TagParser
             IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader),
             IccTags.ncl2 => new NamedColorTag(ref reader),
             IccTags.para => new ParametricCurveTag(ref reader),
+            IccTags.pseq => new ProfileSequenceDescriptionTag(ref reader),
+            IccTags.psid => new ProfileSequenceIdentifierTag(ref reader),
             _ => throw new InvalidDataException("Unknown ICC object type")
         };
     }

@@ -257,13 +257,18 @@ public class ICCParserTest
     [Fact]
     public async Task MultiLocalizedString()
     {
-        var tag = await ParseTag<MultiLocalizedUnicodeTag>(
-            "<6d6c7563 00000000 00000003 0000000C" +
-            "00010004 0000000A 00000034" +
-            "00020007 0000000E 00000044" +
-            "00010009 0000000A 00000034" +
-            "00610062 00630064 00650000 00000000" +
-            "00410042 00430044 00450046 0047>");
+        var tag = await ParseTag<MultiLocalizedUnicodeTag>($"<{MultiLocalizedName}>");
+        VerifyMultiLocalizedStream(tag);
+    }
+    private const string MultiLocalizedName = "6d6c7563 00000000 00000003 0000000C" +
+                             "00010004 0000000A 00000034" +
+                             "00020007 0000000E 00000044" +
+                             "00010009 0000000A 00000034" +
+                             "00610062 00630064 00650000 00000000" +
+                             "00410042 00430044 00450046 0047";
+
+    private static void VerifyMultiLocalizedStream(MultiLocalizedUnicodeTag tag)
+    {
         Assert.Equal(3, tag.Encodings.Count);
         Assert.Equal(1, tag.Encodings[0].Langugae);
         Assert.Equal(4, tag.Encodings[0].Country);
@@ -324,5 +329,33 @@ public class ICCParserTest
         Assert.Equal(d, tag.D);
         Assert.Equal(e, tag.E);
         Assert.Equal(f, tag.F);
+    }
+
+    [Fact]
+    public async Task ProfileSequenceDescTag()
+    {
+        var pds = $"00000001 00000002 00000000 00000004 7669646d {MultiLocalizedName} {MultiLocalizedName}";
+        var tag = await ParseTag<ProfileSequenceDescriptionTag>($"<70736571 00000000 00000002 {pds} {pds}>");
+        Assert.Equal(2, tag.Profiles.Count);
+        Assert.Equal(1ul, tag.Profiles[0].Manufacturer);
+        Assert.Equal(2ul, tag.Profiles[0].Device);
+        Assert.Equal(DeviceAttributes.Negative, tag.Profiles[0].DeviceAttributes);
+        Assert.Equal(DeviceTechnology.VideoMonitor, tag.Profiles[0].DeviceTechnology);
+        VerifyMultiLocalizedStream(tag.Profiles[1].DeviceName);
+    }
+
+    [Fact]
+    public async Task ProfileSequenceIdentifierTag()
+    {
+        var tag = await ParseTag<ProfileSequenceIdentifierTag>("<70736964 00000000 00000002" +
+                                                               "0000001C 00000062 0000001c 00000062" +
+                                                               $"12345678 12345678 87654321 A9876543 {MultiLocalizedName}>");
+        Assert.Equal(2, tag.Profiles.Count);
+        Assert.Equal(0x1234567812345678ul, tag.Profiles[0].ProfileIdHigh);
+        Assert.Equal(0x87654321A9876543ul, tag.Profiles[0].ProfileIdLow);
+        Assert.Equal(0x1234567812345678ul, tag.Profiles[1].ProfileIdHigh);
+        Assert.Equal(0x87654321A9876543ul, tag.Profiles[1].ProfileIdLow);
+        VerifyMultiLocalizedStream(tag.Profiles[0].Description);
+        VerifyMultiLocalizedStream(tag.Profiles[1].Description);
     }
 }
