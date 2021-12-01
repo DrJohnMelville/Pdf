@@ -358,4 +358,57 @@ public class ICCParserTest
         VerifyMultiLocalizedStream(tag.Profiles[0].Description);
         VerifyMultiLocalizedStream(tag.Profiles[1].Description);
     }
+
+    [Fact]
+    public async Task ResponseCurve16Set16TagTest()
+    {
+        var tag = await ParseTag<ResponseCurveSet16Tag>(
+            "<72637332 00000000 00030002 00000014 00000014" +
+            " 53746141 00000003 00000003 00000003" +
+            " 00040000 00050000 00060000 00070000 00080000 00090000 000A0000 000B0000 000C0000" +
+            " 00010000 00020000 00030000 00040000 00050000 00060000 00070000 00080000 00090000 000A0000 000B0000 000C0000" +
+             "00010000 00020000 00030000 00040000 00050000 00060000>");
+        Assert.Equal(2, tag.Curves.Count);
+        CheckResponseCurve(tag.Curves[0]);
+        CheckResponseCurve(tag.Curves[1]);
+    }
+
+    private static void CheckResponseCurve(ResponseCurve curve)
+    {
+        Assert.Equal(CurveMeasurement.StatusA, curve.Unit);
+        Assert.Equal(3, curve.Channels.Count);
+        Assert.Equal(3, curve.Channels[0].response.Count);
+        Assert.Equal(3, curve.Channels[1].response.Count);
+        Assert.Equal(3, curve.Channels[2].response.Count);
+
+        Assert.Equal(4, curve.Channels[0].MaximumColorantValue.X);
+        Assert.Equal(5, curve.Channels[0].MaximumColorantValue.Y);
+        Assert.Equal(6, curve.Channels[0].MaximumColorantValue.Z);
+        Assert.Equal(7, curve.Channels[1].MaximumColorantValue.X);
+        Assert.Equal(8, curve.Channels[1].MaximumColorantValue.Y);
+        Assert.Equal(9, curve.Channels[1].MaximumColorantValue.Z);
+        Assert.Equal(10, curve.Channels[2].MaximumColorantValue.X);
+        Assert.Equal(11, curve.Channels[2].MaximumColorantValue.Y);
+        Assert.Equal(12, curve.Channels[2].MaximumColorantValue.Z);
+
+
+        Assert.Equal(1, curve.Channels[0].response[0].DeviceValue);
+        Assert.Equal(2, curve.Channels[0].response[0].MeasurementValue);
+        Assert.Equal(3, curve.Channels[0].response[1].DeviceValue);
+        Assert.Equal(4, curve.Channels[0].response[1].MeasurementValue);
+        Assert.Equal(5, curve.Channels[0].response[2].DeviceValue);
+        Assert.Equal(6, curve.Channels[0].response[2].MeasurementValue);
+        Assert.Equal(7, curve.Channels[1].response[0].DeviceValue);
+        Assert.Equal(8, curve.Channels[1].response[0].MeasurementValue);
+        Assert.Equal(9, curve.Channels[1].response[1].DeviceValue);
+        Assert.Equal(10, curve.Channels[1].response[1].MeasurementValue);
+        Assert.Equal(11, curve.Channels[1].response[2].DeviceValue);
+        Assert.Equal(12, curve.Channels[1].response[2].MeasurementValue);
+        Assert.Equal(1, curve.Channels[2].response[0].DeviceValue);
+        Assert.Equal(2, curve.Channels[2].response[0].MeasurementValue);
+        Assert.Equal(3, curve.Channels[2].response[1].DeviceValue);
+        Assert.Equal(4, curve.Channels[2].response[1].MeasurementValue);
+        Assert.Equal(5, curve.Channels[2].response[2].DeviceValue);
+        Assert.Equal(6, curve.Channels[2].response[2].MeasurementValue);
+    }
 }

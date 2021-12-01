@@ -1,7 +1,4 @@
-﻿using System.Buffers;
-using Melville.Icc.Parser;
-
-namespace Melville.Icc.Model;
+﻿namespace Melville.Icc.Model;
 
 //The order of fields in this type is their order in the header, which facilitates parsing.
 public record struct IccHeader(

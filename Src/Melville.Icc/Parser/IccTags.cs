@@ -16,4 +16,5 @@ public static class IccTags
     public const uint para = 0x70617261;
     public const uint pseq = 0x70736571;
     public const uint psid = 0x70736964;
+    public const uint rcs2 = 0x72637332;
 }
