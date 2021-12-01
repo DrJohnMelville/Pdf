@@ -390,8 +390,7 @@ public class ICCParserTest
         Assert.Equal(10, curve.Channels[2].MaximumColorantValue.X);
         Assert.Equal(11, curve.Channels[2].MaximumColorantValue.Y);
         Assert.Equal(12, curve.Channels[2].MaximumColorantValue.Z);
-
-
+        
         Assert.Equal(1, curve.Channels[0].response[0].DeviceValue);
         Assert.Equal(2, curve.Channels[0].response[0].MeasurementValue);
         Assert.Equal(3, curve.Channels[0].response[1].DeviceValue);
@@ -410,5 +409,17 @@ public class ICCParserTest
         Assert.Equal(4, curve.Channels[2].response[1].MeasurementValue);
         Assert.Equal(5, curve.Channels[2].response[2].DeviceValue);
         Assert.Equal(6, curve.Channels[2].response[2].MeasurementValue);
+    }
+
+    [Fact]
+    public async Task ParseS15Fixed16ArrayTag()
+    {
+        var tag = await ParseTag<S15Fixed16Array>("<73663332 00000000" +
+                                                  "00010000 00020000 00030000 00040000>");
+        Assert.Equal(4, tag.Values.Count);
+        Assert.Equal(1f, tag.Values[0]);
+        Assert.Equal(2f, tag.Values[1]);
+        Assert.Equal(3f, tag.Values[2]);
+        Assert.Equal(4f, tag.Values[3]);
     }
 }
