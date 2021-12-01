@@ -422,4 +422,14 @@ public class ICCParserTest
         Assert.Equal(3f, tag.Values[2]);
         Assert.Equal(4f, tag.Values[3]);
     }
+
+    [Fact]
+    public async Task ParseSignatureTag()
+    {
+        var tag = await ParseTag<SignatureTag>("<73696720 00000000 12345678>");
+        Assert.Equal(0x12345678u, tag.Signature);
+        
+    }
+    
+    
 }

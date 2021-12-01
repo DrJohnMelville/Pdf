@@ -27,6 +27,7 @@ public static class TagParser
             IccTags.psid => new ProfileSequenceIdentifierTag(ref reader),
             IccTags.rcs2 => new ResponseCurveSet16Tag(ref reader),
             IccTags.sf32 => new S15Fixed16Array(ref reader),
+            IccTags.sig  => new SignatureTag(ref reader),
             _ => throw new InvalidDataException("Unknown ICC object type")
         };
     }
