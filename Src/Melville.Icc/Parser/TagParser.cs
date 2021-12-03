@@ -28,6 +28,13 @@ public static class TagParser
             IccTags.rcs2 => new ResponseCurveSet16Tag(ref reader),
             IccTags.sf32 => new S15Fixed16Array(ref reader),
             IccTags.sig  => new SignatureTag(ref reader),
+            IccTags.text => new TextTag(ref reader),
+            IccTags.uf32 => new U16Fixed16Array(ref reader),
+            IccTags.ui16 => new UInt16Array(ref reader),
+            IccTags.ui32 => new UInt32Array(ref reader),
+            IccTags.ui64 => new UInt64Array(ref reader),
+            IccTags.XYZ => new XyzArray(ref reader),
+            IccTags.view => new ViewingConditionsTag(ref reader),
             _ => throw new InvalidDataException("Unknown ICC object type")
         };
     }

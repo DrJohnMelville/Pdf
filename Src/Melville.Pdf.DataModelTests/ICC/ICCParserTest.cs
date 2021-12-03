@@ -430,6 +430,74 @@ public class ICCParserTest
         Assert.Equal(0x12345678u, tag.Signature);
         
     }
+
+    [Fact]
+    public async Task ParseTextType()
+    {
+        var tag = await ParseTag<TextTag>("<74657874 00000000 61626364 6566>");
+        Assert.Equal("abcdef", tag.Text);
+    }
+
+    [Fact]
+    public async Task Parseu16Fixed16Array ()
+    {
+        var tag = await ParseTag<U16Fixed16Array>("<75663332 00000000 00010000 00020000>");
+        Assert.Equal(2, tag.Values.Count);
+        Assert.Equal(1, tag.Values[0]);
+        Assert.Equal(2, tag.Values[1]);
+        
+    }
+    [Fact]
+    public async Task ParseUint16Array()
+    {
+        var tag = await ParseTag<UInt16Array>("<75693136 00000000 00010002>");
+        Assert.Equal(2, tag.Values.Count);
+        Assert.Equal(1, tag.Values[0]);
+        Assert.Equal(2, tag.Values[1]);
+        
+    }
+    [Fact]
+    public async Task ParseUint32Array()
+    {
+        var tag = await ParseTag<UInt32Array>("<75693332 00000000 00000001 00000002>");
+        Assert.Equal(2, tag.Values.Count);
+        Assert.Equal(1u, tag.Values[0]);
+        Assert.Equal(2u, tag.Values[1]);
+    }
+    
+    [Fact]
+    public async Task ParseUint64Array()
+    {
+        var tag = await ParseTag<UInt64Array>("<75693634 00000000 00000000 00000001 00000000 00000002>");
+        Assert.Equal(2, tag.Values.Count);
+        Assert.Equal(1ul, tag.Values[0]);
+        Assert.Equal(2ul, tag.Values[1]);
+    }
+    [Fact]
+    public async Task ParseXyzArray()
+    {
+        var tag = await ParseTag<XyzArray>("<58595a20 00000000 00010000 00020000 00030000 00040000 00050000 00060000>");
+        Assert.Equal(2, tag.Values.Count);
+        Assert.Equal(1, tag.Values[0].X);
+        Assert.Equal(2, tag.Values[0].Y);
+        Assert.Equal(3, tag.Values[0].Z);
+        Assert.Equal(4, tag.Values[1].X);
+        Assert.Equal(5, tag.Values[1].Y);
+        Assert.Equal(6, tag.Values[1].Z);
+    }
+    [Fact]
+    public async Task ParseViewindConditionsTab()
+    {
+        var tag = await ParseTag<ViewingConditionsTag>("<76696577 00000000 00010000 00020000 00030000 00040000 00050000 00060000 00000004>");
+        Assert.Equal(1, tag.IlluminantValue.X);
+        Assert.Equal(2, tag.IlluminantValue.Y);
+        Assert.Equal(3, tag.IlluminantValue.Z);
+        Assert.Equal(4, tag.SurroundValue.X);
+        Assert.Equal(5, tag.SurroundValue.Y);
+        Assert.Equal(6, tag.SurroundValue.Z);
+        Assert.Equal(StandardIllumination.F2, tag.IlluminantType);
+        
+    }
     
     
 }

@@ -19,4 +19,11 @@ public static class IccTags
     public const uint rcs2 = 0x72637332;
     public const uint sf32 = 0x73663332;
     public const uint sig = 0x73696720;
+    public const uint text = 0x74657874;
+    public const uint uf32 = 0x75663332;
+    public const uint ui16 = 0x75693136;
+    public const uint ui32 = 0x75693332;
+    public const uint ui64 = 0x75693634;
+    public const uint view = 0x76696577;
+    public const uint XYZ = 0x58595a20;
 }
