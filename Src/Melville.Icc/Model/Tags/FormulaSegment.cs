@@ -42,6 +42,7 @@ public class FormulaSegmentType2 : ProfileData, ICurveSegment
     public float C { get; }
     public float D { get; }
     public float E { get; }
+
     public FormulaSegmentType2(ref SequenceReader<byte> reader)
     {
         A = reader.ReadIEEE754Float();
@@ -49,5 +50,15 @@ public class FormulaSegmentType2 : ProfileData, ICurveSegment
         C = reader.ReadIEEE754Float();
         D = reader.ReadIEEE754Float();
         E = reader.ReadIEEE754Float();
+    }
+}
+
+public class SampledCurveSegment : ProfileData, ICurveSegment
+{
+    public IReadOnlyList<float> Samples { get; }
+    public SampledCurveSegment(ref SequenceReader<byte> reader)
+    {
+        reader.Skip32BitPad();
+        Samples = reader.ReadIEEE754FloatArray((int)reader.ReadBigEndianUint32());
     }
 }

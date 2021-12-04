@@ -779,4 +779,19 @@ public class ICCParserTest
         Assert.Equal(5.1, tag.D, 3);
         Assert.Equal(5.1, tag.E, 3);
     }
+    [Fact]
+    public async Task ParseSampledCurveSegment()
+    {
+        var tag = await ParseTag<SampledCurveSegment>(
+            "<73616d66 00000000 00000005 40a33333 40a33333 40a33333 40a33333 40a33333>");
+        Assert.Equal(5, tag.Samples.Count);
+        for (int i = 0; i < 5; i++)
+        {
+            Assert.Equal(5.1, tag.Samples[i], 3);
+            
+        }
+        
+    }
+    
+    
 }

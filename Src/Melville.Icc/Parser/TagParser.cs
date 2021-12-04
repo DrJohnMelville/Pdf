@@ -39,6 +39,7 @@ public static class TagParser
             IccTags.pseq => new ProfileSequenceDescriptionTag(ref reader),
             IccTags.psid => new ProfileSequenceIdentifierTag(ref reader),
             IccTags.rcs2 => new ResponseCurveSet16Tag(ref reader),
+            IccTags.samf => new SampledCurveSegment(ref reader),
             IccTags.sf32 => new S15Fixed16Array(ref reader),
             IccTags.sig => new SignatureTag(ref reader),
             IccTags.text => new TextTag(ref reader),
