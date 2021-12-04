@@ -21,17 +21,7 @@ public class LutXTag : ProfileData
         Outputs = reader.ReadBigEndianUint8();
         GridPoints = reader.ReadBigEndianUint8();
         reader.Skip8BitPad();
-        Matrix = new Matrix3x3(
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16(),
-            reader.Reads15Fixed16()
-        );
+        Matrix = new Matrix3x3(ref reader);
         InputTableEntries = reader.ReadBigEndianUint16();
         OutputTableEntries = reader.ReadBigEndianUint16();
         InputTables = reader.ReadScaledFloatArray(InputTableEntries * Inputs,teblePrecisionInBytes);

@@ -1,4 +1,8 @@
-﻿namespace Melville.Icc.Model.Tags;
+﻿using System.Buffers;
+using System.Security.Cryptography.X509Certificates;
+using Melville.Icc.Parser;
+
+namespace Melville.Icc.Model.Tags;
 
 public readonly struct Matrix3x3
 {
@@ -25,4 +29,36 @@ public readonly struct Matrix3x3
         M32 = m32;
         M33 = m33;
     }
+    
+    public Matrix3x3(ref SequenceReader<byte> reader): this(
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16(),
+        reader.Reads15Fixed16()
+        ){}
+}
+
+public readonly struct AugmentedMatrix3x3
+{
+    public Matrix3x3 Kernel { get; }
+    public float TranslateX { get; }
+    public float TranslateY { get; }
+    public float TranslateZ { get; }
+
+    public AugmentedMatrix3x3(Matrix3x3 kernel, float translateX, float translateY, float translateZ)
+    {
+        Kernel = kernel;
+        TranslateX = translateX;
+        TranslateY = translateY;
+        TranslateZ = translateZ;
+    }
+    
+    public AugmentedMatrix3x3(ref SequenceReader<byte> reader):
+        this (new Matrix3x3(ref reader),
+            reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16()){}
 }

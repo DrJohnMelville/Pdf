@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class CurveTag: ProfileData
+public class CurveTag: ProfileData, ICurveTag
 {
      public IReadOnlyList<ushort> Values { get; }
 

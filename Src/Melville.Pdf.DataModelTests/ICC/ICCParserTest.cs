@@ -496,8 +496,171 @@ public class ICCParserTest
         Assert.Equal(5, tag.SurroundValue.Y);
         Assert.Equal(6, tag.SurroundValue.Z);
         Assert.Equal(StandardIllumination.F2, tag.IlluminantType);
+    }
+
+
+    [Fact]
+    public async Task ParseLutBAIdentity()
+    {
+        var tag = await ParseTag<LutAToBTag>("<6D414220 00000000 03020000 " +
+                                             "00000000 00000000 00000000 00000000 00000000>");
+
+        Assert.Equal(1, tag.Matrix.Kernel.M11, 6);
+        Assert.Equal(0, tag.Matrix.Kernel.M12, 6);
+        Assert.Equal(0, tag.Matrix.Kernel.M13, 6);
+        Assert.Equal(0, tag.Matrix.Kernel.M21, 6);
+        Assert.Equal(1, tag.Matrix.Kernel.M22, 6);
+        Assert.Equal(0, tag.Matrix.Kernel.M23, 6);
+        Assert.Equal(0, tag.Matrix.Kernel.M31, 6);
+        Assert.Equal(0, tag.Matrix.Kernel.M32, 6);
+        Assert.Equal(1, tag.Matrix.Kernel.M33, 6);
+        Assert.Equal(0, tag.Matrix.TranslateX, 6);
+        Assert.Equal(0, tag.Matrix.TranslateY, 6);
+        Assert.Equal(0, tag.Matrix.TranslateZ, 6);
+
+        VerifyCurveType<NullCurve>(3, tag.InputCurves);
+        VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
+        VerifyCurveType<NullCurve>(2, tag.OutputCurves);
+
+        Assert.Equal(NullMultiDimensionalLookupTable.Instance, tag.LookupTable);
         
     }
+
+    private static void VerifyCurveType<T>(int length, IReadOnlyList<ICurveTag> curves)
+    {
+        Assert.Equal(length, curves.Count);
+        foreach (var curve in curves)
+        {
+            Assert.True(curve is T);
+        }
+    }
+
+    [Fact]
+    public async Task ParseLutABWithMatrix()
+    {
+        var tag = await ParseTag<LutAToBTag>("<6D414220 00000000 03020000 " +
+          "00000000 00000020 00000000 00000000 00000000" +
+          "00000001 00000002 00000003 00000004 00000005 00000006 00000007 00000008 00000009 0000000A 0000000B 0000000C 0000000D>");
+
+        Assert.Equal(1 * 1.5259022E-05, tag.Matrix.Kernel.M11, 6);
+        Assert.Equal(2 * 1.5259022E-05, tag.Matrix.Kernel.M12, 6);
+        Assert.Equal(3 * 1.5259022E-05, tag.Matrix.Kernel.M13, 6);
+        Assert.Equal(4 * 1.5259022E-05, tag.Matrix.Kernel.M21, 6);
+        Assert.Equal(5 * 1.5259022E-05, tag.Matrix.Kernel.M22, 6);
+        Assert.Equal(6 * 1.5259022E-05, tag.Matrix.Kernel.M23, 6);
+        Assert.Equal(7 * 1.5259022E-05, tag.Matrix.Kernel.M31, 6);
+        Assert.Equal(8 * 1.5259022E-05, tag.Matrix.Kernel.M32, 6);
+        Assert.Equal(9 * 1.5259022E-05, tag.Matrix.Kernel.M33, 6);
+        Assert.Equal(10 * 1.5259022E-05, tag.Matrix.TranslateX, 6);
+        Assert.Equal(11 * 1.5259022E-05, tag.Matrix.TranslateY, 6);
+        Assert.Equal(12 * 1.5259022E-05, tag.Matrix.TranslateZ, 6);
+    }
+
+    private const string SimpleParametricCurve = "70617261 00000000 00000000 000F0000";
+
+    [Fact]
+    public async Task ParseLutABWithACurves()
+    {
+        var tag = await ParseTag<LutAToBTag>("<6D414220 00000000 03020000 " +
+          "00000000 00000000 00000000 00000000 00000020 " +
+          SimpleParametricCurve + SimpleParametricCurve + SimpleParametricCurve
+          );
+        VerifyCurveType<ParametricCurveTag>(3, tag.InputCurves);
+        VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
+        VerifyCurveType<NullCurve>(2, tag.OutputCurves);
+    }
+    [Fact]
+    public async Task ParseLutABWithBCurves()
+    {
+        var tag = await ParseTag<LutAToBTag>("<6D414220 00000000 03020000 " +
+          "00000020 00000000 00000000 00000000 00000000 " +
+          SimpleParametricCurve + SimpleParametricCurve
+          );
+        VerifyCurveType<NullCurve>(3, tag.InputCurves);
+        VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
+        VerifyCurveType<ParametricCurveTag>(2, tag.OutputCurves);
+    }
+    [Fact]
+    public async Task ParseLutABWithMatrixCurves()
+    {
+        var tag = await ParseTag<LutAToBTag>("<6D414220 00000000 03020000 " +
+          "00000000 00000000 00000020 00000000 00000000 " +
+          SimpleParametricCurve + SimpleParametricCurve + SimpleParametricCurve
+          );
+        VerifyCurveType<NullCurve>(3, tag.InputCurves);
+        VerifyCurveType<ParametricCurveTag>(3, tag.MatrixCurves);
+        VerifyCurveType<NullCurve>(2, tag.OutputCurves);
+    }
     
+    [Fact]
+    public async Task ParseLutBAWithACurves()
+    {
+        var tag = await ParseTag<LutBToATag>("<6D424120 00000000 03020000 " +
+          "00000000 00000000 00000000 00000000 00000020 " +
+          SimpleParametricCurve + SimpleParametricCurve
+          );
+        VerifyCurveType<NullCurve>(3, tag.InputCurves);
+        VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
+        VerifyCurveType<ParametricCurveTag>(2, tag.OutputCurves);
+    }    [Fact]
+    public async Task ParseLutBAWithBCurves()
+    {
+        var tag = await ParseTag<LutBToATag>("<6D424120 00000000 03020000 " +
+          "00000020 00000000 00000000 00000000 00000000 " +
+          SimpleParametricCurve + SimpleParametricCurve + SimpleParametricCurve
+          );
+        VerifyCurveType<ParametricCurveTag>(3, tag.InputCurves);
+        VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
+        VerifyCurveType<NullCurve>(2, tag.OutputCurves);
+    }
     
+    [Fact]
+    public async Task ParseLutBAWithClut8()
+    {
+        var tag = await ParseTag<LutBToATag>("<6D424120 00000000 03020000 " +
+          "00000000 00000000 00000000 00000020 00000000 " +
+          "02030200 00000000 00000000 00000000" + // parameter dimensions -- 12 entreis/24 bytes total
+          "01000000" + // use byte size data
+          "01020304 05060708 090a0b0c 0d0e0f10 11121314 15161718>"
+          );
+        VerifyCurveType<NullCurve>(3, tag.InputCurves);
+        VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
+        VerifyCurveType<NullCurve>(2, tag.OutputCurves);
+        var table = tag.LookupTable as MultidimensionalLookupTable;
+        Assert.NotNull(table);
+        Assert.Equal(2, table.DimensionLengths[0]);
+        Assert.Equal(3, table.DimensionLengths[1]);
+        Assert.Equal(2, table.DimensionLengths[2]);
+        Assert.Equal(0, table.DimensionLengths[3]);
+        
+        for (int i = 0; i < 24; i++)
+        {
+            Assert.Equal((1f + i) / 255, table.Points[i]);
+        }
+    }
+    [Fact]
+    public async Task ParseLutBAWithClut16()
+    {
+        var tag = await ParseTag<LutBToATag>("<6D424120 00000000 03020000 " +
+          "00000000 00000000 00000000 00000020 00000000 " +
+          "02030200 00000000 00000000 00000000" + // parameter dimensions -- 12 entreis/24 bytes total
+          "02000000" + // use ushort size data
+          "00010002 00030004 00050006 00070008 0009000a 000b000c " +
+          "000d000e 000f0010 00110012 00130014 00150016 00170018>"
+          );
+        VerifyCurveType<NullCurve>(3, tag.InputCurves);
+        VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
+        VerifyCurveType<NullCurve>(2, tag.OutputCurves);
+        var table = tag.LookupTable as MultidimensionalLookupTable;
+        Assert.NotNull(table);
+        Assert.Equal(2, table.DimensionLengths[0]);
+        Assert.Equal(3, table.DimensionLengths[1]);
+        Assert.Equal(2, table.DimensionLengths[2]);
+        Assert.Equal(0, table.DimensionLengths[3]);
+        
+        for (int i = 0; i < 24; i++)
+        {
+            Assert.Equal((1f + i) / ushort.MaxValue, table.Points[i]);
+        }
+    }
 }

@@ -3,7 +3,15 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class ParametricCurveTag: ProfileData
+public interface ICurveTag{}
+
+public class NullCurve : ICurveTag
+{
+    public static ICurveTag Instance = new NullCurve();
+    private NullCurve(){}
+}
+
+public class ParametricCurveTag: ProfileData, ICurveTag
 {
     public float G { get; }
     public float A { get; }

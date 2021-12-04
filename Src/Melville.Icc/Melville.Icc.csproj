@@ -15,4 +15,8 @@
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Model\Tags\LookupTable.cs" />
+    </ItemGroup>
+
 </Project>
