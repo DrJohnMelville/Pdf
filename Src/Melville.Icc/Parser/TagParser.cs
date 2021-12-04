@@ -21,6 +21,8 @@ public static class TagParser
             IccTags.clrt => new ColorantTableTag(ref reader),
             IccTags.clut => new MultidimensionalLookupTable(ref reader),
             IccTags.curv => new CurveTag(ref reader),
+            IccTags.curf => new MultiProcessCurve(ref reader),
+            IccTags.cvst => new MultiProcessCurveSet(ref reader),
             IccTags.data => new DataTag(ref reader),
             IccTags.dtim => new DateTimeTag(ref reader),
             IccTags.matf => new MultiProcessMatrix(ref reader),
@@ -33,6 +35,7 @@ public static class TagParser
             IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader),
             IccTags.ncl2 => new NamedColorTag(ref reader),
             IccTags.para => new ParametricCurveTag(ref reader),
+            IccTags.parf => ParseCurveSegment(ref reader),
             IccTags.pseq => new ProfileSequenceDescriptionTag(ref reader),
             IccTags.psid => new ProfileSequenceIdentifierTag(ref reader),
             IccTags.rcs2 => new ResponseCurveSet16Tag(ref reader),
@@ -47,4 +50,18 @@ public static class TagParser
             IccTags.view => new ViewingConditionsTag(ref reader),
             _ => throw new InvalidDataException("Unknown ICC object type")
         };
+
+    private static ProfileData ParseCurveSegment(ref SequenceReader<byte> reader)
+    {
+        reader.Skip32BitPad();
+        var fType = reader.ReadBigEndianUint16();
+        reader.Skip16BitPad();
+        return fType switch
+        {
+            0 => new FormulaSegmentType0(ref reader),
+            1 => new FormulaSegmentType1(ref reader),
+            2 => new FormulaSegmentType2(ref reader),
+            _=> throw new InvalidDataException("Unknown curve segment type")
+        };
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -16,4 +17,7 @@ public static class VerifyJumpingPosition
     
     public static SequenceReader<byte> ReaderAt(in this SequenceReader<byte> reader, uint position) =>
         new(reader.Sequence.Slice(position));
+
+    public static SequenceReader<byte> ReadPositionNumber(ref this SequenceReader<byte> reader) =>
+        reader.ReaderAt(reader.ReadBigEndianUint32(), reader.ReadBigEndianUint32());
 }

@@ -719,4 +719,64 @@ public class ICCParserTest
         Assert.Equal(2, tag.Elements[0].Outputs);
         
     }
+
+    [Fact]
+    public async Task MpeCurveSet()
+    {
+        var tag = await ParseTag<MultiProcessTag>("<6d706574 00000000 00020002 00000001 00000018 00000064" + // mp TAG
+           "6d666c74 00000000 00020002 0000001C 00000048 0000001C 00000048  " + // curve set - 2 identical curves
+           "63757266 00000000 00020000 40a33333" + // formula curve segment with 2 parts
+           "70617266 00000000 00000000 40a33333 40a33333 40a33333 40a33333" + // formula part 1
+           "70617266 00000000 00000000 40a33333 40a33333 40a33333 40a33333" + // formula part 2
+           ">");
+        Assert.Equal(1, tag.Elements.Count);
+        var funcs = (MultiProcessCurveSet)tag.Elements[0];
+        Assert.Equal(2, funcs.Inputs);
+        Assert.Equal(2, funcs.Outputs);
+        Assert.Equal(2, funcs.Curves.Count);
+        VerifyFunc(funcs.Curves[0]);
+        VerifyFunc(funcs.Curves[1]);
+    }
+
+    private void VerifyFunc(MultiProcessCurve curve)
+    {
+        Assert.Equal(1, curve.BreakPoints.Count);
+        Assert.Equal(5.1, curve.BreakPoints[0], 2);
+        Assert.Equal(2, curve.Segments.Count);
+        VerifySegment(curve.Segments[0]);
+        VerifySegment(curve.Segments[1]);
+    }
+
+    private void VerifySegment(ICurveSegment curveSegment)
+    {
+        var fs = (FormulaSegmentType0)curveSegment;
+        Assert.NotNull(fs);
+        Assert.Equal(5.1, fs.Gamma, 3);
+        Assert.Equal(5.1, fs.A, 3);
+        Assert.Equal(5.1, fs.B, 3);
+        Assert.Equal(5.1, fs.C, 3); 
+    }
+
+    [Fact]
+    public async Task ParseType1FormulaCurveSegment()
+    {
+        var tag = await ParseTag<FormulaSegmentType1>(
+            "<70617266 00000000 00010000 40a33333 40a33333 40a33333 40a33333 40a33333>");
+        Assert.Equal(5.1, tag.Gamma, 3);
+        Assert.Equal(5.1, tag.A, 3);
+        Assert.Equal(5.1, tag.B, 3);
+        Assert.Equal(5.1, tag.C, 3); 
+        Assert.Equal(5.1, tag.D, 3); 
+    }
+    [Fact]
+    public async Task ParseType2FormulaCurveSegment()
+    {
+        var tag = await ParseTag<FormulaSegmentType2>(
+            "<70617266 00000000 00020000 40a33333 40a33333 40a33333 40a33333 40a33333>");
+        Assert.Equal(5.1, tag.A, 3);
+        Assert.Equal(5.1, tag.B, 3);
+        Assert.Equal(5.1, tag.C, 3);
+        Assert.Equal(5.1, tag.D, 3);
+        Assert.Equal(5.1, tag.E, 3);
+    }
 }

@@ -19,9 +19,7 @@ public class ProfileSequenceIdentifierTag : ProfileData
         var profiles = new ProfileIdentifier[reader.ReadBigEndianUint32()];
         for (int i = 0; i < profiles.Length; i++)
         {
-            var location = reader.ReadBigEndianUint32();
-            var length = reader.ReadBigEndianUint32();
-            profiles[i] = ParseProfileIdentifier(reader.ReaderAt(location, length));
+            profiles[i] = ParseProfileIdentifier(reader.ReadPositionNumber());
         }
         Profiles = profiles;
     }

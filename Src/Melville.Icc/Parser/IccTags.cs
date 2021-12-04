@@ -8,6 +8,8 @@ public static class IccTags
     public const uint clrt = 0x636c7274;
     public const uint clut = 0x636c7574;
     public const uint curv = 0x63757276;
+    public const uint curf = 0x63757266;
+    public const uint cvst = 0x6d666c74;
     public const uint data = 0x64617461;
     public const uint dtim = 0x6474696d;
     public const uint eACS = 0x65414353;
@@ -21,6 +23,7 @@ public static class IccTags
     public const uint mpet = 0x6d706574;
     public const uint ncl2 = 0x6e636c32;
     public const uint para = 0x70617261;
+    public const uint parf = 0x70617266;
     public const uint pseq = 0x70736571;
     public const uint psid = 0x70736964;
     public const uint rcs2 = 0x72637332;

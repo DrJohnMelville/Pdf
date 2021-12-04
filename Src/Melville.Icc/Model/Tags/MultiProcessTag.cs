@@ -21,9 +21,7 @@ public class MultiProcessTag: ProfileData
         var elements = new IMultiProcessElement[reader.ReadBigEndianUint32()];
         for (int i = 0; i < elements.Length; i++)
         {
-            var offset = reader.ReadBigEndianUint32();
-            var length = reader.ReadBigEndianUint32();
-            var subReader = reader.ReaderAt(offset, length);
+            var subReader = reader.ReadPositionNumber();
             var elt = elements[i] = (IMultiProcessElement)TagParser.Parse(ref subReader);
             inputs = VerifyLegal(inputs, elt);
         }
