@@ -15,17 +15,21 @@ public static class TagParser
     public static ProfileData Parse(ref SequenceReader<byte> reader) => 
         reader.ReadBigEndianUint32() switch
         {
+            IccTags.bACS or IccTags.eACS => NullMultiDimensionalLookupTable.Parse(ref reader),
             IccTags.chrm => new ChromacityTag(ref reader),
             IccTags.clro => new ColorOrderTag(ref reader),
             IccTags.clrt => new ColorantTableTag(ref reader),
+            IccTags.clut => new MultidimensionalLookupTable(ref reader),
             IccTags.curv => new CurveTag(ref reader),
             IccTags.data => new DataTag(ref reader),
             IccTags.dtim => new DateTimeTag(ref reader),
+            IccTags.matf => new MultiProcessMatrix(ref reader),
             IccTags.mft2 => new LutXTag(ref reader, 2),
             IccTags.mft1 => new LutXTag(ref reader, 1),
             IccTags.meas => new MeasurementTypeTag(ref reader),
             IccTags.mAB => new LutAToBTag(ref reader),
             IccTags.mBA => new LutBToATag(ref reader),
+            IccTags.mpet => new MultiProcessTag(ref reader),
             IccTags.mluc => new MultiLocalizedUnicodeTag(ref reader),
             IccTags.ncl2 => new NamedColorTag(ref reader),
             IccTags.para => new ParametricCurveTag(ref reader),

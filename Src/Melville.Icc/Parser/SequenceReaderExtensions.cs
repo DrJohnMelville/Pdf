@@ -96,8 +96,21 @@ public static class SequenceReaderExtensions
         }
         return ret;
     }
+    public static float[] ReadIEEE754FloatArray(
+        this ref SequenceReader<byte> reader, int len)
+    {
+        var ret = new float[len];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = ReadIEEE754Float(ref reader);
+        }
+        return ret;
+    }
 
-    public static void Skip32BitPad(ref this SequenceReader<byte> reader) => reader.ReadBigEndianUint32();
-    public static void Skip16BitPad(ref this SequenceReader<byte> reader) => reader.ReadBigEndianUint16();
-    public static void Skip8BitPad(ref this SequenceReader<byte> reader) => reader.ReadBigEndianUint8();
+    public static float ReadIEEE754Float(this ref SequenceReader<byte> reader) => 
+        BitConverter.UInt32BitsToSingle(reader.ReadBigEndianUint32());
+
+    public static void Skip32BitPad(ref this SequenceReader<byte> reader) => reader.Advance(4);
+    public static void Skip16BitPad(ref this SequenceReader<byte> reader) => reader.Advance(2);
+    public static void Skip8BitPad(ref this SequenceReader<byte> reader) => reader.Advance(1);
 }

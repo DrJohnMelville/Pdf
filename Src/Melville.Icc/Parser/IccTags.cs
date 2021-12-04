@@ -2,18 +2,23 @@
 
 public static class IccTags
 {
+    public const uint bACS = 0x62414353;
     public const uint chrm = 0x6368726d;
     public const uint clro = 0x636c726f;
     public const uint clrt = 0x636c7274;
+    public const uint clut = 0x636c7574;
     public const uint curv = 0x63757276;
     public const uint data = 0x64617461;
     public const uint dtim = 0x6474696d;
+    public const uint eACS = 0x65414353;
+    public const uint matf = 0x6d617466;
     public const uint mft2 = 0x6d667432;
     public const uint mft1 = 0x6d667431;
     public const uint meas = 0x6d656173;
     public const uint mluc = 0x6d6c7563;
     public const uint mAB = 0x6d414220;
     public const uint mBA = 0x6d424120;
+    public const uint mpet = 0x6d706574;
     public const uint ncl2 = 0x6e636c32;
     public const uint para = 0x70617261;
     public const uint pseq = 0x70736571;

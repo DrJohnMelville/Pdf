@@ -10,9 +10,10 @@ public class GenericLut : ProfileData
     public IReadOnlyList<ICurveTag> InputCurves { get; }
     public IReadOnlyList<ICurveTag> MatrixCurves { get; }
     public IReadOnlyList<ICurveTag> OutputCurves { get; }
-    public IMultiDimensionalLookupTable LookupTable { get; }
+    public IMultiProcessElement LookupTable { get; }
     protected GenericLut(ref SequenceReader<byte> reader, bool bIsInput)
     {
+        reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
         var inputs = new ICurveTag[reader.ReadBigEndianUint8()];
         var outputs = new ICurveTag[reader.ReadBigEndianUint8()];
@@ -29,11 +30,10 @@ public class GenericLut : ProfileData
 
 
     }
-
-    private IMultiDimensionalLookupTable ParseClut(ref SequenceReader<byte> reader)
+    private IMultiProcessElement ParseClut(ref SequenceReader<byte> reader)
     {
         var offset = reader.ReadBigEndianUint32(); // clut
-        if (offset == 0) return NullMultiDimensionalLookupTable.Instance;
+        if (offset == 0) return NullMultiDimensionalLookupTable.Instance(InputCurves.Count);
         var clutReader = reader.ReaderAt(offset);
         return new MultidimensionalLookupTable(ref clutReader, OutputCurves.Count);
     }
