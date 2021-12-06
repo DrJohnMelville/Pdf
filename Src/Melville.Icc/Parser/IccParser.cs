@@ -110,6 +110,6 @@ public readonly struct IccParser
             reader.ReadBigEndianUint32(),
             reader.ReadBigEndianUint32(),
             reader.ReadBigEndianUint32(), 
-            ProfileData.Empty);
+            null);
     }
 }

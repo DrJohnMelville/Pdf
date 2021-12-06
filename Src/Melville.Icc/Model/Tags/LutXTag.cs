@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class LutXTag : ProfileData
+public class LutXTag 
 {
     public Matrix3x3 Matrix { get; }
     public byte Inputs { get; }

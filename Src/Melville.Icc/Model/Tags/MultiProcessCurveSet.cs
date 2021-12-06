@@ -8,7 +8,7 @@ public interface ICurveSegment
 {
 }
 
-public class MultiProcessCurve : ProfileData
+public class MultiProcessCurve 
 {
     public IReadOnlyList<float> BreakPoints { get; } 
     public IReadOnlyList<ICurveSegment> Segments { get; }
@@ -26,7 +26,7 @@ public class MultiProcessCurve : ProfileData
     }
 }
 
-public class MultiProcessCurveSet : ProfileData, IMultiProcessElement
+public class MultiProcessCurveSet : IMultiProcessElement
 {
     public int Inputs { get; }
     public int Outputs => Inputs;

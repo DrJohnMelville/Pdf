@@ -4,7 +4,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class ViewingConditionsTag : ProfileData
+public class ViewingConditionsTag 
 { 
     public XyzNumber IlluminantValue { get; }
     public XyzNumber SurroundValue { get; }

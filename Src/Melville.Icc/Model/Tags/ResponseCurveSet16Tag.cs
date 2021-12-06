@@ -26,7 +26,7 @@ public record struct ResponseCurve(
     CurveMeasurement Unit,
     IReadOnlyList<ResponseCurveChannel> Channels);
 
-public class ResponseCurveSet16Tag : ProfileData
+public class ResponseCurveSet16Tag 
 {
     public IReadOnlyList<ResponseCurve> Curves { get; }
     public ResponseCurveSet16Tag(ref SequenceReader<byte> reader)

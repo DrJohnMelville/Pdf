@@ -4,7 +4,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class GenericLut : ProfileData
+public class GenericLut 
 {
     public AugmentedMatrix3x3 Matrix { get; }
     public IReadOnlyList<ICurveTag> InputCurves { get; }

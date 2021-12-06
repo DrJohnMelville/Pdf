@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class FormulaSegmentType0 : ProfileData, ICurveSegment
+public class FormulaSegmentType0 : ICurveSegment
 {
     public float Gamma { get; }
     public float A { get; }
@@ -18,7 +18,7 @@ public class FormulaSegmentType0 : ProfileData, ICurveSegment
     }
 }
 
-public class FormulaSegmentType1 : ProfileData, ICurveSegment
+public class FormulaSegmentType1 : ICurveSegment
 {
     public float Gamma { get; }
     public float A { get; }
@@ -35,7 +35,7 @@ public class FormulaSegmentType1 : ProfileData, ICurveSegment
     }
 }
 
-public class FormulaSegmentType2 : ProfileData, ICurveSegment
+public class FormulaSegmentType2 : ICurveSegment
 {
     public float A { get; }
     public float B { get; }
@@ -53,7 +53,7 @@ public class FormulaSegmentType2 : ProfileData, ICurveSegment
     }
 }
 
-public class SampledCurveSegment : ProfileData, ICurveSegment
+public class SampledCurveSegment : ICurveSegment
 {
     public IReadOnlyList<float> Samples { get; }
     public SampledCurveSegment(ref SequenceReader<byte> reader)

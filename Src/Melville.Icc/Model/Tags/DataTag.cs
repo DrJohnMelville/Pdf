@@ -9,7 +9,7 @@ public enum DataType : uint
     String = 0,
     Binary = 1,
 }
-public class DataTag: ProfileData{
+public class DataTag{
     public DataType Type { get; }
     private byte[] data;
     public IReadOnlyList<byte> Data => data;

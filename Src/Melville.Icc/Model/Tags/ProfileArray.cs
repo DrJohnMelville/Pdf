@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public abstract class ProfileArray<T> : ProfileData
+public abstract class ProfileArray<T> 
 {
     public IReadOnlyList<T> Values { get; }
     protected ProfileArray(ref SequenceReader<byte> reader)

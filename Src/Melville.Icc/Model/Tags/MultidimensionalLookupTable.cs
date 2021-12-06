@@ -4,7 +4,7 @@ using SequenceReaderExtensions = System.Buffers.SequenceReaderExtensions;
 
 namespace Melville.Icc.Model.Tags;
 
-public class NullMultiDimensionalLookupTable : ProfileData, IMultiProcessElement
+public class NullMultiDimensionalLookupTable : IMultiProcessElement
 {
     public static NullMultiDimensionalLookupTable Instance(int inputs) => inputs switch {
         1 => one,
@@ -38,7 +38,7 @@ public class NullMultiDimensionalLookupTable : ProfileData, IMultiProcessElement
     }
 }
 
-public class MultidimensionalLookupTable: ProfileData, IMultiProcessElement
+public class MultidimensionalLookupTable: IMultiProcessElement
 {
     public IReadOnlyList<int> DimensionLengths { get; }
     public IReadOnlyList<float> Points { get; }

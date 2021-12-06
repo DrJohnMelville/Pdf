@@ -67,7 +67,7 @@ public class ICCParserTest
     private Stream LoadSampleData() =>
         GetType().Assembly.GetManifestResourceStream("Melville.Pdf.DataModelTests.ICC.sample.icc")!;
 
-    private static async Task<T> ParseTag<T>(string source) where T : ProfileData
+    private static async Task<T> ParseTag<T>(string source) 
     {
         var PdfString = (PdfString)await (source).ParseObjectAsync();
         var reader = new ReadOnlySequence<byte>(PdfString.Bytes);

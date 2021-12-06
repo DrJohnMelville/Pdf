@@ -4,7 +4,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class S15Fixed16Array : ProfileData
+public class S15Fixed16Array 
 {
     public IReadOnlyList<float> Values { get; }
     public S15Fixed16Array(ref SequenceReader<byte> reader)

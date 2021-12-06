@@ -6,7 +6,7 @@ namespace Melville.Icc.Model.Tags;
 
 public record struct SingleUincodeString(ushort Langugae, ushort Country, string Value);
 
-public class MultiLocalizedUnicodeTag: ProfileData
+public class MultiLocalizedUnicodeTag
 {
     public IReadOnlyList<SingleUincodeString> Encodings { get; }
 

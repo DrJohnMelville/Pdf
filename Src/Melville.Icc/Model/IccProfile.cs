@@ -1,20 +1,14 @@
 ﻿using System.Buffers;
 namespace Melville.Icc.Model;
 
-public class ProfileData
-{
-    public static ProfileData Empty = new ProfileData();
-    
-}
-
 public struct ProfileTag
 {
     public uint Tag { get; init; }
     public uint Offset { get; init; }
     public uint Size { get; init; }
-    public ProfileData Data { get; init; }
+    public object? Data { get; init; }
 
-    public ProfileTag(uint tag, uint offset, uint size, ProfileData data)
+    public ProfileTag(uint tag, uint offset, uint size, object? data)
     {
         Tag = tag;
         Offset = offset;

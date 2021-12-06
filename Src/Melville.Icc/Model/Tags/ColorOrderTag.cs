@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class ColorOrderTag : ProfileData
+public class ColorOrderTag 
 {
     public IReadOnlyList<byte> Colors { get; }
 

@@ -11,7 +11,7 @@ public class NullCurve : ICurveTag
     private NullCurve(){}
 }
 
-public class ParametricCurveTag: ProfileData, ICurveTag
+public class ParametricCurveTag: ICurveTag
 {
     public float G { get; }
     public float A { get; }

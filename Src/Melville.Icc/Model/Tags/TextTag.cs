@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class TextTag : ProfileData
+public class TextTag 
 {
     public string Text { get; }
     public TextTag(ref SequenceReader<byte> reader)

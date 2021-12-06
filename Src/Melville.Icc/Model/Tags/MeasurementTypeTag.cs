@@ -36,7 +36,7 @@ public enum StandardIllumination : uint
     F8 = 8
 }
 
-public class MeasurementTypeTag: ProfileData
+public class MeasurementTypeTag
 {
     public StandardObserver Observer { get; }
     public XyzNumber MeasurementBacking { get; }

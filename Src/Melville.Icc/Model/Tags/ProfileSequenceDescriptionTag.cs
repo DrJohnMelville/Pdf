@@ -12,7 +12,7 @@ public record struct ProfileSequenceDescriptionElement(
     MultiLocalizedUnicodeTag DeviceName
 );
 
-public class ProfileSequenceDescriptionTag : ProfileData
+public class ProfileSequenceDescriptionTag 
 {
     public IReadOnlyList<ProfileSequenceDescriptionElement> Profiles { get; }
     public ProfileSequenceDescriptionTag(ref SequenceReader<byte> reader)

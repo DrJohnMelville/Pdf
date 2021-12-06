@@ -6,13 +6,13 @@ namespace Melville.Icc.Parser;
 
 public static class TagParser
 {
-    public static ProfileData Parse(ReadOnlySequence<byte> input)
+    public static object Parse(ReadOnlySequence<byte> input)
     {
         var reader = new SequenceReader<byte>(input);
         return Parse(ref reader);
     }
 
-    public static ProfileData Parse(ref SequenceReader<byte> reader) => 
+    public static object Parse(ref SequenceReader<byte> reader) => 
         reader.ReadBigEndianUint32() switch
         {
             IccTags.bACS or IccTags.eACS => NullMultiDimensionalLookupTable.Parse(ref reader),
@@ -52,7 +52,7 @@ public static class TagParser
             _ => throw new InvalidDataException("Unknown ICC object type")
         };
 
-    private static ProfileData ParseCurveSegment(ref SequenceReader<byte> reader)
+    private static object ParseCurveSegment(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
         var fType = reader.ReadBigEndianUint16();

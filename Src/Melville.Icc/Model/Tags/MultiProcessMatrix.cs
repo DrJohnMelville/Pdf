@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class MultiProcessMatrix : ProfileData, IMultiProcessElement
+public class MultiProcessMatrix : IMultiProcessElement
 {
     public int Inputs { get; }
     public int Outputs { get; }

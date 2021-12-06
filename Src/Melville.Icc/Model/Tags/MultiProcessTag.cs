@@ -9,7 +9,7 @@ public interface IMultiProcessElement
     public int Outputs { get; }
 }
 
-public class MultiProcessTag: ProfileData
+public class MultiProcessTag
 {
     public IReadOnlyList<IMultiProcessElement> Elements;
     public MultiProcessTag(ref SequenceReader<byte> reader)

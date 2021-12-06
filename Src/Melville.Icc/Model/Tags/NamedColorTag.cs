@@ -5,7 +5,7 @@ namespace Melville.Icc.Model.Tags;
 
 public record struct NamedColorElememt(string Name, XyzNumber PcsValue, ushort[] DeviceValue);
 
-public class NamedColorTag : ProfileData
+public class NamedColorTag 
 {
     public uint VendorSpecificFlag { get; }
     public IReadOnlyList<NamedColorElememt> Colors { get; }

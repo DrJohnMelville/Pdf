@@ -8,7 +8,7 @@ public record struct ProfileIdentifier(
     ulong ProfileIdLow, 
     MultiLocalizedUnicodeTag Description);
 
-public class ProfileSequenceIdentifierTag : ProfileData
+public class ProfileSequenceIdentifierTag 
 {
     public IReadOnlyList<ProfileIdentifier> Profiles { get;}
 

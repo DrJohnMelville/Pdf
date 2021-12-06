@@ -4,7 +4,7 @@ using Melville.Icc.Parser;
 namespace Melville.Icc.Model.Tags;
 
 public record struct ColorantTableEntry(string Name, ushort X, ushort Y, ushort Z);
-public class ColorantTableTag : ProfileData
+public class ColorantTableTag 
 {
     public IReadOnlyList<ColorantTableEntry> Colorants;
 

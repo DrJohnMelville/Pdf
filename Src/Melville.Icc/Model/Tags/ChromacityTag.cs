@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class ChromacityTag : ProfileData
+public class ChromacityTag 
 {
     public ushort Channels { get; }
     public Colorant Colorant { get; }

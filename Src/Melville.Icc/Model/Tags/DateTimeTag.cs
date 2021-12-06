@@ -3,7 +3,7 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class DateTimeTag : ProfileData
+public class DateTimeTag 
 {
     public DateTime DateTime { get; }
 
