@@ -26,9 +26,17 @@ public readonly struct IccParser
         var (ret, tags) = ReadStaticBlock(readResult.Buffer);
         source.AdvanceTo(readResult.Buffer.GetPosition(132));
         await ReadOffsetsAsync(tags);
+        Array.Sort(tags, (x,y)=>x.Offset.CompareTo(y.Offset));
+        for (int i = 0; i < tags.Length; i++)
+        {
+            var tag = tags[i];
+            await source.AdvanceToLocalPositionAsync(tag.Offset);
+            var buffer = await GetMinSizeAsync((int)tag.Size);
+            tags[i] = tag with { Data = TagParser.Parse(buffer.Buffer) };
+        }
         return ret;
     }
-
+    
     private async Task<ReadResult> GetMinSizeAsync(int minSize)
     {
         var readResult = await source.ReadAsync();
