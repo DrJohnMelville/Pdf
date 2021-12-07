@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Threading.Tasks;
 using Melville.Icc.Model.Tags;
 using Xunit;
 
