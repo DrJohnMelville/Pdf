@@ -1,11 +1,12 @@
 ﻿using System.Buffers;
-using System.ComponentModel.DataAnnotations.Schema;
 using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
 public interface ICurveSegment
 {
+    float Evaluate(float input);
+    void Initialize(float minimum, float maximum, float valueAtMinimum);
 }
 
 public class MultiProcessCurve 
@@ -23,10 +24,14 @@ public class MultiProcessCurve
             segments[i] = (ICurveSegment)TagParser.Parse(ref reader);
         }
         Segments = segments;
+        for (int i = 0; i < BreakPoints.Count -1; i++)
+        {
+            segments[i+1].Initialize(BreakPoints[i], BreakPoints[i+1], segments[i].Evaluate(BreakPoints[i]));
+        }
     }
 }
 
-public class MultiProcessCurveSet : IMultiProcessElement
+public class MultiProcessCurveSet : IColorTransform
 {
     public int Inputs { get; }
     public int Outputs => Inputs;
@@ -51,4 +56,9 @@ public class MultiProcessCurveSet : IMultiProcessElement
         if (outputs != Inputs)
             throw new InvalidDataException("Curve set must have same number of inputs and outputs");
     }
+    public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        throw new NotImplementedException();
+    }
+
 }

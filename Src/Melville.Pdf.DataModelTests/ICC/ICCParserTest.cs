@@ -523,7 +523,7 @@ public class ICCParserTest
         VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
         VerifyCurveType<NullCurve>(2, tag.OutputCurves);
 
-        Assert.Equal(NullMultiDimensionalLookupTable.Instance(3), tag.LookupTable);
+        Assert.Equal(NullColorTransform.Instance(3), tag.LookupTable);
     }
 
     private static void VerifyCurveType<T>(int length, IReadOnlyList<ICurveTag> curves)
@@ -714,7 +714,7 @@ public class ICCParserTest
         var tag = await ParseTag<MultiProcessTag>("<6d706574 00000000 00020002 00000001 00000018 00000010" +
                                                   name + " 00000000 00020002 00000000>");
         Assert.Equal(1, tag.Elements.Count);
-        Assert.True(tag.Elements[0] is NullMultiDimensionalLookupTable);
+        Assert.True(tag.Elements[0] is NullColorTransform);
         Assert.Equal(2, tag.Elements[0].Inputs);
         Assert.Equal(2, tag.Elements[0].Outputs);
         
@@ -784,12 +784,18 @@ public class ICCParserTest
     {
         var tag = await ParseTag<SampledCurveSegment>(
             "<73616d66 00000000 00000005 40a33333 40a33333 40a33333 40a33333 40a33333>");
-        Assert.Equal(5, tag.Samples.Count);
-        for (int i = 0; i < 5; i++)
+        Assert.Equal(6, tag.Samples.Count);
+        for (int i = 1; i < 6; i++)
         {
             Assert.Equal(5.1, tag.Samples[i], 3);
             
         }
+
+        Assert.Equal(0, tag.Samples[0]);
+        tag.Initialize(1,10,233);
+        Assert.Equal(1, tag.Minimum, 3);
+        Assert.Equal(1.8, tag.Delta, 3);
+        Assert.Equal(233, tag.Samples[0], 3);
         
     }
     

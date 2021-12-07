@@ -4,48 +4,50 @@ using SequenceReaderExtensions = System.Buffers.SequenceReaderExtensions;
 
 namespace Melville.Icc.Model.Tags;
 
-public class NullMultiDimensionalLookupTable : IMultiProcessElement
+public class NullColorTransform : IColorTransform
 {
-    public static NullMultiDimensionalLookupTable Instance(int inputs) => inputs switch {
+    public static NullColorTransform Instance(int inputs) => inputs switch {
         1 => one,
         2 => two,
         3 => three,
         4 => four,
         5 => five,
-        _ => new NullMultiDimensionalLookupTable(inputs)
+        _ => new NullColorTransform(inputs)
     };
 
     public int Inputs { get; }
     public int Outputs => Inputs;
 
-    private NullMultiDimensionalLookupTable(int inputs)
+    private NullColorTransform(int inputs)
     {
         Inputs = inputs;
     }
     
-    
-    
-    private static readonly NullMultiDimensionalLookupTable one = new(1);
-    private static readonly NullMultiDimensionalLookupTable two = new(2);
-    private static readonly NullMultiDimensionalLookupTable three = new(3);
-    private static readonly NullMultiDimensionalLookupTable four = new(4);
-    private static readonly NullMultiDimensionalLookupTable five = new(5);
+    private static readonly NullColorTransform one = new(1);
+    private static readonly NullColorTransform two = new(2);
+    private static readonly NullColorTransform three = new(3);
+    private static readonly NullColorTransform four = new(4);
+    private static readonly NullColorTransform five = new(5);
 
-    public static NullMultiDimensionalLookupTable Parse(ref SequenceReader<byte> reader)
+    public static NullColorTransform Parse(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
         return Instance(reader.ReadBigEndianUint16());
     }
+    
+    public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        throw new NotImplementedException();
+    }
 }
 
-public class MultidimensionalLookupTable: IMultiProcessElement
+public class MultidimensionalLookupTable: IColorTransform
 {
     public IReadOnlyList<int> DimensionLengths { get; }
     public IReadOnlyList<float> Points { get; }
 
     public int Inputs { get; }
     public int Outputs { get; }
-
     public MultidimensionalLookupTable(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
@@ -77,5 +79,9 @@ public class MultidimensionalLookupTable: IMultiProcessElement
             dimensions[i] = reader.ReadBigEndianUint8();
         }
         return dimensions;
+    }
+    public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        throw new NotImplementedException();
     }
 }

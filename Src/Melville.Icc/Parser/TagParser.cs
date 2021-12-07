@@ -15,7 +15,7 @@ public static class TagParser
     public static object Parse(ref SequenceReader<byte> reader) => 
         reader.ReadBigEndianUint32() switch
         {
-            IccTags.bACS or IccTags.eACS => NullMultiDimensionalLookupTable.Parse(ref reader),
+            IccTags.bACS or IccTags.eACS => NullColorTransform.Parse(ref reader),
             IccTags.chrm => new ChromacityTag(ref reader),
             IccTags.clro => new ColorOrderTag(ref reader),
             IccTags.clrt => new ColorantTableTag(ref reader),
@@ -25,7 +25,7 @@ public static class TagParser
             IccTags.cvst => new MultiProcessCurveSet(ref reader),
             IccTags.data => new DataTag(ref reader),
             IccTags.dtim => new DateTimeTag(ref reader),
-            IccTags.matf => new MultiProcessMatrix(ref reader),
+            IccTags.matf => MultiProcessMatrix.Parse(ref reader),
             IccTags.mft2 => new LutXTag(ref reader, 2),
             IccTags.mft1 => new LutXTag(ref reader, 1),
             IccTags.meas => new MeasurementTypeTag(ref reader),

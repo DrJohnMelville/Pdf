@@ -10,7 +10,7 @@ public class GenericLut
     public IReadOnlyList<ICurveTag> InputCurves { get; }
     public IReadOnlyList<ICurveTag> MatrixCurves { get; }
     public IReadOnlyList<ICurveTag> OutputCurves { get; }
-    public IMultiProcessElement LookupTable { get; }
+    public IColorTransform LookupTable { get; }
     protected GenericLut(ref SequenceReader<byte> reader, bool bIsInput)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
@@ -30,10 +30,10 @@ public class GenericLut
 
 
     }
-    private IMultiProcessElement ParseClut(ref SequenceReader<byte> reader)
+    private IColorTransform ParseClut(ref SequenceReader<byte> reader)
     {
         var offset = reader.ReadBigEndianUint32(); // clut
-        if (offset == 0) return NullMultiDimensionalLookupTable.Instance(InputCurves.Count);
+        if (offset == 0) return NullColorTransform.Instance(InputCurves.Count);
         var clutReader = reader.ReaderAt(offset);
         return new MultidimensionalLookupTable(ref clutReader, OutputCurves.Count);
     }

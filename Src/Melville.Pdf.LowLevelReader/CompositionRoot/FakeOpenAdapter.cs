@@ -13,17 +13,17 @@ internal class FakeOpenAdapter : IOpenSaveFile
         this.path = path;
     }
 
-    public IDirectory? GetDirectory(string? dir = null) => throw new NotImplementedException();
+    public IDirectory? GetDirectory(string? dir = null) => throw new NotSupportedException();
 
-    public string? GetDirectoryString(string? dir = null) => throw new NotImplementedException();
+    public string? GetDirectoryString(string? dir = null) => throw new NotSupportedException();
 
     public IFile? GetSaveFile(
         IDirectory? defaultDirectory, string ext, string filter, string title, string? name = null) => 
-        throw new NotImplementedException();
+        throw new NotSupportedException();
 
     public string? GetSaveFileName(
         string? defaultDir, string ext, string filter, string title, string? name = null) => 
-        throw new NotImplementedException();
+        throw new NotSupportedException();
 
     public string? GetLoadFileName(string? defaultDir, string ext, string filter, string title) => path;
 
@@ -38,5 +38,5 @@ internal class FakeOpenAdapter : IOpenSaveFile
         string? defaultDir, string ext, string filter, string title, bool oneFileOnly = false) =>
         new[] {path};
 
-    public string ImageFileFilter => throw new NotImplementedException();
+    public string ImageFileFilter => throw new NotSupportedException();
 }

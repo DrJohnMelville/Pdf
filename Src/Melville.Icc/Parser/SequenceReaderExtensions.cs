@@ -97,10 +97,10 @@ public static class SequenceReaderExtensions
         return ret;
     }
     public static float[] ReadIEEE754FloatArray(
-        this ref SequenceReader<byte> reader, int len)
+        this ref SequenceReader<byte> reader, int len, int spaceInFront = 0)
     {
-        var ret = new float[len];
-        for (int i = 0; i < ret.Length; i++)
+        var ret = new float[len + spaceInFront];
+        for (int i = spaceInFront; i < ret.Length; i++)
         {
             ret[i] = ReadIEEE754Float(ref reader);
         }
