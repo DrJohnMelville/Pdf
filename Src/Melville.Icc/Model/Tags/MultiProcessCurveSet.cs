@@ -13,42 +13,74 @@ public class MultiProcessCurve
 {
     public IReadOnlyList<float> BreakPoints { get; } 
     public IReadOnlyList<ICurveSegment> Segments { get; }
+
+    public MultiProcessCurve(IReadOnlyList<float> breakPoints, IReadOnlyList<ICurveSegment> segments)
+    {
+        BreakPoints = breakPoints;
+        Segments = segments;
+        InitializeSampledFunctions();
+    }
+
     public MultiProcessCurve(ref SequenceReader<byte> reader)
     {
         reader.ReadBigEndianUint32();
-        var segments = new ICurveSegment[reader.ReadBigEndianUint16()];
+        var segmentCount = reader.ReadBigEndianUint16();
         reader.Skip16BitPad();
-        BreakPoints = reader.ReadIEEE754FloatArray(segments.Length - 1);
+        BreakPoints = reader.ReadIEEE754FloatArray(segmentCount - 1);
+        Segments = ReadSegments(ref reader, segmentCount);
+        InitializeSampledFunctions();
+    }
+
+    private static ICurveSegment[] ReadSegments(ref SequenceReader<byte> reader, int count)
+    {
+        var segments = new ICurveSegment[count];
         for (int i = 0; i < segments.Length; i++)
         {
             segments[i] = (ICurveSegment)TagParser.Parse(ref reader);
         }
-        Segments = segments;
-        for (int i = 0; i < BreakPoints.Count -1; i++)
+        return segments;
+    }
+
+    private void InitializeSampledFunctions()
+    {
+        for (int i = 0; i < BreakPoints.Count - 1; i++)
         {
-            segments[i+1].Initialize(BreakPoints[i], BreakPoints[i+1], segments[i].Evaluate(BreakPoints[i]));
+            Segments[i + 1].Initialize(
+                BreakPoints[i], BreakPoints[i + 1], Segments[i].Evaluate(BreakPoints[i]));
         }
+    }
+
+    public float Evaluate(float input)
+    {
+        int index = 0;
+        while (index < BreakPoints.Count && input > BreakPoints[index]) index++;
+        return Segments[index].Evaluate(input);
     }
 }
 
 public class MultiProcessCurveSet : IColorTransform
 {
-    public int Inputs { get; }
+    public int Inputs => Curves.Count;
     public int Outputs => Inputs;
     public IReadOnlyList<MultiProcessCurve> Curves { get; }
+
+    public MultiProcessCurveSet(params MultiProcessCurve[] curves)
+    {
+        Curves = curves;
+    }
+
     public MultiProcessCurveSet(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
-        Inputs = reader.ReadBigEndianUint16();
+        var curves = new MultiProcessCurve[reader.ReadBigEndianUint16()];
+        Curves = curves;
         VerifyCorrectOutputNumber(reader.ReadBigEndianUint16());
-        var curves = new MultiProcessCurve[Inputs];
         for (int i = 0; i < curves.Length; i++)
         {
             var innerReader = reader.ReadPositionNumber();
             curves[i] = (MultiProcessCurve)TagParser.Parse(ref innerReader);
         }
 
-        Curves = curves;
     }
 
     private void VerifyCorrectOutputNumber(ushort outputs)
@@ -58,7 +90,10 @@ public class MultiProcessCurveSet : IColorTransform
     }
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < input.Length; i++)
+        {
+            output[i] = Curves[i].Evaluate(input[i]);
+        }
     }
 
 }

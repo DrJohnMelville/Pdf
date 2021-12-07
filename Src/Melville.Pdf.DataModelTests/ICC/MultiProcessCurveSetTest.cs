@@ -75,7 +75,48 @@ public class MultiProcessCurveSetTest
         Assert.Equal(15, segment.Evaluate(0.5f));
         Assert.Equal(15, segment.Evaluate(1.5f));
         Assert.Equal(12.5, segment.Evaluate(1.75f));
+    }
+
+    [Theory]
+    [InlineData(-5,0)]
+    [InlineData(-.01,0)]
+    [InlineData(0,0)]
+    [InlineData(.1,.1)]
+    [InlineData(5.6, 5.6)]
+    [InlineData(9.9, 9.9)]
+    [InlineData(10,10)]
+    [InlineData(10.1,10)]
+    [InlineData(23,10)]
+    public void MultiProcessTest(float input, float output)
+    {
+        var curve = TripartiteCurve();
+
+        Assert.Equal(output, curve.Evaluate(input), 3);
+    }
+
+    private MultiProcessCurve TripartiteCurve()
+    {
+        var lowBytes = FloatToBytes(1, 0, 0, 0);
+        var highBytes = FloatToBytes(1, 0, 0, 10);
+        var curve = new MultiProcessCurve(new float[] { 0, 10 },
+            new ICurveSegment[]
+            {
+                new FormulaSegmentType0(ref lowBytes),
+                new SampledCurveSegment(0, 10),
+                new FormulaSegmentType0(ref highBytes)
+            });
+        return curve;
+    }
+
+    [Fact]
+    public void MultiCurveSet()
+    {
+        var singleCurve = TripartiteCurve();
+        var sut = new MultiProcessCurveSet(singleCurve, singleCurve, singleCurve);
+        Span<float> output = stackalloc float[3];
+        Span<float> input = stackalloc float[] { -5, 5, 15 };
+        sut.Transform(input, output);
+        Assert.Equal(new float[]{0, 5,10}, output.ToArray());
         
     }
-    
 }
