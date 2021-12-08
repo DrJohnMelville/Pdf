@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using Melville.Icc.Parser;
 
@@ -6,6 +7,7 @@ namespace Melville.Icc.Model.Tags;
 
 public readonly struct Matrix3x3
 {
+    public static readonly Matrix3x3 Identity = new Matrix3x3(1,0,0 ,0,1,0, 0,0,1);
     public float M11 { get; }
     public float M12 { get; }
     public float M13 { get; }
@@ -41,6 +43,15 @@ public readonly struct Matrix3x3
         reader.Reads15Fixed16(),
         reader.Reads15Fixed16()
         ){}
+
+    public void PostMultiplyBy(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        Debug.Assert(input.Length == 3);
+        Debug.Assert(output.Length == 3);
+        output[0] = M11 * input[0] + M12 * input[1] + M13 * input[2];
+        output[1] = M21 * input[0] + M22 * input[1] + M23 * input[2];
+        output[2] = M31 * input[0] + M32 * input[1] + M33 * input[2];
+    }
 }
 
 public readonly struct AugmentedMatrix3x3
