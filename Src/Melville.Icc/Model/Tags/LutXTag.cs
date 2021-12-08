@@ -75,9 +75,9 @@ public class LutXTag: IColorTransform
         this.VerifyTransform(input, output);
         Span<float> intermed = stackalloc float[input.Length];
         TryMatrixMultiplication(input, intermed);
-        TryInputTransform(intermed);
+        OneDimensionalLookupTable.LookupInPlace(intermed, inputTables.AsSpan());
         clutTransform.Transform(intermed, output);
-        TryOutputTransform(output);
+        OneDimensionalLookupTable.LookupInPlace(output, outputTables.AsSpan());
     }
 
     private void TryMatrixMultiplication(in ReadOnlySpan<float> input, in Span<float> intermed)
@@ -86,17 +86,5 @@ public class LutXTag: IColorTransform
             Matrix.PostMultiplyBy(input, intermed);
         else
             input.CopyTo(intermed);
-    }
-
-    private void TryInputTransform(in Span<float> intermed)
-    {
-        if (InputTableEntries > 0) 
-            OneDimensionalLookupTable.MultiLookup(intermed, inputTables.AsSpan());
-    }
-
-    private void TryOutputTransform(in Span<float> output)
-    {
-        if (OutputTableEntries > 0) 
-            OneDimensionalLookupTable.MultiLookup(output, outputTables.AsSpan());
     }
 }
