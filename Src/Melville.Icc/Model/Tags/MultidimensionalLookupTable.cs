@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using Melville.Icc.Parser;
-using SequenceReaderExtensions = System.Buffers.SequenceReaderExtensions;
 
 namespace Melville.Icc.Model.Tags;
 
@@ -58,11 +57,18 @@ public class MultidimensionalLookupTable: IColorTransform
     {
         Span<int> indices = stackalloc int[input.Length];
         Span<float> scaledInputs = stackalloc float[input.Length];
+        ScaleInputsToGrid(input, scaledInputs);
+        InnerTransform(scaledInputs, indices, indices.Length -1, output);
+    }
+
+    private void ScaleInputsToGrid(ReadOnlySpan<float> input, Span<float> scaledInputs)
+    {
         for (int i = 0; i < input.Length; i++)
         {
-            scaledInputs[i] = Math.Clamp(input[i], 0, 1) * (DimensionLengths[i]-1);
+            // the array contains moth the minimum and maximum point so the actual span of the
+            // dimension is one les than the number of points along any dimension
+            scaledInputs[i] = Math.Clamp(input[i], 0, 1) * (DimensionLengths[i] - 1);
         }
-        InnerTransform(scaledInputs, indices, indices.Length -1, output);
     }
 
     private void InnerTransform(
@@ -73,31 +79,40 @@ public class MultidimensionalLookupTable: IColorTransform
             Lookup(indices, output);
             return;
         }
+        
         indices[activeIndex] = (int)inputs[activeIndex];
         var fraction = inputs[activeIndex] - indices[activeIndex];
         InnerTransform(inputs, indices, activeIndex-1, output);
+        
         indices[activeIndex]++;
         if (IsMaximumSpecialCase(indices, activeIndex)) return;
+        
         Span<float> highResult = stackalloc float[output.Length];
         InnerTransform(inputs, indices, activeIndex-1, highResult);
 
-        for (int i = 0; i < output.Length; i++)
-        {
-            output[i] = Interpolation.InterpolateFraction(fraction, output[i], highResult[i]);
-        }
+        InterpolateOutputValues(output, fraction, highResult);
     }
-    private bool IsMaximumSpecialCase(Span<int> indices, int activeIndex) =>
-        indices[activeIndex] >= DimensionLengths[activeIndex];
 
     public void Lookup(in Span<int> indices, Span<float> output)
     {
         var size = Outputs;
-        int position = 0;
+        var position = 0;
         for (int i = indices.Length -1; i >= 0; i--)
         {
             position += size * indices[i];
             size *= DimensionLengths[i];
         }
         points.AsSpan().Slice(position, Outputs).CopyTo(output);
+    }
+
+    private bool IsMaximumSpecialCase(Span<int> indices, int activeIndex) =>
+        indices[activeIndex] >= DimensionLengths[activeIndex];
+
+    private static void InterpolateOutputValues(Span<float> output, float fraction, Span<float> highResult)
+    {
+        for (var i = 0; i < output.Length; i++)
+        {
+            output[i] = Interpolation.InterpolateFraction(fraction, output[i], highResult[i]);
+        }
     }
 }

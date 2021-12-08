@@ -26,6 +26,23 @@ public class MultiProcessClutTest
         sut.Transform(input, output);
         Assert.Equal(out0, output[0]);
         Assert.Equal(out1, output[1]);
+    }
+
+    [Theory]
+    [InlineData(0,0,0)]
+    [InlineData(.1,.1,.4)]
+    [InlineData(.45,.45,1)]
+    [InlineData(.9,.9,.4)]
+    public void TrippleClut(float in0, float out0, float out1)
+    {
+        var sut = new MultidimensionalLookupTable(new[] { 5 }, 2,
+            0, 0, .25f, 1, .5f, 1, .75f, 1, 1, 0);
+
+        Span<float> input = stackalloc[] { in0 };
+        Span<float> output = stackalloc float[2];
+        sut.Transform(input, output);
+        Assert.Equal(out0, output[0], 3);
+        Assert.Equal(out1, output[1], 3);
         
     }
 }
