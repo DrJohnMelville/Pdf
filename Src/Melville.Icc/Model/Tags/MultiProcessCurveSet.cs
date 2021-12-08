@@ -90,7 +90,7 @@ public class MultiProcessCurveSet : IColorTransform
     }
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
-        for (int i = 0; i < input.Length; i++)
+        for (int i = 0; i < Inputs; i++)
         {
             output[i] = Curves[i].Evaluate(input[i]);
         }

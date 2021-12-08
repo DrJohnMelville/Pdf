@@ -34,5 +34,5 @@ public class NullColorTransform : IColorTransform
         return Instance(reader.ReadBigEndianUint16());
     }
     
-    public void Transform(in ReadOnlySpan<float> input, in Span<float> output) => input.CopyTo(output);
+    public void Transform(in ReadOnlySpan<float> input, in Span<float> output) => input.Slice(0, Inputs).CopyTo(output);
 }

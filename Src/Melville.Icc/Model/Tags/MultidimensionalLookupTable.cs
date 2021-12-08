@@ -19,6 +19,7 @@ public class MultidimensionalLookupTable: IColorTransform
         DimensionLengths = dimensionLengths;
         this.points = points;
         Outputs = outputs;
+        Inputs = DimensionLengths.Count;
     }
 
     public MultidimensionalLookupTable(ref SequenceReader<byte> reader)
@@ -55,15 +56,15 @@ public class MultidimensionalLookupTable: IColorTransform
     }
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
-        Span<int> indices = stackalloc int[input.Length];
-        Span<float> scaledInputs = stackalloc float[input.Length];
+        Span<int> indices = stackalloc int[Inputs];
+        Span<float> scaledInputs = stackalloc float[Inputs];
         ScaleInputsToGrid(input, scaledInputs);
         InnerTransform(scaledInputs, indices, indices.Length -1, output);
     }
 
     private void ScaleInputsToGrid(ReadOnlySpan<float> input, Span<float> scaledInputs)
     {
-        for (int i = 0; i < input.Length; i++)
+        for (int i = 0; i < Inputs; i++)
         {
             // the array contains moth the minimum and maximum point so the actual span of the
             // dimension is one les than the number of points along any dimension

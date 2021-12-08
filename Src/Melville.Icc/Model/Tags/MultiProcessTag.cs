@@ -4,34 +4,25 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public interface IColorTransform
-{
-    public int Inputs { get; }
-    public int Outputs { get; }
-    public void Transform(in ReadOnlySpan<float> input, in Span<float> output);
-}
 
-public static class VerifyTransformParameters 
+public class MultiProcessTag: IColorTransform
 {
-    [Conditional("DEBUG")]
-    public static void VerifyTransform(
-        this IColorTransform xform, in ReadOnlySpan<float> input, in Span<float> output)
+    private IColorTransform[] elements;
+    public IReadOnlyList<IColorTransform> Elements => elements;
+
+    public MultiProcessTag(params IColorTransform[]
+        elements)
     {
-        if (xform.Inputs != input.Length) throw new InvalidOperationException("Wrong number of inputs");
-        if (xform.Outputs != output.Length) throw new InvalidOperationException("Wrong number of outputs");
+        this.elements = elements;
     }
-}
 
-public class MultiProcessTag
-{
-    public IReadOnlyList<IColorTransform> Elements;
     public MultiProcessTag(ref SequenceReader<byte> reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
         var inputs = reader.ReadBigEndianUint16();
         var outputs = reader.ReadBigEndianUint16();
-        var elements = new IColorTransform[reader.ReadBigEndianUint32()];
+        elements = new IColorTransform[reader.ReadBigEndianUint32()];
         for (int i = 0; i < elements.Length; i++)
         {
             var subReader = reader.ReadPositionNumber();
@@ -39,7 +30,6 @@ public class MultiProcessTag
             inputs = VerifyLegal(inputs, elt);
         }
         VerifyLegalSize(inputs, outputs);
-        Elements = elements;
     }
 
     private static void VerifyLegalSize(ushort inputs, ushort outputs)
@@ -52,5 +42,35 @@ public class MultiProcessTag
     {
         if (elt.Inputs != stepInput) throw new InvalidDataException("Invalud number of inputs");
         return (ushort)elt.Outputs;
+    }
+
+    public int Inputs => Elements.First().Inputs;
+    public int Outputs => Elements.Last().Outputs;
+
+    public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        this.VerifyTransform(input, output);
+        switch (Elements.Count)
+        {
+            case 0:
+                throw new InvalidDataException("No definition for multiprocesstag");
+            case 1:
+                elements[0].Transform(input, output);
+                break;
+            default:
+                MultiTransform(input, output);
+                break;
+        };
+    }
+
+    private void MultiTransform(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        Span<float> intermed = stackalloc float[16]; // maximum of  16 dimensnions per spec
+        elements[0].Transform(input, intermed);
+        foreach (var element in elements.AsSpan()[1..^1])
+        {
+            element.Transform(intermed, intermed);
+        }
+        elements[^1].Transform(intermed, output);
     }
 }

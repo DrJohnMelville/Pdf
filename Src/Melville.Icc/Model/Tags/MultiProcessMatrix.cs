@@ -26,7 +26,6 @@ public class MultiProcessMatrix : IColorTransform
     }
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
-        this.VerifyTransform(input, output);
         Span<float> intermediate = stackalloc float[Outputs];
         MatrixMultiplication(input, intermediate);
         AddVectorOutput(output, intermediate);
@@ -47,7 +46,7 @@ public class MultiProcessMatrix : IColorTransform
     private void AddVectorOutput(in Span<float> output, in Span<float> intermediate)
     {
         var translateBase = Inputs * Outputs;
-        for (int i = 0; i < output.Length; i++)
+        for (int i = 0; i < Outputs; i++)
         {
             output[i] = intermediate[i] + Values[translateBase + i];
         }
