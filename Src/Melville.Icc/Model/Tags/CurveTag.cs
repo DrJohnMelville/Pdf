@@ -5,11 +5,17 @@ namespace Melville.Icc.Model.Tags;
 
 public class CurveTag: ICurveTag
 {
-     public IReadOnlyList<ushort> Values { get; }
+     private readonly IReadOnlyList<ushort> values;
+     public IReadOnlyList<ushort> Values => values;
 
      public CurveTag(ref SequenceReader<byte> reader)
      {
           reader.Skip32BitPad();
-          Values = reader.ReadUshortArray((int)reader.ReadBigEndianUint32());
+          values = reader.ReadUshortArray((int)reader.ReadBigEndianUint32());
+     }
+
+     public float Evaluate(float input)
+     {
+          throw new NotImplementedException();
      }
 }

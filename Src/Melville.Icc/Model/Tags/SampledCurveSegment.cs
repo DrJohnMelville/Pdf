@@ -6,7 +6,7 @@ namespace Melville.Icc.Model.Tags;
 public class SampledCurveSegment : ICurveSegment
 {
     public float Minimum { get; private set; }
-    public float Delta { get; private set; }
+    public float Maximum { get; private set; }
     private float[] samples;
     public IReadOnlyList<float> Samples => samples;
 
@@ -23,19 +23,14 @@ public class SampledCurveSegment : ICurveSegment
     public void Initialize(float minimum, float maximum, float valueAtMinimum)
     {
         Minimum = minimum;
-        Delta = (maximum - minimum) / (samples.Length - 1);
+        Maximum = maximum;
         samples[0] = valueAtMinimum;
     }
 
     public float Evaluate(float input)
     {
-        var index = (input - Minimum) / Delta;
-        var bottom = Math.Floor(index);
-        var intBottom = (int)bottom;
-        if (IsLastPointSpecialCase(intBottom)) return samples[intBottom];
-        var subdelta = index - bottom;
-        return Interpolation.InterpolateFraction(subdelta, samples[intBottom], samples[intBottom + 1]);
+        var(min, max, delta) = Interpolation.GetInterpolatedPoints<float>(
+            samples.AsSpan(), Minimum, Maximum, input);
+        return Interpolation.InterpolateFraction(delta, min, max);
     }
-
-    private bool IsLastPointSpecialCase(int intBottom) => intBottom + 1 == samples.Length;
 }

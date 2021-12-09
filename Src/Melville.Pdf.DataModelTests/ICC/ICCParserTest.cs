@@ -794,10 +794,8 @@ public class ICCParserTest
         Assert.Equal(0, tag.Samples[0]);
         tag.Initialize(1,10,233);
         Assert.Equal(1, tag.Minimum, 3);
-        Assert.Equal(1.8, tag.Delta, 3);
+        Assert.Equal(10, tag.Maximum, 3);
         Assert.Equal(233, tag.Samples[0], 3);
         
     }
-    
-    
 }

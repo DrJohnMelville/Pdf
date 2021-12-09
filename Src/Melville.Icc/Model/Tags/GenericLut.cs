@@ -6,11 +6,29 @@ namespace Melville.Icc.Model.Tags;
 
 public class GenericLut 
 {
-    public AugmentedMatrix3x3 Matrix { get; }
-    public IReadOnlyList<ICurveTag> InputCurves { get; }
-    public IReadOnlyList<ICurveTag> MatrixCurves { get; }
-    public IReadOnlyList<ICurveTag> OutputCurves { get; }
+    public AugmentedMatrix3x3 Matrix => matrix;
+
+    private readonly ICurveTag[] inputCurves;
+    public IReadOnlyList<ICurveTag> InputCurves => inputCurves;
+
+    private readonly ICurveTag[] matrixCurves;
+    private readonly AugmentedMatrix3x3 matrix;
+    public IReadOnlyList<ICurveTag> MatrixCurves => matrixCurves;
+
+    private readonly ICurveTag[] outputCurves;
+    public IReadOnlyList<ICurveTag> OutputCurves => outputCurves;
+
     public IColorTransform LookupTable { get; }
+
+    public GenericLut(ICurveTag[] inputCurves, ICurveTag[] matrixCurves, AugmentedMatrix3x3 matrix, ICurveTag[] outputCurves, IColorTransform lookupTable)
+    {
+        this.inputCurves = inputCurves;
+        this.matrixCurves = matrixCurves;
+        this.matrix = matrix;
+        this.outputCurves = outputCurves;
+        LookupTable = lookupTable;
+    }
+
     protected GenericLut(ref SequenceReader<byte> reader, bool bIsInput)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
@@ -18,12 +36,12 @@ public class GenericLut
         var inputs = new ICurveTag[reader.ReadBigEndianUint8()];
         var outputs = new ICurveTag[reader.ReadBigEndianUint8()];
         var matrixCurves = new ICurveTag[3];
-        InputCurves = inputs;
-        MatrixCurves = matrixCurves;
-        OutputCurves = outputs;
+        inputCurves = inputs;
+        this.matrixCurves = matrixCurves;
+        outputCurves = outputs;
         reader.Skip16BitPad();
         ReadCurves(bIsInput ? inputs : outputs, ref reader);
-        Matrix = ReadMatrix(ref reader);
+        matrix = ReadMatrix(ref reader);
         ReadCurves(matrixCurves, ref reader);
         LookupTable = ParseClut(ref reader);
         ReadCurves(bIsInput ? outputs : inputs, ref reader);

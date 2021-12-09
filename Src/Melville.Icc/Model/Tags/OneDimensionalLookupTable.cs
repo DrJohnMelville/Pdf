@@ -17,13 +17,7 @@ public static class OneDimensionalLookupTable
 
     public static float Lookup(float value, in Span<float> points)
     {
-        var position = value / (points.Length - 1);
-        var min = (int)(position);
-        return MaxValueSpecialCase(points, min) ? 
-            points[min] : 
-            Interpolation.InterpolateFraction(position - min, points[min], points[min + 1]);
+        var (low, high, delta) = Interpolation.GetInterpolatedPoints<float>(points, 0, 1, value);
+        return Interpolation.InterpolateFraction(delta, low, high);
     }
-
-    private static bool MaxValueSpecialCase(in Span<float> points, int min) => 
-        min + 1 >= points.Length;
 }
