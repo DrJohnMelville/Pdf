@@ -48,14 +48,17 @@ public readonly struct Matrix3x3
     {
         Debug.Assert(input.Length == 3);
         Debug.Assert(output.Length == 3);
-        output[0] = M11 * input[0] + M12 * input[1] + M13 * input[2];
-        output[1] = M21 * input[0] + M22 * input[1] + M23 * input[2];
-        output[2] = M31 * input[0] + M32 * input[1] + M33 * input[2];
+        (output[0], output[1], output[2]) = (
+            M11 * input[0] + M12 * input[1] + M13 * input[2],
+            M21 * input[0] + M22 * input[1] + M23 * input[2],
+            M31 * input[0] + M32 * input[1] + M33 * input[2]
+        );
     }
 }
 
 public readonly struct AugmentedMatrix3x3
 {
+    public static readonly AugmentedMatrix3x3 Identity = new(Matrix3x3.Identity, 0,0,0);
     public Matrix3x3 Kernel { get; }
     public float TranslateX { get; }
     public float TranslateY { get; }
@@ -72,4 +75,12 @@ public readonly struct AugmentedMatrix3x3
     public AugmentedMatrix3x3(ref SequenceReader<byte> reader):
         this (new Matrix3x3(ref reader),
             reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16()){}
+
+    public void PostMultiplyBy(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        Kernel.PostMultiplyBy(input, output);
+        output[0] += TranslateX;
+        output[1] += TranslateY;
+        output[2] += TranslateZ;
+    }
 }

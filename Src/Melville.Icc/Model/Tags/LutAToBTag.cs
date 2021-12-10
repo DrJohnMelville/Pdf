@@ -12,4 +12,19 @@ public class LutAToBTag : GenericLut
         AugmentedMatrix3x3 matrix, ICurveTag[] outputCurves) : base(inputCurves, matrixCurves, matrix, outputCurves, lookupTable)
     {
     }
+
+    public override void Transform(in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        this.VerifyTransform(input, output);
+        Span<float> localInput = stackalloc float[input.Length];
+        CurveTransform(InputCurves, input, localInput);
+        LookupTable.VerifyTransform(localInput, output);
+        LookupTable.Transform(localInput, output);
+        CurveTransform(MatrixCurves, output, output);
+        if (output.Length == 3)
+        {
+            Matrix.PostMultiplyBy(output, output);
+        }
+        CurveTransform(OutputCurves, output, output);
+    }
 }

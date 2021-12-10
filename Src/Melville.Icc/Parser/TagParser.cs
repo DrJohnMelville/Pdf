@@ -20,7 +20,7 @@ public static class TagParser
             IccTags.clro => new ColorOrderTag(ref reader),
             IccTags.clrt => new ColorantTableTag(ref reader),
             IccTags.clut => new MultidimensionalLookupTable(ref reader),
-            IccTags.curv => new CurveTag(ref reader),
+            IccTags.curv => CurveTagParser.Parse(ref reader),
             IccTags.curf => new MultiProcessCurve(ref reader),
             IccTags.cvst => new MultiProcessCurveSet(ref reader),
             IccTags.data => new DataTag(ref reader),

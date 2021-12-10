@@ -1,10 +1,11 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public class GenericLut 
+public abstract class GenericLut: IColorTransform 
 {
     public AugmentedMatrix3x3 Matrix => matrix;
 
@@ -97,5 +98,20 @@ public class GenericLut
             new AugmentedMatrix3x3(new Matrix3x3(1f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 1f), 0f, 0f, 0f);
         var pos = reader.ReaderAt(offset);
         return new AugmentedMatrix3x3(ref pos);
+    }
+
+    public int Inputs => inputCurves.Length;
+    public int Outputs => outputCurves.Length;
+    public abstract void Transform(in ReadOnlySpan<float> input, in Span<float> output);
+
+    protected void CurveTransform(
+        IReadOnlyList<ICurveTag> curves, in ReadOnlySpan<float> input, in Span<float> output)
+    {
+        Debug.Assert(curves.Count == input.Length);
+        Debug.Assert(curves.Count == output.Length);
+        for (int i = 0; i < input.Length; i++)
+        {
+            output[i] = curves[i].Evaluate(input[i]);
+        }
     }
 }

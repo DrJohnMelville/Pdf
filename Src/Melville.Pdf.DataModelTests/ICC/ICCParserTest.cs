@@ -119,15 +119,33 @@ public class ICCParserTest
     }
 
     [Fact]
+    public async Task CurveTag0Test()
+    {
+        var tag = await ParseTag<NullCurve>("<6375727600000000 00000000>");
+    }
+    [Fact]
+    public async Task CurveTag1Test()
+    {
+        var tag = await ParseTag<ParametricCurveTag>("<6375727600000000 00000001 0280>");
+        Assert.Equal(2.5, tag.G,2);
+        Assert.Equal(1, tag.A);
+        Assert.Equal(0, tag.B);
+        Assert.Equal(0, tag.C);
+        Assert.Equal(float.MinValue, tag.D);
+        Assert.Equal(1, tag.E);
+        Assert.Equal(0, tag.F);
+        
+    }
+    [Fact]
     public async Task CurveTagTest()
     {
-        var tag = await ParseTag<CurveTag>("<6375727600000000 00000005 0005 0004 0003 0002 0001>");
-        Assert.Equal(5, tag.Values.Count);
-        Assert.Equal(5, tag.Values[0]);
-        Assert.Equal(4, tag.Values[1]);
-        Assert.Equal(3, tag.Values[2]);
-        Assert.Equal(2, tag.Values[3]);
-        Assert.Equal(1, tag.Values[4]);
+        var tag = await ParseTag<SampledCurveSegment>("<6375727600000000 00000005 0005 0004 0003 0002 0001>");
+        Assert.Equal(5, tag.Samples.Count);
+        Assert.Equal(7.629511E-05f, tag.Samples[0]);
+        Assert.Equal(6.103609E-05f, tag.Samples[1]);
+        Assert.Equal(4.5777066E-05f, tag.Samples[2]);
+        Assert.Equal(3.0518044E-05f, tag.Samples[3]);
+        Assert.Equal(1.5259022E-05f, tag.Samples[4]);
     }
 
     [Fact]

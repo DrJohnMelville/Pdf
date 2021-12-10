@@ -41,6 +41,8 @@ public static class SequenceReaderExtensions
         ((float)source.ReadBigEndianInt16()) + (((float)source.ReadBigEndianUint16()) / ((1 << 16) - 1));
     public static float Readu16Fixed16(this ref SequenceReader<byte> source) =>
         ((float)source.ReadBigEndianUint16()) + (((float)source.ReadBigEndianUint16()) / ((1 << 16) - 1));
+    public static float Readu8Fixed8(this ref SequenceReader<byte> source) =>
+        ((float)source.ReadBigEndianUint8()) + (((float)source.ReadBigEndianUint8()) / ((1 << 8) - 1));
 
     public static XyzNumber ReadXyzNumber(this ref SequenceReader<byte> source) =>
         new XyzNumber(source.Reads15Fixed16(), source.Reads15Fixed16(), source.Reads15Fixed16());

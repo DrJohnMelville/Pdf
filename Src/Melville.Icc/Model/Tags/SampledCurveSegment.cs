@@ -27,10 +27,6 @@ public class SampledCurveSegment : ICurveSegment
         samples[0] = valueAtMinimum;
     }
 
-    public float Evaluate(float input)
-    {
-        var(min, max, delta) = Interpolation.GetInterpolatedPoints<float>(
-            samples.AsSpan(), Minimum, Maximum, input);
-        return Interpolation.InterpolateFraction(delta, min, max);
-    }
+    public float Evaluate(float input) => 
+        Interpolation.InterpolateFloatArray(new ReadOnlySpan<float>(samples), Minimum, Maximum, input);
 }

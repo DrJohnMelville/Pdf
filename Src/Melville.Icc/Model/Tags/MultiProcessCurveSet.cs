@@ -3,9 +3,8 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public interface ICurveSegment
+public interface ICurveSegment: ICurveTag
 {
-    float Evaluate(float input);
     void Initialize(float minimum, float maximum, float valueAtMinimum);
 }
 
