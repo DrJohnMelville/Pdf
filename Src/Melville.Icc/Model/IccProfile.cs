@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+
 namespace Melville.Icc.Model;
 
 public struct ProfileTag
