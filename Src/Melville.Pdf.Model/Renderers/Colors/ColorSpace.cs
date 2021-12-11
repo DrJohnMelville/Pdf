@@ -34,8 +34,8 @@ public static class ColorSpaceFactory
         {
             KnownNameKeys.DeviceGray => new(DeviceGray.Instance),
             KnownNameKeys.DeviceRGB => new(DeviceRgb.Instance),
-            KnownNameKeys.DeviceCMYK => new(DeviceCmyk.Instance),
-           // KnownNameKeys.DeviceCMYK => CreateCmykColorSpace(),
+        //    KnownNameKeys.DeviceCMYK => new(DeviceCmyk.Instance),
+            KnownNameKeys.DeviceCMYK => CreateCmykColorSpace(),
             _ => throw new PdfParseException("Unrecognized colorspace")
         };
     }

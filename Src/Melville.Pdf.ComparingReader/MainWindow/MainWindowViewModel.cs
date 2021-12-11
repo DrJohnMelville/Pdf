@@ -7,6 +7,7 @@ using Melville.INPC;
 using Melville.MVVM.Wpf.Bindings;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.RootWindows;
+using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.REPLs;
@@ -16,6 +17,7 @@ namespace Melville.Pdf.ComparingReader.MainWindow;
 
 public partial class MainWindowViewModel
 {
+    private readonly ICommandLineSelection commandLine;
     public IList<ReferenceDocumentNode> Nodes { get; }
     [AutoNotify] private ReferenceDocumentNode? selectedNode;
     public IPasswordSource PasswordBox { get; }
@@ -25,10 +27,15 @@ public partial class MainWindowViewModel
         IList<ReferenceDocumentNode> nodes, ICommandLineSelection commandLine, 
         IMultiRenderer renderer, IPasswordSource passwordBox)
     {
+        this.commandLine = commandLine;
         Nodes = nodes;
         Renderer = renderer;
         PasswordBox = passwordBox;
-        SelectedNode = SearchRecusive(nodes, commandLine.CommandLineTag());
+    }
+
+    public void ShowInitial()
+    {
+        SelectedNode ??= SearchRecusive(Nodes, commandLine.CommandLineTag());
     }
 
     private async void OnSelectedNodeChanged(ReferenceDocumentNode? newValue)

@@ -12,7 +12,8 @@
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / auto, *">
+    <Grid easyGrids:GridOperations.ColsAndRows="*,3* / auto, *"
+          Loaded="{eventBindings:EventBinding ShowInitial}">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type referenceDocumentTree:ReferenceDocumentLeaf}">
                 <TextBlock Text="{Binding ShortName}" ToolTip="{Binding LongName}"></TextBlock>
@@ -22,7 +23,7 @@
                 <TextBlock Text="{Binding ShortName}"/>
             </HierarchicalDataTemplate>
         </Grid.Resources>
-        <StackPanel>
+        <StackPanel >
             <Button Click="{eventBindings:EventBinding ShowPdfRepl}">Show Pdf REPL</Button>
             <ComboBox SelectedIndex="{Binding PasswordBox.Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
                Converter={x:Static mainWindow:MainWindowConverters.PasswordTypeConverter} }"
