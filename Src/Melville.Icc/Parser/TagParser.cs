@@ -49,7 +49,7 @@ public static class TagParser
             IccTags.ui64 => new UInt64Array(ref reader),
             IccTags.XYZ => new XyzArray(ref reader),
             IccTags.view => new ViewingConditionsTag(ref reader),
-            _ => throw new InvalidDataException("Unknown ICC object type")
+            var x => NullColorTransform.Instance(3) // Some profiles have invalid tags that we do not care about.
         };
 
     private static object ParseCurveSegment(ref SequenceReader<byte> reader)

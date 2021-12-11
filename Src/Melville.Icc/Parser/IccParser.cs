@@ -16,11 +16,6 @@ public readonly struct IccParser
 
     public async ValueTask<IccProfile> ParseAsync()
     {
-        return await ReadHeaderAsync();
-    }
-
-    private async ValueTask<IccProfile> ReadHeaderAsync()
-    {
         var readResult = await GetMinSizeAsync(132);
 
         var (ret, tags) = ReadStaticBlock(readResult.Buffer);
@@ -34,9 +29,10 @@ public readonly struct IccParser
             var buffer = await GetMinSizeAsync((int)tag.Size);
             tags[i] = tag with { Data = TagParser.Parse(buffer.Buffer) };
         }
+
         return ret;
     }
-    
+
     private async Task<ReadResult> GetMinSizeAsync(int minSize)
     {
         var readResult = await source.ReadAsync();

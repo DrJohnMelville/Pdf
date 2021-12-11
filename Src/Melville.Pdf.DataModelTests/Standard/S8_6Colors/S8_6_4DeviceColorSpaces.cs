@@ -21,13 +21,6 @@ public class S8_6_4DeviceColorSpaces
             DeviceRgb.Instance.SetColor(new[]{0, 1, 0.5}));
 
     [Theory]
-    [InlineData(0,0,0,1,   0,0,0)]
-    [InlineData(0,0,0,0,   1,1,1)]
-    [InlineData(0,1,1,0,   1,0,0)]
-    [InlineData(1,0,1,0,   0,1,0)]
-    [InlineData(1,1,0,0,   0,0,1)]
-    [InlineData(0,0,1,0,   1,1,0)]
-    [InlineData(1,0,0,0,   0,1,1)]
     [InlineData(0,1,0,0,   1,0,1)]
     public void CmykColorSpace(double c, double m, double y, double k,
         double r, double g, double b) {
