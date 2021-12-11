@@ -14,4 +14,11 @@
       <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Renderers\Colors\Profiles\Cmyk.icc" />
+      <EmbeddedResource Include="Renderers\Colors\Profiles\Cmyk.icc" />
+      <None Remove="Renderers\Colors\Profiles\AdobeSrgb.icc" />
+      <EmbeddedResource Include="Renderers\Colors\Profiles\AdobeSrgb.icc" />
+    </ItemGroup>
+
 </Project>

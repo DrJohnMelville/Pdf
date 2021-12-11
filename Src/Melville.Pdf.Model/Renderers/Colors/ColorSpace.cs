@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
@@ -34,7 +35,6 @@ public static class ColorSpaceFactory
         {
             KnownNameKeys.DeviceGray => new(DeviceGray.Instance),
             KnownNameKeys.DeviceRGB => new(DeviceRgb.Instance),
-        //    KnownNameKeys.DeviceCMYK => new(DeviceCmyk.Instance),
             KnownNameKeys.DeviceCMYK => CreateCmykColorSpace(),
             _ => throw new PdfParseException("Unrecognized colorspace")
         };
@@ -45,15 +45,19 @@ public static class ColorSpaceFactory
         new IccColorSpace((await ReadCmyk()).TransformTo(await ReadSrgb()));
     private static IccProfile? sRGB;
     private static async ValueTask<IccProfile> ReadSrgb() => sRGB ??=
-        await LoadProfile(@"C:\Users\jmelv\Documents\Scratch\sRGB_v4_ICC_preference.icc");
+        await LoadProfile(@"AdobeSrgb.icc");
 
     private static IccProfile? cmyk;
     private static async ValueTask<IccProfile> ReadCmyk() => cmyk ??=
-        await LoadProfile(@"C:\Users\jmelv\Documents\Scratch\ICC_Profile_Registry_01_11_2013\CGATS21_CRPC3.icc");
-#warning -- obviously cannot source profiles off of my local hard drive. -- also need to consider render intents.
+        await LoadProfile(@"Cmyk.icc");
 
     
-    private static ValueTask<IccProfile> LoadProfile(string profileFile) => 
-        new IccParser(PipeReader.Create(File.OpenRead(profileFile))).ParseAsync();
+    private static ValueTask<IccProfile> LoadProfile(string profileFile) =>
+        new IccParser(PipeReader.Create(
+            GetIccProfileData(profileFile))).ParseAsync();
 
+    private static Stream GetIccProfileData(string profileFile) =>
+        typeof(ColorSpaceFactory).Assembly.GetManifestResourceStream(
+            "Melville.Pdf.Model.Renderers.Colors.Profiles."+profileFile) ??
+        throw new InvalidDataException("Cannot find resource: " + profileFile);
 }
