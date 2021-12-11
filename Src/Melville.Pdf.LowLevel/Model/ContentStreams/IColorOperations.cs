@@ -41,7 +41,7 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator K
     /// </summary>
-    void SetStrokeCMYK(double cyan, double magenta, double yellow, double black);
+    ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black);
     
     /// <summary>
     /// Content stream operator g
@@ -56,7 +56,7 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator k
     /// </summary>
-    void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black);
+    ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black);
 
 }
 

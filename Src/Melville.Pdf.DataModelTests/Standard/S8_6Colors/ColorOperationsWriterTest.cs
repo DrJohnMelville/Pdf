@@ -111,7 +111,7 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetStrokingCMYK()
     {
-        sut.SetStrokeCMYK(1,2,3,4);
+        await sut.SetStrokeCMYK(1,2,3,4);
         Assert.Equal("1 2 3 4 K\n", await WrittenText());
     }
 
@@ -132,7 +132,7 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetNonStrokingCMYK()
     {
-        sut.SetNonstrokingCMYK(1,2,3,4);
+        await sut.SetNonstrokingCMYK(1,2,3,4);
         Assert.Equal("1 2 3 4 k\n", await WrittenText());
     }
 }

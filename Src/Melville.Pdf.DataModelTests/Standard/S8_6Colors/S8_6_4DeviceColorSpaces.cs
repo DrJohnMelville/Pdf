@@ -19,12 +19,4 @@ public class S8_6_4DeviceColorSpaces
     public void RgbColorSpace() =>
         Assert.Equal(new DeviceColor(0,1, 0.5), 
             DeviceRgb.Instance.SetColor(new[]{0, 1, 0.5}));
-
-    [Theory]
-    [InlineData(0,1,0,0,   1,0,1)]
-    public void CmykColorSpace(double c, double m, double y, double k,
-        double r, double g, double b) {
-        Assert.Equal(new DeviceColor(r,g,b), 
-            DeviceCmyk.Instance.SetColor(new []{c,m,y,k}));
-    }
 }

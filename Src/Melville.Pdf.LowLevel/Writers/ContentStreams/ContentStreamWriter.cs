@@ -165,17 +165,23 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void SetStrokeRGB(double red, double green, double blue) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.RG, red, green, blue);
 
-    public void SetStrokeCMYK(double cyan, double magenta, double yellow, double black) => 
+    public ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.K, cyan, magenta, yellow, black);
-    
+        return ValueTask.CompletedTask;
+    }
+
     public void SetNonstrokingGray(double grayLevel) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.g, grayLevel);
 
     public void SetNonstrokingRGB(double red, double green, double blue) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.rg, red, green, blue);
 
-    public void SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black) => 
+    public ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.k, cyan, magenta, yellow, black);
+        return ValueTask.CompletedTask;
+    }
 
     public ValueTask DoAsync(PdfName name)
     {

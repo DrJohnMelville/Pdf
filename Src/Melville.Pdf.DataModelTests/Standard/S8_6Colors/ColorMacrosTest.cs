@@ -87,11 +87,11 @@ public class ColorMacrosTest
         Assert.Equal(DeviceRgb.Instance, state.Current().StrokeColorSpace);
         Assert.Equal(new DeviceColor(0.4,0.5,0.6), state.Current().StrokeColor);
     }
-    [Fact] public void CmykStrokeMacro()
+    [Fact] public async Task CmykStrokeMacro()
     {
-        sut.SetStrokeCMYK(0,0,0,0);
-        Assert.Equal(DeviceCmyk.Instance, state.Current().StrokeColorSpace);
-        Assert.Equal(new DeviceColor(1,1,1), state.Current().StrokeColor);
+        await sut.SetStrokeCMYK(0,0,0,0);
+        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpace(), state.Current().StrokeColorSpace);
+        VerifyWhite(state.Current().StrokeColor);
     }
     [Fact] public void GrayNonstrokingMacro()
     {
@@ -106,10 +106,17 @@ public class ColorMacrosTest
         Assert.Equal(DeviceRgb.Instance, state.Current().NonstrokeColorSpace);
         Assert.Equal(new DeviceColor(0.4,0.5,0.6), state.Current().NonstrokeColor);
     }
-    [Fact] public void CmykNonstrokingMacro()
+    [Fact] public async Task CmykNonstrokingMacro()
     {
-        sut.SetNonstrokingCMYK(0,0,0,0);
-        Assert.Equal(DeviceCmyk.Instance, state.Current().NonstrokeColorSpace);
-        Assert.Equal(new DeviceColor(1,1,1), state.Current().NonstrokeColor);
+        await sut.SetNonstrokingCMYK(0,0,0,0);
+        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpace(), state.Current().NonstrokeColorSpace);
+        VerifyWhite(state.Current().NonstrokeColor);
+    }
+
+    private static void VerifyWhite(DeviceColor color)
+    {
+        Assert.Equal(255, color.RedByte);
+        Assert.Equal(254, color.GreenByte);
+        Assert.Equal(254, color.BlueByte);
     }
 }

@@ -41,7 +41,7 @@ public static class ColorSpaceFactory
     }
 
     private static IColorSpace? cmykColorSpacel;
-    private static async ValueTask<IColorSpace> CreateCmykColorSpace() => cmykColorSpacel ??= 
+    public static async ValueTask<IColorSpace> CreateCmykColorSpace() => cmykColorSpacel ??= 
         new IccColorSpace((await ReadCmyk()).TransformTo(await ReadSrgb()));
     private static IccProfile? sRGB;
     private static async ValueTask<IccProfile> ReadSrgb() => sRGB ??=
