@@ -1,14 +1,12 @@
 ﻿using System;
-using System.IO;
-using System.IO.Pipelines;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Melville.Icc.Model;
-using Melville.Icc.Parser;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Colors.Profiles;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
@@ -31,33 +29,31 @@ public static class ColorSpaceFactory
 {
     public static ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName, in PdfPage page)
     {
+        #warning both cmyk and CalGray need to honor the current rendering intent
         return colorSpaceName.GetHashCode() switch
         {
             KnownNameKeys.DeviceGray => new(DeviceGray.Instance),
             KnownNameKeys.DeviceRGB => new(DeviceRgb.Instance),
             KnownNameKeys.DeviceCMYK => CreateCmykColorSpace(),
-            _ => throw new PdfParseException("Unrecognized colorspace")
+            _ => FromArray(page, colorSpaceName)
         };
     }
-
     private static IColorSpace? cmykColorSpacel;
     public static async ValueTask<IColorSpace> CreateCmykColorSpace() => cmykColorSpacel ??= 
-        new IccColorSpace((await ReadCmyk()).TransformTo(await ReadSrgb()));
-    private static IccProfile? sRGB;
-    private static async ValueTask<IccProfile> ReadSrgb() => sRGB ??=
-        await LoadProfile(@"AdobeSrgb.icc");
+        new IccColorSpace((await IccProfileLibrary.ReadCmyk()).TransformTo(
+            await IccProfileLibrary.ReadSrgb()));
 
-    private static IccProfile? cmyk;
-    private static async ValueTask<IccProfile> ReadCmyk() => cmyk ??=
-        await LoadProfile(@"Cmyk.icc");
+    private static async ValueTask<IColorSpace> FromArray(PdfPage page, PdfName colorSpaceName)
+    {
+        var obj = await page.GetResourceObject(ResourceTypeName.ColorSpace, colorSpaceName);
+        return obj is PdfArray array? await FromArray(array): DeviceGray.Instance;
+    }
 
-    
-    private static ValueTask<IccProfile> LoadProfile(string profileFile) =>
-        new IccParser(PipeReader.Create(
-            GetIccProfileData(profileFile))).ParseAsync();
+    private static async ValueTask<IColorSpace> FromArray(PdfArray array) =>
+        (await array.GetAsync<PdfName>(0)).GetHashCode() switch
+        {
+            KnownNameKeys.CalGray => await CalGray.Parse(await array.GetAsync<PdfDictionary>(1)),
+            _=> throw new PdfParseException("Unrecognized Colorspace")
+        };
 
-    private static Stream GetIccProfileData(string profileFile) =>
-        typeof(ColorSpaceFactory).Assembly.GetManifestResourceStream(
-            "Melville.Pdf.Model.Renderers.Colors.Profiles."+profileFile) ??
-        throw new InvalidDataException("Cannot find resource: " + profileFile);
 }

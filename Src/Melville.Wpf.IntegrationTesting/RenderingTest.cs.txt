@@ -58,3 +58,7 @@ RenderingTest.cs_wpf-Clipping|590935290
 RenderingTest.cs_Skia-Clipping|4257757955
 RenderingTest.cs_wpf-DeviceCMYK|4126084352
 RenderingTest.cs_Skia-DeviceCMYK|991748805
+RenderingTest.cs_wpf-CalGray|1622962558
+RenderingTest.cs_Skia-CalGray|3822836439
+RenderingTest.cs_wpf-CalGrayGamma|166231922
+RenderingTest.cs_Skia-CalGrayGamma|1806882965

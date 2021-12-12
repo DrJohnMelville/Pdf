@@ -112,6 +112,7 @@ Pdf:BitsPerSample
 Pdf:Bounds
 Pdf:C0
 Pdf:C1
+Pdf:CalGray
 Pdf:Catalog
 Pdf:CF
 Pdf:CFM
@@ -143,6 +144,7 @@ Pdf:ImageI
 Pdf:ImageMask
 Pdf:Interpolate
 Pdf:Index
+Pdf:Gamma
 Pdf:Kids
 Pdf:LastModified
 Pdf:Length
@@ -184,5 +186,6 @@ Pdf:V2
 Pdf:Version
 Pdf:W
 Pdf:Width
+Pdf:WhitePoint
 Pdf:XRef
 Pdf:XRefStm
