@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -11,7 +12,8 @@ namespace Melville.Pdf.Model.Creators;
 public abstract class PageTreeNodeChildCreator
 {
     protected Dictionary<PdfName, PdfObject> MetaData { get; }
-    protected Dictionary<(PdfName DictionaryName, PdfName ItemName), PdfObject> Resources { get; } = new();
+    protected Dictionary<(PdfName DictionaryName, PdfName ItemName), 
+            Func<ILowLevelDocumentCreator,PdfObject>> Resources { get; } = new();
 
     protected PageTreeNodeChildCreator(Dictionary<PdfName, PdfObject> metaData)
     {
@@ -35,19 +37,24 @@ public abstract class PageTreeNodeChildCreator
 
     private PdfObject DictionaryValues(
         ILowLevelDocumentCreator creator, 
-        IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), PdfObject>> subDictionary) =>
+        IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
+            Func<ILowLevelDocumentCreator,PdfObject>>> subDictionary) =>
         subDictionary.Key == KnownNames.ProcSet
-            ? subDictionary.First().Value
+            ? subDictionary.First().Value(creator)
             : CreateDictionary(subDictionary, creator);
 
     private PdfDictionary CreateDictionary(
-        IEnumerable<KeyValuePair<(PdfName DictionaryName, PdfName ItemName), PdfObject>> items,
+        IEnumerable<KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
+            Func<ILowLevelDocumentCreator, PdfObject>>> items,
         ILowLevelDocumentCreator creator) => items
             .Aggregate(new DictionaryBuilder(),
-                (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value)))
+                (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value(creator))))
             .AsDictionary();
 
-    public void AddResourceObject(ResourceTypeName resourceType, PdfName name, PdfObject obj) => 
+    public void AddResourceObject(ResourceTypeName resourceType, PdfName name, PdfObject obj) =>
+        AddResourceObject(resourceType, name, _ => obj);
+    public void AddResourceObject(
+        ResourceTypeName resourceType, PdfName name, Func<ILowLevelDocumentCreator,PdfObject> obj) =>
         Resources[(resourceType, name)] = obj;
 
     public void AddBox(BoxName name, in PdfRect rect) => MetaData.Add(name, rect.ToPdfArray);
@@ -58,7 +65,7 @@ public abstract class PageTreeNodeChildCreator
     public PdfName AddStandardFont(
         PdfName assignedName, BuiltInFontName baseFont, FontEncodingName encoding)
     {
-        Resources[(KnownNames.Font, assignedName)] = new DictionaryBuilder()
+        Resources[(KnownNames.Font, assignedName)] = _=>new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.Type1)
             .WithItem(KnownNames.Name, assignedName)

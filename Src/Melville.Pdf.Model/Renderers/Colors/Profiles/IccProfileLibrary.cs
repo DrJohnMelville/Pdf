@@ -22,7 +22,7 @@ public static class IccProfileLibrary
         new IccParser(PipeReader.Create(
             GetIccProfileData(profileFile))).ParseAsync();
 
-    private static Stream GetIccProfileData(string profileFile) =>
+    public static Stream GetIccProfileData(string profileFile) =>
         typeof(ColorSpaceFactory).Assembly.GetManifestResourceStream(
             "Melville.Pdf.Model.Renderers.Colors.Profiles."+profileFile) ??
         throw new InvalidDataException("Cannot find resource: " + profileFile);

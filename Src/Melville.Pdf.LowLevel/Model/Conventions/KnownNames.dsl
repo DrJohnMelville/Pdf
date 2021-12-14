@@ -137,6 +137,7 @@ Pdf:FormType
 Pdf:Functions
 Pdf:FunctionType
 Pdf:Height
+Pdf:ICCBased
 Pdf:ID
 Pdf:Identity
 Pdf:Image

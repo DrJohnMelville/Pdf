@@ -37,8 +37,8 @@ public class PartParser: IPartParser
                      .OrderBy(i=>i.Target.ObjectNumber)
                      .ToList())
         {
-            waiting.MakeProgress($"Loading Object ({item.Target.ObjectNumber}, {item.Target.GenerationNumber})");
-            items.Add(await item.Target.Visit(generator));
+                waiting.MakeProgress($"Loading Object ({item.Target.ObjectNumber}, {item.Target.GenerationNumber})");
+                items.Add(await item.Target.Visit(generator));
         }
         items.Add(await generator.GeneratePart("Trailer: ", lowlevel.TrailerDictionary));
         return items.ToArray();

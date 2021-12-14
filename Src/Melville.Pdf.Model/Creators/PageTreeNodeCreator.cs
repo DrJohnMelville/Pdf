@@ -74,7 +74,7 @@ public class PageTreeNodeCreator: PageTreeNodeChildCreator
         }
         else
         {
-            Resources.Add((KnownNames.ProcSet, KnownNames.ProcSet), creator.Add(DefaultProcSet()));
+            Resources.Add((KnownNames.ProcSet, KnownNames.ProcSet), cr=>cr.Add(DefaultProcSet()));
         }
 
         TryAddResources(creator);
