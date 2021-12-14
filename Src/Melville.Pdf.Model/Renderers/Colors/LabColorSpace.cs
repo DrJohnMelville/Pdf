@@ -1,39 +1,60 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
 public class LabColorSpace : IColorSpace
 {
     private readonly DeviceColor whitePoint;
+    private readonly ClosedInterval aInterval;
+    public readonly ClosedInterval bInterval;
 
-    public LabColorSpace(DeviceColor whitePoint)
+    public LabColorSpace(DeviceColor whitePoint, ClosedInterval aInterval, ClosedInterval bInterval)
     {
         this.whitePoint = whitePoint;
+        this.aInterval = aInterval;
+        this.bInterval = bInterval;
     }
 
     public static async ValueTask<LabColorSpace> Parse(PdfDictionary parameters)
     {
+        var wp = await ReadWhitePoint(parameters);
+        var array = await parameters.GetOrNullAsync(KnownNames.Range) is PdfArray arr
+            ? await arr.AsDoublesAsync()
+            : Array.Empty<double>();
+        
+        return new LabColorSpace(wp, 
+            new ClosedInterval(TryGet(array, 0, - 100), TryGet(array, 1, 100)),
+            new ClosedInterval(TryGet(array, 2, - 100), TryGet(array, 3, 100))
+            );
+    }
+
+    private static async Task<DeviceColor> ReadWhitePoint(PdfDictionary parameters)
+    {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint);
-        var wp = new DeviceColor(
+        return new DeviceColor(
             (await array.GetAsync<PdfNumber>(0)).DoubleValue,
             (await array.GetAsync<PdfNumber>(1)).DoubleValue,
             (await array.GetAsync<PdfNumber>(2)).DoubleValue
         );
-        return new LabColorSpace(wp);
     }
+
+    private static double TryGet(double[]? arr, int index, double defaultValue) =>
+        arr is not null && arr.Length > index ? arr[index] : defaultValue;
 
     public DeviceColor SetColor(ReadOnlySpan<double> newColor)
     {
         if (newColor.Length != 3)
             throw new PdfParseException("Wrong number of parameters for CalGray color");
         var commonPart = (newColor[0] + 16) / 116;
-        var L = commonPart + (newColor[1] / 500);
+        var L = commonPart + (aInterval.Clip(newColor[1]) / 500);
         var M = commonPart;
-        var N = commonPart - (newColor[2] / 200);
+        var N = commonPart - (bInterval.Clip(newColor[2]) / 200);
         return XyzToDeviceColor.Transform(stackalloc float[]
         {
             (float)(whitePoint.Red * GFunc(L)),
