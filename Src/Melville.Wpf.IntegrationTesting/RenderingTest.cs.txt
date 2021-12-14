@@ -62,3 +62,7 @@ RenderingTest.cs_wpf-CalGray|1622962558
 RenderingTest.cs_Skia-CalGray|3822836439
 RenderingTest.cs_wpf-CalGrayGamma|166231922
 RenderingTest.cs_Skia-CalGrayGamma|1806882965
+RenderingTest.cs_wpf-CalRgb|3395523410
+RenderingTest.cs_wpf-LabColorSpace|482334597
+RenderingTest.cs_Skia-CalRgb|273472104
+RenderingTest.cs_Skia-LabColorSpace|271768455

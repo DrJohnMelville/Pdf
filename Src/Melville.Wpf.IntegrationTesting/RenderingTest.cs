@@ -1,11 +1,9 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
@@ -22,7 +20,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
     public RenderingTest(StringTestDatabase hashes)
     {
         this.hashes = hashes; 
-        //hashes.Recording = true;
+  //      hashes.Recording = true;
     }
 
     private static IEnumerable<object[]> GeneratorTests() =>

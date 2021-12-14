@@ -148,6 +148,7 @@ Pdf:Interpolate
 Pdf:Index
 Pdf:Gamma
 Pdf:Kids
+Pdf:Lab
 Pdf:LastModified
 Pdf:Length
 Pdf:Limits

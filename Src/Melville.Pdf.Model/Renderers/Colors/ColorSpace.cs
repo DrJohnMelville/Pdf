@@ -56,6 +56,7 @@ public static class ColorSpaceFactory
             // for monitors ignore CalRGB see standard section 8.6.5.7
             KnownNameKeys.CalRGB => DeviceRgb.Instance, 
             KnownNameKeys.CalCMYK => await CreateCmykColorSpace(), // standard section 8.6.5.1
+            KnownNameKeys.Lab => await LabColorSpace.Parse(await array.GetAsync<PdfDictionary>(1)),
             _=> throw new PdfParseException("Unrecognized Colorspace")
         };
 
