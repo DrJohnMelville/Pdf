@@ -113,6 +113,8 @@ Pdf:Bounds
 Pdf:C0
 Pdf:C1
 Pdf:CalGray
+Pdf:CalRGB
+Pdf:CalCMYK
 Pdf:Catalog
 Pdf:CF
 Pdf:CFM
@@ -149,6 +151,7 @@ Pdf:Kids
 Pdf:LastModified
 Pdf:Length
 Pdf:Limits
+Pdf:Matrix
 Pdf:Max
 Pdf:N
 Pdf:Name

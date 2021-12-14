@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Melville.Icc.Model;
-using Melville.Icc.Model.Tags;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;

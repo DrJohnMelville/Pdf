@@ -53,6 +53,9 @@ public static class ColorSpaceFactory
         (await array.GetAsync<PdfName>(0)).GetHashCode() switch
         {
             KnownNameKeys.CalGray => await CalGray.Parse(await array.GetAsync<PdfDictionary>(1)),
+            // for monitors ignore CalRGB see standard section 8.6.5.7
+            KnownNameKeys.CalRGB => DeviceRgb.Instance, 
+            KnownNameKeys.CalCMYK => await CreateCmykColorSpace(), // standard section 8.6.5.1
             _=> throw new PdfParseException("Unrecognized Colorspace")
         };
 

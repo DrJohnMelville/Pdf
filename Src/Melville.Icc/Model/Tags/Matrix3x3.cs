@@ -31,7 +31,22 @@ public readonly struct Matrix3x3
         M32 = m32;
         M33 = m33;
     }
-    
+
+    public Matrix3x3(IReadOnlyList<double> c) :
+        this(
+            (float)c[0],
+            (float)c[1],
+            (float)c[2],
+            (float)c[3],
+            (float)c[4],
+            (float)c[5],
+            (float)c[6],
+            (float)c[7],
+            (float)c[8]
+        )
+    {
+    }
+
     public Matrix3x3(ref SequenceReader<byte> reader): this(
         reader.Reads15Fixed16(),
         reader.Reads15Fixed16(),

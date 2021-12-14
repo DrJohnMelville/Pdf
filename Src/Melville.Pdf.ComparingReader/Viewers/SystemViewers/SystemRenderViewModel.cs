@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Melville.INPC;
@@ -63,8 +64,21 @@ public partial class SystemRenderViewModel: IRenderer
     private async ValueTask DeleteFileWhenDone(Process process, string name)
     {
         await process.WaitForExitAsync();
-        Message = "Deleting file.";
-        File.Delete(name);
+        await Task.Delay(500);
+        while (true)
+        {
+            try
+            {
+                Message = "Deleting file.";
+                File.Delete(name);
+                return;
+            }
+            catch (Exception)
+            {
+                Message = "Retrying";
+                await Task.Delay(1000);
+            }
+        }
     }
 
     private string UniquePdfName() => Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
