@@ -160,13 +160,13 @@ public partial class GraphicsState: IGraphiscState
     public void SetRenderIntent(RenderIntentName intent) => RenderIntent = intent;
     public void SetStrokeColorSpace(IColorSpace colorSpace)
     {
-        StrokeColor = new DeviceColor(0, 0, 0);
+        StrokeColor = colorSpace.DefaultColor();
         StrokeColorSpace = colorSpace;
     }
 
     public void SetNonstrokeColorSpace(IColorSpace colorSpace)
     {
-        NonstrokeColor = new DeviceColor(0, 0, 0);
+        NonstrokeColor = colorSpace.DefaultColor();
         NonstrokeColorSpace = colorSpace;
     }
 

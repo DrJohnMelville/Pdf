@@ -7,10 +7,12 @@ public class DeviceRgb : IColorSpace
 {
     public static IColorSpace Instance = new DeviceRgb();
 
-    public DeviceColor SetColor(ReadOnlySpan<double> newColor)
+    public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {
         if (newColor.Length != 3)
             throw new PdfParseException("Wrong number of color parameters");
         return new DeviceColor(newColor[0], newColor[1], newColor[2]);
     }
+    public DeviceColor DefaultColor() => DeviceColor.Black;
+
 }

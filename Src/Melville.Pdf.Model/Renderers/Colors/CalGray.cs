@@ -29,7 +29,7 @@ public class CalGray : IColorSpace
         return new CalGray(wp, gamma);
     }
 
-    public DeviceColor SetColor(ReadOnlySpan<double> newColor)
+    public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {
         if (newColor.Length != 1)
             throw new PdfParseException("Wrong number of parameters for CalGray color");
@@ -42,4 +42,6 @@ public class CalGray : IColorSpace
         });
 
     }
+
+    public DeviceColor DefaultColor() => DeviceColor.Black;
 }

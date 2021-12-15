@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -12,8 +10,6 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
-using Melville.Pdf.LowLevel.Parsing.ContentStreams;
-using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 

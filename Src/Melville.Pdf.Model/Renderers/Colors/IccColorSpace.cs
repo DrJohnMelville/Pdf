@@ -13,7 +13,7 @@ public class IccColorSpace : IColorSpace
         this.transform = transform;
     }
 
-    public DeviceColor SetColor(ReadOnlySpan<double> newColor)
+    public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {
         if (newColor.Length != transform.Inputs)
             throw new PdfParseException("Incorrect number of color parameters");
@@ -27,4 +27,11 @@ public class IccColorSpace : IColorSpace
         transform.Transform(inputs, output);
         return new DeviceColor(output[0], output[1], output[2]);
     }
+
+    public DeviceColor DefaultColor()
+    {
+        // stackalloc will initialize the array to all 0s which is what the spec requires.
+        return SetColor(stackalloc double[transform.Inputs]);
+    }
+
 }

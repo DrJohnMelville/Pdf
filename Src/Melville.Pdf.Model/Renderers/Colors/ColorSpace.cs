@@ -22,7 +22,8 @@ public record struct DeviceColor(double Red, double Green, double Blue)
 
 public interface IColorSpace
 {
-    public DeviceColor SetColor(ReadOnlySpan<double> newColor);
+    public DeviceColor SetColor(in ReadOnlySpan<double> newColor);
+    public DeviceColor DefaultColor();
 }
 
 public static class ColorSpaceFactory
@@ -57,6 +58,7 @@ public static class ColorSpaceFactory
             KnownNameKeys.CalRGB => DeviceRgb.Instance, 
             KnownNameKeys.CalCMYK => await CreateCmykColorSpace(), // standard section 8.6.5.1
             KnownNameKeys.Lab => await LabColorSpace.Parse(await array.GetAsync<PdfDictionary>(1)),
+            KnownNameKeys.ICCBased => await IccProfileColorSpace.Parse(await array.GetAsync<PdfStream>(1)),
             _=> throw new PdfParseException("Unrecognized Colorspace")
         };
 

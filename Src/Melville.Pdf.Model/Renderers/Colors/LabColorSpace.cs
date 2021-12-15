@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
+using Melville.Icc.Model.Tags;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -47,7 +50,7 @@ public class LabColorSpace : IColorSpace
     private static double TryGet(double[]? arr, int index, double defaultValue) =>
         arr is not null && arr.Length > index ? arr[index] : defaultValue;
 
-    public DeviceColor SetColor(ReadOnlySpan<double> newColor)
+    public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {
         if (newColor.Length != 3)
             throw new PdfParseException("Wrong number of parameters for CalGray color");
@@ -65,4 +68,7 @@ public class LabColorSpace : IColorSpace
 
     public double GFunc(double x) =>
         x >= (6.0 / 29) ? x * x * x : (108.0 / 841) * (x - (4.0 / 29));
+    
+    public DeviceColor DefaultColor() => DeviceColor.Black;
+
 }
