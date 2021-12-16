@@ -1,0 +1,10 @@
+﻿namespace Melville.Pdf.Model.Renderers.Colors;
+
+public readonly record struct DeviceColor(double Red, double Green, double Blue)
+{
+    public static readonly DeviceColor Black = new(0, 0, 0);
+
+    public byte RedByte => (byte)(255 * Red);
+    public byte GreenByte => (byte)(255 * Green);
+    public byte BlueByte => (byte)(255 * Blue);
+}

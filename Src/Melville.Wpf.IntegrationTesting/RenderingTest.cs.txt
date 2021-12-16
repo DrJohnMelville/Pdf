@@ -68,3 +68,9 @@ RenderingTest.cs_Skia-CalRgb|273472104
 RenderingTest.cs_Skia-LabColorSpace|271768455
 RenderingTest.cs_wpf-LabColorSpaceClipped|1657648065
 RenderingTest.cs_Skia-LabColorSpaceClipped|3210076908
+RenderingTest.cs_wpf-IccCMYK|2722514844
+RenderingTest.cs_wpf-IndexedByteString|76948566
+RenderingTest.cs_Skia-IccCMYK|816570773
+RenderingTest.cs_Skia-IndexedByteString|2607797124
+RenderingTest.cs_wpf-IndexedStream|817180021
+RenderingTest.cs_Skia-IndexedStream|1129764182

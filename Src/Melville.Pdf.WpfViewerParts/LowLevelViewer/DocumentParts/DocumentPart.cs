@@ -1,4 +1,6 @@
-﻿using Melville.INPC;
+﻿using System;
+using System.Collections.Generic;
+using Melville.INPC;
 
 namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 

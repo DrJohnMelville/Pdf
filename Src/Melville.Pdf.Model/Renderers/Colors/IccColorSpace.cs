@@ -28,10 +28,21 @@ public class IccColorSpace : IColorSpace
         return new DeviceColor(output[0], output[1], output[2]);
     }
 
-    public DeviceColor DefaultColor()
+    public virtual DeviceColor DefaultColor()
     {
         // stackalloc will initialize the array to all 0s which is what the spec requires.
         return SetColor(stackalloc double[transform.Inputs]);
     }
 
+    public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
+        this.SetColorSingleFactor(newColor, 1.0 / 255.0);
+}
+
+public class IccColorspaceWithBlackDefault : IccColorSpace
+{
+    public IccColorspaceWithBlackDefault(IColorTransform transform) : base(transform)
+    {
+    }
+
+    public override DeviceColor DefaultColor() => DeviceColor.Black;
 }

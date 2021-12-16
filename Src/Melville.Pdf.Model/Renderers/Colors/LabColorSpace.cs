@@ -53,7 +53,7 @@ public class LabColorSpace : IColorSpace
     public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {
         if (newColor.Length != 3)
-            throw new PdfParseException("Wrong number of parameters for CalGray color");
+            throw new PdfParseException("Wrong number of parameters for Lab color");
         var commonPart = (newColor[0] + 16) / 116;
         var L = commonPart + (aInterval.Clip(newColor[1]) / 500);
         var M = commonPart;
@@ -67,8 +67,20 @@ public class LabColorSpace : IColorSpace
     }
 
     public double GFunc(double x) =>
-        x >= (6.0 / 29) ? x * x * x : (108.0 / 841) * (x - (4.0 / 29));
+        x >= (6.0 / 29) ? 
+            x * x * x :
+            (108.0 / 841) * (x - (4.0 / 29));
     
     public DeviceColor DefaultColor() => DeviceColor.Black;
 
+    public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor)
+    {
+        var sourceInterval = new ClosedInterval(0, 255);
+        return SetColor(stackalloc double[]
+        {
+            newColor[0] * 100.0 / 255.0,
+            sourceInterval.MapTo(aInterval, newColor[1]),
+            sourceInterval.MapTo(bInterval, newColor[2]),
+        });
+    }
 }

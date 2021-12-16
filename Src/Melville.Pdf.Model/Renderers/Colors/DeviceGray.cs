@@ -15,5 +15,7 @@ public class DeviceGray : IColorSpace
         return new DeviceColor(value, value, value);
     }
     public DeviceColor DefaultColor() => DeviceColor.Black;
+    public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
+        this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
 }

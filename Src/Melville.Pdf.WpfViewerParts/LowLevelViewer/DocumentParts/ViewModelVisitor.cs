@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 
@@ -78,7 +80,12 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public ValueTask<DocumentPart> Visit(PdfDouble item) => 
         Terminal(item.DoubleValue.ToString(CultureInfo.CurrentUICulture));
 
-    public ValueTask<DocumentPart> Visit(PdfString item) => Terminal($"({item})");
+    public ValueTask<DocumentPart> Visit(PdfString item)
+    {
+        var stringDocumentPart = new StringDocumentPart(item, prefix);
+        prefix = "";
+        return new(stringDocumentPart);
+    }
 
     public async ValueTask<DocumentPart> Visit(PdfStream item)
     {

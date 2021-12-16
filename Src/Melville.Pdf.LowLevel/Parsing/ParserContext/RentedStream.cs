@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -148,6 +149,28 @@ public partial class ParsingFileOwner
             baseStream.WriteByte(value);
         }
 
+        #endregion
+
+        #region CopyToAsync
+
+        public override async Task CopyToAsync(
+            Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            try
+            {
+                while (true)
+                {
+                    var read = await ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                    if (read == 0) return;
+                    await destination.WriteAsync(buffer, 0, read);
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
         #endregion
     }
 }
