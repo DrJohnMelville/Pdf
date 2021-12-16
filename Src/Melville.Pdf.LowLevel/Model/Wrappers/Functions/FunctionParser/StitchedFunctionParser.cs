@@ -29,7 +29,7 @@ public static class StitchedFunctionParser
             functions[i] = new StitchedFunctionSegment(
                 SegmentDomain(bounds, i, domain),
                 encode[i],
-                await functionDecls[i].CreateFunction());
+                await functionDecls[i].CreateFunctionAsync());
         }
 
         return functions;

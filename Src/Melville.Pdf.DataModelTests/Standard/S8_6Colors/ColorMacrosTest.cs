@@ -90,7 +90,7 @@ public class ColorMacrosTest
     [Fact] public async Task CmykStrokeMacro()
     {
         await sut.SetStrokeCMYK(0,0,0,0);
-        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpace(), state.Current().StrokeColorSpace);
+        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpaceAsync(), state.Current().StrokeColorSpace);
         VerifyWhite(state.Current().StrokeColor);
     }
     [Fact] public void GrayNonstrokingMacro()
@@ -109,7 +109,7 @@ public class ColorMacrosTest
     [Fact] public async Task CmykNonstrokingMacro()
     {
         await sut.SetNonstrokingCMYK(0,0,0,0);
-        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpace(), state.Current().NonstrokeColorSpace);
+        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpaceAsync(), state.Current().NonstrokeColorSpace);
         VerifyWhite(state.Current().NonstrokeColor);
     }
 

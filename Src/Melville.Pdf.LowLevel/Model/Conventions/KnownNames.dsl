@@ -175,6 +175,7 @@ Pdf:R
 Pdf:Range
 Pdf:Resources
 Pdf:Root
+Pdf:Separation
 Pdf:Size
 Pdf:Standard
 Pdf:StdCF

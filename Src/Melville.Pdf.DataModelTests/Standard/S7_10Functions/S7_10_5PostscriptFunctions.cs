@@ -142,7 +142,7 @@ public class S7_10_5PostscriptFunctions
 
     private async Task InnerPostScriptTest(double[] inputs, double[] outputs, string code)
     {
-        var func = await CreateFunction(code, inputs.Length, outputs.Length).CreateFunction();
+        var func = await CreateFunction(code, inputs.Length, outputs.Length).CreateFunctionAsync();
         Assert.Equal(outputs, func.Compute(inputs).Select(i=>Math.Round(i,3)));
     }
 
@@ -176,5 +176,5 @@ public class S7_10_5PostscriptFunctions
     [InlineData("{12 {1}  add}")]
     [InlineData("{12")]
     public Task PostscriptCompilerError(string code) => 
-        Assert.ThrowsAsync<PdfParseException>(() => CreateFunction(code, 1, 1).CreateFunction().AsTask());
+        Assert.ThrowsAsync<PdfParseException>(() => CreateFunction(code, 1, 1).CreateFunctionAsync().AsTask());
 }

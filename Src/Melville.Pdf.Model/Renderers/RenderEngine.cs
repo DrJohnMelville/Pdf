@@ -195,7 +195,7 @@ public partial class RenderEngine: IContentStreamOperations
 
     public async ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
     {
-        target.GrapicsStateChange.SetStrokeColorSpace(await ColorSpaceFactory.CreateCmykColorSpace());
+        target.GrapicsStateChange.SetStrokeColorSpace(await ColorSpaceFactory.CreateCmykColorSpaceAsync());
         SetStrokeColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
 
@@ -215,7 +215,7 @@ public partial class RenderEngine: IContentStreamOperations
 
     public async ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
     {
-        target.GrapicsStateChange.SetNonstrokeColorSpace(await ColorSpaceFactory.CreateCmykColorSpace());
+        target.GrapicsStateChange.SetNonstrokeColorSpace(await ColorSpaceFactory.CreateCmykColorSpaceAsync());
         SetNonstrokingColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
     #endregion

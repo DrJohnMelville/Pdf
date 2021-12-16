@@ -6,14 +6,17 @@ using SkiaSharp;
 
 public static class SkiaStateInterpreter
 {
-    public static SKPaint Brush(this GraphicsState state) => new()
+    public static SKPaint? Brush(this GraphicsState state) => 
+        state.NonstrokeColor.IsInvisible ? null:
+        new()
         {
             Style = SKPaintStyle.Fill,
             Color = state.NonstrokeColor.AsSkColor(),
         };
 
-    public static SKPaint Pen(this GraphicsState state)
+    public static SKPaint? Pen(this GraphicsState state)
     {
+        if (state.StrokeColor.IsInvisible) return null;
         var paint = new SKPaint()
         {
             Style = SKPaintStyle.Stroke,

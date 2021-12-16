@@ -24,7 +24,7 @@ public class LabColorSpace : IColorSpace
         this.bInterval = bInterval;
     }
 
-    public static async ValueTask<LabColorSpace> Parse(PdfDictionary parameters)
+    public static async ValueTask<LabColorSpace> ParseAsync(PdfDictionary parameters)
     {
         var wp = await ReadWhitePoint(parameters);
         var array = await parameters.GetOrNullAsync(KnownNames.Range) is PdfArray arr

@@ -55,7 +55,7 @@ public class S7_10_3ExponentialInterpolationFunctions
     {
         var builder = new ExponentialFunctionBuilder(1);
         builder.AddFunction(0,1);
-        var func = await builder.Create().CreateFunction();
+        var func = await builder.Create().CreateFunctionAsync();
         Assert.Equal(value, func.ComputeSingleResult(value));
             
     }
@@ -67,7 +67,7 @@ public class S7_10_3ExponentialInterpolationFunctions
     {
         var builder = new ExponentialFunctionBuilder(1);
         builder.AddFunction(5,6);
-        var func = await builder.Create().CreateFunction();
+        var func = await builder.Create().CreateFunctionAsync();
         Assert.Equal(5+value, func.ComputeSingleResult(value));
             
     }
@@ -79,7 +79,7 @@ public class S7_10_3ExponentialInterpolationFunctions
     {
         var builder = new ExponentialFunctionBuilder(1);
         builder.AddFunction(5,55);
-        var func = await builder.Create().CreateFunction();
+        var func = await builder.Create().CreateFunctionAsync();
         Assert.Equal(5+(50*value), func.ComputeSingleResult(value));
             
     }
@@ -91,7 +91,7 @@ public class S7_10_3ExponentialInterpolationFunctions
     {
         var builder = new ExponentialFunctionBuilder(3);
         builder.AddFunction(0, 1);
-        var func = await builder.Create().CreateFunction();
+        var func = await builder.Create().CreateFunctionAsync();
         Assert.Equal(value*value*value, func.ComputeSingleResult(value));
             
     }

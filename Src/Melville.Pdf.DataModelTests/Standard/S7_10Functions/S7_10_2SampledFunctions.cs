@@ -49,7 +49,7 @@ public class S7_10_2SampledFunctions
     public async Task EvaluateFullySpecifiedFunction(double input, double output)
     {
         var str = await ComplexSampledFunction();
-        var func = await str.CreateFunction();
+        var func = await str.CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(input));
             
     }
@@ -66,7 +66,7 @@ public class S7_10_2SampledFunctions
         builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
         builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
         var str = await builder.CreateSampledFunction();
-        var func = await str.CreateFunction();
+        var func = await str.CreateFunctionAsync();
         var result = func.Compute(new[] { inputA, inputB });
         Assert.Equal(2*inputA + 3*inputB, result[0]);
         Assert.Equal(3*inputA + 4 * inputB, result[1]);
@@ -84,7 +84,7 @@ public class S7_10_2SampledFunctions
         builder.AddOutput((x,y)=>2*x+3*y, (0, 255));
         builder.AddOutput((x,y)=>3*x+4*y, (0, 255));
         var str = await builder.CreateSampledFunction();
-        var func = await str.CreateFunction();
+        var func = await str.CreateFunctionAsync();
         var result = func.Compute(new[] { inputA, inputB });
         Assert.Equal(2*inputA + 3*inputB, result[0]);
         Assert.Equal(3*inputA + 4 * inputB, result[1]);
@@ -101,7 +101,7 @@ public class S7_10_2SampledFunctions
         builder.AddInput(11,(0,10));
         builder.AddOutput(x=>x*x, (0, 100));
         var str = await builder.CreateSampledFunction();
-        var func = await str.CreateFunction();
+        var func = await str.CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(inputA));
     }
         

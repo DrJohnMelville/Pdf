@@ -74,3 +74,9 @@ RenderingTest.cs_Skia-IccCMYK|816570773
 RenderingTest.cs_Skia-IndexedByteString|2607797124
 RenderingTest.cs_wpf-IndexedStream|817180021
 RenderingTest.cs_Skia-IndexedStream|1129764182
+RenderingTest.cs_wpf-Separation|2513486222
+RenderingTest.cs_Skia-Separation|3259487712
+RenderingTest.cs_wpf-SeparationAll|1580367651
+RenderingTest.cs_wpf-SeparationNone|3557237725
+RenderingTest.cs_Skia-SeparationAll|2475810247
+RenderingTest.cs_Skia-SeparationNone|2906416928

@@ -17,12 +17,12 @@ public static class ColorSpaceFactory
         {
             KnownNameKeys.DeviceGray => new(DeviceGray.Instance),
             KnownNameKeys.DeviceRGB => new(DeviceRgb.Instance),
-            KnownNameKeys.DeviceCMYK => CreateCmykColorSpace(),
+            KnownNameKeys.DeviceCMYK => CreateCmykColorSpaceAsync(),
             _ => FromArray(page, colorSpaceName)
         };
     }
     private static IColorSpace? cmykColorSpacel;
-    public static async ValueTask<IColorSpace> CreateCmykColorSpace() => cmykColorSpacel ??= 
+    public static async ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => cmykColorSpacel ??= 
         new IccColorspaceWithBlackDefault((await IccProfileLibrary.ReadCmyk()).TransformTo(
             await IccProfileLibrary.ReadSrgb()));
 
@@ -38,11 +38,11 @@ public static class ColorSpaceFactory
             KnownNameKeys.CalGray => await CalGray.Parse(await array.GetAsync<PdfDictionary>(1)),
             // for monitors ignore CalRGB see standard section 8.6.5.7
             KnownNameKeys.CalRGB => DeviceRgb.Instance, 
-            KnownNameKeys.CalCMYK => await CreateCmykColorSpace(), // standard section 8.6.5.1
-            KnownNameKeys.Lab => await LabColorSpace.Parse(await array.GetAsync<PdfDictionary>(1)),
-            KnownNameKeys.ICCBased => await IccProfileColorSpace.Parse(await array.GetAsync<PdfStream>(1)),
-            KnownNameKeys.Indexed => await IndexedColorSpace.Parse(array, page),
+            KnownNameKeys.CalCMYK => await CreateCmykColorSpaceAsync(), // standard section 8.6.5.1
+            KnownNameKeys.Lab => await LabColorSpace.ParseAsync(await array.GetAsync<PdfDictionary>(1)),
+            KnownNameKeys.ICCBased => await IccProfileColorSpace.ParseAsync(await array.GetAsync<PdfStream>(1)),
+            KnownNameKeys.Indexed => await IndexedColorSpace.ParseAsync(array, page),
+            KnownNameKeys.Separation => await SeparationParser.ParseAsync(array, page),
             _=> throw new PdfParseException("Unrecognized Colorspace")
         };
-
 }

@@ -59,14 +59,14 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     #region PathDrawing
     void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        if (fill)
+        if (fill && State.Current().Brush() is {} brush)
         {
             SetCurrentFillRule(evenOddFillRule); 
-            Target.DrawPath(GetOrCreatePath, State.Current().Brush());
+            Target.DrawPath(GetOrCreatePath, brush);
         }
-        if (stroke)
+        if (stroke && State.Current().Pen() is {} pen)
         {
-            Target.DrawPath(GetOrCreatePath, State.Current().Pen());
+            Target.DrawPath(GetOrCreatePath, pen);
         }
     }
 

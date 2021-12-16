@@ -60,7 +60,7 @@ public class S7_10_4StitchingFunctions
         var builder = new StitchingFunctionBuilder(0);
         builder.AddFunction(innerFunc, 0.5, (0, 1));
         builder.AddFunction(innerFunc, 1.0, (1.0, 0.0));
-        var func = await builder.Create().CreateFunction();
+        var func = await builder.Create().CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(input), 3);
             
     }

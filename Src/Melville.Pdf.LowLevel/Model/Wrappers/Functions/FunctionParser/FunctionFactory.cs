@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 public static class FunctionFactory
 {
-    public static async ValueTask<PdfFunction> CreateFunction(this PdfDictionary source)
+    public static async ValueTask<PdfFunction> CreateFunctionAsync(this PdfDictionary source)
     {
         return (await source.GetAsync<PdfNumber>(KnownNames.FunctionType)).IntValue switch
         {
