@@ -179,43 +179,39 @@ public partial class RenderEngine: IContentStreamOperations
         return ValueTask.CompletedTask;
     }
 
-    public void SetStrokeGray(double grayLevel)
+    public async ValueTask SetStrokeGray(double grayLevel)
     {
-        target.GrapicsStateChange.SetStrokeColorSpace(DeviceGray.Instance);
-        Span<double> color = stackalloc double[] { grayLevel };
-            SetStrokeColor(color);
+        await SetStrokingColorSpace(KnownNames.DeviceGray);
+        SetStrokeColor(stackalloc double[] { grayLevel });
     }
 
-    public void SetStrokeRGB(double red, double green, double blue)
+    public async ValueTask SetStrokeRGB(double red, double green, double blue)
     {
-        target.GrapicsStateChange.SetStrokeColorSpace(DeviceRgb.Instance);
-        Span<double> color = stackalloc double[] { red, green, blue };
-        SetStrokeColor(color);
+        await SetStrokingColorSpace(KnownNames.DeviceRGB);
+        SetStrokeColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
     {
-        target.GrapicsStateChange.SetStrokeColorSpace(await ColorSpaceFactory.CreateCmykColorSpaceAsync());
+        await SetStrokingColorSpace(KnownNames.DeviceCMYK);
         SetStrokeColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
 
-    public void SetNonstrokingGray(double grayLevel)
+    public async ValueTask SetNonstrokingGray(double grayLevel)
     {
-        target.GrapicsStateChange.SetNonstrokeColorSpace(DeviceGray.Instance);
-        Span<double> color = stackalloc double[] { grayLevel };
-        SetNonstrokingColor(color);
+        await SetNonstrokingColorSpace(KnownNames.DeviceGray);
+        SetNonstrokingColor(stackalloc double[] { grayLevel });
     }
 
-    public void SetNonstrokingRGB(double red, double green, double blue)
+    public async ValueTask SetNonstrokingRGB(double red, double green, double blue)
     {
-        target.GrapicsStateChange.SetNonstrokeColorSpace(DeviceRgb.Instance);
-        Span<double> color = stackalloc double[] { red, green, blue };
-        SetNonstrokingColor(color);
+        await SetNonstrokingColorSpace(KnownNames.DeviceRGB);
+        SetNonstrokingColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
     {
-        target.GrapicsStateChange.SetNonstrokeColorSpace(await ColorSpaceFactory.CreateCmykColorSpaceAsync());
+        await SetNonstrokingColorSpace(KnownNames.DeviceCMYK);
         SetNonstrokingColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
     #endregion

@@ -155,11 +155,17 @@ public partial class ContentStreamWriter : IContentStreamOperations
         return ValueTask.CompletedTask;
     }
 
-    public void SetStrokeGray(double grayLevel) =>
+    public ValueTask SetStrokeGray(double grayLevel)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.G, grayLevel);
+        return ValueTask.CompletedTask;
+    }
 
-    public void SetStrokeRGB(double red, double green, double blue) => 
+    public ValueTask SetStrokeRGB(double red, double green, double blue)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.RG, red, green, blue);
+        return ValueTask.CompletedTask;
+    }
 
     public ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
     {
@@ -167,11 +173,17 @@ public partial class ContentStreamWriter : IContentStreamOperations
         return ValueTask.CompletedTask;
     }
 
-    public void SetNonstrokingGray(double grayLevel) =>
+    public ValueTask SetNonstrokingGray(double grayLevel)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.g, grayLevel);
+        return ValueTask.CompletedTask;
+    }
 
-    public void SetNonstrokingRGB(double red, double green, double blue) => 
+    public ValueTask SetNonstrokingRGB(double red, double green, double blue)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.rg, red, green, blue);
+        return ValueTask.CompletedTask;
+    }
 
     public ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
     {

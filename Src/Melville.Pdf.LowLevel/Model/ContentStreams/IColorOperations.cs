@@ -31,12 +31,12 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator G
     /// </summary>
-    void SetStrokeGray(double grayLevel);
+    ValueTask SetStrokeGray(double grayLevel);
 
     /// <summary>
     /// Content stream operator RG
     /// </summary>
-    void SetStrokeRGB(double red, double green, double blue);
+    ValueTask SetStrokeRGB(double red, double green, double blue);
 
     /// <summary>
     /// Content stream operator K
@@ -46,12 +46,12 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator g
     /// </summary>
-    void SetNonstrokingGray(double grayLevel);
+    ValueTask SetNonstrokingGray(double grayLevel);
 
     /// <summary>
     /// Content stream operator rg
     /// </summary>
-    void SetNonstrokingRGB(double red, double green, double blue);
+    ValueTask SetNonstrokingRGB(double red, double green, double blue);
 
     /// <summary>
     /// Content stream operator k

@@ -113,10 +113,10 @@ public class ContentStreamContext
                 target.FillPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.G:
-                target.SetStrokeGray(arguments.DoubleAt(0));
+                await target.SetStrokeGray(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.g:
-                target.SetNonstrokingGray(arguments.DoubleAt(0));
+                await target.SetNonstrokingGray(arguments.DoubleAt(0));
                 break;
             case ContentStreamOperatorValue.gs:
                 await target.LoadGraphicStateDictionary(arguments.NamaAt(0));
@@ -136,11 +136,11 @@ public class ContentStreamContext
                 target.SetLineJoinStyle((LineJoinStyle)(double)arguments.LongAt(0));
                 break;
             case ContentStreamOperatorValue.K:
-                target.SetStrokeCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.SetStrokeCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.k:
-                target.SetNonstrokingCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.SetNonstrokingCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.l:
@@ -169,10 +169,10 @@ public class ContentStreamContext
                     arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.RG:
-                target.SetStrokeRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2));
+                await target.SetStrokeRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.rg:
-                target.SetNonstrokingRGB(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.SetNonstrokingRGB(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2));
                 break;
             case ContentStreamOperatorValue.ri:

@@ -97,14 +97,14 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetStrokingGray()
     {
-        sut.SetStrokeGray(12);
+        await sut.SetStrokeGray(12);
         Assert.Equal("12 G\n", await WrittenText());
     }    
     
     [Fact]
     public async Task SetStrokingRGB()
     {
-        sut.SetStrokeRGB(1,2,3);
+        await sut.SetStrokeRGB(1,2,3);
         Assert.Equal("1 2 3 RG\n", await WrittenText());
     }
  
@@ -118,14 +118,14 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetNonStrokingGray()
     {
-        sut.SetNonstrokingGray(12);
+        await sut.SetNonstrokingGray(12);
         Assert.Equal("12 g\n", await WrittenText());
     }    
     
     [Fact]
     public async Task SetNonStrokingRGB()
     {
-        sut.SetNonstrokingRGB(1,2,3);
+        await sut.SetNonstrokingRGB(1,2,3);
         Assert.Equal("1 2 3 rg\n", await WrittenText());
     }
  
