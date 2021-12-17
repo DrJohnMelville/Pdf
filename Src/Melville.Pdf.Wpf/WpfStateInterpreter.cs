@@ -13,7 +13,7 @@ public static class WpfStateInterpreter
     public static Pen Pen(this GraphicsState state)
     {
         var lineCap = ConvertLineCap(state.LineCap);
-        var pen = new Pen(Brushes.Black, state.LineWidth)
+        var pen = new Pen(Brushes.Black, state.EffectiveLineWidth())
         {
             EndLineCap = lineCap,
             StartLineCap = lineCap,
