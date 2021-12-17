@@ -80,3 +80,7 @@ RenderingTest.cs_wpf-SeparationAll|1580367651
 RenderingTest.cs_wpf-SeparationNone|3557237725
 RenderingTest.cs_Skia-SeparationAll|2475810247
 RenderingTest.cs_Skia-SeparationNone|2906416928
+RenderingTest.cs_wpf-DeviceN|3698250936
+RenderingTest.cs_wpf-DeviceNNone|3557237725
+RenderingTest.cs_Skia-DeviceN|4088771555
+RenderingTest.cs_Skia-DeviceNNone|2906416928

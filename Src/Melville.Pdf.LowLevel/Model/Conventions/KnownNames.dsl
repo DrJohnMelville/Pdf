@@ -125,6 +125,7 @@ Pdf:Count
 Pdf:CryptFilterDecodeParms
 Pdf:Decode
 Pdf:DecodeParms
+Pdf:DeviceN
 Pdf:DocOpen
 Pdf:Domain
 Pdf:EarlyChange

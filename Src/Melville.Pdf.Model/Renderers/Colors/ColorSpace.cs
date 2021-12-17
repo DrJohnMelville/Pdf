@@ -21,6 +21,14 @@ public static class ColorSpaceFactory
             _ => FromArray(page, colorSpaceName)
         };
     }
+
+    public static ValueTask<IColorSpace> FromNameOrArray(PdfObject datum, in PdfPage page) => datum switch
+    {
+        PdfName name => ParseColorSpace(name, page),
+        PdfArray array => FromArray(array, page),
+        _ => throw new PdfParseException("Invalid Color space definition")
+    };
+
     private static IColorSpace? cmykColorSpacel;
     public static async ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => cmykColorSpacel ??= 
         new IccColorspaceWithBlackDefault((await IccProfileLibrary.ReadCmyk()).TransformTo(
@@ -42,7 +50,8 @@ public static class ColorSpaceFactory
             KnownNameKeys.Lab => await LabColorSpace.ParseAsync(await array.GetAsync<PdfDictionary>(1)),
             KnownNameKeys.ICCBased => await IccProfileColorSpace.ParseAsync(await array.GetAsync<PdfStream>(1)),
             KnownNameKeys.Indexed => await IndexedColorSpace.ParseAsync(array, page),
-            KnownNameKeys.Separation => await SeparationParser.ParseAsync(array, page),
+            KnownNameKeys.Separation => await SeparationParser.ParseSeparationAsync(array, page),
+            KnownNameKeys.DeviceN => await SeparationParser.ParseDeviceNAsync(array, page),
             _=> throw new PdfParseException("Unrecognized Colorspace")
         };
 }

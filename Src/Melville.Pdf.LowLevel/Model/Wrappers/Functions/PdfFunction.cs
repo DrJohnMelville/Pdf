@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 // actual computation to its children.
 public abstract class PdfFunction
 {
-    protected ClosedInterval[] Domain { get; }
+    public ClosedInterval[] Domain { get; }
     public ClosedInterval[] Range { get; }
 
     protected PdfFunction(ClosedInterval[] domain, ClosedInterval[] range)
