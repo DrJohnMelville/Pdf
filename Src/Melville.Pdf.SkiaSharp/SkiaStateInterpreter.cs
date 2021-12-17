@@ -21,7 +21,7 @@ public static class SkiaStateInterpreter
         {
             Style = SKPaintStyle.Stroke,
             Color = state.StrokeColor.AsSkColor(),
-            StrokeWidth = (float)state.LineWidth,
+            StrokeWidth = (float)state.EffectiveLineWidth(),
             StrokeCap = StrokeCap(state.LineCap),
             StrokeJoin = CreateStrokeJoin(state.LineJoinStyle),
             StrokeMiter = (float)state.MiterLimit
