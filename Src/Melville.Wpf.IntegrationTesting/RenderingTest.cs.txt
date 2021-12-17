@@ -84,3 +84,9 @@ RenderingTest.cs_wpf-DeviceN|3698250936
 RenderingTest.cs_wpf-DeviceNNone|3557237725
 RenderingTest.cs_Skia-DeviceN|4088771555
 RenderingTest.cs_Skia-DeviceNNone|2906416928
+RenderingTest.cs_wpf-DefaultCmyk|2029702295
+RenderingTest.cs_wpf-DefaultGray|1893037037
+RenderingTest.cs_wpf-DefaultRgb|2029702295
+RenderingTest.cs_Skia-DefaultCmyk|2994854511
+RenderingTest.cs_Skia-DefaultGray|1326634132
+RenderingTest.cs_Skia-DefaultRgb|2994854511

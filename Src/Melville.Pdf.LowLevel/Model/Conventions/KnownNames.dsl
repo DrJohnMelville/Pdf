@@ -125,6 +125,9 @@ Pdf:Count
 Pdf:CryptFilterDecodeParms
 Pdf:Decode
 Pdf:DecodeParms
+Pdf:DefaultGray
+Pdf:DefaultRGB
+Pdf:DefaultCMYK
 Pdf:DeviceN
 Pdf:DocOpen
 Pdf:Domain

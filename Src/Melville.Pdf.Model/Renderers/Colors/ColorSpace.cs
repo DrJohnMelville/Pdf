@@ -10,17 +10,22 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 public static class ColorSpaceFactory
 {
-    public static ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName, in PdfPage page)
+    public static async ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName, PdfPage page)
     {
         #warning both cmyk and CalGray need to honor the current rendering intent
         return colorSpaceName.GetHashCode() switch
         {
-            KnownNameKeys.DeviceGray => new(DeviceGray.Instance),
-            KnownNameKeys.DeviceRGB => new(DeviceRgb.Instance),
-            KnownNameKeys.DeviceCMYK => CreateCmykColorSpaceAsync(),
-            _ => FromArray(page, colorSpaceName)
+            KnownNameKeys.DeviceGray => await SearchForDefault(KnownNames.DefaultGray, page, DeviceGray.Instance),
+            KnownNameKeys.DeviceRGB => await SearchForDefault(KnownNames.DefaultRGB, page, DeviceRgb.Instance),
+            KnownNameKeys.DeviceCMYK => 
+                await SearchForDefault(KnownNames.DefaultCMYK, page, await CreateCmykColorSpaceAsync()),
+            _ => await FromArray(page, colorSpaceName)
         };
     }
+
+    public static async ValueTask<IColorSpace> SearchForDefault(PdfName name, PdfPage page, IColorSpace space) =>
+        await page.GetResourceObject(ResourceTypeName.ColorSpace, name) is PdfArray array
+            ? await FromArray(array, page): space;
 
     public static ValueTask<IColorSpace> FromNameOrArray(PdfObject datum, in PdfPage page) => datum switch
     {
