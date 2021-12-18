@@ -83,4 +83,6 @@ public class LabColorSpace : IColorSpace
             sourceInterval.MapTo(bInterval, newColor[2]),
         });
     }
+    
+    public int ExpectedComponents => 3;
 }

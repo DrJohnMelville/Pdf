@@ -8,4 +8,10 @@ public class InvisibleColorSpace: IColorSpace
 
     public DeviceColor DefaultColor()  => DeviceColor.Invisible;
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) => DeviceColor.Invisible;
+    public int ExpectedComponents { get; }
+
+    public InvisibleColorSpace(int expectedComponents)
+    {
+        ExpectedComponents = expectedComponents;
+    }
 }

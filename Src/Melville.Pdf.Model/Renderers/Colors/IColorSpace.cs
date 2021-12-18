@@ -9,6 +9,7 @@ public interface IColorSpace
     DeviceColor SetColor(in ReadOnlySpan<double> newColor);
     DeviceColor DefaultColor();
     DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor);
+    public int ExpectedComponents { get; }
 }
 
 public static class IColorSpaceOperations

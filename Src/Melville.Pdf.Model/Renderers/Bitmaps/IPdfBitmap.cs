@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using Melville.Icc.Model.Tags;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -30,29 +33,40 @@ public static class PdfBitmapOperatons
     public static int ReqiredBufferSize(this IPdfBitmap bitmap) => 4 * TotalPixels(bitmap);
     public static int TotalPixels(this IPdfBitmap bitmap) => bitmap.Width * bitmap.Height;
 
-    public static async ValueTask<IPdfBitmap> WrapForRenderingAsync(this PdfStream stream) =>
+    public static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
+        this PdfStream stream, PdfPage page) =>
         new PdfBitmapWrapper(PipeReader.Create(await stream.StreamContentAsync()),
             (int)await stream.GetOrDefaultAsync(KnownNames.Width, 1),
-            (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1)
+            (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1),
+            await GetByteWriterAsync(stream, page)
         );
+
+    private static async ValueTask<IByteWriter> GetByteWriterAsync(
+        PdfStream stream, PdfPage page)
+    {
+        return new ByteWriter(await ColorSpaceFactory.FromNameOrArray(
+            await stream[KnownNames.ColorSpace], page), 8);
+    }
 }
 
 public class PdfBitmapWrapper : IPdfBitmap
 {
     public int Width { get; }
     public int Height { get; }
+    private readonly IByteWriter byteWriter;
     private readonly PipeReader source;
 
-    public PdfBitmapWrapper(PipeReader source, int width, int height)
+    public PdfBitmapWrapper(PipeReader source, int width, int height, IByteWriter byteWriter)
     {
         this.source = source;
         Width = width;
         Height = height;
+        this.byteWriter = byteWriter;
     }
 
     public unsafe ValueTask RenderPbgra(byte* buffer)
     {
-        var x = new BitmapWriter(buffer,source, Width);
+        var x = new BitmapWriter(buffer, source, Width, byteWriter);
         return InnerRender(x);
     }
 
@@ -60,51 +74,52 @@ public class PdfBitmapWrapper : IPdfBitmap
     {
         int row = Height - 1;
         int column = 0;
-        while (c.LoadLPixels(await c.reader.ReadAsync(), ref row, ref column)) {/* do nothing*/}
-
+        while (c.LoadLPixels(await c.ReadAsync(), ref row, ref column))
+        {
+            /* do nothing*/
+        }
     }
 }
 
 unsafe readonly struct BitmapWriter
 {
     private readonly byte* buffer;
-    public readonly PipeReader reader;
-    public readonly int width;
-    private const int BytesPerPixel = 4; 
-    
-    public BitmapWriter(byte* buffer, PipeReader reader, int width)
+    private readonly PipeReader reader;
+    private readonly int width;
+    private readonly IByteWriter writer;
+
+    public BitmapWriter(byte* buffer, PipeReader reader, int width, IByteWriter writer)
     {
         this.buffer = buffer;
         this.reader = reader;
         this.width = width;
+        this.writer = writer;
     }
 
+    public ValueTask<ReadResult> ReadAsync() => reader.ReadAsync();
 
     public bool LoadLPixels(ReadResult readResult, ref int row, ref int col)
     {
-        if (readResult.IsCompleted && readResult.Buffer.Length < BytesPerPixel) return false;
+        if (readResult.IsCompleted && readResult.Buffer.Length == 0)
+            return false;
         var seq = new SequenceReader<byte>(readResult.Buffer);
-        while (row >= 0)
+        while (seq.Remaining > 0)
         {
-            var localPointer = buffer + 4 * (col + (row * width));
-            while (col < width)
+            byte* localPointer = buffer + 4 * (col + (row * width));
+            byte* oneOffEnd = localPointer + ((width - col) * 4);
+            writer.WriteBytes(ref seq, ref localPointer, oneOffEnd);
+            if (oneOffEnd == localPointer)
             {
-                if (seq.Remaining < BytesPerPixel)
-                {
-                    reader.AdvanceTo(seq.Position, readResult.Buffer.End);
-                    return true;
-                }
-                seq.TryRead(out *(localPointer+2));
-                seq.TryRead(out *(localPointer+1));
-                seq.TryRead(out *localPointer);
-                localPointer += 3;            
-                *localPointer++ = (byte)0xff;
-                col++;
+                row--;
+                col = 0;
             }
-
-            col = 0;
-            row--;
+            else
+            {
+                col = width - (int)(oneOffEnd - localPointer) / 4;
+            }
         }
-        return false;
+
+        reader.AdvanceTo(seq.Position);
+        return row >= 0;
     }
 }

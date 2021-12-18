@@ -12,7 +12,7 @@ public static class SeparationParser
         (await array.GetAsync<PdfName>(1)).GetHashCode() switch
         {
             KnownNameKeys.All => DeviceGray.InvertedInstance,
-            KnownNameKeys.None => new InvisibleColorSpace(),
+            KnownNameKeys.None => new InvisibleColorSpace(1),
             _=>await AlternateColorspace(array, page)
         };
 
@@ -21,10 +21,13 @@ public static class SeparationParser
             await ColorSpaceFactory.FromNameOrArray(await array[2], page),
             await (await array.GetAsync<PdfDictionary>(3)).CreateFunctionAsync());
 
-    public static async ValueTask<IColorSpace> ParseDeviceNAsync(PdfArray array, PdfPage page) =>
-        (await AllNones(await array.GetAsync<PdfArray>(1)))?
-            new InvisibleColorSpace():
-            await AlternateColorspace(array, page);
+    public static async ValueTask<IColorSpace> ParseDeviceNAsync(PdfArray array, PdfPage page)
+    {
+        var nameArray = await array.GetAsync<PdfArray>(1);
+        return (await AllNones(nameArray))
+            ? new InvisibleColorSpace(nameArray.Count)
+            : await AlternateColorspace(array, page);
+    }
 
     private static async ValueTask<bool> AllNones(PdfArray array)
     {

@@ -59,4 +59,5 @@ public class IndexedColorSpace: IColorSpace
         await stream.CopyToAsync(ms);
         return GetValues(ms.GetBuffer().AsSpan(0, (int)ms.Length), baseColorSpace, length);
     }
+    public int ExpectedComponents => 1;
 }

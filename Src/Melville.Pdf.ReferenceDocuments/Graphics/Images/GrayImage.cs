@@ -1,8 +1,8 @@
 ﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
-public class SimpleImage: DisplayImageTest
+public class GrayImage: DisplayImageTest
 {
-    public SimpleImage() : base("Draw a simple, generated image image")
+    public GrayImage() : base("Draw a simple, generated image image")
     {
     }
 
@@ -12,7 +12,7 @@ public class SimpleImage: DisplayImageTest
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
             .WithItem(KnownNames.Width, new PdfInteger(256))
             .WithItem(KnownNames.Height, new PdfInteger(256))
             .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
@@ -26,9 +26,7 @@ public class SimpleImage: DisplayImageTest
         for (int i = 0; i < 256; i++)
         for (int j = 0; j < 256; j++)
         {
-            ret[pos++] = (byte)i;
-            ret[pos++] = (byte)j;
-            ret[pos++] = 0;
+            ret[pos++] = (byte)((i+j)/2);
         }
 
         return ret;

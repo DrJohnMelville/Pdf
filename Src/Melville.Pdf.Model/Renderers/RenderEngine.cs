@@ -148,7 +148,7 @@ public partial class RenderEngine: IContentStreamOperations
                       throw new PdfParseException("Co command can only be called on Streams"));
 
     public async ValueTask DoAsync(PdfStream inlineImage) =>
-        await target.RenderBitmap(await inlineImage.WrapForRenderingAsync());
+        await target.RenderBitmap(await inlineImage.WrapForRenderingAsync(page));
     #endregion
 
     #region Color Implementation

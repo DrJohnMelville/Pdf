@@ -36,6 +36,8 @@ public class IccColorSpace : IColorSpace
 
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
+
+    public int ExpectedComponents => transform.Inputs;
 }
 
 public class IccColorspaceWithBlackDefault : IccColorSpace

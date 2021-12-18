@@ -23,7 +23,7 @@ public class RelativeColorSpace : IColorSpace
 
     public DeviceColor DefaultColor()
     {
-        var colorCount = function.Domain.Length;
+        var colorCount = ExpectedComponents;
         Span<double> defaultColor = stackalloc double[colorCount];
         for (int i = 0; i < colorCount; i++)
         {
@@ -34,4 +34,6 @@ public class RelativeColorSpace : IColorSpace
 
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
+
+    public int ExpectedComponents => function.Domain.Length;
 }
