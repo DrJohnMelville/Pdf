@@ -90,3 +90,5 @@ RenderingTest.cs_wpf-DefaultRgb|2029702295
 RenderingTest.cs_Skia-DefaultCmyk|2994854511
 RenderingTest.cs_Skia-DefaultGray|1326634132
 RenderingTest.cs_Skia-DefaultRgb|2994854511
+RenderingTest.cs_wpf-SimpleImage|2115126373
+RenderingTest.cs_Skia-SimpleImage|1457245106
