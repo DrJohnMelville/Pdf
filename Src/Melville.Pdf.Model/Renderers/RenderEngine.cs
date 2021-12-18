@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -58,7 +59,7 @@ public partial class RenderEngine: IContentStreamOperations
 
     public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
         await StateOps.LoadGraphicStateDictionary(
-            await page.GetResourceObject(ResourceTypeName.ExtGState, dictionaryName) as 
+            await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName) as 
                 PdfDictionary ?? throw new PdfParseException($"Cannot find GraphicsState {dictionaryName}"));
     #endregion
     
@@ -142,15 +143,12 @@ public partial class RenderEngine: IContentStreamOperations
 
     public void ClipToPathEvenOdd() => target.CombineClip(true);
 
-    public ValueTask DoAsync(PdfName name)
-    {
-        throw new NotImplementedException();
-    }
+    public async ValueTask DoAsync(PdfName name) =>
+        await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name)) as PdfStream ??
+                      throw new PdfParseException("Co command can only be called on Streams"));
 
-    public ValueTask DoAsync(PdfStream inlineImage)
-    {
-        throw new NotImplementedException();
-    }
+    public async ValueTask DoAsync(PdfStream inlineImage) =>
+        await target.RenderBitmap(await inlineImage.WrapForRenderingAsync());
     #endregion
 
     #region Color Implementation

@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
@@ -34,7 +35,6 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     }
     #endregion
 
-    
     #region Path Building
 
     private SKPath? currentPath;
@@ -56,7 +56,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 
     #endregion
 
-    #region PathDrawing
+    #region Path Drawing
     void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         if (fill && State.Current().Brush() is {} brush)
@@ -78,5 +78,14 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
         currentPath?.Dispose();
         currentPath = null;
     }
+    #endregion
+    
+    #region Bitmap Rendering
+
+    public ValueTask RenderBitmap(IPdfBitmap bitmap)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 }

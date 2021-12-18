@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
@@ -23,6 +24,8 @@ public interface IRenderTarget
     void RestoreTransformAndClip();
     void Transform(in Matrix3x2 newTransform);
     void CombineClip(bool evenOddRule);
+
+    ValueTask RenderBitmap(IPdfBitmap bitmap);
 }
 
 public abstract class RenderTargetBase<T>

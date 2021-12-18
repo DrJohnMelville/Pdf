@@ -32,8 +32,6 @@ public static class WpfStateInterpreter
     private static Color AsWpfColor(in this DeviceColor dc) => 
         Color.FromRgb(dc.RedByte, dc.GreenByte, dc.BlueByte);
 
-    private static byte MapToByte(double value) => (byte)(255*value);
-
     private static PenLineJoin ComputeLineJoin(LineJoinStyle joinStyle) => joinStyle switch
     {
         LineJoinStyle.Miter => PenLineJoin.Miter,

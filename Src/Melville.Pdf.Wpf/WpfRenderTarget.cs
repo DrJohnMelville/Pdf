@@ -2,11 +2,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
@@ -117,5 +120,17 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
         figure = null;
     }
 
+    #endregion
+
+    #region Bitmap rendering
+
+    public async ValueTask RenderBitmap(IPdfBitmap bitmap)
+    {
+        var pixels = new byte[bitmap.ReqiredBufferSize()];
+        await bitmap.RenderPbgra(pixels.AsMemory());
+        var rtb = BitmapSource.Create(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32,
+            null, pixels, 4 * bitmap.Width);
+        Target.DrawImage(rtb, new Rect(0,0,1,1));
+    }
     #endregion
 }

@@ -59,7 +59,7 @@ public static partial class PdfPageAttributes
             .FirstOrDefaultAsync();
     }
     
-    public static ValueTask<PdfObject?> GetResourceObject<T>(
+    public static ValueTask<PdfObject?> GetResourceAsync<T>(
         this T item, ResourceTypeName resourceType, PdfName name) where T : IHasPageAttributes =>
         TwoLevelResourceDictionaryAccess(item.LowLevel, resourceType, name);
 

@@ -57,7 +57,7 @@ public class S7_7_3_3PageAttributes
             PdfObject obj = new PdfInteger(10);
             i.AddResourceObject(ResourceTypeName.XObject, name, obj);
         });
-        Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceObject(ResourceTypeName.XObject, name)))?.IntValue);
+        Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceAsync(ResourceTypeName.XObject, name)))?.IntValue);
     }
     [Fact]
     public async Task WithInheritedXObjectDictionary()
@@ -69,7 +69,7 @@ public class S7_7_3_3PageAttributes
                 PdfObject obj = new PdfInteger(10);
                 i.AddResourceObject(ResourceTypeName.XObject, name, obj);
             });
-        Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceObject(ResourceTypeName.XObject, name)))?.IntValue);
+        Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceAsync(ResourceTypeName.XObject, name)))?.IntValue);
     }
 
     [Fact]

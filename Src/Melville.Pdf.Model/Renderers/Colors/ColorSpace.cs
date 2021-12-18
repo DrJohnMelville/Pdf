@@ -24,7 +24,7 @@ public static class ColorSpaceFactory
     }
 
     public static async ValueTask<IColorSpace> SearchForDefault(PdfName name, PdfPage page, IColorSpace space) =>
-        await page.GetResourceObject(ResourceTypeName.ColorSpace, name) is PdfArray array
+        await page.GetResourceAsync(ResourceTypeName.ColorSpace, name) is PdfArray array
             ? await FromArray(array, page): space;
 
     public static ValueTask<IColorSpace> FromNameOrArray(PdfObject datum, in PdfPage page) => datum switch
@@ -41,7 +41,7 @@ public static class ColorSpaceFactory
 
     private static async ValueTask<IColorSpace> FromArray(PdfPage page, PdfName colorSpaceName)
     {
-        var obj = await page.GetResourceObject(ResourceTypeName.ColorSpace, colorSpaceName);
+        var obj = await page.GetResourceAsync(ResourceTypeName.ColorSpace, colorSpaceName);
         return obj is PdfArray array? await FromArray(array, page): DeviceGray.Instance;
     }
 
