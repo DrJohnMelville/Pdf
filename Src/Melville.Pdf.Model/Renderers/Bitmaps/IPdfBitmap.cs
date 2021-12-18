@@ -52,7 +52,7 @@ public class PdfBitmapWrapper : IPdfBitmap
 
     public unsafe ValueTask RenderPbgra(byte* buffer)
     {
-        var x = new BitmapWriter(buffer,source, this.TotalPixels());
+        var x = new BitmapWriter(buffer,source, Width);
         return InnerRender(x);
     }
 
@@ -69,39 +69,42 @@ unsafe readonly struct BitmapWriter
 {
     private readonly byte* buffer;
     public readonly PipeReader reader;
-    public readonly int totalPixels;
+    public readonly int width;
     private const int BytesPerPixel = 4; 
     
-    public BitmapWriter(byte* buffer, PipeReader reader, int totalPixels)
+    public BitmapWriter(byte* buffer, PipeReader reader, int width)
     {
         this.buffer = buffer;
         this.reader = reader;
-        this.totalPixels = totalPixels;
+        this.width = width;
     }
 
 
     public bool LoadLPixels(ReadResult readResult, ref int row, ref int col)
     {
         if (readResult.IsCompleted && readResult.Buffer.Length < BytesPerPixel) return false;
-        var localPointer = buffer + (currentPixel * 4);
-        
         var seq = new SequenceReader<byte>(readResult.Buffer);
-        for (int i = 0; i < remaining; i++)
+        while (row >= 0)
         {
-            if (seq.Remaining < BytesPerPixel)
+            var localPointer = buffer + 4 * (col + (row * width));
+            while (col < width)
             {
-                reader.AdvanceTo(seq.Position, readResult.Buffer.End);
-                return i;
+                if (seq.Remaining < BytesPerPixel)
+                {
+                    reader.AdvanceTo(seq.Position, readResult.Buffer.End);
+                    return true;
+                }
+                seq.TryRead(out *(localPointer+2));
+                seq.TryRead(out *(localPointer+1));
+                seq.TryRead(out *localPointer);
+                localPointer += 3;            
+                *localPointer++ = (byte)0xff;
+                col++;
             }
 
-            seq.TryRead(out *(localPointer+2));
-            seq.TryRead(out *(localPointer+1));
-            seq.TryRead(out *localPointer);
-            localPointer += 3;            
-            *localPointer++ = (byte)0xff;
+            col = 0;
+            row--;
         }
-
-        var TSpan = new Span<byte>(buffer, 4 * totalPixels);
-        return remaining;
+        return false;
     }
 }
