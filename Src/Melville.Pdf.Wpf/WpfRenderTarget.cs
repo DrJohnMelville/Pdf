@@ -124,13 +124,16 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     #region Bitmap rendering
 
-    public async ValueTask RenderBitmap(IPdfBitmap bitmap)
+    public async ValueTask RenderBitmap(IPdfBitmap bitmap) => 
+        Target.DrawImage(await BitmapToWpfBitmap(bitmap), new Rect(0,0,1,1));
+
+    private static async Task<BitmapSource> BitmapToWpfBitmap(IPdfBitmap bitmap)
     {
         var pixels = new byte[bitmap.ReqiredBufferSize()];
         await bitmap.RenderPbgra(pixels.AsMemory());
-        var rtb = BitmapSource.Create(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32,
+        return BitmapSource.Create(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32,
             null, pixels, 4 * bitmap.Width);
-        Target.DrawImage(rtb, new Rect(0,0,1,1));
     }
+
     #endregion
 }

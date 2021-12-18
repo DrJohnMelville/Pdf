@@ -82,9 +82,22 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     
     #region Bitmap Rendering
 
-    public ValueTask RenderBitmap(IPdfBitmap bitmap)
+    public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
-        throw new NotImplementedException();
+        var pixels = new byte[bitmap.ReqiredBufferSize()];
+        await bitmap.RenderPbgra(pixels.AsMemory());
+        var skBitmap = CopyToBitmap(bitmap, pixels);
+        Target.DrawBitmap(skBitmap,
+            new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1));
+    }
+
+    private unsafe SKBitmap CopyToBitmap(IPdfBitmap bitmap, byte[] pixels)
+    {
+        var skBitmap = new SKBitmap(new SKImageInfo(bitmap.Width, bitmap.Height, SKColorType.Bgra8888,
+            SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
+        var target = new Span<byte>(skBitmap.GetPixels().ToPointer(), bitmap.ReqiredBufferSize());
+        pixels.AsSpan().CopyTo(target);
+        return skBitmap;
     }
 
     #endregion
