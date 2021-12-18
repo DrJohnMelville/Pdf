@@ -129,11 +129,21 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     private static async Task<BitmapSource> BitmapToWpfBitmap(IPdfBitmap bitmap)
     {
-        var pixels = new byte[bitmap.ReqiredBufferSize()];
-        await bitmap.RenderPbgra(pixels.AsMemory());
-        return BitmapSource.Create(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32,
-            null, pixels, 4 * bitmap.Width);
+        var ret = new WriteableBitmap(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32, null);
+        ret.Lock();
+        try
+        {
+            await FillBitmap(bitmap, ret);
+        }
+        finally
+        {
+            ret.Unlock();
+        }
+        return ret;
     }
+
+    private static unsafe ValueTask FillBitmap(IPdfBitmap bitmap, WriteableBitmap wb) => 
+        bitmap.RenderPbgra((byte*)wb.BackBuffer.ToPointer());
 
     #endregion
 }

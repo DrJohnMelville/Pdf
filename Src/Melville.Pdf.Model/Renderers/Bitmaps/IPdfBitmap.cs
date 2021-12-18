@@ -9,7 +9,14 @@ public interface IPdfBitmap
 {
     int Width { get; }
     int Height { get; }
-    ValueTask RenderPbgra(Memory<byte> buffer);
+    /// <summary>
+    /// Fill the bitmap pointed to by buffer.
+    /// This is implemented as an unsafe pointer operation so that I can quickly fill native buffers,
+    /// deep in the graphics stack.
+    /// </summary>
+    /// <param name="buffer">A byte pointer which must point to the beginning of a buffer that
+    /// is Width * Height *4 bytes long</param>
+    unsafe ValueTask RenderPbgra(byte* buffer);
 }
 
 public static class PdfBitmapOperatons
@@ -36,14 +43,12 @@ public class PdfBitmapWrapper: IPdfBitmap
         Height = height;
     }
     
-    public ValueTask RenderPbgra(Memory<byte> buffer)
+    public unsafe ValueTask RenderPbgra(byte* buffer)
     {
-        var pixels = buffer.Span;
-        for (int i = 0; i < pixels.Length; i++)
+        for (int i = 0; i < this.ReqiredBufferSize(); i++)
         {
-            pixels[i] = (byte)(i %4 != 2 ? 0xFF:0);
+            *buffer++ = (byte)(i %4 != 2 ? 0xFF:0);
         }
-
         return ValueTask.CompletedTask;
     }
 }
