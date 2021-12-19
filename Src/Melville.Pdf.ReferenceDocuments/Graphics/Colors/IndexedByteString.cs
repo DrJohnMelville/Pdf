@@ -13,17 +13,22 @@ public class IndexedByteString: ColorBars
     {
         base.SetPageProperties(page);
         page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"),
-            new PdfArray(
-                KnownNames.Indexed, KnownNames.DeviceRGB, 
-                new PdfInteger(3),
-                new PdfString(new byte[]
-                {
-                    0xff, 0, 0,
-                    0x7f, 0x7f, 0x7f,
-                    0, 0, 0xFF,
-                    0, 0xff, 00
-                })
-            )
+            IndexedColorspace()
+        );
+    }
+
+    private static PdfArray IndexedColorspace()
+    {
+        return new PdfArray(
+            KnownNames.Indexed, KnownNames.DeviceRGB, 
+            new PdfInteger(3),
+            new PdfString(new byte[]
+            {
+                0xff, 0, 0,
+                0x7f, 0x7f, 0x7f,
+                0, 0, 0xFF,
+                0, 0xff, 00
+            })
         );
     }
 

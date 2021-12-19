@@ -30,7 +30,7 @@ public class NBitByteWriter : ByteWriter
         int bitsLeft = 8;
         while (bitsLeft > 0 && output < nextPos)
         {
-            PushComponent(ref output, ((float)((readVal >> (bitsLeft - bits)) & mask)) / mask);
+            PushComponent(ref output, ((readVal >> (bitsLeft - bits)) & mask),  mask);
             bitsLeft -= bits;
         }
     }

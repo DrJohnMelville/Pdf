@@ -24,6 +24,10 @@ public abstract class ByteWriter: IByteWriter
 
     public abstract unsafe void WriteBytes(
         ref SequenceReader<byte> input, ref byte* output, byte* nextPos);
+
+    protected unsafe virtual void PushComponent(
+        ref byte* output, int numerator, int denominator) =>
+        PushComponent(ref output, ((float)numerator) / denominator);  
     
     protected unsafe void PushComponent(ref byte* output, float component)
     {
@@ -43,19 +47,14 @@ public abstract class ByteWriter: IByteWriter
     }
 }
 
-public class ByteWriter16 : ByteWriter
+public class IntegerComponentByteWriter : NBitByteWriter
 {
-    private const float MaxValue = (1 << 16) - 1;
-    public ByteWriter16(IColorSpace colorSpace) : base(colorSpace)
+    public IntegerComponentByteWriter(IColorSpace colorSpace, int bits) : base(colorSpace, bits)
     {
     }
 
-    public override unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
+    protected override unsafe void PushComponent(ref byte* output, int numerator, int denominator)
     {
-        while (output < nextPos && input.TryPeek(out var high) && input.TryPeek(1, out var low))
-        {
-            input.Advance(2);
-            PushComponent(ref output, ((high << 8)|low)/MaxValue);
-        }
+        PushComponent(ref output, numerator);
     }
 }

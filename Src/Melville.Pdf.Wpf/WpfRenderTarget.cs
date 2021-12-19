@@ -16,8 +16,7 @@ namespace Melville.Pdf.Wpf;
 
 public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 {
-
-
+    
     public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
         base(target, state, page)
     {
@@ -124,8 +123,10 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     #region Bitmap rendering
 
-    public async ValueTask RenderBitmap(IPdfBitmap bitmap) => 
-        Target.DrawImage(await BitmapToWpfBitmap(bitmap), new Rect(0,0,1,1));
+    public async ValueTask RenderBitmap(IPdfBitmap bitmap)
+    {
+        Target.DrawImage(await BitmapToWpfBitmap(bitmap), new Rect(0, 0, 1, 1));
+    }
 
     private static async Task<BitmapSource> BitmapToWpfBitmap(IPdfBitmap bitmap)
     {

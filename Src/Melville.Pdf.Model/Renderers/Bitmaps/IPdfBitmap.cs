@@ -28,8 +28,8 @@ public interface IPdfBitmap
     unsafe ValueTask RenderPbgra(byte* buffer);
 }
 
-public static class PdfBitmapOperatons
-{
+    public static class PdfBitmapOperatons
+    {
     public static int ReqiredBufferSize(this IPdfBitmap bitmap) => 4 * TotalPixels(bitmap);
     public static int TotalPixels(this IPdfBitmap bitmap) => bitmap.Width * bitmap.Height;
 
@@ -46,10 +46,12 @@ public static class PdfBitmapOperatons
     {
         var colorSpace = await ColorSpaceFactory.FromNameOrArray(
             await stream[KnownNames.ColorSpace], page);
-        return (int)await stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8) switch
+        var bitsPerComponent = (int)await stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8);
+        return (colorSpace, bitsPerComponent) switch
         {
-            16 => new ByteWriter16(colorSpace),
-            var bits => new NBitByteWriter(colorSpace, bits)
+            (_, 16) => new ByteWriter16(colorSpace),
+            (IndexedColorSpace, _) => new IntegerComponentByteWriter(colorSpace, bitsPerComponent),
+            _ => new NBitByteWriter(colorSpace, bitsPerComponent)
         };
     }
 }
