@@ -8,6 +8,7 @@ public interface IByteWriter
 {
     unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, 
          byte* nextPos);
+    int MinimumInputSize { get; }
 }
 
 public abstract class ByteWriter: IByteWriter
@@ -45,6 +46,8 @@ public abstract class ByteWriter: IByteWriter
         *output++ = 0xFF;
         nextComponent = 0;
     }
+
+    public abstract int MinimumInputSize { get; }
 }
 
 public class IntegerComponentByteWriter : NBitByteWriter

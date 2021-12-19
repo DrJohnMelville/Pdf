@@ -104,3 +104,5 @@ RenderingTest.cs_wpf-IndexedImage1Bit|2332415781
 RenderingTest.cs_Skia-IndexedImage4Bit|508549681
 RenderingTest.cs_Skia-IndexedImage2Bit|3286028472
 RenderingTest.cs_Skia-IndexedImage1Bit|890491180
+RenderingTest.cs_wpf-SmallSimpleImage|2989051407
+RenderingTest.cs_Skia-SmallSimpleImage|1040503154

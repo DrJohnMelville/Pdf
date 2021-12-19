@@ -47,14 +47,18 @@ public interface IPdfBitmap
         var colorSpace = await ColorSpaceFactory.FromNameOrArray(
             await stream[KnownNames.ColorSpace], page);
         var bitsPerComponent = (int)await stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8);
-        return (colorSpace, bitsPerComponent) switch
+        return CreateByteWriter(colorSpace, bitsPerComponent);
+    }
+
+    private static IByteWriter CreateByteWriter(IColorSpace colorSpace, int bitsPerComponent) =>
+        (colorSpace, bitsPerComponent) switch
         {
             (_, 16) => new ByteWriter16(colorSpace),
             (IndexedColorSpace, _) => new IntegerComponentByteWriter(colorSpace, bitsPerComponent),
+            (DeviceRgb, 8) => new FastBitmapWriterRGB8(),
             _ => new NBitByteWriter(colorSpace, bitsPerComponent)
         };
     }
-}
 
 public class PdfBitmapWrapper : IPdfBitmap
 {
@@ -107,10 +111,10 @@ unsafe readonly struct BitmapWriter
 
     public bool LoadLPixels(ReadResult readResult, ref int row, ref int col)
     {
-        if (readResult.IsCompleted && readResult.Buffer.Length == 0)
+        if (readResult.IsCompleted && !EnoughBytesToRead(readResult.Buffer.Length))
             return false;
         var seq = new SequenceReader<byte>(readResult.Buffer);
-        while (seq.Remaining > 0)
+        while (EnoughBytesToRead(seq.Remaining))
         {
             byte* localPointer = buffer + PixelOffset(row, col);
             byte* oneOffEnd = localPointer + ((width - col) * 4);
@@ -127,9 +131,12 @@ unsafe readonly struct BitmapWriter
             }
         }
 
-        reader.AdvanceTo(seq.Position);
+        reader.AdvanceTo(seq.Position, readResult.Buffer.End);
         return row >= 0;
     }
+
+    private bool EnoughBytesToRead(long bytesRemaining) => 
+        bytesRemaining >= writer.MinimumInputSize;
 
     private int PixelOffset(int row, int col) => 4 * PixelPosition(row, col);
     private int PixelPosition(int row, int col) => (col + (row * width));

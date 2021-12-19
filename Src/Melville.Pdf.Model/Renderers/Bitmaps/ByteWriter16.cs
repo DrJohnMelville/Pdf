@@ -18,4 +18,6 @@ public class ByteWriter16 : ByteWriter
             PushComponent(ref output, ((high << 8)|low), ushort.MaxValue);
         }
     }
+
+    public override int MinimumInputSize => 2;
 }
