@@ -10,42 +10,26 @@ public interface IByteWriter
          byte* nextPos);
 }
 
-public class ByteWriter: IByteWriter
+public abstract class ByteWriter: IByteWriter
 {
     private readonly IColorSpace colorSpace;
     private readonly double[] partialColor;
     private int nextComponent = 0;
-    private int bits;
-    private byte mask;
-
-    public ByteWriter(IColorSpace colorSpace, int bits)
+    
+    public ByteWriter(IColorSpace colorSpace)
     {
         this.colorSpace = colorSpace;
         partialColor = new double[colorSpace.ExpectedComponents];
-        this.bits = bits;
-        mask = (byte)((1 << bits) - 1);
     }
 
-    public unsafe void WriteBytes(
-        ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
+    public abstract unsafe void WriteBytes(
+        ref SequenceReader<byte> input, ref byte* output, byte* nextPos);
+    
+    protected unsafe void PushComponent(ref byte* output, float component)
     {
-        while (output < nextPos && input.TryRead(out var readVal))
-        {
-            PushSingleByte(ref output, nextPos, readVal);
-        }
-    }
-
-    private unsafe void PushSingleByte(ref byte* output, byte* nextPos, byte readVal)
-    {
-        int bitsLeft = 8;
-        while (bitsLeft > 0 && output < nextPos)
-        {
-            partialColor[nextComponent++] =
-                ((float)((readVal>>(bitsLeft-bits)) & mask)) / mask;
-            bitsLeft -= bits;
-            if (nextComponent == partialColor.Length)
-                PushPixel(ref output);
-        }
+        partialColor[nextComponent++] = component;
+        if (nextComponent == partialColor.Length)
+            PushPixel(ref output);
     }
 
     private unsafe void PushPixel(ref byte* output)
@@ -56,5 +40,22 @@ public class ByteWriter: IByteWriter
         *output++ = color.RedByte;
         *output++ = 0xFF;
         nextComponent = 0;
+    }
+}
+
+public class ByteWriter16 : ByteWriter
+{
+    private const float MaxValue = (1 << 16) - 1;
+    public ByteWriter16(IColorSpace colorSpace) : base(colorSpace)
+    {
+    }
+
+    public override unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
+    {
+        while (output < nextPos && input.TryPeek(out var high) && input.TryPeek(1, out var low))
+        {
+            input.Advance(2);
+            PushComponent(ref output, ((high << 8)|low)/MaxValue);
+        }
     }
 }

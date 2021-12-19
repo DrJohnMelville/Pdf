@@ -44,8 +44,13 @@ public static class PdfBitmapOperatons
     private static async ValueTask<IByteWriter> GetByteWriterAsync(
         PdfStream stream, PdfPage page)
     {
-        return new ByteWriter(await ColorSpaceFactory.FromNameOrArray(
-            await stream[KnownNames.ColorSpace], page), 8);
+        var colorSpace = await ColorSpaceFactory.FromNameOrArray(
+            await stream[KnownNames.ColorSpace], page);
+        return (int)await stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8) switch
+        {
+            16 => new ByteWriter16(colorSpace),
+            var bits => new NBitByteWriter(colorSpace, bits)
+        };
     }
 }
 

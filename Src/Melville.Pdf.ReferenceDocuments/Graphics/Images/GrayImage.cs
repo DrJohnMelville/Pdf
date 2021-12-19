@@ -2,7 +2,7 @@
 
 public class GrayImage: DisplayImageTest
 {
-    public GrayImage() : base("Draw a simple, generated image image")
+    public GrayImage() : base("Draw a Image using a greyscale colorspace")
     {
     }
 

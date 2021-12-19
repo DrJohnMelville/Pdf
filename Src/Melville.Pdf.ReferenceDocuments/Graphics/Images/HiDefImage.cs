@@ -1,8 +1,8 @@
 ﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
-public class SimpleImage: DisplayImageTest
+public class HiDefImage: DisplayImageTest
 {
-    public SimpleImage() : base("Draw a simple, generated image")
+    public HiDefImage() : base("Draw an image with 48 bit color")
     {
     }
 
@@ -15,19 +15,22 @@ public class SimpleImage: DisplayImageTest
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
             .WithItem(KnownNames.Width, new PdfInteger(256))
             .WithItem(KnownNames.Height, new PdfInteger(256))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
+            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(16))
             .AsStream(GenerateImage());
     }
 
     private byte[] GenerateImage()
     {
-        var ret = new byte[256 * 256 * 3];
+        var ret = new byte[256 * 256 * 6];
         var pos = 0;
         for (int i = 0; i < 256; i++)
         for (int j = 0; j < 256; j++)
         {
             ret[pos++] = (byte)i;
+            ret[pos++] = (byte)0;
             ret[pos++] = (byte)j;
+            ret[pos++] = (byte)0;
+            ret[pos++] = 0;
             ret[pos++] = 0;
         }
 
