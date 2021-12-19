@@ -112,13 +112,14 @@ unsafe readonly struct BitmapWriter
         var seq = new SequenceReader<byte>(readResult.Buffer);
         while (seq.Remaining > 0)
         {
-            byte* localPointer = buffer + 4 * (col + (row * width));
+            byte* localPointer = buffer + PixelOffset(row, col);
             byte* oneOffEnd = localPointer + ((width - col) * 4);
             writer.WriteBytes(ref seq, ref localPointer, oneOffEnd);
             if (oneOffEnd == localPointer)
             {
                 row--;
                 col = 0;
+                
             }
             else
             {
@@ -129,4 +130,7 @@ unsafe readonly struct BitmapWriter
         reader.AdvanceTo(seq.Position);
         return row >= 0;
     }
+
+    private int PixelOffset(int row, int col) => 4 * PixelPosition(row, col);
+    private int PixelPosition(int row, int col) => (col + (row * width));
 }

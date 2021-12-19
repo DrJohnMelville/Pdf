@@ -92,5 +92,15 @@ RenderingTest.cs_Skia-DefaultGray|1326634132
 RenderingTest.cs_Skia-DefaultRgb|2994854511
 RenderingTest.cs_wpf-SimpleImage|2793121871
 RenderingTest.cs_Skia-SimpleImage|914734546
-RenderingTest.cs_wpf-GrayImage|1881647842
+RenderingTest.cs_wpf-GrayImage|1617565980
 RenderingTest.cs_Skia-GrayImage|3208350672
+RenderingTest.cs_wpf-HiDefImage|1145780079
+RenderingTest.cs_wpf-IndexedImage|746307587
+RenderingTest.cs_Skia-HiDefImage|2681794305
+RenderingTest.cs_Skia-IndexedImage|508549681
+RenderingTest.cs_wpf-IndexedImage4Bit|746307587
+RenderingTest.cs_wpf-IndexedImage2Bit|2399338643
+RenderingTest.cs_wpf-IndexedImage1Bit|2332415781
+RenderingTest.cs_Skia-IndexedImage4Bit|508549681
+RenderingTest.cs_Skia-IndexedImage2Bit|3286028472
+RenderingTest.cs_Skia-IndexedImage1Bit|890491180
