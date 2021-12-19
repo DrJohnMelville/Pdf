@@ -32,16 +32,28 @@ public static class RenderToDrawingGroup
     }
     public static async ValueTask<DrawingGroup> Render(PdfPage page)
     {
-        var dg = new DrawingGroup();
-        using (var dc = dg.Open())
-        {
-            await Render(page, dc);
-        }
+        var dg = CreateDrawingGroup();
+        await RenderTo(page, dg);
         dg.Freeze();
         return dg;
     }
 
-    private static async ValueTask Render(PdfPage page, DrawingContext dc)
+    private static DrawingGroup CreateDrawingGroup()
+    {
+        var dg = new DrawingGroup();
+        RenderOptions.SetBitmapScalingMode(dg, BitmapScalingMode.NearestNeighbor);
+        return dg;
+    }
+
+    private static async Task RenderTo(PdfPage page, DrawingGroup dg)
+    {
+        using (var dc = dg.Open())
+        {
+            await RenderTo(page, dc);
+        }
+    }
+
+    private static async ValueTask RenderTo(PdfPage page, DrawingContext dc)
     {
         var rect = await page.GetBoxAsync(BoxName.CropBox);
         if (!rect.HasValue) return;
