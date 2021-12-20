@@ -1,13 +1,9 @@
-﻿using System;
-using System.Buffers;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Icc.Model.Tags;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -47,97 +43,46 @@ public interface IPdfBitmap
         var colorSpace = await ColorSpaceFactory.FromNameOrArray(
             await stream[KnownNames.ColorSpace], page);
         var bitsPerComponent = (int)await stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8);
-        return CreateByteWriter(colorSpace, bitsPerComponent);
+
+        var decode = stream.TryGetValue(KnownNames.Decode, out var arrayTask) && await arrayTask is PdfArray array
+            ? await array.AsDoublesAsync()
+            : null;
+        return CreateByteWriter(colorSpace, bitsPerComponent, decode);
     }
 
-    private static IByteWriter CreateByteWriter(IColorSpace colorSpace, int bitsPerComponent) =>
-        (colorSpace, bitsPerComponent) switch
+    private static IByteWriter CreateByteWriter(IColorSpace colorSpace, int bitsPerComponent, double[]? decode) =>
+        (colorSpace, bitsPerComponent, decode) switch
         {
-            (_, 16) => new ByteWriter16(colorSpace),
-            (IndexedColorSpace, _) => new IntegerComponentByteWriter(colorSpace, bitsPerComponent),
-            (DeviceRgb, 8) => new FastBitmapWriterRGB8(),
-            _ => new NBitByteWriter(colorSpace, bitsPerComponent)
+            (_, 16, _) => new ByteWriter16(colorSpace, ComputeIntervals(colorSpace, decode, bitsPerComponent)),
+            (DeviceRgb, 8, _) when IsDefaultDecode(decode) => new FastBitmapWriterRGB8(),
+            _ => new NBitByteWriter(colorSpace, ComputeIntervals(colorSpace, decode, bitsPerComponent), bitsPerComponent)
         };
-    }
 
-public class PdfBitmapWrapper : IPdfBitmap
-{
-    public int Width { get; }
-    public int Height { get; }
-    private readonly IByteWriter byteWriter;
-    private readonly PipeReader source;
-
-    public PdfBitmapWrapper(PipeReader source, int width, int height, IByteWriter byteWriter)
+    private static ClosedInterval[] ComputeIntervals(IColorSpace colorSpace, double[]? decode, int bitsPerComponent)
     {
-        this.source = source;
-        Width = width;
-        Height = height;
-        this.byteWriter = byteWriter;
-    }
-
-    public unsafe ValueTask RenderPbgra(byte* buffer)
-    {
-        var x = new BitmapWriter(buffer, source, Width, byteWriter);
-        return InnerRender(x);
-    }
-
-    private async ValueTask InnerRender(BitmapWriter c)
-    {
-        int row = Height - 1;
-        int column = 0;
-        while (c.LoadLPixels(await c.ReadAsync(), ref row, ref column))
+        if (decode == null) return colorSpace.DefaultOutputIntervals(bitsPerComponent);
+        CheckDecodeArrayLength(decode);
+        var ret = new ClosedInterval[decode.Length / 2];
+        for (int i = 0; i < ret.Length; i++)
         {
-            /* do nothing*/
+            ret[i] = new ClosedInterval(decode[2 * i], decode[2 * i + 1]);
         }
+        return ret;
     }
-}
 
-unsafe readonly struct BitmapWriter
-{
-    private readonly byte* buffer;
-    private readonly PipeReader reader;
-    private readonly int width;
-    private readonly IByteWriter writer;
-
-    public BitmapWriter(byte* buffer, PipeReader reader, int width, IByteWriter writer)
+    private static void CheckDecodeArrayLength(double[] decode)
     {
-        this.buffer = buffer;
-        this.reader = reader;
-        this.width = width;
-        this.writer = writer;
+        if (decode.Length % 2 == 1)
+            throw new PdfParseException("Decode array must have an even number of elements");
     }
 
-    public ValueTask<ReadResult> ReadAsync() => reader.ReadAsync();
+    private static bool IsDefaultDecode(double[]? decode) =>
+        decode == null || IsExplicitDefaultDecode(decode);
 
-    public bool LoadLPixels(ReadResult readResult, ref int row, ref int col)
-    {
-        if (readResult.IsCompleted && !EnoughBytesToRead(readResult.Buffer.Length))
-            return false;
-        var seq = new SequenceReader<byte>(readResult.Buffer);
-        while (EnoughBytesToRead(seq.Remaining))
-        {
-            byte* localPointer = buffer + PixelOffset(row, col);
-            byte* oneOffEnd = localPointer + ((width - col) * 4);
-            writer.WriteBytes(ref seq, ref localPointer, oneOffEnd);
-            if (oneOffEnd == localPointer)
-            {
-                row--;
-                col = 0;
-                
-            }
-            else
-            {
-                col = width - (int)(oneOffEnd - localPointer) / 4;
-            }
-        }
-
-        reader.AdvanceTo(seq.Position, readResult.Buffer.End);
-        return row >= 0;
+    private static bool IsExplicitDefaultDecode(double[] decode) =>
+        decode.Length == 6 &&
+        decode[0] == 0.0 && decode[1] == 1.0 &&
+        decode[2] == 0.0 && decode[3] == 1.0 &&
+        decode[4] == 0.0 && decode[5] == 1.0;
     }
 
-    private bool EnoughBytesToRead(long bytesRemaining) => 
-        bytesRemaining >= writer.MinimumInputSize;
-
-    private int PixelOffset(int row, int col) => 4 * PixelPosition(row, col);
-    private int PixelPosition(int row, int col) => (col + (row * width));
-}

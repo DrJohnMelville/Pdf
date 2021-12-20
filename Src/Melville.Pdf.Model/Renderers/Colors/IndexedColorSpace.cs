@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
@@ -60,4 +61,7 @@ public class IndexedColorSpace: IColorSpace
         return GetValues(ms.GetBuffer().AsSpan(0, (int)ms.Length), baseColorSpace, length);
     }
     public int ExpectedComponents => 1;
+
+    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) =>
+        new ClosedInterval[] { new(0, (1 << bitsPerComponent) - 1) };
 }

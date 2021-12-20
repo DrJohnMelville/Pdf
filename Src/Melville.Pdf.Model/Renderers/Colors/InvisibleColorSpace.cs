@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
@@ -14,4 +16,8 @@ public class InvisibleColorSpace: IColorSpace
     {
         ExpectedComponents = expectedComponents;
     }
+    
+    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) =>
+      Enumerable.Repeat(new ClosedInterval(0,1), ExpectedComponents).ToArray();
+
 }

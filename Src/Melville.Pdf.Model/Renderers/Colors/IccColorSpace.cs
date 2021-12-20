@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Melville.Icc.Model.Tags;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
@@ -38,6 +40,8 @@ public class IccColorSpace : IColorSpace
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
     public int ExpectedComponents => transform.Inputs;
+    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => 
+      Enumerable.Repeat(new ClosedInterval(0, 1), ExpectedComponents).ToArray();
 }
 
 public class IccColorspaceWithBlackDefault : IccColorSpace

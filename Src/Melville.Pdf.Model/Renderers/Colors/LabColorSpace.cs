@@ -22,7 +22,15 @@ public class LabColorSpace : IColorSpace
         this.whitePoint = whitePoint;
         this.aInterval = aInterval;
         this.bInterval = bInterval;
+        outputIntervals = new[]
+        {
+            new ClosedInterval(0, 100), aInterval, bInterval
+        };
     }
+
+    private ClosedInterval[] outputIntervals;
+    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => outputIntervals;
+
 
     public static async ValueTask<LabColorSpace> ParseAsync(PdfDictionary parameters)
     {

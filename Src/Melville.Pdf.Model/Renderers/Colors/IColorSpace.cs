@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
@@ -10,6 +11,7 @@ public interface IColorSpace
     DeviceColor DefaultColor();
     DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor);
     public int ExpectedComponents { get; }
+    ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent);
 }
 
 public static class IColorSpaceOperations

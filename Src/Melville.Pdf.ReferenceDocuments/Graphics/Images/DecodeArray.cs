@@ -1,8 +1,8 @@
 ﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
-public class SimpleImage: DisplayImageTest
+public class DecodeArray: DisplayImageTest
 {
-    public SimpleImage() : base("Draw a simple, generated image")
+    public DecodeArray() : base("Draw a generated image with a decodeArray")
     {
     }
 
@@ -16,6 +16,11 @@ public class SimpleImage: DisplayImageTest
             .WithItem(KnownNames.Width, new PdfInteger(256))
             .WithItem(KnownNames.Height, new PdfInteger(256))
             .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
+            .WithItem(KnownNames.Decode, new PdfArray(
+                new PdfDouble(1.0), new PdfDouble(0.0),
+                new PdfDouble(0.25), new PdfDouble(0.75),
+                new PdfDouble(0.75), new PdfDouble(0.75)
+            ))
             .AsStream(GenerateImage());
     }
 
