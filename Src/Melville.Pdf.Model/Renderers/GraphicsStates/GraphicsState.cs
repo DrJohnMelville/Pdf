@@ -16,6 +16,7 @@ public interface IGraphiscState : IStateChangingOperations
     ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
     void SetStrokeColorSpace(IColorSpace colorSpace);
     void SetNonstrokeColorSpace(IColorSpace colorSpace);
+    GraphicsState CurrentState();
 }
 
 public partial class GraphicsState: IGraphiscState
@@ -169,6 +170,8 @@ public partial class GraphicsState: IGraphiscState
         NonstrokeColor = colorSpace.DefaultColor();
         NonstrokeColorSpace = colorSpace;
     }
+
+    public GraphicsState CurrentState() => this;
 
     public void SetStrokeColor(in ReadOnlySpan<double> color) => 
         StrokeColor = StrokeColorSpace.SetColor(color);

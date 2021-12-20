@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -12,7 +13,11 @@ namespace Performance.Playground.Rendering
         private static byte[] dest = Enumerable.Repeat((byte)12, 40000).ToArray();
         
         [Benchmark(Baseline = true)]
-        public void Generic() => TestWriter(new NBitByteWriter(DeviceRgb.Instance, 8));
+        public void Generic() => TestWriter(new 
+            NBitByteWriter(DeviceRgb.Instance, new ClosedInterval[]
+            {
+                new (0,1), new (0,1), new (0,1)
+            }, 8));
 
         [Benchmark()]
         public void Specialized() => TestWriter(new FastBitmapWriterRGB8());

@@ -12,7 +12,6 @@ public static class ColorSpaceFactory
 {
     public static async ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName, PdfPage page)
     {
-        #warning both cmyk and CalGray need to honor the current rendering intent
         return colorSpaceName.GetHashCode() switch
         {
             KnownNameKeys.DeviceGray => await SearchForDefault(KnownNames.DefaultGray, page, DeviceGray.Instance),

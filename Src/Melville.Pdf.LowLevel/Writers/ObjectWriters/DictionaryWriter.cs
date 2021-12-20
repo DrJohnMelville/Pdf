@@ -52,5 +52,6 @@ public static class DictionaryWriter
     }
 
     private static bool NeedsLeadingSpace(PdfObject itemValue) => 
-        itemValue is PdfNumber or PdfIndirectObject or PdfIndirectReference;
+        itemValue is PdfNumber or PdfIndirectObject or PdfIndirectReference 
+            or PdfTokenValues;
 }
