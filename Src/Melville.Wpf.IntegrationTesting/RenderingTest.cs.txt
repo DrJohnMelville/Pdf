@@ -112,3 +112,5 @@ RenderingTest.cs_wpf-InvertedStencilMask|2196666708
 RenderingTest.cs_wpf-StencilMask|186705838
 RenderingTest.cs_Skia-InvertedStencilMask|3736333545
 RenderingTest.cs_Skia-StencilMask|277934425
+RenderingTest.cs_wpf-ExplicitColorMask|1049354377
+RenderingTest.cs_Skia-ExplicitColorMask|4094061638

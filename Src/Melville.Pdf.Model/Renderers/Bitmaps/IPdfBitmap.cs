@@ -30,12 +30,19 @@ public interface IPdfBitmap
     public static int TotalPixels(this IPdfBitmap bitmap) => bitmap.Width * bitmap.Height;
 
     public static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
-        this PdfStream stream, PdfPage page, DeviceColor fillColor) =>
-        new PdfBitmapWrapper(PipeReader.Create(await stream.StreamContentAsync()),
+        this PdfStream stream, PdfPage page, DeviceColor fillColor)
+    {
+        var reader = new PdfBitmapWrapper(PipeReader.Create(await stream.StreamContentAsync()),
             (int)await stream.GetOrDefaultAsync(KnownNames.Width, 1),
             (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1),
-            await GetByteWriterAsync(stream, page, fillColor)
-        );
+            await GetByteWriterAsync(stream, page, fillColor));
+        
+        return await stream.GetOrDefaultAsync<PdfObject>(KnownNames.Mask, PdfTokenValues.Null) switch
+        {
+            PdfStream maskImage => new MaskedBitmapWrapper(reader, await MaskBitmap.Create(maskImage, page)),
+            _ => reader
+        };
+    }
 
     private static async ValueTask<IByteWriter> GetByteWriterAsync(
         PdfStream stream, PdfPage page, DeviceColor fillColor)

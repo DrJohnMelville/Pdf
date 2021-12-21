@@ -22,13 +22,10 @@ public class StencilMask : DisplayImageTest
             .WithItem(KnownNames.Width, new PdfInteger(3))
             .WithItem(KnownNames.Height, new PdfInteger(3))
             .WithItem(KnownNames.ImageMask, PdfBoolean.True)
-            .AsStream(GenerateImage());
+            .AsStream(new byte[]{
+                0b01000000,
+                0b10100000,
+                0b01000000
+            });
     }
-
-    private byte[] GenerateImage() =>
-        new byte[]{
-            0b01000000,
-            0b10100000,
-            0b01000000
-        };
 }

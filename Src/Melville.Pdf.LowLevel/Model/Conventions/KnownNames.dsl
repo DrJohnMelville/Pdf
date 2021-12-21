@@ -157,6 +157,7 @@ Pdf:Lab
 Pdf:LastModified
 Pdf:Length
 Pdf:Limits
+Pdf:Mask
 Pdf:Matrix
 Pdf:Max
 Pdf:N

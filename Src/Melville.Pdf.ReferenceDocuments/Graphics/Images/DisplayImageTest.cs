@@ -11,7 +11,7 @@ public abstract class DisplayImageTest : Card3x5
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddResourceObject(ResourceTypeName.XObject, NameDirectory.Get("I1"),
-            CreateImage()
+            cr=>CreateImage()
         );
     }
     
