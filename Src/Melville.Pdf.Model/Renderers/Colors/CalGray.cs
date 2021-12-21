@@ -7,12 +7,14 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
+public record struct FloatColor(double Red, double Green, double Blue);
+
 public class CalGray : IColorSpace
 {
-    private readonly DeviceColor whitePoint;
+    private readonly FloatColor whitePoint;
     private readonly double gamma;
 
-    public CalGray(DeviceColor whitePoint, double gamma)
+    public CalGray(FloatColor whitePoint, double gamma)
     {
         this.whitePoint = whitePoint;
         this.gamma = gamma;
@@ -21,7 +23,7 @@ public class CalGray : IColorSpace
     public static async ValueTask<CalGray> Parse(PdfDictionary parameters)
     {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint);
-        var wp = new DeviceColor(
+        var wp = new FloatColor(
             (await array.GetAsync<PdfNumber>(0)).DoubleValue,
             (await array.GetAsync<PdfNumber>(1)).DoubleValue,
             (await array.GetAsync<PdfNumber>(2)).DoubleValue

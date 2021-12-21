@@ -108,3 +108,7 @@ RenderingTest.cs_wpf-SmallSimpleImage|2989051407
 RenderingTest.cs_Skia-SmallSimpleImage|1040503154
 RenderingTest.cs_wpf-DecodeArray|830484099
 RenderingTest.cs_Skia-DecodeArray|1545096907
+RenderingTest.cs_wpf-InvertedStencilMask|2196666708
+RenderingTest.cs_wpf-StencilMask|186705838
+RenderingTest.cs_Skia-InvertedStencilMask|3736333545
+RenderingTest.cs_Skia-StencilMask|277934425

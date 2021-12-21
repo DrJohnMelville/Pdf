@@ -6,17 +6,15 @@ using SkiaSharp;
 
 public static class SkiaStateInterpreter
 {
-    public static SKPaint? Brush(this GraphicsState state) => 
-        state.NonstrokeColor.IsInvisible ? null:
+    public static SKPaint Brush(this GraphicsState state) => 
         new()
         {
             Style = SKPaintStyle.Fill,
             Color = state.NonstrokeColor.AsSkColor(),
         };
 
-    public static SKPaint? Pen(this GraphicsState state)
+    public static SKPaint Pen(this GraphicsState state)
     {
-        if (state.StrokeColor.IsInvisible) return null;
         var paint = new SKPaint()
         {
             Style = SKPaintStyle.Stroke,
@@ -31,7 +29,7 @@ public static class SkiaStateInterpreter
     }
 
     public static SKColor AsSkColor(in this DeviceColor dc) => 
-        new(dc.RedByte, dc.GreenByte, dc.BlueByte);
+        new(dc.RedByte, dc.GreenByte, dc.BlueByte, dc.Alpha);
 
     //By coincidence these two enums are equivilent, so a simple cast works.
     private static SKStrokeJoin CreateStrokeJoin(LineJoinStyle joinStyle) => (SKStrokeJoin)joinStyle;

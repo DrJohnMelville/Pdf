@@ -8,7 +8,7 @@ namespace Melville.Pdf.Wpf;
 
 public static class WpfStateInterpreter
 {
-    public static Brush? Brush(this GraphicsState state) => state.NonstrokeColor.AsSolidBrush();
+    public static Brush Brush(this GraphicsState state) => state.NonstrokeColor.AsSolidBrush();
     
     public static Pen Pen(this GraphicsState state)
     {
@@ -26,11 +26,10 @@ public static class WpfStateInterpreter
         return pen;
     }
 
-    public static Brush? AsSolidBrush(in this DeviceColor dc) => 
-        dc.IsInvisible? null: new SolidColorBrush(dc.AsWpfColor());
+    public static Brush AsSolidBrush(in this DeviceColor dc) => new SolidColorBrush(dc.AsWpfColor());
 
     private static Color AsWpfColor(in this DeviceColor dc) => 
-        Color.FromRgb(dc.RedByte, dc.GreenByte, dc.BlueByte);
+        Color.FromArgb(dc.Alpha, dc.RedByte, dc.GreenByte, dc.BlueByte);
 
     private static PenLineJoin ComputeLineJoin(LineJoinStyle joinStyle) => joinStyle switch
     {

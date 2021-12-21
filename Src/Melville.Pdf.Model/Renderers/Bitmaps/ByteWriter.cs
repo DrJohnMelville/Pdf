@@ -55,12 +55,19 @@ public abstract class ByteWriter: IByteWriter
     private unsafe void PushPixel(ref byte* output)
     {
         var color = colorSpace.SetColor(partialColor);
+        BitmapPointerMath.PushPixel(ref output, color.AsPreMultiplied());
+        nextComponent = 0;
+    }
+    public abstract int MinimumInputSize { get; }
+}
+
+public static class BitmapPointerMath
+{
+    public static unsafe void PushPixel(ref byte* output, in DeviceColor color)
+    {
         *output++ = color.BlueByte;
         *output++ = color.GreenByte;
         *output++ = color.RedByte;
-        *output++ = 0xFF;
-        nextComponent = 0;
+        *output++ = color.Alpha;
     }
-
-    public abstract int MinimumInputSize { get; }
 }

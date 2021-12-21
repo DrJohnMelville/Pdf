@@ -13,11 +13,11 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 public class LabColorSpace : IColorSpace
 {
-    private readonly DeviceColor whitePoint;
+    private readonly FloatColor whitePoint;
     private readonly ClosedInterval aInterval;
     public readonly ClosedInterval bInterval;
 
-    public LabColorSpace(DeviceColor whitePoint, ClosedInterval aInterval, ClosedInterval bInterval)
+    public LabColorSpace(FloatColor whitePoint, ClosedInterval aInterval, ClosedInterval bInterval)
     {
         this.whitePoint = whitePoint;
         this.aInterval = aInterval;
@@ -45,10 +45,10 @@ public class LabColorSpace : IColorSpace
             );
     }
 
-    private static async Task<DeviceColor> ReadWhitePoint(PdfDictionary parameters)
+    private static async Task<FloatColor> ReadWhitePoint(PdfDictionary parameters)
     {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint);
-        return new DeviceColor(
+        return new FloatColor(
             (await array.GetAsync<PdfNumber>(0)).DoubleValue,
             (await array.GetAsync<PdfNumber>(1)).DoubleValue,
             (await array.GetAsync<PdfNumber>(2)).DoubleValue

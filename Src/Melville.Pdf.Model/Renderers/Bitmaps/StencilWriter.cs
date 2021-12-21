@@ -5,16 +5,12 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal class StencilWriter : IByteWriter
 {
-    private byte redByte;
-    private byte greenByte;
-    private byte blueByte;
+    private DeviceColor color;
     private bool markingValue;
     
     public StencilWriter(double[]? decode, DeviceColor color)
     {
-        redByte = color.RedByte;
-        blueByte = color.BlueByte;
-        greenByte = color.GreenByte;
+        this.color = color.AsPreMultiplied();
         markingValue = ZeroIsMarkingValue(decode);
     }
 
@@ -31,26 +27,15 @@ internal class StencilWriter : IByteWriter
     {
         for (var currentBit = 0x80; currentBit > 0 && MoreRoomToWrite(output, nextPos); currentBit >>=1)
         {
-            if (((currentBit & data) == 0) == markingValue)
-            {
-                PushPixel(ref output, redByte, greenByte, blueByte, 0xFF);
-            }
-            else
-            {
-                PushPixel(ref output, 0, 0, 0, 0);
-            }
+            BitmapPointerMath.PushPixel(ref output, 
+                ShouldMarkPixel(data,currentBit)? color: DeviceColor.Invisible);
         }
     }
 
-    private static unsafe bool MoreRoomToWrite(byte* output, byte* nextPos) => output < nextPos;
+    private bool ShouldMarkPixel(byte data, int currentBit) => 
+        ((currentBit & data) == 0) == markingValue;
 
-    private unsafe void PushPixel(ref byte* output, byte red, byte green, byte blue, byte alpha)
-    {
-        *output++ = blue;
-        *output++ = green;
-        *output++ = red;
-        *output++ = alpha;
-    }
+    private static unsafe bool MoreRoomToWrite(byte* output, byte* nextPos) => output < nextPos;
 
     public int MinimumInputSize => 1;
 }
