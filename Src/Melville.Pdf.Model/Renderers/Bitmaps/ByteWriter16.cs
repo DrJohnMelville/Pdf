@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Buffers;
-using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
-using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 public class ByteWriter16 : ByteWriter
 {
-    public ByteWriter16(IColorSpace colorSpace, ClosedInterval[] outputIntervals) :
-        base(colorSpace, outputIntervals, UInt16.MaxValue)
+    public ByteWriter16(IComponentWriter writer) :
+        base(UInt16.MaxValue, writer)
     {
     }
 
@@ -20,7 +18,6 @@ public class ByteWriter16 : ByteWriter
             PushComponent(ref output, UIntFromBytes(high, low));
         }
     }
-
     private static int UIntFromBytes(byte high, byte low) => (high << 8)|low;
 
     public override int MinimumInputSize => 2;

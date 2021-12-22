@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
-using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -8,8 +7,8 @@ public class NBitByteWriter : ByteWriter
 {
     private int bits;
 
-    public NBitByteWriter(IColorSpace colorSpace, ClosedInterval[] outputIntervals, int bits) : 
-        base(colorSpace, outputIntervals, MaxValueForBits(bits))
+    public NBitByteWriter(IComponentWriter writer, int bits) : 
+        base(MaxValueForBits(bits), writer)
     {
         this.bits = bits;
     }
@@ -34,7 +33,5 @@ public class NBitByteWriter : ByteWriter
             bitsLeft -= bits;
         }
     }
-    
     public override int MinimumInputSize => 1;
-
 }

@@ -14,10 +14,11 @@ namespace Performance.Playground.Rendering
         
         [Benchmark(Baseline = true)]
         public void Generic() => TestWriter(new 
-            NBitByteWriter(DeviceRgb.Instance, new ClosedInterval[]
+            NBitByteWriter(new ComponentWriter(
+                new ClosedInterval(0, 255), new ClosedInterval[]
             {
                 new (0,1), new (0,1), new (0,1)
-            }, 8));
+            }, DeviceRgb.Instance), 8));
 
         [Benchmark()]
         public void Specialized() => TestWriter(new FastBitmapWriterRGB8());

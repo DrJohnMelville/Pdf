@@ -1,8 +1,9 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
+﻿
+namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
-public class SimpleImage: DisplayImageTest
+public class ColorMask: DisplayImageTest
 {
-    public SimpleImage() : base("Draw a simple, generated image")
+    public ColorMask() : base("Draw a simple, generated image")
     {
     }
 
@@ -16,6 +17,11 @@ public class SimpleImage: DisplayImageTest
             .WithItem(KnownNames.Width, new PdfInteger(256))
             .WithItem(KnownNames.Height, new PdfInteger(256))
             .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
+            .WithItem(KnownNames.Mask, new PdfArray(
+                new PdfDouble(75), new PdfDouble(200),
+                new PdfDouble(75), new PdfDouble(200),
+                new PdfDouble(0), new PdfDouble(255)
+                ))
             .AsStream(GenerateImage());
     }
 

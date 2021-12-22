@@ -32,6 +32,7 @@ public interface IPdfBitmap
     public static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
         this PdfStream stream, PdfPage page, DeviceColor fillColor)
     {
+        
         var reader = new PdfBitmapWrapper(PipeReader.Create(await stream.StreamContentAsync()),
             (int)await stream.GetOrDefaultAsync(KnownNames.Width, 1),
             (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1),
@@ -57,27 +58,54 @@ public interface IPdfBitmap
         var colorSpace = await ColorSpaceFactory.FromNameOrArray(
             await stream[KnownNames.ColorSpace], page);
         var bitsPerComponent = (int)await stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8);
+        var mask = await stream.GetOrDefaultAsync<PdfObject>(KnownNames.Mask, PdfTokenValues.Null);
 
-        return CreateByteWriter(colorSpace, bitsPerComponent, decode);
+        if (CanUseFastWriter(colorSpace, bitsPerComponent, decode, mask))
+            return FastBitmapWriterRGB8.Instance;
+
+        var compoentWriter = await WrapWithMask(mask, 
+            CreateComponentWriter(colorSpace, decode, bitsPerComponent));
+
+        return CreateByteWriter(bitsPerComponent, compoentWriter);
     }
 
-    private static IByteWriter CreateByteWriter(IColorSpace colorSpace, int bitsPerComponent, double[]? decode) =>
-        (colorSpace, bitsPerComponent, decode) switch
-        {
-            (_, 16, _) => new ByteWriter16(colorSpace, ComputeIntervals(colorSpace, decode, bitsPerComponent)),
-            (DeviceRgb, 8, _) when IsDefaultDecode(decode) => new FastBitmapWriterRGB8(),
-            _ => new NBitByteWriter(colorSpace, ComputeIntervals(colorSpace, decode, bitsPerComponent), bitsPerComponent)
-        };
+    private static bool CanUseFastWriter(
+        IColorSpace colorSpace, int bitsPerComponent, double[]? decode, PdfObject mask) =>
+        colorSpace == DeviceRgb.Instance && 
+        bitsPerComponent == 8 && 
+        IsDefaultDecode(decode) && 
+        mask == PdfTokenValues.Null;
 
-    private static ClosedInterval[] ComputeIntervals(IColorSpace colorSpace, double[]? decode, int bitsPerComponent)
+    private static IByteWriter CreateByteWriter(int bitsPerComponent, IComponentWriter writer) =>
+        bitsPerComponent == 16 ? new ByteWriter16(writer) : new NBitByteWriter(writer, bitsPerComponent);
+
+    private static IComponentWriter CreateComponentWriter(
+        IColorSpace colorSpace, double[]? decode, int bitsPerComponent) =>
+        new ComponentWriter(
+            new ClosedInterval(0,(1 << bitsPerComponent)- 1), 
+            SpecifiedOrDefaultDecodeIntervals(colorSpace, decode, bitsPerComponent), colorSpace);
+
+    private static async ValueTask<IComponentWriter> WrapWithMask(
+        PdfObject mask, IComponentWriter componentWriter)
     {
-        if (decode == null) return colorSpace.DefaultOutputIntervals(bitsPerComponent);
+        return componentWriter;
+    }
+
+    private static ClosedInterval[] SpecifiedOrDefaultDecodeIntervals(
+        IColorSpace colorSpace, double[]? decode, int bitsPerComponent) =>
+        decode == null ? 
+            colorSpace.DefaultOutputIntervals(bitsPerComponent) : 
+            ComputeDecodeIntervals(decode);
+
+    private static ClosedInterval[] ComputeDecodeIntervals(double[] decode)
+    {
         CheckDecodeArrayLength(decode);
         var ret = new ClosedInterval[decode.Length / 2];
         for (int i = 0; i < ret.Length; i++)
         {
             ret[i] = new ClosedInterval(decode[2 * i], decode[2 * i + 1]);
         }
+
         return ret;
     }
 
