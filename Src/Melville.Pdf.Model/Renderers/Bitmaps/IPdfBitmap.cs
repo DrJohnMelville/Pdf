@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -86,10 +87,13 @@ public interface IPdfBitmap
             SpecifiedOrDefaultDecodeIntervals(colorSpace, decode, bitsPerComponent), colorSpace);
 
     private static async ValueTask<IComponentWriter> WrapWithMask(
-        PdfObject mask, IComponentWriter componentWriter)
-    {
-        return componentWriter;
-    }
+        PdfObject mask, IComponentWriter componentWriter) =>
+        mask switch
+        {
+            PdfArray maskArr => new ColorMaskComponentWriter(componentWriter,
+                await maskArr.AsIntsAsync()),
+            _ => componentWriter
+        };
 
     private static ClosedInterval[] SpecifiedOrDefaultDecodeIntervals(
         IColorSpace colorSpace, double[]? decode, int bitsPerComponent) =>

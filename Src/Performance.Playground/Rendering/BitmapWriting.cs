@@ -21,7 +21,7 @@ namespace Performance.Playground.Rendering
             }, DeviceRgb.Instance), 8));
 
         [Benchmark()]
-        public void Specialized() => TestWriter(new FastBitmapWriterRGB8());
+        public void Specialized() => TestWriter(FastBitmapWriterRGB8.Instance);
 
         private static unsafe void TestWriter(IByteWriter writer)
         {
