@@ -15,3 +15,6 @@ Writers => Model
 #Everyone can use various external resources
 * => System.*
 * => Melville.Parsing.*
+
+#ImageSharp is restricted to ExternalFilters
+Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> SixLabors.*

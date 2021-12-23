@@ -12,4 +12,10 @@
       <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Graphics\Images\JPEG.jpg" />
+      <EmbeddedResource Include="Graphics\Images\JPEG.jpg" />
+      <None Remove="Graphics\Images\png.png" />
+    </ItemGroup>
+
 </Project>
