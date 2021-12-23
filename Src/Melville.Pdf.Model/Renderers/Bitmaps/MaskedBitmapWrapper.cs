@@ -1,72 +1,53 @@
 ﻿using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public partial class MaskedBitmapWrapper : IPdfBitmap
+public class MaskedBitmapWriter : IComponentWriter
 {
-    [DelegateTo()] private readonly IPdfBitmap reader;
-    private readonly MaskBitmap maskImage;
+    private readonly IComponentWriter innerWriter;
+    private readonly MaskBitmap mask;
+    private readonly double widthDelta;
+    private readonly double heightDelta;
+    private double row;
+    private double col;
 
-    public MaskedBitmapWrapper(IPdfBitmap reader, MaskBitmap maskImage)
+
+    public MaskedBitmapWriter(IComponentWriter innerWriter, MaskBitmap mask,
+        int parentWidth, int parentHeight)
     {
-        this.reader = reader;
-        this.maskImage = maskImage;
+        this.innerWriter = innerWriter;
+        this.mask = mask;
+        widthDelta = (double)mask.Width / (parentWidth-1);
+        heightDelta = (double)mask.Height / (parentHeight-1);
+        col = 0;
+        row = mask.Height - heightDelta;
     }
 
-    public unsafe ValueTask RenderPbgra(byte* buffer) => RenderAsync(new BitmapMaskOperation(this, buffer));
-
-    private async ValueTask RenderAsync(BitmapMaskOperation wrapper)
+    public int ColorComponentCount => innerWriter.ColorComponentCount;
+    
+    public unsafe void WriteComponent(ref byte* target, int[] component)
     {
-        await wrapper.BaseRender();
-        wrapper.DoMasking();
-    }
-
-    private unsafe void DoMasking(byte* target)
-    {
-        var widthDelta = maskImage.Width / (double)reader.Width;
-        var heightDelta = maskImage.Height / (double)reader.Height;
-        var maskY = 0.0;
-        for (int i = 0; i < reader.Height; i++)
-        {
-            var maskX = 0.0;
-            for (int j = 0; j < reader.Width; j++)
-            {
-                FilterSinglePixel(ref target, (int)maskX, (int)maskY);
-                maskX += widthDelta;
-            }
-
-            maskY += heightDelta;
-        }
-    }
-
-    private unsafe void FilterSinglePixel(ref byte* target, int maskX, int maskY)
-    {
-        if (maskImage.ShouldWrite(maskY, maskX))
-        {
-            target += 4;
-        } else
-        {
+        if (mask.ShouldWrite((int)row, (int)col))
+            innerWriter.WriteComponent(ref target, component);
+        else
             BitmapPointerMath.PushPixel(ref target, DeviceColor.Invisible);
-        }
+        FindNextPixel();
     }
 
-    public unsafe readonly struct BitmapMaskOperation
+    private void FindNextPixel()
     {
-        private readonly MaskedBitmapWrapper parent;
-        private readonly byte* target;
+        col += widthDelta;
+        if (col < mask.Width) return;
+        NextRow();
+    }
 
-        public BitmapMaskOperation(MaskedBitmapWrapper parent, byte* target)
-        {
-            this.parent = parent;
-            this.target = target;
-        }
-
-        public ValueTask BaseRender() => parent.reader.RenderPbgra(target);
-        public void DoMasking() => parent.DoMasking(target);
+    private void NextRow()
+    {
+        row -= heightDelta;
+        col = 0;
     }
 }
 
@@ -83,7 +64,8 @@ public readonly struct MaskBitmap
         Height = height;
     }
 
-    public bool ShouldWrite(int row, int col) => 255 == Mask[3 + (4 * (col+(row*Width)))];
+    public bool ShouldWrite(int row, int col) =>
+        255 == Mask[3 + (4 * (col + (row * Width)))];
 
     public static async ValueTask<MaskBitmap> Create(PdfStream stream, PdfPage page)
     {
