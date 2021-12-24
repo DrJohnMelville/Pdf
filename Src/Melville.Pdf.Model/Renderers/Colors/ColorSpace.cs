@@ -10,7 +10,7 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 public static class ColorSpaceFactory
 {
-    public static async ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName, PdfPage page)
+    public static async ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName, IHasPageAttributes page)
     {
         return colorSpaceName.GetHashCode() switch
         {
@@ -22,11 +22,11 @@ public static class ColorSpaceFactory
         };
     }
 
-    public static async ValueTask<IColorSpace> SearchForDefault(PdfName name, PdfPage page, IColorSpace space) =>
+    public static async ValueTask<IColorSpace> SearchForDefault(PdfName name, IHasPageAttributes page, IColorSpace space) =>
         await page.GetResourceAsync(ResourceTypeName.ColorSpace, name) is PdfArray array
             ? await FromArray(array, page): space;
 
-    public static ValueTask<IColorSpace> FromNameOrArray(PdfObject datum, in PdfPage page) => datum switch
+    public static ValueTask<IColorSpace> FromNameOrArray(PdfObject datum, in IHasPageAttributes page) => datum switch
     {
         PdfName name => ParseColorSpace(name, page),
         PdfArray array => FromArray(array, page),
@@ -38,13 +38,13 @@ public static class ColorSpaceFactory
         new IccColorspaceWithBlackDefault((await IccProfileLibrary.ReadCmyk()).TransformTo(
             await IccProfileLibrary.ReadSrgb()));
 
-    private static async ValueTask<IColorSpace> FromArray(PdfPage page, PdfName colorSpaceName)
+    private static async ValueTask<IColorSpace> FromArray(IHasPageAttributes page, PdfName colorSpaceName)
     {
         var obj = await page.GetResourceAsync(ResourceTypeName.ColorSpace, colorSpaceName);
         return obj is PdfArray array? await FromArray(array, page): DeviceGray.Instance;
     }
 
-    private static async ValueTask<IColorSpace> FromArray(PdfArray array, PdfPage page) =>
+    private static async ValueTask<IColorSpace> FromArray(PdfArray array, IHasPageAttributes page) =>
         (await array.GetAsync<PdfName>(0)).GetHashCode() switch
         {
             KnownNameKeys.CalGray => await CalGray.Parse(await array.GetAsync<PdfDictionary>(1)),

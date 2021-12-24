@@ -21,6 +21,6 @@ public class JpegImage: DisplayImageTest
             .WithItem(KnownNames.Height, new PdfInteger(256))
             .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
             .WithFilter(FilterName.DCTDecode)
-            .AsStream(img, StreamFormat.DiskRepresentation);
+            .AsStream(img!, StreamFormat.DiskRepresentation);
     }
 }

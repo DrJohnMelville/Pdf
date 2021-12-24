@@ -107,6 +107,7 @@ Pdf:AESV3
 Pdf:All
 Pdf:AuthEvent
 Pdf:BaseFont
+Pdf:BBox
 Pdf:BitsPerComponent
 Pdf:BitsPerSample
 Pdf:Bounds
@@ -137,6 +138,7 @@ Pdf:Encoding
 Pdf:Encrypt
 Pdf:Filter
 Pdf:First
+Pdf:Form
 Pdf:FormType
 Pdf:Functions
 Pdf:FunctionType

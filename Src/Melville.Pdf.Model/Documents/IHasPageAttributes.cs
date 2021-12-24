@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -11,12 +12,15 @@ namespace Melville.Pdf.Model.Documents;
 public interface IHasPageAttributes
 {
     PdfDictionary LowLevel { get; }
+    ValueTask<Stream> GetContentBytes();
+    ValueTask<IHasPageAttributes?> GetParentAsync();
+
 }
 
 public static partial class PdfPageAttributes
 {
     //this odd generic construction gives us poymorphism over the structs without boxing them
-    public static async ValueTask<PdfPageParent?> GetParentAsync<T>(this T item)
+    public static async ValueTask<IHasPageAttributes?> ParentFromAttribute<T>(this T item)
         where T : IHasPageAttributes =>
         item.LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&
         await parentTask is PdfDictionary dict

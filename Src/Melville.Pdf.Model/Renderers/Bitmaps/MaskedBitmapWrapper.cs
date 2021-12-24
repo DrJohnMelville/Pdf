@@ -67,7 +67,7 @@ public readonly struct MaskBitmap
     public bool ShouldWrite(int row, int col) =>
         255 == Mask[3 + (4 * (col + (row * Width)))];
 
-    public static async ValueTask<MaskBitmap> Create(PdfStream stream, PdfPage page)
+    public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
     {
         var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black);
         var buffer = new byte[wrapped.ReqiredBufferSize()];

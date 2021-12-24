@@ -23,7 +23,7 @@ public class IndexedColorSpace: IColorSpace
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
-    public static async Task<IColorSpace> ParseAsync(PdfArray array, PdfPage page)
+    public static async Task<IColorSpace> ParseAsync(PdfArray array, IHasPageAttributes page)
     {
         var subColorSpace = await ColorSpaceFactory.ParseColorSpace(await array.GetAsync<PdfName>(1), page);
         int length = 1 + (int)(await array.GetAsync<PdfNumber>(2)).IntValue;

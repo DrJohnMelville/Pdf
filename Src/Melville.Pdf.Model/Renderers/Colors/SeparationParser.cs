@@ -8,7 +8,7 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 public static class SeparationParser
 {
-    public static async ValueTask<IColorSpace> ParseSeparationAsync(PdfArray array, PdfPage page) =>
+    public static async ValueTask<IColorSpace> ParseSeparationAsync(PdfArray array, IHasPageAttributes page) =>
         (await array.GetAsync<PdfName>(1)).GetHashCode() switch
         {
             KnownNameKeys.All => DeviceGray.InvertedInstance,
@@ -16,12 +16,12 @@ public static class SeparationParser
             _=>await AlternateColorspace(array, page)
         };
 
-    private static async ValueTask<IColorSpace> AlternateColorspace(PdfArray array, PdfPage page) =>
+    private static async ValueTask<IColorSpace> AlternateColorspace(PdfArray array, IHasPageAttributes page) =>
         new RelativeColorSpace(
             await ColorSpaceFactory.FromNameOrArray(await array[2], page),
             await (await array.GetAsync<PdfDictionary>(3)).CreateFunctionAsync());
 
-    public static async ValueTask<IColorSpace> ParseDeviceNAsync(PdfArray array, PdfPage page)
+    public static async ValueTask<IColorSpace> ParseDeviceNAsync(PdfArray array, IHasPageAttributes page)
     {
         var nameArray = await array.GetAsync<PdfArray>(1);
         return (await AllNones(nameArray))

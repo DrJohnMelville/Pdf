@@ -57,7 +57,7 @@ public abstract class RenderTargetBase<T>
 
 public static class RenderTargetOperations
 {
-    public static async ValueTask RenderTo(this PdfPage page, IRenderTarget target) =>
+    public static async ValueTask RenderTo(this IHasPageAttributes page, IRenderTarget target) =>
         await new ContentStreamParser(
                 new RenderEngine(page, target))
             .Parse(

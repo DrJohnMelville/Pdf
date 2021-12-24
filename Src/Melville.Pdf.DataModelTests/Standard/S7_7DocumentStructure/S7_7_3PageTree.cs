@@ -93,17 +93,17 @@ public class S7_7_3PageTree
         var p1 = await p0.GetParentAsync();
         Assert.Equal(KnownNames.Pages, 
             await ((PdfPageParent)p1!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
-        Assert.True(p1.HasValue);
-        var p2 = await p1!.Value.GetParentAsync();
-        Assert.True(p2.HasValue);
+        Assert.True(p1 != null);
+        var p2 = await p1!.GetParentAsync();
+        Assert.True(p2 != null);
         Assert.Equal(KnownNames.Pages, 
             await ((PdfPageParent)p2!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
-        var p3 = await p2!.Value.GetParentAsync();
-        Assert.True(p3.HasValue);
+        var p3 = await p2.GetParentAsync();
+        Assert.True(p3!= null);
         Assert.Equal(KnownNames.Pages, 
             await ((PdfPageParent)p3!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
-        var p4 = await p3!.Value.GetParentAsync();
-        Assert.False(p4.HasValue);
+        var p4 = await p3.GetParentAsync();
+        Assert.False(p4 != null);
     }
 
     private static PdfDocument FifteenPageDocumentTree()

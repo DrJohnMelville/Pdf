@@ -8,7 +8,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public record struct BitmapRenderParameters(PdfStream Stream, PdfPage Page, DeviceColor FillColor,
+public record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttributes Page, DeviceColor FillColor,
     int Width, int Height)
 {
 }
@@ -19,7 +19,7 @@ public static class PdfBitmapOperatons
     public static int TotalPixels(this IPdfBitmap bitmap) => bitmap.Width * bitmap.Height;
 
     public static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
-        this PdfStream stream, PdfPage page, DeviceColor fillColor)
+        this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor)
     {
         var streamAttrs = new BitmapRenderParameters(
             stream, page, fillColor,

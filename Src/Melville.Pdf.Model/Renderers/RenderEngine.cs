@@ -14,9 +14,9 @@ namespace Melville.Pdf.Model.Renderers;
 
 public partial class RenderEngine: IContentStreamOperations
 {
-    private readonly PdfPage page;
+    private readonly IHasPageAttributes page;
     private readonly IRenderTarget target;
-    public RenderEngine(PdfPage page, IRenderTarget target)
+    public RenderEngine(IHasPageAttributes page, IRenderTarget target)
     {
         this.page = page;
         this.target = target;
@@ -147,9 +147,28 @@ public partial class RenderEngine: IContentStreamOperations
         await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name)) as PdfStream ??
                       throw new PdfParseException("Co command can only be called on Streams"));
 
-    public async ValueTask DoAsync(PdfStream inlineImage) =>
-        await target.RenderBitmap(
-            await inlineImage.WrapForRenderingAsync(page, StateOps.CurrentState().NonstrokeColor));
+    public async ValueTask DoAsync(PdfStream inlineImage)
+    {
+        switch ((await inlineImage.GetAsync<PdfName>(KnownNames.Subtype)).GetHashCode())
+        {
+            case KnownNameKeys.Image:
+                await target.RenderBitmap(
+                    await inlineImage.WrapForRenderingAsync(page, StateOps.CurrentState().NonstrokeColor));
+                break;
+            case KnownNameKeys.Form:
+                await RunTargetGroup(inlineImage);
+                break;
+            default: throw new PdfParseException("Cannot do the provided object");
+        }
+    }
+
+    private async ValueTask RunTargetGroup(PdfStream formXObject)
+    {
+        SaveGraphicsState();
+        await new PdfFormXObject(formXObject, page).RenderTo(target);
+        RestoreGraphicsState();
+    }
+
     #endregion
 
     #region Color Implementation
