@@ -18,21 +18,18 @@ public interface IHasPageAttributes
 
 public static partial class PdfPageAttributes
 {
-    private static async IAsyncEnumerable<PdfObject> InheritedPageProperties(
-        PdfDictionary item, PdfName name)
+    private static async IAsyncEnumerable<PdfObject> InheritedPageProperties(IHasPageAttributes item, PdfName name)
     {
         var dict = item;
-        while (true)
+        while (dict != null)
         {
-            if (dict.TryGetValue(name, out var retTask) && await retTask is { } ret &&
+            if (dict.LowLevel.TryGetValue(name, out var retTask) && await retTask is { } ret &&
                 ret != PdfTokenValues.Null) yield return ret;
-            var parent = await dict.GetOrNullAsync(KnownNames.Parent);
-            if (parent is not PdfDictionary parentDict) yield break;
-            dict = parentDict;
+            dict = await dict.GetParentAsync();
         }
     }
 
-    private static IAsyncEnumerable<PdfObject> InheritedResourceItem(PdfDictionary item, PdfName name) =>
+    private static IAsyncEnumerable<PdfObject> InheritedResourceItem(IHasPageAttributes item, PdfName name) =>
         InheritedPageProperties(item, KnownNames.Resources)
             .OfType<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
@@ -41,16 +38,16 @@ public static partial class PdfPageAttributes
     public static async ValueTask<PdfArray?> GetProcSetsAsync<T>(this T item)
         where T : IHasPageAttributes
     {
-        return await InheritedResourceItem(item.LowLevel, KnownNames.ProcSet).OfType<PdfArray>()
+        return await InheritedResourceItem(item, KnownNames.ProcSet).OfType<PdfArray>()
             .FirstOrDefaultAsync();
     }
     
-    public static ValueTask<PdfObject?> GetResourceAsync<T>(
-        this T item, ResourceTypeName resourceType, PdfName name) where T : IHasPageAttributes =>
-        TwoLevelResourceDictionaryAccess(item.LowLevel, resourceType, name);
+    public static ValueTask<PdfObject?> GetResourceAsync(
+        this IHasPageAttributes item, ResourceTypeName resourceType, PdfName name) =>
+        TwoLevelResourceDictionaryAccess(item, resourceType, name);
 
     private static ValueTask<PdfObject?> TwoLevelResourceDictionaryAccess(
-        PdfDictionary item, PdfName subDictionaryName, PdfName name) =>
+        IHasPageAttributes item, PdfName subDictionaryName, PdfName name) =>
         InheritedResourceItem(item, subDictionaryName)
             .OfType<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
@@ -58,7 +55,7 @@ public static partial class PdfPageAttributes
             .DefaultIfEmpty(PdfTokenValues.Null)
             .FirstOrDefaultAsync();
 
-    private static ValueTask<PdfRect?> GetSingleBoxAsync(PdfDictionary item, PdfName name) =>
+    private static ValueTask<PdfRect?> GetSingleBoxAsync(IHasPageAttributes item, PdfName name) =>
         InheritedPageProperties(item, name)
             .OfType<PdfArray>()
             .SelectAwait(PdfRect.CreateAsync)
@@ -71,7 +68,7 @@ public static partial class PdfPageAttributes
     // would have no reason to put a noninheritable property anywhere but in the page node.
     public static async ValueTask<PdfRect?> GetBoxAsync(
         this IHasPageAttributes item, BoxName boxType) =>
-        await GetSingleBoxAsync(item.LowLevel, boxType) ??
+        await GetSingleBoxAsync(item, boxType) ??
         await GetBoxOrDefaultAsync(item, FallbackBox(boxType));
     
     // Standard 7.7.3.3 states that media box is required, however Adobe reader parses files without mediaboxes

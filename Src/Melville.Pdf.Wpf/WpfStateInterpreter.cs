@@ -47,7 +47,8 @@ public static class WpfStateInterpreter
     private static DashStyle CustomDashStyle(double[] dashes, double phase, double width) =>
         new(dashes.Select(i => i / width).ToArray(), phase / width);
 
-    private static PenLineCap ConvertLineCap(LineCap stateLineCap) => stateLineCap switch
+    private static PenLineCap ConvertLineCap(LineCap stateLineCap) => 
+        stateLineCap switch
       {
           LineCap.Butt => PenLineCap.Flat,
           LineCap.Round => PenLineCap.Round,

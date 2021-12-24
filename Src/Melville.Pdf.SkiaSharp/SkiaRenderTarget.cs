@@ -25,7 +25,8 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 
     public void RestoreTransformAndClip() => Target.Restore();
 
-    public override void Transform(in Matrix3x2 newTransform) => Target.SetMatrix(State.Current().Transform());
+    public override void Transform(in Matrix3x2 newTransform) => 
+        Target.SetMatrix(State.Current().Transform());
 
     public void CombineClip(bool evenOddRule)
     {

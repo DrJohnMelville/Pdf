@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -165,9 +166,30 @@ public partial class RenderEngine: IContentStreamOperations
     private async ValueTask RunTargetGroup(PdfStream formXObject)
     {
         SaveGraphicsState();
+        if(await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.Matrix, PdfTokenValues.Null) is PdfArray arr &&
+           (await arr.AsDoublesAsync()) is {} matrix)
+            ModifyTransformMatrix(CreateMatrix(matrix));
+        
+        if ((await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.BBox, PdfTokenValues.Null)) is PdfArray arr2 &&
+            (await arr2.AsDoublesAsync()) is { } bbArray)
+        {
+            Rectangle(bbArray[0], bbArray[1], bbArray[2], bbArray[3]);
+            ClipToPath();
+            EndPathWithNoOp();
+        }
         await new PdfFormXObject(formXObject, page).RenderTo(target);
         RestoreGraphicsState();
     }
+
+    private static Matrix3x2 CreateMatrix(double[] matrix) =>
+        new(
+            (float)matrix[0],
+            (float)matrix[1],
+            (float)matrix[2],
+            (float)matrix[3],
+            (float)matrix[4],
+            (float)matrix[5]
+        );
 
     #endregion
 
