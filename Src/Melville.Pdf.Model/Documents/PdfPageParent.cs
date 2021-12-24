@@ -2,21 +2,16 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.Documents;
 
-public readonly struct PdfPageParent : IHasPageAttributes
+public record class PdfPageParent(PdfDictionary LowLevel) : IHasPageAttributes
 {
-    public PdfDictionary LowLevel { get; }
-
-    public PdfPageParent(PdfDictionary lowLevel)
-    {
-        LowLevel = lowLevel;
-    }
-
-    public ValueTask<Stream> GetContentBytes() => new(new MemoryStream());
+    public virtual ValueTask<Stream> GetContentBytes() => new(new MemoryStream());
     
-    public ValueTask<IHasPageAttributes?> GetParentAsync() =>
-        this.ParentFromAttribute();
+    public async ValueTask<IHasPageAttributes?> GetParentAsync() =>
+        LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&
+        await parentTask is PdfDictionary dict
+            ? new PdfPageParent(dict)
+            : null;
 }
