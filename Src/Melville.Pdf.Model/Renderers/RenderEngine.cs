@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -23,10 +24,6 @@ public partial class RenderEngine: IContentStreamOperations
         this.target = target;
     }
     
-    [DelegateTo]
-    private ITextObjectOperations TextObject => throw new NotImplementedException("Text Object not implemented");
-    [DelegateTo]
-    private ITextBlockOperations TextBlock => throw new NotImplementedException("Text Block not implemented");
     [DelegateTo]
     private IMarkedContentCSOperations Marked => throw new NotImplementedException("Marked Operations not implemented");
     [DelegateTo]
@@ -254,5 +251,59 @@ public partial class RenderEngine: IContentStreamOperations
         await SetNonstrokingColorSpace(KnownNames.DeviceCMYK);
         SetNonstrokingColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
+    #endregion
+
+    #region Text Operations
+
+    public void BeginTextObject()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void EndTextObject()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void MovePositionBy(double x, double y)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void MovePositionByWithLeading(double x, double y)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetTextMatrix(double a, double b, double c, double d, double e, double f)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void MoveToNextTextLine()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ShowString(in ReadOnlyMemory<byte> decodedString)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> decodedString)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void MoveToNextLineAndShowString(double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 }

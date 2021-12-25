@@ -20,8 +20,10 @@ public interface IGraphiscState : IStateChangingOperations
 }
 
 public partial class GraphicsState: IGraphiscState
-{
+{                           
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
+    [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
+    [MacroItem("Matrix3x2", "TextLineMatrix", "Matrix3x2.Identity")]
     [MacroItem("double", "LineWidth", "1.0")]
     [MacroItem("double", "MiterLimit", "10.0")]
     [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter")]
@@ -34,6 +36,16 @@ public partial class GraphicsState: IGraphiscState
     [MacroItem("IColorSpace", "NonstrokeColorSpace", "DeviceGray.Instance")]
     [MacroItem("DeviceColor", "StrokeColor", "DeviceColor.Black")]
     [MacroItem("DeviceColor", "NonstrokeColor", "DeviceColor.Black")]
+
+    // Text Properties
+    [MacroItem("double", "CharacterSpacing", "0.0")]
+    [MacroItem("double", "WordSpacing", "0.0")]
+    [MacroItem("double", "TextLeading", "0.0")]
+    [MacroItem("double", "TextRise", "0.0")]
+    [MacroItem("double", "HorizontalTextScale", "100.0")]
+    [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
+
+    // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
     public void SaveGraphicsState() { }
@@ -120,40 +132,17 @@ public partial class GraphicsState: IGraphiscState
 
     #region Text
 
-    public void SetCharSpace(double value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetWordSpace(double value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetHorizontalTextScaling(double value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetTextLeading(double value)
-    {
-        throw new NotImplementedException();
-    }
-
+    public void SetCharSpace(double value) => CharacterSpacing = value;
+    public void SetWordSpace(double value) => WordSpacing = value;
+    public void SetHorizontalTextScaling(double value) => HorizontalTextScale = value;
+    public void SetTextLeading(double value) => TextLeading = value;
     public void SetFont(PdfName font, double size)
     {
-        throw new NotImplementedException();
+        // eventually we will need to set a font and a size.
     }
 
-    public void SetTextRender(TextRendering rendering)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetTextRise(double value)
-    {
-        throw new NotImplementedException();
-    }
+    public void SetTextRender(TextRendering rendering) => TextRender = rendering;
+    public void SetTextRise(double value) => TextRise = value;
 
     #endregion
 

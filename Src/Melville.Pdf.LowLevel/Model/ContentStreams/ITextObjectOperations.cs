@@ -4,7 +4,8 @@ using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
-public interface ITextObjectOperations
+public interface 
+    ITextObjectOperations
 {
     /// <summary>
     /// Content stream operator Td
