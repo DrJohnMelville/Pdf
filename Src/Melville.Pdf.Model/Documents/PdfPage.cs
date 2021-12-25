@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.Documents;
 
@@ -23,6 +22,6 @@ public record class PdfPage(PdfDictionary LowLevel) : PdfPageParent(LowLevel)
         {
             PdfStream strm => await strm.StreamContentAsync(),
             PdfArray array => new PdfArrayConcatStream(array),
-            var x => throw new PdfParseException("Could not find content stream")
+            var x => new MemoryStream()
         };
 }
