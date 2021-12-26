@@ -147,4 +147,11 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
         bitmap.RenderPbgra((byte*)wb.BackBuffer.ToPointer());
 
     #endregion
+
+    #region Text Rendering
+    public (double width, double height) RenderGlyph(byte b)
+    {
+        return (10, 12);
+    }
+    #endregion
 }

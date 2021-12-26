@@ -26,6 +26,8 @@ public interface IRenderTarget
     void CombineClip(bool evenOddRule);
 
     ValueTask RenderBitmap(IPdfBitmap bitmap);
+
+    (double width, double height) RenderGlyph(byte b);
 }
 
 public abstract class RenderTargetBase<T>

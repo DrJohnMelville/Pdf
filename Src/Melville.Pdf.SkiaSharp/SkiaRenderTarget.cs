@@ -98,4 +98,14 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap) => 
         bitmap.RenderPbgra((byte*)skBitmap.GetPixels().ToPointer());
     #endregion
+    
+    #region Text Rendering
+
+    public (double width, double height) RenderGlyph(byte b)
+    {
+        return (10, 12);
+    }
+
+    #endregion
+
 }

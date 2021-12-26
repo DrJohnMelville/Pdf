@@ -257,52 +257,83 @@ public partial class RenderEngine: IContentStreamOperations
 
     public void BeginTextObject()
     {
-        throw new NotImplementedException();
+        StateOps.SetBothTextMatrices(Matrix3x2.Identity);
     }
 
     public void EndTextObject()
     {
-        throw new NotImplementedException();
     }
 
-    public void MovePositionBy(double x, double y)
-    {
-        throw new NotImplementedException();
-    }
+    public void MovePositionBy(double x, double y) =>
+        StateOps.SetBothTextMatrices(
+            Matrix3x2.CreateTranslation((float)x,(float)y) 
+            * StateOps.CurrentState().TextLineMatrix);
 
     public void MovePositionByWithLeading(double x, double y)
     {
-        throw new NotImplementedException();
+        StateOps.SetTextLeading(-y);
+        MovePositionBy(x,y);
     }
 
-    public void SetTextMatrix(double a, double b, double c, double d, double e, double f)
-    {
-        throw new NotImplementedException();
-    }
+    public void SetTextMatrix(double a, double b, double c, double d, double e, double f) =>
+        StateOps.SetBothTextMatrices(new Matrix3x2(
+            (float)a,(float)b,(float)c,(float)d,(float)e,(float)f));
 
-    public void MoveToNextTextLine()
-    {
-        throw new NotImplementedException();
-    }
+    public void MoveToNextTextLine() => 
+        MovePositionBy(0, - StateOps.CurrentState().TextLeading);
 
     public void ShowString(in ReadOnlyMemory<byte> decodedString)
     {
-        throw new NotImplementedException();
+        foreach (var character in decodedString.Span)
+        {
+            var (w, h) = target.RenderGlyph(character);
+            UpdateTextPosition(w, h);
+        }
     }
+
+    private void UpdateTextPosition(double width, double height)
+    { 
+        StateOps.CurrentState().SetTextMatrix(
+            NextCharPositionAfterWrite(width, height)*
+            StateOps.CurrentState().TextMatrix
+        );
+    }
+
+    private Matrix3x2 NextCharPositionAfterWrite(double width, double height) =>
+        StateOps.CurrentState().WritingMode == WritingMode.TopToBottom
+            ? Matrix3x2.CreateTranslation(0f, (float)-height)
+            : Matrix3x2.CreateTranslation((float)width, 0.0f);
 
     public void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> decodedString)
     {
-        throw new NotImplementedException();
+        MoveToNextTextLine();
+        ShowString(decodedString);
     }
 
     public void MoveToNextLineAndShowString(double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString)
     {
-        throw new NotImplementedException();
+        SetWordSpace(wordSpace);
+        SetCharSpace(charSpace);
+        MoveToNextLineAndShowString(decodedString);
     }
 
     public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
     {
-        throw new NotImplementedException();
+        foreach (var value in values)
+        {
+            switch (value.Type)
+            {
+                case ContentStreamValueType.Number:
+                    var delta = value.Floating / 1000;
+                    UpdateTextPosition(-delta, delta);
+                    break;
+                case ContentStreamValueType.Memory:
+                    ShowString(value.Bytes);
+                    break;
+                default:
+                    throw new PdfParseException("Invalid ShowSpacedString argument");
+            }
+        }
     }
 
     #endregion

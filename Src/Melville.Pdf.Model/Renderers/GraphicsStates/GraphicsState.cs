@@ -17,6 +17,15 @@ public interface IGraphiscState : IStateChangingOperations
     void SetStrokeColorSpace(IColorSpace colorSpace);
     void SetNonstrokeColorSpace(IColorSpace colorSpace);
     GraphicsState CurrentState();
+    void SetTextMatrix(in Matrix3x2 value);
+    void SetTextLineMatrix(in Matrix3x2 value);
+    void SetBothTextMatrices(in Matrix3x2 value);
+}
+
+public enum WritingMode
+{
+    LeftToRight = 0,
+    TopToBottom = 1
 }
 
 public partial class GraphicsState: IGraphiscState
@@ -130,8 +139,10 @@ public partial class GraphicsState: IGraphiscState
         return (T) await entry.Value.DirectValueAsync();
     }
 
-    #region Text
+    #region Text State
 
+    public WritingMode WritingMode => WritingMode.LeftToRight;
+    
     public void SetCharSpace(double value) => CharacterSpacing = value;
     public void SetWordSpace(double value) => WordSpacing = value;
     public void SetHorizontalTextScaling(double value) => HorizontalTextScale = value;
@@ -143,6 +154,18 @@ public partial class GraphicsState: IGraphiscState
 
     public void SetTextRender(TextRendering rendering) => TextRender = rendering;
     public void SetTextRise(double value) => TextRise = value;
+
+    #endregion
+
+    #region Text Position
+
+    public void SetTextMatrix(in Matrix3x2 value) => TextMatrix = value;
+    public void SetTextLineMatrix(in Matrix3x2 value) => TextLineMatrix = value;
+    public void SetBothTextMatrices(in Matrix3x2 value)
+    {
+        SetTextMatrix(value);
+        SetTextLineMatrix(value);
+    }
 
     #endregion
 
@@ -166,7 +189,7 @@ public partial class GraphicsState: IGraphiscState
         StrokeColor = StrokeColorSpace.SetColor(color);
     public void SetNonstrokingColor(in ReadOnlySpan<double> color) => 
         NonstrokeColor = NonstrokeColorSpace.SetColor(color);
-    #endregion
+    #endregion  
 }
 
 public static class GraphicsStateHelpers
