@@ -52,6 +52,7 @@ public partial class GraphicsState: IGraphiscState
     [MacroItem("double", "TextLeading", "0.0")]
     [MacroItem("double", "TextRise", "0.0")]
     [MacroItem("double", "HorizontalTextScale", "100.0")]
+    [MacroItem("double", "FontSize", "12.0")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
 
     // code
@@ -149,7 +150,7 @@ public partial class GraphicsState: IGraphiscState
     public void SetTextLeading(double value) => TextLeading = value;
     public void SetFont(PdfName font, double size)
     {
-        // eventually we will need to set a font and a size.
+        FontSize = size;
     }
 
     public void SetTextRender(TextRendering rendering) => TextRender = rendering;

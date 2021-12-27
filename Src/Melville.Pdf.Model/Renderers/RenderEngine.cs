@@ -286,9 +286,14 @@ public partial class RenderEngine: IContentStreamOperations
     {
         foreach (var character in decodedString.Span)
         {
-            var (w, h) = target.RenderGlyph(character);
+            var (w, h) = target.RenderGlyph(MapToUnicodwCodePoint(character));
             UpdateTextPosition(w, h);
         }
+    }
+
+    private static char MapToUnicodwCodePoint(byte character)
+    {
+        return (Char)character;
     }
 
     private void UpdateTextPosition(double width, double height)

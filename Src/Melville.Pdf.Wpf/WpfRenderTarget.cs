@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -16,10 +14,9 @@ namespace Melville.Pdf.Wpf;
 
 public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 {
-    
     public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
         base(target, state, page)
-    {
+    { 
         SaveTransformAndClip();
     }
 
@@ -149,9 +146,28 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
     #endregion
 
     #region Text Rendering
-    public (double width, double height) RenderGlyph(byte b)
+
+    public void SetFont(BuiltInFontName name, double size)
     {
-        return (10, 12);
+    }
+
+    public (double width, double height) RenderGlyph(char b)
+    {
+        Target.PushTransform(
+            (new Matrix3x2(
+                (float)State.CurrentState().HorizontalTextScale/100,0,0,-1,
+                0, (float)State.CurrentState().TextRise) *
+            State.CurrentState().TextMatrix).WpfTransform()
+            );
+        new Typeface("Times New Roman").TryGetGlyphTypeface(out var gtf);
+        var glyph = gtf.CharacterToGlyphMap[b];
+        var renderingEmSize = State.CurrentState().FontSize;
+        var geom = gtf.GetGlyphOutline(glyph, renderingEmSize, renderingEmSize);
+        Target.DrawGeometry(State.CurrentState().Brush(), State.CurrentState().Pen(),
+            geom);
+        var box = geom.Bounds;
+        Target.Pop();
+        return (gtf.AdvanceWidths[glyph] * renderingEmSize, gtf.AdvanceHeights[glyph] * renderingEmSize);
     }
     #endregion
 }

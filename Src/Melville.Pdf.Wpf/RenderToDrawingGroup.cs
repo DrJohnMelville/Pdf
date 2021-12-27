@@ -54,7 +54,7 @@ public static class RenderToDrawingGroup
     }
 
     private static async ValueTask RenderTo(PdfPage page, DrawingContext dc)
-    {
+    { 
         var rect = await page.GetBoxAsync(BoxName.CropBox);
         if (!rect.HasValue) return;
        

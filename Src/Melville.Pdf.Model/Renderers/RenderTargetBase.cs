@@ -1,6 +1,7 @@
 ﻿using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
@@ -27,7 +28,8 @@ public interface IRenderTarget
 
     ValueTask RenderBitmap(IPdfBitmap bitmap);
 
-    (double width, double height) RenderGlyph(byte b);
+    public void SetFont(BuiltInFontName name, double size);
+    (double width, double height) RenderGlyph(char b);
 }
 
 public abstract class RenderTargetBase<T>

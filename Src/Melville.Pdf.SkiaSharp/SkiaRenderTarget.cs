@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -101,7 +102,11 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     
     #region Text Rendering
 
-    public (double width, double height) RenderGlyph(byte b)
+    public void SetFont(BuiltInFontName name, double size)
+    {
+    }
+
+    public (double width, double height) RenderGlyph(char b)
     {
         return (10, 12);
     }
