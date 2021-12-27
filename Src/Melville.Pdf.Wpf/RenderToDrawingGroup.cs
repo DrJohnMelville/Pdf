@@ -58,7 +58,7 @@ public static class RenderToDrawingGroup
         var rect = await page.GetBoxAsync(BoxName.CropBox);
         if (!rect.HasValue) return;
        
-        var renderTarget = new WpfRenderTarget(dc, new GraphicsStateStack(), page);
+        var renderTarget = new WpfRenderTarget(dc, new GraphicsStateStack<GlyphTypeface>(), page);
         renderTarget.SetBackgroundRect(rect.Value);
 
         await page.RenderTo(renderTarget);

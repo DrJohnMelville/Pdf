@@ -11,12 +11,12 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public interface IGraphiscState : IStateChangingOperations
+public interface IGraphiscState<TTypeface> : IStateChangingOperations
 {
     ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
     void SetStrokeColorSpace(IColorSpace colorSpace);
     void SetNonstrokeColorSpace(IColorSpace colorSpace);
-    GraphicsState CurrentState();
+    GraphicsState<TTypeface> CurrentState();
     void SetTextMatrix(in Matrix3x2 value);
     void SetTextLineMatrix(in Matrix3x2 value);
     void SetBothTextMatrices(in Matrix3x2 value);
@@ -28,7 +28,7 @@ public enum WritingMode
     TopToBottom = 1
 }
 
-public partial class GraphicsState: IGraphiscState
+public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
 {                           
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
@@ -53,11 +53,12 @@ public partial class GraphicsState: IGraphiscState
     [MacroItem("double", "TextRise", "0.0")]
     [MacroItem("double", "HorizontalTextScale", "100.0")]
     [MacroItem("double", "FontSize", "12.0")]
+    [MacroItem("TTypeface?", "Typeface", "default")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
 
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
-    [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
+    [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState<TTypeface> other){", Postfix = "}")]
     public void SaveGraphicsState() { }
     public void RestoreGraphicsState() { }
 
@@ -184,7 +185,7 @@ public partial class GraphicsState: IGraphiscState
         NonstrokeColorSpace = colorSpace;
     }
 
-    public GraphicsState CurrentState() => this;
+    public GraphicsState<TTypeface> CurrentState() => this;
 
     public void SetStrokeColor(in ReadOnlySpan<double> color) => 
         StrokeColor = StrokeColorSpace.SetColor(color);
@@ -195,11 +196,11 @@ public partial class GraphicsState: IGraphiscState
 
 public static class GraphicsStateHelpers
 {
-    public static bool IsDashedStroke(this GraphicsState gs) =>
+    public static bool IsDashedStroke<TTypeface>(this GraphicsState<TTypeface> gs) =>
         gs.DashArray.Length > 0;
 
 
-    public static double EffectiveLineWidth(this GraphicsState state)
+    public static double EffectiveLineWidth<TTypeface>(this GraphicsState<TTypeface> state)
     {
         if (state.LineWidth > double.Epsilon) return state.LineWidth;
         if (!Matrix3x2.Invert(state.TransformMatrix, out var invmat)) return 1;

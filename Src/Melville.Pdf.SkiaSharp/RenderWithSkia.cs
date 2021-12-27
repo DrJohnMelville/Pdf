@@ -27,7 +27,7 @@ namespace Melville.Pdf.SkiaSharp
             (width, height) = AdjustSize(rect.Value, width, height);
             var surface = SKSurface.Create(new SKImageInfo(width, height));
             
-            var target = new SkiaRenderTarget(surface.Canvas, new GraphicsStateStack(), page);
+            var target = new SkiaRenderTarget(surface.Canvas, new GraphicsStateStack<string>(), page);
             target.SetBackgroundRect(rect.Value, width, height);
             await page.RenderTo(target);
             return surface;

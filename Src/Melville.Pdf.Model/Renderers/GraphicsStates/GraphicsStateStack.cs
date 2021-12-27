@@ -4,20 +4,20 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public partial class GraphicsStateStack: IGraphiscState
+public partial class GraphicsStateStack<TTypeface> : IGraphiscState<TTypeface>
 {
-    private readonly Stack<GraphicsState> states;
-    public GraphicsState Current() => states.Peek();
+    private readonly Stack<GraphicsState<TTypeface>> states;
+    public GraphicsState<TTypeface> Current() => states.Peek();
    
     public GraphicsStateStack()
     {
-        states = new Stack<GraphicsState>();
-        states.Push(new GraphicsState());
+        states = new ();
+        states.Push(new GraphicsState<TTypeface>());
     }
 
     public void SaveGraphicsState()
     {
-        var newTop = new GraphicsState();
+        var newTop = new GraphicsState<TTypeface>();
         newTop.CopyFrom(Current());
         states.Push(newTop);
     }
@@ -25,5 +25,5 @@ public partial class GraphicsStateStack: IGraphiscState
     public void RestoreGraphicsState() => states.Pop();
 
     [DelegateTo]
-    private IGraphiscState topState => states.Peek();
+    private IGraphiscState<TTypeface> topState => states.Peek();
 }

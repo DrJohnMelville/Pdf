@@ -14,11 +14,11 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public partial class RenderEngine: IContentStreamOperations
+public partial class RenderEngine<TTypeface>: IContentStreamOperations
 {
     private readonly IHasPageAttributes page;
-    private readonly IRenderTarget target;
-    public RenderEngine(IHasPageAttributes page, IRenderTarget target)
+    private readonly IRenderTarget<TTypeface> target;
+    public RenderEngine(IHasPageAttributes page, IRenderTarget<TTypeface> target)
     {
         this.page = page;
         this.target = target;
@@ -34,7 +34,7 @@ public partial class RenderEngine: IContentStreamOperations
         throw new NotImplementedException("Compatibility Operations not implemented");
 
     #region Graphics State
-    [DelegateTo] private IGraphiscState StateOps => target.GrapicsStateChange;
+    [DelegateTo] private IGraphiscState<TTypeface> StateOps => target.GrapicsStateChange;
     
     public void SaveGraphicsState()
     {

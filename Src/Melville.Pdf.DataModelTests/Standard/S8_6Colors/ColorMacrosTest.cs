@@ -13,15 +13,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 
 public class ColorMacrosTest
 {
-    private readonly GraphicsStateStack state = new();
-    private readonly Mock<IRenderTarget> target = new();
-    private readonly RenderEngine sut;
+    private readonly GraphicsStateStack<string> state = new();
+    private readonly Mock<IRenderTarget<string>> target = new();
+    private readonly RenderEngine<string> sut;
 
     public ColorMacrosTest()
     {
         target.SetupGet(i => i.GrapicsStateChange).Returns(state);
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
-        sut = new RenderEngine(page, target.Object);
+        sut = new RenderEngine<string>(page, target.Object);
     }
 
     [Fact]

@@ -8,9 +8,9 @@ namespace Melville.Pdf.Wpf;
 
 public static class WpfStateInterpreter
 {
-    public static Brush Brush(this GraphicsState state) => state.NonstrokeColor.AsSolidBrush();
+    public static Brush Brush(this GraphicsState<GlyphTypeface> state) => state.NonstrokeColor.AsSolidBrush();
     
-    public static Pen Pen(this GraphicsState state)
+    public static Pen Pen(this GraphicsState<GlyphTypeface> state)
     {
         var lineCap = ConvertLineCap(state.LineCap);
         var pen = new Pen(Brushes.Black, state.EffectiveLineWidth())
@@ -39,7 +39,7 @@ public static class WpfStateInterpreter
         _ => throw new ArgumentOutOfRangeException(nameof(joinStyle), joinStyle, null)
     };
     
-    private static DashStyle ComputeDashStyle(GraphicsState state) => 
+    private static DashStyle ComputeDashStyle(GraphicsState<GlyphTypeface> state) => 
         state.IsDashedStroke() ?
             CustomDashStyle(state.DashArray, state.DashPhase, state.LineWidth):
             DashStyles.Solid;
@@ -56,6 +56,7 @@ public static class WpfStateInterpreter
           _ => throw new ArgumentOutOfRangeException(nameof(stateLineCap), stateLineCap, null)
       };
    
-    public static MatrixTransform Transform(this GraphicsState state) => WpfTransform(state.TransformMatrix);
+    public static MatrixTransform Transform(this GraphicsState<GlyphTypeface> state) => 
+        WpfTransform(state.TransformMatrix);
     public static MatrixTransform WpfTransform(this Matrix3x2 m) => new(m.M11, m.M12, m.M21, m.M22, m.M31, m.M32);
 }

@@ -7,9 +7,9 @@ using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
-public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
+public class SkiaRenderTarget:RenderTargetBase<SKCanvas, string>, IRenderTarget<string>
 {
-    public SkiaRenderTarget(SKCanvas target, GraphicsStateStack state, PdfPage page) : 
+    public SkiaRenderTarget(SKCanvas target, GraphicsStateStack<string> state, PdfPage page) : 
         base(target, state, page)
     {
     }
@@ -42,16 +42,16 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     private SKPath? currentPath;
     private SKPath GetOrCreatePath => currentPath ??= new SKPath();
 
-    void IRenderTarget.MoveTo(double x, double y) => GetOrCreatePath.MoveTo((float)x,(float)y);
+    public void MoveTo(double x, double y) => GetOrCreatePath.MoveTo((float)x,(float)y);
 
-    void IRenderTarget.LineTo(double x, double y) => currentPath?.LineTo((float)x, (float)y);
+    public void LineTo(double x, double y) => currentPath?.LineTo((float)x, (float)y);
 
-    void IRenderTarget.ClosePath()
+    public void ClosePath()
     {
         currentPath?.Close();
     }
 
-    void IRenderTarget.CurveTo(double control1X, double control1Y, double control2X, double control2Y,
+    public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
         double finalX, double finalY) =>
         currentPath?.CubicTo(
             (float)control1X, (float)control1Y, (float)control2X, (float)control2Y, (float)finalX, (float)finalY);
@@ -59,7 +59,8 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     #endregion
 
     #region Path Drawing
-    void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
+
+    public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         if (fill && State.Current().Brush() is {} brush)
         {
@@ -75,7 +76,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     private void SetCurrentFillRule(bool evenOddFillRule) => 
         GetOrCreatePath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
 
-    void IRenderTarget.EndPath()
+    public void EndPath()
     {
         currentPath?.Dispose();
         currentPath = null;

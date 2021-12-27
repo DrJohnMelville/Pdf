@@ -12,9 +12,9 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
 
-public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
+public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, IRenderTarget<GlyphTypeface>
 {
-    public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
+    public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page):
         base(target, state, page)
     { 
         SaveTransformAndClip();
@@ -71,7 +71,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
     private PathGeometry? geometry;
     private PathFigure? figure;
 
-    void IRenderTarget.MoveTo(double x, double y)
+    public void MoveTo(double x, double y)
     {
         figure = new PathFigure(){StartPoint = new Point(x, y)};
         EnsureGeometryExists().Figures.Add(figure);
@@ -79,15 +79,15 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     private PathGeometry EnsureGeometryExists() => geometry ??= new PathGeometry();
 
-    void IRenderTarget.LineTo(double x, double y) => 
+    public void LineTo(double x, double y) => 
         figure?.Segments.Add(new LineSegment(new Point(x,y), true));
 
-    void IRenderTarget.CurveTo(double control1X, double control1Y, double control2X, double control2Y,
+    public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
         double finalX, double finalY) => figure?.Segments.Add(
         new BezierSegment(
             new Point(control1X, control1Y), new Point(control2X, control2Y), new Point(finalX, finalY), true));
 
-    void IRenderTarget.ClosePath()
+    public void ClosePath()
     {
         if (figure == null) return;
         figure.IsClosed = true;
@@ -96,7 +96,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 
     #region Path Painting
 
-    void IRenderTarget.PaintPath(bool stroke, bool fill, bool evenOddFillRule)
+    public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         if (geometry == null) return;
         SetCurrentFillRule(evenOddFillRule);
@@ -110,7 +110,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
         geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
     }
 
-    void IRenderTarget.EndPath()
+    public void EndPath()
     {
         geometry = null;
         figure = null;

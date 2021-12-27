@@ -10,9 +10,9 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public interface IRenderTarget
+public interface IRenderTarget<TTypeface>
 {
-    IGraphiscState GrapicsStateChange { get; }
+    IGraphiscState<TTypeface> GrapicsStateChange { get; }
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
     void CurveTo(double control1X, double control1Y, double control2X, double control2Y, 
@@ -32,15 +32,15 @@ public interface IRenderTarget
     (double width, double height) RenderGlyph(char b);
 }
 
-public abstract class RenderTargetBase<T>
+public abstract class RenderTargetBase<T, TTypeface>
 {
     protected T Target { get; }
-    protected GraphicsStateStack State { get; }
+    protected GraphicsStateStack<TTypeface> State { get; }
     protected PdfPage Page { get; }
 
-    public IGraphiscState GrapicsStateChange => State;
+    public IGraphiscState<TTypeface> GrapicsStateChange => State;
 
-    protected RenderTargetBase(T target, GraphicsStateStack state, PdfPage page)
+    protected RenderTargetBase(T target, GraphicsStateStack<TTypeface> state, PdfPage page)
     {
         Target = target;
         State = state;
@@ -61,9 +61,10 @@ public abstract class RenderTargetBase<T>
 
 public static class RenderTargetOperations
 {
-    public static async ValueTask RenderTo(this IHasPageAttributes page, IRenderTarget target) =>
+    public static async ValueTask RenderTo<TTypeface>(
+        this IHasPageAttributes page, IRenderTarget<TTypeface> target) =>
         await new ContentStreamParser(
-                new RenderEngine(page, target))
+                new RenderEngine<TTypeface>(page, target))
             .Parse(
                 PipeReader.Create(
                     await page.GetContentBytes()));

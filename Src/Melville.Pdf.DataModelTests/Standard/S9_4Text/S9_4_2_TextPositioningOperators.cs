@@ -12,15 +12,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 
 public class S9_4_2_TextPositioningOperators
 {
-    private readonly GraphicsStateStack state = new();
+    private readonly GraphicsStateStack<string> state = new();
     private readonly Mock<IHasPageAttributes> pageMock = new(MockBehavior.Strict);
-    private readonly Mock<IRenderTarget> targetMock = new(MockBehavior.Strict);
-    private readonly RenderEngine sut;
+    private readonly Mock<IRenderTarget<string>> targetMock = new(MockBehavior.Strict);
+    private readonly RenderEngine<string> sut;
 
     public S9_4_2_TextPositioningOperators()
     {
         targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
-        sut = new RenderEngine(pageMock.Object, targetMock.Object);
+        sut = new RenderEngine<string>(pageMock.Object, targetMock.Object);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class S9_4_2_TextPositioningOperators
     [Fact]
     public void MoveToNextTextLineAndShowString()
     {
-        targetMock.Setup(i => i.RenderGlyph('e')).Returns((10.0, 12.0));
+        targetMock.Setup(i => i.RenderGlyph((char)65)).Returns((10.0, 12.0));
         sut.SetTextLeading(20);
         sut.MoveToNextLineAndShowString(new ReadOnlyMemory<byte>(new byte[] { 65 }));
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, 10, -20), sut.CurrentState().TextMatrix);
@@ -95,7 +95,7 @@ public class S9_4_2_TextPositioningOperators
     [Fact]
     public void MoveToNextTextLineAndShowStringWithSpacing()
     {
-        targetMock.Setup(i => i.RenderGlyph('e')).Returns((10.0, 12.0));
+        targetMock.Setup(i => i.RenderGlyph((char)65)).Returns((10.0, 12.0));
         sut.SetTextLeading(20);
         sut.MoveToNextLineAndShowString(4,5,new ReadOnlyMemory<byte>(new byte[] { 65 }));
         Assert.Equal(4.0, sut.CurrentState().WordSpacing);

@@ -79,10 +79,10 @@ public class GraphicStateDictionary
         Assert.Equal(2, gs.Current().DashArray.Length);
     }
 
-    private static async Task<GraphicsStateStack> ComputeFinalGraphicsStack(PdfPage page)
+    private static async Task<GraphicsStateStack<string>> ComputeFinalGraphicsStack(PdfPage page)
     {
-        var gs = new GraphicsStateStack();
-        var target = new Mock<IRenderTarget>();
+        var gs = new GraphicsStateStack<string>();
+        var target = new Mock<IRenderTarget<string>>();
         target.SetupGet(i => i.GrapicsStateChange).Returns(gs);
         Assert.Equal(1.0, gs.Current().LineWidth);
         await page.RenderTo(target.Object);
