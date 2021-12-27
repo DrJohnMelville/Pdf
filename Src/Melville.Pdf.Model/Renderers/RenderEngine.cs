@@ -282,6 +282,13 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
     public void MoveToNextTextLine() => 
         MovePositionBy(0, - StateOps.CurrentState().TextLeading);
 
+    public async ValueTask SetFont(PdfName font, double size)
+    {
+        var fontDic = (PdfDictionary) await page.GetResourceAsync(ResourceTypeName.Font, font);
+        var fname = await fontDic.GetAsync<PdfName>(KnownNames.BaseFont);
+        target.SetBuiltInFont(fname, size);
+        StateOps.SetFont(fname, size);
+    }
     public void ShowString(in ReadOnlyMemory<byte> decodedString)
     {
         foreach (var character in decodedString.Span)

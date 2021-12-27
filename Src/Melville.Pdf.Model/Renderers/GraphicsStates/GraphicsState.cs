@@ -29,7 +29,7 @@ public enum WritingMode
 }
 
 public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
-{                           
+{
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextLineMatrix", "Matrix3x2.Identity")]
@@ -55,7 +55,7 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
     [MacroItem("double", "FontSize", "12.0")]
     [MacroItem("TTypeface?", "Typeface", "default")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
-
+    
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState<TTypeface> other){", Postfix = "}")]
@@ -149,9 +149,10 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
     public void SetWordSpace(double value) => WordSpacing = value;
     public void SetHorizontalTextScaling(double value) => HorizontalTextScale = value;
     public void SetTextLeading(double value) => TextLeading = value;
-    public void SetFont(PdfName font, double size)
+    public ValueTask SetFont(PdfName font, double size)
     {
         FontSize = size;
+        return ValueTask.CompletedTask;
     }
 
     public void SetTextRender(TextRendering rendering) => TextRender = rendering;
@@ -192,6 +193,9 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
     public void SetNonstrokingColor(in ReadOnlySpan<double> color) => 
         NonstrokeColor = NonstrokeColorSpace.SetColor(color);
     #endregion  
+    
+    public void SetTypeface(TTypeface typeface) => Typeface = typeface;
+
 }
 
 public static class GraphicsStateHelpers

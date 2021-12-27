@@ -65,10 +65,11 @@ public partial class ContentStreamWriter : IContentStreamOperations
         return ValueTask.CompletedTask;
     }
 
-    public void SetFont(PdfName font, double size)
+    public ValueTask SetFont(PdfName font, double size)
     {
         destPipe.WriteName(font);
         destPipe.WriteOperator(ContentStreamOperatorNames.Tf, size);
+        return ValueTask.CompletedTask;
     }
 
     public void SetTextRender(TextRendering rendering) =>

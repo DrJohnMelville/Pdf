@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -147,25 +149,51 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
 
     #region Text Rendering
 
-    public void SetFont(BuiltInFontName name, double size)
+    public void SetBuiltInFont(PdfName name, double size)
     {
+        var typeface = name.GetHashCode() switch
+        {
+            KnownNameKeys.Courier =>TypefaceByName("Courier New", false, false), 
+            KnownNameKeys.CourierBold => TypefaceByName("Courier New", true, false), 
+            KnownNameKeys.CourierOblique =>TypefaceByName("Courier New", false, true),
+            KnownNameKeys.CourierBoldOblique => TypefaceByName("Courier New", true, true),
+            KnownNameKeys.Helvetica => TypefaceByName("Arial", false, false), 
+            KnownNameKeys.HelveticaBold =>TypefaceByName("Arial", true, false), 
+            KnownNameKeys.HelveticaOblique=>  TypefaceByName("Arial", false, true), 
+            KnownNameKeys.HelveticaBoldOblique => TypefaceByName("Arial", true, true), 
+            KnownNameKeys.TimesRoman =>  TypefaceByName("Times New Roman", false, false), 
+            KnownNameKeys.TimesBold => TypefaceByName("Times New Roman", true, false), 
+            KnownNameKeys.TimesOblique => TypefaceByName("Times New Roman", false, true),
+            KnownNameKeys.TimesBoldOblique => TypefaceByName("Times New Roman", true, true),
+            KnownNameKeys.Symbol => TypefaceByName("Symbol", false, false), 
+            KnownNameKeys.ZapfDingbats => TypefaceByName("Wingdings", false, false),
+            _=> throw new PdfParseException("Cannot find builtin font: " +name )
+        }; 
+        if (!typeface.TryGetGlyphTypeface(out var gtf))
+            throw new PdfParseException("Cannot create built in font: " + name);
+        State.Current().SetTypeface(gtf);
     }
 
+    public Typeface TypefaceByName(string name, bool bold, bool oblique) =>
+        new Typeface(new FontFamily(name),
+            oblique ? FontStyles.Italic : FontStyles.Normal,
+            bold ? FontWeights.Bold : FontWeights.Light,
+            FontStretches.Normal);
+    
     public (double width, double height) RenderGlyph(char b)
     {
+        if (State.Current().Typeface is not { } gtf) return (0, 0);
         Target.PushTransform(
             (new Matrix3x2(
                 (float)State.CurrentState().HorizontalTextScale/100,0,0,-1,
                 0, (float)State.CurrentState().TextRise) *
             State.CurrentState().TextMatrix).WpfTransform()
             );
-        new Typeface("Times New Roman").TryGetGlyphTypeface(out var gtf);
         var glyph = gtf.CharacterToGlyphMap[b];
         var renderingEmSize = State.CurrentState().FontSize;
         var geom = gtf.GetGlyphOutline(glyph, renderingEmSize, renderingEmSize);
         Target.DrawGeometry(State.CurrentState().Brush(), State.CurrentState().Pen(),
             geom);
-        var box = geom.Bounds;
         Target.Pop();
         return (gtf.AdvanceWidths[glyph] * renderingEmSize, gtf.AdvanceHeights[glyph] * renderingEmSize);
     }
