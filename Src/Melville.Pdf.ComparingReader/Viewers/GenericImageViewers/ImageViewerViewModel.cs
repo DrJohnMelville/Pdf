@@ -19,7 +19,7 @@ public abstract class MelvillePdfRenderer : IImageRenderer
 {
     public async ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password)
     {
-        var doc = await PdfDocument.ReadAsync(pdfBits);
+        var doc = await PdfDocument.ReadAsync(pdfBits, new SinglePasswordSource(password));
         var pages = await doc.PagesAsync();
         var ret = (await pages.CountAsync()) > 0
             ? await Render(await pages.GetPageAsync(0))
@@ -29,6 +29,18 @@ public abstract class MelvillePdfRenderer : IImageRenderer
     }
 
     protected abstract ValueTask<ImageSource> Render(PdfPage page);
+}
+
+public class SinglePasswordSource : IPasswordSource
+{
+    private readonly string password;
+
+    public SinglePasswordSource(string password)
+    {
+        this.password = password;
+    }
+
+    public ValueTask<(string?, PasswordType)> GetPassword() => new((password, PasswordType.User));
 }
 
 public partial class ImageViewerViewModel : IRenderer

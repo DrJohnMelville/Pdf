@@ -24,7 +24,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
 
     #region Path and transform state
 
-    private Stack<int> savePoints = new Stack<int>();
+    private Stack<int> savePoints = new();
     public void SaveTransformAndClip()
     {
         savePoints.Push(0);
