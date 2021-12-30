@@ -49,6 +49,9 @@ public readonly struct SingleUsageDependencyVerifier
             case INamedTypeSymbol {Name:"ValueTuple"} nts:
                 CheckSymbolList(nts.TypeArguments);
                 break;
+            case IPointerTypeSymbol ps: 
+                CheckTypeUsage(ps.PointedAtType);
+                break;
             case ITypeSymbol ts:
                 CheckTypeSymbolUsage(ts);
                 break;

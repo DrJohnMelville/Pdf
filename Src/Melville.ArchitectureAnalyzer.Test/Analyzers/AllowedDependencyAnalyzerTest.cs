@@ -123,6 +123,10 @@ public class AllowedDependencyAnalyzerTest
         RunSimpleTest(
             "", "(int, double) M(){return (1,12.3);} void N(){var (x,y) = M();}", 
             "");
+    [Fact] public Task CanUsePointer() => 
+        RunSimpleTest(
+            "", "unsafe byte* M() => (byte*)0; unsafe void N(){var x = M();}", 
+            "");
     [Fact] public Task CannotCallStaticOnProhibitedType() => 
         RunSimpleTest(
             "public static void M(){}", "void M(){[|Relying|].M();}");
@@ -131,5 +135,5 @@ public class AllowedDependencyAnalyzerTest
     [Fact] public Task CannotInheritFromProhibitedGenericType() => 
         RunSimpleTest("namespace NS { public class ReliedUpon: [|Relying<int>|]{} public class Relying<T>{}}", 
             1, "\"NS.ReliedUpon\" may not reference \"NS.Relying<int>\" because \"NS.Relying* => NS.ReliedUpon*\"");
-        
+    
 }
