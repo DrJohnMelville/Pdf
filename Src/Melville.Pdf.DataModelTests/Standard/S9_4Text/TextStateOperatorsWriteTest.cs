@@ -37,14 +37,14 @@ public class TextStateOperatorsWriteTest: WriterTest
     [Fact]
     public async Task SetFont()
     {
-        sut.SetFont(BuiltInFontName.Helvetica, 12);
+        await sut.SetFont(BuiltInFontName.Helvetica, 12);
         Assert.Equal("/Helvetica 12 Tf\n", await WrittenText());
         
     }
     [Fact]
     public async Task SetFontString()
     {
-        sut.SetFont("Jdm", 12);
+        await sut.SetFont("Jdm", 12);
         Assert.Equal("/Jdm 12 Tf\n", await WrittenText());
         
     }

@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -153,49 +154,79 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     {
         var typeface = name.GetHashCode() switch
         {
-            KnownNameKeys.Courier =>TypefaceByName("Courier New", false, false), 
-            KnownNameKeys.CourierBold => TypefaceByName("Courier New", true, false), 
-            KnownNameKeys.CourierOblique =>TypefaceByName("Courier New", false, true),
-            KnownNameKeys.CourierBoldOblique => TypefaceByName("Courier New", true, true),
-            KnownNameKeys.Helvetica => TypefaceByName("Arial", false, false), 
-            KnownNameKeys.HelveticaBold =>TypefaceByName("Arial", true, false), 
-            KnownNameKeys.HelveticaOblique=>  TypefaceByName("Arial", false, true), 
-            KnownNameKeys.HelveticaBoldOblique => TypefaceByName("Arial", true, true), 
-            KnownNameKeys.TimesRoman =>  TypefaceByName("Times New Roman", false, false), 
-            KnownNameKeys.TimesBold => TypefaceByName("Times New Roman", true, false), 
-            KnownNameKeys.TimesOblique => TypefaceByName("Times New Roman", false, true),
-            KnownNameKeys.TimesBoldOblique => TypefaceByName("Times New Roman", true, true),
+            KnownNameKeys.Courier =>TypefaceByName("Courier", false, false), 
+            KnownNameKeys.CourierBold => TypefaceByName("Courier", true, false), 
+            KnownNameKeys.CourierOblique =>TypefaceByName("Courier", false, true),
+            KnownNameKeys.CourierBoldOblique => TypefaceByName("Courier", true, true),
+            KnownNameKeys.Helvetica => TypefaceByName("Helvetica", false, false), 
+            KnownNameKeys.HelveticaBold =>TypefaceByName("Helvetica", true, false), 
+            KnownNameKeys.HelveticaOblique=>  TypefaceByName("Helvetica", false, true), 
+            KnownNameKeys.HelveticaBoldOblique => TypefaceByName("Helvetica", true, true), 
+            KnownNameKeys.TimesRoman =>  TypefaceByName("Times", false, false), 
+            KnownNameKeys.TimesBold => TypefaceByName("Times", true, false), 
+            KnownNameKeys.TimesOblique => TypefaceByName("Times", false, true),
+            KnownNameKeys.TimesBoldOblique => TypefaceByName("Times", true, true),
             KnownNameKeys.Symbol => TypefaceByName("Symbol", false, false), 
-            KnownNameKeys.ZapfDingbats => TypefaceByName("Wingdings", false, false),
+            KnownNameKeys.ZapfDingbats => TypefaceByName("ZapfDingbats", false, false),
             _=> throw new PdfParseException("Cannot find builtin font: " +name )
-        }; 
-        if (!typeface.TryGetGlyphTypeface(out var gtf))
-            throw new PdfParseException("Cannot create built in font: " + name);
-        State.Current().SetTypeface(gtf);
+        };
     }
 
-    public Typeface TypefaceByName(string name, bool bold, bool oblique) =>
-        new Typeface(new FontFamily(name),
+    private void SetCurrentFont(Typeface typeface, IByteToUnicodeMapping unicodeMapper)
+    {
+        if (!typeface.TryGetGlyphTypeface(out var gtf))
+            throw new PdfParseException("Cannot create built in font.");
+        State.Current().SetTypeface(gtf, unicodeMapper);
+    }
+
+    public Typeface TypefaceByName(string name, bool bold, bool oblique)
+    {
+        IDefaultFontMapper mapper = new WindowsDefaultFonts();
+        var mapping = mapper.MapDefaultFont(name);
+        var typeFace = new Typeface(new FontFamily(mapping.Font.ToString()!),
             oblique ? FontStyles.Italic : FontStyles.Normal,
-            bold ? FontWeights.Bold : FontWeights.Light,
+            bold ? FontWeights.Bold : FontWeights.Normal,
             FontStretches.Normal);
+        SetCurrentFont(typeFace, mapping.Mapping);
     
-    public (double width, double height) RenderGlyph(char b)
+        return typeFace;
+    }
+
+    public (double width, double height) RenderGlyph(byte b)
     {
         if (State.Current().Typeface is not { } gtf) return (0, 0);
-        Target.PushTransform(
-            (new Matrix3x2(
-                (float)State.CurrentState().HorizontalTextScale/100,0,0,-1,
-                0, (float)State.CurrentState().TextRise) *
-            State.CurrentState().TextMatrix).WpfTransform()
-            );
-        var glyph = gtf.CharacterToGlyphMap[b];
+        var charInUnicode = State.CurrentState().ByteMapper.MapToUnicode(b);
+        var glyph = GetGlyphMap(gtf, charInUnicode);
         var renderingEmSize = State.CurrentState().FontSize;
+        DrawGlyph(gtf, glyph, renderingEmSize);
+        return GlyphSize(gtf, glyph, renderingEmSize);
+    }
+
+    private static ushort GetGlyphMap(GlyphTypeface gtf, char charInUnicode) =>
+        gtf.CharacterToGlyphMap.TryGetValue(charInUnicode, out var ret)
+            ? ret
+            : gtf.CharacterToGlyphMap.Values.First();
+
+    private static (double, double) GlyphSize(GlyphTypeface gtf, ushort glyph, double renderingEmSize) =>
+        (gtf.AdvanceWidths[glyph] * renderingEmSize, gtf.AdvanceHeights[glyph] * renderingEmSize);
+
+    private void DrawGlyph(GlyphTypeface gtf, ushort glyph, double renderingEmSize)
+    {
+        Target.PushTransform(CharacterPositionMatrix().WpfTransform());
         var geom = gtf.GetGlyphOutline(glyph, renderingEmSize, renderingEmSize);
-        Target.DrawGeometry(State.CurrentState().Brush(), State.CurrentState().Pen(),
+       Target.DrawGeometry(State.CurrentState().Brush(), null,
             geom);
         Target.Pop();
-        return (gtf.AdvanceWidths[glyph] * renderingEmSize, gtf.AdvanceHeights[glyph] * renderingEmSize);
     }
+
+    private Matrix3x2 CharacterPositionMatrix()
+    {
+        return (new Matrix3x2(
+                    (float)State.CurrentState().HorizontalTextScale/100,0,
+                    0,-1,
+                    0, (float)State.CurrentState().TextRise) *
+                State.CurrentState().TextMatrix);
+    }
+
     #endregion
 }

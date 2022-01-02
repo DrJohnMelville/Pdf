@@ -1,9 +1,4 @@
-﻿using System.Text;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.LowLevel.Writers;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.ReferenceDocuments.Infrastructure;
+﻿using Melville.Pdf.LowLevel.Model.Wrappers;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
 

@@ -211,7 +211,7 @@ public class ContentStreamContext
                 target.MovePositionByWithLeading(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.Tf:
-                target.SetFont(arguments.NamaAt(0), arguments.DoubleAt(1));
+                await target.SetFont(arguments.NamaAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.Tj:
                 target.ShowString(arguments.BytesAt(0));

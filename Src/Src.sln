@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Icc", "Melville.Ic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Parsing", "Melville.Parsing\Melville.Parsing.csproj", "{8E5145BF-F498-4D5D-B082-D5D5758CFF80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.FontLibrary", "Melville.Pdf.FontLibrary\Melville.Pdf.FontLibrary.csproj", "{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,7 @@ Global
 		{1839A2B9-FEAA-4D4C-B922-58793818E960} = {A186AFC6-EDF0-44BE-B437-CA145297DEBC}
 		{FA4B66E9-5D90-4D8D-9190-10E7EC8DC5A7} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
 		{8E5145BF-F498-4D5D-B082-D5D5758CFF80} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
+		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD} = {5114C86E-5BF8-4501-894B-EE7AD0E4E47A}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0DC5C5E9-B98F-46BB-B1D9-C3E6E0278D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -155,5 +158,9 @@ Global
 		{8E5145BF-F498-4D5D-B082-D5D5758CFF80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E5145BF-F498-4D5D-B082-D5D5758CFF80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E5145BF-F498-4D5D-B082-D5D5758CFF80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

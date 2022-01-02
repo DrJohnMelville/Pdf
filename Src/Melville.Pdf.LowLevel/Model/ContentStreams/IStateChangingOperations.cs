@@ -81,7 +81,7 @@ public interface IStateChangingOperations
     void SetHorizontalTextScaling(double value);
 
     /// <summary>
-    /// Content stream operator leading Tl
+    /// Content stream operator leading TL
     /// </summary>
     void SetTextLeading(double value);
 

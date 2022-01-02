@@ -16,6 +16,14 @@
     </ItemGroup>
 
     <ItemGroup>
+    <AdditionalFiles Include="Architecture.adf" />
+    <ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj">
+        <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
+    </ItemGroup>
+
+    <ItemGroup>
       <None Remove="Renderers\Colors\Profiles\Cmyk.icc" />
       <EmbeddedResource Include="Renderers\Colors\Profiles\Cmyk.icc" />
       <None Remove="Renderers\Colors\Profiles\AdobeSrgb.icc" />

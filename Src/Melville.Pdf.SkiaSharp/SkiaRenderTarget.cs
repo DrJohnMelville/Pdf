@@ -108,7 +108,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, string>, IRenderTarget<
     {
     }
 
-    public (double width, double height) RenderGlyph(char b)
+    public (double width, double height) RenderGlyph(byte b)
     {
         return (10, 12);
     }

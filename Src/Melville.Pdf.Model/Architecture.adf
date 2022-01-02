@@ -1,5 +1,24 @@
 ﻿#Everyone can use .Net
-* => System.*
+* => System*
+
+#groups
+Group Renderers
+    Melville.Pdf.Model.Renderers.*
+    
+Group FontMappings
+    Melville.Pdf.Model.FontMappings.*
+    
+Group Documents
+    Melville.Pdf.Model.Documents.*
+
+Group Creators
+    Melville.Pdf.Model.Creators.*
+    
+Renderers => Documents
+Renderers => FontMappings
+
+Melville.Pdf.Model.Renderers.Colors.* ^=> Melville.Icc.*
 
 #Everyone can use the LowLevel Model
 * => Melville.Pdf.LowLevel.*
+* => Melville.Parsing.*

@@ -30,7 +30,7 @@ public interface IRenderTarget<TTypeface>
     ValueTask RenderBitmap(IPdfBitmap bitmap);
 
     public void SetBuiltInFont(PdfName name, double size);
-    (double width, double height) RenderGlyph(char b);
+    (double width, double height) RenderGlyph(byte b);
 }
 
 public abstract class RenderTargetBase<T, TTypeface>

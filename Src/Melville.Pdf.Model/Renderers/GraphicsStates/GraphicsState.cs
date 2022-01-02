@@ -6,6 +6,7 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.FontMappings;
 // needed in rendering code.
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -53,9 +54,10 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
     [MacroItem("double", "TextRise", "0.0")]
     [MacroItem("double", "HorizontalTextScale", "100.0")]
     [MacroItem("double", "FontSize", "12.0")]
-    [MacroItem("TTypeface?", "Typeface", "default")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
-    
+    [MacroItem("TTypeface?", "Typeface", "default")]
+    [MacroItem("IByteToUnicodeMapping", "ByteMapper", "DefaultUnicodeMapping.Instance")]
+
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState<TTypeface> other){", Postfix = "}")]
@@ -194,8 +196,11 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
         NonstrokeColor = NonstrokeColorSpace.SetColor(color);
     #endregion  
     
-    public void SetTypeface(TTypeface typeface) => Typeface = typeface;
-
+    public void SetTypeface(TTypeface typeface, IByteToUnicodeMapping mapper)
+    {
+        Typeface = typeface;
+        ByteMapper = mapper;
+    }
 }
 
 public static class GraphicsStateHelpers
