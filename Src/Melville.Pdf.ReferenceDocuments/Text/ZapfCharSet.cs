@@ -3,16 +3,32 @@ using Melville.Pdf.ReferenceDocuments.Graphics;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
 
-public class ZapfCharSet : Card3x5
+public class ZapfCharSet : DisplayCharSet
 {
-    public ZapfCharSet() : base ("All Characters of the Zapf Dingbats Charset Font")
+    public ZapfCharSet() : base(BuiltInFontName.ZapfDingbats)
     {
+    }
+}
+
+public class SymbolCharSer : DisplayCharSet
+{
+    public SymbolCharSer() : base(BuiltInFontName.Symbol)
+    {
+    }
+}
+public abstract class DisplayCharSet : Card3x5
+{
+    private BuiltInFontName name;
+
+    protected DisplayCharSet(BuiltInFontName name) : base ($"All Characters of the {name} Charset")
+    {
+        this.name = name;
     }
 
     private static readonly PdfName fontName = NameDirectory.Get("F1"); 
     protected override void SetPageProperties(PageCreator page)
     {
-        page.AddStandardFont(fontName, BuiltInFontName.ZapfDingbats, FontEncodingName.StandardEncoding);
+        page.AddStandardFont(fontName, name, FontEncodingName.StandardEncoding);
         
     }
 

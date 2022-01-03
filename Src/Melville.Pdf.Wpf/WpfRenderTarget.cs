@@ -154,20 +154,20 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     {
         var typeface = name.GetHashCode() switch
         {
-            KnownNameKeys.Courier =>TypefaceByName("Courier", false, false), 
-            KnownNameKeys.CourierBold => TypefaceByName("Courier", true, false), 
-            KnownNameKeys.CourierOblique =>TypefaceByName("Courier", false, true),
-            KnownNameKeys.CourierBoldOblique => TypefaceByName("Courier", true, true),
-            KnownNameKeys.Helvetica => TypefaceByName("Helvetica", false, false), 
-            KnownNameKeys.HelveticaBold =>TypefaceByName("Helvetica", true, false), 
-            KnownNameKeys.HelveticaOblique=>  TypefaceByName("Helvetica", false, true), 
-            KnownNameKeys.HelveticaBoldOblique => TypefaceByName("Helvetica", true, true), 
-            KnownNameKeys.TimesRoman =>  TypefaceByName("Times", false, false), 
-            KnownNameKeys.TimesBold => TypefaceByName("Times", true, false), 
-            KnownNameKeys.TimesOblique => TypefaceByName("Times", false, true),
-            KnownNameKeys.TimesBoldOblique => TypefaceByName("Times", true, true),
-            KnownNameKeys.Symbol => TypefaceByName("Symbol", false, false), 
-            KnownNameKeys.ZapfDingbats => TypefaceByName("ZapfDingbats", false, false),
+            KnownNameKeys.Courier =>TypefaceByName(DefaultPdfFonts.Courier, false, false), 
+            KnownNameKeys.CourierBold => TypefaceByName(DefaultPdfFonts.Courier, true, false), 
+            KnownNameKeys.CourierOblique =>TypefaceByName(DefaultPdfFonts.Courier, false, true),
+            KnownNameKeys.CourierBoldOblique => TypefaceByName(DefaultPdfFonts.Courier, true, true),
+            KnownNameKeys.Helvetica => TypefaceByName(DefaultPdfFonts.Helvetica, false, false), 
+            KnownNameKeys.HelveticaBold =>TypefaceByName(DefaultPdfFonts.Helvetica, true, false), 
+            KnownNameKeys.HelveticaOblique=>  TypefaceByName(DefaultPdfFonts.Helvetica, false, true), 
+            KnownNameKeys.HelveticaBoldOblique => TypefaceByName(DefaultPdfFonts.Helvetica, true, true), 
+            KnownNameKeys.TimesRoman =>  TypefaceByName(DefaultPdfFonts.Times, false, false), 
+            KnownNameKeys.TimesBold => TypefaceByName(DefaultPdfFonts.Times, true, false), 
+            KnownNameKeys.TimesOblique => TypefaceByName(DefaultPdfFonts.Times, false, true),
+            KnownNameKeys.TimesBoldOblique => TypefaceByName(DefaultPdfFonts.Times, true, true),
+            KnownNameKeys.Symbol => TypefaceByName(DefaultPdfFonts.Symbol, false, false), 
+            KnownNameKeys.ZapfDingbats => TypefaceByName(DefaultPdfFonts.Dingbats, false, false),
             _=> throw new PdfParseException("Cannot find builtin font: " +name )
         };
     }
@@ -179,7 +179,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
         State.Current().SetTypeface(gtf, unicodeMapper);
     }
 
-    public Typeface TypefaceByName(string name, bool bold, bool oblique)
+    private Typeface TypefaceByName(DefaultPdfFonts name, bool bold, bool oblique)
     {
         IDefaultFontMapper mapper = new WindowsDefaultFonts();
         var mapping = mapper.MapDefaultFont(name);

@@ -21,7 +21,16 @@ public interface IFontMapping
     IByteToUnicodeMapping Mapping { get; }
 }
 
+public enum DefaultPdfFonts
+{
+    Courier,
+    Helvetica,
+    Times,
+    Symbol,
+    Dingbats
+}
+
 public interface IDefaultFontMapper
 {
-    public IFontMapping MapDefaultFont(string name);
+    public IFontMapping MapDefaultFont(DefaultPdfFonts font);
 }
