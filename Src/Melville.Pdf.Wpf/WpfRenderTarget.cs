@@ -17,9 +17,12 @@ namespace Melville.Pdf.Wpf;
 
 public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, IRenderTarget<GlyphTypeface>
 {
-    public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page):
+    private IDefaultFontMapper defaultFontMapper;
+    public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page, 
+        IDefaultFontMapper? defaultFontMapper = null):
         base(target, state, page)
-    { 
+    {
+        this.defaultFontMapper = defaultFontMapper ?? new WindowsDefaultFonts();
         SaveTransformAndClip();
     }
 
@@ -181,8 +184,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
 
     private Typeface TypefaceByName(DefaultPdfFonts name, bool bold, bool oblique)
     {
-        IDefaultFontMapper mapper = new WindowsDefaultFonts();
-        var mapping = mapper.MapDefaultFont(name);
+        var mapping = defaultFontMapper.MapDefaultFont(name);
         var typeFace = new Typeface(new FontFamily(mapping.Font.ToString()!),
             oblique ? FontStyles.Italic : FontStyles.Normal,
             bold ? FontWeights.Bold : FontWeights.Normal,
