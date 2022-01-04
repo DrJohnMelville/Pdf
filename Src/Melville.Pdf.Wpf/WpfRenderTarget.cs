@@ -17,12 +17,10 @@ namespace Melville.Pdf.Wpf;
 
 public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, IRenderTarget<GlyphTypeface>
 {
-    private IDefaultFontMapper defaultFontMapper;
     public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page, 
         IDefaultFontMapper? defaultFontMapper = null):
-        base(target, state, page)
+        base(target, state, page, defaultFontMapper ?? new WindowsDefaultFonts())
     {
-        this.defaultFontMapper = defaultFontMapper ?? new WindowsDefaultFonts();
         SaveTransformAndClip();
     }
 
@@ -153,26 +151,15 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
 
     #region Text Rendering
 
-    public void SetBuiltInFont(PdfName name, double size)
+    
+    protected override void SetBuiltInTypeface(DefaultPdfFonts name, bool bold, bool oblique)
     {
-        var typeface = name.GetHashCode() switch
-        {
-            KnownNameKeys.Courier =>TypefaceByName(DefaultPdfFonts.Courier, false, false), 
-            KnownNameKeys.CourierBold => TypefaceByName(DefaultPdfFonts.Courier, true, false), 
-            KnownNameKeys.CourierOblique =>TypefaceByName(DefaultPdfFonts.Courier, false, true),
-            KnownNameKeys.CourierBoldOblique => TypefaceByName(DefaultPdfFonts.Courier, true, true),
-            KnownNameKeys.Helvetica => TypefaceByName(DefaultPdfFonts.Helvetica, false, false), 
-            KnownNameKeys.HelveticaBold =>TypefaceByName(DefaultPdfFonts.Helvetica, true, false), 
-            KnownNameKeys.HelveticaOblique=>  TypefaceByName(DefaultPdfFonts.Helvetica, false, true), 
-            KnownNameKeys.HelveticaBoldOblique => TypefaceByName(DefaultPdfFonts.Helvetica, true, true), 
-            KnownNameKeys.TimesRoman =>  TypefaceByName(DefaultPdfFonts.Times, false, false), 
-            KnownNameKeys.TimesBold => TypefaceByName(DefaultPdfFonts.Times, true, false), 
-            KnownNameKeys.TimesOblique => TypefaceByName(DefaultPdfFonts.Times, false, true),
-            KnownNameKeys.TimesBoldOblique => TypefaceByName(DefaultPdfFonts.Times, true, true),
-            KnownNameKeys.Symbol => TypefaceByName(DefaultPdfFonts.Symbol, false, false), 
-            KnownNameKeys.ZapfDingbats => TypefaceByName(DefaultPdfFonts.Dingbats, false, false),
-            _=> throw new PdfParseException("Cannot find builtin font: " +name )
-        };
+        var mapping = DefaultFontMapper.MapDefaultFont(name);
+        var typeFace = new Typeface(new FontFamily(mapping.Font.ToString()!),
+            oblique ? FontStyles.Italic : FontStyles.Normal,
+            bold ? FontWeights.Bold : FontWeights.Normal,
+            FontStretches.Normal);
+        SetCurrentFont(typeFace, mapping.Mapping);
     }
 
     private void SetCurrentFont(Typeface typeface, IByteToUnicodeMapping unicodeMapper)
@@ -181,23 +168,9 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
             throw new PdfParseException("Cannot create built in font.");
         State.Current().SetTypeface(gtf, unicodeMapper);
     }
-
-    private Typeface TypefaceByName(DefaultPdfFonts name, bool bold, bool oblique)
-    {
-        var mapping = defaultFontMapper.MapDefaultFont(name);
-        var typeFace = new Typeface(new FontFamily(mapping.Font.ToString()!),
-            oblique ? FontStyles.Italic : FontStyles.Normal,
-            bold ? FontWeights.Bold : FontWeights.Normal,
-            FontStretches.Normal);
-        SetCurrentFont(typeFace, mapping.Mapping);
     
-        return typeFace;
-    }
-
-    public (double width, double height) RenderGlyph(byte b)
+    protected override (double width, double height) RenderGlyph(GlyphTypeface gtf, char charInUnicode)
     {
-        if (State.Current().Typeface is not { } gtf) return (0, 0);
-        var charInUnicode = State.CurrentState().ByteMapper.MapToUnicode(b);
         var glyph = GetGlyphMap(gtf, charInUnicode);
         var renderingEmSize = State.CurrentState().FontSize;
         DrawGlyph(gtf, glyph, renderingEmSize);
@@ -220,15 +193,5 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
             geom);
         Target.Pop();
     }
-
-    private Matrix3x2 CharacterPositionMatrix()
-    {
-        return (new Matrix3x2(
-                    (float)State.CurrentState().HorizontalTextScale/100,0,
-                    0,-1,
-                    0, (float)State.CurrentState().TextRise) *
-                State.CurrentState().TextMatrix);
-    }
-
     #endregion
 }

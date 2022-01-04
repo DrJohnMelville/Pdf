@@ -3,15 +3,17 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
-public class SkiaRenderTarget:RenderTargetBase<SKCanvas, string>, IRenderTarget<string>
+public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTarget<SKTypeface>
 {
-    public SkiaRenderTarget(SKCanvas target, GraphicsStateStack<string> state, PdfPage page) : 
-        base(target, state, page)
+    public SkiaRenderTarget(
+        SKCanvas target, GraphicsStateStack<SKTypeface> state, PdfPage page, IDefaultFontMapper? defaultFontMapper = null) : 
+        base(target, state, page, defaultFontMapper ?? new WindowsDefaultFonts())
     {
     }
 
@@ -104,15 +106,34 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, string>, IRenderTarget<
     
     #region Text Rendering
 
-    public void SetBuiltInFont(PdfName name, double size)
+    protected override void SetBuiltInTypeface(DefaultPdfFonts name, bool bold, bool oblique)
     {
+        var mapping = DefaultFontMapper.MapDefaultFont(name);
+        var typeFace = SKTypeface.FromFamilyName(mapping.Font.ToString(),
+            bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
+            SKFontStyleWidth.Normal,
+            oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
+        State.Current().SetTypeface(typeFace, mapping.Mapping);
     }
 
-    public (double width, double height) RenderGlyph(byte b)
+    protected override (double width, double height) RenderGlyph(SKTypeface gtf, char charInUnicode)
     {
-        return (10, 12);
+        Span<char> s = new char[] { charInUnicode };
+        using (var paint = new SKPaint())
+        {
+            paint.Typeface = gtf;
+            paint.TextSize = (float)State.Current().FontSize;
+            using var path = paint.GetTextPath(s, 0, 0);
+            Target.SetMatrix((CharacterPositionMatrix()*State.Current().TransformMatrix).Transform());
+            if (State.Current().Brush() is {} brush)
+            {
+               Target.DrawPath(path, brush);
+            }
+            Target.SetMatrix(State.Current().TransformMatrix.Transform());
+            
+        }
+        return (12.0, 12.0);
     }
-
     #endregion
 
 }

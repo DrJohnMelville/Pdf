@@ -1,6 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
@@ -10,15 +11,16 @@ namespace Melville.Pdf.SkiaSharp
     public static class RenderWithSkia
     {
         public static async ValueTask ToPngStream(
-            PdfPage page, Stream target, int width = -1, int height = -1)
+            PdfPage page, Stream target, int width = -1, int height = -1, IDefaultFontMapper? defaultFontMapper = null)
         {
-            using var surface = await ToSurface(page, width, height);
+            using var surface = await ToSurface(page, width, height, defaultFontMapper);
             using var image = surface.Snapshot();
             using var data = image.Encode();
             data.SaveTo(target);
         }
 
-        public static async ValueTask<SKSurface> ToSurface(PdfPage page, int width = -1, int height = -1)
+        public static async ValueTask<SKSurface> ToSurface(PdfPage page, int width = -1, int height = -1,
+            IDefaultFontMapper? defaultFontMapper = null)
         {
             
             var rect = await page.GetBoxAsync(BoxName.CropBox);
@@ -27,7 +29,8 @@ namespace Melville.Pdf.SkiaSharp
             (width, height) = AdjustSize(rect.Value, width, height);
             var surface = SKSurface.Create(new SKImageInfo(width, height));
             
-            var target = new SkiaRenderTarget(surface.Canvas, new GraphicsStateStack<string>(), page);
+            var target = new SkiaRenderTarget(
+                surface.Canvas, new GraphicsStateStack<SKTypeface>(), page, defaultFontMapper);
             target.SetBackgroundRect(rect.Value, width, height);
             await page.RenderTo(target);
             return surface;
