@@ -69,10 +69,12 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
         {
             SetCurrentFillRule(evenOddFillRule); 
             Target.DrawPath(GetOrCreatePath, brush);
+            brush.Dispose();
         }
         if (stroke && State.Current().Pen() is {} pen)
         {
             Target.DrawPath(GetOrCreatePath, pen);
+            pen.Dispose();
         }
     }
 
@@ -90,7 +92,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
 
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
-        var skBitmap = ScreenFormatBitmap(bitmap);
+        using var skBitmap = ScreenFormatBitmap(bitmap);
         await FillBitmapAsync(bitmap, skBitmap);
         Target.DrawBitmap(skBitmap,
             new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1));
@@ -118,22 +120,21 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
 
     protected override (double width, double height) RenderGlyph(SKTypeface gtf, char charInUnicode)
     {
-        Span<char> s = new char[] { charInUnicode };
-        using (var paint = new SKPaint())
+        using var font = gtf.ToFont((float)State.Current().FontSize);
+        var glyph = font.GetGlyph(charInUnicode);
+        using var path = font.GetGlyphPath(glyph);
+
+        Target.SetMatrix((CharacterPositionMatrix()*State.Current().TransformMatrix).Transform());
+        if (State.Current().Brush() is {} brush)
         {
-            paint.Typeface = gtf;
-            paint.TextSize = (float)State.Current().FontSize;
-            using var path = paint.GetTextPath(s, 0, 0);
-            Target.SetMatrix((CharacterPositionMatrix()*State.Current().TransformMatrix).Transform());
-            if (State.Current().Brush() is {} brush)
-            {
-               Target.DrawPath(path, brush);
-            }
-            Target.SetMatrix(State.Current().TransformMatrix.Transform());
-            
+            Target.DrawPath(path, brush);
+            brush.Dispose();
         }
-        return (12.0, 12.0);
+        Target.SetMatrix(State.Current().TransformMatrix.Transform());
+        var measure = font.MeasureText(stackalloc []{glyph}, out var bounds);
+        return (measure, bounds.Height);
     }
+
     #endregion
 
 }

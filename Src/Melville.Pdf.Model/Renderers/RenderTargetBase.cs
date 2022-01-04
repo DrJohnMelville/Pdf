@@ -128,14 +128,14 @@ public abstract class RenderTargetBase<T, TTypeface>
 
     protected abstract (double width, double height) RenderGlyph(TTypeface gtf, char charInUnicode);
 
-    protected Matrix3x2 CharacterPositionMatrix()
-    {
-        return (new Matrix3x2(
-                    (float)State.CurrentState().HorizontalTextScale/100,0,
-                    0,-1,
-                    0, (float)State.CurrentState().TextRise) *
-                State.CurrentState().TextMatrix);
-    }
+    protected Matrix3x2 CharacterPositionMatrix() =>
+        (GlyphAdjustmentMatrix() *
+         State.CurrentState().TextMatrix);
+
+    private Matrix3x2 GlyphAdjustmentMatrix() => new(
+            (float)State.CurrentState().HorizontalTextScale/100,0,
+            0,-1,
+            0, (float)State.CurrentState().TextRise);
 
     #endregion
 }
