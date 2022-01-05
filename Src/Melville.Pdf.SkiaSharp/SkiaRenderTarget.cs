@@ -129,7 +129,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
     {
         using var font = gtf.ToFont((float)State.Current().FontSize);
         var glyph = font.GetGlyph(charInUnicode);
-        using var path = font.GetGlyphPath(glyph);
+        var path = font.GetGlyphPath(glyph);
 
         DrawGlyphAtPosition(path);
         return GlyphSize(font, glyph);
@@ -137,37 +137,26 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
 
     private void DrawGlyphAtPosition(SKPath path)
     {
-        path.Transform(CharacterPositionMatrix().Transform());
-        DrawGlyph(path);
+        var transform = CharacterPositionMatrix().Transform();
+        GetOrCreateCurrentString().AddPath(path, ref transform);
     }
 
     protected override void RenderCurrentString(bool stroke, bool fill, bool clip)
     {
+        if (currentString == null) return;
+        InnerPaintPath(stroke, fill, false, currentString);
+        if (clip) Target.ClipPath(currentString);
+        DoneWithCurrentString();
     }
 
-    private void DrawGlyph(SKPath path)
+    private void DoneWithCurrentString()
     {
-        switch (State.CurrentState().TextRender)
-        {
-            case TextRendering.FillAndClip:
-            case TextRendering.Fill:
-                InnerPaintPath(false, true, false, path);
-                break;
-            case TextRendering.StrokeAndClip:
-            case TextRendering.Stroke:
-                InnerPaintPath(true, false, false, path);
-                break;
-            case TextRendering.FillStrokeAndClip:
-            case TextRendering.FillAndStroke:
-                InnerPaintPath(true, true, false, path);
-                break;
-            case TextRendering.Invisible:
-            case TextRendering.Clip:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        currentString?.Dispose();
+        currentString = null;
     }
+
+    private SKPath? currentString;
+    private SKPath GetOrCreateCurrentString() => currentString ??= new();
 
     private(double width, double height) GlyphSize(SKFont font, ushort glyph)
     {

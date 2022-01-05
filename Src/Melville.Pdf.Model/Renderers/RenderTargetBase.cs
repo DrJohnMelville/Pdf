@@ -132,35 +132,9 @@ public abstract class RenderTargetBase<T, TTypeface>
 
     public void RenderCurrentString()
     {
-        switch (State.CurrentState().TextRender)
-        {
-            case TextRendering.Fill:
-                RenderCurrentString(false, true, false);
-                break;
-            case TextRendering.Stroke:
-                RenderCurrentString(true, false, false);
-                break;
-            case TextRendering.FillAndStroke:
-                RenderCurrentString(true, true, false);
-                break;
-            case TextRendering.Invisible:
-                RenderCurrentString(false, false, false);
-                break;
-            case TextRendering.FillAndClip:
-                RenderCurrentString(false, true, true);
-                break;
-            case TextRendering.StrokeAndClip:
-                RenderCurrentString(true, false, true);
-                break;
-            case TextRendering.FillStrokeAndClip:
-                RenderCurrentString(true, true, true);
-                break;
-            case TextRendering.Clip:
-                RenderCurrentString(false, false, false);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        var textRender = State.CurrentState().TextRender;
+        RenderCurrentString(
+            textRender.ShouldStroke(), textRender.ShouldFill(), textRender.ShouldClip());
     }
 
     protected abstract void RenderCurrentString(bool stroke, bool fill, bool clip);
