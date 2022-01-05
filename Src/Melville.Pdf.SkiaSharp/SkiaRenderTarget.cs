@@ -124,14 +124,27 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
         var glyph = font.GetGlyph(charInUnicode);
         using var path = font.GetGlyphPath(glyph);
 
-        Target.SetMatrix((CharacterPositionMatrix()*State.Current().TransformMatrix).Transform());
-        if (State.Current().Brush() is {} brush)
-        {
-            Target.DrawPath(path, brush);
-            brush.Dispose();
-        }
+        DrawGlyphAtPosition(path);
+        return GlyphSize(font, glyph);
+    }
+
+    private void DrawGlyphAtPosition(SKPath path)
+    {
+        Target.SetMatrix((CharacterPositionMatrix() * State.Current().TransformMatrix).Transform());
+        DrawGlyph(path);
         Target.SetMatrix(State.Current().TransformMatrix.Transform());
-        var measure = font.MeasureText(stackalloc []{glyph}, out var bounds);
+    }
+
+    private void DrawGlyph(SKPath path)
+    {
+        if (State.Current().Brush() is not { } brush) return;
+        Target.DrawPath(path, brush);
+        brush.Dispose();
+    }
+
+    private(double width, double height) GlyphSize(SKFont font, ushort glyph)
+    {
+        var measure = font.MeasureText(stackalloc[] { glyph }, out var bounds);
         return (measure, bounds.Height);
     }
 
