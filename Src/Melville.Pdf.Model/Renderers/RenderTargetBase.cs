@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -34,7 +36,8 @@ public interface IRenderTarget<TTypeface>
     ValueTask RenderBitmap(IPdfBitmap bitmap);
 
     public void SetBuiltInFont(PdfName name, double size);
-    (double width, double height) RenderGlyph(byte b);
+    (double width, double height) AddGlyphToCurrentString(byte b);
+    void RenderCurrentString();
 }
 
 public abstract class RenderTargetBase<T, TTypeface>
@@ -120,13 +123,47 @@ public abstract class RenderTargetBase<T, TTypeface>
         }
     }
 
-    public (double width, double height) RenderGlyph(byte b)
+    public (double width, double height) AddGlyphToCurrentString(byte b)
     {
         if (State.Current().Typeface is not { } gtf) return (0, 0);
-        return RenderGlyph(gtf, State.CurrentState().ByteMapper.MapToUnicode(b));
+        return AddGlyphToCurrentString(gtf, State.CurrentState().ByteMapper.MapToUnicode(b));
+    }
+    protected abstract (double width, double height) AddGlyphToCurrentString(TTypeface gtf, char charInUnicode);
+
+    public void RenderCurrentString()
+    {
+        switch (State.CurrentState().TextRender)
+        {
+            case TextRendering.Fill:
+                RenderCurrentString(false, true, false);
+                break;
+            case TextRendering.Stroke:
+                RenderCurrentString(true, false, false);
+                break;
+            case TextRendering.FillAndStroke:
+                RenderCurrentString(true, true, false);
+                break;
+            case TextRendering.Invisible:
+                RenderCurrentString(false, false, false);
+                break;
+            case TextRendering.FillAndClip:
+                RenderCurrentString(false, true, true);
+                break;
+            case TextRendering.StrokeAndClip:
+                RenderCurrentString(true, false, true);
+                break;
+            case TextRendering.FillStrokeAndClip:
+                RenderCurrentString(true, true, true);
+                break;
+            case TextRendering.Clip:
+                RenderCurrentString(false, false, false);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
-    protected abstract (double width, double height) RenderGlyph(TTypeface gtf, char charInUnicode);
+    protected abstract void RenderCurrentString(bool stroke, bool fill, bool clip);
 
     protected Matrix3x2 CharacterPositionMatrix() =>
         (GlyphAdjustmentMatrix() *

@@ -56,13 +56,13 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     public void CombineClip(bool evenOddRule)
     {
         if (geometry is null) return;
-        ClipToGeometry(evenOddRule, geometry);
+        SetCurrentFillRule(evenOddRule);
+        ClipToGeometry(geometry);
     }
 
-    private void ClipToGeometry(bool evenOddRule, Geometry clippingGeometry)
+    private void ClipToGeometry(Geometry clippingGeometry)
     {
         IncrementSavePoints();
-        SetCurrentFillRule(evenOddRule);
         Target.PushClip(clippingGeometry);
     }
 
@@ -180,7 +180,7 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
         State.Current().SetTypeface(gtf, unicodeMapper);
     }
     
-    protected override (double width, double height) RenderGlyph(GlyphTypeface gtf, char charInUnicode)
+    protected override (double width, double height) AddGlyphToCurrentString(GlyphTypeface gtf, char charInUnicode)
     {
         var glyph = GetGlyphMap(gtf, charInUnicode);
         var renderingEmSize = State.CurrentState().FontSize;
@@ -196,31 +196,22 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     private static (double, double) GlyphSize(GlyphTypeface gtf, ushort glyph, double renderingEmSize) =>
         (gtf.AdvanceWidths[glyph] * renderingEmSize, gtf.AdvanceHeights[glyph] * renderingEmSize);
 
+    protected override void RenderCurrentString(bool stroke, bool fill, bool clip)
+    {
+        if (currentString is not { } path) return;
+        currentString.Freeze();
+        InnerPathPaint(stroke, fill, path); 
+        if (clip) ClipToGeometry(currentString);
+        currentString = null;
+    }
+
+    private GeometryGroup? currentString;
+    private GeometryGroup GetOrCreateCurrentString() => currentString ??= new ();
     private void DrawGlyph(GlyphTypeface gtf, ushort glyph, double renderingEmSize)
     {
-        Target.PushTransform(CharacterPositionMatrix().WpfTransform());
         var geom = gtf.GetGlyphOutline(glyph, renderingEmSize, renderingEmSize);
-        switch (State.CurrentState().TextRender)
-        {
-            case TextRendering.FillAndClip:
-            case TextRendering.Fill:
-                InnerPathPaint(false, true, geom);
-                break;
-            case TextRendering.StrokeAndClip:
-            case TextRendering.Stroke:
-                InnerPathPaint(true, false, geom);
-                break;
-            case TextRendering.FillStrokeAndClip:
-            case TextRendering.FillAndStroke:
-                InnerPathPaint(true, true, geom);
-                break;
-            case TextRendering.Invisible:
-            case TextRendering.Clip:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-        Target.Pop();
+        geom.Transform = CharacterPositionMatrix().WpfTransform();
+        GetOrCreateCurrentString().Children.Add(geom);
     }
     #endregion
 }

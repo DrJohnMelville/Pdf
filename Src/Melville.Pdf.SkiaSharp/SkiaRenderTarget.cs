@@ -125,7 +125,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
         State.Current().SetTypeface(typeFace, mapping.Mapping);
     }
 
-    protected override (double width, double height) RenderGlyph(SKTypeface gtf, char charInUnicode)
+    protected override (double width, double height) AddGlyphToCurrentString(SKTypeface gtf, char charInUnicode)
     {
         using var font = gtf.ToFont((float)State.Current().FontSize);
         var glyph = font.GetGlyph(charInUnicode);
@@ -137,9 +137,12 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
 
     private void DrawGlyphAtPosition(SKPath path)
     {
-        Target.SetMatrix((CharacterPositionMatrix() * State.Current().TransformMatrix).Transform());
+        path.Transform(CharacterPositionMatrix().Transform());
         DrawGlyph(path);
-        Target.SetMatrix(State.Current().TransformMatrix.Transform());
+    }
+
+    protected override void RenderCurrentString(bool stroke, bool fill, bool clip)
+    {
     }
 
     private void DrawGlyph(SKPath path)

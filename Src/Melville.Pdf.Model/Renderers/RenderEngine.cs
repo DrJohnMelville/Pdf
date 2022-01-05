@@ -304,9 +304,10 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
     {
         foreach (var character in decodedString.Span)
         {
-            var (w, h) = target.RenderGlyph(character);
+            var (w, h) = target.AddGlyphToCurrentString(character);
             AdjustTextPositionForCharacter(w, h, character);
         }
+        target.RenderCurrentString();
     }
 
     private void AdjustTextPositionForCharacter(double width, double height, byte character)
