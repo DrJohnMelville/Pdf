@@ -83,6 +83,18 @@ public class S9_4_2_TextPositioningOperators
     }
 
     [Fact]
+    public void DrawHorizontalCompressedStream()
+    {
+        targetMock.Setup(i => i.RenderGlyph((byte)' ')).Returns((10.0, 12.0));
+        sut.SetCharSpace(20);
+        sut.SetWordSpace(30);
+        sut.SetHorizontalTextScaling(50);
+        sut.ShowString(" ".AsExtendedAsciiBytes());
+        Assert.Equal(new Matrix3x2(1,0,0,1,30, 0), sut.CurrentState().TextMatrix);
+        
+    }
+
+    [Fact]
     public void MoveToNextTextLineAndShowString()
     {
         targetMock.Setup(i => i.RenderGlyph(65)).Returns((10.0, 12.0));
@@ -90,8 +102,7 @@ public class S9_4_2_TextPositioningOperators
         sut.MoveToNextLineAndShowString(new ReadOnlyMemory<byte>(new byte[] { 65 }));
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, 10, -20), sut.CurrentState().TextMatrix);
     }
-
-
+    
     [Fact]
     public void MoveToNextTextLineAndShowStringWithSpacing()
     {
@@ -101,13 +112,17 @@ public class S9_4_2_TextPositioningOperators
         Assert.Equal(4.0, sut.CurrentState().WordSpacing);
         Assert.Equal(5.0, sut.CurrentState().CharacterSpacing);
         
-        Assert.Equal(new Matrix3x2(1, 0, 0, 1, 10, -20), sut.CurrentState().TextMatrix);
+        Assert.Equal(new Matrix3x2(1, 0, 0, 1, 15, -20), sut.CurrentState().TextMatrix);
     }
 
-    [Fact]
-    public void ShowSpacedStream()
+    [Theory]
+    [InlineData(100,9)]
+    [InlineData(50,4.5)]
+    [InlineData(1000,90)]
+    public void ShowSpacedStream(double horizontalScale, float xPosition)
     {
         targetMock.Setup(i => i.RenderGlyph((byte)'e')).Returns((10.0, 12.0));
+        sut.SetHorizontalTextScaling(horizontalScale);
         sut.ShowSpacedString(
             new []
             {
@@ -116,7 +131,6 @@ public class S9_4_2_TextPositioningOperators
             });
         Assert.Equal(Matrix3x2.Identity,
             sut.CurrentState().TextLineMatrix);
-        Assert.Equal(new Matrix3x2(1, 0, 0, 1, 9, 0), sut.CurrentState().TextMatrix);
+        Assert.Equal(new Matrix3x2(1, 0, 0, 1, xPosition, 0), sut.CurrentState().TextMatrix);
     }
-
 }

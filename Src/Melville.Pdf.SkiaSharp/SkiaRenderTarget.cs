@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
@@ -65,15 +66,21 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
 
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        if (fill && State.Current().Brush() is {} brush)
+        InnerPaintPath(stroke, fill, evenOddFillRule, GetOrCreatePath);
+    }
+
+    private void InnerPaintPath(bool stroke, bool fill, bool evenOddFillRule, SKPath path)
+    {
+        if (fill && State.Current().Brush() is { } brush)
         {
-            SetCurrentFillRule(evenOddFillRule); 
-            Target.DrawPath(GetOrCreatePath, brush);
+            SetCurrentFillRule(evenOddFillRule);
+            Target.DrawPath(path, brush);
             brush.Dispose();
         }
-        if (stroke && State.Current().Pen() is {} pen)
+
+        if (stroke && State.Current().Pen() is { } pen)
         {
-            Target.DrawPath(GetOrCreatePath, pen);
+            Target.DrawPath(path, pen);
             pen.Dispose();
         }
     }
@@ -137,9 +144,26 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
 
     private void DrawGlyph(SKPath path)
     {
-        if (State.Current().Brush() is not { } brush) return;
-        Target.DrawPath(path, brush);
-        brush.Dispose();
+        switch (State.CurrentState().TextRender)
+        {
+            case TextRendering.FillAndClip:
+            case TextRendering.Fill:
+                InnerPaintPath(false, true, false, path);
+                break;
+            case TextRendering.StrokeAndClip:
+            case TextRendering.Stroke:
+                InnerPaintPath(true, false, false, path);
+                break;
+            case TextRendering.FillStrokeAndClip:
+            case TextRendering.FillAndStroke:
+                InnerPaintPath(true, true, false, path);
+                break;
+            case TextRendering.Invisible:
+            case TextRendering.Clip:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     private(double width, double height) GlyphSize(SKFont font, ushort glyph)

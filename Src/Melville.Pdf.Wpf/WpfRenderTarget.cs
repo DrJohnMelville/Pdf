@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -55,9 +56,14 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     public void CombineClip(bool evenOddRule)
     {
         if (geometry is null) return;
-         IncrementSavePoints();
-         SetCurrentFillRule(evenOddRule);
-         Target.PushClip(geometry);
+        ClipToGeometry(evenOddRule, geometry);
+    }
+
+    private void ClipToGeometry(bool evenOddRule, Geometry clippingGeometry)
+    {
+        IncrementSavePoints();
+        SetCurrentFillRule(evenOddRule);
+        Target.PushClip(clippingGeometry);
     }
 
     #endregion
@@ -104,9 +110,14 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     {
         if (geometry == null) return;
         SetCurrentFillRule(evenOddFillRule);
-        Target.DrawGeometry(fill?State.Current().Brush(): null, 
-                            stroke?State.Current().Pen():null, geometry);
+        InnerPathPaint(stroke, fill, geometry);
     }
+
+    private void InnerPathPaint(bool stroke, bool fill, Geometry pathToPaint) =>
+        Target.DrawGeometry(
+            fill ? State.Current().Brush() : null, 
+            stroke ? State.Current().Pen() : null, 
+            pathToPaint);
 
     private void SetCurrentFillRule(bool evenOddFillRule)
     {
@@ -189,8 +200,26 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     {
         Target.PushTransform(CharacterPositionMatrix().WpfTransform());
         var geom = gtf.GetGlyphOutline(glyph, renderingEmSize, renderingEmSize);
-       Target.DrawGeometry(State.CurrentState().Brush(), null,
-            geom);
+        switch (State.CurrentState().TextRender)
+        {
+            case TextRendering.FillAndClip:
+            case TextRendering.Fill:
+                InnerPathPaint(false, true, geom);
+                break;
+            case TextRendering.StrokeAndClip:
+            case TextRendering.Stroke:
+                InnerPathPaint(true, false, geom);
+                break;
+            case TextRendering.FillStrokeAndClip:
+            case TextRendering.FillAndStroke:
+                InnerPathPaint(true, true, geom);
+                break;
+            case TextRendering.Invisible:
+            case TextRendering.Clip:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
         Target.Pop();
     }
     #endregion

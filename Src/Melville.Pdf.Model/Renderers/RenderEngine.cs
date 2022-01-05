@@ -305,19 +305,36 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
         foreach (var character in decodedString.Span)
         {
             var (w, h) = target.RenderGlyph(character);
-            UpdateTextPosition(w, h);
+            AdjustTextPositionForCharacter(w, h, character);
         }
     }
-    
+
+    private void AdjustTextPositionForCharacter(double width, double height, byte character)
+    {
+        var delta = CharacterSpacingAdjustment(character);
+        UpdateTextPosition(width+delta, height + delta);
+    }
+
+    private double CharacterSpacingAdjustment(byte character) =>
+        StateOps.CurrentState().CharacterSpacing + ApplicableWordSpacing(character);
+
+    private double ApplicableWordSpacing(byte character) => 
+        IsSpaceCharacter(character)? StateOps.CurrentState().WordSpacing:0;
+
+    private bool IsSpaceCharacter(byte character) => character == 0x20;
+
     private void UpdateTextPosition(double width, double height)
     { 
         StateOps.CurrentState().SetTextMatrix(
-            NextCharPositionAfterWrite(width, height)*
+            IncrementAlongActiveVector(ScaleHorizontalOffset(width), height)*
             StateOps.CurrentState().TextMatrix
         );
     }
 
-    private Matrix3x2 NextCharPositionAfterWrite(double width, double height) =>
+    private double ScaleHorizontalOffset(double width) => 
+        width * StateOps.CurrentState().HorizontalTextScale/100.0;
+
+    private Matrix3x2 IncrementAlongActiveVector(double width, double height) =>
         StateOps.CurrentState().WritingMode == WritingMode.TopToBottom
             ? Matrix3x2.CreateTranslation(0f, (float)-height)
             : Matrix3x2.CreateTranslation((float)width, 0.0f);

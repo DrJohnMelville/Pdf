@@ -7,5 +7,7 @@ public enum TextRendering
     FillAndStroke = 2,
     Invisible = 3,
     FillAndClip = 4,
-    StrokeAndClip = 5
+    StrokeAndClip = 5,
+    FillStrokeAndClip = 6,
+    Clip = 7
 }

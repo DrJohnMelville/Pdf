@@ -130,3 +130,15 @@ RenderingTest.cs_wpf-ZapfCharSet|2288214115
 RenderingTest.cs_wpf-SymbolCharSer|3474470451
 RenderingTest.cs_Skia-ZapfCharSet|725939343
 RenderingTest.cs_Skia-SymbolCharSer|683952957
+RenderingTest.cs_wpf-CharacterSpacing|3484542826
+RenderingTest.cs_wpf-WordSpacing|4041117708
+RenderingTest.cs_Skia-CharacterSpacing|1375942023
+RenderingTest.cs_Skia-WordSpacing|1899555673
+RenderingTest.cs_wpf-HorizontalScaling|856419686
+RenderingTest.cs_wpf-StrokeText|4085889795
+RenderingTest.cs_wpf-StrokeAndFillText|3612311554
+RenderingTest.cs_wpf-InvisibleText|3385510162
+RenderingTest.cs_Skia-HorizontalScaling|676240117
+RenderingTest.cs_Skia-StrokeText|336850917
+RenderingTest.cs_Skia-StrokeAndFillText|3093661062
+RenderingTest.cs_Skia-InvisibleText|4087236348

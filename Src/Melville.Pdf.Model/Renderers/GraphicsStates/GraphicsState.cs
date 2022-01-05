@@ -21,6 +21,7 @@ public interface IGraphiscState<TTypeface> : IStateChangingOperations
     void SetTextMatrix(in Matrix3x2 value);
     void SetTextLineMatrix(in Matrix3x2 value);
     void SetBothTextMatrices(in Matrix3x2 value);
+    
 }
 
 public enum WritingMode
