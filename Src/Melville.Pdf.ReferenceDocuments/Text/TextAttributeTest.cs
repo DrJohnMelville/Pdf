@@ -33,6 +33,21 @@ public abstract class TextAttributeTest : Card3x5
     protected abstract void SetTestedParameter(ContentStreamWriter csw);
 }
 
+public abstract class ClippingTextAttributeTest : TextAttributeTest
+{
+    protected ClippingTextAttributeTest(string helpText) : base(helpText)
+    {
+    }
+
+    protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
+    {
+        await base.DoPaintingAsync(csw);
+        await csw.SetNonstrokingRGB(0, 1, 0);
+        csw.Rectangle(10,130, 300, 20);
+        csw.FillPath();
+    }
+}
+
 public class CharacterSpacing: TextAttributeTest
 {
     public CharacterSpacing() : base("Set the Character Spacing")
@@ -93,4 +108,14 @@ public class InvisibleText : TextAttributeTest
 
     protected override void SetTestedParameter(ContentStreamWriter csw) => 
         csw.SetTextRender(TextRendering.Invisible);
+}
+
+public class StrokeAndClip : ClippingTextAttributeTest
+{
+    public StrokeAndClip() : base("Stroked text as a clipping region.")
+    {
+    }
+
+    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+        csw.SetTextRender(TextRendering.StrokeAndClip);
 }
