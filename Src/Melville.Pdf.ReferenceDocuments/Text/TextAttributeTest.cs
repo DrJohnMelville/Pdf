@@ -59,6 +59,17 @@ public class CharacterSpacing: TextAttributeTest
         csw.SetCharSpace(30);
     }
 }
+public class TextRise: TextAttributeTest
+{
+    public TextRise() : base("Set the TextRise")
+    {
+    }
+
+    protected override void SetTestedParameter(ContentStreamWriter csw)
+    {
+        csw.SetTextRise(30);
+    }
+}
 public class WordSpacing: TextAttributeTest
 {
     public WordSpacing() : base("Set the Word Spacing")
@@ -118,4 +129,33 @@ public class StrokeAndClip : ClippingTextAttributeTest
 
     protected override void SetTestedParameter(ContentStreamWriter csw) => 
         csw.SetTextRender(TextRendering.StrokeAndClip);
+}
+
+public class FillAndClip : ClippingTextAttributeTest
+{
+    public FillAndClip() : base("Filled text as a clipping region.")
+    {
+    }
+
+    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+        csw.SetTextRender(TextRendering.FillAndClip);
+}
+public class StrokeFillAndClip : ClippingTextAttributeTest
+{
+    public StrokeFillAndClip() : base("Stroked, Filled text as a clipping region.")
+    {
+    }
+
+    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+        csw.SetTextRender(TextRendering.FillStrokeAndClip);
+}
+
+public class ClipToText : ClippingTextAttributeTest
+{
+    public ClipToText() : base("Clipping region is a clipping region.")
+    {
+    }
+
+    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+        csw.SetTextRender(TextRendering.Clip);
 }

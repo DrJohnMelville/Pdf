@@ -144,3 +144,11 @@ RenderingTest.cs_Skia-StrokeAndFillText|3093661062
 RenderingTest.cs_Skia-InvisibleText|4087236348
 RenderingTest.cs_wpf-StrokeAndClip|409017774
 RenderingTest.cs_Skia-StrokeAndClip|282448665
+RenderingTest.cs_wpf-FillAndClip|3236845119
+RenderingTest.cs_wpf-StrokeFillAndClip|3852841688
+RenderingTest.cs_wpf-ClipToText|3737238028
+RenderingTest.cs_Skia-FillAndClip|3564864037
+RenderingTest.cs_Skia-StrokeFillAndClip|4287090085
+RenderingTest.cs_Skia-ClipToText|3909786065
+RenderingTest.cs_wpf-TextRise|3009372878
+RenderingTest.cs_Skia-TextRise|1759471571
