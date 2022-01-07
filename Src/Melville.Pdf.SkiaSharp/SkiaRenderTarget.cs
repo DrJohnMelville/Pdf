@@ -13,8 +13,8 @@ using SkiaSharp;
 public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTarget<SKTypeface>
 {
     public SkiaRenderTarget(
-        SKCanvas target, GraphicsStateStack<SKTypeface> state, PdfPage page, IDefaultFontMapper? defaultFontMapper = null) : 
-        base(target, state, page, defaultFontMapper ?? new WindowsDefaultFonts())
+        SKCanvas target, GraphicsStateStack<SKTypeface> state, PdfPage page) : 
+        base(target, state, page)
     {
     }
 
@@ -115,14 +115,16 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
     
     #region Text Rendering
 
-    protected override void SetTypeface(IFontMapping mapping, bool bold, bool oblique) =>
-        State.Current().SetTypeface(CreateSkTypeface(mapping, bold, oblique), mapping.Mapping);
+    public void SetFont(IFontMapping font, double size)
+    {
+        State.Current().SetTypeface(CreateSkTypeface(font), font.Mapping);
+    }
 
-    private static SKTypeface CreateSkTypeface(IFontMapping mapping, bool bold, bool oblique) =>
+    private static SKTypeface CreateSkTypeface(IFontMapping mapping) =>
         SKTypeface.FromFamilyName(mapping.Font.ToString(),
-            bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
+            mapping.Bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
             SKFontStyleWidth.Normal,
-            oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
+            mapping.Oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
 
     protected override (double width, double height) AddGlyphToCurrentString(SKTypeface gtf, char charInUnicode)
     {

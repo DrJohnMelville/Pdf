@@ -3,6 +3,7 @@ using System.Numerics;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Moq;
@@ -20,7 +21,7 @@ public class S9_4_2_TextPositioningOperators
     public S9_4_2_TextPositioningOperators()
     {
         targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
-        sut = new RenderEngine<string>(pageMock.Object, targetMock.Object);
+        sut = new RenderEngine<string>(pageMock.Object, targetMock.Object, new FontReader(new WindowsDefaultFonts()));
     }
 
     [Fact]

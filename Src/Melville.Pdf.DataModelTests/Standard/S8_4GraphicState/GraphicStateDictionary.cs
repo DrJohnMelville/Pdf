@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Moq;
@@ -85,7 +86,7 @@ public class GraphicStateDictionary
         var target = new Mock<IRenderTarget<string>>();
         target.SetupGet(i => i.GrapicsStateChange).Returns(gs);
         Assert.Equal(1.0, gs.Current().LineWidth);
-        await page.RenderTo(target.Object);
+        await page.RenderTo(target.Object, new FontReader(new WindowsDefaultFonts()));
         return gs;
     }
 

@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.Model.FontMappings;
+﻿using Melville.Pdf.LowLevel.Model.Objects;
+
+namespace Melville.Pdf.Model.FontMappings;
 
 public interface IByteToUnicodeMapping
 {
@@ -19,6 +21,8 @@ public interface IFontMapping
 {
     object Font { get; }
     IByteToUnicodeMapping Mapping { get; }
+    bool Bold { get; }
+    bool Oblique { get; }
 }
 
 public enum DefaultPdfFonts
@@ -32,5 +36,5 @@ public enum DefaultPdfFonts
 
 public interface IDefaultFontMapper
 {
-    public IFontMapping MapDefaultFont(DefaultPdfFonts font);
+    public IFontMapping MapDefaultFont(PdfName font);
 }

@@ -3,6 +3,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -21,7 +22,7 @@ public class ColorMacrosTest
     {
         target.SetupGet(i => i.GrapicsStateChange).Returns(state);
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
-        sut = new RenderEngine<string>(page, target.Object);
+        sut = new RenderEngine<string>(page, target.Object, new FontReader(new WindowsDefaultFonts()));
     }
 
     [Fact]

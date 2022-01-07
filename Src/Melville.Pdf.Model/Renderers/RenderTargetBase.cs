@@ -3,9 +3,6 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
@@ -35,7 +32,7 @@ public interface IRenderTarget<TTypeface>
 
     ValueTask RenderBitmap(IPdfBitmap bitmap);
 
-    public void SetBuiltInFont(PdfName name, double size);
+    public void SetFont(IFontMapping font, double size);
     (double width, double height) AddGlyphToCurrentString(byte b);
     void RenderCurrentString();
 }
@@ -45,17 +42,14 @@ public abstract class RenderTargetBase<T, TTypeface>
     protected T Target { get; }
     protected GraphicsStateStack<TTypeface> State { get; }
     protected PdfPage Page { get; }
-    protected IDefaultFontMapper DefaultFontMapper { get; }
-
+ 
     public IGraphiscState<TTypeface> GrapicsStateChange => State;
 
-    protected RenderTargetBase(
-        T target, GraphicsStateStack<TTypeface> state, PdfPage page, IDefaultFontMapper defaultFontMapper)
+    protected RenderTargetBase(T target, GraphicsStateStack<TTypeface> state, PdfPage page)
     {
         Target = target;
         State = state;
         Page = page;
-        DefaultFontMapper = defaultFontMapper;
     }
 
     protected void MapUserSpaceToBitmapSpace(PdfRect rect, double xPixels, double yPixels)
@@ -70,61 +64,6 @@ public abstract class RenderTargetBase<T, TTypeface>
     public abstract void Transform(in Matrix3x2 newTransform);
 
     #region TextRendering
-
-    private void SetBuiltInTypeface(DefaultPdfFonts name, bool bold, bool oblique) =>
-        SetTypeface(DefaultFontMapper.MapDefaultFont(name), bold, oblique);
-    protected abstract void SetTypeface(IFontMapping mapping, bool bold, bool oblique);
-
-    public void SetBuiltInFont(PdfName name, double size)
-    {
-        switch (name.GetHashCode())
-        {
-            case KnownNameKeys.Courier:
-                SetBuiltInTypeface(DefaultPdfFonts.Courier, false, false);
-                break;
-            case KnownNameKeys.CourierBold:
-                SetBuiltInTypeface(DefaultPdfFonts.Courier, true, false);
-                break;
-            case KnownNameKeys.CourierOblique:
-                SetBuiltInTypeface(DefaultPdfFonts.Courier, false, true);
-                break;
-            case KnownNameKeys.CourierBoldOblique:
-                SetBuiltInTypeface(DefaultPdfFonts.Courier, true, true);
-                break;
-            case KnownNameKeys.Helvetica:
-                SetBuiltInTypeface(DefaultPdfFonts.Helvetica, false, false);
-                break;
-            case KnownNameKeys.HelveticaBold:
-                SetBuiltInTypeface(DefaultPdfFonts.Helvetica, true, false);
-                break;
-            case KnownNameKeys.HelveticaOblique:
-                SetBuiltInTypeface(DefaultPdfFonts.Helvetica, false, true);
-                break;
-            case KnownNameKeys.HelveticaBoldOblique:
-                SetBuiltInTypeface(DefaultPdfFonts.Helvetica, true, true);
-                break;
-            case KnownNameKeys.TimesRoman:
-                SetBuiltInTypeface(DefaultPdfFonts.Times, false, false);
-                break;
-            case KnownNameKeys.TimesBold:
-                SetBuiltInTypeface(DefaultPdfFonts.Times, true, false);
-                break;
-            case KnownNameKeys.TimesOblique:
-                SetBuiltInTypeface(DefaultPdfFonts.Times, false, true);
-                break;
-            case KnownNameKeys.TimesBoldOblique:
-                SetBuiltInTypeface(DefaultPdfFonts.Times, true, true);
-                break;
-            case KnownNameKeys.Symbol:
-                SetBuiltInTypeface(DefaultPdfFonts.Symbol, false, false);
-                break;
-            case KnownNameKeys.ZapfDingbats:
-                SetBuiltInTypeface(DefaultPdfFonts.Dingbats, false, false);
-                break;
-            default: throw new PdfParseException("Cannot find builtin font: " + name);
-        }
-    }
-
     public (double width, double height) AddGlyphToCurrentString(byte b)
     {
         if (State.Current().Typeface is not { } gtf) return (0, 0);
@@ -156,9 +95,9 @@ public abstract class RenderTargetBase<T, TTypeface>
 public static class RenderTargetOperations
 {
     public static async ValueTask RenderTo<TTypeface>(
-        this IHasPageAttributes page, IRenderTarget<TTypeface> target) =>
+        this IHasPageAttributes page, IRenderTarget<TTypeface> target, FontReader fonts) =>
         await new ContentStreamParser(
-                new RenderEngine<TTypeface>(page, target))
+                new RenderEngine<TTypeface>(page, target, fonts))
             .Parse(
                 PipeReader.Create(
                     await page.GetContentBytes()));

@@ -18,9 +18,8 @@ namespace Melville.Pdf.Wpf;
 
 public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, IRenderTarget<GlyphTypeface>
 {
-    public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page, 
-        IDefaultFontMapper? defaultFontMapper = null):
-        base(target, state, page, defaultFontMapper ?? new WindowsDefaultFonts())
+    public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page):
+        base(target, state, page)
     {
         SaveTransformAndClip();
     }
@@ -162,13 +161,14 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
 
     #region Text Rendering
 
-    protected override void SetTypeface(IFontMapping mapping, bool bold, bool oblique) => 
-        SetCurrentFont(CreateWpfTypeface(mapping, bold, oblique), mapping.Mapping);
-
-    private static Typeface CreateWpfTypeface(IFontMapping mapping, bool bold, bool oblique) =>
+    public void SetFont(IFontMapping font, double size)
+    {
+        SetCurrentFont(CreateWpfTypeface(font), font.Mapping);
+    }
+    private static Typeface CreateWpfTypeface(IFontMapping mapping) =>
         new Typeface(new FontFamily(mapping.Font.ToString()!),
-            oblique ? FontStyles.Italic : FontStyles.Normal,
-            bold ? FontWeights.Bold : FontWeights.Normal,
+            mapping.Oblique ? FontStyles.Italic : FontStyles.Normal,
+            mapping.Bold ? FontWeights.Bold : FontWeights.Normal,
             FontStretches.Normal);
 
     private void SetCurrentFont(Typeface typeface, IByteToUnicodeMapping unicodeMapper)

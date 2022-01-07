@@ -5,6 +5,9 @@ public class DingbatsToSegoeUi : IFontMapping, IByteToUnicodeMapping
     public object Font => "Segoe UI Symbol";
     public IByteToUnicodeMapping Mapping => this;
 
+    public bool Bold => false;
+    public bool Oblique => false;
+
     public char MapToUnicode(byte input) =>(char)(input switch
     {
         <0x20 => 0x25A1,

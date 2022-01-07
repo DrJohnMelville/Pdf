@@ -11,17 +11,18 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
-
 namespace Melville.Pdf.Model.Renderers;
 
 public partial class RenderEngine<TTypeface>: IContentStreamOperations
 {
     private readonly IHasPageAttributes page;
     private readonly IRenderTarget<TTypeface> target;
-    public RenderEngine(IHasPageAttributes page, IRenderTarget<TTypeface> target)
+    private readonly FontReader fontReader;
+    public RenderEngine(IHasPageAttributes page, IRenderTarget<TTypeface> target, FontReader fontReader)
     {
         this.page = page;
         this.target = target;
+        this.fontReader = fontReader;
     }
     
     [DelegateTo]
@@ -174,7 +175,7 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
             ClipToPath();
             EndPathWithNoOp();
         }
-        await new PdfFormXObject(formXObject, page).RenderTo(target);
+        await new PdfFormXObject(formXObject, page).RenderTo(target, fontReader);
         RestoreGraphicsState();
     }
 
@@ -284,20 +285,10 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
 
     public async ValueTask SetFont(PdfName font, double size)
     {
-        if ((await page.GetResourceAsync(ResourceTypeName.Font, font)) is PdfDictionary fontDic)
-        {
-            InnerSetFont(await fontDic.GetAsync<PdfName>(KnownNames.BaseFont), size);
-        }
-        else
-        {
-            InnerSetFont(font, size);
-        }
+        target.SetFont(await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
+            await fontReader.DictionaryToMappingAsync(fontDic) :
+                fontReader.NameToMapping(font), size);
         await StateOps.SetFont(font, size);
-    }
-
-    private void InnerSetFont(PdfName fontName, double size)
-    {
-        target.SetBuiltInFont(fontName, size);
     }
 
     public void ShowString(in ReadOnlyMemory<byte> decodedString)

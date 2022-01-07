@@ -30,9 +30,9 @@ namespace Melville.Pdf.SkiaSharp
             var surface = SKSurface.Create(new SKImageInfo(width, height));
             
             var target = new SkiaRenderTarget(
-                surface.Canvas, new GraphicsStateStack<SKTypeface>(), page, defaultFontMapper);
+                surface.Canvas, new GraphicsStateStack<SKTypeface>(), page);
             target.SetBackgroundRect(rect.Value, width, height);
-            await page.RenderTo(target);
+            await page.RenderTo(target, new FontReader(defaultFontMapper??new WindowsDefaultFonts()));
             return surface;
         }
 
