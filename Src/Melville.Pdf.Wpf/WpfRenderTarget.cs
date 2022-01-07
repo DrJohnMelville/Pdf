@@ -162,16 +162,14 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
 
     #region Text Rendering
 
-    
-    protected override void SetBuiltInTypeface(DefaultPdfFonts name, bool bold, bool oblique)
-    {
-        var mapping = DefaultFontMapper.MapDefaultFont(name);
-        var typeFace = new Typeface(new FontFamily(mapping.Font.ToString()!),
+    protected override void SetTypeface(IFontMapping mapping, bool bold, bool oblique) => 
+        SetCurrentFont(CreateWpfTypeface(mapping, bold, oblique), mapping.Mapping);
+
+    private static Typeface CreateWpfTypeface(IFontMapping mapping, bool bold, bool oblique) =>
+        new Typeface(new FontFamily(mapping.Font.ToString()!),
             oblique ? FontStyles.Italic : FontStyles.Normal,
             bold ? FontWeights.Bold : FontWeights.Normal,
             FontStretches.Normal);
-        SetCurrentFont(typeFace, mapping.Mapping);
-    }
 
     private void SetCurrentFont(Typeface typeface, IByteToUnicodeMapping unicodeMapper)
     {

@@ -115,15 +115,14 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
     
     #region Text Rendering
 
-    protected override void SetBuiltInTypeface(DefaultPdfFonts name, bool bold, bool oblique)
-    {
-        var mapping = DefaultFontMapper.MapDefaultFont(name);
-        var typeFace = SKTypeface.FromFamilyName(mapping.Font.ToString(),
+    protected override void SetTypeface(IFontMapping mapping, bool bold, bool oblique) =>
+        State.Current().SetTypeface(CreateSkTypeface(mapping, bold, oblique), mapping.Mapping);
+
+    private static SKTypeface CreateSkTypeface(IFontMapping mapping, bool bold, bool oblique) =>
+        SKTypeface.FromFamilyName(mapping.Font.ToString(),
             bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
             SKFontStyleWidth.Normal,
             oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
-        State.Current().SetTypeface(typeFace, mapping.Mapping);
-    }
 
     protected override (double width, double height) AddGlyphToCurrentString(SKTypeface gtf, char charInUnicode)
     {

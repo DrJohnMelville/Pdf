@@ -71,7 +71,9 @@ public abstract class RenderTargetBase<T, TTypeface>
 
     #region TextRendering
 
-    protected abstract void SetBuiltInTypeface(DefaultPdfFonts name, bool bold, bool oblique);
+    private void SetBuiltInTypeface(DefaultPdfFonts name, bool bold, bool oblique) =>
+        SetTypeface(DefaultFontMapper.MapDefaultFont(name), bold, oblique);
+    protected abstract void SetTypeface(IFontMapping mapping, bool bold, bool oblique);
 
     public void SetBuiltInFont(PdfName name, double size)
     {
