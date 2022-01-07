@@ -32,12 +32,10 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
         hashes.AssertDatabase(await ComputeWpfHash(generator), "wpf" + shortName);
     
     private Task<string> ComputeWpfHash(IPdfGenerator generator) =>
-        ComputeGenericHash(generator, HasWpfPage);
+        ComputeGenericHash(generator, AsWpfPage);
 
-    private ValueTask HasWpfPage(PdfPage page, Stream target)
-    {
-        return RenderToDrawingGroup.RenderToPngStream(page, target);
-    }
+    private ValueTask AsWpfPage(PdfPage page, Stream target) => 
+        RenderToDrawingGroup.RenderToPngStream(page, target);
 
     [Theory]
     [MemberData(nameof(GeneratorTests))]

@@ -99,6 +99,9 @@ GraphicStateParameter:HT
 GraphicStateParameter:FL
 GraphicStateParameter:SM
 
+FontTypes:Type1
+FontTypes:MMType1
+FontTypes:TrueType
 
 Pdf:AC
 Pdf:Activation
@@ -192,7 +195,6 @@ Pdf:StrF
 Pdf:Subtype
 Pdf:Text
 Pdf:Type
-Pdf:Type1
 Pdf:U
 Pdf:V
 Pdf:V2
