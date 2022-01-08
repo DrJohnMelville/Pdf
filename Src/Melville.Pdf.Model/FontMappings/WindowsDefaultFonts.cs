@@ -7,33 +7,39 @@ namespace Melville.Pdf.Model.FontMappings;
 
 public class WindowsDefaultFonts: IDefaultFontMapper
 {
+    private static readonly byte[] TimesNewRoman = 
+        { 84, 105, 109, 101, 115, 78, 101, 119, 82, 111, 109, 97, 110 };
+    private static readonly byte[] CourierNew =
+        { 67, 111, 117, 114, 105, 101, 114, 78, 101, 119 };
+    private static readonly byte[] Arial = { 65, 114, 105, 97, 108 };
+    private static readonly byte[] Symbol = { 83, 121, 109, 98, 111, 108 };
     public IFontMapping MapDefaultFont(PdfName font) => font.GetHashCode() switch
     {
-        KnownNameKeys.Courier => new NamedDefaultMapping("Courier New", false, false),
-        KnownNameKeys.CourierBold => new NamedDefaultMapping("Courier New", true, false),
-        KnownNameKeys.CourierOblique => new NamedDefaultMapping("Courier New", false, true),
-        KnownNameKeys.CourierBoldOblique => new NamedDefaultMapping("Courier New", true, true),
-        KnownNameKeys.Helvetica => new NamedDefaultMapping("Arial", false, false),
-        KnownNameKeys.HelveticaBold => new NamedDefaultMapping("Arial", true, false),
-        KnownNameKeys.HelveticaOblique => new NamedDefaultMapping("Arial", false, true),
-        KnownNameKeys.HelveticaBoldOblique => new NamedDefaultMapping("Arial", true, true),
-        KnownNameKeys.TimesRoman => new NamedDefaultMapping("Times New Roman", false, false),
-        KnownNameKeys.TimesBold => new NamedDefaultMapping("Times New Roman", true, false),
-        KnownNameKeys.TimesOblique => new NamedDefaultMapping("Times New Roman", false, true),
-        KnownNameKeys.TimesBoldOblique => new NamedDefaultMapping("Times New Roman", true, true),
-        KnownNameKeys.Symbol => new NamedDefaultMapping("Symbol", false, false),
+        KnownNameKeys.Courier => new NamedDefaultMapping(CourierNew, false, false),
+        KnownNameKeys.CourierBold => new NamedDefaultMapping(CourierNew, true, false),
+        KnownNameKeys.CourierOblique => new NamedDefaultMapping(CourierNew, false, true),
+        KnownNameKeys.CourierBoldOblique => new NamedDefaultMapping(CourierNew, true, true),
+        KnownNameKeys.Helvetica => new NamedDefaultMapping(Arial, false, false),
+        KnownNameKeys.HelveticaBold => new NamedDefaultMapping(Arial, true, false),
+        KnownNameKeys.HelveticaOblique => new NamedDefaultMapping(Arial, false, true),
+        KnownNameKeys.HelveticaBoldOblique => new NamedDefaultMapping(Arial, true, true),
+        KnownNameKeys.TimesRoman => new NamedDefaultMapping(TimesNewRoman, false, false),
+        KnownNameKeys.TimesBold => new NamedDefaultMapping(TimesNewRoman, true, false),
+        KnownNameKeys.TimesOblique => new NamedDefaultMapping(TimesNewRoman, false, true),
+        KnownNameKeys.TimesBoldOblique => new NamedDefaultMapping(TimesNewRoman, true, true),
+        KnownNameKeys.Symbol => new NamedDefaultMapping(Symbol, false, false),
         KnownNameKeys.ZapfDingbats => new DingbatsToSegoeUi(),
-        _ => new NamedDefaultMapping(font.ToString(), false, false)
+        _ => new NamedDefaultMapping(font.Bytes, false, false)
     };
 }
 
 public class NamedDefaultMapping : IFontMapping, IByteToUnicodeMapping
 {
-    private string osFontName;
+    private byte[] osFontName;
     public bool Bold { get; }
     public bool Oblique { get; }
 
-    public NamedDefaultMapping(string osFontName, bool bold, bool oblique)
+    public NamedDefaultMapping(byte[] osFontName, bool bold, bool oblique)
     {
         this.osFontName = osFontName;
         Bold = bold;

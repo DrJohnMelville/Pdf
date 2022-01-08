@@ -2,7 +2,9 @@
 
 public class DingbatsToSegoeUi : IFontMapping, IByteToUnicodeMapping
 {
-    public object Font => "Segoe UI Symbol";
+    private static readonly byte[] SegoeUISymbol =
+        { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
+    public object Font => SegoeUISymbol;
     public IByteToUnicodeMapping Mapping => this;
 
     public bool Bold => false;

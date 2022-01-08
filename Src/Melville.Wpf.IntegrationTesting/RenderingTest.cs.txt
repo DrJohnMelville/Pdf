@@ -152,3 +152,5 @@ RenderingTest.cs_Skia-StrokeFillAndClip|4287090085
 RenderingTest.cs_Skia-ClipToText|3909786065
 RenderingTest.cs_wpf-TextRise|3009372878
 RenderingTest.cs_Skia-TextRise|1759471571
+RenderingTest.cs_wpf-MMFont1|503595755
+RenderingTest.cs_Skia-MMFont1|3019911363

@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Accessibility;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -165,12 +166,31 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
     {
         SetCurrentFont(CreateWpfTypeface(font), font.Mapping);
     }
-    private static Typeface CreateWpfTypeface(IFontMapping mapping) =>
-        new Typeface(new FontFamily(mapping.Font.ToString()!),
+    private static Typeface CreateWpfTypeface(IFontMapping mapping) => mapping.Font switch
+    {
+        byte[] fontName => new Typeface(FindFontFamily(fontName),
             mapping.Oblique ? FontStyles.Italic : FontStyles.Normal,
             mapping.Bold ? FontWeights.Bold : FontWeights.Normal,
-            FontStretches.Normal);
+            FontStretches.Normal) 
+    };
 
+    private static FontFamily FindFontFamily(byte[] fontName)
+    {
+        int currentLen = -1;
+        FontFamily? result = null;
+        foreach (var family in Fonts.SystemFontFamilies)
+        {
+            var len = CommonPrefixLength(fontName, family.Source);
+            if (len > currentLen || 
+                (len == currentLen && family.Source.Length < (result?.Source.Length??1000)))
+            {
+                currentLen = len;
+                result = family;
+            }
+        }
+        return result ?? new FontFamily("Arial");
+    }
+    
     private void SetCurrentFont(Typeface typeface, IByteToUnicodeMapping unicodeMapper)
     {
         if (!typeface.TryGetGlyphTypeface(out var gtf))

@@ -120,11 +120,31 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
         State.Current().SetTypeface(CreateSkTypeface(font), font.Mapping);
     }
 
-    private static SKTypeface CreateSkTypeface(IFontMapping mapping) =>
-        SKTypeface.FromFamilyName(mapping.Font.ToString(),
+    private static SKTypeface CreateSkTypeface(IFontMapping mapping) => mapping.Font switch
+    {
+        byte[] fontName =>         SKTypeface.FromFamilyName(FindFontFamily(fontName),
             mapping.Bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
             SKFontStyleWidth.Normal,
-            mapping.Oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright);
+            mapping.Oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright),
+    };
+
+    private static string FindFontFamily(byte[] fontName)
+    {
+        var result = "Arial";
+        var currentLen = -1;
+        foreach (var family in SKFontManager.Default.FontFamilies)
+        {
+            var len = CommonPrefixLength(fontName, family);
+            if (len > currentLen || 
+                len == currentLen && family.Length < result.Length)
+            {
+                currentLen = len;
+                result = family;
+            }
+        }
+        return result;
+    }
+
 
     protected override (double width, double height) AddGlyphToCurrentString(SKTypeface gtf, char charInUnicode)
     {

@@ -90,6 +90,29 @@ public abstract class RenderTargetBase<T, TTypeface>
             0, (float)State.CurrentState().TextRise);
 
     #endregion
+
+    #region Font mapping
+    protected static int CommonPrefixLength(byte[] fontName, string familySource)
+    {
+        var fontNamePos = 0;
+        var familyPos = 0;
+        while (true)
+        {
+            if (fontNamePos >= fontName.Length || familyPos >= familySource.Length)
+                return fontNamePos;
+            switch ((fontName[fontNamePos], (byte)(familySource[familyPos])))
+            {
+                case (32, _) : fontNamePos++; break;
+                case (_, 32) : familyPos++; break;
+                case var(a,b) when a==b:
+                    fontNamePos++;
+                    familyPos++;
+                    break;
+                default: return fontNamePos;
+            }
+        }
+    }
+    #endregion
 }
 
 public static class RenderTargetOperations
