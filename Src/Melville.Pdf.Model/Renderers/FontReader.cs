@@ -32,7 +32,9 @@ public readonly struct FontReader
     }
 
     private async ValueTask<PdfStream?> StreamFromDescriptorAsync(PdfDictionary descriptor) =>
-        descriptor.TryGetValue(KnownNames.FontFile2, out var ff2Task) && (await ff2Task) is PdfStream ff2
+        (descriptor.TryGetValue(KnownNames.FontFile2, out var ff2Task) ||
+         descriptor.TryGetValue(KnownNames.FontFile3, out ff2Task)) 
+       && (await ff2Task) is PdfStream ff2
             ? ff2
             : null;
 

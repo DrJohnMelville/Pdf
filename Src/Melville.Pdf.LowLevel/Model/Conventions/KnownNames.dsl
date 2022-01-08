@@ -102,6 +102,7 @@ GraphicStateParameter:SM
 FontTypes:Type1
 FontTypes:MMType1
 FontTypes:TrueType
+FontTypes:OpenType
 
 Pdf:AC
 Pdf:Activation
