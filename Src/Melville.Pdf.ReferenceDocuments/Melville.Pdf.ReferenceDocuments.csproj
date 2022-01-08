@@ -16,6 +16,10 @@
       <None Remove="Graphics\Images\JPEG.jpg" />
       <EmbeddedResource Include="Graphics\Images\JPEG.jpg" />
       <None Remove="Graphics\Images\png.png" />
+      <None Remove="Text\Zev.ttf" />
+      <EmbeddedResource Include="Text\Zev.ttf" />
+      <None Remove="Text\GFSEustace.otf" />
+      <EmbeddedResource Include="Text\GFSEustace.otf" />
     </ItemGroup>
 
 </Project>

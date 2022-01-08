@@ -108,6 +108,7 @@ Pdf:Activation
 Pdf:AESV2
 Pdf:AESV3
 Pdf:All
+Pdf:Ascent
 Pdf:AuthEvent
 Pdf:BaseFont
 Pdf:BBox
@@ -116,6 +117,7 @@ Pdf:BitsPerSample
 Pdf:Bounds
 Pdf:C0
 Pdf:C1
+Pdf:CapHeight
 Pdf:CalGray
 Pdf:CalRGB
 Pdf:CalCMYK
@@ -132,6 +134,7 @@ Pdf:DecodeParms
 Pdf:DefaultGray
 Pdf:DefaultRGB
 Pdf:DefaultCMYK
+Pdf:Descent
 Pdf:DeviceN
 Pdf:DocOpen
 Pdf:Domain
@@ -142,7 +145,15 @@ Pdf:Encrypt
 Pdf:Filter
 Pdf:First
 Pdf:Form
+Pdf:Flags
 Pdf:FormType
+Pdf:FontBBox
+Pdf:FontDescriptor
+Pdf:FontFile
+Pdf:FontFile2
+Pdf:FontFile3
+Pdf:FontName
+Pdf:FontWeight
 Pdf:Functions
 Pdf:FunctionType
 Pdf:Height
@@ -156,11 +167,15 @@ Pdf:ImageI
 Pdf:ImageMask
 Pdf:Interpolate
 Pdf:Index
+Pdf:ItalicAngle
 Pdf:Gamma
 Pdf:Kids
 Pdf:Lab
 Pdf:LastModified
 Pdf:Length
+Pdf:Length1
+Pdf:Length2
+Pdf:Length3
 Pdf:Limits
 Pdf:Mask
 Pdf:Matrix
@@ -192,6 +207,7 @@ Pdf:StdCF
 Pdf:StemV
 Pdf:StmF
 Pdf:StrF
+Pdf:StemV
 Pdf:Subtype
 Pdf:Text
 Pdf:Type
@@ -201,6 +217,7 @@ Pdf:V2
 Pdf:Version
 Pdf:W
 Pdf:Width
+Pdf:Widths
 Pdf:WhitePoint
 Pdf:XRef
 Pdf:XRefStm
