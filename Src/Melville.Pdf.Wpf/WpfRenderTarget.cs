@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
@@ -14,14 +15,18 @@ using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Wpf.FakeUris;
 
 namespace Melville.Pdf.Wpf;
 
-public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, IRenderTarget<GlyphTypeface>
+public class WpfRenderTarget: 
+    RenderTargetBase<DrawingContext, GlyphTypeface>, IRenderTarget<GlyphTypeface>
 {
-    public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page):
+    private readonly TempFontDirectory fontCache;
+    public WpfRenderTarget(DrawingContext target, GraphicsStateStack<GlyphTypeface> state, PdfPage page, TempFontDirectory fontCache):
         base(target, state, page)
     {
+        this.fontCache = fontCache;
         SaveTransformAndClip();
     }
 
@@ -162,17 +167,24 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext, GlyphTypeface>, I
 
     #region Text Rendering
 
-    public void SetFont(IFontMapping font, double size)
+    public async ValueTask SetFont(IFontMapping font, double size)
     {
-        SetCurrentFont(CreateWpfTypeface(font), font.Mapping);
+        SetCurrentFont(await CreateWpfTypeface(font), font.Mapping);
     }
-    private static Typeface CreateWpfTypeface(IFontMapping mapping) => mapping.Font switch
-    {
-        byte[] fontName => new Typeface(FindFontFamily(fontName),
+
+    private  async ValueTask<Typeface> CreateWpfTypeface(IFontMapping mapping) =>
+        new Typeface(await FindFontFamily(mapping.Font),
             mapping.Oblique ? FontStyles.Italic : FontStyles.Normal,
             mapping.Bold ? FontWeights.Bold : FontWeights.Normal,
-            FontStretches.Normal) 
-    };
+            FontStretches.Normal);
+
+    private  async ValueTask<FontFamily> FindFontFamily(object font) =>
+        font switch
+        {
+            byte[] fontName => FindFontFamily(fontName),
+            PdfStream s => Fonts.GetFontFamilies(await fontCache.StoreStream(s)).First(),
+            _ => throw new PdfParseException("Cannot create a font from: " + font)
+        };
 
     private static FontFamily FindFontFamily(byte[] fontName)
     {

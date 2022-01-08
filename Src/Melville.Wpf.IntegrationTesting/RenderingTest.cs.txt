@@ -154,3 +154,9 @@ RenderingTest.cs_wpf-TextRise|3009372878
 RenderingTest.cs_Skia-TextRise|1759471571
 RenderingTest.cs_wpf-MMFont1|503595755
 RenderingTest.cs_Skia-MMFont1|3019911363
+RenderingTest.cs_wpf-BuiltInTrueType|3993572237
+RenderingTest.cs_wpf-EmbeddedTrueType|The process cannot access the file '1.ttf' because it is being used by another process.
+RenderingTest.cs_wpf-ScriptFontBug|1016386241
+RenderingTest.cs_Skia-BuiltInTrueType|4117844045
+RenderingTest.cs_Skia-EmbeddedTrueType|3228599587
+RenderingTest.cs_Skia-ScriptFontBug|2220242374

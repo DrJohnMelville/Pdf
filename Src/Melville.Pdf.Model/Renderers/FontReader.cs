@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -17,6 +18,11 @@ public readonly struct FontReader
 
     public async ValueTask<IFontMapping> DictionaryToMappingAsync(PdfDictionary font)
     {
+        if (font.TryGetValue(KnownNames.FontDescriptor, out var descTask) && 
+            (await descTask) is PdfDictionary descriptor &&
+            await StreamFromDescriptorAsync(descriptor) is { } fontAsStream)
+            return new NamedDefaultMapping(fontAsStream, false, false);
+        
         var baseFontName = await font.GetAsync<PdfName>(KnownNames.BaseFont);
         return (await font.GetOrDefaultAsync(KnownNames.Subtype, KnownNames.Type1)).GetHashCode() switch
         {
@@ -24,6 +30,11 @@ public readonly struct FontReader
             _ => NameToMapping(baseFontName)
         };
     }
+
+    private async ValueTask<PdfStream?> StreamFromDescriptorAsync(PdfDictionary descriptor) =>
+        descriptor.TryGetValue(KnownNames.FontFile2, out var ff2Task) && (await ff2Task) is PdfStream ff2
+            ? ff2
+            : null;
 
     private PdfName RemoveMultMasterSuffix(PdfName baseFontName)
     {

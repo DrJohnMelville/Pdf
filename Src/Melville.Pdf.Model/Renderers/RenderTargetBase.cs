@@ -32,7 +32,7 @@ public interface IRenderTarget<TTypeface>
 
     ValueTask RenderBitmap(IPdfBitmap bitmap);
 
-    public void SetFont(IFontMapping font, double size);
+    public ValueTask SetFont(IFontMapping font, double size);
     (double width, double height) AddGlyphToCurrentString(byte b);
     void RenderCurrentString();
 }

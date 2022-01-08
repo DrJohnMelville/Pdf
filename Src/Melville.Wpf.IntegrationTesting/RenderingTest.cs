@@ -34,8 +34,11 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
     private Task<string> ComputeWpfHash(IPdfGenerator generator) =>
         ComputeGenericHash(generator, AsWpfPage);
 
-    private ValueTask AsWpfPage(PdfPage page, Stream target) => 
-        RenderToDrawingGroup.RenderToPngStream(page, target);
+    private ValueTask AsWpfPage(PdfPage page, Stream target)
+    {
+        using var rtdg = new RenderToDrawingGroup();
+        return rtdg.RenderToPngStream(page, target);
+    }
 
     [Theory]
     [MemberData(nameof(GeneratorTests))]

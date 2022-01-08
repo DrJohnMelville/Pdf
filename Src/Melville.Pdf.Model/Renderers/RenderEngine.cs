@@ -285,7 +285,7 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
 
     public async ValueTask SetFont(PdfName font, double size)
     {
-        target.SetFont(await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
+        await target.SetFont(await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
             await fontReader.DictionaryToMappingAsync(fontDic) :
                 fontReader.NameToMapping(font), size);
         await StateOps.SetFont(font, size);

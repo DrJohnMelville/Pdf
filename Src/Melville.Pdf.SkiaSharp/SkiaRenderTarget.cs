@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.FontMappings;
@@ -115,17 +116,19 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
     
     #region Text Rendering
 
-    public void SetFont(IFontMapping font, double size)
+    public async ValueTask SetFont(IFontMapping font, double size)
     {
-        State.Current().SetTypeface(CreateSkTypeface(font), font.Mapping);
+        State.Current().SetTypeface(await CreateSkTypeface(font), font.Mapping);
     }
 
-    private static SKTypeface CreateSkTypeface(IFontMapping mapping) => mapping.Font switch
+    private static async ValueTask<SKTypeface> CreateSkTypeface(IFontMapping mapping) => mapping.Font switch
     {
-        byte[] fontName =>         SKTypeface.FromFamilyName(FindFontFamily(fontName),
+        byte[] fontName => SKTypeface.FromFamilyName(FindFontFamily(fontName),
             mapping.Bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
             SKFontStyleWidth.Normal,
             mapping.Oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright),
+        PdfStream fontFile => SKTypeface.FromStream(await fontFile.StreamContentAsync()),
+        _ => throw new PdfParseException("Cannot create font from: " + mapping.Font)
     };
 
     private static string FindFontFamily(byte[] fontName)

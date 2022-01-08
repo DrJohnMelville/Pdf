@@ -25,15 +25,6 @@ public interface IFontMapping
     bool Oblique { get; }
 }
 
-public enum DefaultPdfFonts
-{
-    Courier,
-    Helvetica,
-    Times,
-    Symbol,
-    Dingbats
-}
-
 public interface IDefaultFontMapper
 {
     public IFontMapping MapDefaultFont(PdfName font);

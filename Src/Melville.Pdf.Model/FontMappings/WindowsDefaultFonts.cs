@@ -35,18 +35,18 @@ public class WindowsDefaultFonts: IDefaultFontMapper
 
 public class NamedDefaultMapping : IFontMapping, IByteToUnicodeMapping
 {
-    private byte[] osFontName;
+    private object fontData;
     public bool Bold { get; }
     public bool Oblique { get; }
 
-    public NamedDefaultMapping(byte[] osFontName, bool bold, bool oblique)
+    public NamedDefaultMapping(object fontData, bool bold, bool oblique)
     {
-        this.osFontName = osFontName;
+        this.fontData = fontData;
         Bold = bold;
         Oblique = oblique;
     }
 
-    public object Font => osFontName;
+    public object Font => fontData;
     public IByteToUnicodeMapping Mapping => this;
     public char MapToUnicode(byte input) => (char)input;
 }
