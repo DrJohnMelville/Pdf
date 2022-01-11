@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
@@ -40,7 +38,7 @@ public abstract class RenderTargetBase<T>
     protected T Target { get; }
     protected GraphicsStateStack State { get; }
     protected PdfPage Page { get; }
- 
+
     public IGraphiscState GrapicsStateChange => State;
 
     protected RenderTargetBase(T target, GraphicsStateStack state, PdfPage page)
@@ -62,24 +60,17 @@ public abstract class RenderTargetBase<T>
     public abstract void Transform(in Matrix3x2 newTransform);
 
     #region TextRendering
- /*   public (double width, double height) AddGlyphToCurrentString(byte b)
-    {
-        if (State.Current().Typeface is not { } gtf) return (0, 0);
-        return AddGlyphToCurrentString(gtf, State.CurrentState().ByteMapper.MapToUnicode(b));
-    }
-    protected abstract (double width, double height) AddGlyphToCurrentString(TTypeface gtf, char charInUnicode);
 
-    public void RenderCurrentString()
-    {
-        var textRender = State.CurrentState().TextRender;
-        RenderCurrentString(
-            textRender.ShouldStroke(), textRender.ShouldFill(), textRender.ShouldClip());
-    }
+    public Matrix3x2 CharacterPositionMatrix() =>
+        (GlyphAdjustmentMatrix() *
+         State.CurrentState().TextMatrix);
 
-    protected abstract void RenderCurrentString(bool stroke, bool fill, bool clip);
-*/
+    private Matrix3x2 GlyphAdjustmentMatrix() => new(
+        (float)State.CurrentState().HorizontalTextScale / 100, 0,
+        0, -1,
+        0, (float)State.CurrentState().TextRise);
+
     #endregion
-
 }
 
 public static class RenderTargetOperations

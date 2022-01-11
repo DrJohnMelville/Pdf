@@ -16,7 +16,7 @@ using Melville.Pdf.Wpf.FakeUris;
 
 namespace Melville.Pdf.Wpf;
 
-public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
+public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget, IFontWriteTarget<GeometryGroup>
 {
     private readonly TempFontDirectory fontCache;
     public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page, TempFontDirectory fontCache):
@@ -169,76 +169,10 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
             await new RealizedFontFactory(font, fontCache, this).CreateRealizedFont(size));
     }
 
- //    private  async ValueTask<Typeface> CreateWpfTypeface(IFontMapping mapping) =>
- //        new Typeface(await FindFontFamily(mapping.Font),
- //            mapping.Oblique ? FontStyles.Italic : FontStyles.Normal,
- //            mapping.Bold ? FontWeights.Bold : FontWeights.Normal,
- //            FontStretches.Normal);
- //
- //    private  async ValueTask<FontFamily> FindFontFamily(object font) =>
- //        font switch
- //        {
- //            byte[] fontName => FindFontFamily(fontName),
- //            PdfStream s => Fonts.GetFontFamilies(await fontCache.StoreStream(s)).First(),
- //            _ => throw new PdfParseException("Cannot create a font from: " + font)
- //        };
- //
- //    private static FontFamily FindFontFamily(byte[] fontName)
- //    {
- //        int currentLen = -1;
- //        FontFamily? result = null;
- //        foreach (var family in Fonts.SystemFontFamilies)
- //        {
- //            var len = CommonPrefixLength(fontName, family.Source);
- //            if (len > currentLen || 
- //                (len == currentLen && family.Source.Length < (result?.Source.Length??1000)))
- //            {
- //                currentLen = len;
- //                result = family;
- //            }
- //        }
- //        return result ?? new FontFamily("Arial");
- //    }
- //    
- //    private void SetCurrentFont(Typeface typeface, IByteToUnicodeMapping unicodeMapper)
- //    {
- //        if (!typeface.TryGetGlyphTypeface(out var gtf))
- //            throw new PdfParseException("Cannot create built in font.");
- // //       State.Current().SetTypeface(gtf, unicodeMapper);
- //    }
-    
-    // protected override (double width, double height) AddGlyphToCurrentString(GlyphTypeface gtf, char charInUnicode)
-    // {
-    //     var glyph = GetGlyphMap(gtf, charInUnicode);
-    //     var renderingEmSize = State.CurrentState().FontSize;
-    //     DrawGlyph(gtf, glyph, renderingEmSize);
-    //     return GlyphSize(gtf, glyph, renderingEmSize);
-    // }
-    //
-    // private static ushort GetGlyphMap(GlyphTypeface gtf, char charInUnicode) =>
-    //     gtf.CharacterToGlyphMap.TryGetValue(charInUnicode, out var ret)
-    //         ? ret
-    //         : gtf.CharacterToGlyphMap.Values.First();
-    //
-    // private static (double, double) GlyphSize(GlyphTypeface gtf, ushort glyph, double renderingEmSize) =>
-    //     (gtf.AdvanceWidths[glyph] * renderingEmSize, gtf.AdvanceHeights[glyph] * renderingEmSize);
-    //
     public  void RenderCurrentString(GeometryGroup currentString, bool stroke, bool fill, bool clip)
     {
-        if (currentString is not { } path) return;
-        currentString.Freeze();
-        InnerPathPaint(stroke, fill, path); 
+        InnerPathPaint(stroke, fill, currentString); 
         if (clip) ClipToGeometry(currentString);
-        currentString = null;
     }
-    //
-    // private GeometryGroup? currentString;
-    // private GeometryGroup GetOrCreateCurrentString() => currentString ??= new ();
-    // private void DrawGlyph(GlyphTypeface gtf, ushort glyph, double renderingEmSize)
-    // {
-    //     var geom = gtf.GetGlyphOutline(glyph, renderingEmSize, renderingEmSize);
-    //     geom.Transform = CharacterPositionMatrix().WpfTransform();
-    //     GetOrCreateCurrentString().Children.Add(geom);
-    // }
     #endregion
 }

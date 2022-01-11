@@ -10,7 +10,7 @@ public class WpfRealizedTrueOrOpetypeFont: IRealizedFont
     private readonly GlyphTypeface typeface;
     private readonly double size;
     private readonly IByteToUnicodeMapping mapping;
-    private readonly WpfRenderTarget target;
+    private readonly IFontWriteTarget<GeometryGroup> target;
 
     public WpfRealizedTrueOrOpetypeFont(
         GlyphTypeface typeface, double size, IByteToUnicodeMapping mapping, WpfRenderTarget target)
@@ -50,21 +50,10 @@ public class WpfRealizedTrueOrOpetypeFont: IRealizedFont
         private void DrawGlyph(GlyphTypeface gtf, ushort glyph, double renderingEmSize)
         {
             var geom = gtf.GetGlyphOutline(glyph, renderingEmSize, renderingEmSize);
-            geom.Transform = CharacterPositionMatrix().WpfTransform();
+            geom.Transform = parent.target.CharacterPositionMatrix().WpfTransform();
             currentString.Children.Add(geom);
         }
-
-        private Matrix3x2 CharacterPositionMatrix() =>
-            (GlyphAdjustmentMatrix() *
-             State.CurrentState().TextMatrix);
-
-        private Matrix3x2 GlyphAdjustmentMatrix() => new(
-            (float)State.CurrentState().HorizontalTextScale/100,0,
-            0,-1,
-            0, (float)State.CurrentState().TextRise);
-
-        private GraphicsState State => parent.target.GrapicsStateChange.CurrentState();
-
+        
         public void RenderCurrentString(bool stroke, bool fill, bool clip)
         {
             parent.target.RenderCurrentString(currentString, stroke, fill, clip);

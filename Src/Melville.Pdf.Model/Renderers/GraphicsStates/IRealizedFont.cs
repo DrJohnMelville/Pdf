@@ -1,7 +1,14 @@
 ﻿using System;
+using System.Numerics;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
+
+public interface IFontWriteTarget<T>
+{
+    Matrix3x2 CharacterPositionMatrix();
+    void RenderCurrentString(T currentString, bool stroke, bool fill, bool clip);
+}
 
 public interface IFontWriteOperation
 {
