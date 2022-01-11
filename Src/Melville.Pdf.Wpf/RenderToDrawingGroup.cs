@@ -79,7 +79,7 @@ public class RenderToDrawingGroup:IDisposable
         if (!rect.HasValue) return;
        
         
-        var renderTarget = new WpfRenderTarget(dc, new GraphicsStateStack<GlyphTypeface>(), page, 
+        var renderTarget = new WpfRenderTarget(dc, new GraphicsStateStack(), page, 
             fontCache);
         renderTarget.SetBackgroundRect(rect.Value);
 

@@ -11,10 +11,10 @@ using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
-public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTarget<SKTypeface>
+public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 {
     public SkiaRenderTarget(
-        SKCanvas target, GraphicsStateStack<SKTypeface> state, PdfPage page) : 
+        SKCanvas target, GraphicsStateStack state, PdfPage page) : 
         base(target, state, page)
     {
     }
@@ -118,75 +118,75 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas, SKTypeface>, IRenderTar
 
     public async ValueTask SetFont(IFontMapping font, double size)
     {
-        State.Current().SetTypeface(await CreateSkTypeface(font), font.Mapping);
+//        State.Current().SetTypeface(await CreateSkTypeface(font), font.Mapping);
     }
 
-    private static async ValueTask<SKTypeface> CreateSkTypeface(IFontMapping mapping) => mapping.Font switch
-    {
-        byte[] fontName => SKTypeface.FromFamilyName(FindFontFamily(fontName),
-            mapping.Bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
-            SKFontStyleWidth.Normal,
-            mapping.Oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright),
-        PdfStream fontFile => SKTypeface.FromStream(await fontFile.StreamContentAsync()),
-        _ => throw new PdfParseException("Cannot create font from: " + mapping.Font)
-    };
+    // private static async ValueTask<SKTypeface> CreateSkTypeface(IFontMapping mapping) => mapping.Font switch
+    // {
+    //     byte[] fontName => SKTypeface.FromFamilyName(FindFontFamily(fontName),
+    //         mapping.Bold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
+    //         SKFontStyleWidth.Normal,
+    //         mapping.Oblique ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright),
+    //     PdfStream fontFile => SKTypeface.FromStream(await fontFile.StreamContentAsync()),
+    //     _ => throw new PdfParseException("Cannot create font from: " + mapping.Font)
+    // };
+    //
+    // private static string FindFontFamily(byte[] fontName)
+    // {
+    //     var result = "Arial";
+    //     var currentLen = -1;
+    //     foreach (var family in SKFontManager.Default.FontFamilies)
+    //     {
+    //         var len = CommonPrefixLength(fontName, family);
+    //         if (len > currentLen || 
+    //             len == currentLen && family.Length < result.Length)
+    //         {
+    //             currentLen = len;
+    //             result = family;
+    //         }
+    //     }
+    //     return result;
+    // }
+    //
 
-    private static string FindFontFamily(byte[] fontName)
-    {
-        var result = "Arial";
-        var currentLen = -1;
-        foreach (var family in SKFontManager.Default.FontFamilies)
-        {
-            var len = CommonPrefixLength(fontName, family);
-            if (len > currentLen || 
-                len == currentLen && family.Length < result.Length)
-            {
-                currentLen = len;
-                result = family;
-            }
-        }
-        return result;
-    }
+    // protected override (double width, double height) AddGlyphToCurrentString(SKTypeface gtf, char charInUnicode)
+    // {
+    //     using var font = gtf.ToFont((float)State.Current().FontSize);
+    //     var glyph = font.GetGlyph(charInUnicode);
+    //     var path = font.GetGlyphPath(glyph);
+    //
+    //     DrawGlyphAtPosition(path);
+    //     return GlyphSize(font, glyph);
+    // }
 
-
-    protected override (double width, double height) AddGlyphToCurrentString(SKTypeface gtf, char charInUnicode)
-    {
-        using var font = gtf.ToFont((float)State.Current().FontSize);
-        var glyph = font.GetGlyph(charInUnicode);
-        var path = font.GetGlyphPath(glyph);
-
-        DrawGlyphAtPosition(path);
-        return GlyphSize(font, glyph);
-    }
-
-    private void DrawGlyphAtPosition(SKPath path)
-    {
-        var transform = CharacterPositionMatrix().Transform();
-        GetOrCreateCurrentString().AddPath(path, ref transform);
-    }
-
-    protected override void RenderCurrentString(bool stroke, bool fill, bool clip)
-    {
-        if (currentString == null) return;
-        InnerPaintPath(stroke, fill, false, currentString);
-        if (clip) Target.ClipPath(currentString);
-        DoneWithCurrentString();
-    }
-
-    private void DoneWithCurrentString()
-    {
-        currentString?.Dispose();
-        currentString = null;
-    }
-
-    private SKPath? currentString;
-    private SKPath GetOrCreateCurrentString() => currentString ??= new();
-
-    private(double width, double height) GlyphSize(SKFont font, ushort glyph)
-    {
-        var measure = font.MeasureText(stackalloc[] { glyph }, out var bounds);
-        return (measure, bounds.Height);
-    }
+    // private void DrawGlyphAtPosition(SKPath path)
+    // {
+    //     var transform = CharacterPositionMatrix().Transform();
+    //     GetOrCreateCurrentString().AddPath(path, ref transform);
+    // }
+    //
+    // protected override void RenderCurrentString(bool stroke, bool fill, bool clip)
+    // {
+    //     if (currentString == null) return;
+    //     InnerPaintPath(stroke, fill, false, currentString);
+    //     if (clip) Target.ClipPath(currentString);
+    //     DoneWithCurrentString();
+    // }
+    //
+    // private void DoneWithCurrentString()
+    // {
+    //     currentString?.Dispose();
+    //     currentString = null;
+    // }
+    //
+    // private SKPath? currentString;
+    // private SKPath GetOrCreateCurrentString() => currentString ??= new();
+    //
+    // private(double width, double height) GlyphSize(SKFont font, ushort glyph)
+    // {
+    //     var measure = font.MeasureText(stackalloc[] { glyph }, out var bounds);
+    //     return (measure, bounds.Height);
+    // }
 
     #endregion
 

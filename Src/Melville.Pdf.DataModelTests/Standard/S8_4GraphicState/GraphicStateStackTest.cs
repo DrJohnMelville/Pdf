@@ -5,7 +5,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
 public class GraphicStateStackTest
 {
-    private readonly GraphicsStateStack<string> stack = new();
+    private readonly GraphicsStateStack stack = new();
     
     [Fact]
     public void PushAndPop()

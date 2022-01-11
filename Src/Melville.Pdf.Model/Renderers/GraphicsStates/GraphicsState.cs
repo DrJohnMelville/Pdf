@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -12,12 +13,12 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public interface IGraphiscState<TTypeface> : IStateChangingOperations
+public interface IGraphiscState : IStateChangingOperations
 {
     ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
     void SetStrokeColorSpace(IColorSpace colorSpace);
     void SetNonstrokeColorSpace(IColorSpace colorSpace);
-    GraphicsState<TTypeface> CurrentState();
+    GraphicsState CurrentState();
     void SetTextMatrix(in Matrix3x2 value);
     void SetTextLineMatrix(in Matrix3x2 value);
     void SetBothTextMatrices(in Matrix3x2 value);
@@ -30,7 +31,7 @@ public enum WritingMode
     TopToBottom = 1
 }
 
-public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
+public partial class GraphicsState: IGraphiscState
 {
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
@@ -54,14 +55,13 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
     [MacroItem("double", "TextLeading", "0.0")]
     [MacroItem("double", "TextRise", "0.0")]
     [MacroItem("double", "HorizontalTextScale", "100.0")]
-    [MacroItem("double", "FontSize", "12.0")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
-    [MacroItem("TTypeface?", "Typeface", "default")]
+    [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
     [MacroItem("IByteToUnicodeMapping", "ByteMapper", "DefaultUnicodeMapping.Instance")]
 
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
-    [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState<TTypeface> other){", Postfix = "}")]
+    [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
     public void SaveGraphicsState() { }
     public void RestoreGraphicsState() { }
 
@@ -154,7 +154,7 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
     public void SetTextLeading(double value) => TextLeading = value;
     public ValueTask SetFont(PdfName font, double size)
     {
-        FontSize = size;
+        Debug.Assert(false, "The render engine should have handled this by this point");
         return ValueTask.CompletedTask;
     }
 
@@ -189,28 +189,27 @@ public partial class GraphicsState<TTypeface>: IGraphiscState<TTypeface>
         NonstrokeColorSpace = colorSpace;
     }
 
-    public GraphicsState<TTypeface> CurrentState() => this;
+    public GraphicsState CurrentState() => this;
 
     public void SetStrokeColor(in ReadOnlySpan<double> color) => 
         StrokeColor = StrokeColorSpace.SetColor(color);
     public void SetNonstrokingColor(in ReadOnlySpan<double> color) => 
         NonstrokeColor = NonstrokeColorSpace.SetColor(color);
-    #endregion  
-    
-    public void SetTypeface(TTypeface typeface, IByteToUnicodeMapping mapper)
+    #endregion
+
+    public void SetTypeface(IRealizedFont realizedFont)
     {
-        Typeface = typeface;
-        ByteMapper = mapper;
+        Typeface = realizedFont;
     }
 }
 
 public static class GraphicsStateHelpers
 {
-    public static bool IsDashedStroke<TTypeface>(this GraphicsState<TTypeface> gs) =>
+    public static bool IsDashedStroke(this GraphicsState gs) =>
         gs.DashArray.Length > 0;
 
 
-    public static double EffectiveLineWidth<TTypeface>(this GraphicsState<TTypeface> state)
+    public static double EffectiveLineWidth(this GraphicsState state)
     {
         if (state.LineWidth > double.Epsilon) return state.LineWidth;
         if (!Matrix3x2.Invert(state.TransformMatrix, out var invmat)) return 1;

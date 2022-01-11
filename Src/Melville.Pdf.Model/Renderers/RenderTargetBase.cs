@@ -12,9 +12,9 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public interface IRenderTarget<TTypeface>
+public interface IRenderTarget
 {
-    IGraphiscState<TTypeface> GrapicsStateChange { get; }
+    IGraphiscState GrapicsStateChange { get; }
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
 
@@ -33,19 +33,17 @@ public interface IRenderTarget<TTypeface>
     ValueTask RenderBitmap(IPdfBitmap bitmap);
 
     public ValueTask SetFont(IFontMapping font, double size);
-    (double width, double height) AddGlyphToCurrentString(byte b);
-    void RenderCurrentString();
 }
 
-public abstract class RenderTargetBase<T, TTypeface>
+public abstract class RenderTargetBase<T>
 {
     protected T Target { get; }
-    protected GraphicsStateStack<TTypeface> State { get; }
+    protected GraphicsStateStack State { get; }
     protected PdfPage Page { get; }
  
-    public IGraphiscState<TTypeface> GrapicsStateChange => State;
+    public IGraphiscState GrapicsStateChange => State;
 
-    protected RenderTargetBase(T target, GraphicsStateStack<TTypeface> state, PdfPage page)
+    protected RenderTargetBase(T target, GraphicsStateStack state, PdfPage page)
     {
         Target = target;
         State = state;
@@ -64,7 +62,7 @@ public abstract class RenderTargetBase<T, TTypeface>
     public abstract void Transform(in Matrix3x2 newTransform);
 
     #region TextRendering
-    public (double width, double height) AddGlyphToCurrentString(byte b)
+ /*   public (double width, double height) AddGlyphToCurrentString(byte b)
     {
         if (State.Current().Typeface is not { } gtf) return (0, 0);
         return AddGlyphToCurrentString(gtf, State.CurrentState().ByteMapper.MapToUnicode(b));
@@ -79,48 +77,17 @@ public abstract class RenderTargetBase<T, TTypeface>
     }
 
     protected abstract void RenderCurrentString(bool stroke, bool fill, bool clip);
-
-    protected Matrix3x2 CharacterPositionMatrix() =>
-        (GlyphAdjustmentMatrix() *
-         State.CurrentState().TextMatrix);
-
-    private Matrix3x2 GlyphAdjustmentMatrix() => new(
-            (float)State.CurrentState().HorizontalTextScale/100,0,
-            0,-1,
-            0, (float)State.CurrentState().TextRise);
-
+*/
     #endregion
 
-    #region Font mapping
-    protected static int CommonPrefixLength(byte[] fontName, string familySource)
-    {
-        var fontNamePos = 0;
-        var familyPos = 0;
-        while (true)
-        {
-            if (fontNamePos >= fontName.Length || familyPos >= familySource.Length)
-                return fontNamePos;
-            switch ((fontName[fontNamePos], (byte)(familySource[familyPos])))
-            {
-                case (32, _) : fontNamePos++; break;
-                case (_, 32) : familyPos++; break;
-                case var(a,b) when a==b:
-                    fontNamePos++;
-                    familyPos++;
-                    break;
-                default: return fontNamePos;
-            }
-        }
-    }
-    #endregion
 }
 
 public static class RenderTargetOperations
 {
-    public static async ValueTask RenderTo<TTypeface>(
-        this IHasPageAttributes page, IRenderTarget<TTypeface> target, FontReader fonts) =>
+    public static async ValueTask RenderTo(
+        this IHasPageAttributes page, IRenderTarget target, FontReader fonts) =>
         await new ContentStreamParser(
-                new RenderEngine<TTypeface>(page, target, fonts))
+                new RenderEngine(page, target, fonts))
             .Parse(
                 PipeReader.Create(
                     await page.GetContentBytes()));

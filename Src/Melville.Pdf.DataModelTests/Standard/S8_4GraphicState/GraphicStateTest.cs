@@ -10,8 +10,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
 public class GraphicStateTest
 {
-    private readonly GraphicsState<string> sut = new();
-    private readonly GraphicsState<string> sut2 = new();
+    private readonly GraphicsState sut = new();
+    private readonly GraphicsState sut2 = new();
     
     private void PropTest<T>(string name, T defaultValue, T newValue, Action<IStateChangingOperations> act)
     {

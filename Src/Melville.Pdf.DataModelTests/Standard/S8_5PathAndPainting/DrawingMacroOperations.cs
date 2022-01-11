@@ -9,13 +9,13 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 
 public class DrawingMacroOperations
 {
-    private readonly Mock<IRenderTarget<string>> target = new();
-    private readonly RenderEngine<string> sut;
+    private readonly Mock<IRenderTarget> target = new();
+    private readonly RenderEngine sut;
 
     public DrawingMacroOperations()
     {
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
-        sut = new RenderEngine<string>(page, target.Object, new FontReader(new WindowsDefaultFonts()));
+        sut = new RenderEngine(page, target.Object, new FontReader(new WindowsDefaultFonts()));
     }
 
     [Fact]

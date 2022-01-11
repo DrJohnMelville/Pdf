@@ -6,14 +6,14 @@ using SkiaSharp;
 
 public static class SkiaStateInterpreter
 {
-    public static SKPaint Brush(this GraphicsState<SKTypeface> state) => 
+    public static SKPaint Brush(this GraphicsState state) => 
         new()
         {
             Style = SKPaintStyle.Fill,
             Color = state.NonstrokeColor.AsSkColor(),
         };
 
-    public static SKPaint Pen(this GraphicsState<SKTypeface> state)
+    public static SKPaint Pen(this GraphicsState state)
     {
         var paint = new SKPaint()
         {
@@ -34,7 +34,7 @@ public static class SkiaStateInterpreter
     //By coincidence these two enums are equivilent, so a simple cast works.
     private static SKStrokeJoin CreateStrokeJoin(LineJoinStyle joinStyle) => (SKStrokeJoin)joinStyle;
 
-    private static void SetDashState(GraphicsState<SKTypeface> state, SKPaint paint)
+    private static void SetDashState(GraphicsState state, SKPaint paint)
     {
         if (state.IsDashedStroke()) 
             paint.PathEffect = CreatePathEffect(state.DashArray, state.DashPhase);
@@ -47,7 +47,7 @@ public static class SkiaStateInterpreter
     // can just cast the enum right across
     private static SKStrokeCap StrokeCap(LineCap cap) => (SKStrokeCap)cap;
     
-    public static SKMatrix Transform(this GraphicsState<SKTypeface> gs) =>
+    public static SKMatrix Transform(this GraphicsState gs) =>
         Transform(gs.TransformMatrix);
 
     public static SKMatrix Transform(this Matrix3x2 tm) => new(

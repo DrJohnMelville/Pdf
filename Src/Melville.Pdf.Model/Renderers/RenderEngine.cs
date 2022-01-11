@@ -13,12 +13,12 @@ using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 namespace Melville.Pdf.Model.Renderers;
 
-public partial class RenderEngine<TTypeface>: IContentStreamOperations
+public partial class RenderEngine: IContentStreamOperations
 {
     private readonly IHasPageAttributes page;
-    private readonly IRenderTarget<TTypeface> target;
+    private readonly IRenderTarget target;
     private readonly FontReader fontReader;
-    public RenderEngine(IHasPageAttributes page, IRenderTarget<TTypeface> target, FontReader fontReader)
+    public RenderEngine(IHasPageAttributes page, IRenderTarget target, FontReader fontReader)
     {
         this.page = page;
         this.target = target;
@@ -35,7 +35,7 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
         throw new NotImplementedException("Compatibility Operations not implemented");
 
     #region Graphics State
-    [DelegateTo] private IGraphiscState<TTypeface> StateOps => target.GrapicsStateChange;
+    [DelegateTo] private IGraphiscState StateOps => target.GrapicsStateChange;
     
     public void SaveGraphicsState()
     {
@@ -288,17 +288,18 @@ public partial class RenderEngine<TTypeface>: IContentStreamOperations
         await target.SetFont(await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
             await fontReader.DictionaryToMappingAsync(fontDic) :
                 fontReader.NameToMapping(font), size);
-        await StateOps.SetFont(font, size);
+ //       await StateOps.SetFont(font, size);
     }
 
     public void ShowString(in ReadOnlyMemory<byte> decodedString)
     {
+        var writer = StateOps.CurrentState().Typeface.BeginFontWrite();
         foreach (var character in decodedString.Span)
         {
-            var (w, h) = target.AddGlyphToCurrentString(character);
+            var (w, h) = writer.AddGlyphToCurrentString(character);
             AdjustTextPositionForCharacter(w, h, character);
         }
-        target.RenderCurrentString();
+        writer.RenderCurrentString(StateOps.CurrentState().TextRender);
     }
 
     private void AdjustTextPositionForCharacter(double width, double height, byte character)
