@@ -100,6 +100,7 @@ GraphicStateParameter:FL
 GraphicStateParameter:SM
 
 FontTypes:Type1
+FontTypes:Type3
 FontTypes:MMType1
 FontTypes:TrueType
 FontTypes:OpenType
@@ -125,6 +126,7 @@ Pdf:CalCMYK
 Pdf:Catalog
 Pdf:CF
 Pdf:CFM
+Pdf:CharProcs
 Pdf:Colors
 Pdf:Columns
 Pdf:Contents
@@ -137,6 +139,7 @@ Pdf:DefaultRGB
 Pdf:DefaultCMYK
 Pdf:Descent
 Pdf:DeviceN
+Pdf:Differences
 Pdf:DocOpen
 Pdf:Domain
 Pdf:EarlyChange
@@ -145,6 +148,7 @@ Pdf:Encoding
 Pdf:Encrypt
 Pdf:Filter
 Pdf:First
+Pdf:FirstChar
 Pdf:Form
 Pdf:Flags
 Pdf:FormType
@@ -153,6 +157,7 @@ Pdf:FontDescriptor
 Pdf:FontFile
 Pdf:FontFile2
 Pdf:FontFile3
+Pdf:FontMatrix
 Pdf:FontName
 Pdf:FontWeight
 Pdf:Functions
@@ -172,6 +177,7 @@ Pdf:ItalicAngle
 Pdf:Gamma
 Pdf:Kids
 Pdf:Lab
+Pdf:LastChar
 Pdf:LastModified
 Pdf:Length
 Pdf:Length1

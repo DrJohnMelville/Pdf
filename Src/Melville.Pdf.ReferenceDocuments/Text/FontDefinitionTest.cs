@@ -5,6 +5,7 @@ namespace Melville.Pdf.ReferenceDocuments.Text;
 
 public abstract class FontDefinitionTest : Card3x5
 {
+    protected string TextToRender { get; set; } = "Is Text";
     protected FontDefinitionTest(string helpText) : base (helpText)
     {
     }
@@ -26,10 +27,10 @@ public abstract class FontDefinitionTest : Card3x5
             await csw.SetStrokeRGB(1.0, 0.0, 0.0);
             await csw.SetFont(Font1, 70);
             tr.SetTextMatrix(1,0,0,1,30,25);
-            tr.ShowString("Is Text");
+            tr.ShowString(TextToRender);
             await csw.SetFont(Font2, 70);
             tr.SetTextMatrix(1,0,0,1,30,125);
-            tr.ShowString("Is Text");
+            tr.ShowString(TextToRender);
         }
     }
 }
