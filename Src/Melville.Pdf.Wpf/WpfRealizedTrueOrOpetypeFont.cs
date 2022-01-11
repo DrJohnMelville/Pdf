@@ -13,7 +13,8 @@ public class WpfRealizedTrueOrOpetypeFont: IRealizedFont
     private readonly IFontWriteTarget<GeometryGroup> target;
 
     public WpfRealizedTrueOrOpetypeFont(
-        GlyphTypeface typeface, double size, IByteToUnicodeMapping mapping, WpfRenderTarget target)
+        GlyphTypeface typeface, double size, IByteToUnicodeMapping mapping, 
+        IFontWriteTarget<GeometryGroup> target)
     {
         this.typeface = typeface;
         this.size = size;

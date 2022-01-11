@@ -13,9 +13,10 @@ public readonly struct RealizedFontFactory
 {
     private readonly IFontMapping mapping;
     private readonly TempFontDirectory fontCache;
-    private readonly WpfRenderTarget target;
+    private readonly IFontWriteTarget<GeometryGroup> target;
 
-    public RealizedFontFactory(IFontMapping mapping, TempFontDirectory fontCache, WpfRenderTarget target)
+    public RealizedFontFactory(
+        IFontMapping mapping, TempFontDirectory fontCache, IFontWriteTarget<GeometryGroup> target)
     {
         this.mapping = mapping;
         this.fontCache = fontCache;

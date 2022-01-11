@@ -285,10 +285,10 @@ public partial class RenderEngine: IContentStreamOperations
 
     public async ValueTask SetFont(PdfName font, double size)
     {
+        
         await target.SetFont(await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
             await fontReader.DictionaryToMappingAsync(fontDic) :
                 fontReader.NameToMapping(font), size);
- //       await StateOps.SetFont(font, size);
     }
 
     public void ShowString(in ReadOnlyMemory<byte> decodedString)
