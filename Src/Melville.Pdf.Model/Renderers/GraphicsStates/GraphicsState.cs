@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.FontMappings;
 // needed in rendering code.
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Model.Renderers.FontRenderings;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 

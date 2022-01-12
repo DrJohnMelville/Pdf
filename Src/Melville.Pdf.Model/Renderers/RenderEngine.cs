@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -8,12 +9,15 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 namespace Melville.Pdf.Model.Renderers;
 
-public partial class RenderEngine: IContentStreamOperations
+public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
 {
     private readonly IHasPageAttributes page;
     private readonly IRenderTarget target;
@@ -285,23 +289,34 @@ public partial class RenderEngine: IContentStreamOperations
 
     public async ValueTask SetFont(PdfName font, double size)
     {
-        
-        await target.SetFont(await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
-            await fontReader.DictionaryToMappingAsync(fontDic) :
-                fontReader.NameToMapping(font), size);
+        var fontMapping = await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
+            await fontReader.DictionaryToMappingAsync(fontDic, this, size) :
+            fontReader.NameToMapping(font);
+        await SetTypeface(fontMapping, size);
     }
 
-    public void ShowString(in ReadOnlyMemory<byte> decodedString)
+    private async ValueTask SetTypeface(IFontMapping fontMapping, double size)
+    {
+        if (fontMapping.Font is IRealizedFont rf)
+            StateOps.CurrentState().SetTypeface(rf);
+        else
+            await target.SetFont(fontMapping, size);
+    }
+
+    public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
         var writer = StateOps.CurrentState().Typeface.BeginFontWrite();
-        foreach (var character in decodedString.Span)
+        for (int i = 0; i < decodedString.Length; i++)
         {
-            var (w, h) = writer.AddGlyphToCurrentString(character);
+            var character = GetAt(decodedString,  i);
+            var (w, h) = await writer.AddGlyphToCurrentString(character);
             AdjustTextPositionForCharacter(w, h, character);
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
     }
 
+    private byte GetAt(ReadOnlyMemory<byte> decodedString, int i) => decodedString.Span[i];
+    
     private void AdjustTextPositionForCharacter(double width, double height, byte character)
     {
         var delta = CharacterSpacingAdjustment(character);
@@ -332,17 +347,17 @@ public partial class RenderEngine: IContentStreamOperations
             ? Matrix3x2.CreateTranslation(0f, (float)-height)
             : Matrix3x2.CreateTranslation((float)width, 0.0f);
 
-    public void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> decodedString)
+    public ValueTask MoveToNextLineAndShowString(ReadOnlyMemory<byte> decodedString)
     {
         MoveToNextTextLine();
-        ShowString(decodedString);
+        return ShowString(decodedString);
     }
 
-    public void MoveToNextLineAndShowString(double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString)
+    public ValueTask MoveToNextLineAndShowString(double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString)
     {
         SetWordSpace(wordSpace);
         SetCharSpace(charSpace);
-        MoveToNextLineAndShowString(decodedString);
+        return MoveToNextLineAndShowString(decodedString);
     }
 
     public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
@@ -362,6 +377,11 @@ public partial class RenderEngine: IContentStreamOperations
                     throw new PdfParseException("Invalid ShowSpacedString argument");
             }
         }
+    }
+
+    public ValueTask<(double width, double height)> RenderType3Character(Stream s)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion

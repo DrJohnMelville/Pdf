@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Windows.Media;
 using Melville.Pdf.Model.FontMappings;
+using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
@@ -34,11 +35,11 @@ public class WpfRealizedTrueOrOpetypeFont: IRealizedFont
             this.parent = parent;
         }
 
-        public (double width, double height) AddGlyphToCurrentString(byte b)
+        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b)
         {
             var glyph = GetGlyphMap(parent.mapping.MapToUnicode(b));
             DrawGlyph(parent.typeface, glyph, parent.size);
-            return GlyphSize(parent.typeface, glyph, parent.size);
+            return new(GlyphSize(parent.typeface, glyph, parent.size));
         }
         private ushort GetGlyphMap(char charInUnicode) =>
             parent.typeface.CharacterToGlyphMap.TryGetValue(charInUnicode, out var ret)

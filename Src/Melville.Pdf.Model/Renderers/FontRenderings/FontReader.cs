@@ -1,11 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.FontMappings;
+using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
-namespace Melville.Pdf.Model.Renderers;
+namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
 public readonly struct FontReader
 {
@@ -16,17 +17,20 @@ public readonly struct FontReader
         this.defaultMapper = defaultMapper;
     }
 
-    public async ValueTask<IFontMapping> DictionaryToMappingAsync(PdfDictionary font)
+    public async ValueTask<IFontMapping> DictionaryToMappingAsync(
+        PdfDictionary font, IType3FontTarget target, double size)
     {
         if (font.TryGetValue(KnownNames.FontDescriptor, out var descTask) && 
             (await descTask) is PdfDictionary descriptor &&
             await StreamFromDescriptorAsync(descriptor) is { } fontAsStream)
             return new NamedDefaultMapping(fontAsStream, false, false);
         
-        var baseFontName = await font.GetAsync<PdfName>(KnownNames.BaseFont);
+        var baseFontName = await font.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica);
+        
         return (await font.GetOrDefaultAsync(KnownNames.Subtype, KnownNames.Type1)).GetHashCode() switch
         {
             KnownNameKeys.MMType1=> NameToMapping(RemoveMultMasterSuffix(baseFontName)),
+            KnownNameKeys.Type3 => await new Type3FontFactory(font, target, size).ParseAsync(),
             _ => NameToMapping(baseFontName)
         };
     }

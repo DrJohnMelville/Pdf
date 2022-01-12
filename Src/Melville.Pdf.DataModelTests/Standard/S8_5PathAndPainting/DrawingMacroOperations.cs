@@ -2,6 +2,7 @@
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.FontRenderings;
 using Moq;
 using Xunit;
 

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Moq;
 using Xunit;
@@ -30,7 +32,7 @@ public class S9_4_2_TextPositioningOperators
 
     private void SetupMockRealizedFont()
     {
-        fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<byte>())).Returns((10.0, 12.0));
+        fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<byte>())).Returns( ValueTask.FromResult((10.0, 12.0)));
         fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()));
         rf.Setup(i => i.BeginFontWrite()).Returns(fw.Object);
         state.CurrentState().SetTypeface(rf.Object);

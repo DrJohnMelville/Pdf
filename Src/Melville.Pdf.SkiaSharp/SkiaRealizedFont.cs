@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.Model.FontMappings;
+using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
@@ -29,13 +30,13 @@ public class SkiaRealizedFont: IRealizedFont, IDisposable
         {
             this.parent = parent;
         }
-        public (double width, double height) AddGlyphToCurrentString(byte b)
+        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b)
         {
             var glyph = parent.font.GetGlyph(parent.mapping.MapToUnicode(b));
             var path = parent.font.GetGlyphPath(glyph);
             
             DrawGlyphAtPosition(path);
-            return GlyphSize(glyph);
+            return new(GlyphSize(glyph));
         }
         private void DrawGlyphAtPosition(SKPath path)
         {

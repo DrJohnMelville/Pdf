@@ -300,18 +300,25 @@ public partial class ContentStreamWriter : IContentStreamOperations
     void ITextObjectOperations.MoveToNextTextLine() =>
         destPipe.WriteOperator(ContentStreamOperatorNames.TStar);
 
-    void ITextObjectOperations.ShowString(in ReadOnlyMemory<byte> decodedString) =>
+    ValueTask ITextObjectOperations.ShowString(ReadOnlyMemory<byte> decodedString)
+    {
         destPipe.WriteOperator(ContentStreamOperatorNames.Tj, decodedString.Span);
-    void ITextObjectOperations.MoveToNextLineAndShowString(in ReadOnlyMemory<byte> decodedString) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.SingleQuote, decodedString.Span);
+        return new();
+    }
 
-    void ITextObjectOperations.MoveToNextLineAndShowString(
-        double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString)
+    ValueTask ITextObjectOperations.MoveToNextLineAndShowString(ReadOnlyMemory<byte> decodedString)
+    {
+        destPipe.WriteOperator(ContentStreamOperatorNames.SingleQuote, decodedString.Span);
+        return new();
+    }
+
+    ValueTask ITextObjectOperations.MoveToNextLineAndShowString(
+        double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString)
     {
         destPipe.WriteDoubleAndSpace(wordSpace);
         destPipe.WriteDouble(charSpace);
         destPipe.WriteOperator(ContentStreamOperatorNames.DoubleQuote, decodedString.Span);
-
+        return new();
     }
 
     void ITextObjectOperations.ShowSpacedString(in Span<ContentStreamValueUnion> values)

@@ -1,7 +1,7 @@
 ﻿using System;
 using Melville.INPC;
 
-namespace Melville.Pdf.Model.Renderers.GraphicsStates;
+namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
 public sealed partial class BlockFontDispose : IRealizedFont
 {

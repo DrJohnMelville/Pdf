@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -30,20 +31,20 @@ public interface
     /// <summary>
     /// Content stream operator Tj
     /// </summary>
-    void ShowString(in ReadOnlyMemory<byte> decodedString);
+    ValueTask ShowString(ReadOnlyMemory<byte> decodedString);
 
     /// <summary>
     /// Content stream operator '
     /// </summary>
     /// <param name="decodedString"></param>
-    void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> decodedString);
+    ValueTask MoveToNextLineAndShowString(ReadOnlyMemory<byte> decodedString);
 
     /// <summary>
     /// Content stream operator "
     /// </summary>
     /// <param name="decodedString"></param>
-    void MoveToNextLineAndShowString(
-        double wordSpace, double charSpace, in ReadOnlyMemory<byte> decodedString);
+    ValueTask MoveToNextLineAndShowString(
+        double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString);
 
     /// <summary>
     /// Context stream operator TJ

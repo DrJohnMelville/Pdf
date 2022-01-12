@@ -214,7 +214,7 @@ public class ContentStreamContext
                 await target.SetFont(arguments.NamaAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.Tj:
-                target.ShowString(arguments.BytesAt(0));
+                await target.ShowString(arguments.BytesAt(0));
                 break;
             case ContentStreamOperatorValue.TJ:
                 target.ShowSpacedString(arguments.NativeSpan());
@@ -256,10 +256,10 @@ public class ContentStreamContext
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.SingleQuote:
-                target.MoveToNextLineAndShowString(arguments.BytesAt(0));
+                await target.MoveToNextLineAndShowString(arguments.BytesAt(0));
                 break;
             case ContentStreamOperatorValue.DoubleQuote:
-                target.MoveToNextLineAndShowString(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.MoveToNextLineAndShowString(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.BytesAt(2));
                 break;
             default:

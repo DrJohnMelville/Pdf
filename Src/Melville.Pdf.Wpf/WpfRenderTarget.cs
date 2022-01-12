@@ -11,6 +11,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Wpf.FakeUris;
 
