@@ -23,13 +23,12 @@ public class SkiaRealizedFont: IRealizedFont, IDisposable
     private class FontOperation: IFontWriteOperation
     {
         private readonly SkiaRealizedFont parent;
-        private readonly SKPath currentString = new SKPath();
+        private readonly SKPath currentString = new();
 
         public FontOperation(SkiaRealizedFont parent)
         {
             this.parent = parent;
         }
-
         public (double width, double height) AddGlyphToCurrentString(byte b)
         {
             var glyph = parent.font.GetGlyph(parent.mapping.MapToUnicode(b));
@@ -43,18 +42,15 @@ public class SkiaRealizedFont: IRealizedFont, IDisposable
             var transform = parent.target.CharacterPositionMatrix().Transform();
             currentString.AddPath(path, ref transform);
         }
-
         public void RenderCurrentString(bool stroke, bool fill, bool clip)
         {
             parent.target.RenderCurrentString(currentString, stroke, fill, clip);
             currentString.Dispose();
         }
-
         private(double width, double height) GlyphSize(ushort glyph)
         {
             var measure = parent.font.MeasureText(stackalloc[] { glyph }, out var bounds);
             return (measure, bounds.Height);
         }
-
     }
 }

@@ -17,11 +17,23 @@ public class S9_4_2_TextPositioningOperators
     private readonly Mock<IHasPageAttributes> pageMock = new(MockBehavior.Strict);
     private readonly Mock<IRenderTarget> targetMock = new(MockBehavior.Strict);
     private readonly RenderEngine sut;
+    private readonly Mock<IRealizedFont> rf = new();
+    private readonly Mock<IFontWriteOperation> fw = new();
 
     public S9_4_2_TextPositioningOperators()
     {
         targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
+        SetupMockRealizedFont();
+
         sut = new RenderEngine(pageMock.Object, targetMock.Object, new FontReader(new WindowsDefaultFonts()));
+    }
+
+    private void SetupMockRealizedFont()
+    {
+        fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<byte>())).Returns((10.0, 12.0));
+        fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()));
+        rf.Setup(i => i.BeginFontWrite()).Returns(fw.Object);
+        state.CurrentState().SetTypeface(rf.Object);
     }
 
     [Fact]
@@ -77,8 +89,6 @@ public class S9_4_2_TextPositioningOperators
     [InlineData("ee", 20)]
     public void DrawString(string input, float xPos)
     {
-//        targetMock.Setup(i => i.AddGlyphToCurrentString((byte)'e')).Returns((10.0, 12.0));
- //       targetMock.Setup(i => i.RenderCurrentString());
         sut.ShowString(input.AsExtendedAsciiBytes());
         Assert.Equal(Matrix3x2.Identity, sut.CurrentState().TextLineMatrix);
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, xPos, 0), sut.CurrentState().TextMatrix);
@@ -87,8 +97,6 @@ public class S9_4_2_TextPositioningOperators
     [Fact]
     public void DrawHorizontalCompressedStream()
     {
-   //     targetMock.Setup(i => i.AddGlyphToCurrentString((byte)' ')).Returns((10.0, 12.0));
-     //   targetMock.Setup(i => i.RenderCurrentString());
         sut.SetCharSpace(20);
         sut.SetWordSpace(30);
         sut.SetHorizontalTextScaling(50);
@@ -100,8 +108,6 @@ public class S9_4_2_TextPositioningOperators
     [Fact]
     public void MoveToNextTextLineAndShowString()
     {
-//        targetMock.Setup(i => i.AddGlyphToCurrentString(65)).Returns((10.0, 12.0));
- //       targetMock.Setup(i => i.RenderCurrentString());
         sut.SetTextLeading(20);
         sut.MoveToNextLineAndShowString(new ReadOnlyMemory<byte>(new byte[] { 65 }));
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, 10, -20), sut.CurrentState().TextMatrix);
@@ -110,8 +116,6 @@ public class S9_4_2_TextPositioningOperators
     [Fact]
     public void MoveToNextTextLineAndShowStringWithSpacing()
     {
-   //     targetMock.Setup(i => i.AddGlyphToCurrentString(65)).Returns((10.0, 12.0));
-     //   targetMock.Setup(i => i.RenderCurrentString());
         sut.SetTextLeading(20);
         sut.MoveToNextLineAndShowString(4,5,new ReadOnlyMemory<byte>(new byte[] { 65 }));
         Assert.Equal(4.0, sut.CurrentState().WordSpacing);
@@ -126,8 +130,6 @@ public class S9_4_2_TextPositioningOperators
     [InlineData(1000,90)]
     public void ShowSpacedStream(double horizontalScale, float xPosition)
     {
-//        targetMock.Setup(i => i.AddGlyphToCurrentString((byte)'e')).Returns((10.0, 12.0));
-  //      targetMock.Setup(i => i.RenderCurrentString());
         sut.SetHorizontalTextScaling(horizontalScale);
         sut.ShowSpacedString(
             new []

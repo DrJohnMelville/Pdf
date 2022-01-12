@@ -199,8 +199,15 @@ public partial class GraphicsState: IGraphiscState
 
     public void SetTypeface(IRealizedFont realizedFont)
     {
+        (Typeface as IDisposable)?.Dispose();
         Typeface = realizedFont;
     }
+
+    //Only the lowest state on the stack should dispose of a typeface, because we might pop the stack and come
+    // back to a prior font.  If the typeface is disposable, wrap it in a wrapper that does not implement IDisposable
+    // and this instance will never dispose of the typeface
+    public void MakeFontNotDisposable() =>
+        Typeface = BlockFontDispose.AsNonDisposableTypeface(Typeface);
 }
 
 public static class GraphicsStateHelpers

@@ -77,9 +77,10 @@ public class RenderToDrawingGroup:IDisposable
     { 
         var rect = await page.GetBoxAsync(BoxName.CropBox);
         if (!rect.HasValue) return;
-       
-        
-        var renderTarget = new WpfRenderTarget(dc, new GraphicsStateStack(), page, 
+
+
+        using var stateStack = new GraphicsStateStack();
+        var renderTarget = new WpfRenderTarget(dc, stateStack, page, 
             fontCache);
         renderTarget.SetBackgroundRect(rect.Value);
 
