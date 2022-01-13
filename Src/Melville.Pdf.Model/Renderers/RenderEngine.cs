@@ -395,15 +395,26 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
     public async ValueTask<(double width, double height)> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix)
     {
-        SaveGraphicsState();
-        var textMatrix = StateOps.CurrentState().TextMatrix;
-        ModifyTransformMatrix(fontMatrix*textMatrix);
-        await new ContentStreamParser(this).Parse(PipeReader.Create(s));
-        RestoreGraphicsState();
-        var ret = Vector2.Transform(new Vector2((float)lastWx, (float)(lastUry - lastLly)),
-            fontMatrix);
+        if (StateOps.CurrentState().TextRender != TextRendering.Invisible)
+        {
+            await DrawType3Character(s, fontMatrix);
+        }
+        var ret = CharacterSizeInTextSpace(fontMatrix);
         return (ret.X, ret.Y);
     }
+
+    private async Task DrawType3Character(Stream s, Matrix3x2 fontMatrix)
+    {
+        SaveGraphicsState();
+        var textMatrix = StateOps.CurrentState().TextMatrix;
+        ModifyTransformMatrix(fontMatrix * textMatrix);
+        await new ContentStreamParser(this).Parse(PipeReader.Create(s));
+        RestoreGraphicsState();
+    }
+
+    private Vector2 CharacterSizeInTextSpace(Matrix3x2 fontMatrix) =>
+        Vector2.Transform(new Vector2((float)lastWx, (float)(lastUry - lastLly)),
+            fontMatrix);
 
     private double lastWx, lastWy, lastLlx, lastLly, lastUrx, lastUry;
 
