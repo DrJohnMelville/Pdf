@@ -49,7 +49,7 @@ public interface
     /// <summary>
     /// Context stream operator TJ
     /// </summary>
-    void ShowSpacedString(in Span<ContentStreamValueUnion> values);
+    ValueTask ShowSpacedString(in Span<ContentStreamValueUnion> values);
 
 }
 

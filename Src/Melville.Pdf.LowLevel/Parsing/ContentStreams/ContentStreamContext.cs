@@ -217,7 +217,7 @@ public class ContentStreamContext
                 await target.ShowString(arguments.BytesAt(0));
                 break;
             case ContentStreamOperatorValue.TJ:
-                target.ShowSpacedString(arguments.NativeSpan());
+                await target.ShowSpacedString(arguments.NativeSpan());
                 break;
             case ContentStreamOperatorValue.TL:
                 target.SetTextLeading(arguments.DoubleAt(0));

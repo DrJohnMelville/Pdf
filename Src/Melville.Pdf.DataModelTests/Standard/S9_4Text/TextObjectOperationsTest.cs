@@ -108,7 +108,7 @@ public class TextObjectOperationsTest : WriterTest
             builder.Add("D".AsExtendedAsciiBytes().AsMemory());
             builder.Add(4);
             builder.Add(5);
-            block.ShowSpacedString(builder.GetAllValues());
+            await block.ShowSpacedString(builder.GetAllValues());
         }
         Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenText() );
         

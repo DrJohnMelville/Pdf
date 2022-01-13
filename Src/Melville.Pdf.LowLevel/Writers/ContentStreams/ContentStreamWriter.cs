@@ -266,24 +266,8 @@ public partial class ContentStreamWriter : IContentStreamOperations
             parent.destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
         }
         
-        public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
-        {
-            parent.destPipe.WriteChar('[');
-            foreach (var value in values)
-            {
-                switch (value.Type)
-                {
-                    case ContentStreamValueType.Number:
-                        parent.destPipe.WriteDoubleAndSpace(value.Floating);
-                        break;
-                    case ContentStreamValueType.Memory:
-                        parent.destPipe.WriteString(value.Bytes.Span);
-                        break;
-                }
-            }
-            parent.destPipe.WriteChar(']');
-            parent.destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
-        }
+        public ValueTask ShowSpacedString(in Span<ContentStreamValueUnion> values) => 
+            ((ITextObjectOperations)parent).ShowSpacedString(values);
 
         public void Dispose() => ((ITextBlockOperations)parent).EndTextObject();
     }
@@ -321,7 +305,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
         return new();
     }
 
-    void ITextObjectOperations.ShowSpacedString(in Span<ContentStreamValueUnion> values)
+    ValueTask ITextObjectOperations.ShowSpacedString(in Span<ContentStreamValueUnion> values)
     {
         destPipe.WriteChar('[');
         foreach (var value in values)
@@ -338,6 +322,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
         }
         destPipe.WriteChar(']');
         destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
+        return ValueTask.CompletedTask;
     }
 
     #endregion

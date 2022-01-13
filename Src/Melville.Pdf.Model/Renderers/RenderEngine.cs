@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -359,9 +361,17 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
         return MoveToNextLineAndShowString(decodedString);
     }
 
-    public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
+    public ValueTask ShowSpacedString(in Span<ContentStreamValueUnion> values)
     {
-        foreach (var value in values)
+        var ary = ArrayPool<ContentStreamValueUnion>.Shared.Rent(values.Length);
+        values.CopyTo(ary);
+        return new ValueTask(ShowSpacedString(ary, values.Length).ContinueWith(_ =>
+            ArrayPool<ContentStreamValueUnion>.Shared.Return(ary)));
+    }
+
+    private async Task ShowSpacedString(ContentStreamValueUnion[] values, int length)
+    {
+        foreach (var value in values.Take(length))
         {
             switch (value.Type)
             {
@@ -370,7 +380,7 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
                     UpdateTextPosition(-delta, delta);
                     break;
                 case ContentStreamValueType.Memory:
-                    ShowString(value.Bytes);
+                    await ShowString(value.Bytes);
                     break;
                 default:
                     throw new PdfParseException("Invalid ShowSpacedString argument");

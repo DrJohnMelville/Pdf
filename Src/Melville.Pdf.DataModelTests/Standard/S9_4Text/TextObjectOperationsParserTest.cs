@@ -54,7 +54,7 @@ public partial class TextObjectOperationsParserTest : ParserTest
             return new ValueTask();
         }
 
-        public void ShowSpacedString(in Span<ContentStreamValueUnion> values)
+        public ValueTask ShowSpacedString(in Span<ContentStreamValueUnion> values)
         {
             //[(a)2(b)3(c)(s)4 5]TJ
             Assert.Equal("a", ExtendedAsciiEncoding.ExtendedAsciiString(values[0].Bytes.Span));
@@ -67,6 +67,7 @@ public partial class TextObjectOperationsParserTest : ParserTest
             Assert.Equal(5, values[7].Integer);
 
             SetCalled();
+            return ValueTask.CompletedTask;
         }
 
         private void AssertResult(ReadOnlyMemory<byte> input, string expected)
