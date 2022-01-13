@@ -160,3 +160,7 @@ RenderingTest.cs_wpf-ScriptFontBug|1016386241
 RenderingTest.cs_Skia-BuiltInTrueType|4117844045
 RenderingTest.cs_Skia-EmbeddedTrueType|3228599587
 RenderingTest.cs_Skia-ScriptFontBug|2220242374
+RenderingTest.cs_wpf-EmbeddedOpenType|The process cannot access the file '1.ttf' because it is being used by another process.
+RenderingTest.cs_wpf-Type3Font|132436353
+RenderingTest.cs_Skia-EmbeddedOpenType|4140117613
+RenderingTest.cs_Skia-Type3Font|2704616001

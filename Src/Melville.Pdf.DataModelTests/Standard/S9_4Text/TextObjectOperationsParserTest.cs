@@ -33,14 +33,25 @@ public partial class TextObjectOperationsParserTest : ParserTest
     {
         [DelegateTo()] private IContentStreamOperations op = null!;
 
-        public void ShowString(in ReadOnlyMemory<byte> input) => AssertResult(input, "ABC");
-        public void MoveToNextLineAndShowString(in ReadOnlyMemory<byte> input) => AssertResult(input, "def");
-        public void MoveToNextLineAndShowString(
-            double wordSpace, double charSpace,in ReadOnlyMemory<byte> input)
+        public ValueTask ShowString(ReadOnlyMemory<byte> input)
+        {
+            AssertResult(input, "ABC");
+            return new ValueTask();
+        }
+
+        public ValueTask MoveToNextLineAndShowString(ReadOnlyMemory<byte> input)
+        {
+            AssertResult(input, "def");
+            return new ValueTask();
+        }
+
+        public ValueTask MoveToNextLineAndShowString(
+            double wordSpace, double charSpace,ReadOnlyMemory<byte> input)
         {
             Assert.Equal(7, wordSpace);
             Assert.Equal(8, charSpace);
             AssertResult(input, "IJK");
+            return new ValueTask();
         }
 
         public void ShowSpacedString(in Span<ContentStreamValueUnion> values)

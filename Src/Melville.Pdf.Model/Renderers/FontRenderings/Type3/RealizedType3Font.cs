@@ -9,10 +9,10 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 public interface IType3FontTarget
 {
-    ValueTask<(double width, double height)> RenderType3Character(Stream s);
+    ValueTask<(double width, double height)> RenderType3Character(Stream s, Matrix3x2 fontMatrix);
 }
 
-public class RealizedType3Font : IRealizedFont
+public class RealizedType3Font : IRealizedFont, IFontWriteOperation
 {
     private readonly IType3FontTarget target;
     private readonly MultiBufferStream[] characters;
@@ -29,28 +29,15 @@ public class RealizedType3Font : IRealizedFont
         this.fontMatrix = fontMatrix;
     }
 
-    public IFontWriteOperation BeginFontWrite()
-    {
-        throw new System.NotImplementedException();
-    }
-    
-    private class FontWriteOperation: IFontWriteOperation
-    {
-        private readonly RealizedType3Font parent;
-
-        public FontWriteOperation(RealizedType3Font parent)
-        {
-            this.parent = parent;
-        }
+    public IFontWriteOperation BeginFontWrite() => this;
 
         public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b)
         {
-            return parent.target.RenderType3Character(
-                parent.characters[b - parent.firstCharacter].CreateReader());
+            return target.RenderType3Character(
+                characters[b - firstCharacter].CreateReader(), fontMatrix);
         }
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip)
         {
         }
-    }
 }

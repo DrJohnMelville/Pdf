@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -8,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
+using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers.Bitmaps;
@@ -33,9 +35,6 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
     private IMarkedContentCSOperations Marked => throw new NotImplementedException("Marked Operations not implemented");
     [DelegateTo]
     private ICompatibilityOperations Compat => 
-        throw new NotImplementedException("Compatibility Operations not implemented");
-    [DelegateTo]
-    private IFontMetricsOperations FontMetrics => 
         throw new NotImplementedException("Compatibility Operations not implemented");
 
     #region Graphics State
@@ -379,9 +378,38 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
         }
     }
 
-    public ValueTask<(double width, double height)> RenderType3Character(Stream s)
+
+    #endregion
+
+    #region Type 3 font rendering
+    public async ValueTask<(double width, double height)> RenderType3Character(
+        Stream s, Matrix3x2 fontMatrix)
     {
-        throw new NotImplementedException();
+        SaveGraphicsState();
+        var textMatrix = StateOps.CurrentState().TextMatrix;
+        ModifyTransformMatrix(fontMatrix*textMatrix);
+        await new ContentStreamParser(this).Parse(PipeReader.Create(s));
+        RestoreGraphicsState();
+        var ret = Vector2.Transform(new Vector2((float)lastWx, (float)(lastUry - lastLly)),
+            fontMatrix);
+        return (ret.X, ret.Y);
+    }
+
+    private double lastWx, lastWy, lastLlx, lastLly, lastUrx, lastUry;
+
+    public void SetColoredGlyphMetrics(double wX, double wY)
+    {
+        lastWx = wX;
+        lastWy = wY;
+    }
+
+    public void SetUncoloredGlyphMetrics(double wX, double wY, double llX, double llY, double urX, double urY)
+    {
+        SetColoredGlyphMetrics(wX, wY);
+        lastLlx = llX;
+        lastLly = llY;
+        lastUrx = urX;
+        lastUry = urY;
     }
 
     #endregion
