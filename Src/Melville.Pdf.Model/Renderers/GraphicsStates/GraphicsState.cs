@@ -11,6 +11,7 @@ using Melville.Pdf.Model.FontMappings;
 // needed in rendering code.
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -58,7 +59,7 @@ public partial class GraphicsState: IGraphiscState
     [MacroItem("double", "HorizontalTextScale", "100.0")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
     [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
-    [MacroItem("IByteToUnicodeMapping", "ByteMapper", "DefaultUnicodeMapping.Instance")]
+    [MacroItem("IByteToUnicodeMapping", "ByteMapper", "CharacterEncodings.Standard")]
 
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]

@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Windows.Media;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;

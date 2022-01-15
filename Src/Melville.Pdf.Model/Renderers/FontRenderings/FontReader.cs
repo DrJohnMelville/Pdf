@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.FontMappings;
@@ -22,7 +23,7 @@ public readonly struct FontReader
         if (font.TryGetValue(KnownNames.FontDescriptor, out var descTask) && 
             (await descTask) is PdfDictionary descriptor &&
             await StreamFromDescriptorAsync(descriptor) is { } fontAsStream)
-            return new NamedDefaultMapping(fontAsStream, false, false);
+            return new NamedDefaultMapping(fontAsStream, false, false, CharacterEncodings.Standard);
         
         var baseFontName = await font.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica);
         

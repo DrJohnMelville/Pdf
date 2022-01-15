@@ -24,6 +24,8 @@
       <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
       <None Remove="Model\Conventions\KnownNames.dsl" />
       <AdditionalFiles Include="Model\Conventions\KnownNames.dsl" />
+      <AdditionalFiles Include="Model\CharacterEncoding\glyphlist.cedsl" />
+      <AdditionalFiles Include="Model\CharacterEncoding\stdEncodings.cedsl" />
     </ItemGroup>
 
     <ItemGroup>

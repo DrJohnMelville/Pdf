@@ -3,6 +3,12 @@ using Melville.Pdf.ReferenceDocuments.Graphics;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
 
+public class StandardCharSet : DisplayCharSet
+{
+    public StandardCharSet() : base(BuiltInFontName.Courier)
+    {
+    }
+}
 public class ZapfCharSet : DisplayCharSet
 {
     public ZapfCharSet() : base(BuiltInFontName.ZapfDingbats)
@@ -41,7 +47,7 @@ public abstract class DisplayCharSet : Card3x5
             await csw.SetFont(fontName, 12);
             for (int i = 0; i < 16; i++) 
             {
-                tr.MoveToNextLineAndShowString(Enumerable.Range(0,16).Select(j=>(byte)(16*i + j)).ToArray());
+                await tr.MoveToNextLineAndShowString(Enumerable.Range(0,16).Select(j=>(byte)(16*i + j)).ToArray());
             }
         }
     }

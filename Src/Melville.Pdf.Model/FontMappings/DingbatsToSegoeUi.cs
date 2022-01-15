@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.Model.FontMappings;
+﻿using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+
+namespace Melville.Pdf.Model.FontMappings;
 
 public class DingbatsToSegoeUi : IFontMapping, IByteToUnicodeMapping
 {

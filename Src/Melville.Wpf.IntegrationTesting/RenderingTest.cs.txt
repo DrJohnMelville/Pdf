@@ -129,7 +129,7 @@ RenderingTest.cs_Skia-FormObjectFromXObject|1255845827
 RenderingTest.cs_wpf-ZapfCharSet|1513908641
 RenderingTest.cs_wpf-SymbolCharSer|1077209385
 RenderingTest.cs_Skia-ZapfCharSet|725939343
-RenderingTest.cs_Skia-SymbolCharSer|2533071961
+RenderingTest.cs_Skia-SymbolCharSer|3305088014
 RenderingTest.cs_wpf-CharacterSpacing|3484542826
 RenderingTest.cs_wpf-WordSpacing|2904391494
 RenderingTest.cs_Skia-CharacterSpacing|900020302
@@ -164,3 +164,5 @@ RenderingTest.cs_wpf-EmbeddedOpenType|The process cannot access the file '1.ttf'
 RenderingTest.cs_wpf-Type3Font|132436353
 RenderingTest.cs_Skia-EmbeddedOpenType|4140117613
 RenderingTest.cs_Skia-Type3Font|2704616001
+RenderingTest.cs_Skia-StandardCharSet|1526970507
+RenderingTest.cs_wpf-StandardCharSet|2185420389

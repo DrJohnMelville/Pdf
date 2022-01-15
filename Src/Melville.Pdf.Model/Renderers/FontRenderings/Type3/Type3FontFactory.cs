@@ -49,7 +49,8 @@ public readonly struct Type3FontFactory
 
         return new NamedDefaultMapping(new RealizedType3Font(target, characters, (byte)firstChar,
             (await ReadTransformMatrix()*
-             Matrix3x2.CreateScale((float)size, (float)size))), false, false);
+             Matrix3x2.CreateScale((float)size, (float)size))), false, false,
+            NullUnicodeMapping.Instance);
     }
 
     private async Task<Matrix3x2> ReadTransformMatrix()
