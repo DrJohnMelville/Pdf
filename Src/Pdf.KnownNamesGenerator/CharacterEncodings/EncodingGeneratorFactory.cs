@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -14,7 +16,8 @@ public static class EncodingGeneratorFactory
     {
         return new EncodingGenerator(GlyphNameParser.Parse(Inputfile(texts, "glyphlist.cedsl")),
             new MultiEncodingMaps(Inputfile(texts, "stdEncodings.cedsl")),
-            SimpleMapParser.Parse(Inputfile(texts, "Symbol.cedsl")));
+            SimpleMapParser.Parse(Inputfile(texts, "Symbol.cedsl")),
+            SimpleMapParser.Parse(Inputfile(texts, "MacExpert.cedsl")));
     }
 
     private static string Inputfile(ImmutableArray<AdditionalText> texts, string name) => 
@@ -26,12 +29,15 @@ public class EncodingGenerator
     private IDictionary<string, string> glyphNameToUnicode;
     private MultiEncodingMaps maps;
     private IReadOnlyDictionary<byte, string> symbolMap;
+    private IReadOnlyDictionary<byte, string> macExpertMap;
     public EncodingGenerator(IDictionary<string, string> glyphNameToUnicode, 
-        MultiEncodingMaps maps, IReadOnlyDictionary<byte, string> symbolMap)
+        MultiEncodingMaps maps, IReadOnlyDictionary<byte, string> symbolMap, 
+        IReadOnlyDictionary<byte, string> macExpertMap)
     {
         this.glyphNameToUnicode = glyphNameToUnicode;
         this.maps = maps;
         this.symbolMap = symbolMap;
+        this.macExpertMap = macExpertMap;
     }
 
     public string Generate()
@@ -46,6 +52,7 @@ public class EncodingGenerator
     private void GenerateAllEncodings(StringBuilder sb)
     {
         GeneratePreamble(sb);
+        GenerateEncoding(sb,"MacExpert", macExpertMap);
         GenerateEncoding(sb,"Symbol", symbolMap);
         GenerateEncoding(sb,"Standard",maps.Standard);
         GenerateEncoding(sb,"WinAnsi",maps.Win);
@@ -73,13 +80,18 @@ public class EncodingGenerator
         sb.Append("        ");
         for (int i = 0; i < 256; i++)
         {
-            var value = map.TryGetValue((byte)i, out var mappedName) &&
-                        glyphNameToUnicode.TryGetValue(mappedName, out var uni)
-                ? uni
-                : "25CF";
+            var value = ComputeUnicodeForGlyph(map, i);
             sb.Append($" (char)(0x{value}),");
         }
         sb.AppendLine("    });");
+    }
+
+    private string ComputeUnicodeForGlyph(IReadOnlyDictionary<byte, string> map, int i)
+    {
+        if (!map.TryGetValue((byte)i, out var mappedName)) return "25CF";
+        if (!glyphNameToUnicode.TryGetValue(mappedName, out var uni))
+            throw new InvalidOperationException("Cannot find glyph named: " + mappedName);
+        return uni;
     }
 }
 

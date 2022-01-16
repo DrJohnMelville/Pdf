@@ -75,6 +75,7 @@ public readonly struct FontReader
             (_, KnownNameKeys.StandardEncoding) => CharacterEncodings.Standard,
             (_, KnownNameKeys.MacRomanEncoding) => CharacterEncodings.MacRoman,
             (_, KnownNameKeys.PdfDocEncoding) => CharacterEncodings.Pdf,
+            (_, KnownNameKeys.MacExpertEncoding) => CharacterEncodings.MacExpert,
             _ => throw new PdfParseException("Invalid encoding member on font.")
         };
     }
