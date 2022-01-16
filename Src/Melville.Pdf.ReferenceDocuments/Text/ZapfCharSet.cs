@@ -3,6 +3,18 @@ using Melville.Pdf.ReferenceDocuments.Graphics;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
 
+public class MacExpertCharSet : DisplayCharSet
+{
+    public MacExpertCharSet() : base(BuiltInFontName.Courier, FontEncodingName.MacExpertEncoding)
+    {
+    }
+}
+public class MacRomanCharSet : DisplayCharSet
+{
+    public MacRomanCharSet() : base(BuiltInFontName.Courier, FontEncodingName.MacRomanEncoding)
+    {
+    }
+}
 public class WinAnsiCharSet : DisplayCharSet
 {
     public WinAnsiCharSet() : base(BuiltInFontName.Courier, FontEncodingName.WinAnsiEncoding)

@@ -49,6 +49,8 @@ public class EncodingGenerator
         GenerateEncoding(sb,"Symbol", symbolMap);
         GenerateEncoding(sb,"Standard",maps.Standard);
         GenerateEncoding(sb,"WinAnsi",maps.Win);
+        GenerateEncoding(sb,"MacRoman",maps.Mac);
+        GenerateEncoding(sb,"Pdf",maps.Pdf);
         CloseClassBlock(sb);
     }
 

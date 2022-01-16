@@ -170,3 +170,5 @@ RenderingTest.cs_wpf-SymbolCharSet|4225240944
 RenderingTest.cs_Skia-SymbolCharSet|1745012603
 RenderingTest.cs_wpf-WinAnsiCharSet|3177082674
 RenderingTest.cs_Skia-WinAnsiCharSet|1614823914
+RenderingTest.cs_wpf-MacRomanCharSet|551757578
+RenderingTest.cs_Skia-MacRomanCharSet|1222305867
