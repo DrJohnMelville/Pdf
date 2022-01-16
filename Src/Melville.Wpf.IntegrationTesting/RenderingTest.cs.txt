@@ -172,3 +172,5 @@ RenderingTest.cs_wpf-WinAnsiCharSet|3177082674
 RenderingTest.cs_Skia-WinAnsiCharSet|1614823914
 RenderingTest.cs_wpf-MacRomanCharSet|551757578
 RenderingTest.cs_Skia-MacRomanCharSet|1222305867
+RenderingTest.cs_wpf-MacExpertCharSet|3144216165
+RenderingTest.cs_Skia-MacExpertCharSet|1653400347

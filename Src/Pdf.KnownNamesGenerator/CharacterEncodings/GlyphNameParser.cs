@@ -12,7 +12,7 @@ public static class GlyphNameParser
             .ToDictionary(match => match.Groups[1].Value, match => match.Groups[2].Value);
 
     private static IEnumerable<Match> ExtractPairs(string source) => 
-        Regex.Matches(source, @"^([^;\s]+);([0-9A-F]+)\s*$", RegexOptions.Multiline)
+        Regex.Matches(source, @"^([^;\s]+);([0-9A-Fa-f]+)\s*$", RegexOptions.Multiline)
             .Cast<Match>();
 }
 
