@@ -28,24 +28,10 @@ public class WindowsDefaultFonts: IDefaultFontMapper
         KnownNameKeys.TimesBold => new NamedDefaultMapping(TimesNewRoman, true, false, CharacterEncodings.Standard),
         KnownNameKeys.TimesOblique => new NamedDefaultMapping(TimesNewRoman, false, true, CharacterEncodings.Standard),
         KnownNameKeys.TimesBoldOblique => new NamedDefaultMapping(TimesNewRoman, true, true, CharacterEncodings.Standard),
-        KnownNameKeys.Symbol => new NamedDefaultMapping(Symbol, false, false, SymbolMapping.Instance),
-        KnownNameKeys.ZapfDingbats => new DingbatsToSegoeUi(),
+        KnownNameKeys.Symbol => SegoeUiSymbolMappedFont.Symbol,
+        KnownNameKeys.ZapfDingbats => SegoeUiSymbolMappedFont.ZapfDingbats,
         _ => new NamedDefaultMapping(font.Bytes, false, false, CharacterEncodings.Standard)
     };
-}
-
-public class SymbolMapping: IByteToUnicodeMapping
-{
-    public  static readonly SymbolMapping Instance = new();
-
-    private SymbolMapping()
-    {
-    }
-
-    public char MapToUnicode(byte input)
-    {
-        return input == 0xA0 ? (char)0x20ac : (char)input;
-    }
 }
 
 public class NullUnicodeMapping : IByteToUnicodeMapping

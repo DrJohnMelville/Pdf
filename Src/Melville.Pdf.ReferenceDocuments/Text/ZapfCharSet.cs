@@ -16,9 +16,9 @@ public class ZapfCharSet : DisplayCharSet
     }
 }
 
-public class SymbolCharSer : DisplayCharSet
+public class SymbolCharSet : DisplayCharSet
 {
-    public SymbolCharSer() : base(BuiltInFontName.Symbol)
+    public SymbolCharSet() : base(BuiltInFontName.Symbol)
     {
     }
 }

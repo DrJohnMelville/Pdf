@@ -1,4 +1,4 @@
-RenderingTest.cs_wpf-StandardFonts|3354566855
+RenderingTest.cs_wpf-StandardFonts|520556425
 RenderingTest.cs_wpf-FiltersGenerator|1589314206
 RenderingTest.cs_wpf-MinimalPdfParser|1706411023
 RenderingTest.cs_wpf-ObjectStreamPage|1902750923
@@ -15,7 +15,7 @@ RenderingTest.cs_wpf-EndCaps|3890543918
 RenderingTest.cs_wpf-LineJoin|2548825538
 RenderingTest.cs_wpf-LineWidths|4196252740
 RenderingTest.cs_wpf-MiterLimit|2470350407
-RenderingTest.cs_Skia-StandardFonts|372474714
+RenderingTest.cs_Skia-StandardFonts|2353439633
 RenderingTest.cs_Skia-FiltersGenerator|4190745884
 RenderingTest.cs_Skia-MinimalPdfParser|2633483471
 RenderingTest.cs_Skia-ObjectStreamPage|135874101
@@ -126,9 +126,9 @@ RenderingTest.cs_wpf-FormObjectFromPage|911276189
 RenderingTest.cs_Skia-FormObjectFromPage|1255845827
 RenderingTest.cs_wpf-FormObjectFromXObject|911276189
 RenderingTest.cs_Skia-FormObjectFromXObject|1255845827
-RenderingTest.cs_wpf-ZapfCharSet|1513908641
+RenderingTest.cs_wpf-ZapfCharSet|3371793271
 RenderingTest.cs_wpf-SymbolCharSer|1077209385
-RenderingTest.cs_Skia-ZapfCharSet|725939343
+RenderingTest.cs_Skia-ZapfCharSet|2043877209
 RenderingTest.cs_Skia-SymbolCharSer|3305088014
 RenderingTest.cs_wpf-CharacterSpacing|3484542826
 RenderingTest.cs_wpf-WordSpacing|2904391494
@@ -166,3 +166,5 @@ RenderingTest.cs_Skia-EmbeddedOpenType|4140117613
 RenderingTest.cs_Skia-Type3Font|2704616001
 RenderingTest.cs_Skia-StandardCharSet|1526970507
 RenderingTest.cs_wpf-StandardCharSet|2185420389
+RenderingTest.cs_wpf-SymbolCharSet|4225240944
+RenderingTest.cs_Skia-SymbolCharSet|1745012603

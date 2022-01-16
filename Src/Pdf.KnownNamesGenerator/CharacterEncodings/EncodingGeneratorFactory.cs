@@ -13,36 +13,40 @@ public static class EncodingGeneratorFactory
     public static EncodingGenerator Create(ImmutableArray<AdditionalText> texts)
     {
         return new EncodingGenerator(GlyphNameParser.Parse(Inputfile(texts, "glyphlist.cedsl")),
-            new MultiEncodingMaps(Inputfile(texts, "stdEncodings.cedsl")));
+            new MultiEncodingMaps(Inputfile(texts, "stdEncodings.cedsl")),
+            SimpleMapParser.Parse(Inputfile(texts, "Symbol.cedsl")));
     }
 
-    private static string Inputfile(ImmutableArray<AdditionalText> texts, string name)
-    {
-        return texts.First(i => i.Path.EndsWith(name)).GetText()!.ToString();
-    }
+    private static string Inputfile(ImmutableArray<AdditionalText> texts, string name) => 
+        texts.First(i => i.Path.EndsWith(name)).GetText()!.ToString();
 }
 
 public class EncodingGenerator
 {
     private IDictionary<string, string> glyphNameToUnicode;
     private MultiEncodingMaps maps;
-    public EncodingGenerator(IDictionary<string, string> glyphNameToUnicode, MultiEncodingMaps maps)
+    private IReadOnlyDictionary<byte, string> symbolMap;
+    public EncodingGenerator(IDictionary<string, string> glyphNameToUnicode, 
+        MultiEncodingMaps maps, IReadOnlyDictionary<byte, string> symbolMap)
     {
-        UdpConsole.WriteLine("Got list");
         this.glyphNameToUnicode = glyphNameToUnicode;
         this.maps = maps;
+        this.symbolMap = symbolMap;
     }
 
     public string Generate()
     {
         var sb = new StringBuilder();
         GenerateAllEncodings(sb);
-        return sb.ToString();
+        var text = sb.ToString();
+        UdpConsole.WriteLine(text.Substring(0,1000));
+        return text;
     }
 
     private void GenerateAllEncodings(StringBuilder sb)
     {
         GeneratePreamble(sb);
+        GenerateEncoding(sb,"Symbol", symbolMap);
         GenerateEncoding(sb,"Standard",maps.Standard);
         CloseClassBlock(sb);
     }
@@ -60,16 +64,17 @@ public class EncodingGenerator
         sb.AppendLine("}");
     }
 
-    private void GenerateEncoding(StringBuilder sb, string name, Dictionary<byte,string> map)
+    private void GenerateEncoding(StringBuilder sb, string name, IReadOnlyDictionary<byte, string> map)
     {
         sb.AppendLine($"    public static IByteToUnicodeMapping {name} = new TableMapping(new char[] {{");
+        sb.Append("        ");
         for (int i = 0; i < 256; i++)
         {
             var value = map.TryGetValue((byte)i, out var mappedName) &&
                         glyphNameToUnicode.TryGetValue(mappedName, out var uni)
                 ? uni
                 : "25CF";
-            sb.AppendLine($"        (char)(0x{value}),");
+            sb.Append($" (char)(0x{value}),");
         }
         sb.AppendLine("    });");
     }

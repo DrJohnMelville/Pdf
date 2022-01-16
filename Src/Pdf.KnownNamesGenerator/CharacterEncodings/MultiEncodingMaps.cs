@@ -16,6 +16,7 @@ public class MultiEncodingMaps
     {
         foreach (var row in GetRows(inputfile))
         {
+            if (row.Length < 6) continue;
             TryAddValue(Standard, row[1], row[2]);
             TryAddValue(Mac, row[1], row[3]);
             TryAddValue(Win, row[1], row[4]);

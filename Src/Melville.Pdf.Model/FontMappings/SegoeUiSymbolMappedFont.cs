@@ -2,16 +2,29 @@
 
 namespace Melville.Pdf.Model.FontMappings;
 
-public class DingbatsToSegoeUi : IFontMapping, IByteToUnicodeMapping
+public class SegoeUiSymbolMappedFont : IFontMapping
 {
+    public static readonly SegoeUiSymbolMappedFont ZapfDingbats = new(ZapfDignbatsMapping.Instance);
+    public static readonly SegoeUiSymbolMappedFont Symbol = new SegoeUiSymbolMappedFont(CharacterEncodings.Symbol);
+    private SegoeUiSymbolMappedFont(IByteToUnicodeMapping mapping)
+    {
+        Mapping = mapping;
+    }
+
     private static readonly byte[] SegoeUISymbol =
         { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
     public object Font => SegoeUISymbol;
-    public IByteToUnicodeMapping Mapping => this;
+    public IByteToUnicodeMapping Mapping { get; }
 
     public bool Bold => false;
     public bool Oblique => false;
 
+}
+
+public class ZapfDignbatsMapping : IByteToUnicodeMapping
+{
+    public static readonly ZapfDignbatsMapping Instance = new();
+    private ZapfDignbatsMapping() { }
     public char MapToUnicode(byte input) =>(char)(input switch
     {
         <0x20 => 0x25A1,
@@ -31,7 +44,7 @@ public class DingbatsToSegoeUi : IFontMapping, IByteToUnicodeMapping
         0xa9 =>  0x2666,// Diamonds
         0xAA =>  0x2665, // hearts
         0xAB => 0x2660, // spades
-        >0xAC and <= 0xBC => input + 0x2780 - 0xAC,
+        >=0xAC and <= 0xBC => input + 0x2780 - 0xAC,
         0xD5 => 0x2192,
         0XD6 => 0X2194,
         0XD7 => 0X2195,

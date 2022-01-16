@@ -26,6 +26,7 @@
       <AdditionalFiles Include="Model\Conventions\KnownNames.dsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\glyphlist.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\stdEncodings.cedsl" />
+      <AdditionalFiles Include="Model\CharacterEncoding\Symbol.cedsl" />
     </ItemGroup>
 
     <ItemGroup>
