@@ -3,6 +3,12 @@ using Melville.Pdf.ReferenceDocuments.Graphics;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
 
+public class WinAnsiCharSet : DisplayCharSet
+{
+    public WinAnsiCharSet() : base(BuiltInFontName.Courier, FontEncodingName.WinAnsiEncoding)
+    {
+    }
+}
 public class StandardCharSet : DisplayCharSet
 {
     public StandardCharSet() : base(BuiltInFontName.Courier)
@@ -24,18 +30,22 @@ public class SymbolCharSet : DisplayCharSet
 }
 public abstract class DisplayCharSet : Card3x5
 {
-    private BuiltInFontName name;
+    private readonly BuiltInFontName name;
+    private readonly FontEncodingName fontEncodingName;
 
-    protected DisplayCharSet(BuiltInFontName name) : base ($"All Characters of the {name} Charset")
+    protected DisplayCharSet(BuiltInFontName name) : this (name, FontEncodingName.StandardEncoding){}
+    protected DisplayCharSet(BuiltInFontName name, FontEncodingName fontEncodingName) : 
+        base ($"All Characters of the {name} Charset")
     {
         this.name = name;
+        this.fontEncodingName = fontEncodingName;
     }
 
-    private static readonly PdfName fontName = NameDirectory.Get("F1"); 
+    private static readonly PdfName fontName = NameDirectory.Get("F1");
+
     protected override void SetPageProperties(PageCreator page)
     {
-        page.AddStandardFont(fontName, name, FontEncodingName.StandardEncoding);
-        
+        page.AddStandardFont(fontName, name, fontEncodingName);
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)

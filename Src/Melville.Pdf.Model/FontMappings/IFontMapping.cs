@@ -12,5 +12,5 @@ public interface IFontMapping
 
 public interface IDefaultFontMapper
 {
-    public IFontMapping MapDefaultFont(PdfName font);
+    public IFontMapping MapDefaultFont(PdfName font, IByteToUnicodeMapping suggestedEncoding);
 }

@@ -48,6 +48,7 @@ public class EncodingGenerator
         GeneratePreamble(sb);
         GenerateEncoding(sb,"Symbol", symbolMap);
         GenerateEncoding(sb,"Standard",maps.Standard);
+        GenerateEncoding(sb,"WinAnsi",maps.Win);
         CloseClassBlock(sb);
     }
 

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -292,7 +293,7 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
     {
         var fontMapping = await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
             await fontReader.DictionaryToMappingAsync(fontDic, this, size) :
-            fontReader.NameToMapping(font);
+            fontReader.NameToMapping(font, CharacterEncodings.Standard);
         await SetTypeface(fontMapping, size);
     }
 
