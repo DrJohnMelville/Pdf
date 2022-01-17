@@ -20,6 +20,15 @@ namespace Pdf.KnownNamesGenerator
             context.RegisterSourceOutput(context.AdditionalTextsProvider
                     .Where(i=>i.Path.EndsWith(".cedsl")).Collect(),
                 GenerateCharacterEncodings);
+            context.RegisterSourceOutput(context.AdditionalTextsProvider
+                    .Where(i=>i.Path.EndsWith("glyphlist.cedsl")),
+                GenerateGlyphList);
+        }
+
+        private void GenerateGlyphList(SourceProductionContext context, AdditionalText text)
+        {
+            context.AddSource("GlyphMapper.Generated.cs",
+                new GlyphListWriter(GlyphNameParser.Parse(text.GetText()!.ToString())).Write());
         }
 
         private void GenerateCharacterEncodings(

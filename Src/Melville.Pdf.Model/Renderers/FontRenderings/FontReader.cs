@@ -89,12 +89,8 @@ public readonly struct FontReader
         var baseEncoding = dict.TryGetValue(KnownNames.BaseEncoding, out var baseTask)
             ? await InterpretEncodingValue(await baseTask)
             : CharacterEncodings.Standard;
-
-        return baseEncoding;
+        return dict.TryGetValue(KnownNames.Differences, out var arrTask) &&
+               (await arrTask) is PdfArray arr?
+            await CustomFontEncodingFactory.Create(baseEncoding, arr): baseEncoding;
     }
 }
-
-// public class CustomFontEncodings : IByteToUnicodeMapping
-// {
-//     
-// }

@@ -6,6 +6,27 @@ using System.Text.RegularExpressions;
 
 namespace Pdf.KnownNamesGenerator.KnownNames
 {
+    //this is a simplified version of the FNV algorithm for short strings, it does not do any of the modulos
+    public static class Fnv
+    {
+        private const uint offsetBasis = 0x811c9dc5;
+        private const uint prime = 0x01000193;
+
+        public static int FromString(string s)
+        {
+            unchecked
+            {
+                var hash = offsetBasis;
+                foreach (var character in s)
+                {
+                    hash = (hash * prime) ^ (uint)(character & 0xFF);
+                }
+
+                return (int)hash;
+                
+            }
+        }
+    }
     public  class GenerateKnownNames
     {
         private string data;
@@ -86,29 +107,11 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.AppendLine("      public static partial class KnownNameKeys {");
             foreach (var (value, name, _) in UniquePdfNames(allNames))
             {
-                sb.AppendLine($"        public const int {name} = {FnvForString(value)};");
+                sb.AppendLine($"        public const int {name} = {Fnv.FromString(value)};");
             }
 
             sb.AppendLine("          }");
         }
-
-        private const uint offsetBasis = 0x811c9dc5;
-        private const uint prime = 0x01000193;
-        private static int FnvForString(string s)
-        {
-            unchecked
-            {
-                var hash = offsetBasis;
-                foreach (var character in s)
-                {
-                    hash = (hash * prime) ^ (uint)(character & 0xFF);
-                }
-
-                return (int)hash;
-                
-            }
-        }
-
         private static IOrderedEnumerable<(string Value, string CSharpName, string type)> UniquePdfNames(List<(string Value, string CSharpName, string type)> allNames) =>
             allNames
                 .GroupBy(i => i.CSharpName).Select(i => i.First())
