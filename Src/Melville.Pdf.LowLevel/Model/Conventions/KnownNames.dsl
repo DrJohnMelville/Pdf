@@ -112,6 +112,7 @@ Pdf:AESV3
 Pdf:All
 Pdf:Ascent
 Pdf:AuthEvent
+Pdf:BaseEncoding
 Pdf:BaseFont
 Pdf:BBox
 Pdf:BitsPerComponent
