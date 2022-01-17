@@ -69,14 +69,32 @@ public readonly struct FontReader
         if (!font.TryGetValue(KnownNames.Encoding, out var EncodingTask))
             return CharacterEncodings.Standard;
         var encoding = await EncodingTask;
-        return (encoding, encoding.GetHashCode()) switch
+        return await InterpretEncodingValue(encoding);
+    }
+
+    private  ValueTask<IByteToUnicodeMapping> InterpretEncodingValue(PdfObject encoding) =>
+        (encoding, encoding.GetHashCode()) switch
         {
-            (_, KnownNameKeys.WinAnsiEncoding) => CharacterEncodings.WinAnsi,
-            (_, KnownNameKeys.StandardEncoding) => CharacterEncodings.Standard,
-            (_, KnownNameKeys.MacRomanEncoding) => CharacterEncodings.MacRoman,
-            (_, KnownNameKeys.PdfDocEncoding) => CharacterEncodings.Pdf,
-            (_, KnownNameKeys.MacExpertEncoding) => CharacterEncodings.MacExpert,
+            (_, KnownNameKeys.WinAnsiEncoding) => new(CharacterEncodings.WinAnsi),
+            (_, KnownNameKeys.StandardEncoding) => new(CharacterEncodings.Standard),
+            (_, KnownNameKeys.MacRomanEncoding) => new(CharacterEncodings.MacRoman),
+            (_, KnownNameKeys.PdfDocEncoding) => new(CharacterEncodings.Pdf),
+            (_, KnownNameKeys.MacExpertEncoding) => new(CharacterEncodings.MacExpert),
+            (PdfDictionary dict, _) => ReadEncodingDictionary(dict),
             _ => throw new PdfParseException("Invalid encoding member on font.")
         };
+
+    private async ValueTask<IByteToUnicodeMapping> ReadEncodingDictionary(PdfDictionary dict)
+    {
+        var baseEncoding = dict.TryGetValue(KnownNames.BaseEncoding, out var baseTask)
+            ? await InterpretEncodingValue(await baseTask)
+            : CharacterEncodings.Standard;
+
+        return baseEncoding;
     }
 }
+
+// public class CustomFontEncodings : IByteToUnicodeMapping
+// {
+//     
+// }

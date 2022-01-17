@@ -62,8 +62,12 @@ public abstract class PageTreeNodeChildCreator
     public PdfName AddStandardFont(
         string assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
         AddStandardFont(NameDirectory.Get(assignedName), baseFont, encoding);
+
     public PdfName AddStandardFont(
-        PdfName assignedName, BuiltInFontName baseFont, FontEncodingName encoding)
+        PdfName assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
+        AddStandardFont(assignedName, baseFont, (PdfName)encoding);
+    public PdfName AddStandardFont(
+        PdfName assignedName, BuiltInFontName baseFont, PdfObject encoding)
     {
         Resources[(KnownNames.Font, assignedName)] = _=>new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
