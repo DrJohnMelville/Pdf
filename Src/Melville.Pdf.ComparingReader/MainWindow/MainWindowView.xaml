@@ -25,6 +25,7 @@
         </Grid.Resources>
         <StackPanel >
             <Button Click="{eventBindings:EventBinding ShowPdfRepl}">Show Pdf REPL</Button>
+            <Button Click="{eventBindings:EventBinding LoadFile}">Load File</Button>
             <ComboBox SelectedIndex="{Binding PasswordBox.Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
                Converter={x:Static mainWindow:MainWindowConverters.PasswordTypeConverter} }"
                       IsSynchronizedWithCurrentItem="True">

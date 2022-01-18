@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using ABI.System.Collections.Generic;
 using Melville.INPC;
 using Melville.MVVM.Wpf.Bindings;
 using Melville.MVVM.Wpf.DiParameterSources;
+using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RootWindows;
 using Melville.MVVM.Wpf.ViewFrames;
+using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.REPLs;
@@ -65,6 +68,18 @@ public partial class MainWindowViewModel
     public void ShowPdfRepl([FromServices] ReplViewModel model,
         [FromServices] Func<object, IRootNavigationWindow> factory) =>
         factory(model).Show();
+
+    public async Task LoadFile([FromServices] IOpenSaveFile fileSource)
+    {
+        var file = fileSource.GetLoadFile(null, "PDF", "Portable Document Format(*.pdf)|*.pdf", "Load File");
+        if (file is null) return;
+        var src = new MultiBufferStream();
+        await using (var fileStr = await file.OpenRead())
+        {
+            await fileStr.CopyToAsync(src);
+        }
+        Renderer.SetTarget(src);
+    }
 }
 
 public static class MainWindowConverters

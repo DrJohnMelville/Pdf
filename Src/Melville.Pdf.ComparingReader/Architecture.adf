@@ -17,6 +17,7 @@ Group REPL
 MainWindow => Renderers
 MainWindow => REPL
 MainWindow => Melville.MVVM.*
+MainWindow => Melville.FileSystem.*
 
 REPL => Renderers
 REPL => Melville.Pdf.ReferenceDocuments.*

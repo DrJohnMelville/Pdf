@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using Melville.IOC.IocContainers;
+using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
@@ -68,6 +69,7 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
 
         private void RegisterRootWindows(IBindableIocService service)
         {
+            service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
            service.Bind<IList<ReferenceDocumentNode>>().ToMethod(ReferenceDocumentFactory.Create);
             service.Bind<ICommandLineSelection>().ToMethod(() => new CommandLineSelection(this.CommandLineParameters));
             service.Bind<IPasswordSource>().To<PasswordBox>().AsSingleton();
