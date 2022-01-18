@@ -6,6 +6,7 @@ using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
+using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.ComparingReader.Viewers.LowLevel;
 using Melville.Pdf.ComparingReader.Viewers.SkiaViewer;
@@ -51,7 +52,9 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
 
         private static void RegisterRenderers(IBindableIocService service)
         {
-            BindImageRenderer(service, "Reference", new WindowsImageRenderer());
+            var selector = new PageSelectorViewModel();
+            service.Bind<IPageSelector>().ToConstant(selector);
+            BindImageRenderer(service, "Reference", new WindowsImageRenderer(selector));
             BindImageRenderer(service, "WPF", new WpfDrawingGroupRenderer());
             BindImageRenderer(service, "Skia", new SkiaRenderer());
             service.Bind<IRenderer>().To<LowLevelRenderer>();
@@ -65,7 +68,7 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
 
         private void RegisterRootWindows(IBindableIocService service)
         {
-            service.Bind<IList<ReferenceDocumentNode>>().ToMethod(ReferenceDocumentFactory.Create);
+           service.Bind<IList<ReferenceDocumentNode>>().ToMethod(ReferenceDocumentFactory.Create);
             service.Bind<ICommandLineSelection>().ToMethod(() => new CommandLineSelection(this.CommandLineParameters));
             service.Bind<IPasswordSource>().To<PasswordBox>().AsSingleton();
             service.Bind<Window>().And<IRootNavigationWindow>().To<RootNavigationWindow>().AsSingleton();

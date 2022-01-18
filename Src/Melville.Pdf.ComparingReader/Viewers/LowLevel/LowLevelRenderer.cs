@@ -17,7 +17,7 @@ public class LowLevelRenderer : IRenderer
 
     public object RenderTarget => model;
 
-    public void SetTarget(Stream pdfBits)
+    public void SetTarget(Stream pdfBits, int _)
     {
         model.SetStream(pdfBits);
     }

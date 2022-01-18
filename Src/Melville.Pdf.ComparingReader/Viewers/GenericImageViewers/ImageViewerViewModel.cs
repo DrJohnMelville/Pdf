@@ -12,17 +12,17 @@ namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 
 public interface IImageRenderer
 {
-    ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password);
+    ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password, int page);
 }
 
 public abstract class MelvillePdfRenderer : IImageRenderer
 {
-    public async ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password)
+    public async ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password, int page)
     {
         var doc = await PdfDocument.ReadAsync(pdfBits, new SinglePasswordSource(password));
         var pages = await doc.PagesAsync();
         var ret = (await pages.CountAsync()) > 0
-            ? await Render(await pages.GetPageAsync(0))
+            ? await Render(await pages.GetPageAsync(page -1))
             : new DrawingImage();
         ret.Freeze();
         return ret;
@@ -59,13 +59,13 @@ public partial class ImageViewerViewModel : IRenderer
         DisplayName = displayName;
     }
 
-    public async void SetTarget(Stream pdfBits)
+    public async void SetTarget(Stream pdfBits, int page)
     {
         try
         {
             var (password, _) = await passwords.GetPassword();
             pdfBits.Seek(0, SeekOrigin.Begin);
-            Image = await renderer.LoadFirstPage(pdfBits, password ??"");
+            Image = await renderer.LoadFirstPage(pdfBits, password ??"", page);
             Exception = null;
         }
         catch (Exception e)

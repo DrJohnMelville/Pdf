@@ -16,7 +16,7 @@ public partial class SystemRenderViewModel: IRenderer
     [AutoNotify] private string message = "";
     private Stream? savedTarget;
 
-    public void SetTarget(Stream pdfBits)
+    public void SetTarget(Stream pdfBits, int _)
     {
         savedTarget = pdfBits;
     }
