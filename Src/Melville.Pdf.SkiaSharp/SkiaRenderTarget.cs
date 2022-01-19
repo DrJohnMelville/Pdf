@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.FontMappings;
@@ -10,7 +11,7 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget, IFontWriteTarget<SKPath>
+public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget, IFontWriteTarget<SKPath>
 {
     public SkiaRenderTarget(
         SKCanvas target, GraphicsStateStack state, PdfPage page) : 
@@ -32,66 +33,40 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget, IFontWr
 
     public override void Transform(in Matrix3x2 newTransform) => 
         Target.SetMatrix(State.Current().Transform());
-
-    public void ClipToPath(bool evenOddRule)
-    {
-        if (currentPath is null) return;
-        SetCurrentFillRule(evenOddRule);
-        Target.ClipPath(currentPath);
-    }
     #endregion
 
     #region Path Building
 
-    private SKPath? currentPath;
-    private SKPath GetOrCreatePath => currentPath ??= new SKPath();
+    private IDrawTarget? currentShape = null;
 
-    public void MoveTo(double x, double y) => GetOrCreatePath.MoveTo((float)x,(float)y);
+    [DelegateTo()]
+    private IDrawTarget CurrentShape() => currentShape ??= new SkiaDrawTarget(Target, State);
 
-    public void LineTo(double x, double y) => currentPath?.LineTo((float)x, (float)y);
+    // private SKPath? currentPath;
+    // private SKPath GetOrCreatePath => currentPath ??= new SKPath();
 
-    public void ClosePath()
-    {
-        currentPath?.Close();
-    }
-
-    public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
-        double finalX, double finalY) =>
-        currentPath?.CubicTo(
-            (float)control1X, (float)control1Y, (float)control2X, (float)control2Y, (float)finalX, (float)finalY);
+    // public void MoveTo(double x, double y) => GetOrCreatePath.MoveTo((float)x,(float)y);
+    //
+    // public void LineTo(double x, double y) => currentPath?.LineTo((float)x, (float)y);
+    //
+    // public void ClosePath()
+    // {
+    //     currentPath?.Close();
+    // }
+    //
+    // public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
+    //     double finalX, double finalY) =>
+    //     currentPath?.CubicTo(
+    //         (float)control1X, (float)control1Y, (float)control2X, (float)control2Y, (float)finalX, (float)finalY);
 
     #endregion
 
     #region Path Drawing
 
-    public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
-    {
-        InnerPaintPath(stroke, fill, evenOddFillRule, GetOrCreatePath);
-    }
-
-    private void InnerPaintPath(bool stroke, bool fill, bool evenOddFillRule, SKPath path)
-    {
-        if (fill && State.Current().Brush() is { } brush)
-        {
-            SetCurrentFillRule(evenOddFillRule);
-            Target.DrawPath(path, brush);
-            brush.Dispose();
-        }
-
-        if (stroke && State.Current().Pen() is { } pen)
-        {
-            Target.DrawPath(path, pen);
-            pen.Dispose();
-        }
-    }
-
-    private void SetCurrentFillRule(bool evenOddFillRule) => 
-        GetOrCreatePath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
-
     public void EndPath()
     {
-        currentPath?.Dispose();
-        currentPath = null;
+        (currentShape as IDisposable)?.Dispose();
+        currentShape = null;
     }
     #endregion
     
@@ -121,9 +96,11 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget, IFontWr
 
     public void RenderCurrentString(SKPath currentString, bool stroke, bool fill, bool clip)
     {
-        InnerPaintPath(stroke, fill, false, currentString);
-        if (clip) Target.ClipPath(currentString);
+        var stringDrawTarget = new SkiaDrawTarget(Target, State, currentString);
+        stringDrawTarget.PaintPath(stroke, fill, false);
+        if (clip) stringDrawTarget.ClipToPath(false);
     }
+
     #endregion
 
 }

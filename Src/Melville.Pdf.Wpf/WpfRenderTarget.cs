@@ -4,8 +4,6 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.FontMappings;
@@ -57,19 +55,10 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderT
 
     public void ClipToPath(bool evenOddRule)
     {
-        // if (geometry is null) return;
-        // SetCurrentFillRule(evenOddRule);
-        // ClipToGeometry(geometry);
         if(shape is null) return;
         shape.ClipToPath(evenOddRule);
         IncrementSavePoints();
     }
-
-    // private void ClipToGeometry(Geometry clippingGeometry)
-    // {
-    //     IncrementSavePoints();
-    //     Target.PushClip(clippingGeometry);
-    // }
 
     #endregion
 
