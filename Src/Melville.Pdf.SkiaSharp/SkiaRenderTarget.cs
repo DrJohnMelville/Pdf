@@ -37,7 +37,7 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget,
 
     #region Path Building
 
-    protected override IDrawTarget CreateDrawTarget() =>new SkiaDrawTarget(Target, State);
+    public override IDrawTarget CreateDrawTarget() =>new SkiaDrawTarget(Target, State);
 
     #endregion
     

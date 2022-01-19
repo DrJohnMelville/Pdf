@@ -32,7 +32,8 @@ public interface IRenderTarget: IDrawTarget
     void RestoreTransformAndClip();
     void Transform(in Matrix3x2 newTransform);
     ValueTask RenderBitmap(IPdfBitmap bitmap);
-    public ValueTask SetFont(IFontMapping font, double size);
+    ValueTask SetFont(IFontMapping font, double size);
+    IDrawTarget CreateDrawTarget();
 }
 
 public abstract partial class RenderTargetBase<T>: IDrawTarget
@@ -76,7 +77,7 @@ public abstract partial class RenderTargetBase<T>: IDrawTarget
 
     #region Draw Shapes
 
-    protected abstract IDrawTarget CreateDrawTarget();
+    public abstract IDrawTarget CreateDrawTarget();
 
     protected IDrawTarget? currentShape = null;
     [DelegateTo()]

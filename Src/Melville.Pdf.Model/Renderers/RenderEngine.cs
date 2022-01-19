@@ -22,7 +22,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 namespace Melville.Pdf.Model.Renderers;
 
-public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
+public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
     private readonly IRenderTarget target;
@@ -393,6 +393,9 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
     #endregion
 
     #region Type 3 font rendering
+
+    public IDrawTarget CreateDrawTarget() => target.CreateDrawTarget();
+
     public async ValueTask<(double width, double height)> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix)
     {

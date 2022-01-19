@@ -20,7 +20,7 @@ public readonly struct FontReader
     }
 
     public async ValueTask<IFontMapping> DictionaryToMappingAsync(
-        PdfDictionary font, IType3FontTarget target, double size)
+        PdfDictionary font, IFontTarget target, double size)
     {
         var fontTypeKey = 
             (await font.GetOrDefaultAsync(KnownNames.Subtype, KnownNames.Type1)).GetHashCode();

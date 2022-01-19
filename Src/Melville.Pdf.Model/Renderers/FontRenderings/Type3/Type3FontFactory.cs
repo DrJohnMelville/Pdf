@@ -11,10 +11,10 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 public readonly struct Type3FontFactory
 {
     private readonly PdfDictionary font;
-    private readonly IType3FontTarget target;
+    private readonly IFontTarget target;
     private readonly double size;
 
-    public Type3FontFactory(PdfDictionary font, IType3FontTarget target, double size)
+    public Type3FontFactory(PdfDictionary font, IFontTarget target, double size)
     {
         this.font = font;
         this.target = target;

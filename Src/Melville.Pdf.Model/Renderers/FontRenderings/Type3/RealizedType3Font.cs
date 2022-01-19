@@ -7,20 +7,21 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
-public interface IType3FontTarget
+public interface IFontTarget
 {
     ValueTask<(double width, double height)> RenderType3Character(Stream s, Matrix3x2 fontMatrix);
+    IDrawTarget CreateDrawTarget();
 }
 
 public class RealizedType3Font : IRealizedFont, IFontWriteOperation
 {
-    private readonly IType3FontTarget target;
+    private readonly IFontTarget target;
     private readonly MultiBufferStream[] characters;
     private readonly byte firstCharacter;
     private readonly Matrix3x2 fontMatrix;
     
     public RealizedType3Font(
-        IType3FontTarget target, MultiBufferStream[] characters, byte firstCharacter, 
+        IFontTarget target, MultiBufferStream[] characters, byte firstCharacter, 
         Matrix3x2 fontMatrix)
     {
         this.target = target;

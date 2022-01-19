@@ -70,13 +70,8 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderT
         // setup the userSpace to device space transform
         MapUserSpaceToBitmapSpace(rect, rect.Width, rect.Height);
     }
-
-    #region Path Building
-
-    protected override IDrawTarget CreateDrawTarget() => new WpfDrawTarget(Target, State);
-
-
-    #endregion
+    
+    public override IDrawTarget CreateDrawTarget() => new WpfDrawTarget(Target, State);
 
     #region Bitmap rendering
 
