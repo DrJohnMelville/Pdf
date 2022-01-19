@@ -33,7 +33,7 @@ public class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget, IFontWr
     public override void Transform(in Matrix3x2 newTransform) => 
         Target.SetMatrix(State.Current().Transform());
 
-    public void CombineClip(bool evenOddRule)
+    public void ClipToPath(bool evenOddRule)
     {
         if (currentPath is null) return;
         SetCurrentFillRule(evenOddRule);

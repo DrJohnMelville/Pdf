@@ -11,26 +11,25 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public interface IRenderTarget
+public interface IDrawTarget
 {
-    IGraphiscState GrapicsStateChange { get; }
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
-
     void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
         double finalX, double finalY);
-
     void ClosePath();
     void PaintPath(bool stroke, bool fill, bool evenOddFillRule);
-    void EndPath();
+    void ClipToPath(bool evenOddRule);
+}
 
+public interface IRenderTarget: IDrawTarget
+{
+    IGraphiscState GrapicsStateChange { get; }
+    void EndPath();
     void SaveTransformAndClip();
     void RestoreTransformAndClip();
     void Transform(in Matrix3x2 newTransform);
-    void CombineClip(bool evenOddRule);
-
     ValueTask RenderBitmap(IPdfBitmap bitmap);
-
     public ValueTask SetFont(IFontMapping font, double size);
 }
 

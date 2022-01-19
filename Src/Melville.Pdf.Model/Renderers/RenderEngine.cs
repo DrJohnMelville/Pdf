@@ -144,9 +144,9 @@ public partial class RenderEngine: IContentStreamOperations, IType3FontTarget
         EndPathWithNoOp();
     }
 
-    public void ClipToPath() => target.CombineClip(false);
+    public void ClipToPath() => target.ClipToPath(false);
 
-    public void ClipToPathEvenOdd() => target.CombineClip(true);
+    public void ClipToPathEvenOdd() => target.ClipToPath(true);
 
     public async ValueTask DoAsync(PdfName name) =>
         await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name)) as PdfStream ??

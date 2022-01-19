@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
@@ -17,7 +17,7 @@ using Melville.Pdf.Wpf.FakeUris;
 
 namespace Melville.Pdf.Wpf;
 
-public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget, IFontWriteTarget<GeometryGroup>
+public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget, IFontWriteTarget<GeometryGroup>
 {
     private readonly TempFontDirectory fontCache;
     public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page, TempFontDirectory fontCache):
@@ -55,18 +55,21 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget, I
         savePoints.Push(1+savePoints.Pop());
     }
 
-    public void CombineClip(bool evenOddRule)
+    public void ClipToPath(bool evenOddRule)
     {
-        if (geometry is null) return;
-        SetCurrentFillRule(evenOddRule);
-        ClipToGeometry(geometry);
+        // if (geometry is null) return;
+        // SetCurrentFillRule(evenOddRule);
+        // ClipToGeometry(geometry);
+        if(shape is null) return;
+        shape.ClipToPath(evenOddRule);
+        IncrementSavePoints();
     }
 
-    private void ClipToGeometry(Geometry clippingGeometry)
-    {
-        IncrementSavePoints();
-        Target.PushClip(clippingGeometry);
-    }
+    // private void ClipToGeometry(Geometry clippingGeometry)
+    // {
+    //     IncrementSavePoints();
+    //     Target.PushClip(clippingGeometry);
+    // }
 
     #endregion
 
@@ -80,57 +83,15 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget, I
     }
 
     #region Path Building
-    private PathGeometry? geometry;
-    private PathFigure? figure;
 
-    public void MoveTo(double x, double y)
-    {
-        figure = new PathFigure(){StartPoint = new Point(x, y)};
-        EnsureGeometryExists().Figures.Add(figure);
-    }
+    private IDrawTarget? shape = null;
 
-    private PathGeometry EnsureGeometryExists() => geometry ??= new PathGeometry();
-
-    public void LineTo(double x, double y) => 
-        figure?.Segments.Add(new LineSegment(new Point(x,y), true));
-
-    public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
-        double finalX, double finalY) => figure?.Segments.Add(
-        new BezierSegment(
-            new Point(control1X, control1Y), new Point(control2X, control2Y), new Point(finalX, finalY), true));
-
-    public void ClosePath()
-    {
-        if (figure == null) return;
-        figure.IsClosed = true;
-    }
-    #endregion
-
-    #region Path Painting
-
-    public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
-    {
-        if (geometry == null) return;
-        SetCurrentFillRule(evenOddFillRule);
-        InnerPathPaint(stroke, fill, geometry);
-    }
-
-    private void InnerPathPaint(bool stroke, bool fill, Geometry pathToPaint) =>
-        Target.DrawGeometry(
-            fill ? State.Current().Brush() : null, 
-            stroke ? State.Current().Pen() : null, 
-            pathToPaint);
-
-    private void SetCurrentFillRule(bool evenOddFillRule)
-    {
-        Debug.Assert(geometry != null);
-        geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
-    }
+    [DelegateTo()]
+    private IDrawTarget CreateShape() => shape ??= new WpfDrawTarget(Target, State);
 
     public void EndPath()
     {
-        geometry = null;
-        figure = null;
+        shape = null;
     }
 
     #endregion
@@ -172,8 +133,19 @@ public class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget, I
 
     public  void RenderCurrentString(GeometryGroup currentString, bool stroke, bool fill, bool clip)
     {
-        InnerPathPaint(stroke, fill, currentString); 
-        if (clip) ClipToGeometry(currentString);
+        InnerPathPaint(stroke, fill, currentString);
+        if (clip)
+        {
+            Target.PushClip(currentString);
+            IncrementSavePoints();
+        }
     }
+
+    private void InnerPathPaint(bool stroke, bool fill, Geometry pathToPaint) =>
+        Target.DrawGeometry(
+            fill ? State.Current().Brush() : null, 
+            stroke ? State.Current().Pen() : null, 
+            pathToPaint);
+
     #endregion
 }
