@@ -26,7 +26,6 @@ public static class SimpleMapParser
     private static byte KeySelector(string[] i)
     {
         var ret = (byte)ParseOctal(i[1]);
-        UdpConsole.WriteLine($"{i[1]} = {ret} => {i[0]}");
         return ret;
     }
 

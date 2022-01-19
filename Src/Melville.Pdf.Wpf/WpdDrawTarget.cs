@@ -50,7 +50,7 @@ public class WpfDrawTarget : IDrawTarget
             pathToPaint);
 
     private void SetCurrentFillRule(bool evenOddFillRule) => 
-        geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
+    geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
 
     public void ClipToPath(bool evenOddRule)
     {

@@ -53,10 +53,10 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderT
         savePoints.Push(1+savePoints.Pop());
     }
 
-    public void ClipToPath(bool evenOddRule)
+    public override void ClipToPath(bool evenOddRule)
     {
-        if(shape is null) return;
-        shape.ClipToPath(evenOddRule);
+        if(currentShape is null) return;
+        currentShape.ClipToPath(evenOddRule);
         IncrementSavePoints();
     }
 
@@ -73,15 +73,8 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderT
 
     #region Path Building
 
-    private IDrawTarget? shape = null;
+    protected override IDrawTarget CreateDrawTarget() => new WpfDrawTarget(Target, State);
 
-    [DelegateTo()]
-    private IDrawTarget CreateShape() => shape ??= new WpfDrawTarget(Target, State);
-
-    public void EndPath()
-    {
-        shape = null;
-    }
 
     #endregion
 

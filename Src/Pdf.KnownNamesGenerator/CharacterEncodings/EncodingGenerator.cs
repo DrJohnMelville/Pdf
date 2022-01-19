@@ -25,7 +25,6 @@ public class EncodingGenerator
         var sb = new StringBuilder();
         GenerateAllEncodings(sb);
         var text = sb.ToString();
-        UdpConsole.WriteLine(text.Substring(0,1000));
         return text;
     }
 

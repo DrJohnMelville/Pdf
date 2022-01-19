@@ -37,37 +37,8 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget,
 
     #region Path Building
 
-    private IDrawTarget? currentShape = null;
+    protected override IDrawTarget CreateDrawTarget() =>new SkiaDrawTarget(Target, State);
 
-    [DelegateTo()]
-    private IDrawTarget CurrentShape() => currentShape ??= new SkiaDrawTarget(Target, State);
-
-    // private SKPath? currentPath;
-    // private SKPath GetOrCreatePath => currentPath ??= new SKPath();
-
-    // public void MoveTo(double x, double y) => GetOrCreatePath.MoveTo((float)x,(float)y);
-    //
-    // public void LineTo(double x, double y) => currentPath?.LineTo((float)x, (float)y);
-    //
-    // public void ClosePath()
-    // {
-    //     currentPath?.Close();
-    // }
-    //
-    // public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
-    //     double finalX, double finalY) =>
-    //     currentPath?.CubicTo(
-    //         (float)control1X, (float)control1Y, (float)control2X, (float)control2Y, (float)finalX, (float)finalY);
-
-    #endregion
-
-    #region Path Drawing
-
-    public void EndPath()
-    {
-        (currentShape as IDisposable)?.Dispose();
-        currentShape = null;
-    }
     #endregion
     
     #region Bitmap Rendering

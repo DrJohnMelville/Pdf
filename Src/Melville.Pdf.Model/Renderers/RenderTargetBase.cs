@@ -1,6 +1,8 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
@@ -33,7 +35,7 @@ public interface IRenderTarget: IDrawTarget
     public ValueTask SetFont(IFontMapping font, double size);
 }
 
-public abstract class RenderTargetBase<T>
+public abstract partial class RenderTargetBase<T>: IDrawTarget
 {
     protected T Target { get; }
     protected GraphicsStateStack State { get; }
@@ -70,6 +72,23 @@ public abstract class RenderTargetBase<T>
         0, -1,
         0, (float)State.CurrentState().TextRise);
 
+    #endregion
+
+    #region Draw Shapes
+
+    protected abstract IDrawTarget CreateDrawTarget();
+
+    protected IDrawTarget? currentShape = null;
+    [DelegateTo()]
+    private IDrawTarget CurrentShape() => currentShape ??= CreateDrawTarget();
+
+    public virtual void ClipToPath(bool evenOddRule) => CurrentShape().ClipToPath(evenOddRule);
+    
+    public void EndPath()
+    {
+        (currentShape as IDisposable)?.Dispose();
+        currentShape = null;
+    }
     #endregion
 }
 
