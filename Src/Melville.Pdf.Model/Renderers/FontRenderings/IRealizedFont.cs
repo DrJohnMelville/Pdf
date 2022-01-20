@@ -12,7 +12,7 @@ public interface IFontWriteTarget<T>
 
 public interface IFontWriteOperation
 {
-    ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b);
+    ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 textMatrix);
     void RenderCurrentString(bool stroke, bool fill, bool clip);
 }
 public interface IRealizedFont
@@ -25,7 +25,7 @@ public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
     public static readonly NullRealizedFont Instance = new();
 
     private NullRealizedFont() { }
-    public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b) => new((0.0, 0.0));
+    public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 matrix) => new((0.0, 0.0));
 
     public void RenderCurrentString(bool stroke, bool fill, bool clip)
     {

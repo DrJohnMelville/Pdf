@@ -32,10 +32,11 @@ public class RealizedType3Font : IRealizedFont, IFontWriteOperation
 
     public IFontWriteOperation BeginFontWrite() => this;
 
-        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b)
+        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b,
+            Matrix3x2 charMatrix)
         {
             return target.RenderType3Character(
-                characters[b - firstCharacter].CreateReader(), fontMatrix);
+                characters[b - firstCharacter].CreateReader(), fontMatrix );
         }
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip)

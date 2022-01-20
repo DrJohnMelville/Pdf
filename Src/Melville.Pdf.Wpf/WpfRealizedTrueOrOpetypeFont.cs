@@ -23,6 +23,7 @@ public class WpfRealizedTrueOrOpetypeFont: IRealizedFont
         this.mapping = mapping;
         this.target = target;
     }
+    
 
     public IFontWriteOperation BeginFontWrite() => new WpfFontWriteOperation(this);
     
@@ -36,7 +37,7 @@ public class WpfRealizedTrueOrOpetypeFont: IRealizedFont
             this.parent = parent;
         }
 
-        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b)
+        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 mat)
         {
             var glyph = GetGlyphMap(parent.mapping.MapToUnicode(b));
             DrawGlyph(parent.typeface, glyph, parent.size);

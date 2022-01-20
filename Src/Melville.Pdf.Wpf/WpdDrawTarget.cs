@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.Model.Renderers;
@@ -10,19 +11,36 @@ public class WpfDrawTarget : IDrawTarget
 {
     private readonly DrawingContext context;
     private readonly GraphicsStateStack state;
-    private readonly PathGeometry geometry = new();
+    private readonly GeometryGroup geoGroup = new GeometryGroup();
+    private PathGeometry? geometry;
     private PathFigure? figure = null;
-
+  
     public WpfDrawTarget(DrawingContext context, GraphicsStateStack state)
     {
         this.context = context;
         this.state = state;
     }
 
+    public void SetDrawingTransform(Matrix3x2 transform)
+    {
+        geometry = new PathGeometry() { Transform = transform.WpfTransform() };
+        geoGroup.Children.Add(geometry);
+    }
+
+    public PathGeometry RequireGeometry()
+    {
+        if (geometry == null)
+        {
+            geometry = new PathGeometry();
+            geoGroup.Children.Add(geometry);
+        }
+        return geometry;
+    }
+
     public void MoveTo(double x, double y)
     {
         figure = new PathFigure(){StartPoint = new Point(x, y)};
-        geometry.Figures.Add(figure);
+        RequireGeometry().Figures.Add(figure);
     }
 
     public void LineTo(double x, double y) => figure?.Segments.Add(new LineSegment(new Point(x,y), true));
@@ -40,7 +58,7 @@ public class WpfDrawTarget : IDrawTarget
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         SetCurrentFillRule(evenOddFillRule);
-        InnerPathPaint(stroke, fill, geometry);
+        InnerPathPaint(stroke, fill, geoGroup);
     }
 
     private void InnerPathPaint(bool stroke, bool fill, Geometry pathToPaint) =>
@@ -49,12 +67,12 @@ public class WpfDrawTarget : IDrawTarget
             stroke ? state.Current().Pen() : null, 
             pathToPaint);
 
-    private void SetCurrentFillRule(bool evenOddFillRule) => 
-    geometry.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
+    private void SetCurrentFillRule(bool evenOddFillRule) =>
+        geoGroup.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
 
     public void ClipToPath(bool evenOddRule)
     {
         SetCurrentFillRule(evenOddRule);
-        context.PushClip(geometry);
+        context.PushClip(geoGroup);
     }
 }

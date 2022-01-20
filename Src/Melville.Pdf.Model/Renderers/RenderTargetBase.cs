@@ -15,6 +15,7 @@ namespace Melville.Pdf.Model.Renderers;
 
 public interface IDrawTarget
 {
+    void SetDrawingTransform(Matrix3x2 transform);
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
     void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
@@ -32,6 +33,7 @@ public interface IRenderTarget: IDrawTarget
     void RestoreTransformAndClip();
     void Transform(in Matrix3x2 newTransform);
     ValueTask RenderBitmap(IPdfBitmap bitmap);
+    [Obsolete("Eventually all fonts will be realized in the render layer and render targets will not have to know about them")]
     ValueTask SetFont(IFontMapping font, double size);
     IDrawTarget CreateDrawTarget();
 }
@@ -63,11 +65,12 @@ public abstract partial class RenderTargetBase<T>: IDrawTarget
     public abstract void Transform(in Matrix3x2 newTransform);
 
     #region TextRendering
-
+    [Obsolete("Moved to RenderEngine")]
     public Matrix3x2 CharacterPositionMatrix() =>
         (GlyphAdjustmentMatrix() *
          State.CurrentState().TextMatrix);
 
+    [Obsolete("Moved to RenderEngine")]
     private Matrix3x2 GlyphAdjustmentMatrix() => new(
         (float)State.CurrentState().HorizontalTextScale / 100, 0,
         0, -1,

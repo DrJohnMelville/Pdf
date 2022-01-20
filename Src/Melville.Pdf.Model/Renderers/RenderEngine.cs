@@ -292,9 +292,10 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask SetFont(PdfName font, double size)
     {
         var fontMapping = await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
-            await fontReader.DictionaryToMappingAsync(fontDic, this, size) :
-            fontReader.NameToMapping(font, CharacterEncodings.Standard);
-        await SetTypeface(fontMapping, size);
+            await fontReader.DictionaryToRealizedFont(fontDic, this, size) :
+            await fontReader.NameToRealizedFont(font, this, size);
+        StateOps.CurrentState().SetTypeface(fontMapping);
+      //  await SetTypeface(fontMapping, size);
     }
 
     private async ValueTask SetTypeface(IFontMapping fontMapping, double size)
@@ -311,12 +312,22 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         for (int i = 0; i < decodedString.Length; i++)
         {
             var character = GetAt(decodedString,  i);
-            var (w, h) = await writer.AddGlyphToCurrentString(character);
+            var (w, h) = await writer.AddGlyphToCurrentString(character, CharacterPositionMatrix());
             AdjustTextPositionForCharacter(w, h, character);
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
     }
 
+    public Matrix3x2 CharacterPositionMatrix() =>
+        (GlyphAdjustmentMatrix() * StateOps.CurrentState().TextMatrix);
+
+    private Matrix3x2 GlyphAdjustmentMatrix() => new(
+        (float)StateOps.CurrentState().HorizontalTextScale / 100, 0,
+        0, -1,
+        0, (float)StateOps.CurrentState().TextRise);
+
+
+    
     private byte GetAt(ReadOnlyMemory<byte> decodedString, int i) => decodedString.Span[i];
     
     private void AdjustTextPositionForCharacter(double width, double height, byte character)
@@ -411,7 +422,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         SaveGraphicsState();
         var textMatrix = StateOps.CurrentState().TextMatrix;
-        ModifyTransformMatrix(fontMatrix * textMatrix);
+        ModifyTransformMatrix(fontMatrix* textMatrix);
         await new ContentStreamParser(this).Parse(PipeReader.Create(s));
         RestoreGraphicsState();
     }

@@ -1,4 +1,7 @@
-﻿using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+﻿using System;
+using System.Numerics;
+using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -31,7 +34,7 @@ public class SkiaRealizedFont: IRealizedFont, IDisposable
         {
             this.parent = parent;
         }
-        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b)
+        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 mat)
         {
             var glyph = parent.font.GetGlyph(parent.mapping.MapToUnicode(b));
             var path = parent.font.GetGlyphPath(glyph);

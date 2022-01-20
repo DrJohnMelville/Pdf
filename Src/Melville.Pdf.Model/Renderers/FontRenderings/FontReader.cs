@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.FontMappings;
+using Melville.Pdf.Model.Renderers.FontRenderings.OpenType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
@@ -17,6 +18,28 @@ public readonly struct FontReader
     public FontReader(IDefaultFontMapper defaultMapper)
     {
         this.defaultMapper = defaultMapper;
+    }
+
+    public async ValueTask<IRealizedFont> DictionaryToRealizedFont(
+        PdfDictionary dict, IFontTarget target, double size)
+    {
+        return await FontMappingToRealizedFont(await DictionaryToMappingAsync(dict, target, size), target, size);
+    }
+
+    public async ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, IFontTarget target, double size)
+    {
+        return await FontMappingToRealizedFont(NameToMapping(name, CharacterEncodings.Standard), target, size);
+    }
+
+    private async Task<IRealizedFont> FontMappingToRealizedFont(IFontMapping mapping, IFontTarget target, double size)
+    {
+        return mapping.Font switch
+        {
+            IRealizedFont rf => rf,
+            byte[] name => OpenTypeFontFactory.SystemFont(
+                name, size, target, mapping.Mapping, mapping.Bold, mapping.Oblique),
+            PdfStream s => await OpenTypeFontFactory.FromStream(s, size, target, mapping.Mapping),
+        };
     }
 
     public async ValueTask<IFontMapping> DictionaryToMappingAsync(

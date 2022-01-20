@@ -22,3 +22,6 @@ Melville.Pdf.Model.Renderers.Colors.* ^=> Melville.Icc.*
 #Everyone can use the LowLevel Model
 * => Melville.Pdf.LowLevel.*
 * => Melville.Parsing.*
+
+#SixLabors.Fonts is cabined to a very small folder
+Melville.Pdf.Model.Renderers.FontRenderings.OpenType.* ^=> SixLabors.Fonts.*
