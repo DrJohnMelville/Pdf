@@ -25,14 +25,17 @@
         <TextBlock Grid.Column="1" FontSize="18" Text="{Binding Selected.Title}"></TextBlock>
         <ScrollViewer Grid.Row="1" Grid.Column="1" wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected}">
             <Grid easyGrids:GridOperations.ColsAndRows="* / auto, *">
-                <ListBox wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected.Formats}"
-                         ItemsSource="{Binding Selected.Formats}" SelectedIndex="{Binding Selected.SelectedFormat}">
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                </ListBox>
+                <DockPanel wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected.Formats}">
+                    <Button DockPanel.Dock="Right" Click="{eventBindings:EventBinding Selected.SaveStreamToFile}">Save to File</Button>
+                    <ListBox ItemsSource="{Binding Selected.Formats}" SelectedIndex="{Binding Selected.SelectedFormat}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+
+                </DockPanel>
                 <TextBlock Grid.Row="1" Text="{Binding Selected.DisplayContent}" FontFamily="Consolas"/>
             </Grid>
         </ScrollViewer>    

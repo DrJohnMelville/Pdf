@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.INPC;
 using Melville.Linq;
+using Melville.MVVM.Wpf.DiParameterSources;
+using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -49,10 +52,21 @@ public partial class StreamDocumentPart : DocumentPart
             .Select(i => i.ToString()??"No name")
             .Prepend("Raw Stream")
             .ToArray();
-        await using var streamData = await source.StreamContentAsync(selectedFormat);
+        await using var streamData = await SelectedFormatContentAsync();
         var data = new byte[10240];
         var read = await streamData.FillBufferAsync(data, 0, data.Length);
         DisplayContent = string.Join("\r\n", CreateHexDump(data.Take(read)));
+    }
+
+    private ValueTask<Stream> SelectedFormatContentAsync() => source.StreamContentAsync(selectedFormat);
+
+    public async Task SaveStreamToFile([FromServices] IOpenSaveFile fileDlg)
+    {
+        var target = fileDlg.GetSaveFile(null, "", "All Files (*.*)|*.*", "Write stream to file");
+        if (target == null) return;
+        await using var targetStream = await target.CreateWrite();
+        await using var source = await SelectedFormatContentAsync();
+        await source.CopyToAsync(targetStream);
     }
 
     private static IEnumerable<string> CreateHexDump(IEnumerable<byte> data) => 
