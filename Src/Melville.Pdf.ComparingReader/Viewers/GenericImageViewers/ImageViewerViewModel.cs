@@ -7,6 +7,7 @@ using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
+using SixLabors.ImageSharp;
 
 namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 

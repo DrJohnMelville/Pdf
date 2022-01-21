@@ -10,7 +10,7 @@ using SixLabors.Fonts;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.OpenType;
 
-public class OpenTypeFontFactory
+public static class OpenTypeFontFactory
 {
     public static IRealizedFont SystemFont(byte[] name, double size, IFontTarget target,
         IByteToUnicodeMapping mapping, bool bold, bool oblique)

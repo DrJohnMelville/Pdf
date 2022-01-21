@@ -44,7 +44,7 @@ public abstract class MultiRenderer : IMultiRenderer
     {
         if (source != pdfBits)
         {
-            pageSelector.Page = 1;
+            pageSelector.ToStartSilent();
             source = pdfBits;
         }
         foreach (var renderer in Renderers)

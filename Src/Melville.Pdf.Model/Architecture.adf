@@ -25,3 +25,6 @@ Melville.Pdf.Model.Renderers.Colors.* ^=> Melville.Icc.*
 
 #SixLabors.Fonts is cabined to a very small folder
 Melville.Pdf.Model.Renderers.FontRenderings.OpenType.* ^=> SixLabors.Fonts.*
+
+#Cabin the freetype dependency
+Melville.Pdf.Model.Renderers.FontRenderings.FreeType.* ^=> SharpFont.*

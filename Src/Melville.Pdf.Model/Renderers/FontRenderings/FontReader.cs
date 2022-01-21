@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.FontMappings;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.OpenType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -36,9 +37,10 @@ public readonly struct FontReader
         return mapping.Font switch
         {
             IRealizedFont rf => rf,
-            byte[] name => OpenTypeFontFactory.SystemFont(
+            byte[] name => await FreeTypeFontFactory.SystemFont(
                 name, size, target, mapping.Mapping, mapping.Bold, mapping.Oblique),
-            PdfStream s => await OpenTypeFontFactory.FromStream(s, size, target, mapping.Mapping),
+            PdfStream s => await FreeTypeFontFactory.FromStream(s, size, target, mapping.Mapping),
+            _ => throw new NotSupportedException("Unknown font type")
         };
     }
 

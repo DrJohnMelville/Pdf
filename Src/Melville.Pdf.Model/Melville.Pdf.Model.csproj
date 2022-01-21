@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="SharpFont.NetStandard" Version="1.0.5" />
       <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
       <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     </ItemGroup>

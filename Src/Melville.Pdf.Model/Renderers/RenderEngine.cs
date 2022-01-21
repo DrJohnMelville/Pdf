@@ -323,7 +323,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     private Matrix3x2 GlyphAdjustmentMatrix() => new(
         (float)StateOps.CurrentState().HorizontalTextScale / 100, 0,
-        0, -1,
+        0, 1,
         0, (float)StateOps.CurrentState().TextRise);
 
 
