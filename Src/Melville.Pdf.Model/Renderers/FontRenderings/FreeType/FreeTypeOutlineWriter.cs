@@ -28,7 +28,7 @@ public class FreeTypeOutlineWriter
 
     private int ConicTo(ref FTVector control, ref FTVector to, IntPtr user)
     {
-        target.CurveTo(control.X, control.Y, to.X, to.Y, to.X, to.Y);
+        target.ConicCurveTo(control.X,control.Y, to.X, to.Y);
         return 0;
     }
 

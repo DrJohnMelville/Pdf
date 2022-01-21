@@ -18,6 +18,7 @@ public interface IDrawTarget
     void SetDrawingTransform(Matrix3x2 transform);
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
+    void ConicCurveTo(double controlX, double controlY, double finalX, double finalY);
     void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
         double finalX, double finalY);
     void ClosePath();

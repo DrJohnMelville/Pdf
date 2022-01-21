@@ -51,6 +51,9 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
         path?.Close();
     }
 
+    public void ConicCurveTo(double controlX, double controlY, double finalX, double finalY) =>
+        path.QuadTo((float)controlX, (float)controlY, (float)finalX, (float)finalY);
+
     public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
         double finalX, double finalY) =>
         path?.CubicTo(
