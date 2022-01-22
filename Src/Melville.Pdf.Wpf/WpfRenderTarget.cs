@@ -1,27 +1,20 @@
-﻿using System.Globalization;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
-using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
-using Melville.Pdf.Wpf.FakeUris;
 
 namespace Melville.Pdf.Wpf;
 
-public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget, IFontWriteTarget<GeometryGroup>
+public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 {
-    private readonly TempFontDirectory fontCache;
-    public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page, TempFontDirectory fontCache):
+    public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
         base(target, state, page)
     {
-        this.fontCache = fontCache;
         SaveTransformAndClip();
     }
 
@@ -97,32 +90,6 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderT
 
     private static unsafe ValueTask FillBitmap(IPdfBitmap bitmap, WriteableBitmap wb) => 
         bitmap.RenderPbgra((byte*)wb.BackBuffer.ToPointer());
-
-    #endregion
-
-    #region Text Rendering
-
-    public async ValueTask SetFont(IFontMapping font, double size)
-    {
-        State.CurrentState().SetTypeface(
-            await new RealizedFontFactory(font, fontCache, this).CreateRealizedFont(size));
-    }
-
-    public  void RenderCurrentString(GeometryGroup currentString, bool stroke, bool fill, bool clip)
-    {
-        InnerPathPaint(stroke, fill, currentString);
-        if (clip)
-        {
-            Target.PushClip(currentString);
-            IncrementSavePoints();
-        }
-    }
-
-    private void InnerPathPaint(bool stroke, bool fill, Geometry pathToPaint) =>
-        Target.DrawGeometry(
-            fill ? State.Current().Brush() : null, 
-            stroke ? State.Current().Pen() : null, 
-            pathToPaint);
 
     #endregion
 }

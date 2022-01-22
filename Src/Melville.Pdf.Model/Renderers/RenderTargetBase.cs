@@ -34,8 +34,6 @@ public interface IRenderTarget: IDrawTarget
     void RestoreTransformAndClip();
     void Transform(in Matrix3x2 newTransform);
     ValueTask RenderBitmap(IPdfBitmap bitmap);
-    [Obsolete("Eventually all fonts will be realized in the render layer and render targets will not have to know about them")]
-    ValueTask SetFont(IFontMapping font, double size);
     IDrawTarget CreateDrawTarget();
 }
 

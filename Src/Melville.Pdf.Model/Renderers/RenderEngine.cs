@@ -20,6 +20,8 @@ using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using SixLabors.ImageSharp;
+
 namespace Melville.Pdf.Model.Renderers;
 
 public partial class RenderEngine: IContentStreamOperations, IFontTarget
@@ -303,7 +305,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         if (fontMapping.Font is IRealizedFont rf)
             StateOps.CurrentState().SetTypeface(rf);
         else
-            await target.SetFont(fontMapping, size);
+            throw new InvalidProgramException("Mapping should only go to realized fonts");
     }
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)

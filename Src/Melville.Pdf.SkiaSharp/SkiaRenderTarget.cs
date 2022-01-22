@@ -11,7 +11,7 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget, IFontWriteTarget<SKPath>
+public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 {
     public SkiaRenderTarget(
         SKCanvas target, GraphicsStateStack state, PdfPage page) : 
@@ -59,19 +59,4 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget,
         bitmap.RenderPbgra((byte*)skBitmap.GetPixels().ToPointer());
     #endregion
     
-    #region Text Rendering
-
-    public async ValueTask SetFont(IFontMapping font, double size) =>
-        State.CurrentState().SetTypeface(
-            await new SkieRealizedFontFactory(font, this).CreateRealizedFontAsync(size));
-
-    public void RenderCurrentString(SKPath currentString, bool stroke, bool fill, bool clip)
-    {
-        var stringDrawTarget = new SkiaDrawTarget(Target, State, currentString);
-        stringDrawTarget.PaintPath(stroke, fill, false);
-        if (clip) stringDrawTarget.ClipToPath(false);
-    }
-
-    #endregion
-
 }

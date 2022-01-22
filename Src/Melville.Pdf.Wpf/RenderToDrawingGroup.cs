@@ -9,23 +9,16 @@ using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
-using Melville.Pdf.Wpf.FakeUris;
 
 namespace Melville.Pdf.Wpf;
 
-public class RenderToDrawingGroup:IDisposable
+public class RenderToDrawingGroup
 { 
-    private readonly TempFontDirectory fontCache = new();
     private readonly IDefaultFontMapper fontMapper;
 
     public RenderToDrawingGroup(IDefaultFontMapper? fontMapper = null)
     {
         this.fontMapper = fontMapper ?? new WindowsDefaultFonts();
-    }
-
-    public void Dispose()
-    {
-        fontCache.Dispose();
     }
 
     public async ValueTask RenderToPngStream(PdfPage page, Stream stream) =>
@@ -81,8 +74,7 @@ public class RenderToDrawingGroup:IDisposable
 
 
         using var stateStack = new GraphicsStateStack();
-        var renderTarget = new WpfRenderTarget(dc, stateStack, page, 
-            fontCache);
+        var renderTarget = new WpfRenderTarget(dc, stateStack, page);
         renderTarget.SetBackgroundRect(rect.Value);
 
         await page.RenderTo(renderTarget, new FontReader(defaultFontMapper??new WindowsDefaultFonts()));

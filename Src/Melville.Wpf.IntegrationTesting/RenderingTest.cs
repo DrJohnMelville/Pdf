@@ -36,7 +36,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
     private ValueTask AsWpfPage(PdfPage page, Stream target)
     {
-        using var rtdg = new RenderToDrawingGroup();
+        var rtdg = new RenderToDrawingGroup();
         return rtdg.RenderToPngStream(page, target);
     }
 

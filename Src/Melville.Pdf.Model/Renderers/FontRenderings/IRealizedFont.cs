@@ -4,12 +4,6 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
-public interface IFontWriteTarget<T>
-{
-    Matrix3x2 CharacterPositionMatrix();
-    void RenderCurrentString(T currentString, bool stroke, bool fill, bool clip);
-}
-
 public interface IFontWriteOperation
 {
     ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 textMatrix);
