@@ -33,12 +33,12 @@ public class FreeTypeFont : IRealizedFont, IDisposable
     public IFontWriteOperation BeginFontWrite() => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
     
-    private (double width, double height) RenderByte(OutlineFuncs nativeTarget, IDrawTarget drawTarget, byte b)
+    private (double width, double height) RenderByte(OutlineFuncs nativeTarget, byte b)
     {
         var unicode = mapping.MapToUnicode(b);
         face.LoadGlyph(face.GetCharIndex(unicode), LoadFlags.NoBitmap, LoadTarget.Normal);
         face.Glyph.Outline.Decompose(nativeTarget, IntPtr.Zero);
-        return (face.Glyph.LinearHorizontalAdvance/50, face.Glyph.LinearVerticalAdvance/50);
+        return (face.Glyph.Advance.X/64.0, face.Glyph.Advance.Y/64.0);
     }
 
     private class FreeTypeWriteOperation: IFontWriteOperation
@@ -56,9 +56,9 @@ public class FreeTypeFont : IRealizedFont, IDisposable
 
         public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 textMatrix)
         {
-            float pixelSize = (float)(parent.size/5);
+            float pixelSize = 16;
             target.SetDrawingTransform(Matrix3x2.CreateScale(pixelSize)*textMatrix);
-            return new (parent.RenderByte(nativeTarget, target, b));
+            return new (parent.RenderByte(nativeTarget, b));
         }
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip)

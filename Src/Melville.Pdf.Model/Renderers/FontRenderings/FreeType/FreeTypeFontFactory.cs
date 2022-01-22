@@ -31,7 +31,7 @@ public class FreeTypeFontFactory
         Stream source)
     {
         var face = sharpFontLibrary.NewMemoryFace(await UncompressToBufferAsync(source), 0);
-        face.SetCharSize(0, 64 * size, 96, 96);
+        face.SetCharSize(0, 64 *  size, 0,0);
         return new FreeTypeFont(face, target, mapping, size);
     }
 
