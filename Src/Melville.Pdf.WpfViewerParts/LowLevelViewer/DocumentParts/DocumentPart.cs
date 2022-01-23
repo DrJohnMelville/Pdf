@@ -7,20 +7,13 @@ namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 public partial class DocumentPart
 {
     public string Title { get; }
-    [AutoNotify] private string[]? formats = null;
     public IReadOnlyList<DocumentPart> Children { get; }
+    public virtual object? DetailView => null;
 
     public DocumentPart(string title):this(title, Array.Empty<DocumentPart>()) { }
     public DocumentPart(string title, IReadOnlyList<DocumentPart> children)
     {
         Title = title;
         Children = children;
-    }
-}
-
-public partial class FontPart: DocumentPart
-{
-    public FontPart(string title, IReadOnlyList<DocumentPart> children) : base(title, children)
-    {
     }
 }

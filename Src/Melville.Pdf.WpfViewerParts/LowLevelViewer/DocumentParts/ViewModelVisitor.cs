@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
+using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
 
@@ -42,15 +43,15 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     {
         //Notice there is an ordering dependency in these two declarationsn.  The second
         //line changes prefix;
-        var dictionaryTitle = prefix ;
+        var savedPrefix = prefix ;
         var children = await ParseDictionaryChildren(item);
 
         var type = await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.Type);
 
         if (type == KnownNames.Font)
-            return new FontPart(dictionaryTitle + "Font", children);
+            return new FontPart(savedPrefix + "Font", item, children);
         
-        return new DocumentPart(dictionaryTitle + DictionaryTitle(type), children);
+        return new DocumentPart(savedPrefix + DictionaryTitle(type), children);
     }
 
     private static string DictionaryTitle(PdfName type)
@@ -102,7 +103,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     {
         var title = prefix + "Stream";
         var children = await ParseDictionaryChildren(item);
-        return new StreamDocumentPart(title, children, item);
+        return new Streams.StreamPartViewModel(title, children, item);
     }
 
     public ValueTask<DocumentPart> Visit(PdfFreeListObject item) =>

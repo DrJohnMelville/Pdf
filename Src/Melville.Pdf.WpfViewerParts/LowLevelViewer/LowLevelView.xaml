@@ -8,6 +8,7 @@
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
              xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
              xmlns:documentParts1="clr-namespace:Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts"
+             xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Loaded="{eventBindings:EventBinding SetVisualTreeRunner}"
@@ -23,21 +24,8 @@
         </TreeView>
         <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5" Grid.RowSpan="2"/>
         <TextBlock Grid.Column="1" FontSize="18" Text="{Binding Selected.Title}"></TextBlock>
-        <ScrollViewer Grid.Row="1" Grid.Column="1" wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected}">
-            <Grid easyGrids:GridOperations.ColsAndRows="* / auto, *">
-                <DockPanel wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected.Formats}">
-                    <Button DockPanel.Dock="Right" Click="{eventBindings:EventBinding Selected.SaveStreamToFile}">Save to File</Button>
-                    <ListBox ItemsSource="{Binding Selected.Formats}" SelectedIndex="{Binding Selected.SelectedFormat}">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
-
-                </DockPanel>
-                <TextBlock Grid.Row="1" Text="{Binding Selected.DisplayContent}" FontFamily="Consolas"/>
-            </Grid>
-        </ScrollViewer>    
+        <viewFrames:ViewFrame Content="{Binding Selected.DetailView}"
+                              Grid.Row="1" Grid.Column="1" 
+                              wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected.DetailView}"/>
     </Grid>
 </UserControl>

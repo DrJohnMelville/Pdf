@@ -10,10 +10,10 @@ using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Streams;
 using Moq;
 using Xunit;
 using DocumentPart = Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
-using StreamDocumentPart = Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.StreamDocumentPart;
 
 namespace Melville.Pdf.WpfToolTests.LowLevelReader;
 
@@ -73,7 +73,7 @@ public class PartParserTest
     {
         var model = await BuildSingleElementFile(i=>
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsStream("The Stream Data"));
-        var stream = (StreamDocumentPart)model[2].Children[0];
+        var stream = (StreamPartViewModel)model[2].Children[0];
         await stream.LoadBytesAsync();
         Assert.Equal("Stream", stream.Title);
         Assert.Equal("/Type: /Page", stream.Children[0].Title);
