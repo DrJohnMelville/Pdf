@@ -17,3 +17,10 @@ public partial class DocumentPart
         Children = children;
     }
 }
+
+public partial class FontPart: DocumentPart
+{
+    public FontPart(string title, IReadOnlyList<DocumentPart> children) : base(title, children)
+    {
+    }
+}

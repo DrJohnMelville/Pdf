@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 
@@ -41,9 +42,20 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     {
         //Notice there is an ordering dependency in these two declarationsn.  The second
         //line changes prefix;
-        var dictionaryTitle = prefix + "Dictionary";
+        var dictionaryTitle = prefix ;
         var children = await ParseDictionaryChildren(item);
-        return new DocumentPart(dictionaryTitle, children);
+
+        var type = await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.Type);
+
+        if (type == KnownNames.Font)
+            return new FontPart(dictionaryTitle + "Font", children);
+        
+        return new DocumentPart(dictionaryTitle + DictionaryTitle(type), children);
+    }
+
+    private static string DictionaryTitle(PdfName type)
+    {
+        return (type == KnownNames.Type?"Dictionary":type.ToString());
     }
 
     private async Task<DocumentPart[]> ParseDictionaryChildren(PdfDictionary item)
@@ -65,9 +77,8 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
 
     public async ValueTask<DocumentPart> Visit(PdfIndirectObject item)
     {
-        var title = $"{prefix}{item.ObjectNumber} {item.GenerationNumber} obj";
-        prefix = "";
-        return new DocumentPart(title, new[] {await (await item.DirectValueAsync()).Visit(this)});
+        prefix = $"{prefix}{item.ObjectNumber} {item.GenerationNumber}: ";
+        return await (await item.DirectValueAsync()).Visit(this);
     }
 
     public ValueTask<DocumentPart> Visit(PdfIndirectReference item) => 
