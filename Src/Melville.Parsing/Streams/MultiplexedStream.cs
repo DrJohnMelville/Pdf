@@ -39,11 +39,11 @@ public sealed class MultiplexedStream: IDisposable
     public async ValueTask<int> ReadAsync(
         long position, Memory<byte> buffer, CancellationToken cancellationToken)
     {
-        EnsureProperReadPosition(position);
-        await mutex.WaitAsync();
+       await mutex.WaitAsync();
         try
         {
-            return await source.ReadAsync(buffer, cancellationToken);
+             EnsureProperReadPosition(position);
+             return await source.ReadAsync(buffer, cancellationToken);
         }
         finally
         {
