@@ -25,7 +25,6 @@ public partial class StreamPartViewModel : DocumentPart
     {
         if (newFormat is not null)
             Content = await newFormat.Creator(source);
-
     }
 
     private async void LoadFormats()

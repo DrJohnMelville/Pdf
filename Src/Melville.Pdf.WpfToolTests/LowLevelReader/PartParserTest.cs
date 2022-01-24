@@ -62,8 +62,8 @@ public class PartParserTest
     {
         var model = await BuildSingleElementFile(_=>
             new PdfArray(PdfBoolean.True, PdfBoolean.False, KnownNames.Max));
-        var array = model[2].Children[0];
-        Assert.Equal("Array", array.Title);
+        var array = model[2];
+        Assert.Equal("1 0: Array", array.Title);
         Assert.Equal("[0]: true", array.Children[0].Title);
         Assert.Equal("[1]: false", array.Children[1].Title);
         Assert.Equal("[2]: /Max", array.Children[2].Title);
@@ -72,21 +72,21 @@ public class PartParserTest
     public async Task ParseSteam()
     {
         var model = await BuildSingleElementFile(i=>
-            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsStream("The Stream Data"));
-        var stream = (StreamPartViewModel)model[2].Children[0];
-//        await stream.LoadBytesAsync(stream.LoadBytesAsync());
-        Assert.Equal("Stream", stream.Title);
-        Assert.Equal("/Type: /Page", stream.Children[0].Title);
+            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.C1).AsStream("The Stream Data"));
+        var stream = (StreamPartViewModel)model[2];
+        Assert.Equal("1 0: Stream", stream.Title);
+        Assert.Equal("/Type: /C1", stream.Children[0].Title);
         Assert.Equal("/Length: 15", stream.Children[1].Title);
-        Assert.Equal("00000000  54 68 65 20 53 74 72 65 61 6D 20 44 61 74 61      The Stream Data", stream.DisplayContent);
+        stream.SelectedFormat = stream.Formats.Last();
+        var str = (ByteStringViewModel)stream.Content;
+        Assert.Equal("00000000  54 68 65 20 53 74 72 65 61 6D 20 44 61 74 61      The Stream Data", str.HexDump);
+        Assert.Equal("The Stream Data", str.AsAsciiString);
     }
 
     private async Task TestSingleElement(PdfObject item, string renderAs)
     {
         var model = await BuildSingleElementFile(_=>item);
-        Assert.Equal("1 0 obj", model[2].Title);
-        Assert.Equal(renderAs.Length, model[2].Children[0].Title.Length);
-        Assert.Equal(renderAs, model[2].Children[0].Title);
+        Assert.Equal("1 0: "+renderAs, model[2].Title);
     }
 
     private async Task<DocumentPart[]> BuildSingleElementFile(
