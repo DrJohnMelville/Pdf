@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
@@ -101,9 +99,11 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
 
     public async ValueTask<DocumentPart> Visit(PdfStream item)
     {
-        var title = prefix + "Stream";
+        var title = prefix;
         var children = await ParseDictionaryChildren(item);
-        return new Streams.StreamPartViewModel(title, children, item);
+        if (item.TryGetValue(KnownNames.Subtype, out var stTask) && (await stTask) == KnownNames.Image)
+            return new ImagePartViewModel(title + "Image Stream", children, item);
+        return new StreamPartViewModel(title + "Stream", children, item);
     }
 
     public ValueTask<DocumentPart> Visit(PdfFreeListObject item) =>

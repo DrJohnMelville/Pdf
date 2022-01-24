@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
     </ItemGroup>
 
     <ItemGroup>

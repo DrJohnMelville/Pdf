@@ -19,7 +19,7 @@ public partial class StreamPartViewModel : DocumentPart
     [AutoNotify] private IReadOnlyList<StreamDisplayFormat> formats = Array.Empty<StreamDisplayFormat>();
     [AutoNotify] private StreamDisplayFormat? selectedFormat = null;
     public override object? DetailView => this;
-    [AutoNotify] private object content;
+    [AutoNotify] private object? content;
 
     private async void OnSelectedFormatChanged(StreamDisplayFormat? newFormat)
     {
@@ -31,21 +31,26 @@ public partial class StreamPartViewModel : DocumentPart
     private async void LoadFormats()
     {
         var fmts = new List<StreamDisplayFormat>();
-        fmts.Add(new StreamDisplayFormat("Disk Representation",
-            p=>LoadBytesAsync(p, StreamFormat.DiskRepresentation)));
-        fmts.Add(new StreamDisplayFormat("Implicit Encryption",
-            p=>LoadBytesAsync(p, StreamFormat.ImplicitEncryption)));
-        var fmtList = (await source.GetOrNullAsync(KnownNames.Filter)).AsList();
-        for (int i = 0; i < fmtList.Count; i++)
-        {
-            fmts.Add(new StreamDisplayFormat(fmtList[i].ToString() ??"No Name",
-                p=>LoadBytesAsync(p, (StreamFormat)i)));
-        }
+        await AddFormats(fmts);
 
         Formats = fmts;
         SelectedFormat = fmts.First();
     }
-    
+
+    protected virtual async ValueTask AddFormats(List<StreamDisplayFormat> fmts)
+    {
+        fmts.Add(new StreamDisplayFormat("Disk Representation",
+            p => LoadBytesAsync(p, StreamFormat.DiskRepresentation)));
+        fmts.Add(new StreamDisplayFormat("Implicit Encryption",
+            p => LoadBytesAsync(p, StreamFormat.ImplicitEncryption)));
+        var fmtList = (await source.GetOrNullAsync(KnownNames.Filter)).AsList();
+        for (int i = 0; i < fmtList.Count; i++)
+        {
+            fmts.Add(new StreamDisplayFormat(fmtList[i].ToString() ?? "No Name",
+                p => LoadBytesAsync(p, (StreamFormat)i)));
+        }
+    }
+
     public StreamPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : base(title, children)
     {
         this.source = source;

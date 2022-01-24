@@ -74,7 +74,7 @@ public class PartParserTest
         var model = await BuildSingleElementFile(i=>
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsStream("The Stream Data"));
         var stream = (StreamPartViewModel)model[2].Children[0];
-        await stream.LoadBytesAsync();
+//        await stream.LoadBytesAsync(stream.LoadBytesAsync());
         Assert.Equal("Stream", stream.Title);
         Assert.Equal("/Type: /Page", stream.Children[0].Title);
         Assert.Equal("/Length: 15", stream.Children[1].Title);

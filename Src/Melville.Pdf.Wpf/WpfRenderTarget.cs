@@ -65,31 +65,6 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderT
     }
     
     public override IDrawTarget CreateDrawTarget() => new WpfDrawTarget(Target, State);
-
-    #region Bitmap rendering
-
-    public async ValueTask RenderBitmap(IPdfBitmap bitmap)
-    {
-        Target.DrawImage(await BitmapToWpfBitmap(bitmap), new Rect(0, 0, 1, 1));
-    }
-
-    private static async Task<BitmapSource> BitmapToWpfBitmap(IPdfBitmap bitmap)
-    {
-        var ret = new WriteableBitmap(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32, null);
-        ret.Lock();
-        try
-        {
-            await FillBitmap(bitmap, ret);
-        }
-        finally
-        {
-            ret.Unlock();
-        }
-        return ret;
-    }
-
-    private static unsafe ValueTask FillBitmap(IPdfBitmap bitmap, WriteableBitmap wb) => 
-        bitmap.RenderPbgra((byte*)wb.BackBuffer.ToPointer());
-
-    #endregion
+    
+    public async ValueTask RenderBitmap(IPdfBitmap bitmap) => Target.DrawImage(await bitmap.ToWbfBitmap(), new Rect(0, 0, 1, 1));
 }
