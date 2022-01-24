@@ -1,7 +1,10 @@
 ﻿using System.Globalization;
+using System.Net.NetworkInformation;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
+using Melville.Pdf.Model.Documents;
+using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Pages;
 using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
@@ -46,10 +49,12 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
 
         var type = await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.Type);
 
-        if (type == KnownNames.Font)
-            return new FontPart(savedPrefix + "Font", item, children);
-        
-        return new DocumentPart(savedPrefix + DictionaryTitle(type), children);
+        return type.GetHashCode() switch
+        {
+            KnownNameKeys.Font => new FontPart(savedPrefix + "Font", item, children),
+            KnownNameKeys.Page => new PagePartViewModel(savedPrefix+"Page", children, new PdfPage(item)),
+            _ => new DocumentPart(savedPrefix + DictionaryTitle(type), children)
+        };
     }
 
     private static string DictionaryTitle(PdfName type)

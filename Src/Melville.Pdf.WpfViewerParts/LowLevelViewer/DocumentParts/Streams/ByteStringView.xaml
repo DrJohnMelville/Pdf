@@ -10,7 +10,7 @@
     <Grid>
         <TabControl>
             <TabItem Header="Hex Dump">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto">
                     <TextBlock Text="{Binding HexDump}" FontFamily="Consolas"></TextBlock>
                 </ScrollViewer>
             </TabItem>

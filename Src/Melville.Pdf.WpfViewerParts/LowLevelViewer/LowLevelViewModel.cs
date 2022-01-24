@@ -25,6 +25,7 @@ public partial class LowLevelViewModel
 
     public async void SetStream(Stream source)
     {
+        
         Root = await parser.ParseAsync(source, waiter ?? new FakeWaitingService());
     }
 }
