@@ -27,7 +27,7 @@ public partial class CountingPipeReader : PipeReader
     public override async ValueTask<ReadResult> ReadAsync(
         CancellationToken cancellationToken = default)
     {
-        var ret = await inner.ReadAsync(cancellationToken);
+        var ret = await inner.ReadAsync(cancellationToken).ConfigureAwait(false);
         currentBuffer = ret;
         return ret;
     }
@@ -79,7 +79,7 @@ public partial class CountingPipeReader : PipeReader
     {
         while (true)
         {
-            var ret = await ReadAsync();
+            var ret = await ReadAsync().ConfigureAwait(false);
             if (ret.Buffer.Length > delta)
             {
                 AdvanceTo(ret.Buffer.GetPosition(delta));

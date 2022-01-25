@@ -39,11 +39,11 @@ public sealed class MultiplexedStream: IDisposable
     public async ValueTask<int> ReadAsync(
         long position, Memory<byte> buffer, CancellationToken cancellationToken)
     {
-        await mutex.WaitAsync();
+        await mutex.WaitAsync().ConfigureAwait(false);
         try
         {
              EnsureProperReadPosition(position);
-             return await source.ReadAsync(buffer, cancellationToken);
+             return await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -79,7 +79,7 @@ public sealed class MultiplexedReader : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        var ret = await source.ReadAsync(Position, buffer, cancellationToken);
+        var ret = await source.ReadAsync(Position, buffer, cancellationToken).ConfigureAwait(false);
         Position += ret;
         return ret;
     }
