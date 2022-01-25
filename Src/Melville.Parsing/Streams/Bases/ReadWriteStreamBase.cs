@@ -13,12 +13,12 @@ public abstract class ReadWriteStreamBase: Stream
     public override int EndRead(IAsyncResult asyncResult) => ((Task<int>)asyncResult).Result;
     
     public override int Read(byte[] buffer, int offset, int count) => 
-        ReadAsync(buffer.AsMemory(offset, count)).GetAwaiter().GetResult();
+        ReadAsync(buffer.AsMemory(offset, count)).ConfigureAwait(false).GetAwaiter().GetResult();
 
     public override int Read(Span<byte> buffer)
     {
         var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
-        var ret = ReadAsync(rented[..buffer.Length]).GetAwaiter().GetResult();
+        var ret = ReadAsync(rented[..buffer.Length]).ConfigureAwait(false).GetAwaiter().GetResult();
         rented.AsSpan(0, ret).CopyTo(buffer);
         ArrayPool<byte>.Shared.Return(rented);
         return ret;

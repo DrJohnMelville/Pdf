@@ -39,7 +39,7 @@ public sealed class MultiplexedStream: IDisposable
     public async ValueTask<int> ReadAsync(
         long position, Memory<byte> buffer, CancellationToken cancellationToken)
     {
-       await mutex.WaitAsync();
+        await mutex.WaitAsync();
         try
         {
              EnsureProperReadPosition(position);
@@ -94,7 +94,6 @@ public sealed class MultiplexedReader : DefaultBaseStream
             SeekOrigin.End => source.Length + offset,
             _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null)
         };
-
+    
     public override long Length => source.Length;
-
 }
