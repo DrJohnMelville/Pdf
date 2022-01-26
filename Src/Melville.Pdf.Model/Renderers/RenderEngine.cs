@@ -6,7 +6,6 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -14,13 +13,11 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
-using SixLabors.ImageSharp;
 
 namespace Melville.Pdf.Model.Renderers;
 
@@ -293,19 +290,11 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask SetFont(PdfName font, double size)
     {
-        var fontMapping = await page.GetResourceAsync(ResourceTypeName.Font, font).ConfigureAwait(false) is PdfDictionary fontDic ?
-            await fontReader.DictionaryToRealizedFont(fontDic, size).ConfigureAwait(false) :
-            await fontReader.NameToRealizedFont(font, size).ConfigureAwait(false);
-        StateOps.CurrentState().SetTypeface(fontMapping);
-      //  await SetTypeface(fontMapping, size);
-    }
-
-    private async ValueTask SetTypeface(IFontMapping fontMapping, double size)
-    {
-        if (fontMapping.Font is IRealizedFont rf)
-            StateOps.CurrentState().SetTypeface(rf);
-        else
-            throw new InvalidProgramException("Mapping should only go to realized fonts");
+        StateOps.CurrentState().SetTypeface(
+            await page.GetResourceAsync(ResourceTypeName.Font, font).ConfigureAwait(false) is PdfDictionary fontDic ?
+                await fontReader.DictionaryToRealizedFont(fontDic, size).ConfigureAwait(false) :
+                await fontReader.NameToRealizedFont(font, size).ConfigureAwait(false)
+            );
     }
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)

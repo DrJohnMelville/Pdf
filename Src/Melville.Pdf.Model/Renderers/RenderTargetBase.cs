@@ -62,21 +62,7 @@ public abstract partial class RenderTargetBase<T>: IDrawTarget
     }
 
     public abstract void Transform(in Matrix3x2 newTransform);
-
-    #region TextRendering
-    [Obsolete("Moved to RenderEngine")]
-    public Matrix3x2 CharacterPositionMatrix() =>
-        (GlyphAdjustmentMatrix() *
-         State.CurrentState().TextMatrix);
-
-    [Obsolete("Moved to RenderEngine")]
-    private Matrix3x2 GlyphAdjustmentMatrix() => new(
-        (float)State.CurrentState().HorizontalTextScale / 100, 0,
-        0, -1,
-        0, (float)State.CurrentState().TextRise);
-
-    #endregion
-
+    
     #region Draw Shapes
 
     public abstract IDrawTarget CreateDrawTarget();
