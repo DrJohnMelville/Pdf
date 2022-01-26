@@ -20,36 +20,36 @@ public readonly struct FontReader
     }
 
     public async ValueTask<IRealizedFont> DictionaryToRealizedFont(
-        PdfDictionary dict, IFontTarget target, double size)
+        PdfDictionary dict, double size)
     {
-        return await FontMappingToRealizedFont(await DictionaryToMappingAsync(dict, target, size).ConfigureAwait(false), target, size).ConfigureAwait(false);
+        return await FontMappingToRealizedFont(await DictionaryToMappingAsync(dict, size).ConfigureAwait(false), size).ConfigureAwait(false);
     }
 
-    public async ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, IFontTarget target, double size)
+    public async ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, double size)
     {
-        return await FontMappingToRealizedFont(NameToMapping(name, CharacterEncodings.Standard), target, size).ConfigureAwait(false);
+        return await FontMappingToRealizedFont(NameToMapping(name, CharacterEncodings.Standard), size).ConfigureAwait(false);
     }
 
-    private async Task<IRealizedFont> FontMappingToRealizedFont(IFontMapping mapping, IFontTarget target, double size)
+    private async Task<IRealizedFont> FontMappingToRealizedFont(IFontMapping mapping, double size)
     {
         return mapping.Font switch
         {
             IRealizedFont rf => rf,
             byte[] name => await FreeTypeFontFactory.SystemFont(
-                name, size, target, mapping.Mapping, mapping.Bold, mapping.Oblique).ConfigureAwait(false),
-            PdfStream s => await FreeTypeFontFactory.FromStream(s, size, target, mapping.Mapping).ConfigureAwait(false),
+                name, size, mapping.Mapping, mapping.Bold, mapping.Oblique).ConfigureAwait(false),
+            PdfStream s => await FreeTypeFontFactory.FromStream(s, size, mapping.Mapping).ConfigureAwait(false),
             _ => throw new NotSupportedException("Unknown font type")
         };
     }
 
     public async ValueTask<IFontMapping> DictionaryToMappingAsync(
-        PdfDictionary font, IFontTarget target, double size)
+        PdfDictionary font, double size)
     {
         var fontTypeKey = 
             (await font.GetOrDefaultAsync(KnownNames.Subtype, KnownNames.Type1).ConfigureAwait(false)).GetHashCode();
         
         if (fontTypeKey == KnownNameKeys.Type3)
-            return await new Type3FontFactory(font, target, size).ParseAsync().ConfigureAwait(false);
+            return await new Type3FontFactory(font, size).ParseAsync().ConfigureAwait(false);
         
         var encoding = await ComputeEncoding(font).ConfigureAwait(false);
         

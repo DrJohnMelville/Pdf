@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Fonts;
 using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Pages;
 using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Streams;
 

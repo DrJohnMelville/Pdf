@@ -13,14 +13,12 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 public class FreeTypeFont : IRealizedFont, IDisposable
 {
     private readonly Face face;
-    private readonly IFontTarget target;
     private readonly IByteToUnicodeMapping mapping;
     private readonly double size;
     
-    public FreeTypeFont(Face face, IFontTarget target, IByteToUnicodeMapping mapping, double size)
+    public FreeTypeFont(Face face, IByteToUnicodeMapping mapping, double size)
     {
         this.face = face;
-        this.target = target;
         this.mapping = mapping;
         this.size = size;
     }
@@ -30,7 +28,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
         face.Dispose();
     }
 
-    public IFontWriteOperation BeginFontWrite() => 
+    public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
     
     private (double width, double height) RenderByte(OutlineFuncs nativeTarget, byte b)

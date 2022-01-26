@@ -294,8 +294,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask SetFont(PdfName font, double size)
     {
         var fontMapping = await page.GetResourceAsync(ResourceTypeName.Font, font).ConfigureAwait(false) is PdfDictionary fontDic ?
-            await fontReader.DictionaryToRealizedFont(fontDic, this, size).ConfigureAwait(false) :
-            await fontReader.NameToRealizedFont(font, this, size).ConfigureAwait(false);
+            await fontReader.DictionaryToRealizedFont(fontDic, size).ConfigureAwait(false) :
+            await fontReader.NameToRealizedFont(font, size).ConfigureAwait(false);
         StateOps.CurrentState().SetTypeface(fontMapping);
       //  await SetTypeface(fontMapping, size);
     }
@@ -310,7 +310,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
-        var writer = StateOps.CurrentState().Typeface.BeginFontWrite();
+        var writer = StateOps.CurrentState().Typeface.BeginFontWrite(this);
         for (int i = 0; i < decodedString.Length; i++)
         {
             var character = GetAt(decodedString,  i);

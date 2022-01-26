@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
@@ -11,7 +12,7 @@ public interface IFontWriteOperation
 }
 public interface IRealizedFont
 {
-    IFontWriteOperation BeginFontWrite();
+    IFontWriteOperation BeginFontWrite(IFontTarget target);
 }
 
 public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
@@ -25,7 +26,7 @@ public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
     {
     }
 
-    public IFontWriteOperation BeginFontWrite() => this;
+    public IFontWriteOperation BeginFontWrite(IFontTarget target) => this;
 }
 
 public static class FontWriteOperationsImpl

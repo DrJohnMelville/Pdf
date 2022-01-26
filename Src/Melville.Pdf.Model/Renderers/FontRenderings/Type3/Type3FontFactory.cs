@@ -11,13 +11,11 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 public readonly struct Type3FontFactory
 {
     private readonly PdfDictionary font;
-    private readonly IFontTarget target;
     private readonly double size;
 
-    public Type3FontFactory(PdfDictionary font, IFontTarget target, double size)
+    public Type3FontFactory(PdfDictionary font, double size)
     {
         this.font = font;
-        this.target = target;
         this.size = size;
     }
 
@@ -47,7 +45,7 @@ public readonly struct Type3FontFactory
             }
         }
 
-        return new NamedDefaultMapping(new RealizedType3Font(target, characters, (byte)firstChar,
+        return new NamedDefaultMapping(new RealizedType3Font(characters, (byte)firstChar,
             (await ReadTransformMatrix().ConfigureAwait(false)*
              Matrix3x2.CreateScale((float)size, (float)size))), false, false,
             NullUnicodeMapping.Instance);

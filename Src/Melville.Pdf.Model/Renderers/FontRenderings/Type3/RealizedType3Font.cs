@@ -13,33 +13,43 @@ public interface IFontTarget
     IDrawTarget CreateDrawTarget();
 }
 
-public class RealizedType3Font : IRealizedFont, IFontWriteOperation
+public class RealizedType3Font : IRealizedFont
 {
-    private readonly IFontTarget target;
     private readonly MultiBufferStream[] characters;
     private readonly byte firstCharacter;
     private readonly Matrix3x2 fontMatrix;
     
-    public RealizedType3Font(
-        IFontTarget target, MultiBufferStream[] characters, byte firstCharacter, 
+    public RealizedType3Font(MultiBufferStream[] characters, byte firstCharacter, 
         Matrix3x2 fontMatrix)
     {
-        this.target = target;
         this.characters = characters;
         this.firstCharacter = firstCharacter;
         this.fontMatrix = fontMatrix;
     }
 
-    public IFontWriteOperation BeginFontWrite() => this;
+    public IFontWriteOperation BeginFontWrite(IFontTarget target) => new Type3Writer(this, target);
 
-        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b,
-            Matrix3x2 charMatrix)
+    public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b,
+        Matrix3x2 charMatrix, IFontTarget target)
+    {
+        return target.RenderType3Character(
+            characters[b - firstCharacter].CreateReader(), fontMatrix );
+    }
+    
+    private class Type3Writer: IFontWriteOperation
+    {
+        private readonly RealizedType3Font parent;
+        private readonly IFontTarget target;
+
+        public Type3Writer(RealizedType3Font parent, IFontTarget target)
         {
-            return target.RenderType3Character(
-                characters[b - firstCharacter].CreateReader(), fontMatrix );
+            this.parent = parent;
+            this.target = target;
         }
 
-        public void RenderCurrentString(bool stroke, bool fill, bool clip)
-        {
-        }
+        public ValueTask<(double width, double height)> AddGlyphToCurrentString(
+            byte b, Matrix3x2 textMatrix) => parent.AddGlyphToCurrentString(b, textMatrix, target);
+        
+        public void RenderCurrentString(bool stroke, bool fill, bool clip) { }    
+    }
 }
