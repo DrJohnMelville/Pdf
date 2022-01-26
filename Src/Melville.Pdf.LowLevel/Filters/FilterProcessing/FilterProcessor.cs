@@ -25,9 +25,9 @@ public abstract class FilterProcessorBase: IFilterProcessor
     {
         return sourceFormat.CompareTo(desiredEncoding) switch
         {
-            < 0 => await Decode(src, sourceFormat, desiredEncoding),
+            < 0 => await Decode(src, sourceFormat, desiredEncoding).ConfigureAwait(false),
             0 => src,
-            _ => await Encode(src, sourceFormat, desiredEncoding)
+            _ => await Encode(src, sourceFormat, desiredEncoding).ConfigureAwait(false)
         };
     }
 
@@ -62,7 +62,7 @@ public class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = inclusiveUpperBound; i > exclusiveLowerBound; i--)
         {
-            ret = await singleFilter.Encode(ret, filters[i], TryGetParameter(i));
+            ret = await singleFilter.Encode(ret, filters[i], TryGetParameter(i)).ConfigureAwait(false);
         }
 
         return ret;
@@ -76,7 +76,7 @@ public class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = firstFilter; i < oneMoreThanLastFilter; i++)
         {
-            ret = await singleFilter.Decode(ret, filters[i], TryGetParameter(i));
+            ret = await singleFilter.Decode(ret, filters[i], TryGetParameter(i)).ConfigureAwait(false);
         }
 
         return ret;

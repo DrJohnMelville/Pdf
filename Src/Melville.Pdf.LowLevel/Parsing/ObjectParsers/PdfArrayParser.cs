@@ -9,14 +9,14 @@ public class PdfArrayParser: IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        var reader = await source.Reader.Source.ReadAsync();
+        var reader = await source.Reader.Source.ReadAsync().ConfigureAwait(false);
         //This has to succeed because the prior parser looked at the prefix to get here.
         source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(1));
         //TODO: consider renting these lists
         var items = new List<PdfObject>();
         while (true)
         {
-            var item = await source.RootObjectParser.ParseAsync(source);
+            var item = await source.RootObjectParser.ParseAsync(source).ConfigureAwait(false);
             if (item == PdfTokenValues.ArrayTerminator) return new PdfArray(items.ToArray());
             items.Add(item);
         }

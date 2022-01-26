@@ -20,7 +20,7 @@ public class DefaultEncryptionFilterProcessor : FilterProcessorBase
 
     protected override async ValueTask<Stream> Encode(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
-        TryEncrypt(await innerProcessor.StreamInDesiredEncoding(source, sourceFormat, targetFormat),
+        TryEncrypt(await innerProcessor.StreamInDesiredEncoding(source, sourceFormat, targetFormat).ConfigureAwait(false),
             sourceFormat, targetFormat);
 
     private Stream TryEncrypt(

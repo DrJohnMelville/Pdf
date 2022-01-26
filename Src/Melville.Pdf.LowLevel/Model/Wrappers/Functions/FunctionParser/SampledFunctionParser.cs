@@ -12,20 +12,20 @@ public static class SampledFunctionParser
 {
     public static async Task<SampledFunctionBase> Parse( PdfStream source)
     {
-        var domain = await source.ReadIntervals(KnownNames.Domain);
-        var range = await source.ReadIntervals(KnownNames.Range);
-        var size = await (await source.GetAsync<PdfArray>(KnownNames.Size)).AsIntsAsync();
+        var domain = await source.ReadIntervals(KnownNames.Domain).ConfigureAwait(false);
+        var range = await source.ReadIntervals(KnownNames.Range).ConfigureAwait(false);
+        var size = await (await source.GetAsync<PdfArray>(KnownNames.Size).ConfigureAwait(false)).AsIntsAsync().ConfigureAwait(false);
         var encode = source.ContainsKey(KnownNames.Encode)
-            ? await source.ReadIntervals(KnownNames.Encode)
+            ? await source.ReadIntervals(KnownNames.Encode).ConfigureAwait(false)
             : CreateEncodeFromSize(size);
         VerifyEqualLength(domain, encode);
         var order =
             size.All(i => i >= 4) &&
-            await source.GetOrNullAsync(KnownNames.Order) is PdfNumber num
+            await source.GetOrNullAsync(KnownNames.Order).ConfigureAwait(false) is PdfNumber num
                 ? num.IntValue
                 : 1;
 
-        var samples = await ReadSamples(source, InputPermutations(size), range);
+        var samples = await ReadSamples(source, InputPermutations(size), range).ConfigureAwait(false);
         return order == 3
             ? new CubicSampledFunction(domain, range, size, encode, samples)
             : new LinearSampledFunction(domain, range, size, encode, samples);
@@ -46,17 +46,17 @@ public static class SampledFunctionParser
         PdfStream source, int inputPermutations, ClosedInterval[] range)
     {
         var decode = source.ContainsKey(KnownNames.Decode)?
-            await source.ReadIntervals(KnownNames.Decode): range;
+            await source.ReadIntervals(KnownNames.Decode).ConfigureAwait(false): range;
         var bitsPerSample = 
-            (int)(await source.GetAsync<PdfNumber>(KnownNames.BitsPerSample)).IntValue;
-        var reader = new BitStreamReader(await source.StreamContentAsync(), bitsPerSample);
+            (int)(await source.GetAsync<PdfNumber>(KnownNames.BitsPerSample).ConfigureAwait(false)).IntValue;
+        var reader = new BitStreamReader(await source.StreamContentAsync().ConfigureAwait(false), bitsPerSample);
         var ret = new double[inputPermutations * range.Length];
         var pos = 0;
         for (int i = 0; i < inputPermutations; i++)
         {
             for (int j = 0; j < range.Length; j++)
             {
-                ret[pos++] = decode[j].MapTo(range[j], await reader.NextNum());
+                ret[pos++] = decode[j].MapTo(range[j], await reader.NextNum().ConfigureAwait(false));
             }
         }
 

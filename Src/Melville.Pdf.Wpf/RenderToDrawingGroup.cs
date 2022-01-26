@@ -72,10 +72,11 @@ public class RenderToDrawingGroup
         var rect = await page.GetBoxAsync(BoxName.CropBox);
         if (!rect.HasValue) return;
 
-
         using var stateStack = new GraphicsStateStack();
-        var renderTarget = new WpfRenderTarget(dc, stateStack, page);
-        renderTarget.SetBackgroundRect(rect.Value);
+        var innerRenderer = new WpfRenderTarget(dc, stateStack, page);
+        innerRenderer.SetBackgroundRect(rect.Value);
+        var renderTarget = new DispatcherRenderTarget(
+            dc.Dispatcher, innerRenderer);
 
         await page.RenderTo(renderTarget, new FontReader(defaultFontMapper??new WindowsDefaultFonts()));
     }

@@ -20,7 +20,7 @@ public class CrossReferenceTableParser
 
     public async Task Parse()
     {
-        while (!ParseNextLine(await source.Reader.Source.ReadAsync()))
+        while (!ParseNextLine(await source.Reader.Source.ReadAsync().ConfigureAwait(false)))
         {
         }       
     }

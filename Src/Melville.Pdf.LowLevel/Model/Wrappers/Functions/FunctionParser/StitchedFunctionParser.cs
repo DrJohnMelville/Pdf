@@ -8,14 +8,14 @@ public static class StitchedFunctionParser
 {
     public static async ValueTask<PdfFunction> Parse(PdfDictionary source)
     {
-        var domain = await source.ReadIntervals(KnownNames.Domain);
-        var encode = await source.ReadIntervals(KnownNames.Encode);
-        var bounds = await (await source.GetAsync<PdfArray>(KnownNames.Bounds)).AsDoublesAsync();
+        var domain = await source.ReadIntervals(KnownNames.Domain).ConfigureAwait(false);
+        var encode = await source.ReadIntervals(KnownNames.Encode).ConfigureAwait(false);
+        var bounds = await (await source.GetAsync<PdfArray>(KnownNames.Bounds).ConfigureAwait(false)).AsDoublesAsync().ConfigureAwait(false);
         var functionDecls =
-            await (await source.GetAsync<PdfArray>(KnownNames.Functions)).AsAsync<PdfDictionary>();
-        var functions = await CreateFunctionSegments(functionDecls, domain[0], bounds, encode);
+            await (await source.GetAsync<PdfArray>(KnownNames.Functions).ConfigureAwait(false)).AsAsync<PdfDictionary>().ConfigureAwait(false);
+        var functions = await CreateFunctionSegments(functionDecls, domain[0], bounds, encode).ConfigureAwait(false);
 
-        var range = await source.ReadOptionalRanges(functions[0].NumberOfOutputs);
+        var range = await source.ReadOptionalRanges(functions[0].NumberOfOutputs).ConfigureAwait(false);
         return new StitchedFunction(domain, range, functions);
     }
         
@@ -29,7 +29,7 @@ public static class StitchedFunctionParser
             functions[i] = new StitchedFunctionSegment(
                 SegmentDomain(bounds, i, domain),
                 encode[i],
-                await functionDecls[i].CreateFunctionAsync());
+                await functionDecls[i].CreateFunctionAsync().ConfigureAwait(false));
         }
 
         return functions;

@@ -63,7 +63,7 @@ public class ReadAdlerStream : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        var ret = await source.ReadAsync(buffer, cancellationToken);
+        var ret = await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         Computer.AddData(buffer.Span[..ret]);
         return ret;
     }

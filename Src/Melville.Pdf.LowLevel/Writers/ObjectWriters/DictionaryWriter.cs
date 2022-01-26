@@ -30,13 +30,13 @@ public static class DictionaryWriter
         writer.WriteBytes(prefix);
         foreach (var item in items)
         {
-            await item.Key.Visit(innerWriter);
+            await item.Key.Visit(innerWriter).ConfigureAwait(false);
             AddWhitespaceIfNeeded(writer, item.Value); 
-            await item.Value.Visit(innerWriter);
-            await writer.FlushAsync();
+            await item.Value.Visit(innerWriter).ConfigureAwait(false);
+            await writer.FlushAsync().ConfigureAwait(false);
         }
         writer.WriteBytes(suffix);
-        return await writer.FlushAsync();
+        return await writer.FlushAsync().ConfigureAwait(false);
     }
 
     private static void WritePrefix(PipeWriter writer) => writer.WriteBytes((byte) '<', (byte) '<');

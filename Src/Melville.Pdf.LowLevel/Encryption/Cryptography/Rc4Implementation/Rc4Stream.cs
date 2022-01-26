@@ -35,7 +35,7 @@ public class Rc4Stream : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        var ret = await innerStream.ReadAsync(buffer, cancellationToken);
+        var ret = await innerStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         encryptor.TransfromInPlace(buffer.Span[..ret]);
         return ret;
     }
@@ -52,7 +52,7 @@ public class Rc4Stream : DefaultBaseStream
     {
         var copy = ArrayPool<byte>.Shared.Rent(buffer.Length);
         encryptor.Transform(buffer.Span, copy);
-        await innerStream.WriteAsync(copy.AsMemory(0, buffer.Length), cancellationToken);
+        await innerStream.WriteAsync(copy.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
         ArrayPool<byte>.Shared.Return(copy);
     }
 

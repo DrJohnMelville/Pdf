@@ -21,7 +21,7 @@ public class FlateCodecDefinition: ICodecDefinition
         int totalRead = 0;
         do
         {
-            var localRead = await input.ReadAsync(buffer, 0, 2 - totalRead);
+            var localRead = await input.ReadAsync(buffer, 0, 2 - totalRead).ConfigureAwait(false);
             totalRead += localRead;
         } while (totalRead < 2);
         return new DeflateStream(input, CompressionMode.Decompress);
@@ -57,9 +57,9 @@ public sealed class FlateEncodeWrapper: DefaultBaseStream
 
     private async void InitiateCopyProcess()
     {
-        await adler.CopyToAsync(deflator);
-        await deflator.DisposeAsync();
-        await reverser.Writer.CompleteAsync();
+        await adler.CopyToAsync(deflator).ConfigureAwait(false);
+        await deflator.DisposeAsync().ConfigureAwait(false);
+        await reverser.Writer.CompleteAsync().ConfigureAwait(false);
     }
 
     protected override void Dispose(bool disposing)
@@ -77,9 +77,9 @@ public sealed class FlateEncodeWrapper: DefaultBaseStream
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken()) =>
         state switch
         {
-            State.WritePrefix => await TryWritePrefix(buffer, cancellationToken),
-            State.CopyBytes => await CopyBytes(buffer, cancellationToken),
-            State.WriteTrailer => await WriteTrailer(buffer),
+            State.WritePrefix => await TryWritePrefix(buffer, cancellationToken).ConfigureAwait(false),
+            State.CopyBytes => await CopyBytes(buffer, cancellationToken).ConfigureAwait(false),
+            State.WriteTrailer => await WriteTrailer(buffer).ConfigureAwait(false),
             State.Done => 0,
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -93,12 +93,12 @@ public sealed class FlateEncodeWrapper: DefaultBaseStream
 
     private async ValueTask<int> CopyBytes(Memory<byte> buffer, CancellationToken cancellationToken)
     {
-        var ret = await compressedSource.ReadAsync(buffer);
+        var ret = await compressedSource.ReadAsync(buffer).ConfigureAwait(false);
         if (ret == 0)
         {
             state = State.WriteTrailer;
             // we need the "tail call" here so we do not return 0 before we write out the trailer.
-            return await ReadAsync(buffer, cancellationToken);
+            return await ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         }
         return ret;
     }
@@ -109,7 +109,7 @@ public sealed class FlateEncodeWrapper: DefaultBaseStream
         state = State.CopyBytes;
         // this is an optimization -- we cold just always return 2 bytes from the first read.
         // we choose to try and fill the buffer as much as we can.
-        return 2 + await ReadAsync(destination[2..], cancellationToken);
+        return 2 + await ReadAsync(destination[2..], cancellationToken).ConfigureAwait(false);
     }
 
     private static void CopyPrefixToMemory(in Memory<byte> destination)

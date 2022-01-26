@@ -33,7 +33,7 @@ public class IndirectObjectResolver : IIndirectObjectResolver
     public async Task<long> FreeListHead()
     {
         return (index.TryGetValue((0, 65535), out var iRef) &&
-                (await iRef.DirectValueAsync()) is PdfFreeListObject flo)
+                (await iRef.DirectValueAsync().ConfigureAwait(false)) is PdfFreeListObject flo)
             ? flo.NextItem
             : 0;
     }

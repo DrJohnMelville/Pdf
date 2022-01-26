@@ -10,9 +10,9 @@ public static class StreamAsTextStream
 {
     public static async ValueTask<TextReader> TextStreamReader(this PdfStream source)
     {
-        var stream = await source.StreamContentAsync();
+        var stream = await source.StreamContentAsync().ConfigureAwait(false);
         var buffer = new byte[2];
-        var len=await buffer.FillBufferAsync(0, 2, stream);
+        var len=await buffer.FillBufferAsync(0, 2, stream).ConfigureAwait(false);
         return Utf16BE.HasUtf16BOM(buffer) ? 
             new StreamReader(stream, Utf16BE.UtfEncoding, false, -1, false) : 
             new StreamReader(PushbackPrefix(len, buffer, stream), new PdfDocEncoding(), false, -1, false);

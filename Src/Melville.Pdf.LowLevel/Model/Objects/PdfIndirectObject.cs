@@ -39,7 +39,7 @@ public class PdfIndirectObject: PdfObject, IMultableIndirectObject
     {
         if (accessor != null)
         {
-            value = await accessor();
+            value = await accessor().ConfigureAwait(false);
             accessor = null;
         } 
         return value;

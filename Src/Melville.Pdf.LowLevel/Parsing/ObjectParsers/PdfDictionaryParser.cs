@@ -24,17 +24,17 @@ public class PdfDictionaryParser : IPdfObjectParser
     }
 
     public async Task<PdfObject> ParseAsync(IParsingReader source) =>
-        new PdfDictionary(await ParseDictionaryItemsAsync(source));
+        new PdfDictionary(await ParseDictionaryItemsAsync(source).ConfigureAwait(false));
 
     public async Task<Dictionary<PdfName, PdfObject>> ParseDictionaryItemsAsync(IParsingReader source)
     {
-        var reader = await source.Reader.Source.ReadAsync();
+        var reader = await source.Reader.Source.ReadAsync().ConfigureAwait(false);
         //This has to succeed because the prior parser looked at the prefix to get here.
         source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(2));
         var dictionary = new Dictionary<PdfName, PdfObject>();
         while (true)
         {
-            var key = await nameParser.ParseAsync(source);
+            var key = await nameParser.ParseAsync(source).ConfigureAwait(false);
             if (key == PdfTokenValues.DictionaryTerminator)
             {
                 //TODO: See how much the trim helps in memory and costs in speed.
@@ -43,7 +43,7 @@ public class PdfDictionaryParser : IPdfObjectParser
                 return dictionary;
             }
 
-            var item = await valueParser.ParseAsync(source);
+            var item = await valueParser.ParseAsync(source).ConfigureAwait(false);
             if (item == PdfTokenValues.Null) continue;
             CheckValueIsNotTerminator(item);
             dictionary[CheckIfKeyIsName(key)] = item;

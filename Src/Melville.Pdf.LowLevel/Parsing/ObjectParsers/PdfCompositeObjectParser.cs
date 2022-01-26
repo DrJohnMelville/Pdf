@@ -21,13 +21,13 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        await NextTokenFinder.SkipToNextToken(source.Reader);
+        await NextTokenFinder.SkipToNextToken(source.Reader).ConfigureAwait(false);
         IPdfObjectParser parser;
         do
         {
-        } while (source.Reader.Source.ShouldContinue(PickParser(await source.Reader.Source.ReadAsync(), out parser!)));
+        } while (source.Reader.Source.ShouldContinue(PickParser(await source.Reader.Source.ReadAsync().ConfigureAwait(false), out parser!)));
 
-        return await parser.ParseAsync(source);
+        return await parser.ParseAsync(source).ConfigureAwait(false);
     }
 
     private (bool Success, SequencePosition Position) PickParser
@@ -95,7 +95,7 @@ public class ExpandSynonymsParser : IPdfObjectParser
 
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        var ret = await inner.ParseAsync(source);
+        var ret = await inner.ParseAsync(source).ConfigureAwait(false);
         return expansions.TryGetValue(ret, out var expansion) ? expansion : ret;
     }
 }

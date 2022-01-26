@@ -32,15 +32,15 @@ public readonly struct ContentStreamParser
         bool done = false;
         do
         {
-            var bfp = await BufferFromPipe.Create(source);
-            done = (! await ParseReadResult(bfp)) && bfp.Done;
+            var bfp = await BufferFromPipe.Create(source).ConfigureAwait(false);
+            done = (! await ParseReadResult(bfp).ConfigureAwait(false)) && bfp.Done;
             
         }while (!done);
     }
 
     private async ValueTask<bool> ParseReadResult(BufferFromPipe bfp)
     {
-        if (await ParseReader(bfp)) return true;
+        if (await ParseReader(bfp).ConfigureAwait(false)) return true;
         bfp.NeedMoreBytes();
         return false;
     }
@@ -151,7 +151,7 @@ public readonly struct ContentStreamParser
     
     private async ValueTask<bool> RunOpcode(uint opCode)
     {
-        await HandleOpCode(opCode);
+        await HandleOpCode(opCode).ConfigureAwait(false);
         return true;
     }
 
@@ -159,23 +159,23 @@ public readonly struct ContentStreamParser
     
     private async ValueTask<bool> TryParseDictionary(BufferFromPipe bfp)
     {
-        var dict = await PdfParserParts.EmbeddedDictionaryParser.ParseAsync(bfp.CreateParsingReader());
+        var dict = await PdfParserParts.EmbeddedDictionaryParser.ParseAsync(bfp.CreateParsingReader()).ConfigureAwait(false);
         target.HandleDictionary(dict);
         return true;
     }
     private async ValueTask<bool> ParseInlineImage(BufferFromPipe bfp)
     {
         var dict = await PdfParserParts.InlineImageDictionaryParser
-            .ParseDictionaryItemsAsync(bfp.CreateParsingReader());
+            .ParseDictionaryItemsAsync(bfp.CreateParsingReader()).ConfigureAwait(false);
         SetTypeAsImage(dict);
-        bfp = await bfp.Refresh();
+        bfp = await bfp.Refresh().ConfigureAwait(false);
         SequencePosition endPos;
         while (!(SearchForEndSequence(bfp, out endPos)))
         {
-            bfp = await bfp.InvalidateAndRefresh();
+            bfp = await bfp.InvalidateAndRefresh().ConfigureAwait(false);
         }
 
-        await target.HandleInlineImage(CreateStream(GrabStreamContent(bfp, endPos), dict));
+        await target.HandleInlineImage(CreateStream(GrabStreamContent(bfp, endPos), dict)).ConfigureAwait(false);
         return true;
     }
 

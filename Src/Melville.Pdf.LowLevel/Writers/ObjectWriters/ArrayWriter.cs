@@ -21,10 +21,10 @@ public static class ArrayWriter
             {
                 writer.WriteSpace();
             }
-            await items[i].Visit(innerWriter);
+            await items[i].Visit(innerWriter).ConfigureAwait(false);
         }
         writer.WriteByte( (byte)']');
-        return await writer.FlushAsync();
+        return await writer.FlushAsync().ConfigureAwait(false);
     }
 
     private static int WriteByte(Span<byte> target, byte c)

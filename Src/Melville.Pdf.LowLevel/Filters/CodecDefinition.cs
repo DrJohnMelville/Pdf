@@ -26,8 +26,8 @@ public class CodecDefinition: ICodecDefinition
     }
 
     public async ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) =>
-        ReadingFilterStream.Wrap(data, await encoder(parameters));
+        ReadingFilterStream.Wrap(data, await encoder(parameters).ConfigureAwait(false));
 
     public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters) =>
-        ReadingFilterStream.Wrap(input, await decoder(parameters));
+        ReadingFilterStream.Wrap(input, await decoder(parameters).ConfigureAwait(false));
 }

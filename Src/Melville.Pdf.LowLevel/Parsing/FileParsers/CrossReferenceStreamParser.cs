@@ -17,19 +17,19 @@ public static class CrossReferenceStreamParser
     public static async Task<PdfDictionary> Read(ParsingFileOwner owner, long offset)
     {
         PdfObject? xRefStreamAsPdfObject ;
-        var context = await owner.RentReader(offset);
-        xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context);
+        var context = await owner.RentReader(offset).ConfigureAwait(false);
+        xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context).ConfigureAwait(false);
         if (!(xRefStreamAsPdfObject is PdfStream crossRefPdfStream))
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
-        await using (var decodedStream = await crossRefPdfStream.StreamContentAsync())
+        await using (var decodedStream = await crossRefPdfStream.StreamContentAsync().ConfigureAwait(false))
         {
             await new ParseXRefStream(
-                await crossRefPdfStream[KnownNames.W], 
-                await crossRefPdfStream.GetOrNullAsync(KnownNames.Index), 
+                await crossRefPdfStream[KnownNames.W].ConfigureAwait(false), 
+                await crossRefPdfStream.GetOrNullAsync(KnownNames.Index).ConfigureAwait(false), 
                 decodedStream, owner
-            ).Parse();
+            ).Parse().ConfigureAwait(false);
         }
-        await owner.InitializeDecryption(crossRefPdfStream);
+        await owner.InitializeDecryption(crossRefPdfStream).ConfigureAwait(false);
         return crossRefPdfStream;
     }
 
@@ -73,7 +73,7 @@ public class ParseXRefStream
     {
         while (true)
         {
-            var result = await source.ReadAsync();
+            var result = await source.ReadAsync().ConfigureAwait(false);
             if (DoneReading(result)) return;
             ParseFromBuffer(result.Buffer);
         }

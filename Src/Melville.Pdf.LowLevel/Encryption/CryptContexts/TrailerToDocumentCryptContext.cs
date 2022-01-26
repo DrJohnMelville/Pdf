@@ -12,7 +12,7 @@ public static class TrailerToDocumentCryptContext
     public static async ValueTask<IDocumentCryptContext> CreateCryptContext(
         PdfDictionary trailer, string? userPassword)
     {
-        var securityHandler = await SecurityHandlerFromTrailer(trailer);
+        var securityHandler = await SecurityHandlerFromTrailer(trailer).ConfigureAwait(false);
         var key = securityHandler.TryComputeRootKey(userPassword??"", PasswordType.User);
         return key is null ?
             throw new ArgumentException("Incorrect user key for encryption"):
@@ -20,11 +20,11 @@ public static class TrailerToDocumentCryptContext
     }
 
     private static async ValueTask<ISecurityHandler> SecurityHandlerFromTrailer(PdfDictionary trailer) =>
-        await trailer.GetOrNullAsync(KnownNames.Encrypt) is not PdfDictionary dict
+        await trailer.GetOrNullAsync(KnownNames.Encrypt).ConfigureAwait(false) is not PdfDictionary dict
             ? NullSecurityHandler.Instance
-            : await SecurityHandlerFactory.CreateSecurityHandler(trailer, dict);
+            : await SecurityHandlerFactory.CreateSecurityHandler(trailer, dict).ConfigureAwait(false);
 
     public static async ValueTask<IDocumentCryptContext> CreateDecryptorFactory(
         PdfDictionary trailer, IPasswordSource passwordSource) =>
-        await (await SecurityHandlerFromTrailer(trailer)).InteractiveGetCryptContext(passwordSource);
+        await (await SecurityHandlerFromTrailer(trailer).ConfigureAwait(false)).InteractiveGetCryptContext(passwordSource).ConfigureAwait(false);
 }

@@ -55,7 +55,7 @@ public sealed class PdfArray :
         {
             currentPosition++;
             if (currentPosition >= items.Count) return false;
-            Current = await items[currentPosition].DirectValueAsync();
+            Current = await items[currentPosition].DirectValueAsync().ConfigureAwait(false);
             return true;
         }
 

@@ -44,7 +44,7 @@ public class ReadingFilterStream : DefaultBaseStream
         var ret = 0;
         do
         {
-            var result = await source.ReadAsync();
+            var result = await source.ReadAsync().ConfigureAwait(false);
             ret = HandleResult(buffer.Span, result);
             if (result.IsCompleted) return ret;
         } while (ret < 1);

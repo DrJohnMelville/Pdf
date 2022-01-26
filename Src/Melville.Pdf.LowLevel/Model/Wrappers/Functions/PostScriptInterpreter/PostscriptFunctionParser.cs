@@ -15,10 +15,10 @@ public static class PostscriptFunctionParser
 {
     public static async Task<PdfFunction> Parse(PdfStream source)
     {
-        var domain = await source.ReadIntervals(KnownNames.Domain);
-        var range = await source.ReadIntervals(KnownNames.Range);
+        var domain = await source.ReadIntervals(KnownNames.Domain).ConfigureAwait(false);
+        var range = await source.ReadIntervals(KnownNames.Range).ConfigureAwait(false);
         var op = await new PostscriptLanguageParser(PipeReader.Create(
-            await source.StreamContentAsync())).ParseCompositeAsync();
+            await source.StreamContentAsync().ConfigureAwait(false))).ParseCompositeAsync().ConfigureAwait(false);
         return new PostscriptFunction(domain, range, op);
     }
 }
@@ -36,10 +36,10 @@ public readonly struct PostscriptLanguageParser
 
     public async Task<CompositeOperation> ParseCompositeAsync()
     {
-        var open = await reader.ReadToken();
+        var open = await reader.ReadToken().ConfigureAwait(false);
         if (open != PostScriptOperations.Open_Brace)
             throw new PdfParseException("Postscript function must start with {");
-        var ret = await OpenCompositeOperation();
+        var ret = await OpenCompositeOperation().ConfigureAwait(false);
         return ret;
     }
 
@@ -47,7 +47,7 @@ public readonly struct PostscriptLanguageParser
     {
         var ret = new CompositeOperation();
         composites.Push(ret);
-        await ParseInsideComposite(ret);
+        await ParseInsideComposite(ret).ConfigureAwait(false);
         return ret;
     }
 
@@ -57,13 +57,13 @@ public readonly struct PostscriptLanguageParser
         CompositeOperation? elseBranch = null;
         while (true)
         {
-            switch (await reader.ReadToken(), ifBranch, elseBRanch: elseBranch)
+            switch (await reader.ReadToken().ConfigureAwait(false), ifBranch, elseBRanch: elseBranch)
             {
                 case (PostScriptOperations.OperationOpen_Brace, null, null):
-                    ifBranch = await OpenCompositeOperation();
+                    ifBranch = await OpenCompositeOperation().ConfigureAwait(false);
                     break;
                 case (PostScriptOperations.OperationOpen_Brace, not null, null):
-                    elseBranch = await OpenCompositeOperation();
+                    elseBranch = await OpenCompositeOperation().ConfigureAwait(false);
                     break;
                 case (PostScriptOperations.OperationIfElse, { }ib, {}eb):
                     ret.AddOperation(new IfOperation(ib,eb));
@@ -113,7 +113,7 @@ public readonly struct PostscriptTokenizer
     {
         while (true)
         {
-            if (TryRead((await reader.ReadAsync()), out var ret)) return ret;
+            if (TryRead((await reader.ReadAsync().ConfigureAwait(false)), out var ret)) return ret;
         }
     }
 

@@ -16,7 +16,7 @@ public class DctDecoder : ICodecDefinition
 
     public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
     {
-        var img = await Image.LoadAsync<Rgb24>(input);
+        var img = await Image.LoadAsync<Rgb24>(input).ConfigureAwait(false);
         return new ImageReadStream(img);
     }
 }

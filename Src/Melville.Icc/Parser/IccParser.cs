@@ -16,17 +16,17 @@ public readonly struct IccParser
 
     public async ValueTask<IccProfile> ParseAsync()
     {
-        var readResult = await GetMinSizeAsync(132);
+        var readResult = await GetMinSizeAsync(132).ConfigureAwait(false);
 
         var (ret, tags) = ReadStaticBlock(readResult.Buffer);
         source.AdvanceTo(readResult.Buffer.GetPosition(132));
-        await ReadOffsetsAsync(tags);
+        await ReadOffsetsAsync(tags).ConfigureAwait(false);
         Array.Sort(tags, (x,y)=>x.Offset.CompareTo(y.Offset));
         for (int i = 0; i < tags.Length; i++)
         {
             var tag = tags[i];
-            await source.AdvanceToLocalPositionAsync(tag.Offset);
-            var buffer = await GetMinSizeAsync((int)tag.Size);
+            await source.AdvanceToLocalPositionAsync(tag.Offset).ConfigureAwait(false);
+            var buffer = await GetMinSizeAsync((int)tag.Size).ConfigureAwait(false);
             tags[i] = tag with { Data = TagParser.Parse(buffer.Buffer) };
         }
 
@@ -35,12 +35,12 @@ public readonly struct IccParser
 
     private async Task<ReadResult> GetMinSizeAsync(int minSize)
     {
-        var readResult = await source.ReadAsync();
+        var readResult = await source.ReadAsync().ConfigureAwait(false);
         while (readResult.Buffer.Length < minSize)
         {
             if (readResult.IsCompleted) throw new InvalidDataException("Too short for an ICC profile");
             source.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
-            readResult = await source.ReadAsync();
+            readResult = await source.ReadAsync().ConfigureAwait(false);
         }
         return readResult;
     }
@@ -86,7 +86,7 @@ public readonly struct IccParser
 
     private async ValueTask ReadOffsetsAsync(ProfileTag[] tags)
     {
-        var result = await GetMinSizeAsync(12 * tags.Length);
+        var result = await GetMinSizeAsync(12 * tags.Length).ConfigureAwait(false);
         ReadOffsets(result.Buffer, tags);
         source.AdvanceTo(result.Buffer.GetPosition(12*tags.Length));
     }

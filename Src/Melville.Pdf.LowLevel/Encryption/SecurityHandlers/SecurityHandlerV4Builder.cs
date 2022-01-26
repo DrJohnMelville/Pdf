@@ -13,20 +13,20 @@ public static class SecurityHandlerV4Builder
         
     public static async ValueTask<SecurityHandlerV4> Create(RootKeyComputer rootKeyComputer, PdfDictionary encryptionDictionary)
     {
-        var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF);
+        var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF).ConfigureAwait(false);
         var finalDictionary = new Dictionary<PdfName, ISecurityHandler>();
         finalDictionary.Add(KnownNames.Identity, NullSecurityHandler.Instance);
         foreach (var entry in cfd)
         {
-            var cryptDictionary = (PdfDictionary)await entry.Value;
-            var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM);
+            var cryptDictionary = (PdfDictionary)await entry.Value.ConfigureAwait(false);
+            var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM).ConfigureAwait(false);
             finalDictionary.Add(entry.Key, CreateSubSecurityHandler(rootKeyComputer, cfm, encryptionDictionary));
         }
             
         finalDictionary.Add(KnownNames.StmF, 
-            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StmF, KnownNames.Identity)]);
+            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StmF, KnownNames.Identity).ConfigureAwait(false)]);
         finalDictionary.Add(KnownNames.StrF, 
-            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity)]);
+            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity).ConfigureAwait(false)]);
 
         return new SecurityHandlerV4(rootKeyComputer ,finalDictionary);
     }

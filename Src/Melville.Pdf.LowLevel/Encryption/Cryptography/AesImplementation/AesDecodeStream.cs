@@ -31,14 +31,14 @@ public class AesDecodeStream : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        if (decryptedSource == null) await InitalizeCryptStream();
-        return await decryptedSource!.ReadAsync(buffer, cancellationToken);
+        if (decryptedSource == null) await InitalizeCryptStream().ConfigureAwait(false);
+        return await decryptedSource!.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
     }
 
     private async ValueTask InitalizeCryptStream()
     {
         var iv = new byte[decryptor.BlockSize / 8];
-        await iv.FillBufferAsync(0, iv.Length, input);
+        await iv.FillBufferAsync(0, iv.Length, input).ConfigureAwait(false);
         decryptor.IV = iv;
         decryptedSource = new CryptoStream(input, decryptor.CreateDecryptor(), CryptoStreamMode.Read);
     }

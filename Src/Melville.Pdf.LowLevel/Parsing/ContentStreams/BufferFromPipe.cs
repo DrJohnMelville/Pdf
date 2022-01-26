@@ -19,7 +19,7 @@ public readonly struct BufferFromPipe
 
     public static async ValueTask<BufferFromPipe> Create(PipeReader reader)
     {
-        var readResult = await reader.ReadAsync();
+        var readResult = await reader.ReadAsync().ConfigureAwait(false);
         return new BufferFromPipe(reader, readResult, readResult.Buffer.Start);
     }
 

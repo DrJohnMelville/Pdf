@@ -24,8 +24,8 @@ public static class StaticCodecFactory
             { KnownNames.ASCII85Decode, ConstantCodec(new Ascii85Encoder(), new Ascii85Decoder()) },
             { KnownNames.RunLengthDecode, ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()) },
             { KnownNames.LZWDecode, new CodecDefinition(
-                async p => new LzwEncodeFilter(await p.EarlySwitchLength()),
-                async p => new LzwDecodeFilter(await p.EarlySwitchLength())) },
+                async p => new LzwEncodeFilter(await p.EarlySwitchLength().ConfigureAwait(false)),
+                async p => new LzwDecodeFilter(await p.EarlySwitchLength().ConfigureAwait(false))) },
             { KnownNames.FlateDecode, new FlateCodecDefinition() },
             {KnownNames.DCTDecode, new DctDecoder()}
         };

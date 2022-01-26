@@ -103,7 +103,7 @@ public class SampledFunctionBuilder
         var ret = new MultiBufferStream();
         var bitWriter = new BitStreamWriter(ret, bitsPerSample);
         WriteSamplesToWriter(bitWriter);
-        await bitWriter.FinishAsync();
+        await bitWriter.FinishAsync().ConfigureAwait(false);
         return ret;
     }
 
@@ -149,5 +149,5 @@ public class SampledFunctionBuilder
         CreateSampledFunction(new DictionaryBuilder());
 
     public async ValueTask<PdfStream> CreateSampledFunction(DictionaryBuilder members) =>
-        DictionaryEntries(members).AsStream(await SamplesStream());
+        DictionaryEntries(members).AsStream(await SamplesStream().ConfigureAwait(false));
 }

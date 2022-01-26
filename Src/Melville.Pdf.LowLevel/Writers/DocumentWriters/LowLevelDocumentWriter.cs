@@ -27,26 +27,26 @@ public class LowLevelDocumentWriter
     public async Task WriteAsync()
     {
             
-        var objectOffsets = await WriteHeaderAndObjects(0);
+        var objectOffsets = await WriteHeaderAndObjects(0).ConfigureAwait(false);
         long xRefStart = target.BytesWritten;
-        await NewXrefTableWriter.WriteXrefsForNewFile(target, objectOffsets);
-        await TrailerWriter.WriteTrailerWithDictionary(target, document.TrailerDictionary, xRefStart);
+        await NewXrefTableWriter.WriteXrefsForNewFile(target, objectOffsets).ConfigureAwait(false);
+        await TrailerWriter.WriteTrailerWithDictionary(target, document.TrailerDictionary, xRefStart).ConfigureAwait(false);
     }
 
     public async Task WriteWithReferenceStream()
     {
         document.VerifyCanSupportObjectStreams();
-        var objectOffsets = await WriteHeaderAndObjects(1);
+        var objectOffsets = await WriteHeaderAndObjects(1).ConfigureAwait(false);
         long xRefStart = target.BytesWritten;
         objectOffsets.DeclareIndirectObject(objectOffsets.Entries.Length-1, xRefStart);
-        await new ReferenceStreamWriter(target, document, objectOffsets).Write();
-        await TrailerWriter.WriteTerminalStartXrefAndEof(target, xRefStart);
+        await new ReferenceStreamWriter(target, document, objectOffsets).Write().ConfigureAwait(false);
+        await TrailerWriter.WriteTerminalStartXrefAndEof(target, xRefStart).ConfigureAwait(false);
     }
 
     private async Task<XRefTable> WriteHeaderAndObjects( int extraSlots)
     {
         HeaderWriter.WriteHeader(target, document.MajorVersion, document.MinorVersion);
-        var objectOffsets = await WriteObjectList(document, extraSlots);
+        var objectOffsets = await WriteObjectList(document, extraSlots).ConfigureAwait(false);
         return objectOffsets;
     }
 
@@ -55,23 +55,23 @@ public class LowLevelDocumentWriter
         var positions= CreateIndexArray(document, extraSlots);
         var objectWriter = new PdfObjectWriter(target,
             await TrailerToDocumentCryptContext.CreateCryptContext(
-                document.TrailerDictionary, userPassword));
+                document.TrailerDictionary, userPassword).ConfigureAwait(false));
         foreach (var item in document.Objects.Values)
         {
-            if (!(await item.Target.DirectValueAsync()).ShouldWriteToFile()) continue;
+            if (!(await item.Target.DirectValueAsync().ConfigureAwait(false)).ShouldWriteToFile()) continue;
             positions.DeclareIndirectObject(item.Target.ObjectNumber, target.BytesWritten);
-            await DeclareContainedObjects(item, positions);
-            await item.Target.Visit(objectWriter);
+            await DeclareContainedObjects(item, positions).ConfigureAwait(false);
+            await item.Target.Visit(objectWriter).ConfigureAwait(false);
         }
         return positions;
     }
 
     private async Task DeclareContainedObjects(PdfIndirectReference item, XRefTable positions)
     {
-        if (await item.DirectValueAsync() is IHasInternalIndirectObjects hiid)
+        if (await item.DirectValueAsync().ConfigureAwait(false) is IHasInternalIndirectObjects hiid)
         {
             int streamPosition = 0;
-            foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbersAsync())
+            foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbersAsync().ConfigureAwait(false))
             {
                 EnsureOuterGenerationNumberIsZero(item.Target);
                 positions.DeclareObjectStreamObject(

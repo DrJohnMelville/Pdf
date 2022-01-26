@@ -82,15 +82,15 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         {
             lines.Add(new XrefLine(
                 item.Target.ObjectNumber, target.BytesWritten, item.Target.GenerationNumber, true));
-            await writer.Visit(item.Target);
+            await writer.Visit(item.Target).ConfigureAwait(false);
         }
         var startXref = target.BytesWritten;
         XrefTableElementWriter.WriteXrefTitleLine(target);
         DeletedItemLines(lines);
         WriteRevisedXrefTable(target, lines);
-        await target.FlushAsync();
+        await target.FlushAsync().ConfigureAwait(false);
         builder.AddToTrailerDictionary(KnownNames.Prev, new PdfInteger(priorXref));
-        await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref);
+        await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref).ConfigureAwait(false);
     }
 
     private void WriteRevisedXrefTable(CountingPipeWriter target, IEnumerable<XrefLine> lines)

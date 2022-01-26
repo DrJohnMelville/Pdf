@@ -13,13 +13,13 @@ public static class RandomAccessFileParser
         ParsingFileOwner owner, int fileTrailerSizeHint = 30)
     {
         byte major, minor;
-        var context = await owner.RentReader(0);
-        owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffset(context.Reader));
-        (major, minor) = await PdfHeaderParser.ParseHeadder(context.Reader);
+        var context = await owner.RentReader(0).ConfigureAwait(false);
+        owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffset(context.Reader).ConfigureAwait(false));
+        (major, minor) = await PdfHeaderParser.ParseHeadder(context.Reader).ConfigureAwait(false);
 
-        var xrefPosition = await FileTrailerLocater.Search(owner, fileTrailerSizeHint);
-        var dictionary = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition);
-        var firstFree = await owner.IndirectResolver.FreeListHead();
+        var xrefPosition = await FileTrailerLocater.Search(owner, fileTrailerSizeHint).ConfigureAwait(false);
+        var dictionary = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition).ConfigureAwait(false);
+        var firstFree = await owner.IndirectResolver.FreeListHead().ConfigureAwait(false);
 
         return new PdfLoadedLowLevelDocument(
             major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, firstFree);

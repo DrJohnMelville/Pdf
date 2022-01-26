@@ -28,9 +28,9 @@ public readonly struct ObjectStreamWriter
 
     public async ValueTask TryAddRefAsync(PdfIndirectObject obj)
     {
-        var direcetValue = await obj.DirectValueAsync();
+        var direcetValue = await obj.DirectValueAsync().ConfigureAwait(false);
         WriteObjectPosition(obj);
-        await WriteObject(direcetValue);
+        await WriteObject(direcetValue).ConfigureAwait(false);
     }
 
     private void WriteObjectPosition(PdfIndirectObject item)
@@ -43,14 +43,14 @@ public readonly struct ObjectStreamWriter
 
     private async ValueTask WriteObject(PdfObject directValue)
     {
-        await directValue.Visit(objectWriter);
+        await directValue.Visit(objectWriter).ConfigureAwait(false);
         objectStreamWriter.WriteLineFeed();
     }
 
     public async ValueTask<PdfStream> Build(DictionaryBuilder builder, int count)
     {
-        await referenceStreamWriter.FlushAsync();
-        await objectStreamWriter.FlushAsync();
+        await referenceStreamWriter.FlushAsync().ConfigureAwait(false);
+        await objectStreamWriter.FlushAsync().ConfigureAwait(false);
         return builder
             .WithItem(KnownNames.Type, KnownNames.ObjStm)
             .WithItem(KnownNames.N, count)

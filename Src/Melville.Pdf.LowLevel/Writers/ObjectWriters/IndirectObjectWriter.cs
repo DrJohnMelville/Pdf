@@ -30,10 +30,10 @@ public static class IndirectObjectWriter
         ILowLevelVisitor<ValueTask<FlushResult>> innerWriter)
     {
         target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 
-        await target.FlushAsync();
-        await (await item.DirectValueAsync()).Visit(innerWriter);
+        await target.FlushAsync().ConfigureAwait(false);
+        await (await item.DirectValueAsync().ConfigureAwait(false)).Visit(innerWriter).ConfigureAwait(false);
         target.WriteBytes(endObjLabel);
-        return await target.FlushAsync();
+        return await target.FlushAsync().ConfigureAwait(false);
     }
         
     private static int WriteObjectIdDigits(Span<byte> buffer, PdfIndirectObject pdfIndirectObject)

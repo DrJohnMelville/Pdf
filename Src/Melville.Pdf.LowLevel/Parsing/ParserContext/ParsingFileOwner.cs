@@ -63,7 +63,7 @@ public partial class ParsingFileOwner
     {
         if (AlreadyInitializedDecryption()) return;
         documentCryptContext = await 
-            TrailerToDocumentCryptContext.CreateDecryptorFactory(trailerDictionary, passwordSource);
+            TrailerToDocumentCryptContext.CreateDecryptorFactory(trailerDictionary, passwordSource).ConfigureAwait(false);
     }
 
     private bool AlreadyInitializedDecryption()

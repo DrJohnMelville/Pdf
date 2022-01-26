@@ -22,8 +22,8 @@ public class ObjectStreamBuilder
         var writer = new ObjectStreamWriter();
         foreach (var member in members)
         {
-            await  writer.TryAddRefAsync(member);
+            await  writer.TryAddRefAsync(member).ConfigureAwait(false);
         }
-        return await writer.Build(builder, members.Count);
+        return await writer.Build(builder, members.Count).ConfigureAwait(false);
     }
 }

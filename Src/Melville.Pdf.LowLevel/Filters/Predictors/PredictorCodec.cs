@@ -18,13 +18,13 @@ public class PredictorCodec : ICodecDefinition
 
     public async ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters)
     {
-        var filter = await PredictionFilterAsync(parameters, true);
+        var filter = await PredictionFilterAsync(parameters, true).ConfigureAwait(false);
         return filter == null ? data : ReadingFilterStream.Wrap(data, filter);
     }
         
     public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
     {
-        var filter = await PredictionFilterAsync(parameters, false);
+        var filter = await PredictionFilterAsync(parameters, false).ConfigureAwait(false);
         return filter == null ? input : ReadingFilterStream.Wrap(input, filter);
     }
 
@@ -33,10 +33,10 @@ public class PredictorCodec : ICodecDefinition
         parameters is not PdfDictionary dict
             ? null
             : PredictionFilter(
-                await dict.GetOrDefaultAsync(KnownNames.Predictor, 1),
-                (int)await dict.GetOrDefaultAsync(KnownNames.Colors, 1),
-                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8),
-                (int)await dict.GetOrDefaultAsync(KnownNames.Columns, 1), 
+                await dict.GetOrDefaultAsync(KnownNames.Predictor, 1).ConfigureAwait(false),
+                (int)await dict.GetOrDefaultAsync(KnownNames.Colors, 1).ConfigureAwait(false),
+                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).ConfigureAwait(false),
+                (int)await dict.GetOrDefaultAsync(KnownNames.Columns, 1).ConfigureAwait(false), 
                 encoding);
 
     private IStreamFilterDefinition? PredictionFilter(

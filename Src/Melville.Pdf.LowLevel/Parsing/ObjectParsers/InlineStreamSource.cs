@@ -24,7 +24,7 @@ public class InlineStreamSource: IStreamDataSource
 
     public async ValueTask<Stream> OpenRawStream(long streamLength)
     {
-        return await parsingFileOwner.RentStream(sourceFilePosition, streamLength);
+        return await parsingFileOwner.RentStream(sourceFilePosition, streamLength).ConfigureAwait(false);
     }
 
     public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) => 

@@ -23,7 +23,7 @@ public readonly struct BitStreamReader
     {
         while (true)
         {
-            var span = await pipe.ReadAsync();
+            var span = await pipe.ReadAsync().ConfigureAwait(false);
             if (TryRead(span.Buffer, out var ret)) return ret;
             pipe.AdvanceTo(span.Buffer.Start, span.Buffer.End);
         }

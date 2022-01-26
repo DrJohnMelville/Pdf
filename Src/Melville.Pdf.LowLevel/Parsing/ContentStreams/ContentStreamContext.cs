@@ -45,7 +45,7 @@ public class ContentStreamContext
                 target.FillAndStrokePathEvenOdd();
                 break;
             case ContentStreamOperatorValue.BDC:
-                await BeginMarkedRange();
+                await BeginMarkedRange().ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.BI:
                 break;
@@ -70,10 +70,10 @@ public class ContentStreamContext
                     arguments.FloatAt(4), arguments.FloatAt(5)));
                 break;
             case ContentStreamOperatorValue.CS:
-                await target.SetStrokingColorSpace(arguments.NamaAt(0));
+                await target.SetStrokingColorSpace(arguments.NamaAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.cs:
-                await target.SetNonstrokingColorSpace(arguments.NamaAt(0));
+                await target.SetNonstrokingColorSpace(arguments.NamaAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.d:
                 SetLineDashPattern();
@@ -87,10 +87,10 @@ public class ContentStreamContext
                     arguments.DoubleAt(3), arguments.DoubleAt(4), arguments.DoubleAt(5));
                 break;
             case ContentStreamOperatorValue.Do:
-                await target.DoAsync(arguments.NamaAt(0));
+                await target.DoAsync(arguments.NamaAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.DP:
-                await MarkedContentPoint();
+                await MarkedContentPoint().ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.EI:
                 break;
@@ -113,13 +113,13 @@ public class ContentStreamContext
                 target.FillPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.G:
-                await target.SetStrokeGray(arguments.DoubleAt(0));
+                await target.SetStrokeGray(arguments.DoubleAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.g:
-                await target.SetNonstrokingGray(arguments.DoubleAt(0));
+                await target.SetNonstrokingGray(arguments.DoubleAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.gs:
-                await target.LoadGraphicStateDictionary(arguments.NamaAt(0));
+                await target.LoadGraphicStateDictionary(arguments.NamaAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.h:
                 target.ClosePath();
@@ -137,11 +137,11 @@ public class ContentStreamContext
                 break;
             case ContentStreamOperatorValue.K:
                 await target.SetStrokeCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
-                    arguments.DoubleAt(2), arguments.DoubleAt(3));
+                    arguments.DoubleAt(2), arguments.DoubleAt(3)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.k:
                 await target.SetNonstrokingCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
-                    arguments.DoubleAt(2), arguments.DoubleAt(3));
+                    arguments.DoubleAt(2), arguments.DoubleAt(3)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.l:
                 target.LineTo(arguments.DoubleAt(0), arguments.DoubleAt(1));
@@ -169,11 +169,11 @@ public class ContentStreamContext
                     arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.RG:
-                await target.SetStrokeRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2));
+                await target.SetStrokeRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.rg:
                 await target.SetNonstrokingRGB(arguments.DoubleAt(0), arguments.DoubleAt(1),
-                    arguments.DoubleAt(2));
+                    arguments.DoubleAt(2)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.ri:
                 target.SetRenderIntent(new RenderIntentName(arguments.NamaAt(0)));
@@ -191,10 +191,10 @@ public class ContentStreamContext
                 SetStrokingColor();
                 break;
             case ContentStreamOperatorValue.SCN:
-                await SetStrokingColorExtended();
+                await SetStrokingColorExtended().ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.scn:
-                await SetNonstrokingColorExtended();
+                await SetNonstrokingColorExtended().ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.sh:
                 break;
@@ -211,13 +211,13 @@ public class ContentStreamContext
                 target.MovePositionByWithLeading(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.Tf:
-                await target.SetFont(arguments.NamaAt(0), arguments.DoubleAt(1));
+                await target.SetFont(arguments.NamaAt(0), arguments.DoubleAt(1)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.Tj:
-                await target.ShowString(arguments.BytesAt(0));
+                await target.ShowString(arguments.BytesAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.TJ:
-                await target.ShowSpacedString(arguments.NativeSpan());
+                await target.ShowSpacedString(arguments.NativeSpan()).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.TL:
                 target.SetTextLeading(arguments.DoubleAt(0));
@@ -256,11 +256,11 @@ public class ContentStreamContext
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.SingleQuote:
-                await target.MoveToNextLineAndShowString(arguments.BytesAt(0));
+                await target.MoveToNextLineAndShowString(arguments.BytesAt(0)).ConfigureAwait(false);
                 break;
             case ContentStreamOperatorValue.DoubleQuote:
                 await target.MoveToNextLineAndShowString(arguments.DoubleAt(0), arguments.DoubleAt(1),
-                    arguments.BytesAt(2));
+                    arguments.BytesAt(2)).ConfigureAwait(false);
                 break;
             default:
                 HandleUnknownOperation();

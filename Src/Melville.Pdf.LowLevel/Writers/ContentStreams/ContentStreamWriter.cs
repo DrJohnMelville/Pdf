@@ -200,10 +200,10 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        await destPipe.WriteInlineImageDict(inlineImage);
-        await using (var str = await DiskRepresentation(inlineImage))
+        await destPipe.WriteInlineImageDict(inlineImage).ConfigureAwait(false);
+        await using (var str = await DiskRepresentation(inlineImage).ConfigureAwait(false))
         {
-            await destPipe.WriteStreamContent(str);
+            await destPipe.WriteStreamContent(str).ConfigureAwait(false);
         }
         destPipe.WriteBytes(inlineImageTerminator);
     }
@@ -340,7 +340,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public async ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dict)
     {
         destPipe.WriteName(tag);
-        await destPipe.WriteDictionary(dict);
+        await destPipe.WriteDictionary(dict).ConfigureAwait(false);
         destPipe.WriteOperator(ContentStreamOperatorNames.DP);
     }
 
@@ -352,12 +352,12 @@ public partial class ContentStreamWriter : IContentStreamOperations
 
     public async ValueTask<DeferedClosingTask> BeginMarkedRange(PdfName tag, PdfName dictName)
     {
-        await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictName);
+        await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictName).ConfigureAwait(false);
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
     public async ValueTask<DeferedClosingTask> BeginMarkedRange(PdfName tag, PdfDictionary dictionary)
     {
-        await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictionary);
+        await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictionary).ConfigureAwait(false);
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
     }
 
@@ -373,7 +373,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     async ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
     {
         destPipe.WriteName(tag);
-        await destPipe.WriteDictionary(dictionary);
+        await destPipe.WriteDictionary(dictionary).ConfigureAwait(false);
         destPipe.WriteOperator(ContentStreamOperatorNames.BDC);
     }
 

@@ -17,8 +17,8 @@ public static class TrailerWriter
         PipeWriter target, PdfDictionary dictionary, long xRefStart)
     {
         target.WriteBytes(trailerTag);
-        await dictionary.Visit(new PdfObjectWriter(target));
-        await WriteTerminalStartXrefAndEof(target, xRefStart);
+        await dictionary.Visit(new PdfObjectWriter(target)).ConfigureAwait(false);
+        await WriteTerminalStartXrefAndEof(target, xRefStart).ConfigureAwait(false);
     }
 
     public static ValueTask<FlushResult> WriteTerminalStartXrefAndEof(PipeWriter target, long xRefStart)

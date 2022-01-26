@@ -161,9 +161,9 @@ public partial class ParsingFileOwner
             {
                 while (true)
                 {
-                    var read = await ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                    var read = await ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
                     if (read == 0) return;
-                    await destination.WriteAsync(buffer, 0, read);
+                    await destination.WriteAsync(buffer, 0, read).ConfigureAwait(false);
                 }
             }
             finally

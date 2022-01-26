@@ -10,12 +10,12 @@ public static class FunctionFactory
 {
     public static async ValueTask<PdfFunction> CreateFunctionAsync(this PdfDictionary source)
     {
-        return (await source.GetAsync<PdfNumber>(KnownNames.FunctionType)).IntValue switch
+        return (await source.GetAsync<PdfNumber>(KnownNames.FunctionType).ConfigureAwait(false)).IntValue switch
         {
-            0 => await SampledFunctionParser.Parse(AsStream(source)),
-            2 => await ExponentialFunctionParser.Parse(source),
-            3 => await StitchedFunctionParser.Parse(source),
-            4 => await PostscriptFunctionParser.Parse(AsStream(source)),
+            0 => await SampledFunctionParser.Parse(AsStream(source)).ConfigureAwait(false),
+            2 => await ExponentialFunctionParser.Parse(source).ConfigureAwait(false),
+            3 => await StitchedFunctionParser.Parse(source).ConfigureAwait(false),
+            4 => await PostscriptFunctionParser.Parse(AsStream(source)).ConfigureAwait(false),
             var type => throw new PdfParseException("Unknown function type: "+ type)
         };
     }

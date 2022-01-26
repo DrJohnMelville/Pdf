@@ -20,15 +20,15 @@ public static class FileTrailerLocater
         while (true)
         {
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
-            var context = await source.RentReader(start);
+            var context = await source.RentReader(start).ConfigureAwait(false);
             var reader = context.Reader;
-            while (SearchForS(await reader.Source.ReadAsync(), reader, end, out var foundPos))
+            while (SearchForS(await reader.Source.ReadAsync().ConfigureAwait(false), reader, end, out var foundPos))
             {
                 if (!foundPos) continue;
-                if (await TokenChecker.CheckToken(context.Reader, startXRef))
+                if (await TokenChecker.CheckToken(context.Reader, startXRef).ConfigureAwait(false))
                 {
-                    await NextTokenFinder.SkipToNextToken(reader);
-                    do { } while (reader.Source.ShouldContinue(GetLong(await reader.Source.ReadAsync(), out xrefPosition)));
+                    await NextTokenFinder.SkipToNextToken(reader).ConfigureAwait(false);
+                    do { } while (reader.Source.ShouldContinue(GetLong(await reader.Source.ReadAsync().ConfigureAwait(false), out xrefPosition)));
                     return xrefPosition;
                 }
             }

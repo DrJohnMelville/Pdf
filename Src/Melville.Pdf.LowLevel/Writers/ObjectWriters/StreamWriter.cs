@@ -21,15 +21,15 @@ public static class StreamWriter
         IObjectCryptContext encryptor)
     {
         Stream diskrep;
-        await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor);
-        diskrep = await EnsureStreamHasKnownLength(rawStream);
+        await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).ConfigureAwait(false);
+        diskrep = await EnsureStreamHasKnownLength(rawStream).ConfigureAwait(false);
             
         await DictionaryWriter.WriteAsync(target, innerWriter, 
-            item.MergeItems((KnownNames.Length, new PdfInteger(diskrep.Length))));
+            item.MergeItems((KnownNames.Length, new PdfInteger(diskrep.Length)))).ConfigureAwait(false);
         target.WriteBytes(streamToken);
-        await diskrep.CopyToAsync(target);
+        await diskrep.CopyToAsync(target).ConfigureAwait(false);
         target.WriteBytes(endStreamToken);
-        return await target.FlushAsync();
+        return await target.FlushAsync().ConfigureAwait(false);
     }
 
     private static async Task<Stream> EnsureStreamHasKnownLength(Stream rawStream)
@@ -38,7 +38,7 @@ public static class StreamWriter
         if (rawStream.Length < 1)
         {
             var mbs = new MultiBufferStream(2048);
-            await rawStream.CopyToAsync(mbs);
+            await rawStream.CopyToAsync(mbs).ConfigureAwait(false);
             diskrep = mbs.CreateReader();
         }
         else

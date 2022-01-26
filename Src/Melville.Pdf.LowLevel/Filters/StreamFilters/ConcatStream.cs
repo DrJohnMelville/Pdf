@@ -35,13 +35,13 @@ public abstract class ConcatStreamBase : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        await TryLoadFirstSource();
+        await TryLoadFirstSource().ConfigureAwait(false);
         var bytesWritten = 0;
         while (!AtEndOfStream() && bytesWritten < buffer.Length)
         {
-            var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken);
+            var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken).ConfigureAwait(false);
             bytesWritten += localWritten;
-            await PrepareForNextRead(localWritten);
+            await PrepareForNextRead(localWritten).ConfigureAwait(false);
         }
 
         return bytesWritten;
@@ -50,7 +50,7 @@ public abstract class ConcatStreamBase : DefaultBaseStream
     private async ValueTask TryLoadFirstSource()
     {
         // we use this as a sentinel to mean we have not gotten the first source yet
-        current = (current == this) ? await GetNextStream(): current;
+        current = (current == this) ? await GetNextStream().ConfigureAwait(false): current;
     }
     
     [MemberNotNullWhen(false, nameof(current))]
@@ -59,8 +59,8 @@ public abstract class ConcatStreamBase : DefaultBaseStream
     private async ValueTask PrepareForNextRead(int localWritten)
     {
         if (PriorReadSucceeded(localWritten)) return;
-        if (current != null) await current.DisposeAsync();
-        current = await GetNextStream();;
+        if (current != null) await current.DisposeAsync().ConfigureAwait(false);
+        current = await GetNextStream().ConfigureAwait(false);;
     }
 
     private static bool PriorReadSucceeded(int localWritten) => localWritten > 0;
