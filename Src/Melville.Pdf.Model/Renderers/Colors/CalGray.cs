@@ -22,13 +22,13 @@ public class CalGray : IColorSpace
 
     public static async ValueTask<CalGray> Parse(PdfDictionary parameters)
     {
-        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint);
+        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).ConfigureAwait(false);
         var wp = new FloatColor(
-            (await array.GetAsync<PdfNumber>(0)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(1)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(2)).DoubleValue
+            (await array.GetAsync<PdfNumber>(0).ConfigureAwait(false)).DoubleValue,
+            (await array.GetAsync<PdfNumber>(1).ConfigureAwait(false)).DoubleValue,
+            (await array.GetAsync<PdfNumber>(2).ConfigureAwait(false)).DoubleValue
         );
-        var gamma = await parameters.GetOrDefaultAsync(KnownNames.Gamma, 1.0);
+        var gamma = await parameters.GetOrDefaultAsync(KnownNames.Gamma, 1.0).ConfigureAwait(false);
         return new CalGray(wp, gamma);
     }
 

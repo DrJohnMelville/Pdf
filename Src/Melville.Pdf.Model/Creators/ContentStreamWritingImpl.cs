@@ -26,8 +26,8 @@ public static class ContentStreamWritingImpl
     {
         var streamData = new MultiBufferStream();
         var pipe = PipeWriter.Create(streamData);
-        await creator(new ContentStreamWriter(pipe));
-        await pipe.FlushAsync();
+        await creator(new ContentStreamWriter(pipe)).ConfigureAwait(false);
+        await pipe.FlushAsync().ConfigureAwait(false);
         pc.AddToContentStream(dict.AsStream(streamData));
     }
 }

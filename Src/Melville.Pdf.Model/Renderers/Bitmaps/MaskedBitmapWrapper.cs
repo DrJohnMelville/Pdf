@@ -69,9 +69,9 @@ public readonly struct MaskBitmap
 
     public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
     {
-        var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black);
+        var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black).ConfigureAwait(false);
         var buffer = new byte[wrapped.ReqiredBufferSize()];
-        await FillBuffer(buffer, wrapped);
+        await FillBuffer(buffer, wrapped).ConfigureAwait(false);
         return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);
     }
 

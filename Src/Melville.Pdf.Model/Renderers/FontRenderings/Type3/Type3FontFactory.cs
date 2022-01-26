@@ -23,14 +23,14 @@ public readonly struct Type3FontFactory
 
     public async ValueTask<IFontMapping> ParseAsync()
     {
-        var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0);
-        var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255);
+        var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0).ConfigureAwait(false);
+        var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255).ConfigureAwait(false);
         var characters = new MultiBufferStream[1 + lastChar - firstChar];
-        var encoding = await font.GetAsync<PdfDictionary>(KnownNames.Encoding);
-        var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcs);
-        var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences);
+        var encoding = await font.GetAsync<PdfDictionary>(KnownNames.Encoding).ConfigureAwait(false);
+        var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcs).ConfigureAwait(false);
+        var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences).ConfigureAwait(false);
         int currentChar = 0;
-        await foreach (var item in differences)
+        await foreach (var item in differences.ConfigureAwait(false))
         {
             switch (item)
             {
@@ -39,8 +39,8 @@ public readonly struct Type3FontFactory
                     break;
                 case PdfName name:
                     var stream = new MultiBufferStream();
-                    var source = await (await charProcs.GetAsync<PdfStream>(name)).StreamContentAsync();
-                    await source.CopyToAsync(stream);
+                    var source = await (await charProcs.GetAsync<PdfStream>(name).ConfigureAwait(false)).StreamContentAsync().ConfigureAwait(false);
+                    await source.CopyToAsync(stream).ConfigureAwait(false);
                     characters[currentChar - firstChar] = stream;
                     currentChar++;
                     break;
@@ -48,14 +48,14 @@ public readonly struct Type3FontFactory
         }
 
         return new NamedDefaultMapping(new RealizedType3Font(target, characters, (byte)firstChar,
-            (await ReadTransformMatrix()*
+            (await ReadTransformMatrix().ConfigureAwait(false)*
              Matrix3x2.CreateScale((float)size, (float)size))), false, false,
             NullUnicodeMapping.Instance);
     }
 
     private async Task<Matrix3x2> ReadTransformMatrix()
     {
-        var digits = await (await font.GetAsync<PdfArray>(KnownNames.FontMatrix)).AsDoublesAsync();
+        var digits = await (await font.GetAsync<PdfArray>(KnownNames.FontMatrix).ConfigureAwait(false)).AsDoublesAsync().ConfigureAwait(false);
         return new Matrix3x2(
             (float) digits[0], (float) digits[1], (float) digits[2], (float) digits[3], (float) digits[4],
             (float) digits[5]);

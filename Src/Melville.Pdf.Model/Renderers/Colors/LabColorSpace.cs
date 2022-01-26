@@ -34,9 +34,9 @@ public class LabColorSpace : IColorSpace
 
     public static async ValueTask<LabColorSpace> ParseAsync(PdfDictionary parameters)
     {
-        var wp = await ReadWhitePoint(parameters);
-        var array = await parameters.GetOrNullAsync(KnownNames.Range) is PdfArray arr
-            ? await arr.AsDoublesAsync()
+        var wp = await ReadWhitePoint(parameters).ConfigureAwait(false);
+        var array = await parameters.GetOrNullAsync(KnownNames.Range).ConfigureAwait(false) is PdfArray arr
+            ? await arr.AsDoublesAsync().ConfigureAwait(false)
             : Array.Empty<double>();
         
         return new LabColorSpace(wp, 
@@ -47,11 +47,11 @@ public class LabColorSpace : IColorSpace
 
     private static async Task<FloatColor> ReadWhitePoint(PdfDictionary parameters)
     {
-        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint);
+        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).ConfigureAwait(false);
         return new FloatColor(
-            (await array.GetAsync<PdfNumber>(0)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(1)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(2)).DoubleValue
+            (await array.GetAsync<PdfNumber>(0).ConfigureAwait(false)).DoubleValue,
+            (await array.GetAsync<PdfNumber>(1).ConfigureAwait(false)).DoubleValue,
+            (await array.GetAsync<PdfNumber>(2).ConfigureAwait(false)).DoubleValue
         );
     }
 

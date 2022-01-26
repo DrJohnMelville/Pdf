@@ -14,7 +14,7 @@ namespace Melville.Pdf.SkiaSharp
         public static async ValueTask ToPngStream(
             PdfPage page, Stream target, int width = -1, int height = -1, IDefaultFontMapper? defaultFontMapper = null)
         {
-            using var surface = await ToSurface(page, width, height, defaultFontMapper);
+            using var surface = await ToSurface(page, width, height, defaultFontMapper).ConfigureAwait(false);
             using var image = surface.Snapshot();
             using var data = image.Encode();
             data.SaveTo(target);
@@ -24,7 +24,7 @@ namespace Melville.Pdf.SkiaSharp
             IDefaultFontMapper? defaultFontMapper = null)
         {
             
-            var rect = await page.GetBoxAsync(BoxName.CropBox);
+            var rect = await page.GetBoxAsync(BoxName.CropBox).ConfigureAwait(false);
             if (!rect.HasValue) return SKSurface.Create(new SKImageInfo(1, 1));
             
             (width, height) = AdjustSize(rect.Value, width, height);
@@ -34,7 +34,7 @@ namespace Melville.Pdf.SkiaSharp
             var target = new SkiaRenderTarget(
                 surface.Canvas, stateStack, page);
             target.SetBackgroundRect(rect.Value, width, height);
-            await page.RenderTo(target, new FontReader(defaultFontMapper??new WindowsDefaultFonts()));
+            await page.RenderTo(target, new FontReader(defaultFontMapper??new WindowsDefaultFonts())).ConfigureAwait(false);
             return surface;
         }
 

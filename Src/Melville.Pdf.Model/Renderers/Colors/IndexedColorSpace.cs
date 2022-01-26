@@ -25,10 +25,10 @@ public class IndexedColorSpace: IColorSpace
 
     public static async Task<IColorSpace> ParseAsync(PdfArray array, IHasPageAttributes page)
     {
-        var subColorSpace = await ColorSpaceFactory.ParseColorSpace(await array.GetAsync<PdfName>(1), page);
-        int length = 1 + (int)(await array.GetAsync<PdfNumber>(2)).IntValue;
+        var subColorSpace = await ColorSpaceFactory.ParseColorSpace(await array.GetAsync<PdfName>(1).ConfigureAwait(false), page).ConfigureAwait(false);
+        int length = 1 + (int)(await array.GetAsync<PdfNumber>(2).ConfigureAwait(false)).IntValue;
         return new IndexedColorSpace(await GetValues(
-            await array.GetAsync<PdfObject>(3), subColorSpace, length));
+            await array.GetAsync<PdfObject>(3).ConfigureAwait(false), subColorSpace, length).ConfigureAwait(false));
     }
 
     private static ValueTask<DeviceColor[]> GetValues(
@@ -55,9 +55,9 @@ public class IndexedColorSpace: IColorSpace
     private static async ValueTask<DeviceColor[]> GetValuesFromStream(
         PdfStream pdfStream, IColorSpace baseColorSpace, int length)
     {
-        var stream = await pdfStream.StreamContentAsync();
+        var stream = await pdfStream.StreamContentAsync().ConfigureAwait(false);
         var ms = new MemoryStream();
-        await stream.CopyToAsync(ms);
+        await stream.CopyToAsync(ms).ConfigureAwait(false);
         return GetValues(ms.GetBuffer().AsSpan(0, (int)ms.Length), baseColorSpace, length);
     }
     public int ExpectedComponents => 1;

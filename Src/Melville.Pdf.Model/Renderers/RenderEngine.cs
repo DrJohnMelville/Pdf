@@ -66,8 +66,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
         await StateOps.LoadGraphicStateDictionary(
-            await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName) as 
-                PdfDictionary ?? throw new PdfParseException($"Cannot find GraphicsState {dictionaryName}"));
+            await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName).ConfigureAwait(false) as 
+                PdfDictionary ?? throw new PdfParseException($"Cannot find GraphicsState {dictionaryName}")).ConfigureAwait(false);
     #endregion
     
     #region Drawing Operations
@@ -151,19 +151,19 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public void ClipToPathEvenOdd() => target.ClipToPath(true);
 
     public async ValueTask DoAsync(PdfName name) =>
-        await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name)) as PdfStream ??
-                      throw new PdfParseException("Co command can only be called on Streams"));
+        await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name).ConfigureAwait(false)) as PdfStream ??
+                      throw new PdfParseException("Co command can only be called on Streams")).ConfigureAwait(false);
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        switch ((await inlineImage.GetAsync<PdfName>(KnownNames.Subtype)).GetHashCode())
+        switch ((await inlineImage.GetAsync<PdfName>(KnownNames.Subtype).ConfigureAwait(false)).GetHashCode())
         {
             case KnownNameKeys.Image:
                 await target.RenderBitmap(
-                    await inlineImage.WrapForRenderingAsync(page, StateOps.CurrentState().NonstrokeColor));
+                    await inlineImage.WrapForRenderingAsync(page, StateOps.CurrentState().NonstrokeColor).ConfigureAwait(false)).ConfigureAwait(false);
                 break;
             case KnownNameKeys.Form:
-                await RunTargetGroup(inlineImage);
+                await RunTargetGroup(inlineImage).ConfigureAwait(false);
                 break;
             default: throw new PdfParseException("Cannot do the provided object");
         }
@@ -172,18 +172,18 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask RunTargetGroup(PdfStream formXObject)
     {
         SaveGraphicsState();
-        if(await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.Matrix, PdfTokenValues.Null) is PdfArray arr &&
-           (await arr.AsDoublesAsync()) is {} matrix)
+        if(await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.Matrix, PdfTokenValues.Null).ConfigureAwait(false) is PdfArray arr &&
+           (await arr.AsDoublesAsync().ConfigureAwait(false)) is {} matrix)
             ModifyTransformMatrix(CreateMatrix(matrix));
         
-        if ((await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.BBox, PdfTokenValues.Null)) is PdfArray arr2 &&
-            (await arr2.AsDoublesAsync()) is { } bbArray)
+        if ((await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.BBox, PdfTokenValues.Null).ConfigureAwait(false)) is PdfArray arr2 &&
+            (await arr2.AsDoublesAsync().ConfigureAwait(false)) is { } bbArray)
         {
             Rectangle(bbArray[0], bbArray[1], bbArray[2], bbArray[3]);
             ClipToPath();
             EndPathWithNoOp();
         }
-        await new PdfFormXObject(formXObject, page).RenderTo(target, fontReader);
+        await new PdfFormXObject(formXObject, page).RenderTo(target, fontReader).ConfigureAwait(false);
         RestoreGraphicsState();
     }
 
@@ -204,12 +204,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask SetStrokingColorSpace(PdfName colorSpace)
     {
         target.GrapicsStateChange.SetStrokeColorSpace(
-            await ColorSpaceFactory.ParseColorSpace(colorSpace, page));
+            await ColorSpaceFactory.ParseColorSpace(colorSpace, page).ConfigureAwait(false));
     }
 
     public async ValueTask SetNonstrokingColorSpace(PdfName colorSpace) =>
         target.GrapicsStateChange.SetNonstrokeColorSpace(
-            await ColorSpaceFactory.ParseColorSpace(colorSpace, page));
+            await ColorSpaceFactory.ParseColorSpace(colorSpace, page).ConfigureAwait(false));
     
     public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
@@ -227,37 +227,37 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask SetStrokeGray(double grayLevel)
     {
-        await SetStrokingColorSpace(KnownNames.DeviceGray);
+        await SetStrokingColorSpace(KnownNames.DeviceGray).ConfigureAwait(false);
         SetStrokeColor(stackalloc double[] { grayLevel });
     }
 
     public async ValueTask SetStrokeRGB(double red, double green, double blue)
     {
-        await SetStrokingColorSpace(KnownNames.DeviceRGB);
+        await SetStrokingColorSpace(KnownNames.DeviceRGB).ConfigureAwait(false);
         SetStrokeColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
     {
-        await SetStrokingColorSpace(KnownNames.DeviceCMYK);
+        await SetStrokingColorSpace(KnownNames.DeviceCMYK).ConfigureAwait(false);
         SetStrokeColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
 
     public async ValueTask SetNonstrokingGray(double grayLevel)
     {
-        await SetNonstrokingColorSpace(KnownNames.DeviceGray);
+        await SetNonstrokingColorSpace(KnownNames.DeviceGray).ConfigureAwait(false);
         SetNonstrokingColor(stackalloc double[] { grayLevel });
     }
 
     public async ValueTask SetNonstrokingRGB(double red, double green, double blue)
     {
-        await SetNonstrokingColorSpace(KnownNames.DeviceRGB);
+        await SetNonstrokingColorSpace(KnownNames.DeviceRGB).ConfigureAwait(false);
         SetNonstrokingColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
     {
-        await SetNonstrokingColorSpace(KnownNames.DeviceCMYK);
+        await SetNonstrokingColorSpace(KnownNames.DeviceCMYK).ConfigureAwait(false);
         SetNonstrokingColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
     #endregion
@@ -293,9 +293,9 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask SetFont(PdfName font, double size)
     {
-        var fontMapping = await page.GetResourceAsync(ResourceTypeName.Font, font) is PdfDictionary fontDic ?
-            await fontReader.DictionaryToRealizedFont(fontDic, this, size) :
-            await fontReader.NameToRealizedFont(font, this, size);
+        var fontMapping = await page.GetResourceAsync(ResourceTypeName.Font, font).ConfigureAwait(false) is PdfDictionary fontDic ?
+            await fontReader.DictionaryToRealizedFont(fontDic, this, size).ConfigureAwait(false) :
+            await fontReader.NameToRealizedFont(font, this, size).ConfigureAwait(false);
         StateOps.CurrentState().SetTypeface(fontMapping);
       //  await SetTypeface(fontMapping, size);
     }
@@ -314,7 +314,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         for (int i = 0; i < decodedString.Length; i++)
         {
             var character = GetAt(decodedString,  i);
-            var (w, h) = await writer.AddGlyphToCurrentString(character, CharacterPositionMatrix());
+            var (w, h) = await writer.AddGlyphToCurrentString(character, CharacterPositionMatrix()).ConfigureAwait(false);
             AdjustTextPositionForCharacter(w, h, character);
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
@@ -394,7 +394,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
                     UpdateTextPosition(-delta, delta);
                     break;
                 case ContentStreamValueType.Memory:
-                    await ShowString(value.Bytes);
+                    await ShowString(value.Bytes).ConfigureAwait(false);
                     break;
                 default:
                     throw new PdfParseException("Invalid ShowSpacedString argument");
@@ -414,7 +414,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         if (StateOps.CurrentState().TextRender != TextRendering.Invisible)
         {
-            await DrawType3Character(s, fontMatrix);
+            await DrawType3Character(s, fontMatrix).ConfigureAwait(false);
         }
         var ret = CharacterSizeInTextSpace(fontMatrix);
         return (ret.X, ret.Y);
@@ -425,7 +425,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         SaveGraphicsState();
         var textMatrix = StateOps.CurrentState().TextMatrix;
         ModifyTransformMatrix(fontMatrix* textMatrix);
-        await new ContentStreamParser(this).Parse(PipeReader.Create(s));
+        await new ContentStreamParser(this).Parse(PipeReader.Create(s)).ConfigureAwait(false);
         RestoreGraphicsState();
     }
 

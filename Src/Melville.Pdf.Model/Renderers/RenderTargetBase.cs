@@ -103,5 +103,5 @@ public static class RenderTargetOperations
                 new RenderEngine(page, target, fonts))
             .Parse(
                 PipeReader.Create(
-                    await page.GetContentBytes()));
+                    await page.GetContentBytes().ConfigureAwait(false))).ConfigureAwait(false);
 }

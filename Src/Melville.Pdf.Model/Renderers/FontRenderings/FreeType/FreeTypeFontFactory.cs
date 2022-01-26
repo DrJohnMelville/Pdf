@@ -37,14 +37,14 @@ public class FreeTypeFontFactory
     public static async ValueTask<IRealizedFont> FromStream(PdfStream pdfStream, double size, IFontTarget target,
         IByteToUnicodeMapping mapping)
     {
-        var source = await pdfStream.StreamContentAsync();
-        return await FromCSharpStream(size, target, mapping, source);
+        var source = await pdfStream.StreamContentAsync().ConfigureAwait(false);
+        return await FromCSharpStream(size, target, mapping, source).ConfigureAwait(false);
     }
 
     private static async ValueTask<IRealizedFont> FromCSharpStream(double size, IFontTarget target, IByteToUnicodeMapping mapping,
         Stream source)
     {
-        var face = sharpFontLibrary.NewMemoryFace(await UncompressToBufferAsync(source), 0);
+        var face = sharpFontLibrary.NewMemoryFace(await UncompressToBufferAsync(source).ConfigureAwait(false), 0);
         return FontFromFace(size, target, mapping, face);
     }
 
@@ -57,9 +57,9 @@ public class FreeTypeFontFactory
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)
     {
         var decodedSource = new MultiBufferStream();
-        await source.CopyToAsync(decodedSource);
+        await source.CopyToAsync(decodedSource).ConfigureAwait(false);
         var output = new byte[decodedSource.Length];
-        await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader());
+        await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader()).ConfigureAwait(false);
         return output;
     }
 }

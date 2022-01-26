@@ -31,7 +31,7 @@ public static class CustomFontEncodingFactory
     {
         var dict = new Dictionary<byte, char>();
         byte currentChar = 0;
-        await foreach (var item in differences)
+        await foreach (var item in differences.ConfigureAwait(false))
         {
             switch (item)
             {

@@ -11,12 +11,12 @@ public static class IccProfileLibrary
     private static IccProfile? sRGB;
 
     public static async ValueTask<IccProfile> ReadSrgb() => sRGB ??=
-        await LoadProfile(@"AdobeSrgb.icc");
+        await LoadProfile(@"AdobeSrgb.icc").ConfigureAwait(false);
 
     private static IccProfile? cmyk;
 
     public static async ValueTask<IccProfile> ReadCmyk() => cmyk ??=
-        await LoadProfile(@"Cmyk.icc");
+        await LoadProfile(@"Cmyk.icc").ConfigureAwait(false);
     
     private static ValueTask<IccProfile> LoadProfile(string profileFile) =>
         new IccParser(PipeReader.Create(

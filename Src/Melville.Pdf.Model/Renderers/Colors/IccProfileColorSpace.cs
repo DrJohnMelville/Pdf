@@ -12,14 +12,14 @@ internal class IccProfileColorSpace
 {
     public static async Task<IColorSpace> ParseAsync(PdfStream getAsync)
     {
-        var profile = await new IccParser(PipeReader.Create(await getAsync.StreamContentAsync())).ParseAsync();
+        var profile = await new IccParser(PipeReader.Create(await getAsync.StreamContentAsync().ConfigureAwait(false))).ParseAsync().ConfigureAwait(false);
         return new IccColorSpace( 
             profile.Header.ProfileConnectionColorSpace switch
         {
             ColorSpace.XYZ => new CompositeTransform(profile.DeviceToPcsTransform(RenderIntent.Perceptual)??
                                                      throw new PdfParseException("Invalid icc profile"),
                 XyzToDeviceColor.Instance),
-            ColorSpace.Lab => profile.TransformTo(await IccProfileLibrary.ReadSrgb()),
+            ColorSpace.Lab => profile.TransformTo(await IccProfileLibrary.ReadSrgb().ConfigureAwait(false)),
             var x => throw new PdfParseException("Unsupported profile connection space: "+x)
         });
     }

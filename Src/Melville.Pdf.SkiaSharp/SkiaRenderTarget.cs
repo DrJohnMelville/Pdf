@@ -46,7 +46,7 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         using var skBitmap = ScreenFormatBitmap(bitmap);
-        await FillBitmapAsync(bitmap, skBitmap);
+        await FillBitmapAsync(bitmap, skBitmap).ConfigureAwait(false);
         Target.DrawBitmap(skBitmap,
             new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1));
     }

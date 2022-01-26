@@ -16,7 +16,7 @@ public readonly struct PdfDocument
 
     public static async ValueTask<PdfDocument> ReadAsync(Stream source, IPasswordSource? passwords = null) => 
         new(
-            await RandomAccessFileParser.Parse(new ParsingFileOwner(source, passwords)));
+            await RandomAccessFileParser.Parse(new ParsingFileOwner(source, passwords)).ConfigureAwait(false));
 
     public PdfDocument(PdfLowLevelDocument lowLevel)
     {
@@ -27,10 +27,10 @@ public readonly struct PdfDocument
         LowLevel.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
 
     public async ValueTask<PdfName> VersionAsync() =>
-        (await CatalogAsync()).TryGetValue(KnownNames.Version, out var task) &&
-        (await task) is PdfName version?
+        (await CatalogAsync().ConfigureAwait(false)).TryGetValue(KnownNames.Version, out var task) &&
+        (await task.ConfigureAwait(false)) is PdfName version?
             version: NameDirectory.Get($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
 
     public async ValueTask<PageTree> PagesAsync() =>
-        new(await (await CatalogAsync()).GetAsync<PdfDictionary>(KnownNames.Pages));
+        new(await (await CatalogAsync().ConfigureAwait(false)).GetAsync<PdfDictionary>(KnownNames.Pages).ConfigureAwait(false));
 }

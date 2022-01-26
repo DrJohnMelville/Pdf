@@ -91,12 +91,12 @@ public partial class GraphicsState: IGraphiscState
     
     private async ValueTask SetLineDashPattern(PdfArray entryValue)
     {
-        DashPhase = (await entryValue.GetAsync<PdfNumber>(1)).DoubleValue;
-        var pattern = await entryValue.GetAsync<PdfArray>(0);
+        DashPhase = (await entryValue.GetAsync<PdfNumber>(1).ConfigureAwait(false)).DoubleValue;
+        var pattern = await entryValue.GetAsync<PdfArray>(0).ConfigureAwait(false);
         var patternNums = new double[pattern.Count];
         for (int i = 0; i < pattern.Count; i++)
         {
-            patternNums[i] = (await pattern.GetAsync<PdfNumber>(i)).DoubleValue;
+            patternNums[i] = (await pattern.GetAsync<PdfNumber>(i).ConfigureAwait(false)).DoubleValue;
         }
         DashArray = patternNums;
     }
@@ -116,25 +116,25 @@ public partial class GraphicsState: IGraphiscState
             switch (hashCode)
             {
                 case KnownNameKeys.LW:
-                    SetLineWidth((await EntryValue<PdfNumber>(entry)).DoubleValue);
+                    SetLineWidth((await EntryValue<PdfNumber>(entry).ConfigureAwait(false)).DoubleValue);
                     break;
                 case KnownNameKeys.FL:
-                    SetFlatnessTolerance((await EntryValue<PdfNumber>(entry)).DoubleValue);
+                    SetFlatnessTolerance((await EntryValue<PdfNumber>(entry).ConfigureAwait(false)).DoubleValue);
                     break;
                 case KnownNameKeys.LC:
-                    SetLineCap((LineCap)(await EntryValue<PdfNumber>(entry)).IntValue);
+                    SetLineCap((LineCap)(await EntryValue<PdfNumber>(entry).ConfigureAwait(false)).IntValue);
                     break;
                 case KnownNameKeys.LJ:
-                    SetLineJoinStyle((LineJoinStyle)(await EntryValue<PdfNumber>(entry)).IntValue);
+                    SetLineJoinStyle((LineJoinStyle)(await EntryValue<PdfNumber>(entry).ConfigureAwait(false)).IntValue);
                     break;
                 case KnownNameKeys.ML:
-                    SetMiterLimit((await EntryValue<PdfNumber>(entry)).DoubleValue);
+                    SetMiterLimit((await EntryValue<PdfNumber>(entry).ConfigureAwait(false)).DoubleValue);
                     break;
                 case KnownNameKeys.D:
-                    await SetLineDashPattern(await EntryValue<PdfArray>(entry));
+                    await SetLineDashPattern(await EntryValue<PdfArray>(entry).ConfigureAwait(false)).ConfigureAwait(false);
                     break;
                 case KnownNameKeys.RI:
-                    SetRenderIntent(new RenderIntentName(await EntryValue<PdfName>(entry)));
+                    SetRenderIntent(new RenderIntentName(await EntryValue<PdfName>(entry).ConfigureAwait(false)));
                     break;
             }
         }
@@ -143,7 +143,7 @@ public partial class GraphicsState: IGraphiscState
     private static async ValueTask<T> EntryValue<T>(KeyValuePair<PdfName, PdfObject> entry)
         where T:PdfObject
     {
-        return (T) await entry.Value.DirectValueAsync();
+        return (T) await entry.Value.DirectValueAsync().ConfigureAwait(false);
     }
 
     #region Text State

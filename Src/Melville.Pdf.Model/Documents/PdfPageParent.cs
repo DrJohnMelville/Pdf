@@ -11,7 +11,7 @@ public record class PdfPageParent(PdfDictionary LowLevel) : IHasPageAttributes
     
     public async ValueTask<IHasPageAttributes?> GetParentAsync() =>
         LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&
-        await parentTask is PdfDictionary dict
+        await parentTask.ConfigureAwait(false) is PdfDictionary dict
             ? new PdfPageParent(dict)
             : null;
 }

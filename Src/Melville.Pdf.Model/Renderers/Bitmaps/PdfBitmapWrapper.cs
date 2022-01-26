@@ -29,7 +29,7 @@ public class PdfBitmapWrapper : IPdfBitmap
     {
         int row = Height - 1;
         int column = 0;
-        while (c.LoadLPixels(await c.ReadAsync(), ref row, ref column))
+        while (c.LoadLPixels(await c.ReadAsync().ConfigureAwait(false), ref row, ref column))
         {
             /* do nothing*/
         }

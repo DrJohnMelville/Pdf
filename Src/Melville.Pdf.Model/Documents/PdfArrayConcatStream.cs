@@ -21,6 +21,6 @@ public class PdfArrayConcatStream : ConcatStreamBase
         if (!source.MoveNext()) return null;
         var stream = (await source.Current) as PdfStream ??
                   throw new PdfParseException("Content array should contain only streams");
-        return await stream.StreamContentAsync();
+        return await stream.StreamContentAsync().ConfigureAwait(false);
     }
 }
