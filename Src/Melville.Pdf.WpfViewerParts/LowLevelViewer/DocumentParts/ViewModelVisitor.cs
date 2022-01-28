@@ -52,7 +52,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
 
         return type.GetHashCode() switch
         {
-            KnownNameKeys.Font => new FontPart(savedPrefix + "Font", item, children),
+            KnownNameKeys.Font => new FontPartViewModel(savedPrefix + "Font", item, children),
             KnownNameKeys.Page => new PagePartViewModel(savedPrefix+"Page", children, new PdfPage(item)),
             _ => new DocumentPart(savedPrefix + DictionaryTitle(type), children)
         };

@@ -1,15 +1,16 @@
 ﻿using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 
 namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Fonts;
 
-public partial class FontPart: DocumentPart
+public partial class FontPartViewModel: DocumentPart
 {
     private readonly PdfDictionary fontDic;
-    [AutoNotify] private IRealizedFont font;
+    [AutoNotify] private IRealizedFont? font;
     
-    public FontPart(string title, PdfDictionary fontDic, IReadOnlyList<DocumentPart> children) : base(title, children)
+    public FontPartViewModel(string title, PdfDictionary fontDic, IReadOnlyList<DocumentPart> children) : base(title, children)
     {
         this.fontDic = fontDic;
     }
@@ -23,7 +24,8 @@ public partial class FontPart: DocumentPart
         }
     }
 
-    private void LoadFont()
+    private async void LoadFont()
     {
-    }
+        Font = await new FontReader(new WindowsDefaultFonts()).DictionaryToRealizedFont(fontDic, 72);
+   }
 }

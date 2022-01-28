@@ -12,20 +12,20 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 public class FreeTypeFont : IRealizedFont, IDisposable
 {
-    private readonly Face face;
-    private readonly IByteToUnicodeMapping mapping;
+    public Face Face { get; }
+    public IByteToUnicodeMapping Mapping { get; }
     private readonly double size;
     
     public FreeTypeFont(Face face, IByteToUnicodeMapping mapping, double size)
     {
-        this.face = face;
-        this.mapping = mapping;
+        this.Face = face;
+        this.Mapping = mapping;
         this.size = size;
     }
 
     public void Dispose()
     { 
-        face.Dispose();
+        Face.Dispose();
     }
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
@@ -33,10 +33,10 @@ public class FreeTypeFont : IRealizedFont, IDisposable
     
     private (double width, double height) RenderByte(OutlineFuncs nativeTarget, byte b)
     {
-        var unicode = mapping.MapToUnicode(b);
-        face.LoadGlyph(face.GetCharIndex(unicode), LoadFlags.NoBitmap, LoadTarget.Normal);
-        face.Glyph.Outline.Decompose(nativeTarget, IntPtr.Zero);
-        return (face.Glyph.Advance.X/64.0, face.Glyph.Advance.Y/64.0);
+        var unicode = Mapping.MapToUnicode(b);
+        Face.LoadGlyph(Face.GetCharIndex(unicode), LoadFlags.NoBitmap, LoadTarget.Normal);
+        Face.Glyph.Outline.Decompose(nativeTarget, IntPtr.Zero);
+        return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0);
     }
 
     private class FreeTypeWriteOperation: IFontWriteOperation
@@ -74,7 +74,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
 
         private bool GlyphRequiresEvenOddFill()
         {
-            return (parent.face.Glyph.Outline.Flags & OutlineFlags.EvenOddFill) != 0;
+            return (parent.Face.Glyph.Outline.Flags & OutlineFlags.EvenOddFill) != 0;
         }
     }
 }
