@@ -6,5 +6,5 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 public interface IDefaultFontMapper
 {
-    public ValueTask<IRealizedFont> MapDefaultFont(PdfName font, double size, IByteToUnicodeMapping suggestedEncoding);
+    public ValueTask<IRealizedFont> MapDefaultFont(PdfName font, double size);
 }

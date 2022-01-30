@@ -23,13 +23,13 @@ public readonly struct FontReader
     public async ValueTask<IRealizedFont> DictionaryToRealizedFont(
         PdfDictionary dict, double size)
     {
-        return await DictionaryToMappingAsync(dict, size).ConfigureAwait(false);
+        return await FontFromDictionaryAsync(dict, size).ConfigureAwait(false);
     }
 
     public ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, double size) =>
-        defaultMapper.MapDefaultFont(name, size, CharacterEncodings.Standard);
+        defaultMapper.MapDefaultFont(name, size);
 
-    public async ValueTask<IRealizedFont> DictionaryToMappingAsync(
+    private async ValueTask<IRealizedFont> FontFromDictionaryAsync(
         PdfDictionary font, double size)
     {
         var fontTypeKey = 
@@ -42,36 +42,34 @@ public readonly struct FontReader
         PdfObject encoding = await font.GetOrNullAsync(KnownNames.Encoding).ConfigureAwait(false);
         PdfDictionary? descriptor = font.TryGetValue(KnownNames.FontDescriptor, out var descTask) ?
              (await descTask) as PdfDictionary: null;
-
-
-        IRealizedFont ret;
-        if (descriptor is not null &&
-            await StreamFromDescriptorAsync(descriptor).ConfigureAwait(false)
-                is { } fontAsStream)
-        {
-            ret =  await FreeTypeFontFactory.FromStream(fontAsStream, size,
-                    await NonsymbolicEncodingParser.InterpretEncodingValue(encoding).ConfigureAwait(false))
-                .ConfigureAwait(false);
-        }
-        else
-        {
-            var baseFontName = await
-                font.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica).ConfigureAwait(false);
-
-            ret = await defaultMapper.MapDefaultFont(ComputeOsFontName(fontTypeKey, baseFontName), size,
-                    await NonsymbolicEncodingParser.InterpretEncodingValue(encoding).ConfigureAwait(false))
-                .ConfigureAwait(false);
-        }
-
+        
+        var ret = await CreateRealizedFont(font, size, descriptor, fontTypeKey).ConfigureAwait(false);
         await ret.SetGlyphEncoding(encoding, descriptor).ConfigureAwait(false);
         return ret;
     }
-    
+
+    private async Task<IRealizedFont> CreateRealizedFont(PdfDictionary font, double size, PdfDictionary? descriptor, int fontTypeKey) =>
+        await (
+                await StreamFromDescriptorAsync(descriptor).ConfigureAwait(false) is { } fontAsStream ?
+                    FreeTypeFontFactory.FromStream(fontAsStream, size, null) :
+                    SystemFontByName(font, size, fontTypeKey)
+              ).ConfigureAwait(false);
+
+    private async ValueTask<IRealizedFont> SystemFontByName(PdfDictionary font, double size, int fontTypeKey)
+    {
+        var baseFontName = await
+            font.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica).ConfigureAwait(false);
+
+        return await defaultMapper.MapDefaultFont(ComputeOsFontName(fontTypeKey, baseFontName), size)
+            .ConfigureAwait(false);
+    }
+
     private PdfName ComputeOsFontName(int fontType, PdfName baseFontName) =>
         fontType == KnownNameKeys.MMType1?
             RemoveMultMasterSuffix(baseFontName):baseFontName;
 
-    private async ValueTask<PdfStream?> StreamFromDescriptorAsync(PdfDictionary descriptor) =>
+    private async ValueTask<PdfStream?> StreamFromDescriptorAsync(PdfDictionary? descriptor) =>
+        descriptor != null && 
         (descriptor.TryGetValue(KnownNames.FontFile2, out var ff2Task) ||
          descriptor.TryGetValue(KnownNames.FontFile3, out ff2Task)) 
        && (await ff2Task.ConfigureAwait(false)) is PdfStream ff2

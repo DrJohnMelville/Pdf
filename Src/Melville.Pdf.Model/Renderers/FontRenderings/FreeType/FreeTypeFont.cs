@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using SharpFont;
 
@@ -11,23 +12,21 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 public class FreeTypeFont : IRealizedFont, IDisposable
 {
     public Face Face { get; }
-    private IByteToUnicodeMapping Mapping { get; }
-    private readonly double size;
+    private IByteToUnicodeMapping? Mapping { get; }
     private IGlyphMapping? glyphMap;
     
-    public FreeTypeFont(Face face, IByteToUnicodeMapping mapping, double size)
+    public FreeTypeFont(Face face, IByteToUnicodeMapping? mapping)
     {
         Face = face;
         Mapping = mapping;
-        this.size = size;
     }
 
-    public ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor)
+    public async ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor)
     {
-        glyphMap = new UnicodeGlyphMapping(Face, Mapping);
-        return ValueTask.CompletedTask;
+        glyphMap = new UnicodeGlyphMapping(Face, 
+            Mapping ?? await NonsymbolicEncodingParser.InterpretEncodingValue(encoding)
+                .ConfigureAwait(false));
     }
-
 
     public void Dispose() => Face.Dispose();
 
