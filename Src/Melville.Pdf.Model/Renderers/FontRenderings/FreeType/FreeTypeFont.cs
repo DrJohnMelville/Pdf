@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using SharpFont;
 
@@ -10,8 +11,9 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 public class FreeTypeFont : IRealizedFont, IDisposable
 {
     public Face Face { get; }
-    public IByteToUnicodeMapping Mapping { get; }
+    private IByteToUnicodeMapping Mapping { get; }
     private readonly double size;
+    private IGlyphMapping? glyphMap;
     
     public FreeTypeFont(Face face, IByteToUnicodeMapping mapping, double size)
     {
@@ -20,18 +22,22 @@ public class FreeTypeFont : IRealizedFont, IDisposable
         this.size = size;
     }
 
-    public void Dispose()
-    { 
-        Face.Dispose();
+    public ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor)
+    {
+        glyphMap = new UnicodeGlyphMapping(Face, Mapping);
+        return ValueTask.CompletedTask;
     }
+
+
+    public void Dispose() => Face.Dispose();
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
     
     private (double width, double height) RenderByte(OutlineFuncs nativeTarget, byte b)
     {
-        var unicode = Mapping.MapToUnicode(b);
-        Face.LoadGlyph(Face.GetCharIndex(unicode), LoadFlags.NoBitmap, LoadTarget.Normal);
+        if (glyphMap is null) return (0,0);
+        Face.LoadGlyph(glyphMap.SelectGlyph(b), LoadFlags.NoBitmap, LoadTarget.Normal);
         Face.Glyph.Outline.Decompose(nativeTarget, IntPtr.Zero);
         return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0);
     }

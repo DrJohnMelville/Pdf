@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 
 public static class NonsymbolicEncodingParser
 {

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
@@ -32,7 +33,8 @@ public readonly struct FontReader
         PdfDictionary font, double size)
     {
         var fontTypeKey = 
-            (await font.GetOrDefaultAsync(KnownNames.Subtype, KnownNames.Type1).ConfigureAwait(false)).GetHashCode();
+            (await font.GetOrDefaultAsync(KnownNames.Subtype, KnownNames.Type1).ConfigureAwait(false))
+            .GetHashCode();
         
         if (fontTypeKey == KnownNameKeys.Type3)
             return await new Type3FontFactory(font, size).ParseAsync().ConfigureAwait(false);
@@ -42,19 +44,27 @@ public readonly struct FontReader
              (await descTask) as PdfDictionary: null;
 
 
+        IRealizedFont ret;
         if (descriptor is not null &&
             await StreamFromDescriptorAsync(descriptor).ConfigureAwait(false)
                 is { } fontAsStream)
-            return await FreeTypeFontFactory.FromStream(fontAsStream, size,
-                await NonsymbolicEncodingParser.InterpretEncodingValue(encoding).ConfigureAwait(false)).
-                ConfigureAwait(false);
-        
-        var baseFontName = await 
-            font.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica).ConfigureAwait(false);
-    
-        return await defaultMapper.MapDefaultFont(ComputeOsFontName(fontTypeKey, baseFontName), size,
-            await NonsymbolicEncodingParser.InterpretEncodingValue(encoding).ConfigureAwait(false))
-            .ConfigureAwait(false);
+        {
+            ret =  await FreeTypeFontFactory.FromStream(fontAsStream, size,
+                    await NonsymbolicEncodingParser.InterpretEncodingValue(encoding).ConfigureAwait(false))
+                .ConfigureAwait(false);
+        }
+        else
+        {
+            var baseFontName = await
+                font.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica).ConfigureAwait(false);
+
+            ret = await defaultMapper.MapDefaultFont(ComputeOsFontName(fontTypeKey, baseFontName), size,
+                    await NonsymbolicEncodingParser.InterpretEncodingValue(encoding).ConfigureAwait(false))
+                .ConfigureAwait(false);
+        }
+
+        await ret.SetGlyphEncoding(encoding, descriptor).ConfigureAwait(false);
+        return ret;
     }
     
     private PdfName ComputeOsFontName(int fontType, PdfName baseFontName) =>

@@ -4,6 +4,7 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -35,7 +36,10 @@ public class RealizedType3Font : IRealizedFont
         return target.RenderType3Character(
             characters[b - firstCharacter].CreateReader(), fontMatrix );
     }
-    
+
+    public ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor) => 
+        ValueTask.CompletedTask;
+
     private class Type3Writer: IFontWriteOperation
     {
         private readonly RealizedType3Font parent;

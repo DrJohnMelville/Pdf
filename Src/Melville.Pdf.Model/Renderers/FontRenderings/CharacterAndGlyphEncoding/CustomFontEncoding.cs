@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Microsoft.Win32.SafeHandles;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 
 public class CustomFontEncoding : IByteToUnicodeMapping
 {
