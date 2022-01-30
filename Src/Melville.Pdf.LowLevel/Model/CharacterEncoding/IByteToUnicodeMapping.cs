@@ -17,3 +17,8 @@ public class TableMapping : IByteToUnicodeMapping
     }
     public char MapToUnicode(byte input) => mappings[input];
 }
+
+public class PassthroughMapping : IByteToUnicodeMapping
+{
+    public char MapToUnicode(byte input) => (char)input;
+}

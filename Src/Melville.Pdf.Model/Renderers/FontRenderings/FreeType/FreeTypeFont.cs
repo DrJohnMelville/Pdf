@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
@@ -23,9 +24,18 @@ public class FreeTypeFont : IRealizedFont, IDisposable
 
     public async ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor)
     {
-        glyphMap = new UnicodeGlyphMapping(Face, 
-            Mapping ?? await NonsymbolicEncodingParser.InterpretEncodingValue(encoding)
-                .ConfigureAwait(false));
+        if (fontDescriptor is not null && 
+            ((await fontDescriptor.GetOrDefaultAsync(KnownNames.Flags, 0).ConfigureAwait(false)) & 4) == 4)
+        {
+            Face.SelectCharmap(Encoding.AppleRoman);
+            glyphMap = new UnicodeGlyphMapping(Face, new PassthroughMapping());
+        }
+        else
+        {
+            glyphMap = new UnicodeGlyphMapping(Face,
+                Mapping ?? await NonsymbolicEncodingParser.InterpretEncodingValue(encoding)
+                    .ConfigureAwait(false));
+        }
     }
 
     public void Dispose() => Face.Dispose();
