@@ -4,7 +4,6 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.Model.FontMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -19,7 +18,7 @@ public readonly struct Type3FontFactory
         this.size = size;
     }
 
-    public async ValueTask<IFontMapping> ParseAsync()
+    public async ValueTask<IRealizedFont> ParseAsync()
     {
         var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0).ConfigureAwait(false);
         var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255).ConfigureAwait(false);
@@ -45,10 +44,9 @@ public readonly struct Type3FontFactory
             }
         }
 
-        return new NamedDefaultMapping(new RealizedType3Font(characters, (byte)firstChar,
-            (await ReadTransformMatrix().ConfigureAwait(false)*
-             Matrix3x2.CreateScale((float)size, (float)size))), false, false,
-            NullUnicodeMapping.Instance);
+        return new RealizedType3Font(characters, (byte)firstChar,
+            (await ReadTransformMatrix().ConfigureAwait(false) *
+             Matrix3x2.CreateScale((float)size, (float)size)));
     }
 
     private async Task<Matrix3x2> ReadTransformMatrix()

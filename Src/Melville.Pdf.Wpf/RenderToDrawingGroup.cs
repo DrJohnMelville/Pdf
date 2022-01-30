@@ -5,9 +5,9 @@ using System.Windows.Media.Imaging;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;

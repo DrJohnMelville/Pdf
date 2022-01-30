@@ -1,6 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
-namespace Melville.Pdf.Model.FontMappings;
+namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
 public class NullUnicodeMapping : IByteToUnicodeMapping
 {

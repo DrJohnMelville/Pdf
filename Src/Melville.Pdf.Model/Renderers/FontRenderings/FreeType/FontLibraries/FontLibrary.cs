@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using SharpFont;
-using SixLabors.Fonts;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 

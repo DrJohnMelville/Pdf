@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <PackageReference Include="SharpFont.NetStandard" Version="1.0.5" />
-      <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
       <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     </ItemGroup>
 
@@ -31,6 +30,10 @@
       <None Remove="Renderers\Colors\Profiles\AdobeSrgb.icc" />
       <EmbeddedResource Include="Renderers\Colors\Profiles\AdobeSrgb.icc" />
       <None Remove="Renderers\Colors\Profiles\D65_XYZ.icc" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="FontMappings" />
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
 ﻿using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Moq;
 using Xunit;
 

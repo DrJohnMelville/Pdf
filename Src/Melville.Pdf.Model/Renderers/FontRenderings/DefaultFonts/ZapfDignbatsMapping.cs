@@ -1,25 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
-namespace Melville.Pdf.Model.FontMappings;
-
-public class SegoeUiSymbolMappedFont : IFontMapping
-{
-    public static readonly SegoeUiSymbolMappedFont ZapfDingbats = new(ZapfDignbatsMapping.Instance);
-    public static readonly SegoeUiSymbolMappedFont Symbol = new SegoeUiSymbolMappedFont(CharacterEncodings.Symbol);
-    private SegoeUiSymbolMappedFont(IByteToUnicodeMapping mapping)
-    {
-        Mapping = mapping;
-    }
-
-    private static readonly byte[] SegoeUISymbol =
-        { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
-    public object Font => SegoeUISymbol;
-    public IByteToUnicodeMapping Mapping { get; }
-
-    public bool Bold => false;
-    public bool Oblique => false;
-
-}
+namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 public class ZapfDignbatsMapping : IByteToUnicodeMapping
 {

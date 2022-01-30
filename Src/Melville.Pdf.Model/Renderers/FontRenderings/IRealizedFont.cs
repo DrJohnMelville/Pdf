@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
@@ -13,6 +14,7 @@ public interface IFontWriteOperation
 public interface IRealizedFont
 {
     IFontWriteOperation BeginFontWrite(IFontTarget target);
+//    ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor);
 }
 
 public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont

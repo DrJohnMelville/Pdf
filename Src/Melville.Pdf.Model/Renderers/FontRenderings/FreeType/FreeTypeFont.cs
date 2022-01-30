@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Numerics;
-using System.Threading;
 using System.Threading.Tasks;
-using Melville.Icc.Model.Tags;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
@@ -18,8 +15,8 @@ public class FreeTypeFont : IRealizedFont, IDisposable
     
     public FreeTypeFont(Face face, IByteToUnicodeMapping mapping, double size)
     {
-        this.Face = face;
-        this.Mapping = mapping;
+        Face = face;
+        Mapping = mapping;
         this.size = size;
     }
 

@@ -1,7 +1,7 @@
 ﻿using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.Model.FontMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Fonts;
 
