@@ -27,8 +27,8 @@ public class FreeTypeFont : IRealizedFont, IDisposable
         if (fontDescriptor is not null && 
             ((await fontDescriptor.GetOrDefaultAsync(KnownNames.Flags, 0).ConfigureAwait(false)) & 4) == 4)
         {
-            Face.SelectCharmap(Encoding.AppleRoman);
-            glyphMap = new UnicodeGlyphMapping(Face, new PassthroughMapping());
+            glyphMap = await SymbolicEncodingParser.ParseGlyphMapping(Face, encoding)
+                .ConfigureAwait(false);
         }
         else
         {

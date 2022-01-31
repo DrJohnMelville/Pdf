@@ -1,9 +1,7 @@
 ﻿using System.IO;
 using System.Numerics;
-using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
-using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
