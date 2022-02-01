@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -23,7 +24,7 @@ public class IndirectObjectParser : IPdfObjectParser
     {
         ParseResult kind;
         PdfIndirectReference? reference;
-        do{}while(source.Reader.Source.ShouldContinue(ParseReference(await source.Reader.Source.ReadAsync().ConfigureAwait(false), 
+        do{}while(source.Reader.Source.ShouldContinue(ParseReference(await source.Reader.Source.ReadAsync().CA(), 
                       source.IndirectResolver, out kind, out reference!)));
 
         switch (kind)
@@ -32,14 +33,14 @@ public class IndirectObjectParser : IPdfObjectParser
                 return reference;
                 
             case ParseResult.FoundDefinition:
-                do { } while (source.Reader.Source.ShouldContinue(SkipToObjectBeginning(await source.Reader.Source.ReadAsync().ConfigureAwait(false))));
-                var target = await source.RootObjectParser.ParseAsync(source).ConfigureAwait(false);
-                await NextTokenFinder.SkipToNextToken(source.Reader).ConfigureAwait(false);
-                do { } while (source.Reader.Source.ShouldContinue(SkipEndObj(await source.Reader.Source.ReadAsync().ConfigureAwait(false))));
+                do { } while (source.Reader.Source.ShouldContinue(SkipToObjectBeginning(await source.Reader.Source.ReadAsync().CA())));
+                var target = await source.RootObjectParser.ParseAsync(source).CA();
+                await NextTokenFinder.SkipToNextToken(source.Reader).CA();
+                do { } while (source.Reader.Source.ShouldContinue(SkipEndObj(await source.Reader.Source.ReadAsync().CA())));
                 return target;
                 
             case ParseResult.NotAReference:
-                return await fallbackNumberParser.ParseAsync(source).ConfigureAwait(false);
+                return await fallbackNumberParser.ParseAsync(source).CA();
             default:
                 throw new ArgumentOutOfRangeException();
         }

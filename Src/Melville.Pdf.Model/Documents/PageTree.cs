@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -18,19 +19,19 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
     }
 
     public async ValueTask<long> CountAsync() => 
-        (await LowLevel.GetAsync<PdfNumber>(KnownNames.Count).ConfigureAwait(false)).IntValue;
+        (await LowLevel.GetAsync<PdfNumber>(KnownNames.Count).CA()).IntValue;
 
     public async IAsyncEnumerator<PdfPage> GetAsyncEnumerator(CancellationToken cancellationToken = new())
     {
-        var kids = await LowLevel.GetAsync<PdfArray>(KnownNames.Kids).ConfigureAwait(false);
-        await foreach (var kid in kids.ConfigureAwait(false))
+        var kids = await LowLevel.GetAsync<PdfArray>(KnownNames.Kids).CA();
+        await foreach (var kid in kids.CA())
         {
             var kidAsDict = (PdfDictionary)kid;
-            var type = await kidAsDict.GetAsync<PdfName>(KnownNames.Type).ConfigureAwait(false);
+            var type = await kidAsDict.GetAsync<PdfName>(KnownNames.Type).CA();
             if (type == KnownNames.Page) yield return new PdfPage(kidAsDict);
             else if (type == KnownNames.Pages)
             {
-                await foreach (var innerKid in new PageTree(kidAsDict).ConfigureAwait(false))
+                await foreach (var innerKid in new PageTree(kidAsDict).CA())
                 {
                     yield return innerKid;
                 }
@@ -41,11 +42,11 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
 
     public async Task<PdfPage> GetPageAsync(long position)
     {
-        var items = await LowLevel.GetAsync<PdfArray>(KnownNames.Kids).ConfigureAwait(false);
+        var items = await LowLevel.GetAsync<PdfArray>(KnownNames.Kids).CA();
         foreach (var kidTask in items.RawItems)
         {
-            var kid = (PdfDictionary)await kidTask.DirectValueAsync().ConfigureAwait(false);
-            var type = await kid.GetAsync<PdfName>(KnownNames.Type).ConfigureAwait(false);
+            var kid = (PdfDictionary)await kidTask.DirectValueAsync().CA();
+            var type = await kid.GetAsync<PdfName>(KnownNames.Type).CA();
             if (type == KnownNames.Page)
             {
                 if (position == 0) return new PdfPage(kid);
@@ -53,8 +54,8 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
             }
             else if (type == KnownNames.Pages)
             {
-                var nodeCount = (await kid.GetAsync<PdfNumber>(KnownNames.Count).ConfigureAwait(false)).IntValue;
-                if (position < nodeCount) return await new PageTree(kid).GetPageAsync(position).ConfigureAwait(false);
+                var nodeCount = (await kid.GetAsync<PdfNumber>(KnownNames.Count).CA()).IntValue;
+                if (position < nodeCount) return await new PageTree(kid).GetPageAsync(position).CA();
                 position -= nodeCount;
             }
             else throw new PdfParseException("Page trees should contain only pages and nodes");

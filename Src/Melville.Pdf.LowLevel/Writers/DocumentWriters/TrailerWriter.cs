@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
@@ -17,8 +18,8 @@ public static class TrailerWriter
         PipeWriter target, PdfDictionary dictionary, long xRefStart)
     {
         target.WriteBytes(trailerTag);
-        await dictionary.Visit(new PdfObjectWriter(target)).ConfigureAwait(false);
-        await WriteTerminalStartXrefAndEof(target, xRefStart).ConfigureAwait(false);
+        await dictionary.Visit(new PdfObjectWriter(target)).CA();
+        await WriteTerminalStartXrefAndEof(target, xRefStart).CA();
     }
 
     public static ValueTask<FlushResult> WriteTerminalStartXrefAndEof(PipeWriter target, long xRefStart)

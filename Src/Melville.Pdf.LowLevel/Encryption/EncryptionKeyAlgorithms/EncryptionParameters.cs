@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -24,13 +25,13 @@ public readonly struct EncryptionParameters
     }
 
     public static async ValueTask<EncryptionParameters> Create(PdfDictionary trailer) =>
-        (await trailer.GetOrNullAsync(KnownNames.ID).ConfigureAwait(false) is not PdfArray id ||
-         await id[0].ConfigureAwait(false) is not PdfString firstId ||
-         await trailer.GetOrNullAsync(KnownNames.Encrypt).ConfigureAwait(false) is not PdfDictionary dict ||
-         await dict.GetOrNullAsync(KnownNames.O).ConfigureAwait(false) is not PdfString ownerHash ||
-         await dict.GetOrNullAsync(KnownNames.U).ConfigureAwait(false) is not PdfString userHash ||
-         await dict.GetOrNullAsync(KnownNames.P).ConfigureAwait(false) is not PdfNumber permissions ||
-         await dict.GetOrNullAsync(KnownNames.Length).ConfigureAwait(false) is not PdfNumber length
+        (await trailer.GetOrNullAsync(KnownNames.ID).CA() is not PdfArray id ||
+         await id[0].CA() is not PdfString firstId ||
+         await trailer.GetOrNullAsync(KnownNames.Encrypt).CA() is not PdfDictionary dict ||
+         await dict.GetOrNullAsync(KnownNames.O).CA() is not PdfString ownerHash ||
+         await dict.GetOrNullAsync(KnownNames.U).CA() is not PdfString userHash ||
+         await dict.GetOrNullAsync(KnownNames.P).CA() is not PdfNumber permissions ||
+         await dict.GetOrNullAsync(KnownNames.Length).CA() is not PdfNumber length
         )? throw new PdfSecurityException("Required parameter missing for encryption"):
             new EncryptionParameters(
                 firstId.Bytes, ownerHash.Bytes, userHash.Bytes, (uint)permissions.IntValue, 

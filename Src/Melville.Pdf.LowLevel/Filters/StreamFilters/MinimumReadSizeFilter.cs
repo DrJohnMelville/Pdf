@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -46,8 +47,8 @@ public class MinimumReadSizeFilter : DefaultBaseStream
         Debug.Assert(!HasPriorData());
         priorData = ArrayPool<byte>.Shared.Rent(minReadSize + 1);
         priorDataStart = 0;
-        priorDataLength = await ReadIntoBuffer(this.priorData.AsMemory(), cancellationToken).ConfigureAwait(false);
-        return await ReadFromPriorData(buffer, cancellationToken).ConfigureAwait(false);
+        priorDataLength = await ReadIntoBuffer(this.priorData.AsMemory(), cancellationToken).CA();
+        return await ReadFromPriorData(buffer, cancellationToken).CA();
     }
 
     private async ValueTask<int> ReadFromPriorData(Memory<byte> buffer, CancellationToken cancellationToken)
@@ -56,7 +57,7 @@ public class MinimumReadSizeFilter : DefaultBaseStream
         var bytesToCopy = Math.Min(buffer.Length, UnusedPriorDataLength());
         CopyFromTempBuffer(buffer, bytesToCopy);
         if (ResidueToSmallForAnotherRead(buffer, bytesToCopy)) return bytesToCopy;
-        return bytesToCopy + await ReadIntoBuffer(buffer.Slice(bytesToCopy), cancellationToken).ConfigureAwait(false);
+        return bytesToCopy + await ReadIntoBuffer(buffer.Slice(bytesToCopy), cancellationToken).CA();
     }
 
     private bool ResidueToSmallForAnotherRead(Memory<byte> buffer, int bytesUsed) => 

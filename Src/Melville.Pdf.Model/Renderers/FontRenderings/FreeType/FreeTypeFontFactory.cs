@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -36,14 +37,14 @@ public class FreeTypeFontFactory
     public static async ValueTask<IRealizedFont> FromStream(PdfStream pdfStream, double size,
         IByteToUnicodeMapping? mapping)
     {
-        var source = await pdfStream.StreamContentAsync().ConfigureAwait(false);
-        return await FromCSharpStream(size, mapping, source).ConfigureAwait(false);
+        var source = await pdfStream.StreamContentAsync().CA();
+        return await FromCSharpStream(size, mapping, source).CA();
     }
 
     private static async ValueTask<IRealizedFont> FromCSharpStream(double size, IByteToUnicodeMapping? mapping,
         Stream source)
     {
-        var face = sharpFontLibrary.NewMemoryFace(await UncompressToBufferAsync(source).ConfigureAwait(false), 0);
+        var face = sharpFontLibrary.NewMemoryFace(await UncompressToBufferAsync(source).CA(), 0);
         return FontFromFace(size, mapping, face);
     }
 
@@ -56,9 +57,9 @@ public class FreeTypeFontFactory
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)
     {
         var decodedSource = new MultiBufferStream();
-        await source.CopyToAsync(decodedSource).ConfigureAwait(false);
+        await source.CopyToAsync(decodedSource).CA();
         var output = new byte[decodedSource.Length];
-        await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader()).ConfigureAwait(false);
+        await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader()).CA();
         return output;
     }
 }

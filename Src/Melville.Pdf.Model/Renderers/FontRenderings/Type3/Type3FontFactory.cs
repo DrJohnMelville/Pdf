@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -20,14 +21,14 @@ public readonly struct Type3FontFactory
 
     public async ValueTask<IRealizedFont> ParseAsync()
     {
-        var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0).ConfigureAwait(false);
-        var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255).ConfigureAwait(false);
+        var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0).CA();
+        var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255).CA();
         var characters = new MultiBufferStream[1 + lastChar - firstChar];
-        var encoding = await font.GetAsync<PdfDictionary>(KnownNames.Encoding).ConfigureAwait(false);
-        var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcs).ConfigureAwait(false);
-        var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences).ConfigureAwait(false);
+        var encoding = await font.GetAsync<PdfDictionary>(KnownNames.Encoding).CA();
+        var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcs).CA();
+        var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences).CA();
         int currentChar = 0;
-        await foreach (var item in differences.ConfigureAwait(false))
+        await foreach (var item in differences.CA())
         {
             switch (item)
             {
@@ -36,8 +37,8 @@ public readonly struct Type3FontFactory
                     break;
                 case PdfName name:
                     var stream = new MultiBufferStream();
-                    var source = await (await charProcs.GetAsync<PdfStream>(name).ConfigureAwait(false)).StreamContentAsync().ConfigureAwait(false);
-                    await source.CopyToAsync(stream).ConfigureAwait(false);
+                    var source = await (await charProcs.GetAsync<PdfStream>(name).CA()).StreamContentAsync().CA();
+                    await source.CopyToAsync(stream).CA();
                     characters[currentChar - firstChar] = stream;
                     currentChar++;
                     break;
@@ -45,13 +46,13 @@ public readonly struct Type3FontFactory
         }
 
         return new RealizedType3Font(characters, (byte)firstChar,
-            (await ReadTransformMatrix().ConfigureAwait(false) *
+            (await ReadTransformMatrix().CA() *
              Matrix3x2.CreateScale((float)size, (float)size)));
     }
 
     private async Task<Matrix3x2> ReadTransformMatrix()
     {
-        var digits = await (await font.GetAsync<PdfArray>(KnownNames.FontMatrix).ConfigureAwait(false)).AsDoublesAsync().ConfigureAwait(false);
+        var digits = await (await font.GetAsync<PdfArray>(KnownNames.FontMatrix).CA()).AsDoublesAsync().CA();
         return new Matrix3x2(
             (float) digits[0], (float) digits[1], (float) digits[2], (float) digits[3], (float) digits[4],
             (float) digits[5]);

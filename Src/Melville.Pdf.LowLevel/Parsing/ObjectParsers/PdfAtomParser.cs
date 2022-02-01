@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -17,7 +18,7 @@ public abstract class PdfAtomParser : IPdfObjectParser
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
         PdfObject result;
-        do{}while(source.Reader.Source.ShouldContinue(Parse(await source.Reader.Source.ReadAsync().ConfigureAwait(false), source, out result!)));
+        do{}while(source.Reader.Source.ShouldContinue(Parse(await source.Reader.Source.ReadAsync().CA(), source, out result!)));
         return result;
     }
 

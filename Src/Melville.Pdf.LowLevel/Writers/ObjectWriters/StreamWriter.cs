@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -21,15 +22,15 @@ public static class StreamWriter
         IObjectCryptContext encryptor)
     {
         Stream diskrep;
-        await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).ConfigureAwait(false);
-        diskrep = await EnsureStreamHasKnownLength(rawStream).ConfigureAwait(false);
+        await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).CA();
+        diskrep = await EnsureStreamHasKnownLength(rawStream).CA();
             
         await DictionaryWriter.WriteAsync(target, innerWriter, 
-            item.MergeItems((KnownNames.Length, new PdfInteger(diskrep.Length)))).ConfigureAwait(false);
+            item.MergeItems((KnownNames.Length, new PdfInteger(diskrep.Length)))).CA();
         target.WriteBytes(streamToken);
-        await diskrep.CopyToAsync(target).ConfigureAwait(false);
+        await diskrep.CopyToAsync(target).CA();
         target.WriteBytes(endStreamToken);
-        return await target.FlushAsync().ConfigureAwait(false);
+        return await target.FlushAsync().CA();
     }
 
     private static async Task<Stream> EnsureStreamHasKnownLength(Stream rawStream)
@@ -38,7 +39,7 @@ public static class StreamWriter
         if (rawStream.Length < 1)
         {
             var mbs = new MultiBufferStream(2048);
-            await rawStream.CopyToAsync(mbs).ConfigureAwait(false);
+            await rawStream.CopyToAsync(mbs).CA();
             diskrep = mbs.CreateReader();
         }
         else

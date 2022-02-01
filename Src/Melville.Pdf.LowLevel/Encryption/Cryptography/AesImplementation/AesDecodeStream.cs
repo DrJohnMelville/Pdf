@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
@@ -31,14 +32,14 @@ public class AesDecodeStream : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        if (decryptedSource == null) await InitalizeCryptStream().ConfigureAwait(false);
-        return await decryptedSource!.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        if (decryptedSource == null) await InitalizeCryptStream().CA();
+        return await decryptedSource!.ReadAsync(buffer, cancellationToken).CA();
     }
 
     private async ValueTask InitalizeCryptStream()
     {
         var iv = new byte[decryptor.BlockSize / 8];
-        await iv.FillBufferAsync(0, iv.Length, input).ConfigureAwait(false);
+        await iv.FillBufferAsync(0, iv.Length, input).CA();
         decryptor.IV = iv;
         decryptedSource = new CryptoStream(input, decryptor.CreateDecryptor(), CryptoStreamMode.Read);
     }

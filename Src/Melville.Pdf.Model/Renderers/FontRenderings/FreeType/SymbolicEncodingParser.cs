@@ -13,7 +13,7 @@ public static class SymbolicEncodingParser
     public static async ValueTask<IGlyphMapping> ParseGlyphMapping(Face face, PdfObject encoding)
     {
         // if (encoding is PdfDictionary dict && dict.TryGetValue(KnownNames.Differences, out var arrTask) &&
-        //     (await arrTask.ConfigureAwait(false)) is PdfArray arr)
+        //     (await arrTask.CA()) is PdfArray arr)
         // {
         //      return await ComputeMappipng(arr, face);
         // }

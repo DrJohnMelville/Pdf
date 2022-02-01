@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using Melville.Hacks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -36,8 +37,8 @@ public readonly struct ReferenceStreamWriter
     }
 
     public async  ValueTask<FlushResult> Write() =>
-        await new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStream().ConfigureAwait(false))
-            .Visit(UnencryptedPdfObjectWriter()).ConfigureAwait(false);
+        await new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStream().CA())
+            .Visit(UnencryptedPdfObjectWriter()).CA();
 
     private PdfObjectWriter UnencryptedPdfObjectWriter() => new(target);
 
@@ -46,7 +47,7 @@ public readonly struct ReferenceStreamWriter
     private async ValueTask<PdfStream> CreateReferenceStream()
     {
         var data = new MultiBufferStream(2048);
-        await GenerateXrefStreamAsync(data).ConfigureAwait(false);
+        await GenerateXrefStreamAsync(data).CA();
 
         return new DictionaryBuilder()
             .WithMultiItem(document.TrailerDictionary.RawItems.Where(i => i.Key != KnownNames.Size))
@@ -72,7 +73,7 @@ public readonly struct ReferenceStreamWriter
     private async ValueTask GenerateXrefStreamAsync(Stream arg)
     {
         var w = GenerateXrefStream(arg);
-        await w.FlushAsync().ConfigureAwait(false);
+        await w.FlushAsync().CA();
     }
 
     private PipeWriter GenerateXrefStream(Stream arg)

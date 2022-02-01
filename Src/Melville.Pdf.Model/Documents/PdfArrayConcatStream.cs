@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -21,6 +22,6 @@ public class PdfArrayConcatStream : ConcatStreamBase
         if (!source.MoveNext()) return null;
         var stream = (await source.Current) as PdfStream ??
                   throw new PdfParseException("Content array should contain only streams");
-        return await stream.StreamContentAsync().ConfigureAwait(false);
+        return await stream.StreamContentAsync().CA();
     }
 }

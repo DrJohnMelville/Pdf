@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -19,7 +20,7 @@ public static class SecurityHandlerOperations
     public static async ValueTask<IDocumentCryptContext> InteractiveGetCryptContext(
         this ISecurityHandler handler, IPasswordSource source)
     {
-        return handler.CreateCryptContext(await GetRootKey(handler, source).ConfigureAwait(false));
+        return handler.CreateCryptContext(await GetRootKey(handler, source).CA());
     }
 
     private static ValueTask<byte[]> GetRootKey(ISecurityHandler handler, IPasswordSource source) =>
@@ -32,7 +33,7 @@ public static class SecurityHandlerOperations
     {
         while (true)
         {
-            var (password, type) = await source.GetPassword().ConfigureAwait(false);
+            var (password, type) = await source.GetPassword().CA();
             if (password == null)
                 throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
             if (handler.TryComputeRootKey(password, type) is { } rootKey) 

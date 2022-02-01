@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -24,10 +25,10 @@ public static class NonsymbolicEncodingParser
     private static async ValueTask<IByteToUnicodeMapping> ReadEncodingDictionary(PdfDictionary dict)
     {
         var baseEncoding = dict.TryGetValue(KnownNames.BaseEncoding, out var baseTask)
-            ? await InterpretEncodingValue(await baseTask.ConfigureAwait(false)).ConfigureAwait(false)
+            ? await InterpretEncodingValue(await baseTask.CA()).CA()
             : CharacterEncodings.Standard;
         return dict.TryGetValue(KnownNames.Differences, out var arrTask) &&
-               (await arrTask.ConfigureAwait(false)) is PdfArray arr?
-            await CustomFontEncodingFactory.Create(baseEncoding, arr).ConfigureAwait(false): baseEncoding;
+               (await arrTask.CA()) is PdfArray arr?
+            await CustomFontEncodingFactory.Create(baseEncoding, arr).CA(): baseEncoding;
     }
 }

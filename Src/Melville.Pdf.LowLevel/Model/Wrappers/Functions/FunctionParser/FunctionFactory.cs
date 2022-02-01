@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -10,12 +11,12 @@ public static class FunctionFactory
 {
     public static async ValueTask<PdfFunction> CreateFunctionAsync(this PdfDictionary source)
     {
-        return (await source.GetAsync<PdfNumber>(KnownNames.FunctionType).ConfigureAwait(false)).IntValue switch
+        return (await source.GetAsync<PdfNumber>(KnownNames.FunctionType).CA()).IntValue switch
         {
-            0 => await SampledFunctionParser.Parse(AsStream(source)).ConfigureAwait(false),
-            2 => await ExponentialFunctionParser.Parse(source).ConfigureAwait(false),
-            3 => await StitchedFunctionParser.Parse(source).ConfigureAwait(false),
-            4 => await PostscriptFunctionParser.Parse(AsStream(source)).ConfigureAwait(false),
+            0 => await SampledFunctionParser.Parse(AsStream(source)).CA(),
+            2 => await ExponentialFunctionParser.Parse(source).CA(),
+            3 => await StitchedFunctionParser.Parse(source).CA(),
+            4 => await PostscriptFunctionParser.Parse(AsStream(source)).CA(),
             var type => throw new PdfParseException("Unknown function type: "+ type)
         };
     }

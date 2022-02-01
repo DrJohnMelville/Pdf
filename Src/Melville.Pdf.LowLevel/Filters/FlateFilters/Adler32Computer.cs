@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
@@ -63,7 +64,7 @@ public class ReadAdlerStream : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        var ret = await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        var ret = await source.ReadAsync(buffer, cancellationToken).CA();
         Computer.AddData(buffer.Span[..ret]);
         return ret;
     }

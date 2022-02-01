@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -33,7 +34,7 @@ public class IndirectObjectResolver : IIndirectObjectResolver
     public async Task<long> FreeListHead()
     {
         return (index.TryGetValue((0, 65535), out var iRef) &&
-                (await iRef.DirectValueAsync().ConfigureAwait(false)) is PdfFreeListObject flo)
+                (await iRef.DirectValueAsync().CA()) is PdfFreeListObject flo)
             ? flo.NextItem
             : 0;
     }

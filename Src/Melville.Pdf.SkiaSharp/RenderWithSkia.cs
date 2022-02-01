@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Conventions;
+﻿using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -14,7 +15,7 @@ namespace Melville.Pdf.SkiaSharp
         public static async ValueTask ToPngStream(
             PdfPage page, Stream target, int width = -1, int height = -1, IDefaultFontMapper? defaultFontMapper = null)
         {
-            using var surface = await ToSurface(page, width, height, defaultFontMapper).ConfigureAwait(false);
+            using var surface = await ToSurface(page, width, height, defaultFontMapper).CA();
             using var image = surface.Snapshot();
             using var data = image.Encode();
             data.SaveTo(target);
@@ -24,7 +25,7 @@ namespace Melville.Pdf.SkiaSharp
             IDefaultFontMapper? defaultFontMapper = null)
         {
             
-            var rect = await page.GetBoxAsync(BoxName.CropBox).ConfigureAwait(false);
+            var rect = await page.GetBoxAsync(BoxName.CropBox).CA();
             if (!rect.HasValue) return SKSurface.Create(new SKImageInfo(1, 1));
             
             (width, height) = AdjustSize(rect.Value, width, height);
@@ -34,7 +35,7 @@ namespace Melville.Pdf.SkiaSharp
             var target = new SkiaRenderTarget(
                 surface.Canvas, stateStack, page);
             target.SetBackgroundRect(rect.Value, width, height);
-            await page.RenderTo(target, new FontReader(defaultFontMapper??new WindowsDefaultFonts())).ConfigureAwait(false);
+            await page.RenderTo(target, new FontReader(defaultFontMapper??new WindowsDefaultFonts())).CA();
             return surface;
         }
 

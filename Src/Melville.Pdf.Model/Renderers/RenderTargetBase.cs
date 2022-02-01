@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
@@ -88,5 +89,5 @@ public static class RenderTargetOperations
                 new RenderEngine(page, target, fonts))
             .Parse(
                 PipeReader.Create(
-                    await page.GetContentBytes().ConfigureAwait(false))).ConfigureAwait(false);
+                    await page.GetContentBytes().CA())).CA();
 }

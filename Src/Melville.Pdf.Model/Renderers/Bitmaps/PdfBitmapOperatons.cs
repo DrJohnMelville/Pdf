@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
@@ -23,38 +24,38 @@ public static class PdfBitmapOperatons
     {
         var streamAttrs = new BitmapRenderParameters(
             stream, page, fillColor,
-            (int)await stream.GetOrDefaultAsync(KnownNames.Width, 1).ConfigureAwait(false),
-            (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1).ConfigureAwait(false)
+            (int)await stream.GetOrDefaultAsync(KnownNames.Width, 1).CA(),
+            (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1).CA()
         );
 
-        return new PdfBitmapWrapper(PipeReader.Create(await stream.StreamContentAsync().ConfigureAwait(false)),
+        return new PdfBitmapWrapper(PipeReader.Create(await stream.StreamContentAsync().CA()),
             streamAttrs.Width, streamAttrs.Height,
-            await GetByteWriterAsync(streamAttrs).ConfigureAwait(false));
+            await GetByteWriterAsync(streamAttrs).CA());
     }
 
     private static async ValueTask<IByteWriter> GetByteWriterAsync(BitmapRenderParameters attr)
     {
         var decode = attr.Stream.TryGetValue(KnownNames.Decode, out var arrayTask) &&
-                     await arrayTask.ConfigureAwait(false) is PdfArray array
-            ? await array.AsDoublesAsync().ConfigureAwait(false)
+                     await arrayTask.CA() is PdfArray array
+            ? await array.AsDoublesAsync().CA()
             : null;
 
-        if (await attr.Stream.GetOrDefaultAsync(KnownNames.ImageMask, PdfBoolean.False).ConfigureAwait(false) == PdfBoolean.True)
+        if (await attr.Stream.GetOrDefaultAsync(KnownNames.ImageMask, PdfBoolean.False).CA() == PdfBoolean.True)
         {
             return new StencilWriter(decode, attr.FillColor);
         }
 
         var colorSpace = await ColorSpaceFactory.FromNameOrArray(
-            await attr.Stream[KnownNames.ColorSpace].ConfigureAwait(false), attr.Page).ConfigureAwait(false);
+            await attr.Stream[KnownNames.ColorSpace].CA(), attr.Page).CA();
         var bitsPerComponent =
-            (int)await attr.Stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).ConfigureAwait(false);
-        var mask = await attr.Stream.GetOrDefaultAsync<PdfObject>(KnownNames.Mask, PdfTokenValues.Null).ConfigureAwait(false);
+            (int)await attr.Stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).CA();
+        var mask = await attr.Stream.GetOrDefaultAsync<PdfObject>(KnownNames.Mask, PdfTokenValues.Null).CA();
 
         if (CanUseFastWriter(colorSpace, bitsPerComponent, decode, mask))
             return FastBitmapWriterRGB8.Instance;
 
         var compoentWriter = await WrapWithMask(mask, attr,
-            CreateComponentWriter(colorSpace, decode, bitsPerComponent)).ConfigureAwait(false);
+            CreateComponentWriter(colorSpace, decode, bitsPerComponent)).CA();
 
         return CreateByteWriter(bitsPerComponent, compoentWriter);
     }
@@ -81,9 +82,9 @@ public static class PdfBitmapOperatons
         mask switch
         {
             PdfArray maskArr => new ColorMaskComponentWriter(componentWriter,
-                await maskArr.AsIntsAsync().ConfigureAwait(false)),
+                await maskArr.AsIntsAsync().CA()),
             PdfStream str => new MaskedBitmapWriter(componentWriter,
-                await MaskBitmap.Create(str, attr.Page).ConfigureAwait(false), attr.Width, attr.Height),
+                await MaskBitmap.Create(str, attr.Page).CA(), attr.Width, attr.Height),
             _ => componentWriter
         };
 }

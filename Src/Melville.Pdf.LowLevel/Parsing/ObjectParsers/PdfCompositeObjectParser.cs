@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -21,13 +22,13 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        await NextTokenFinder.SkipToNextToken(source.Reader).ConfigureAwait(false);
+        await NextTokenFinder.SkipToNextToken(source.Reader).CA();
         IPdfObjectParser parser;
         do
         {
-        } while (source.Reader.Source.ShouldContinue(PickParser(await source.Reader.Source.ReadAsync().ConfigureAwait(false), out parser!)));
+        } while (source.Reader.Source.ShouldContinue(PickParser(await source.Reader.Source.ReadAsync().CA(), out parser!)));
 
-        return await parser.ParseAsync(source).ConfigureAwait(false);
+        return await parser.ParseAsync(source).CA();
     }
 
     private (bool Success, SequencePosition Position) PickParser
@@ -95,7 +96,7 @@ public class ExpandSynonymsParser : IPdfObjectParser
 
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        var ret = await inner.ParseAsync(source).ConfigureAwait(false);
+        var ret = await inner.ParseAsync(source).CA();
         return expansions.TryGetValue(ret, out var expansion) ? expansion : ret;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -29,7 +30,7 @@ public class PdfBitmapWrapper : IPdfBitmap
     {
         int row = Height - 1;
         int column = 0;
-        while (c.LoadLPixels(await c.ReadAsync().ConfigureAwait(false), ref row, ref column))
+        while (c.LoadLPixels(await c.ReadAsync().CA(), ref row, ref column))
         {
             /* do nothing*/
         }

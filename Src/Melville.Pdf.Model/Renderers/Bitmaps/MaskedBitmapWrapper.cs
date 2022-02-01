@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -69,9 +70,9 @@ public readonly struct MaskBitmap
 
     public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
     {
-        var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black).ConfigureAwait(false);
+        var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black).CA();
         var buffer = new byte[wrapped.ReqiredBufferSize()];
-        await FillBuffer(buffer, wrapped).ConfigureAwait(false);
+        await FillBuffer(buffer, wrapped).CA();
         return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
@@ -12,18 +13,18 @@ public static class SecurityHandlerFactory
     public static async ValueTask<ISecurityHandler> CreateSecurityHandler(
         PdfDictionary trailer, PdfDictionary dict)
     {
-        if (await dict.GetAsync<PdfName>(KnownNames.Filter).ConfigureAwait(false) != KnownNames.Standard)
+        if (await dict.GetAsync<PdfName>(KnownNames.Filter).CA() != KnownNames.Standard)
             throw new PdfSecurityException("Only standard security handler is supported.");
         
-        var V = (await dict.GetAsync<PdfNumber>(KnownNames.V).ConfigureAwait(false)).IntValue;
-        var R = (await dict.GetAsync<PdfNumber>(KnownNames.R).ConfigureAwait(false)).IntValue;
+        var V = (await dict.GetAsync<PdfNumber>(KnownNames.V).CA()).IntValue;
+        var R = (await dict.GetAsync<PdfNumber>(KnownNames.R).CA()).IntValue;
 
-        var parameters = await EncryptionParameters.Create(trailer).ConfigureAwait(false);
+        var parameters = await EncryptionParameters.Create(trailer).CA();
             
         return (V,R)switch
         {
             (0 or 3, _) => throw new PdfSecurityException("Undocumented Algorithms are not supported"),
-            (4, _) => await SecurityHandlerV4Builder.Create(RootKeyComputerV3(parameters),dict).ConfigureAwait(false),
+            (4, _) => await SecurityHandlerV4Builder.Create(RootKeyComputerV3(parameters),dict).CA(),
             (1 or 2, 2) =>  SecurityHandlerV2( parameters, dict),
             (1 or 2, 3) =>  SecurityHandlerV3(parameters, dict),
             (_, 4) => throw new PdfSecurityException(

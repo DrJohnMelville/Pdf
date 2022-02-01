@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -33,8 +34,8 @@ public static class IndirectObjectResolverOperations
         owner.IndirectResolver.AddLocationHint(number, (int)generation,
             async () =>
             {
-                var rentedReader = await owner.RentReader(offset, number, (int)generation).ConfigureAwait(false);
-                return await rentedReader.RootObjectParser.ParseAsync(rentedReader).ConfigureAwait(false);
+                var rentedReader = await owner.RentReader(offset, number, (int)generation).CA();
+                return await rentedReader.RootObjectParser.ParseAsync(rentedReader).CA();
             });
     }
     public static void RegisterObjectStreamBlock(
@@ -45,9 +46,9 @@ public static class IndirectObjectResolverOperations
             async () =>
             {
                 var referredObject = await owner.IndirectResolver
-                    .FindIndirect((int)referredStream, 0).DirectValueAsync().ConfigureAwait(false);
+                    .FindIndirect((int)referredStream, 0).DirectValueAsync().CA();
                 if (referredObject is not PdfStream stream) return PdfTokenValues.Null;
-                return await LoadObjectStream(owner, stream, number).ConfigureAwait(false);
+                return await LoadObjectStream(owner, stream, number).CA();
             });
     }
         
@@ -55,15 +56,15 @@ public static class IndirectObjectResolverOperations
         ParsingFileOwner owner, PdfStream source, int objectNumber)
     {
         PdfObject ret = PdfTokenValues.Null;
-        await using var data = await source.StreamContentAsync().ConfigureAwait(false);
+        await using var data = await source.StreamContentAsync().CA();
         var reader = owner.ParsingReaderForStream(data, 0);
         var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
-            source, reader.Reader).ConfigureAwait(false);
-        var first = (await source.GetAsync<PdfNumber>(KnownNames.First).ConfigureAwait(false)).IntValue;
+            source, reader.Reader).CA();
+        var first = (await source.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue;
         foreach (var location in objectLocations)
         {
-            await reader.Reader.Source.AdvanceToLocalPositionAsync(first + location.Offset).ConfigureAwait(false);
-            var obj = await PdfParserParts.Composite.ParseAsync(reader).ConfigureAwait(false);
+            await reader.Reader.Source.AdvanceToLocalPositionAsync(first + location.Offset).CA();
+            var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
             if (objectNumber == location.ObjectNumber)
                 ret = obj;
             AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);

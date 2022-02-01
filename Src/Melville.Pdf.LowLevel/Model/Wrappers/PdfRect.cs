@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -13,8 +14,8 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
     {
         if (array.Count != 4)
             throw new PdfParseException("Pdf Rectangle must have exactly 4 items.");
-        var (left,right) = MinMax((PdfNumber)await array[0].ConfigureAwait(false), (PdfNumber)await array[2].ConfigureAwait(false));
-        var (bottom, top) = MinMax((PdfNumber)await array[1].ConfigureAwait(false), (PdfNumber)await array[3].ConfigureAwait(false));
+        var (left,right) = MinMax((PdfNumber)await array[0].CA(), (PdfNumber)await array[2].CA());
+        var (bottom, top) = MinMax((PdfNumber)await array[1].CA(), (PdfNumber)await array[3].CA());
         return new PdfRect(left, bottom, right, top);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Parsing.Streams.Bases;
 
@@ -11,14 +12,15 @@ public abstract class ReadWriteStreamBase: Stream
         ReadAsync(buffer, offset, count).AsApm(callback, state);
 
     public override int EndRead(IAsyncResult asyncResult) => ((Task<int>)asyncResult).Result;
-    
-    public override int Read(byte[] buffer, int offset, int count) => 
-        ReadAsync(buffer.AsMemory(offset, count)).ConfigureAwait(false).GetAwaiter().GetResult();
+
+    public override int Read(byte[] buffer, int offset, int count) =>
+        RunSynchronous.Do(() => ReadAsync(buffer.AsMemory(offset, count)));
 
     public override int Read(Span<byte> buffer)
     {
         var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
-        var ret = ReadAsync(rented[..buffer.Length]).ConfigureAwait(false).GetAwaiter().GetResult();
+        var capturedLength = buffer.Length;
+        var ret = RunSynchronous.Do(() => ReadAsync(rented.AsMemory(0, capturedLength)));
         rented.AsSpan(0, ret).CopyTo(buffer);
         ArrayPool<byte>.Shared.Return(rented);
         return ret;
@@ -46,13 +48,14 @@ public abstract class ReadWriteStreamBase: Stream
     public override void EndWrite(IAsyncResult asyncResult) => ((Task)asyncResult).GetAwaiter().GetResult();
 
     public override void Write(byte[] buffer, int offset, int count) => 
-        WriteAsync(buffer.AsMemory(offset, count)).GetAwaiter().GetResult();
+        RunSynchronous.Do(()=>WriteAsync(buffer.AsMemory(offset, count)));
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
         var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
         buffer.CopyTo(rented);
-        WriteAsync(rented[..buffer.Length]).GetAwaiter().GetResult();
+        var captureLength = buffer.Length;
+        RunSynchronous.Do(() => WriteAsync(rented.AsMemory(0, captureLength)));
         ArrayPool<byte>.Shared.Return(rented);
     }
 

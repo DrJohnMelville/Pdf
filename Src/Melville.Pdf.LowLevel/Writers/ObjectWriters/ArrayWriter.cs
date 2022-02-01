@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 
@@ -21,10 +22,10 @@ public static class ArrayWriter
             {
                 writer.WriteSpace();
             }
-            await items[i].Visit(innerWriter).ConfigureAwait(false);
+            await items[i].Visit(innerWriter).CA();
         }
         writer.WriteByte( (byte)']');
-        return await writer.FlushAsync().ConfigureAwait(false);
+        return await writer.FlushAsync().CA();
     }
 
     private static int WriteByte(Span<byte> target, byte c)

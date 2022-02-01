@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -28,9 +29,9 @@ public readonly struct ObjectStreamWriter
 
     public async ValueTask TryAddRefAsync(PdfIndirectObject obj)
     {
-        var direcetValue = await obj.DirectValueAsync().ConfigureAwait(false);
+        var direcetValue = await obj.DirectValueAsync().CA();
         WriteObjectPosition(obj);
-        await WriteObject(direcetValue).ConfigureAwait(false);
+        await WriteObject(direcetValue).CA();
     }
 
     private void WriteObjectPosition(PdfIndirectObject item)
@@ -43,14 +44,14 @@ public readonly struct ObjectStreamWriter
 
     private async ValueTask WriteObject(PdfObject directValue)
     {
-        await directValue.Visit(objectWriter).ConfigureAwait(false);
+        await directValue.Visit(objectWriter).CA();
         objectStreamWriter.WriteLineFeed();
     }
 
     public async ValueTask<PdfStream> Build(DictionaryBuilder builder, int count)
     {
-        await referenceStreamWriter.FlushAsync().ConfigureAwait(false);
-        await objectStreamWriter.FlushAsync().ConfigureAwait(false);
+        await referenceStreamWriter.FlushAsync().CA();
+        await objectStreamWriter.FlushAsync().CA();
         return builder
             .WithItem(KnownNames.Type, KnownNames.ObjStm)
             .WithItem(KnownNames.N, count)

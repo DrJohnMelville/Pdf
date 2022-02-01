@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
@@ -30,10 +31,10 @@ public static class IndirectObjectWriter
         ILowLevelVisitor<ValueTask<FlushResult>> innerWriter)
     {
         target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 
-        await target.FlushAsync().ConfigureAwait(false);
-        await (await item.DirectValueAsync().ConfigureAwait(false)).Visit(innerWriter).ConfigureAwait(false);
+        await target.FlushAsync().CA();
+        await (await item.DirectValueAsync().CA()).Visit(innerWriter).CA();
         target.WriteBytes(endObjLabel);
-        return await target.FlushAsync().ConfigureAwait(false);
+        return await target.FlushAsync().CA();
     }
         
     private static int WriteObjectIdDigits(Span<byte> buffer, PdfIndirectObject pdfIndirectObject)

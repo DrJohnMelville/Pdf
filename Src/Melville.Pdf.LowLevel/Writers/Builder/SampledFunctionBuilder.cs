@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Linq;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -103,7 +104,7 @@ public class SampledFunctionBuilder
         var ret = new MultiBufferStream();
         var bitWriter = new BitStreamWriter(ret, bitsPerSample);
         WriteSamplesToWriter(bitWriter);
-        await bitWriter.FinishAsync().ConfigureAwait(false);
+        await bitWriter.FinishAsync().CA();
         return ret;
     }
 
@@ -149,5 +150,5 @@ public class SampledFunctionBuilder
         CreateSampledFunction(new DictionaryBuilder());
 
     public async ValueTask<PdfStream> CreateSampledFunction(DictionaryBuilder members) =>
-        DictionaryEntries(members).AsStream(await SamplesStream().ConfigureAwait(false));
+        DictionaryEntries(members).AsStream(await SamplesStream().CA());
 }

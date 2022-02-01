@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -12,7 +13,7 @@ public static class NextTokenFinder
 {
     public static async ValueTask SkipToNextToken(IPipeReaderWithPosition source)
     {
-        do {} while (source.Source.ShouldContinue(SkipToNextToken2(await source.Source.ReadAsync().ConfigureAwait(false))));
+        do {} while (source.Source.ShouldContinue(SkipToNextToken2(await source.Source.ReadAsync().CA())));
     }
 
     private static (bool Success, SequencePosition Position) SkipToNextToken2(ReadResult source)

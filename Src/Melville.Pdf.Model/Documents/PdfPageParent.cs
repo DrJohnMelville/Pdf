@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -11,7 +12,7 @@ public record class PdfPageParent(PdfDictionary LowLevel) : IHasPageAttributes
     
     public async ValueTask<IHasPageAttributes?> GetParentAsync() =>
         LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&
-        await parentTask.ConfigureAwait(false) is PdfDictionary dict
+        await parentTask.CA() is PdfDictionary dict
             ? new PdfPageParent(dict)
             : null;
 }

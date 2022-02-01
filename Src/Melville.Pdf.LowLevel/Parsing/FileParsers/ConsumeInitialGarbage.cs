@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -12,7 +13,7 @@ public static class ConsumeInitialGarbage
     public static async ValueTask<int> CheckForOffset(IPipeReaderWithPosition context)
     {
         int offset;
-        do {} while(context.Source.ShouldContinue(SkipGarbage(await context.Source.ReadAsync().ConfigureAwait(false), out offset)));
+        do {} while(context.Source.ShouldContinue(SkipGarbage(await context.Source.ReadAsync().CA(), out offset)));
 
         return offset;
 

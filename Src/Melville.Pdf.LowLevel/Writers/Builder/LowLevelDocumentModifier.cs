@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -82,15 +83,15 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         {
             lines.Add(new XrefLine(
                 item.Target.ObjectNumber, target.BytesWritten, item.Target.GenerationNumber, true));
-            await writer.Visit(item.Target).ConfigureAwait(false);
+            await writer.Visit(item.Target).CA();
         }
         var startXref = target.BytesWritten;
         XrefTableElementWriter.WriteXrefTitleLine(target);
         DeletedItemLines(lines);
         WriteRevisedXrefTable(target, lines);
-        await target.FlushAsync().ConfigureAwait(false);
+        await target.FlushAsync().CA();
         builder.AddToTrailerDictionary(KnownNames.Prev, new PdfInteger(priorXref));
-        await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref).ConfigureAwait(false);
+        await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref).CA();
     }
 
     private void WriteRevisedXrefTable(CountingPipeWriter target, IEnumerable<XrefLine> lines)

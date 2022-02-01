@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -8,14 +9,14 @@ public static class StitchedFunctionParser
 {
     public static async ValueTask<PdfFunction> Parse(PdfDictionary source)
     {
-        var domain = await source.ReadIntervals(KnownNames.Domain).ConfigureAwait(false);
-        var encode = await source.ReadIntervals(KnownNames.Encode).ConfigureAwait(false);
-        var bounds = await (await source.GetAsync<PdfArray>(KnownNames.Bounds).ConfigureAwait(false)).AsDoublesAsync().ConfigureAwait(false);
+        var domain = await source.ReadIntervals(KnownNames.Domain).CA();
+        var encode = await source.ReadIntervals(KnownNames.Encode).CA();
+        var bounds = await (await source.GetAsync<PdfArray>(KnownNames.Bounds).CA()).AsDoublesAsync().CA();
         var functionDecls =
-            await (await source.GetAsync<PdfArray>(KnownNames.Functions).ConfigureAwait(false)).AsAsync<PdfDictionary>().ConfigureAwait(false);
-        var functions = await CreateFunctionSegments(functionDecls, domain[0], bounds, encode).ConfigureAwait(false);
+            await (await source.GetAsync<PdfArray>(KnownNames.Functions).CA()).AsAsync<PdfDictionary>().CA();
+        var functions = await CreateFunctionSegments(functionDecls, domain[0], bounds, encode).CA();
 
-        var range = await source.ReadOptionalRanges(functions[0].NumberOfOutputs).ConfigureAwait(false);
+        var range = await source.ReadOptionalRanges(functions[0].NumberOfOutputs).CA();
         return new StitchedFunction(domain, range, functions);
     }
         
@@ -29,7 +30,7 @@ public static class StitchedFunctionParser
             functions[i] = new StitchedFunctionSegment(
                 SegmentDomain(bounds, i, domain),
                 encode[i],
-                await functionDecls[i].CreateFunctionAsync().ConfigureAwait(false));
+                await functionDecls[i].CreateFunctionAsync().CA());
         }
 
         return functions;

@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Parsing.CountingReaders;
 
@@ -27,7 +28,7 @@ public partial class CountingPipeReader : PipeReader
     public override async ValueTask<ReadResult> ReadAsync(
         CancellationToken cancellationToken = default)
     {
-        var ret = await inner.ReadAsync(cancellationToken).ConfigureAwait(false);
+        var ret = await inner.ReadAsync(cancellationToken).CA();
         currentBuffer = ret;
         return ret;
     }
@@ -79,7 +80,7 @@ public partial class CountingPipeReader : PipeReader
     {
         while (true)
         {
-            var ret = await ReadAsync().ConfigureAwait(false);
+            var ret = await ReadAsync().CA();
             if (ret.Buffer.Length > delta)
             {
                 AdvanceTo(ret.Buffer.GetPosition(delta));

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.FileSystem;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -24,7 +25,7 @@ public class S7_6_5CryptFilters
         Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].DirectValueAsync()).ToString());
         Assert.Equal("plaintext stream", await (
                 await ((PdfStream)(
-                    await doc.Objects[(3, 0)].DirectValueAsync().ConfigureAwait(false))).StreamContentAsync())
+                    await doc.Objects[(3, 0)].DirectValueAsync().CA())).StreamContentAsync())
             .ReadAsStringAsync());
     }
 

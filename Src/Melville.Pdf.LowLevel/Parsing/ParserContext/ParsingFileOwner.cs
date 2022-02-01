@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -63,7 +64,7 @@ public partial class ParsingFileOwner
     {
         if (AlreadyInitializedDecryption()) return;
         documentCryptContext = await 
-            TrailerToDocumentCryptContext.CreateDecryptorFactory(trailerDictionary, passwordSource).ConfigureAwait(false);
+            TrailerToDocumentCryptContext.CreateDecryptorFactory(trailerDictionary, passwordSource).CA();
     }
 
     private bool AlreadyInitializedDecryption()

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 using Melville.Pdf.LowLevel.Filters.ExternalFilters;
@@ -24,8 +25,8 @@ public static class StaticCodecFactory
             { KnownNames.ASCII85Decode, ConstantCodec(new Ascii85Encoder(), new Ascii85Decoder()) },
             { KnownNames.RunLengthDecode, ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()) },
             { KnownNames.LZWDecode, new CodecDefinition(
-                async p => new LzwEncodeFilter(await p.EarlySwitchLength().ConfigureAwait(false)),
-                async p => new LzwDecodeFilter(await p.EarlySwitchLength().ConfigureAwait(false))) },
+                async p => new LzwEncodeFilter(await p.EarlySwitchLength().CA()),
+                async p => new LzwDecodeFilter(await p.EarlySwitchLength().CA())) },
             { KnownNames.FlateDecode, new FlateCodecDefinition() },
             {KnownNames.DCTDecode, new DctDecoder()}
         };

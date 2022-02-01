@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.Streams.Bases;
+﻿using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
 
@@ -39,11 +40,11 @@ public sealed class MultiplexedStream: IDisposable
     public async ValueTask<int> ReadAsync(
         long position, Memory<byte> buffer, CancellationToken cancellationToken)
     {
-        await mutex.WaitAsync().ConfigureAwait(false);
+        await mutex.WaitAsync().CA();
         try
         {
              EnsureProperReadPosition(position);
-             return await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+             return await source.ReadAsync(buffer, cancellationToken).CA();
         }
         finally
         {
@@ -79,7 +80,7 @@ public sealed class MultiplexedReader : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        var ret = await source.ReadAsync(Position, buffer, cancellationToken).ConfigureAwait(false);
+        var ret = await source.ReadAsync(Position, buffer, cancellationToken).CA();
         Position += ret;
         return ret;
     }

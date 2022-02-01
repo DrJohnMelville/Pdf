@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -14,7 +15,7 @@ public static class PdfHeaderParser
     public static async ValueTask<(byte Major, byte Minor)> ParseHeadder(IPipeReaderWithPosition context)
     {
         byte major, minor;
-        do {} while(context.Source.ShouldContinue(ParseDocumentHeader(await context.Source.ReadAsync().ConfigureAwait(false),
+        do {} while(context.Source.ShouldContinue(ParseDocumentHeader(await context.Source.ReadAsync().CA(),
                         out major, out minor)));
 
         return (major, minor);

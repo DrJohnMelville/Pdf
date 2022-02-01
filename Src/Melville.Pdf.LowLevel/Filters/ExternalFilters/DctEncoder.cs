@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -16,7 +17,7 @@ public class DctDecoder : ICodecDefinition
 
     public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
     {
-        var img = await Image.LoadAsync<Rgb24>(input).ConfigureAwait(false);
+        var img = await Image.LoadAsync<Rgb24>(input).CA();
         return new ImageReadStream(img);
     }
 }

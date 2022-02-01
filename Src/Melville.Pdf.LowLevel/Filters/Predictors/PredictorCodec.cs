@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -18,13 +19,13 @@ public class PredictorCodec : ICodecDefinition
 
     public async ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters)
     {
-        var filter = await PredictionFilterAsync(parameters, true).ConfigureAwait(false);
+        var filter = await PredictionFilterAsync(parameters, true).CA();
         return filter == null ? data : ReadingFilterStream.Wrap(data, filter);
     }
         
     public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
     {
-        var filter = await PredictionFilterAsync(parameters, false).ConfigureAwait(false);
+        var filter = await PredictionFilterAsync(parameters, false).CA();
         return filter == null ? input : ReadingFilterStream.Wrap(input, filter);
     }
 
@@ -33,10 +34,10 @@ public class PredictorCodec : ICodecDefinition
         parameters is not PdfDictionary dict
             ? null
             : PredictionFilter(
-                await dict.GetOrDefaultAsync(KnownNames.Predictor, 1).ConfigureAwait(false),
-                (int)await dict.GetOrDefaultAsync(KnownNames.Colors, 1).ConfigureAwait(false),
-                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).ConfigureAwait(false),
-                (int)await dict.GetOrDefaultAsync(KnownNames.Columns, 1).ConfigureAwait(false), 
+                await dict.GetOrDefaultAsync(KnownNames.Predictor, 1).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.Colors, 1).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.Columns, 1).CA(), 
                 encoding);
 
     private IStreamFilterDefinition? PredictionFilter(

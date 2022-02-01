@@ -3,6 +3,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Melville.Icc.Model.Tags;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -34,9 +35,9 @@ public class LabColorSpace : IColorSpace
 
     public static async ValueTask<LabColorSpace> ParseAsync(PdfDictionary parameters)
     {
-        var wp = await ReadWhitePoint(parameters).ConfigureAwait(false);
-        var array = await parameters.GetOrNullAsync(KnownNames.Range).ConfigureAwait(false) is PdfArray arr
-            ? await arr.AsDoublesAsync().ConfigureAwait(false)
+        var wp = await ReadWhitePoint(parameters).CA();
+        var array = await parameters.GetOrNullAsync(KnownNames.Range).CA() is PdfArray arr
+            ? await arr.AsDoublesAsync().CA()
             : Array.Empty<double>();
         
         return new LabColorSpace(wp, 
@@ -47,11 +48,11 @@ public class LabColorSpace : IColorSpace
 
     private static async Task<FloatColor> ReadWhitePoint(PdfDictionary parameters)
     {
-        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).ConfigureAwait(false);
+        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
         return new FloatColor(
-            (await array.GetAsync<PdfNumber>(0).ConfigureAwait(false)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(1).ConfigureAwait(false)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(2).ConfigureAwait(false)).DoubleValue
+            (await array.GetAsync<PdfNumber>(0).CA()).DoubleValue,
+            (await array.GetAsync<PdfNumber>(1).CA()).DoubleValue,
+            (await array.GetAsync<PdfNumber>(2).CA()).DoubleValue
         );
     }
 

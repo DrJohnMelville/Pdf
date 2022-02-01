@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -20,7 +21,7 @@ public class CrossReferenceTableParser
 
     public async Task Parse()
     {
-        while (!ParseNextLine(await source.Reader.Source.ReadAsync().ConfigureAwait(false)))
+        while (!ParseNextLine(await source.Reader.Source.ReadAsync().CA()))
         {
         }       
     }

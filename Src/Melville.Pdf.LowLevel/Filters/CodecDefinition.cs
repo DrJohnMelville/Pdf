@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -26,8 +27,8 @@ public class CodecDefinition: ICodecDefinition
     }
 
     public async ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) =>
-        ReadingFilterStream.Wrap(data, await encoder(parameters).ConfigureAwait(false));
+        ReadingFilterStream.Wrap(data, await encoder(parameters).CA());
 
     public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters) =>
-        ReadingFilterStream.Wrap(input, await decoder(parameters).ConfigureAwait(false));
+        ReadingFilterStream.Wrap(input, await decoder(parameters).CA());
 }

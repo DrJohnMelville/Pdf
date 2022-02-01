@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -35,13 +36,13 @@ public abstract class ConcatStreamBase : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        await TryLoadFirstSource().ConfigureAwait(false);
+        await TryLoadFirstSource().CA();
         var bytesWritten = 0;
         while (!AtEndOfStream() && bytesWritten < buffer.Length)
         {
-            var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken).ConfigureAwait(false);
+            var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken).CA();
             bytesWritten += localWritten;
-            await PrepareForNextRead(localWritten).ConfigureAwait(false);
+            await PrepareForNextRead(localWritten).CA();
         }
 
         return bytesWritten;
@@ -50,7 +51,7 @@ public abstract class ConcatStreamBase : DefaultBaseStream
     private async ValueTask TryLoadFirstSource()
     {
         // we use this as a sentinel to mean we have not gotten the first source yet
-        current = (current == this) ? await GetNextStream().ConfigureAwait(false): current;
+        current = (current == this) ? await GetNextStream().CA(): current;
     }
     
     [MemberNotNullWhen(false, nameof(current))]
@@ -59,8 +60,8 @@ public abstract class ConcatStreamBase : DefaultBaseStream
     private async ValueTask PrepareForNextRead(int localWritten)
     {
         if (PriorReadSucceeded(localWritten)) return;
-        if (current != null) await current.DisposeAsync().ConfigureAwait(false);
-        current = await GetNextStream().ConfigureAwait(false);;
+        if (current != null) await current.DisposeAsync().CA();
+        current = await GetNextStream().CA();;
     }
 
     private static bool PriorReadSucceeded(int localWritten) => localWritten > 0;

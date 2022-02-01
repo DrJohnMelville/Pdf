@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -8,5 +9,5 @@ public static class LzwParameterParser
 {
     public static async ValueTask<int> EarlySwitchLength(this PdfObject? parameters) =>
         parameters is PdfDictionary dict?
-            (int)await dict.GetOrDefaultAsync(KnownNames.EarlyChange, 1).ConfigureAwait(false): 1;
+            (int)await dict.GetOrDefaultAsync(KnownNames.EarlyChange, 1).CA(): 1;
 }

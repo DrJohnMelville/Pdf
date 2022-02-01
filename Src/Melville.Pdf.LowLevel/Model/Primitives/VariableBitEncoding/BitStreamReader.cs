@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
@@ -23,7 +24,7 @@ public readonly struct BitStreamReader
     {
         while (true)
         {
-            var span = await pipe.ReadAsync().ConfigureAwait(false);
+            var span = await pipe.ReadAsync().CA();
             if (TryRead(span.Buffer, out var ret)) return ret;
             pipe.AdvanceTo(span.Buffer.Start, span.Buffer.End);
         }

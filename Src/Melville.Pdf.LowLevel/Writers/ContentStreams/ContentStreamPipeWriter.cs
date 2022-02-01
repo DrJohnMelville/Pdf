@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
@@ -114,7 +115,7 @@ public readonly struct ContentStreamPipeWriter
     public void WriteOperator(in ReadOnlySpan<byte> operation, PdfDictionary dictionary)
     {
         DictionaryWriter.WriteAsync(destPipe, new PdfObjectWriter(destPipe), dictionary.RawItems)
-            .ConfigureAwait(false).GetAwaiter().GetResult();
+            .CA().GetAwaiter().GetResult();
         WriteOperator(operation);
     }
 

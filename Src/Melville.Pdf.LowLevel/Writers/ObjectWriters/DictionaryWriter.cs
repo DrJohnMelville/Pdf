@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 
@@ -30,13 +31,13 @@ public static class DictionaryWriter
         writer.WriteBytes(prefix);
         foreach (var item in items)
         {
-            await item.Key.Visit(innerWriter).ConfigureAwait(false);
+            await item.Key.Visit(innerWriter).CA();
             AddWhitespaceIfNeeded(writer, item.Value); 
-            await item.Value.Visit(innerWriter).ConfigureAwait(false);
-            await writer.FlushAsync().ConfigureAwait(false);
+            await item.Value.Visit(innerWriter).CA();
+            await writer.FlushAsync().CA();
         }
         writer.WriteBytes(suffix);
-        return await writer.FlushAsync().ConfigureAwait(false);
+        return await writer.FlushAsync().CA();
     }
 
     private static void WritePrefix(PipeWriter writer) => writer.WriteBytes((byte) '<', (byte) '<');

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
@@ -23,9 +24,9 @@ public static partial class PdfPageAttributes
         var dict = item;
         while (dict != null)
         {
-            if (dict.LowLevel.TryGetValue(name, out var retTask) && await retTask.ConfigureAwait(false) is { } ret &&
+            if (dict.LowLevel.TryGetValue(name, out var retTask) && await retTask.CA() is { } ret &&
                 ret != PdfTokenValues.Null) yield return ret;
-            dict = await dict.GetParentAsync().ConfigureAwait(false);
+            dict = await dict.GetParentAsync().CA();
         }
     }
 
@@ -39,7 +40,7 @@ public static partial class PdfPageAttributes
         where T : IHasPageAttributes
     {
         return await InheritedResourceItem(item, KnownNames.ProcSet).OfType<PdfArray>()
-            .FirstOrDefaultAsync().ConfigureAwait(false);
+            .FirstOrDefaultAsync().CA();
     }
     
     public static ValueTask<PdfObject?> GetResourceAsync(
@@ -68,8 +69,8 @@ public static partial class PdfPageAttributes
     // would have no reason to put a noninheritable property anywhere but in the page node.
     public static async ValueTask<PdfRect?> GetBoxAsync(
         this IHasPageAttributes item, BoxName boxType) =>
-        await GetSingleBoxAsync(item, boxType).ConfigureAwait(false) ??
-        await GetBoxOrDefaultAsync(item, FallbackBox(boxType)).ConfigureAwait(false);
+        await GetSingleBoxAsync(item, boxType).CA() ??
+        await GetBoxOrDefaultAsync(item, FallbackBox(boxType)).CA();
     
     // Standard 7.7.3.3 states that media box is required, however Adobe reader parses files without mediaboxes
     // without complaining -- so we just default to letter size peper.

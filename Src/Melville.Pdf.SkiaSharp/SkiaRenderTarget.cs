@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -45,7 +46,7 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         using var skBitmap = ScreenFormatBitmap(bitmap);
-        await FillBitmapAsync(bitmap, skBitmap).ConfigureAwait(false);
+        await FillBitmapAsync(bitmap, skBitmap).CA();
         Target.DrawBitmap(skBitmap,
             new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1));
     }

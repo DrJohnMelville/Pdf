@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using Melville.Icc.Model;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 namespace Melville.Icc.Parser;
 
@@ -16,17 +17,17 @@ public readonly struct IccParser
 
     public async ValueTask<IccProfile> ParseAsync()
     {
-        var readResult = await GetMinSizeAsync(132).ConfigureAwait(false);
+        var readResult = await GetMinSizeAsync(132).CA();
 
         var (ret, tags) = ReadStaticBlock(readResult.Buffer);
         source.AdvanceTo(readResult.Buffer.GetPosition(132));
-        await ReadOffsetsAsync(tags).ConfigureAwait(false);
+        await ReadOffsetsAsync(tags).CA();
         Array.Sort(tags, (x,y)=>x.Offset.CompareTo(y.Offset));
         for (int i = 0; i < tags.Length; i++)
         {
             var tag = tags[i];
-            await source.AdvanceToLocalPositionAsync(tag.Offset).ConfigureAwait(false);
-            var buffer = await GetMinSizeAsync((int)tag.Size).ConfigureAwait(false);
+            await source.AdvanceToLocalPositionAsync(tag.Offset).CA();
+            var buffer = await GetMinSizeAsync((int)tag.Size).CA();
             tags[i] = tag with { Data = TagParser.Parse(buffer.Buffer) };
         }
 
@@ -35,12 +36,12 @@ public readonly struct IccParser
 
     private async Task<ReadResult> GetMinSizeAsync(int minSize)
     {
-        var readResult = await source.ReadAsync().ConfigureAwait(false);
+        var readResult = await source.ReadAsync().CA();
         while (readResult.Buffer.Length < minSize)
         {
             if (readResult.IsCompleted) throw new InvalidDataException("Too short for an ICC profile");
             source.AdvanceTo(readResult.Buffer.Start, readResult.Buffer.End);
-            readResult = await source.ReadAsync().ConfigureAwait(false);
+            readResult = await source.ReadAsync().CA();
         }
         return readResult;
     }
@@ -86,7 +87,7 @@ public readonly struct IccParser
 
     private async ValueTask ReadOffsetsAsync(ProfileTag[] tags)
     {
-        var result = await GetMinSizeAsync(12 * tags.Length).ConfigureAwait(false);
+        var result = await GetMinSizeAsync(12 * tags.Length).CA();
         ReadOffsets(result.Buffer, tags);
         source.AdvanceTo(result.Buffer.GetPosition(12*tags.Length));
     }

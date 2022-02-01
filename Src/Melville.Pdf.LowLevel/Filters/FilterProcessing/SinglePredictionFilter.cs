@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -17,14 +18,14 @@ public class SinglePredictionFilter : IApplySingleFilter
     public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
     {
         var sourceWithPredictionApplied = 
-            await PredictionCodec.EncodeOnReadStream(source, parameter).ConfigureAwait(false);
-        return await innerFilter.Encode(sourceWithPredictionApplied, filter, parameter).ConfigureAwait(false);
+            await PredictionCodec.EncodeOnReadStream(source, parameter).CA();
+        return await innerFilter.Encode(sourceWithPredictionApplied, filter, parameter).CA();
     }
 
     public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)
     {
-        var decodedSource = await innerFilter.Decode(source, filter, parameter).ConfigureAwait(false);
-        return await PredictionCodec.DecodeOnReadStream(decodedSource, parameter).ConfigureAwait(false);
+        var decodedSource = await innerFilter.Decode(source, filter, parameter).CA();
+        return await PredictionCodec.DecodeOnReadStream(decodedSource, parameter).CA();
     }
 
     private static readonly ICodecDefinition PredictionCodec = new PredictorCodec();

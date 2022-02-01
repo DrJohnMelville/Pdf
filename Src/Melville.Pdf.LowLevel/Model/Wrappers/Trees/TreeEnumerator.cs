@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -19,18 +20,18 @@ public class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     public PdfObject Current { get; private set; } = PdfTokenValues.Null;
-    private async ValueTask SetCurrentValue() => Current = await currentLeafArray![currentLeafIndex].ConfigureAwait(false);
+    private async ValueTask SetCurrentValue() => Current = await currentLeafArray![currentLeafIndex].CA();
 
     public async ValueTask<bool> MoveNextAsync()
     {
-        if (!await FindNextLeafItem().ConfigureAwait(false)) return false;
-        await SetCurrentValue().ConfigureAwait(false);
+        if (!await FindNextLeafItem().CA()) return false;
+        await SetCurrentValue().CA();
         return true;
     }
 
 
     private async ValueTask<bool> FindNextLeafItem() => 
-        HasNextLeafItem() || await HandleNextIntermediateNode().ConfigureAwait(false);
+        HasNextLeafItem() || await HandleNextIntermediateNode().CA();
 
     private bool HasNextLeafItem() => currentLeafArray != null && IncrementLeafItem() < currentLeafArray.Count;
 
@@ -41,7 +42,7 @@ public class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
         while (true)
         {
             if (NoIntermediateNodesLeft()) return false;
-            if (await TryFindFirstLeafItem(pendingIntermediateNodes.Pop()).ConfigureAwait(false)) return true;
+            if (await TryFindFirstLeafItem(pendingIntermediateNodes.Pop()).CA()) return true;
         }
     }
 
@@ -52,8 +53,8 @@ public class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
 
     private async ValueTask<bool> TryFindFirstLeafItem(PdfDictionary node)
     {
-        if (await TryPushIntermediateNodeKids(node).ConfigureAwait(false)) return false;
-        return RecordLeafItems(await node.GetAsync<PdfArray>(PdfTreeElementNamer.FinalArrayName<T>()).ConfigureAwait(false));
+        if (await TryPushIntermediateNodeKids(node).CA()) return false;
+        return RecordLeafItems(await node.GetAsync<PdfArray>(PdfTreeElementNamer.FinalArrayName<T>()).CA());
     }
 
     private bool RecordLeafItems(PdfArray leaves)
@@ -71,9 +72,9 @@ public class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
     private async Task<bool> TryPushIntermediateNodeKids(PdfDictionary node)
     {
         if (!node.TryGetValue(KnownNames.Kids, out var kidsTask)) return false;
-        if (await kidsTask.ConfigureAwait(false) is not PdfArray kids) return true;
+        if (await kidsTask.CA() is not PdfArray kids) return true;
             
-        await PushInReverseOrder(kids).ConfigureAwait(false);
+        await PushInReverseOrder(kids).CA();
 
         return true;
     }
@@ -83,7 +84,7 @@ public class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
         // do not use kids.Reverse because we want to use valuetasks immediately after creating them
         for (var i = kids.Count - 1; i >= 0; i--)
         {
-            pendingIntermediateNodes.Push((PdfDictionary)await kids[i].ConfigureAwait(false));
+            pendingIntermediateNodes.Push((PdfDictionary)await kids[i].CA());
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -26,8 +27,8 @@ public static class ContentStreamWritingImpl
     {
         var streamData = new MultiBufferStream();
         var pipe = PipeWriter.Create(streamData);
-        await creator(new ContentStreamWriter(pipe)).ConfigureAwait(false);
-        await pipe.FlushAsync().ConfigureAwait(false);
+        await creator(new ContentStreamWriter(pipe)).CA();
+        await pipe.FlushAsync().CA();
         pc.AddToContentStream(dict.AsStream(streamData));
     }
 }

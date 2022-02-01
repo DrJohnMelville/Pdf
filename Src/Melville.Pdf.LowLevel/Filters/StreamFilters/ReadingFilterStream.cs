@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -44,7 +45,7 @@ public class ReadingFilterStream : DefaultBaseStream
         var ret = 0;
         do
         {
-            var result = await source.ReadAsync().ConfigureAwait(false);
+            var result = await source.ReadAsync().CA();
             ret = HandleResult(buffer.Span, result);
             if (result.IsCompleted) return ret;
         } while (ret < 1);

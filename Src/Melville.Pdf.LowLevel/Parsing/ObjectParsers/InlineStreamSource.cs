@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.Decryptors;
@@ -24,7 +25,7 @@ public class InlineStreamSource: IStreamDataSource
 
     public async ValueTask<Stream> OpenRawStream(long streamLength)
     {
-        return await parsingFileOwner.RentStream(sourceFilePosition, streamLength).ConfigureAwait(false);
+        return await parsingFileOwner.RentStream(sourceFilePosition, streamLength).CA();
     }
 
     public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) => 

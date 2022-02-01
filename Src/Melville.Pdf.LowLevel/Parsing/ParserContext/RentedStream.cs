@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -161,9 +162,9 @@ public partial class ParsingFileOwner
             {
                 while (true)
                 {
-                    var read = await ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                    var read = await ReadAsync(buffer, 0, buffer.Length, cancellationToken).CA();
                     if (read == 0) return;
-                    await destination.WriteAsync(buffer, 0, read).ConfigureAwait(false);
+                    await destination.WriteAsync(buffer, 0, read).CA();
                 }
             }
             finally

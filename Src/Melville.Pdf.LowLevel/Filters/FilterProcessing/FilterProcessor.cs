@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -25,9 +26,9 @@ public abstract class FilterProcessorBase: IFilterProcessor
     {
         return sourceFormat.CompareTo(desiredEncoding) switch
         {
-            < 0 => await Decode(src, sourceFormat, desiredEncoding).ConfigureAwait(false),
+            < 0 => await Decode(src, sourceFormat, desiredEncoding).CA(),
             0 => src,
-            _ => await Encode(src, sourceFormat, desiredEncoding).ConfigureAwait(false)
+            _ => await Encode(src, sourceFormat, desiredEncoding).CA()
         };
     }
 
@@ -62,7 +63,7 @@ public class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = inclusiveUpperBound; i > exclusiveLowerBound; i--)
         {
-            ret = await singleFilter.Encode(ret, filters[i], TryGetParameter(i)).ConfigureAwait(false);
+            ret = await singleFilter.Encode(ret, filters[i], TryGetParameter(i)).CA();
         }
 
         return ret;
@@ -76,7 +77,7 @@ public class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = firstFilter; i < oneMoreThanLastFilter; i++)
         {
-            ret = await singleFilter.Decode(ret, filters[i], TryGetParameter(i)).ConfigureAwait(false);
+            ret = await singleFilter.Decode(ret, filters[i], TryGetParameter(i)).CA();
         }
 
         return ret;

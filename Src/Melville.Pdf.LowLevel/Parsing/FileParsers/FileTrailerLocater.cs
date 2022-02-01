@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -20,15 +21,15 @@ public static class FileTrailerLocater
         while (true)
         {
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
-            var context = await source.RentReader(start).ConfigureAwait(false);
+            var context = await source.RentReader(start).CA();
             var reader = context.Reader;
-            while (SearchForS(await reader.Source.ReadAsync().ConfigureAwait(false), reader, end, out var foundPos))
+            while (SearchForS(await reader.Source.ReadAsync().CA(), reader, end, out var foundPos))
             {
                 if (!foundPos) continue;
-                if (await TokenChecker.CheckToken(context.Reader, startXRef).ConfigureAwait(false))
+                if (await TokenChecker.CheckToken(context.Reader, startXRef).CA())
                 {
-                    await NextTokenFinder.SkipToNextToken(reader).ConfigureAwait(false);
-                    do { } while (reader.Source.ShouldContinue(GetLong(await reader.Source.ReadAsync().ConfigureAwait(false), out xrefPosition)));
+                    await NextTokenFinder.SkipToNextToken(reader).CA();
+                    do { } while (reader.Source.ShouldContinue(GetLong(await reader.Source.ReadAsync().CA(), out xrefPosition)));
                     return xrefPosition;
                 }
             }

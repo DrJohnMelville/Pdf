@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
@@ -13,20 +14,20 @@ public static class SecurityHandlerV4Builder
         
     public static async ValueTask<SecurityHandlerV4> Create(RootKeyComputer rootKeyComputer, PdfDictionary encryptionDictionary)
     {
-        var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF).ConfigureAwait(false);
+        var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF).CA();
         var finalDictionary = new Dictionary<PdfName, ISecurityHandler>();
         finalDictionary.Add(KnownNames.Identity, NullSecurityHandler.Instance);
         foreach (var entry in cfd)
         {
-            var cryptDictionary = (PdfDictionary)await entry.Value.ConfigureAwait(false);
-            var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM).ConfigureAwait(false);
+            var cryptDictionary = (PdfDictionary)await entry.Value.CA();
+            var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM).CA();
             finalDictionary.Add(entry.Key, CreateSubSecurityHandler(rootKeyComputer, cfm, encryptionDictionary));
         }
             
         finalDictionary.Add(KnownNames.StmF, 
-            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StmF, KnownNames.Identity).ConfigureAwait(false)]);
+            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StmF, KnownNames.Identity).CA()]);
         finalDictionary.Add(KnownNames.StrF, 
-            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity).ConfigureAwait(false)]);
+            finalDictionary[await encryptionDictionary.GetOrDefaultAsync(KnownNames.StrF, KnownNames.Identity).CA()]);
 
         return new SecurityHandlerV4(rootKeyComputer ,finalDictionary);
     }

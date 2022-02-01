@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -22,13 +23,13 @@ public class CalGray : IColorSpace
 
     public static async ValueTask<CalGray> Parse(PdfDictionary parameters)
     {
-        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).ConfigureAwait(false);
+        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
         var wp = new FloatColor(
-            (await array.GetAsync<PdfNumber>(0).ConfigureAwait(false)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(1).ConfigureAwait(false)).DoubleValue,
-            (await array.GetAsync<PdfNumber>(2).ConfigureAwait(false)).DoubleValue
+            (await array.GetAsync<PdfNumber>(0).CA()).DoubleValue,
+            (await array.GetAsync<PdfNumber>(1).CA()).DoubleValue,
+            (await array.GetAsync<PdfNumber>(2).CA()).DoubleValue
         );
-        var gamma = await parameters.GetOrDefaultAsync(KnownNames.Gamma, 1.0).ConfigureAwait(false);
+        var gamma = await parameters.GetOrDefaultAsync(KnownNames.Gamma, 1.0).CA();
         return new CalGray(wp, gamma);
     }
 

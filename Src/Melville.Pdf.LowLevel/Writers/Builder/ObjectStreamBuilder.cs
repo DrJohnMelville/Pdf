@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
@@ -22,8 +23,8 @@ public class ObjectStreamBuilder
         var writer = new ObjectStreamWriter();
         foreach (var member in members)
         {
-            await  writer.TryAddRefAsync(member).ConfigureAwait(false);
+            await  writer.TryAddRefAsync(member).CA();
         }
-        return await writer.Build(builder, members.Count).ConfigureAwait(false);
+        return await writer.Build(builder, members.Count).CA();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -20,7 +21,7 @@ public class DefaultEncryptionFilterProcessor : FilterProcessorBase
 
     protected override async ValueTask<Stream> Encode(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat) =>
-        TryEncrypt(await innerProcessor.StreamInDesiredEncoding(source, sourceFormat, targetFormat).ConfigureAwait(false),
+        TryEncrypt(await innerProcessor.StreamInDesiredEncoding(source, sourceFormat, targetFormat).CA(),
             sourceFormat, targetFormat);
 
     private Stream TryEncrypt(

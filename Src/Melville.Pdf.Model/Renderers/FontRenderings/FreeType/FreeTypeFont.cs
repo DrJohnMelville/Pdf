@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -25,16 +26,16 @@ public class FreeTypeFont : IRealizedFont, IDisposable
     public async ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor)
     {
         if (fontDescriptor is not null && 
-            ((await fontDescriptor.GetOrDefaultAsync(KnownNames.Flags, 0).ConfigureAwait(false)) & 4) == 4)
+            ((await fontDescriptor.GetOrDefaultAsync(KnownNames.Flags, 0).CA()) & 4) == 4)
         {
             glyphMap = await SymbolicEncodingParser.ParseGlyphMapping(Face, encoding)
-                .ConfigureAwait(false);
+                .CA();
         }
         else
         {
             glyphMap = new UnicodeGlyphMapping(Face,
                 Mapping ?? await NonsymbolicEncodingParser.InterpretEncodingValue(encoding)
-                    .ConfigureAwait(false));
+                    .CA());
         }
     }
 

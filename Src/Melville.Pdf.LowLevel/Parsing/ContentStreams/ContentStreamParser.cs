@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -32,15 +33,15 @@ public readonly struct ContentStreamParser
         bool done = false;
         do
         {
-            var bfp = await BufferFromPipe.Create(source).ConfigureAwait(false);
-            done = (! await ParseReadResult(bfp).ConfigureAwait(false)) && bfp.Done;
+            var bfp = await BufferFromPipe.Create(source).CA();
+            done = (! await ParseReadResult(bfp).CA()) && bfp.Done;
             
         }while (!done);
     }
 
     private async ValueTask<bool> ParseReadResult(BufferFromPipe bfp)
     {
-        if (await ParseReader(bfp).ConfigureAwait(false)) return true;
+        if (await ParseReader(bfp).CA()) return true;
         bfp.NeedMoreBytes();
         return false;
     }
@@ -151,7 +152,7 @@ public readonly struct ContentStreamParser
     
     private async ValueTask<bool> RunOpcode(uint opCode)
     {
-        await HandleOpCode(opCode).ConfigureAwait(false);
+        await HandleOpCode(opCode).CA();
         return true;
     }
 
@@ -159,23 +160,23 @@ public readonly struct ContentStreamParser
     
     private async ValueTask<bool> TryParseDictionary(BufferFromPipe bfp)
     {
-        var dict = await PdfParserParts.EmbeddedDictionaryParser.ParseAsync(bfp.CreateParsingReader()).ConfigureAwait(false);
+        var dict = await PdfParserParts.EmbeddedDictionaryParser.ParseAsync(bfp.CreateParsingReader()).CA();
         target.HandleDictionary(dict);
         return true;
     }
     private async ValueTask<bool> ParseInlineImage(BufferFromPipe bfp)
     {
         var dict = await PdfParserParts.InlineImageDictionaryParser
-            .ParseDictionaryItemsAsync(bfp.CreateParsingReader()).ConfigureAwait(false);
+            .ParseDictionaryItemsAsync(bfp.CreateParsingReader()).CA();
         SetTypeAsImage(dict);
-        bfp = await bfp.Refresh().ConfigureAwait(false);
+        bfp = await bfp.Refresh().CA();
         SequencePosition endPos;
         while (!(SearchForEndSequence(bfp, out endPos)))
         {
-            bfp = await bfp.InvalidateAndRefresh().ConfigureAwait(false);
+            bfp = await bfp.InvalidateAndRefresh().CA();
         }
 
-        await target.HandleInlineImage(CreateStream(GrabStreamContent(bfp, endPos), dict)).ConfigureAwait(false);
+        await target.HandleInlineImage(CreateStream(GrabStreamContent(bfp, endPos), dict)).CA();
         return true;
     }
 

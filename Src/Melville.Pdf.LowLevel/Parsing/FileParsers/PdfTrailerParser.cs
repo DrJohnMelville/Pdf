@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -11,41 +12,41 @@ public static class PdfTrailerParser
 {
     public static async ValueTask< PdfDictionary> ParseXrefAndTrailer(ParsingFileOwner source, long xrefPosition)
     {
-        return await XrefAndTrailer(source, xrefPosition).ConfigureAwait(false);
+        return await XrefAndTrailer(source, xrefPosition).CA();
     }
         
     private static async Task<PdfDictionary> XrefAndTrailer(ParsingFileOwner source, long xrefPosition)
     {
         PdfDictionary? trailerDictionary;
 
-        var context = await source.RentReader(xrefPosition).ConfigureAwait(false);
-        trailerDictionary = await ReadSingleRefTrailerBlock(context).ConfigureAwait(false);
+        var context = await source.RentReader(xrefPosition).CA();
+        trailerDictionary = await ReadSingleRefTrailerBlock(context).CA();
 
         if (trailerDictionary != null)
         {
-            await source.InitializeDecryption(trailerDictionary).ConfigureAwait(false);
+            await source.InitializeDecryption(trailerDictionary).CA();
         }
         else
         {
-            trailerDictionary = await CrossReferenceStreamParser.Read(source, xrefPosition).ConfigureAwait(false);
+            trailerDictionary = await CrossReferenceStreamParser.Read(source, xrefPosition).CA();
         }
 
-        if (trailerDictionary.TryGetValue(KnownNames.Prev, out var prev) && (await prev.ConfigureAwait(false)) is PdfNumber offset)
+        if (trailerDictionary.TryGetValue(KnownNames.Prev, out var prev) && (await prev.CA()) is PdfNumber offset)
         {
-            await XrefAndTrailer(source, offset.IntValue).ConfigureAwait(false);
+            await XrefAndTrailer(source, offset.IntValue).CA();
         }
         return  trailerDictionary;
     }
 
     private static async Task<PdfDictionary?> ReadSingleRefTrailerBlock(IParsingReader context)
     {
-        if (!await TokenChecker.CheckToken(context.Reader, xrefTag).ConfigureAwait(false)) return null;
-        await NextTokenFinder.SkipToNextToken(context.Reader).ConfigureAwait(false);
-        await new CrossReferenceTableParser(context).Parse().ConfigureAwait(false);
-        await NextTokenFinder.SkipToNextToken(context.Reader).ConfigureAwait(false);
-        if (!await TokenChecker.CheckToken(context.Reader, trailerTag).ConfigureAwait(false))
+        if (!await TokenChecker.CheckToken(context.Reader, xrefTag).CA()) return null;
+        await NextTokenFinder.SkipToNextToken(context.Reader).CA();
+        await new CrossReferenceTableParser(context).Parse().CA();
+        await NextTokenFinder.SkipToNextToken(context.Reader).CA();
+        if (!await TokenChecker.CheckToken(context.Reader, trailerTag).CA())
             throw new PdfParseException("Trailer does not follow xref");
-        var trailer = await context.RootObjectParser.ParseAsync(context).ConfigureAwait(false);
+        var trailer = await context.RootObjectParser.ParseAsync(context).CA();
         if (trailer is not PdfDictionary td)
             throw new PdfParseException("Trailer dictionary is invalid");
         return td;

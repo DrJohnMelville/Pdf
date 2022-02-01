@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -19,7 +20,7 @@ public readonly struct BufferFromPipe
 
     public static async ValueTask<BufferFromPipe> Create(PipeReader reader)
     {
-        var readResult = await reader.ReadAsync().ConfigureAwait(false);
+        var readResult = await reader.ReadAsync().CA();
         return new BufferFromPipe(reader, readResult, readResult.Buffer.Start);
     }
 

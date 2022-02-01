@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using System.Xml;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -17,19 +18,19 @@ public static class CrossReferenceStreamParser
     public static async Task<PdfDictionary> Read(ParsingFileOwner owner, long offset)
     {
         PdfObject? xRefStreamAsPdfObject ;
-        var context = await owner.RentReader(offset).ConfigureAwait(false);
-        xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context).ConfigureAwait(false);
+        var context = await owner.RentReader(offset).CA();
+        xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context).CA();
         if (!(xRefStreamAsPdfObject is PdfStream crossRefPdfStream))
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
-        await using (var decodedStream = await crossRefPdfStream.StreamContentAsync().ConfigureAwait(false))
+        await using (var decodedStream = await crossRefPdfStream.StreamContentAsync().CA())
         {
             await new ParseXRefStream(
-                await crossRefPdfStream[KnownNames.W].ConfigureAwait(false), 
-                await crossRefPdfStream.GetOrNullAsync(KnownNames.Index).ConfigureAwait(false), 
+                await crossRefPdfStream[KnownNames.W].CA(), 
+                await crossRefPdfStream.GetOrNullAsync(KnownNames.Index).CA(), 
                 decodedStream, owner
-            ).Parse().ConfigureAwait(false);
+            ).Parse().CA();
         }
-        await owner.InitializeDecryption(crossRefPdfStream).ConfigureAwait(false);
+        await owner.InitializeDecryption(crossRefPdfStream).CA();
         return crossRefPdfStream;
     }
 
@@ -73,7 +74,7 @@ public class ParseXRefStream
     {
         while (true)
         {
-            var result = await source.ReadAsync().ConfigureAwait(false);
+            var result = await source.ReadAsync().CA();
             if (DoneReading(result)) return;
             ParseFromBuffer(result.Buffer);
         }

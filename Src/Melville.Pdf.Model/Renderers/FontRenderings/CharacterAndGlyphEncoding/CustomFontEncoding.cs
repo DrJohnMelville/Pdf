@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -29,7 +30,7 @@ public static class CustomFontEncodingFactory
     {
         var dict = new Dictionary<byte, char>();
         byte currentChar = 0;
-        await foreach (var item in differences.ConfigureAwait(false))
+        await foreach (var item in differences.CA())
         {
             switch (item)
             {

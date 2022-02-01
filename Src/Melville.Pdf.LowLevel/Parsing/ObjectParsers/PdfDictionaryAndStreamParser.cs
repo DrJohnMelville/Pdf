@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -13,9 +14,9 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        var dictionary = await PdfParserParts.Dictionary.ParseDictionaryItemsAsync(source).ConfigureAwait(false);
+        var dictionary = await PdfParserParts.Dictionary.ParseDictionaryItemsAsync(source).CA();
         bool isStream;
-        do {}while (source.Reader.Source.ShouldContinue(CheckForStreamTrailer(await source.Reader.Source.ReadAsync().ConfigureAwait(false), out isStream)));
+        do {}while (source.Reader.Source.ShouldContinue(CheckForStreamTrailer(await source.Reader.Source.ReadAsync().CA(), out isStream)));
         return CreateFinalObject(source, dictionary, isStream);
     }
 

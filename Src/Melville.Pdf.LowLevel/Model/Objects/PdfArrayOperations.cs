@@ -1,12 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
 public static class PdfArrayOperations
 {
     public static async ValueTask<T> GetAsync<T>(this PdfArray array, int index) where T: PdfObject =>
-        (T) await array[index].ConfigureAwait(false);
+        (T) await array[index].CA();
 
     public static ValueTask<PdfObject> GetOrNullAsync(this PdfArray array, int index) =>
         index < 0 || index >= array.Count ? new(PdfTokenValues.Null) : array[index];
@@ -16,7 +17,7 @@ public static class PdfArrayOperations
         var ret = new double[array.Count];
         for (var i = 0; i < ret.Length; i++)
         {
-            ret[i] = ((PdfNumber)await array[i].ConfigureAwait(false)).DoubleValue;
+            ret[i] = ((PdfNumber)await array[i].CA()).DoubleValue;
         }
         return ret;
     }
@@ -25,7 +26,7 @@ public static class PdfArrayOperations
         var ret = new int[array.Count];
         for (var i = 0; i < ret.Length; i++)
         {
-            ret[i] = (int)((PdfNumber)await array[i].ConfigureAwait(false)).IntValue;
+            ret[i] = (int)((PdfNumber)await array[i].CA()).IntValue;
         }
         return ret;
     }
@@ -34,7 +35,7 @@ public static class PdfArrayOperations
         var ret = new T[array.Count];
         for (var i = 0; i < ret.Length; i++)
         {
-            ret[i] = (T)await array[i].ConfigureAwait(false);
+            ret[i] = (T)await array[i].CA();
         }
         return ret;
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
@@ -55,7 +56,7 @@ public sealed class PdfArray :
         {
             currentPosition++;
             if (currentPosition >= items.Count) return false;
-            Current = await items[currentPosition].DirectValueAsync().ConfigureAwait(false);
+            Current = await items[currentPosition].DirectValueAsync().CA();
             return true;
         }
 

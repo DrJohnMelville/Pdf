@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -13,7 +14,7 @@ public static class TokenChecker
         bool result = false;
         do
         {
-        } while (reader.Source.ShouldContinue(VerifyTag(await reader.Source.ReadAsync().ConfigureAwait(false), template, out result)));
+        } while (reader.Source.ShouldContinue(VerifyTag(await reader.Source.ReadAsync().CA(), template, out result)));
 
         return result;
     }

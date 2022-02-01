@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
 
@@ -39,7 +40,7 @@ public class PdfIndirectObject: PdfObject, IMultableIndirectObject
     {
         if (accessor != null)
         {
-            value = await accessor().ConfigureAwait(false);
+            value = await accessor().CA();
             accessor = null;
         } 
         return value;

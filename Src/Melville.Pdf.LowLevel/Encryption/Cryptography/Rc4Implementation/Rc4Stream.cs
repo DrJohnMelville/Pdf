@@ -3,6 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
@@ -35,7 +36,7 @@ public class Rc4Stream : DefaultBaseStream
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        var ret = await innerStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        var ret = await innerStream.ReadAsync(buffer, cancellationToken).CA();
         encryptor.TransfromInPlace(buffer.Span[..ret]);
         return ret;
     }
@@ -52,7 +53,7 @@ public class Rc4Stream : DefaultBaseStream
     {
         var copy = ArrayPool<byte>.Shared.Rent(buffer.Length);
         encryptor.Transform(buffer.Span, copy);
-        await innerStream.WriteAsync(copy.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
+        await innerStream.WriteAsync(copy.AsMemory(0, buffer.Length), cancellationToken).CA();
         ArrayPool<byte>.Shared.Return(copy);
     }
 
