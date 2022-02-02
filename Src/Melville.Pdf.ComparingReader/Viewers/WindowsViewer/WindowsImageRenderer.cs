@@ -13,17 +13,24 @@ namespace Melville.Pdf.ComparingReader.Viewers.WindowsViewer;
 public class WindowsImageRenderer : IImageRenderer
 {
     private readonly IPageSelector pageSel;
-
+    private PdfDocument? document;
+    
     public WindowsImageRenderer(IPageSelector pageSel)
     {
         this.pageSel = pageSel;
     }
 
-    public  async ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password, int page)
+    public async ValueTask SetSource(Stream pdfBits, string password)
     {
-        var document = await PdfDocument.LoadFromStreamAsync(
-            pdfBits.AsRandomAccessStream(), password);
+        document = null;
+        document = await PdfDocument.LoadFromStreamAsync(pdfBits.AsRandomAccessStream(), password);
         TrySetPageCount((int)document.PageCount);
+    }
+
+    public async ValueTask<ImageSource> LoadPage(int page)
+    {
+        if (document == null) return new BitmapImage();
+        
         var stream = new InMemoryRandomAccessStream();
         await document.GetPage((uint)page - 1).RenderToStreamAsync(stream);
         var bitmapFrame = BitmapFrame.Create(

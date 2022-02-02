@@ -16,10 +16,8 @@ public partial class SystemRenderViewModel: IRenderer
     [AutoNotify] private string message = "";
     private Stream? savedTarget;
 
-    public void SetTarget(Stream pdfBits, int _)
-    {
-        savedTarget = pdfBits;
-    }
+    public void SetTarget(Stream pdfBits) => savedTarget = pdfBits;
+    public void SetPage(int page) { /* Do Nothing -- has no current page concept*/ }
 
     public async Task OpenFile()
     {

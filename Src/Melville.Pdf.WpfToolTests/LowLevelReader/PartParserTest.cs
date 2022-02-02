@@ -78,7 +78,7 @@ public class PartParserTest
         Assert.Equal("/Type: /C1", stream.Children[0].Title);
         Assert.Equal("/Length: 15", stream.Children[1].Title);
         stream.SelectedFormat = stream.Formats.Last();
-        var str = (ByteStringViewModel)stream.Content;
+        var str = (ByteStringViewModel)stream.Content!;
         Assert.Equal("00000000  54 68 65 20 53 74 72 65 61 6D 20 44 61 74 61      The Stream Data", str.HexDump);
         Assert.Equal("The Stream Data", str.AsAsciiString);
     }

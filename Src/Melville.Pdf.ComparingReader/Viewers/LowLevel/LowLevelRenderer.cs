@@ -17,9 +17,8 @@ public class LowLevelRenderer : IRenderer
 
     public object RenderTarget => model;
 
-    public void SetTarget(Stream pdfBits, int _)
-    {
-        model.SetStream(pdfBits);
-    }
+    public void SetTarget(Stream pdfBits) => model.SetStream(pdfBits);
+
+    public void SetPage(int page) { /* Do Nothing -- has no current page concept*/ }
 }
 

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.Model.DocumentRenderers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf;
@@ -34,10 +37,10 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
     private Task<string> ComputeWpfHash(IPdfGenerator generator) =>
         ComputeGenericHash(generator, AsWpfPage);
 
-    private ValueTask AsWpfPage(PdfPage page, Stream target)
+    private ValueTask AsWpfPage(DocumentRenderer documentRenderer, Stream target)
     {
         var rtdg = new RenderToDrawingGroup();
-        return rtdg.RenderToPngStream(page, target);
+        return rtdg.RenderToPngStream(documentRenderer, 0, target);
     }
 
     [Theory]
@@ -46,16 +49,18 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
         hashes.AssertDatabase(await ComputeSkiaHash(generator), "Skia"+shortName);
 
     private static Task<string> ComputeSkiaHash(IPdfGenerator generator) =>
-        ComputeGenericHash(generator, (page, target) => RenderWithSkia.ToPngStream(page, target, -1, 1024));
+        ComputeGenericHash(generator, (documentRenderer, target) => 
+            RenderWithSkia.ToPngStream(documentRenderer, 0, target, -1, 1024));
+
     private static async Task<string> ComputeGenericHash(IPdfGenerator generator,
-        Func<PdfPage, Stream, ValueTask> renderTo)
+        Func<DocumentRenderer, Stream, ValueTask> renderTo)
     {
         try
         {
-            var doc = await ReadDocument(generator);
+            var doc = await DocumentRendererFactory.CreateRendererAsync(
+                await ReadDocument(generator), new WindowsDefaultFonts());
             var target = new WriteToAdlerStream();
-            var firstPage = await (await doc.PagesAsync()).GetPageAsync(0);
-            await renderTo(firstPage, target);
+            await renderTo(doc, target);
             return target.Computer.GetHash().ToString();
         }
         catch (Exception e)

@@ -26,7 +26,7 @@ public interface IDrawTarget
     void ClipToPath(bool evenOddRule);
 }
 
-public interface IRenderTarget: IDrawTarget
+public interface IRenderTarget: IDrawTarget, IDisposable
 {
     IGraphiscState GrapicsStateChange { get; }
     void EndPath();
@@ -37,19 +37,21 @@ public interface IRenderTarget: IDrawTarget
     IDrawTarget CreateDrawTarget();
 }
 
-public abstract partial class RenderTargetBase<T>: IDrawTarget
+public abstract partial class RenderTargetBase<T>: IDrawTarget, IDisposable
 {
     protected T Target { get; }
-    protected GraphicsStateStack State { get; }
-    protected PdfPage Page { get; }
+    protected GraphicsStateStack State { get; } = new GraphicsStateStack();
 
     public IGraphiscState GrapicsStateChange => State;
 
-    protected RenderTargetBase(T target, GraphicsStateStack state, PdfPage page)
+    protected RenderTargetBase(T target)
     {
         Target = target;
-        State = state;
-        Page = page;
+    }
+
+    public void Dispose()
+    {
+        State.Dispose();
     }
 
     protected void MapUserSpaceToBitmapSpace(PdfRect rect, double xPixels, double yPixels)
@@ -79,15 +81,4 @@ public abstract partial class RenderTargetBase<T>: IDrawTarget
         currentShape = null;
     }
     #endregion
-}
-
-public static class RenderTargetOperations
-{
-    public static async ValueTask RenderTo(
-        this IHasPageAttributes page, IRenderTarget target, FontReader fonts) =>
-        await new ContentStreamParser(
-                new RenderEngine(page, target, fonts))
-            .Parse(
-                PipeReader.Create(
-                    await page.GetContentBytes().CA())).CA();
 }

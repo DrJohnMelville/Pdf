@@ -13,18 +13,22 @@ Group Documents
 
 Group Creators
     Melville.Pdf.Model.Creators.*
+
+Group DocumentRenderers
+    Melville.Pdf.Model.DocumentRenderers.*
     
 Renderers => Documents
 Renderers => FontMappings
 
 Melville.Pdf.Model.Renderers.Colors.* ^=> Melville.Icc.*
 
+DocumentRenderers => Documents
+DocumentRenderers => Renderers
+DocumentRenderers => FontMappings
+
 #Everyone can use the LowLevel Model
 * => Melville.Pdf.LowLevel.*
 * => Melville.Parsing.*
-
-#SixLabors.Fonts is cabined to a very small folder
-Melville.Pdf.Model.Renderers.FontRenderings.OpenType.* ^=> SixLabors.Fonts.*
 
 #Cabin the freetype dependency
 Melville.Pdf.Model.Renderers.FontRenderings.FreeType.* ^=> SharpFont.*

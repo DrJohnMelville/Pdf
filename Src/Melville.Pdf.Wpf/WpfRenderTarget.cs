@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -12,8 +11,8 @@ namespace Melville.Pdf.Wpf;
 
 public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
 {
-    public WpfRenderTarget(DrawingContext target, GraphicsStateStack state, PdfPage page):
-        base(target, state, page)
+    public WpfRenderTarget(DrawingContext target):
+        base(target)
     {
         SaveTransformAndClip();
     }

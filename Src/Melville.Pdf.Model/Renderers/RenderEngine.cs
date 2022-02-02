@@ -16,7 +16,9 @@ using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -26,12 +28,14 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
     private readonly IRenderTarget target;
-    private readonly FontReader fontReader;
-    public RenderEngine(IHasPageAttributes page, IRenderTarget target, FontReader fontReader)
+    private readonly IDefaultFontMapper defaultFontMapper;
+    private readonly IDocumentPartCache cache;
+    public RenderEngine(IHasPageAttributes page, IRenderTarget target, IDefaultFontMapper defaultFontMapper, IDocumentPartCache cache)
     {
         this.page = page;
         this.target = target;
-        this.fontReader = fontReader;
+        this.defaultFontMapper = defaultFontMapper;
+        this.cache = cache;
     }
     
     [DelegateTo]
@@ -55,7 +59,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         target.RestoreTransformAndClip();
     }
 
-    public void ModifyTransformMatrix(in System.Numerics.Matrix3x2 newTransform)
+    public void ModifyTransformMatrix(in Matrix3x2 newTransform)
     {
         StateOps.ModifyTransformMatrix(in newTransform);
         target.Transform(newTransform);
@@ -181,9 +185,17 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             ClipToPath();
             EndPathWithNoOp();
         }
-        await new PdfFormXObject(formXObject, page).RenderTo(target, fontReader).CA();
+        await Render(new PdfFormXObject(formXObject, page)).CA();
         RestoreGraphicsState();
     }
+
+    private ValueTask Render(IHasPageAttributes xObject) =>
+        new RenderEngine(xObject, target, defaultFontMapper, cache).RunContentStream();
+
+    public async ValueTask RunContentStream() =>
+        await new ContentStreamParser(this).Parse(
+            PipeReader.Create(await page.GetContentBytes().CA())).CA();
+
 
     private static Matrix3x2 CreateMatrix(double[] matrix) =>
         new(
@@ -281,7 +293,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         StateOps.SetTextLeading(-y);
         MovePositionBy(x,y);
     }
-
+ 
     public void SetTextMatrix(double a, double b, double c, double d, double e, double f) =>
         StateOps.SetBothTextMatrices(new Matrix3x2(
             (float)a,(float)b,(float)c,(float)d,(float)e,(float)f));
@@ -293,10 +305,14 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         StateOps.CurrentState().SetTypeface(
             await page.GetResourceAsync(ResourceTypeName.Font, font).CA() is PdfDictionary fontDic ?
-                await fontReader.DictionaryToRealizedFont(fontDic, size).CA() :
-                await fontReader.NameToRealizedFont(font, size).CA()
+                BlockFontDispose.AsNonDisposableTypeface(await cache.Get(new FontRecord(fontDic, 
+                        Math.Floor(size)), 
+                        r=> new FontReader(defaultFontMapper).DictionaryToRealizedFont(r.Dictionary,size)).CA()):
+                await new FontReader(defaultFontMapper).NameToRealizedFont(font, size).CA()
             );
     }
+
+    private record FontRecord(PdfDictionary Dictionary, double Size);
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {

@@ -40,7 +40,7 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
         }
     }
 
-    public async Task<PdfPage> GetPageAsync(long position)
+    public async ValueTask<PdfPage> GetPageAsync(long position)
     {
         var items = await LowLevel.GetAsync<PdfArray>(KnownNames.Kids).CA();
         foreach (var kidTask in items.RawItems)

@@ -1,35 +1,52 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.Model.DocumentRenderers;
 using Melville.Pdf.Model.Documents;
-using SixLabors.ImageSharp;
+using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 
 public interface IImageRenderer
 {
-    ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password, int page);
+    ValueTask  SetSource(Stream pdfBits, string password);
+    ValueTask<ImageSource> LoadPage(int page);
 }
 
 public abstract class MelvillePdfRenderer : IImageRenderer
 {
-    public async ValueTask<ImageSource> LoadFirstPage(Stream pdfBits, string password, int page)
+    private DocumentRenderer? source;
+    public async ValueTask SetSource(Stream pdfBits, string password)
     {
-        var doc = await PdfDocument.ReadAsync(pdfBits, new SinglePasswordSource(password));
-        var pages = await doc.PagesAsync();
-        var ret = (await pages.CountAsync()) > 0
-            ? await Render(await pages.GetPageAsync(page -1))
-            : new DrawingImage();
+        source = null;
+        source = await DocumentRendererFactory.CreateRendererAsync(
+            await PdfDocument.ReadAsync(pdfBits, new SinglePasswordSource(password)),
+            new WindowsDefaultFonts()
+        );
+    }
+
+    public async ValueTask<ImageSource> LoadPage(int page)
+    {
+        var ret = await TryRenderPage(page);
         ret.Freeze();
         return ret;
     }
 
-    protected abstract ValueTask<ImageSource> Render(PdfPage page);
+    private ValueTask<ImageSource> TryRenderPage(int page) =>
+        IsValidPageRender(page)
+            ?  Render(source, page - 1)
+            : new(new DrawingImage());
+
+    [MemberNotNullWhen(true, nameof(source))]
+    private bool IsValidPageRender(int page) => 
+        source != null && page >= 1 && page <= source.TotalPages;
+
+    protected abstract ValueTask<ImageSource> Render(DocumentRenderer source, int page);
 }
 
 public class SinglePasswordSource : IPasswordSource
@@ -52,6 +69,7 @@ public partial class ImageViewerViewModel : IRenderer
     [AutoNotify] private string? exception;
     private readonly IPasswordSource passwords;
     private readonly IImageRenderer renderer;
+    private bool fileParseSucceeded = false;
 
     public ImageViewerViewModel(IPasswordSource passwords, IImageRenderer renderer, string displayName)
     {
@@ -59,20 +77,45 @@ public partial class ImageViewerViewModel : IRenderer
         this.renderer = renderer;
         DisplayName = displayName;
     }
+    
+    public async void SetTarget(Stream pdfBits)
+    {
+        fileParseSucceeded = await LoadStream(pdfBits);
+        SetPage(1);
+    }
 
-    public async void SetTarget(Stream pdfBits, int page)
+    private async ValueTask<bool> LoadStream(Stream pdfBits)
     {
         try
         {
             var (password, _) = await passwords.GetPassword();
-            pdfBits.Seek(0, SeekOrigin.Begin);
-            Image = await renderer.LoadFirstPage(pdfBits, password ??"", page);
+            await renderer.SetSource(pdfBits, password ?? "");
+            return true;
+        }
+        catch (Exception e)
+        {
+            ReportException(e);
+            return false;
+        }
+    }
+
+    public async void SetPage(int page)
+    {
+        if  (!fileParseSucceeded) return;
+        try
+        {
+            Image = await renderer.LoadPage(page);
             Exception = null;
         }
         catch (Exception e)
         {
-            Image = null;
-            Exception = $"{e.Message}\r\n\r\n{e.StackTrace}";
+            ReportException(e);
         }
+    }
+
+    private void ReportException(Exception e)
+    {
+        Image = null;
+        Exception = $"{e.Message}\r\n\r\n{e.StackTrace}";
     }
 }

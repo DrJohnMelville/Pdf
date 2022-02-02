@@ -11,7 +11,8 @@ public interface IRenderer
 {
     string DisplayName { get; }
     object RenderTarget { get; }
-    void SetTarget(Stream pdfBits, int page);
+    void SetTarget(Stream pdfBits);
+    void SetPage( int page);
 }
 
 public interface IMultiRenderer
@@ -24,7 +25,6 @@ public abstract class MultiRenderer : IMultiRenderer
 {
     private readonly IPageSelector pageSelector;
     public IReadOnlyList<IRenderer> Renderers { get; }
-    private MultiBufferStream? source;
     
     protected MultiRenderer(IReadOnlyList<IRenderer> renderers, IPageSelector pageSelector)
     {
@@ -35,21 +35,20 @@ public abstract class MultiRenderer : IMultiRenderer
 
     private void NewPage()
     {
-        if (source is not null) SetTarget(source);
+        foreach (var renderer in Renderers)
+        {
+            renderer.SetPage(pageSelector.Page);
+        }
     }
 
     public object RenderTarget => this;
 
     public void SetTarget(MultiBufferStream pdfBits)
     {
-        if (source != pdfBits)
-        {
-            pageSelector.ToStartSilent();
-            source = pdfBits;
-        }
+        pageSelector.ToStartSilent();
         foreach (var renderer in Renderers)
         {
-            renderer.SetTarget(pdfBits.CreateReader(), pageSelector.Page);
+            renderer.SetTarget(pdfBits.CreateReader());
         }
     }
 }

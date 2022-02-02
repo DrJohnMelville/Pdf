@@ -2,7 +2,6 @@
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -14,8 +13,8 @@ namespace Melville.Pdf.SkiaSharp;
 public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 {
     public SkiaRenderTarget(
-        SKCanvas target, GraphicsStateStack state, PdfPage page) : 
-        base(target, state, page)
+        SKCanvas target) : 
+        base(target)
     {
     }
 

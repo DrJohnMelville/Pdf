@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.Model.DocumentRenderers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -15,9 +16,9 @@ namespace Melville.Pdf.Wpf;
 
 public class RenderToDrawingGroup
 {
-    public async ValueTask RenderToPngStream(PdfPage page, Stream stream) =>
+    public async ValueTask RenderToPngStream(DocumentRenderer doc, int page, Stream stream) =>
         await WriteToBufferStream(
-                DrawingGroupToBitmap(await Render(page))).CreateReader()
+                DrawingGroupToBitmap(await Render(doc, page))).CreateReader()
             .CopyToAsync(stream);
 
     private static RenderTargetBitmap DrawingGroupToBitmap(DrawingGroup doc)
@@ -38,10 +39,10 @@ public class RenderToDrawingGroup
         return mbs;
     }
 
-    public async ValueTask<DrawingGroup> Render(PdfPage page)
+    public async ValueTask<DrawingGroup> Render(DocumentRenderer doc, int page)
     {
         var dg = CreateDrawingGroup();
-        await RenderTo(page, dg);
+        await RenderTo(doc, page, dg);
         dg.Freeze();
         return dg;
     }
@@ -53,24 +54,21 @@ public class RenderToDrawingGroup
         return dg;
     }
 
-    private async Task RenderTo(
-        PdfPage page, DrawingGroup dg)
+    private async Task RenderTo(DocumentRenderer doc, int page, DrawingGroup dg)
     {
         using var dc = dg.Open();
-        await RenderTo(page, dc);
+        await RenderTo(doc, page, dc);
     }
 
-    private async ValueTask RenderTo(PdfPage page, DrawingContext dc, 
-        IDefaultFontMapper? defaultFontMapper = null)
-    { 
-        var rect = await page.GetBoxAsync(BoxName.CropBox);
-        if (!rect.HasValue) return;
+    private  ValueTask RenderTo(DocumentRenderer doc, int page, DrawingContext dc)
+    {
 
-        using var stateStack = new GraphicsStateStack();
-        var innerRenderer = new WpfRenderTarget(dc, stateStack, page);
-        innerRenderer.SetBackgroundRect(rect.Value);
         AwaitConfig.ResumeOnCalledThread(true);
-
-        await page.RenderTo(innerRenderer, new FontReader(defaultFontMapper??new WindowsDefaultFonts()));
-    }
+        return doc.RenderPageTo(page, rect =>
+        {
+            var innerRenderer = new WpfRenderTarget(dc);
+            innerRenderer.SetBackgroundRect(rect);
+            return innerRenderer;
+        });
+   }
 }

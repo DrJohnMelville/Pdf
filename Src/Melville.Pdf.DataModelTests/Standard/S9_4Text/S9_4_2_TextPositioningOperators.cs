@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
@@ -28,7 +29,7 @@ public class S9_4_2_TextPositioningOperators
         targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
         SetupMockRealizedFont();
 
-        sut = new RenderEngine(pageMock.Object, targetMock.Object, new FontReader(new WindowsDefaultFonts()));
+        sut = new RenderEngine(pageMock.Object, targetMock.Object,new WindowsDefaultFonts(), new DocumentPartCache());
     }
 
     private void SetupMockRealizedFont()

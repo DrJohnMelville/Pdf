@@ -20,18 +20,11 @@ public readonly struct FontReader
     {
         this.defaultMapper = defaultMapper;
     }
-
-    public async ValueTask<IRealizedFont> DictionaryToRealizedFont(
-        PdfDictionary dict, double size)
-    {
-        return await FontFromDictionaryAsync(dict, size).CA();
-    }
-
+    
     public ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, double size) =>
         defaultMapper.MapDefaultFont(name, size);
 
-    private async ValueTask<IRealizedFont> FontFromDictionaryAsync(
-        PdfDictionary font, double size)
+    public async ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary font, double size)
     {
         var fontTypeKey = 
             (await font.GetOrDefaultAsync(KnownNames.Subtype, KnownNames.Type1).CA())
