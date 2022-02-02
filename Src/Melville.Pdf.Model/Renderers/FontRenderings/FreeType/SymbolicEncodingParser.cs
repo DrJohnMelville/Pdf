@@ -10,7 +10,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 public static class SymbolicEncodingParser
 {
-    public static async ValueTask<IGlyphMapping> ParseGlyphMapping(Face face, PdfObject encoding)
+    public static ValueTask<IGlyphMapping> ParseGlyphMapping(Face face, PdfObject encoding)
     {
         // if (encoding is PdfDictionary dict && dict.TryGetValue(KnownNames.Differences, out var arrTask) &&
         //     (await arrTask.CA()) is PdfArray arr)
@@ -19,7 +19,7 @@ public static class SymbolicEncodingParser
         // }
         
         face.SelectCharmap(Encoding.AppleRoman);
-        return new UnicodeGlyphMapping(face, new PassthroughMapping());
+        return new (new UnicodeGlyphMapping(face, new PassthroughMapping()));
     }
 
     // I think this is Unnecessary but it is possible I may find files that need the custom encoding

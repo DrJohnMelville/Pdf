@@ -18,13 +18,12 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
     {
     }
 
-    public void SetBackgroundRect(PdfRect rect, int width, int height)
+    public void SetBackgroundRect(PdfRect rect, int width, int height, in Matrix3x2 adjustOutput)
     {
         Target.Clear(SKColors.White);
-        MapUserSpaceToBitmapSpace(rect, width, height);
+        MapUserSpaceToBitmapSpace(rect, adjustOutput, width, height);
     }
 
-    #region Path and Transform state
 
     public void SaveTransformAndClip() => Target.Save();
 
@@ -32,16 +31,11 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 
     public override void Transform(in Matrix3x2 newTransform) => 
         Target.SetMatrix(State.Current().Transform());
-    #endregion
 
-    #region Path Building
-
+    
     public override IDrawTarget CreateDrawTarget() =>new SkiaDrawTarget(Target, State);
 
-    #endregion
     
-    #region Bitmap Rendering
-
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         using var skBitmap = ScreenFormatBitmap(bitmap);
@@ -56,6 +50,4 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
 
     private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap) => 
         bitmap.RenderPbgra((byte*)skBitmap.GetPixels().ToPointer());
-    #endregion
-    
 }

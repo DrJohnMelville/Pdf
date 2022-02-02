@@ -59,6 +59,8 @@ public abstract class PageTreeNodeChildCreator
 
     public void AddBox(BoxName name, in PdfRect rect) => MetaData.Add(name, rect.ToPdfArray);
 
+    public void AddRotate(int rotation) => MetaData.Add(KnownNames.Rotate, new PdfInteger(rotation));
+
     public PdfName AddStandardFont(
         string assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
         AddStandardFont(NameDirectory.Get(assignedName), baseFont, encoding);

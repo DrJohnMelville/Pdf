@@ -1,12 +1,6 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.DocumentRenderers;
-using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers;
-using Melville.Pdf.Model.Renderers.FontRenderings;
-using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
-using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp
@@ -25,13 +19,13 @@ namespace Melville.Pdf.SkiaSharp
         public static async ValueTask<SKSurface> ToSurface(DocumentRenderer doc, int page, int width = -1, int height = -1)
         {
             SKSurface surface = null!;
-            await doc.RenderPageTo(page, rect =>
+            await doc.RenderPageTo(page, (rect, adjustOutput) =>
             {
                 (width, height) = AdjustSize(rect, width, height);
                 surface = SKSurface.Create(new SKImageInfo(width, height));
 
                 var target = new SkiaRenderTarget(surface.Canvas);
-                target.SetBackgroundRect(rect, width, height);
+                target.SetBackgroundRect(rect, width, height, adjustOutput);
                 return target;
             }).CA();
             return surface;

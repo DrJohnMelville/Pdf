@@ -54,9 +54,11 @@ public abstract partial class RenderTargetBase<T>: IDrawTarget, IDisposable
         State.Dispose();
     }
 
-    protected void MapUserSpaceToBitmapSpace(PdfRect rect, double xPixels, double yPixels)
+    
+    protected void MapUserSpaceToBitmapSpace(in PdfRect rect, in Matrix3x2 adjustOutput, double xPixels, double yPixels)
     {
-        var xform = Matrix3x2.CreateTranslation((float)-rect.Left, (float)-rect.Bottom) *
+        var xform = adjustOutput *
+                    Matrix3x2.CreateTranslation((float)-rect.Left, (float)-rect.Bottom) *
                     Matrix3x2.CreateScale((float)(xPixels / rect.Width), (float)(-yPixels / rect.Height)) *
                     Matrix3x2.CreateTranslation(0, (float)yPixels);
         State.ModifyTransformMatrix(xform);

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Numerics;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -12,16 +14,30 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
 
     public static async ValueTask<PdfRect> CreateAsync(PdfArray array)
     {
-        if (array.Count != 4)
+        var nums = await array.AsDoublesAsync().CA();
+        return CreateRect(nums);
+    }
+
+    private static PdfRect CreateRect(in ReadOnlySpan<double> nums)
+    {
+        if (nums.Length != 4)
             throw new PdfParseException("Pdf Rectangle must have exactly 4 items.");
-        var (left,right) = MinMax((PdfNumber)await array[0].CA(), (PdfNumber)await array[2].CA());
-        var (bottom, top) = MinMax((PdfNumber)await array[1].CA(), (PdfNumber)await array[3].CA());
+        var (left, right) = MinMax(nums[0], nums[2]);
+        var (bottom, top) = MinMax(nums[1], nums[3]);
         return new PdfRect(left, bottom, right, top);
     }
 
-    private static (PdfNumber min, PdfNumber max) MinMax(PdfNumber a, PdfNumber b) => 
-        (a.DoubleValue > b.DoubleValue) ? (b, a) : (a, b);
+    private static (double min, double max) MinMax(double a, double b) => 
+        (a > b) ? (b, a) : (a, b);
 
     public double Width => Right - Left;
     public double Height => Top - Bottom;
+
+    public PdfRect Transform(in Matrix3x2 transform)
+    {
+        var ll = Vector2.Transform(new Vector2((float)Left, (float)Bottom), transform);
+        var ur = Vector2.Transform(new Vector2((float)Right, (float)Top), transform);
+        Span<double> nums = stackalloc double[] { ll.X, ll.Y, ur.X, ur.Y };
+        return CreateRect(nums);
+    }
 }

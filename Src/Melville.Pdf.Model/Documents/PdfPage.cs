@@ -25,4 +25,7 @@ public record class PdfPage(PdfDictionary LowLevel) : PdfPageParent(LowLevel)
             PdfArray array => new PdfArrayConcatStream(array),
             var x => new MemoryStream()
         };
+
+    public ValueTask<long> GetDefaultRotationAsync() => 
+        LowLevel.GetOrDefaultAsync(KnownNames.Rotate, 0);
 }

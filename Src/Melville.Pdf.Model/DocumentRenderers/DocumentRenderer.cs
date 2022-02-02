@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -27,12 +28,22 @@ public class DocumentRenderer
         TotalPages = totalPages;
     }
     
-    public async ValueTask RenderPageTo(int page, Func<PdfRect,IRenderTarget> target)
+    public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
         var pageStruct = await pageSource(page).CA();
         var cropRect = await GetCropDimensionsAsync(pageStruct).CA();
-        using var renderTarget = target(cropRect);
+        var rotation = CreateRotateMatrix( cropRect, await pageStruct.GetDefaultRotationAsync().CA());
+        
+        using var renderTarget = target(cropRect.Transform(rotation),rotation);
         await CreateRenderEngine(pageStruct, renderTarget).RunContentStream().CA();
+    }
+
+    private Matrix3x2 CreateRotateMatrix(PdfRect cropRect, long rotateBy)
+    {
+        var centerX = cropRect.Left + cropRect.Right / 2;
+        var centerY = cropRect.Top + cropRect.Bottom / 2;
+        return Matrix3x2.CreateRotation((float) (rotateBy * Math.PI / -180), 
+            new Vector2((float)centerX, (float)centerY));
     }
 
     private async ValueTask<PdfRect> GetCropDimensionsAsync(PdfPage pageStruct) => 

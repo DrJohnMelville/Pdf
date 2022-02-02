@@ -1,11 +1,9 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
-using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf;
 
@@ -54,13 +52,13 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderT
 
     #endregion
 
-    public void SetBackgroundRect(PdfRect rect)
+    public void SetBackgroundRect(PdfRect rect, in Matrix3x2 transform)
     {
         var clipRectangle = new Rect(0,0, rect.Width, rect.Height);
         Target.DrawRectangle(Brushes.White, null, clipRectangle);
         Target.PushClip(new RectangleGeometry(clipRectangle));
         // setup the userSpace to device space transform
-        MapUserSpaceToBitmapSpace(rect, rect.Width, rect.Height);
+        MapUserSpaceToBitmapSpace(rect, transform, rect.Width, rect.Height);
     }
     
     public override IDrawTarget CreateDrawTarget() => new WpfDrawTarget(Target, State);

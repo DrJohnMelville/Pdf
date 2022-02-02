@@ -64,10 +64,10 @@ public class RenderToDrawingGroup
     {
 
         AwaitConfig.ResumeOnCalledThread(true);
-        return doc.RenderPageTo(page, rect =>
+        return doc.RenderPageTo(page, (rect, preTransform) =>
         {
             var innerRenderer = new WpfRenderTarget(dc);
-            innerRenderer.SetBackgroundRect(rect);
+            innerRenderer.SetBackgroundRect(rect, preTransform);
             return innerRenderer;
         });
    }
