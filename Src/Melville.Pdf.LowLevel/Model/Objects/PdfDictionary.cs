@@ -1,14 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects.StreamDataSources;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
 public class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>
 {
+    public static readonly PdfStream Empty =
+        new PdfStream(new LiteralStreamSource(Array.Empty<byte>(), StreamFormat.DiskRepresentation),
+            new Dictionary<PdfName, PdfObject>());
+    
     public IReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
 
     public PdfDictionary(IReadOnlyDictionary<PdfName, PdfObject> rawItems)

@@ -28,27 +28,12 @@ public class FreeTypeFont : IRealizedFont, IDisposable
     private IByteToUnicodeMapping? Mapping { get; }
     private IGlyphMapping? glyphMap;
     
-    public FreeTypeFont(Face face, IByteToUnicodeMapping? mapping, IFontWidthComputer? fontWidthComputer)
+    public FreeTypeFont(Face face, IByteToUnicodeMapping? mapping, IFontWidthComputer? fontWidthComputer, IGlyphMapping? glyphMap)
     {
         this.fontWidthComputer = fontWidthComputer ?? new NullFontWidthComputer();
         Face = face;
         Mapping = mapping;
-    }
-
-    public async ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor)
-    {
-        if (fontDescriptor is not null && 
-            ((await fontDescriptor.GetOrDefaultAsync(KnownNames.Flags, 0).CA()) & 4) == 4)
-        {
-            glyphMap = await SymbolicEncodingParser.ParseGlyphMapping(Face, encoding)
-                .CA();
-        }
-        else
-        {
-            glyphMap = new UnicodeGlyphMapping(Face,
-                Mapping ?? await NonsymbolicEncodingParser.InterpretEncodingValue(encoding)
-                    .CA());
-        }
+        this.glyphMap = glyphMap;
     }
 
     public void Dispose() => Face.Dispose();

@@ -14,7 +14,6 @@ public interface IFontWriteOperation
 public interface IRealizedFont
 {
     IFontWriteOperation BeginFontWrite(IFontTarget target);
-    ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor);
 }
 
 public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
@@ -29,9 +28,6 @@ public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
     }
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => this;
-
-    public ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor) =>
-        ValueTask.CompletedTask;
 }
 
 public static class FontWriteOperationsImpl

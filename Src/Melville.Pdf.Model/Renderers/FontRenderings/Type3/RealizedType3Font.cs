@@ -35,9 +35,6 @@ public class RealizedType3Font : IRealizedFont
             characters[b - firstCharacter].CreateReader(), fontMatrix );
     }
 
-    public ValueTask SetGlyphEncoding(PdfObject encoding, PdfDictionary? fontDescriptor) => 
-        ValueTask.CompletedTask;
-
     private class Type3Writer: IFontWriteOperation
     {
         private readonly RealizedType3Font parent;

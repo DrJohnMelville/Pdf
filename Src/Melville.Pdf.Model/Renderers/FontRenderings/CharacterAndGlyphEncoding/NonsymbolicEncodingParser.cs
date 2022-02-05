@@ -9,11 +9,11 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 
 public static class NonsymbolicEncodingParser
 {
-    public static ValueTask<IByteToUnicodeMapping> InterpretEncodingValue(PdfObject encoding) =>
-        (encoding, encoding.GetHashCode()) switch
+    public static ValueTask<IByteToUnicodeMapping> InterpretEncodingValue(PdfObject? encoding) =>
+        (encoding, encoding?.GetHashCode()) switch
         {
+            (null,_)  => new (CharacterEncodings.Standard),
             (_, KnownNameKeys.WinAnsiEncoding) => new(CharacterEncodings.WinAnsi),
-            (var x,_) when x == PdfTokenValues.Null => new (CharacterEncodings.Standard),
             (_, KnownNameKeys.StandardEncoding) => new(CharacterEncodings.Standard),
             (_, KnownNameKeys.MacRomanEncoding) => new(CharacterEncodings.MacRoman),
             (_, KnownNameKeys.PdfDocEncoding) => new(CharacterEncodings.Pdf),

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -310,7 +311,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
                         Math.Floor(size)), 
                         r=> new FontReader(defaultFontMapper).DictionaryToRealizedFont(r.Dictionary,size)).CA()):
                 await new FontReader(defaultFontMapper).
-                    NameToRealizedFont(font, new FreeTypeFontFactory(size, null, null)).CA()
+                    NameToRealizedFont(font, new FreeTypeFontFactory(size, null, 
+                        new PdfFont(PdfDictionary.Empty))).CA()
             );
     }
 

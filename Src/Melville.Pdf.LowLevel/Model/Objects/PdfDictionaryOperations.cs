@@ -17,6 +17,10 @@ public static class PdfDictionaryOperations
     public static async ValueTask<PdfObject> GetOrNullAsync(this PdfDictionary dict, PdfName name) =>
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is {} definiteObj? definiteObj: PdfTokenValues.Null;
+    public static async ValueTask<T?> GetOrNullAsync<T>(this PdfDictionary dict, PdfName name) 
+        where T:PdfObject=>
+        dict.TryGetValue(name, out var obj) && 
+        await obj.CA() is T definiteObj? definiteObj: null;
     public static async ValueTask<long> GetOrDefaultAsync(
         this PdfDictionary dict, PdfName name, long defaultValue) =>
         dict.TryGetValue(name, out var obj) && 

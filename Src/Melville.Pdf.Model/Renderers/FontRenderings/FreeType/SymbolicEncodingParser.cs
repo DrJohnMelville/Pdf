@@ -10,7 +10,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 public static class SymbolicEncodingParser
 {
-    public static ValueTask<IGlyphMapping> ParseGlyphMapping(Face face, PdfObject encoding)
+    public static ValueTask<IGlyphMapping> ParseGlyphMapping(Face face, PdfObject? encoding)
     {
         // if (encoding is PdfDictionary dict && dict.TryGetValue(KnownNames.Differences, out var arrTask) &&
         //     (await arrTask.CA()) is PdfArray arr)

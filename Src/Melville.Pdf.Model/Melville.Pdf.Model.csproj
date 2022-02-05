@@ -32,8 +32,4 @@
       <None Remove="Renderers\Colors\Profiles\D65_XYZ.icc" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="FontMappings" />
-    </ItemGroup>
-
 </Project>
