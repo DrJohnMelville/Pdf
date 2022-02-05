@@ -21,8 +21,8 @@ public readonly struct FontReader
         this.defaultMapper = defaultMapper;
     }
     
-    public ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, double size) =>
-        defaultMapper.MapDefaultFont(name, size);
+    public ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, FreeTypeFontFactory factory) =>
+        defaultMapper.MapDefaultFont(name, factory);
 
     public async ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary font, double size)
     {
@@ -36,25 +36,27 @@ public readonly struct FontReader
         PdfObject encoding = await font.GetOrNullAsync(KnownNames.Encoding).CA();
         PdfDictionary? descriptor = font.TryGetValue(KnownNames.FontDescriptor, out var descTask) ?
              (await descTask) as PdfDictionary: null;
-        
-        var ret = await CreateRealizedFont(font, size, descriptor, fontTypeKey).CA();
+
+        var fontFactory = new FreeTypeFontFactory(size, null, null);
+        var ret = await CreateRealizedFont(font, fontFactory, descriptor, fontTypeKey).CA();
+        #warning setGlyphEncoding shoud move into the freetypefontfactory
         await ret.SetGlyphEncoding(encoding, descriptor).CA();
         return ret;
     }
 
-    private async Task<IRealizedFont> CreateRealizedFont(PdfDictionary font, double size, PdfDictionary? descriptor, int fontTypeKey) =>
+    private async Task<IRealizedFont> CreateRealizedFont(PdfDictionary font, FreeTypeFontFactory factory, PdfDictionary? descriptor, int fontTypeKey) =>
         await (
                 await StreamFromDescriptorAsync(descriptor).CA() is { } fontAsStream ?
-                    FreeTypeFontFactory.FromStream(fontAsStream, size, null) :
-                    SystemFontByName(font, size, fontTypeKey)
+                    factory.FromStream(fontAsStream) :
+                    SystemFontByName(font, factory, fontTypeKey)
               ).CA();
 
-    private async ValueTask<IRealizedFont> SystemFontByName(PdfDictionary font, double size, int fontTypeKey)
+    private async ValueTask<IRealizedFont> SystemFontByName(PdfDictionary font, FreeTypeFontFactory factory, int fontTypeKey)
     {
         var baseFontName = await
             font.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica).CA();
 
-        return await defaultMapper.MapDefaultFont(ComputeOsFontName(fontTypeKey, baseFontName), size)
+        return await defaultMapper.MapDefaultFont(ComputeOsFontName(fontTypeKey, baseFontName), factory)
             .CA();
     }
 

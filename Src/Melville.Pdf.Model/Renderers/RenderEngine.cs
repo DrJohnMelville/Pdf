@@ -19,6 +19,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -308,7 +309,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
                 BlockFontDispose.AsNonDisposableTypeface(await cache.Get(new FontRecord(fontDic, 
                         Math.Floor(size)), 
                         r=> new FontReader(defaultFontMapper).DictionaryToRealizedFont(r.Dictionary,size)).CA()):
-                await new FontReader(defaultFontMapper).NameToRealizedFont(font, size).CA()
+                await new FontReader(defaultFontMapper).
+                    NameToRealizedFont(font, new FreeTypeFontFactory(size, null, null)).CA()
             );
     }
 
@@ -396,7 +398,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             switch (value.Type)
             {
                 case ContentStreamValueType.Number:
-                    var delta = value.Floating / 1000;
+                    var delta = value.Floating / 1000.0;
                     UpdateTextPosition(-delta, delta);
                     break;
                 case ContentStreamValueType.Memory:

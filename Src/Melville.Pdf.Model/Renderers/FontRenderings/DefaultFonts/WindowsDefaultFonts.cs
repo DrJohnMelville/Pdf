@@ -18,24 +18,27 @@ public class WindowsDefaultFonts : IDefaultFontMapper
     private static readonly byte[] SegoeUISymbol =
         { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
 
-    public ValueTask<IRealizedFont>  MapDefaultFont(PdfName font, double size) =>
-        font.GetHashCode() switch
+    public ValueTask<IRealizedFont>  MapDefaultFont(PdfName font, FreeTypeFontFactory factory)
+    {
+        return font.GetHashCode() switch
         {
-            KnownNameKeys.Courier => FreeTypeFontFactory.SystemFont(CourierNew, size, null, false, false),
-            KnownNameKeys.CourierBold => FreeTypeFontFactory.SystemFont(CourierNew, size, null, true, false),
-            KnownNameKeys.CourierOblique => FreeTypeFontFactory.SystemFont(CourierNew, size, null, false, true),
-            KnownNameKeys.CourierBoldOblique =>FreeTypeFontFactory.SystemFont(CourierNew, size, null, true, true),
-            KnownNameKeys.Helvetica => FreeTypeFontFactory.SystemFont(Arial, size, null, false, false),
-            KnownNameKeys.HelveticaBold => FreeTypeFontFactory.SystemFont(Arial, size, null, true, false),
-            KnownNameKeys.HelveticaOblique => FreeTypeFontFactory.SystemFont(Arial, size, null, false, true),
-            KnownNameKeys.HelveticaBoldOblique => FreeTypeFontFactory.SystemFont(Arial, size, null, true, true),
-            KnownNameKeys.TimesRoman => FreeTypeFontFactory.SystemFont(TimesNewRoman, size, null, false, false),
-            KnownNameKeys.TimesBold => FreeTypeFontFactory.SystemFont(TimesNewRoman, size, null, true, false),
-            KnownNameKeys.TimesOblique => FreeTypeFontFactory.SystemFont(TimesNewRoman, size, null, false, true),
-            KnownNameKeys.TimesBoldOblique => FreeTypeFontFactory.SystemFont(TimesNewRoman, size, null, true, true),
-            KnownNameKeys.Symbol => FreeTypeFontFactory.SystemFont(SegoeUISymbol, size, CharacterEncodings.Symbol, false, false),
-            KnownNameKeys.ZapfDingbats => FreeTypeFontFactory.SystemFont(
-                SegoeUISymbol, size, ZapfDignbatsMapping.Instance, false, false),
-            _ => FreeTypeFontFactory.SystemFont(font.Bytes, size, null, false, false)
+            KnownNameKeys.Courier => factory.SystemFont(CourierNew, false, false),
+            KnownNameKeys.CourierBold => factory.SystemFont(CourierNew, true, false),
+            KnownNameKeys.CourierOblique => factory.SystemFont(CourierNew, false, true),
+            KnownNameKeys.CourierBoldOblique => factory.SystemFont(CourierNew, true, true),
+            KnownNameKeys.Helvetica => factory.SystemFont(Arial, false, false),
+            KnownNameKeys.HelveticaBold => factory.SystemFont(Arial, true, false),
+            KnownNameKeys.HelveticaOblique => factory.SystemFont(Arial, false, true),
+            KnownNameKeys.HelveticaBoldOblique => factory.SystemFont(Arial, true, true),
+            KnownNameKeys.TimesRoman => factory.SystemFont(TimesNewRoman, false, false),
+            KnownNameKeys.TimesBold => factory.SystemFont(TimesNewRoman, true, false),
+            KnownNameKeys.TimesOblique => factory.SystemFont(TimesNewRoman, false, true),
+            KnownNameKeys.TimesBoldOblique => factory.SystemFont(TimesNewRoman, true, true),
+            KnownNameKeys.Symbol => (factory with{Mapping =  CharacterEncodings.Symbol}).SystemFont(SegoeUISymbol,
+                false, false),
+            KnownNameKeys.ZapfDingbats => (factory with{Mapping =  ZapfDignbatsMapping.Instance})
+                .SystemFont(SegoeUISymbol, false, false),
+            _ => factory.SystemFont(font.Bytes, false, false)
         };
+    }
 }

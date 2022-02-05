@@ -1,57 +1,50 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public class FreeTypeFontFactory
+public readonly struct FreeTypeFontFactory
 {
-    private static readonly Library sharpFontLibrary = new Library();
-    
-    private static FontLibrary? instance;
+    private readonly double size;
+    public IByteToUnicodeMapping Mapping { get; init; }
+    private readonly IFontWidthComputer? widthComputer;
 
-    public static FontLibrary Instance() =>
-        instance ?? SetFontDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
-
-    public static FontLibrary SetFontDirectory(string fontFolder)
+    public FreeTypeFontFactory(double size, IByteToUnicodeMapping? mapping, IFontWidthComputer? widthComputer)
     {
-        instance = new FontLibraryBuilder(sharpFontLibrary).BuildFrom(fontFolder);
-        return instance;
+        this.size = size;
+        this.Mapping = mapping;
+        this.widthComputer = widthComputer;
     }
 
-    public static ValueTask<IRealizedFont> SystemFont(byte[] name, double size,
-        IByteToUnicodeMapping? mapping, bool bold, bool oblique)
+    public ValueTask<IRealizedFont> SystemFont(byte[] name, bool bold, bool oblique)
     {
-        var fontRef = Instance().FontFromName(name, bold, oblique);
-        var face = sharpFontLibrary.NewFace(fontRef.FileName, fontRef.Index);
-        return new(FontFromFace(size, mapping, face));
+        var fontRef = GlobalFreeTypeResources.SystemFontLibrary().FontFromName(name, bold, oblique);
+        var face = GlobalFreeTypeResources.SharpFontLibrary.NewFace(fontRef.FileName, fontRef.Index);
+        return new(FontFromFace(face));
     }
     
-    public static async ValueTask<IRealizedFont> FromStream(PdfStream pdfStream, double size,
-        IByteToUnicodeMapping? mapping)
+    public async ValueTask<IRealizedFont> FromStream(PdfStream pdfStream)
     {
         var source = await pdfStream.StreamContentAsync().CA();
-        return await FromCSharpStream(size, mapping, source).CA();
+        return await FromCSharpStream(source).CA();
     }
 
-    private static async ValueTask<IRealizedFont> FromCSharpStream(double size, IByteToUnicodeMapping? mapping,
-        Stream source)
+    private async ValueTask<IRealizedFont> FromCSharpStream(Stream source)
     {
-        var face = sharpFontLibrary.NewMemoryFace(await UncompressToBufferAsync(source).CA(), 0);
-        return FontFromFace(size, mapping, face);
+        var face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(await UncompressToBufferAsync(source).CA(), 0);
+        return FontFromFace(face);
     }
 
-    private static IRealizedFont FontFromFace(double size, IByteToUnicodeMapping? mapping, Face face)
+    private IRealizedFont FontFromFace(Face face)
     {
         face.SetCharSize(0, 64 * size, 0, 0);
-        return new FreeTypeFont(face, mapping);
+        return new FreeTypeFont(face, Mapping, widthComputer);
     }
 
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)

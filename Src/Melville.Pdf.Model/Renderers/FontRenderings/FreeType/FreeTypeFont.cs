@@ -11,14 +11,26 @@ using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
+public interface IFontWidthComputer
+{
+    double GetWidth(byte character, double defaultWidth);
+}
+
+public class NullFontWidthComputer : IFontWidthComputer
+{
+    public double GetWidth(byte character, double defaultWidth) => defaultWidth;
+}
+
 public class FreeTypeFont : IRealizedFont, IDisposable
 {
+    private readonly IFontWidthComputer fontWidthComputer;
     public Face Face { get; }
     private IByteToUnicodeMapping? Mapping { get; }
     private IGlyphMapping? glyphMap;
     
-    public FreeTypeFont(Face face, IByteToUnicodeMapping? mapping)
+    public FreeTypeFont(Face face, IByteToUnicodeMapping? mapping, IFontWidthComputer? fontWidthComputer)
     {
+        this.fontWidthComputer = fontWidthComputer ?? new NullFontWidthComputer();
         Face = face;
         Mapping = mapping;
     }
@@ -49,7 +61,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
         if (glyphMap is null) return (0,0);
         Face.LoadGlyph(glyphMap.SelectGlyph(b), LoadFlags.NoBitmap, LoadTarget.Normal);
         Face.Glyph.Outline.Decompose(nativeTarget, IntPtr.Zero);
-        return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0);
+        return (fontWidthComputer.GetWidth(b, Face.Glyph.Advance.X)/64.0, Face.Glyph.Advance.Y/64.0);
     }
 
     private class FreeTypeWriteOperation: IFontWriteOperation

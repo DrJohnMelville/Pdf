@@ -28,7 +28,7 @@ public class RealizedType3Font : IRealizedFont
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new Type3Writer(this, target);
 
-    public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b,
+    private ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b,
         Matrix3x2 charMatrix, IFontTarget target)
     {
         return target.RenderType3Character(
