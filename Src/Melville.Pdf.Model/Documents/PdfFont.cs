@@ -51,6 +51,15 @@ public readonly struct PdfFont
     public ValueTask<PdfName> BaseFontNameAsync() =>
         LowLevel.GetOrDefaultAsync(KnownNames.BaseFont, KnownNames.Helvetica);
 
+    public async ValueTask<byte> FirstCharAsync() =>
+        (byte)await LowLevel.GetOrDefaultAsync(KnownNames.FirstChar, 0).CA();
+
+    public async ValueTask<double[]?> WidthsArrayAsync() =>
+        (await LowLevel.GetOrNullAsync<PdfArray>(KnownNames.Widths).CA()) is { } widthArray
+            ? await widthArray.AsDoublesAsync().CA()
+            : null;
+    
+
     public async ValueTask<PdfName> OsFontNameAsync() =>
         ComputeOsFontName((await SubTypeAsync().CA()).GetHashCode(), await BaseFontNameAsync().CA());
     

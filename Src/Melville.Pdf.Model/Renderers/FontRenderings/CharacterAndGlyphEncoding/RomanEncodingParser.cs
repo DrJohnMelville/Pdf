@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 
-public static class NonsymbolicEncodingParser
+public static class RomanEncodingParser
 {
     public static ValueTask<IByteToUnicodeMapping> InterpretEncodingValue(PdfObject? encoding) =>
         (encoding, encoding?.GetHashCode()) switch
