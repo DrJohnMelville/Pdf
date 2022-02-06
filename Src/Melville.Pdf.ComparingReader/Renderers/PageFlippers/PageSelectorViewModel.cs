@@ -12,7 +12,7 @@ public interface IPageSelector
     void ToEnd();
     void Decrement();
     void ToStart();
-    public void ToStartSilent();
+    public void SetPageSilent(int newPageNumber);
 }
 public partial class PageSelectorViewModel: IPageSelector
 {
@@ -31,5 +31,5 @@ public partial class PageSelectorViewModel: IPageSelector
     [AutoNotify] public string DisplayString => $"{Page} of {MaxPage}";
     [AutoNotify] public bool CanPrev => Page > 1;
     [AutoNotify] public bool CanNext => Page < MaxPage;
-    public void ToStartSilent() => page = 1;
+    public void SetPageSilent(int newPageNumber) => page = newPageNumber;
 }

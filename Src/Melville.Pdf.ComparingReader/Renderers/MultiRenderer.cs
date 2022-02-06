@@ -4,7 +4,6 @@ using System.IO;
 using Melville.INPC;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.ComparingReader.Renderers;
 public interface IRenderer
@@ -18,14 +17,16 @@ public interface IRenderer
 public interface IMultiRenderer
 {
     object RenderTarget { get; }
-    void SetTarget(MultiBufferStream pdfBits);
+    void SetTarget(MultiBufferStream pdfBits, int showPage = 1);
+    Stream GetCurrentTargetReader();
 }
 
 public abstract class MultiRenderer : IMultiRenderer
 {
     private readonly IPageSelector pageSelector;
     public IReadOnlyList<IRenderer> Renderers { get; }
-    
+    private MultiBufferStream? currentTarget;
+
     protected MultiRenderer(IReadOnlyList<IRenderer> renderers, IPageSelector pageSelector)
     {
         this.pageSelector = pageSelector;
@@ -43,12 +44,15 @@ public abstract class MultiRenderer : IMultiRenderer
 
     public object RenderTarget => this;
 
-    public void SetTarget(MultiBufferStream pdfBits)
+    public void SetTarget(MultiBufferStream pdfBits, int showPage)
     {
-        pageSelector.ToStartSilent();
+        currentTarget = pdfBits;
+        pageSelector.SetPageSilent(showPage);
         foreach (var renderer in Renderers)
         {
             renderer.SetTarget(pdfBits.CreateReader());
         }
     }
+
+    public Stream GetCurrentTargetReader() => currentTarget?.CreateReader() as Stream ?? new MemoryStream();
 }

@@ -21,7 +21,8 @@ MainWindow => Melville.FileSystem.*
 
 REPL => Renderers
 REPL => Melville.Pdf.ReferenceDocuments.*
-REPL => Melville.Pdf.LowLevel.Writers.*
+REPL => Melville.Pdf.LowLevel.*
+REPL => Melville.Pdf.Model.*
 
 Melville.Pdf.ComparingReader.Viewers.* => Renderers
 Melville.Pdf.ComparingReader.Viewers.* => Melville.Pdf.LowLevel.Parsing.ParserContext.*

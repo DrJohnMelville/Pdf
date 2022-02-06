@@ -15,7 +15,7 @@ public abstract class Card3x5: CreatePdfParser
         var docCreator = new PdfDocumentCreator();
         var page = docCreator.Pages.CreatePage();
         page.AddBox(BoxName.CropBox, new PdfRect(0,0, 5*72, 3*72));
-        SetPageProperties(page);
+        await SetPagePropertiesAsync(page);
         await page.AddToContentStreamAsync(CreateContentStream);
         await docCreator.CreateDocument().WriteToAsync(target);
     }
@@ -25,6 +25,11 @@ public abstract class Card3x5: CreatePdfParser
         return DoPaintingAsync(csw);
     }
     
+    protected virtual ValueTask SetPagePropertiesAsync(PageCreator page)
+    {
+        SetPageProperties(page);
+        return ValueTask.CompletedTask;
+    }
     protected virtual void SetPageProperties(PageCreator page)
     {
     }

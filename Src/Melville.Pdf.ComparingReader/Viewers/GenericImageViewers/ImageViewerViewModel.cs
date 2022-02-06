@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
+using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.DocumentRenderers;
 using Melville.Pdf.Model.Documents;
@@ -69,19 +70,21 @@ public partial class ImageViewerViewModel : IRenderer
     [AutoNotify] private string? exception;
     private readonly IPasswordSource passwords;
     private readonly IImageRenderer renderer;
+    private readonly IPageSelector pageSelector;
     private bool fileParseSucceeded = false;
 
-    public ImageViewerViewModel(IPasswordSource passwords, IImageRenderer renderer, string displayName)
+    public ImageViewerViewModel(IPasswordSource passwords, IImageRenderer renderer, string displayName, IPageSelector pageSelector)
     {
         this.passwords = passwords;
         this.renderer = renderer;
         DisplayName = displayName;
+        this.pageSelector = pageSelector;
     }
     
     public async void SetTarget(Stream pdfBits)
     {
         fileParseSucceeded = await LoadStream(pdfBits);
-        SetPage(1);
+        SetPage(pageSelector.Page);
     }
 
     private async ValueTask<bool> LoadStream(Stream pdfBits)

@@ -13,8 +13,10 @@ using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
+using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.ComparingReader.REPLs;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.ComparingReader.MainWindow;
 
@@ -52,7 +54,7 @@ public partial class MainWindowViewModel
     private ReferenceDocumentLeaf? SearchRecusive(IList<ReferenceDocumentNode> nodes, string? commandLineTag)
     {
         if (commandLineTag == null) return null;
-        return nodes.Select(i => SearchRecusive(i, commandLineTag)).Where(i => i != null).FirstOrDefault();
+        return nodes.Select(i => SearchRecusive(i, commandLineTag)).FirstOrDefault(i => i != null);
     }
 
     private ReferenceDocumentLeaf? SearchRecusive(ReferenceDocumentNode node, string commandLineTag)
@@ -65,9 +67,11 @@ public partial class MainWindowViewModel
         };
     }
 
-    public void ShowPdfRepl([FromServices] ReplViewModel model,
-        [FromServices] Func<object, IRootNavigationWindow> factory) =>
-        factory(model).Show();
+    public async void ShowPdfRepl([FromServices] ReplViewModelFactory modelFactory,
+        [FromServices] Func<object, IRootNavigationWindow> windowFactory)
+    {
+        windowFactory(await modelFactory.Create()).Show();
+    }
 
     public async Task LoadFile([FromServices] IOpenSaveFile fileSource)
     {
