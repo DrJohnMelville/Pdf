@@ -34,7 +34,8 @@ public class S9_4_2_TextPositioningOperators
 
     private void SetupMockRealizedFont()
     {
-        fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<byte>(), It.IsAny<Matrix3x2>())).Returns( ValueTask.FromResult((10.0, 12.0)));
+        fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<ReadOnlyMemory<byte>>(), It.IsAny<Matrix3x2>()))
+            .Returns( ValueTask.FromResult((10.0, 12.0, 1)));
         fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()));
         rf.Setup(i => i.BeginFontWrite(It.IsAny<IFontTarget>())).Returns(fw.Object);
         state.CurrentState().SetTypeface(rf.Object);
@@ -129,13 +130,15 @@ public class S9_4_2_TextPositioningOperators
     }
 
     [Theory]
-    [InlineData(100,9)]
-    [InlineData(50,4.5)]
-    [InlineData(1000,90)]
-    public void ShowSpacedStream(double horizontalScale, float xPosition)
+    [InlineData(100,9, 1)]
+    [InlineData(100,8, 2)]
+    [InlineData(50,4.5, 1)]
+    [InlineData(1000,90, 1)]
+    public async Task ShowSpacedStream(double horizontalScale, float xPosition, int fontSize)
     {
         sut.SetHorizontalTextScaling(horizontalScale);
-        sut.ShowSpacedString(
+        await state.CurrentState().SetFont(KnownNames.Helvetica, fontSize); 
+        await sut.ShowSpacedString(
             new []
             {
                 new ContentStreamValueUnion("e".AsExtendedAsciiBytes()),
