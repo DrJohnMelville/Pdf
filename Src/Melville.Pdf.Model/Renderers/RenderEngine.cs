@@ -314,6 +314,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
                     NameToRealizedFont(font, new FreeTypeFontFactory(size, null, 
                         new PdfFont(PdfDictionary.Empty))).CA()
             );
+        await StateOps.CurrentState().SetFont(font,size).CA();
     }
 
     private record FontRecord(PdfDictionary Dictionary, double Size);
@@ -400,7 +401,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             switch (value.Type)
             {
                 case ContentStreamValueType.Number:
-                    var delta = value.Floating / 1000.0;
+                    var delta = StateOps.CurrentState().FontSize * value.Floating / 1000.0;
                     UpdateTextPosition(-delta, delta);
                     break;
                 case ContentStreamValueType.Memory:

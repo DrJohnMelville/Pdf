@@ -59,6 +59,7 @@ public partial class GraphicsState: IGraphiscState
     [MacroItem("double", "HorizontalTextScale", "100.0")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
     [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
+    [MacroItem("double", "FontSize", "0.0")]
     [MacroItem("IByteToUnicodeMapping", "ByteMapper", "CharacterEncodings.Standard")]
 
     // code
@@ -156,7 +157,7 @@ public partial class GraphicsState: IGraphiscState
     public void SetTextLeading(double value) => TextLeading = value;
     public ValueTask SetFont(PdfName font, double size)
     {
-        Debug.Assert(false, "The render engine should have handled this by this point");
+        FontSize = size;
         return ValueTask.CompletedTask;
     }
 
