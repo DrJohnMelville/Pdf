@@ -176,3 +176,11 @@ RenderingTest.cs_wpf-MacExpertCharSet|3607068759
 RenderingTest.cs_Skia-MacExpertCharSet|317535312
 RenderingTest.cs_wpf-EncodingWithDiferences|3138738070
 RenderingTest.cs_Skia-EncodingWithDiferences|2906823799
+RenderingTest.cs_wpf-Rotate0|630456576
+RenderingTest.cs_wpf-Rotate90|2768721656
+RenderingTest.cs_wpf-Rotate180|3488542910
+RenderingTest.cs_wpf-Rotate270|513323802
+RenderingTest.cs_Skia-Rotate0|1768461071
+RenderingTest.cs_Skia-Rotate90|94766907
+RenderingTest.cs_Skia-Rotate180|2269924571
+RenderingTest.cs_Skia-Rotate270|2733246247
