@@ -21,12 +21,18 @@ public partial class PagePartViewModel: DocumentPart
 
     private async void RenderPage()
     {
-        var drawingGroup = await new RenderToDrawingGroup().Render(
-            DocumentRendererFactory.CreateRenderer(page, new WindowsDefaultFonts()), 0);
-        drawingGroup.Freeze();
-        var image = new DrawingImage(drawingGroup);
-        image.Freeze();
-        RenderedPage =image;
+        try
+        {
+            var drawingGroup = await new RenderToDrawingGroup().Render(
+                DocumentRendererFactory.CreateRenderer(page, new WindowsDefaultFonts()), 0);
+            drawingGroup.Freeze();
+            var image = new DrawingImage(drawingGroup);
+            image.Freeze();
+            RenderedPage =image;
+        }
+        catch (Exception )
+        {
+        }
     }
 
 

@@ -54,10 +54,15 @@ public readonly struct FreeTypeFontFactory
         (await font.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic)
             ? await
                 SymbolicEncodingParser.ParseGlyphMapping(face, await font.EncodingAsync().CA()).CA()
-            : new UnicodeGlyphMapping(face,
-                Mapping ??
-                await RomanEncodingParser.InterpretEncodingValue(
-                    await font.EncodingAsync().CA()).CA());
+            : await RomanGlyphMapping(face).CA();
+
+    private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face)
+    {
+        var encoding = await font.EncodingAsync().CA();
+        
+        return new UnicodeGlyphMapping(face,
+            Mapping ?? await RomanEncodingParser.InterpretEncodingValue(encoding).CA());
+    }
 
 
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)

@@ -1,14 +1,14 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
 public interface IFontWriteOperation
 {
-    ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 textMatrix);
+    ValueTask<(double width, double height, int charsConsumed)> AddGlyphToCurrentString(ReadOnlyMemory<byte> input, Matrix3x2 textMatrix);
     void RenderCurrentString(bool stroke, bool fill, bool clip);
 }
 public interface IRealizedFont
@@ -21,7 +21,8 @@ public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
     public static readonly NullRealizedFont Instance = new();
 
     private NullRealizedFont() { }
-    public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 matrix) => new((0.0, 0.0));
+    public ValueTask<(double width, double height, int charsConsumed)> AddGlyphToCurrentString(
+        ReadOnlyMemory<byte> input, Matrix3x2 textMatrix) => new((0.0, 0.0, 1));
 
     public void RenderCurrentString(bool stroke, bool fill, bool clip)
     {

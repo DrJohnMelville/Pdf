@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Parsing.SpanAndMemory;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using SharpFont;
@@ -25,12 +26,14 @@ public class FreeTypeFont : IRealizedFont, IDisposable
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
     
-    private (double width, double height) RenderByte(OutlineFuncs nativeTarget, byte b)
+    private (double width, double height, int charsConsumed) RenderByte
+        (OutlineFuncs nativeTarget, ReadOnlyMemory<byte> input)
     {
-        if (glyphMap is null) return (0,0);
-        Face.LoadGlyph(glyphMap.SelectGlyph(b), LoadFlags.NoBitmap, LoadTarget.Normal);
+        if (glyphMap is null) return (0,0, 1);
+        var (glyph, bytesConsumed) = glyphMap.SelectGlyph(input.Span);
+        Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
         Face.Glyph.Outline.Decompose(nativeTarget, IntPtr.Zero);
-        return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0);
+        return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0, bytesConsumed);
     }
 
     private class FreeTypeWriteOperation: IFontWriteOperation
@@ -46,11 +49,12 @@ public class FreeTypeFont : IRealizedFont, IDisposable
             nativeTarget = new FreeTypeOutlineWriter(this.target).DrawHandle();
         }
 
-        public ValueTask<(double width, double height)> AddGlyphToCurrentString(byte b, Matrix3x2 textMatrix)
+        public ValueTask<(double width, double height, int charsConsumed)> AddGlyphToCurrentString(
+            ReadOnlyMemory<byte> input, Matrix3x2 textMatrix)
         {
             float pixelSize = 16;
             target.SetDrawingTransform(Matrix3x2.CreateScale(pixelSize)*textMatrix);
-            return new (parent.RenderByte(nativeTarget, b));
+            return new (parent.RenderByte(nativeTarget, input));
         }
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip)

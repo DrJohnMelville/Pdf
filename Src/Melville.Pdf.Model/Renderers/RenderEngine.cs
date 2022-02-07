@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.SpanAndMemory;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -40,8 +40,6 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         this.cache = cache;
     }
     
-    [DelegateTo]
-    private IMarkedContentCSOperations Marked => throw new NotImplementedException("Marked Operations not implemented");
     [DelegateTo]
     private ICompatibilityOperations Compat => 
         throw new NotImplementedException("Compatibility Operations not implemented");
@@ -322,11 +320,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
         var writer = StateOps.CurrentState().Typeface.BeginFontWrite(this);
-        for (int i = 0; i < decodedString.Length; i++)
+        var currentInput = decodedString;
+        while (currentInput.Length > 0)
         {
-            var character = GetAt(decodedString,  i);
-            var (w, h) = await writer.AddGlyphToCurrentString(character, CharacterPositionMatrix()).CA();
-            AdjustTextPositionForCharacter(w, h, character);
+            var (w, h, bytesUsed) = await writer.AddGlyphToCurrentString(currentInput, CharacterPositionMatrix()).CA();
+            AdjustTextPositionForCharacter(w, h, currentInput.At(0));
+            currentInput = currentInput[bytesUsed..];
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
     }
@@ -460,6 +459,24 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         lastUrx = urX;
         lastUry = urY;
     }
+
+    #endregion
+
+    #region Marked Operations
+
+    public void MarkedContentPoint(PdfName tag) { }
+
+    public ValueTask MarkedContentPointAsync(PdfName tag, PdfName properties) => ValueTask.CompletedTask;
+
+    public ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dictionary) => ValueTask.CompletedTask;
+
+    public void BeginMarkedRange(PdfName tag) {}
+
+    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) => ValueTask.CompletedTask;
+
+    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) => ValueTask.CompletedTask;
+
+    public void EndMarkedRange() { }
 
     #endregion
 }

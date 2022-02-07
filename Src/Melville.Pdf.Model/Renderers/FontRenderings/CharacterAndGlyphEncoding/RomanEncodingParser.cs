@@ -13,11 +13,11 @@ public static class RomanEncodingParser
         (encoding, encoding?.GetHashCode()) switch
         {
             (null,_)  => new (CharacterEncodings.Standard),
-            (_, KnownNameKeys.WinAnsiEncoding) => new(CharacterEncodings.WinAnsi),
-            (_, KnownNameKeys.StandardEncoding) => new(CharacterEncodings.Standard),
-            (_, KnownNameKeys.MacRomanEncoding) => new(CharacterEncodings.MacRoman),
-            (_, KnownNameKeys.PdfDocEncoding) => new(CharacterEncodings.Pdf),
-            (_, KnownNameKeys.MacExpertEncoding) => new(CharacterEncodings.MacExpert),
+            (PdfName, KnownNameKeys.WinAnsiEncoding) => new(CharacterEncodings.WinAnsi),
+            (PdfName, KnownNameKeys.StandardEncoding) => new(CharacterEncodings.Standard),
+            (PdfName, KnownNameKeys.MacRomanEncoding) => new(CharacterEncodings.MacRoman),
+            (PdfName, KnownNameKeys.PdfDocEncoding) => new(CharacterEncodings.Pdf),
+            (PdfName, KnownNameKeys.MacExpertEncoding) => new(CharacterEncodings.MacExpert),
             (PdfDictionary dict, _) => ReadEncodingDictionary(dict),
             _ => throw new PdfParseException("Invalid encoding member on font.")
         };

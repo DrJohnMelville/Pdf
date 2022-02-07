@@ -1,11 +1,12 @@
-﻿using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+﻿using System;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 public interface IGlyphMapping
 {
-    uint SelectGlyph(byte stringByte);
+    (uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input);
 }
 
 public class UnicodeGlyphMapping : IGlyphMapping
@@ -19,6 +20,6 @@ public class UnicodeGlyphMapping : IGlyphMapping
         this.charMapping = charMapping;
     }
 
-    public uint SelectGlyph(byte stringByte) => 
-        face.GetCharIndex(charMapping.MapToUnicode(stringByte));
+    public (uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input) =>
+        (face.GetCharIndex(charMapping.MapToUnicode(input[0])), 1);
 }

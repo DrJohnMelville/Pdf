@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.SpanAndMemory;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -32,7 +35,7 @@ public class RealizedType3Font : IRealizedFont
         Matrix3x2 charMatrix, IFontTarget target)
     {
         return target.RenderType3Character(
-            characters[b - firstCharacter].CreateReader(), fontMatrix );
+            characters[b - firstCharacter].CreateReader(), fontMatrix);
     }
 
     private class Type3Writer: IFontWriteOperation
@@ -46,9 +49,14 @@ public class RealizedType3Font : IRealizedFont
             this.target = target;
         }
 
-        public ValueTask<(double width, double height)> AddGlyphToCurrentString(
-            byte b, Matrix3x2 textMatrix) => parent.AddGlyphToCurrentString(b, textMatrix, target);
-        
+        public async ValueTask<(double width, double height, int charsConsumed)> AddGlyphToCurrentString(
+            ReadOnlyMemory<byte> input, Matrix3x2 textMatrix)
+        {
+            var (width, height) = await parent.AddGlyphToCurrentString(
+                input.At(0), textMatrix, target).CA();
+            return (width, height, 1);
+        }
+
         public void RenderCurrentString(bool stroke, bool fill, bool clip) { }    
     }
 }
