@@ -52,6 +52,8 @@ FontEncoding:MacRomanEncoding
 FontEncoding:WinAnsiEncoding
 FontEncoding:PdfDocEncoding
 FontEncoding:MacExpertEncoding
+FontEncoding:IdentityH!Identity-H
+FontEncoding:IdentityV!Identity-V
 
 RenderIntent:AbsoluteColoriMetric
 RenderIntent:RelativeColoriMetric
