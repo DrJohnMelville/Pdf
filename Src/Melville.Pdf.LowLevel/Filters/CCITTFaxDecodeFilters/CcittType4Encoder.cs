@@ -32,6 +32,11 @@ public class CcittType4Encoder : IStreamFilterDefinition
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
         ref SequenceReader<byte> source, ref Span<byte> destination)
     {
+        if (source.Length == 0)
+        {
+            return (source.Position, bitWriter.FinishWrite(destination), true);
+            
+        } 
         if (HasIncompleteLine())
         {
             if (!LoadLine(ref source)) return (source.Position, 0, false);
