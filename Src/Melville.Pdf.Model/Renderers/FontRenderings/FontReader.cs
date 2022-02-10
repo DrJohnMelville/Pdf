@@ -32,13 +32,9 @@ public readonly struct FontReader
         
         if (fontTypeKey == KnownNameKeys.Type3)
             return await new Type3FontFactory(font.LowLevel, size).ParseAsync().CA();
-
-        var encoding = await font.EncodingAsync().CA();
-        PdfDictionary? descriptor = await font.DescriptorAsync().CA();
-
+        
         var fontFactory = new FreeTypeFontFactory(size, null, font);
-        var ret = await CreateRealizedFont(font, fontFactory).CA();
-        return ret;
+        return await CreateRealizedFont(font, fontFactory).CA();
     }
 
     private async Task<IRealizedFont> CreateRealizedFont(PdfFont font, FreeTypeFontFactory factory) =>
