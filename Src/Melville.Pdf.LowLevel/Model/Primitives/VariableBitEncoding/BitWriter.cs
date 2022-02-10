@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
@@ -36,8 +37,10 @@ public class BitWriter
 
     private void AddBottomBitsToResidue(int data, int bits)
     {
-        residue |= (byte) ((data & BitUtilities.Mask(bits)) << (spotsAvailable - bits));
-        spotsAvailable = (byte) (spotsAvailable - bits);
+        Debug.Assert(bits <= spotsAvailable);
+        var spotsAvailableAfterBitsAdded = (spotsAvailable - bits);
+        residue |= (byte) ((data & BitUtilities.Mask(bits)) << spotsAvailableAfterBitsAdded);
+        spotsAvailable = (byte) spotsAvailableAfterBitsAdded;
     }
         
     private bool NoBitsWaitingToBeWritten() => spotsAvailable > 7;

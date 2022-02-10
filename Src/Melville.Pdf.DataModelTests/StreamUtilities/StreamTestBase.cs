@@ -36,6 +36,7 @@ public partial class SingleCharSource : IStreamDataSource
         return new OneCharAtAtimeStream(await source.OpenRawStream(streamLength));
     }
 }
+
 public abstract class StreamTestBase
 {
     private readonly string source;

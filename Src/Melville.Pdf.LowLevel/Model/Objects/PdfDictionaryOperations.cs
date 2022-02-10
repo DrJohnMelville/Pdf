@@ -25,6 +25,10 @@ public static class PdfDictionaryOperations
         this PdfDictionary dict, PdfName name, long defaultValue) =>
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is PdfNumber definiteObj? definiteObj.IntValue: defaultValue;
+    public static async ValueTask<bool> GetOrDefaultAsync(
+        this PdfDictionary dict, PdfName name, bool defaultValue) =>
+        dict.TryGetValue(name, out var obj) && 
+        await obj.CA() is PdfBoolean definiteObj? definiteObj == PdfBoolean.True: defaultValue;
     public static async ValueTask<double> GetOrDefaultAsync(
         this PdfDictionary dict, PdfName name, double defaultValue) =>
         dict.TryGetValue(name, out var obj) && 

@@ -15,7 +15,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 [MacroItem("zzzzzzzzzzxyz", "\xF7z\x2xyz", "ConcatRepeatToLiteral")]
 [MacroItem("xyAzzzzzzzzzz", "\x2xyA\xF7z", "ConcatLiteralToRepeat")]
 [MacroItem("xyzzzzzzzzzz", "\x1xy\xF7z", "ConcatT20Plus")]
-[MacroItem("xzzzzzzzzzz", "\x0x\xF7z", "ConcatTowRepeats")]
+[MacroItem("xzzzzzzzzzz", "\x0x\xF7z", "ConcatTwoRepeats")]
 [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.RunLengthDecode){}}")]
 public partial class S7_4_5RunLengthDecodeFilter
 {

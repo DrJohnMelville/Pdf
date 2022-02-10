@@ -119,6 +119,7 @@ Pdf:BaseFont
 Pdf:BBox
 Pdf:BitsPerComponent
 Pdf:BitsPerSample
+Pdf:BlackIs1
 Pdf:Bounds
 Pdf:C0
 Pdf:C1
@@ -135,6 +136,7 @@ Pdf:Columns
 Pdf:Contents
 Pdf:Count
 Pdf:CryptFilterDecodeParms
+Pdf:DamagedRowsBeforeError
 Pdf:Decode
 Pdf:DecodeParms
 Pdf:DefaultGray
@@ -147,8 +149,11 @@ Pdf:DocOpen
 Pdf:Domain
 Pdf:EarlyChange
 Pdf:Encode
+Pdf:EncodedByteAlign
 Pdf:Encoding
 Pdf:Encrypt
+Pdf:EndOfLine
+Pdf:EndOfBlock
 Pdf:Filter
 Pdf:First
 Pdf:FirstChar
@@ -178,6 +183,7 @@ Pdf:Interpolate
 Pdf:Index
 Pdf:ItalicAngle
 Pdf:Gamma
+Pdf:K
 Pdf:Kids
 Pdf:Lab
 Pdf:LastChar
@@ -210,6 +216,7 @@ Pdf:R
 Pdf:Range
 Pdf:Resources
 Pdf:Root
+Pdf:Rows
 Pdf:Rotate
 Pdf:Separation
 Pdf:Size

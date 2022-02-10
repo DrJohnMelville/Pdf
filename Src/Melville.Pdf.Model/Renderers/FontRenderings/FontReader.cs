@@ -38,7 +38,6 @@ public readonly struct FontReader
 
         var fontFactory = new FreeTypeFontFactory(size, null, font);
         var ret = await CreateRealizedFont(font, fontFactory).CA();
-        #warning setGlyphEncoding shoud move into the freetypefontfactory
         return ret;
     }
 
