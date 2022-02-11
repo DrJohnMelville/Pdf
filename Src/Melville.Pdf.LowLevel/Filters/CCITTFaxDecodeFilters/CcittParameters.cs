@@ -38,13 +38,15 @@ public readonly struct CcittParameters
 
     public bool[] CreateWhiteRow()
     {
-        var ret = new bool[Columns];
-        ret.AsSpan().Fill(WhiteValue);
+        var ret = EmptyLine();
+        ret.AsSpan().Fill(true);
         return ret;
     }
+
+    public bool[] EmptyLine() => new bool[Columns];
 
     public bool WhiteValue => !BlackIs1;
     public bool BlackValue => BlackIs1;
 
-    public bool IsWhiteValue(bool value) => value != BlackValue;
+    public bool IsWhiteValue(int value) => (value != 0) ^ BlackIs1 ;
 }

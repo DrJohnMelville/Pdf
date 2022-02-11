@@ -2,6 +2,7 @@
 using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
@@ -10,21 +11,14 @@ public class CcittType4Encoder : IStreamFilterDefinition
     private readonly CcittParameters parameters;
     private readonly BitWriter bitWriter = new();
     private readonly BitReader bitReader = new();
-    private bool[] priorLine;
-    private int LineLength => priorLine.Length;
-    private bool[] currentLine;
+    private CcittLinePair lines;
     private int currentReadPos;
     private int a0;
-    private int a1;
-    private int a2;
-    private int b1;
-    private int b2;
     
     public CcittType4Encoder(in CcittParameters parameters)
     {
         this.parameters = parameters;
-        priorLine = this.parameters.CreateWhiteRow();
-        currentLine = new bool[LineLength];
+        lines = new CcittLinePair(parameters);
     }
 
     public int MinWriteSize => 5;
@@ -37,34 +31,26 @@ public class CcittType4Encoder : IStreamFilterDefinition
             return (source.Position, bitWriter.FinishWrite(destination), true);
             
         } 
-        if (HasIncompleteLine())
+        if (LineLoadIsIncomplete())
         {
             if (!LoadLine(ref source)) return (source.Position, 0, false);
         }
 
         var bytesWritten = 0;
-        while (a0 < LineLength)
+        while (a0 < lines.LineLength)
         {
-            a1 = a0 + 1;
-            while (a1 < LineLength && IsContinuationBlock(currentLine, a1)) a1++;
-            a2 = Math.Min(LineLength, a1 + 1);
-            while (a2 < LineLength && IsContinuationBlock(currentLine, a2)) a2++;
-            b1 = Math.Min(LineLength, a0 + 1);
-            while (b1 < LineLength && (IsContinuationBlock(priorLine, b1) ||
-                                       currentLine[a0] == priorLine[b1])) b1++;
-            b2 = Math.Min(LineLength, b1 + 1);
-            while (b2 < LineLength && IsContinuationBlock(priorLine, b2)) b2++;
-            if (Math.Abs(a1 - b1) <= 3)
+            var comparison = lines.CompareLinesFrom(a0);
+            if (comparison.CanVerticalEncode)
             {
-                bytesWritten += WriteVerticalMode(a1, b1, destination);
-                a0 = a1;
+                bytesWritten += WriteVerticalMode(comparison.VerticalEncodingDelta, destination);
+                a0 = comparison.A1;
             }
             else
             {
                 throw new NotImplementedException("Only vertical mode is implemented");
             }
         }
-        if (a0 <= LineLength)
+        if (a0 <= lines.LineLength)
         {
             if (bytesWritten >= destination.Length) return (source.Position, bytesWritten, false);
             var bw = ResetForNextLine(destination[bytesWritten..]);
@@ -75,19 +61,17 @@ public class CcittType4Encoder : IStreamFilterDefinition
 
     private int ResetForNextLine(in Span<byte> destination)
     {
-        SwapLines();
+        lines = lines.SwapLines();
         a0 = -1;
         currentReadPos = 0;
         return TryByteAlignEncodedOutput(destination);
     }
 
-    private void SwapLines() => (currentLine, priorLine) = (priorLine, currentLine);
-
     private int TryByteAlignEncodedOutput(in Span<byte> destination) =>
         parameters.EncodedByteAlign ? bitWriter.FinishWrite(destination) : 0;
 
-    private int WriteVerticalMode(int a, int b, in Span<byte> destination) =>
-        (a - b) switch
+    private int WriteVerticalMode(int delta, in Span<byte> destination) =>
+        (delta) switch
         {
             -3 => bitWriter.WriteBits(0b0000010, 7, destination),
             -2 => bitWriter.WriteBits(0b000010, 6, destination),
@@ -97,20 +81,16 @@ public class CcittType4Encoder : IStreamFilterDefinition
             3 => bitWriter.WriteBits(0b0000011, 7, destination),
             _ => bitWriter.WriteBits(0b1, 1, destination),
         };
-
-    private bool IsContinuationBlock(bool[] line, int index) => 
-        (index <= 0 || line[index] == line[index - 1]);
-
-    private bool HasIncompleteLine() => currentReadPos < LineLength;
+    
+    private bool LineLoadIsIncomplete() => currentReadPos < lines.LineLength;
 
     private bool LoadLine(ref SequenceReader<byte> source)
     {
-        for (; currentReadPos < currentLine.Length; currentReadPos++)
+        for (; currentReadPos < lines.CurrentLine.Length; currentReadPos++)
         {
             if (!bitReader.TryRead(1, ref source, out var pixel)) return false;
-            currentLine[currentReadPos] = parameters.IsWhiteValue(pixel == 1);
+            lines.CurrentLine[currentReadPos] = parameters.IsWhiteValue(pixel);
         }
-
         a0 = -1;
         return true;
     }
