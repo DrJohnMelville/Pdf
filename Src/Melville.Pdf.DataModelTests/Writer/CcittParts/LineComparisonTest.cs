@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Runtime.Intrinsics.X86;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 using Xunit;
 

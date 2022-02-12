@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
@@ -8,7 +9,9 @@ public class CcittType4Decoder : IStreamFilterDefinition
 {
   private readonly CcittParameters parameters;
   private CcittLinePair lines;
-
+  private readonly BitReader reader = new ();
+  private readonly BitWriter writer = new();
+  
   public CcittType4Decoder(CcittParameters parameters)
   {
     this.parameters = parameters;
