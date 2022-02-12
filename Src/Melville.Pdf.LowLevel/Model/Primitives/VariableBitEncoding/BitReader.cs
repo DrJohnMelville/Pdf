@@ -14,6 +14,7 @@ public class BitReader
         value = ret ?? 0;
         return ret.HasValue;
     }
+    #warning -- rewrite this to be non-recursive using a bigger accumulator.
     public int? TryRead(int bits, ref SequenceReader<byte> input)
     {
         if (bits - bitsRemaining > 8 * input.Remaining) return null; 
@@ -50,4 +51,6 @@ public class BitReader
         bitsRemaining = 8;
         return true;
     }
+
+    public void DiscardPartialByte() => bitsRemaining = 0;
 }

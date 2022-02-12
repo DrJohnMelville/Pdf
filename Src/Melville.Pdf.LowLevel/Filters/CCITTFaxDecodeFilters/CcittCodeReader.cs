@@ -328,4 +328,6 @@ public partial class CcittCodeReader
         currentWord |= bit;
         currentWordLength++;
     }
+
+    public void DiscardPartialByte() => reader.DiscardPartialByte();
 }

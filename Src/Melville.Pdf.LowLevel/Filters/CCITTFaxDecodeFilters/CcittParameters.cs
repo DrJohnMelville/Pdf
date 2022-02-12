@@ -49,4 +49,6 @@ public readonly struct CcittParameters
     public bool BlackValue => BlackIs1;
 
     public bool IsWhiteValue(int value) => (value != 0) ^ BlackIs1 ;
+
+    public byte ByteForColor(bool white) => (white ^ BlackIs1)?(byte)1:(byte)0;
 }
