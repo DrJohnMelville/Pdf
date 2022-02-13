@@ -271,7 +271,10 @@ public partial class CcittCodeReader
                 AddBitToCurrentWord(bit);
             } while (!LookupCode(isWhiteRun, out code));
             ResetCurrentWord();
-            if (GetTerminalCode(ref code)) return true;
+            if (GetTerminalCode(ref code))
+            {
+                return true;
+            }
         }
     }
 

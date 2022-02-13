@@ -8,6 +8,7 @@ using Melville.Pdf.DataModelTests.StreamUtilities;
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
 [MacroItem("\xff\xff\xff\xff","\x80", "AllWhite", "JustData32v4")]
+[MacroItem("\x0\x0\x0\x0","& Ô", "AllBlack", "JustData32v4")]
 [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.CCITTFaxDecode, S7_4_6CCITFaxDecode.~3~){}}")]
 public partial class S7_4_6CCITFaxDecode
 {

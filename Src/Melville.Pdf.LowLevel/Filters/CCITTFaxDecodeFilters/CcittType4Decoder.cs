@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -62,8 +63,6 @@ public class CcittType4Decoder : IStreamFilterDefinition
       default:
         throw new PdfParseException($"Code {code.Operation} should not have escaped the CccitCodeReader");
     }
-
-    currentRunIsWhite = !currentRunIsWhite;
   }
 
   private void DoPass()
@@ -73,12 +72,16 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   private void DoBlack(ushort codeLength)
   {
-    throw new NotImplementedException();
+    Debug.Assert(!currentRunIsWhite);
+    FillRun(codeLength);
+    SwitchRunColor();
   }
 
   private void DoWhite(ushort codeLength)
   {
-    throw new NotImplementedException();
+    Debug.Assert(currentRunIsWhite);
+    FillRun(codeLength);
+    SwitchRunColor();
   }
 
   private void DoVertical(int delta)
@@ -86,6 +89,12 @@ public class CcittType4Decoder : IStreamFilterDefinition
     var b1 = lines.ComputeB1(currentRunPosition - 1);
     var runLength = b1 + delta;
     FillRun(runLength);
+    SwitchRunColor();
+  }
+
+  private void SwitchRunColor()
+  {
+    currentRunIsWhite = !currentRunIsWhite;
   }
 
   private void FillRun(int runLength)
