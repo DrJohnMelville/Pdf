@@ -71,12 +71,12 @@ public class CcittType4Encoder : IStreamFilterDefinition
 
     private int WriteHorizontalCode(in CcittLineComparison comparison, in Span<byte> destination)
     {
-        #warning -- this does not really work because the bitwriter will have a different state next time arround
+        var writerState = bitWriter.GetState();
         var writer = new BitTarget(destination, bitWriter);
-        return HorizontalSpanEncoder.Write(ref writer, this.nextRunIsWhite,
-            comparison.A1 - (a0 + 1), comparison.A2 - comparison.A1)
-            ? writer.BytesWritten
-            : -1;
+        if (comparison.TryWriteHorizontalSpan(ref writer, nextRunIsWhite, a0 + 1))
+            return writer.BytesWritten;
+        bitWriter.SetState(writerState);
+        return -1;
     }
 
     private int WritePassCode(Span<byte> span) => bitWriter.WriteBits(0b0001, 4, span);

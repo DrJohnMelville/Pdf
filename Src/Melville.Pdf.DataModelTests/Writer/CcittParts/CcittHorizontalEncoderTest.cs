@@ -1,29 +1,12 @@
-﻿using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+﻿using System;
+using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.CcittParts;
 
-public class CcittCodeReaderTest
+public class CcittHorizontalEncoderTest
 {
-    private readonly CcittCodeReader sut = new();
-
-    [Theory]
-    [InlineData("0001", CcittCodeOperation.Pass, 0)]
-    [InlineData("1", CcittCodeOperation.Vertical, 3)]
-    [InlineData("011", CcittCodeOperation.Vertical, 4)]
-    [InlineData("000011", CcittCodeOperation.Vertical, 5)]
-    [InlineData("0000011", CcittCodeOperation.Vertical, 6)]
-    [InlineData("010", CcittCodeOperation.Vertical, 2)]
-    [InlineData("000010", CcittCodeOperation.Vertical, 1)]
-    [InlineData("0000010", CcittCodeOperation.Vertical, 0)]
-    public void ReadVerticalOrPassThrough(string input, CcittCodeOperation op, int length)
-    {
-        var reader = StringToByteArray.CreateSequence(input);
-        Assert.True(sut.TryReadCode(ref reader, true, out var code));
-        Assert.Equal(op, code.Operation);
-        Assert.Equal(length, code.Length);
-    }
-
     [Theory]
     [InlineData("001 00110101 0000110111", 0)]
     [InlineData("001 000111 010", 1)]
@@ -156,14 +139,15 @@ public class CcittCodeReaderTest
     [InlineData("001 000000011101 000111 000000011101 010", 2432 + 1)]
     [InlineData("001 000000011110 000111 000000011110 010", 2496 + 1)]
     [InlineData("001 000000011111 000111 000000011111 010", 2560 + 1)]
-    public void HorizontalEncoding(string input, int length)
+    public void Encode(string result, int length)
     {
-        var sr = StringToByteArray.CreateSequence(input);
-        Assert.True(sut.TryReadCode(ref sr, true, out var code));
-        Assert.Equal(CcittCodeOperation.HorizontalWhite, code.Operation);
-        Assert.Equal(length, code.Length);
-        Assert.True(sut.TryReadCode(ref sr, false, out code));
-        Assert.Equal(CcittCodeOperation.HorizontalBlack, code.Operation);
-        Assert.Equal(length, code.Length);
+        var buffer = new byte[10];
+        var bw = new BitWriter();
+        var writer = new BitTarget(buffer.AsSpan(), bw);
+        HorizontalSpanEncoder.Write(ref writer, true, length, length);
+        var wl = writer.BytesWritten + bw.FinishWrite(buffer.AsSpan(writer.BytesWritten));
+        Assert.Equal(0, StringToByteArray.CreateArray(result).AsSpan()
+            .SequenceCompareTo(buffer.AsSpan(0,wl)));
+        
     }
 }

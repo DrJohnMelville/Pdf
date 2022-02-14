@@ -59,4 +59,7 @@ public class BitWriter
     }
     public int FinishWrite(in Span<byte> target) => 
         NoBitsWaitingToBeWritten() ? 0 : WriteCurrentByte(target);
+
+    public (byte, byte) GetState() => (residue, spotsAvailable);
+    public void SetState((byte, byte) state) => (residue, spotsAvailable) = state;
 }
