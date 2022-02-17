@@ -16,8 +16,6 @@ public enum CcittCodeOperation : byte
     SwitchToHorizontalMode = 5
 }
 
-public record struct CcittCode(CcittCodeOperation Operation, ushort Length);
-
 public partial class CcittCodeReader
 {
     private Dictionary<(int, int), CcittCode> operationCodeBook = new()
