@@ -46,11 +46,23 @@ public readonly struct CcittLinePair
     }
 
     public int ComputeB1(int a0) => ComputeB1(a0, ImputedColorAt(CurrentLine,a0));
+
+    public int ComputeB2(int a0)
+    {
+        var baseColor = ImputedColorAt(CurrentLine,a0);
+        var b1 = ComputeB1(a0, baseColor);
+        return FindColor(PriorLine, b1, baseColor);
+    }
     private int ComputeB1(int a0, bool baseColor)
     {
-        return ImputedColorAt(PriorLine, a0) == baseColor ?
-            FindColor(PriorLine, a0+1, !baseColor):
-            FindColor(PriorLine, FindColor(PriorLine, a0+1, baseColor) , !baseColor);
+        var ret = a0 + 1;
+        while (ret < LineLength &&
+               (PriorLine[ret] == baseColor || PriorLine[ret] == ImputedColorAt(PriorLine, ret - 1)))
+            ret++;
+        return ret;
+        // return ImputedColorAt(PriorLine, a0) == baseColor ?
+        //     FindColor(PriorLine, a0+1, !baseColor):
+        //     FindColor(PriorLine, FindColor(PriorLine, a0+1, baseColor) , !baseColor);
     }
 
     private bool ImputedColorAt(bool[] line, int position) => position < 0 ? true : line[position];

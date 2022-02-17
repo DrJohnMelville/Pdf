@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Melville.INPC;
@@ -102,6 +103,7 @@ public partial class ImageViewerViewModel : IRenderer
         }
     }
 
+    [HandleProcessCorruptedStateExceptions]
     public async void SetPage(int page)
     {
         if  (!fileParseSucceeded) return;

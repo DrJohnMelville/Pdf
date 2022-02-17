@@ -15,6 +15,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private CcittLinePair lines;
   private readonly CcittCodeReader reader = new ();
   private readonly BitWriter writer = new();
+  private int linesDone = 0;
   
   public CcittType4Decoder(CcittParameters parameters)
   {
@@ -28,7 +29,9 @@ public class CcittType4Decoder : IStreamFilterDefinition
     var localDestination = destination;
     while (localDestination.Length > 0)
     {
-      if (currentRunPosition >= lines.LineLength && !WriteCurrentLine(ref localDestination)) continue;
+      if (a0 >= lines.LineLength-1 && !WriteCurrentLine(ref localDestination)) continue;
+      if (linesDone == parameters.Rows && linesDone > 0)
+        return (source.Position, destination.Length - localDestination.Length, true);
       if (!ReadLine(ref source)) break;
     } 
     return (source.Position, destination.Length - localDestination.Length, false);
@@ -38,11 +41,11 @@ public class CcittType4Decoder : IStreamFilterDefinition
     ref SequenceReader<byte> source, ref Span<byte> destination) =>
     (source.Position, writer.FinishWrite(destination), true);
 
-  private int currentRunPosition = 0;
+  private int a0 = -1;
   private bool currentRunIsWhite = true;
   private bool ReadLine(ref SequenceReader<byte> source)
   {
-    while (currentRunPosition < lines.LineLength)
+    while (a0 < lines.LineLength-1)
     {
       if (!reader.TryReadCode(ref source, currentRunIsWhite, out var code)) return false;
       ProcessCode(code);
@@ -67,43 +70,50 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   private void DoPass()
   {
-    throw new NotImplementedException();
+    var b2 = lines.ComputeB2(a0);
+    FillRunTo(b2);
   }
 
   private void DoBlack(ushort codeLength)
   {
     Debug.Assert(!currentRunIsWhite);
-    FillRun(codeLength);
-    SwitchRunColor();
+    DoHorizontalRun(codeLength);
   }
 
   private void DoWhite(ushort codeLength)
   {
     Debug.Assert(currentRunIsWhite);
-    FillRun(codeLength);
+    DoHorizontalRun(codeLength);
+  }
+
+  private void DoHorizontalRun(ushort codeLength)
+  {
+    FillRunTo(Math.Max(0, a0)+codeLength);
     SwitchRunColor();
   }
+  
 
   private void DoVertical(int delta)
   {
-    var b1 = lines.ComputeB1(currentRunPosition - 1);
-    var runLength = b1 + delta;
-    FillRun(runLength);
+    var b1 = lines.ComputeB1(a0);
+    FillRunTo(b1+delta);
     SwitchRunColor();
   }
 
   private void SwitchRunColor()
   {
     currentRunIsWhite = !currentRunIsWhite;
+    if (a0 >= 0 && a0 < lines.LineLength) lines.CurrentLine[a0] = currentRunIsWhite;
   }
 
-  private void FillRun(int runLength)
+  private void FillRunTo(int inclusiveLastPoint)
   {
-    for (int i = 0; i < runLength; i++)
+    for (int i = a0+1; i <=  Math.Min(inclusiveLastPoint, lines.LineLength-1); i++)
     {
-      lines.CurrentLine[currentRunPosition + i] = currentRunIsWhite;
+      lines.CurrentLine[i] = currentRunIsWhite;
     }
-    currentRunPosition += runLength;
+
+    a0 = inclusiveLastPoint;
   }
 
 
@@ -137,8 +147,9 @@ public class CcittType4Decoder : IStreamFilterDefinition
     if (parameters.EncodedByteAlign) reader.DiscardPartialByte();
     currentRunIsWhite = true;
     currentWritePosition = 0;
-    currentRunPosition = 0;
+    a0 = -1;
     lines = lines.SwapLines();
+    linesDone++;
   }
 
   private byte CurrentPixelBit() => parameters.ByteForColor(lines.CurrentLine[currentWritePosition]);
