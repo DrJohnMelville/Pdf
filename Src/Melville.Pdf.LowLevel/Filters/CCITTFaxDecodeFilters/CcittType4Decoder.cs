@@ -27,14 +27,20 @@ public class CcittType4Decoder : IStreamFilterDefinition
   ref SequenceReader<byte> source, ref Span<byte> destination)
   {
     var localDestination = destination;
-    while (localDestination.Length > 0)
+    var doneReading = InnerConvertLoop(ref source, ref localDestination);
+    return (source.Position, destination.Length - localDestination.Length, doneReading);
+  }
+
+  private bool InnerConvertLoop(ref SequenceReader<byte> source, ref Span<byte> destination)
+  {
+    while (destination.Length > 0)
     {
-      if (DoneReadingLine() && !WriteCurrentLine(ref localDestination)) continue;
-      if (linesDone == parameters.Rows && linesDone > 0)
-        return (source.Position, destination.Length - localDestination.Length, true);
-      if (!ReadLine(ref source)) break;
-    } 
-    return (source.Position, destination.Length - localDestination.Length, false);
+      if (DoneReadingLine() && !WriteCurrentLine(ref destination)) return false;
+      if (parameters.HasReadEntireImage(linesDone))
+        return true;
+      if (!ReadLine(ref source)) return false;
+    }
+    return false;
   }
 
   private bool DoneReadingLine() => a0 >= lines.LineLength-1;

@@ -45,10 +45,10 @@ public readonly struct CcittParameters
 
     public bool[] EmptyLine() => new bool[Columns];
 
-    public bool WhiteValue => !BlackIs1;
-    public bool BlackValue => BlackIs1;
-
     public bool IsWhiteValue(int value) => (value != 0) ^ BlackIs1 ;
 
     public byte ByteForColor(bool white) => (white ^ BlackIs1)?(byte)1:(byte)0;
+
+    public bool HasReadEntireImage(int linesCompleted) =>
+        Rows > 0 && linesCompleted >= Rows;
 }
