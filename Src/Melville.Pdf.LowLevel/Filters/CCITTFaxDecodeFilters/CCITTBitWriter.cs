@@ -35,6 +35,8 @@ public ref struct CcittBitWriter
         }    
     }
 
+    
+    
     public bool WriteHorizontal(bool firstIsWhite, int firstRun, int secondRun)
     {
         var savedState = writer.GetState();

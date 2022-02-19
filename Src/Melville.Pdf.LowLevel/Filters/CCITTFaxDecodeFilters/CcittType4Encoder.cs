@@ -61,30 +61,11 @@ public class CcittType4Encoder : IStreamFilterDefinition
         }
         else
         {
-            if (!TryWriteHorizontalCode(comparison, ref writer)) return false;
+            if (!writer.WriteHorizontal(lines.ImputedCurrentColor(a0),
+                    comparison.FirstHorizontalDelta(a0), comparison.SecondHorizontalDelta)) return false;
+            a0 = comparison.A2;
         }
 
-        return true;
-    }
-
-    private bool DoneEncodingLine() => a0 >= lines.LineLength;
-
-    private bool TryWriteHorizontalCode(in CcittLineComparison comparison, ref CcittBitWriter writer) =>
-        (a0, lines.CurrentLine[0]) switch
-        {
-             (-1, false) => DoTwoRuns(ref writer, true, 0, comparison.A2, comparison.A2),
-            (-1, true) => DoTwoRuns(ref writer, true, 
-                comparison.A1, comparison.A2-comparison.A1, comparison.A2),
-            (>=0, _) => DoTwoRuns(ref writer, lines.CurrentLine[a0], 
-                comparison.A1 - a0, comparison.A2-comparison.A1, comparison.A2),
-            _=> throw new InvalidOperationException("A0 must be >= -1")
-        };
-
-    private bool DoTwoRuns(ref CcittBitWriter writer, bool firstIsWhite, int firstLen, int secondLen, int newA0)
-    {
-        if (!writer.WriteHorizontal(firstIsWhite, firstLen, secondLen))
-            return false;
-        a0 = newA0;
         return true;
     }
 
@@ -92,6 +73,8 @@ public class CcittType4Encoder : IStreamFilterDefinition
     {
         if (DoneEncodingLine() && writer.HasRoomToWrite()) ResetForNextLine(ref writer);
     }
+
+    private bool DoneEncodingLine() => a0 >= lines.LineLength;
 
     private void ResetForNextLine(ref CcittBitWriter encoding)
     {
