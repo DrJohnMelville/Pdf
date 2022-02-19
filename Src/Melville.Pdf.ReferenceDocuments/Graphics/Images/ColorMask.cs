@@ -3,7 +3,7 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
 public class ColorMask: DisplayImageTest
 {
-    public ColorMask() : base("Draw a simple, generated image")
+    public ColorMask() : base("Use A Mask to crop a rectangle out of an image")
     {
     }
 

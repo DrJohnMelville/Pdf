@@ -7,12 +7,8 @@ namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
 public record struct CcittLineComparison(int A1, int A2, int B1, int B2)
 {
-    public bool CanVerticalEncode => Math.Abs(VerticalEncodingDelta) <= 4;
+    public bool CanVerticalEncode => Math.Abs(VerticalEncodingDelta) <= 3;
     public int VerticalEncodingDelta => A1 - B1;
     public bool CanPassEncode => B2 < A1;
-
-    [Pure]
-    public bool TryWriteHorizontalSpan(ref BitTarget writer, bool firstRunIsWhite, int firstPos) =>
-        HorizontalSpanEncoder.Write(ref writer, firstRunIsWhite, A1 - firstPos, A2 - A1);
 }
 

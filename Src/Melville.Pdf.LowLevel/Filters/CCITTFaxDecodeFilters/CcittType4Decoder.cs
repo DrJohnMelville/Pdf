@@ -54,7 +54,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   {
     while (a0 < lines.LineLength-1)
     {
-      if (!reader.TryReadCode(ref source, lines.ImputedCurrentColor(a0), out var code)) return false;
+      if (!reader.TryReadCode(ref source, currentRunColor, out var code)) return false;
       ProcessCode(code);
     }
     return true;
@@ -79,44 +79,45 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   private void DoBlack(ushort codeLength)
   {
-    Debug.Assert(!lines.ImputedCurrentColor(a0));
+    Debug.Assert(!currentRunColor);
     DoHorizontalRun(codeLength);
   }
 
   private void DoWhite(ushort codeLength)
   {
-    Debug.Assert(lines.ImputedCurrentColor(a0));
-    DoHorizontalRun(codeLength);
+    Debug.Assert(currentRunColor);
+   DoHorizontalRun(codeLength);
   }
 
   private void DoHorizontalRun(ushort codeLength)
   {
-    FillRunTo(Math.Max(0, a0)+codeLength);
+    if (codeLength > 0) FillRunTo(a0+1+codeLength);
     SwitchRunColor();
   }
   
 
   private void DoVertical(int delta)
   {
-    var b1 = lines.ComputeB1(a0);
+    var b1 = lines.ComputeB1(a0, currentRunColor);
     FillRunTo(b1+delta);
     SwitchRunColor();
   }
 
+  private bool currentRunColor = true;
   private void SwitchRunColor()
   {
-   if (a0 >= 0 && a0 < lines.LineLength) lines.CurrentLine[a0] = !lines.CurrentLine[a0];
+    currentRunColor = !currentRunColor;
   }
 
-  private void FillRunTo(int inclusiveLastPoint)
+  private void FillRunTo(int exclusiveLastPoint)
   {
-    var currentRunIsWhite = lines.ImputedCurrentColor(a0);
-    for (int i = a0+1; i <=  Math.Min(inclusiveLastPoint, lines.LineLength-1); i++)
+    for (int i = a0+1; i < Math.Min(exclusiveLastPoint, lines.LineLength); i++)
     {
-      lines.CurrentLine[i] = currentRunIsWhite;
+      lines.CurrentLine[i] = currentRunColor;
     }
 
-    a0 = inclusiveLastPoint;
+    a0 = exclusiveLastPoint-1;
+    Debug.Assert(a0 >= -1 && a0 <= lines.LineLength);
   }
 
 
@@ -152,6 +153,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
     a0 = -1;
     lines = lines.SwapLines();
     linesDone++;
+    currentRunColor = true;
   }
 
   private byte CurrentPixelBit() => parameters.ByteForColor(lines.CurrentLine[currentWritePosition]);

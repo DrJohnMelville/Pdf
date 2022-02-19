@@ -29,23 +29,23 @@ public readonly struct CcittLinePair
         var b2 = FindColor(PriorLine, b1, baseColor);
         return new CcittLineComparison(a1, a2, b1, b2);
     }
-
-    public int ComputeB1(int a0) => ComputeB1(a0, ImputedColorAt(CurrentLine,a0));
-
+    
     public int ComputeB2(int a0)
     {
         var baseColor = ImputedColorAt(CurrentLine,a0);
         var b1 = ComputeB1(a0, baseColor);
         return FindColor(PriorLine, b1, baseColor);
     }
-    private int ComputeB1(int a0, bool baseColor)
+
+    public int ComputeB1(int a0, bool baseColor)
     {
         var ret = 0;
         for (ret = a0 + 1; ret < LineLength && IsNotPointB1(baseColor, ret); ret++) ; // empty loop body
         return ret;
     }
 
-    private bool IsNotPointB1(bool baseColor, int ret) => SameAsBaseColor(baseColor, ret) || IsNotChangingPixel(ret);
+    private bool IsNotPointB1(bool baseColor, int ret) =>
+        SameAsBaseColor(baseColor, ret) || IsNotChangingPixel(ret);
 
     private bool IsNotChangingPixel(int ret) => PriorLine[ret] == ImputedColorAt(PriorLine, ret - 1);
 

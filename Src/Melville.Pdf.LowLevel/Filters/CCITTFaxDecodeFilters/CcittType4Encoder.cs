@@ -2,7 +2,6 @@
 using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
@@ -14,7 +13,6 @@ public class CcittType4Encoder : IStreamFilterDefinition
     private CcittLinePair lines;
     private int currentReadPos;
     private int a0;
-    private bool nextRunIsWhite = true;
     
     public CcittType4Encoder(in CcittParameters parameters)
     {
@@ -57,10 +55,9 @@ public class CcittType4Encoder : IStreamFilterDefinition
                 var localBytesWritten = WriteHorizontalCode(comparison, destination[bytesWritten..]);
                 if (localBytesWritten < 0) break;
                 bytesWritten += localBytesWritten;
-                a0 = comparison.A2;
             }
         }
-        if (a0 <= lines.LineLength)
+        if (a0 >= lines.LineLength)
         {
             if (bytesWritten >= destination.Length) return (source.Position, bytesWritten, false);
             var bw = ResetForNextLine(destination[bytesWritten..]);
@@ -73,10 +70,26 @@ public class CcittType4Encoder : IStreamFilterDefinition
     {
         var writerState = bitWriter.GetState();
         var writer = new BitTarget(destination, bitWriter);
-        if (comparison.TryWriteHorizontalSpan(ref writer, nextRunIsWhite, a0 + 1))
-            return writer.BytesWritten;
+        if (TryWriteHorizontalCode(comparison, ref writer)) return writer.BytesWritten;
         bitWriter.SetState(writerState);
         return -1;
+    }
+
+    public bool TryWriteHorizontalCode(in CcittLineComparison comparison, ref BitTarget writer) =>
+        (a0, lines.CurrentLine[a0 + 1]) switch
+        {
+             (-1, false) => DoTwoRuns(ref writer, true, 0, comparison.A2, comparison.A2),
+            (-1, true) => DoTwoRuns(ref writer, true, comparison.A1, comparison.A2-comparison.A1, comparison.A2),
+            (>=0, var first) => DoTwoRuns(ref writer, first, comparison.A1 - a0, comparison.A2-comparison.A1, comparison.A2),
+            _=> throw new InvalidOperationException("A0 must be >= -1")
+        };
+
+    private bool DoTwoRuns(ref BitTarget writer, bool firstIsWhite, int firstLen, int secondLen, int newA0)
+    {
+        if (!HorizontalSpanEncoder.Write(ref writer, firstIsWhite, firstLen, secondLen))
+            return false;
+        a0 = newA0;
+        return true;
     }
 
     private int WritePassCode(Span<byte> span) => bitWriter.WriteBits(0b0001, 4, span);
@@ -94,7 +107,6 @@ public class CcittType4Encoder : IStreamFilterDefinition
 
     private int WriteVerticalMode(int delta, in Span<byte> destination)
     {
-        nextRunIsWhite = !nextRunIsWhite;
         return (delta) switch
         {
             -3 => bitWriter.WriteBits(0b0000010, 7, destination),

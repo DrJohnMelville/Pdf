@@ -103,7 +103,6 @@ public partial class ImageViewerViewModel : IRenderer
         }
     }
 
-    [HandleProcessCorruptedStateExceptions]
     public async void SetPage(int page)
     {
         if  (!fileParseSucceeded) return;
