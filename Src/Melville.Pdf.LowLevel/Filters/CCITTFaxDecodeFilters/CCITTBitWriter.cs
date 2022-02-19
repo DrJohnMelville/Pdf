@@ -6,13 +6,16 @@ namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
 public ref struct CcittBitWriter
 {
-    private readonly BitWriter writer = new();
+    private readonly BitWriter writer;
     private BitTarget target;
 
-    public CcittBitWriter(in Span<byte> destination)
+    public CcittBitWriter(in Span<byte> destination, BitWriter writer)
     {
+        this.writer = writer;
         target = new BitTarget(destination, writer);
     }
+
+    public int BytesWritten => target.BytesWritten;
 
     public void WritePass() => WriteBits(0b0001, 4);
 
@@ -52,8 +55,13 @@ public ref struct CcittBitWriter
 
     public Span<byte> WrittenSpan()
     {
+        PadUnusedBits();
+        return target.WrittenSpan();
+    }
+
+    public void PadUnusedBits()
+    {
         Debug.Assert(HasRoomToWrite());
         target.FinishWrite();
-        return target.WrittenSpan();
     }
 }

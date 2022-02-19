@@ -26,56 +26,50 @@ public class CcittType4Encoder : IStreamFilterDefinition
         ref SequenceReader<byte> source, ref Span<byte> destination)
     {
         if (source.Length == 0)
-        {
             return (source.Position, bitWriter.FinishWrite(destination), true);
-            
-        } 
-        if (LineLoadIsIncomplete())
-        {
-            if (!LoadLine(ref source)) return (source.Position, 0, false);
-        }
-
-        var bytesWritten = 0;
-        while (a0 < lines.LineLength && bytesWritten < destination.Length)
-        {
-            var comparison = lines.CompareLinesFrom(a0);
-            if (comparison.CanPassEncode)
-            {
-                bytesWritten += WritePassCode(destination[bytesWritten..]);
-                a0 = comparison.B2;
-            }
-            else if (comparison.CanVerticalEncode)
-            {
-                bytesWritten += WriteVerticalMode(
-                    comparison.VerticalEncodingDelta, destination[bytesWritten..]);
-                a0 = comparison.A1;
-            }
-            else
-            {
-                var localBytesWritten = WriteHorizontalCode(comparison, destination[bytesWritten..]);
-                if (localBytesWritten < 0) break;
-                bytesWritten += localBytesWritten;
-            }
-        }
-        if (a0 >= lines.LineLength)
-        {
-            if (bytesWritten >= destination.Length) return (source.Position, bytesWritten, false);
-            var bw = ResetForNextLine(destination[bytesWritten..]);
-            bytesWritten += bw;
-        }
-        return (source.Position, bytesWritten, false);
+        if (LineLoadIsIncomplete() && !LoadLine(ref source))
+                return (source.Position, 0, false);
+        return TryWriteCurrentRow(ref source, destination);
     }
 
-    private int WriteHorizontalCode(in CcittLineComparison comparison, in Span<byte> destination)
+    private (SequencePosition SourceConsumed, int bytesWritten, bool Done) TryWriteCurrentRow(
+        ref SequenceReader<byte> source, Span<byte> destination)
     {
-        var writerState = bitWriter.GetState();
-        var writer = new BitTarget(destination, bitWriter);
-        if (TryWriteHorizontalCode(comparison, ref writer)) return writer.BytesWritten;
-        bitWriter.SetState(writerState);
-        return -1;
+        var writer = new CcittBitWriter(destination, bitWriter);
+        while (!DoneEncodingLine() && writer.HasRoomToWrite() && TryWriteRun(ref writer))
+        {
+            // do nothing, the TryWriteRun call does the work as long as it can
+        }
+
+        TryResetForNextLine(ref writer);
+
+        return (source.Position, writer.BytesWritten, false);
+    }
+    
+    private bool TryWriteRun(ref CcittBitWriter writer)
+    {
+        var comparison = lines.CompareLinesFrom(a0);
+        if (comparison.CanPassEncode)
+        {
+            writer.WritePass();
+            a0 = comparison.B2;
+        }
+        else if (comparison.CanVerticalEncode)
+        {
+            writer.WriteVertical(comparison.VerticalEncodingDelta);
+            a0 = comparison.A1;
+        }
+        else
+        {
+            if (!TryWriteHorizontalCode(comparison, ref writer)) return false;
+        }
+
+        return true;
     }
 
-    public bool TryWriteHorizontalCode(in CcittLineComparison comparison, ref BitTarget writer) =>
+    private bool DoneEncodingLine() => a0 >= lines.LineLength;
+
+    public bool TryWriteHorizontalCode(in CcittLineComparison comparison, ref CcittBitWriter writer) =>
         (a0, lines.CurrentLine[a0 + 1]) switch
         {
              (-1, false) => DoTwoRuns(ref writer, true, 0, comparison.A2, comparison.A2),
@@ -84,39 +78,30 @@ public class CcittType4Encoder : IStreamFilterDefinition
             _=> throw new InvalidOperationException("A0 must be >= -1")
         };
 
-    private bool DoTwoRuns(ref BitTarget writer, bool firstIsWhite, int firstLen, int secondLen, int newA0)
+    private bool DoTwoRuns(ref CcittBitWriter writer, bool firstIsWhite, int firstLen, int secondLen, int newA0)
     {
-        if (!HorizontalSpanEncoder.Write(ref writer, firstIsWhite, firstLen, secondLen))
+        if (!writer.WriteHorizontal(firstIsWhite, firstLen, secondLen))
             return false;
         a0 = newA0;
         return true;
     }
 
-    private int WritePassCode(Span<byte> span) => bitWriter.WriteBits(0b0001, 4, span);
+    private void TryResetForNextLine(ref CcittBitWriter writer)
+    {
+        if (DoneEncodingLine() && writer.HasRoomToWrite()) ResetForNextLine(ref writer);
+    }
 
-    private int ResetForNextLine(in Span<byte> destination)
+    private void ResetForNextLine(ref CcittBitWriter encoding)
     {
         lines = lines.SwapLines();
         a0 = -1;
         currentReadPos = 0;
-        return TryByteAlignEncodedOutput(destination);
+        TryByteAlignEncodedOutput(ref encoding);
     }
 
-    private int TryByteAlignEncodedOutput(in Span<byte> destination) =>
-        parameters.EncodedByteAlign ? bitWriter.FinishWrite(destination) : 0;
-
-    private int WriteVerticalMode(int delta, in Span<byte> destination)
+    private void TryByteAlignEncodedOutput(ref CcittBitWriter encoding)
     {
-        return (delta) switch
-        {
-            -3 => bitWriter.WriteBits(0b0000010, 7, destination),
-            -2 => bitWriter.WriteBits(0b000010, 6, destination),
-            -1 => bitWriter.WriteBits(0b010, 3, destination),
-            1 => bitWriter.WriteBits(0b011, 3, destination),
-            2 => bitWriter.WriteBits(0b000011, 6, destination),
-            3 => bitWriter.WriteBits(0b0000011, 7, destination),
-            _ => bitWriter.WriteBits(0b1, 1, destination),
-        };
+        if (parameters.EncodedByteAlign) encoding.PadUnusedBits();
     }
 
     private bool LineLoadIsIncomplete() => currentReadPos < lines.LineLength;
