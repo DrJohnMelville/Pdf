@@ -69,12 +69,14 @@ public class CcittType4Encoder : IStreamFilterDefinition
 
     private bool DoneEncodingLine() => a0 >= lines.LineLength;
 
-    public bool TryWriteHorizontalCode(in CcittLineComparison comparison, ref CcittBitWriter writer) =>
-        (a0, lines.CurrentLine[a0 + 1]) switch
+    private bool TryWriteHorizontalCode(in CcittLineComparison comparison, ref CcittBitWriter writer) =>
+        (a0, lines.CurrentLine[0]) switch
         {
              (-1, false) => DoTwoRuns(ref writer, true, 0, comparison.A2, comparison.A2),
-            (-1, true) => DoTwoRuns(ref writer, true, comparison.A1, comparison.A2-comparison.A1, comparison.A2),
-            (>=0, var first) => DoTwoRuns(ref writer, first, comparison.A1 - a0, comparison.A2-comparison.A1, comparison.A2),
+            (-1, true) => DoTwoRuns(ref writer, true, 
+                comparison.A1, comparison.A2-comparison.A1, comparison.A2),
+            (>=0, _) => DoTwoRuns(ref writer, lines.CurrentLine[a0], 
+                comparison.A1 - a0, comparison.A2-comparison.A1, comparison.A2),
             _=> throw new InvalidOperationException("A0 must be >= -1")
         };
 

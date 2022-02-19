@@ -41,10 +41,11 @@ public ref struct CCITEncodingTestBuilder
 
 [MacroItem("\xff\xff\xff\xff","V(0)", "AllWhite", "JustData32v4")]
 [MacroItem("\xff\x00\x00\xff","HW(8,16).V(0)", "WhiteBlackWhite", "JustData32v4")]
+[MacroItem("\x00\xFF\xFF\x00","HW(0,8).HW(16,8)", "BackWhiteBlack", "JustData32v4")]
 [MacroItem("\x0\x0\x0\x0","HW(0,32)", "AllBlack", "JustData32v4")]
 [MacroItem("\xFF\xFF\xFF\xF8","VL(3).V(0)", "VerticalMinusThree", "JustData32v4")]
 [MacroItem("\xFF\xFF\xFF\xFE","VL(1).V(0)", "VerticalMinusOne", "JustData32v4")]
-[MacroItem("\x55\x55\x55\x55", "HW(0,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).HB(1,1).VL(2).VL(1).V(0)", "Alternate1And0", "JustData32v4")]
+[MacroItem("\x55\x55\x55\x55", "HW(0,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).VL(2).VL(1).V(0)", "Alternate1And0", "JustData32v4")]
 [MacroItem("\x0\x0\x0\x0\x0\x0\x0\x0","HW(0,32).V(0).V(0)", "TwoBlack", "JustData32v4")]
 [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",new CCITEncodingTestBuilder().~1~.Build(), KnownNames.CCITTFaxDecode, S7_4_6CCITFaxDecode.~3~){}}")]
 public partial class S7_4_6CCITFaxDecode

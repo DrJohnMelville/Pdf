@@ -67,7 +67,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
       case CcittCodeOperation.Pass: DoPass(); break;
       case CcittCodeOperation.HorizontalBlack: DoBlack(code.Length); break;
       case CcittCodeOperation.HorizontalWhite: DoWhite(code.Length); break;
-      case CcittCodeOperation.Vertical: DoVertical(code.Length - 3); break;
+      case CcittCodeOperation.Vertical: DoVertical(code.VerticalOffset); break;
       case CcittCodeOperation.MakeUp:
       case CcittCodeOperation.SwitchToHorizontalMode:
       default:
