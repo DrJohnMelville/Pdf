@@ -17,7 +17,7 @@
         </DrawingBrush>
     </UserControl.Background>
     <Viewbox Stretch="Uniform">
-        <Border BorderBrush="Red" BorderThickness="1">
+        <Border BorderBrush="Red" BorderThickness="1" RenderOptions.BitmapScalingMode="NearestNeighbor">
             <Image Source="{Binding Image}">
                 <Image.LayoutTransform>
                     <ScaleTransform ScaleX="1" ScaleY="-1"></ScaleTransform>
