@@ -11,26 +11,6 @@ using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
-
-public static class UdpConsole
-{
-  private static UdpClient? client = null;
-  private static UdpClient Client
-  {
-    get
-    {
-      client ??= new UdpClient();
-      return client ;
-    }
-  }
-
-  public static string WriteLine(string str)
-  {
-    var bytes = Encoding.UTF8.GetBytes(str);
-    Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
-    return str;
-  }
-}
 public class CcittType4Decoder : IStreamFilterDefinition
 {
   private readonly CcittParameters parameters;
@@ -98,29 +78,16 @@ public class CcittType4Decoder : IStreamFilterDefinition
     }
   }
 
-  private void DoPass()
-  {
-    var b2 = lines.ComputeB2(a0IsNextPixelToWrite, currentRunColor);
-    Log($"Pass => {b2}");
-    FillRunTo(b2);
-  }
+  private void DoPass() => FillRunTo(lines.ComputeB2(a0IsNextPixelToWrite, currentRunColor));
 
   private void DoBlack(ushort codeLength)
   {
-    Log($"Black({codeLength}");
     Debug.Assert(!currentRunColor);
     DoHorizontalRun(codeLength);
-  }
-
-  private void Log(string code)
-  {
-    string CurrentColor() => currentRunColor ? "White" : "Black";
-    UdpConsole.WriteLine($"({CurrentColor()} ,{linesDone}, {a0IsNextPixelToWrite}) {code})");
   }
   
   private void DoWhite(ushort codeLength)
   {
-    Log($"White({codeLength}");
     Debug.Assert(currentRunColor);
    DoHorizontalRun(codeLength);
   }
@@ -134,9 +101,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   private void DoVertical(int delta)
   {
-    var b1 = lines.ComputeB1(a0IsNextPixelToWrite, currentRunColor);
-    Log($"Vertical({delta} => {b1}");
-    FillRunTo(b1+delta);
+    FillRunTo(lines.ComputeB1(a0IsNextPixelToWrite, currentRunColor)+delta);
     SwitchRunColor();
   }
 
