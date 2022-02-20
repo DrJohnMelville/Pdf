@@ -9,7 +9,6 @@ using Melville.Pdf.LowLevelReader.MainDisplay;
 using Melville.Pdf.LowLevelReader.Services;
 using Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
 using Melville.WpfAppFramework.StartupBases;
-
 namespace Melville.Pdf.LowLevelReader.CompositionRoot;
 
 public class Startup: StartupBase
@@ -17,7 +16,7 @@ public class Startup: StartupBase
     [STAThread]
     public static void Main(string[] arguments)
     {
-        ApplicationRootImplementation.Run(new Startup(arguments));
+         ApplicationRootImplementation.Run(new Startup(arguments));
     }
 
     private Startup(string[] arguments) : base(arguments)

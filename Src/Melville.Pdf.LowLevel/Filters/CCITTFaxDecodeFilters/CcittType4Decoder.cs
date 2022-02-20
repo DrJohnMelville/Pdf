@@ -2,6 +2,8 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.Net.Sockets;
+using System.Text;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -9,6 +11,26 @@ using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
+
+public static class UdpConsole
+{
+  private static UdpClient? client = null;
+  private static UdpClient Client
+  {
+    get
+    {
+      client ??= new UdpClient();
+      return client ;
+    }
+  }
+
+  public static string WriteLine(string str)
+  {
+    var bytes = Encoding.UTF8.GetBytes(str);
+    Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
+    return str;
+  }
+}
 public class CcittType4Decoder : IStreamFilterDefinition
 {
   private readonly CcittParameters parameters;
@@ -35,6 +57,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   {
     while (destination.Length > 0)
     {
+      Debug.Assert(a0IsNextPixelToWrite <= lines.LineLength);
       if (DoneReadingLine() && !WriteCurrentLine(ref destination)) return false;
       if (parameters.HasReadEntireImage(linesDone))
         return true;
@@ -43,20 +66,20 @@ public class CcittType4Decoder : IStreamFilterDefinition
     return false;
   }
 
-  private bool DoneReadingLine() => a0 >= lines.LineLength-1;
+  private bool DoneReadingLine() => a0IsNextPixelToWrite >= lines.LineLength;
 
   public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
     ref SequenceReader<byte> source, ref Span<byte> destination) =>
     (source.Position, writer.FinishWrite(destination), true);
 
-  private int a0 = -1;
+  private int a0IsNextPixelToWrite = -1;
   private bool ReadLine(ref SequenceReader<byte> source)
   {
-    while (a0 < lines.LineLength-1)
+    while (a0IsNextPixelToWrite < lines.LineLength)
     {
       if (!reader.TryReadCode(ref source, currentRunColor, out var code)) return false;
       ProcessCode(code);
-    }
+     }
     return true;
   }
 
@@ -67,7 +90,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
       case CcittCodeOperation.Pass: DoPass(); break;
       case CcittCodeOperation.HorizontalBlack: DoBlack(code.Length); break;
       case CcittCodeOperation.HorizontalWhite: DoWhite(code.Length); break;
-      case CcittCodeOperation.Vertical: DoVertical(code.VerticalOffset); break;
+      case CcittCodeOperation.Vertical: DoVertical(code.VerticalOffset);  break;
       case CcittCodeOperation.MakeUp:
       case CcittCodeOperation.SwitchToHorizontalMode:
       default:
@@ -75,30 +98,44 @@ public class CcittType4Decoder : IStreamFilterDefinition
     }
   }
 
-  private void DoPass() => FillRunTo(lines.ComputeB2(a0));
+  private void DoPass()
+  {
+    var b2 = lines.ComputeB2(a0IsNextPixelToWrite, currentRunColor);
+    Log($"Pass => {b2}");
+    FillRunTo(b2);
+  }
 
   private void DoBlack(ushort codeLength)
   {
+    Log($"Black({codeLength}");
     Debug.Assert(!currentRunColor);
     DoHorizontalRun(codeLength);
   }
 
+  private void Log(string code)
+  {
+    string CurrentColor() => currentRunColor ? "White" : "Black";
+    UdpConsole.WriteLine($"({CurrentColor()} ,{linesDone}, {a0IsNextPixelToWrite}) {code})");
+  }
+  
   private void DoWhite(ushort codeLength)
   {
+    Log($"White({codeLength}");
     Debug.Assert(currentRunColor);
    DoHorizontalRun(codeLength);
   }
 
   private void DoHorizontalRun(ushort codeLength)
   {
-    if (codeLength > 0) FillRunTo(a0+1+codeLength);
+    if (codeLength > 0) FillRunTo(Math.Max(a0IsNextPixelToWrite,0)+codeLength);
     SwitchRunColor();
   }
   
 
   private void DoVertical(int delta)
   {
-    var b1 = lines.ComputeB1(a0, currentRunColor);
+    var b1 = lines.ComputeB1(a0IsNextPixelToWrite, currentRunColor);
+    Log($"Vertical({delta} => {b1}");
     FillRunTo(b1+delta);
     SwitchRunColor();
   }
@@ -111,23 +148,23 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   private void FillRunTo(int exclusiveLastPoint)
   {
-    for (int i = a0+1; i < Math.Min(exclusiveLastPoint, lines.LineLength); i++)
+    for (int i = Math.Max(0,a0IsNextPixelToWrite); i < Math.Min(exclusiveLastPoint, lines.LineLength); i++)
     {
       lines.CurrentLine[i] = currentRunColor;
     }
 
-    a0 = exclusiveLastPoint-1;
-    Debug.Assert(a0 >= -1 && a0 <= lines.LineLength);
+    a0IsNextPixelToWrite = exclusiveLastPoint; 
+    Debug.Assert(a0IsNextPixelToWrite > -1 && a0IsNextPixelToWrite <= lines.LineLength);
   }
 
 
-  int currentWritePosition = 0; 
   private bool WriteCurrentLine(ref Span<byte> destination)
   {
     TryWriteCurrentLineToSpan(ref destination);
     return CheckIfLineWriteComplete();
   }
 
+  private int currentWritePosition = 0; 
   private void TryWriteCurrentLineToSpan(ref Span<byte> destination)
   {
     for (; currentWritePosition < lines.LineLength && destination.Length > 0; currentWritePosition++)
@@ -150,7 +187,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   {
     if (parameters.EncodedByteAlign) reader.DiscardPartialByte();
     currentWritePosition = 0;
-    a0 = -1;
+    a0IsNextPixelToWrite = -1;
     lines = lines.SwapLines();
     linesDone++;
     currentRunColor = true;
