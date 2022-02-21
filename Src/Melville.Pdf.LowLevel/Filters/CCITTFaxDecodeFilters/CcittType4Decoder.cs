@@ -55,14 +55,14 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private int a0IsNextPixelToWrite = -1;
   private bool ReadLine(ref SequenceReader<byte> source)
   {
-    while (a0IsNextPixelToWrite < lines.LineLength)
+    while (reader.IsMidHorizontalCode || a0IsNextPixelToWrite < lines.LineLength)
     {
       if (!reader.TryReadCode(ref source, currentRunColor, out var code)) return false;
       ProcessCode(code);
      }
     return true;
   }
-
+  
   private void ProcessCode(CcittCode code)
   {
     switch (code.Operation)

@@ -32,14 +32,22 @@ public class Type4Encoded: DisplayImageTest
 
         private byte[] GenerateImage()
         {
-            var ret = new byte[32*16];
+            var ret = new byte[32*2];
             var bitWriter = new BitWriter();
             var pos = 0;
-            for (int i = 0; i < 16; i++)
-            for (int j = 0; j < 32; j++)
+
+            for (int k = 0; k < 2; k++)
             {
-                pos += bitWriter.WriteBits((i + j) & 1, 1, ret.AsSpan(pos));
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 32; j++)
+                    {
+                        var bit = j / (i+1) % 2;
+                        pos += bitWriter.WriteBits((bit) & 1, 1, ret.AsSpan(pos));
+                    }
+                }
             }
+            bitWriter.FinishWrite(ret.AsSpan(pos));
             return ret;
         }
     }    

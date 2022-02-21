@@ -253,7 +253,8 @@ public partial class CcittCodeReader
     private int currentWord = 0;
     private int currentWordLength = 0;
     private int expectedHorizontalRuns = 0;
-    
+    public bool IsMidHorizontalCode => expectedHorizontalRuns > 0;
+
 
     public bool TryReadCode(ref SequenceReader<byte> source, bool isWhiteRun, out CcittCode code)
     {
