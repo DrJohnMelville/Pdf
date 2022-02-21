@@ -59,6 +59,14 @@ unsafe readonly struct BitmapWriter
         if (readResult.IsCompleted && !EnoughBytesToRead(readResult.Buffer.Length))
             return false;
         var seq = new SequenceReader<byte>(readResult.Buffer);
+        LoadBytes(ref row, ref col, ref seq);
+
+        reader.AdvanceTo(seq.Position, readResult.Buffer.End);
+        return row >= 0;
+    }
+
+    private void LoadBytes(ref int row, ref int col, ref SequenceReader<byte> seq)
+    {
         while (EnoughBytesToRead(seq.Remaining))
         {
             byte* localPointer = buffer + PixelOffset(row, col);
@@ -67,17 +75,14 @@ unsafe readonly struct BitmapWriter
             if (oneOffEnd == localPointer)
             {
                 row--;
+                if (row < 0) return;
                 col = 0;
-                
             }
             else
             {
                 col = width - (int)(oneOffEnd - localPointer) / 4;
             }
         }
-
-        reader.AdvanceTo(seq.Position, readResult.Buffer.End);
-        return row >= 0;
     }
 
     private bool EnoughBytesToRead(long bytesRemaining) => 
