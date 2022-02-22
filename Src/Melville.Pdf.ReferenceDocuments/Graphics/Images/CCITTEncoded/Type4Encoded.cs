@@ -2,12 +2,29 @@
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.CCITTEncoded;
 
-public class Type4Encoded: DisplayImageTest
+public class Type4Encoded : CcottEncodedBase
+{
+    public Type4Encoded() : base("Use A Mask to crop a rectangle out of an image")
     {
-        public Type4Encoded() : base("Use A Mask to crop a rectangle out of an image")
+    }
+    protected override PdfDictionary CcittParamDictionary()
+    {
+        return new DictionaryBuilder()
+            .WithItem(KnownNames.K, -1)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
+            .AsDictionary();
+    }
+
+}
+    public abstract class CcottEncodedBase: DisplayImageTest
+    {
+        public CcottEncodedBase(string helpText) : base(helpText)
         {
         }
-
 
         protected override PdfStream CreateImage()
         {
@@ -19,16 +36,11 @@ public class Type4Encoded: DisplayImageTest
                 .WithItem(KnownNames.Height, new PdfInteger(16))
                 .WithItem(KnownNames.BitsPerComponent, new PdfInteger(1))
                 .WithFilter(FilterName.CCITTFaxDecode)
-                .WithFilterParam(new DictionaryBuilder()
-                    .WithItem(KnownNames.K, -1)
-                    .WithItem(KnownNames.EncodedByteAlign, false)
-                    .WithItem(KnownNames.Columns, 32)
-                    .WithItem(KnownNames.EndOfBlock, false)
-                    .WithItem(KnownNames.BlackIs1, false)
-                    .WithItem(KnownNames.DamagedRowsBeforeError, 0)
-                    .AsDictionary())
+                .WithFilterParam(CcittParamDictionary())
                 .AsStream(GenerateImage());
         }
+
+        protected abstract PdfDictionary CcittParamDictionary();
 
         private byte[] GenerateImage()
         {
