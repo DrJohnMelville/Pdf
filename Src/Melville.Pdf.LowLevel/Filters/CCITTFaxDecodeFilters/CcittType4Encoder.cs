@@ -5,19 +5,18 @@ using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
-public class CcittType4Encoder : IStreamFilterDefinition
+public abstract class CcittEncoderBase : IStreamFilterDefinition
 {
-    private readonly CcittParameters parameters;
-    private readonly BitWriter bitWriter = new();
-    private readonly BitReader bitReader = new();
-    private CcittLinePair lines;
+    protected readonly CcittParameters Parameters;
+    protected readonly BitWriter BitWriter = new();
+    private readonly BitReader BitReader = new();
+    protected CcittLinePair Lines;
     private int currentReadPos;
-    private int a0;
-    
-    public CcittType4Encoder(in CcittParameters parameters)
+
+    protected CcittEncoderBase(CcittParameters parameters)
     {
-        this.parameters = parameters;
-        lines = new CcittLinePair(parameters);
+        Parameters = parameters;
+        Lines = new CcittLinePair(parameters);
     }
 
     public int MinWriteSize => 10;
@@ -26,16 +25,42 @@ public class CcittType4Encoder : IStreamFilterDefinition
         ref SequenceReader<byte> source, ref Span<byte> destination)
     {
         if (source.Length == 0)
-            return (source.Position, bitWriter.FinishWrite(destination), true);
+            return (source.Position, BitWriter.FinishWrite(destination), true);
         if (LineLoadIsIncomplete() && !LoadLine(ref source))
-                return (source.Position, 0, false);
-        return TryWriteCurrentRow(ref source, destination);
+            return (source.Position, 0, false);
+        return (source.Position, TryWriteCurrentRow(destination), false);
     }
 
-    private (SequencePosition SourceConsumed, int bytesWritten, bool Done) TryWriteCurrentRow(
-        ref SequenceReader<byte> source, Span<byte> destination)
+    private bool LineLoadIsIncomplete() => currentReadPos < Lines.LineLength;
+
+    private bool LoadLine(ref SequenceReader<byte> source)
     {
-        var writer = new CcittBitWriter(destination, bitWriter);
+        for (; currentReadPos < Lines.CurrentLine.Length; currentReadPos++)
+        {
+            if (!BitReader.TryRead(1, ref source, out var pixel)) return false;
+            Lines.CurrentLine[currentReadPos] = Parameters.IsWhiteValue(pixel);
+        }
+        return true;
+    }
+    
+    protected void SetCurrentLineAsUnread() => currentReadPos = 0;
+
+
+    protected abstract int TryWriteCurrentRow(Span<byte> destination);
+
+}
+
+public class CcittType4Encoder : CcittEncoderBase
+{
+    private int a0 = -1;
+    
+    public CcittType4Encoder(in CcittParameters parameters): base(parameters)
+    {
+    }
+    
+    protected override int TryWriteCurrentRow(Span<byte> destination)
+    {
+        var writer = new CcittBitWriter(destination, BitWriter);
         while (!DoneEncodingLine() && writer.HasRoomToWrite() && TryWriteRun(ref writer))
         {
             // do nothing, the TryWriteRun call does the work as long as it can
@@ -43,12 +68,12 @@ public class CcittType4Encoder : IStreamFilterDefinition
 
         TryResetForNextLine(ref writer);
 
-        return (source.Position, writer.BytesWritten, false);
+        return writer.BytesWritten;
     }
     
     private bool TryWriteRun(ref CcittBitWriter writer)
     {
-        var comparison = lines.CompareLinesFrom(a0);
+        var comparison = Lines.CompareLinesFrom(a0);
         if (comparison.CanPassEncode)
         {
             writer.WritePass();
@@ -61,7 +86,7 @@ public class CcittType4Encoder : IStreamFilterDefinition
         }
         else
         {
-            if (!writer.WriteHorizontal(lines.ImputedCurrentColor(a0),
+            if (!writer.WriteHorizontal(Lines.ImputedCurrentColor(a0),
                     comparison.FirstHorizontalDelta(a0), comparison.SecondHorizontalDelta)) return false;
             a0 = comparison.A2;
         }
@@ -74,31 +99,18 @@ public class CcittType4Encoder : IStreamFilterDefinition
         if (DoneEncodingLine() && writer.HasRoomToWrite()) ResetForNextLine(ref writer);
     }
 
-    private bool DoneEncodingLine() => a0 >= lines.LineLength;
+    private bool DoneEncodingLine() => a0 >= Lines.LineLength;
 
     private void ResetForNextLine(ref CcittBitWriter encoding)
     {
-        lines = lines.SwapLines();
+        Lines = Lines.SwapLines();
         a0 = -1;
-        currentReadPos = 0;
+        SetCurrentLineAsUnread();
         TryByteAlignEncodedOutput(ref encoding);
     }
-
+    
     private void TryByteAlignEncodedOutput(ref CcittBitWriter encoding)
     {
-        if (parameters.EncodedByteAlign) encoding.PadUnusedBits();
-    }
-
-    private bool LineLoadIsIncomplete() => currentReadPos < lines.LineLength;
-
-    private bool LoadLine(ref SequenceReader<byte> source)
-    {
-        for (; currentReadPos < lines.CurrentLine.Length; currentReadPos++)
-        {
-            if (!bitReader.TryRead(1, ref source, out var pixel)) return false;
-            lines.CurrentLine[currentReadPos] = parameters.IsWhiteValue(pixel);
-        }
-        a0 = -1;
-        return true;
+        if (Parameters.EncodedByteAlign) encoding.PadUnusedBits();
     }
 }

@@ -18,6 +18,24 @@ public class CcittType4Encoded : CcottEncodedBase
     }
 
 }
+public class CcittType3Encoded : CcottEncodedBase
+{
+    public CcittType3Encoded() : base("Encode using CCITT Type 3 encoding")
+    {
+    }
+    protected override PdfDictionary CcittParamDictionary()
+    {
+        return new DictionaryBuilder()
+            .WithItem(KnownNames.K, 0)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
+            .AsDictionary();
+    }
+
+}
 
 public class CcittEncodedByteAlign : CcottEncodedBase
 {
