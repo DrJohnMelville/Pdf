@@ -50,5 +50,5 @@ public readonly struct CcittParameters
     public byte ByteForColor(bool white) => (white ^ BlackIs1)?(byte)1:(byte)0;
 
     public bool HasReadEntireImage(int linesCompleted) =>
-        Rows > 0 && linesCompleted >= Rows;
+        Rows > 0 && linesCompleted >= Rows && !EndOfBlock;
 }
