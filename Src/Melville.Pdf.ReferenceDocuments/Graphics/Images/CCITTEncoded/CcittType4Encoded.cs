@@ -18,9 +18,10 @@ public class CcittType4Encoded : CcottEncodedBase
     }
 
 }
-public class CcittType3Encoded : CcottEncodedBase
+
+public class CcittType3K0Encoded : CcottEncodedBase
 {
-    public CcittType3Encoded() : base("Encode using CCITT Type 3 encoding")
+    public CcittType3K0Encoded() : base("Encode using CCITT Type 3 K = 0 encoding")
     {
     }
     protected override PdfDictionary CcittParamDictionary()
@@ -35,6 +36,23 @@ public class CcittType3Encoded : CcottEncodedBase
             .AsDictionary();
     }
 
+}
+public class CcittType3K1Encoded : CcottEncodedBase
+{
+    public CcittType3K1Encoded() : base("Encode using CCITT Type 3 K = 1 encoding")
+    {
+    }
+    protected override PdfDictionary CcittParamDictionary()
+    {
+        return new DictionaryBuilder()
+            .WithItem(KnownNames.K, 0)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
+            .AsDictionary();
+    }
 }
 
 public class CcittEncodedByteAlign : CcottEncodedBase

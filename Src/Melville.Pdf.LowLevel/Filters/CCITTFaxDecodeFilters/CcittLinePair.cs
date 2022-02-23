@@ -37,6 +37,7 @@ public readonly struct CcittLinePair
             ? FindColor(PriorLine, 0, false)
             : FindChangeToOppositeColor(a0, baseColor);
 
+    public int StartOfNextRun(int a0) => FindColor(CurrentLine, a0, !CurrentLine[a0]);
     private int FindChangeToOppositeColor(int a0, bool baseColor)
     {
         Debug.Assert(a0 >= 0);

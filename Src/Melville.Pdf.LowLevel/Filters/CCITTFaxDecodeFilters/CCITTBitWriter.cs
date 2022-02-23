@@ -37,7 +37,7 @@ public ref struct CcittBitWriter
 
     
     
-    public bool WriteHorizontal(bool firstIsWhite, int firstRun, int secondRun)
+    public bool WriteHorizontal(bool firstIsWhite, int firstRun, int secondRun=-1)
     {
         var savedState = writer.GetState();
         var savedTarget = target;
@@ -46,14 +46,14 @@ public ref struct CcittBitWriter
         target = savedTarget;
         return false;
     }
-
+    
     private void WriteBits(uint data, int bits)
     {
         Debug.Assert(HasRoomToWrite());
         target.TryWriteBits(data, bits);
     }
 
-    public bool HasRoomToWrite() => target.BytesRemaining() > 0;
+    public bool HasRoomToWrite(int bytes = 1) => target.BytesRemaining() >= bytes;
 
     public Span<byte> WrittenSpan()
     {
@@ -66,4 +66,9 @@ public ref struct CcittBitWriter
         Debug.Assert(HasRoomToWrite());
         target.FinishWrite();
     }
+
+    public bool WriteEndOfLine(uint nextLineEncoding, int k) =>
+        k==0 ? 
+        target.TryWriteBits(0b000000000001, 12):
+        target.TryWriteBits(nextLineEncoding | 0b0000000000010, 13);
 }

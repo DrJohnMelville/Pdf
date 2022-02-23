@@ -2,10 +2,19 @@
 
 public static class HorizontalSpanEncoder
 {
-    public static bool Write(ref BitTarget target, bool firstRunWhite, int firstRun, int secondRun) =>
-        target.TryWriteBits(0b001, 3) &&
-        WriteRun(ref target, firstRunWhite, firstRun) &&
-        WriteRun(ref target, !firstRunWhite, secondRun);
+    public static bool Write(ref BitTarget target, bool firstRunWhite, int firstRun, int secondRun)
+    {
+        return secondRun < 0?
+            WriteRun(ref target, firstRunWhite, firstRun):
+            WriteTwoRunSequence(ref target, firstRunWhite, firstRun, secondRun);
+    }
+
+    private static bool WriteTwoRunSequence(ref BitTarget target, bool firstRunWhite, int firstRun, int secondRun)
+    {
+        return target.TryWriteBits(0b001, 3) &&
+               WriteRun(ref target, firstRunWhite, firstRun) &&
+               WriteRun(ref target, !firstRunWhite, secondRun);
+    }
 
     private static bool WriteRun(ref BitTarget target, bool whiteRun, int length) =>
         (whiteRun ? whiteEncoder : blackEncoder).WriteRun(ref target, length);

@@ -15,9 +15,13 @@ public class HorizontalRunEncoder
         this.makeupSpans = makeupSpans;
     }
 
-    public bool WriteRun(ref BitTarget target, int length) => length < 64 ? 
-        DoWrite(ref target, terminatingSpans[length]) : 
-        WriteWithMakeupRun(ref target, length);
+    public bool WriteRun(ref BitTarget target, int length)
+    {
+        Debug.Assert(length >= 0);
+        return length < 64 ? 
+            DoWrite(ref target, terminatingSpans[length]) : 
+            WriteWithMakeupRun(ref target, length);
+    }
 
     private bool WriteWithMakeupRun(ref BitTarget target, int length)
     {

@@ -12,6 +12,7 @@ public abstract class CcittEncoderBase : IStreamFilterDefinition
     private readonly BitReader BitReader = new();
     protected CcittLinePair Lines;
     private int currentReadPos;
+    protected int a0 = -1;
 
     protected CcittEncoderBase(CcittParameters parameters)
     {
@@ -43,17 +44,34 @@ public abstract class CcittEncoderBase : IStreamFilterDefinition
         return true;
     }
     
-    protected void SetCurrentLineAsUnread() => currentReadPos = 0;
+    protected bool DoneEncodingLine() => a0 >= Lines.LineLength;
 
 
+    private void SetCurrentLineAsUnEncoded() => a0 = -1;
+
+    private void SetCurrentLineAsUnread() => currentReadPos = 0;
+    
+    private void TryByteAlignEncodedOutput(ref CcittBitWriter encoding)
+    {
+        if (Parameters.EncodedByteAlign) encoding.PadUnusedBits();
+    }
+    protected void TryResetForNextLine(ref CcittBitWriter writer)
+    {
+        if (writer.HasRoomToWrite(3)) ResetForNextLine(ref writer);
+    }
+    protected virtual void ResetForNextLine(ref CcittBitWriter writer)
+    {
+        Lines = Lines.SwapLines();
+        SetCurrentLineAsUnEncoded();
+        SetCurrentLineAsUnread();
+        TryByteAlignEncodedOutput(ref writer);
+    }
     protected abstract int TryWriteCurrentRow(Span<byte> destination);
-
 }
 
 public class CcittType4Encoder : CcittEncoderBase
 {
-    private int a0 = -1;
-    
+   
     public CcittType4Encoder(in CcittParameters parameters): base(parameters)
     {
     }
@@ -66,7 +84,7 @@ public class CcittType4Encoder : CcittEncoderBase
             // do nothing, the TryWriteRun call does the work as long as it can
         }
 
-        TryResetForNextLine(ref writer);
+        if (DoneEncodingLine()) TryResetForNextLine(ref writer);
 
         return writer.BytesWritten;
     }
@@ -90,27 +108,6 @@ public class CcittType4Encoder : CcittEncoderBase
                     comparison.FirstHorizontalDelta(a0), comparison.SecondHorizontalDelta)) return false;
             a0 = comparison.A2;
         }
-
         return true;
-    }
-
-    private void TryResetForNextLine(ref CcittBitWriter writer)
-    {
-        if (DoneEncodingLine() && writer.HasRoomToWrite()) ResetForNextLine(ref writer);
-    }
-
-    private bool DoneEncodingLine() => a0 >= Lines.LineLength;
-
-    private void ResetForNextLine(ref CcittBitWriter encoding)
-    {
-        Lines = Lines.SwapLines();
-        a0 = -1;
-        SetCurrentLineAsUnread();
-        TryByteAlignEncodedOutput(ref encoding);
-    }
-    
-    private void TryByteAlignEncodedOutput(ref CcittBitWriter encoding)
-    {
-        if (Parameters.EncodedByteAlign) encoding.PadUnusedBits();
     }
 }
