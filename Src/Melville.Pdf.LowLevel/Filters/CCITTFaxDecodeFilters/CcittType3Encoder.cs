@@ -8,32 +8,17 @@ public class CcittType3Encoder : CcittEncoderBase
     public CcittType3Encoder(in CcittParameters parameters) : base(parameters)
     {
     }
-
-    protected override int TryWriteCurrentRow(Span<byte> destination)
+    
+    protected override void WriteLineSuffix(ref CcittBitWriter writer)
     {
-        var writer = new CcittBitWriter(destination, BitWriter);
-        if (!TryWriteLinePrefix(ref writer)) return writer.BytesWritten;
-        while (!DoneEncodingLine() && writer.HasRoomToWrite() && TryWriteRun(ref writer))
-        {
-            // do nothing
-        }
-
-        if (DoneEncodingLine()) TryResetForNextLine(ref writer);
-        
-        return writer.BytesWritten;
-    }
-
-    protected override void ResetForNextLine(ref CcittBitWriter writer)
-    {
-        var result = WriteEndOfLine(ref writer);
-        Debug.Assert(result); // TryResetForNextLine makes this work every time.
-        base.ResetForNextLine(ref writer);
+        bool success = writer.WriteEndOfLine(1, Parameters.K);
+        Debug.Assert(success);
     }
 
     private bool WriteEndOfLine(ref CcittBitWriter writer) =>
         writer.HasRoomToWrite(3) && writer.WriteEndOfLine(1, Parameters.K);
 
-    private bool TryWriteRun(ref CcittBitWriter writer)
+    protected override bool TryWriteRun(ref CcittBitWriter writer)
     {
         var a1 = Lines.StartOfNextRun(a0);
         if (!writer.WriteHorizontal(Lines.CurrentLine[a0], a1 - a0)) return false;
@@ -41,7 +26,7 @@ public class CcittType3Encoder : CcittEncoderBase
         return true;
     }
 
-    private bool TryWriteLinePrefix(ref CcittBitWriter writer)
+    protected override bool TryWriteLinePrefix(ref CcittBitWriter writer)
     {
         if (!EncodingImaginaryFirstPixel()) return true;
         if (! (Lines.CurrentLine[0] || WriteEmptyWhiteRun(ref writer))) return false;

@@ -59,14 +59,42 @@ public abstract class CcittEncoderBase : IStreamFilterDefinition
     {
         if (writer.HasRoomToWrite(3)) ResetForNextLine(ref writer);
     }
-    protected virtual void ResetForNextLine(ref CcittBitWriter writer)
+    protected void ResetForNextLine(ref CcittBitWriter writer)
     {
         Lines = Lines.SwapLines();
         SetCurrentLineAsUnEncoded();
         SetCurrentLineAsUnread();
         TryByteAlignEncodedOutput(ref writer);
     }
-    protected abstract int TryWriteCurrentRow(Span<byte> destination);
+
+    private int TryWriteCurrentRow(Span<byte> destination)
+    {
+        var writer = new CcittBitWriter(destination, BitWriter);
+        if (!TryWriteLinePrefix(ref writer)) return writer.BytesWritten;
+        while (!DoneEncodingLine() && writer.HasRoomToWrite() && TryWriteRun(ref writer))
+        {
+            // do nothing
+        }
+
+        if (DoneEncodingLine() && writer.HasRoomToWrite(3))
+        {
+            WriteLineSuffix(ref writer);
+            TryResetForNextLine(ref writer);
+        }
+        
+        return writer.BytesWritten;
+    }
+    
+    protected abstract bool TryWriteRun(ref CcittBitWriter writer);
+    protected abstract bool TryWriteLinePrefix(ref CcittBitWriter writer);
+    protected abstract void WriteLineSuffix(ref CcittBitWriter writer);
+}
+
+public interface ICcittLineEncoder
+{
+    bool TryWriteLinePrefix(ref CcittBitWriter writer) => true;
+    void WriteLineSuffix(ref CcittBitWriter writer) {}
+    bool TryWriteRun(ref CcittBitWriter writer)
 }
 
 public class CcittType4Encoder : CcittEncoderBase
@@ -75,21 +103,10 @@ public class CcittType4Encoder : CcittEncoderBase
     public CcittType4Encoder(in CcittParameters parameters): base(parameters)
     {
     }
-    
-    protected override int TryWriteCurrentRow(Span<byte> destination)
-    {
-        var writer = new CcittBitWriter(destination, BitWriter);
-        while (!DoneEncodingLine() && writer.HasRoomToWrite() && TryWriteRun(ref writer))
-        {
-            // do nothing, the TryWriteRun call does the work as long as it can
-        }
 
-        if (DoneEncodingLine()) TryResetForNextLine(ref writer);
-
-        return writer.BytesWritten;
-    }
-    
-    private bool TryWriteRun(ref CcittBitWriter writer)
+    protected override bool TryWriteLinePrefix(ref CcittBitWriter writer) => true;
+    protected override void WriteLineSuffix(ref CcittBitWriter writer) {}
+    protected override bool TryWriteRun(ref CcittBitWriter writer)
     {
         var comparison = Lines.CompareLinesFrom(a0);
         if (comparison.CanPassEncode)
