@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
-public record struct CcittLineComparison(int A1, int A2, int B1, int B2)
+public record struct LineComparison(int A1, int A2, int B1, int B2)
 {
     public bool CanPassEncode => B2 < A1;
     

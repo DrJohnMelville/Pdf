@@ -2,32 +2,32 @@
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
-public readonly struct CcittLinePair
+public readonly struct LinePair
 {
-    public bool[] PriorLine { get; }
+    private bool[] PriorLine { get; }
     public bool[] CurrentLine { get; }
     public int LineLength => CurrentLine.Length;
 
-    public CcittLinePair(bool[] priorLine, bool[] currentLine)
+    public LinePair(bool[] priorLine, bool[] currentLine)
     {
         Debug.Assert(priorLine.Length == currentLine.Length);
         PriorLine = priorLine;
         CurrentLine = currentLine;
     }
     
-    public CcittLinePair(in CcittParameters parameters): 
+    public LinePair(in CcittParameters parameters): 
         this(parameters.CreateWhiteRow(), parameters.EmptyLine()){}
 
-    public CcittLinePair SwapLines() => new(CurrentLine, PriorLine);
+    public LinePair SwapLines() => new(CurrentLine, PriorLine);
 
-    public CcittLineComparison CompareLinesFrom(int a0)
+    public LineComparison CompareLinesFrom(int a0)
     {
         var baseColor = ImputedColorAt(CurrentLine, a0);
         var a1 = FindColor(CurrentLine, a0+1, !baseColor);
         var a2 = FindColor(CurrentLine, a1, baseColor);
         var b1 = ComputeB1(a0, baseColor);
         var b2 = FindColor(PriorLine, b1, baseColor);
-        return new CcittLineComparison(a1, a2, b1, b2);
+        return new LineComparison(a1, a2, b1, b2);
     }
     
     public int ComputeB2(int a0, bool baseColor) => 

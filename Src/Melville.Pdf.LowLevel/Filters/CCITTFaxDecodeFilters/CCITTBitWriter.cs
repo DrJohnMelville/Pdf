@@ -34,8 +34,6 @@ public ref struct CcittBitWriter
             default: throw new InvalidOperationException("Invalid Vertical Offset");
         }    
     }
-
-    
     
     public bool WriteHorizontal(bool firstIsWhite, int firstRun, int secondRun=-1)
     {
@@ -67,8 +65,6 @@ public ref struct CcittBitWriter
         target.FinishWrite();
     }
 
-    public bool WriteEndOfLine(uint nextLineEncoding, int k) =>
-        k==0 ? 
-        target.TryWriteBits(0b000000000001, 12):
-        target.TryWriteBits(nextLineEncoding | 0b0000000000010, 13);
+    public bool WriteEndOfLineCode() => target.TryWriteBits(0b000000000001, 12);
+    public bool WhiteNextLineEncodingBit(bool nextIs1d) => target.TryWriteBits(nextIs1d ? 1u : 0, 1);
 }

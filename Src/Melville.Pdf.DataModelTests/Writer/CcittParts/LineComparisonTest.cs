@@ -8,7 +8,7 @@ public class LineComparisonTest
 {
     [Theory]
     [MemberData(nameof(TestCases))]
-    public void LineComparisonTestCase(CcittLinePair pair, CcittLineComparison result, int a0)
+    public void LineComparisonTestCase(LinePair pair, LineComparison result, int a0)
     {
         Assert.Equal(result, pair.CompareLinesFrom(a0));
     }
@@ -31,8 +31,8 @@ public class LineComparisonTest
     }
     private static object[] TestCase(string prior, string current, int a0, int a1, int a2, int b1, int b2)
     {
-        var pair = new CcittLinePair(RowFromStream(prior), RowFromStream(current));
-        var result = new CcittLineComparison(a1, a2, b1, b2);
+        var pair = new LinePair(RowFromStream(prior), RowFromStream(current));
+        var result = new LineComparison(a1, a2, b1, b2);
         return new object[] { pair, result, a0 };
     }
 

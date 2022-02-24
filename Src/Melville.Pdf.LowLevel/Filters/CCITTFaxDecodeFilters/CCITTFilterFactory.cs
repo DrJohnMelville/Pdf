@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -8,11 +9,15 @@ namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
 public static class CcittFilterFactory
 {
-    public async static ValueTask<IStreamFilterDefinition> Encoder(PdfObject? arg)
-    {
-        var args = await CcittParameters.FromPdfObject(arg).CA();
-        return args.K >= 0 ? (IStreamFilterDefinition)new CcittType3Encoder(args) : new CcittType4Encoder(args);
-    }
+    public static async ValueTask<IStreamFilterDefinition> Encoder(PdfObject? arg) => 
+        SelectEncoderType(await CcittParameters.FromPdfObject(arg).CA());
+
+    private static IStreamFilterDefinition SelectEncoderType(CcittParameters args) => args.K switch
+        {
+            < 0 => new CcittType4Encoder(args),
+            0 => new CcittType31dEncoder(args),
+            > 0 => new CcittType3SwitchingEncoder(args)
+        };
 
     public static async ValueTask<IStreamFilterDefinition> Decoder(PdfObject? arg)
     {

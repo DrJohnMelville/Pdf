@@ -14,7 +14,7 @@ namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 public class CcittType4Decoder : IStreamFilterDefinition
 {
   private readonly CcittParameters parameters;
-  private CcittLinePair lines;
+  private LinePair lines;
   private readonly CcittCodeReader reader = new ();
   private readonly BitWriter writer = new();
   private int linesDone = 0;
@@ -22,7 +22,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   public CcittType4Decoder(CcittParameters parameters)
   {
     this.parameters = parameters;
-    lines = new CcittLinePair(parameters);
+    lines = new LinePair(parameters);
   }
 
   public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
