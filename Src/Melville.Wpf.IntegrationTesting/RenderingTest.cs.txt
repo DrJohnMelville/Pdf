@@ -198,3 +198,9 @@ RenderingTest.cs_Skia-CcittEncodedByteAlign|375525976
 RenderingTest.cs_Skia-CcittFirst8Rows|2465361491
 RenderingTest.cs_Skia-CcittEndOfBlockRescuesLowRowCount|375525976
 RenderingTest.cs_Skia-CcittBlackIs1|375525976
+RenderingTest.cs_wpf-CcittType3K0Encoded|1114358541
+RenderingTest.cs_wpf-CcittType3K1Encoded|1114358541
+RenderingTest.cs_wpf-CcittType3K10Encoded|1114358541
+RenderingTest.cs_Skia-CcittType3K0Encoded|375525976
+RenderingTest.cs_Skia-CcittType3K1Encoded|375525976
+RenderingTest.cs_Skia-CcittType3K10Encoded|375525976

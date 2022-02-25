@@ -3,9 +3,9 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.CcittParts;
 
-public class CcittCodeReaderTest
+public class TwoDimensionalLineCodeDictionaryTest
 {
-    private readonly CcittCodeReader sut = new();
+    private readonly CcittCodeReader sut = new(new TwoDimensionalLineCodeDictionary());
 
     [Theory]
     [InlineData("0001", CcittCodeOperation.Pass, 0)]

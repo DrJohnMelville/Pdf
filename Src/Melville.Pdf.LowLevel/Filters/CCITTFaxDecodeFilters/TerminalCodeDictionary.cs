@@ -10,14 +10,16 @@ public partial class TerminalCodeDictionary: ICodeDictionay
 
     private TerminalCodeDictionary() { }
 
-    public bool TryReadCode(in (int SourceBits, int BitLength) input, bool isWhiteRun, out CcittCode code) => 
+    public bool TryReadCode(in (int BitLength, int SourceBits) input, bool isWhiteRun, out CcittCode code) => 
         SelectDictionary(isWhiteRun).TryGetValue(input, out code);
 
-    private static Dictionary<(int, int), CcittCode> SelectDictionary(bool isWhiteRun) => 
+    private static Dictionary<(int BitLength, int SourceBits), CcittCode> SelectDictionary(bool isWhiteRun) => 
         isWhiteRun?White:Black;
 
-    private static readonly Dictionary<(int, int), CcittCode> White = CreateWhiteReader();
-    private static readonly Dictionary<(int, int), CcittCode> Black = CreateBlackReader();
+    public bool IsAtValidEndOfLine => true;
+
+    private static readonly Dictionary<(int BitLength, int SourceBits), CcittCode> White = CreateWhiteReader();
+    private static readonly Dictionary<(int BitLength, int SourceBits), CcittCode> Black = CreateBlackReader();
 
 [MacroItem("HorizontalWhite", 0, 8, "00110101")]
 [MacroItem("HorizontalWhite", 1, 6, "000111")]

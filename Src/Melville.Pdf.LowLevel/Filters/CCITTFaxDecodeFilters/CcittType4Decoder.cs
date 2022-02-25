@@ -12,14 +12,17 @@ public class CcittType4Decoder : IStreamFilterDefinition
 {
   private readonly CcittParameters parameters;
   private LinePair lines;
-  private readonly CcittCodeReader reader = new ();
+  private readonly CcittCodeReader reader;
+  private readonly ICodeDictionay codeDictionay;
   private readonly BitWriter writer = new();
   private int linesDone = 0;
   
-  public CcittType4Decoder(CcittParameters parameters)
+  public CcittType4Decoder(CcittParameters parameters, ICodeDictionay codeDictionay)
   {
     this.parameters = parameters;
     lines = new LinePair(parameters);
+    this.codeDictionay = codeDictionay;
+    reader = new(codeDictionay);
   }
 
   public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
@@ -52,15 +55,13 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private int a0IsNextPixelToWrite = -1;
   private bool ReadLine(ref SequenceReader<byte> source)
   {
-    while (IsMidHorizontalCode || a0IsNextPixelToWrite < lines.LineLength)
+    while (!codeDictionay.IsAtValidEndOfLine || a0IsNextPixelToWrite < lines.LineLength)
     {
       if (!reader.TryReadCode(ref source, currentRunColor, out var code)) return false;
       ProcessCode(code);
      }
     return true;
   }
-  private int horizontalRunCount;
-  public bool IsMidHorizontalCode => (horizontalRunCount % 2) == 1;
 
   private void ProcessCode(CcittCode code)
   {
@@ -70,12 +71,13 @@ public class CcittType4Decoder : IStreamFilterDefinition
       case CcittCodeOperation.HorizontalBlack: DoBlack(code.Length); break;
       case CcittCodeOperation.HorizontalWhite: DoWhite(code.Length); break;
       case CcittCodeOperation.Vertical: DoVertical(code.VerticalOffset);  break;
-      case CcittCodeOperation.MakeUp:
-      case CcittCodeOperation.SwitchToHorizontalMode:
+      case CcittCodeOperation.EndOfLine: DoEndOfLine(); break;
       default:
         throw new PdfParseException($"Code {code.Operation} should not have escaped the CccitCodeReader");
     }
   }
+
+  private void DoEndOfLine() => Debug.Assert(a0IsNextPixelToWrite >= lines.LineLength);
 
   private void DoPass() => FillRunTo(lines.ComputeB2(a0IsNextPixelToWrite, currentRunColor));
 
@@ -93,7 +95,6 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   private void DoHorizontalRun(ushort codeLength)
   {
-    horizontalRunCount++;
     if (codeLength > 0) FillRunTo(Math.Max(a0IsNextPixelToWrite,0)+codeLength);
     SwitchRunColor();
   }
@@ -151,7 +152,6 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private void ResetReaderForNextLine()
   {
     if (parameters.EncodedByteAlign) reader.DiscardPartialByte();
-    horizontalRunCount = 0;
     currentWritePosition = 0;
     a0IsNextPixelToWrite = -1;
     lines = lines.SwapLines();

@@ -19,11 +19,13 @@ public static class CcittFilterFactory
             > 0 => new CcittType3SwitchingEncoder(args)
         };
 
-    public static async ValueTask<IStreamFilterDefinition> Decoder(PdfObject? arg)
+    public static async ValueTask<IStreamFilterDefinition> Decoder(PdfObject? arg) => 
+        SelectDecoderType(await CcittParameters.FromPdfObject(arg).CA());
+
+    private static IStreamFilterDefinition SelectDecoderType(CcittParameters args) => args.K switch
     {
-        var args = await CcittParameters.FromPdfObject(arg).CA();
-        if (args.K >= 0)
-            throw new NotSupportedException("Type 3 CCITT encoding not implemented yet.");
-        return new CcittType4Decoder(args);
-    }
+        < 0 => new CcittType4Decoder(args, new TwoDimensionalLineCodeDictionary()),
+        0 => new CcittType4Decoder(args, new Type3K0LineCodeDictionary()),
+        > 0 => new CcittType4Decoder(args, new Type3SwitchingLineCodeDictionary())
+    };
 }

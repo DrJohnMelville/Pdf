@@ -10,7 +10,7 @@ public class MakeUpExpander : ICodeDictionay
         this.innerDictionary = innerDictionary;
     }
 
-    public bool TryReadCode(in (int SourceBits, int BitLength) input, bool isWhiteRun, out CcittCode code)
+    public bool TryReadCode(in (int BitLength, int SourceBits) input, bool isWhiteRun, out CcittCode code)
     {
         if (!innerDictionary.TryReadCode(input, isWhiteRun, out code)) return false;
         switch (code.Operation)
@@ -37,4 +37,6 @@ public class MakeUpExpander : ICodeDictionay
         extraPixels += code.Length;
         code = new CcittCode(CcittCodeOperation.NoCode, 0);
     }
+
+    public bool IsAtValidEndOfLine => extraPixels == 0;
 }
