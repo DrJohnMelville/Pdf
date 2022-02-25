@@ -1,47 +1,23 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
-public enum CcittCodeOperation : byte
-{
-    Pass = 0,
-    HorizontalBlack = 1,
-    HorizontalWhite = 2,
-    Vertical = 3,
-    MakeUp = 4,
-    SwitchToHorizontalMode = 5,
-    EndOfLine = 6,
-    NoCode = 7,
-}
 
-public interface ICodeDictionay
+public partial class TerminalCodeDictionary: ICodeDictionay
 {
-    bool TryReadCode(
-        in (int SourceBits, int BitLength) input, bool isWhiteRun, out CcittCode code);
-}
+    public static ICodeDictionay Instance = new TerminalCodeDictionary();
 
-public partial class CcittCodeReader
-{
-    private Dictionary<(int, int), CcittCode> operationCodeBook = new()
-    {
-        //Pass Mode
-        {(4, 0b0001), new CcittCode(CcittCodeOperation.Pass, 0)},
-        // verticalCodes
-        {(1,0b1), new CcittCode(CcittCodeOperation.Vertical, 3)},
-        {(3,0b011), new CcittCode(CcittCodeOperation.Vertical, 4)},
-        {(6,0b000011), new CcittCode(CcittCodeOperation.Vertical, 5)},
-        {(7,0b0000011), new CcittCode(CcittCodeOperation.Vertical, 6)},
-        {(3,0b010), new CcittCode(CcittCodeOperation.Vertical, 2)},
-        {(6,0b000010), new CcittCode(CcittCodeOperation.Vertical, 1)},
-        {(7,0b0000010), new CcittCode(CcittCodeOperation.Vertical, 0)},
-        //Transition to horizontalMode
-        {(3, 0b001), new CcittCode(CcittCodeOperation.SwitchToHorizontalMode, 0)}
-    };
+    private TerminalCodeDictionary() { }
+
+    public bool TryReadCode(in (int SourceBits, int BitLength) input, bool isWhiteRun, out CcittCode code) => 
+        SelectDictionary(isWhiteRun).TryGetValue(input, out code);
+
+    private static Dictionary<(int, int), CcittCode> SelectDictionary(bool isWhiteRun) => 
+        isWhiteRun?White:Black;
+
+    private static readonly Dictionary<(int, int), CcittCode> White = CreateWhiteReader();
+    private static readonly Dictionary<(int, int), CcittCode> Black = CreateBlackReader();
 
 [MacroItem("HorizontalWhite", 0, 8, "00110101")]
 [MacroItem("HorizontalWhite", 1, 6, "000111")]
@@ -147,10 +123,12 @@ public partial class CcittCodeReader
 [MacroItem("MakeUp", 2432, 12, "000000011101")]
 [MacroItem("MakeUp", 2496, 12, "000000011110")]
 [MacroItem("MakeUp", 2560, 12, "000000011111")]
-[MacroCode(  "        {(~2~,0b~3~), new CcittCode(CcittCodeOperation.~0~, ~1~)},\r\n",
-        Prefix  ="    private Dictionary<(int, int), CcittCode> whiteCodeBook = new() {",
+[MacroCode(  "        {(~2~,0b~3~), new CcittCode(CcittCodeOperation.~0~, ~1~)},",
+    Prefix  ="    private static partial Dictionary<(int, int), CcittCode> CreateWhiteReader() => new Dictionary<(int, int), CcittCode>{",
         Postfix = "    };")]
-    private readonly CcittCode initiateHorizontal = new(CcittCodeOperation.SwitchToHorizontalMode, 0);
+
+    private static partial Dictionary<(int, int), CcittCode> CreateWhiteReader();
+
 [MacroItem("HorizontalBlack", 0, 10, "0000110111")]
 [MacroItem("HorizontalBlack", 1, 3, "010")]
 [MacroItem("HorizontalBlack", 2, 2, "11")]
@@ -255,55 +233,9 @@ public partial class CcittCodeReader
 [MacroItem("MakeUp", 2432, 12, "000000011101")]
 [MacroItem("MakeUp", 2496, 12, "000000011110")]
 [MacroItem("MakeUp", 2560, 12, "000000011111")]
-[MacroCode(  "        {(~2~,0b~3~), new CcittCode(CcittCodeOperation.~0~, ~1~)},\r\n",
-        Prefix  ="    private Dictionary<(int, int), CcittCode> blackCodeBook = new() {",
+[MacroCode(  "        {(~2~,0b~3~), new CcittCode(CcittCodeOperation.~0~, ~1~)},",
+        Prefix  ="    private static partial Dictionary<(int, int), CcittCode> CreateBlackReader() => new Dictionary<(int, int), CcittCode>{",
         Postfix = "    };")]
-    private readonly BitReader reader = new();
-    private int currentWord = 0;
-    private int currentWordLength = 0;
-    private readonly TwoDimensionalLineCodeDictionary dict = new();
 
-
-    public bool TryReadCode(ref SequenceReader<byte> source, bool isWhiteRun, out CcittCode code)
-    {
-        while (true)
-        {
-            do
-            {
-                if (!reader.TryRead(1, ref source, out var bit))
-                {
-                    code = initiateHorizontal;
-                    return false;
-                }
-                AddBitToCurrentWord(bit);
-            } while (!LookupCode(isWhiteRun, out code));
-             ResetCurrentWord();
-             if (code.Operation != CcittCodeOperation.NoCode)
-            {
-                Debug.Assert(code.Operation != CcittCodeOperation.MakeUp);
-                Debug.Assert(code.Operation != CcittCodeOperation.SwitchToHorizontalMode);
-                return true;
-            }
-        }
-    }
-
-    private bool LookupCode(bool isWhiteRun, out CcittCode code) => 
-        dict.TryReadCode((currentWordLength, currentWord), isWhiteRun, out code);
-
-
-    private void ResetCurrentWord()
-    {
-        currentWord = 0;
-        currentWordLength = 0;
-    }
-    
-    private void AddBitToCurrentWord(int bit)
-    {
-        Debug.Assert(bit is 0 or 1);
-        currentWord <<= 1;
-        currentWord |= bit;
-        currentWordLength++;
-    }
-
-    public void DiscardPartialByte() => reader.DiscardPartialByte();
+    private static partial Dictionary<(int, int), CcittCode> CreateBlackReader();
 }

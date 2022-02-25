@@ -2,10 +2,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.Net.Sockets;
-using System.Text;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
@@ -55,14 +52,16 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private int a0IsNextPixelToWrite = -1;
   private bool ReadLine(ref SequenceReader<byte> source)
   {
-    while (reader.IsMidHorizontalCode || a0IsNextPixelToWrite < lines.LineLength)
+    while (IsMidHorizontalCode || a0IsNextPixelToWrite < lines.LineLength)
     {
       if (!reader.TryReadCode(ref source, currentRunColor, out var code)) return false;
       ProcessCode(code);
      }
     return true;
   }
-  
+  private int horizontalRunCount;
+  public bool IsMidHorizontalCode => (horizontalRunCount % 2) == 1;
+
   private void ProcessCode(CcittCode code)
   {
     switch (code.Operation)
@@ -94,6 +93,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   private void DoHorizontalRun(ushort codeLength)
   {
+    horizontalRunCount++;
     if (codeLength > 0) FillRunTo(Math.Max(a0IsNextPixelToWrite,0)+codeLength);
     SwitchRunColor();
   }
@@ -151,6 +151,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private void ResetReaderForNextLine()
   {
     if (parameters.EncodedByteAlign) reader.DiscardPartialByte();
+    horizontalRunCount = 0;
     currentWritePosition = 0;
     a0IsNextPixelToWrite = -1;
     lines = lines.SwapLines();
