@@ -2,7 +2,6 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.SpanAndMemory;
-using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using SharpFont;
 
@@ -11,13 +10,11 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 public class FreeTypeFont : IRealizedFont, IDisposable
 {
     public Face Face { get; }
-    private IByteToUnicodeMapping? Mapping { get; }
     private IGlyphMapping? glyphMap;
     
-    public FreeTypeFont(Face face, IByteToUnicodeMapping? mapping, IGlyphMapping? glyphMap)
+    public FreeTypeFont(Face face, IGlyphMapping? glyphMap)
     {
         Face = face;
-        Mapping = mapping;
         this.glyphMap = glyphMap;
     }
 

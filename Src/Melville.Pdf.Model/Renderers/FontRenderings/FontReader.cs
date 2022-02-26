@@ -33,6 +33,7 @@ public readonly struct FontReader
         if (fontTypeKey == KnownNameKeys.Type3)
             return await new Type3FontFactory(font.LowLevel, size).ParseAsync().CA();
         
+        
         var fontFactory = new FreeTypeFontFactory(size, null, font);
         return await CreateRealizedFont(font, fontFactory).CA();
     }

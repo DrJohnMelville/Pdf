@@ -47,10 +47,10 @@ public readonly struct FreeTypeFontFactory
     private async ValueTask<IRealizedFont> FontFromFace(Face face)
     {
         face.SetCharSize(0, 64 * size, 0, 0);
-        return new FreeTypeFont(face, Mapping, await CreateGlyphMap(face).CA());
+        return new FreeTypeFont(face, await CreateGlyphMap(face).CA());
     }
 
-    public async ValueTask<IGlyphMapping> CreateGlyphMap(Face face) =>
+    private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face) =>
         (await font.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic)
             ? await
                 SymbolicEncodingParser.ParseGlyphMapping(face, await font.EncodingAsync().CA()).CA()
