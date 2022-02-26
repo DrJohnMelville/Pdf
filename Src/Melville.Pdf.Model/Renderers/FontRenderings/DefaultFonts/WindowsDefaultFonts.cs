@@ -34,9 +34,9 @@ public class WindowsDefaultFonts : IDefaultFontMapper
             KnownNameKeys.TimesBold => factory.SystemFont(TimesNewRoman, true, false),
             KnownNameKeys.TimesOblique => factory.SystemFont(TimesNewRoman, false, true),
             KnownNameKeys.TimesBoldOblique => factory.SystemFont(TimesNewRoman, true, true),
-            KnownNameKeys.Symbol => (factory with{Mapping =  CharacterEncodings.Symbol}).SystemFont(SegoeUISymbol,
+            KnownNameKeys.Symbol => (factory with{ByteToUnicodeMapping =  CharacterEncodings.Symbol}).SystemFont(SegoeUISymbol,
                 false, false),
-            KnownNameKeys.ZapfDingbats => (factory with{Mapping =  ZapfDignbatsMapping.Instance})
+            KnownNameKeys.ZapfDingbats => (factory with{ByteToUnicodeMapping =  ZapfDignbatsMapping.Instance})
                 .SystemFont(SegoeUISymbol, false, false),
             _ => factory.SystemFont(font.Bytes, false, false)
         };

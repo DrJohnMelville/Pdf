@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -73,5 +74,14 @@ public readonly struct PdfFont
         var firstUnderscore = source.IndexOf((byte)'_');
         return firstUnderscore < 0 ? baseFontName : NameDirectory.Get(source[..firstUnderscore]);
     }
+
+    public async ValueTask<PdfFont> Type0SubFont() =>
+        new PdfFont(
+            await (await LowLevel.GetAsync<PdfArray>(KnownNames.DescendantFonts).CA())
+                .GetAsync<PdfDictionary>(0).CA()
+        );
+
+    public ValueTask<PdfDictionary?> CidSystemInfo() =>
+        LowLevel.GetOrDefaultAsync(KnownNames.CIDSystemInfo, (PdfDictionary?)null);
 }
 

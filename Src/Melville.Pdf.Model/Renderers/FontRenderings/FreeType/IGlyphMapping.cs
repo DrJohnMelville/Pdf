@@ -24,4 +24,10 @@ public class UnicodeGlyphMapping : IGlyphMapping
         (face.GetCharIndex(charMapping.MapToUnicode(input[0])), 1);
 }
 
- 
+public class IdentityCmapMapping: IGlyphMapping
+{
+    public readonly static IGlyphMapping Instance = new IdentityCmapMapping();
+    private IdentityCmapMapping() { }
+    public (uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input) => 
+        ((uint)(input[0] << 8) | input[1], 2);
+}

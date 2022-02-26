@@ -101,6 +101,7 @@ GraphicStateParameter:HT
 GraphicStateParameter:FL
 GraphicStateParameter:SM
 
+FontTypes:Type0
 FontTypes:Type1
 FontTypes:Type3
 FontTypes:MMType1
@@ -131,6 +132,7 @@ Pdf:Catalog
 Pdf:CF
 Pdf:CFM
 Pdf:CharProcs
+Pdf:CIDSystemInfo
 Pdf:Colors
 Pdf:Columns
 Pdf:Contents
@@ -142,6 +144,7 @@ Pdf:DecodeParms
 Pdf:DefaultGray
 Pdf:DefaultRGB
 Pdf:DefaultCMYK
+Pdf:DescendantFonts
 Pdf:Descent
 Pdf:DeviceN
 Pdf:Differences
@@ -204,6 +207,7 @@ Pdf:Nums
 Pdf:O
 Pdf:ObjStm
 Pdf:Order
+Pdf:Ordering
 Pdf:Outlines
 Pdf:P
 Pdf:Page
@@ -214,6 +218,7 @@ Pdf:Predictor
 Pdf:Prev
 Pdf:R
 Pdf:Range
+Pdf:Registry
 Pdf:Resources
 Pdf:Root
 Pdf:Rows
@@ -227,6 +232,7 @@ Pdf:StmF
 Pdf:StrF
 Pdf:StemV
 Pdf:Subtype
+Pdf:Supplement
 Pdf:Text
 Pdf:Type
 Pdf:U

@@ -14,6 +14,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 [DebuggerDisplay("PdfString ({ToString()}) <{Bytes.AsHex()}>")]
 public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
 {
+    public static readonly PdfString Empty = new PdfString(Array.Empty<byte>());
     public PdfString(byte[] bytes): base(bytes) { }
     public override string ToString() => Bytes.PdfDocEncodedString();
     public bool TestEqual(string s) => TestEqual(s.AsExtendedAsciiBytes());

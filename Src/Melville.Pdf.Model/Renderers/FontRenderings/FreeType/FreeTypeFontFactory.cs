@@ -14,14 +14,14 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 public readonly struct FreeTypeFontFactory
 {
     private readonly double size;
-    public IByteToUnicodeMapping? Mapping { get; init; }
+    public IByteToUnicodeMapping? ByteToUnicodeMapping { get; init; } = null;
+    public IGlyphMapping? GlyphMapping { get; init; } = null;
     private readonly PdfFont font;
 
-    public FreeTypeFontFactory(double size, IByteToUnicodeMapping? mapping, in PdfFont font)
+    public FreeTypeFontFactory(double size, in PdfFont font)
     {
         this.size = size;
         this.font = font;
-        Mapping = mapping;
     }
 
     public ValueTask<IRealizedFont> SystemFont(byte[] name, bool bold, bool oblique)
@@ -47,7 +47,7 @@ public readonly struct FreeTypeFontFactory
     private async ValueTask<IRealizedFont> FontFromFace(Face face)
     {
         face.SetCharSize(0, 64 * size, 0, 0);
-        return new FreeTypeFont(face, await CreateGlyphMap(face).CA());
+        return new FreeTypeFont(face, GlyphMapping ?? await CreateGlyphMap(face).CA());
     }
 
     private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face) =>
@@ -59,9 +59,8 @@ public readonly struct FreeTypeFontFactory
     private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face)
     {
         var encoding = await font.EncodingAsync().CA();
-        
         return new UnicodeGlyphMapping(face,
-            Mapping ?? await RomanEncodingParser.InterpretEncodingValue(encoding).CA());
+            ByteToUnicodeMapping ?? await RomanEncodingParser.InterpretEncodingValue(encoding).CA());
     }
 
 

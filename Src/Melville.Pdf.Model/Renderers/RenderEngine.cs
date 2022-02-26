@@ -309,7 +309,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
                         Math.Floor(size)), 
                         r=> new FontReader(defaultFontMapper).DictionaryToRealizedFont(r.Dictionary,size)).CA()):
                 await new FontReader(defaultFontMapper).
-                    NameToRealizedFont(font, new FreeTypeFontFactory(size, null, 
+                    NameToRealizedFont(font, new FreeTypeFontFactory(size, 
                         new PdfFont(PdfDictionary.Empty))).CA()
             );
         await StateOps.CurrentState().SetFont(font,size).CA();

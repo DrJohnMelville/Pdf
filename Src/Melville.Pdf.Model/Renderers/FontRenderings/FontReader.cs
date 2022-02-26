@@ -25,20 +25,25 @@ public readonly struct FontReader
     public ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, FreeTypeFontFactory factory) =>
         defaultMapper.MapDefaultFont(name, factory);
 
-    public async ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict, double size)
+    public  ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict, double size) => 
+         PdfFontToRealizedFont(size, new PdfFont(fontDict));
+
+    private async ValueTask<IRealizedFont> PdfFontToRealizedFont(
+        double size, PdfFont font, IGlyphMapping? externalMapping = null)
     {
-        var font = new PdfFont(fontDict);
         var fontTypeKey = (await font.SubTypeAsync().CA()).GetHashCode();
-        
-        if (fontTypeKey == KnownNameKeys.Type3)
-            return await new Type3FontFactory(font.LowLevel, size).ParseAsync().CA();
-        
-        
-        var fontFactory = new FreeTypeFontFactory(size, null, font);
-        return await CreateRealizedFont(font, fontFactory).CA();
+
+        return await (fontTypeKey switch
+        {
+            KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel, size).ParseAsync().CA(),
+            KnownNameKeys.Type0 => CreateType0Font(font, size).CA(),
+            _ => CreateRealizedFont(font, 
+                new FreeTypeFontFactory(size, font) { GlyphMapping = externalMapping }).CA()
+        });
     }
 
-    private async Task<IRealizedFont> CreateRealizedFont(PdfFont font, FreeTypeFontFactory factory) =>
+
+    private async ValueTask<IRealizedFont> CreateRealizedFont(PdfFont font, FreeTypeFontFactory factory) =>
         await (
                 await font.EmbeddedStreamAsync().CA() is { } fontAsStream ?
                     factory.FromStream(fontAsStream) :
@@ -49,4 +54,30 @@ public readonly struct FontReader
         await defaultMapper.MapDefaultFont(await font.OsFontNameAsync().CA(), factory)
             .CA();
 
+    private async ValueTask<IRealizedFont> CreateType0Font(PdfFont font, double size)
+    {
+        var sub = await font.Type0SubFont().CA();
+        var mapper = await ParseSubFontSytemInfo(
+            await ParseType0Encoding(await font.EncodingAsync().CA()).CA(), sub).CA();
+        return await PdfFontToRealizedFont(size, sub, mapper).CA();
+    }
+
+    private async ValueTask<IGlyphMapping> ParseSubFontSytemInfo(
+        IGlyphMapping externalMapping, PdfFont font)
+    {
+        var info = await font.CidSystemInfo().CA();
+        if (info == null ||
+            await info.GetOrDefaultAsync(KnownNames.Supplement, 0) != 0 ||
+            !(await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA()).IsSameAS("Adobe") ||
+            !(await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA()).IsSameAS("Identity"))
+            throw new NotImplementedException("Only default CID Font Orderings are implemented. ");
+        return externalMapping;
+    }
+
+    private async ValueTask<IGlyphMapping> ParseType0Encoding(PdfObject? encodingEntry)
+    {
+        if (encodingEntry != KnownNames.IdentityH && encodingEntry != KnownNames.IdentityV)
+            throw new NotImplementedException("CMAP parsing is not implemented.");
+        return IdentityCmapMapping.Instance;
+    }
 }
