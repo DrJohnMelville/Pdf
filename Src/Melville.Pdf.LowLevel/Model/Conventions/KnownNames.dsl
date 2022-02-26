@@ -107,6 +107,7 @@ FontTypes:Type3
 FontTypes:MMType1
 FontTypes:TrueType
 FontTypes:OpenType
+FontTypes:CIDFontType2
 
 Pdf:AC
 Pdf:Activation

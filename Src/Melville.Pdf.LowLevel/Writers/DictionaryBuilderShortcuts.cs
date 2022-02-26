@@ -12,5 +12,7 @@ public static class DictionaryBuilderShortcuts
     
     public static DictionaryBuilder WithItem(this in DictionaryBuilder builder, PdfName name, bool item) =>
         builder.WithItem(name, item?PdfBoolean.True:PdfBoolean.False);
+    public static DictionaryBuilder WithItem(this in DictionaryBuilder builder, PdfName name, string item) =>
+        builder.WithItem(name, PdfString.CreateAscii(item));
     
 }
