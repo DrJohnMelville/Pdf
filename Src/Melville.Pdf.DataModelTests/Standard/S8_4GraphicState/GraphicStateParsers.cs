@@ -20,6 +20,10 @@ public partial class GraphicStateParsers: ParserTest
         "Q", i => i.RestoreGraphicsState());
 
     [Fact]
+    public Task IgnoreCommendTest() => TestInput(
+        "q% this is a q Q q comment \r\n Q", i => i.SaveGraphicsState(), i => i.RestoreGraphicsState());
+    
+    [Fact]
     public async Task CompositeOperatorsWithWhiteSpace()
     {
         await ParseString("   q\r\n  Q  ");

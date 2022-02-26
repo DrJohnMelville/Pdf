@@ -59,9 +59,17 @@ public readonly struct ContentStreamParser
             '/' => ValueTask.FromResult(ParseName(bfp.WithStartingPosition(reader.Position))),
             '(' => ValueTask.FromResult(ParseSyntaxString(bfp.WithStartingPosition(reader.Position))),
             '<' => HandleInitialOpenWakka(bfp.WithStartingPosition(reader.Position)),
+            '%' => SkipComment(bfp.WithStartingPosition(reader.Position)),
             _ => ParseOperator(bfp.WithStartingPosition(reader.Position))
         };
     }
+
+    private ValueTask<bool> SkipComment(BufferFromPipe bfp)
+    {
+        var reader = bfp.CreateReader();
+        return new (bfp.ConsumeIfSucceeded(reader.TryAdvanceToAny(endOfLineMarkers, true), ref reader));
+    }
+    private static readonly byte[] endOfLineMarkers =new byte[] { (byte)'\r', (byte)'\n' }; 
 
     private bool ParseSyntaxString(BufferFromPipe bfp)
     {
