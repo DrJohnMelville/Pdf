@@ -1,8 +1,11 @@
-﻿namespace Melville.Pdf.ComparingReader.MainWindow;
+﻿using Melville.FileSystem;
+
+namespace Melville.Pdf.ComparingReader.MainWindow;
 
 public interface ICommandLineSelection
 {
     string? CommandLineTag();
+    IFile? CmdLineFile();
 }
 
 public class CommandLineSelection: ICommandLineSelection
@@ -20,7 +23,13 @@ public class CommandLineSelection: ICommandLineSelection
         {
             if (arg.Length > 0 && arg[0] == '-') return arg[1..];
         }
-
         return null;
     }
+
+    public IFile? CmdLineFile() =>
+        commandLineArgs.Length > 0 &&
+        new FileSystemFile(commandLineArgs[0]) is { } ret &&
+        ret.Exists()
+            ? ret
+            : null;
 }

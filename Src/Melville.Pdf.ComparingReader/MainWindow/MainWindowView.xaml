@@ -13,7 +13,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid easyGrids:GridOperations.ColsAndRows="*,3* / auto, *"
-          Loaded="{eventBindings:EventBinding ShowInitial}">
+          Loaded="{eventBindings:EventBinding ShowInitial, MaxCalls=1}">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type referenceDocumentTree:ReferenceDocumentLeaf}">
                 <TextBlock Text="{Binding ShortName}" ToolTip="{Binding LongName}"></TextBlock>

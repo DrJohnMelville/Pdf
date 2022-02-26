@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using ABI.System.Collections.Generic;
+using Melville.FileSystem;
 using Melville.INPC;
 using Melville.MVVM.Wpf.Bindings;
 using Melville.MVVM.Wpf.DiParameterSources;
@@ -22,25 +23,26 @@ namespace Melville.Pdf.ComparingReader.MainWindow;
 
 public partial class MainWindowViewModel
 {
-    private readonly ICommandLineSelection commandLine;
     public IList<ReferenceDocumentNode> Nodes { get; }
     [AutoNotify] private ReferenceDocumentNode? selectedNode;
     public IPasswordSource PasswordBox { get; }
     public IMultiRenderer Renderer { get; }
 
     public MainWindowViewModel(
-        IList<ReferenceDocumentNode> nodes, ICommandLineSelection commandLine, 
+        IList<ReferenceDocumentNode> nodes, 
         IMultiRenderer renderer, IPasswordSource passwordBox)
     {
-        this.commandLine = commandLine;
         Nodes = nodes;
         Renderer = renderer;
         PasswordBox = passwordBox;
     }
 
-    public void ShowInitial()
+    public async void ShowInitial([FromServices]ICommandLineSelection commandLine)
     {
-        SelectedNode ??= SearchRecusive(Nodes, commandLine.CommandLineTag());
+        if (commandLine.CommandLineTag() is {} tag) 
+            SelectedNode = SearchRecusive(Nodes, tag);
+        if (commandLine.CmdLineFile() is { } file)
+            await LoadFile(file);
     }
 
     private async void OnSelectedNodeChanged(ReferenceDocumentNode? newValue)
@@ -77,6 +79,11 @@ public partial class MainWindowViewModel
     {
         var file = fileSource.GetLoadFile(null, "PDF", "Portable Document Format(*.pdf)|*.pdf", "Load File");
         if (file is null) return;
+        await LoadFile(file);
+    }
+
+    private async Task LoadFile(IFile file)
+    {
         var src = new MultiBufferStream();
         await using (var fileStr = await file.OpenRead())
         {
