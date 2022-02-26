@@ -57,19 +57,27 @@ public readonly struct FontReader
     private async ValueTask<IRealizedFont> CreateType0Font(PdfFont font, double size)
     {
         var sub = await font.Type0SubFont().CA();
-        var mapper = await ParseSubFontSytemInfo(
-            await ParseType0Encoding(await font.EncodingAsync().CA()).CA(), sub).CA();
+        var mapper =
+            await ParseCidToGidMap(await sub.CidToGidMapStream(),
+                await ParseSubFontSytemInfo(
+                    await ParseType0Encoding(await font.EncodingAsync().CA()).CA(), sub).CA()).CA();
         return await PdfFontToRealizedFont(size, sub, mapper).CA();
     }
+
+    private ValueTask<IGlyphMapping> ParseCidToGidMap(PdfStream? mapStream, IGlyphMapping innerMapping) => 
+        mapStream is null ? new(innerMapping) : ExplicitMappingFactory.Parse(innerMapping, mapStream);
 
     private async ValueTask<IGlyphMapping> ParseSubFontSytemInfo(
         IGlyphMapping externalMapping, PdfFont font)
     {
         var info = await font.CidSystemInfo().CA();
+        var supplement = await info.GetOrDefaultAsync(KnownNames.Supplement, 0);
+        var registry = (await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA());
+        var ordering = (await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA());
         if (info == null ||
-            await info.GetOrDefaultAsync(KnownNames.Supplement, 0) != 0 ||
-            !(await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA()).IsSameAS("Adobe") ||
-            !(await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA()).IsSameAS("Identity"))
+            supplement is not (0 or 1) ||
+            !registry.IsSameAS("Adobe") ||
+            !ordering.IsSameAS("Identity"))
             throw new NotImplementedException("Only default CID Font Orderings are implemented. ");
         return externalMapping;
     }

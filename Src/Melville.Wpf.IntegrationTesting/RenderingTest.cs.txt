@@ -206,3 +206,5 @@ RenderingTest.cs_Skia-CcittType3K1Encoded|375525976
 RenderingTest.cs_Skia-CcittType3K10Encoded|375525976
 RenderingTest.cs_wpf-Type0WithEmbeddedTT|3670411632
 RenderingTest.cs_Skia-Type0WithEmbeddedTT|874979496
+RenderingTest.cs_wpf-Type0WithCidToGid|3045268106
+RenderingTest.cs_Skia-Type0WithCidToGid|2946352456

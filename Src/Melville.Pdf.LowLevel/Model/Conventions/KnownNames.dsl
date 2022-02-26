@@ -134,6 +134,7 @@ Pdf:CF
 Pdf:CFM
 Pdf:CharProcs
 Pdf:CIDSystemInfo
+Pdf:CIDToGIDMap
 Pdf:Colors
 Pdf:Columns
 Pdf:Contents

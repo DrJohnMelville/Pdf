@@ -83,5 +83,8 @@ public readonly struct PdfFont
 
     public ValueTask<PdfDictionary?> CidSystemInfo() =>
         LowLevel.GetOrDefaultAsync(KnownNames.CIDSystemInfo, (PdfDictionary?)null);
+
+    public ValueTask<PdfStream?> CidToGidMapStream() => 
+        LowLevel.GetOrDefaultAsync(KnownNames.CIDToGIDMap, (PdfStream?)null);
 }
 
