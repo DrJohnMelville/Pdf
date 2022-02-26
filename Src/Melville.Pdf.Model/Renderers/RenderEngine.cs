@@ -40,10 +40,6 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         this.cache = cache;
     }
     
-    [DelegateTo]
-    private ICompatibilityOperations Compat => 
-        throw new NotImplementedException("Compatibility Operations not implemented");
-
     #region Graphics State
     [DelegateTo] private IGraphiscState StateOps => target.GrapicsStateChange;
     
@@ -478,5 +474,10 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public void EndMarkedRange() { }
 
+    #endregion
+
+    #region Compatability Operators
+    public void BeginCompatibilitySection() { }
+    public void EndCompatibilitySection() { }
     #endregion
 }
