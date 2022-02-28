@@ -41,8 +41,9 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     {
         var innerEncryptor = encryptor ?? ErrorObjectEncryptor.Instance;
             
-        var decoder = new CryptSingleFilter(new SinglePredictionFilter(new StaticSingleFilter()),
-            source, innerEncryptor);
+        var decoder = await DctToMonochromeFilter.TryApply(
+            new CryptSingleFilter(
+                new SinglePredictionFilter(new StaticSingleFilter()), source, innerEncryptor), this).CA();
         IFilterProcessor processor = 
             new FilterProcessor(await FilterList().CA(), await FilterParamList().CA(), decoder);
         if (await ShouldApplyDefaultEncryption().CA())
