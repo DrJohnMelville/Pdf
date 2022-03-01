@@ -23,7 +23,7 @@ public abstract class CcittEncoderBase : IStreamFilterDefinition
     public int MinWriteSize => 10;
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
-        ref SequenceReader<byte> source, ref Span<byte> destination)
+        ref SequenceReader<byte> source, in Span<byte> destination)
     {
         if (source.Length == 0)
             return (source.Position, bitWriter.FinishWrite(destination), true);

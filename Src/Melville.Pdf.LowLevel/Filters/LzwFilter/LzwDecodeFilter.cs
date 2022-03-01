@@ -23,7 +23,7 @@ public class LzwDecodeFilter : IStreamFilterDefinition
     }
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         var destPosition = 0;
         while (true)
@@ -48,7 +48,7 @@ public class LzwDecodeFilter : IStreamFilterDefinition
     }
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        FinalConvert(ref SequenceReader<byte> source, ref Span<byte> destination) =>
+        FinalConvert(ref SequenceReader<byte> source, in Span<byte> destination) =>
         (source.Position, 0, false);
 
     private void ResetDictionary()
@@ -112,7 +112,7 @@ public class LzwDecodeFilter : IStreamFilterDefinition
     private int WriteCurrentCodeToDestionation(in Span<byte> destination, int destPosition)
     {
         var target = destination[destPosition..];
-        var localWrite = dictionary.WriteChars(codeBeingWritten, nextByteToWrite, ref target);
+        var localWrite = dictionary.WriteChars(codeBeingWritten, nextByteToWrite, target);
         return localWrite;
     }
 }

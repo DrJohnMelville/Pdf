@@ -9,7 +9,7 @@ public class Ascii85Encoder : IStreamFilterDefinition
     public int MinWriteSize => 7;
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         int i;
         for (i = 0; i + 4 < destination.Length && TryGetQuad(ref source, out uint quad); i += 5)
@@ -56,12 +56,12 @@ public class Ascii85Encoder : IStreamFilterDefinition
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
         FinalConvert(ref SequenceReader<byte> source,
-            ref Span<byte> destination)
+            in Span<byte> destination)
     {
         if (destination.Length < 7) return (source.Position, 0, false);
         var (finalBytes, finalQuad) = ReadPartialQuad(source);
         var lastCodeLen = EncodePartialValue(destination, finalBytes, finalQuad);
-        AddStreamTerminator(ref destination, lastCodeLen);
+        AddStreamTerminator(destination, lastCodeLen);
         return (source.Position, lastCodeLen + 2, true);
     }
 
@@ -94,7 +94,7 @@ public class Ascii85Encoder : IStreamFilterDefinition
         return lastCodeLen;
     }
 
-    private static void AddStreamTerminator(ref Span<byte> destination, int lastCodeLen)
+    private static void AddStreamTerminator(in Span<byte> destination, int lastCodeLen)
     {
         destination[lastCodeLen] = Ascii85Constants.FirstTerminatingChar;
         destination[lastCodeLen + 1] = Ascii85Constants.SecondTerminatingChar;

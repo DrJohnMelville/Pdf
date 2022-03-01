@@ -19,7 +19,7 @@ public class Ascii85Decoder : IStreamFilterDefinition
     public int MinWriteSize => 4;
         
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         var destPosition = 0;
         while (true)
@@ -40,14 +40,14 @@ public class Ascii85Decoder : IStreamFilterDefinition
                       source.TryReadNonWhitespace(out var b4) && source.TryReadNonWhitespace(out var b5)))
                     return (lastPosition, destPosition, false);
                 bool isDone;
-                (destPosition, isDone) = HandleQuintuple(b1, b2, b3, b4, b5, ref destination, destPosition);
+                (destPosition, isDone) = HandleQuintuple(b1, b2, b3, b4, b5, destination, destPosition);
                 if (isDone) return (source.Position, destPosition, true);
             }
         }
     }
 
     private (int, bool) HandleQuintuple(byte b1, byte b2, byte b3, byte b4, byte b5,
-        ref Span<byte> destination, int destPosition) => (b1, b2, b3, b4, b5) switch
+        in Span<byte> destination, int destPosition) => (b1, b2, b3, b4, b5) switch
     {
         (_, Ascii85Constants.FirstTerminatingChar, _, _, _) =>
             (WriteQuad(destination, ComputeQuad(b1), 0, destPosition), true),
@@ -98,7 +98,7 @@ public class Ascii85Decoder : IStreamFilterDefinition
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
         ref SequenceReader<byte> source,
-        ref Span<byte> destination)
+        in Span<byte> destination)
     {
         if (!source.TryReadNonWhitespace(out var b1) || b1 == Ascii85Constants.FirstTerminatingChar)
             return (source.Sequence.Start, 0, false);
@@ -118,7 +118,7 @@ public class Ascii85Decoder : IStreamFilterDefinition
         }
 
         var (pos, done) =
-            HandleQuintuple(b1, b2, b3, b4, Ascii85Constants.FirstTerminatingChar, ref destination, 0);
+            HandleQuintuple(b1, b2, b3, b4, Ascii85Constants.FirstTerminatingChar, destination, 0);
         return (source.Position, pos, done);
     }
 }

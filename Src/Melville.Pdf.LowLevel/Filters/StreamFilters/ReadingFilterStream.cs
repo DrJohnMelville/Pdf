@@ -57,7 +57,7 @@ public class ReadingFilterStream : DefaultBaseStream
     {
         if (result.IsCanceled || doneReading) return 0;
         var reader = new SequenceReader<byte>(result.Buffer);
-        var (finalPos, bytesWritten, done) = filter.Convert(ref reader, ref buffer);
+        var (finalPos, bytesWritten, done) = filter.Convert(ref reader, buffer);
         if (bytesWritten == 0 && result.IsCompleted)
         {
             (finalPos, bytesWritten, done) = HandleFinalDecode(buffer, result, finalPos, bytesWritten);
@@ -75,7 +75,7 @@ public class ReadingFilterStream : DefaultBaseStream
         int extrBytes;
         var r2 = new SequenceReader<byte>(result.Buffer.Slice(finalPos));
         var remaining = buffer.Slice(bytesWritten);
-        (finalPos, extrBytes, done) = filter.FinalConvert(ref r2, ref remaining);
+        (finalPos, extrBytes, done) = filter.FinalConvert(ref r2, remaining);
         bytesWritten += extrBytes;
         return (finalPos, bytesWritten, done);
     }

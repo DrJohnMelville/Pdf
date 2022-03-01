@@ -15,7 +15,7 @@ public class DecoderDictionaryTest
     {
         var dest = new byte[5];
         var span = dest.AsSpan().Slice(position);
-        Assert.Equal(1,dict.WriteChars(data, 0, ref span));
+        Assert.Equal(1,dict.WriteChars(data, 0, span));
         Assert.Equal(result, dest);
     }
 
@@ -49,7 +49,7 @@ public class DecoderDictionaryTest
         var dest = new byte[5];
         var span = dest.AsSpan().Slice(position);
         dict.AddChild(65, 66);
-        Assert.Equal(bytesWritten,dict.WriteChars(258, sourceStart, ref span));
+        Assert.Equal(bytesWritten,dict.WriteChars(258, sourceStart, span));
         Assert.Equal(result, dest);
     }
 }

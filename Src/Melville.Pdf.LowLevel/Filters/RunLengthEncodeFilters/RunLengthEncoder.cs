@@ -9,10 +9,10 @@ public class RunLengthEncoder : IStreamFilterDefinition
     public int MinWriteSize => 129;
             
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, ref Span<byte> destination) =>
+        Convert(ref SequenceReader<byte> source, in Span<byte> destination) =>
         new RleEncoderEngine(source, destination).Convert(false);
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
-        ref SequenceReader<byte> source, ref Span<byte> destination) =>
+        ref SequenceReader<byte> source, in Span<byte> destination) =>
         new RleEncoderEngine(source, destination).Convert(true);
 }

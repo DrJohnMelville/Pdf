@@ -188,22 +188,22 @@ RenderingTest.cs_wpf-WriteSpacedText|1502107112
 RenderingTest.cs_Skia-WriteSpacedText|1856342295
 RenderingTest.cs_wpf-Type4Encoded|1114358541
 RenderingTest.cs_Skia-Type4Encoded|375525976
-RenderingTest.cs_wpf-CcittType4Encoded|1114358541
-RenderingTest.cs_wpf-CcittEncodedByteAlign|1114358541
-RenderingTest.cs_wpf-CcittFirst8Rows|275992779
-RenderingTest.cs_wpf-CcittEndOfBlockRescuesLowRowCount|1114358541
-RenderingTest.cs_wpf-CcittBlackIs1|1114358541
-RenderingTest.cs_Skia-CcittType4Encoded|375525976
-RenderingTest.cs_Skia-CcittEncodedByteAlign|375525976
-RenderingTest.cs_Skia-CcittFirst8Rows|2465361491
-RenderingTest.cs_Skia-CcittEndOfBlockRescuesLowRowCount|375525976
-RenderingTest.cs_Skia-CcittBlackIs1|375525976
-RenderingTest.cs_wpf-CcittType3K0Encoded|1114358541
-RenderingTest.cs_wpf-CcittType3K1Encoded|1114358541
-RenderingTest.cs_wpf-CcittType3K10Encoded|1114358541
-RenderingTest.cs_Skia-CcittType3K0Encoded|375525976
-RenderingTest.cs_Skia-CcittType3K1Encoded|375525976
-RenderingTest.cs_Skia-CcittType3K10Encoded|375525976
+RenderingTest.cs_wpf-CcittType4Encoded|JPEG encoding is not supported
+RenderingTest.cs_wpf-CcittEncodedByteAlign|JPEG encoding is not supported
+RenderingTest.cs_wpf-CcittFirst8Rows|JPEG encoding is not supported
+RenderingTest.cs_wpf-CcittEndOfBlockRescuesLowRowCount|JPEG encoding is not supported
+RenderingTest.cs_wpf-CcittBlackIs1|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittType4Encoded|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittEncodedByteAlign|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittFirst8Rows|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittEndOfBlockRescuesLowRowCount|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittBlackIs1|JPEG encoding is not supported
+RenderingTest.cs_wpf-CcittType3K0Encoded|JPEG encoding is not supported
+RenderingTest.cs_wpf-CcittType3K1Encoded|JPEG encoding is not supported
+RenderingTest.cs_wpf-CcittType3K10Encoded|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittType3K0Encoded|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittType3K1Encoded|JPEG encoding is not supported
+RenderingTest.cs_Skia-CcittType3K10Encoded|JPEG encoding is not supported
 RenderingTest.cs_wpf-Type0WithEmbeddedTT|3670411632
 RenderingTest.cs_Skia-Type0WithEmbeddedTT|874979496
 RenderingTest.cs_wpf-Type0WithCidToGid|3045268106

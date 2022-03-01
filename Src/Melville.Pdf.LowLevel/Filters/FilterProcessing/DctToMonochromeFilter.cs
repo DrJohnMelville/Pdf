@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -36,25 +35,7 @@ public class DctToMonochromeFilter : IApplySingleFilter
     {
         return filter == KnownNames.DCTDecode?
             (ReadingFilterStream.Wrap( await innerFilter.Decode(source, filter, parameter).CA(),
-                EveryThirdByteStream.Instance)):
+                EveryThirdByteFilter.Instance)):
             (source);
-    }
-}
-
-public class EveryThirdByteStream : IStreamFilterDefinition
-{
-    public static IStreamFilterDefinition Instance = new EveryThirdByteStream();
-    private EveryThirdByteStream() {}
-
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
-    {
-        var destPos = 0;
-        while (destPos < destination.Length && source.TryPeek(2, out var currentByte))
-        {
-            source.Advance(3);
-            destination[destPos++] = currentByte;
-        }
-
-        return (source.Position, destPos, false);
     }
 }

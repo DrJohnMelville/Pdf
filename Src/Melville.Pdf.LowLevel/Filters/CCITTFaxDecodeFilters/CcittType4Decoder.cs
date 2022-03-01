@@ -26,7 +26,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   }
 
   public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
-  ref SequenceReader<byte> source, ref Span<byte> destination)
+  ref SequenceReader<byte> source, in Span<byte> destination)
   {
     var localDestination = destination;
     var doneReading = InnerConvertLoop(ref source, ref localDestination);
@@ -49,7 +49,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private bool DoneReadingLine() => a0IsNextPixelToWrite >= lines.LineLength;
 
   public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
-    ref SequenceReader<byte> source, ref Span<byte> destination) =>
+    ref SequenceReader<byte> source, in Span<byte> destination) =>
     (source.Position, writer.FinishWrite(destination), true);
 
   private int a0IsNextPixelToWrite = -1;

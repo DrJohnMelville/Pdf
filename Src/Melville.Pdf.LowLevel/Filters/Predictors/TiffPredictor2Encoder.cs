@@ -44,7 +44,7 @@ public abstract class TiffPredictor2Filter: IStreamFilterDefinition
 
     public int MinWriteSize => minBytes+1;
 
-    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+    public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         var destPosition = 0;
         while (destPosition + minBytes < destination.Length && 
@@ -63,7 +63,7 @@ public abstract class TiffPredictor2Filter: IStreamFilterDefinition
     }
         
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(ref SequenceReader<byte> source,
-        ref Span<byte> destination)
+        in Span<byte> destination)
     {
         if (destination.Length < minBytes) return (source.Position, 0, false);
         Debug.Assert(!source.TryRead(out _));

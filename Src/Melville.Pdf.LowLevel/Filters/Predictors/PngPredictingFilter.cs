@@ -14,7 +14,7 @@ public abstract class PngPredictingFilter: IStreamFilterDefinition
     }
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) Convert(
-        ref SequenceReader<byte> source, ref Span<byte> destination)
+        ref SequenceReader<byte> source, in Span<byte> destination)
     {
         int written;
         for (written = 0;

@@ -34,18 +34,18 @@ public class DecoderDictionary
         SetupDefaultDictionary();
     }
 
-    public int WriteChars(int entryIndex, int firstToWrite, ref Span<byte> destination) => 
-        WriteChars(ref entries[entryIndex], firstToWrite, ref destination);
+    public int WriteChars(int entryIndex, int firstToWrite, in Span<byte> destination) => 
+        WriteChars(ref entries[entryIndex], firstToWrite, destination);
 
     private int WriteChars(
-        ref Entry entry, int firstToWrite, ref Span<byte> destination)
+        ref Entry entry, int firstToWrite, in Span<byte> destination)
     {
         int destNext = 0;
         if (firstToWrite > entry.StringIndex) return 0;
         if (firstToWrite < entry.StringIndex)
         {
             destNext =
-                WriteChars(ref entries[entry.Parent], firstToWrite, ref destination);
+                WriteChars(ref entries[entry.Parent], firstToWrite, destination);
         }
 
         if (destNext >= destination.Length) return destNext;

@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 public class AsciiHexDecoder : IStreamFilterDefinition
 {
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         int position = 0;
         SequencePosition consumed = source.Sequence.Start;
@@ -27,7 +27,7 @@ public class AsciiHexDecoder : IStreamFilterDefinition
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
         ref SequenceReader<byte> source,
-        ref Span<byte> destination)
+        in Span<byte> destination)
     {
         if (destination.Length > 0 && source.TryReadNonWhitespace(out var highByte)
                                    && HexMath.ByteToNibble(highByte) != Nibble.Terminator)

@@ -10,7 +10,7 @@ public class AsciiHexEncoder : IStreamFilterDefinition
     public int MinWriteSize => 2;
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         int i;
         for (i = 0; i + 1 < destination.Length && source.TryRead(out var inputByte); i += 2)

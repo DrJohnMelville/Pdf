@@ -20,7 +20,7 @@ public class LzwEncodeFilter : IStreamFilterDefinition
     public int MinWriteSize => 10;
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
-        Convert(ref SequenceReader<byte> source, ref Span<byte> destination)
+        Convert(ref SequenceReader<byte> source, in Span<byte> destination)
     {
         if (currentDictionaryEntry < 0)
         {
@@ -78,7 +78,7 @@ public class LzwEncodeFilter : IStreamFilterDefinition
 
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done) FinalConvert(
         ref SequenceReader<byte> source,
-        ref Span<byte> destination)
+        in Span<byte> destination)
     {
         if (!HasRoomToWrite(destination, 2)) return (source.Position, 0, false);
         var len = output.WriteBits(currentDictionaryEntry, bits.Length, destination);
