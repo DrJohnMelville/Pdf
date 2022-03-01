@@ -39,21 +39,25 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     public async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
         IObjectCryptContext? encryptor = null)
     {
-        var innerEncryptor = encryptor ?? ErrorObjectEncryptor.Instance;
-            
-        var decoder = await DctToMonochromeFilter.TryApply(
-            new CryptSingleFilter(
-                new SinglePredictionFilter(new StaticSingleFilter()), source, innerEncryptor), this).CA();
-        IFilterProcessor processor = 
-            new FilterProcessor(await FilterList().CA(), await FilterParamList().CA(), decoder);
-        if (await ShouldApplyDefaultEncryption().CA())
-        {
-            processor = new DefaultEncryptionFilterProcessor(
-                processor, source, innerEncryptor);
-        }
+        var processor =
+            await CreateFilterProcessor(encryptor ?? ErrorObjectEncryptor.Instance).CA();
+        
         return await processor.StreamInDesiredEncoding(await SourceStreamAsync().CA(),
             source.SourceFormat, desiredFormat).CA();
     }
+
+    private async Task<IFilterProcessor> CreateFilterProcessor(IObjectCryptContext innerEncryptor) =>
+        await DefaultEncryptionSelector.TryAddDefaultEncryption(this, source, innerEncryptor,
+                new FilterProcessor(
+                    await FilterList().CA(),
+                    await FilterParamList().CA(),
+                    await CreateDecoder(innerEncryptor).CA())).CA();
+
+    private  ValueTask<IApplySingleFilter> CreateDecoder(IObjectCryptContext innerEncryptor) =>
+        DctToMonochromeFilter.TryApply(this,
+            new CryptSingleFilter(source, innerEncryptor,
+                new SinglePredictionFilter(
+                    new StaticSingleFilter())));
 
     private async ValueTask<IReadOnlyList<PdfObject>> FilterList() => 
         (await this.GetOrNullAsync(KnownNames.Filter).CA()).AsList();
@@ -68,10 +72,6 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
         }
         return false;
     }
-
-    private async Task<bool> ShouldApplyDefaultEncryption() =>
-        !(await this.GetOrNullAsync(KnownNames.Type).CA() == KnownNames.XRef ||
-          await HasFilterOfType(KnownNames.Crypt).CA());
 
     public async ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync()
     {

@@ -1,10 +1,24 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
+public static class DefaultEncryptionSelector
+{
+    public static async ValueTask<IFilterProcessor> TryAddDefaultEncryption(
+        PdfStream stream, IStreamDataSource source, IObjectCryptContext encryptor,
+        IFilterProcessor inner) =>
+        await ShouldApplyDefaultEncryption(stream)
+            ? new DefaultEncryptionFilterProcessor(inner, source, encryptor)
+            : inner;
+    
+    private static async Task<bool> ShouldApplyDefaultEncryption(PdfStream stream) =>
+        !(await stream.GetOrNullAsync(KnownNames.Type).CA() == KnownNames.XRef ||
+          await stream.HasFilterOfType(KnownNames.Crypt).CA());
+}
 public class DefaultEncryptionFilterProcessor : FilterProcessorBase
 {
     private readonly IFilterProcessor innerProcessor;

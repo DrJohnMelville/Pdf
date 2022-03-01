@@ -18,7 +18,7 @@ public class DctToMonochromeFilter : IApplySingleFilter
     }
 
     public static async ValueTask<IApplySingleFilter> TryApply(
-        IApplySingleFilter innerFilter, PdfStream stream)
+        PdfStream stream, IApplySingleFilter innerFilter)
     {
         if (stream.TryGetValue(KnownNames.ColorSpace, out var csTask) && await csTask.CA() is { } cs &&
             cs.GetHashCode() is KnownNameKeys.CalGray or KnownNameKeys.DefaultGray or KnownNameKeys.DeviceGray)

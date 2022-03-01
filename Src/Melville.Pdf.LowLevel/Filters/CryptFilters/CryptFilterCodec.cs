@@ -13,8 +13,8 @@ public class CryptSingleFilter: IApplySingleFilter
     private readonly IStreamDataSource streamDataSource;
     private readonly IObjectCryptContext encryptor;
 
-    public CryptSingleFilter(
-        IApplySingleFilter innerFilter, IStreamDataSource streamDataSource, IObjectCryptContext encryptor)
+    public CryptSingleFilter(IStreamDataSource streamDataSource, IObjectCryptContext encryptor,
+        IApplySingleFilter innerFilter)
     {
         this.innerFilter = innerFilter;
         this.streamDataSource = streamDataSource;
