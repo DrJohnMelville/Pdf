@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Melville.Pdf.ComparingReader.Renderers;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 
 namespace Melville.Pdf.ComparingReader.Viewers.LowLevel;
 

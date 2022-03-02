@@ -36,7 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.ReferenceDocum
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.ComparingReader", "Melville.Pdf.ComparingReader\Melville.Pdf.ComparingReader.csproj", "{DEF98F68-C5B1-4C4A-99D4-BA48517FF30E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.WpfViewerParts", "Melville.Pdf.WpfViewerParts\Melville.Pdf.WpfViewerParts.csproj", "{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.LowLevelViewerParts", "Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj", "{2CB5D3FA-FEB1-4C30-A319-2611FBE8A68F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Renderers", "Renderers", "{5114C86E-5BF8-4501-894B-EE7AD0E4E47A}"
 EndProject
@@ -51,6 +51,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Parsing", "Melville.Parsing\Melville.Parsing.csproj", "{8E5145BF-F498-4D5D-B082-D5D5758CFF80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.FontLibrary", "Melville.Pdf.FontLibrary\Melville.Pdf.FontLibrary.csproj", "{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.WpfViewer", "Melville.Pdf.WpfViewer\Melville.Pdf.WpfViewer.csproj", "{65B68BD3-EB5E-4A9E-862B-4B70997D76B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,7 @@ Global
 		{FA4B66E9-5D90-4D8D-9190-10E7EC8DC5A7} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
 		{8E5145BF-F498-4D5D-B082-D5D5758CFF80} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
 		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD} = {5114C86E-5BF8-4501-894B-EE7AD0E4E47A}
+		{65B68BD3-EB5E-4A9E-862B-4B70997D76B8} = {7808232A-94F8-4390-9D4E-A9CBCC067CBB}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0DC5C5E9-B98F-46BB-B1D9-C3E6E0278D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -162,5 +165,9 @@ Global
 		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61174C28-E5FE-4CD0-A411-B6E7B0B49DBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65B68BD3-EB5E-4A9E-862B-4B70997D76B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65B68BD3-EB5E-4A9E-862B-4B70997D76B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65B68BD3-EB5E-4A9E-862B-4B70997D76B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65B68BD3-EB5E-4A9E-862B-4B70997D76B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

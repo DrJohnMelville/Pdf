@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
-using Melville.Pdf.ComparingReader.Viewers.LowLevel;
+using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.Renderers;
 

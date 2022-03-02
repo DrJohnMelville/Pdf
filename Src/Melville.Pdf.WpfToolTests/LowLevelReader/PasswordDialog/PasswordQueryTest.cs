@@ -4,7 +4,7 @@ using System.Windows.Threading;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RunOnWindowThreads;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
+using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
 using Moq;
 using Xunit;
 

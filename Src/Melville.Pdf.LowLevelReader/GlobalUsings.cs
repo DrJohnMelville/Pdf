@@ -1,1 +1,1 @@
-﻿using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
+﻿using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;

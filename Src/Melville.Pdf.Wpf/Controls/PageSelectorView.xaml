@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="Melville.Pdf.Wpf.Controls.PageSelectorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <DockPanel>
+        <Button DockPanel.Dock="Left" Command="{Binding ToStartCommand}">Start</Button>
+        <Button DockPanel.Dock="Left" Command="{Binding DecrementCommand}">Back</Button>
+        <Button DockPanel.Dock="Right" Command="{Binding ToEndCommand}">End</Button>
+        <Button DockPanel.Dock="Right" Command="{Binding IncrementCommand}">Forward</Button>
+        <Grid Name="MouseCaptureBox" Width="100">
+            <TextBox Text="{Binding Page}"></TextBox>
+            <Border Background="White" IsHitTestVisible="False">
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsKeyboardFocusWithin, ElementName=MouseCaptureBox}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock Text="{Binding DisplayString}" HorizontalAlignment="Center"/>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

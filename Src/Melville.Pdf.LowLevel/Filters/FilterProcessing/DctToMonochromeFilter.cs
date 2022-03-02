@@ -31,11 +31,13 @@ public class DctToMonochromeFilter : IApplySingleFilter
         throw new NotSupportedException("JPEG encoding is not supported");
     }
 
-    public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)
+    public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter) => 
+        TryWrapDctForEveryThirdByte(filter, await innerFilter.Decode(source, filter, parameter).CA());
+
+    private static Stream TryWrapDctForEveryThirdByte(PdfObject filter, Stream innerStream)
     {
-        return filter == KnownNames.DCTDecode?
-            (ReadingFilterStream.Wrap( await innerFilter.Decode(source, filter, parameter).CA(),
-                EveryThirdByteFilter.Instance)):
-            (source);
+        return filter == KnownNames.DCTDecode
+            ? ReadingFilterStream.Wrap(innerStream, EveryThirdByteFilter.Instance)
+            : innerStream;
     }
 }

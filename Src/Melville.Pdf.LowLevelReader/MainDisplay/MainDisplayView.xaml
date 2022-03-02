@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
              xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
-             xmlns:documentParts1="clr-namespace:Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;assembly=Melville.Pdf.WpfViewerParts"
+             xmlns:documentParts1="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;assembly=Melville.Pdf.LowLevelViewerParts"
              xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">

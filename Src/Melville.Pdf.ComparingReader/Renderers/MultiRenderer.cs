@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using Melville.INPC;
 using Melville.Parsing.Streams;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
+using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.Renderers;
 public interface IRenderer

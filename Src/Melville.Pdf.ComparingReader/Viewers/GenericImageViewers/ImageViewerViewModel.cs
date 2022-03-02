@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.DocumentRenderers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 

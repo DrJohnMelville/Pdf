@@ -4,12 +4,12 @@ using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevelReader.MainDisplay;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 using Melville.TestHelpers.InpcTesting;
 using Moq;
 using Xunit;
-using DocumentPart = Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
+using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
 
 namespace Melville.Pdf.WpfToolTests.LowLevelReader;
 

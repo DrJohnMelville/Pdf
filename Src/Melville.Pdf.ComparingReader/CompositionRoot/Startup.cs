@@ -7,7 +7,6 @@ using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.ComparingReader.Viewers.LowLevel;
 using Melville.Pdf.ComparingReader.Viewers.SkiaViewer;
@@ -15,6 +14,7 @@ using Melville.Pdf.ComparingReader.Viewers.SystemViewers;
 using Melville.Pdf.ComparingReader.Viewers.WindowsViewer;
 using Melville.Pdf.ComparingReader.Viewers.WpfViewers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.Wpf.Controls;
 using Melville.WpfAppFramework.StartupBases;
 
 namespace Melville.Pdf.ComparingReader.CompositionRoot

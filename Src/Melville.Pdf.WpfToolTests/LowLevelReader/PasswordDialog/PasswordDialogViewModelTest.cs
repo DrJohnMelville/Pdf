@@ -1,4 +1,4 @@
-﻿using Melville.Pdf.WpfViewerParts.PasswordDialogs.PasswordDialogs;
+﻿using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
 using Xunit;
 
 namespace Melville.Pdf.WpfToolTests.LowLevelReader.PasswordDialog;

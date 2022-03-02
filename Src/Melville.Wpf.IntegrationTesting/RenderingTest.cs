@@ -11,6 +11,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf;
+using Melville.Pdf.Wpf.Rendering;
 using Melville.TestHelpers.StringDatabase;
 using Xunit;
 namespace Melville.Wpf.IntegrationTesting;
@@ -38,8 +39,8 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
     private ValueTask AsWpfPage(DocumentRenderer documentRenderer, Stream target)
     {
-        var rtdg = new RenderToDrawingGroup();
-        return rtdg.RenderToPngStream(documentRenderer, 0, target);
+        var rtdg = new RenderToDrawingGroup(documentRenderer, 0);
+        return rtdg.RenderToPngStream(target);
     }
 
     [Theory]

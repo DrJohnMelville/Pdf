@@ -9,11 +9,11 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.Streams;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 using Moq;
 using Xunit;
-using DocumentPart = Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
+using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
 
 namespace Melville.Pdf.WpfToolTests.LowLevelReader;
 

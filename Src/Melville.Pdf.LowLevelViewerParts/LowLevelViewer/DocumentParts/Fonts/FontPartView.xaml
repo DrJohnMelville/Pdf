@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts.FontPartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts"
+             xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
+             xmlns:freeType="clr-namespace:Melville.Pdf.Model.Renderers.FontRenderings.FreeType;assembly=Melville.Pdf.Model"
+             xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
+             xmlns:sharpFont="clr-namespace:SharpFont;assembly=SharpFont.NetStandard"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type freeType:FreeTypeFont }">
+            <TabControl>
+                <TabItem Header="Information">
+                    <easyGrids:EasyGrid easyGrids:GridOperations.ColsAndRows="auto  * / auto auto auto auto auto auto">
+                        <easyGrids:EasyGrid.Resources>
+                            <Style TargetType="TextBlock">
+                                 <Setter Property="Margin" Value="5 0 0 0"/>                                
+                             </Style>
+                        </easyGrids:EasyGrid.Resources>
+                        <TextBlock>Family Name:</TextBlock>
+                        <TextBlock Text="{Binding Face.FamilyName}"/>
+                        <TextBlock>Style Name:</TextBlock>
+                        <TextBlock Text="{Binding Face.StyleName}"/>
+                        <TextBlock>Face Flags:</TextBlock>
+                        <TextBlock Text="{Binding Face.FaceFlags}"/>
+                        <TextBlock>Style Flags:</TextBlock>
+                        <TextBlock Text="{Binding Face.StyleFlags}"/>
+                        <TextBlock>Glyph Count:</TextBlock>
+                        <TextBlock Text="{Binding Face.GlyphCount}"/>
+                        <TextBlock>Glyphs:</TextBlock>
+                        <local:FreeTypeGlyphPreview Face="{Binding Face}" HorizontalAlignment="Left"/>
+                    </easyGrids:EasyGrid>
+                </TabItem>
+                <TabItem Header="CharMaps">
+                    <TabItem.Resources>
+                        <DataTemplate DataType="{x:Type sharpFont:CharMap}">
+                            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Converter={x:Static local:FaceCharacterConverter.Instance}}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Vertical" IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </DataTemplate>
+                    </TabItem.Resources>
+                    <TabControl ItemsSource="{Binding Face.CharMaps}" >
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Header" Value="{Binding Encoding}"></Setter>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                    </TabControl>
+                </TabItem>
+            </TabControl>
+        </DataTemplate>
+    </UserControl.Resources>
+    <ContentPresenter Content="{Binding Font}"/>
+</UserControl>

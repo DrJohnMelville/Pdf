@@ -5,8 +5,8 @@ using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer;
-using Melville.Pdf.WpfViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
 namespace Melville.Pdf.LowLevelReader.MainDisplay;
 

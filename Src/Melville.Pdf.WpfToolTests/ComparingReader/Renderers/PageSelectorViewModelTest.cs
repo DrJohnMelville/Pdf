@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
+﻿using Melville.Pdf.Wpf.Controls;
 using Xunit;
 
 namespace Melville.Pdf.WpfToolTests.ComparingReader.Renderers;
@@ -87,23 +86,5 @@ public class PageSelectorViewModelTest
         Assert.Equal(9, sut.Page);
         sut.ToStart();
         Assert.Equal(1, sut.Page);
-    }
-
-    [Fact]
-    public void CanDecrement()
-    {
-        sut.MaxPage = 10;
-        Assert.False(sut.CanPrev);
-        sut.Increment();
-        Assert.True( sut.CanPrev);
-    }
-    [Fact]
-    public void CanIncrement()
-    {
-        sut.MaxPage = 10;
-        sut.ToEnd();
-        Assert.False(sut.CanNext);
-        sut.Decrement();
-        Assert.True(sut.CanNext);
     }
 }

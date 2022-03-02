@@ -33,7 +33,7 @@ MainWindow => Melville.Pdf.LowLevel.Parsing.ParserContext.*
 Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree.* => Melville.Pdf.ReferenceDocuments.*
 
 #External Dependency for the Low Level Pdf Viewer
-Melville.Pdf.ComparingReader.Viewers.LowLevel.LowLevelRenderer ^=> Melville.Pdf.WpfViewerParts.LowLevelViewer.*
+Melville.Pdf.ComparingReader.Viewers.LowLevel.LowLevelRenderer ^=> Melville.Pdf.LowLevelViewerParts.LowLevelViewer.*
 
 Melville.Pdf.ComparingReader.Viewers.* +=> Melville.Pdf.ComparingReader.Viewers.GenericImageViewers.*
 
@@ -42,7 +42,7 @@ Melville.Pdf.ComparingReader.Viewers.WindowsViewer.* ^=> Windows.Data.Pdf.*
 Melville.Pdf.ComparingReader.Viewers.WindowsViewer.* => Windows.*
 
 #External Dependency for the Wpf Viewer
-Melville.Pdf.ComparingReader.Viewers.WpfViewers.* ^=> Melville.Pdf.Wpf.*
+Melville.Pdf.ComparingReader.* ^=> Melville.Pdf.Wpf.*
 
 #External Dependency for the SkiaSharp Viewer
 Melville.Pdf.ComparingReader.Viewers.SkiaViewer.* ^=> Melville.Pdf.SkiaSharp.* 

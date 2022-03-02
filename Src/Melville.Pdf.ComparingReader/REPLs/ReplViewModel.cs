@@ -1,24 +1,18 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Melville.FileSystem;
 using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Renderers;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.Model.Creators;
-using Melville.Pdf.Model.DocumentRenderers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.REPLs;
 

@@ -14,7 +14,6 @@ using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.ComparingReader.REPLs;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;

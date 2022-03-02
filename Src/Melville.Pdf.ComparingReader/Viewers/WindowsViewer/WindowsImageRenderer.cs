@@ -5,8 +5,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.Data.Pdf;
 using Windows.Storage.Streams;
-using Melville.Pdf.ComparingReader.Renderers.PageFlippers;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
+using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.Viewers.WindowsViewer;
 
