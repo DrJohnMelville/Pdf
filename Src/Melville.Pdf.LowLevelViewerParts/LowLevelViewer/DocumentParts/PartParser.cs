@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.Runtime.Intrinsics.Arm;
 using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
 using Melville.Pdf.LowLevel.Model.Document;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -12,10 +14,9 @@ public interface IPartParser
     Task<DocumentPart[]> ParseAsync(IFile source, IWaitingService waiting);
     public Task<DocumentPart[]> ParseAsync(Stream source, IWaitingService waiting);
 }
+
 public class PartParser: IPartParser
 {
-    private ViewModelVisitor generator = new();
-    private List<DocumentPart> items = new();
     private readonly IPasswordSource passwordSource;
 
     public PartParser(IPasswordSource passwordSource)
@@ -28,22 +29,57 @@ public class PartParser: IPartParser
 
     public async Task<DocumentPart[]> ParseAsync(Stream source, IWaitingService waiting)
     {
-        items.Clear();
         PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(
             new ParsingFileOwner(source, passwordSource));
-        GenerateHeaderElement(lowlevel);
-        using var waitHandle = waiting.WaitBlock("Loading File", lowlevel.Objects.Count);
-        foreach (var item in lowlevel.Objects.Values
-                     .OrderBy(i=>i.Target.ObjectNumber)
-                     .ToList())
-        {
-                waiting.MakeProgress($"Loading Object ({item.Target.ObjectNumber}, {item.Target.GenerationNumber})");
-                items.Add(await item.Target.Visit(generator));
-        }
-        items.Add(await generator.GeneratePart("Trailer: ", lowlevel.TrailerDictionary));
+        var sourceList = OrderedListOfObjects(lowlevel);
+        
+        var items = sourceList.Length > 1000?
+              CreateLazyLoadList(sourceList)
+            : await CreateFlatItemsList(waiting, sourceList);
+
+        await AddPrefixAndSuffix(items, lowlevel);
         return items.ToArray();
     }
 
-    private void GenerateHeaderElement(PdfLowLevelDocument lowlevel) =>
-        items.Add(new DocumentPart($"PDF-{lowlevel.MajorVersion}.{lowlevel.MinorVersion}"));
+    private DocumentPart[] CreateLazyLoadList(PdfIndirectReference[] sourceList)
+    {
+        var listLen = ComputeDecimatedLength(sourceList);
+        var ret = new DocumentPart[listLen + 2];
+        for (int i = 0; i < listLen; i++)
+        {
+            ret[i + 1] =
+                new ItemLoader(sourceList.AsMemory(i * 1000, 
+                    Math.Min((i+1) * 1000, sourceList.Length) - (i * 1000)));
+        }
+        return ret;
+    }
+
+    private static int ComputeDecimatedLength(PdfIndirectReference[] sourceList) => (sourceList.Length + 999) / 1000;
+
+    private static async Task<DocumentPart[]> CreateFlatItemsList(IWaitingService waiting, PdfIndirectReference[] sourceList)
+    {
+        var items = new DocumentPart[sourceList.Length + 2];
+        var creator = new ItemLoader(sourceList);
+        await creator.FillMemoryWithParts(waiting, items.AsMemory(1..^1));
+        return items;
+    }
+
+    private async ValueTask AddPrefixAndSuffix(DocumentPart[] items, PdfLowLevelDocument lowlevel)
+    {
+        items[0] = GenerateHeaderElement(lowlevel);
+        items[^1] = await GenerateSuffixElement(lowlevel);
+    }
+
+    private static ValueTask<DocumentPart> GenerateSuffixElement(PdfLowLevelDocument lowlevel)
+    {
+        return new ViewModelVisitor().GeneratePart("Trailer: ", lowlevel.TrailerDictionary);
+    }
+
+    private static PdfIndirectReference[] OrderedListOfObjects(PdfLowLevelDocument lowlevel)
+    {
+        return lowlevel.Objects.Values.OrderBy(i => i.Target.ObjectNumber).ToArray();
+    }
+
+    private DocumentPart GenerateHeaderElement(PdfLowLevelDocument lowlevel) =>
+        new DocumentPart($"PDF-{lowlevel.MajorVersion}.{lowlevel.MinorVersion}");
 }

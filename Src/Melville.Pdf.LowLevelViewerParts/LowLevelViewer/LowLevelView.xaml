@@ -21,6 +21,11 @@
                     <TextBlock Text="{Binding Title}"/>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <eventBindings:EventIocSetter Event="Expanded" MethodName="OnExpand"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
         </TreeView>
         <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5" Grid.RowSpan="2"/>
         <TextBlock Grid.Column="1" FontSize="18" Text="{Binding Selected.Title}"></TextBlock>
