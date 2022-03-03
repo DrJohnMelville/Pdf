@@ -31,15 +31,27 @@ public class PartParser: IPartParser
     {
         PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(
             new ParsingFileOwner(source, passwordSource));
-        var sourceList = OrderedListOfObjects(lowlevel);
-        
-        var items = sourceList.Length > 1000?
-              CreateLazyLoadList(sourceList)
-            : await CreateFlatItemsList(waiting, sourceList);
-
-        await AddPrefixAndSuffix(items, lowlevel);
-        return items.ToArray();
+        return await GenerateUIList(waiting, lowlevel);
     }
+
+    private async Task<DocumentPart[]> GenerateUIList(IWaitingService waiting, PdfLowLevelDocument lowlevel)
+    {
+        var sourceList = OrderedListOfObjects(lowlevel);
+        var items = await ParseItemElements(waiting, sourceList);
+        await AddPrefixAndSuffix(items, lowlevel);
+        return items;
+    }
+
+    private const int maxSegmentLength = 1000;
+    private async Task<DocumentPart[]> ParseItemElements(IWaitingService waiting, PdfIndirectReference[] sourceList)
+    {
+        return TooLongForPreloadedList(sourceList)?
+            CreateLazyLoadList(sourceList)
+            : await CreatePreloadedList(waiting, sourceList);
+    }
+
+    private static bool TooLongForPreloadedList(PdfIndirectReference[] sourceList) => 
+        sourceList.Length > maxSegmentLength;
 
     private DocumentPart[] CreateLazyLoadList(PdfIndirectReference[] sourceList)
     {
@@ -48,15 +60,26 @@ public class PartParser: IPartParser
         for (int i = 0; i < listLen; i++)
         {
             ret[i + 1] =
-                new ItemLoader(sourceList.AsMemory(i * 1000, 
-                    Math.Min((i+1) * 1000, sourceList.Length) - (i * 1000)));
+                new ItemLoader(MemoryForSegment(sourceList, i));
         }
         return ret;
     }
 
-    private static int ComputeDecimatedLength(PdfIndirectReference[] sourceList) => (sourceList.Length + 999) / 1000;
+    private static Memory<PdfIndirectReference> MemoryForSegment(PdfIndirectReference[] sourceList, int i) => 
+        sourceList.AsMemory(i * maxSegmentLength, SegmentLength(sourceList, i));
 
-    private static async Task<DocumentPart[]> CreateFlatItemsList(IWaitingService waiting, PdfIndirectReference[] sourceList)
+    private static int SegmentLength(PdfIndirectReference[] sourceList, int i) => 
+        ItemAfterSegment(sourceList, i) - (i * maxSegmentLength);
+
+    private static int ItemAfterSegment(PdfIndirectReference[] sourceList, int i)
+    {
+        return Math.Min((i+1) * maxSegmentLength, sourceList.Length);
+    }
+
+    private static int ComputeDecimatedLength(PdfIndirectReference[] sourceList) => 
+        (sourceList.Length + maxSegmentLength - 1) / maxSegmentLength;
+
+    private static async Task<DocumentPart[]> CreatePreloadedList(IWaitingService waiting, PdfIndirectReference[] sourceList)
     {
         var items = new DocumentPart[sourceList.Length + 2];
         var creator = new ItemLoader(sourceList);

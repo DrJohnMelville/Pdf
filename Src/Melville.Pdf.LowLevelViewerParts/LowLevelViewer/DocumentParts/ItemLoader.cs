@@ -26,6 +26,7 @@ public class ItemLoader : DocumentPart
         this.references = references;
     }
 
+    //This is used -- it gets called by the UI
     public async void OnExpand( IWaitingService waiting)
     {
         if (Children != fakeContent) return;
