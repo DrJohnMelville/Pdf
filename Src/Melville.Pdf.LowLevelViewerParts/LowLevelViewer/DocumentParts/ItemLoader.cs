@@ -1,7 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.MVVM.WaitingServices;
-using Melville.MVVM.Wpf.DiParameterSources;
-using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;

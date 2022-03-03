@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using Melville.INPC;
 using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Bitmaps;
@@ -9,7 +10,19 @@ using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
-public record ImageDisplayViewModel(ImageSource Image);
+public partial class ImageDisplayViewModel
+{
+    
+    public ImageSource Image { get; init; }
+    [AutoNotify] private bool showCheckers = true;
+    public ImageDisplayViewModel(ImageSource Image)
+    {
+        this.Image = Image;
+    }
+
+    public void ToggleBackground() => ShowCheckers = !ShowCheckers;
+
+}
 
 public class ImagePartViewModel: StreamPartViewModel, ICreateView
 {
