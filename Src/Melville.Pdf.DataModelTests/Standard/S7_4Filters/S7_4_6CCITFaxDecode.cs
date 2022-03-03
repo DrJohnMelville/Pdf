@@ -60,4 +60,3 @@ public partial class S7_4_6CCITFaxDecode
         .WithItem(KnownNames.DamagedRowsBeforeError, 0)
         .AsDictionary();
 }
-

@@ -138,6 +138,12 @@ public class CcittType4Decoder : IStreamFilterDefinition
       var bytesWritten = writer.WriteBits(CurrentPixelBit(), 1, destination);
       destination = destination[bytesWritten..];
     }
+
+    if (destination.Length > 0)
+    {
+      var finalLength = writer.FinishWrite(destination);
+      destination = destination[finalLength..];
+    }
   }
 
   private bool CheckIfLineWriteComplete()
@@ -147,7 +153,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
     return true;
   }
 
-  private bool LineCompletelyWritten() => currentWritePosition >= lines.LineLength;
+  private bool LineCompletelyWritten() => currentWritePosition >= lines.LineLength && writer.NoBitsWaitingToBeWritten();
 
   private void ResetReaderForNextLine()
   {

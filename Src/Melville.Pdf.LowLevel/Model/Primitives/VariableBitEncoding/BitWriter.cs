@@ -43,7 +43,7 @@ public class BitWriter
         spotsAvailable = (byte) spotsAvailableAfterBitsAdded;
     }
         
-    private bool NoBitsWaitingToBeWritten() => spotsAvailable > 7;
+    public bool NoBitsWaitingToBeWritten() => spotsAvailable > 7;
 
     private int WriteCurrentByte(in Span<byte> target)
     {
