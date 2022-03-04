@@ -7,7 +7,7 @@ namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
 public sealed partial class GraphicsStateStack<T> : IGraphiscState, IDisposable
     where T: GraphicsState, new()
-{
+{ 
     private readonly Stack<T> states;
     public T Current() => states.Peek();
    
@@ -21,13 +21,12 @@ public sealed partial class GraphicsStateStack<T> : IGraphiscState, IDisposable
     {
         var newTop = new T();
         newTop.CopyFrom(Current());
-        newTop.MakeFontNotDisposable();
         states.Push(newTop);
     }
 
     public void RestoreGraphicsState()
     {
-        (Current().Typeface as IDisposable)?.Dispose();
+        Current().Dispose();
         states.Pop();
     }
 

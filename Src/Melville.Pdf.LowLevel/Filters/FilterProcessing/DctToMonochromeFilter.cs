@@ -26,10 +26,8 @@ public class DctToMonochromeFilter : IApplySingleFilter
         return innerFilter;
     }
 
-    public ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
-    {
-        throw new NotSupportedException("JPEG encoding is not supported");
-    }
+    public ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter) => 
+        innerFilter.Encode(source, filter, parameter);
 
     public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter) => 
         TryWrapDctForEveryThirdByte(filter, await innerFilter.Decode(source, filter, parameter).CA());

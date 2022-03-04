@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-// needed in rendering code.
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.FontRenderings;
-using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -38,7 +36,7 @@ public enum WritingMode
 // code
 [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
 [MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;", Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
-public abstract partial class GraphicsState<T> : GraphicsState
+public abstract partial class GraphicsState<T> : GraphicsState, IDisposable
 {
     protected GraphicsState()
     {
@@ -46,13 +44,15 @@ public abstract partial class GraphicsState<T> : GraphicsState
         NonstrokeColorChanged();
     }
 
-    protected override void StrokeColorChanged() => StrokeBrush = CreateSolidBrush(StrokeColor);
-    protected override void NonstrokeColorChanged() => NonstrokeBrush = CreateSolidBrush(NonstrokeColor);
+    protected override void StrokeColorChanged() => 
+        StrokeBrush = TryRegisterDispose(CreateSolidBrush(StrokeColor));
+    protected override void NonstrokeColorChanged() => NonstrokeBrush = 
+        TryRegisterDispose(CreateSolidBrush(NonstrokeColor));
 
     protected abstract T CreateSolidBrush(DeviceColor color);
 }
 
-public abstract partial  class GraphicsState: IGraphiscState
+public abstract partial  class GraphicsState: IGraphiscState, IDisposable
 {
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
@@ -234,15 +234,16 @@ public abstract partial  class GraphicsState: IGraphiscState
 
     public void SetTypeface(IRealizedFont realizedFont)
     {
-        (Typeface as IDisposable)?.Dispose();
-        Typeface = realizedFont;
+        Typeface = TryRegisterDispose(realizedFont);
     }
 
-    //Only the lowest state on the stack should dispose of a typeface, because we might pop the stack and come
-    // back to a prior font.  If the typeface is disposable, wrap it in a wrapper that does not implement IDisposable
-    // and this instance will never dispose of the typeface
-    public void MakeFontNotDisposable() =>
-        Typeface = BlockFontDispose.AsNonDisposableTypeface(Typeface);
+    #region Disposal
+
+    private readonly DisposeList pendingDispose = new();
+    public void Dispose() => pendingDispose.Dispose();
+    protected T TryRegisterDispose<T>(T item) => pendingDispose.TryRegister(item);
+
+    #endregion
 }
 
 public static class GraphicsStateHelpers
