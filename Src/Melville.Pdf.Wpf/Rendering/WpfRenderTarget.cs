@@ -4,18 +4,8 @@ using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
-using Melville.Pdf.Model.Renderers.Colors;
-using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf.Rendering;
-
-public class WpfGraphicsState : GraphicsState<DeviceColor>
-{
-    protected override DeviceColor CreateSolidBrush(DeviceColor color)
-    {
-        return color;
-    }
-}
 
 public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>, IRenderTarget
 {

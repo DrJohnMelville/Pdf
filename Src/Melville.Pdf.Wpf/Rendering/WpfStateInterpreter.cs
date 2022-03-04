@@ -11,9 +11,9 @@ namespace Melville.Pdf.Wpf.Rendering;
 
 public static class WpfStateInterpreter
 {
-    public static Brush Brush(this GraphicsState state) => state.NonstrokeColor.AsSolidBrush();
+    public static Brush Brush(this WpfGraphicsState state) => state.NonstrokeBrush;
     
-    public static Pen Pen(this GraphicsState state)
+    public static Pen Pen(this WpfGraphicsState state)
     {
         var lineCap = ConvertLineCap(state.LineCap);
         var pen = new Pen(Brushes.Black, state.EffectiveLineWidth())
@@ -24,14 +24,12 @@ public static class WpfStateInterpreter
             DashStyle = ComputeDashStyle(state),
             LineJoin = ComputeLineJoin(state.LineJoinStyle),
             MiterLimit = state.MiterLimit,
-            Brush = state.StrokeColor.AsSolidBrush()
+            Brush = state.StrokeBrush
         };
         return pen;
     }
-
-    public static Brush AsSolidBrush(in this DeviceColor dc) => new SolidColorBrush(dc.AsWpfColor());
-
-    private static Color AsWpfColor(in this DeviceColor dc) => 
+    
+    public static Color AsWpfColor(in this DeviceColor dc) => 
         Color.FromArgb(dc.Alpha, dc.RedByte, dc.GreenByte, dc.BlueByte);
 
     private static PenLineJoin ComputeLineJoin(LineJoinStyle joinStyle) => joinStyle switch

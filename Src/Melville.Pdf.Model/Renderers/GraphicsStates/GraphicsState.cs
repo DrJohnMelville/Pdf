@@ -40,6 +40,12 @@ public enum WritingMode
 [MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;", Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
 public abstract partial class GraphicsState<T> : GraphicsState
 {
+    protected GraphicsState()
+    {
+        StrokeColorChanged();
+        NonstrokeColorChanged();
+    }
+
     protected override void StrokeColorChanged() => StrokeBrush = CreateSolidBrush(StrokeColor);
     protected override void NonstrokeColorChanged() => NonstrokeBrush = CreateSolidBrush(NonstrokeColor);
 
@@ -218,7 +224,7 @@ public abstract partial  class GraphicsState: IGraphiscState
         StrokeColorChanged();
     }
     public void SetNonstrokingColor(in ReadOnlySpan<double> color) => 
-        NonstrokeColor = NonstrokeColorSpace.SetColor(color);
+       SetNonstrokeColor(NonstrokeColorSpace.SetColor(color));
     private void SetNonstrokeColor(DeviceColor color)
     {
         NonstrokeColor = color;

@@ -9,7 +9,7 @@ public sealed partial class GraphicsStateStack<T> : IGraphiscState, IDisposable
     where T: GraphicsState, new()
 {
     private readonly Stack<T> states;
-    public GraphicsState Current() => states.Peek();
+    public T Current() => states.Peek();
    
     public GraphicsStateStack()
     {
