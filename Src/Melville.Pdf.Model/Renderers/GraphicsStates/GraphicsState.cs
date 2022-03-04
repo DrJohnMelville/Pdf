@@ -33,14 +33,17 @@ public enum WritingMode
     TopToBottom = 1
 }
 
-[MacroItem("DeviceColor", "StrokeColor", "DeviceColor.Black")]
-[MacroItem("DeviceColor", "NonstrokeColor", "DeviceColor.Black")]
+[MacroItem("T", "StrokeBrush", "default")]
+[MacroItem("T", "NonstrokeBrush", "default")]
 // code
 [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
-[MacroCode("    ~1~ = other.~1~;", Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
-public partial class GraphicsState<T> : GraphicsState
+[MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;", Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
+public abstract partial class GraphicsState<T> : GraphicsState
 {
-    
+    protected override void StrokeColorChanged() => StrokeBrush = CreateSolidBrush(StrokeColor);
+    protected override void NonstrokeColorChanged() => NonstrokeBrush = CreateSolidBrush(NonstrokeColor);
+
+    protected abstract T CreateSolidBrush(DeviceColor color);
 }
 
 public abstract partial  class GraphicsState: IGraphiscState
@@ -189,25 +192,38 @@ public abstract partial  class GraphicsState: IGraphiscState
     #endregion
 
     #region Color
+
+    protected abstract void StrokeColorChanged();
+    protected abstract void NonstrokeColorChanged();
     public void SetRenderIntent(RenderIntentName intent) => RenderIntent = intent;
     public void SetStrokeColorSpace(IColorSpace colorSpace)
     {
-        StrokeColor = colorSpace.DefaultColor();
+        SetStrokeColor(colorSpace.DefaultColor());
         StrokeColorSpace = colorSpace;
     }
-
+    
     public void SetNonstrokeColorSpace(IColorSpace colorSpace)
     {
-        NonstrokeColor = colorSpace.DefaultColor();
+        SetNonstrokeColor(colorSpace.DefaultColor());
         NonstrokeColorSpace = colorSpace;
     }
 
     public GraphicsState CurrentState() => this;
 
     public void SetStrokeColor(in ReadOnlySpan<double> color) => 
-        StrokeColor = StrokeColorSpace.SetColor(color);
+        SetStrokeColor(StrokeColorSpace.SetColor(color));
+    private void SetStrokeColor(DeviceColor color)
+    {
+        StrokeColor = color;
+        StrokeColorChanged();
+    }
     public void SetNonstrokingColor(in ReadOnlySpan<double> color) => 
         NonstrokeColor = NonstrokeColorSpace.SetColor(color);
+    private void SetNonstrokeColor(DeviceColor color)
+    {
+        NonstrokeColor = color;
+        NonstrokeColorChanged();
+    }
     #endregion
 
     public void SetTypeface(IRealizedFont realizedFont)

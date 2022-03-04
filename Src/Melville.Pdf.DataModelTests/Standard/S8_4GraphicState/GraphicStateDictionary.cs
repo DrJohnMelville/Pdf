@@ -15,6 +15,10 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
+public class TestGraphicsState : GraphicsState<DeviceColor>
+{
+    protected override DeviceColor CreateSolidBrush(DeviceColor color) => color;
+}
 public class GraphicStateDictionary
 {
 
@@ -83,9 +87,9 @@ public class GraphicStateDictionary
         Assert.Equal(2, gs.Current().DashArray.Length);
     }
 
-    private static async Task<GraphicsStateStack<GraphicsState<DeviceColor>>> ComputeFinalGraphicsStack(PdfPage page)
+    private static async Task<GraphicsStateStack<TestGraphicsState>> ComputeFinalGraphicsStack(PdfPage page)
     {
-        var gs = new GraphicsStateStack<GraphicsState<DeviceColor>>();
+        var gs = new GraphicsStateStack<TestGraphicsState>();
         var target = new Mock<IRenderTarget>();
         target.SetupGet(i => i.GrapicsStateChange).Returns(gs);
         Assert.Equal(1.0, gs.Current().LineWidth);

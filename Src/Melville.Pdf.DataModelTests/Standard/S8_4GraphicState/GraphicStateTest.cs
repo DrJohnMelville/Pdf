@@ -11,8 +11,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
 public class GraphicStateTest
 {
-    private readonly GraphicsState<DeviceColor> sut = new();
-    private readonly GraphicsState<DeviceColor> sut2 = new();
+    private readonly TestGraphicsState sut = new();
+    private readonly TestGraphicsState sut2 = new();
     
     private void PropTest<T>(string name, T defaultValue, T newValue, Action<IStateChangingOperations> act)
     {

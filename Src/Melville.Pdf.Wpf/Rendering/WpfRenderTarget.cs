@@ -11,7 +11,10 @@ namespace Melville.Pdf.Wpf.Rendering;
 
 public class WpfGraphicsState : GraphicsState<DeviceColor>
 {
-    
+    protected override DeviceColor CreateSolidBrush(DeviceColor color)
+    {
+        return color;
+    }
 }
 
 public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>, IRenderTarget

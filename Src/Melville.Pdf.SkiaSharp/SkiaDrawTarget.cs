@@ -10,7 +10,10 @@ namespace Melville.Pdf.SkiaSharp;
 
 public class SkiaGraphicsState:GraphicsState<DeviceColor>
 {
-    
+    protected override DeviceColor CreateSolidBrush(DeviceColor color)
+    {
+        return color;
+    }
 }
 public class SkiaDrawTarget : IDrawTarget, IDisposable
 {
