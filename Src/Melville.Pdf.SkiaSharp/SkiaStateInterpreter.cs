@@ -1,17 +1,15 @@
-﻿using System.Numerics;
+﻿using System.Linq;
+using System.Numerics;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.SkiaSharp;
 using SkiaSharp;
 
 public static class SkiaStateInterpreter
 {
-    public static SKPaint Brush(this GraphicsState state) => 
-        new()
-        {
-            Style = SKPaintStyle.Fill,
-            Color = state.NonstrokeColor.AsSkColor(),
-        };
+    public static SKPaint Brush(this SkiaGraphicsState state) =>
+        state.NonstrokeBrush;
 
     public static SKPaint Pen(this GraphicsState state)
     {

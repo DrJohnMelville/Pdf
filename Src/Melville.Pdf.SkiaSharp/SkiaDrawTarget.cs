@@ -2,19 +2,11 @@
 using System.Numerics;
 using System.Security.AccessControl;
 using Melville.Pdf.Model.Renderers;
-using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public class SkiaGraphicsState:GraphicsState<DeviceColor>
-{
-    protected override DeviceColor CreateSolidBrush(DeviceColor color)
-    {
-        return color;
-    }
-}
 public class SkiaDrawTarget : IDrawTarget, IDisposable
 {
     private readonly SKCanvas target;
@@ -81,7 +73,6 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
         {
             SetCurrentFillRule(evenOddFillRule);
             target.DrawPath(compositePath, brush);
-            brush.Dispose();
         }
 
         if (stroke && state.Current().Pen() is { } pen)
