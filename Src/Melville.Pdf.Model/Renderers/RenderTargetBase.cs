@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -37,10 +38,11 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     IDrawTarget CreateDrawTarget();
 }
 
-public abstract partial class RenderTargetBase<T>: IDrawTarget, IDisposable
+public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposable
+   where TState:GraphicsState, new()
 {
     protected T Target { get; }
-    protected GraphicsStateStack State { get; } = new GraphicsStateStack();
+    protected GraphicsStateStack<TState> State { get; } = new();
 
     public IGraphiscState GrapicsStateChange => State;
 

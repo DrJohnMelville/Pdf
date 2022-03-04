@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
@@ -82,9 +83,9 @@ public class GraphicStateDictionary
         Assert.Equal(2, gs.Current().DashArray.Length);
     }
 
-    private static async Task<GraphicsStateStack> ComputeFinalGraphicsStack(PdfPage page)
+    private static async Task<GraphicsStateStack<GraphicsState<DeviceColor>>> ComputeFinalGraphicsStack(PdfPage page)
     {
-        var gs = new GraphicsStateStack();
+        var gs = new GraphicsStateStack<GraphicsState<DeviceColor>>();
         var target = new Mock<IRenderTarget>();
         target.SetupGet(i => i.GrapicsStateChange).Returns(gs);
         Assert.Equal(1.0, gs.Current().LineWidth);

@@ -41,7 +41,7 @@ public partial class FreeTypeGlyphPreview : UserControl
         var dg = new DrawingGroup();
         using (var dc = dg.Open())
         {
-            var stack = new GraphicsStateStack();
+            var stack = new GraphicsStateStack<WpfGraphicsState>();
             var target = new WpfDrawTarget(dc, stack);
             Face.LoadGlyph((uint)CurrentGlyph, LoadFlags.NoBitmap, LoadTarget.Normal);
             Face.Glyph.Outline.Decompose(new FreeTypeOutlineWriter(target).DrawHandle(), IntPtr.Zero);

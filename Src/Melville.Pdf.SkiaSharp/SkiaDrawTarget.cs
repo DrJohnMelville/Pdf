@@ -2,20 +2,25 @@
 using System.Numerics;
 using System.Security.AccessControl;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
+public class SkiaGraphicsState:GraphicsState<DeviceColor>
+{
+    
+}
 public class SkiaDrawTarget : IDrawTarget, IDisposable
 {
     private readonly SKCanvas target;
-    private readonly GraphicsStateStack state;
+    private readonly GraphicsStateStack<SkiaGraphicsState> state;
     private SKPath compositePath = new();
     private SKPath path;
 
-    public SkiaDrawTarget(SKCanvas target, GraphicsStateStack state): this(target, state, new SKPath()){}
-    public SkiaDrawTarget(SKCanvas target, GraphicsStateStack state, SKPath path)
+    public SkiaDrawTarget(SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state): this(target, state, new SKPath()){}
+    public SkiaDrawTarget(SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, SKPath path)
     {
         this.target = target;
         this.state = state;

@@ -4,10 +4,17 @@ using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
-public partial class WpfRenderTarget: RenderTargetBase<DrawingContext>, IRenderTarget
+public class WpfGraphicsState : GraphicsState<DeviceColor>
+{
+    
+}
+
+public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>, IRenderTarget
 {
     public WpfRenderTarget(DrawingContext target):
         base(target)

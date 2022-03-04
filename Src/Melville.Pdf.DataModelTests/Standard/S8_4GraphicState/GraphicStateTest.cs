@@ -3,6 +3,7 @@ using System.Numerics;
 using Melville.Hacks.Reflection;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Xunit;
 
@@ -10,8 +11,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 
 public class GraphicStateTest
 {
-    private readonly GraphicsState sut = new();
-    private readonly GraphicsState sut2 = new();
+    private readonly GraphicsState<DeviceColor> sut = new();
+    private readonly GraphicsState<DeviceColor> sut2 = new();
     
     private void PropTest<T>(string name, T defaultValue, T newValue, Action<IStateChangingOperations> act)
     {

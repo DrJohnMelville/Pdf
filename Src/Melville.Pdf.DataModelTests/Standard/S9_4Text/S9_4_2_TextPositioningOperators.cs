@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
@@ -17,7 +18,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 
 public class S9_4_2_TextPositioningOperators
 {
-    private readonly GraphicsStateStack state = new();
+    private readonly GraphicsStateStack<GraphicsState<DeviceColor>> state = new();
     private readonly Mock<IHasPageAttributes> pageMock = new(MockBehavior.Strict);
     private readonly Mock<IRenderTarget> targetMock = new(MockBehavior.Strict);
     private readonly RenderEngine sut;

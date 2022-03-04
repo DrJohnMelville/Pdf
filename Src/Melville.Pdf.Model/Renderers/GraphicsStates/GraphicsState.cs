@@ -33,7 +33,17 @@ public enum WritingMode
     TopToBottom = 1
 }
 
-public partial class GraphicsState: IGraphiscState
+[MacroItem("DeviceColor", "StrokeColor", "DeviceColor.Black")]
+[MacroItem("DeviceColor", "NonstrokeColor", "DeviceColor.Black")]
+// code
+[MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
+[MacroCode("    ~1~ = other.~1~;", Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
+public partial class GraphicsState<T> : GraphicsState
+{
+    
+}
+
+public abstract partial  class GraphicsState: IGraphiscState
 {
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
@@ -64,7 +74,7 @@ public partial class GraphicsState: IGraphiscState
 
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
-    [MacroCode("    ~1~ = other.~1~;", Prefix = "public void CopyFrom(GraphicsState other){", Postfix = "}")]
+    [MacroCode("    ~1~ = other.~1~;", Prefix = "public virtual void CopyFrom(GraphicsState other){", Postfix = "}")]
     public void SaveGraphicsState() { }
     public void RestoreGraphicsState() { }
 

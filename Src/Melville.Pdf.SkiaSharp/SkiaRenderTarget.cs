@@ -10,7 +10,7 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas>, IRenderTarget
+public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsState>, IRenderTarget
 {
     public SkiaRenderTarget(
         SKCanvas target) : 

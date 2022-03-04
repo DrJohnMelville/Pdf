@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 
 public class ColorMacrosTest
 {
-    private readonly GraphicsStateStack state = new();
+    private readonly GraphicsStateStack<GraphicsState<DeviceColor>> state = new();
     private readonly Mock<IRenderTarget> target = new();
     private readonly RenderEngine sut;
 

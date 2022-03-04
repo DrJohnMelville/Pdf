@@ -9,12 +9,12 @@ namespace Melville.Pdf.Wpf.Rendering;
 public class WpfDrawTarget : IDrawTarget
 {
     private readonly DrawingContext context;
-    private readonly GraphicsStateStack state;
+    private readonly GraphicsStateStack<WpfGraphicsState> state;
     private readonly GeometryGroup geoGroup = new GeometryGroup();
     private PathGeometry? geometry;
     private PathFigure? figure = null;
   
-    public WpfDrawTarget(DrawingContext context, GraphicsStateStack state)
+    public WpfDrawTarget(DrawingContext context, GraphicsStateStack<WpfGraphicsState> state)
     {
         this.context = context;
         this.state = state;
