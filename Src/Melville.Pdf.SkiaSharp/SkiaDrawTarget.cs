@@ -78,7 +78,6 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
         if (stroke && state.Current().Pen() is { } pen)
         {
             target.DrawPath(compositePath, pen);
-            pen.Dispose();
         }
     }
 

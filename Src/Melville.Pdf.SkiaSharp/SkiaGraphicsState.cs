@@ -10,7 +10,6 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
     {
         return new SKPaint
         {
-            Style = SKPaintStyle.Fill,
             Color = color.AsSkColor()   
         };
     }

@@ -8,20 +8,23 @@ using SkiaSharp;
 
 public static class SkiaStateInterpreter
 {
-    public static SKPaint Brush(this SkiaGraphicsState state) =>
-        state.NonstrokeBrush;
-
-    public static SKPaint Pen(this GraphicsState state)
+    public static SKPaint Brush(this SkiaGraphicsState state)
     {
-        var paint = new SKPaint()
-        {
-            Style = SKPaintStyle.Stroke,
-            Color = state.StrokeColor.AsSkColor(),
-            StrokeWidth = (float)state.EffectiveLineWidth(),
-            StrokeCap = StrokeCap(state.LineCap),
-            StrokeJoin = CreateStrokeJoin(state.LineJoinStyle),
-            StrokeMiter = (float)state.MiterLimit
-        };
+        var ret = state.NonstrokeBrush;
+        ret.Style = SKPaintStyle.Fill;
+        return ret;
+    }
+
+    public static SKPaint Pen(this SkiaGraphicsState state)
+    {
+        var paint = state.StrokeBrush;
+        paint.Style = SKPaintStyle.Stroke;
+        paint.Color = state.StrokeColor.AsSkColor();
+        paint.StrokeWidth = (float)state.EffectiveLineWidth();
+        paint.StrokeCap = StrokeCap(state.LineCap);
+        paint.StrokeJoin = CreateStrokeJoin(state.LineJoinStyle);
+        paint.StrokeMiter = (float)state.MiterLimit;
+
         SetDashState(state, paint);
         return paint;
     }
