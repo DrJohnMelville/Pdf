@@ -34,7 +34,7 @@ public static class PdfDictionaryOperations
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is PdfNumber definiteObj? definiteObj.DoubleValue: defaultValue;
     public static async ValueTask<T> GetOrDefaultAsync<T>(
-        this PdfDictionary dict, PdfName name, T defaultValue) where T:PdfObject =>
+        this PdfDictionary dict, PdfName name, T defaultValue) where T:PdfObject? =>
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is T definiteObj? definiteObj: defaultValue;
 

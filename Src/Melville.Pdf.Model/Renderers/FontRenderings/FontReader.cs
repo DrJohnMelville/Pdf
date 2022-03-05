@@ -4,6 +4,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
@@ -71,11 +72,12 @@ public readonly struct FontReader
         IGlyphMapping externalMapping, PdfFont font)
     {
         var info = await font.CidSystemInfo().CA();
-        var supplement = await info.GetOrDefaultAsync(KnownNames.Supplement, 0);
+        if (info == null)
+            throw new PdfParseException("No system info for CID font");
+        var supplement = await info.GetOrDefaultAsync(KnownNames.Supplement, 0).CA();
         var registry = (await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA());
         var ordering = (await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA());
-        if (info == null ||
-            supplement is not (0 or 1) ||
+        if (supplement is not (0 or 1) ||
             !registry.IsSameAS("Adobe") ||
             !ordering.IsSameAS("Identity"))
             throw new NotImplementedException("Only default CID Font Orderings are implemented. ");

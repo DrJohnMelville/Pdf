@@ -62,9 +62,8 @@ public readonly struct ExplicitMappingFactory
 
     private static uint ReadUShort(ref SequenceReader<byte> reader)
     {
-       #warning assert success here because we checked ahead of time if we had enough room.
-        reader.TryRead(out var hiByte);
-        reader.TryRead(out var lowByte);
+        Trace.Assert(reader.TryRead(out var hiByte));
+        Trace.Assert(reader.TryRead(out var lowByte));
         var value = (uint)((hiByte << 8) | lowByte);
         return value;
     }

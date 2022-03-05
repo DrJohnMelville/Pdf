@@ -2,10 +2,8 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
-using System.Threading;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -13,9 +11,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamDataSources;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
-using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
