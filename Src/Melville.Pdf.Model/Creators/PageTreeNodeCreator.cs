@@ -20,8 +20,9 @@ public class PageTreeNodeCreator: PageTreeNodeChildCreator
     {
     }
 
-    public PageCreator CreatePage() => AddAndReturn(new PageCreator());
-    public PageCreator CreatePageInObjectStream() => AddAndReturn(new ObjectStreamPageCreator());
+    public PageCreator CreatePage() => AddAndReturn(new PageCreator(NoObjectStream.Instance));
+    public PageCreator CreatePageInObjectStream() => 
+        AddAndReturn(new PageCreator(EncodeInObjectStream.Instance));
     public PageTreeNodeCreator CreateNode() => AddAndReturn(new PageTreeNodeCreator());
 
     private T AddAndReturn<T>(T ret) where T:PageTreeNodeChildCreator

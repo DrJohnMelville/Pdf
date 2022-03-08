@@ -31,8 +31,8 @@ public enum WritingMode
     TopToBottom = 1
 }
 
-[MacroItem("T", "StrokeBrush", "default")]
-[MacroItem("T", "NonstrokeBrush", "default")]
+[MacroItem("T", "StrokeBrush", "default!")]
+[MacroItem("T", "NonstrokeBrush", "default!")]
 // code
 [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
 [MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;", Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]

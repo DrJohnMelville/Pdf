@@ -84,10 +84,10 @@ public readonly struct FontReader
         return externalMapping;
     }
 
-    private async ValueTask<IGlyphMapping> ParseType0Encoding(PdfObject? encodingEntry)
+    private ValueTask<IGlyphMapping> ParseType0Encoding(PdfObject? encodingEntry)
     {
         if (encodingEntry != KnownNames.IdentityH && encodingEntry != KnownNames.IdentityV)
             throw new NotImplementedException("CMAP parsing is not implemented.");
-        return IdentityCmapMapping.Instance;
+        return new (IdentityCmapMapping.Instance);
     }
 }

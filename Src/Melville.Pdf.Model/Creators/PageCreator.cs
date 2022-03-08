@@ -12,11 +12,18 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
+public abstract class ContentStreamCreator: PageTreeNodeCreator
+{
+    
+}
+
 public class PageCreator: PageTreeNodeChildCreator
 {
     private readonly List<PdfStream> streamSegments = new();
-    public PageCreator() : base(new())
+    private readonly IObjectStreamCreationStrategy objStreamStrategy;
+    public PageCreator(IObjectStreamCreationStrategy objStreamStrategy) : base(new())
     {
+        this.objStreamStrategy = objStreamStrategy;
         MetaData.Add(KnownNames.Type, KnownNames.Page);
     }
 
@@ -25,6 +32,7 @@ public class PageCreator: PageTreeNodeChildCreator
             int maxNodeSize)
     {
         if (parent is null) throw new ArgumentException("Pages must have a parent.");
+        using var _ = objStreamStrategy.EnterObjectStreamContext(creator);
         MetaData.Add(KnownNames.Parent, parent);
         TryAddContent(creator);
         TryAddResources(creator);
