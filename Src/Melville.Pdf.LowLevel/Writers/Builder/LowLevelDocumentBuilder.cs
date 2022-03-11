@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -78,7 +80,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 
     private PdfIndirectReference InnerAdd(PdfIndirectReference item)
     {
-        if (!TryWriteToObjectStream(item))
+        if (!(Objects.Contains(item) || TryWriteToObjectStream(item)))
         {
             Objects.Add(item);
         }

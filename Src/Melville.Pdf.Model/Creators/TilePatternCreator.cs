@@ -35,6 +35,7 @@ public class TilePatternCreator : ContentStreamCreator
         : base(objStreamStrategy)
     {
         MetaData.WithItem(KnownNames.Type, KnownNames.Pattern)
+         .WithItem(KnownNames.PatternType, 1)   
          .WithItem(KnownNames.PaintType,  (int)paint)
          .WithItem(KnownNames.TilingType, (int)tile)
          .WithItem(KnownNames.XStep, xStep)

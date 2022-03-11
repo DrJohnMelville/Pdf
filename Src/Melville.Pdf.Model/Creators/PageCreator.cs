@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
-public abstract class ContentStreamCreator: PageTreeNodeChildCreator
+public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
 {
     private readonly IObjectStreamCreationStrategy objStreamStrategy;
     

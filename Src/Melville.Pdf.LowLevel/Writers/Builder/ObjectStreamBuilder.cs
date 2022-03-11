@@ -12,7 +12,7 @@ public class ObjectStreamBuilder
     public bool TryAddRef(PdfIndirectObject obj)
     {
         if (!(obj.TryGetDirectValue(out var directValue) && IsLegalWrite(obj, directValue))) return false;
-        members.Add(obj);
+        if (!members.Contains(obj)) members.Add(obj);
         return true;
     }
     private bool IsLegalWrite(PdfIndirectObject pdfIndirectObject, PdfObject direcetValue) => 

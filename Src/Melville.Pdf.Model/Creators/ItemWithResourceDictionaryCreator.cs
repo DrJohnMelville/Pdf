@@ -9,13 +9,13 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
-public abstract class PageTreeNodeChildCreator
+public abstract class ItemWithResourceDictionaryCreator
 {
     protected DictionaryBuilder MetaData { get; }
     protected Dictionary<(PdfName DictionaryName, PdfName ItemName), 
             Func<ILowLevelDocumentCreator,PdfObject>> Resources { get; } = new();
 
-    protected PageTreeNodeChildCreator(DictionaryBuilder metaData)
+    protected ItemWithResourceDictionaryCreator(DictionaryBuilder metaData)
     {
         MetaData = metaData;
     }

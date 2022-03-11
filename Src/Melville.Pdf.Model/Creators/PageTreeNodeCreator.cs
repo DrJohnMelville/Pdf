@@ -2,22 +2,23 @@
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
-public sealed class PageTreeNodeCreator: PageTreeNodeChildCreator
+public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
 {
-    private readonly IList<PageTreeNodeChildCreator> children;
+    private readonly IList<ItemWithResourceDictionaryCreator> children;
 
-    private PageTreeNodeCreator(DictionaryBuilder metaData, IList<PageTreeNodeChildCreator> children):
+    private PageTreeNodeCreator(DictionaryBuilder metaData, IList<ItemWithResourceDictionaryCreator> children):
         base(metaData)
     {
         this.children = children;
         metaData.WithItem(KnownNames.Type, KnownNames.Pages);
     }
-    public PageTreeNodeCreator():this(new() ,new List<PageTreeNodeChildCreator>())
+    public PageTreeNodeCreator():this(new() ,new List<ItemWithResourceDictionaryCreator>())
     {
     }
 
@@ -26,7 +27,7 @@ public sealed class PageTreeNodeCreator: PageTreeNodeChildCreator
         AddAndReturn(new PageCreator(EncodeInObjectStream.Instance));
     public PageTreeNodeCreator CreateNode() => AddAndReturn(new PageTreeNodeCreator());
 
-    private T AddAndReturn<T>(T ret) where T:PageTreeNodeChildCreator
+    private T AddAndReturn<T>(T ret) where T:ItemWithResourceDictionaryCreator
     {
         children.Add(ret);
         return ret;
@@ -45,7 +46,7 @@ public sealed class PageTreeNodeCreator: PageTreeNodeChildCreator
 
     private PageTreeNodeCreator SegmentedTree(int maxNodeSize) => new(MetaData, 
         children.Chunk(maxNodeSize)
-        .Select(i => (PageTreeNodeChildCreator)new PageTreeNodeCreator(
+        .Select(i => (ItemWithResourceDictionaryCreator)new PageTreeNodeCreator(
             new(),i)).ToArray()
         );
 

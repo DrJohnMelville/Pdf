@@ -15,13 +15,15 @@ public class PdfDocumentCreator
 
     public PdfLowLevelDocument CreateDocument()
     {
-        var (pageTree, _) = Pages.ConstructPageTree(LowLevelCreator, null, MaxPageTreeNodeSize);
+        var pageTree = CreateResourceDictionaryItem(Pages);
         catalogItems.Add(KnownNames.Pages, pageTree);
         LowLevelCreator.AddToTrailerDictionary(KnownNames.Root, LowLevelCreator.Add(
             new PdfDictionary(catalogItems)));
-        
         return LowLevelCreator.CreateDocument();
     }
+
+    public PdfIndirectReference CreateResourceDictionaryItem(ItemWithResourceDictionaryCreator creator) => 
+        creator.ConstructPageTree(LowLevelCreator, null, MaxPageTreeNodeSize).Reference;
 
     public void SetVersionInCatalog(byte major, byte minor) =>
         SetVersionInCatalog(NameDirectory.Get($"{major}.{minor}"));

@@ -1,4 +1,7 @@
-﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns;
@@ -9,16 +12,75 @@ public class ColoredTilePattern: Card3x5
     {
     }
 
-    protected override ValueTask SetPagePropertiesAsync(PageCreator page)
+    protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {
-        return base.SetPagePropertiesAsync(page);
+        return base.AddContentToDocumentAsync(docCreator);
+    }
+
+    protected override void SetPageProperties(PageCreator page)
+    {
+        page.AddResourceObject(ResourceTypeName.Pattern, NameDirectory.Get("P1"), CreatePattern);
+        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("Cs12"), new PdfArray(
+            KnownNames.Pattern, KnownNames.DeviceRGB));
+    }
+
+    private PdfObject CreatePattern(ILowLevelDocumentCreator lldc)
+    {
+        var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 100, 100,
+            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
+        tpc.AddMatrix(Matrix3x2.CreateScale(0.4f));
+
+        var enc = lldc.Add(new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Encoding)
+            .WithItem(KnownNames.Differences, new PdfArray(
+                new PdfInteger(1),
+                NameDirectory.Get("a109"),
+                NameDirectory.Get("a110"),
+                NameDirectory.Get("a111"),
+                NameDirectory.Get("a112")
+                ))
+            .AsDictionary());
+        var zapf = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, BuiltInFontName.ZapfDingbats)
+            .WithItem(KnownNames.Encoding, enc)
+            .AsDictionary();
+        
+        tpc.AddResourceObject(ResourceTypeName.Font, NameDirectory.Get("F1"), zapf);
+        tpc.AddToContentStream(new DictionaryBuilder(), @"BT
+/F1 1 Tf
+64 0 0 64 7.1771 2.4414 Tm
+0 Tc
+0 Tw
+1 0 0 rg
+(\001) Tj
+
+0.7478 -0.007 TD
+0 1 0 rg
+(\002) Tj
+
+-0.7323 0.7813 TD
+0 0 1 rg
+(\003) Tj
+
+0.6913 0.007 TD
+0 0 0 rg
+(\004) Tj
+ET
+");
+
+        return tpc.ConstructPageTree(lldc, null, 100).Reference;
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        csw.SetNonstrokingRGB(1.0, 1.0, 0.0);
+        await csw.SetNonstrokingRGB(1.0, 1.0, 0.0);
         csw.Rectangle(25, 175, 175, -150);
         csw.FillPath();
+
+        await csw.SetNonstrokingColorSpace(NameDirectory.Get("Cs12"));
+        await csw.SetNonstrokingColorExtended(NameDirectory.Get("P1"), 0.77, 0.2, 0.0);
         
         csw.MoveTo(99.92, 49.92);
         csw.CurveTo(99.92, 77.52, 77.52, 99.91, 49.92, 99.92);

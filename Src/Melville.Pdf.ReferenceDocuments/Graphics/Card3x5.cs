@@ -13,12 +13,18 @@ public abstract class Card3x5: CreatePdfParser
     public override async ValueTask WritePdfAsync(Stream target)
     {
         var docCreator = new PdfDocumentCreator();
-        var page = docCreator.Pages.CreatePage();
-        page.AddBox(BoxName.CropBox, new PdfRect(0,0, 5*72, 3*72));
-        await SetPagePropertiesAsync(page);
-        await page.AddToContentStreamAsync(CreateContentStream);
+        await AddContentToDocumentAsync(docCreator);
         await docCreator.CreateDocument().WriteToAsync(target);
     }
+
+    protected virtual async ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
+    {
+        var page = docCreator.Pages.CreatePage();
+        page.AddBox(BoxName.CropBox, new PdfRect(0, 0, 5 * 72, 3 * 72));
+        await SetPagePropertiesAsync(page);
+        await page.AddToContentStreamAsync(CreateContentStream);
+    }
+
     private ValueTask CreateContentStream(ContentStreamWriter csw)
     {
         DoPainting(csw);
