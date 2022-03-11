@@ -10,9 +10,9 @@ public abstract class PdfNumber: PdfObject, IComparable<PdfNumber>
     public abstract long IntValue { get; }
     public abstract double DoubleValue { get; }
 
-    public static implicit operator long(PdfNumber num) => num.IntValue;
-    public static implicit operator int(PdfNumber num) => (int)num.IntValue;
-    public static implicit operator double(PdfNumber num) => num.DoubleValue;
+    // public static implicit operator long(PdfNumber num) => num.IntValue;
+    // public static implicit operator int(PdfNumber num) => (int)num.IntValue;
+    // public static implicit operator double(PdfNumber num) => num.DoubleValue;
     public int CompareTo(PdfNumber? other) => DoubleValue.CompareTo(other?.DoubleValue);
 }
 

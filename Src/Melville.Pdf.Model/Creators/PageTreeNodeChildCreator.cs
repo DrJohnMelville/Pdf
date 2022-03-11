@@ -11,11 +11,11 @@ namespace Melville.Pdf.Model.Creators;
 
 public abstract class PageTreeNodeChildCreator
 {
-    protected Dictionary<PdfName, PdfObject> MetaData { get; }
+    protected DictionaryBuilder MetaData { get; }
     protected Dictionary<(PdfName DictionaryName, PdfName ItemName), 
             Func<ILowLevelDocumentCreator,PdfObject>> Resources { get; } = new();
 
-    protected PageTreeNodeChildCreator(Dictionary<PdfName, PdfObject> metaData)
+    protected PageTreeNodeChildCreator(DictionaryBuilder metaData)
     {
         MetaData = metaData;
     }
@@ -32,7 +32,7 @@ public abstract class PageTreeNodeChildCreator
         {
             res.WithItem(subDictionary.Key, DictionaryValues(creator, subDictionary));
         }
-        MetaData.Add(KnownNames.Resources, res.AsDictionary());
+        MetaData.WithItem(KnownNames.Resources, res.AsDictionary());
     }
 
     private PdfObject DictionaryValues(
@@ -57,9 +57,9 @@ public abstract class PageTreeNodeChildCreator
         ResourceTypeName resourceType, PdfName name, Func<ILowLevelDocumentCreator,PdfObject> obj) =>
         Resources[(resourceType, name)] = obj;
 
-    public void AddBox(BoxName name, in PdfRect rect) => MetaData.Add(name, rect.ToPdfArray);
+    public void AddBox(BoxName name, in PdfRect rect) => MetaData.WithItem(name, rect.ToPdfArray);
 
-    public void AddRotate(int rotation) => MetaData.Add(KnownNames.Rotate, new PdfInteger(rotation));
+    public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.Rotate, new PdfInteger(rotation));
 
     public PdfName AddStandardFont(
         string assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>

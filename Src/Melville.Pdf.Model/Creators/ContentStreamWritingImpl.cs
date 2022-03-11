@@ -23,12 +23,12 @@ public static class ContentStreamWritingImpl
         this PageCreator pc, Func<ContentStreamWriter, ValueTask> creator) =>
         pc.AddToContentStreamAsync(new DictionaryBuilder().WithFilter(FilterName.FlateDecode), creator);
     public static async ValueTask AddToContentStreamAsync(
-        this PageCreator pc, DictionaryBuilder dict, Func<ContentStreamWriter, ValueTask> creator)
+        this ContentStreamCreator pc, DictionaryBuilder dict, Func<ContentStreamWriter, ValueTask> creator)
     {
         var streamData = new MultiBufferStream();
         var pipe = PipeWriter.Create(streamData);
         await creator(new ContentStreamWriter(pipe)).CA();
         await pipe.FlushAsync().CA();
-        pc.AddToContentStream(dict.AsStream(streamData));
+        pc.AddToContentStream(dict, streamData);
     }
 }

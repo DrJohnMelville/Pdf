@@ -31,8 +31,8 @@ public class S7_9Trees
         var array = await result.GetAsync<PdfArray>(KnownNames.Nums);
         for (int i = 0; i < 5; i++)
         {
-            Assert.Equal(1+i, (PdfNumber)await array[2*i]);
-            Assert.Equal(10*(1+i), (PdfNumber)await array[2*i+1]);
+            Assert.Equal(1+i, ((PdfNumber)await array[2*i]).IntValue);
+            Assert.Equal(10*(1+i), ((PdfNumber)await array[2*i+1]).IntValue);
         }
     }
 
@@ -44,12 +44,12 @@ public class S7_9Trees
         builder.Add(result);
         Assert.Equal(5, array.Count);
         var secondNode = (PdfDictionary)await array[1];
-        Assert.Equal(11, (PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[0]);
-        Assert.Equal(110, (PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[1]);
-        Assert.Equal(20, (PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[18]);
-        Assert.Equal(200, (PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[19]);
-        Assert.Equal(11, (PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[0]);
-        Assert.Equal(20, (PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[1]);
+        Assert.Equal(11, ((PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[0]).IntValue);
+        Assert.Equal(110, ((PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[1]).IntValue);
+        Assert.Equal(20,  ((PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[18]).IntValue);
+        Assert.Equal(200, ((PdfNumber)await (await secondNode.GetAsync<PdfArray>(KnownNames.Nums))[19]).IntValue);
+        Assert.Equal(11,  ((PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[0]).IntValue);
+        Assert.Equal(20,  ((PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[1]).IntValue);
         var docAsString = await builder.AsStringAsync();
         Assert.Contains("1 0 obj <</Nums[1 10", docAsString);
         Assert.Contains("6 0 obj <</Kids[1 0 R 2 0 R 3 0 R 4 0 R 5 0 R]>> endobj", docAsString);
@@ -62,15 +62,15 @@ public class S7_9Trees
         builder.Add(result);
         Assert.Equal(5, array.Count);
         var secondNode = await array.GetAsync<PdfDictionary>(1);
-        Assert.Equal(101, (PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[0]);
-        Assert.Equal(200, (PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[1]);
+        Assert.Equal(101, ((PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[0]).IntValue);
+        Assert.Equal(200, ((PdfNumber) await (await secondNode.GetAsync<PdfArray>(KnownNames.Limits))[1]).IntValue);
         var thirdNode = await (await secondNode.GetAsync<PdfArray>(KnownNames.Kids)).GetAsync<PdfDictionary>(1);
-        Assert.Equal(111, (PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[0]);
-        Assert.Equal(1110, (PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[1]);
-        Assert.Equal(120, (PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[18]);
-        Assert.Equal(1200, (PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[19]);
-        Assert.Equal(111, (PdfNumber) await (await thirdNode.GetAsync<PdfArray>(KnownNames.Limits))[0]);
-        Assert.Equal(120, (PdfNumber) await (await thirdNode.GetAsync<PdfArray>(KnownNames.Limits))[1]);
+        Assert.Equal(111, ((PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[0]).IntValue);
+        Assert.Equal(1110, ((PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[1]).IntValue);
+        Assert.Equal(120, ((PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[18]).IntValue);
+        Assert.Equal(1200, ((PdfNumber)await (await thirdNode.GetAsync<PdfArray>(KnownNames.Nums))[19]).IntValue);
+        Assert.Equal(111, ((PdfNumber) await (await thirdNode.GetAsync<PdfArray>(KnownNames.Limits))[0]).IntValue);
+        Assert.Equal(120, ((PdfNumber) await (await thirdNode.GetAsync<PdfArray>(KnownNames.Limits))[1]).IntValue);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class S7_9Trees
     public async Task IndexerTest(int key, int value)
     {
         var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
-        Assert.Equal(value, (PdfInteger)await tree.Search(key));
+        Assert.Equal(value, ((PdfInteger)await tree.Search(key)).IntValue);
     }
 
     [Theory]

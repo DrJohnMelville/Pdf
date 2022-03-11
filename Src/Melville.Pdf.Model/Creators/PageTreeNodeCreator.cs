@@ -2,21 +2,22 @@
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
-public class PageTreeNodeCreator: PageTreeNodeChildCreator
+public sealed class PageTreeNodeCreator: PageTreeNodeChildCreator
 {
     private readonly IList<PageTreeNodeChildCreator> children;
 
-    private PageTreeNodeCreator(Dictionary<PdfName, PdfObject> metaData, IList<PageTreeNodeChildCreator> children):
+    private PageTreeNodeCreator(DictionaryBuilder metaData, IList<PageTreeNodeChildCreator> children):
         base(metaData)
     {
         this.children = children;
-        metaData[KnownNames.Type] = KnownNames.Pages;
+        metaData.WithItem(KnownNames.Type, KnownNames.Pages);
     }
-    public PageTreeNodeCreator():this(new Dictionary<PdfName, PdfObject>() ,new List<PageTreeNodeChildCreator>())
+    public PageTreeNodeCreator():this(new() ,new List<PageTreeNodeChildCreator>())
     {
     }
 
@@ -45,14 +46,14 @@ public class PageTreeNodeCreator: PageTreeNodeChildCreator
     private PageTreeNodeCreator SegmentedTree(int maxNodeSize) => new(MetaData, 
         children.Chunk(maxNodeSize)
         .Select(i => (PageTreeNodeChildCreator)new PageTreeNodeCreator(
-            new Dictionary<PdfName, PdfObject>(),i)).ToArray()
+            new(),i)).ToArray()
         );
 
     private (PdfIndirectReference Reference, int PageCount)
         InnnerConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectReference? parent,
             int maxNodeSize)
     {
-        var ret = creator.Add(new PdfDictionary(MetaData));
+        var ret = creator.Add(MetaData.AsDictionary());
         AddExtraFieldsFromTreeLevel(creator,parent);
         var kids = new PdfObject[children.Count];
         int count = 0;
@@ -61,8 +62,8 @@ public class PageTreeNodeCreator: PageTreeNodeChildCreator
             (kids[i], var localCount) = children[i].ConstructPageTree(creator, ret, maxNodeSize);
             count += localCount;
         }
-        MetaData.Add(KnownNames.Kids, new PdfArray(kids));
-        MetaData.Add(KnownNames.Count, new PdfInteger(count));
+        MetaData.WithItem(KnownNames.Kids, new PdfArray(kids)).
+            WithItem(KnownNames.Count, count);
         return (ret, count);
     }
     
@@ -71,13 +72,12 @@ public class PageTreeNodeCreator: PageTreeNodeChildCreator
     {
         if (parent is not null)
         {
-            MetaData.Add(KnownNames.Parent, parent);
+            MetaData.WithItem(KnownNames.Parent, parent);
         }
         else
         {
             Resources.Add((KnownNames.ProcSet, KnownNames.ProcSet), cr=>cr.Add(DefaultProcSet()));
         }
-
         TryAddResources(creator);
     }
 

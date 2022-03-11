@@ -212,9 +212,11 @@ Pdf:Order
 Pdf:Ordering
 Pdf:Outlines
 Pdf:P
+Pdf:PaintType
 Pdf:Page
 Pdf:Pages
 Pdf:Parent
+Pdf:PatternType
 Pdf:PDF
 Pdf:Predictor
 Pdf:Prev
@@ -236,6 +238,7 @@ Pdf:StemV
 Pdf:Subtype
 Pdf:Supplement
 Pdf:Text
+Pdf:TilingType
 Pdf:Type
 Pdf:U
 Pdf:V
@@ -246,4 +249,6 @@ Pdf:Width
 Pdf:Widths
 Pdf:WhitePoint
 Pdf:XRef
+Pdf:XStep
 Pdf:XRefStm
+Pdf:YStep

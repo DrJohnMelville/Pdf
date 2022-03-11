@@ -12,7 +12,7 @@ public static class PdfDictionaryTestVerifiers
         Assert.Equal(domain.Count, values.Length);
         for (int i = 0; i < values.Length; i++)
         {
-            Assert.Equal(values[i], await domain.GetAsync<PdfNumber>(i));
+            Assert.Equal(values[i], (await domain.GetAsync<PdfNumber>(i)).DoubleValue);
         }
     }
     public static async Task VerifyNumber(this PdfDictionary str, PdfName name, int value)
