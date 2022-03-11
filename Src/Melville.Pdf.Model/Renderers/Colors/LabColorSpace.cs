@@ -33,7 +33,7 @@ public class LabColorSpace : IColorSpace
     public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => outputIntervals;
 
 
-    public static async ValueTask<LabColorSpace> ParseAsync(PdfDictionary parameters)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfDictionary parameters)
     {
         var wp = await ReadWhitePoint(parameters).CA();
         var array = await parameters.GetOrNullAsync(KnownNames.Range).CA() is PdfArray arr

@@ -11,7 +11,7 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 internal class IccProfileColorSpace
 {
-    public static async Task<IColorSpace> ParseAsync(PdfStream getAsync)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfStream getAsync)
     {
         var profile = await new IccParser(PipeReader.Create(await getAsync.StreamContentAsync().CA())).ParseAsync().CA();
         return new IccColorSpace( 

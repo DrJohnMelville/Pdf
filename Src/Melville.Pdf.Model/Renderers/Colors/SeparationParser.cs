@@ -1,30 +1,32 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.Model.Documents;
+using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
 public static class SeparationParser
 {
-    public static async ValueTask<IColorSpace> ParseSeparationAsync(PdfArray array, IHasPageAttributes page) =>
-        (await array.GetAsync<PdfName>(1).CA()).GetHashCode() switch
+    public static ValueTask<IColorSpace> ParseSeparationAsync(in Memory<PdfObject> array, IHasPageAttributes page) =>
+        ((PdfName)array.Span[1]).GetHashCode() switch
         {
-            KnownNameKeys.All => DeviceGray.InvertedInstance,
-            KnownNameKeys.None => new InvisibleColorSpace(1),
-            _=>await AlternateColorspace(array, page).CA()
+            KnownNameKeys.All => new(DeviceGray.InvertedInstance),
+            KnownNameKeys.None => new(new InvisibleColorSpace(1)),
+            _=>AlternateColorspace(array, page)
         };
 
-    private static async ValueTask<IColorSpace> AlternateColorspace(PdfArray array, IHasPageAttributes page) =>
+    private static async ValueTask<IColorSpace> AlternateColorspace(Memory<PdfObject> array, IHasPageAttributes page) =>
         new RelativeColorSpace(
-            await ColorSpaceFactory.FromNameOrArray(await array[2].CA(), page).CA(),
-            await (await array.GetAsync<PdfDictionary>(3).CA()).CreateFunctionAsync().CA());
+            await ColorSpaceFactory.FromNameOrArray(array.Span[2], page).CA(),
+            await ((PdfDictionary)array.Span[3]).CreateFunctionAsync().CA());
 
-    public static async ValueTask<IColorSpace> ParseDeviceNAsync(PdfArray array, IHasPageAttributes page)
+    public static async ValueTask<IColorSpace> ParseDeviceNAsync(Memory<PdfObject> array, IHasPageAttributes page)
     {
-        var nameArray = await array.GetAsync<PdfArray>(1).CA();
+        var nameArray = (PdfArray)array.Span[1];
         return (await AllNones(nameArray).CA())
             ? new InvisibleColorSpace(nameArray.Count)
             : await AlternateColorspace(array, page).CA();

@@ -21,7 +21,7 @@ public class CalGray : IColorSpace
         this.gamma = gamma;
     }
 
-    public static async ValueTask<CalGray> Parse(PdfDictionary parameters)
+    public static async ValueTask<IColorSpace> Parse(PdfDictionary parameters)
     {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
         var wp = new FloatColor(

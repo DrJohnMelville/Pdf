@@ -24,12 +24,11 @@ public class IndexedColorSpace: IColorSpace
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
-    public static async Task<IColorSpace> ParseAsync(PdfArray array, IHasPageAttributes page)
+    public static async ValueTask<IColorSpace> ParseAsync(Memory<PdfObject> array, IHasPageAttributes page)
     {
-        var subColorSpace = await ColorSpaceFactory.ParseColorSpace(await array.GetAsync<PdfName>(1).CA(), page).CA();
-        int length = 1 + (int)(await array.GetAsync<PdfNumber>(2).CA()).IntValue;
-        return new IndexedColorSpace(await GetValues(
-            await array.GetAsync<PdfObject>(3).CA(), subColorSpace, length).CA());
+        var subColorSpace = await ColorSpaceFactory.ParseColorSpace((PdfName)(array.Span[1]), page).CA();
+        int length = (int) (1 + ((PdfNumber)array.Span[2]).IntValue);
+        return new IndexedColorSpace(await GetValues(array.Span[3], subColorSpace, length).CA());
     }
 
     private static ValueTask<DeviceColor[]> GetValues(
