@@ -10,46 +10,52 @@ using Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public static class ColorSpaceFactory
+public readonly struct ColorSpaceFactory
 {
-    public static ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName, IHasPageAttributes page)
+    private readonly IHasPageAttributes page;
+    public ColorSpaceFactory(IHasPageAttributes page)
+    {
+        this.page = page;
+    }
+
+    public ValueTask<IColorSpace> ParseColorSpace(PdfName colorSpaceName)
     {
         var code = colorSpaceName.GetHashCode();
         return code switch
         {
             KnownNameKeys.DeviceGray  or KnownNameKeys.DeviceRGB or KnownNameKeys.DeviceCMYK => 
-                SpacesWithoutParameters(code, page),
-            _ => FromArray(page, colorSpaceName)
+                SpacesWithoutParameters(code),
+            _ => LookupInResourceDictionary(colorSpaceName)
         };
     }
 
-    public static async ValueTask<IColorSpace> SearchForDefault(PdfName name, IHasPageAttributes page, 
-        Func<ValueTask<IColorSpace>> space) =>
+    private async ValueTask<IColorSpace> SearchForDefault(PdfName name, Func<ValueTask<IColorSpace>> space) =>
         await (await page.GetResourceAsync(ResourceTypeName.ColorSpace, name).CA() is PdfArray array
-            ?  FromArray(array, page): space()).CA();
+            ?  FromArray(array): space()).CA();
 
-    public static ValueTask<IColorSpace> FromNameOrArray(PdfObject datum, in IHasPageAttributes page) => datum switch
+    public ValueTask<IColorSpace> FromNameOrArray(PdfObject datum) => datum switch
     {
-        PdfName name => ParseColorSpace(name, page),
-        PdfArray array => FromArray(array, page),
+        PdfName name => ParseColorSpace(name),
+        PdfArray array => FromArray(array),
         _ => throw new PdfParseException("Invalid Color space definition")
     };
 
     private static IColorSpace? cmykColorSpacel;
+
     public static async ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => cmykColorSpacel ??= 
         new IccColorspaceWithBlackDefault((await IccProfileLibrary.ReadCmyk().CA()).TransformTo(
             await IccProfileLibrary.ReadSrgb().CA()));
 
-    private static async ValueTask<IColorSpace> FromArray(IHasPageAttributes page, PdfName colorSpaceName)
+    private async ValueTask<IColorSpace> LookupInResourceDictionary(PdfName colorSpaceName)
     {
         var obj = await page.GetResourceAsync(ResourceTypeName.ColorSpace, colorSpaceName).CA();
-        return obj is PdfArray array? await FromArray(array, page).CA(): DeviceGray.Instance;
+        return obj is PdfArray array? await FromArray(array).CA(): DeviceGray.Instance;
     }
 
-    private static async ValueTask<IColorSpace> FromArray(PdfArray array, IHasPageAttributes page) =>
-        await FromMemory((await array.AsAsync<PdfObject>().CA()).AsMemory(), page).CA();
+    private async ValueTask<IColorSpace> FromArray(PdfArray array) =>
+        await FromMemory((await array.AsAsync<PdfObject>().CA()).AsMemory()).CA();
 
-    private static ValueTask<IColorSpace> FromMemory(Memory<PdfObject> memory, IHasPageAttributes page)
+    private ValueTask<IColorSpace> FromMemory(Memory<PdfObject> memory)
     {
         var array = memory.Span;
         if (array.Length == 0) return new(DeviceRgb.Instance);
@@ -62,18 +68,19 @@ public static class ColorSpaceFactory
             KnownNameKeys.Indexed => IndexedColorSpace.ParseAsync(memory, page),
             KnownNameKeys.Separation => SeparationParser.ParseSeparationAsync(memory, page),
             KnownNameKeys.DeviceN => SeparationParser.ParseDeviceNAsync(memory, page),
-            var other => SpacesWithoutParameters(other, page)
+            KnownNameKeys.Pattern => FromMemory(memory.Slice(1)),
+            var other => SpacesWithoutParameters(other)
         };
     }
 
-    private static ValueTask<IColorSpace> SpacesWithoutParameters(int nameHashCode, IHasPageAttributes page) => nameHashCode switch
+    private ValueTask<IColorSpace> SpacesWithoutParameters(int nameHashCode) => nameHashCode switch
     {
         // for monitors ignore CalRGB see standard section 8.6.5.7
         KnownNameKeys.CalRGB => new(DeviceRgb.Instance),
         KnownNameKeys.CalCMYK => CreateCmykColorSpaceAsync(), // standard section 8.6.5.1
-        KnownNameKeys.DeviceGray => SearchForDefault(KnownNames.DefaultGray, page, static ()=>new(DeviceGray.Instance)),
-        KnownNameKeys.DeviceRGB => SearchForDefault(KnownNames.DefaultRGB, page, static ()=>new(DeviceRgb.Instance)),
-        KnownNameKeys.DeviceCMYK =>  SearchForDefault(KnownNames.DefaultCMYK, page, CreateCmykColorSpaceAsync),
+        KnownNameKeys.DeviceGray => SearchForDefault(KnownNames.DefaultGray, static ()=>new(DeviceGray.Instance)),
+        KnownNameKeys.DeviceRGB => SearchForDefault(KnownNames.DefaultRGB, static ()=>new(DeviceRgb.Instance)),
+        KnownNameKeys.DeviceCMYK =>  SearchForDefault(KnownNames.DefaultCMYK, CreateCmykColorSpaceAsync),
         _ => throw new PdfParseException("Unrecognized Colorspace")
     };
         

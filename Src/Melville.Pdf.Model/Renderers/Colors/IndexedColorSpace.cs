@@ -26,7 +26,7 @@ public class IndexedColorSpace: IColorSpace
 
     public static async ValueTask<IColorSpace> ParseAsync(Memory<PdfObject> array, IHasPageAttributes page)
     {
-        var subColorSpace = await ColorSpaceFactory.ParseColorSpace((PdfName)(array.Span[1]), page).CA();
+        var subColorSpace = await new ColorSpaceFactory(page).ParseColorSpace((PdfName)(array.Span[1])).CA();
         int length = (int) (1 + ((PdfNumber)array.Span[2]).IntValue);
         return new IndexedColorSpace(await GetValues(array.Span[3], subColorSpace, length).CA());
     }

@@ -21,7 +21,7 @@ public static class SeparationParser
 
     private static async ValueTask<IColorSpace> AlternateColorspace(Memory<PdfObject> array, IHasPageAttributes page) =>
         new RelativeColorSpace(
-            await ColorSpaceFactory.FromNameOrArray(array.Span[2], page).CA(),
+            await new ColorSpaceFactory(page).FromNameOrArray(array.Span[2]).CA(),
             await ((PdfDictionary)array.Span[3]).CreateFunctionAsync().CA());
 
     public static async ValueTask<IColorSpace> ParseDeviceNAsync(Memory<PdfObject> array, IHasPageAttributes page)

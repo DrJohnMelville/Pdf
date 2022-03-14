@@ -210,28 +210,44 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask SetStrokingColorSpace(PdfName colorSpace)
     {
         target.GrapicsStateChange.SetStrokeColorSpace(
-            await ColorSpaceFactory.ParseColorSpace(colorSpace, page).CA());
+            await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
     }
 
     public async ValueTask SetNonstrokingColorSpace(PdfName colorSpace) =>
         target.GrapicsStateChange.SetNonstrokeColorSpace(
-            await ColorSpaceFactory.ParseColorSpace(colorSpace, page).CA());
+            await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
     
     public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
-        if (patternName != null) throw new NotImplementedException("Patterns not implemented yet");
-        SetStrokeColor(colors);
-        return ValueTask.CompletedTask;
-    }
-    
-    public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
-    {
-        if (patternName != null) throw new NotImplementedException("Patterns not implemented yet");
-        SetNonstrokingColor(colors);
-        return ValueTask.CompletedTask;
+        if (colors.Length > 0) SetStrokeColor(colors);
+        return SetStrokingPattern(patternName);
     }
 
-    public async ValueTask SetStrokeGray(double grayLevel)
+    private async ValueTask SetStrokingPattern(PdfName? patternName)
+    {
+        if ((await GetPatternDict(patternName).CA()) is { } patternDict)
+            await target.SetStrokePattern(patternDict).CA();
+    }
+
+    public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+    {
+        if (colors.Length > 0) SetNonstrokingColor(colors);
+        return SetNonstrokingPattern(patternName);
+    }
+
+    private async ValueTask SetNonstrokingPattern(PdfName? patternName)
+    {
+        if ((await GetPatternDict(patternName).CA()) is { } patternDict)
+            await target.SetNonstrokePattern(patternDict).CA();
+    }
+
+    private async ValueTask<PdfDictionary?> GetPatternDict(PdfName? patternName) =>
+        patternName != null && (await page.GetResourceAsync(ResourceTypeName.Pattern, patternName).CA()) is
+        PdfDictionary patternDict
+            ? patternDict
+            : null;
+
+        public async ValueTask SetStrokeGray(double grayLevel)
     {
         await SetStrokingColorSpace(KnownNames.DeviceGray).CA();
         SetStrokeColor(stackalloc double[] { grayLevel });

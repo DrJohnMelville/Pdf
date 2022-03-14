@@ -45,8 +45,8 @@ public static class PdfBitmapOperatons
             return new StencilWriter(decode, attr.FillColor);
         }
 
-        var colorSpace = await ColorSpaceFactory.FromNameOrArray(
-            await attr.Stream[KnownNames.ColorSpace].CA(), attr.Page).CA();
+        var colorSpace = await new ColorSpaceFactory(attr.Page).FromNameOrArray(
+            await attr.Stream[KnownNames.ColorSpace].CA()).CA();
         var bitsPerComponent =
             (int)await attr.Stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).CA();
         var mask = await attr.Stream.GetOrDefaultAsync<PdfObject>(KnownNames.Mask, PdfTokenValues.Null).CA();
