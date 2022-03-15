@@ -1,6 +1,6 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.Model.DocumentRenderers;
+using Melville.Pdf.Model.Renderers;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp

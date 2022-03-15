@@ -30,14 +30,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
     private readonly IRenderTarget target;
-    private readonly IDefaultFontMapper defaultFontMapper;
-    private readonly IDocumentPartCache cache;
-    public RenderEngine(IHasPageAttributes page, IRenderTarget target, IDefaultFontMapper defaultFontMapper, IDocumentPartCache cache)
+    private readonly DocumentRenderer renderer;
+    public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer)
     {
         this.page = page;
         this.target = target;
-        this.defaultFontMapper = defaultFontMapper;
-        this.cache = cache;
+        this.renderer = renderer;
     }
     
     #region Graphics State
@@ -186,7 +184,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
 
     private ValueTask Render(IHasPageAttributes xObject) =>
-        new RenderEngine(xObject, target, defaultFontMapper, cache).RunContentStream();
+        new RenderEngine(xObject, target, renderer).RunContentStream();
 
     public async ValueTask RunContentStream() =>
         await new ContentStreamParser(this).Parse(
@@ -226,7 +224,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask SetStrokingPattern(PdfName? patternName)
     {
         if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.SetStrokePattern(patternDict).CA();
+            await target.GrapicsStateChange.CurrentState().SetStrokePattern(patternDict, renderer).CA();
     }
 
     public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
@@ -238,7 +236,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask SetNonstrokingPattern(PdfName? patternName)
     {
         if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.SetNonstrokePattern(patternDict).CA();
+            await target.GrapicsStateChange.CurrentState().SetNonstrokePattern(patternDict, renderer).CA();
     }
 
     private async ValueTask<PdfDictionary?> GetPatternDict(PdfName? patternName) =>
@@ -317,10 +315,10 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         StateOps.CurrentState().SetTypeface(
             await page.GetResourceAsync(ResourceTypeName.Font, font).CA() is PdfDictionary fontDic ?
-                BlockFontDispose.AsNonDisposableTypeface(await cache.Get(new FontRecord(fontDic, 
+                BlockFontDispose.AsNonDisposableTypeface(await renderer.Cache.Get(new FontRecord(fontDic, 
                         Math.Floor(size)), 
-                        r=> new FontReader(defaultFontMapper).DictionaryToRealizedFont(r.Dictionary,size)).CA()):
-                await new FontReader(defaultFontMapper).
+                        r=> new FontReader(renderer.FontMapper).DictionaryToRealizedFont(r.Dictionary,size)).CA()):
+                await new FontReader(renderer.FontMapper).
                     NameToRealizedFont(font, new FreeTypeFontFactory(size, 
                         new PdfFont(PdfDictionary.Empty))).CA()
             );

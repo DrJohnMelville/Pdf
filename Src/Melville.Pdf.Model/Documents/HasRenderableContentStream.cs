@@ -6,13 +6,21 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Documents;
 
-public record class PdfPageParent(PdfDictionary LowLevel) : IHasPageAttributes
+public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPageAttributes
 {
     public virtual ValueTask<Stream> GetContentBytes() => new(new MemoryStream());
     
     public async ValueTask<IHasPageAttributes?> GetParentAsync() =>
         LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&
         await parentTask.CA() is PdfDictionary dict
-            ? new PdfPageParent(dict)
+            ? new HasRenderableContentStream(dict)
             : null;
+    
+    public ValueTask<long> GetDefaultRotationAsync() => 
+        LowLevel.GetOrDefaultAsync(KnownNames.Rotate, 0);
+}
+
+public record class PdfPattern(PdfDictionary LowLevel) : HasRenderableContentStream(LowLevel)
+{
+    public override ValueTask<Stream> GetContentBytes() => ((PdfStream)LowLevel).StreamContentAsync();
 }

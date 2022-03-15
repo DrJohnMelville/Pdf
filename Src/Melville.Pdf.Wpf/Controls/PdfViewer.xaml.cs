@@ -6,8 +6,8 @@ using System.Windows.Threading;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
-using Melville.Pdf.Model.DocumentRenderers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Wpf.Rendering;
 

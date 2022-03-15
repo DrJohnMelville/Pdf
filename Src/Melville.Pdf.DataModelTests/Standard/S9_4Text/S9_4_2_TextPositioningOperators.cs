@@ -31,7 +31,8 @@ public class S9_4_2_TextPositioningOperators
         targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
         SetupMockRealizedFont();
 
-        sut = new RenderEngine(pageMock.Object, targetMock.Object,new WindowsDefaultFonts(), new DocumentPartCache());
+        sut = new RenderEngine(pageMock.Object, targetMock.Object,
+            DocumentRendererFactory.CreateRenderer(null!, new WindowsDefaultFonts()));
     }
 
     private void SetupMockRealizedFont()

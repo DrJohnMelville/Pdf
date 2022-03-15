@@ -23,7 +23,7 @@ public class S7_7_3_3PageAttributes
         create(creator);
         if (parent != null) parent(docCreator.Pages);
         var doc = new PdfDocument(docCreator.CreateDocument());
-        return await (await doc.PagesAsync()).GetPageAsync(0);
+        return (PdfPage) await (await doc.PagesAsync()).GetPageAsync(0);
     }
     [Fact]
     public async Task LastModifiedTime()

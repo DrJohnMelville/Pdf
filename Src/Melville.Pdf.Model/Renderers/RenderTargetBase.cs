@@ -1,16 +1,9 @@
 ﻿using System;
-using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.LowLevel.Parsing.ContentStreams;
-using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
-using Melville.Pdf.Model.Renderers.Colors;
-using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
@@ -37,8 +30,6 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     void Transform(in Matrix3x2 newTransform);
     ValueTask RenderBitmap(IPdfBitmap bitmap);
     IDrawTarget CreateDrawTarget();
-    ValueTask SetStrokePattern(PdfDictionary pattern);
-    ValueTask SetNonstrokePattern(PdfDictionary pattern);
 }
 
 public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposable
@@ -88,9 +79,4 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
         currentShape = null;
     }
     #endregion
-
-    public ValueTask SetStrokePattern(PdfDictionary pattern) => 
-        State.CurrentState().SetStrokePattern(pattern);
-    public ValueTask SetNonstrokePattern(PdfDictionary pattern) => 
-        State.CurrentState().SetNonstrokePattern(pattern);
 }

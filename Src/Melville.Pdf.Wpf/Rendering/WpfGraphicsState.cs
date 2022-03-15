@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -10,8 +12,9 @@ public class WpfGraphicsState : GraphicsState<Brush>
 {
     protected override Brush CreateSolidBrush(DeviceColor color) => new SolidColorBrush(color.AsWpfColor());
 
-    protected async override ValueTask<Brush> CreatePatternBrush(PdfDictionary pattern) =>
-        new DrawingBrush(await CreateDrawing)
+    protected async override ValueTask<Brush> CreatePatternBrush(
+        PdfDictionary pattern, DocumentRenderer parentRenderer) =>
+        new DrawingBrush( await CreateDrawing(new PdfPattern(pattern), parentRenderer))
         {
             Stretch = Stretch.None,
             //ViewBox is the size of the cell
@@ -23,12 +26,6 @@ public class WpfGraphicsState : GraphicsState<Brush>
             TileMode = TileMode.Tile
         };
 
-    private Drawing CreateDrawing()
-    {
-        var dg = new DrawingGroup();
-        using var dc = dg.Open();
-        dc.DrawLine(new Pen(Brushes.Red, 1), new Point(0,0), new Point(10,10));
-        dc.DrawLine(new Pen(Brushes.Blue, 1), new Point(10,0), new Point(0,10));
-        return dg; 
-    }
+    private ValueTask<DrawingGroup> CreateDrawing(PdfPattern pdfPattern, DocumentRenderer parentRenderer) => 
+        new RenderToDrawingGroup(parentRenderer.SubRenderer(pdfPattern), 0).Render();
 }

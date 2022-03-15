@@ -1,33 +1,41 @@
 ﻿using System;
-using System.IO.Pipelines;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
-using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
-namespace Melville.Pdf.Model.DocumentRenderers;
+namespace Melville.Pdf.Model.Renderers;
 
-public class DocumentRenderer
+public sealed class DocumentRenderer
 {
-    private readonly Func<long, ValueTask<PdfPage>> pageSource;
+    private readonly Func<long, ValueTask<HasRenderableContentStream>> pageSource;
     public int TotalPages { get; }
-    private IDefaultFontMapper fontFactory;
-    private IDocumentPartCache cache = new DocumentPartCache();
+    public IDefaultFontMapper FontMapper { get; }
+    public IDocumentPartCache Cache { get; }
 
-    public DocumentRenderer(Func<long, ValueTask<PdfPage>> pageSource, int totalPages, IDefaultFontMapper fontFactory)
+    public DocumentRenderer(
+        Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages,
+        IDefaultFontMapper fontMapper) : this(pageSource, totalPages, fontMapper, new DocumentPartCache())
+    {
+        
+    }
+    private DocumentRenderer(
+        Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages, 
+        IDefaultFontMapper fontMapper, IDocumentPartCache cache)
     {
         this.pageSource = pageSource;
-        this.fontFactory = fontFactory;
+        this.FontMapper = fontMapper;
+        this.Cache = cache;
         TotalPages = totalPages;
     }
-    
+
+    public DocumentRenderer SubRenderer(HasRenderableContentStream item) => 
+        new DocumentRenderer(_ => ValueTask.FromResult(item), 1, FontMapper);
+
     public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
         var pageStruct = await pageSource(page).CA();
@@ -46,25 +54,24 @@ public class DocumentRenderer
             new Vector2((float)centerX, (float)centerY));
     }
 
-    private async ValueTask<PdfRect> GetCropDimensionsAsync(PdfPage pageStruct) => 
+    private async ValueTask<PdfRect> GetCropDimensionsAsync(IHasPageAttributes pageStruct) => 
         await pageStruct.GetBoxAsync(BoxName.CropBox).CA() ?? new PdfRect(0,0,1,1);
 
-    private RenderEngine CreateRenderEngine(in PdfPage page, IRenderTarget target) =>
-        new RenderEngine(page, target, fontFactory, cache);
-
+    private RenderEngine CreateRenderEngine(HasRenderableContentStream page, IRenderTarget target) =>
+        new(page, target, this);
 }
 
 public static class DocumentRendererFactory
 {
     public static DocumentRenderer CreateRenderer(
-        PdfPage page, IDefaultFontMapper fontFactory) =>
-        new DocumentRenderer(_ => new(page), 1, fontFactory);
+        HasRenderableContentStream page, IDefaultFontMapper fontFactory) =>
+        new(_ => new(page), 1, fontFactory);
     
     public static async ValueTask<DocumentRenderer> CreateRendererAsync(
         PdfDocument document, IDefaultFontMapper fontFactory)
     {
         var pages = await document.PagesAsync().CA();
         var pageCount = (int)await pages.CountAsync().CA();
-        return new DocumentRenderer(pages.GetPageAsync, pageCount, fontFactory);
+        return new DocumentRenderer( pages.GetPageAsync, pageCount, fontFactory);
     }
 }

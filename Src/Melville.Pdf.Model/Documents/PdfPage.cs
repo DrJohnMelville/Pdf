@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.Model.Documents;
 
-public record class PdfPage(PdfDictionary LowLevel) : PdfPageParent(LowLevel)
+public record class PdfPage(PdfDictionary LowLevel) : HasRenderableContentStream(LowLevel)
 {
     
     public async ValueTask<PdfTime?> LastModifiedAsync()
@@ -26,6 +26,4 @@ public record class PdfPage(PdfDictionary LowLevel) : PdfPageParent(LowLevel)
             var x => new MemoryStream()
         };
 
-    public ValueTask<long> GetDefaultRotationAsync() => 
-        LowLevel.GetOrDefaultAsync(KnownNames.Rotate, 0);
 }

@@ -3,7 +3,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
-using Melville.Pdf.Model.DocumentRenderers;
+using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.SkiaSharp;
 
 namespace Melville.Pdf.ComparingReader.Viewers.SkiaViewer;

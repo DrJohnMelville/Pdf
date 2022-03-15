@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
@@ -15,7 +16,7 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         };
     }
     
-    protected override ValueTask<SKPaint> CreatePatternBrush(PdfDictionary pattern) => 
+    protected override ValueTask<SKPaint> CreatePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer) => 
         throw new System.NotImplementedException();
 
 }

@@ -92,16 +92,16 @@ public class S7_7_3PageTree
         Assert.Equal(KnownNames.Page, await p0.LowLevel.GetAsync<PdfName>(KnownNames.Type));
         var p1 = await p0.GetParentAsync();
         Assert.Equal(KnownNames.Pages, 
-            await ((PdfPageParent)p1!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
+            await ((HasRenderableContentStream)p1!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
         Assert.True(p1 != null);
         var p2 = await p1!.GetParentAsync();
         Assert.True(p2 != null);
         Assert.Equal(KnownNames.Pages, 
-            await ((PdfPageParent)p2!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
+            await ((HasRenderableContentStream)p2!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
         var p3 = await p2.GetParentAsync();
         Assert.True(p3!= null);
         Assert.Equal(KnownNames.Pages, 
-            await ((PdfPageParent)p3!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
+            await ((HasRenderableContentStream)p3!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
         var p4 = await p3.GetParentAsync();
         Assert.False(p4 != null);
     }

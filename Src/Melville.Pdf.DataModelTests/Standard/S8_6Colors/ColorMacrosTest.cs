@@ -25,7 +25,8 @@ public class ColorMacrosTest
     {
         target.SetupGet(i => i.GrapicsStateChange).Returns(state);
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
-        sut = new RenderEngine(page, target.Object, new WindowsDefaultFonts(), new DocumentPartCache());
+        sut = new RenderEngine(page, target.Object, 
+            DocumentRendererFactory.CreateRenderer(page, new WindowsDefaultFonts()));
     }
 
     [Fact]
