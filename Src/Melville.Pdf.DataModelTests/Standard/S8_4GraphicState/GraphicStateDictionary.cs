@@ -18,6 +18,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 public class TestGraphicsState : GraphicsState<DeviceColor>
 {
     protected override DeviceColor CreateSolidBrush(DeviceColor color) => color;
+    protected override ValueTask<DeviceColor> CreatePatternBrush(PdfDictionary pattern) => 
+        throw new System.NotSupportedException();
 }
 public class GraphicStateDictionary
 {

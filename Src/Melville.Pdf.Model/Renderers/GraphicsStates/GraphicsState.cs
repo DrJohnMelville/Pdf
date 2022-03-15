@@ -25,17 +25,12 @@ public interface IGraphiscState : IStateChangingOperations
     
 }
 
-public enum WritingMode
-{
-    LeftToRight = 0,
-    TopToBottom = 1
-}
-
 [MacroItem("T", "StrokeBrush", "default!")]
 [MacroItem("T", "NonstrokeBrush", "default!")]
 // code
 [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
-[MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;", Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
+[MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;",
+    Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
 public abstract partial class GraphicsState<T> : GraphicsState, IDisposable
 {
     protected GraphicsState()
@@ -44,12 +39,23 @@ public abstract partial class GraphicsState<T> : GraphicsState, IDisposable
         NonstrokeColorChanged();
     }
 
-    protected override void StrokeColorChanged() => 
+    protected sealed override void StrokeColorChanged() =>
         StrokeBrush = TryRegisterDispose(CreateSolidBrush(StrokeColor));
-    protected override void NonstrokeColorChanged() => NonstrokeBrush = 
+
+    protected sealed override void NonstrokeColorChanged() => NonstrokeBrush =
         TryRegisterDispose(CreateSolidBrush(NonstrokeColor));
 
     protected abstract T CreateSolidBrush(DeviceColor color);
+
+    public override async ValueTask SetStrokePattern(PdfDictionary pattern)
+    {
+        StrokeBrush = await CreatePatternBrush(pattern);
+    }
+
+    protected abstract ValueTask<T> CreatePatternBrush(PdfDictionary pattern);
+
+    public override async ValueTask SetNonstrokePattern(PdfDictionary pattern) =>
+        NonstrokeBrush = await CreatePatternBrush(pattern).CA();
 }
 
 public abstract partial  class GraphicsState: IGraphiscState, IDisposable
@@ -244,18 +250,7 @@ public abstract partial  class GraphicsState: IGraphiscState, IDisposable
     protected T TryRegisterDispose<T>(T item) => pendingDispose.TryRegister(item);
 
     #endregion
-}
 
-public static class GraphicsStateHelpers
-{
-    public static bool IsDashedStroke(this GraphicsState gs) =>
-        gs.DashArray.Length > 0;
-
-
-    public static double EffectiveLineWidth(this GraphicsState state)
-    {
-        if (state.LineWidth > double.Epsilon) return state.LineWidth;
-        if (!Matrix3x2.Invert(state.TransformMatrix, out var invmat)) return 1;
-        return invmat.M11;
-    }
+    public abstract ValueTask SetStrokePattern(PdfDictionary pattern);
+    public abstract ValueTask SetNonstrokePattern(PdfDictionary pattern);
 }

@@ -89,16 +89,8 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
     }
     #endregion
 
-    public ValueTask SetStrokePattern(PdfDictionary pattern)
-    {
-        return ValueTask.CompletedTask;
-    }
-
-    public ValueTask SetNonstrokePattern(PdfDictionary pattern)
-    {
-        return ValueTask.CompletedTask;
-        
-    }
-    
-
+    public ValueTask SetStrokePattern(PdfDictionary pattern) => 
+        State.CurrentState().SetStrokePattern(pattern);
+    public ValueTask SetNonstrokePattern(PdfDictionary pattern) => 
+        State.CurrentState().SetNonstrokePattern(pattern);
 }
