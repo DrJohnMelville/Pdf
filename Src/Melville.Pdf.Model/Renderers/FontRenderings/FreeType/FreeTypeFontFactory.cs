@@ -60,7 +60,7 @@ public readonly struct FreeTypeFontFactory
     {
         var encoding = await font.EncodingAsync().CA();
         return new UnicodeGlyphMapping(face,
-            ByteToUnicodeMapping ?? await RomanEncodingParser.InterpretEncodingValue(encoding).CA());
+            await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping).CA());
     }
 
 
