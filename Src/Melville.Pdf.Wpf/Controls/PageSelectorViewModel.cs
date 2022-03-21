@@ -40,9 +40,10 @@ public partial class PageSelectorViewModel: IPageSelector
 {
     [AutoNotify] private int page = 1;
     [AutoNotify] private int maxPage = 1;
+    [AutoNotify] private int minPage = 1;
     [AutoNotify] public int ZeroBasisPage => Page - 1;
-    private int PageSetFilter(int newPage) => newPage.Clamp(1, MaxPage);
-    private void OnMaxPageChanged(int newValue) => page = 1;
+    private int PageSetFilter(int newPage) => newPage.Clamp(MinPage, MaxPage);
+    private void OnMaxPageChanged(int newValue) => page = minPage;
 
     public ICommand IncrementCommand { get; } 
     public ICommand DecrementCommand { get; } 
@@ -52,14 +53,14 @@ public partial class PageSelectorViewModel: IPageSelector
     public PageSelectorViewModel()
     {
         IncrementCommand = new SimpleCommand(_ => Increment(), _ => Page < MaxPage, this);
-        DecrementCommand = new SimpleCommand(_ => Decrement(), _ => Page > 1, this );
-        ToStartCommand = new SimpleCommand(_ => ToStart(), _ => Page != 1, this);
+        DecrementCommand = new SimpleCommand(_ => Decrement(), _ => Page > MinPage, this );
+        ToStartCommand = new SimpleCommand(_ => ToStart(), _ => Page != MinPage, this);
         ToEndCommand = new SimpleCommand(_=>ToEnd(), _ => Page < MaxPage, this);
     }
 
     public void Increment() => Page++;
     public void Decrement() => Page--;
-    public void ToStart() => Page = 1;
+    public void ToStart() => Page = MinPage;
     public void ToEnd() => Page = MaxPage;
 
     [AutoNotify] public string DisplayString => $"{Page} of {MaxPage}";

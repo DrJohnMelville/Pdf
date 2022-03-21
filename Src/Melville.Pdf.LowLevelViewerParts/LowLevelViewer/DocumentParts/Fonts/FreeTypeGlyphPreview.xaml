@@ -5,14 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts"
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
+             xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300" x:Name="Ctrl">
-    <Grid easyGrids:GridOperations.ColsAndRows="auto * auto / auto *" 
-          DataContext="{Binding ElementName=Ctrl}" Width="96">
-        <Button Click="DownOne">&lt;</Button>
-        <TextBlock Grid.Column="1"><TextBlock Text="{Binding CurrentGlyph}"/> of <TextBlock Text="{Binding MaxGlyph}"/></TextBlock>
-        <Button Grid.Column="2" Click="UpOne">&gt;</Button>
-        <Image Grid.Row="1" Grid.ColumnSpan="3" Source="{Binding GlyphImage}" Stretch="Uniform"
+    <Grid easyGrids:GridOperations.ColsAndRows="*/ auto *" 
+          DataContext="{Binding ElementName=Ctrl}" Width="400">
+        <viewFrames:ViewFrame Content="{Binding GlyphSelector}"/>  
+        <Image Grid.Row="1" Source="{Binding GlyphImage}" Stretch="Uniform"
                Height = "96" Width="96">
             <Image.LayoutTransform>
                 <ScaleTransform ScaleX="1" ScaleY="-1"></ScaleTransform>
