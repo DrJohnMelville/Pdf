@@ -33,8 +33,8 @@ public class DocumentRenderer
         TotalPages = totalPages;
     }
 
-    public DocumentRenderer PatternRenderer(HasRenderableContentStream item, Matrix3x2 patternTransform) =>
-        new PatternRenderer(_ => ValueTask.FromResult(item), 1, FontMapper, Cache, patternTransform);
+    public DocumentRenderer PatternRenderer(HasRenderableContentStream item, in Matrix3x2 patternTransform, in PdfRect bBox) =>
+        new PatternRenderer(_ => ValueTask.FromResult(item), 1, FontMapper, Cache, patternTransform, bBox);
 
     public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {

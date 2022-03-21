@@ -1,8 +1,10 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -60,6 +62,8 @@ public static class WpfStateInterpreter
     public static MatrixTransform Transform(this GraphicsState state) => 
         WpfTransform(state.TransformMatrix);
     public static MatrixTransform WpfTransform(this Matrix3x2 m) => new(m.M11, m.M12, m.M21, m.M22, m.M31, m.M32);
+
+    public static Rect AsWpfRect(this in PdfRect src) => new(src.Left, src.Bottom, src.Right, src.Top);
 
     #region Bitmap Translation
 
