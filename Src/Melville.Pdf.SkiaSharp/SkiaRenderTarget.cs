@@ -1,11 +1,8 @@
 ﻿using System.Numerics;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
-using Melville.Pdf.Model.Renderers.FontRenderings;
-using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
@@ -18,10 +15,10 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
     {
     }
 
-    public void SetBackgroundRect(PdfRect rect, int width, int height, in Matrix3x2 adjustOutput)
+    public void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform)
     {
         Target.Clear(SKColors.White);
-        MapUserSpaceToBitmapSpace(rect, adjustOutput, width, height);
+        MapUserSpaceToBitmapSpace(rect, transform, width, height);
     }
 
 

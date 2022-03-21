@@ -10,7 +10,24 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public sealed class DocumentRenderer
+public class PatternRenderer: DocumentRenderer
+{
+    private readonly Matrix3x2 patternTransform;
+    public PatternRenderer(
+        Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages, 
+        IDefaultFontMapper fontMapper, in Matrix3x2 patternTransform) : base(pageSource, totalPages, fontMapper)
+    {
+        this.patternTransform = patternTransform;
+    }
+
+    public override void InitializeRenderTarget(IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
+        in Matrix3x2 transform)
+    {
+        base.InitializeRenderTarget(innerRenderer, in rect, width, height, patternTransform * transform);
+    }
+}
+
+public class DocumentRenderer
 {
     private readonly Func<long, ValueTask<HasRenderableContentStream>> pageSource;
     public int TotalPages { get; }
@@ -33,8 +50,8 @@ public sealed class DocumentRenderer
         TotalPages = totalPages;
     }
 
-    public DocumentRenderer SubRenderer(HasRenderableContentStream item) => 
-        new DocumentRenderer(_ => ValueTask.FromResult(item), 1, FontMapper);
+    public DocumentRenderer PatternRenderer(HasRenderableContentStream item, Matrix3x2 patternTransform) =>
+        new PatternRenderer(_ => ValueTask.FromResult(item), 1, FontMapper, patternTransform);
 
     public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
@@ -59,6 +76,12 @@ public sealed class DocumentRenderer
 
     private RenderEngine CreateRenderEngine(HasRenderableContentStream page, IRenderTarget target) =>
         new(page, target, this);
+
+    public virtual void InitializeRenderTarget(IRenderTarget innerRenderer,
+        in PdfRect rect, double width, double height, in Matrix3x2 transform)
+    {
+        innerRenderer.SetBackgroundRect(rect, width, height, transform);
+    }
 }
 
 public static class DocumentRendererFactory

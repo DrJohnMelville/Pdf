@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Numerics;
+using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
@@ -13,19 +14,27 @@ public class WpfGraphicsState : GraphicsState<Brush>
     protected override Brush CreateSolidBrush(DeviceColor color) => new SolidColorBrush(color.AsWpfColor());
 
     protected async override ValueTask<Brush> CreatePatternBrush(
-        PdfDictionary pattern, DocumentRenderer parentRenderer) =>
-        new DrawingBrush( await CreateDrawing(new PdfPattern(pattern), parentRenderer))
+        PdfDictionary pattern, DocumentRenderer parentRenderer)
+    {
+        var pdfPattern = new PdfPattern(pattern);
+        var patXformm = await pdfPattern.Matrix();
+        var bbox = (await pdfPattern.BBox()).Transform(patXformm);
+        var delta = Vector2.Transform(new Vector2(
+            (float)await pdfPattern.XStep(), (float)await pdfPattern.YStep()), patXformm);
+        return new DrawingBrush(await CreateDrawing(pdfPattern, parentRenderer, patXformm))
         {
             Stretch = Stretch.None,
             //ViewBox is the size of the cell
-            Viewbox = new Rect(0,0,10,10),
+            Viewbox = new Rect(bbox.Left, bbox.Bottom, bbox.Width, bbox.Height),
             ViewboxUnits = BrushMappingMode.Absolute,
             //Viewport is the placement of the cells. -- down to the minimum of the cell size
-            Viewport = new Rect(0,0,12,15),
+            Viewport = new Rect(0, 0, delta.X,delta.Y),
             ViewportUnits = BrushMappingMode.Absolute,
             TileMode = TileMode.Tile
         };
+    }
 
-    private ValueTask<DrawingGroup> CreateDrawing(PdfPattern pdfPattern, DocumentRenderer parentRenderer) => 
-        new RenderToDrawingGroup(parentRenderer.SubRenderer(pdfPattern), 0).Render();
+    private ValueTask<DrawingGroup> CreateDrawing(
+        PdfPattern pdfPattern, DocumentRenderer parentRenderer, in Matrix3x2 patXformm) =>
+        new RenderToDrawingGroup(parentRenderer.PatternRenderer(pdfPattern, patXformm), 0).Render();
 }

@@ -72,12 +72,12 @@ public readonly struct RenderToDrawingGroup
 
     private  ValueTask RenderTo(DrawingContext dc)
     {
-
         AwaitConfig.ResumeOnCalledThread(true);
+        var d2 = doc;
         return doc.RenderPageTo(page, (rect, preTransform) =>
         {
             var innerRenderer = new WpfRenderTarget(dc);
-            innerRenderer.SetBackgroundRect(rect, preTransform);
+            d2.InitializeRenderTarget(innerRenderer, rect, rect.Width, rect.Height, preTransform);
             return innerRenderer;
         });
    }

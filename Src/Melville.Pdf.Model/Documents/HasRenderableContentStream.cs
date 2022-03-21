@@ -19,8 +19,3 @@ public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPag
     public ValueTask<long> GetDefaultRotationAsync() => 
         LowLevel.GetOrDefaultAsync(KnownNames.Rotate, 0);
 }
-
-public record class PdfPattern(PdfDictionary LowLevel) : HasRenderableContentStream(LowLevel)
-{
-    public override ValueTask<Stream> GetContentBytes() => ((PdfStream)LowLevel).StreamContentAsync();
-}

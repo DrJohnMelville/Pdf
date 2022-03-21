@@ -30,6 +30,7 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     void Transform(in Matrix3x2 newTransform);
     ValueTask RenderBitmap(IPdfBitmap bitmap);
     IDrawTarget CreateDrawTarget();
+    void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform);
 }
 
 public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposable
