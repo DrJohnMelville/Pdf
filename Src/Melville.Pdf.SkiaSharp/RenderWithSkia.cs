@@ -26,6 +26,7 @@ namespace Melville.Pdf.SkiaSharp
 
                 var target = new SkiaRenderTarget(surface.Canvas);
                 target.SetBackgroundRect(rect, width, height, adjustOutput);
+                target.MapUserSpaceToBitmapSpace(rect, width, height, adjustOutput);
                 return target;
             }).CA();
             return surface;

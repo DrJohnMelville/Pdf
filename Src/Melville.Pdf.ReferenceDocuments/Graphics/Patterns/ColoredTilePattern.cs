@@ -8,6 +8,29 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns;
 
 public class ColoredTilePattern: Card3x5
 {
+
+    private const string PatternContent = @"BT
+/F1 1 Tf
+64 0 0 64 7.1771 2.4414 Tm
+0 Tc
+0 Tw
+1 0 0 rg
+(\001) Tj
+
+0.7478 -0.007 TD
+0 1 0 rg
+(\002) Tj
+
+-0.7323 0.7813 TD
+0 0 1 rg
+(\003) Tj
+
+0.6913 0.007 TD
+0 0 0 rg
+(\004) Tj
+ET
+";
+
     public ColoredTilePattern() : base("Spec example of a colored tile pattern")
     {
     }
@@ -48,27 +71,7 @@ public class ColoredTilePattern: Card3x5
             .AsDictionary();
         
         tpc.AddResourceObject(ResourceTypeName.Font, NameDirectory.Get("F1"), zapf);
-        tpc.AddToContentStream(new DictionaryBuilder(), @"BT
-/F1 1 Tf
-64 0 0 64 7.1771 2.4414 Tm
-0 Tc
-0 Tw
-1 0 0 rg
-(\001) Tj
-
-0.7478 -0.007 TD
-0 1 0 rg
-(\002) Tj
-
--0.7323 0.7813 TD
-0 0 1 rg
-(\003) Tj
-
-0.6913 0.007 TD
-0 0 0 rg
-(\004) Tj
-ET
-");
+        tpc.AddToContentStream(new DictionaryBuilder(), PatternContent);
 
         return tpc.ConstructPageTree(lldc, null, 100).Reference;
     }

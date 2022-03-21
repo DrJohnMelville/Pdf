@@ -18,7 +18,6 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
     public void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform)
     {
         Target.Clear(SKColors.White);
-        MapUserSpaceToBitmapSpace(rect, transform, width, height);
     }
 
 

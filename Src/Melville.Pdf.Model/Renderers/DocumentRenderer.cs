@@ -10,23 +10,6 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public class PatternRenderer: DocumentRenderer
-{
-    private readonly Matrix3x2 patternTransform;
-    public PatternRenderer(
-        Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages, 
-        IDefaultFontMapper fontMapper, in Matrix3x2 patternTransform) : base(pageSource, totalPages, fontMapper)
-    {
-        this.patternTransform = patternTransform;
-    }
-
-    public override void InitializeRenderTarget(IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
-        in Matrix3x2 transform)
-    {
-        base.InitializeRenderTarget(innerRenderer, in rect, width, height, patternTransform * transform);
-    }
-}
-
 public class DocumentRenderer
 {
     private readonly Func<long, ValueTask<HasRenderableContentStream>> pageSource;
@@ -40,7 +23,7 @@ public class DocumentRenderer
     {
         
     }
-    private DocumentRenderer(
+    protected DocumentRenderer(
         Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages, 
         IDefaultFontMapper fontMapper, IDocumentPartCache cache)
     {
@@ -51,7 +34,7 @@ public class DocumentRenderer
     }
 
     public DocumentRenderer PatternRenderer(HasRenderableContentStream item, Matrix3x2 patternTransform) =>
-        new PatternRenderer(_ => ValueTask.FromResult(item), 1, FontMapper, patternTransform);
+        new PatternRenderer(_ => ValueTask.FromResult(item), 1, FontMapper, Cache, patternTransform);
 
     public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
@@ -81,6 +64,7 @@ public class DocumentRenderer
         in PdfRect rect, double width, double height, in Matrix3x2 transform)
     {
         innerRenderer.SetBackgroundRect(rect, width, height, transform);
+        innerRenderer.MapUserSpaceToBitmapSpace(rect, width, height, transform);
     }
 }
 

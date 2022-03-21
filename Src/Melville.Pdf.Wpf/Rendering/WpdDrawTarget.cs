@@ -44,8 +44,9 @@ public class WpfDrawTarget : IDrawTarget
 
     public void LineTo(double x, double y) => figure?.Segments.Add(new LineSegment(new Point(x,y), true));
 
-    public void ConicCurveTo(double controlX, double controlY, double finalX, double finalY) => 
-        figure?.Segments.Add(new QuadraticBezierSegment(new Point(controlX, controlY), new Point(finalX, finalY), true));
+    public void ConicCurveTo(double controlX, double controlY, double finalX, double finalY) =>
+        figure?.Segments.Add(new QuadraticBezierSegment(new Point(controlX, controlY), new Point(finalX, finalY),
+            true));
 
     public void CurveTo( 
         double control1X, double control1Y, double control2X, double control2Y, double finalX, double finalY) => 

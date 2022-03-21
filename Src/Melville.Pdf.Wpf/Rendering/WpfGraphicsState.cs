@@ -35,6 +35,8 @@ public class WpfGraphicsState : GraphicsState<Brush>
     }
 
     private ValueTask<DrawingGroup> CreateDrawing(
-        PdfPattern pdfPattern, DocumentRenderer parentRenderer, in Matrix3x2 patXformm) =>
-        new RenderToDrawingGroup(parentRenderer.PatternRenderer(pdfPattern, patXformm), 0).Render();
+        PdfPattern pdfPattern, DocumentRenderer parentRenderer, in Matrix3x2 patXformm)
+    {
+        return new RenderToDrawingGroup(parentRenderer.PatternRenderer(pdfPattern, patXformm), 0).Render();
+    }
 }

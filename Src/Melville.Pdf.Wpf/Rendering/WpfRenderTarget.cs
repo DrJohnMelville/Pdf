@@ -55,10 +55,8 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     public void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform)
     {
         var clipRectangle = new Rect(0,0, width, height);
-        Target.DrawRectangle(Brushes.White, new Pen(Brushes.Coral, 1), clipRectangle);
+        Target.DrawRectangle(Brushes.White, null, clipRectangle);
         Target.PushClip(new RectangleGeometry(clipRectangle));
-        // setup the userSpace to device space transform
-        MapUserSpaceToBitmapSpace(rect, transform, width, height);
     }
     
     public override IDrawTarget CreateDrawTarget() => new WpfDrawTarget(Target, State);

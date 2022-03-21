@@ -31,6 +31,7 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     ValueTask RenderBitmap(IPdfBitmap bitmap);
     IDrawTarget CreateDrawTarget();
     void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform);
+    void MapUserSpaceToBitmapSpace(in PdfRect rect, double xPixels, double yPixels, in Matrix3x2 adjustOutput);
 }
 
 public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposable
@@ -51,8 +52,8 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
         State.Dispose();
     }
 
-    
-    protected void MapUserSpaceToBitmapSpace(in PdfRect rect, in Matrix3x2 adjustOutput, double xPixels, double yPixels)
+
+    public void MapUserSpaceToBitmapSpace(in PdfRect rect, double xPixels, double yPixels, in Matrix3x2 adjustOutput)
     {
         var xform = adjustOutput *
                     Matrix3x2.CreateTranslation((float)-rect.Left, (float)-rect.Bottom) *
