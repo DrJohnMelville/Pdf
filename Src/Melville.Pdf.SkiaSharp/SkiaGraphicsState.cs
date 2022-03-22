@@ -27,7 +27,8 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         return new SKPaint()
         {
             Shader = SKShader.CreateImage(tileItem.Snapshot(),
-                SKShaderTileMode.Repeat, SKShaderTileMode.Repeat)
+                SKShaderTileMode.Repeat, SKShaderTileMode.Repeat).
+                WithLocalMatrix(request.PatternTransform.Transform())
         };
         
     }

@@ -6,10 +6,54 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns;
 
+public class ColoredTileWithSpacing : ColoredTilePattern
+{
+    public ColoredTileWithSpacing() : base("Tile pattern with spacing")
+    {
+    }
+    
+    protected override TilePatternCreator CreatePatternCreator()
+    {
+        var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 150, 200,
+            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
+        tpc.AddMatrix(Matrix3x2.CreateScale(0.4f));
+        return tpc;
+    }
+}
+
+public class ColoredTileRotated : ColoredTilePattern
+{
+    public ColoredTileRotated(): base("Colored time patter with 45 degree rotation")
+    {
+    }
+    
+    protected override TilePatternCreator CreatePatternCreator()
+    {
+        var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 100, 100,
+            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
+        tpc.AddMatrix(Matrix3x2.CreateScale(0.4f)*Matrix3x2.CreateRotation((float)(0.4)));
+        return tpc;
+    }
+
+}
+public class ColoredTileMissingMatrix : ColoredTilePattern
+{
+    public ColoredTileMissingMatrix(): base("Colored time patter with 45 degree rotation")
+    {
+    }
+    
+    protected override TilePatternCreator CreatePatternCreator()
+    {
+        var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 100, 100,
+            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
+        return tpc;
+    }
+
+}
 public class ColoredTilePattern: Card3x5
 {
 
-    private const string PatternContent = @"BT
+    protected virtual string PatternContent() => @"BT
 /F1 1 Tf
 64 0 0 64 7.1771 2.4414 Tm
 0 Tc
@@ -31,13 +75,12 @@ public class ColoredTilePattern: Card3x5
 ET
 ";
 
-    public ColoredTilePattern() : base("Spec example of a colored tile pattern")
+    public ColoredTilePattern() : this("Spec example of a colored tile pattern")
     {
     }
 
-    protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
+    public ColoredTilePattern(string helpText) : base(helpText)
     {
-        return base.AddContentToDocumentAsync(docCreator);
     }
 
     protected override void SetPageProperties(PageCreator page)
@@ -49,9 +92,7 @@ ET
 
     private PdfObject CreatePattern(ILowLevelDocumentCreator lldc)
     {
-        var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 100, 100,
-            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
-        tpc.AddMatrix(Matrix3x2.CreateScale(0.4f));
+        var tpc = CreatePatternCreator();
 
         var enc = lldc.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Encoding)
@@ -71,9 +112,17 @@ ET
             .AsDictionary();
         
         tpc.AddResourceObject(ResourceTypeName.Font, NameDirectory.Get("F1"), zapf);
-        tpc.AddToContentStream(new DictionaryBuilder(), PatternContent);
+        tpc.AddToContentStream(new DictionaryBuilder(), PatternContent());
 
         return tpc.ConstructPageTree(lldc, null, 100).Reference;
+    }
+
+    protected virtual TilePatternCreator CreatePatternCreator()
+    {
+        var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 100, 100,
+            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
+        tpc.AddMatrix(Matrix3x2.CreateScale(0.4f));
+        return tpc;
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)

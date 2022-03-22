@@ -32,7 +32,8 @@ public class WpfGraphicsState : GraphicsState<Brush>
             ViewboxUnits = BrushMappingMode.Absolute,
             Viewport = PatternDestinationBox(request.RepeatSize),
             ViewportUnits = BrushMappingMode.Absolute,
-            TileMode = TileMode.Tile
+            TileMode = TileMode.Tile,
+            Transform = request.PatternTransform.WpfTransform()
         };
     }
 

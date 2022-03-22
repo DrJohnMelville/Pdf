@@ -25,7 +25,7 @@ public class PatternRenderer: DocumentRenderer
     {
         var bounds = request.BoundingBox;
         innerRenderer.MapUserSpaceToBitmapSpace(bounds, bounds.Width,bounds.Height, 
-            request.PatternTransform * InvertYDimension() );
+             InvertYDimension() );
     }
 
     private Matrix3x2 InvertYDimension() => 

@@ -1,4 +1,4 @@
-RenderingTest.cs_wpf-StandardFonts|4102486185
+RenderingTest.cs_wpf-StandardFonts|1238155642
 RenderingTest.cs_wpf-FiltersGenerator|4096662070
 RenderingTest.cs_wpf-MinimalPdfParser|1706411023
 RenderingTest.cs_wpf-ObjectStreamPage|2370513598
@@ -15,7 +15,7 @@ RenderingTest.cs_wpf-EndCaps|3890543918
 RenderingTest.cs_wpf-LineJoin|2548825538
 RenderingTest.cs_wpf-LineWidths|4196252740
 RenderingTest.cs_wpf-MiterLimit|2470350407
-RenderingTest.cs_Skia-StandardFonts|2731194970
+RenderingTest.cs_Skia-StandardFonts|2961556229
 RenderingTest.cs_Skia-FiltersGenerator|1206561395
 RenderingTest.cs_Skia-MinimalPdfParser|2633483471
 RenderingTest.cs_Skia-ObjectStreamPage|963513203
@@ -126,9 +126,9 @@ RenderingTest.cs_wpf-FormObjectFromPage|911276189
 RenderingTest.cs_Skia-FormObjectFromPage|1255845827
 RenderingTest.cs_wpf-FormObjectFromXObject|911276189
 RenderingTest.cs_Skia-FormObjectFromXObject|1255845827
-RenderingTest.cs_wpf-ZapfCharSet|4058074224
+RenderingTest.cs_wpf-ZapfCharSet|1079344266
 RenderingTest.cs_wpf-SymbolCharSer|1077209385
-RenderingTest.cs_Skia-ZapfCharSet|4104457399
+RenderingTest.cs_Skia-ZapfCharSet|3661492095
 RenderingTest.cs_Skia-SymbolCharSer|3305088014
 RenderingTest.cs_wpf-CharacterSpacing|3780958787
 RenderingTest.cs_wpf-WordSpacing|2611113163
@@ -208,3 +208,13 @@ RenderingTest.cs_wpf-Type0WithEmbeddedTT|3670411632
 RenderingTest.cs_Skia-Type0WithEmbeddedTT|874979496
 RenderingTest.cs_wpf-Type0WithCidToGid|3045268106
 RenderingTest.cs_Skia-Type0WithCidToGid|2946352456
+RenderingTest.cs_wpf-DingBatsWithANameDifferences|1117080585
+RenderingTest.cs_wpf-ColoredTileWithSpacing|466889515
+RenderingTest.cs_wpf-ColoredTileRotated|4170779843
+RenderingTest.cs_wpf-ColoredTileMissingMatrix|2758093428
+RenderingTest.cs_wpf-ColoredTilePattern|4090074509
+RenderingTest.cs_Skia-DingBatsWithANameDifferences|3108763095
+RenderingTest.cs_Skia-ColoredTileWithSpacing|2292629683
+RenderingTest.cs_Skia-ColoredTileRotated|3704132720
+RenderingTest.cs_Skia-ColoredTileMissingMatrix|915491630
+RenderingTest.cs_Skia-ColoredTilePattern|696091501

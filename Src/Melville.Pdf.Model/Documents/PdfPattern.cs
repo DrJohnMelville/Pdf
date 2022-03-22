@@ -18,8 +18,11 @@ public record class PdfPattern(PdfDictionary LowLevel) : HasRenderableContentStr
     public ValueTask<double> YStep() => LowLevel.GetOrDefaultAsync(KnownNames.XStep, 0.0);
     public async ValueTask<PdfRect> BBox() => await PdfRect.CreateAsync(
         await LowLevel.GetAsync<PdfArray>(KnownNames.BBox).CA()).CA();
+
     public async ValueTask<Matrix3x2> Matrix() =>
-       await (await LowLevel.GetAsync<PdfArray>(KnownNames.Matrix).CA()).AsMatrix3x2Async().CA();
+        LowLevel.TryGetValue(KnownNames.Matrix, out var matTask) && await matTask.CA() is PdfArray matArray
+            ? await matArray.AsMatrix3x2Async().CA()
+            : Matrix3x2.Identity;
 }
 
 public record struct 
@@ -32,10 +35,10 @@ public record struct
     public static async ValueTask<TileBrushRequest> Parse(PdfDictionary dict)
     {
         var pdfPattern = new PdfPattern(dict);
-        var patternTransform = await pdfPattern.Matrix();
-        var boundingBox = (await pdfPattern.BBox()).Transform(patternTransform);
-        var repeatSize = Vector2.Transform(new Vector2(
-            (float)await pdfPattern.XStep(), (float)await pdfPattern.YStep()), patternTransform);
+        var patternTransform = await pdfPattern.Matrix().CA();
+        var boundingBox = (await pdfPattern.BBox().CA());
+        var repeatSize = new Vector2(
+            (float)await pdfPattern.XStep().CA(), (float)await pdfPattern.YStep().CA());
         return new(pdfPattern, patternTransform, boundingBox, repeatSize);
     }
 }
