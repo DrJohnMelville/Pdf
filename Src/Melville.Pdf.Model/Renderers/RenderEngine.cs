@@ -30,8 +30,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
     private readonly IRenderTarget target;
-    private readonly DocumentRenderer renderer;
-    public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer)
+    private readonly DocumentRendererBase renderer;
+    public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRendererBase renderer)
     {
         this.page = page;
         this.target = target;

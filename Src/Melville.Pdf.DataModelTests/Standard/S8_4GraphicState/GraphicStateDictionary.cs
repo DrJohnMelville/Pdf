@@ -19,7 +19,7 @@ public class TestGraphicsState : GraphicsState<DeviceColor>
 {
     protected override DeviceColor CreateSolidBrush(DeviceColor color) => color;
     protected override ValueTask<DeviceColor> CreatePatternBrush(PdfDictionary pattern,
-        DocumentRenderer parentRenderer) => 
+        DocumentRendererBase parentRenderer) => 
         throw new System.NotSupportedException();
 }
 public class GraphicStateDictionary

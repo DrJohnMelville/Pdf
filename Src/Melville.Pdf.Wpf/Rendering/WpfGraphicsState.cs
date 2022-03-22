@@ -10,26 +10,27 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
+
 public class WpfGraphicsState : GraphicsState<Brush>
 {
     protected override Brush CreateSolidBrush(DeviceColor color) => new SolidColorBrush(color.AsWpfColor());
 
     protected override async ValueTask<Brush> CreatePatternBrush(
-        PdfDictionary pattern, DocumentRenderer parentRenderer)
+        PdfDictionary pattern, DocumentRendererBase parentRenderer)
     {
-        var pdfPattern = new PdfPattern(pattern);
-        var patternTransform = await pdfPattern.Matrix();
-        var boundingBox = (await pdfPattern.BBox()).Transform(patternTransform);
-        var repeatSize = Vector2.Transform(new Vector2(
-            (float)await pdfPattern.XStep(), (float)await pdfPattern.YStep()), patternTransform);
-        
-        return new DrawingBrush(await 
-            PatternRenderer(parentRenderer, pdfPattern, patternTransform, boundingBox).Render())
+        var request = await TileBrushRequest.Parse(pattern);
+        var pattternItem = await PatternRenderer(parentRenderer, request).Render();
+        return CreateBrush(pattternItem, request);
+    }
+
+    private static Brush CreateBrush(DrawingGroup pattternItem, in TileBrushRequest request)
+    {
+        return new DrawingBrush(pattternItem)
         {
             Stretch = Stretch.None,
-            Viewbox = PatternSourceBox(boundingBox),
+            Viewbox = PatternSourceBox(request.BoundingBox),
             ViewboxUnits = BrushMappingMode.Absolute,
-            Viewport = PatternDestinationBox(repeatSize),
+            Viewport = PatternDestinationBox(request.RepeatSize),
             ViewportUnits = BrushMappingMode.Absolute,
             TileMode = TileMode.Tile
         };
@@ -40,8 +41,9 @@ public class WpfGraphicsState : GraphicsState<Brush>
 
     private static Rect PatternSourceBox(PdfRect bbox) => bbox.AsWpfRect();
 
-    private RenderToDrawingGroup PatternRenderer(DocumentRenderer parentRenderer, PdfPattern pdfPattern, Matrix3x2 patXformm, PdfRect bbox)
+    private RenderToDrawingGroup PatternRenderer(
+        DocumentRendererBase parentRenderer, in TileBrushRequest request)
     {
-        return new RenderToDrawingGroup(parentRenderer.PatternRenderer(pdfPattern, patXformm, bbox), 0);
+        return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request), 0);
     }
 }

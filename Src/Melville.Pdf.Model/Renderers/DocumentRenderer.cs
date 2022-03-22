@@ -10,35 +10,41 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public class DocumentRenderer
+public class DocumentRenderer : DocumentRendererBase
 {
     private readonly Func<long, ValueTask<HasRenderableContentStream>> pageSource;
+
+    public DocumentRenderer(Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages,
+        IDefaultFontMapper fontMapper, IDocumentPartCache cache) : base(totalPages, fontMapper, cache)
+    {
+        this.pageSource = pageSource;
+    }
+
+    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page)
+    {
+        return pageSource(page);
+    }
+}
+public abstract class DocumentRendererBase
+{
     public int TotalPages { get; }
     public IDefaultFontMapper FontMapper { get; }
     public IDocumentPartCache Cache { get; }
 
-    public DocumentRenderer(
-        Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages,
-        IDefaultFontMapper fontMapper) : this(pageSource, totalPages, fontMapper, new DocumentPartCache())
-    {
-        
-    }
-    protected DocumentRenderer(
-        Func<long, ValueTask<HasRenderableContentStream>> pageSource, int totalPages, 
+    public  DocumentRendererBase(int totalPages, 
         IDefaultFontMapper fontMapper, IDocumentPartCache cache)
     {
-        this.pageSource = pageSource;
         this.FontMapper = fontMapper;
         this.Cache = cache;
         TotalPages = totalPages;
     }
 
-    public DocumentRenderer PatternRenderer(HasRenderableContentStream item, in Matrix3x2 patternTransform, in PdfRect bBox) =>
-        new PatternRenderer(_ => ValueTask.FromResult(item), 1, FontMapper, Cache, patternTransform, bBox);
+    public DocumentRendererBase PatternRenderer(in TileBrushRequest request) => 
+        new PatternRenderer(FontMapper, Cache, request);
 
     public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
-        var pageStruct = await pageSource(page).CA();
+        var pageStruct = await GetPageContent(page).CA();
         var cropRect = await GetCropDimensionsAsync(pageStruct).CA();
         var rotation = CreateRotateMatrix( cropRect, await pageStruct.GetDefaultRotationAsync().CA());
         
@@ -66,19 +72,33 @@ public class DocumentRenderer
         innerRenderer.SetBackgroundRect(rect, width, height, transform);
         innerRenderer.MapUserSpaceToBitmapSpace(rect, width, height, transform);
     }
+
+    public virtual (int width, int height) ScalePageToRequestedSize(in PdfRect pageSize, Vector2 requestedSize)=>
+        (requestedSize) switch
+        {
+            { X: < 0, Y:< 0 } => ((int)pageSize.Width, (int)pageSize.Height),
+            {X: < 0} => new(Scale(pageSize.Width, requestedSize.Y, pageSize.Height), (int)requestedSize.Y),
+            {Y: < 0} => new((int)requestedSize.X, Scale(pageSize.Height, requestedSize.X, pageSize.Width)),
+            _ => ((int)requestedSize.X, (int)requestedSize.Y)
+        };
+    
+    private static int Scale(double freeDimension, float setValue, double setDimension) => 
+        (int)(freeDimension * (setValue / setDimension));
+
+    protected abstract ValueTask<HasRenderableContentStream> GetPageContent(int page);
 }
 
 public static class DocumentRendererFactory
 {
     public static DocumentRenderer CreateRenderer(
         HasRenderableContentStream page, IDefaultFontMapper fontFactory) =>
-        new(_ => new(page), 1, fontFactory);
+        new(_ => new(page), 1, fontFactory, new DocumentPartCache());
     
     public static async ValueTask<DocumentRenderer> CreateRendererAsync(
         PdfDocument document, IDefaultFontMapper fontFactory)
     {
         var pages = await document.PagesAsync().CA();
         var pageCount = (int)await pages.CountAsync().CA();
-        return new DocumentRenderer( pages.GetPageAsync, pageCount, fontFactory);
+        return new DocumentRenderer( pages.GetPageAsync, pageCount, fontFactory, new DocumentPartCache());
     }
 }
