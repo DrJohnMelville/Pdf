@@ -47,11 +47,11 @@ public abstract partial class GraphicsState<T> : GraphicsState, IDisposable
 
     protected abstract T CreateSolidBrush(DeviceColor color);
 
-    public override async ValueTask SetStrokePattern(PdfDictionary pattern, DocumentRendererBase parentRenderer) => 
+    public override async ValueTask SetStrokePattern(PdfDictionary pattern, DocumentRenderer parentRenderer) => 
         StrokeBrush = await CreatePatternBrush(pattern, parentRenderer).CA();
-    public override async ValueTask SetNonstrokePattern(PdfDictionary pattern, DocumentRendererBase parentRenderer) =>
+    public override async ValueTask SetNonstrokePattern(PdfDictionary pattern, DocumentRenderer parentRenderer) =>
         NonstrokeBrush = await CreatePatternBrush(pattern, parentRenderer).CA();
-    protected abstract ValueTask<T> CreatePatternBrush(PdfDictionary pattern, DocumentRendererBase parentRenderer);
+    protected abstract ValueTask<T> CreatePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer);
 }
 
 public abstract partial  class GraphicsState: IGraphiscState, IDisposable
@@ -247,6 +247,6 @@ public abstract partial  class GraphicsState: IGraphiscState, IDisposable
 
     #endregion
 
-    public abstract ValueTask SetStrokePattern(PdfDictionary pattern, DocumentRendererBase parentRenderer);
-    public abstract ValueTask SetNonstrokePattern(PdfDictionary pattern, DocumentRendererBase parentRenderer);
+    public abstract ValueTask SetStrokePattern(PdfDictionary pattern, DocumentRenderer parentRenderer);
+    public abstract ValueTask SetNonstrokePattern(PdfDictionary pattern, DocumentRenderer parentRenderer);
 }

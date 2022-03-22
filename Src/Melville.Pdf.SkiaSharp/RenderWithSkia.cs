@@ -16,7 +16,7 @@ namespace Melville.Pdf.SkiaSharp
             data.SaveTo(target);
         }
 
-        public static async ValueTask<SKSurface> ToSurface(DocumentRendererBase doc, int page, int width = -1, int height = -1)
+        public static async ValueTask<SKSurface> ToSurface(DocumentRenderer doc, int page, int width = -1, int height = -1)
         {
             SKSurface surface = null!;
             await doc.RenderPageTo(page, (rect, adjustOutput) =>

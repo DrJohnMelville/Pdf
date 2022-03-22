@@ -16,7 +16,7 @@ public class WpfGraphicsState : GraphicsState<Brush>
     protected override Brush CreateSolidBrush(DeviceColor color) => new SolidColorBrush(color.AsWpfColor());
 
     protected override async ValueTask<Brush> CreatePatternBrush(
-        PdfDictionary pattern, DocumentRendererBase parentRenderer)
+        PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.Parse(pattern);
         var pattternItem = await PatternRenderer(parentRenderer, request).Render();
@@ -42,7 +42,7 @@ public class WpfGraphicsState : GraphicsState<Brush>
     private static Rect PatternSourceBox(PdfRect bbox) => bbox.AsWpfRect();
 
     private RenderToDrawingGroup PatternRenderer(
-        DocumentRendererBase parentRenderer, in TileBrushRequest request)
+        DocumentRenderer parentRenderer, in TileBrushRequest request)
     {
         return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request), 0);
     }

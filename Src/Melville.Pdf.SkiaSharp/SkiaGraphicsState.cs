@@ -19,7 +19,7 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
     }
 
     protected override async ValueTask<SKPaint> CreatePatternBrush(
-        PdfDictionary pattern, DocumentRendererBase parentRenderer)
+        PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.Parse(pattern).CA();
         var tileItem = await RenderWithSkia.ToSurface(

@@ -8,7 +8,7 @@ using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public class PatternRenderer: DocumentRendererBase
+public class PatternRenderer: DocumentRenderer
 {
     private readonly TileBrushRequest request;
 

@@ -10,10 +10,10 @@ namespace Melville.Pdf.Wpf.Rendering;
 
 public readonly struct RenderToDrawingGroup
 {
-    private readonly DocumentRendererBase doc;
+    private readonly DocumentRenderer doc;
     private readonly int page;
 
-    public RenderToDrawingGroup(DocumentRendererBase doc, int page)
+    public RenderToDrawingGroup(DocumentRenderer doc, int page)
     {
         this.doc = doc;
         this.page = page;
