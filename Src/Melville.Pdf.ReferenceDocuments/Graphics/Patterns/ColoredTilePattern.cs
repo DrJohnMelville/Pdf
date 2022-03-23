@@ -132,7 +132,7 @@ ET
         csw.FillPath();
 
         await csw.SetNonstrokingColorSpace(NameDirectory.Get("Cs12"));
-        await csw.SetNonstrokingColorExtended(NameDirectory.Get("P1"), 0.77, 0.2, 0.0);
+        await csw.SetNonstrokingColorExtended(NameDirectory.Get("P1"));
         
         csw.MoveTo(99.92, 49.92);
         csw.CurveTo(99.92, 77.52, 77.52, 99.91, 49.92, 99.92);

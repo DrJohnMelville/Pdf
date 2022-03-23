@@ -218,3 +218,5 @@ RenderingTest.cs_Skia-ColoredTileWithSpacing|2292629683
 RenderingTest.cs_Skia-ColoredTileRotated|3704132720
 RenderingTest.cs_Skia-ColoredTileMissingMatrix|915491630
 RenderingTest.cs_Skia-ColoredTilePattern|696091501
+RenderingTest.cs_wpf-UncoloredTilingPattern|2710480144
+RenderingTest.cs_Skia-UncoloredTilingPattern|3160807119

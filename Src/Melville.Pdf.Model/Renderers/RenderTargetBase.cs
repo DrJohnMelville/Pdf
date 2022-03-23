@@ -32,6 +32,7 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     IDrawTarget CreateDrawTarget();
     void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform);
     void MapUserSpaceToBitmapSpace(in PdfRect rect, double xPixels, double yPixels, in Matrix3x2 adjustOutput);
+    void CloneStateFrom(GraphicsState priorState);
 }
 
 public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposable
@@ -81,4 +82,11 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
         currentShape = null;
     }
     #endregion
+
+    public void CloneStateFrom(GraphicsState priorState)
+    {
+        if (priorState is TState ts) State.CurrentState().CopyFrom(ts);
+        State.CurrentState().ResetTransformMatrix();
+            
+    }
 }

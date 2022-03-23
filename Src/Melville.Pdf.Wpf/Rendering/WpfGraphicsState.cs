@@ -45,6 +45,6 @@ public class WpfGraphicsState : GraphicsState<Brush>
     private RenderToDrawingGroup PatternRenderer(
         DocumentRenderer parentRenderer, in TileBrushRequest request)
     {
-        return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request), 0);
+        return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request, this), 0);
     }
 }

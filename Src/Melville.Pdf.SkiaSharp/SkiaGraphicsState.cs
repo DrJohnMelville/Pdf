@@ -23,7 +23,7 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
     {
         var request = await TileBrushRequest.Parse(pattern).CA();
         var tileItem = await RenderWithSkia.ToSurface(
-            parentRenderer.PatternRenderer(request), 0).CA();
+            parentRenderer.PatternRenderer(request, this), 0).CA();
         return new SKPaint()
         {
             Shader = SKShader.CreateImage(tileItem.Snapshot(),

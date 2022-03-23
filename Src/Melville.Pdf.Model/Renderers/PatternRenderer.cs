@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers;
@@ -11,11 +12,13 @@ namespace Melville.Pdf.Model.Renderers;
 public class PatternRenderer: DocumentRenderer
 {
     private readonly TileBrushRequest request;
+    private readonly GraphicsState priorState;
 
-    public PatternRenderer(IDefaultFontMapper fontMapper, IDocumentPartCache cache, in TileBrushRequest request) : 
+    public PatternRenderer(IDefaultFontMapper fontMapper, IDocumentPartCache cache, in TileBrushRequest request, GraphicsState priorState) : 
         base(1, fontMapper, cache)
     {
         this.request = request;
+        this.priorState = priorState;
     }
 
     protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) => new(request.Pattern);
@@ -23,6 +26,7 @@ public class PatternRenderer: DocumentRenderer
     public override void InitializeRenderTarget(IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
         in Matrix3x2 transform)
     {
+        innerRenderer.CloneStateFrom(priorState);
         var bounds = request.BoundingBox;
         innerRenderer.MapUserSpaceToBitmapSpace(bounds, bounds.Width,bounds.Height, 
              InvertYDimension() );

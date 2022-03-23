@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
 
@@ -49,8 +50,8 @@ public abstract class DocumentRenderer
         TotalPages = totalPages;
     }
 
-    public DocumentRenderer PatternRenderer(in TileBrushRequest request) => 
-        new PatternRenderer(FontMapper, Cache, request);
+    public DocumentRenderer PatternRenderer(in TileBrushRequest request, GraphicsState priorState) => 
+        new PatternRenderer(FontMapper, Cache, request, priorState);
 
     public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {

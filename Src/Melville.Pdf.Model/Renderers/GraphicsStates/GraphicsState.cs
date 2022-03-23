@@ -89,10 +89,11 @@ public abstract partial  class GraphicsState: IGraphiscState, IDisposable
     public void SaveGraphicsState() { }
     public void RestoreGraphicsState() { }
 
-    public void ModifyTransformMatrix(in Matrix3x2 newTransform)
-    {
+    public void ModifyTransformMatrix(in Matrix3x2 newTransform) => 
         TransformMatrix = newTransform * TransformMatrix;
-    }
+
+    public void ResetTransformMatrix() => 
+        TransformMatrix = Matrix3x2.Identity;
 
     public Vector2 ApplyCurrentTransform(in Vector2 point) => Vector2.Transform(point, TransformMatrix);
 
