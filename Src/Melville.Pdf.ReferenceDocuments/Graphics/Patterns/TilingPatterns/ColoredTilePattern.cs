@@ -10,7 +10,8 @@ public class ColoredTilePattern: PatternDisplayClass
 /F1 1 Tf
 64 0 0 64 7.1771 2.4414 Tm
 0 Tc
-0 Tw1 0 0 rg
+0 Tw
+1 0 0 rg
 (\001) Tj
 
 0.7478 -0.007 TD
