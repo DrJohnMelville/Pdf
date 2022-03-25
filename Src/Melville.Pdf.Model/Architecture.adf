@@ -17,8 +17,12 @@ Group Creators
 Group DocumentRenderers
     Melville.Pdf.Model.DocumentRenderers.*
     
+Group OptionalContent
+    Melville.Pdf.Model.OptionalContent.*
+    
 Renderers => Documents
 Renderers => FontMappings
+Renderers => OptionalContent
 
 Melville.Pdf.Model.Renderers.Colors.* ^=> Melville.Icc.*
 

@@ -5,6 +5,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -15,8 +16,9 @@ public class ExplicitDocumentRenderer : DocumentRenderer
 {
     private readonly HasRenderableContentStream content;
     public ExplicitDocumentRenderer(
-        IDefaultFontMapper fontMapper, IDocumentPartCache cache, HasRenderableContentStream content) : 
-        base(1, fontMapper, cache)
+        IDefaultFontMapper fontMapper, IDocumentPartCache cache, HasRenderableContentStream content,
+        IOptionalContentState ocs) : 
+        base(1, fontMapper, cache, ocs)
     {
         this.content = content;
     }
@@ -27,7 +29,9 @@ public class PageTreeDocumentRenderer : DocumentRenderer
 {
     private readonly PageTree tree;
 
-    public PageTreeDocumentRenderer(int totalPages, IDefaultFontMapper fontMapper, IDocumentPartCache cache, PageTree tree) : base(totalPages, fontMapper, cache)
+    public PageTreeDocumentRenderer(int totalPages, IDefaultFontMapper fontMapper, IDocumentPartCache cache, 
+        PageTree tree, IOptionalContentState ocs) :
+        base(totalPages, fontMapper, cache, ocs)
     {
         this.tree = tree;
     }
@@ -41,17 +45,19 @@ public abstract class DocumentRenderer
     public int TotalPages { get; }
     public IDefaultFontMapper FontMapper { get; }
     public IDocumentPartCache Cache { get; }
+    public IOptionalContentState OptionalContentState { get; }
 
     public  DocumentRenderer(int totalPages, 
-        IDefaultFontMapper fontMapper, IDocumentPartCache cache)
+        IDefaultFontMapper fontMapper, IDocumentPartCache cache, IOptionalContentState optionalContentState)
     {
         this.FontMapper = fontMapper;
         this.Cache = cache;
+        OptionalContentState = optionalContentState;
         TotalPages = totalPages;
     }
 
     public DocumentRenderer PatternRenderer(in TileBrushRequest request, GraphicsState priorState) => 
-        new PatternRenderer(FontMapper, Cache, request, priorState);
+        new PatternRenderer(FontMapper, Cache, request, priorState, OptionalContentState);
 
     public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
@@ -103,13 +109,16 @@ public static class DocumentRendererFactory
 {
     public static DocumentRenderer CreateRenderer(
         HasRenderableContentStream page, IDefaultFontMapper fontFactory) =>
-        new ExplicitDocumentRenderer(fontFactory, new DocumentPartCache(), page);
+        new ExplicitDocumentRenderer(fontFactory, new DocumentPartCache(), page,
+            AllOptionalContentVisible.Instance);
     
     public static async ValueTask<DocumentRenderer> CreateRendererAsync(
         PdfDocument document, IDefaultFontMapper fontFactory)
     {
         var pages = await document.PagesAsync().CA();
         var pageCount = (int)await pages.CountAsync().CA();
-        return new PageTreeDocumentRenderer(pageCount, fontFactory, new DocumentPartCache(), pages);
+        return new PageTreeDocumentRenderer(pageCount, fontFactory, new DocumentPartCache(), pages,
+            await OptionalContentPropertiesParser.ParseAsync(
+                await document.OptionalContentProperties().CA()).CA());
     }
 }

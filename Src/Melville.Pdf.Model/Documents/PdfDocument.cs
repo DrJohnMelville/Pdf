@@ -34,4 +34,7 @@ public readonly struct PdfDocument
 
     public async ValueTask<PageTree> PagesAsync() =>
         new(await (await CatalogAsync().CA()).GetAsync<PdfDictionary>(KnownNames.Pages).CA());
+
+    public async ValueTask<PdfDictionary?> OptionalContentProperties() =>
+        await (await CatalogAsync().CA()).GetOrDefaultAsync<PdfDictionary?>(KnownNames.OCProperties, null).CA();
 }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -14,8 +15,9 @@ public class PatternRenderer: DocumentRenderer
     private readonly TileBrushRequest request;
     private readonly GraphicsState priorState;
 
-    public PatternRenderer(IDefaultFontMapper fontMapper, IDocumentPartCache cache, in TileBrushRequest request, GraphicsState priorState) : 
-        base(1, fontMapper, cache)
+    public PatternRenderer(IDefaultFontMapper fontMapper, IDocumentPartCache cache, in TileBrushRequest request,
+        GraphicsState priorState, IOptionalContentState ocs) : 
+        base(1, fontMapper, cache, ocs)
     {
         this.request = request;
         this.priorState = priorState;
