@@ -3,12 +3,12 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
-namespace Melville.Pdf.ReferenceDocuments.PageProperties;
+namespace Melville.Pdf.ReferenceDocuments.PageProperties.Rotation;
 
-public abstract class Rotate: Card3x5
+public abstract class RotateBase: Card3x5
 {
     private readonly int rotation;
-    public Rotate(int rotation) : base($"Page with a rotation value of {rotation}")
+    public RotateBase(int rotation) : base($"Page with a rotation value of {rotation}")
     {
         this.rotation = rotation;
     }
@@ -27,33 +27,5 @@ public abstract class Rotate: Card3x5
         csw.LineTo(0, 150);
         csw.LineTo(50, 100);
         csw.StrokePath();
-    }
-}
-
-public class Rotate0: Rotate
-{
-    public Rotate0() : base(0)
-    {
-    }
-}
-
-public class Rotate90: Rotate
-{
-    public Rotate90() : base(90)
-    {
-    }
-}
-
-public class Rotate180: Rotate
-{
-    public Rotate180() : base(180)
-    {
-    }
-}
-
-public class Rotate270: Rotate
-{
-    public Rotate270() : base(270)
-    {
     }
 }

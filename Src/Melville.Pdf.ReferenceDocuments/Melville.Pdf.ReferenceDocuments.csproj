@@ -22,4 +22,8 @@
       <EmbeddedResource Include="Text\GFSEustace.otf" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Graphics\Patterns\FunctionPatterns" />
+    </ItemGroup>
+
 </Project>

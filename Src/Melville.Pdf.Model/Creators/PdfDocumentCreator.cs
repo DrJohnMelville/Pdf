@@ -31,4 +31,6 @@ public class PdfDocumentCreator
     {
         catalogItems[KnownNames.Version] = version;
     }
+
+    public void AddToCatalog(PdfName name, PdfObject obj) => catalogItems.Add(name, obj);
 }

@@ -79,6 +79,7 @@ ResourceType:Shading
 ResourceType:XObject
 ResourceType:Font
 ResourceType:ProcSet
+ResourceType:Properties
 
 GraphicStateParameter:LW
 GraphicStateParameter:LC
@@ -139,8 +140,11 @@ Pdf:Colors
 Pdf:Columns
 Pdf:Contents
 Pdf:Count
+Pdf:Creator
+Pdf:CreatorInfo
 Pdf:CryptFilterDecodeParms
 Pdf:DamagedRowsBeforeError
+Pdf:D
 Pdf:Decode
 Pdf:DecodeParms
 Pdf:DefaultGray
@@ -148,6 +152,7 @@ Pdf:DefaultRGB
 Pdf:DefaultCMYK
 Pdf:DescendantFonts
 Pdf:Descent
+Pdf:Design
 Pdf:DeviceN
 Pdf:Differences
 Pdf:DocOpen
@@ -184,6 +189,7 @@ Pdf:ImageB
 Pdf:ImageC
 Pdf:ImageI
 Pdf:ImageMask
+Pdf:Intent
 Pdf:Interpolate
 Pdf:Index
 Pdf:ItalicAngle
@@ -207,6 +213,12 @@ Pdf:Names
 Pdf:None
 Pdf:Nums
 Pdf:O
+Pdf:OFF
+Pdf:OC
+Pdf:OCG
+Pdf:OCGs
+Pdf:OCProperties
+Pdf:ON
 Pdf:ObjStm
 Pdf:Order
 Pdf:Ordering
@@ -221,6 +233,7 @@ Pdf:PDF
 Pdf:Predictor
 Pdf:Prev
 Pdf:R
+Pdf:RBGroups
 Pdf:Range
 Pdf:Registry
 Pdf:Resources
@@ -241,8 +254,11 @@ Pdf:Text
 Pdf:TilingType
 Pdf:Type
 Pdf:U
+Pdf:Usage
 Pdf:V
 Pdf:V2
+Pdf:View
+Pdf:ViewState
 Pdf:Version
 Pdf:W
 Pdf:Width

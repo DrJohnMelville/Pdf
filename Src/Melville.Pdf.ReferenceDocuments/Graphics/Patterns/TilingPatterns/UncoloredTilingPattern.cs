@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
-namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns;
+namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.TilingPatterns;
 
 public class UncoloredTilingPattern : ColoredTilePattern
 {

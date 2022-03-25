@@ -67,6 +67,9 @@ public static class TransformPicker
                     if (tag.Tag == (uint)preference && tag.Data is IColorTransform ret) return ret;
                }
           }
-          return null;
+          return tags
+               .Select(i=>i.Data)
+               .OfType<IColorTransform>()
+               .FirstOrDefault();
      }
 }
