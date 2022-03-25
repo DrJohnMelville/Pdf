@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -152,6 +153,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
+        if (await InInvisibleContentRegion(await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()))
+            return;
         switch ((await inlineImage.GetAsync<PdfName>(KnownNames.Subtype).CA()).GetHashCode())
         {
             case KnownNameKeys.Image:
@@ -164,6 +167,9 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             default: throw new PdfParseException("Cannot do the provided object");
         }
     }
+
+    private async ValueTask<bool> InInvisibleContentRegion(PdfDictionary? visibilityGroup) => 
+        ! await renderer.OptionalContentState.IsGroupVisible(visibilityGroup).CA();
 
     private async ValueTask RunTargetGroup(PdfStream formXObject)
     {
@@ -482,11 +488,26 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public void BeginMarkedRange(PdfName tag) {}
 
-    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) => ValueTask.CompletedTask;
+    public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) => {
+        if 
+    }
 
-    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) => ValueTask.CompletedTask;
+    public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) => ValueTask.CompletedTask;
 
-    public void EndMarkedRange() { }
+    public void EndMarkedRange()
+    {
+        if (IsInInvisibleOptionalContent()) invisibleOptionalCount--;
+    }
+
+    private bool IsInInvisibleOptionalContent()
+    { 
+        if (invisibleOptionalCount > 0) return true;
+        return false;
+    }
+    
+    private OptionalContentCounter optionalCounter = new ();
+
+    private int invisibleOptionalCount = 0;
 
     #endregion
 

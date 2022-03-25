@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
 public interface IOptionalContentState
 {
-    public bool IsGroupVisible(PdfDictionary dictionary);
+    public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary);
 }

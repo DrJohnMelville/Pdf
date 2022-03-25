@@ -1,7 +1,10 @@
 ﻿using System.Numerics;
+using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
+using Melville.Pdf.Model.Creators;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.TilingPatterns;
 
