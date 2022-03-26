@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
@@ -12,6 +13,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 public sealed class PdfArray :
     PdfObject, IReadOnlyList<ValueTask<PdfObject>>, IAsyncEnumerable<PdfObject>
 {
+    public static PdfArray Empty = new PdfArray(Array.Empty<PdfObject>());
     public IReadOnlyList<PdfObject> RawItems { get; }
 
     public PdfArray(params PdfObject[] rawItems) : this((IReadOnlyList<PdfObject>)rawItems)

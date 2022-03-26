@@ -119,6 +119,7 @@ Pdf:Ascent
 Pdf:AuthEvent
 Pdf:BaseEncoding
 Pdf:BaseFont
+Pdf:BaseState
 Pdf:BBox
 Pdf:BitsPerComponent
 Pdf:BitsPerSample

@@ -220,3 +220,7 @@ RenderingTest.cs_Skia-ColoredTileMissingMatrix|915491630
 RenderingTest.cs_Skia-ColoredTilePattern|696091501
 RenderingTest.cs_wpf-UncoloredTilingPattern|2710480144
 RenderingTest.cs_Skia-UncoloredTilingPattern|3160807119
+RenderingTest.cs_wpf-HideOptionalImageOn|4209922491
+RenderingTest.cs_wpf-HideOptionalImageOff|1295938836
+RenderingTest.cs_Skia-HideOptionalImageOn|2323272246
+RenderingTest.cs_Skia-HideOptionalImageOff|3150822017
