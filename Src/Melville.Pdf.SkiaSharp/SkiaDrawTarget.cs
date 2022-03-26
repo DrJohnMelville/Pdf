@@ -11,14 +11,21 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
 {
     private readonly SKCanvas target;
     private readonly GraphicsStateStack<SkiaGraphicsState> state;
+    private readonly OptionalContentCounter? counter;
     private SKPath compositePath = new();
     private SKPath path;
 
-    public SkiaDrawTarget(SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state): this(target, state, new SKPath()){}
-    public SkiaDrawTarget(SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, SKPath path)
+    public SkiaDrawTarget(
+        SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, OptionalContentCounter? counter): 
+        this(target, state, counter, new SKPath()){}
+    
+    public SkiaDrawTarget(
+        SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, 
+        OptionalContentCounter? counter, SKPath path)
     {
         this.target = target;
         this.state = state;
+        this.counter = counter;
         this.path = path;
     }
 
@@ -69,6 +76,7 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
 
     private void InnerPaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
+        if (counter?.IsHidden??false) return;
         if (fill && state.Current().Brush() is { } brush)
         {
             SetCurrentFillRule(evenOddFillRule);

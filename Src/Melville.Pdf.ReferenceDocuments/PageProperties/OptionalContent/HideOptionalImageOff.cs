@@ -56,7 +56,7 @@ public class HideOptionalImageOff: DisplayImageTest
     {
 
         page.AddResourceObject(ResourceTypeName.Properties, NameDirectory.Get("OCLayer"),
-            ocg
+            ocg!
         );
         base.SetPageProperties(page);
     }

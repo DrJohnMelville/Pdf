@@ -37,6 +37,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         this.page = page;
         this.target = target;
         this.renderer = renderer;
+        target.OptionalContentCounter = new OptionalContentCounter(this.renderer.OptionalContentState, page);
     }
     
     #region Graphics State
@@ -488,27 +489,13 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public void BeginMarkedRange(PdfName tag) {}
 
-    public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) => {
-        if 
-    }
+    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) =>
+        target.OptionalContentCounter?.EnterGroup(tag, dictName) ?? ValueTask.CompletedTask;
 
-    public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) => ValueTask.CompletedTask;
+    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) =>
+        target.OptionalContentCounter?.EnterGroup(tag, dictionary) ?? ValueTask.CompletedTask;
 
-    public void EndMarkedRange()
-    {
-        if (IsInInvisibleOptionalContent()) invisibleOptionalCount--;
-    }
-
-    private bool IsInInvisibleOptionalContent()
-    { 
-        if (invisibleOptionalCount > 0) return true;
-        return false;
-    }
-    
-    private OptionalContentCounter optionalCounter = new ();
-
-    private int invisibleOptionalCount = 0;
-
+    public void EndMarkedRange() => target.OptionalContentCounter?.Pop();
     #endregion
 
     #region Compatability Operators

@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using SkiaSharp;
@@ -9,8 +10,7 @@ namespace Melville.Pdf.SkiaSharp;
 
 public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsState>, IRenderTarget
 {
-    public SkiaRenderTarget(
-        SKCanvas target) : 
+    public SkiaRenderTarget(SKCanvas target) : 
         base(target)
     {
     }
@@ -29,11 +29,13 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
         Target.SetMatrix(State.Current().Transform());
 
     
-    public override IDrawTarget CreateDrawTarget() =>new SkiaDrawTarget(Target, State);
+    public override IDrawTarget CreateDrawTarget() =>
+        new SkiaDrawTarget(Target, State, OptionalContentCounter);
 
     
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
+        if (OptionalContentCounter?.IsHidden??false) return;
         using var skBitmap = ScreenFormatBitmap(bitmap);
         await FillBitmapAsync(bitmap, skBitmap).CA();
         Target.DrawBitmap(skBitmap,

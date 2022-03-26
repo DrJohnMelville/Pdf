@@ -29,6 +29,7 @@ public class S9_4_2_TextPositioningOperators
     public S9_4_2_TextPositioningOperators()
     {
         targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
+        targetMock.SetupSet(i => i.OptionalContentCounter = It.IsAny<OptionalContentCounter>());
         SetupMockRealizedFont();
 
         sut = new RenderEngine(pageMock.Object, targetMock.Object,

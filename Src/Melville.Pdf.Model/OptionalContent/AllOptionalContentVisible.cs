@@ -7,5 +7,5 @@ public sealed class AllOptionalContentVisible : IOptionalContentState
 {
     public static readonly AllOptionalContentVisible Instance = new();
     private AllOptionalContentVisible() { }
-    public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary) => new(false);
+    public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary) => new(true);
 }

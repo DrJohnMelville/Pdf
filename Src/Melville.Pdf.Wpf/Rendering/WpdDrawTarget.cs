@@ -10,14 +10,17 @@ public class WpfDrawTarget : IDrawTarget
 {
     private readonly DrawingContext context;
     private readonly GraphicsStateStack<WpfGraphicsState> state;
+    private readonly OptionalContentCounter? optionalContentCounter;
     private readonly GeometryGroup geoGroup = new GeometryGroup();
     private PathGeometry? geometry;
     private PathFigure? figure = null;
   
-    public WpfDrawTarget(DrawingContext context, GraphicsStateStack<WpfGraphicsState> state)
+    public WpfDrawTarget(DrawingContext context, GraphicsStateStack<WpfGraphicsState> state,
+        OptionalContentCounter? optionalContentCounter)
     {
         this.context = context;
         this.state = state;
+        this.optionalContentCounter = optionalContentCounter;
     }
 
     public void SetDrawingTransform(Matrix3x2 transform)
@@ -61,6 +64,7 @@ public class WpfDrawTarget : IDrawTarget
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         SetCurrentFillRule(evenOddFillRule);
+        if (optionalContentCounter?.IsHidden ?? false) return;
         InnerPathPaint(stroke, fill, geoGroup);
     }
 
