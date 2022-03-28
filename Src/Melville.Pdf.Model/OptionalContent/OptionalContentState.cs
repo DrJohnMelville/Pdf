@@ -13,8 +13,6 @@ public partial class OptionalContentState : IOptionalContentState
     private Dictionary<PdfDictionary, OptionalGroup> groupStates;
     public IReadOnlyList<OptionalContentConfiguration> Configurations { get; }
     [AutoNotify] private OptionalContentConfiguration? selectedConfiguration;
-    public bool HasOptionalGroups => Configurations.Count > 0;
-    public bool HasMultipleConfigurations => Configurations.Count > 1;
     public event EventHandler<EventArgs>? SelectedContentChanged; 
 
     public OptionalContentState(Dictionary<PdfDictionary, OptionalGroup> groupStates,
@@ -52,6 +50,6 @@ public partial class OptionalContentState : IOptionalContentState
     }
 
 
-    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModel(PdfArray order) => 
+    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModel(PdfArray? order) => 
         new UiModelParser(groupStates).Parse(order);
 }

@@ -1,7 +1,5 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -9,40 +7,8 @@ using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
-using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.Controls;
-
-public partial class PdfViewerModel
-{
-    private readonly DocumentRenderer document;
-    [AutoNotify] private ImageSource? pageImage;
-    public PageSelectorViewModel PageSelector { get; } = new PageSelectorViewModel(); 
-
-    public PdfViewerModel(DocumentRenderer document)
-    {
-        this.document = document;
-        InitalizePageFlipper();
-        RenderPage(0);
-    }
-
-    private void InitalizePageFlipper()
-    {
-        PageSelector.MaxPage = document.TotalPages;
-        PageSelector.PropertyChanged += TryChangePage;
-    }
-
-    private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPage(PageSelector.ZeroBasisPage);
-
-    private int lastIndex = -1;
-    private async void RenderPage(int pageIndex)
-    {
-        if (pageIndex == lastIndex) return;
-        lastIndex = pageIndex;
-        var image = await new RenderToDrawingGroup(document, pageIndex).RenderToDrawingImage();
-        PageImage = image;
-    }
-}
 
 public partial class PdfViewer : UserControl
 {

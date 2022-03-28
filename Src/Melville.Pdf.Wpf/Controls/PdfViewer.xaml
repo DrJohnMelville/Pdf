@@ -7,11 +7,16 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300" Background="DarkGray">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <controls:PageSelectorView DataContext="{Binding PageSelector}" HorizontalAlignment="Center"/>
-        <Image Grid.Row="1" Stretch="Uniform" Source="{Binding PageImage, Mode=OneWay}"/>
+        <controls:LeftSideBar DataContext="{Binding}" Grid.RowSpan="2"/> 
+        <controls:PageSelectorView Grid.Column="1" DataContext="{Binding PageSelector}" HorizontalAlignment="Center"/>
+        <Image Grid.Column="1" Grid.Row="1" Stretch="Uniform" Source="{Binding PageImage, Mode=OneWay}"/>
     </Grid>
 </UserControl>

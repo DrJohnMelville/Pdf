@@ -15,9 +15,9 @@ public readonly struct UiModelParser
     {
         this.groupStates = groupStates;
     }
-    public async ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> Parse(PdfArray order)
+    public async ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> Parse(PdfArray? order)
     {
-        if (order == PdfArray.Empty) return Array.Empty<IOptionalContentDisplayGroup>();
+        if (order is null or {Count:0} ) return Array.Empty<IOptionalContentDisplayGroup>();
         var items = await order.AsAsync<PdfObject>().CA();
         return await ParseMultipleOptionDisplayGroups(new ReadOnlyMemory<PdfObject>(items)).CA();
     }
