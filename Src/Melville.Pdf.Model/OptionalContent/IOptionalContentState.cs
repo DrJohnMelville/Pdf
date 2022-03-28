@@ -6,5 +6,7 @@ namespace Melville.Pdf.Model.OptionalContent;
 
 public interface IOptionalContentState
 {
-    public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary);
+    ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary);
+    IReadOnlyList<OptionalContentConfiguration> Configurations { get; }
+    ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModel(PdfArray order);
 }

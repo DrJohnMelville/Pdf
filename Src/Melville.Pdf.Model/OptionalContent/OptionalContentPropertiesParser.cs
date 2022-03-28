@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -17,21 +16,24 @@ public static class OptionalContentPropertiesParser
     private static async ValueTask<IOptionalContentState> ParseProperties(PdfDictionary oCProperties)
     {
         var ocgs = await (await oCProperties.GetAsync<PdfArray>(KnownNames.OCGs).CA()).AsAsync<PdfDictionary>().CA();
-        var ocgDict = ocgs.ToDictionary(i => i, i => true);
-
-        var configs = new List<OptionalContentConfiguration>();
-        OptionalContentConfiguration? defaultConfig = null;
-        if (oCProperties.TryGetValue(KnownNames.D, out var dTask) && 
-            (await dTask.CA()) is PdfDictionary occ)
+        var ocDict = new Dictionary<PdfDictionary, OptionalGroup>();
+        foreach (var ocg in ocgs)
         {
-            defaultConfig = await ParseOptionalContentConfiguration(occ).CA();
-            configs.Add(defaultConfig);
+            ocDict[ocg] = new OptionalGroup(
+                (await ocg.GetOrDefaultAsync(KnownNames.Name, PdfString.Empty).CA()).AsTextString());
         }
 
-        var ret = new OptionalContentState(ocgDict, configs);
-        if (defaultConfig != null)
+        var configs = new List<OptionalContentConfiguration>();
+        if (oCProperties.TryGetValue(KnownNames.D, out var dTask) && 
+            (await dTask.CA()) is PdfDictionary occ)
+        { 
+            configs.Add(await ParseOptionalContentConfiguration(occ).CA());
+        }
+
+        var ret = new OptionalContentState(ocDict, configs);
+        if (configs.Count > 0)
         {
-            ret.ConfigureWith(defaultConfig);
+            ret.ConfigureWith(configs[0]);
         }
         return ret;
     }
@@ -44,8 +46,12 @@ public static class OptionalContentPropertiesParser
         var baseState = ParseBaseState(await occ.GetOrNullAsync(KnownNames.BaseState).CA());
         var onArr = await ParseOnOffArray(occ, KnownNames.ON).CA();
         var offArr = await ParseOnOffArray(occ, KnownNames.OFF).CA();
+        var order = await occ.GetOrDefaultAsync(KnownNames.Order, PdfArray.Empty).CA();
 
-        return new OptionalContentConfiguration(name, creator, baseState, onArr, offArr);
+        return new OptionalContentConfiguration(
+            name.AsTextString(), 
+            creator.AsTextString(), 
+            baseState, onArr, offArr, order);
     }
 
     private static bool? ParseBaseState(PdfObject baseStateVal)
@@ -64,26 +70,4 @@ public static class OptionalContentPropertiesParser
         return await (await occ.GetOrDefaultAsync(dictName, PdfArray.Empty).CA())
             .AsAsync<PdfDictionary>().CA();
     }
-}
-
-public class OptionalContentState : IOptionalContentState
-{
-    private Dictionary<PdfDictionary, bool> groupStates;
-    public IReadOnlyList<OptionalContentConfiguration> Configurations { get; }
-
-    public OptionalContentState(Dictionary<PdfDictionary, bool> groupStates,
-        IReadOnlyList<OptionalContentConfiguration> configurations)
-    {
-        this.groupStates = groupStates;
-        Configurations = configurations;
-    }
-
-    public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary)
-    {
-        if (dictionary == null) return new(true);
-        return new(groupStates.TryGetValue(dictionary, out var result) ? result : true);
-    }
-
-    public void ConfigureWith(OptionalContentConfiguration configuration) => 
-        configuration.ApplyTo(groupStates);
 }

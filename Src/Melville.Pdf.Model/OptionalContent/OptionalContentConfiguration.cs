@@ -1,29 +1,35 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
 public record class OptionalContentConfiguration(
-    PdfString Name,
-    PdfString Creator,
+    string Name,
+    string Creator,
     bool? BaseState,
     PdfDictionary[] On,
-    PdfDictionary[]  Off
+    PdfDictionary[]  Off,
+    PdfArray Order
 )
 {
-    public void ApplyTo(Dictionary<PdfDictionary, bool> groupStates)
+    public void ApplyTo(IReadOnlyDictionary<PdfDictionary, OptionalGroup> groupStates)
     {
         if (BaseState.HasValue) SetValues(groupStates, groupStates.Keys.ToArray(), BaseState.Value);
         SetValues(groupStates, On, true);
         SetValues(groupStates, Off, false);
     }
 
-    private void SetValues(Dictionary<PdfDictionary, bool> dict, IEnumerable<PdfDictionary> values, bool baseState)
+    private void SetValues(IReadOnlyDictionary<PdfDictionary, OptionalGroup> dict, IEnumerable<PdfDictionary> values,
+        bool baseState)
     {
         foreach (var value in values)
         {
-            dict[value] = baseState;
+            if (dict.TryGetValue(value, out var optionalGroup)) optionalGroup.Visible = baseState;
         }
+
     }
 }

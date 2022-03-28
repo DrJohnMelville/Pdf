@@ -9,9 +9,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_11_OptionalContent;
 
 public class OptionalContentParserTest
 {
-    private readonly PdfDictionary ocg1 = OCG("01");
-    private readonly PdfDictionary ocg2 = OCG("02");
-    private readonly PdfDictionary ocg3 = OCG("02");
+    private readonly PdfDictionary ocg1 = OCG("O1");
+    private readonly PdfDictionary ocg2 = OCG("O2");
+    private readonly PdfDictionary ocg3 = OCG("O3");
     private static PdfDictionary OCG(string name) =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.OCG)
@@ -28,8 +28,8 @@ public class OptionalContentParserTest
                 .AsDictionary()
             );
         
-        Assert.True(await sut.IsGroupVisible(ocg1));
-        Assert.True(await sut.IsGroupVisible(ocg2));
+        Assert.False(await sut.IsGroupVisible(ocg1));
+        Assert.False(await sut.IsGroupVisible(ocg2));
     }
     [Fact]
     public async Task AllOffVisibility()
@@ -50,7 +50,6 @@ public class OptionalContentParserTest
     [Fact]
     public async Task TurnOneOn()
     {
-        
         var sut = await OptionalContentPropertiesParser.ParseAsync(
             new DictionaryBuilder()
                 .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2))
@@ -63,5 +62,65 @@ public class OptionalContentParserTest
         
         Assert.True(await sut.IsGroupVisible(ocg1));
         Assert.False(await sut.IsGroupVisible(ocg2));
+    }
+
+    [Fact]
+    public async Task ParseSimpleOrder()
+    {
+        var sut = await OptionalContentPropertiesParser.ParseAsync(
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2))
+                .WithItem(KnownNames.D, new DictionaryBuilder()
+                    .WithItem(KnownNames.Order, new PdfArray(ocg2, ocg1))
+                    .AsDictionary())
+                .AsDictionary()
+        );
+
+        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        Assert.Equal("O2", display[0].Name);
+        Assert.Equal("O1", display[1].Name);
+        
+    }
+    [Fact]
+    public async Task ParseOrderWithTitle()
+    {
+        var sut = await OptionalContentPropertiesParser.ParseAsync(
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2))
+                .WithItem(KnownNames.D, new DictionaryBuilder()
+                    .WithItem(KnownNames.Order, new PdfArray( 
+                        new PdfArray(PdfString.CreateUtf16("Title"),ocg2, ocg1)))
+                    .AsDictionary())
+                .AsDictionary()
+        );
+
+        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        Assert.Equal("Title", display[0].Name);
+        Assert.False(display[0].ShowCheck);
+        
+        Assert.Equal("O2", display[0].Children[0].Name);
+        Assert.Equal("O1", display[0].Children[1].Name);
+        
+    }
+    [Fact]
+    public async Task ParseOrderWithSuperGroup()
+    {
+        var sut = await OptionalContentPropertiesParser.ParseAsync(
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2,ocg3))
+                .WithItem(KnownNames.D, new DictionaryBuilder()
+                    .WithItem(KnownNames.Order, new PdfArray( 
+                        new PdfArray(ocg3,ocg2, ocg1)))
+                    .AsDictionary())
+                .AsDictionary()
+        );
+
+        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        Assert.Equal("O3", display[0].Name);
+        Assert.True(display[0].ShowCheck);
+        
+        Assert.Equal("O2", display[0].Children[0].Name);
+        Assert.Equal("O1", display[0].Children[1].Name);
+        
     }
 }
