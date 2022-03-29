@@ -5,6 +5,11 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 public class PdfDocEncoding : Encoding
 {
+    public static PdfDocEncoding Instance = new();
+    private PdfDocEncoding() : base()
+    {
+    }
+
     public override int GetByteCount(char[] chars, int index, int count) => count;
        
     public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)

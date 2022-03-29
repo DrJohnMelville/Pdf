@@ -30,6 +30,14 @@ public class S7_9_2StringDataTypes
         Assert.Equal(text, encoded.AsUtf16());
         Assert.Equal(text, encoded.AsTextString());
     }
+
+    [Fact]
+    public void CorrectlyDecodeUtf16LE()
+    {
+        var encoded = new PdfString(new byte[] { 0xFF, 0xFE, 0x41, 0, 0x42, 0 });
+        Assert.Equal("AB", encoded.AsTextString());
+        
+    }
     [Theory]
     [InlineData("","")]
     [InlineData("a","a")]

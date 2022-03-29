@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
@@ -14,10 +15,15 @@ public static class StreamAsTextStream
         var stream = await source.StreamContentAsync().CA();
         var buffer = new byte[2];
         var len=await buffer.FillBufferAsync(0, 2, stream).CA();
-        return Utf16BE.HasUtf16BOM(buffer) ? 
-            new StreamReader(stream, Utf16BE.UtfEncoding, false, -1, false) : 
-            new StreamReader(PushbackPrefix(len, buffer, stream), new PdfDocEncoding(), false, -1, false);
+        #warning -- needs to handle little endial as well
+        var encoder = ByteOrderDetector.DetectByteOrder(buffer);
+        return
+            new StreamReader(TrySkipByteOrderMark(encoder, stream, len, buffer),
+                encoder, false, -1, false);
     }
+
+    private static Stream TrySkipByteOrderMark(Encoding encoder, Stream stream, int len, byte[] buffer) => 
+        encoder is UnicodeEncoding ? stream : PushbackPrefix(len, buffer, stream);
 
     private static ConcatStream PushbackPrefix(int len, byte[] buffer, Stream stream) => 
         new(MakePrefixStream(len, buffer), stream);
