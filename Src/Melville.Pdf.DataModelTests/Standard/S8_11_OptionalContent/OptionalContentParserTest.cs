@@ -82,6 +82,31 @@ public class OptionalContentParserTest
         
     }
     [Fact]
+    public async Task RadioButtons()
+    {
+        var sut = await OptionalContentPropertiesParser.ParseAsync(
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2))
+                .WithItem(KnownNames.D, new DictionaryBuilder()
+                    .WithItem(KnownNames.Order, new PdfArray(ocg2, ocg1))
+                    .WithItem(KnownNames.RBGroups, new PdfArray(new PdfArray(ocg2, ocg1)))
+                    .AsDictionary())
+                .AsDictionary()
+        );
+
+        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        var disp =await sut.ConstructUiModel(sut.SelectedConfiguration!.Order);
+        disp[0].Visible = true;
+        Assert.False(disp[1].Visible);
+        disp[1].Visible = true;
+        Assert.False(disp[0].Visible);
+
+        // setting to false does not reset
+        disp[0].Visible = false;
+        Assert.True(disp[1].Visible);
+
+    }
+    [Fact]
     public async Task ParseOrderWithTitle()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(

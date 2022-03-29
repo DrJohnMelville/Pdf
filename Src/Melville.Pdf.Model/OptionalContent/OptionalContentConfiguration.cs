@@ -13,8 +13,10 @@ public record class OptionalContentConfiguration(
     bool? BaseState,
     PdfDictionary[] On,
     PdfDictionary[]  Off,
-    PdfArray Order
+    PdfArray Order,
+    IReadOnlyList<OptionalContentExclusionGroup> RadioButtons 
 )
+
 {
     public void ApplyTo(IReadOnlyDictionary<PdfDictionary, OptionalGroup> groupStates)
     {
@@ -31,5 +33,32 @@ public record class OptionalContentConfiguration(
             if (dict.TryGetValue(value, out var optionalGroup)) optionalGroup.Visible = baseState;
         }
 
+    }
+
+    public void HandleRadioButtonExclusivity(OptionalGroup og)
+    {
+        foreach (var radioButtonGroup in RadioButtons)
+        {
+            radioButtonGroup.HandleRadioButtonExclusivity(og);
+        }
+    }
+}
+
+public readonly struct OptionalContentExclusionGroup
+{
+    private readonly IReadOnlyList<OptionalGroup> items;
+
+    public OptionalContentExclusionGroup(IReadOnlyList<OptionalGroup> items)
+    {
+        this.items = items;
+    }
+
+    public void HandleRadioButtonExclusivity(OptionalGroup og)
+    {
+        if (!items.Contains(og)) return;
+        foreach (var item in items)
+        {
+            if (item.Visible && item != og) item.Visible = false;
+        }
     }
 }

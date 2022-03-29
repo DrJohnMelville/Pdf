@@ -30,10 +30,12 @@ public partial class OptionalContentState : IOptionalContentState
             state.PropertyChanged += SignalSelectedContentChanged;
         }
     }
-    private void SignalSelectedContentChanged(object? sender, EventArgs ea) =>
-        SignalSelectedContentChanged();
-    private void SignalSelectedContentChanged()
+    private void SignalSelectedContentChanged(object? sender, EventArgs ea)
     {
+        if (sender is OptionalGroup og && og.Visible)
+        {
+            selectedConfiguration?.HandleRadioButtonExclusivity(og);
+        } 
         SelectedContentChanged?.Invoke(this, EventArgs.Empty);
     }
 

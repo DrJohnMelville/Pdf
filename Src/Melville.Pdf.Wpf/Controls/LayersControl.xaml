@@ -9,7 +9,7 @@
     <Grid>
         <TreeView ItemsSource="{Binding}">
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding }">
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <CheckBox Content="{Binding Name}" 
                               IsChecked="{Binding Visible, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
                 </HierarchicalDataTemplate>
