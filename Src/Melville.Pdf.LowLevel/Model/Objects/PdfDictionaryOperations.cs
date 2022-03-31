@@ -37,6 +37,7 @@ public static class PdfDictionaryOperations
         this PdfDictionary dict, PdfName name, T defaultValue) where T:PdfObject? =>
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is T definiteObj? definiteObj: defaultValue;
+    
 
     public static IReadOnlyDictionary<PdfName, PdfObject> MergeItems(this PdfDictionary source, params (PdfName, PdfObject)[] items)
     {

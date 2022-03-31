@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
@@ -39,10 +39,15 @@ public partial class OptionalContentState : IOptionalContentState
         SelectedContentChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary)
+    public async ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary)
     {
-        if (dictionary == null) return new(true);
-        return new(groupStates.TryGetValue(dictionary, out var result) ? result.Visible : true);
+        if (dictionary == null) return true;
+        if (await dictionary.GetOrDefaultAsync(
+                KnownNames.Type, KnownNames.DamagedRowsBeforeError).CA()== KnownNames.OCMD)
+            return await
+                new OptionalContentMemberDictionaryInterpreter(dictionary, this)
+                    .Parse().CA();
+        return groupStates.TryGetValue(dictionary, out var result) ? result.Visible : true;
     }
 
     public void ConfigureWith(OptionalContentConfiguration configuration)

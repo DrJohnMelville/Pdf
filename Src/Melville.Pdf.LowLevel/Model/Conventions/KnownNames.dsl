@@ -110,6 +110,11 @@ FontTypes:TrueType
 FontTypes:OpenType
 FontTypes:CIDFontType2
 
+OptionalContentMemberFunction:AllOn
+OptionalContentMemberFunction:AllOff
+OptionalContentMemberFunction:AnyOn
+OptionalContentMemberFunction:AnyOff
+
 Pdf:AC
 Pdf:Activation
 Pdf:AESV2
@@ -218,6 +223,7 @@ Pdf:OFF
 Pdf:OC
 Pdf:OCG
 Pdf:OCGs
+Pdf:OCMD
 Pdf:OCProperties
 Pdf:ON
 Pdf:ObjStm

@@ -148,4 +148,53 @@ public class OptionalContentParserTest
         Assert.Equal("O1", display[0].Children[1].Name);
         
     }
+
+    public static object[][] PTestItems() =>
+        new[]
+        {
+            new object[]{false, false, false, KnownNames.AllOn, false},
+            new object[]{ true, false, false, KnownNames.AllOn, false},
+            new object[]{ true,  true, false, KnownNames.AllOn, false},
+            new object[]{ true,  true,  true, KnownNames.AllOn,  true},
+
+            new object[]{false, false, false, KnownNames.AnyOn, false},
+            new object[]{ true, false, false, KnownNames.AnyOn,  true},
+            new object[]{ true,  true, false, KnownNames.AnyOn,  true},
+            new object[]{ true,  true,  true, KnownNames.AnyOn,  true},
+
+            new object[]{false, false, false, KnownNames.AllOff, true},
+            new object[]{ true, false, false, KnownNames.AllOff, false},
+            new object[]{ true,  true, false, KnownNames.AllOff, false},
+            new object[]{ true,  true,  true, KnownNames.AllOff, false},
+
+            new object[]{false, false, false, KnownNames.AnyOff, true},
+            new object[]{ true, false, false, KnownNames.AnyOff, true},
+            new object[]{ true,  true, false, KnownNames.AnyOff, true},
+            new object[]{ true,  true,  true, KnownNames.AnyOff, false},
+        }; 
+    
+    [Theory]
+    [MemberData(nameof(PTestItems))]
+    public async Task MemerContentPTest(bool v1, bool v2, bool v3, PdfName pOp, bool result)
+    {
+        
+        var sut = await OptionalContentPropertiesParser.ParseAsync(
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2, ocg3))
+                .WithItem(KnownNames.D, new DictionaryBuilder()
+                    .WithItem(KnownNames.Order, new PdfArray(ocg1,ocg2, ocg3))
+                .AsDictionary())
+                .AsDictionary());
+        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        display[0].Visible = v1;
+        display[1].Visible = v2;
+        display[2].Visible = v3;
+        Assert.Equal(result, await sut.IsGroupVisible(new DictionaryBuilder()
+            .WithItem(KnownNames.OCGs, new PdfArray(ocg1,ocg2,ocg3))
+            .WithItem(KnownNames.Type, KnownNames.OCMD)
+            .WithItem(KnownNames.P, pOp)
+            .AsDictionary()));
+        
+    }
+
 }
