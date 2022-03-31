@@ -177,24 +177,86 @@ public class OptionalContentParserTest
     [MemberData(nameof(PTestItems))]
     public async Task MemerContentPTest(bool v1, bool v2, bool v3, PdfName pOp, bool result)
     {
-        
-        var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new DictionaryBuilder()
-                .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2, ocg3))
-                .WithItem(KnownNames.D, new DictionaryBuilder()
-                    .WithItem(KnownNames.Order, new PdfArray(ocg1,ocg2, ocg3))
-                .AsDictionary())
-                .AsDictionary());
-        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
-        display[0].Visible = v1;
-        display[1].Visible = v2;
-        display[2].Visible = v3;
+        var sut = await CreateVisContext(v1, v2, v3);
         Assert.Equal(result, await sut.IsGroupVisible(new DictionaryBuilder()
             .WithItem(KnownNames.OCGs, new PdfArray(ocg1,ocg2,ocg3))
             .WithItem(KnownNames.Type, KnownNames.OCMD)
             .WithItem(KnownNames.P, pOp)
             .AsDictionary()));
+    }
+
+    private async Task<IOptionalContentState> CreateVisContext(bool v1, bool v2, bool v3)
+    {
+        var sut = await OptionalContentPropertiesParser.ParseAsync(
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGs, new PdfArray(ocg1, ocg2, ocg3))
+                .WithItem(KnownNames.D, new DictionaryBuilder()
+                    .WithItem(KnownNames.Order, new PdfArray(ocg1, ocg2, ocg3))
+                    .AsDictionary())
+                .AsDictionary());
+        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        display[0].Visible = v1;
+        display[1].Visible = v2;
+        display[2].Visible = v3;
+        return sut;
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false,  true)]
+    [InlineData( true, false)]
+    [InlineData( true,  true)]
+    public async Task AndVETest(bool a, bool b)
+    {
+        var sut = await CreateVisContext(a, b, true);
+        Assert.Equal(a & b, await sut.IsGroupVisible(new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.OCMD)
+            .WithItem(KnownNames.VE, new PdfArray(KnownNames.And, ocg1, ocg2))
+            .AsDictionary()));
         
     }
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false,  true)]
+    [InlineData( true, false)]
+    [InlineData( true,  true)]
+    public async Task OrVETest(bool a, bool b)
+    {
+        var sut = await CreateVisContext(a, b, true);
+        Assert.Equal(a | b, await sut.IsGroupVisible(new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.OCMD)
+            .WithItem(KnownNames.VE, new PdfArray(KnownNames.Or, ocg1, ocg2))
+            .AsDictionary()));
+        
+    }
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false,  true)]
+    [InlineData( true, false)]
+    [InlineData( true,  true)]
+    public async Task NotVETest(bool a, bool b)
+    {
+        var sut = await CreateVisContext(a, b, true);
+        Assert.Equal(!a, await sut.IsGroupVisible(new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.OCMD)
+            .WithItem(KnownNames.VE, new PdfArray(KnownNames.Not, ocg1, ocg2))
+            .AsDictionary()));
+        
+    }
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false,  true)]
+    [InlineData( true, false)]
+    [InlineData( true,  true)]
+    public async Task ImplicationVETest(bool a, bool b)
+    {
+        var sut = await CreateVisContext(a, b, true);
+        Assert.Equal((!a) | b, await sut.IsGroupVisible(new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.OCMD)
+            .WithItem(KnownNames.VE, 
+                new PdfArray(KnownNames.Or, ocg2, new PdfArray(KnownNames.Not, ocg1)))
+            .AsDictionary()));
+        
+    }
 }

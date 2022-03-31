@@ -120,6 +120,7 @@ Pdf:Activation
 Pdf:AESV2
 Pdf:AESV3
 Pdf:All
+Pdf:And
 Pdf:Ascent
 Pdf:AuthEvent
 Pdf:BaseEncoding
@@ -217,6 +218,7 @@ Pdf:N
 Pdf:Name
 Pdf:Names
 Pdf:None
+Pdf:Not
 Pdf:Nums
 Pdf:O
 Pdf:OFF
@@ -227,6 +229,7 @@ Pdf:OCMD
 Pdf:OCProperties
 Pdf:ON
 Pdf:ObjStm
+Pdf:Or
 Pdf:Order
 Pdf:Ordering
 Pdf:Outlines
@@ -263,6 +266,7 @@ Pdf:Type
 Pdf:U
 Pdf:Usage
 Pdf:V
+Pdf:VE
 Pdf:V2
 Pdf:View
 Pdf:ViewState
