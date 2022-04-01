@@ -133,11 +133,10 @@ public class CcittType4Decoder : IStreamFilterDefinition
   private int currentWritePosition = 0; 
   private void TryWriteCurrentLineToSpan(ref Span<byte> destination)
   {
-    for (; currentWritePosition < lines.LineLength && destination.Length > 0; currentWritePosition++)
-    {
-      var bytesWritten = writer.WriteBits(CurrentPixelBit(), 1, destination);
-      destination = destination[bytesWritten..];
-    }
+    var (read, written) = writer.WriteBitSpan(lines.CurrentLine.AsSpan(currentWritePosition..),
+      destination, new BitToByte(parameters.WhiteByte, parameters.BlackByte));
+    destination = destination[written..];
+    currentWritePosition += read;
 
     if (destination.Length > 0)
     {
@@ -164,6 +163,4 @@ public class CcittType4Decoder : IStreamFilterDefinition
     linesDone++;
     currentRunColor = true;
   }
-
-  private byte CurrentPixelBit() => parameters.ByteForColor(lines.CurrentLine[currentWritePosition]);
 }

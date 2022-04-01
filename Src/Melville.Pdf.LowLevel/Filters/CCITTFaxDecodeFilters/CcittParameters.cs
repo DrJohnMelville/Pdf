@@ -14,6 +14,8 @@ public readonly struct CcittParameters
     public int Rows { get; }
     public bool EndOfBlock { get; }
     public bool BlackIs1 { get; }
+    public byte WhiteByte { get; }
+    public byte BlackByte { get; }
 
     public CcittParameters(int k, bool encodedByteAlign, int columns, int rows, bool endOfBlock, bool blackIs1)
     {
@@ -23,6 +25,7 @@ public readonly struct CcittParameters
         Rows = rows;
         EndOfBlock = endOfBlock;
         BlackIs1 = blackIs1;
+        (WhiteByte, BlackByte) = BlackIs1?((byte)0,(byte)1):( (byte)1, (byte)0);
     }
 
     public static ValueTask<CcittParameters> FromPdfObject(PdfObject? parameters) =>
@@ -46,8 +49,6 @@ public readonly struct CcittParameters
     public bool[] EmptyLine() => new bool[Columns];
 
     public bool IsWhiteValue(int value) => (value != 0) ^ BlackIs1 ;
-
-    public byte ByteForColor(bool white) => (white ^ BlackIs1)?(byte)1:(byte)0;
 
     public bool HasReadEntireImage(int linesCompleted) =>
         Rows > 0 && linesCompleted >= Rows && !EndOfBlock;

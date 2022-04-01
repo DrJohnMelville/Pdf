@@ -15,7 +15,6 @@ public static class StreamAsTextStream
         var stream = await source.StreamContentAsync().CA();
         var buffer = new byte[2];
         var len=await buffer.FillBufferAsync(0, 2, stream).CA();
-        #warning -- needs to handle little endial as well
         var encoder = ByteOrderDetector.DetectByteOrder(buffer);
         return
             new StreamReader(TrySkipByteOrderMark(encoder, stream, len, buffer),
