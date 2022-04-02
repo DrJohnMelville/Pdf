@@ -20,17 +20,18 @@ public class FreeTypeFont : IRealizedFont, IDisposable
 
     public void Dispose() => Face.Dispose();
 
+    public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => 
+        glyphMap?.SelectGlyph(input) ?? (0,1);
+
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
     
-    private (double width, double height, int charsConsumed) RenderByte
-        (OutlineFuncs nativeTarget, ReadOnlyMemory<byte> input)
+    private (double width, double height) RenderByte
+        (OutlineFuncs nativeTarget, uint glyph)
     {
-        if (glyphMap is null) return (0,0, 1);
-        var (glyph, bytesConsumed) = glyphMap.SelectGlyph(input.Span);
         Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
         Face.Glyph.Outline.Decompose(nativeTarget, IntPtr.Zero);
-        return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0, bytesConsumed);
+        return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0);
     }
 
     private class FreeTypeWriteOperation: IFontWriteOperation
@@ -46,11 +47,11 @@ public class FreeTypeFont : IRealizedFont, IDisposable
             nativeTarget = new FreeTypeOutlineWriter(this.target).DrawHandle();
         }
 
-        public ValueTask<(double width, double height, int charsConsumed)> AddGlyphToCurrentString(
-            ReadOnlyMemory<byte> input, Matrix3x2 textMatrix)
+        public ValueTask<(double width, double height)> AddGlyphToCurrentString(
+            uint glyph, Matrix3x2 textMatrix)
         {
             target.SetDrawingTransform(Matrix3x2.CreateScale(16)*textMatrix);
-            return new (parent.RenderByte(nativeTarget, input));
+            return new (parent.RenderByte(nativeTarget, glyph));
         }
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip)

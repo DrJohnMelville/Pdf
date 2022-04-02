@@ -38,8 +38,8 @@ public class S9_4_2_TextPositioningOperators
 
     private void SetupMockRealizedFont()
     {
-        fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<ReadOnlyMemory<byte>>(), It.IsAny<Matrix3x2>()))
-            .Returns( ValueTask.FromResult((10.0, 12.0, 1)));
+        fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<uint>(), It.IsAny<Matrix3x2>()))
+            .Returns( ValueTask.FromResult((10.0, 12.0)));
         fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()));
         rf.Setup(i => i.BeginFontWrite(It.IsAny<IFontTarget>())).Returns(fw.Object);
         state.CurrentState().SetTypeface(rf.Object);

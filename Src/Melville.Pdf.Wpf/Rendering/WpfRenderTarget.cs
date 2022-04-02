@@ -61,7 +61,8 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
         Target.PushClip(new RectangleGeometry(clipRectangle));
     }
     
-    public override IDrawTarget CreateDrawTarget() => new WpfDrawTarget(Target, State, OptionalContentCounter);
+    public override IDrawTarget CreateDrawTarget() => 
+        new WpfDrawTarget(Target, State, OptionalContentCounter);
     
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {

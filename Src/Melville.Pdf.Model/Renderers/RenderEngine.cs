@@ -348,26 +348,27 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
-        var writer = StateOps.CurrentState().Typeface.BeginFontWrite(this);
-        var currentInput = decodedString;
-        while (currentInput.Length > 0)
+        var font = StateOps.CurrentState().Typeface;
+        var writer = font.BeginFontWrite(this);
+        var remainingI = decodedString;
+        while (remainingI.Length > 0)
         {
-            var (w, h, bytesUsed) = await writer.AddGlyphToCurrentString(currentInput, CharacterPositionMatrix()).CA();
-            AdjustTextPositionForCharacter(w, h, currentInput.At(0));
-            currentInput = currentInput[bytesUsed..];
+            var (glyph, bytesUsed) = font.GetNextGlyph(remainingI.Span);
+            var (w, h) = await writer.AddGlyphToCurrentString(
+                glyph, CharacterPositionMatrix()).CA();
+            AdjustTextPositionForCharacter(w, h, remainingI.At(0));
+            remainingI = remainingI[bytesUsed..];
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
     }
 
-    public Matrix3x2 CharacterPositionMatrix() =>
+    private Matrix3x2 CharacterPositionMatrix() =>
         (GlyphAdjustmentMatrix() * StateOps.CurrentState().TextMatrix);
 
     private Matrix3x2 GlyphAdjustmentMatrix() => new(
         (float)StateOps.CurrentState().HorizontalTextScale / 100, 0,
         0, 1,
         0, (float)StateOps.CurrentState().TextRise);
-
-
     
     private byte GetAt(ReadOnlyMemory<byte> decodedString, int i) => decodedString.Span[i];
     
