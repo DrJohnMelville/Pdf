@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
@@ -34,6 +35,7 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     void MapUserSpaceToBitmapSpace(in PdfRect rect, double xPixels, double yPixels, in Matrix3x2 adjustOutput);
     void CloneStateFrom(GraphicsState priorState);
     OptionalContentCounter? OptionalContentCounter { get; set; }
+    IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
 }
 
 public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposable

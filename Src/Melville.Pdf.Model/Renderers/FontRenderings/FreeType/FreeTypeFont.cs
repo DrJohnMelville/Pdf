@@ -49,8 +49,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
         public ValueTask<(double width, double height, int charsConsumed)> AddGlyphToCurrentString(
             ReadOnlyMemory<byte> input, Matrix3x2 textMatrix)
         {
-            float pixelSize = 16;
-            target.SetDrawingTransform(Matrix3x2.CreateScale(pixelSize)*textMatrix);
+            target.SetDrawingTransform(Matrix3x2.CreateScale(16)*textMatrix);
             return new (parent.RenderByte(nativeTarget, input));
         }
 

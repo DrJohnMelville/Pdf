@@ -4,6 +4,8 @@ using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Wpf.FontCaching;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
@@ -63,7 +65,9 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
-        if (this.OptionalContentCounter?.IsHidden ?? false) return;
+        if (OptionalContentCounter?.IsHidden ?? false) return;
         Target.DrawImage(await bitmap.ToWbfBitmap(), new Rect(0, 0, 1, 1));
     }
+
+    public IRealizedFont WrapRealizedFont(IRealizedFont font) => new WpfCachedFont(font);
 }

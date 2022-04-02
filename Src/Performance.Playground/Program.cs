@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
 using Melville.Parsing.AwaitConfiguration;
@@ -14,9 +17,9 @@ namespace Performance.Playground
     {
         static Task Main(string[] args)
         {
-          //  var summary = BenchmarkRunner.Run<LoadCCITPerf>();
-            //return Task.CompletedTask;
-            return Timer.DoTime(() => new LoadCCITPerf().RenderPage());
+            var summary = BenchmarkRunner.Run<FontRenderingPerf>();
+           return Task.CompletedTask;
+ //           return Timer.DoTime(() => new LoadCCITPerf().RenderPage());
         }
     }
 

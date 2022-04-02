@@ -16,12 +16,12 @@ public readonly struct FreeTypeFontFactory
     private readonly double size;
     public IByteToUnicodeMapping? ByteToUnicodeMapping { get; init; } = null;
     public IGlyphMapping? GlyphMapping { get; init; } = null;
-    private readonly PdfFont font;
+    private readonly PdfFont fontDefinitionDictionary;
 
-    public FreeTypeFontFactory(double size, in PdfFont font)
+    public FreeTypeFontFactory(double size, in PdfFont fontDefinitionDictionary)
     {
         this.size = size;
-        this.font = font;
+        this.fontDefinitionDictionary = fontDefinitionDictionary;
     }
 
     public ValueTask<IRealizedFont> SystemFont(byte[] name, bool bold, bool oblique)
@@ -51,14 +51,14 @@ public readonly struct FreeTypeFontFactory
     }
 
     private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face) =>
-        (await font.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic)
+        (await fontDefinitionDictionary.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic)
             ? await
-                SymbolicEncodingParser.ParseGlyphMapping(face, await font.EncodingAsync().CA()).CA()
+                SymbolicEncodingParser.ParseGlyphMapping(face, await fontDefinitionDictionary.EncodingAsync().CA()).CA()
             : await RomanGlyphMapping(face).CA();
 
     private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face)
     {
-        var encoding = await font.EncodingAsync().CA();
+        var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return new UnicodeGlyphMapping(face,
             await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping).CA());
     }

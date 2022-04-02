@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net6.0-windows</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
@@ -20,6 +20,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.DataModelTests\Melville.Pdf.DataModelTests.csproj" />
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.SkiaSharp\Melville.Pdf.SkiaSharp.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
     </ItemGroup>
 
 </Project>

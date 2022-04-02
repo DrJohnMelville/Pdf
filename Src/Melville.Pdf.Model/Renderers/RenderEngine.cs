@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -18,9 +17,7 @@ using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
-using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
-using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -320,19 +317,34 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask SetFont(PdfName font, double size)
     {
-        StateOps.CurrentState().SetTypeface(
-            await page.GetResourceAsync(ResourceTypeName.Font, font).CA() is PdfDictionary fontDic ?
-                BlockFontDispose.AsNonDisposableTypeface(await renderer.Cache.Get(new FontRecord(fontDic, 
-                        Math.Floor(size)), 
-                        r=> new FontReader(renderer.FontMapper).DictionaryToRealizedFont(r.Dictionary,size)).CA()):
-                await new FontReader(renderer.FontMapper).
-                    NameToRealizedFont(font, new FreeTypeFontFactory(size, 
-                        new PdfFont(PdfDictionary.Empty))).CA()
-            );
+        var fontResource = await page.GetResourceAsync(ResourceTypeName.Font, font).CA();
+        var typeFace = fontResource is PdfDictionary fontDic ?
+            BlockFontDispose.AsNonDisposableTypeface(await CheckCacheForFont(size, fontDic).CA()):
+            await SystemFontFromName(font, size).CA();
+        
+        StateOps.CurrentState().SetTypeface(await RendererSpecificFont(typeFace).CA());
         await StateOps.CurrentState().SetFont(font,size).CA();
     }
 
-    private record FontRecord(PdfDictionary Dictionary, double Size);
+    //The renderer is allowed to optimize the font rendering using render specific structures, so we include the
+    // type of the renderer just so that we do not get unexpected structures if a document is rendered
+    // in more than one renderer.
+    private ValueTask<IRealizedFont> RendererSpecificFont(IRealizedFont typeFace) =>
+        renderer.Cache.Get((Renderer: target.GetType(), TypeFace:typeFace), r=>
+            new ValueTask<IRealizedFont>(target.WrapRealizedFont(r.TypeFace)));
+
+    private ValueTask<IRealizedFont> CheckCacheForFont(double size, PdfDictionary fontDic) =>
+        renderer.Cache.Get(new FontRecord(fontDic, Math.Floor(size)), 
+            r=> FontReader().DictionaryToRealizedFont(r.Dictionary,r.Size));
+
+    private ValueTask<IRealizedFont> SystemFontFromName(PdfName font, double size) =>
+        FontReader().
+            NameToRealizedFont(font, new FreeTypeFontFactory(size, 
+                new PdfFont(PdfDictionary.Empty)));
+
+    private FontReader FontReader() => new(renderer.FontMapper);
+
+    private record struct FontRecord(PdfDictionary Dictionary, double Size);
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
