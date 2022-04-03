@@ -23,8 +23,7 @@ public class WpfCachedFont : IRealizedFont
     public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) =>
         inner.GetNextGlyph(input);
 
-    public IFontWriteOperation BeginFontWrite(IFontTarget target) => //inner.BeginFontWrite(target);
-        new CachedOperation(this,target);
+    public IFontWriteOperation BeginFontWrite(IFontTarget target) => new CachedOperation(this,target);
 
     private async ValueTask<CachedGlyph> GetGlyph(uint glyph)
     {

@@ -20,6 +20,7 @@ public class FontCachingTarget : WpfPathCreator, IFontTarget
     {
         var innerender = font.BeginFontWrite(this);
         var (width, height) = await innerender.AddGlyphToCurrentString(glyph, Matrix3x2.Identity);
+        Geometry?.Freeze();
         return new CachedGlyph(Figures(), Fill(), width, height);
     }
 }

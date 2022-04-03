@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
-using BenchmarkDotNet.Running;
-using Melville.Parsing.AwaitConfiguration;
-using Performance.Playground.Encryption;
-using Performance.Playground.ObjectModel;
 using Performance.Playground.Rendering;
-using Performance.Playground.Writers;
 
 namespace Performance.Playground
 {
@@ -17,9 +9,12 @@ namespace Performance.Playground
     {
         static Task Main(string[] args)
         {
+            #if DEBUG
             var summary = BenchmarkRunner.Run<FontRenderingPerf>();
            return Task.CompletedTask;
- //           return Timer.DoTime(() => new LoadCCITPerf().RenderPage());
+            #else
+            return Timer.DoTime(() => new FontRenderingPerf().RenderWpf());
+            #endif
         }
     }
 
@@ -33,6 +28,16 @@ namespace Performance.Playground
             await item();
             sw.Stop();
             Console.WriteLine($"Done in {sw.ElapsedMilliseconds} ms.");
+        }
+        public static Task DoTime(Action item)
+        {
+            Console.WriteLine("Begin Test");
+            var sw = new Stopwatch();
+            sw.Start();
+            item();
+            sw.Stop();
+            Console.WriteLine($"Done in {sw.ElapsedMilliseconds} ms.");
+            return Task.CompletedTask;
         }
     }
 }

@@ -22,9 +22,7 @@ namespace Performance.Playground.Rendering
         {
             AwaitConfig.ResumeOnCalledThread(false);
             using var dr = await LoadDocument();
-            MeasureProfiler.StartCollectingData(); 
             await RenderWithSkia.ToSurface(dr, 1); 
-            MeasureProfiler.StopCollectingData();
         }
         [Benchmark]
         public void RenderWpf()
@@ -33,9 +31,7 @@ namespace Performance.Playground.Rendering
           {
             AwaitConfig.ResumeOnCalledThread(true);
             using var dr = await LoadDocument();
-            MeasureProfiler.StartCollectingData();
             await new RenderToDrawingGroup(dr, 1).RenderToDrawingImage();
-            MeasureProfiler.StopCollectingData();
           });
         }
 
