@@ -50,7 +50,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
         public ValueTask<(double width, double height)> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)
         {
-            target.SetDrawingTransform(Matrix3x2.CreateScale(16)*textMatrix);
+            target.SetDrawingTransform(textMatrix);
             return new (parent.RenderByte(nativeTarget, glyph));
         }
 

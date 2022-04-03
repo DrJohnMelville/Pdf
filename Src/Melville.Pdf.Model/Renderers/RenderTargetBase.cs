@@ -9,9 +9,10 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers;
 
+
 public interface IDrawTarget
 {
-    void SetDrawingTransform(Matrix3x2 transform);
+    void SetDrawingTransform(in Matrix3x2 transform);
     void MoveTo(double x, double y);
     void LineTo(double x, double y);
     void ConicCurveTo(double controlX, double controlY, double finalX, double finalY);

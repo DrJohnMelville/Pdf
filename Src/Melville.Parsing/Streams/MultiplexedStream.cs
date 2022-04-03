@@ -15,7 +15,11 @@ public sealed class MultiplexedStream: IDisposable
         VerifyLegalStream();
     }
 
-    public void Dispose() => mutex.Dispose();
+    public void Dispose()
+    {
+        mutex.Dispose();
+        source.Dispose();
+    }
 
     private void VerifyLegalStream()
     {

@@ -1,42 +1,26 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Wpf.FontCaching;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
-public class WpfDrawTarget : IDrawTarget
+public class WpfPathCreator : IDrawTarget
 {
-    private readonly DrawingContext context;
-    private readonly GraphicsStateStack<WpfGraphicsState> state;
-    private readonly OptionalContentCounter? optionalContentCounter;
-    private readonly GeometryGroup geoGroup = new GeometryGroup();
-    private PathGeometry? geometry;
+    protected PathGeometry? Geometry { get; private set; }
     private PathFigure? figure = null;
-  
-    public WpfDrawTarget(DrawingContext context, GraphicsStateStack<WpfGraphicsState> state,
-        OptionalContentCounter? optionalContentCounter)
-    {
-        this.context = context;
-        this.state = state;
-        this.optionalContentCounter = optionalContentCounter;
-    }
 
-    public void SetDrawingTransform(Matrix3x2 transform)
-    {
-        geometry = new PathGeometry() { Transform = transform.WpfTransform() };
-        geoGroup.Children.Add(geometry);
-    }
+    [MemberNotNull(nameof(Geometry))]
+    public virtual PathGeometry RequireGeometry() => 
+        Geometry ??= new PathGeometry();
 
-    public PathGeometry RequireGeometry()
+    [MemberNotNull(nameof(Geometry))]
+    protected void SetGeometry(PathGeometry SetGeometry)
     {
-        if (geometry == null)
-        {
-            geometry = new PathGeometry();
-            geoGroup.Children.Add(geometry);
-        }
-        return geometry;
+        Geometry = SetGeometry;
     }
 
     public void MoveTo(double x, double y)
@@ -61,7 +45,52 @@ public class WpfDrawTarget : IDrawTarget
         if (figure != null) figure.IsClosed = true;
     }
 
-    public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
+    public virtual void SetDrawingTransform(in Matrix3x2 transform)
+    {
+    }
+
+    public virtual void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
+    {
+    }
+
+    public virtual void ClipToPath(bool evenOddRule)
+    {
+    }
+}
+public class WpfDrawTarget : WpfPathCreator
+{
+    private readonly DrawingContext context;
+    private readonly GraphicsStateStack<WpfGraphicsState> state;
+    private readonly OptionalContentCounter? optionalContentCounter;
+    private readonly GeometryGroup geoGroup = new GeometryGroup();
+  
+    public WpfDrawTarget(DrawingContext context, GraphicsStateStack<WpfGraphicsState> state,
+        OptionalContentCounter? optionalContentCounter)
+    {
+        this.context = context;
+        this.state = state;
+        this.optionalContentCounter = optionalContentCounter;
+    }
+
+    public override PathGeometry RequireGeometry()
+    {
+        if (Geometry is null) geoGroup.Children.Add(base.RequireGeometry());
+        return Geometry;
+    }
+
+    public override void SetDrawingTransform(in Matrix3x2 transform)
+    {
+        SetGeometry(new PathGeometry() { Transform = transform.WpfTransform() });
+        geoGroup.Children.Add(Geometry);
+    }
+
+    public void AddGeometry(in Matrix3x2 textMatrix, CachedGlyph cachedGlyph)
+    {
+        SetGeometry(cachedGlyph.CreateInstance(textMatrix));
+        geoGroup.Children.Add(Geometry);
+    }
+
+    public override void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         SetCurrentFillRule(evenOddFillRule);
         if (optionalContentCounter?.IsHidden ?? false) return;
@@ -77,7 +106,7 @@ public class WpfDrawTarget : IDrawTarget
     private void SetCurrentFillRule(bool evenOddFillRule) =>
         geoGroup.FillRule = evenOddFillRule ? FillRule.EvenOdd : FillRule.Nonzero;
 
-    public void ClipToPath(bool evenOddRule)
+    public override void ClipToPath(bool evenOddRule)
     {
         SetCurrentFillRule(evenOddRule);
         context.PushClip(geoGroup);

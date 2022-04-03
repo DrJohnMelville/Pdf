@@ -23,7 +23,8 @@ public static class RandomAccessFileParser
         var firstFree = await owner.IndirectResolver.FreeListHead().CA();
 
         return new PdfLoadedLowLevelDocument(
-            major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, firstFree);
+            major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, firstFree,
+            owner);
     }
 
 }

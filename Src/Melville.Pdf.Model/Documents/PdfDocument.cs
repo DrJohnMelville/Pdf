@@ -5,13 +5,12 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.Model.Documents;
 
-public readonly struct PdfDocument
+public readonly struct PdfDocument: IDisposable
 {
     public PdfLowLevelDocument LowLevel { get; }
 
@@ -37,4 +36,9 @@ public readonly struct PdfDocument
 
     public async ValueTask<PdfDictionary?> OptionalContentProperties() =>
         await (await CatalogAsync().CA()).GetOrNullAsync<PdfDictionary>(KnownNames.OCProperties).CA();
+
+    public void Dispose()
+    {
+        (LowLevel as IDisposable)?.Dispose();
+    }
 }

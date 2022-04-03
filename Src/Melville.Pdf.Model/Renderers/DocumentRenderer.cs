@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
@@ -40,7 +41,20 @@ public class PageTreeDocumentRenderer : DocumentRenderer
         tree.GetPageAsync(page);
 }
 
-public abstract class DocumentRenderer
+public class OwnedPageTreeDocumentRenderer : PageTreeDocumentRenderer
+{
+    private readonly PdfDocument document;
+    public OwnedPageTreeDocumentRenderer(
+        int totalPages, IDefaultFontMapper fontMapper, IDocumentPartCache cache, PageTree tree, 
+        IOptionalContentState ocs, PdfDocument document) : base(totalPages, fontMapper, cache, tree, ocs)
+    {
+        this.document = document;
+    }
+
+    public override void Dispose() =>  document.Dispose();
+}
+
+public abstract class DocumentRenderer: IDisposable
 {
     public int TotalPages { get; }
     public IDefaultFontMapper FontMapper { get; }
@@ -103,6 +117,10 @@ public abstract class DocumentRenderer
         (int)(freeDimension * (setValue / setDimension));
 
     protected abstract ValueTask<HasRenderableContentStream> GetPageContent(int page);
+
+    public virtual void Dispose()
+    {
+    }
 }
 
 public static class DocumentRendererFactory
@@ -117,8 +135,10 @@ public static class DocumentRendererFactory
     {
         var pages = await document.PagesAsync().CA();
         var pageCount = (int)await pages.CountAsync().CA();
-        return new PageTreeDocumentRenderer(pageCount, fontFactory, new DocumentPartCache(), pages,
+        return new OwnedPageTreeDocumentRenderer(pageCount, fontFactory, new DocumentPartCache(), pages,
             await OptionalContentPropertiesParser.ParseAsync(
-                await document.OptionalContentProperties().CA()).CA());
+                await document.OptionalContentProperties().CA()).CA(), document);
     }
+    
+    
 }

@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
+using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.Model.Documents;
@@ -23,11 +24,12 @@ public class S9_4_2_TextPositioningOperators
     private readonly Mock<IHasPageAttributes> pageMock = new(MockBehavior.Strict);
     private readonly Mock<IRenderTarget> targetMock = new(MockBehavior.Strict);
     private readonly RenderEngine sut;
-    private readonly Mock<IRealizedFont> rf = new();
+    private readonly IRealizedFont rf;
     private readonly Mock<IFontWriteOperation> fw = new();
 
     public S9_4_2_TextPositioningOperators()
     {
+        rf = new RealizedFontMock(fw.Object);
         targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
         targetMock.SetupSet(i => i.OptionalContentCounter = It.IsAny<OptionalContentCounter>());
         SetupMockRealizedFont();
@@ -35,14 +37,33 @@ public class S9_4_2_TextPositioningOperators
         sut = new RenderEngine(pageMock.Object, targetMock.Object,
             DocumentRendererFactory.CreateRenderer(null!, new WindowsDefaultFonts()));
     }
+    
+    private class RealizedFontMock: IRealizedFont
+    {
+        private IFontWriteOperation fw;
+
+        public RealizedFontMock(IFontWriteOperation fw)
+        {
+            this.fw = fw;
+        }
+
+        public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
+        {
+            return (input[0], 1);
+        }
+
+        public IFontWriteOperation BeginFontWrite(IFontTarget target)
+        {
+            return fw;
+        }
+    }
 
     private void SetupMockRealizedFont()
     {
         fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<uint>(), It.IsAny<Matrix3x2>()))
             .Returns( ValueTask.FromResult((10.0, 12.0)));
         fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()));
-        rf.Setup(i => i.BeginFontWrite(It.IsAny<IFontTarget>())).Returns(fw.Object);
-        state.CurrentState().SetTypeface(rf.Object);
+        state.CurrentState().SetTypeface(rf);
     }
 
     [Fact]

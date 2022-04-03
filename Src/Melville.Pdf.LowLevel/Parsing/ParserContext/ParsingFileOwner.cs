@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -12,14 +13,14 @@ using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.E
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-public partial class ParsingFileOwner
+public sealed partial class ParsingFileOwner: IDisposable
 {
     private readonly MultiplexedStream source;
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
     public IIndirectObjectResolver IndirectResolver { get; }
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
-    private IPasswordSource passwordSource;
+    private readonly IPasswordSource passwordSource;
 
     public ParsingFileOwner(Stream source, IPasswordSource? passwordSource = null,
         IIndirectObjectResolver? indirectResolver = null)
@@ -71,4 +72,6 @@ public partial class ParsingFileOwner
     {
         return documentCryptContext != NullSecurityHandler.Instance;
     }
+
+    public void Dispose() => source.Dispose();
 }
