@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
 namespace Performance.Playground
@@ -9,7 +10,7 @@ namespace Performance.Playground
     {
         static Task Main(string[] args)
         {
-            #if DEBUG
+            #if !DEBUG
             var summary = BenchmarkRunner.Run<FontRenderingPerf>();
            return Task.CompletedTask;
             #else

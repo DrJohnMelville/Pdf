@@ -13,21 +13,26 @@ public class FontCachingTarget : WpfPathCreator, IFontTarget
     public ValueTask<(double width, double height)> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 
         throw new NotSupportedException("This should only be used to cache FreeType fonts");
     public IDrawTarget CreateDrawTarget() => this;
-    public PathFigureCollection Figures() => Geometry?.Figures ?? new PathFigureCollection();
-    public FillRule Fill() => Geometry?.FillRule ?? FillRule.Nonzero;
+   public FillRule Fill() => Geometry?.FillRule ?? FillRule.Nonzero;
 
     public async ValueTask<CachedGlyph> RenderGlyph(IRealizedFont font, uint glyph)
     {
         var innerender = font.BeginFontWrite(this);
         var (width, height) = await innerender.AddGlyphToCurrentString(glyph, Matrix3x2.Identity);
-        Geometry?.Freeze();
-        return new CachedGlyph(Figures(), Fill(), width, height);
+        return new CachedGlyph(Geometry?.GetFlattenedPathGeometry()??new PathGeometry(),
+            Fill(), width, height);
     }
 }
 
 public record CachedGlyph(
-    PathFigureCollection Figures, FillRule Rule, double Width, double Height)
+    PathGeometry Figures, FillRule Rule, double Width, double Height)
 {
-    public PathGeometry CreateInstance(in Matrix3x2 transform) => 
-        new PathGeometry(Figures, Rule, transform.WpfTransform());
+    public PathGeometry CreateInstance(in Transform transform) => 
+        new PathGeometry(Figures.Figures, Rule, transform);
+
+    public PathGeometry Original(in Transform transform)
+    {
+        Figures.Transform = transform;
+        return Figures;
+    }
 }

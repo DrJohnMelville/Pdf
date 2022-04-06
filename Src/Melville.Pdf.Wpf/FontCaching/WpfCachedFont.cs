@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
+using System.Windows.Media;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -25,12 +26,12 @@ public class WpfCachedFont : IRealizedFont
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new CachedOperation(this,target);
 
-    private async ValueTask<CachedGlyph> GetGlyph(uint glyph)
+    private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyph(uint glyph, Transform transform)
     {
-        if (cache.TryGetValue(glyph, out var quick)) return quick;
+        if (cache.TryGetValue(glyph, out var quick)) return (quick,quick.CreateInstance(transform));
         var slow = await new FontCachingTarget().RenderGlyph(inner, glyph);
         cache.Add(glyph, slow);
-        return slow;
+        return (slow,slow.Original(transform));
     }
 
 
@@ -39,7 +40,7 @@ public class WpfCachedFont : IRealizedFont
         private readonly WpfCachedFont parent;
         private readonly IFontTarget fontTarget;
         private readonly IFontWriteOperation innerWriter;
-        private WpfDrawTarget drawTarget;
+        private WpfDrawTarget drawTarget = null!;
 
         public CachedOperation(WpfCachedFont parent, IFontTarget fontTarget)
         {
@@ -51,8 +52,9 @@ public class WpfCachedFont : IRealizedFont
         public async ValueTask<(double width, double height)> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)
         {
-            var cachedCharacter = await parent.GetGlyph(glyph).CA();
-            drawTarget.AddGeometry(textMatrix, cachedCharacter);
+            var (cachedCharacter, geometry) = await parent.GetGlyph(glyph, textMatrix.WpfTransform()).CA();
+            geometry.Freeze();
+            drawTarget.AddGeometry(geometry);
             return (cachedCharacter.Width, cachedCharacter.Height);
         }
 

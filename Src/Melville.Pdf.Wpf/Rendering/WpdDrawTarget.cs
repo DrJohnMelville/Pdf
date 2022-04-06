@@ -84,9 +84,9 @@ public class WpfDrawTarget : WpfPathCreator
         geoGroup.Children.Add(Geometry);
     }
 
-    public void AddGeometry(in Matrix3x2 textMatrix, CachedGlyph cachedGlyph)
+    public void AddGeometry(PathGeometry geometry)
     {
-        SetGeometry(cachedGlyph.CreateInstance(textMatrix));
+        SetGeometry(geometry);
         geoGroup.Children.Add(Geometry);
     }
 
