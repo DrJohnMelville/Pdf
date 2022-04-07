@@ -252,6 +252,7 @@ Pdf:Rows
 Pdf:Rotate
 Pdf:Separation
 Pdf:Size
+Pdf:SMask
 Pdf:Standard
 Pdf:StdCF
 Pdf:StemV
