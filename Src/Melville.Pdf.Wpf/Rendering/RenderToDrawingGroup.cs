@@ -1,10 +1,12 @@
 ﻿using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
@@ -64,13 +66,14 @@ public readonly struct RenderToDrawingGroup
         return dg;
     }
 
-    private async Task RenderTo(DrawingGroup dg)
+    private async ValueTask RenderTo(DrawingGroup dg)
     {
         using var dc = dg.Open();
-        await RenderTo(dc);
+        await RenderTo(dc, dg);
     }
+    
 
-    private  ValueTask RenderTo(DrawingContext dc)
+    private  ValueTask RenderTo(DrawingContext dc, DependencyObject sizeTarget)
     {
         AwaitConfig.ResumeOnCalledThread(true);
         var d2 = doc;
@@ -78,7 +81,16 @@ public readonly struct RenderToDrawingGroup
         {
             var innerRenderer = new WpfRenderTarget(dc);
             d2.InitializeRenderTarget(innerRenderer, rect, rect.Width, rect.Height, preTransform);
+            PageDisplay.SetPageSize(sizeTarget, new PageSize(rect.Width, rect.Height));
             return innerRenderer;
         });
    }
+
+    public async ValueTask<DrawingVisual> RenderToDrawingVisual()
+    {
+        var ret = new DrawingVisual();
+        using var dc = ret.RenderOpen();
+        await RenderTo(dc, ret);
+        return ret;
+    }
 }

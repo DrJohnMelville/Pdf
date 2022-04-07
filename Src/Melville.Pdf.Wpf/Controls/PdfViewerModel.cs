@@ -10,7 +10,7 @@ namespace Melville.Pdf.Wpf.Controls;
 public partial class PdfViewerModel
 {
     private readonly DocumentRenderer document;
-    [AutoNotify] private ImageSource? pageImage;
+    [AutoNotify] private DrawingVisual? pageImage;
     [AutoNotify] private IReadOnlyList<IOptionalContentDisplayGroup>? optionalContentDisplay;
     public PageSelectorViewModel PageSelector { get; } = new PageSelectorViewModel(); 
 
@@ -21,7 +21,6 @@ public partial class PdfViewerModel
         InitalizePageFlipper();
         RenderPage(0);
         ConfigureOptionalContentDisplay(this.document.OptionalContentState);
-
     }
 
     private void ConfigureOptionalContentDisplay(IOptionalContentState ocs)
@@ -52,7 +51,7 @@ public partial class PdfViewerModel
     {
         if (pageIndex == lastIndex) return;
         lastIndex = pageIndex;
-        var image = await new RenderToDrawingGroup(document, pageIndex).RenderToDrawingImage();
+        var image = await new RenderToDrawingGroup(document, pageIndex).RenderToDrawingVisual();
         PageImage = image;
     }
     private void RedrawPage(object? sender, EventArgs e)

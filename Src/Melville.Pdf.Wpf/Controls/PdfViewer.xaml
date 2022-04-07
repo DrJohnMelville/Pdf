@@ -17,6 +17,7 @@
         </Grid.RowDefinitions>
         <controls:LeftSideBar DataContext="{Binding}" Grid.RowSpan="2"/> 
         <controls:PageSelectorView Grid.Column="1" DataContext="{Binding PageSelector}" HorizontalAlignment="Center"/>
-        <Image Grid.Column="1" Grid.Row="1" Stretch="Uniform" Source="{Binding PageImage, Mode=OneWay}"/>
+       <!-- <Image Grid.Column="1" Grid.Row="1" Stretch="Uniform" Source="{Binding PageImage, Mode=OneWay}"/>-->
+        <controls:PageDisplay Grid.Column="1" Grid.Row="1" PageData="{Binding PageImage, Mode=OneWay}"/>
     </Grid>
 </UserControl>
