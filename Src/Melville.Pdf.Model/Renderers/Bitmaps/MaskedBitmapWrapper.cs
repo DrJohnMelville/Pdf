@@ -1,10 +1,4 @@
-﻿using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers.Colors;
-
-namespace Melville.Pdf.Model.Renderers.Bitmaps;
+﻿namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 public abstract class MaskedBitmapWriter : IComponentWriter
 {
@@ -16,13 +10,13 @@ public abstract class MaskedBitmapWriter : IComponentWriter
     private double col;
 
 
-    public MaskedBitmapWriter(IComponentWriter innerWriter, MaskBitmap mask,
+    protected MaskedBitmapWriter(IComponentWriter innerWriter, MaskBitmap mask,
         int parentWidth, int parentHeight)
     {
         this.innerWriter = innerWriter;
-        this.Mask = mask;
-        widthDelta = (double)mask.Width / (parentWidth-1);
-        heightDelta = (double)mask.Height / (parentHeight-1);
+        Mask = mask;
+        widthDelta = (double)mask.Width / (parentWidth);
+        heightDelta = (double)mask.Height / (parentHeight);
         col = 0;
         row = mask.Height - heightDelta;
     }
@@ -72,39 +66,4 @@ public class SoftMaskedBitmapWriter: MaskedBitmapWriter
 
     protected override byte AlphaForByte(byte alpha, double atRow, double atCol) =>
         Mask.RedAt((int)atRow, (int)atCol);
-}
-
-public readonly struct MaskBitmap
-{
-    public byte[] Mask { get; }
-    public int Width { get; }
-    public int Height { get; }
-                                        
-    public MaskBitmap(byte[] mask, int width, int height)
-    {
-        Mask = mask;
-        Width = width;
-        Height = height;
-    }
-
-    public bool ShouldWrite(int row, int col) => 255 == AlphaAt(row, col);
-
-    public byte AlphaAt(int row, int col) => Mask[3 + (4 * (col + (row * Width)))];
-    public byte RedAt(int row, int col) => Mask[(4 * (col + (row * Width)))];
-
-    public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
-    {
-        var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black).CA();
-        var buffer = new byte[wrapped.ReqiredBufferSize()];
-        await FillBuffer(buffer, wrapped).CA();
-        return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);
-    }
-
-    private static unsafe ValueTask FillBuffer(byte[] buffer, IPdfBitmap wrapped)
-    {
-        fixed (byte* pointer = buffer)
-        {
-            return wrapped.RenderPbgra(pointer);
-        }
-    }
 }
