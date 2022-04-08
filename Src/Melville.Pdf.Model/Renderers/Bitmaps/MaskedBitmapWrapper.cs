@@ -29,14 +29,13 @@ public class MaskedBitmapWriter : IComponentWriter
 
     public int ColorComponentCount => innerWriter.ColorComponentCount;
     
-    public unsafe void WriteComponent(ref byte* target, int[] component)
+    public unsafe void WriteComponent(ref byte* target, int[] component, byte alpha)
     {
-        if (mask.ShouldWrite((int)row, (int)col))
-            innerWriter.WriteComponent(ref target, component);
-        else
-            BitmapPointerMath.PushPixel(ref target, DeviceColor.Invisible);
+        innerWriter.WriteComponent(ref target, component,AlphaForByte(alpha));
         FindNextPixel();
     }
+
+    private byte AlphaForByte(byte alpha) => (byte)(mask.ShouldWrite((int)row, (int)col)? alpha:0);
 
     private void FindNextPixel()
     {

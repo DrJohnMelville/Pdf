@@ -23,12 +23,9 @@ public class ColorMaskComponentWriter: IComponentWriter
 
     public int ColorComponentCount => innerWriter.ColorComponentCount;
     
-    public unsafe void WriteComponent(ref byte* target, int[] component)
+    public unsafe void WriteComponent(ref byte* target, int[] component, byte alpha)
     {
-        if (IsInvisible(component))
-            BitmapPointerMath.PushPixel(ref target, DeviceColor.Invisible);
-        else
-            innerWriter.WriteComponent(ref target, component);
+        innerWriter.WriteComponent(ref target, component, (byte)(IsInvisible(component) ? 0 : 255));
     }
 
     private bool IsInvisible(int[] component)

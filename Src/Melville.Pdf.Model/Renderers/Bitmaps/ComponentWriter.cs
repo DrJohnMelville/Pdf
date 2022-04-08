@@ -9,7 +9,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 public interface IComponentWriter
 {
     public int ColorComponentCount { get; }
-    unsafe void WriteComponent(ref byte* target, int[] component);
+    unsafe void WriteComponent(ref byte* target, int[] component, byte alpha);
 }
 
 public class ComponentWriter : IComponentWriter
@@ -34,7 +34,7 @@ public class ComponentWriter : IComponentWriter
             throw new PdfParseException("Incorrect number of output intervals");
     }
 
-    public unsafe void WriteComponent(ref byte* target, int[] component)
+    public unsafe void WriteComponent(ref byte* target, int[] component, byte alpha)
     {
         Span<double> partialColor = stackalloc double[component.Length];
         for (int i = 0; i < partialColor.Length; i++)
@@ -42,7 +42,7 @@ public class ComponentWriter : IComponentWriter
             partialColor[i] = sourceInterval.MapTo(outputIntervals[i], component[i]);
         }
         var color = colorSpace.SetColor(partialColor);
-        BitmapPointerMath.PushPixel(ref target, color.AsPreMultiplied());
+        BitmapPointerMath.PushPixel(ref target, (color with{Alpha = alpha}).AsPreMultiplied());
     }
 
 }
