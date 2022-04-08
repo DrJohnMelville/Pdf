@@ -49,23 +49,25 @@ public static class PdfBitmapOperatons
             await attr.Stream[KnownNames.ColorSpace].CA()).CA();
         var bitsPerComponent =
             (int)await attr.Stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).CA();
-        var mask = await attr.Stream.GetOrDefaultAsync<PdfObject>(KnownNames.Mask, PdfTokenValues.Null).CA();
-
-        if (CanUseFastWriter(colorSpace, bitsPerComponent, decode, mask))
+        var mask = await attr.Stream.GetOrNullAsync(KnownNames.Mask).CA();
+        var softMask = await attr.Stream.GetOrNullAsync(KnownNames.SMask).CA();
+        if (CanUseFastWriter(colorSpace, bitsPerComponent, decode, mask, softMask))
             return FastBitmapWriterRGB8.Instance;
 
-        var compoentWriter = await WrapWithMask(mask, attr,
+        var componentWriter = await WrapWithMask(mask, attr,
             CreateComponentWriter(colorSpace, decode, bitsPerComponent)).CA();
+        componentWriter = await WrapWithSoftMask(softMask, attr, componentWriter).CA();
 
-        return CreateByteWriter(bitsPerComponent, compoentWriter);
+        return CreateByteWriter(bitsPerComponent, componentWriter);
     }
 
     private static bool CanUseFastWriter(
-        IColorSpace colorSpace, int bitsPerComponent, double[]? decode, PdfObject mask) =>
+        IColorSpace colorSpace, int bitsPerComponent, double[]? decode, PdfObject mask, PdfObject sMask) =>
         colorSpace == DeviceRgb.Instance &&
         bitsPerComponent == 8 &&
         DecodeArrayParser.IsDefaultDecode(decode) &&
-        mask == PdfTokenValues.Null;
+        mask == PdfTokenValues.Null &&
+        sMask == PdfTokenValues.Null;
 
     private static IByteWriter CreateByteWriter(int bitsPerComponent, IComponentWriter writer) =>
         bitsPerComponent == 16 ? new ByteWriter16(writer) : new NBitByteWriter(writer, bitsPerComponent);
@@ -83,7 +85,15 @@ public static class PdfBitmapOperatons
         {
             PdfArray maskArr => new ColorMaskComponentWriter(componentWriter,
                 await maskArr.AsIntsAsync().CA()),
-            PdfStream str => new MaskedBitmapWriter(componentWriter,
+            PdfStream str => new HardMaskedBitmapWriter(componentWriter,
+                await MaskBitmap.Create(str, attr.Page).CA(), attr.Width, attr.Height),
+            _ => componentWriter
+        };
+    private static async ValueTask<IComponentWriter> WrapWithSoftMask(
+        PdfObject mask, BitmapRenderParameters attr, IComponentWriter componentWriter) =>
+        mask switch
+        {
+            PdfStream str => new SoftMaskedBitmapWriter(componentWriter,
                 await MaskBitmap.Create(str, attr.Page).CA(), attr.Width, attr.Height),
             _ => componentWriter
         };
