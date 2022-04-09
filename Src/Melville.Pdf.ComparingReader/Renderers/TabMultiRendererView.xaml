@@ -9,34 +9,32 @@
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <easyGrids:EasyGrid easyGrids:GridOperations.ColsAndRows="* / auto *">
+    <Grid easyGrids:GridOperations.ColsAndRows="* / auto *">
         <viewFrames:ViewFrame HorizontalAlignment="Center" Content="{Binding PageSelector}"/>
-        <UniformGrid Columns="2">
-            <UniformGrid.Resources>
-                <DataTemplate x:Key="FramePresenter">
-                    <Grid>
-                        <viewFrames:ViewFrame Content="{Binding}"></viewFrames:ViewFrame>
-                        <TextBlock Text="{Binding DisplayName}"
-                                   HorizontalAlignment="Left" VerticalAlignment="Top"
-                                   FontSize="24" />
-                    </Grid>
+        <ComboBox HorizontalAlignment="Right" DisplayMemberPath="Name" ItemsSource="{Binding Configurations}"
+                  SelectedItem="{Binding CurrentConfiguration}"></ComboBox>
+        <ItemsControl ItemsSource="{Binding Panes}" Grid.Row="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="{Binding Columns}"></UniformGrid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type renderers:RenderTab}">
+                    <TabControl ItemsSource="{Binding Renderers}" SelectedIndex="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Header" Value="{Binding DisplayName}"></Setter>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate DataType="{x:Type renderers:IRenderer}">
+                                <viewFrames:ViewFrame Content="{Binding RenderTarget}" />
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                    </TabControl>
                 </DataTemplate>
-            </UniformGrid.Resources>
-            <ContentPresenter Content="{Binding First}" ContentTemplate="{StaticResource FramePresenter}" />
-            <ContentPresenter Content="{Binding Second}" ContentTemplate="{StaticResource FramePresenter}" />
-            <ContentPresenter Content="{Binding Third}" ContentTemplate="{StaticResource FramePresenter}" />
-            <TabControl ItemsSource="{Binding Remaining}">
-                <TabControl.ItemContainerStyle>
-                    <Style TargetType="TabItem">
-                        <Setter Property="Header" Value="{Binding DisplayName}"></Setter>
-                    </Style>
-                </TabControl.ItemContainerStyle>
-                <TabControl.ContentTemplate>
-                    <DataTemplate DataType="{x:Type renderers:IRenderer}">
-                        <viewFrames:ViewFrame Content="{Binding RenderTarget}" />
-                    </DataTemplate>
-                </TabControl.ContentTemplate>
-            </TabControl>
-        </UniformGrid>
-    </easyGrids:EasyGrid>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
 </UserControl>
