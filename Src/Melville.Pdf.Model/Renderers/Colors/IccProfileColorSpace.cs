@@ -1,6 +1,7 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Icc.Model;
+using Melville.Icc.Model.Tags;
 using Melville.Icc.Parser;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -17,9 +18,8 @@ internal class IccProfileColorSpace
         return new IccColorSpace( 
             profile.Header.ProfileConnectionColorSpace switch
         {
-            ColorSpace.XYZ => new CompositeTransform(profile.DeviceToPcsTransform(RenderIntent.Perceptual)??
-                                                     throw new PdfParseException("Invalid icc profile"),
-                XyzToDeviceColor.Instance),
+            ColorSpace.XYZ => profile.DeviceToPcsTransform(RenderIntent.Perceptual) is {} devToXyz?
+                new CompositeTransform(devToXyz, XyzToDeviceColor.Instance): NullColorTransform.Instance(3),
             ColorSpace.Lab => profile.TransformTo(await IccProfileLibrary.ReadSrgb().CA()),
             var x => throw new PdfParseException("Unsupported profile connection space: "+x)
         });

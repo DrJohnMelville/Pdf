@@ -1,10 +1,13 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 
 namespace Melville.Icc.Model;
 
+[DebuggerDisplay("Profile Tag {TagName}")]
 public struct ProfileTag
 {
     public uint Tag { get; init; }
+    public string TagName => Visualizations.As4CC(Tag);
     public uint Offset { get; init; }
     public uint Size { get; init; }
     public object? Data { get; init; }

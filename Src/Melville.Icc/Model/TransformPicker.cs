@@ -1,4 +1,8 @@
-﻿using Melville.Icc.Model.Tags;
+﻿using System.Diagnostics;
+using System.Reflection;
+using Melville.Icc.Model;
+using Melville.Icc.Model.Tags;
+
 
 namespace Melville.Icc.Model;
 
@@ -70,6 +74,6 @@ public static class TransformPicker
           return tags
                .Select(i=>i.Data)
                .OfType<IColorTransform>()
-               .FirstOrDefault();
+               .FirstOrDefault(i => i is not NullColorTransform);
      }
 }

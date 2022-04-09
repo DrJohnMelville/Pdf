@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Text;
 using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
 
@@ -12,8 +13,9 @@ public static class TagParser
         return Parse(ref reader);
     }
 
-    public static object Parse(ref SequenceReader<byte> reader) => 
-        reader.ReadBigEndianUint32() switch
+    public static object Parse(ref SequenceReader<byte> reader)
+    {
+        return reader.ReadBigEndianUint32() switch
         {
             IccTags.bACS or IccTags.eACS => NullColorTransform.Parse(ref reader),
             IccTags.chrm => new ChromacityTag(ref reader),
@@ -49,8 +51,21 @@ public static class TagParser
             IccTags.ui64 => new UInt64Array(ref reader),
             IccTags.XYZ => new XyzArray(ref reader),
             IccTags.view => new ViewingConditionsTag(ref reader),
-            var x => NullColorTransform.Instance(3) // Some profiles have invalid tags that we do not care about.
+            var x => UnRecognizedTransform(x) // Some profiles have invalid tags that we do not care about.
         };
+    }
+
+    private static NullColorTransform UnRecognizedTransform(uint u)
+    {
+        var strm = Encoding.UTF8.GetString(new byte[]
+        {
+            (byte)(u >> 24),
+            (byte)(u >> 16),
+            (byte)(u >> 8),
+            (byte)(u),
+        });
+        return NullColorTransform.Instance(3);
+    }
 
     private static object ParseCurveSegment(ref SequenceReader<byte> reader)
     {
