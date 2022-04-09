@@ -32,6 +32,8 @@
         </TreeView>
         <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5" Grid.RowSpan="2"/>
         <TextBlock Grid.Column="1" FontSize="18" Text="{Binding Selected.Title}"></TextBlock>
+        <Button Grid.Column="1" HorizontalAlignment="Right" Margin="0 0 10 0"
+                Click="{eventBindings:EventBinding NavigateBack}">Back</Button>
         <viewFrames:ViewFrame Content="{Binding Selected.DetailView}"
                               Grid.Row="1" Grid.Column="1" 
                               wpfHacks:VisibilityHack.CollapseIfNull="{Binding Selected.DetailView}"/>
