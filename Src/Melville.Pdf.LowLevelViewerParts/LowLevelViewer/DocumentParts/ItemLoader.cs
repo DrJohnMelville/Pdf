@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Melville.MVVM.WaitingServices;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -12,6 +13,8 @@ public class ItemLoader : DocumentPart
         new DocumentPart("Fake--this should never be seen")
     };
 
+    private readonly int minObjectNumber;
+    private readonly int maxObjectNumber;
     private static string ComputeName(Memory<PdfIndirectReference> mem)
     {
         var span = mem.Span;
@@ -20,13 +23,18 @@ public class ItemLoader : DocumentPart
 
     public ItemLoader(Memory<PdfIndirectReference> references) :
         base(ComputeName(references),fakeContent)
-
     {
         this.references = references;
+        var span = references.Span;
+        minObjectNumber = span[0].Target.ObjectNumber;
+        maxObjectNumber = span[^1].Target.ObjectNumber;
     }
 
-    //This is used -- it gets called by the UI
-    public async void OnExpand( IWaitingService waiting)
+    public override bool CanSkipSearch(int objectNumber) =>
+        objectNumber < minObjectNumber || objectNumber > maxObjectNumber;
+
+
+    public override async ValueTask TryFillTree(IWaitingService waiting)
     {
         if (Children != fakeContent) return;
         Children = await GetItems(waiting);

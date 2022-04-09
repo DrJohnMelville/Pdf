@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Pages;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 using Melville.Pdf.Model.Documents;
 
@@ -83,11 +84,12 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public async ValueTask<DocumentPart> Visit(PdfIndirectObject item)
     {
         prefix = $"{prefix}{item.ObjectNumber} {item.GenerationNumber}: ";
-        return await (await item.DirectValueAsync()).Visit(this);
+        return (await (await item.DirectValueAsync()).Visit(this))
+            .WithTarget(item.ObjectNumber, item.GenerationNumber);
     }
 
-    public ValueTask<DocumentPart> Visit(PdfIndirectReference item) => 
-        Terminal ($"{item.Target.ObjectNumber} {item.Target.GenerationNumber} R");
+    public ValueTask<DocumentPart> Visit(PdfIndirectReference item) =>
+        new(new ReferencePartViewModel(prefix, item.Target.ObjectNumber, item.Target.GenerationNumber));
 
     public ValueTask<DocumentPart> Visit(PdfName item) => Terminal(item.ToString());
 

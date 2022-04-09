@@ -3,6 +3,7 @@ using Melville.INPC;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 
@@ -27,5 +28,11 @@ public partial class LowLevelViewModel
     {
         
         Root = await parser.ParseAsync(source, waiter ?? new FakeWaitingService());
+    }
+
+    public async Task JumpToReference(ReferencePartViewModel target, IWaitingService waiting)
+    {
+        Selected = (await new DocumentPartSearcher(target.RefersTo, waiting)
+            .FindAsync(root)) ?? Selected;
     }
 }

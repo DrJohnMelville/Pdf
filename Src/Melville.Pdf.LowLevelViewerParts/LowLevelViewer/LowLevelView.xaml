@@ -24,6 +24,9 @@
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
                     <eventBindings:EventIocSetter Event="Expanded" MethodName="OnExpand"/>
+                    <eventBindings:EventIocSetter Event="Selected" MethodName="OnSelected"/>
+                    <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
+                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
                 </Style>
             </TreeView.ItemContainerStyle>
         </TreeView>
