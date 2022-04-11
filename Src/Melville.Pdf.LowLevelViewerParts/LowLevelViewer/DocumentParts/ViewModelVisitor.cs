@@ -21,12 +21,15 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
         return item.Visit(this);
     }
 
-    private ValueTask<DocumentPart> Terminal(string text)
+    private string ConsumePrefix()
     {
-        var ret = new ValueTask<DocumentPart>(new DocumentPart(prefix + text));
+        var ret = prefix;
         prefix = "";
         return ret;
     }
+
+    private ValueTask<DocumentPart> Terminal(string text) => 
+        new ValueTask<DocumentPart>(new DocumentPart(ConsumePrefix() + text));
 
     public async ValueTask<DocumentPart> Visit(PdfArray item)
     {
@@ -46,7 +49,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     {
         //Notice there is an ordering dependency in these two declarationsn.  The second
         //line changes prefix;
-        var savedPrefix = prefix ;
+        var savedPrefix = ConsumePrefix() ;
         var children = await ParseDictionaryChildren(item);
 
         var type = await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.Type);
@@ -89,7 +92,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     }
 
     public ValueTask<DocumentPart> Visit(PdfIndirectReference item) =>
-        new(new ReferencePartViewModel(prefix, item.Target.ObjectNumber, item.Target.GenerationNumber));
+        new(new ReferencePartViewModel(ConsumePrefix(), item.Target.ObjectNumber, item.Target.GenerationNumber));
 
     public ValueTask<DocumentPart> Visit(PdfName item) => Terminal(item.ToString());
 
@@ -98,16 +101,12 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public ValueTask<DocumentPart> Visit(PdfDouble item) => 
         Terminal(item.DoubleValue.ToString(CultureInfo.CurrentUICulture));
 
-    public ValueTask<DocumentPart> Visit(PdfString item)
-    {
-        var stringDocumentPart = new StringDocumentPart(item, prefix);
-        prefix = "";
-        return new(stringDocumentPart);
-    }
+    public ValueTask<DocumentPart> Visit(PdfString item) => 
+        new(new StringDocumentPart(item, ConsumePrefix()));
 
     public async ValueTask<DocumentPart> Visit(PdfStream item)
     {
-        var title = prefix;
+        var title = ConsumePrefix();
         var children = await ParseDictionaryChildren(item);
         if (item.TryGetValue(KnownNames.Subtype, out var stTask) && (await stTask) == KnownNames.Image)
             return new ImagePartViewModel(title + "Image Stream", children, item);
