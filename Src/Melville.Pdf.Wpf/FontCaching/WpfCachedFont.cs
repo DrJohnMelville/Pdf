@@ -49,13 +49,13 @@ public class WpfCachedFont : IRealizedFont
             innerWriter = parent.inner.BeginFontWrite(this);
         }
         
-        public async ValueTask<(double width, double height)> AddGlyphToCurrentString(
+        public async ValueTask<double> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)
         {
             var (cachedCharacter, geometry) = await parent.GetGlyph(glyph, textMatrix.WpfTransform()).CA();
             geometry.Freeze();
             drawTarget.AddGeometry(geometry);
-            return (cachedCharacter.Width, cachedCharacter.Height);
+            return (cachedCharacter.Width);
         }
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip)
@@ -63,7 +63,7 @@ public class WpfCachedFont : IRealizedFont
             innerWriter.RenderCurrentString(stroke, fill, clip);
         }
 
-        public ValueTask<(double width, double height)> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 
+        public ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 
             fontTarget.RenderType3Character(s, fontMatrix);
 
         public IDrawTarget CreateDrawTarget() => 

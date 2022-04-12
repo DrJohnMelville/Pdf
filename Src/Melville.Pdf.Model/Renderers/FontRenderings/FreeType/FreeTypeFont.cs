@@ -26,12 +26,12 @@ public class FreeTypeFont : IRealizedFont, IDisposable
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
     
-    private (double width, double height) RenderByte
+    private double RenderByte
         (FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
         Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
         nativeTarget.Decompose(Face.Glyph.Outline);
-        return (Face.Glyph.Advance.X/64.0, Face.Glyph.Advance.Y/64.0);
+        return Face.Glyph.Advance.X/64.0;
     }
 
     private class FreeTypeWriteOperation: IFontWriteOperation
@@ -47,7 +47,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
             nativeTarget = new FreeTypeOutlineWriter(this.target);
         }
 
-        public ValueTask<(double width, double height)> AddGlyphToCurrentString(
+        public ValueTask<double> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)
         {
             target.SetDrawingTransform(textMatrix);

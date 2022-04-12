@@ -354,9 +354,9 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         while (remainingI.Length > 0)
         {
             var (glyph, bytesUsed) = font.GetNextGlyph(remainingI.Span);
-            var (w, h) = await writer.AddGlyphToCurrentString(
+            var w = await writer.AddGlyphToCurrentString(
                 glyph, CharacterPositionMatrix()).CA();
-            AdjustTextPositionForCharacter(w, h, remainingI.At(0));
+            AdjustTextPositionForCharacter(w, remainingI.At(0));
             remainingI = remainingI[bytesUsed..];
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
@@ -372,10 +372,10 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     private byte GetAt(ReadOnlyMemory<byte> decodedString, int i) => decodedString.Span[i];
     
-    private void AdjustTextPositionForCharacter(double width, double height, byte character)
+    private void AdjustTextPositionForCharacter(double width, byte character)
     {
         var delta = CharacterSpacingAdjustment(character);
-        UpdateTextPosition(width+delta, height + delta);
+        UpdateTextPosition(width+delta);
     }
 
     private double CharacterSpacingAdjustment(byte character) =>
@@ -386,10 +386,10 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     private bool IsSpaceCharacter(byte character) => character == 0x20;
 
-    private void UpdateTextPosition(double width, double height)
+    private void UpdateTextPosition(double width)
     { 
         StateOps.CurrentState().SetTextMatrix(
-            IncrementAlongActiveVector(ScaleHorizontalOffset(width), height)*
+            IncrementAlongActiveVector(ScaleHorizontalOffset(width))*
             StateOps.CurrentState().TextMatrix
         );
     }
@@ -397,10 +397,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private double ScaleHorizontalOffset(double width) => 
         width * StateOps.CurrentState().HorizontalTextScale/100.0;
 
-    private Matrix3x2 IncrementAlongActiveVector(double width, double height) =>
-        StateOps.CurrentState().WritingMode == WritingMode.TopToBottom
-            ? Matrix3x2.CreateTranslation(0f, (float)-height)
-            : Matrix3x2.CreateTranslation((float)width, 0.0f);
+    private Matrix3x2 IncrementAlongActiveVector(double width) =>
+            Matrix3x2.CreateTranslation((float)width, 0.0f);
 
     public ValueTask MoveToNextLineAndShowString(ReadOnlyMemory<byte> decodedString)
     {
@@ -431,7 +429,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             {
                 case ContentStreamValueType.Number:
                     var delta = StateOps.CurrentState().FontSize * value.Floating / 1000.0;
-                    UpdateTextPosition(-delta, delta);
+                    UpdateTextPosition(-delta);
                     break;
                 case ContentStreamValueType.Memory:
                     await ShowString(value.Bytes).CA();
@@ -449,7 +447,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public IDrawTarget CreateDrawTarget() => target.CreateDrawTarget();
 
-    public async ValueTask<(double width, double height)> RenderType3Character(
+    public async ValueTask<double> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix)
     {
         if (StateOps.CurrentState().TextRender != TextRendering.Invisible)
@@ -457,7 +455,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             await DrawType3Character(s, fontMatrix).CA();
         }
         var ret = CharacterSizeInTextSpace(fontMatrix);
-        return (ret.X, ret.Y);
+        return ret.X;
     }
 
     private async Task DrawType3Character(Stream s, Matrix3x2 fontMatrix)

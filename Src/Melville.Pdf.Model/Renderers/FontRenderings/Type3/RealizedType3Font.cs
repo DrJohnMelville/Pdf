@@ -13,7 +13,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 public interface IFontTarget
 {
-    ValueTask<(double width, double height)> RenderType3Character(Stream s, Matrix3x2 fontMatrix);
+    ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix);
     IDrawTarget CreateDrawTarget();
 }
 
@@ -39,7 +39,7 @@ public class RealizedType3Font : IRealizedFont
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new Type3Writer(this, target);
 
-    private ValueTask<(double width, double height)> AddGlyphToCurrentString(uint glyph,
+    private ValueTask<double> AddGlyphToCurrentString(uint glyph,
         Matrix3x2 charMatrix, IFontTarget target)
     {
         return target.RenderType3Character(
@@ -57,12 +57,11 @@ public class RealizedType3Font : IRealizedFont
             this.target = target;
         }
 
-        public async ValueTask<(double width, double height)> AddGlyphToCurrentString(
+        public ValueTask<double> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)
         {
-            var (width, height) = await parent.AddGlyphToCurrentString(
-                glyph, textMatrix, target).CA();
-            return (width, height);
+            return parent.AddGlyphToCurrentString(
+                glyph, textMatrix, target);
         }
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip) { }    

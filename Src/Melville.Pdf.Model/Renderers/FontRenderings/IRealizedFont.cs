@@ -8,7 +8,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
 public interface IFontWriteOperation
 {
-    ValueTask<(double width, double height)> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix);
+    ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix);
     void RenderCurrentString(bool stroke, bool fill, bool clip);
 }
 public interface IRealizedFont
@@ -24,8 +24,8 @@ public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
     private NullRealizedFont() { }
     public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => (0, 1);
 
-    public ValueTask<(double width, double height)> AddGlyphToCurrentString(
-        uint glyph, Matrix3x2 textMatrix) => new((0.0, 0.0));
+    public ValueTask<double> AddGlyphToCurrentString(
+        uint glyph, Matrix3x2 textMatrix) => new((0.0));
 
     public void RenderCurrentString(bool stroke, bool fill, bool clip)
     {

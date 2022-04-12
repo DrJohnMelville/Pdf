@@ -31,6 +31,7 @@ public partial class LowLevelViewModel
 
     public async ValueTask JumpToReference(ReferencePartViewModel target, IWaitingService waiting)
     {
+        if (Selected is null) return;
         if (targetHistory.Count == 0 || targetHistory.Peek()!= Selected) targetHistory.Push(Selected);
         Selected = (await new DocumentPartSearcher(target.RefersTo, waiting)
             .FindAsync(root)) ?? Selected;

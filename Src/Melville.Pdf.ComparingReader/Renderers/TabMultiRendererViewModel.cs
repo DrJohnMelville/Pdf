@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Melville.Icc.Model.Tags;
 using Melville.INPC;
@@ -21,10 +22,11 @@ public partial class TabMultiRendererViewModel : MultiRenderer
 
     [AutoNotify] private CellConfiguration currentConfiguration;
 
+    [MemberNotNull(nameof(panes))]
     private void OnCurrentConfigurationChanged(CellConfiguration config)
     {
         Columns = config.Columns;
-        Panes = Enumerable.Range(0, config.Cells).Select(i => new RenderTab(renderers, i)).ToArray();
+        panes = Panes = Enumerable.Range(0, config.Cells).Select(i => new RenderTab(renderers, i)).ToArray();
     }
     [AutoNotify] private IReadOnlyList<RenderTab> panes;
     [AutoNotify] private int columns = 2;
@@ -34,7 +36,8 @@ public partial class TabMultiRendererViewModel : MultiRenderer
     {
         this.renderers = renderers;
         PageSelector = pageSelector;
-        CurrentConfiguration = Configurations[3];
+        currentConfiguration = Configurations[3];
+        OnCurrentConfigurationChanged(CurrentConfiguration);
     }
 }
 

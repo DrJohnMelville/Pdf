@@ -10,7 +10,7 @@ namespace Melville.Pdf.Wpf.FontCaching;
 
 public class FontCachingTarget : WpfPathCreator, IFontTarget
 {
-    public ValueTask<(double width, double height)> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 
+    public ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 
         throw new NotSupportedException("This should only be used to cache FreeType fonts");
     public IDrawTarget CreateDrawTarget() => this;
    public FillRule Fill() => Geometry?.FillRule ?? FillRule.Nonzero;
@@ -18,14 +18,14 @@ public class FontCachingTarget : WpfPathCreator, IFontTarget
     public async ValueTask<CachedGlyph> RenderGlyph(IRealizedFont font, uint glyph)
     {
         var innerender = font.BeginFontWrite(this);
-        var (width, height) = await innerender.AddGlyphToCurrentString(glyph, Matrix3x2.Identity);
+        var width= await innerender.AddGlyphToCurrentString(glyph, Matrix3x2.Identity);
         return new CachedGlyph(Geometry?.GetFlattenedPathGeometry()??new PathGeometry(),
-            Fill(), width, height);
+            Fill(), width);
     }
 }
 
 public record CachedGlyph(
-    PathGeometry Figures, FillRule Rule, double Width, double Height)
+    PathGeometry Figures, FillRule Rule, double Width)
 {
     public PathGeometry CreateInstance(in Transform transform) => 
         new PathGeometry(Figures.Figures, Rule, transform);
