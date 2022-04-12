@@ -34,13 +34,20 @@ public readonly struct FontReader
     {
         var fontTypeKey = (await font.SubTypeAsync().CA()).GetHashCode();
 
-        return await (fontTypeKey switch
+        var realizedFont = await ParseFontByType(size, font, externalMapping, fontTypeKey).CA();
+        return
+            await new FontWidthParser(realizedFont, font, size).Parse(fontTypeKey).CA();
+    }
+
+    private ValueTask<IRealizedFont> ParseFontByType(double size, PdfFont font, IGlyphMapping? externalMapping, int fontTypeKey)
+    {
+        return fontTypeKey switch
         {
-            KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel, size).ParseAsync().CA(),
-            KnownNameKeys.Type0 => CreateType0Font(font, size).CA(),
+            KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel, size).ParseAsync(),
+            KnownNameKeys.Type0 => CreateType0Font(font, size),
             _ => CreateRealizedFont(font, 
-                new FreeTypeFontFactory(size, font) { GlyphMapping = externalMapping }).CA()
-        });
+                new FreeTypeFontFactory(size, font) { GlyphMapping = externalMapping })
+        };
     }
 
 
