@@ -33,6 +33,8 @@ public class FreeTypeFont : IRealizedFont, IDisposable
         return Face.Glyph.Advance.X/64.0;
     }
 
+    public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
+
     private class FreeTypeWriteOperation: IFontWriteOperation
     {
         private readonly FreeTypeFont parent;
@@ -52,9 +54,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
             target.SetDrawingTransform(textMatrix);
             return new (parent.RenderByte(nativeTarget, glyph));
         }
-
-        public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
-
+        
         public void RenderCurrentString(bool stroke, bool fill, bool clip)
         {
             if (stroke || fill)

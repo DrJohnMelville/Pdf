@@ -10,12 +10,12 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings;
 public interface IFontWriteOperation
 {
     ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix);
-    double AdjustWidth(uint character, double glyphWidth);
     void RenderCurrentString(bool stroke, bool fill, bool clip);
 }
 public interface IRealizedFont
 {
     (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input);
+    double AdjustWidth(uint character, double glyphWidth);
     IFontWriteOperation BeginFontWrite(IFontTarget target);
 }
 

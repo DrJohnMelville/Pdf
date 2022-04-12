@@ -48,6 +48,7 @@ public class RealizedType3Font : IRealizedFont
         return target.RenderType3Character(
             characters[glyph].CreateReader(), fontMatrix);
     }
+    public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
 
     private class Type3Writer: IFontWriteOperation
     {
@@ -62,9 +63,7 @@ public class RealizedType3Font : IRealizedFont
 
         public ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix) => 
             parent.AddGlyphToCurrentString(glyph, textMatrix, target);
-
-        public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
-
+        
         public void RenderCurrentString(bool stroke, bool fill, bool clip) { }    
     }
 }

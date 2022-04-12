@@ -33,6 +33,7 @@ public class WpfCachedFont : IRealizedFont
         cache.Add(glyph, slow);
         return (slow,slow.Original(transform));
     }
+    public double AdjustWidth(uint character, double glyphWidth) => inner.AdjustWidth(character, glyphWidth);
 
 
     private class CachedOperation : IFontWriteOperation, IFontTarget
@@ -57,9 +58,7 @@ public class WpfCachedFont : IRealizedFont
             drawTarget.AddGeometry(geometry);
             return (cachedCharacter.Width);
         }
-
-        public double AdjustWidth(uint character, double glyphWidth) => innerWriter.AdjustWidth(character, glyphWidth);
-       
+        
         public void RenderCurrentString(bool stroke, bool fill, bool clip) => innerWriter.RenderCurrentString(stroke, fill, clip);
 
         public ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 

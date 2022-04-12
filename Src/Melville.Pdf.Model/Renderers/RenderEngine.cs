@@ -353,12 +353,19 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         var remainingI = decodedString;
         while (remainingI.Length > 0)
         {
-            var (character, glyph, bytesUsed) = font.GetNextGlyph(remainingI.Span);
-            var w = await writer.AddGlyphToCurrentString(glyph, CharacterPositionMatrix()).CA();
-            AdjustTextPositionForCharacter(w, remainingI.At(0));
-            remainingI = remainingI[bytesUsed..];
+            var (character, glyph) = GetNextCharacterAndGlyph(font, ref remainingI);
+            var measuredGlyphWidth = await writer.AddGlyphToCurrentString(glyph, CharacterPositionMatrix()).CA();
+            AdjustTextPositionForCharacter(font.AdjustWidth(character, measuredGlyphWidth), character);
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
+    }
+
+    private static (uint character, uint glyph) GetNextCharacterAndGlyph(
+        IRealizedFont font, ref ReadOnlyMemory<byte> remainingI)
+    {
+        var (character, glyph, bytesUsed) = font.GetNextGlyph(remainingI.Span);
+        remainingI = remainingI[bytesUsed..];
+        return (character, glyph);
     }
 
     private Matrix3x2 CharacterPositionMatrix() =>
@@ -371,19 +378,19 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     private byte GetAt(ReadOnlyMemory<byte> decodedString, int i) => decodedString.Span[i];
     
-    private void AdjustTextPositionForCharacter(double width, byte character)
+    private void AdjustTextPositionForCharacter(double width, uint character)
     {
         var delta = CharacterSpacingAdjustment(character);
         UpdateTextPosition(width+delta);
     }
 
-    private double CharacterSpacingAdjustment(byte character) =>
+    private double CharacterSpacingAdjustment(uint character) =>
         StateOps.CurrentState().CharacterSpacing + ApplicableWordSpacing(character);
 
-    private double ApplicableWordSpacing(byte character) => 
+    private double ApplicableWordSpacing(uint character) => 
         IsSpaceCharacter(character)? StateOps.CurrentState().WordSpacing:0;
 
-    private bool IsSpaceCharacter(byte character) => character == 0x20;
+    private bool IsSpaceCharacter(uint character) => character == 0x20;
 
     private void UpdateTextPosition(double width)
     { 
