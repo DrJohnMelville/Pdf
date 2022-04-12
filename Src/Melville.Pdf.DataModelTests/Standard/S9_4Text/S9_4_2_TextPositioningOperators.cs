@@ -47,9 +47,9 @@ public class S9_4_2_TextPositioningOperators
             this.fw = fw;
         }
 
-        public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
+        public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
         {
-            return (input[0], 1);
+            return (input[0], input[0], 1);
         }
 
         public IFontWriteOperation BeginFontWrite(IFontTarget target)

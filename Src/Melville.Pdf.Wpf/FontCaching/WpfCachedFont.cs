@@ -21,7 +21,7 @@ public class WpfCachedFont : IRealizedFont
         this.inner = inner;
     }
 
-    public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) =>
+    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) =>
         inner.GetNextGlyph(input);
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new CachedOperation(this,target);
@@ -58,10 +58,9 @@ public class WpfCachedFont : IRealizedFont
             return (cachedCharacter.Width);
         }
 
-        public void RenderCurrentString(bool stroke, bool fill, bool clip)
-        {
-            innerWriter.RenderCurrentString(stroke, fill, clip);
-        }
+        public double AdjustWidth(uint character, double glyphWidth) => innerWriter.AdjustWidth(character, glyphWidth);
+       
+        public void RenderCurrentString(bool stroke, bool fill, bool clip) => innerWriter.RenderCurrentString(stroke, fill, clip);
 
         public ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 
             fontTarget.RenderType3Character(s, fontMatrix);

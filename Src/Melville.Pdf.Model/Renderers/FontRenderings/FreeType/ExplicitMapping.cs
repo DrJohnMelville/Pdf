@@ -22,10 +22,10 @@ public class ExplicitMapping: IGlyphMapping
         this.mappings = mappings;
     }
 
-    public (uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input)
+    public (uint character, uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input)
     {
-        var (raw, len) = inner.SelectGlyph(input);
-        return (raw < mappings.Count ? mappings[(int)raw]: raw, len);
+        var (character, raw, len) = inner.SelectGlyph(input);
+        return (character, raw < mappings.Count ? mappings[(int)raw]: raw, len);
     }
 }
 

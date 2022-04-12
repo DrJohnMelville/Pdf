@@ -353,9 +353,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         var remainingI = decodedString;
         while (remainingI.Length > 0)
         {
-            var (glyph, bytesUsed) = font.GetNextGlyph(remainingI.Span);
-            var w = await writer.AddGlyphToCurrentString(
-                glyph, CharacterPositionMatrix()).CA();
+            var (character, glyph, bytesUsed) = font.GetNextGlyph(remainingI.Span);
+            var w = await writer.AddGlyphToCurrentString(glyph, CharacterPositionMatrix()).CA();
             AdjustTextPositionForCharacter(w, remainingI.At(0));
             remainingI = remainingI[bytesUsed..];
         }

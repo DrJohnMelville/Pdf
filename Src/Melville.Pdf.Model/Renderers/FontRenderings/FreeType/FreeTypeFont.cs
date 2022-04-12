@@ -20,14 +20,13 @@ public class FreeTypeFont : IRealizedFont, IDisposable
 
     public void Dispose() => Face.Dispose();
 
-    public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => 
-        glyphMap?.SelectGlyph(input) ?? (0,1);
+    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => 
+        glyphMap?.SelectGlyph(input) ?? (0, 0,1);
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
     
-    private double RenderByte
-        (FreeTypeOutlineWriter nativeTarget, uint glyph)
+    private double RenderByte(FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
         Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
         nativeTarget.Decompose(Face.Glyph.Outline);
@@ -53,6 +52,8 @@ public class FreeTypeFont : IRealizedFont, IDisposable
             target.SetDrawingTransform(textMatrix);
             return new (parent.RenderByte(nativeTarget, glyph));
         }
+
+        public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip)
         {

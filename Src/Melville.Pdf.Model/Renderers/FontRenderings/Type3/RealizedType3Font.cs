@@ -31,8 +31,11 @@ public class RealizedType3Font : IRealizedFont
         this.fontMatrix = fontMatrix;
     }
 
-    public (uint glyph, int charsConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => 
-        (ClampToGlyphs(input[0]), 1);
+    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
+    {
+        var character = input[0];
+        return (character, ClampToGlyphs(character), 1);
+    }
 
     private ushort ClampToGlyphs(byte input) => 
         (ushort)(input - firstCharacter).Clamp(0, characters.Length-1);
@@ -57,12 +60,10 @@ public class RealizedType3Font : IRealizedFont
             this.target = target;
         }
 
-        public ValueTask<double> AddGlyphToCurrentString(
-            uint glyph, Matrix3x2 textMatrix)
-        {
-            return parent.AddGlyphToCurrentString(
-                glyph, textMatrix, target);
-        }
+        public ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix) => 
+            parent.AddGlyphToCurrentString(glyph, textMatrix, target);
+
+        public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
 
         public void RenderCurrentString(bool stroke, bool fill, bool clip) { }    
     }
