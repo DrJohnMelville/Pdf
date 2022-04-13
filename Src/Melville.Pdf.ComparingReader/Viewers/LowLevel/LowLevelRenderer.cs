@@ -6,19 +6,18 @@ namespace Melville.Pdf.ComparingReader.Viewers.LowLevel;
 
 public class LowLevelRenderer : IRenderer
 {
-    private LowLevelViewModel model;
+    private LowLevelRenderViewModel model;
 
     public LowLevelRenderer(LowLevelViewModel model)
     {
-        this.model = model;
+        this.model = new LowLevelRenderViewModel(model);
     }
 
     public string DisplayName => "Low Level";
 
     public object RenderTarget => model;
 
-    public void SetTarget(Stream pdfBits) => model.SetStream(pdfBits);
+    public void SetTarget(Stream pdfBits) => model.InnerModel.SetStream(pdfBits);
 
     public void SetPage(int page) { /* Do Nothing -- has no current page concept*/ }
 }
-

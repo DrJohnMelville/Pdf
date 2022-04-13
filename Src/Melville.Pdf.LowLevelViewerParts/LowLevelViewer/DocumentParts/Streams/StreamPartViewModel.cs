@@ -15,7 +15,7 @@ public record StreamDisplayFormat(string Name, Func<PdfStream, ValueTask<object>
 
 public partial class StreamPartViewModel : DocumentPart
 {
-    private readonly PdfStream source;
+    public PdfStream Source { get; }
     [AutoNotify] private IReadOnlyList<StreamDisplayFormat> formats = Array.Empty<StreamDisplayFormat>();
     [AutoNotify] private StreamDisplayFormat? selectedFormat = null;
     public override object? DetailView => this;
@@ -24,7 +24,7 @@ public partial class StreamPartViewModel : DocumentPart
     private async void OnSelectedFormatChanged(StreamDisplayFormat? newFormat)
     {
         if (newFormat is not null)
-            Content = await newFormat.Creator(source);
+            Content = await newFormat.Creator(Source);
     }
 
     private async void LoadFormats()
@@ -42,7 +42,7 @@ public partial class StreamPartViewModel : DocumentPart
             p => LoadBytesAsync(p, StreamFormat.DiskRepresentation)));
         fmts.Add(new StreamDisplayFormat("Implicit Encryption",
             p => LoadBytesAsync(p, StreamFormat.ImplicitEncryption)));
-        var fmtList = (await source.GetOrNullAsync(KnownNames.Filter)).AsList();
+        var fmtList = (await Source.GetOrNullAsync(KnownNames.Filter)).AsList();
         for (int i = 0; i < fmtList.Count; i++)
         {
             fmts.Add(new StreamDisplayFormat(fmtList[i].ToString() ?? "No Name",
@@ -52,7 +52,7 @@ public partial class StreamPartViewModel : DocumentPart
 
     public StreamPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : base(title, children)
     {
-        this.source = source;
+        this.Source = source;
         LoadFormats();
     }
 

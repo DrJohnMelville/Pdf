@@ -33,7 +33,12 @@ MainWindow => Melville.Pdf.LowLevel.Parsing.ParserContext.*
 Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree.* => Melville.Pdf.ReferenceDocuments.*
 
 #External Dependency for the Low Level Pdf Viewer
-Melville.Pdf.ComparingReader.Viewers.LowLevel.LowLevelRenderer ^=> Melville.Pdf.LowLevelViewerParts.LowLevelViewer.*
+Group LowLevel
+    Melville.Pdf.ComparingReader.Viewers.LowLevel.*
+    Melville.Pdf.LowLevel.*
+    Melville.Pdf.LowLevelViewerParts.LowLevelViewer.*
+MainWindow => LowLevel
+REPL=>LowLevel
 
 Melville.Pdf.ComparingReader.Viewers.* +=> Melville.Pdf.ComparingReader.Viewers.GenericImageViewers.*
 

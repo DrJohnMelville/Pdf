@@ -15,6 +15,7 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.REPLs;
+using Melville.Pdf.ComparingReader.Viewers.LowLevel;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
 
@@ -69,9 +70,9 @@ public partial class MainWindowViewModel
     }
 
     public async void ShowPdfRepl([FromServices] ReplViewModelFactory modelFactory,
-        [FromServices] Func<object, IRootNavigationWindow> windowFactory)
+        [FromServices] Func<object, IRootNavigationWindow> windowFactory, IReplStreamPicker? picker = null)
     {
-        windowFactory(await modelFactory.Create()).Show();
+        windowFactory(await modelFactory.Create(picker?.GetReference())).Show();
     }
 
     public async Task LoadFile([FromServices] IOpenSaveFile fileSource)

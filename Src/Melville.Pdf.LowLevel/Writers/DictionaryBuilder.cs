@@ -39,4 +39,12 @@ public readonly struct DictionaryBuilder
 
     public PdfStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
         new(new LiteralStreamSource(stream.Stream, format), attributes);
+
+    public void CopyFrom(PdfDictionary sourceDict)
+    {
+        foreach (var item in sourceDict.RawItems)
+        {
+            attributes[item.Key] = item.Value;
+        }
+    }
 }
