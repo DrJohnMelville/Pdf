@@ -33,7 +33,7 @@ public abstract class ByteWriter: IByteWriter
         components[currentComponent++] = numerator;
         if (currentComponent >= components.Length)
         {
-            componentWriter.WriteComponent(ref output, components);
+            componentWriter.WriteComponent(ref output, components, 255);
             currentComponent = 0;
         }
     }

@@ -1,47 +1,40 @@
-﻿using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers.Colors;
+﻿namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-namespace Melville.Pdf.Model.Renderers.Bitmaps;
-
-public class MaskedBitmapWriter : IComponentWriter
+public abstract class MaskedBitmapWriter : IComponentWriter
 {
     private readonly IComponentWriter innerWriter;
-    private readonly MaskBitmap mask;
+    protected MaskBitmap Mask { get; }
     private readonly double widthDelta;
     private readonly double heightDelta;
     private double row;
     private double col;
 
 
-    public MaskedBitmapWriter(IComponentWriter innerWriter, MaskBitmap mask,
+    protected MaskedBitmapWriter(IComponentWriter innerWriter, MaskBitmap mask,
         int parentWidth, int parentHeight)
     {
         this.innerWriter = innerWriter;
-        this.mask = mask;
-        widthDelta = (double)mask.Width / (parentWidth-1);
-        heightDelta = (double)mask.Height / (parentHeight-1);
+        Mask = mask;
+        widthDelta = (double)mask.Width / (parentWidth);
+        heightDelta = (double)mask.Height / (parentHeight);
         col = 0;
         row = mask.Height - heightDelta;
     }
 
     public int ColorComponentCount => innerWriter.ColorComponentCount;
     
-    public unsafe void WriteComponent(ref byte* target, int[] component)
+    public unsafe void WriteComponent(ref byte* target, int[] component, byte alpha)
     {
-        if (mask.ShouldWrite((int)row, (int)col))
-            innerWriter.WriteComponent(ref target, component);
-        else
-            BitmapPointerMath.PushPixel(ref target, DeviceColor.Invisible);
+        innerWriter.WriteComponent(ref target, component,AlphaForByte(alpha, row, col));
         FindNextPixel();
     }
+
+    protected abstract byte AlphaForByte(byte alpha, double atRow, double atCol);
 
     private void FindNextPixel()
     {
         col += widthDelta;
-        if (col < mask.Width) return;
+        if (col < Mask.Width) return;
         NextRow();
     }
 
@@ -52,35 +45,25 @@ public class MaskedBitmapWriter : IComponentWriter
     }
 }
 
-public readonly struct MaskBitmap
+public class HardMaskedBitmapWriter: MaskedBitmapWriter
 {
-    public byte[] Mask { get; }
-    public int Width { get; }
-    public int Height { get; }
-                                        
-    public MaskBitmap(byte[] mask, int width, int height)
+    public HardMaskedBitmapWriter(
+        IComponentWriter innerWriter, MaskBitmap mask, int parentWidth, int parentHeight) : 
+        base(innerWriter, mask, parentWidth, parentHeight)
     {
-        Mask = mask;
-        Width = width;
-        Height = height;
     }
 
-    public bool ShouldWrite(int row, int col) =>
-        255 == Mask[3 + (4 * (col + (row * Width)))];
-
-    public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
+    protected override byte AlphaForByte(byte alpha, double atRow, double atCol) =>
+        (byte)(Mask.ShouldWrite((int)atRow, (int)atCol) ? alpha : 0);
+}
+public class SoftMaskedBitmapWriter: MaskedBitmapWriter
+{
+    public SoftMaskedBitmapWriter(
+        IComponentWriter innerWriter, MaskBitmap mask, int parentWidth, int parentHeight) : 
+        base(innerWriter, mask, parentWidth, parentHeight)
     {
-        var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black).CA();
-        var buffer = new byte[wrapped.ReqiredBufferSize()];
-        await FillBuffer(buffer, wrapped).CA();
-        return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);
     }
 
-    private static unsafe ValueTask FillBuffer(byte[] buffer, IPdfBitmap wrapped)
-    {
-        fixed (byte* pointer = buffer)
-        {
-            return wrapped.RenderPbgra(pointer);
-        }
-    }
+    protected override byte AlphaForByte(byte alpha, double atRow, double atCol) =>
+        Mask.RedAt((int)atRow, (int)atCol);
 }

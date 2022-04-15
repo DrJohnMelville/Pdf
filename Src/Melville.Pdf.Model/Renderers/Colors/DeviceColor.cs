@@ -26,7 +26,7 @@ public readonly record struct DeviceColor(byte RedByte, byte GreenByte, byte Blu
         Alpha switch
         {
             255 => this,
-            0 => Black,
+            0 => Invisible,
             _ => new DeviceColor(PreMulRed(), PreMulGreen(), PreMulBlue(), Alpha)
         };
 
