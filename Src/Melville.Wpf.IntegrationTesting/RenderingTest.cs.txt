@@ -56,8 +56,8 @@ RenderingTest.cs_Skia-MoveToIsRequired|1881810430
 RenderingTest.cs_Skia-TransformedLineWidth|3694971280
 RenderingTest.cs_wpf-Clipping|590935290
 RenderingTest.cs_Skia-Clipping|4257757955
-RenderingTest.cs_wpf-DeviceCMYK|4126084352
-RenderingTest.cs_Skia-DeviceCMYK|991748805
+RenderingTest.cs_wpf-DeviceCMYK|Not enough input
+RenderingTest.cs_Skia-DeviceCMYK|Not enough input
 RenderingTest.cs_wpf-CalGray|1622962558
 RenderingTest.cs_Skia-CalGray|3822836439
 RenderingTest.cs_wpf-CalGrayGamma|166231922
@@ -68,9 +68,9 @@ RenderingTest.cs_Skia-CalRgb|273472104
 RenderingTest.cs_Skia-LabColorSpace|271768455
 RenderingTest.cs_wpf-LabColorSpaceClipped|1657648065
 RenderingTest.cs_Skia-LabColorSpaceClipped|3210076908
-RenderingTest.cs_wpf-IccCMYK|2722514844
+RenderingTest.cs_wpf-IccCMYK|Not enough input
 RenderingTest.cs_wpf-IndexedByteString|76948566
-RenderingTest.cs_Skia-IccCMYK|816570773
+RenderingTest.cs_Skia-IccCMYK|Not enough input
 RenderingTest.cs_Skia-IndexedByteString|2607797124
 RenderingTest.cs_wpf-IndexedStream|817180021
 RenderingTest.cs_Skia-IndexedStream|1129764182
@@ -155,14 +155,14 @@ RenderingTest.cs_Skia-TextRise|89992073
 RenderingTest.cs_wpf-MMFont1|3483207785
 RenderingTest.cs_Skia-MMFont1|834725648
 RenderingTest.cs_wpf-BuiltInTrueType|3636069690
-RenderingTest.cs_wpf-EmbeddedTrueType|1793143202
+RenderingTest.cs_wpf-EmbeddedTrueType|3245787073
 RenderingTest.cs_wpf-ScriptFontBug|4043421
 RenderingTest.cs_Skia-BuiltInTrueType|2725999165
-RenderingTest.cs_Skia-EmbeddedTrueType|1805993671
+RenderingTest.cs_Skia-EmbeddedTrueType|2231360049
 RenderingTest.cs_Skia-ScriptFontBug|2958240832
-RenderingTest.cs_wpf-EmbeddedOpenType|4045307435
+RenderingTest.cs_wpf-EmbeddedOpenType|285112964
 RenderingTest.cs_wpf-Type3Font|1655295008
-RenderingTest.cs_Skia-EmbeddedOpenType|599385229
+RenderingTest.cs_Skia-EmbeddedOpenType|1813864934
 RenderingTest.cs_Skia-Type3Font|2924899270
 RenderingTest.cs_Skia-StandardCharSet|2666101901
 RenderingTest.cs_wpf-StandardCharSet|3666242224
@@ -204,10 +204,10 @@ RenderingTest.cs_wpf-CcittType3K10Encoded|1114358541
 RenderingTest.cs_Skia-CcittType3K0Encoded|375525976
 RenderingTest.cs_Skia-CcittType3K1Encoded|375525976
 RenderingTest.cs_Skia-CcittType3K10Encoded|375525976
-RenderingTest.cs_wpf-Type0WithEmbeddedTT|977993409
-RenderingTest.cs_Skia-Type0WithEmbeddedTT|874979496
-RenderingTest.cs_wpf-Type0WithCidToGid|2527396684
-RenderingTest.cs_Skia-Type0WithCidToGid|2946352456
+RenderingTest.cs_wpf-Type0WithEmbeddedTT|378875025
+RenderingTest.cs_Skia-Type0WithEmbeddedTT|1982725972
+RenderingTest.cs_wpf-Type0WithCidToGid|3311315980
+RenderingTest.cs_Skia-Type0WithCidToGid|945071482
 RenderingTest.cs_wpf-DingBatsWithANameDifferences|958308281
 RenderingTest.cs_wpf-ColoredTileWithSpacing|466889515
 RenderingTest.cs_wpf-ColoredTileRotated|4170779843
@@ -224,3 +224,7 @@ RenderingTest.cs_wpf-HideOptionalImageOn|4209922491
 RenderingTest.cs_wpf-HideOptionalImageOff|1295938836
 RenderingTest.cs_Skia-HideOptionalImageOn|2323272246
 RenderingTest.cs_Skia-HideOptionalImageOff|3150822017
+RenderingTest.cs_wpf-ExplicitType1FontWidth|1361168416
+RenderingTest.cs_wpf-UnalignedSMask|3836405812
+RenderingTest.cs_Skia-ExplicitType1FontWidth|2183102623
+RenderingTest.cs_Skia-UnalignedSMask|992798530
