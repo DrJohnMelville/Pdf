@@ -28,7 +28,7 @@ public readonly struct IccParser
             var tag = tags[i];
             await source.AdvanceToLocalPositionAsync(tag.Offset).CA();
             var buffer = await GetMinSizeAsync((int)tag.Size).CA();
-            tags[i] = tag with { Data = TagParser.Parse(buffer.Buffer) };
+            tags[i] = tag with { Data = TagParser.Parse(buffer.Buffer.Slice(0, tag.Size)) };
         }
 
         return ret;
@@ -104,9 +104,9 @@ public readonly struct IccParser
     private ProfileTag ParseSingleOffset(ref SequenceReader<byte> reader)
     {
         return new ProfileTag(
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(),
-            reader.ReadBigEndianUint32(), 
+            tag: reader.ReadBigEndianUint32(),
+            offset: reader.ReadBigEndianUint32(),
+            size: reader.ReadBigEndianUint32(), 
             null);
     }
 }

@@ -217,14 +217,43 @@ public class ICCParserTest
                                           "00010000 00000000 00000000" +
                                           "00000000 00010000 00000000" +
                                           "00000000 00000000 00010000" +
-                                          //input and output table size
-                                          "00030004" +
-                                          // input table 2 inputs * 3 entries = 6
-                                          "01 02 03 04 05 06" +
+                                          // input table 2 inputs * 256 entries = 512
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
                                           // clut = 3 grid points ^ 2 inputs * 1 output = 9
                                           "01 02 03 04 05 06 07 08 09" +
-                                          // output table = 4 output table entries * 1 output
-                                          "01 02 03 04>");
+                                          // output table = 256 output table entries * 1 output
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f" +
+                                          "00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f"
+                                          );
 
         Assert.Equal(2, tag.Inputs);
         Assert.Equal(1, tag.Outputs);
@@ -240,12 +269,10 @@ public class ICCParserTest
         Assert.Equal(0f, tag.Matrix.M32);
         Assert.Equal(1f, tag.Matrix.M33);
 
-        Assert.Equal(3, tag.InputTableEntries);
-        Assert.Equal(4, tag.OutputTableEntries);
+        Assert.Equal(256, tag.InputTableEntries);
+        Assert.Equal(256, tag.OutputTableEntries);
 
-        AssertFloatArraySame(IncrementingFloatArray(6, 8), tag.InputTables, 0.0000001);
         AssertFloatArraySame(IncrementingFloatArray(9, 8), tag.Clut, 0.00000001);
-        AssertFloatArraySame(IncrementingFloatArray(4, 8), tag.OutputTables, 0.00000001);
     }
 
     private void AssertFloatArraySame(float[] f1, IReadOnlyList<float> f2, double tolerence)

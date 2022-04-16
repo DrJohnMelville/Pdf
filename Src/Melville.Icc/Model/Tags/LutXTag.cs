@@ -39,7 +39,7 @@ public class LutXTag: IColorTransform
         clutTransform = ComputeClutTransform();
     }
 
-    public LutXTag(ref SequenceReader<byte> reader, int teblePrecisionInBytes)
+    public LutXTag(ref SequenceReader<byte> reader, int tablePrecisionInBytes)
     {
         reader.Skip32BitPad();
         Inputs = reader.ReadBigEndianUint8();
@@ -47,13 +47,19 @@ public class LutXTag: IColorTransform
         GridPoints = reader.ReadBigEndianUint8();
         reader.Skip8BitPad();
         Matrix = new Matrix3x3(ref reader);
-        InputTableEntries = reader.ReadBigEndianUint16();
-        OutputTableEntries = reader.ReadBigEndianUint16();
-        inputTables = reader.ReadScaledFloatArray(InputTableEntries * Inputs,teblePrecisionInBytes);
-        clut = reader.ReadScaledFloatArray((int)Math.Pow(GridPoints, Inputs) * Outputs,teblePrecisionInBytes);
-        outputTables = reader.ReadScaledFloatArray(OutputTableEntries * Outputs,teblePrecisionInBytes);
+
+        InputTableEntries = GetTableLength(tablePrecisionInBytes, ref reader);
+        OutputTableEntries = GetTableLength(tablePrecisionInBytes, ref reader);
+        
+        inputTables = reader.ReadScaledFloatArray(InputTableEntries * Inputs,tablePrecisionInBytes);
+        clut = reader.ReadScaledFloatArray((int)Math.Pow(GridPoints, Inputs) * Outputs,tablePrecisionInBytes);
+        outputTables = reader.ReadScaledFloatArray(OutputTableEntries * Outputs,tablePrecisionInBytes);
         clutTransform = ComputeClutTransform();
     }
+
+    // the 16 bit version encodes the input and output table length but set to 256 in the 8 bit version
+    private ushort GetTableLength(int tablePrecisionInBytes, ref SequenceReader<byte> reader) =>
+        tablePrecisionInBytes == 1 ? (ushort)256 : reader.ReadBigEndianUint16();
 
     private IColorTransform ComputeClutTransform()
     {
