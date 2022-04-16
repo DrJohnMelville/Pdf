@@ -33,7 +33,6 @@ public readonly struct MultiDimensionalArray<T>
     {
         Debug.Assert(result.Length == dimensionLengthInValuesArray[0]);
         values.AsSpan(MapMultidimensionalIndex(index), result.Length).CopyTo(result);
-
     }
     private int MapMultidimensionalIndex(in ReadOnlySpan<int> sampleIndex)
     {

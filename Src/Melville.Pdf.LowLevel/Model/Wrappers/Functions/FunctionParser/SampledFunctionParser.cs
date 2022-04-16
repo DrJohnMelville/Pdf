@@ -50,6 +50,7 @@ public static class SampledFunctionParser
             await source.ReadIntervals(KnownNames.Decode).CA(): range;
         var bitsPerSample = 
             (int)(await source.GetAsync<PdfNumber>(KnownNames.BitsPerSample).CA()).IntValue;
+        var encodedRange = new ClosedInterval(0, (1 << bitsPerSample) - 1);
         var reader = new BitStreamReader(await source.StreamContentAsync().CA(), bitsPerSample);
         var ret = new double[inputPermutations * range.Length];
         var pos = 0;
@@ -57,7 +58,9 @@ public static class SampledFunctionParser
         {
             for (int j = 0; j < range.Length; j++)
             {
-                ret[pos++] = decode[j].MapTo(range[j], await reader.NextNum().CA());
+                var encoded = await reader.NextNum().CA();
+                var unencoded = encodedRange.MapTo(decode[j], encoded);
+                ret[pos++] = unencoded;
             }
         }
 

@@ -13,7 +13,7 @@ public sealed class LinearSampledFunction : SampledFunctionBase
     {
         var lowIndex = (int)Math.Truncate(inputAsArrayIndex);
         var lowValue = EvaluateAtIndex(input, sampleIndex, inputIndex, lowIndex,
-            stackalloc double[result.Length]);
+             stackalloc double[result.Length]);
         EvaluateAtIndex(input, sampleIndex, inputIndex, lowIndex + 1, result);
 
         var offset = inputAsArrayIndex - lowIndex;

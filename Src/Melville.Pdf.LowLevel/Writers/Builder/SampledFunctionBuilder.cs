@@ -21,10 +21,11 @@ public enum SampledFunctionOrder
 }
 public class SampledFunctionBuilder
 {
-    private List<SampledFunctionInput> inputs = new();
-    private List<SampledFunctionOutput> outputs = new();
-    private int bitsPerSample;
+    private readonly List<SampledFunctionInput> inputs = new();
+    private readonly List<SampledFunctionOutput> outputs = new();
+    private readonly int bitsPerSample;
     private readonly SampledFunctionOrder order;
+    private readonly ClosedInterval sampleDomain;
 
     public SampledFunctionBuilder(
         int bitsPerSample, SampledFunctionOrder order = SampledFunctionOrder.Linear)
@@ -33,6 +34,7 @@ public class SampledFunctionBuilder
         this.order = order;
         VerifyOrder(order);
         VerifySampleBitLength();
+        sampleDomain = new ClosedInterval(0, (1 << bitsPerSample) - 1);
     }
 
     private static void VerifyOrder(SampledFunctionOrder order)
@@ -140,12 +142,11 @@ public class SampledFunctionBuilder
     private void WriteSingleOutput(
         in BitStreamWriter bitStreamWriter, in Span<double> value, SampledFunctionOutput singleOutput)
     {
-        var valud = singleOutput.Definition(value);
-        var encodedValue = singleOutput.Range.MapTo(singleOutput.Decode, valud);
-        var clipped = (uint)singleOutput.Decode.Clip(encodedValue);
-        bitStreamWriter.Write(clipped);
+        var unencodedValue = singleOutput.Definition(value);
+        var encodedValue = (uint)singleOutput.Decode.MapTo(sampleDomain, unencodedValue);
+        bitStreamWriter.Write(encodedValue);
     }
-
+    
     public ValueTask<PdfStream> CreateSampledFunction() =>
         CreateSampledFunction(new DictionaryBuilder());
 

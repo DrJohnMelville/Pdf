@@ -19,6 +19,6 @@ public readonly struct SampledFunctionOutput
     }
 
     public bool DecodeTrivial(int bitsPerSample) =>
-        DoubleCompare.WithinOne(0.0, Decode.MinValue) &&
-        DoubleCompare.WithinOne((1 << bitsPerSample) - 1, Decode.MaxValue);
+        DoubleCompare.WithinOne(Range.MinValue, Decode.MinValue) &&
+        DoubleCompare.WithinOne(Range.MaxValue, Decode.MaxValue);
 }
