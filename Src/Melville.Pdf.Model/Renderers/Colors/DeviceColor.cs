@@ -13,8 +13,13 @@ public readonly record struct DeviceColor(byte RedByte, byte GreenByte, byte Blu
     {
     }
 
-    private static byte ToByte(double d) => (byte)(d*255);
-
+    private static byte ToByte(double d) => d switch
+    {
+        >= 1 => 255,
+        <= 0 => 0,
+        _ => (byte)(d * 255)
+    };
+    
     public static readonly DeviceColor Invisible = new (0,0,0,0);
     public static readonly DeviceColor Black = new(0, 0, 0, 255);
 
