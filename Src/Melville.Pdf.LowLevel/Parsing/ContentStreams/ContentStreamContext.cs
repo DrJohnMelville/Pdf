@@ -293,11 +293,11 @@ public class ContentStreamContext
             _ => throw new PdfParseException("Invalid BeginMarkedRange parameter")
         };
 
-    private (int argsCount, PdfName? name) ExtendedSetColorParams()
+    private (int numericArgsCount, PdfName? name) ExtendedSetColorParams()
     {
         var argsCount = arguments.Count;
         PdfName? name = null;
-        if (arguments.TypeAt(argsCount - 1) == ContentStreamValueType.Object)
+        if (LastArgumentIsAName(argsCount))
         {
             argsCount--;
             name = arguments.NamaAt(argsCount);
@@ -306,22 +306,28 @@ public class ContentStreamContext
         return (argsCount, name);
     }
 
+    private bool LastArgumentIsAName(int argsCount) => 
+        arguments.TypeAt(argsCount - 1) == ContentStreamValueType.Object;
+
+    private (PdfName? name, double[] numericArguments) CollectExtendedColorArgs()
+    {
+        var (numericArgsCount, name) = ExtendedSetColorParams();
+        // have to allocate here because the Set...ColorExtended call could be async
+        var span = new double[numericArgsCount];
+        arguments.FillSpan(span);
+        return (name, span);
+    }
+
     private ValueTask SetNonstrokingColorExtended()
     {
-        var (argsCount, name) = ExtendedSetColorParams();
-        // have to allocate here because the last call could be async
-        var span = new double[argsCount];
-        arguments.FillSpan(span);
-        return target.SetNonstrokingColorExtended(name, span);
+        var (name, numericArguments) = CollectExtendedColorArgs();
+        return target.SetNonstrokingColorExtended(name, numericArguments);
     }
 
     private ValueTask SetStrokingColorExtended()
     {
-        var (argsCount, name) = ExtendedSetColorParams();
-        // have to allocate here because the last call could be async
-        var span = new double[argsCount];
-        arguments.FillSpan(span);
-        return target.SetStrokeColorExtended(name, span);
+        var (name, numericArguments) = CollectExtendedColorArgs();
+        return target.SetStrokeColorExtended(name, numericArguments);
     }
 
     private void SetStrokingColor()
