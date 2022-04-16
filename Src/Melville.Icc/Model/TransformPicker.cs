@@ -20,6 +20,14 @@ public enum TransformationNames : uint
      BtoD0 = 0x42324430,
      BtoD1 = 0x42324431,
      BtoD2 = 0x42324432,
+     
+     rXYZ = 0x7258595a,
+     gXYZ = 0x6758595a,
+     bXYZ = 0x6258595a,
+     
+     rTRC = 0x72545243,
+     gTRC = 0x67545243,
+     bTRC = 0x62545243,
 }
 public static class TransformPicker
 {
@@ -47,8 +55,9 @@ public static class TransformPicker
                _ => throw new ArgumentOutOfRangeException(nameof(intent), intent, null)
           };
      public static IColorTransform? DeviceToPcsTransform(this IccProfile profile, RenderIntent intent) =>
-          SelectTransform(profile.Tags, DeviceToPcsPreferences(intent));
-
+          SelectTransform(profile.Tags, DeviceToPcsPreferences(intent)) ??
+          new TrcTransformParser(profile).Create();
+     
      private static TransformationNames[] DeviceToPcsPreferences(RenderIntent intent) =>
           intent switch
           {
@@ -76,4 +85,5 @@ public static class TransformPicker
                .OfType<IColorTransform>()
                .FirstOrDefault(i => i is not NullColorTransform);
      }
+     
 }
