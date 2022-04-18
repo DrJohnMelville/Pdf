@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-using Melville.Icc.Model;
+﻿using System.Diagnostics.CodeAnalysis;
 using Melville.Icc.Model.Tags;
 
 
@@ -44,7 +42,8 @@ public static class TransformPicker
      private static TransformationNames[] saturationDeviceToPcs =
           { TransformationNames.DtoB2, TransformationNames.AtoB2, TransformationNames.AtoB0 };
      public static IColorTransform? PcsToDeviceTransform(this IccProfile profile, RenderIntent intent) =>
-          SelectTransform(profile.Tags, PcsToDevicePreferences(intent));
+          TryWrapFromLabConversion(profile.Header.ProfileConnectionColorSpace, 
+               SelectTransform(profile.Tags, PcsToDevicePreferences(intent)));
 
      private static TransformationNames[] PcsToDevicePreferences(RenderIntent intent) =>
           intent switch
@@ -55,9 +54,24 @@ public static class TransformPicker
                _ => throw new ArgumentOutOfRangeException(nameof(intent), intent, null)
           };
      public static IColorTransform? DeviceToPcsTransform(this IccProfile profile, RenderIntent intent) =>
-          SelectTransform(profile.Tags, DeviceToPcsPreferences(intent)) ??
-          new TrcTransformParser(profile).Create();
-     
+          TryWrapToLabConversion(profile.Header.ProfileConnectionColorSpace, SelectTransform(profile.Tags, DeviceToPcsPreferences(intent)) ??
+          new TrcTransformParser(profile).Create());
+
+     private static IColorTransform? TryWrapToLabConversion(ColorSpace profile, IColorTransform? innerTransform) => 
+          ShouldWrapLabTransform(profile, innerTransform) ? 
+               new ToLabConversion(innerTransform): 
+               innerTransform;
+     private static IColorTransform? TryWrapFromLabConversion(ColorSpace profile, IColorTransform? innerTransform) => 
+          ShouldWrapLabTransform(profile, innerTransform) ? 
+               new FromLabConversion(innerTransform): 
+               innerTransform;
+
+
+     private static bool ShouldWrapLabTransform(
+          ColorSpace profile, [NotNullWhen(true)] IColorTransform? innerTransform) =>
+//          false;
+          profile == ColorSpace.Lab && innerTransform is not null;
+
      private static TransformationNames[] DeviceToPcsPreferences(RenderIntent intent) =>
           intent switch
           {

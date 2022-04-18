@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
@@ -10,18 +11,26 @@ using Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-internal class IccProfileColorSpace
+public static class IccProfileColorSpace
 {
     public static async ValueTask<IColorSpace> ParseAsync(PdfStream getAsync)
     {
         var profile = await new IccParser(PipeReader.Create(await getAsync.StreamContentAsync().CA())).ParseAsync().CA();
-        return new IccColorSpace( 
-            profile.Header.ProfileConnectionColorSpace switch
-        {
-            ColorSpace.XYZ => profile.DeviceToPcsTransform(RenderIntent.Perceptual) is {} devToXyz?
-                new CompositeTransform(devToXyz, XyzToDeviceColor.Instance): NullColorTransform.Instance(3),
-            ColorSpace.Lab => profile.TransformTo(await IccProfileLibrary.ReadSrgb().CA()),
-            var x => throw new PdfParseException("Unsupported profile connection space: "+x)
-        });
+        return new IccColorSpace(await DeviceToSrgb(profile).CA());
     }
+
+    public static async Task<IColorTransform> DeviceToSrgb(this IccProfile profile)
+    {
+        return profile.DeviceToPcsTransform(RenderIntent.Perceptual)?.Concat(
+                   await PcsToSrgb(profile.Header.ProfileConnectionColorSpace).CA()) ??
+               throw new PdfParseException("Cannot find ICC profile");
+    }
+
+    private static async ValueTask<IColorTransform> PcsToSrgb(ColorSpace pcs) => pcs switch
+    {
+        ColorSpace.XYZ => XyzToDeviceColor.Instance,
+        ColorSpace.Lab => (await IccProfileLibrary.ReadSrgb().CA()).PcsToDeviceTransform(RenderIntent.Perceptual) ??
+                          throw new InvalidOperationException("This profile should exist"),
+        var x => throw new PdfParseException("Unsupported profile connection space: " + x)
+    };
 }

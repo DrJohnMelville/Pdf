@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
