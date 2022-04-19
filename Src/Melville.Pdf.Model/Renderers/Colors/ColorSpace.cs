@@ -43,7 +43,7 @@ public readonly struct ColorSpaceFactory
     private static IColorSpace? cmykColorSpacel;
 
     public static async ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => cmykColorSpacel ??= 
-        new IccColorspaceWithBlackDefault(await (await IccProfileLibrary.ReadCmyk().CA()).DeviceToSrgb().CA());
+        new IccColorspaceWithBlackDefault( (await IccProfileLibrary.ReadCmyk().CA()).DeviceToSrgb());
 
     private async ValueTask<IColorSpace> LookupInResourceDictionary(PdfName colorSpaceName)
     {

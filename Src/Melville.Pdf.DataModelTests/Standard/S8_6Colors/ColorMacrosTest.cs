@@ -122,6 +122,6 @@ public class ColorMacrosTest
     {
         Assert.Equal(253, color.RedByte);
         Assert.Equal(253, color.GreenByte);
-        Assert.Equal(254, color.BlueByte);
+        Assert.Equal(253, color.BlueByte);
     }
 }
