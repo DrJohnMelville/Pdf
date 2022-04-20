@@ -28,7 +28,6 @@
       <None Remove="Renderers\Colors\Profiles\Cmyk.icc" />
       <EmbeddedResource Include="Renderers\Colors\Profiles\Cmyk.icc" />
       <None Remove="Renderers\Colors\Profiles\AdobeSrgb.icc" />
-      <EmbeddedResource Include="Renderers\Colors\Profiles\AdobeSrgb.icc" />
       <None Remove="Renderers\Colors\Profiles\D65_XYZ.icc" />
     </ItemGroup>
 

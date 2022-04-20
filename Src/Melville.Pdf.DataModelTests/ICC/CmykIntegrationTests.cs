@@ -12,7 +12,9 @@ public class CmykIntegrationTests
 {
     [Theory]
     [InlineData(1, 1, 1, 1, 0, 0, 0)]
-    [InlineData(0,0,0,0.5, 60.87, -0.1757, 0.36984)]
+    [InlineData(0,0,0,0.5, 60.87, -0.1747, 0.396484)]
+    [InlineData(0.2, 0.2, 0.2, 0, 79.254, 2.906250, 3.031250)]
+    [InlineData(0.1, 0.2, 0.3, 0.4, 56.172641, 5.169547, 13.35622)]
     public async Task ICCToLabProfile(float c, float m, float y, float k, float l, float a, float b)
     {
         var xform = (await IccProfileLibrary.ReadCmyk()).DeviceToPcsTransform(RenderIntent.Perceptual);
@@ -22,19 +24,5 @@ public class CmykIntegrationTests
         Assert.Equal(a, result[1], 2);
         Assert.Equal(b, result[2], 2);
         
-    }
-
-    [Theory]
-    [InlineData(1, 1, 1, 1, 0, 0, 0)]
-//    [InlineData(0, 0, 0, 0.5, 60.87, -0.1757, 0.36984)]
-    public async Task CompositeTransform(float c, float m, float y, float k, float r, float g, float b)
-    {
-        var xform = (await IccProfileLibrary.ReadCmyk()).TransformTo(
-            await IccProfileLibrary.ReadSrgb());
-        var result = new float[3];
-        xform!.Transform(stackalloc float[]{c,m,y,k}, result.AsSpan());
-        Assert.Equal(r, result[0], 0);
-        Assert.Equal(g, result[1], 2);
-        Assert.Equal(b, result[2], 2);
     }
 }

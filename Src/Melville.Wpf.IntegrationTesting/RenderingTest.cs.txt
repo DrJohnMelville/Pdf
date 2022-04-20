@@ -56,8 +56,8 @@ RenderingTest.cs_Skia-MoveToIsRequired|1881810430
 RenderingTest.cs_Skia-TransformedLineWidth|3694971280
 RenderingTest.cs_wpf-Clipping|590935290
 RenderingTest.cs_Skia-Clipping|4257757955
-RenderingTest.cs_wpf-DeviceCMYK|4126084352
-RenderingTest.cs_Skia-DeviceCMYK|991748805
+RenderingTest.cs_wpf-DeviceCMYK|1711112066
+RenderingTest.cs_Skia-DeviceCMYK|1386862876
 RenderingTest.cs_wpf-CalGray|1622962558
 RenderingTest.cs_Skia-CalGray|3822836439
 RenderingTest.cs_wpf-CalGrayGamma|166231922
@@ -68,9 +68,9 @@ RenderingTest.cs_Skia-CalRgb|273472104
 RenderingTest.cs_Skia-LabColorSpace|271768455
 RenderingTest.cs_wpf-LabColorSpaceClipped|1657648065
 RenderingTest.cs_Skia-LabColorSpaceClipped|3210076908
-RenderingTest.cs_wpf-IccCMYK|2722514844
+RenderingTest.cs_wpf-IccCMYK|617483939
 RenderingTest.cs_wpf-IndexedByteString|76948566
-RenderingTest.cs_Skia-IccCMYK|816570773
+RenderingTest.cs_Skia-IccCMYK|1480513968
 RenderingTest.cs_Skia-IndexedByteString|2607797124
 RenderingTest.cs_wpf-IndexedStream|817180021
 RenderingTest.cs_Skia-IndexedStream|1129764182

@@ -17,17 +17,22 @@ public class LabToXyz : IColorTransform
     {
         var scaledL = (color[0] + 16f) / 116f;
 
-        xyz[0] = xN * decFunc(scaledL + (color[1] * 256f/ 500f));
-        xyz[1] = yN * decFunc(scaledL);
-        xyz[2] = zN * decFunc(scaledL - (color[2] * 256f/ 200f));
+        xyz[0] = D65WhitePoint.X * decFunc(scaledL + (color[1] / 500f));
+        xyz[1] = D65WhitePoint.Y * decFunc(scaledL);
+        xyz[2] = D65WhitePoint.Z * decFunc(scaledL - (color[2] / 200f));
     }
 
-    private const float xN = .950489f;
-    private const float yN = 1f;
-    private const float zN = 1.088840f;
 
     float decFunc(float f) =>
-        f >= 6f / 29f ? f * f * f : (f / (3 * sigma * sigma)) + (4f / 29f);
+        f >= sigma ? f * f * f : (f / (3 * sigma * sigma)) + (4f / 29f);
 
     private const float sigma = 6f / 29f;
+
+    private static class D65WhitePoint
+    {
+        public const float X = .950489f;
+        public const float Y = 1f;
+        public const float Z = 1.088840f;
+    }
 }
+
