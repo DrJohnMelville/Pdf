@@ -9,11 +9,6 @@ namespace Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 public static class IccProfileLibrary
 {
-    private static IccProfile? sRGB;
-
-    public static async ValueTask<IccProfile> ReadSrgb() => sRGB ??=
-        await LoadProfile(@"AdobeSrgb.icc").CA();
-
     private static IccProfile? cmyk;
 
     public static async ValueTask<IccProfile> ReadCmyk() => cmyk ??=

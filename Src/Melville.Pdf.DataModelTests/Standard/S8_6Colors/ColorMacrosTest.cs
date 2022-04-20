@@ -120,7 +120,7 @@ public class ColorMacrosTest
 
     private static void VerifyWhite(DeviceColor color)
     {
-        Assert.Equal(253, color.RedByte);
+        Assert.Equal(253 , color.RedByte);
         Assert.Equal(253, color.GreenByte);
         Assert.Equal(253, color.BlueByte);
     }

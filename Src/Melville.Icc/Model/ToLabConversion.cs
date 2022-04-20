@@ -15,10 +15,12 @@ public partial class ToLabConversion : IColorTransform
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
         innerTransform.Transform(input, output);
-        output[0] *= 100;
-        output[1] -= 0.5f;
-        output[2] -= 0.5f;
+        output[0] *= 100f;
+        output[1] = AbTransform(output[1]);
+        output[2] = AbTransform(output[2]);
     }
+
+    private static float AbTransform(float a) => (a * 256f) - 128f;
 }
 public partial class FromLabConversion : IColorTransform
 {
@@ -32,7 +34,9 @@ public partial class FromLabConversion : IColorTransform
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
         Span<float> transformedLab = 
-            stackalloc float[] { input[0] / 100f, input[1] + 0.5f, input[2] + 0.5f };
+            stackalloc float[] { input[0] / 100f, AbTransform(input[1]), input[2] + 0.5f };
         innerTransform.Transform(transformedLab, output);
     }
+
+    private static float AbTransform(float value) => (value + 128f)/256f;
 }
