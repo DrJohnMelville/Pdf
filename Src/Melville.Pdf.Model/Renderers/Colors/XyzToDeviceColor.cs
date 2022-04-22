@@ -30,10 +30,12 @@ public class XyzToDeviceColor : IColorTransform
         }
     }
 
+    //Use the Bradford adapted sRGB matrix with a D50 white point from
+    //http://www.brucelindbloom.com/ 
     private readonly Matrix3x3 transformMatrix = new(
-        3.2404542f, -1.5371385f, -0.4985314f,
-        -0.9692660f, 1.8760108f, 0.0415560f,
-        0.0556434f, -0.2040259f, 1.0572252f);
+            1.9624274f, -0.6105343f, -0.3413404f,
+             -0.9787684f,  1.9161415f,  0.0334540f,
+             0.0286869f, -0.1406752f,  1.3487655f);
 
     private float GammaCorrect(float f) =>
         (float)((f <= 0.0031308 ? 12.92*f: 1.055*Math.Pow(f,1/2.4) - 0.055));

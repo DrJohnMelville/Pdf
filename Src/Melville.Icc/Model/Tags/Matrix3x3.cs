@@ -6,7 +6,7 @@ using Melville.Icc.Parser;
 namespace Melville.Icc.Model.Tags;
 
 public readonly struct Matrix3x3
-{
+{ 
     public static readonly Matrix3x3 Identity = new Matrix3x3(1,0,0 ,0,1,0, 0,0,1);
     public float M11 { get; }
     public float M12 { get; }
