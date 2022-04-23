@@ -5,32 +5,13 @@ using Melville.Icc.Parser;
 
 namespace Melville.Icc.Model.Tags;
 
-public readonly struct Matrix3x3
+public record struct Matrix3x3(
+    float M11, float M12, float M13, 
+    float M21, float M22, float M23, 
+    float M31, float M32, float M33
+    )
 { 
     public static readonly Matrix3x3 Identity = new Matrix3x3(1,0,0 ,0,1,0, 0,0,1);
-    public float M11 { get; }
-    public float M12 { get; }
-    public float M13 { get; }
-    public float M21 { get; }
-    public float M22 { get; }
-    public float M23 { get; }
-    public float M31 { get; }
-    public float M32 { get; }
-    public float M33 { get; }
-
-    public Matrix3x3(
-        float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32, float m33)
-    {
-        M11 = m11;
-        M12 = m12;
-        M13 = m13;
-        M21 = m21;
-        M22 = m22;
-        M23 = m23;
-        M31 = m31;
-        M32 = m32;
-        M33 = m33;
-    }
 
     public Matrix3x3(IReadOnlyList<double> c) :
         this(
@@ -69,33 +50,61 @@ public readonly struct Matrix3x3
             M31 * input[0] + M32 * input[1] + M33 * input[2]
         );
     }
-}
 
-public readonly struct AugmentedMatrix3x3
-{
-    public static readonly AugmentedMatrix3x3 Identity = new(Matrix3x3.Identity, 0,0,0);
-    public Matrix3x3 Kernel { get; }
-    public float TranslateX { get; }
-    public float TranslateY { get; }
-    public float TranslateZ { get; }
+    public static Matrix3x3 operator +(in Matrix3x3 a, in Matrix3x3 b) =>
+        new Matrix3x3(
+            a.M11 + b.M11,
+            a.M12 + b.M12,
+            a.M13 + b.M13,
+            a.M21 + b.M21,
+            a.M22 + b.M22,
+            a.M23 + b.M23,
+            a.M31 + b.M31,
+            a.M32 + b.M32,
+            a.M33 + b.M33
+        );
 
-    public AugmentedMatrix3x3(Matrix3x3 kernel, float translateX, float translateY, float translateZ)
-    {
-        Kernel = kernel;
-        TranslateX = translateX;
-        TranslateY = translateY;
-        TranslateZ = translateZ;
-    }
+    public static Matrix3x3 operator *(in Matrix3x3 a, float b) =>
+      new (
+           a.M11 * b, a.M12 * b, a.M13 * b,
+           a.M21 * b, a.M22 * b, a.M23 * b,
+           a.M31 * b, a.M32 * b, a.M33 * b
+        );
     
-    public AugmentedMatrix3x3(ref SequenceReader<byte> reader):
-        this (new Matrix3x3(ref reader),
-            reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16()){}
+    public static Matrix3x3 operator *(in Matrix3x3 a, in Matrix3x3 b) =>
+        new Matrix3x3(
+            a.M11 * b.M11       + a.M12 * b. M21 +     a.M13 * b.M31,
+            a.M11 * b.M12       + a.M12 * b. M22 +     a.M13 * b.M32,
+            a.M11 * b.M13       + a.M12 * b. M23 +     a.M13 * b.M33,
 
-    public void PostMultiplyBy(in ReadOnlySpan<float> input, in Span<float> output)
-    {
-        Kernel.PostMultiplyBy(input, output);
-        output[0] += TranslateX;
-        output[1] += TranslateY;
-        output[2] += TranslateZ;
-    }
+            a.M21 * b.M11       + a.M22 * b. M21 +     a.M23 * b.M31,
+            a.M21 * b.M12       + a.M22 * b. M22 +     a.M23 * b.M32,
+            a.M21 * b.M13       + a.M22 * b. M23 +     a.M23 * b.M33,
+
+            a.M31 * b.M11       + a.M32 * b. M21 +     a.M33 * b.M31,
+            a.M31 * b.M12       + a.M32 * b. M22 +     a.M33 * b.M32,
+            a.M31 * b.M13       + a.M32 * b. M23 +     a.M33 * b.M33
+        );
+    
+    
+
+    public override string ToString() =>
+        $"{M11,8:F3} {M12,8:F3} {M13,8:F3}\r\n" +
+        $"{M21,8:F3} {M22,8:F3} {M23,8:F3}\r\n" +
+        $"{M31,8:F3} {M32,8:F3} {M33,8:F3}\r\n";
+
+    public float Determinant() =>
+       (M11 * M22 * M33 +   M12 * M23 * M31 +    M13 * M21 * M32) - 
+       (M13 * M22 * M31 +   M12 * M21 * M33 +    M11 * M23 * M32);
+
+    public bool HasInverse() => Determinant() != 0;
+
+    // special case for inversion of the 3x3 matrix using partial determinants
+    // https://en.wikipedia.org/wiki/Invertible_matrix#Inversion_of_3_%C3%97_3_matrices
+    public Matrix3x3 Inverse() =>
+        new Matrix3x3(
+              M22*M33 - M23*M32,  -(M12*M33 - M13*M32),  M12*M23 - M13*M22, 
+            -(M21*M33 - M23*M31),   M11*M33 - M13*M31, -(M11*M23 - M13*M21), 
+              M21*M32 - M22*M31,  -(M11*M32 - M12*M31),  M11*M22 - M12*M21) 
+        * (1f / Determinant());
 }
