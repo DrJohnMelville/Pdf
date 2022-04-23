@@ -7,7 +7,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 
 public class XyzToDeviceColorTest
 {
-    private IColorTransform sut = XyzToDeviceColor.Instance;
+    private IColorTransform sut = XyzToDeviceColor.FromD50;
 
     // these conversion data come from http://colorizer.org/
     [Theory]
@@ -22,7 +22,7 @@ public class XyzToDeviceColorTest
         sut.Transform(stackalloc float[]{x,y,z}, result);
         Assert.Equal(red, (int)(result[0] * 255));
         Assert.Equal(green, (int)(result[1] * 255));
-        Assert.Equal(blue, (int)(result[2] * 255)7);
+        Assert.Equal(blue, (int)(result[2] * 255));
         
     }
 }

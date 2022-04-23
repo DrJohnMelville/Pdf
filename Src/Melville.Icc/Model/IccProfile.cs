@@ -1,5 +1,7 @@
 ﻿using System.Buffers;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.Model;
 
@@ -31,4 +33,40 @@ public class IccProfile
         Header = header;
         Tags = tags;
     }
+
+    public bool UseWhitePoint()
+    {
+        // I am not completely confident this is the correct rule for  when to use the media whote point
+        // vs the illuminant white point.  Hopefully I will find some more profiles that will either
+        // work or not work and give me more insight, because I cannot figure out the rule from the spec.
+        foreach (var tag in Tags)
+        {
+            if ((TransformationNames)tag.Tag is
+                TransformationNames.AtoB0 or
+                TransformationNames.AtoB1 or
+                TransformationNames.AtoB2 or
+                TransformationNames.BtoA0 or
+                TransformationNames.BtoA1 or
+                TransformationNames.BtoA2
+               ) return true;
+        }
+
+        return false;
+    }
+
+    public XyzNumber WhitePoint()
+    {
+        if (UseWhitePoint())
+        {
+            foreach (var tag in Tags)
+            {
+                if (tag.Tag is 0x77747074 && tag.Data is XyzArray xyzArr)
+                    return xyzArr.Values[0];
+            }
+        }
+
+        return Header.Illuminant;
+        
+    }
+
 }

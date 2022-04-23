@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Icc.Model.Tags;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -8,27 +9,23 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public record struct FloatColor(double Red, double Green, double Blue);
-
 public class CalGray : IColorSpace
 {
-    private readonly FloatColor whitePoint;
+    private readonly DoubleColor whitePoint;
+    private readonly IColorTransform xyzToDeviceTransform;
     private readonly double gamma;
 
-    public CalGray(FloatColor whitePoint, double gamma)
+    public CalGray(DoubleColor whitePoint, double gamma)
     {
         this.whitePoint = whitePoint;
+        xyzToDeviceTransform = new XyzToDeviceColor(whitePoint);
         this.gamma = gamma;
     }
 
     public static async ValueTask<IColorSpace> Parse(PdfDictionary parameters)
     {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
-        var wp = new FloatColor(
-            (await array.GetAsync<PdfNumber>(0).CA()).DoubleValue,
-            (await array.GetAsync<PdfNumber>(1).CA()).DoubleValue,
-            (await array.GetAsync<PdfNumber>(2).CA()).DoubleValue
-        );
+        var wp = await DoubleColor.ParseAsync(array).CA();
         var gamma = await parameters.GetOrDefaultAsync(KnownNames.Gamma, 1.0).CA();
         return new CalGray(wp, gamma);
     }
@@ -38,7 +35,7 @@ public class CalGray : IColorSpace
         if (newColor.Length != 1)
             throw new PdfParseException("Wrong number of parameters for CalGray color");
         var gammaTransformed = Math.Pow(newColor[0], gamma);
-        return XyzToDeviceColor.Transform(stackalloc float[]
+        return xyzToDeviceTransform.ToDeviceColor(stackalloc float[]
         {
             (float)(whitePoint.Red * gammaTransformed),
             (float)(whitePoint.Green * gammaTransformed),

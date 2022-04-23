@@ -14,11 +14,11 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 public class LabColorSpace : IColorSpace
 {
-    private readonly FloatColor whitePoint;
+    private readonly DoubleColor whitePoint;
     private readonly ClosedInterval aInterval;
     public readonly ClosedInterval bInterval;
 
-    public LabColorSpace(FloatColor whitePoint, ClosedInterval aInterval, ClosedInterval bInterval)
+    public LabColorSpace(DoubleColor whitePoint, ClosedInterval aInterval, ClosedInterval bInterval)
     {
         this.whitePoint = whitePoint;
         this.aInterval = aInterval;
@@ -46,10 +46,10 @@ public class LabColorSpace : IColorSpace
             );
     }
 
-    private static async Task<FloatColor> ReadWhitePoint(PdfDictionary parameters)
+    private static async Task<DoubleColor> ReadWhitePoint(PdfDictionary parameters)
     {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
-        return new FloatColor(
+        return new DoubleColor(
             (await array.GetAsync<PdfNumber>(0).CA()).DoubleValue,
             (await array.GetAsync<PdfNumber>(1).CA()).DoubleValue,
             (await array.GetAsync<PdfNumber>(2).CA()).DoubleValue
@@ -67,7 +67,7 @@ public class LabColorSpace : IColorSpace
         var L = commonPart + (aInterval.Clip(newColor[1]) / 500);
         var M = commonPart;
         var N = commonPart - (bInterval.Clip(newColor[2]) / 200);
-        return XyzToDeviceColor.Transform(stackalloc float[]
+        return new XyzToDeviceColor(whitePoint).ToDeviceColor(stackalloc float[]
         {
             (float)(whitePoint.Red * GFunc(L)),
             (float)(whitePoint.Green * GFunc(M)),

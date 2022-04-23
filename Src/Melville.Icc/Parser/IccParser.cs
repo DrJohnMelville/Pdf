@@ -36,7 +36,7 @@ public readonly struct IccParser
 
     private async Task<ReadResult> GetMinSizeAsync(int minSize)
     {
-        var readResult = await source.ReadAsync().CA();
+        var readResult = await source.ReadAsync().CA(); 
         while (readResult.Buffer.Length < minSize)
         {
             if (readResult.IsCompleted) throw new InvalidDataException("Too short for an ICC profile");

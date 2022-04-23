@@ -69,7 +69,6 @@ public static class TransformPicker
 
      private static bool ShouldWrapLabTransform(
           ColorSpace profile, [NotNullWhen(true)] IColorTransform? innerTransform) =>
-//          false;
           profile == ColorSpace.Lab && innerTransform is not null;
 
      private static TransformationNames[] DeviceToPcsPreferences(RenderIntent intent) =>

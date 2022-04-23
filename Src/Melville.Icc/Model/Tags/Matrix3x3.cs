@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Security.Cryptography.X509Certificates;
 using Melville.Icc.Parser;
 
@@ -40,6 +41,7 @@ public record struct Matrix3x3(
         reader.Reads15Fixed16()
         ){}
 
+    [Pure]
     public void PostMultiplyBy(in ReadOnlySpan<float> input, in Span<float> output)
     {
         Debug.Assert(input.Length == 3);
@@ -88,19 +90,23 @@ public record struct Matrix3x3(
     
     
 
+    [Pure]
     public override string ToString() =>
         $"{M11,8:F3} {M12,8:F3} {M13,8:F3}\r\n" +
         $"{M21,8:F3} {M22,8:F3} {M23,8:F3}\r\n" +
         $"{M31,8:F3} {M32,8:F3} {M33,8:F3}\r\n";
 
+    [Pure]
     public float Determinant() =>
        (M11 * M22 * M33 +   M12 * M23 * M31 +    M13 * M21 * M32) - 
        (M13 * M22 * M31 +   M12 * M21 * M33 +    M11 * M23 * M32);
 
+    [Pure]
     public bool HasInverse() => Determinant() != 0;
 
     // special case for inversion of the 3x3 matrix using partial determinants
     // https://en.wikipedia.org/wiki/Invertible_matrix#Inversion_of_3_%C3%97_3_matrices
+    [Pure]
     public Matrix3x3 Inverse() =>
         new Matrix3x3(
               M22*M33 - M23*M32,  -(M12*M33 - M13*M32),  M12*M23 - M13*M22, 
