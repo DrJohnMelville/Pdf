@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.5.38" />
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.5.40" />
       <PackageReference Include="Melville.WpfControls" Version="0.5.16" />
     </ItemGroup>
 

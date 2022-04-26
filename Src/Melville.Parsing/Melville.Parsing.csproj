@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Generators.INPC" Version="0.5.38" />
-      <PackageReference Include="System.IO.Pipelines" Version="6.0.0" />
+      <PackageReference Include="Melville.Generators.INPC" Version="0.5.40" />
+      <PackageReference Include="System.IO.Pipelines" Version="6.0.2" />
     </ItemGroup>
 
 </Project>

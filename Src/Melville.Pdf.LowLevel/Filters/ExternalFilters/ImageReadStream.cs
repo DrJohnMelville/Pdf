@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Melville.Parsing.Streams.Bases;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace Melville.Pdf.LowLevel.Filters.ExternalFilters;
@@ -38,7 +39,7 @@ public class ImageReadStream : DefaultBaseStream
     }
 
     private Span<byte> RemainingBytesInCurrentRow() => 
-        MemoryMarshal.AsBytes(source.GetPixelRowSpan(currentRow)).Slice(currentByte);
+        MemoryMarshal.AsBytes(source.DangerousGetPixelRowMemory(currentRow).Span)[currentByte..];
 
     private int ClaimCopyableBytes(int sourceLength, int destLength)
     {

@@ -13,7 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="SharpFont.NetStandard" Version="1.0.5" />
-      <PackageReference Include="System.Linq.Async" Version="5.0.0" />
+      <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>
