@@ -31,4 +31,8 @@
       <None Remove="Renderers\Colors\Profiles\D65_XYZ.icc" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Renderers\Colors\DeviceCmyk.cs" />
+    </ItemGroup>
+
 </Project>

@@ -28,7 +28,6 @@ public static class IccProfileColorSpace
     private static IColorTransform PcsToSrgb(IccProfile profile) => 
         profile.Header.ProfileConnectionColorSpace switch
     {
-        // Per ICC.1:2010 sec 7.2.16 the PCS in ICC profiles is always illuminated by D50
         ColorSpace.XYZ => new XyzToDeviceColor(profile.WhitePoint()), 
         ColorSpace.Lab => LabToXyz.Instance.Concat(new XyzToDeviceColor(profile.WhitePoint())),
         var x => throw new PdfParseException("Unsupported profile connection space: " + x)

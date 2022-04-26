@@ -17,9 +17,9 @@ public class LabToXyz : IColorTransform
     {
         var scaledL = (color[0] + 16f) / 116f;
 
-        xyz[0] = D65WhitePoint.X * decFunc(scaledL + (color[1] / 500f));
-        xyz[1] = D65WhitePoint.Y * decFunc(scaledL);
-        xyz[2] = D65WhitePoint.Z * decFunc(scaledL - (color[2] / 200f));
+        xyz[0] = D50WhitePoint.X * decFunc(scaledL + (color[1] / 500f));
+        xyz[1] = D50WhitePoint.Y * decFunc(scaledL);
+        xyz[2] = D50WhitePoint.Z * decFunc(scaledL - (color[2] / 200f));
     }
 
 
@@ -28,11 +28,13 @@ public class LabToXyz : IColorTransform
 
     private const float sigma = 6f / 29f;
 
-    private static class D65WhitePoint
+    // Lab profiles used as a PCS in an ICC have to be relative to D50 per the spec
+    // if I ever need other whitepoints, make sure the icc profiles use d50.
+    private static class D50WhitePoint
     {
-        public const float X = .950489f;
+        public const float X = .9642f;
         public const float Y = 1f;
-        public const float Z = 1.088840f;
+        public const float Z = .8251f;
     }
 }
 
