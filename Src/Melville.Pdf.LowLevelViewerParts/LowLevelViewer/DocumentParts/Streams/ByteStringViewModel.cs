@@ -33,4 +33,9 @@ public class ByteStringViewModel
         await targetStream.WriteAsync(Bytes.AsMemory());
     }
 
+    public void ShowAsIccColorPicker()
+    {
+        ;
+    }
+
 }

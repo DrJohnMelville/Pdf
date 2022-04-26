@@ -20,7 +20,13 @@
                 </ScrollViewer>
             </TabItem>
         </TabControl>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Click="{eventBindings:EventBinding SaveStreamToFile}">Save to File</Button>
+        <Menu HorizontalAlignment="Right" VerticalAlignment="Top">
+            <MenuItem Header="Operations">
+                <MenuItem Header="Color Picker" Click="{eventBindings:EventBinding ShowAsIccColorPicker}"></MenuItem>
+                <MenuItem Header="Save to File" Click="{eventBindings:EventBinding SaveStreamToFile}"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <!--<Button HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Click="{eventBindings:EventBinding SaveStreamToFile}">Save to File</Button>-->
     </Grid>
 </UserControl>
