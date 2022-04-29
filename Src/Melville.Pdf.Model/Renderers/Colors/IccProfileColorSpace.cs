@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System.IO;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
@@ -11,10 +12,12 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 public static class IccProfileColorSpace
 {
-    public static async ValueTask<IColorSpace> ParseAsync(PdfStream getAsync)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfStream getAsync) =>
+        await ParseAsync(await getAsync.StreamContentAsync().CA()).CA();
+    
+    public static async ValueTask<IColorSpace> ParseAsync(Stream source)
     {
-        var profile = await new IccParser(
-            PipeReader.Create(await getAsync.StreamContentAsync().CA())).ParseAsync().CA();
+        var profile = await new IccParser(PipeReader.Create(source)).ParseAsync().CA();
         return new IccColorSpace(DeviceToSrgb(profile));
     }
 

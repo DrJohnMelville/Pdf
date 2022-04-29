@@ -11,7 +11,7 @@ public static class ColorTransformOperations
         Debug.Assert(xform.Outputs == 3);
         Span<float> intermed = stackalloc float[3];
         xform.Transform(input, intermed);
-        return new DeviceColor(
+        return DeviceColor.FromDoubles(
             intermed[0],
             intermed[1],
             intermed[2]

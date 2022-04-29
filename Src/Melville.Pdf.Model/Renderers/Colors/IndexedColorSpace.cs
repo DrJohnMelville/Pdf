@@ -62,6 +62,6 @@ public class IndexedColorSpace: IColorSpace
     }
     public int ExpectedComponents => 1;
 
-    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) =>
+    public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) =>
         new ClosedInterval[] { new(0, (1 << bitsPerComponent) - 1) };
 }

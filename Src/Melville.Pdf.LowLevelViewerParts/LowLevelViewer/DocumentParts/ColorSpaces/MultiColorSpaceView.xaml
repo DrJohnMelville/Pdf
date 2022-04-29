@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces.MultiColorSpaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces"
+             xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <TabControl ItemsSource="{Binding Spaces}">
+        <TabControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type local:ColorSpaceViewModel}">
+                <TextBlock Text="{Binding Title}"></TextBlock>
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+            <DataTemplate DataType="{x:Type local:ColorSpaceViewModel}">
+                <viewFrames:ViewFrame Content="{Binding}"/> 
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
+</UserControl>

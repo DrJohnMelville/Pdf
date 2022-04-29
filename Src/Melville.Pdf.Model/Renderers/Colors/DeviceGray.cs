@@ -14,14 +14,14 @@ public class DeviceGray : IColorSpace
         if (newColor.Length != 1)
             throw new PdfParseException("Wrong number of color parameters");
         double value = newColor[0];
-        return new DeviceColor(value, value, value);
+        return DeviceColor.FromDoubles(value, value, value);
     }
     public DeviceColor DefaultColor() => DeviceColor.Black;
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
     public int ExpectedComponents => 1;
-    private ClosedInterval[] outputIntervals = { new(0, 1) };
-    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => outputIntervals;
+    private static ClosedInterval[] outputIntervals = { new(0, 1) };
+    public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) => outputIntervals;
 
 }
 

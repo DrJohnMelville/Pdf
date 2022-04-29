@@ -36,7 +36,7 @@ public class RelativeColorSpace : IColorSpace
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
     public int ExpectedComponents => function.Domain.Length;
-    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => 
+    public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) => 
         function.Domain;
 
 }

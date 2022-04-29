@@ -40,9 +40,7 @@ public class CalGray : IColorSpace
             (float)(whitePoint.Red * gammaTransformed),
             (float)(whitePoint.Green * gammaTransformed),
             (float)(whitePoint.Blue * gammaTransformed),
-        }); 
-#warning need to adapt to d50  before doing the xyztransform.
-
+        });
     }
 
     public DeviceColor DefaultColor() => DeviceColor.Black;
@@ -51,6 +49,6 @@ public class CalGray : IColorSpace
 
     public int ExpectedComponents => 1;
 
-    private ClosedInterval[] outputIntervals = { new(0, 1) };
-    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => outputIntervals;
+    private static ClosedInterval[] outputIntervals = { new(0, 1) };
+    public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) => outputIntervals;
 }

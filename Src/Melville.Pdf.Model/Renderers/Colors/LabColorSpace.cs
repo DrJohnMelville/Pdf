@@ -30,7 +30,7 @@ public class LabColorSpace : IColorSpace
     }
 
     private ClosedInterval[] outputIntervals;
-    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => outputIntervals;
+    public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) => outputIntervals;
 
 
     public static async ValueTask<IColorSpace> ParseAsync(PdfDictionary parameters)

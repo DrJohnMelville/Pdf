@@ -8,20 +8,13 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
-public readonly struct ClosedInterval
+public record struct ClosedInterval(double MinValue, double MaxValue)
 {
-    public double MinValue { get; }
-    public double MaxValue { get; }
-    public double Size => MaxValue - MinValue;
-
     //It is legal for maxValue < minValue -- used in type 3 functions to invert a function.
     // inverted ranges are always empty and they clip oddly, but the mapto works.
-    public ClosedInterval(double minValue, double maxValue)
-    {
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
-        
+    // irregular intervals have a negative size
+    public double Size => MaxValue - MinValue;
+    
     public double Clip(double val) =>
         val > MaxValue ? MaxValue :
         val < MinValue ? MinValue : val;

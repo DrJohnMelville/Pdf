@@ -27,7 +27,7 @@ public class IccColorSpace : IColorSpace
 
         Span<float> output = stackalloc float[3];
         transform.Transform(inputs, output);
-        return new DeviceColor(output[0], output[1], output[2]);
+        return DeviceColor.FromDoubles(output[0], output[1], output[2]);
     }
 
     public virtual DeviceColor DefaultColor()
@@ -40,7 +40,7 @@ public class IccColorSpace : IColorSpace
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
     public int ExpectedComponents => transform.Inputs;
-    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) => 
+    public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) => 
       Enumerable.Repeat(new ClosedInterval(0, 1), ExpectedComponents).ToArray();
 }
 

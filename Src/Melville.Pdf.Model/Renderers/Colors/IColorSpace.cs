@@ -11,7 +11,7 @@ public interface IColorSpace
     DeviceColor DefaultColor();
     DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor);
     public int ExpectedComponents { get; }
-    ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent);
+    ClosedInterval[] ColorComponentRanges(int bitsPerComponent);
 }
 
 public static class IColorSpaceOperations

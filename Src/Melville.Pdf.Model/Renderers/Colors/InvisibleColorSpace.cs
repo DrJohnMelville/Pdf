@@ -17,7 +17,7 @@ public class InvisibleColorSpace: IColorSpace
         ExpectedComponents = expectedComponents;
     }
     
-    public ClosedInterval[] DefaultOutputIntervals(int bitsPerComponent) =>
+    public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) =>
       Enumerable.Repeat(new ClosedInterval(0,1), ExpectedComponents).ToArray();
 
 }

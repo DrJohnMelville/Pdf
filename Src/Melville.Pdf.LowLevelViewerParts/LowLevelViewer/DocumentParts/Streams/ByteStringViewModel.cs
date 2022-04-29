@@ -1,7 +1,9 @@
-﻿using Melville.Linq;
+﻿using System.IO;
+using Melville.Linq;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
@@ -33,9 +35,9 @@ public class ByteStringViewModel
         await targetStream.WriteAsync(Bytes.AsMemory());
     }
 
-    public void ShowAsIccColorPicker()
-    {
-        ;
-    }
-
+    public async Task ShowAsIccColorPicker([FromServices] IMvvmDialog dlg) =>
+        dlg.ShowPopupWindow(
+            await ColorSpaceViewModelFactory.CreateAsync(new MemoryStream(Bytes)),
+            800, 400, "Color Picker");
 }
+

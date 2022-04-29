@@ -8,7 +8,7 @@ public static class DecodeArrayParser
 {
     public static ClosedInterval[] SpecifiedOrDefaultDecodeIntervals(
         IColorSpace colorSpace, double[]? decode, int bitsPerComponent) =>
-        decode == null ? colorSpace.DefaultOutputIntervals(bitsPerComponent) : 
+        decode == null ? colorSpace.ColorComponentRanges(bitsPerComponent) : 
             ComputeDecodeIntervals(decode);
 
     private static ClosedInterval[] ComputeDecodeIntervals(double[] decode)

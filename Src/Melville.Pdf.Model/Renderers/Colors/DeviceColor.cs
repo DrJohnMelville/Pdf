@@ -5,13 +5,8 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 public readonly record struct DeviceColor(byte RedByte, byte GreenByte, byte BlueByte, byte Alpha)
 {
-    public DeviceColor(double red, double green, double blue) : this(ToByte(red), ToByte(green), ToByte(blue), 255)
-    {
-    }
-    public DeviceColor(double red, double green, double blue, double alpha) : 
-        this(ToByte(red), ToByte(green), ToByte(blue), ToByte(alpha))
-    {
-    }
+    public static DeviceColor FromDoubles(double red, double green, double blue, double alpha = 1.0) =>
+        new(ToByte(red), ToByte(green), ToByte(blue), ToByte(alpha));
 
     private static byte ToByte(double d) => d switch
     {

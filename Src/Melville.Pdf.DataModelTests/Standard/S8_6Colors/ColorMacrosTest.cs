@@ -35,11 +35,11 @@ public class ColorMacrosTest
         await sut.SetStrokingColorSpace(ColorSpaceName.DeviceRGB);
         sut.SetStrokeColor(0.75, 1, 1);
         await sut.SetStrokingColorSpace(ColorSpaceName.DeviceGray);
-        Assert.Equal(new DeviceColor(0,0,0), state.Current().StrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0,0,0), state.Current().StrokeColor);
         Assert.Equal(DeviceGray.Instance, state.Current().StrokeColorSpace);
         
         sut.SetStrokeColor(0.5);
-        Assert.Equal(new DeviceColor(0.5,0.5,0.5), state.Current().StrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.5,0.5,0.5), state.Current().StrokeColor);
     }
 
     [Fact]
@@ -47,36 +47,36 @@ public class ColorMacrosTest
     {
         sut.SetStrokeColor(0.75);
         await sut.SetStrokingColorSpace(ColorSpaceName.DeviceRGB);
-        Assert.Equal(new DeviceColor(0,0,0), state.Current().StrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0,0,0), state.Current().StrokeColor);
         Assert.Equal(DeviceRgb.Instance, state.Current().StrokeColorSpace);
         
         sut.SetStrokeColor(0.5, 0.6, 0.7);
-        Assert.Equal(new DeviceColor(0.5,0.6,0.7), state.Current().StrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.5,0.6,0.7), state.Current().StrokeColor);
     }
     [Fact]
     public async Task SetNonStrokeColor()
     {
         sut.SetNonstrokingColor(0.75);
         await sut.SetNonstrokingColorSpace(ColorSpaceName.DeviceRGB);
-        Assert.Equal(new DeviceColor(0,0,0), state.Current().NonstrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0,0,0), state.Current().NonstrokeColor);
         Assert.Equal(DeviceRgb.Instance, state.Current().NonstrokeColorSpace);
         
         sut.SetNonstrokingColor(0.5, 0.6, 0.7);
-        Assert.Equal(new DeviceColor(0.5,0.6,0.7), state.Current().NonstrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.5,0.6,0.7), state.Current().NonstrokeColor);
     }
     [Fact]
     public async Task SetStrokeColorExtended()
     {
         await sut.SetStrokingColorSpace(ColorSpaceName.DeviceRGB);
         await sut.SetStrokeColorExtended(null, 0.5, 0.6, 0.7);
-        Assert.Equal(new DeviceColor(0.5,0.6,0.7), state.Current().StrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.5,0.6,0.7), state.Current().StrokeColor);
     }
     [Fact]
     public async Task SetNonStrokeColorExtended()
     {
         await sut.SetNonstrokingColorSpace(ColorSpaceName.DeviceRGB);
         await sut.SetNonstrokingColorExtended(null, 0.5, 0.6, 0.7);
-        Assert.Equal(new DeviceColor(0.5,0.6,0.7), state.Current().NonstrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.5,0.6,0.7), state.Current().NonstrokeColor);
     }
 
     [Fact] public void GrayStrokeMacro()
@@ -84,13 +84,13 @@ public class ColorMacrosTest
         sut.SetStrokeRGB(1,1,1);
         sut.SetStrokeGray(0.4);
         Assert.Equal(DeviceGray.Instance, state.Current().StrokeColorSpace);
-        Assert.Equal(new DeviceColor(0.4,0.4,0.4), state.Current().StrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.4,0.4,0.4), state.Current().StrokeColor);
     }
     [Fact] public void RgbStrokeMacro()
     {
         sut.SetStrokeRGB(0.4,0.5,0.6);
         Assert.Equal(DeviceRgb.Instance, state.Current().StrokeColorSpace);
-        Assert.Equal(new DeviceColor(0.4,0.5,0.6), state.Current().StrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.4,0.5,0.6), state.Current().StrokeColor);
     }
     [Fact] public async Task CmykStrokeMacro()
     {
@@ -103,13 +103,13 @@ public class ColorMacrosTest
         sut.SetNonstrokingRGB(1,1,1);
         sut.SetNonstrokingGray(0.4);
         Assert.Equal(DeviceGray.Instance, state.Current().NonstrokeColorSpace);
-        Assert.Equal(new DeviceColor(0.4,0.4,0.4), state.Current().NonstrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.4,0.4,0.4), state.Current().NonstrokeColor);
     }
     [Fact] public void RgbNonstrokingMacro()
     {
         sut.SetNonstrokingRGB(0.4,0.5,0.6);
         Assert.Equal(DeviceRgb.Instance, state.Current().NonstrokeColorSpace);
-        Assert.Equal(new DeviceColor(0.4,0.5,0.6), state.Current().NonstrokeColor);
+        Assert.Equal(DeviceColor.FromDoubles(0.4,0.5,0.6), state.Current().NonstrokeColor);
     }
     [Fact] public async Task CmykNonstrokingMacro()
     {

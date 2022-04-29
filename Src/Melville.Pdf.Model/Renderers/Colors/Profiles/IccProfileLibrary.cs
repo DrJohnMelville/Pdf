@@ -9,10 +9,11 @@ namespace Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 public static class IccProfileLibrary
 {
+    public const string CmykProfileName = @"Cmyk.icc";
     private static IccProfile? cmyk;
 
     public static async ValueTask<IccProfile> ReadCmyk() => cmyk ??=
-        await LoadProfile(@"Cmyk.icc").CA();
+        await LoadProfile(CmykProfileName).CA();
     
     private static ValueTask<IccProfile> LoadProfile(string profileFile) =>
         new IccParser(PipeReader.Create(

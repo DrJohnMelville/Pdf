@@ -12,11 +12,11 @@ public class S8_6_4DeviceColorSpaces
     [InlineData(0.75)]
     [InlineData(1)]
     public void DeviceGrayTest(double value) =>
-        Assert.Equal(new DeviceColor(value, value, value),
+        Assert.Equal(DeviceColor.FromDoubles(value, value, value),
             DeviceGray.Instance.SetColor(new[] {value}));
 
     [Fact]
     public void RgbColorSpace() =>
-        Assert.Equal(new DeviceColor(0,1, 0.5), 
+        Assert.Equal(DeviceColor.FromDoubles(0,1, 0.5), 
             DeviceRgb.Instance.SetColor(new[]{0, 1, 0.5}));
 }
