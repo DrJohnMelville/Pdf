@@ -15,14 +15,9 @@ public interface IReplStreamPicker
 
 public partial class LowLevelRenderViewModel: IReplStreamPicker
 {
-    [AutoNotify] private Visibility buttonVisibility = Visibility.Collapsed;
     public LowLevelRenderViewModel(LowLevelViewModel innerModel)
     {
         InnerModel = innerModel;
-        innerModel.WhenMemberChanges(nameof(innerModel.Selected), () =>
-            ButtonVisibility = innerModel.Selected?.IsTargetOf is not null
-                ? Visibility.Visible
-                : Visibility.Collapsed);
     }
 
     public LowLevelViewModel InnerModel { get; }
