@@ -15,10 +15,10 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
     public static async ValueTask<PdfRect> CreateAsync(PdfArray array)
     {
         var nums = await array.AsDoublesAsync().CA();
-        return CreateRect(nums);
+        return FromDoubleSpan(nums);
     }
 
-    private static PdfRect CreateRect(in ReadOnlySpan<double> nums)
+    private static PdfRect FromDoubleSpan(in ReadOnlySpan<double> nums)
     {
         if (nums.Length != 4)
             throw new PdfParseException("Pdf Rectangle must have exactly 4 items.");
@@ -38,6 +38,6 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
         var ll = Vector2.Transform(new Vector2((float)Left, (float)Bottom), transform);
         var ur = Vector2.Transform(new Vector2((float)Right, (float)Top), transform);
         Span<double> nums = stackalloc double[] { ll.X, ll.Y, ur.X, ur.Y };
-        return CreateRect(nums);
+        return FromDoubleSpan(nums);
     }
 }

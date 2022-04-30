@@ -12,6 +12,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
@@ -54,6 +55,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public void ModifyTransformMatrix(in Matrix3x2 newTransform)
     {
+        if (newTransform.IsIdentity) return;
         StateOps.ModifyTransformMatrix(in newTransform);
         target.Transform(newTransform);
     }
@@ -172,19 +174,32 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask RunTargetGroup(PdfStream formXObject)
     {
         SaveGraphicsState();
-        if(await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.Matrix, PdfTokenValues.Null).CA() is PdfArray arr &&
-           (await arr.AsDoublesAsync().CA()) is {} matrix)
-            ModifyTransformMatrix(CreateMatrix(matrix));
+        await TryApplyFormXObjectMatrix(formXObject).CA();
         
-        if ((await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.BBox, PdfTokenValues.Null).CA()) is PdfArray arr2 &&
-            (await arr2.AsDoublesAsync().CA()) is { } bbArray)
+        await TryClipToFormXObjectBoundingBox(formXObject);
+
+        await Render(new PdfFormXObject(formXObject, page)).CA();
+        RestoreGraphicsState();
+    }
+
+    private async Task TryApplyFormXObjectMatrix(PdfStream formXObject)
+    {
+        if (await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.Matrix, PdfTokenValues.Null).CA() 
+                is PdfArray arr &&
+            await arr.AsDoublesAsync().CA() is { } matrix)
+            ModifyTransformMatrix(CreateMatrix(matrix));
+    }
+
+    private async Task TryClipToFormXObjectBoundingBox(PdfStream formXObject)
+    {
+        if (await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.BBox, PdfTokenValues.Null).CA() 
+            is PdfArray{Count:4} arr2)
         {
-            Rectangle(bbArray[0], bbArray[1], bbArray[2], bbArray[3]);
+            var clipRect = await PdfRect.CreateAsync(arr2).CA();
+            Rectangle(clipRect.Left, clipRect.Bottom, clipRect.Width, clipRect.Height);
             ClipToPath();
             EndPathWithNoOp();
         }
-        await Render(new PdfFormXObject(formXObject, page)).CA();
-        RestoreGraphicsState();
     }
 
     private ValueTask Render(IHasPageAttributes xObject) =>
