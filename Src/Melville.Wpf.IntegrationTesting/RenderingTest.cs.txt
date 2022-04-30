@@ -228,5 +228,5 @@ RenderingTest.cs_wpf-ExplicitType1FontWidth|1361168416
 RenderingTest.cs_wpf-UnalignedSMask|3836405812
 RenderingTest.cs_Skia-ExplicitType1FontWidth|2183102623
 RenderingTest.cs_Skia-UnalignedSMask|992798530
-RenderingTest.cs_wpf-DeviceCMYK2|1111499757
-RenderingTest.cs_Skia-DeviceCMYK2|1170980415
+RenderingTest.cs_wpf-DeviceCMYK2|642931830
+RenderingTest.cs_Skia-DeviceCMYK2|2084362961

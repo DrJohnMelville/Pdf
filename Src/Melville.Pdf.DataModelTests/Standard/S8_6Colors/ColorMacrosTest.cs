@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Drawing;
+using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -118,10 +119,15 @@ public class ColorMacrosTest
         VerifyWhite(state.Current().NonstrokeColor);
     }
 
+    [Fact] public async Task Cmyk1111IsBlack()
+    {
+        await sut.SetNonstrokingCMYK(1.0,1.0,1.0, 1.0);
+        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpaceAsync(), state.Current().NonstrokeColorSpace);
+        Assert.Equal(new DeviceColor(0,0,0,255), state.Current().NonstrokeColor);
+    }
+
     private static void VerifyWhite(DeviceColor color)
     {
-        Assert.Equal(246 , color.RedByte);
-        Assert.Equal(255, color.GreenByte);
-        Assert.Equal(255, color.BlueByte);
+        Assert.Equal(new DeviceColor(253, 253, 253, 255), color);
     }
 }
