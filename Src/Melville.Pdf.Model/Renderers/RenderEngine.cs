@@ -349,7 +349,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             new ValueTask<IRealizedFont>(target.WrapRealizedFont(r.TypeFace)));
 
     private ValueTask<IRealizedFont> CheckCacheForFont(double size, PdfDictionary fontDic) =>
-        renderer.Cache.Get(new FontRecord(fontDic, Math.Floor(size)), 
+        renderer.Cache.Get(new FontRecord(fontDic, size), 
             r=> FontReader().DictionaryToRealizedFont(r.Dictionary,r.Size));
 
     private ValueTask<IRealizedFont> SystemFontFromName(PdfName font, double size) =>
