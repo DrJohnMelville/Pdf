@@ -49,7 +49,7 @@ RenderingTest.cs_Skia-DeviceRGB|487708149
 RenderingTest.cs_wpf-StrokeAndFill|560322167
 RenderingTest.cs_Skia-StrokeAndFill|269933207
 RenderingTest.cs_wpf-FillRules|1036377199
-RenderingTest.cs_Skia-FillRules|2063068387
+RenderingTest.cs_Skia-FillRules|2373482460
 RenderingTest.cs_wpf-MoveToIsRequired|2829728482
 RenderingTest.cs_wpf-TransformedLineWidth|3786595585
 RenderingTest.cs_Skia-MoveToIsRequired|1881810430

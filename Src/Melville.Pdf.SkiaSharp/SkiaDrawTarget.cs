@@ -90,7 +90,7 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
     }
 
     private void SetCurrentFillRule(bool evenOddFillRule) => 
-        path.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
+        compositePath.FillType = evenOddFillRule ? SKPathFillType.EvenOdd : SKPathFillType.Winding;
 
 
     public void ClipToPath(bool evenOddRule)
