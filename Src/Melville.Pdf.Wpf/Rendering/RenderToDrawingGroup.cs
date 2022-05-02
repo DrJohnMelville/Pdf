@@ -53,16 +53,9 @@ public readonly struct RenderToDrawingGroup
 
     public async ValueTask<DrawingGroup> Render()
     {
-        var dg = CreateDrawingGroup();
+        var dg = new DrawingGroup();
         await RenderTo(dg);
         dg.Freeze();
-        return dg;
-    }
-
-    private static DrawingGroup CreateDrawingGroup()
-    {
-        var dg = new DrawingGroup();
-        RenderOptions.SetBitmapScalingMode(dg, BitmapScalingMode.NearestNeighbor);
         return dg;
     }
 

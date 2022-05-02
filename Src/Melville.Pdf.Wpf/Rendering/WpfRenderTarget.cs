@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
@@ -64,12 +65,19 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     
     public override IDrawTarget CreateDrawTarget() => 
         new WpfDrawTarget(Target, State, OptionalContentCounter);
-    
+
+    private static readonly Rect unitRectangle = new Rect(0, 0, 1, 1);
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         if (OptionalContentCounter?.IsHidden ?? false) return;
-        Target.DrawImage(await bitmap.ToWbfBitmap(), new Rect(0, 0, 1, 1));
+        var bitmapSource = await bitmap.ToWbfBitmap();
+        var dg = new DrawingGroup();
+        RenderOptions.SetBitmapScalingMode(dg, bitmap.ShouldInterpolate(State.CurrentState().TransformMatrix)
+            ?BitmapScalingMode.HighQuality: BitmapScalingMode.NearestNeighbor);
+        dg.Children.Add(new ImageDrawing(bitmapSource, unitRectangle));
+        Target.DrawDrawing(dg);
     }
+
 
     public IRealizedFont WrapRealizedFont(IRealizedFont font) => 
         font is RealizedType3Font ? font: new WpfCachedFont(font);

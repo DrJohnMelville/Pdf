@@ -30,6 +30,7 @@ public static class PdfBitmapOperatons
 
         return new PdfBitmapWrapper(PipeReader.Create(await stream.StreamContentAsync().CA()),
             streamAttrs.Width, streamAttrs.Height,
+            await stream.GetOrDefaultAsync(KnownNames.Interpolate, false).CA(),
             await GetByteWriterAsync(streamAttrs).CA());
     }
 

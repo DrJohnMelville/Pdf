@@ -9,14 +9,17 @@ public class PdfBitmapWrapper : IPdfBitmap
 {
     public int Width { get; }
     public int Height { get; }
+    public bool DeclaredWithInterpolation { get; }
     private readonly IByteWriter byteWriter;
     private readonly PipeReader source;
 
-    public PdfBitmapWrapper(PipeReader source, int width, int height, IByteWriter byteWriter)
+    public PdfBitmapWrapper(
+        PipeReader source, int width, int height, bool shouldRenderInterpolated, IByteWriter byteWriter)
     {
         this.source = source;
         Width = width;
         Height = height;
+        DeclaredWithInterpolation = shouldRenderInterpolated;
         this.byteWriter = byteWriter;
     }
 

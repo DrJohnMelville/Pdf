@@ -11,6 +11,7 @@
              xmlns:mainWindow="clr-namespace:Melville.Pdf.ComparingReader.MainWindow"
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
+             RenderOptions.BitmapScalingMode="HighQuality"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid easyGrids:GridOperations.ColsAndRows="*,3* / auto, *"
           Loaded="{eventBindings:EventBinding ShowInitial, MaxCalls=1}">
