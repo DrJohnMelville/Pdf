@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
@@ -70,13 +72,22 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         if (OptionalContentCounter?.IsHidden ?? false) return;
-        var bitmapSource = await bitmap.ToWbfBitmap();
-        var dg = new DrawingGroup();
-        RenderOptions.SetBitmapScalingMode(dg, bitmap.ShouldInterpolate(State.CurrentState().TransformMatrix)
-            ?BitmapScalingMode.HighQuality: BitmapScalingMode.NearestNeighbor);
-        dg.Children.Add(new ImageDrawing(bitmapSource, unitRectangle));
+        var dg = ApplyBitmapScaling(bitmap, await bitmap.ToWbfBitmap().CA());
         Target.DrawDrawing(dg);
     }
+
+    private DrawingGroup ApplyBitmapScaling(IPdfBitmap bitmap, BitmapSource bitmapSource)
+    {
+        var ret = new DrawingGroup();
+        RenderOptions.SetBitmapScalingMode(ret, SelectScalingMode(bitmap));
+        ret.Children.Add(new ImageDrawing(bitmapSource, unitRectangle));
+        return ret;
+    }
+
+    private BitmapScalingMode SelectScalingMode(IPdfBitmap bitmap) =>
+        bitmap.ShouldInterpolate(State.CurrentState().TransformMatrix)
+            ? BitmapScalingMode.HighQuality
+            : BitmapScalingMode.NearestNeighbor;
 
 
     public IRealizedFont WrapRealizedFont(IRealizedFont font) => 

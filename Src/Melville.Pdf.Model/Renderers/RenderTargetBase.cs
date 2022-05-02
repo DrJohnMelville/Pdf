@@ -52,12 +52,7 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
     {
         Target = target;
     }
-
-    public void Dispose()
-    {
-        State.Dispose();
-    }
-
+    
 
     public void MapUserSpaceToBitmapSpace(in PdfRect rect, double xPixels, double yPixels, in Matrix3x2 adjustOutput)
     {
@@ -93,5 +88,10 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
         if (priorState is TState ts) State.CurrentState().CopyFrom(ts);
         State.CurrentState().ResetTransformMatrix();
             
+    }
+
+    public virtual void Dispose()
+    {
+        State.Dispose();
     }
 }

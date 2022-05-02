@@ -32,14 +32,23 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
     public override IDrawTarget CreateDrawTarget() =>
         new SkiaDrawTarget(Target, State, OptionalContentCounter);
 
-    
+
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         if (OptionalContentCounter?.IsHidden??false) return;
         using var skBitmap = ScreenFormatBitmap(bitmap);
         await FillBitmapAsync(bitmap, skBitmap).CA();
+        SetBitmapScaleQuality(bitmap);
         Target.DrawBitmap(skBitmap,
-            new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1));
+            new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1), fillPaint);
+    }
+
+    private readonly SKPaint fillPaint = new();
+    private void SetBitmapScaleQuality(IPdfBitmap bitmap)
+    {
+        fillPaint.FilterQuality = bitmap.ShouldInterpolate(State.Current().TransformMatrix)
+            ? SKFilterQuality.High
+            : SKFilterQuality.None;
     }
 
     private static SKBitmap ScreenFormatBitmap(IPdfBitmap bitmap) =>
@@ -48,4 +57,10 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
 
     private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap) => 
         bitmap.RenderPbgra((byte*)skBitmap.GetPixels().ToPointer());
+
+    public override void Dispose()
+    {
+        fillPaint.Dispose();
+        base.Dispose();
+    }
 }
