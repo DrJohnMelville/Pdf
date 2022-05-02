@@ -13,28 +13,19 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
     private readonly GraphicsStateStack<SkiaGraphicsState> state;
     private readonly OptionalContentCounter? counter;
     private SKPath compositePath = new();
-    private SKPath path;
+    private SKPath? path = null;
 
     public SkiaDrawTarget(
-        SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, OptionalContentCounter? counter): 
-        this(target, state, counter, new SKPath()){}
-    
-    public SkiaDrawTarget(
-        SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, 
-        OptionalContentCounter? counter, SKPath path)
+        SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, OptionalContentCounter? counter)
     {
         this.target = target;
         this.state = state;
         this.counter = counter;
-        this.path = path;
     }
 
-    public void Dispose()
-    {
-        path.Dispose();
-    }
+    public void Dispose() => path?.Dispose();
 
-    public Matrix3x2 currentMatrix = Matrix3x2.Identity;
+    private Matrix3x2 currentMatrix = Matrix3x2.Identity;
     public void SetDrawingTransform(in Matrix3x2 transform)
     {
         TryAddCurrent();
@@ -43,13 +34,17 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
 
     private void TryAddCurrent()
     {
-        if (path.IsEmpty) return;
+        if (path is null or {IsEmpty:true} ) return;
         var matrix = currentMatrix.Transform();
         compositePath.AddPath(path, ref matrix);
         path = new SKPath();
     }
 
-    public void MoveTo(double x, double y) => path.MoveTo((float)x,(float)y);
+    public void MoveTo(double x, double y) => GetOrCreatePath().MoveTo((float)x,(float)y);
+
+    //The Adobe Pdf interpreter ignores drawing operations before the first MoveTo operation.
+    //If path == null then we have not yet gotten a moveto command and we just ignore all the drawing operations
+    private SKPath GetOrCreatePath() => path ??= new SKPath();
 
     public void LineTo(double x, double y) => path?.LineTo((float)x, (float)y);
 
@@ -59,7 +54,7 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
     }
 
     public void ConicCurveTo(double controlX, double controlY, double finalX, double finalY) =>
-        path.QuadTo((float)controlX, (float)controlY, (float)finalX, (float)finalY);
+        path?.QuadTo((float)controlX, (float)controlY, (float)finalX, (float)finalY);
 
     public void CurveTo(double control1X, double control1Y, double control2X, double control2Y,
         double finalX, double finalY) =>
