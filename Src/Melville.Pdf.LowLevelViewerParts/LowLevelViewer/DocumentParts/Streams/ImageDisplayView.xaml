@@ -7,7 +7,7 @@
              xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid MouseDown="{eventBindings:EventBinding ToggleBackground}" Background="Transparent">
+    <Grid MouseDown="{eventBindings:EventBinding ToggleBackground}" Background="Cyan">
         <Rectangle wpfHacks:VisibilityHack.CollapseUnless="{Binding ShowCheckers}">
             <Rectangle.Fill>
                 <DrawingBrush TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
