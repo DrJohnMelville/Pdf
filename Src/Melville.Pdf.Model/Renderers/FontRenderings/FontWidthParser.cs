@@ -13,8 +13,6 @@ public readonly struct FontWidthParser
     private readonly IRealizedFont innerFont;
     private readonly PdfFont pdfFont;
     private readonly double sizeFactor;
-#warning this constant has to go away
-    private const double TerribleBrokenMagicConstantIDoNotUnderstandYet = 17.0/16.0;
 
     public FontWidthParser(IRealizedFont innerFont, PdfFont pdfFont, double size)
     {
