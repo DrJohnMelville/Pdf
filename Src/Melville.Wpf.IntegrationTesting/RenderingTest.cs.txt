@@ -204,10 +204,10 @@ RenderingTest.cs_wpf-CcittType3K10Encoded|1114358541
 RenderingTest.cs_Skia-CcittType3K0Encoded|375525976
 RenderingTest.cs_Skia-CcittType3K1Encoded|375525976
 RenderingTest.cs_Skia-CcittType3K10Encoded|375525976
-RenderingTest.cs_wpf-Type0WithEmbeddedTT|378875025
-RenderingTest.cs_Skia-Type0WithEmbeddedTT|1982725972
-RenderingTest.cs_wpf-Type0WithCidToGid|3311315980
-RenderingTest.cs_Skia-Type0WithCidToGid|945071482
+RenderingTest.cs_wpf-Type0WithEmbeddedTT|1024293366
+RenderingTest.cs_Skia-Type0WithEmbeddedTT|2734233237
+RenderingTest.cs_wpf-Type0WithCidToGid|3400115999
+RenderingTest.cs_Skia-Type0WithCidToGid|193255945
 RenderingTest.cs_wpf-DingBatsWithANameDifferences|958308281
 RenderingTest.cs_wpf-ColoredTileWithSpacing|466889515
 RenderingTest.cs_wpf-ColoredTileRotated|299643208
@@ -232,3 +232,7 @@ RenderingTest.cs_wpf-DeviceCMYK2|642931830
 RenderingTest.cs_Skia-DeviceCMYK2|2084362961
 RenderingTest.cs_wpf-InterpolatedIndexedImage|993833348
 RenderingTest.cs_Skia-InterpolatedIndexedImage|2916797230
+RenderingTest.cs_wpf-Type0WithTightDefaultCharSpacing|1704100692
+RenderingTest.cs_wpf-Type0WithIndividualCharSpacing|4131844796
+RenderingTest.cs_Skia-Type0WithTightDefaultCharSpacing|2414284558
+RenderingTest.cs_Skia-Type0WithIndividualCharSpacing|1477752168

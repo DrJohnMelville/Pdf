@@ -33,7 +33,8 @@ public class WpfCachedFont : IRealizedFont
         cache.Add(glyph, slow);
         return (slow,slow.Original(transform));
     }
-    public double AdjustWidth(uint character, double glyphWidth) => inner.AdjustWidth(character, glyphWidth);
+    public double AdjustWidth(uint character, double glyphWidth) => inner.
+        AdjustWidth(character, glyphWidth);
 
 
     private class CachedOperation : IFontWriteOperation, IFontTarget

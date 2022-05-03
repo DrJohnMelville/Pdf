@@ -10,7 +10,6 @@ using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
-using Melville.Pdf.Wpf;
 using Melville.Pdf.Wpf.Rendering;
 using Melville.TestHelpers.StringDatabase;
 using Xunit;

@@ -108,6 +108,7 @@ FontTypes:Type3
 FontTypes:MMType1
 FontTypes:TrueType
 FontTypes:OpenType
+FontTypes:CIDFontType0
 FontTypes:CIDFontType2
 
 OptionalContentMemberFunction:AllOn
@@ -164,6 +165,8 @@ Pdf:DeviceN
 Pdf:Differences
 Pdf:DocOpen
 Pdf:Domain
+Pdf:DW
+Pdf:DW2
 Pdf:EarlyChange
 Pdf:Encode
 Pdf:EncodedByteAlign
@@ -273,6 +276,7 @@ Pdf:View
 Pdf:ViewState
 Pdf:Version
 Pdf:W
+Pdf:W2
 Pdf:Width
 Pdf:Widths
 Pdf:WhitePoint

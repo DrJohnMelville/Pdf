@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -23,11 +26,11 @@ public readonly struct FontWidthParser
 
     public ValueTask<IRealizedFont> Parse(int subTypeKey) => subTypeKey switch
     {
-        KnownNameKeys.Type3 => new(innerFont),
-        KnownNameKeys.Type0 => new(innerFont),
+        KnownNameKeys.Type3 or KnownNameKeys.Type0 => new(innerFont),
+        KnownNameKeys.CIDFontType2 or KnownNameKeys.CIDFontType0 => ParseCidFontWidths(),
         _ => ParseSimpleFont()
     };
-
+    
     private async ValueTask<IRealizedFont> ParseSimpleFont()
     {
         var pdfWidths = await pdfFont.WidthsArrayAsync().CA();
@@ -44,29 +47,58 @@ public readonly struct FontWidthParser
         }
         return pdfWidths;
     }
-}
-
-public partial class SimpleWidthAdjustedFont : IRealizedFont
-{
-
-    [DelegateTo()]
-    private readonly IRealizedFont innerFont;
-    private readonly uint first;
-    private readonly double[] pdfWidths;
-
-    public SimpleWidthAdjustedFont(IRealizedFont innerFont, uint first, double[] pdfWidths)
-    {
-        this.innerFont = innerFont;
-        this.first = first;
-        this.pdfWidths = pdfWidths;
-    }
     
-    public double AdjustWidth(uint character, double glyphWidth)
+    private async ValueTask<IRealizedFont> ParseCidFontWidths()
     {
-        var index = character - first;
-        var adjustWidth = index < pdfWidths.Length ? 
-            pdfWidths[index]:
-            innerFont.AdjustWidth(character, glyphWidth);
-        return adjustWidth;
+        return new CidWidthAdjustedFont(innerFont, sizeFactor * await pdfFont.DefaultWidthAsync().CA(),
+            await ParseWArray().CA());
+    }
+
+    private async ValueTask<IReadOnlyDictionary<uint,double>> ParseWArray()
+    {
+        var ret = new Dictionary<uint, double>();
+        var charWidthArray = await pdfFont.WArrayAsync().CA();
+        int pos = 0;
+        while (pos < charWidthArray.Count)
+        {
+            pos += await ParseSingleArrayItem(charWidthArray, ret, pos).CA();
+        }
+
+        return ret;
+    }
+
+    private async ValueTask<int> ParseSingleArrayItem(
+        PdfArray charWidthArray, Dictionary<uint, double> ret, int pos)
+    {
+        var first = (uint)(await charWidthArray.GetAsync<PdfNumber>(pos).CA()).IntValue;
+        switch (await charWidthArray[pos + 1].CA())
+        {
+            case
+                PdfArray arr:
+                AddItems(ret, first, await arr.AsDoublesAsync().CA());
+                return 2;
+            case PdfNumber last:
+                AddItems(ret, first, (uint)last.IntValue,
+                    (await charWidthArray.GetAsync<PdfNumber>(pos + 2).CA()).DoubleValue);
+                return 3;
+            default: throw new PdfParseException("Invalid W array");
+        }
+    }
+
+    private void AddItems(Dictionary<uint, double> ret, uint first, uint last, double width)
+    {
+        width *= sizeFactor;
+        for (uint i = first; i <= last; i++)
+        {
+            ret[i] = width;
+        }
+    }
+
+    private void AddItems(Dictionary<uint, double> ret, uint first, double[] widths)
+    {
+        foreach (var width in widths)
+        {
+            ret[first++] = width * sizeFactor;
+        }
     }
 }
