@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Melville.FileSystem;
 using Melville.INPC;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.DiParameterSources;
+using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
@@ -17,7 +20,7 @@ public interface ICloseApp
 [OnDisplayed(nameof(OpenFile))]
 public partial class MainDisplayViewModel
 {
-    public LowLevelViewModel Model { get; }
+    [AutoNotify] private object? model;
 
     public MainDisplayViewModel(LowLevelViewModel model)
     {
@@ -25,17 +28,24 @@ public partial class MainDisplayViewModel
     }
 
     public async Task OpenFile([FromServices]IOpenSaveFile dlg, 
-        [FromServices] ICloseApp closeApp, IWaitingService wait)
+        [FromServices] ICloseApp closeApp, IVisualTreeRunner runner)
     {
         var file = 
             dlg.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open");
-        if (file != null)
+        switch (file?.Extension().ToUpper())
         {
-            Model.SetStream(await file.OpenRead());
+            case "PDF":
+                runner.RunMethod(OpenPdfFile, new object?[] { await file.OpenRead() }, out var _);
+                break;
+            default:
+                closeApp.Close();
+                break;
         }
-        else
-        {
-            closeApp.Close();
-        }
+    }
+
+    private void OpenPdfFile(Stream pdfFile, [FromServices] LowLevelViewModel newModel)
+    {
+        newModel.SetStream(pdfFile);
+        Model = newModel;
     }
 }
