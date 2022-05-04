@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
+using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevelReader.MainDisplay;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
@@ -19,37 +20,38 @@ public class MainDisplayViewModelTest
     private readonly Mock<IPartParser> parser = new();
     private readonly Mock<IFile> file = new();
     private readonly Mock<ICloseApp> closer = new();
-    private readonly Mock<IWaitingService> waiting = new();
+    private readonly Mock<IVisualTreeRunner> runner = new();
         
     private readonly MainDisplayViewModel sut;
 
     public MainDisplayViewModelTest()
     {
+        file.SetupGet(i => i.Path).Returns("c:\\ddd.pdf");
         sut = new(new LowLevelViewModel(parser.Object));
     }
 
     [Fact]
-    public void RootTest() => sut.Model.AssertProperty(i=>i.Root, new DocumentPart[1]);
+    public void RootTest() => ((LowLevelViewModel)sut.Model!).AssertProperty(i=>i.Root, new DocumentPart[1]);
     [Fact]
-    public void SelectedTest() => sut.Model.AssertProperty(i=>i.Selected, new DocumentPart("s"));
+    public void SelectedTest() => ((LowLevelViewModel)sut.Model!).AssertProperty(i=>i.Selected, new DocumentPart("s"));
 
     [Fact]
     public async Task ShowFileDisplaySucceed()
     {
         dlg.Setup(i => i.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open"))
             .Returns(file.Object);
-        await sut.OpenFile(dlg.Object, closer.Object, waiting.Object);
+        await sut.OpenFile(dlg.Object, closer.Object, runner.Object);
         closer.VerifyNoOtherCalls();
-        waiting.VerifyNoOtherCalls();
+        Assert.Single(runner.Invocations);
     }
     [Fact]
     public async Task ShowFileDisplayFail()
     {
         dlg.Setup(i => i.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open"))
             .Returns((IFile?)null);
-        await sut.OpenFile(dlg.Object, closer.Object, waiting.Object);
+        await sut.OpenFile(dlg.Object, closer.Object, runner.Object);
         closer.Verify(i=>i.Close());
         parser.VerifyNoOtherCalls();
-        waiting.VerifyNoOtherCalls();
+        runner.VerifyNoOtherCalls();
     }
 }

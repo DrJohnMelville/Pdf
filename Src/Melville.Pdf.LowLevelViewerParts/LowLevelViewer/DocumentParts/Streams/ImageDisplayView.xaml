@@ -24,7 +24,7 @@
             <Border BorderBrush="Red" BorderThickness="1" RenderOptions.BitmapScalingMode="NearestNeighbor">
                 <Image Source="{Binding Image}">
                     <Image.LayoutTransform>
-                        <ScaleTransform ScaleX="1" ScaleY="-1"></ScaleTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="{Binding YFactor}"></ScaleTransform>
                     </Image.LayoutTransform>
                 </Image>
             </Border>

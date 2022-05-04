@@ -15,9 +15,11 @@ public partial class ImageDisplayViewModel
     
     public ImageSource Image { get; init; }
     [AutoNotify] private bool showCheckers = true;
-    public ImageDisplayViewModel(ImageSource Image)
+    public double YFactor { get; }
+    public ImageDisplayViewModel(ImageSource Image, double yFactor = -1)
     {
         this.Image = Image;
+        YFactor = yFactor;
     }
 
     public void ToggleBackground() => ShowCheckers = !ShowCheckers;

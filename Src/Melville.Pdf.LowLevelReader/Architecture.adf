@@ -19,7 +19,13 @@ Group DocumentParts
      Melville.Pdf.LowLevelReader.DocumentParts.*
 Group Passwords
      Melville.Pdf.LowLevelReader.PasswordDialogs.*
+Group ImageViewers
+    Melville.Pdf.LowLevelReader.ImageViewers.*
 
 Melville.Pdf.LowLevelReader.Services.* +=> Melville.Pdf.LowLevelReader.* 
 
 MainDisplay => DocumentParts
+MainDisplay => ImageViewers
+
+ImageViewers => Melville.Pdf.Model.*
+ImageViewers => Melville.Parsing.*

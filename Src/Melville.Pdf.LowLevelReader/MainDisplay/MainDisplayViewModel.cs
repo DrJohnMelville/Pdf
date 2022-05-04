@@ -1,15 +1,21 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.INPC;
-using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
+using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers;
+using Melville.Pdf.LowLevelReader.ImageViewers;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
-using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
+using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.LowLevelReader.MainDisplay;
 
@@ -36,6 +42,9 @@ public partial class MainDisplayViewModel
         {
             case "PDF":
                 runner.RunMethod(OpenPdfFile, new object?[] { await file.OpenRead() }, out var _);
+                break;
+            case "JPG":
+                Model = new ImageDisplayViewModel(await ImageReader.ReadJpeg(await file.OpenRead()), 1);
                 break;
             default:
                 closeApp.Close();
