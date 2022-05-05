@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Security.Cryptography.X509Certificates;
 using Melville.Icc.Parser;
+using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 

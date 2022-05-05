@@ -38,7 +38,7 @@ public class MainDisplayViewModelTest
     [Fact]
     public async Task ShowFileDisplaySucceed()
     {
-        dlg.Setup(i => i.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open"))
+        dlg.Setup(i => i.GetLoadFile(null, "pdf", It.IsAny<string>(), "File to open"))
             .Returns(file.Object);
         await sut.OpenFile(dlg.Object, closer.Object, runner.Object);
         closer.VerifyNoOtherCalls();

@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
 using Melville.Icc.Parser;
+using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 

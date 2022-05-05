@@ -37,7 +37,7 @@ public partial class MainDisplayViewModel
         [FromServices] ICloseApp closeApp, IVisualTreeRunner runner)
     {
         var file = 
-            dlg.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open");
+            dlg.GetLoadFile(null, "pdf", "Image Files|*.pdf;*.jpg;*.jb2|Portable Document Format|*.pdf|Jpeg|*.jpg|JBIG2|*.jb2", "File to open");
         switch (file?.Extension().ToUpper())
         {
             case "PDF":

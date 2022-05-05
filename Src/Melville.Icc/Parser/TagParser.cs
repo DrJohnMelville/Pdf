@@ -2,6 +2,7 @@
 using System.Text;
 using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
+using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Parser;
 

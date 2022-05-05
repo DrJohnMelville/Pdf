@@ -3,6 +3,8 @@ using System.IO.Pipelines;
 using Melville.Icc.Model;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Parsing.SequenceReaders;
+
 namespace Melville.Icc.Parser;
 
 public readonly struct IccParser
