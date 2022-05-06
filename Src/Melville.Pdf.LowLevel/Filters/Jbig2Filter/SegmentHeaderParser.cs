@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Runtime.CompilerServices;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
