@@ -14,15 +14,15 @@ public static  partial class SequenceReaderExtensions
     [MacroItem("ulong", "Uint64", 8)]
     [MacroCode("public static ~0~ ReadBigEndian~1~(this ref SequenceReader<byte> reader) => (~0~)reader.ReadBigEndianUint(~2~);")]
     [MacroCode(@"public static bool TryReadBigEndian~1~(this ref SequenceReader<byte> reader, out ~0~ ret) 
-{
-     if (TryReadBigEndian(ref reader, out var inner, ~2~))
-    {
-        ret = (~0~)inner;
-        return true;
-    }
-    ret = 0;
-    return false;
-}")]
+        {
+             if (TryReadBigEndian(ref reader, out var inner, ~2~))
+            {
+                ret = (~0~)inner;
+                return true;
+            }
+            ret = 0;
+            return false;
+        }")]
     public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, out ulong value, int byteCount)
     {
         value = 0;
