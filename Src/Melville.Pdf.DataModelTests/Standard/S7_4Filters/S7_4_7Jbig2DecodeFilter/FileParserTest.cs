@@ -11,22 +11,15 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilt
 
 public class FileParserTest
 {
-    public async ValueTask<byte[]> ParseHexString(params string[] sources)
-    {
-        var data = string.Join("", sources.Prepend("<").Append(">"));
-        return ((PdfString)await data.ParseObjectAsync()).Bytes;
-    }
-
     private const string magicNumber = "97 4A 42 32 0D 0A 1A 0A";
-    private const string endOfPageHead = "00000004 31 00 01 00000000";
-    private const string endOfStripeHead = "00000004 32 00 01 00000004";
+    private const string endOfPageHead = "00000005 31 00 01 00000000";
+    private const string endOfStripeHead = "00000002 32 00 01 00000004";
     private const string endofStripeData = "000000FF";
     private const string endOfFileHead = "00000006 33 00 01 00000000";
 
     private async ValueTask<SegmentReader> ParseFile(params string[] data)
     {
-        return await JbigFileParser.ReadFileHeader(new MemoryStream(
-            await ParseHexString(data)));
+        return await JbigFileParser.ReadFileHeader(new MemoryStream(BitStreamCreator.BitsFromHex(data)));
     } 
 
     [Theory]
@@ -36,7 +29,7 @@ public class FileParserTest
     {
         var reader = await ParseFile(magicNumber, typeAndPages,
             endOfStripeHead, endofStripeData, endOfPageHead, endOfFileHead);
-        VerifySimpleFile<SequentialSegmentReader>(pages, reader);
+        await VerifySimpleFile<SequentialSegmentReader>(pages, reader);
     }
     [Theory]
     [InlineData("00 00000003", 3u)]
@@ -45,12 +38,22 @@ public class FileParserTest
     {
         var reader = await ParseFile(magicNumber, typeAndPages,
             endOfStripeHead, endOfPageHead, endOfFileHead, endofStripeData);
-        VerifySimpleFile<RandomAccessSegmentReader>(pages, reader);
+        await VerifySimpleFile<RandomAccessSegmentReader>(pages, reader);
     }
 
-    private static void VerifySimpleFile<T>(uint pages, SegmentReader reader)
+    private static async ValueTask VerifySimpleFile<T>(uint pages, SegmentReader reader)
     {
         Assert.IsType<T>(reader);
         Assert.Equal(pages, reader.Pages);
+        await VerifySegment(reader, 2, SegmentType.EndOfStripe);
+        await VerifySegment(reader, uint.MaxValue, SegmentType.EndOfPage);
+        await VerifySegment(reader, uint.MaxValue, SegmentType.EndOfFile);
+    }
+
+    private static async Task VerifySegment(SegmentReader reader, uint number, SegmentType type)
+    {
+        var header = await reader.NextSegment();
+        Assert.Equal(number, header.Number);
+        Assert.Equal(type, header.Type);
     }
 }

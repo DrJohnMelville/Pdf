@@ -31,7 +31,7 @@ public enum SegmentType : byte
     Extension = 62
 }
 
-public record struct SegmentHeader(uint Number, SegmentType Flags, uint Page, uint DataLength)
+public record struct SegmentHeader(uint Number, SegmentType SegmentType, uint Page, uint DataLength)
 {
     
 }
