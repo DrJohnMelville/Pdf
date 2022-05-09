@@ -136,6 +136,100 @@ public class StandardHuffmanTables
         new HuffmanLine(9, 0b111111111, 32, 3339, 1)
     );
 
+    private static readonly HuffmanTable B10 = new(
+        new HuffmanLine(2, 0b00, 2, -2, 1),
+        new HuffmanLine(2, 0b01, 6, 6, 1),
+        new HuffmanLine(2, 0b10, 0, int.MaxValue, 0),
+        new HuffmanLine(5, 0b11000, 0, -3, 0),
+        new HuffmanLine(5, 0b11001, 0, 2, 0),
+        new HuffmanLine(5, 0b11010, 5, 70, 1),
+        new HuffmanLine(6, 0b110110, 0, 3, 0),
+        new HuffmanLine(6, 0b110111, 5, 102, 1),
+        new HuffmanLine(6, 0b111000, 6, 134, 1),
+        new HuffmanLine(6, 0b111001, 7, 198, 1),
+        new HuffmanLine(6, 0b111010, 8, 326, 1),
+        new HuffmanLine(6, 0b111011, 9, 582, 1),
+        new HuffmanLine(6, 0b111100, 10, 1094, 1),
+        new HuffmanLine(7, 0b1111010, 4, -21, 1),
+        new HuffmanLine(7, 0b1111011, 0, -4, 0),
+        new HuffmanLine(7, 0b1111100, 0, 4, 0),
+        new HuffmanLine(7, 0b1111101, 11, 2118, 1),
+        new HuffmanLine(8, 0b11111100, 0, -5, 0),
+        new HuffmanLine(8, 0b11111101, 0, 5, 0),
+        new HuffmanLine(8, 0b11111110, 32, -22, -1),
+        new HuffmanLine(8, 0b11111111, 32, 4166, 1)
+    );
+
+    private static readonly HuffmanTable B11 = new(
+        new HuffmanLine(1, 0b0, 0, 1, 0),
+        new HuffmanLine(2, 0b10, 1, 2, 1),
+        new HuffmanLine(4, 0b1100, 0, 4, 0),
+        new HuffmanLine(4, 0b1101, 1, 5, 1),
+        new HuffmanLine(5, 0b11100, 1, 7, 1),
+        new HuffmanLine(5, 0b11101, 2, 9, 1),
+        new HuffmanLine(6, 0b111100, 2, 13, 1),
+        new HuffmanLine(7, 0b1111010, 2, 17, 1),
+        new HuffmanLine(7, 0b1111011, 3, 21, 1),
+        new HuffmanLine(7, 0b1111100, 4, 29, 1),
+        new HuffmanLine(7, 0b1111101, 5, 45, 1),
+        new HuffmanLine(7, 0b1111110, 6, 77, 1),
+        new HuffmanLine(7, 0b1111111, 32, 141, 1)
+    );
+
+    private static readonly HuffmanTable B12 = new HuffmanTable(
+        new HuffmanLine(1, 0b0, 0, 1, 0),
+        new HuffmanLine(2, 0b10, 0, 2, 0),
+        new HuffmanLine(3, 0b110, 1, 3, 1 ),
+        new HuffmanLine(5, 0b11100, 0, 5, 0),
+        new HuffmanLine(5, 0b11101, 1, 6, 1),
+        new HuffmanLine(6, 0b111100, 1, 8, 1),
+        new HuffmanLine(7, 0b1111010, 0, 10, 0),
+        new HuffmanLine(7, 0b1111011, 1, 11,1),
+        new HuffmanLine(7, 0b1111100, 2, 13, 1),
+        new HuffmanLine(7, 0b1111101, 3, 17, 1),
+        new HuffmanLine(7, 0b1111110, 4, 25, 1),
+        new HuffmanLine(8, 0b11111110, 5, 41, 1),
+        new HuffmanLine(8, 0b11111111, 32, 73, 1)
+    );
+
+    private static readonly HuffmanTable B13 = new(
+        new HuffmanLine(1, 0b0, 0,1,0),
+        new HuffmanLine(3, 0b100, 0, 2, 0),
+        new HuffmanLine(3, 0b101, 3, 7, 1),
+        new HuffmanLine(4, 0b1100, 0, 3, 0),
+        new HuffmanLine(4, 0b1101, 1, 5, 1),
+        new HuffmanLine(5, 0b11100, 0, 4, 1),
+        new HuffmanLine(6, 0b111010, 1, 15, 1),
+        new HuffmanLine(6, 0b111011, 2, 17, 1),
+        new HuffmanLine(6, 0b111100, 3, 21, 1),
+        new HuffmanLine(6, 0b111101, 4, 29, 1),
+        new HuffmanLine(6, 0b111110, 5, 45, 1),
+        new HuffmanLine(7, 0b1111110, 6, 77, 1),
+        new HuffmanLine(7, 0b1111111, 32, 141, 1)
+    );
+
+    private static readonly HuffmanTable B14 = new(
+        new HuffmanLine(1, 0b0, 0, 0, 0),
+        // Notice this definition differs from table B14 in the spec, but is more efficient.
+        new HuffmanLine(2, 0b10, 1, -2, 1),
+        new HuffmanLine(2, 0b11, 1, 1, 1)
+    );
+
+    private static readonly HuffmanTable B15 = new(
+        // this differs from the spec table b15, but exploits more redundency
+        new HuffmanLine(1, 0b0, 0, 0,0),
+        new HuffmanLine(2, 0b10, 1, -1, 2),
+        new HuffmanLine(3, 0b110, 1, -2, 4),
+        new HuffmanLine(5, 0b11100, 1, -4, 1),
+        new HuffmanLine(5, 0b11101, 1, 3, 1),
+        new HuffmanLine(6, 0b111100, 2, -8, 1),
+        new HuffmanLine(6, 0b111101, 2, 5, 1),
+        new HuffmanLine(7, 0b1111100, 4, -24, 1),
+        new HuffmanLine(7, 0b1111101, 4, 9, 1),
+        new HuffmanLine(7, 0b1111110, 32, -25, -1),
+        new HuffmanLine(7, 0b1111111, 32, 25, 1)
+    );
+
     public static HuffmanTable FromSelector(HuffmanTableSelection tableSelector) => tableSelector switch
     {
         HuffmanTableSelection.B1 => B1,
@@ -147,6 +241,12 @@ public class StandardHuffmanTables
         HuffmanTableSelection.B7 => B7,
         HuffmanTableSelection.B8 => B8,
         HuffmanTableSelection.B9 => B9,
+        HuffmanTableSelection.B10 => B10,
+        HuffmanTableSelection.B11 => B11,
+        HuffmanTableSelection.B12 => B12,
+        HuffmanTableSelection.B13 => B13,
+        HuffmanTableSelection.B14 => B14,
+        HuffmanTableSelection.B15 => B15,
         _ => throw new InvalidDataException("Cannot find standard huffman table: " + tableSelector)
     };
 }
