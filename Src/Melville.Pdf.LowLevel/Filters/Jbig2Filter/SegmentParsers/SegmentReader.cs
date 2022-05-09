@@ -33,6 +33,8 @@ public static class SegmentReader
         {
             SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader).Parse(header.Number),
             SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(header, ref reader),
+            SegmentType.EndOfPage => Segment.EndOfPage,
+            SegmentType.EndOfFile => Segment.EndOfFile,
             _ => throw new InvalidDataException("Unknown JBig2 Segment: " + header.SegmentType)
         };
     }

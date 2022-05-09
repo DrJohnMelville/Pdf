@@ -14,7 +14,7 @@ public static class BitStreamCreator
             .Select(HexValue)
             .Where(i => i >= 0)
             .Chunk(2)
-            .Select(i => (byte)(i.Length == 2 ? (i[0] << 8 | i[1]) : i[0] << 8))
+            .Select(i => (byte)((i[0] << 4) | (i.Length == 2 ?i[1] : 0)))
             .ToArray();
 
     private static int HexValue(char character) => character switch
