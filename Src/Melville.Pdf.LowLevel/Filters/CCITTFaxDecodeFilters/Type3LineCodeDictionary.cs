@@ -21,6 +21,9 @@ public abstract class Type3LineCodeDictionary : ICodeDictionay
     protected abstract ICodeDictionay LineReader { get; }
 }
 
+/// <summary>
+/// This type implements Group 3, 1-D from the ITU Rec T.4
+/// </summary>
 public class Type3K0LineCodeDictionary : Type3LineCodeDictionary
 {
     protected override bool IsEndOfLineCode((int BitLength, int SourceBits) input) => 
@@ -30,6 +33,9 @@ public class Type3K0LineCodeDictionary : Type3LineCodeDictionary
         new MakeUpExpander(TerminalCodeDictionary.Instance);
 }
 
+/// <summary>
+/// This type implements Group 3 2-D from the ITU Rec T.4
+/// </summary>
 public class Type3SwitchingLineCodeDictionary: Type3LineCodeDictionary
 {
     private readonly ICodeDictionay twoDimensional;

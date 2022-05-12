@@ -3,6 +3,7 @@
 public readonly struct HuffmanLine
 {
     public int PrefixLengh { get; }
+
     private readonly int prefixData;
     private readonly int rangeLength;
     private readonly int rangeOffset;
@@ -19,4 +20,5 @@ public readonly struct HuffmanLine
 
     public bool Matches(int patternLen, int pattern) => patternLen == PrefixLengh && pattern == prefixData;
     public int ReadNum(ref BitSource source) => rangeOffset + (rangeFactor * source.ReadInt(rangeLength));
+    public bool IsOutOfBandRow => rangeLength == 0 && rangeOffset == int.MaxValue;
 }

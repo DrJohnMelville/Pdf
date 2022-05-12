@@ -1,6 +1,7 @@
 ﻿
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
@@ -26,4 +27,8 @@ public class HuffmanTable
 
         throw new InvalidDataException("Got to the end of a huffman table");
     }
+
+    public bool HasOutOfBandRow() => lines.Any(i => i.IsOutOfBandRow);
+
+    public bool IsOutOfBand(int value) => value == int.MaxValue;
 }

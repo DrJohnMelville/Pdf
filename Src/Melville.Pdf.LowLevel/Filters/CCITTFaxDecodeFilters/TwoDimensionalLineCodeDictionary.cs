@@ -2,6 +2,9 @@
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
+/// <summary>
+/// This dictionary implements CCITT Group 4 or the ITU Rec T.6 protocool
+/// </summary>
 public class TwoDimensionalLineCodeDictionary : ICodeDictionay
 {
     private ICodeDictionay inner;

@@ -9,14 +9,14 @@ public enum HuffmanTableSelection : byte
 }
 public class StandardHuffmanTables
 {
-    private static readonly HuffmanTable B1 = new HuffmanTable(
+    public static readonly HuffmanTable B1 = new HuffmanTable(
         new HuffmanLine(1,0,4,0, 1),
         new HuffmanLine(2,0b10, 8, 16, 1),
         new HuffmanLine(3,0b110, 16,272, 1),
         new HuffmanLine(3,0b111, 32, 65808, 1)
     );
 
-    private static readonly HuffmanTable B2 = new(
+    public static readonly HuffmanTable B2 = new(
         new HuffmanLine(1,0,0,0,0),
         new HuffmanLine(2, 0b10, 0, 1, 0),
         new HuffmanLine(3, 0b110, 0, 2, 0),
@@ -26,7 +26,7 @@ public class StandardHuffmanTables
         new HuffmanLine(6, 0b111111, 0, int.MaxValue, 0)
     );
 
-    private static readonly HuffmanTable B3 = new(
+    public static readonly HuffmanTable B3 = new(
         new HuffmanLine(1,0b0, 0, 0, 0),
         new HuffmanLine(2, 0b10, 0, 1, 0),
         new HuffmanLine(3, 0b110, 0, 2, 0),
@@ -38,7 +38,7 @@ public class StandardHuffmanTables
         new HuffmanLine(8, 0b11111111, 32, -257, -1)
         );
 
-    private static readonly HuffmanTable B4 = new(
+    public static readonly HuffmanTable B4 = new(
         new HuffmanLine(1, 0b0, 0, 1, 0),
         new HuffmanLine(2, 0b10, 0, 2, 0),
         new HuffmanLine(3, 0b110, 0, 3, 0),
@@ -47,7 +47,7 @@ public class StandardHuffmanTables
         new HuffmanLine(5, 0b11111, 32, 76, 1)
         );
 
-    private static readonly HuffmanTable B5 = new(
+    public static readonly HuffmanTable B5 = new(
         new HuffmanLine(1, 0b0, 0, 1, 0),
         new HuffmanLine(2, 0b10, 0, 2, 0),
         new HuffmanLine(3, 0b110, 0, 3, 0),
@@ -58,7 +58,7 @@ public class StandardHuffmanTables
         new HuffmanLine(7, 0b1111111, 32, -256,-1)
         );
 
-    private static readonly HuffmanTable B6 = new(
+    public static readonly HuffmanTable B6 = new(
         new HuffmanLine(2, 0b00, 7, 0, 1),
         new HuffmanLine(3, 0b010, 7, 128, 1),
         new HuffmanLine(3, 0b011, 8, 256, 1),
@@ -74,7 +74,7 @@ public class StandardHuffmanTables
         new HuffmanLine(6, 0b111111, 32, 2048, 1)
     );
 
-    private static readonly HuffmanTable B7 = new(
+    public static readonly HuffmanTable B7 = new(
         new HuffmanLine(3, 0b000, 8, -512, 1),
         new HuffmanLine(3, 0b001, 8, 256, 1),
         new HuffmanLine(3, 0b010, 9, 512, 1),
@@ -94,7 +94,7 @@ public class StandardHuffmanTables
         new HuffmanLine(5, 0b11111, 32, 2048, 1)
     );
 
-    private static readonly HuffmanTable B8 = new(
+    public static readonly HuffmanTable B8 = new(
         new HuffmanLine(2, 0b00, 1, 0, 1),
         new HuffmanLine(2, 0b01, 0, int.MaxValue, 0),
         new HuffmanLine(4, 0b1010, 0, -1, 0),
@@ -113,7 +113,7 @@ public class StandardHuffmanTables
         new HuffmanLine(9, 0b111111111, 32, 1670, 1)
     );
 
-    private static readonly HuffmanTable B9 = new(
+    public static readonly HuffmanTable B9 = new(
         new HuffmanLine(2, 0b00, 0, int.MaxValue, 0),
         new HuffmanLine(3, 0b010, 1, -1, 1),
         new HuffmanLine(3, 0b011, 1, 1, 1),
@@ -136,7 +136,7 @@ public class StandardHuffmanTables
         new HuffmanLine(9, 0b111111111, 32, 3339, 1)
     );
 
-    private static readonly HuffmanTable B10 = new(
+    public static readonly HuffmanTable B10 = new(
         new HuffmanLine(2, 0b00, 2, -2, 1),
         new HuffmanLine(2, 0b01, 6, 6, 1),
         new HuffmanLine(2, 0b10, 0, int.MaxValue, 0),
@@ -160,7 +160,7 @@ public class StandardHuffmanTables
         new HuffmanLine(8, 0b11111111, 32, 4166, 1)
     );
 
-    private static readonly HuffmanTable B11 = new(
+    public static readonly HuffmanTable B11 = new(
         new HuffmanLine(1, 0b0, 0, 1, 0),
         new HuffmanLine(2, 0b10, 1, 2, 1),
         new HuffmanLine(4, 0b1100, 0, 4, 0),
@@ -176,7 +176,7 @@ public class StandardHuffmanTables
         new HuffmanLine(7, 0b1111111, 32, 141, 1)
     );
 
-    private static readonly HuffmanTable B12 = new HuffmanTable(
+    public static readonly HuffmanTable B12 = new HuffmanTable(
         new HuffmanLine(1, 0b0, 0, 1, 0),
         new HuffmanLine(2, 0b10, 0, 2, 0),
         new HuffmanLine(3, 0b110, 1, 3, 1 ),
@@ -192,7 +192,7 @@ public class StandardHuffmanTables
         new HuffmanLine(8, 0b11111111, 32, 73, 1)
     );
 
-    private static readonly HuffmanTable B13 = new(
+    public static readonly HuffmanTable B13 = new(
         new HuffmanLine(1, 0b0, 0,1,0),
         new HuffmanLine(3, 0b100, 0, 2, 0),
         new HuffmanLine(3, 0b101, 3, 7, 1),
@@ -208,14 +208,14 @@ public class StandardHuffmanTables
         new HuffmanLine(7, 0b1111111, 32, 141, 1)
     );
 
-    private static readonly HuffmanTable B14 = new(
+    public static readonly HuffmanTable B14 = new(
         new HuffmanLine(1, 0b0, 0, 0, 0),
         // Notice this definition differs from table B14 in the spec, but is more efficient.
         new HuffmanLine(2, 0b10, 1, -2, 1),
         new HuffmanLine(2, 0b11, 1, 1, 1)
     );
 
-    private static readonly HuffmanTable B15 = new(
+    public static readonly HuffmanTable B15 = new(
         // this differs from the spec table b15, but exploits more redundency
         new HuffmanLine(1, 0b0, 0, 0,0),
         new HuffmanLine(2, 0b10, 1, -1, 2),

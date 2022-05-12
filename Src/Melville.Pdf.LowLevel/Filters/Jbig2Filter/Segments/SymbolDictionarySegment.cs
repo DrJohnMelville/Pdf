@@ -1,15 +1,17 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+﻿using System;
+using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 public class SymbolDictionarySegment : Segment
 {
-    private readonly SymbolDictionaryFlags flags;
-    private readonly uint exportedSymbols;
-    private readonly uint newSymbols;
+    public IBinaryBitmap[] AllSymbols { get; }
+    public Memory<IBinaryBitmap> ExportedSymbols { get; }
     
-    public SymbolDictionarySegment(uint number, SymbolDictionaryFlags flags, uint exportedSymbols, uint newSymbols) : base(SegmentType.SymbolDictionary, number)
+    public SymbolDictionarySegment(uint number, IBinaryBitmap[] allSymbols, Memory<IBinaryBitmap> exportedSymbols) : 
+        base(SegmentType.SymbolDictionary, number)
     {
-        this.flags = flags;
-        this.exportedSymbols = exportedSymbols;
-        this.newSymbols = newSymbols;
+        AllSymbols = allSymbols;
+        ExportedSymbols = exportedSymbols;
     }
 }
