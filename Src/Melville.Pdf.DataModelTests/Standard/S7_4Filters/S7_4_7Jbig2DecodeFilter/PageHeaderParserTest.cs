@@ -10,14 +10,15 @@ public class PageHeaderParserTest
 {
     private static PageInformationSegment Parse(string data) => Parse(data.BitsFromHex());
 
-    private static PageInformationSegment Parse(byte[] bits) =>
-        new PageHeaderParser(
-            new SequenceReader<byte>(
-                new ReadOnlySequence<byte>(
-                    bits
-                )
+    private static PageInformationSegment Parse(byte[] bits)
+    {
+        var reader = new SequenceReader<byte>(
+            new ReadOnlySequence<byte>(
+                bits
             )
-        ).Parse(210);
+        );
+        return PageHeaderParser.Parse(ref reader, 210);
+    }
 
     [Fact]
     public void FirstPageSegmentFromSample()
@@ -33,7 +34,7 @@ public class PageHeaderParserTest
         Assert.False(sut.Flags.HasFlag(PageInformationFlags.DefaultValue));
         Assert.False(sut.Flags.HasFlag(PageInformationFlags.AuxiliaryBuffers));
         Assert.False(sut.Flags.HasFlag(PageInformationFlags.OverrideCombinator));
-        Assert.Equal(PageCombinationOperator.Or, sut.Flags.DefaultOperator());
+        Assert.Equal(CombinationOperator.Or, sut.Flags.DefaultOperator());
         Assert.False(sut.Striping.IsStriped);
         Assert.Equal(0, sut.Striping.StripeSize);
     }
@@ -54,15 +55,15 @@ public class PageHeaderParserTest
     }
 
     [Theory]
-    [InlineData(PageCombinationOperator.Or)]
-    [InlineData(PageCombinationOperator.And)]
-    [InlineData(PageCombinationOperator.Xor)]
-    [InlineData(PageCombinationOperator.Xnor)]
-    public void CombOperator(PageCombinationOperator op)
+    [InlineData(CombinationOperator.Or)]
+    [InlineData(CombinationOperator.And)]
+    [InlineData(CombinationOperator.Xor)]
+    [InlineData(CombinationOperator.Xnor)]
+    public void CombOperator(CombinationOperator op)
     {
         var data = "00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 00 00 00".BitsFromHex();
         var sut = Parse(data);
-        Assert.Equal(PageCombinationOperator.Or, sut.Flags.DefaultOperator());
+        Assert.Equal(CombinationOperator.Or, sut.Flags.DefaultOperator());
         
         data[^3] |= (byte)((byte)op << 3);
         sut = Parse(data);

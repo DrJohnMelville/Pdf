@@ -2,13 +2,6 @@
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
-public enum PageCombinationOperator
-{
-    Or = 0,
-    And = 1,
-    Xor = 2,
-    Xnor = 3
-}
 [Flags]
 public enum PageInformationFlags : byte
 {
@@ -21,8 +14,8 @@ public enum PageInformationFlags : byte
 
 public static class PageInformationFlagOperation
 {
-    public static PageCombinationOperator DefaultOperator(this PageInformationFlags flags) =>
-        (PageCombinationOperator)((byte)flags >> 3);
+    public static CombinationOperator DefaultOperator(this PageInformationFlags flags) =>
+        (CombinationOperator)(0b11 & ((int)flags >> 3));
 }
 
 public readonly struct PageStripingInformation

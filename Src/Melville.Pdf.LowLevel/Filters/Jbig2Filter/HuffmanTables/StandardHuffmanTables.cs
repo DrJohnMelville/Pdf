@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
@@ -7,6 +8,25 @@ public enum HuffmanTableSelection : byte
 {
     UserSupplied, B1,B2,B3,B4,B5,B6,B7,B8,B9,B10,B11,B12,B13,B14,B15
 }
+
+public static class HuffmanTableSelector
+{
+    public static HuffmanTableSelection Select(
+        int flags, int position, 
+        HuffmanTableSelection sel0, 
+        HuffmanTableSelection sel1, 
+        HuffmanTableSelection sel3 = HuffmanTableSelection.UserSupplied,
+        HuffmanTableSelection selOther = HuffmanTableSelection.UserSupplied) =>
+        (flags.UnsignedInteger(position,3)) switch
+        {
+            0x00 => sel0,
+            0x01 => sel1,
+            0x03 => sel3,
+            _=> selOther
+        };
+ 
+}
+
 public class StandardHuffmanTables
 {
     public static readonly HuffmanTable B1 = new HuffmanTable(
@@ -249,4 +269,5 @@ public class StandardHuffmanTables
         HuffmanTableSelection.B15 => B15,
         _ => throw new InvalidDataException("Cannot find standard huffman table: " + tableSelector)
     };
+    
 }
