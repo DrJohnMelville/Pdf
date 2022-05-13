@@ -25,6 +25,21 @@ public class SymbolSegmentParserTest
         Assert.Equal(sut.AllSymbols[0],  sut.ExportedSymbols.Span[0]);
         
     }
+    [Fact]
+    public void Example2FromStandard()
+    {
+        var data = "0001 00000002 00000002 E5 CD F8 00 79 E0 84 10 81 F0 82 10 86 10 79 F0 00 80".BitsFromHex();
+        var sut = new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data))).Parse(11);
+        Assert.Equal(11u, sut.Number);
+        Assert.Equal(2, sut.AllSymbols.Length);
+        Assert.Equal(6, sut.AllSymbols[0].Height);
+        Assert.Equal(".BBBB.\r\nB....B\r\nB.....\r\nB.....\r\nB....B\r\n.BBBB.", sut.AllSymbols[0].BitmapString());
+        Assert.Equal(".BBBB.\r\n.....B\r\n.BBBBB\r\nB....B\r\nB....B\r\n.BBBBB", sut.AllSymbols[1].BitmapString());
+        Assert.Equal(2, sut.ExportedSymbols.Length);
+        Assert.Equal(sut.AllSymbols[0],  sut.ExportedSymbols.Span[0]);
+        Assert.Equal(sut.AllSymbols[1],  sut.ExportedSymbols.Span[1]);
+        
+    }
     
     
 }

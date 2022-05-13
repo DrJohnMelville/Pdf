@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
@@ -78,6 +79,9 @@ public ref struct SymbolParser
         return rowBitmap;
     }
 
+    private readonly bool TryGetWidth(ref BitSource source, out int value) => 
+        !widthReader.IsOutOfBand(value = widthReader.GetInteger(ref source));
+
     private static void AddBitmaps(
         in Span<int> widths, in Span<IBinaryBitmap> dest, IBinaryBitmap rowBitmap)
     {
@@ -100,19 +104,24 @@ public ref struct SymbolParser
     private void ReadBitmap(BinaryBitmap rowBitmap, int bitmapLength)
     {
         if (bitmapLength == 0)
-            throw new NotImplementedException("Unencoded bitmaps are not implemented");
-        CreateMmrDecoder(rowBitmap).Convert(ref reader, rowBitmap.AsByteSpan());
+            ReadUnencodedBitmap(rowBitmap);
+        else
+            ReadMmrBitmap(rowBitmap);
     }
+
+    private void ReadUnencodedBitmap(BinaryBitmap rowBitmap)
+    {
+        var rowSpan = rowBitmap.AsByteSpan();
+        if (!reader.TryCopyTo(rowSpan))
+            throw new InvalidDataException("Not enough bytes in unencoded bitmap");
+        reader.Advance(rowSpan.Length);
+    }
+
+    private void ReadMmrBitmap(BinaryBitmap rowBitmap) => CreateMmrDecoder(rowBitmap).Convert(ref reader, rowBitmap.AsByteSpan());
 
     private const int KValueThatGetsIgnored = 1000;
     private static CcittType4Decoder CreateMmrDecoder(BinaryBitmap rowBitmap) => new(
         new CcittParameters(KValueThatGetsIgnored, 
             encodedByteAlign:false, rowBitmap.Width, rowBitmap.Height, endOfBlock:false, blackIs1: true), 
             new TwoDimensionalLineCodeDictionary());
-
-    private readonly bool TryGetWidth(ref BitSource source, out int value)
-    {
-        value = widthReader.GetInteger(ref source);
-        return !widthReader.IsOutOfBand(value);
-    }
 }
