@@ -5,13 +5,22 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 public ref struct PrefixCode
 {
-    private int currentCode = 0;
+    private short currentCode = 0;
+    public short CodeLength { get; set; } = 0;
 
-    public int NextCode() => currentCode++;
+    public int NextCode()
+    {
+        return currentCode++;
+    }
+
     // the current code for the current code length becomes the prefix code for the next code
     // length, so a right shift gives us a code one longer, with the right prefix, and with
     // 0 in the new ones bit.
-    public void IncrementCodeLength() => currentCode <<= 1;
+    public void IncrementCodeLength()
+    {
+        CodeLength++;
+        currentCode <<= 1;
+    }
 }
 
 public ref struct BitAssignment
@@ -30,32 +39,31 @@ public ref struct BitAssignment
         this.prefixes = prefixes; 
     }
 
-    private const int MinimumPossibleCodeLength = 1;
     private void AssignPrefixesForAllLengths()
     {
-        var maximumCodeLength = GetMaxCodeLength(prefixLengths);
-        for (var curLen = MinimumPossibleCodeLength; curLen <= maximumCodeLength ; curLen++)
+        do
         {
             currentCode.IncrementCodeLength();
-            AssignPrefixesOfLength(curLen);
-        }
+        } while (AssignPrefixesOfLength());
     }
-
-    private static int GetMaxCodeLength(in ReadOnlySpan<int> prefixLengths)
+    
+    private bool AssignPrefixesOfLength()
     {
-        var maximum = 0;
-        foreach (var prefixLength in prefixLengths) maximum = Math.Max(prefixLength, maximum);
-        return maximum;
-    }
-
-    private  void AssignPrefixesOfLength(int selectedLength)
-    {
+        var greaterLengthCodesExist = false; 
         for (var i = 0; i < prefixLengths.Length; i++)
         {
-            if (prefixLengths[i] == selectedLength)
+            switch (prefixLengths[i] - currentCode.CodeLength)
             {
-                prefixes[i] = currentCode.NextCode();
+                case < 0: break;
+                case 0:
+                    prefixes[i] = currentCode.NextCode();
+                    break;
+                default:
+                    greaterLengthCodesExist = true;
+                    break;
             }
         }
+
+        return greaterLengthCodesExist;
     }
 }
