@@ -1,6 +1,4 @@
-﻿
-using System.Diagnostics;
-using System.IO;
+﻿using System;
 using System.Linq;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
@@ -16,19 +14,25 @@ public class HuffmanTable
 
     public int GetInteger(ref BitSource source)
     {
-        var patternLen = 0;
-        var pattern = 0;
-        foreach (var line in lines)
-        {
-            Debug.Assert(patternLen <= line.PrefixLengh, "Lines must be ascending length order");
-            while (patternLen < line.PrefixLengh) source.AddToPattern(ref pattern, ref patternLen);
-            if (line.Matches(patternLen, pattern)) return line.ReadNum(ref source);
-        }
-
-        throw new InvalidDataException("Got to the end of a huffman table");
+        return source.ReadHuffmanInt(lines);
     }
 
     public bool HasOutOfBandRow() => lines.Any(i => i.IsOutOfBandRow);
 
     public bool IsOutOfBand(int value) => value == int.MaxValue;
+}
+
+public readonly ref struct StructHuffmanTable
+{
+    private readonly ReadOnlySpan<HuffmanLine> lines;
+
+    public StructHuffmanTable(in ReadOnlySpan<HuffmanLine> lines)
+    {
+        this.lines = lines;
+    }
+
+    public int GetInteger(ref BitSource source)
+    {
+        return source.ReadHuffmanInt(lines);
+    }
 }
