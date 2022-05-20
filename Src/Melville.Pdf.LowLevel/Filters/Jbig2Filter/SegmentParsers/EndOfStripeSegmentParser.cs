@@ -7,5 +7,5 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 public static class EndOfStripeSegmentParser
 {
     public static Segment Read(in SegmentHeader header, ref SequenceReader<byte> reader) => 
-        new EndOfStripeSegment(reader.ReadBigEndianUint32(), header.Number);
+        new EndOfStripeSegment(reader.ReadBigEndianUint32());
 }

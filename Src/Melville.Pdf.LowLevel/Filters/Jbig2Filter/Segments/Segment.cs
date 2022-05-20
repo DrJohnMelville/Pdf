@@ -4,14 +4,12 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 public class Segment
 {
-    public static readonly Segment EndOfPage = new(SegmentType.EndOfPage, uint.MaxValue);
-    public static readonly Segment EndOfFile = new(SegmentType.EndOfFile, uint.MaxValue);
+    public static readonly Segment EndOfPage = new(SegmentType.EndOfPage);
+    public static readonly Segment EndOfFile = new(SegmentType.EndOfFile);
     public SegmentType Type { get; }
-    public uint Number { get; }
 
-    protected Segment(SegmentType type, uint number)
+    protected Segment(SegmentType type)
     {
         Type = type;
-        Number = number;
     }
 }

@@ -45,15 +45,14 @@ public class FileParserTest
     {
         Assert.IsType<T>(reader);
         Assert.Equal(pages, reader.Pages);
-        await VerifySegment(reader, 2, SegmentType.EndOfStripe);
-        await VerifySegment(reader, uint.MaxValue, SegmentType.EndOfPage);
-        await VerifySegment(reader, uint.MaxValue, SegmentType.EndOfFile);
+        await VerifySegment(reader, SegmentType.EndOfStripe);
+        await VerifySegment(reader, SegmentType.EndOfPage);
+        await VerifySegment(reader, SegmentType.EndOfFile);
     }
 
-    private static async Task VerifySegment(SegmentReader reader, uint number, SegmentType type)
+    private static async Task VerifySegment(SegmentReader reader, SegmentType type)
     {
         var header = await reader.NextSegment();
-        Assert.Equal(number, header.Number);
         Assert.Equal(type, header.Type);
     }
 }

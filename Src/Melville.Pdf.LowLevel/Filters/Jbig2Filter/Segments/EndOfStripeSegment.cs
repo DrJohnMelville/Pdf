@@ -5,7 +5,7 @@ public class EndOfStripeSegment: Segment
 {
     public uint YCoordinate { get; }
 
-    public EndOfStripeSegment(uint yCoordinate, uint number): base(SegmentType.EndOfStripe, number)
+    public EndOfStripeSegment(uint yCoordinate): base(SegmentType.EndOfStripe)
     {
         YCoordinate = yCoordinate;
     }

@@ -73,7 +73,7 @@ public readonly struct TextRegionHuffmanFlags
 
 public class TextRegionSegment: RegionSegment
 {
-    public TextRegionSegment(SegmentType type, uint number, BinaryBitmap bitmap) : base(type, number, bitmap)
+    public TextRegionSegment(SegmentType type, BinaryBitmap bitmap) : base(type, bitmap)
     {
     }
 }

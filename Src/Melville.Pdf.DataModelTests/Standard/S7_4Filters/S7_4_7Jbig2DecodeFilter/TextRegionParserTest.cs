@@ -1,15 +1,10 @@
 ﻿
 using System;
 using System.Buffers;
-using System.Diagnostics;
-using System.Diagnostics.SymbolStore;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-using SharpFont;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -23,7 +18,7 @@ public class TextRegionParserTest
                 bits
             )
         );
-        return TextRegionSegmentParser.Parse(ref reader, 210);
+        return TextRegionSegmentParser.Parse(ref reader);
     }
     [Fact]
     public void ParseTextSegment()
@@ -100,15 +95,9 @@ public class TextRegionParserTest
     private void CheckRead(in Span<HuffmanLine> destination, int bits, int bitData, int result)
     {
         int leadingBits = bitData << (16 - bits);
-        byte[] data = new byte[] { (byte)(leadingBits >> 8), (byte)leadingBits };
+        byte[] data = { (byte)(leadingBits >> 8), (byte)leadingBits };
         var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(data));
         var source = new BitSource(reader);
         Assert.Equal(result, source.ReadHuffmanInt(destination));
-        
     }
-}
-
-public static class SpanOperations {
-    public static unsafe Span<T> OverideEscapeTracking<T>(in this Span<T> input) where T:unmanaged => 
-        new((T*)Unsafe.AsPointer(ref input.GetPinnableReference()), input.Length);
 }

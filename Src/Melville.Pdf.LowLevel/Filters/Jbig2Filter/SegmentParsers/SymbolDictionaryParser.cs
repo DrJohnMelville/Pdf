@@ -32,7 +32,7 @@ public ref struct SymbolDictionaryParser
         new SymbolParser(flags, heightHuffman, widthHuffman, bitmapSizeHuffman, symbols).Parse(ref reader);
         
         
-        return new SymbolDictionarySegment(number, symbols, ReadExportedSymbols(symbols));
+        return new SymbolDictionarySegment(symbols, ReadExportedSymbols(symbols));
     }
 
     private Memory<IBinaryBitmap> ReadExportedSymbols(IBinaryBitmap[] symbols)

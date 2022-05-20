@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 
 public static class TextRegionSegmentParser
 {
-    public static unsafe TextRegionSegment Parse(ref SequenceReader<byte> reader, uint segmentNumber)
+    public static unsafe TextRegionSegment Parse(ref SequenceReader<byte> reader)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
         var regionFlags = new TextRegionFlags(reader.ReadBigEndianUint16());
@@ -22,12 +22,12 @@ public static class TextRegionSegmentParser
         var instances = (int)reader.ReadBigEndianUint32();
 
         // use this hack to avoid the escape detection warning
-        HuffmanLine* linesPtr = stackalloc HuffmanLine[instances]; 
+        HuffmanLine* linesPtr = stackalloc HuffmanLine[3]; 
         #warning I am pretty sure instances is the wrong count variable here
-        Span<HuffmanLine> lines = new Span<HuffmanLine>(linesPtr, instances);
+        Span<HuffmanLine> lines = new Span<HuffmanLine>(linesPtr, 3);
         TextSegmentSymbolTableParser.Parse(ref reader, lines);
 
-        return new TextRegionSegment(SegmentType.IntermediateTextRegion, segmentNumber,
+        return new TextRegionSegment(SegmentType.IntermediateTextRegion,
             new BinaryBitmap((int)regionHead.Height, (int)regionHead.Width));
     }
 }

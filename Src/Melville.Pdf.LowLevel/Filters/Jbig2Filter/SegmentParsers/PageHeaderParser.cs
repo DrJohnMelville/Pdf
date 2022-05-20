@@ -15,6 +15,6 @@ public static class PageHeaderParser
         var flags = (PageInformationFlags)reader.ReadBigEndianUint8();
         var striping = new PageStripingInformation(reader.ReadBigEndianUint16());
 
-        return new (segmentNumber, width, height, xResolution, yResolution,flags, striping);
+        return new (width, height, xResolution, yResolution,flags, striping);
     }
 }

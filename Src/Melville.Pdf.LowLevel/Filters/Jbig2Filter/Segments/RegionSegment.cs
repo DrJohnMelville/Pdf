@@ -7,7 +7,7 @@ public class RegionSegment: Segment
 {
     public BinaryBitmap Bitmap { get; }
 
-    protected RegionSegment(SegmentType type, uint number, BinaryBitmap bitmap) : base(type, number)
+    protected RegionSegment(SegmentType type, BinaryBitmap bitmap) : base(type)
     {
         Bitmap = bitmap;
     }

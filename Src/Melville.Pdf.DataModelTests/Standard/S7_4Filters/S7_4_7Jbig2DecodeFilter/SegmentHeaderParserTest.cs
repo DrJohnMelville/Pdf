@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 using Xunit;
 
@@ -12,28 +13,28 @@ public class SegmentHeaderParserTest
     {
         new object[]
         {
-            new byte[] { 0x00, 0x00, 0x00, 0x20, 0x86, 0x6b, 0x02, 0x1E, 0x05, 0x04, 0x00, 0x00, 0x12, 0x34 },
-            new SegmentHeader(32, SegmentType.ImmediateTextRegion, 4, 0x1234)
+            "00000020 86 6B 02 1E 05 04 00001234".BitsFromHex(),
+            new SegmentHeader(32, SegmentType.ImmediateTextRegion, 4, 0x1234, new uint[]{2,30,5})
         },
         new Object[]
         {
-            new byte[]
-            {
-                0x00, 0x00, 0x02, 0x34, 0x40, 0xe0, 0x00, 0x00, 0x09, 0x02, 0xfd, 0x01, 0x00, 0x00,
-                0x02, 0x00, 0x1E, 0x00, 0x05, 0x02, 0x00, 0x02, 0x01, 0x02, 0x02, 0x02, 0x03, 0x02,
-                0x04, 0x00, 0x00, 0x04, 0x01, 0x12, 0x34, 0x56, 0x78
-            },
-            new SegmentHeader(564, SegmentType.SymbolDictionary, 1025, 0x12345678)
+            ("00000234" +// id number
+            "40" + // flags
+            "e0 00 00 09" + // 9 referred segments in long format
+            "02 fd" + // retain bits
+            "0100 0002 001E 0005 0200 0201 0202 0203 0204" + // referred segments
+            "00 00 04 01" + // page number
+            "12345678") // segment length
+                .BitsFromHex(),
+            new SegmentHeader(564, SegmentType.SymbolDictionary, 1025, 0x12345678, 
+                new uint[]{256,2,0x1e, 5, 0x200, 0x201, 0x202, 0x203, 0x204})
         },
+        
         new Object[]
         {
-            new byte[]
-            {
-                0x0F, 0x00, 0x02, 0x34, 0x40, 0xe0, 0x00, 0x00, 0x09, 0x02, 0xfd, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
-                0x02, 0x00, 0x00, 0x00, 0x1E, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x03, 0x00, 0x00, 0x02,
-                0x04, 0x00, 0x00, 0x04, 0x01, 0x12, 0x34, 0x56, 0x78
-            },
-            new SegmentHeader(0x0f000234, SegmentType.SymbolDictionary, 1025, 0x12345678)
+            @"0F00023440e000000902fd00000100000000020000001E0000000500000200000002010000020200000203000002040000040112345678".BitsFromHex(),
+            new SegmentHeader(0x0f000234, SegmentType.SymbolDictionary, 1025, 0x12345678, 
+                new uint[]{256,2,0x1e, 5, 0x200, 0x201, 0x202, 0x203, 0x204})
         }
     };
     
@@ -44,7 +45,12 @@ public class SegmentHeaderParserTest
         var reader = ReaderFromBytes(data);
         Assert.True(SegmentHeaderParser.TryParse(ref reader, out var header));
         RequireEntireBlock(data);
-        Assert.Equal(result, header);
+        Assert.Equal(result.Number, header.Number);
+        Assert.Equal(result.SegmentType, header.SegmentType);
+        Assert.Equal(result.ReferencedSegmentNumbers, header.ReferencedSegmentNumbers);
+        Assert.Equal(result.Page, header.Page);
+        Assert.Equal(result.DataLength, header.DataLength);
+        
     }
 
     private void RequireEntireBlock(byte[] data)

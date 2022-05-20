@@ -41,8 +41,8 @@ public class PageInformationSegment : Segment
     public PageInformationFlags Flags { get; }
     public PageStripingInformation Striping { get; }
 
-    public PageInformationSegment(uint number, uint width, uint height, uint xResolution, uint yResolution, PageInformationFlags flags, PageStripingInformation striping) : 
-        base(SegmentType.PageInformation, number)
+    public PageInformationSegment(uint width, uint height, uint xResolution, uint yResolution, PageInformationFlags flags, PageStripingInformation striping) : 
+        base(SegmentType.PageInformation)
     {
         Width = width;
         Height = height;
