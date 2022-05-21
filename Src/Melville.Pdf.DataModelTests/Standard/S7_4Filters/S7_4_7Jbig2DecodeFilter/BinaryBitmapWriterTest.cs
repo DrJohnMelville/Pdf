@@ -34,7 +34,7 @@ public class BinaryBitmapWriterTest
         var sut = new BinaryBitmapWriter(target.Object, transposed, corner, CombinationOperator.Or);
         var s = 10;
         sut.WriteBitmap(13, ref s, source.Object);
-        target.Verify(i=>i.CopyTo(row, column, source.Object, CombinationOperator.Or));
+        target.Verify(i=>i.PasteBitsFrom(row, column, source.Object, CombinationOperator.Or));
         Assert.Equal(finalS, s);
         
     }
@@ -46,6 +46,6 @@ public class BinaryBitmapWriterTest
         var sut = new BinaryBitmapWriter(target.Object, false, ReferenceCorner.TopLeft, op);
         var s = 10;
         sut.WriteBitmap(13, ref s, source.Object);
-        target.Verify(i=>i.CopyTo(It.IsAny<int>(), It.IsAny<int>(), source.Object, op));
+        target.Verify(i=>i.PasteBitsFrom(It.IsAny<int>(), It.IsAny<int>(), source.Object, op));
     }
 }

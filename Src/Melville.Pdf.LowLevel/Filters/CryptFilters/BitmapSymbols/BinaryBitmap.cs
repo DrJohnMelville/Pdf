@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
@@ -15,7 +17,7 @@ public interface IBinaryBitmap
 
 public interface IBitmapCopyTarget : IBinaryBitmap
 {
-    void CopyTo(int row, int column, IBinaryBitmap source, CombinationOperator combOp);
+    void PasteBitsFrom(int row, int column, IBinaryBitmap source, CombinationOperator combOp);
 }
 
 public class BinaryBitmap: IBitmapCopyTarget
@@ -31,7 +33,7 @@ public class BinaryBitmap: IBitmapCopyTarget
         set => ComputeBitPosition(row, column).WriteBit(bits, value);
     }
 
-    public void CopyTo(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
+    public void PasteBitsFrom(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
     {
         #warning -- this is ripe with opportunities to optimize
         for (int i = 0; i < source.Height; i++)
@@ -40,15 +42,47 @@ public class BinaryBitmap: IBitmapCopyTarget
             if (!IsValid(outputRow, Height)) continue;
             for (int j = 0; j < source.Width; j++)
             {
-                this[outputRow, column + j] = source[i, j];
+                var outputCol = column + j;
+                if (!IsValid(outputCol, Width)) continue;
+                AssignPixel(outputRow, outputCol, source[i, j], combOp);
             }
+        }
+    }
+
+    private void AssignPixel(int outputRow, int outputCol, bool sourcePixel, CombinationOperator combinationOperator)
+    {
+        switch (combinationOperator)
+        {
+            case CombinationOperator.Or:    
+                this[outputRow, outputCol] |= sourcePixel;                
+                break;
+            case CombinationOperator.And:
+                this[outputRow, outputCol] &= sourcePixel;                
+                break;
+            case CombinationOperator.Xor:
+                this[outputRow, outputCol] ^= sourcePixel;                
+                break;
+            case CombinationOperator.Xnor:
+                this[outputRow, outputCol] = !(this[outputRow, outputCol] ^ sourcePixel);                
+                break;
+            case CombinationOperator.Replace:
+                this[outputRow, outputCol] = sourcePixel;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(combinationOperator), combinationOperator, null);
         }
     }
 
     private bool IsValid(int i, int size) => i >= 0 && i < size;
 
-    private BitOffset ComputeBitPosition(int row, int col) =>
-        new((uint)((row * stride) + (col >> 3)), (byte)(col & 0b111));
+    private BitOffset ComputeBitPosition(int row, int col)
+    {
+        Debug.Assert(row >= 0);
+        Debug.Assert(row < Height);
+        Debug.Assert(col >= 0);
+        Debug.Assert(col<= Width);
+        return new((uint)((row * stride) + (col >> 3)), (byte)(col & 0b111));
+    }
 
     public BinaryBitmap(int height, int width)
     {
@@ -91,30 +125,4 @@ public readonly struct BitOffset
 
     private void SetBit(byte[] buffer) => buffer[ByteOffset] |= BitMask;
     private void ClearBit(byte[] buffer) => buffer[ByteOffset] &= (byte)~BitMask;
-}
-
-public static class BitmapOperations
-{
-    public static string BitmapString(this IBinaryBitmap src) =>
-        string.Join("\r\n", Enumerable.Range(0, src.Height).Select(i=>
-            string.Join("", Enumerable.Range(0,src.Width).Select(j=>src[i,j]?"B":"."))
-        ));
-
-    public static BinaryBitmap AsBinaryBitmap(this string source, int height, int width )
-    {
-        var ret = new BinaryBitmap(height, width);
-        var count = 0;
-        foreach (var character in source.Where(i=> i is 'B' or '.'))
-        {
-            AddBit(ret, character, count++);
-        }
-        return ret;
-    }
-
-    private static void AddBit(BinaryBitmap ret, char character, int position)
-    {
-        var (row, col) = Math.DivRem(position, ret.Width);
-        ret[row, col] = character == 'B';
-        // this is a utility method to help with testing, so we want the exception if too much data
-    }
 }

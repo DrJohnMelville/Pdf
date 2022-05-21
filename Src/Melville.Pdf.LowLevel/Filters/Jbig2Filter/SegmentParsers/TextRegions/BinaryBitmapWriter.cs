@@ -24,7 +24,7 @@ public readonly struct BinaryBitmapWriter
     public void WriteBitmap(int t, ref int s, IBinaryBitmap source)
     {
         var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, source), source);
-        target.CopyTo(row,col, source, operation);
+        target.PasteBitsFrom(row,col, source, operation);
     }
 
     private (int row, int col) FinalBitmapPosition(int t, ref int s, IBinaryBitmap source) => 
