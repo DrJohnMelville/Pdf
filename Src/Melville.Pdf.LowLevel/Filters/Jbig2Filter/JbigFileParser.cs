@@ -8,6 +8,7 @@ using System.Xml.XPath;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;

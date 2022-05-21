@@ -1,8 +1,10 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
@@ -29,9 +31,11 @@ public static class SegmentReader
     private static Segment ReadFrom(in SegmentHeader header, in ReadOnlySequence<byte> data)
     {
         var reader = new SequenceReader<byte>(data);
+        #warning -- need to actually load the referred segments
+        ReadOnlySpan<Segment> referencedSegments = ReadOnlySpan<Segment>.Empty;
         return header.SegmentType switch
         {
-            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader).Parse(header.Number),
+            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(header.Number),
             SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(header, ref reader),
             SegmentType.EndOfPage => Segment.EndOfPage,
             SegmentType.EndOfFile => Segment.EndOfFile,

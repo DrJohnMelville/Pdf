@@ -269,5 +269,4 @@ public class StandardHuffmanTables
         HuffmanTableSelection.B15 => B15,
         _ => throw new InvalidDataException("Cannot find standard huffman table: " + tableSelector)
     };
-    
 }

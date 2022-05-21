@@ -1,6 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
-namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 
 public ref struct RunCodeInterpreter
 {

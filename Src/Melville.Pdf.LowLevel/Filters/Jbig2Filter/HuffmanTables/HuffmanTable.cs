@@ -3,7 +3,12 @@ using System.Linq;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
-public class HuffmanTable
+public interface IIntegerDecoder
+{
+    int GetInteger(ref BitSource source);
+}
+
+public class HuffmanTable : IIntegerDecoder
 {
     private readonly HuffmanLine[] lines;
 

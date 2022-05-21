@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
-namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
 
 public ref struct SymbolParser
 {

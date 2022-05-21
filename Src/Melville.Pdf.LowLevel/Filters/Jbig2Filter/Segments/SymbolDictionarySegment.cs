@@ -8,6 +8,8 @@ public class SymbolDictionarySegment : Segment
     public IBinaryBitmap[] AllSymbols { get; }
     public Memory<IBinaryBitmap> ExportedSymbols { get; }
     
+    public SymbolDictionarySegment(IBinaryBitmap[] allSymbols) :
+        this(allSymbols, allSymbols.AsMemory()){}
     public SymbolDictionarySegment(IBinaryBitmap[] allSymbols, Memory<IBinaryBitmap> exportedSymbols) : 
         base(SegmentType.SymbolDictionary)
     {

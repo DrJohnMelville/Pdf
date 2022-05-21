@@ -1,9 +1,11 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.Hacks.Reflection;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 using Xunit;
 
@@ -15,7 +17,8 @@ public class SymbolSegmentParserTest
     public void Example1FromStandard()
     {
         var data = "00 01 00 00 00 01 00 00 00 01 E9 CB F4 00 26 AF 04 BF F0 78 2F E0 00 40".BitsFromHex();
-        var sut = new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data))).Parse(210);
+        var sut = new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data)),
+            ReadOnlySpan<Segment>.Empty).Parse(210);
         Assert.Single(sut.AllSymbols);
         Assert.Equal(8, sut.AllSymbols[0].Height);
         Assert.Equal("BBBB.\r\nB...B\r\nB...B\r\nB...B\r\nBBBB.\r\nB....\r\nB....\r\nB....", 
@@ -28,7 +31,8 @@ public class SymbolSegmentParserTest
     public void Example2FromStandard()
     {
         var data = "0001 00000002 00000002 E5 CD F8 00 79 E0 84 10 81 F0 82 10 86 10 79 F0 00 80".BitsFromHex();
-        var sut = new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data))).Parse(11);
+        var sut = new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data)),
+            ReadOnlySpan<Segment>.Empty).Parse(11);
         Assert.Equal(2, sut.AllSymbols.Length);
         Assert.Equal(6, sut.AllSymbols[0].Height);
         Assert.Equal(".BBBB.\r\nB....B\r\nB.....\r\nB.....\r\nB....B\r\n.BBBB.", sut.AllSymbols[0].BitmapString());

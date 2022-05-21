@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Linq;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
@@ -11,7 +13,12 @@ public interface IBinaryBitmap
     bool this[int row, int column] { get; set; }
 }
 
-public class BinaryBitmap: IBinaryBitmap
+public interface IBitmapCopyTarget : IBinaryBitmap
+{
+    void CopyTo(int row, int column, IBinaryBitmap source, CombinationOperator combOp);
+}
+
+public class BinaryBitmap: IBitmapCopyTarget
 {
     private readonly int stride;
     public int Width { get; }
@@ -22,6 +29,10 @@ public class BinaryBitmap: IBinaryBitmap
     {
         get => ComputeBitPosition(row, column).GetBit(bits);
         set => ComputeBitPosition(row, column).WriteBit(bits, value);
+    }
+
+    public void CopyTo(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
+    {
     }
 
     private BitOffset ComputeBitPosition(int row, int col) =>
@@ -36,6 +47,11 @@ public class BinaryBitmap: IBinaryBitmap
     }
 
     public Span<byte> AsByteSpan() => bits.AsSpan();
+
+    public void FillBlack()
+    {
+        AsByteSpan().Fill(0xFF);
+    }
 }
 
 public readonly struct BitOffset
@@ -71,4 +87,22 @@ public static class BitmapOperations
         string.Join("\r\n", Enumerable.Range(0, src.Height).Select(i=>
             string.Join("", Enumerable.Range(0,src.Width).Select(j=>src[i,j]?"B":"."))
         ));
+
+    public static BinaryBitmap AsBinaryBitmap(this string source, int height, int width )
+    {
+        var ret = new BinaryBitmap(height, width);
+        var count = 0;
+        foreach (var character in source.Where(i=> i is 'B' or '.'))
+        {
+            AddBit(ret, character, count++);
+        }
+        return ret;
+    }
+
+    private static void AddBit(BinaryBitmap ret, char character, int position)
+    {
+        var (row, col) = Math.DivRem(position, ret.Width);
+        ret[row, col] = character == 'B';
+        // this is a utility method to help with testing, so we want the exception if too much data
+    }
 }

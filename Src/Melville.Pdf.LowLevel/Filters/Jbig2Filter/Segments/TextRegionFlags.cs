@@ -17,10 +17,16 @@ public readonly struct TextRegionFlags
     /// In Standard SBREFINE
     /// </summary>
     public bool UsesRefinement => BitOperations.CheckBit(data, 0x02);
+
     /// <summary>
     /// In standard LOGSBSTRIPS except this property evaluated the exponential to get the encoded value
+    /// Also referred to STRIPS
     /// </summary>
-    public int StripSize => 1 << BitOperations.UnsignedInteger(data, 2, 3);
+    public int StripSize => 1 << LogStripSize;
+    /// <summary>
+    /// In Standard LogStripSize
+    /// </summary>
+    public int LogStripSize => BitOperations.UnsignedInteger(data, 2, 3);
     /// <summary>
     /// In standard REFCORNER
     /// </summary>
@@ -41,7 +47,7 @@ public readonly struct TextRegionFlags
     /// <summary>
     /// In standard SBDSOFFSET
     /// </summary>
-    public int SbOffset => BitOperations.AsSignedInteger(BitOperations.UnsignedInteger(data, 10, 0x1F),5);
+    public int DefaultCharacteSpacing => BitOperations.AsSignedInteger(BitOperations.UnsignedInteger(data, 10, 0x1F),5);
     /// <summary>
     /// In standard SBRTEMPLATE
     /// </summary>

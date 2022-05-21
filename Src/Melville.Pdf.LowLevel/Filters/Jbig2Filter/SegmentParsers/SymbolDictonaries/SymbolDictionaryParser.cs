@@ -1,20 +1,22 @@
-﻿
-using System;
+﻿using System;
 using System.Buffers;
 using System.Diagnostics;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
+
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
 
 public ref struct SymbolDictionaryParser
 {
     private SequenceReader<byte> reader;
+    private ReadOnlySpan<Segment> referencedSegments;
 
-    public SymbolDictionaryParser(in SequenceReader<byte> reader)
+    public SymbolDictionaryParser(in SequenceReader<byte> reader, in ReadOnlySpan<Segment> referencedSegments)
     {
         this.reader = reader;
+        this.referencedSegments = referencedSegments;
     }
 
     public SymbolDictionarySegment Parse(uint number)
@@ -61,10 +63,6 @@ public ref struct SymbolDictionaryParser
             throw new NotImplementedException("Parsing refinement ATflags is not supported");
     }
 
-    private HuffmanTable GetHuffmanTable(HuffmanTableSelection selection)
-    {
-        if (selection == HuffmanTableSelection.UserSupplied)
-            throw new NotImplementedException("reading user supplied huffman table is not implemented");
-        return StandardHuffmanTables.FromSelector(selection);
-    }
+    private HuffmanTable GetHuffmanTable(HuffmanTableSelection selection) => 
+        selection.GetTable(ref referencedSegments);
 }

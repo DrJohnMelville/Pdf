@@ -1,0 +1,51 @@
+﻿using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Moq;
+using Xunit;
+
+namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
+
+public class BinaryBitmapWriterTest
+{
+    private readonly Mock<IBitmapCopyTarget> target = new();
+    private readonly Mock<IBinaryBitmap> source = new();
+
+    public BinaryBitmapWriterTest()
+    {
+        target.SetupGet(i => i.Width).Returns(50);
+        target.SetupGet(i => i.Height).Returns(70);
+        source.SetupGet(i => i.Width).Returns(5);
+        source.SetupGet(i => i.Height).Returns(7);
+    }
+
+    [Theory]
+    [InlineData(ReferenceCorner.TopLeft, false, 13,10, 14)]
+    [InlineData(ReferenceCorner.TopRight, false, 13,9, 14)]
+    [InlineData(ReferenceCorner.BottomLeft, false, 6, 10, 14)]
+    [InlineData(ReferenceCorner.BottomRight, false, 6, 9, 14)]
+
+    [InlineData(ReferenceCorner.TopLeft, true, 10, 13, 16)]
+    [InlineData(ReferenceCorner.BottomLeft, true, 9, 13, 16)]
+    [InlineData(ReferenceCorner.TopRight, true, 10, 8, 16)]
+    [InlineData(ReferenceCorner.BottomRight, true, 9, 8, 16)]
+    public void DisplayCornerTest(ReferenceCorner corner, bool transposed, int row, int column, int finalS)
+    {
+        var sut = new BinaryBitmapWriter(target.Object, transposed, corner, CombinationOperator.Or);
+        var s = 10;
+        sut.WriteBitmap(13, ref s, source.Object);
+        target.Verify(i=>i.CopyTo(row, column, source.Object, CombinationOperator.Or));
+        Assert.Equal(finalS, s);
+        
+    }
+    [Theory]
+    [InlineData(CombinationOperator.Replace)]
+    [InlineData(CombinationOperator.And)]
+    public void BitOperationTest(CombinationOperator op)
+    {
+        var sut = new BinaryBitmapWriter(target.Object, false, ReferenceCorner.TopLeft, op);
+        var s = 10;
+        sut.WriteBitmap(13, ref s, source.Object);
+        target.Verify(i=>i.CopyTo(It.IsAny<int>(), It.IsAny<int>(), source.Object, op));
+    }
+}

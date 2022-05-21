@@ -57,7 +57,7 @@ public class TextRegionFlagsTest
     [InlineData(16<<10, -16)]
     [InlineData(31<<10, -1)]
     public void SbdOffset(ushort value, int offset)=>
-        Assert.Equal(offset, new TextRegionFlags(value).SbOffset);
+        Assert.Equal(offset, new TextRegionFlags(value).DefaultCharacteSpacing);
     
     [Theory]
     [InlineData(1<<15, true)]
