@@ -33,7 +33,19 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     public void CopyTo(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
     {
+        #warning -- this is ripe with opportunities to optimize
+        for (int i = 0; i < source.Height; i++)
+        {
+            var outputRow = row + i;
+            if (!IsValid(outputRow, Height)) continue;
+            for (int j = 0; j < source.Width; j++)
+            {
+                this[outputRow, column + j] = source[i, j];
+            }
+        }
     }
+
+    private bool IsValid(int i, int size) => i >= 0 && i < size;
 
     private BitOffset ComputeBitPosition(int row, int col) =>
         new((uint)((row * stride) + (col >> 3)), (byte)(col & 0b111));

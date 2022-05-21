@@ -21,14 +21,14 @@ public class BinaryBitmapWriterTest
 
     [Theory]
     [InlineData(ReferenceCorner.TopLeft, false, 13,10, 14)]
-    [InlineData(ReferenceCorner.TopRight, false, 13,9, 14)]
-    [InlineData(ReferenceCorner.BottomLeft, false, 6, 10, 14)]
-    [InlineData(ReferenceCorner.BottomRight, false, 6, 9, 14)]
+    [InlineData(ReferenceCorner.TopRight, false, 13,10, 14)]
+    [InlineData(ReferenceCorner.BottomLeft, false, 7, 10, 14)]
+    [InlineData(ReferenceCorner.BottomRight, false, 7, 10, 14)]
 
     [InlineData(ReferenceCorner.TopLeft, true, 10, 13, 16)]
-    [InlineData(ReferenceCorner.BottomLeft, true, 9, 13, 16)]
-    [InlineData(ReferenceCorner.TopRight, true, 10, 8, 16)]
-    [InlineData(ReferenceCorner.BottomRight, true, 9, 8, 16)]
+    [InlineData(ReferenceCorner.BottomLeft, true, 10, 13, 16)]
+    [InlineData(ReferenceCorner.TopRight, true, 10, 9, 16)]
+    [InlineData(ReferenceCorner.BottomRight, true, 10, 9, 16)]
     public void DisplayCornerTest(ReferenceCorner corner, bool transposed, int row, int column, int finalS)
     {
         var sut = new BinaryBitmapWriter(target.Object, transposed, corner, CombinationOperator.Or);
