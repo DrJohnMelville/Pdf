@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Buffers.Binary;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reflection.PortableExecutable;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
@@ -13,6 +10,8 @@ public interface IBinaryBitmap
     int Width { get; }
     int Height { get; }
     bool this[int row, int column] { get; set; }
+    int Stride { get; }
+    (byte[] Array, BitOffset Offset) ColumnLocation (int column);
 }
 
 public interface IBitmapCopyTarget : IBinaryBitmap
@@ -22,7 +21,7 @@ public interface IBitmapCopyTarget : IBinaryBitmap
 
 public class BinaryBitmap: IBitmapCopyTarget
 {
-    private readonly int stride;
+    public int Stride { get; }
     public int Width { get; }
     public int Height { get; }
     private readonly byte[] bits;
@@ -33,18 +32,67 @@ public class BinaryBitmap: IBitmapCopyTarget
         set => ComputeBitPosition(row, column).WriteBit(bits, value);
     }
 
+
     public void PasteBitsFrom(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
     {
-        #warning -- this is ripe with opportunities to optimize
-        for (int i = 0; i < source.Height; i++)
+        var copyRegion = new BinaryBitmapCopyRegion(row, column, source, this);
+        if (copyRegion.UseSlowAlgorithm)
+            PasteBitsFromSlow(source, combOp, copyRegion);
+        else
         {
-            var outputRow = row + i;
-            if (!IsValid(outputRow, Height)) continue;
-            for (int j = 0; j < source.Width; j++)
+            PasteBitsFromFast(source, combOp, copyRegion);
+        }
+    }
+
+
+    [Obsolete("This is a temporary method for profiling only")]
+    public void PasteBitsFromSlow(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
+    {
+        var copyRegion = new BinaryBitmapCopyRegion(row, column, source, this);
+        PasteBitsFromSlow(source, combOp, copyRegion);
+    }
+
+    private void PasteBitsFromFast(IBinaryBitmap source, CombinationOperator combOp, 
+        BinaryBitmapCopyRegion copyRegion)
+    {
+        var srcLocation = source.ColumnLocation(copyRegion.SourceFirstCol);
+        var destLocation = this.ColumnLocation(copyRegion.DestinationFirstCol);
+        unsafe
+        {
+            fixed(byte* srcPointer = srcLocation.Array)
+            fixed (byte* destPointer = destLocation.Array)
             {
-                var outputCol = column + j;
-                if (!IsValid(outputCol, Width)) continue;
-                AssignPixel(outputRow, outputCol, source[i, j], combOp);
+                var plan = BitCopierFactory.Create(
+                    srcLocation.Offset.BitOffsetRightOfMsb, destLocation.Offset.BitOffsetRightOfMsb,
+                    copyRegion.RowLength, combOp);
+                var rows = copyRegion.Height;
+                var sourceStride = source.Stride;
+                var destStride = Stride;
+                var currentSrc = srcPointer + srcLocation.Offset.ByteOffset + (
+                    copyRegion.SourceFirstRow * sourceStride);
+                var currentDest = destPointer + destLocation.Offset.ByteOffset + (
+                        copyRegion.DestinationFirstRow * destStride);
+                for (int i = 0; i < rows; i++)
+                {
+                    plan.Copy(currentSrc, currentDest);
+                    currentSrc += sourceStride;
+                    currentDest += destStride;
+                }
+
+            }
+        }
+            
+//        PasteBitsFromSlow(source, combOp, copyRegion);
+    }
+    private void PasteBitsFromSlow(IBinaryBitmap source, CombinationOperator combOp, BinaryBitmapCopyRegion copyRegion)
+    {
+        var destRow = copyRegion.DestinationFirstRow;
+        for (var i = copyRegion.SourceFirstRow; i < copyRegion.SourceExclusiveEndRow; i++, destRow++)
+        {
+            int destColumn = copyRegion.DestinationFirstCol;
+            for (int j = copyRegion.SourceFirstCol; j < copyRegion.SourceExclusiveEndCol; j++, destColumn++)
+            {
+                AssignPixel(destRow, destColumn, source[i, j], combOp);
             }
         }
     }
@@ -73,23 +121,23 @@ public class BinaryBitmap: IBitmapCopyTarget
         }
     }
 
-    private bool IsValid(int i, int size) => i >= 0 && i < size;
-
     private BitOffset ComputeBitPosition(int row, int col)
     {
         Debug.Assert(row >= 0);
         Debug.Assert(row < Height);
         Debug.Assert(col >= 0);
         Debug.Assert(col<= Width);
-        return new((uint)((row * stride) + (col >> 3)), (byte)(col & 0b111));
+        return new((uint)((row * Stride) + (col >> 3)), (byte)(col & 0b111));
     }
+
+    public (byte[] Array, BitOffset Offset) ColumnLocation(int column) => (bits, ComputeBitPosition(0, column));
 
     public BinaryBitmap(int height, int width)
     {
         Width = width;
         Height = height;
-        stride = (width + 7) / 8;
-        bits = new byte[stride * Height];
+        Stride = (width + 7) / 8;
+        bits = new byte[Stride * Height];
     }
 
     public Span<byte> AsByteSpan() => bits.AsSpan();
@@ -98,31 +146,4 @@ public class BinaryBitmap: IBitmapCopyTarget
     {
         AsByteSpan().Fill(0xFF);
     }
-}
-
-public readonly struct BitOffset
-{
-    private uint ByteOffset { get;}
-    private byte BitOffsetRightOfMsb {get;} // bits are numbered 0-7 MSB to LSB
-    private byte BitMask {get;} // bits are numbered 0-7 MSB to LSB
-
-    public BitOffset(uint byteOffset, byte bitOffsetRightOfMsb)
-    {
-        ByteOffset = byteOffset;
-        BitOffsetRightOfMsb = bitOffsetRightOfMsb;
-        BitMask = (byte)(1 << (7-bitOffsetRightOfMsb));
-    }
-
-    public bool GetBit(byte[] buffer) => BitMask == (buffer[ByteOffset] & BitMask);
-
-    public void WriteBit(byte[] buffer, bool value)
-    {
-        if (value)
-            SetBit(buffer);
-        else
-            ClearBit(buffer);
-    }
-
-    private void SetBit(byte[] buffer) => buffer[ByteOffset] |= BitMask;
-    private void ClearBit(byte[] buffer) => buffer[ByteOffset] &= (byte)~BitMask;
 }

@@ -4,20 +4,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
-namespace Performance.Playground
-{
-    class Program
-    {
-        static Task Main(string[] args)
-        {
-            #if !DEBUG
-            var summary = BenchmarkRunner.Run<FontRenderingPerf>();
-           return Task.CompletedTask;
-            #else
-            return Timer.DoTime(() => new FontRenderingPerf().RenderWpf());
-            #endif
-        }
-    }
+BenchmarkRunner.Run<BinaryBitmapCopy>();
 
     public static class Timer
     {
@@ -41,4 +28,3 @@ namespace Performance.Playground
             return Task.CompletedTask;
         }
     }
-}

@@ -96,7 +96,7 @@ public ref struct SymbolParser
         var offset = 0;
         for (int i = 0; i < widths.Length; i++)
         {
-            dest[i] = new VerticalStripBitmap(rowBitmap, offset, widths[i]);
+            dest[i] = new HorizontalStripBitmap(rowBitmap, offset, widths[i]);
             offset += widths[i];
         }
     }

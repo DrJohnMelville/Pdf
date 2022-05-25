@@ -1,14 +1,14 @@
 ﻿
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
-public class VerticalStripBitmap : IBinaryBitmap
+public class HorizontalStripBitmap : IBinaryBitmap
 {
     private IBinaryBitmap inner;
     public int Height => inner.Height;
     public int Width { get; }
     private readonly int firstCol;
 
-    public VerticalStripBitmap(IBinaryBitmap inner, int firstCol, int width)
+    public HorizontalStripBitmap(IBinaryBitmap inner, int firstCol, int width)
     {
         this.inner = inner;
         this.firstCol = firstCol;
@@ -20,4 +20,7 @@ public class VerticalStripBitmap : IBinaryBitmap
         get => inner[row, column+firstCol];
         set => inner[row, column+firstCol] = value;
     }
+
+    public int Stride => inner.Stride;
+    public (byte[], BitOffset) ColumnLocation(int column) => inner.ColumnLocation(column + firstCol);
 }
