@@ -60,6 +60,16 @@ B....BB....B
         var sut = Parse(data.BitsFromHex());
         Assert.Equal(0x25, sut.Bitmap.Width);
         Assert.Equal(8, sut.Bitmap.Height);
+        Assert.Equal(@"
+.BBBB....BBBB...BBBB....BBBB....BBBB.
+B....B.......B..B...B.......B..B....B
+B........BBBBB..B...B...BBBBB..B.....
+B.......B....B..B...B..B....B..B.....
+B....B..B....B..BBBB...B....B..B....B
+.BBBB....BBBBB..B.......BBBBB...BBBB.
+................B....................
+................B....................", "\r\n"+sut.Bitmap.BitmapString());
+
     }
 
     [Fact]
