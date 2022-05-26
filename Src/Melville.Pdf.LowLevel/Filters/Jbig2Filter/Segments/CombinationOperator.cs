@@ -23,4 +23,16 @@ public static class CombinatiorOperatorImplementation
             CombinationOperator.Replace => copied,
             _ => throw new ArgumentOutOfRangeException(nameof(operation), operation, null)
         };
+
+    public static ulong Combine(this CombinationOperator operation, ulong prior, ulong copied) =>
+        operation switch
+        {
+            CombinationOperator.Or => prior | copied,
+            CombinationOperator.And => prior & copied,
+            CombinationOperator.Xor => prior ^ copied,
+            CombinationOperator.Xnor => ~(prior ^ copied),
+            CombinationOperator.Replace => copied,
+            _ => throw new ArgumentOutOfRangeException(nameof(operation), operation, null)
+        };
+
 }

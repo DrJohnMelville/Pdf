@@ -10,7 +10,6 @@ namespace Performance.Playground.Rendering
     {
         private const int Dimension = 40;
         private BinaryBitmap source = new BinaryBitmap(Dimension, Dimension);
-        private BinaryBitmap SlowDestination = new BinaryBitmap(Dimension, Dimension);
         private BinaryBitmap FastDestination = new BinaryBitmap(Dimension, Dimension);
 
         public BinaryBitmapCopy()
@@ -19,20 +18,6 @@ namespace Performance.Playground.Rendering
             rand.NextBytes(source.AsByteSpan());
         }
 
-        [Benchmark]
-        public void SlowAlgorithm()
-        {
-            for (int i = -20; i < 20; i++)
-            {
-                for (int j = -20; j < 20; j++)
-                {
-                    for (int k = 0; k < 5; k++)
-                    {
-                        SlowDestination.PasteBitsFromSlow(i,j, source, (CombinationOperator)k);
-                    }
-                }
-            }
-        }
         [Benchmark(Baseline = true)]
         public void FastAlgorithm()
         {
@@ -46,14 +31,6 @@ namespace Performance.Playground.Rendering
                     }
                 }
             }
-        }
-
-        [Benchmark]
-        public void CheckSame()
-        {
-            FastAlgorithm();
-            SlowAlgorithm();
-            Assert.True(FastDestination.AsByteSpan().SequenceEqual(SlowDestination.AsByteSpan()));
         }
     }
 }

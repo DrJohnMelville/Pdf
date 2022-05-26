@@ -1,4 +1,5 @@
 ﻿
+using System.Threading;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
@@ -28,8 +29,7 @@ public sealed class SourceOffsetBulkCopy : IBulkByteCopy
 
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
-        var srcEnd = src + copier.Plan.WholeBytes;
-        while (src < srcEnd)
+        for (var i = copier.Plan.WholeBytes; i > 0; i--)
         {
             *dest++ = copier.Reader.ReadBye(ref src);
         }
@@ -42,8 +42,7 @@ public sealed class SourceOffsetBulkOperation : IBulkByteCopy
 
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
-        var srcEnd = src + copier.Plan.WholeBytes;
-        while (src < srcEnd)
+        for (var i = copier.Plan.WholeBytes; i > 0; i--)
         {
             *dest = copier.Plan.CombinationOperator.Combine(copier.Reader.ReadBye(ref src), *dest);
             dest++;
@@ -57,8 +56,7 @@ public sealed class AlignedBulkOperation : IBulkByteCopy
 
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
-        var srcEnd = src + copier.Plan.WholeBytes;
-        while (src < srcEnd)
+        for (var i = copier.Plan.WholeBytes; i > 0; i--)
         {
             *dest = copier.Plan.CombinationOperator.Combine(*src++, *dest);
             dest++;

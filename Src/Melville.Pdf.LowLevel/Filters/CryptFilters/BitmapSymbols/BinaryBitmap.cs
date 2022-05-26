@@ -39,24 +39,14 @@ public class BinaryBitmap: IBitmapCopyTarget
         if (copyRegion.UseSlowAlgorithm)
             PasteBitsFromSlow(source, combOp, copyRegion);
         else
-        {
             PasteBitsFromFast(source, combOp, copyRegion);
-        }
-    }
-
-
-    [Obsolete("This is a temporary method for profiling only")]
-    public void PasteBitsFromSlow(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
-    {
-        var copyRegion = new BinaryBitmapCopyRegion(row, column, source, this);
-        PasteBitsFromSlow(source, combOp, copyRegion);
     }
 
     private void PasteBitsFromFast(IBinaryBitmap source, CombinationOperator combOp, 
         BinaryBitmapCopyRegion copyRegion)
     {
         var srcLocation = source.ColumnLocation(copyRegion.SourceFirstCol);
-        var destLocation = this.ColumnLocation(copyRegion.DestinationFirstCol);
+        var destLocation = ColumnLocation(copyRegion.DestinationFirstCol);
         unsafe
         {
             fixed(byte* srcPointer = srcLocation.Array)
