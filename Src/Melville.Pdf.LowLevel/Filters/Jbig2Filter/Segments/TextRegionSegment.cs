@@ -2,6 +2,7 @@
 using System.Threading;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
@@ -73,7 +74,7 @@ public readonly struct TextRegionHuffmanFlags
 
 public class TextRegionSegment: RegionSegment
 {
-    public TextRegionSegment(SegmentType type, BinaryBitmap bitmap) : base(type, bitmap)
+    public TextRegionSegment(SegmentType type, in RegionHeader header, BinaryBitmap bitmap) : base(type, in header, bitmap)
     {
     }
 }

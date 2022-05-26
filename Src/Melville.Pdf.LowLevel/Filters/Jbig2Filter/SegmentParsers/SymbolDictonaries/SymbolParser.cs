@@ -104,24 +104,8 @@ public ref struct SymbolParser
     private void ReadBitmap(BinaryBitmap rowBitmap, int bitmapLength)
     {
         if (bitmapLength == 0)
-            ReadUnencodedBitmap(rowBitmap);
+            rowBitmap.ReadUnencodedBitmap(ref reader);
         else
-            ReadMmrBitmap(rowBitmap);
+            rowBitmap.ReadMmrEncodedBitmap(ref reader);
     }
-
-    private void ReadUnencodedBitmap(BinaryBitmap rowBitmap)
-    {
-        var rowSpan = rowBitmap.AsByteSpan();
-        if (!reader.TryCopyTo(rowSpan))
-            throw new InvalidDataException("Not enough bytes in unencoded bitmap");
-        reader.Advance(rowSpan.Length);
-    }
-
-    private void ReadMmrBitmap(BinaryBitmap rowBitmap) => CreateMmrDecoder(rowBitmap).Convert(ref reader, rowBitmap.AsByteSpan());
-
-    private const int KValueThatGetsIgnored = 1000;
-    private static CcittType4Decoder CreateMmrDecoder(BinaryBitmap rowBitmap) => new(
-        new CcittParameters(KValueThatGetsIgnored, 
-            encodedByteAlign:false, rowBitmap.Width, rowBitmap.Height, endOfBlock:false, blackIs1: true), 
-            new TwoDimensionalLineCodeDictionary());
 }

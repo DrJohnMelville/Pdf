@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection.PortableExecutable;
+using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
@@ -137,10 +141,28 @@ public class BinaryBitmap: IBitmapCopyTarget
         bits = new byte[Stride * Height];
     }
 
-    public Span<byte> AsByteSpan() => bits.AsSpan();
+    private Span<byte> AsByteSpan() => bits.AsSpan();
 
     public void FillBlack()
     {
         AsByteSpan().Fill(0xFF);
     }
+
+    public void ReadUnencodedBitmap(ref SequenceReader<byte> reader)
+    {
+        if (!reader.TryCopyTo(AsByteSpan()))
+            throw new InvalidDataException("Not enough bytes in unencoded bitmap");
+        reader.Advance(bits.Length);
+
+    }
+    
+    public void ReadMmrEncodedBitmap(ref SequenceReader<byte> reader) =>
+        CreateMmrDecoder().Convert(ref reader, AsByteSpan());
+
+    private const int KValueThatGetsIgnored = 1000;
+    private CcittType4Decoder CreateMmrDecoder() => new(
+        new CcittParameters(KValueThatGetsIgnored, 
+            encodedByteAlign:false, Width, Height, endOfBlock:false, blackIs1: true), 
+        new TwoDimensionalLineCodeDictionary());
+    
 }

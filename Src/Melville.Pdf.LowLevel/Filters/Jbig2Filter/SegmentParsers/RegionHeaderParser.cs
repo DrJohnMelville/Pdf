@@ -1,12 +1,18 @@
 ﻿
 using System.Buffers;
+using System.Diagnostics;
 using Melville.Parsing.SequenceReaders;
+using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 
-public record struct RegionHeader(
-    uint Width, uint Height, uint X, uint Y, CombinationOperator CombinationOperator);
+public readonly record struct RegionHeader(
+    uint Width, uint Height, uint X, uint Y, CombinationOperator CombinationOperator)
+{
+    public BinaryBitmap CreateTargetBitmap() => new BinaryBitmap((int)Height, (int)Width);
+
+}
 
 public static class RegionHeaderParser
 {

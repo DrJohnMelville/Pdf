@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using Melville.Icc.Model.Tags;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
@@ -60,6 +59,10 @@ B....BB....B
         var sut = Parse(data.BitsFromHex());
         Assert.Equal(0x25, sut.Bitmap.Width);
         Assert.Equal(8, sut.Bitmap.Height);
+        Assert.Equal(4u, sut.X);
+        Assert.Equal(1u, sut.Y);
+        Assert.Equal(CombinationOperator.Or, sut.CombinationOperator);
+        
         Assert.Equal(@"
 .BBBB....BBBB...BBBB....BBBB....BBBB.
 B....B.......B..B...B.......B..B....B

@@ -18,7 +18,7 @@ public ref struct TextRegionSegmentParser
         var regionFlags = new TextRegionFlags(reader.ReadBigEndianUint16());
 
         var parser = new TextRegionSegmentParser(reader, regionHead, regionFlags, referencedSegments);
-        return new TextRegionSegment(SegmentType.IntermediateTextRegion, parser.CreateBitmap());
+        return new TextRegionSegment(SegmentType.IntermediateTextRegion, regionHead, parser.CreateBitmap());
     }
 
     private SequenceReader<byte> reader;
@@ -89,7 +89,7 @@ public ref struct TextRegionSegmentParser
 
     private BinaryBitmap CreateTargetBitmap()
     {
-        var binaryBitmap = new BinaryBitmap((int)regionHead.Height, (int)regionHead.Width);
+        var binaryBitmap = regionHead.CreateTargetBitmap();
         SetBitmapBackground(binaryBitmap);
         return binaryBitmap;
     }
