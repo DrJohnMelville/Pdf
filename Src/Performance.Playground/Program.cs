@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
-BenchmarkRunner.Run<BinaryBitmapCopy>();
+BenchmarkRunner.Run<BitmapWriting>();
 
     public static class Timer
     {
