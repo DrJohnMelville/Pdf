@@ -39,7 +39,7 @@ public readonly struct TextRegionFlags
     /// In standard SBCOMBOP
     /// </summary>
     public CombinationOperator CombinationOperator => 
-        (CombinationOperator)BitOperations.UnsignedInteger(data, 7, 3);
+        (CombinationOperator)BitOperations.UnsignedInteger(data, 7, 7);
     /// <summary>
     /// In standard SBDEFPIXEL
     /// </summary>

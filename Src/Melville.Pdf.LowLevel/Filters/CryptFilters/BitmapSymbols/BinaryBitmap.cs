@@ -2,9 +2,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.PortableExecutable;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
@@ -156,8 +154,15 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     }
     
-    public void ReadMmrEncodedBitmap(ref SequenceReader<byte> reader) =>
-        CreateMmrDecoder().Convert(ref reader, AsByteSpan());
+    public void ReadMmrEncodedBitmap(ref SequenceReader<byte> reader, bool requireTerminator)
+    {
+        var ccittType4Decoder = CreateMmrDecoder();
+        ccittType4Decoder.Convert(ref reader, AsByteSpan());
+        if (requireTerminator)
+        {
+            ccittType4Decoder.RequireTerminator(ref reader);
+        }
+    }
 
     private const int KValueThatGetsIgnored = 1000;
     private CcittType4Decoder CreateMmrDecoder() => new(

@@ -37,6 +37,29 @@ public partial class CcittCodeReader
         this.dict = dict;
     }
 
+    public bool TryReadEndOfFileCode(ref SequenceReader<byte> source, out bool isEndOfFile)
+    {
+        var privateSource = source;
+        var privateReader = reader;
+        isEndOfFile = false;
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 11; j++)
+            {
+                if (!privateReader.TryRead(1, ref privateSource, out var zeroBit))
+                    return false; // not enough data
+                if (zeroBit != 0) return true; // found wrong code;
+            }
+
+            if (!privateReader.TryRead(1, ref privateSource, out var oneBit)) return false;
+            if (oneBit != 1) return true;
+        }
+        isEndOfFile = true;
+        source = privateSource;
+        return true;
+    }
+    
+
     public bool TryReadCode(ref SequenceReader<byte> source, bool isWhiteRun, out CcittCode code)
     {
         while (true)

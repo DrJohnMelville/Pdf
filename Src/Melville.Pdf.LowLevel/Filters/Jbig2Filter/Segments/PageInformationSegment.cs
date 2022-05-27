@@ -1,21 +1,26 @@
 ﻿using System;
+using System.Security.Principal;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
-[Flags]
-public enum PageInformationFlags : byte
+public readonly struct PageInformationFlags
 {
-    Lossless             = 0b00000001,
-    HasRefinements       = 0b00000010,
-    DefaultValue         = 0b00000100,
-    AuxiliaryBuffers     = 0b00100000,
-    OverrideCombinator = 0b01000000,
-}
+    private readonly byte flags;
 
-public static class PageInformationFlagOperation
-{
-    public static CombinationOperator DefaultOperator(this PageInformationFlags flags) =>
-        (CombinationOperator)(0b11 & ((int)flags >> 3));
+    public PageInformationFlags(byte flags)
+    {
+        this.flags = flags;
+    }
+
+    public bool Lossless => BitOperations.CheckBit(flags, 0x01);
+    public bool HasRefinements => BitOperations.CheckBit(flags, 0x02);
+    public bool DefaultValue => BitOperations.CheckBit(flags, 0x04);
+
+    public CombinationOperator DefaultOperator =>
+        (CombinationOperator)BitOperations.UnsignedInteger((int)flags, 3, 7);
+    public bool AuxiliaryBuffers => BitOperations.CheckBit(flags, 0x20);
+    public bool OverrideCombinator => BitOperations.CheckBit(flags, 0x40);
 }
 
 public readonly struct PageStripingInformation
@@ -28,7 +33,7 @@ public readonly struct PageStripingInformation
     }
 
     private const ushort StripedBitmask = 0x8000;
-    public bool IsStriped => (rawData & StripedBitmask) == StripedBitmask;
+    public bool IsStriped => BitOperations.CheckBit(rawData, StripedBitmask);
     public int StripeSize => rawData & (~StripedBitmask);
 }
 

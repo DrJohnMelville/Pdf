@@ -37,7 +37,7 @@ public static class PatternDictionarySegmentParser
     {
         if (!flags.UseMmr)
             throw new NotImplementedException("Only MMR Encoding is supported right now");
-        innerBitmap.ReadMmrEncodedBitmap(ref reader);
+        innerBitmap.ReadMmrEncodedBitmap(ref reader, false);
     }
 
     private static IBinaryBitmap[] CreatePatternStrip(uint largestGrayScale, BinaryBitmap innerBitmap, byte width)

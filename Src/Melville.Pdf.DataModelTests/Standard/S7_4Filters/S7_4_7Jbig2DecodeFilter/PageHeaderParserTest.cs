@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
@@ -29,17 +30,33 @@ public class PageHeaderParserTest
         Assert.Equal(0u, sut.XResolution);
         Assert.Equal(0u, sut.YResolution);
         
-        Assert.True(sut.Flags.HasFlag(PageInformationFlags.Lossless));
-        Assert.False(sut.Flags.HasFlag(PageInformationFlags.HasRefinements));
-        Assert.False(sut.Flags.HasFlag(PageInformationFlags.DefaultValue));
-        Assert.False(sut.Flags.HasFlag(PageInformationFlags.AuxiliaryBuffers));
-        Assert.False(sut.Flags.HasFlag(PageInformationFlags.OverrideCombinator));
-        Assert.Equal(CombinationOperator.Or, sut.Flags.DefaultOperator());
+        Assert.True(sut.Flags.Lossless);
+        Assert.False(sut.Flags.HasRefinements);
+        Assert.False(sut.Flags.DefaultValue);
+        Assert.False(sut.Flags.AuxiliaryBuffers);
+        Assert.False(sut.Flags.OverrideCombinator);
+        Assert.Equal(CombinationOperator.Or, sut.Flags.DefaultOperator);
         Assert.False(sut.Striping.IsStriped);
         Assert.Equal(0, sut.Striping.StripeSize);
     }
 
+
     [Theory]
+    [InlineData(CombinationOperator.Or)]
+    [InlineData(CombinationOperator.And)]
+    [InlineData(CombinationOperator.Xor)]
+    [InlineData(CombinationOperator.Xnor)]
+    public void CombOperator(CombinationOperator op)
+    {
+        var data = "00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 00 00 00".BitsFromHex();
+        var sut = Parse(data);
+        Assert.Equal(CombinationOperator.Or, sut.Flags.DefaultOperator);
+        
+        data[^3] |= (byte)((byte)op << 3);
+        sut = Parse(data);
+        Assert.Equal(op, sut.Flags.DefaultOperator);
+    }
+/*    [Theory]
     [InlineData(PageInformationFlags.Lossless)]
     [InlineData(PageInformationFlags.HasRefinements)]
     [InlineData(PageInformationFlags.AuxiliaryBuffers)]
@@ -52,23 +69,24 @@ public class PageHeaderParserTest
         data[^3] |= (byte)item;
         sut = Parse(data);
         Assert.True(sut.Flags.HasFlag(item));
-    }
+    }*/
 
-    [Theory]
-    [InlineData(CombinationOperator.Or)]
-    [InlineData(CombinationOperator.And)]
-    [InlineData(CombinationOperator.Xor)]
-    [InlineData(CombinationOperator.Xnor)]
-    public void CombOperator(CombinationOperator op)
+    private void RunFlagTest(byte value, Func<PageInformationFlags, bool> selector)
     {
         var data = "00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 00 00 00".BitsFromHex();
         var sut = Parse(data);
-        Assert.Equal(CombinationOperator.Or, sut.Flags.DefaultOperator());
-        
-        data[^3] |= (byte)((byte)op << 3);
+        Assert.False(selector(sut.Flags));
+        data[^3] |= value;
         sut = Parse(data);
-        Assert.Equal(op, sut.Flags.DefaultOperator());
+        Assert.True(selector(sut.Flags));
     }
+
+    [Fact] public void LosslessBit() => RunFlagTest(0x1, i => i.Lossless);
+    [Fact] public void RefinementBit() => RunFlagTest(0x2, i => i.HasRefinements);
+    [Fact] public void DefaultValueBit() => RunFlagTest(0x4, i => i.DefaultValue);
+    [Fact] public void AuxBufferBit() => RunFlagTest(0x20, i => i.AuxiliaryBuffers);
+    [Fact] public void OverrideCombinatorBit() => RunFlagTest(0x40, i => i.OverrideCombinator);
+
 
     [Fact]
     public void StripingOp()

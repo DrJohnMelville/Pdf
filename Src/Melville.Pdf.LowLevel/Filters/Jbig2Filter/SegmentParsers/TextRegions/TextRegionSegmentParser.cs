@@ -4,9 +4,7 @@ using System.Diagnostics;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-using SequenceReaderExtensions = System.Buffers.SequenceReaderExtensions;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 
@@ -114,7 +112,7 @@ public ref struct TextRegionSegmentParser
         var ret = 0;
         foreach (var segment in referencedSegments)
         {
-            if (segment is SymbolDictionarySegment sds) ret += sds.ExportedSymbols.Length;
+            if (segment is DictionarySegment sds) ret += sds.ExportedSymbols.Length;
         }
 
         return ret;

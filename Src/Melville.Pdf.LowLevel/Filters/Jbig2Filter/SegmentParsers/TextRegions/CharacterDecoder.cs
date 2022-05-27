@@ -22,7 +22,7 @@ public readonly ref struct CharacterDecoder
         var index = decoder.GetInteger(ref source);
         foreach (var segment in segments)
         {
-            if (segment is not SymbolDictionarySegment sds) continue;
+            if (segment is not DictionarySegment sds) continue;
             var exportedLength = sds.ExportedSymbols.Length;
             if (index < exportedLength) return sds.ExportedSymbols.Span[index];
             index -= exportedLength;

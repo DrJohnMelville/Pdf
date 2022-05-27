@@ -3,17 +3,12 @@ using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
-public class SymbolDictionarySegment : Segment
+public class SymbolDictionarySegment : DictionarySegment
 {
-    public IBinaryBitmap[] AllSymbols { get; }
-    public Memory<IBinaryBitmap> ExportedSymbols { get; }
-    
     public SymbolDictionarySegment(IBinaryBitmap[] allSymbols) :
         this(allSymbols, allSymbols.AsMemory()){}
     public SymbolDictionarySegment(IBinaryBitmap[] allSymbols, Memory<IBinaryBitmap> exportedSymbols) : 
-        base(SegmentType.SymbolDictionary)
+        base(SegmentType.SymbolDictionary, allSymbols, exportedSymbols)
     {
-        AllSymbols = allSymbols;
-        ExportedSymbols = exportedSymbols;
     }
 }

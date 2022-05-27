@@ -1,10 +1,8 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
-using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
-namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.GenericRegionParsers;
 
 public readonly struct GenericRegionSegmentFlags
 {
@@ -35,10 +33,8 @@ public static class GenericRegionSegmentParser
         var regionHead = RegionHeaderParser.Parse(ref reader);
         var flags = new GenericRegionSegmentFlags(reader.ReadBigEndianUint8());
         var bitmap = regionHead.CreateTargetBitmap();
-        if (!flags.UseMmr)
-            throw new NotImplementedException("Uses only mmr encoding for now");
-        bitmap.ReadMmrEncodedBitmap(ref reader);
-
+        new GenericRegionReader(bitmap, flags.UseMmr).ReadFrom(ref reader, false);
+       
         return new GenericRegionSegment(SegmentType.ImmediateLosslessGenericRegion,
             regionHead, bitmap);
     }

@@ -12,7 +12,7 @@ public static class PageHeaderParser
         var height = reader.ReadBigEndianUint32();
         var xResolution = reader.ReadBigEndianUint32();
         var yResolution = reader.ReadBigEndianUint32();
-        var flags = (PageInformationFlags)reader.ReadBigEndianUint8();
+        var flags = new PageInformationFlags(reader.ReadBigEndianUint8());
         var striping = new PageStripingInformation(reader.ReadBigEndianUint16());
 
         return new (width, height, xResolution, yResolution,flags, striping);

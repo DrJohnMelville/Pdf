@@ -106,6 +106,6 @@ public ref struct SymbolParser
         if (bitmapLength == 0)
             rowBitmap.ReadUnencodedBitmap(ref reader);
         else
-            rowBitmap.ReadMmrEncodedBitmap(ref reader);
+            rowBitmap.ReadMmrEncodedBitmap(ref reader, false);
     }
 }

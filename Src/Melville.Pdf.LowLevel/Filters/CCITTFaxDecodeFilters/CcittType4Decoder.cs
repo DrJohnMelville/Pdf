@@ -2,6 +2,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
@@ -162,5 +163,13 @@ public class CcittType4Decoder : IStreamFilterDefinition
     lines = lines.SwapLines();
     linesDone++;
     currentRunColor = true;
+  }
+
+  public void RequireTerminator(ref SequenceReader<byte> source)
+  {
+    if (!this.reader.TryReadEndOfFileCode(ref source, out var done) || !done)
+    {
+      throw new InvalidDataException("An expected CCIT End of Frame code is not found");
+    }
   }
 }
