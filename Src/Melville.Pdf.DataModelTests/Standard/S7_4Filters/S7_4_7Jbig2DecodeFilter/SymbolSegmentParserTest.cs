@@ -27,11 +27,12 @@ public class SymbolSegmentParserTest
         Assert.Equal(sut.AllSymbols[0],  sut.ExportedSymbols.Span[0]);
         
     }
-    [Fact]
-    public void Example2FromStandard()
+    [Theory]
+    [InlineData("0001 00000002 00000002 E5 CD F8 00 79 E0 84 10 81 F0 82 10 86 10 79 F0 00 80")]
+  //  [InlineData("08 00 02 FF 00 00 00 02 00 00 00 02 4F E7 8C 20 0E 1D C7 CF 01 11 C4 B2 6F FF AC")]
+    public void Example2FromStandard(string data)
     {
-        var data = "0001 00000002 00000002 E5 CD F8 00 79 E0 84 10 81 F0 82 10 86 10 79 F0 00 80".BitsFromHex();
-        var sut = new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data)),
+        var sut = new SymbolDictionaryParser(new SequenceReader<byte>(new ReadOnlySequence<byte>(data.BitsFromHex())),
             ReadOnlySpan<Segment>.Empty).Parse(11);
         Assert.Equal(2, sut.AllSymbols.Length);
         Assert.Equal(6, sut.AllSymbols[0].Height);
