@@ -34,7 +34,6 @@ public class ArithmeticDecoderTest
         for (int i = 0; i < 32*8; i++)
         {
             ansReader.TryRead(1, ref ansSource, out var expected);
-            testOutput.WriteLine($"Iter: {i} {decoder.DebugState}");
             var actual = decoder.GetBit(ref encodedSource, 0);
             Assert.Equal(expected, actual);
             
