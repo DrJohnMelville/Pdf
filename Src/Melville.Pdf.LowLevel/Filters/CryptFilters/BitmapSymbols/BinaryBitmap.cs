@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using SixLabors.ImageSharp.ColorSpaces.Conversion;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
@@ -14,6 +15,12 @@ public interface IBinaryBitmap
     bool this[int row, int column] { get; set; }
     int Stride { get; }
     (byte[] Array, BitOffset Offset) ColumnLocation (int column);
+}
+
+public static class BinaryBitmapOperations
+{
+    public static bool ContainsPixel(this IBinaryBitmap bitmap, int row, int col) =>
+        row >= 0 && col >= 0 && row < bitmap.Height & col < bitmap.Width;
 }
 
 public interface IBitmapCopyTarget : IBinaryBitmap
@@ -122,10 +129,7 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     private BitOffset ComputeBitPosition(int row, int col)
     {
-        Debug.Assert(row >= 0);
-        Debug.Assert(row < Height);
-        Debug.Assert(col >= 0);
-        Debug.Assert(col<= Width);
+        Debug.Assert(this.ContainsPixel(row,col));
         return new((uint)((row * Stride) + (col >> 3)), (byte)(col & 0b111));
     }
 

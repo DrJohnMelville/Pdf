@@ -13,25 +13,27 @@ public ref struct SymbolParser
 {
     private SequenceReader<byte> reader = default;
     private readonly SymbolDictionaryFlags headerFlags;
-    private readonly HuffmanTable heightReader;
-    private readonly HuffmanTable widthReader;
-    private readonly HuffmanTable sizeReader;
+    public readonly IIntegerDecoder HeightReader;
+    public readonly IIntegerDecoder WidthReader;
+    public readonly IIntegerDecoder SizeReader;
     private readonly IBinaryBitmap[] result;
+    private readonly IHeightClassReaderStrategy heightClassReader;
     private int bitmapsDecoded = 0;
     private int height = 0;
 
     public SymbolParser(SymbolDictionaryFlags headerFlags,
-        HuffmanTable heightReader, HuffmanTable widthReader, HuffmanTable sizeReader, 
-        IBinaryBitmap[] result)
+        IIntegerDecoder heightReader, IIntegerDecoder widthReader, IIntegerDecoder sizeReader, 
+        IBinaryBitmap[] result, IHeightClassReaderStrategy heightClassReader)
     {
         Debug.Assert(widthReader.HasOutOfBandRow());
         Debug.Assert(!heightReader.HasOutOfBandRow());
         Debug.Assert(!sizeReader.HasOutOfBandRow());
         this.headerFlags = headerFlags;
-        this.heightReader = heightReader;
-        this.widthReader = widthReader;
-        this.sizeReader = sizeReader;
+        HeightReader = heightReader;
+        WidthReader = widthReader;
+        SizeReader = sizeReader;
         this.result = result;
+        this.heightClassReader = heightClassReader;
     }
 
     public void Parse(ref SequenceReader<byte> reader)
@@ -54,58 +56,11 @@ public ref struct SymbolParser
     private void ReadHeightClass()
     {
         var source = new BitSource(reader);
-        height += heightReader.GetInteger(ref source);
-        var rowBitmap = ConstructCompositeBitmap(ref source);
-        var bitmapLength = sizeReader.GetInteger(ref source);
-        reader = source.Source;
-        ReadBitmap(rowBitmap, bitmapLength);
+        height += HeightReader.GetInteger(ref source);
+        heightClassReader.ReadHeightClassBitmaps(ref source, ref this, height);
     }
 
-    private BinaryBitmap ConstructCompositeBitmap(ref BitSource source)
-    {
-        Span<int> widths = stackalloc int[result.Length - bitmapsDecoded];
-        int totalWidth = 0;
-        int localCount = 0;
-        var priorWidth = 0;
-        while (TryGetWidth(ref source, out var widthDelta))
-        {
-            widths[localCount] = (priorWidth += widthDelta);
-            totalWidth += priorWidth;
-            localCount++;
-        }
-        var rowBitmap = new BinaryBitmap(height, totalWidth);
-        AddBitmaps(widths[..localCount], result.AsSpan(bitmapsDecoded..), rowBitmap);
-        bitmapsDecoded += localCount;
-        return rowBitmap;
-    }
-
-    private readonly bool TryGetWidth(ref BitSource source, out int value) => 
-        !widthReader.IsOutOfBand(value = widthReader.GetInteger(ref source));
-
-    private static void AddBitmaps(
-        in Span<int> widths, in Span<IBinaryBitmap> dest, IBinaryBitmap rowBitmap)
-    {
-        if (widths.Length == 1)
-            dest[0] = rowBitmap;
-        else
-            AddMultiBitmap(widths, dest, rowBitmap);
-    }
-
-    private static void AddMultiBitmap(Span<int> widths, Span<IBinaryBitmap> dest, IBinaryBitmap rowBitmap)
-    {
-        var offset = 0;
-        for (int i = 0; i < widths.Length; i++)
-        {
-            dest[i] = new HorizontalStripBitmap(rowBitmap, offset, widths[i]);
-            offset += widths[i];
-        }
-    }
-
-    private void ReadBitmap(BinaryBitmap rowBitmap, int bitmapLength)
-    {
-        if (bitmapLength == 0)
-            rowBitmap.ReadUnencodedBitmap(ref reader);
-        else
-            rowBitmap.ReadMmrEncodedBitmap(ref reader, false);
-    }
+    public void AdvancePast(in SequenceReader<byte> source) => reader = source;
+    public int BitmapsLeftToDecode() => result.Length - bitmapsDecoded;
+    public void AddBitmap(IBinaryBitmap bitmap) => result[bitmapsDecoded++] = bitmap;
 }

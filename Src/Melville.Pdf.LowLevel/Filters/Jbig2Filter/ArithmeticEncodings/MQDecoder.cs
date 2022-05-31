@@ -21,9 +21,9 @@ public ref struct MQDecoder
         set => c = ((uint)value << 16) | (c & 0xFFFF);
 }
 
-    public MQDecoder(ref SequenceReader<byte> source, int contextBytes) : this()
+    public MQDecoder(ref SequenceReader<byte> source, int contextStateqBits) : this()
     {
-        contextState = new ContextStateDict(contextBytes);
+        contextState = new ContextStateDict(contextStateqBits);
         input = new TwoByteBuffer();
         INITDEC(ref source);
     }

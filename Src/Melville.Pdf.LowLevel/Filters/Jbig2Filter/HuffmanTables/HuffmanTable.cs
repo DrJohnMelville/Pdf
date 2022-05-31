@@ -6,6 +6,8 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 public interface IIntegerDecoder
 {
     int GetInteger(ref BitSource source);
+    bool HasOutOfBandRow();
+    bool IsOutOfBand(int value);
 }
 
 public class HuffmanTable : IIntegerDecoder

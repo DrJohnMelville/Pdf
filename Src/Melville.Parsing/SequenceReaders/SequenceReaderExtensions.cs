@@ -6,6 +6,7 @@ namespace Melville.Parsing.SequenceReaders;
 public static  partial class SequenceReaderExtensions
 {
     [MacroItem("byte", "Uint8", 1)]
+    [MacroItem("sbyte", "Int8", 1)]
     [MacroItem("short", "Int16", 2)]
     [MacroItem("ushort", "Uint16", 2)]
     [MacroItem("int", "Int32", 4)]

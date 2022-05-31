@@ -14,6 +14,8 @@ public class DirectReader : IIntegerDecoder
     private readonly int bits;
     private DirectReader(int bits) { this.bits = bits; }
     public int GetInteger(ref BitSource source) => source.ReadInt(bits);
+    public bool HasOutOfBandRow() => false;
+    public bool IsOutOfBand(int value) => false;
 }
 
 public class FakeReaderReturnsZero: IIntegerDecoder
@@ -25,4 +27,6 @@ public class FakeReaderReturnsZero: IIntegerDecoder
     }
 
     public int GetInteger(ref BitSource source) => 0;
+    public bool HasOutOfBandRow() => false;
+    public bool IsOutOfBand(int value) => false;
 }

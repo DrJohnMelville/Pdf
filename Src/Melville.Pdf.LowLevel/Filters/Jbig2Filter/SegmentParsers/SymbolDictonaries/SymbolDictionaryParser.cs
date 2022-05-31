@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Diagnostics;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
@@ -12,17 +13,21 @@ public ref struct SymbolDictionaryParser
 {
     private SequenceReader<byte> reader;
     private ReadOnlySpan<Segment> referencedSegments;
+    private readonly SymbolDictionaryFlags flags;
 
     public SymbolDictionaryParser(in SequenceReader<byte> reader, in ReadOnlySpan<Segment> referencedSegments)
     {
         this.reader = reader;
         this.referencedSegments = referencedSegments;
+        flags = new SymbolDictionaryFlags(this.reader.ReadBigEndianUint16());
     }
 
-    public SymbolDictionarySegment Parse(uint number)
+    public SymbolDictionarySegment Parse()
     {
-        var flags = new SymbolDictionaryFlags(reader.ReadBigEndianUint16());
         CheckTemporaryAssumptions(flags);
+        var heightReader = flags.UseHuffmanEncoding?
+            CompositeHeightClassReaderStrategy.Instance:
+            ParseAtDecoder();
         var symbols = CreateSymbolArray();
 
         var heightHuffman = GetHuffmanTable(flags.HuffmanSelectionForHeight);
@@ -31,11 +36,15 @@ public ref struct SymbolDictionaryParser
         var aggregationHuffman = GetHuffmanTable(flags.HuffmanTableSelectionAggInst);
         Debug.Assert(!aggregationHuffman.HasOutOfBandRow());
 
-        new SymbolParser(flags, heightHuffman, widthHuffman, bitmapSizeHuffman, symbols).Parse(ref reader);
-        
+        new SymbolParser(flags, heightHuffman, widthHuffman, bitmapSizeHuffman, symbols,
+            heightReader).Parse(ref reader);
         
         return new SymbolDictionarySegment(symbols, ReadExportedSymbols(symbols));
     }
+
+    private IHeightClassReaderStrategy ParseAtDecoder() => 
+        new ArithmeticHeightClassReader(
+            BitmapTemplateFactory.ReadContext(ref reader, flags.SymbolDictionaryTemplate));
 
     private Memory<IBinaryBitmap> ReadExportedSymbols(IBinaryBitmap[] symbols)
     {
@@ -57,12 +66,14 @@ public ref struct SymbolDictionaryParser
 
     private static void CheckTemporaryAssumptions(SymbolDictionaryFlags flags)
     {
-        if (!flags.UseHuffmanEncoding)
-            throw new NotImplementedException(" Parsing non huffman symbolDictionaries is not supported yet");
+        if (flags.AggregateRefinement)
+            throw new NotImplementedException("Aggregate refinement is not implemented yet");
         if (flags.AggregateRefinement && !flags.RefAggTeqmplate)
             throw new NotImplementedException("Parsing refinement ATflags is not supported");
     }
 
-    private HuffmanTable GetHuffmanTable(HuffmanTableSelection selection) => 
-        selection.GetTable(ref referencedSegments);
+    private IIntegerDecoder GetHuffmanTable(HuffmanTableSelection selection) => 
+         flags.UseHuffmanEncoding?
+             selection.GetTable(ref referencedSegments):
+             new ArithmeticIntegerDecoder();
 }

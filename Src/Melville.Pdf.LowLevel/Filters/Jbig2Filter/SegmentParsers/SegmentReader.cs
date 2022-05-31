@@ -35,7 +35,7 @@ public static class SegmentReader
         ReadOnlySpan<Segment> referencedSegments = ReadOnlySpan<Segment>.Empty;
         return header.SegmentType switch
         {
-            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(header.Number),
+            SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(),
             SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(header, ref reader),
             SegmentType.EndOfPage => Segment.EndOfPage,
             SegmentType.EndOfFile => Segment.EndOfFile,
