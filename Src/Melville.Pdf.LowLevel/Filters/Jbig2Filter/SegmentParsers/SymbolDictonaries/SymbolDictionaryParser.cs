@@ -34,7 +34,7 @@ public ref struct SymbolDictionaryParser
         var widthHuffman = GetHuffmanTable(flags.HuffmanSelectionForWidth);
         var bitmapSizeHuffman = GetHuffmanTable(flags.HuffmanSelectionBitmapSize);
         var aggregationHuffman = GetHuffmanTable(flags.HuffmanTableSelectionAggInst);
-        Debug.Assert(!aggregationHuffman.HasOutOfBandRow());
+        Debug.Assert((!aggregationHuffman.HasOutOfBandRow()) || !flags.UseHuffmanEncoding);
 
         new SymbolParser(flags, heightHuffman, widthHuffman, bitmapSizeHuffman, symbols,
             heightReader).Parse(ref reader);

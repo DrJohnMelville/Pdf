@@ -26,8 +26,8 @@ public ref struct SymbolParser
         IBinaryBitmap[] result, IHeightClassReaderStrategy heightClassReader)
     {
         Debug.Assert(widthReader.HasOutOfBandRow());
-        Debug.Assert(!heightReader.HasOutOfBandRow());
-        Debug.Assert(!sizeReader.HasOutOfBandRow());
+        Debug.Assert(!heightReader.HasOutOfBandRow() || !headerFlags.UseHuffmanEncoding);
+        Debug.Assert(!sizeReader.HasOutOfBandRow() || !headerFlags.UseHuffmanEncoding);
         this.headerFlags = headerFlags;
         HeightReader = heightReader;
         WidthReader = widthReader;
@@ -45,7 +45,7 @@ public ref struct SymbolParser
 
     private void Parse()
     {
-        if (headerFlags.AggregateRefinement | !headerFlags.UseHuffmanEncoding)
+        if (headerFlags.AggregateRefinement)
             throw new NotImplementedException("Only type 1 dictionary parsing is implemented");
         do
         {

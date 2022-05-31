@@ -10,10 +10,10 @@ public ref struct MQDecoder
     private ushort a;
     private byte ct;
     private readonly ContextStateDict contextState;
-    private TwoByteBuffer input;
+    private byte B, B1;
 
     public string DebugState =>
-        $"A:{a:X} C:{c:X} count:{ct} b:{input.B} b1:{input.B1}";
+        $"A:{a:X} C:{c:X} count:{ct} b:{B} b1:{B1}";
 
     public ushort CHigh
     {
@@ -24,13 +24,13 @@ public ref struct MQDecoder
     public MQDecoder(ref SequenceReader<byte> source, int contextStateqBits) : this()
     {
         contextState = new ContextStateDict(contextStateqBits);
-        input = new TwoByteBuffer();
         INITDEC(ref source);
     }
     public void INITDEC(ref SequenceReader<byte> source)
     {
-        input.Initialize(ref source);
-        c = (uint) (input.B ^ 0xFF) << 16;
+        source.TryRead(out B);
+        source.TryRead(out B1);
+        c = (uint) (B ^ 0xFF) << 16;
         BYTEIN(ref source);
         c <<= 7;
         ct -= 7;
@@ -38,7 +38,7 @@ public ref struct MQDecoder
     }
     private void BYTEIN(ref SequenceReader<byte> source)
     {
-        if (input.B == 0xFF)
+        if (B == 0xFF)
         {
             if (IsTerminationCode())
             {
@@ -54,15 +54,13 @@ public ref struct MQDecoder
         InnerReadByte(ref source, 0xFF00, 8, 8);
     }
 
-    private bool IsTerminationCode()
-    {
-        return input.B1 > 0x8f;
-    }
+    private bool IsTerminationCode() => B1 > 0x8f;
 
     private void InnerReadByte(ref SequenceReader<byte> source, int max, int byteOffset, byte nextCount)
-    {
-        input.Advance(ref source);
-        c += (uint)(max - (input.B << byteOffset));
+    { 
+        B = B1;
+        source.TryRead(out B1);
+        c += (uint)(max - (B << byteOffset));
         ct = nextCount;
     }
 
