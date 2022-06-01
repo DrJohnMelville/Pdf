@@ -4,8 +4,10 @@ using System.Diagnostics;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
 
@@ -25,21 +27,29 @@ public ref struct SymbolDictionaryParser
     public SymbolDictionarySegment Parse()
     {
         CheckTemporaryAssumptions(flags);
-        var heightReader = flags.UseHuffmanEncoding?
+        var heightClassReader = flags.UseHuffmanEncoding?
             CompositeHeightClassReaderStrategy.Instance:
             ParseAtDecoder();
         var symbols = CreateSymbolArray();
 
-        var heightHuffman = GetHuffmanTable(flags.HuffmanSelectionForHeight);
-        var widthHuffman = GetHuffmanTable(flags.HuffmanSelectionForWidth);
-        var bitmapSizeHuffman = GetHuffmanTable(flags.HuffmanSelectionBitmapSize);
-        var aggregationHuffman = GetHuffmanTable(flags.HuffmanTableSelectionAggInst);
-        Debug.Assert((!aggregationHuffman.HasOutOfBandRow()) || !flags.UseHuffmanEncoding);
-
-        new SymbolParser(flags, heightHuffman, widthHuffman, bitmapSizeHuffman, symbols,
-            heightReader).Parse(ref reader);
+        var intReader = flags.UseHuffmanEncoding
+            ? HuffmanIntReader()
+            : throw new NotImplementedException("aritmetic int parsing");
+        
+        new SymbolParser(flags, intReader, symbols, heightClassReader).Parse(ref reader);
         
         return new SymbolDictionarySegment(symbols, ReadExportedSymbols(symbols));
+    }
+
+    private IEncodedReader HuffmanIntReader()
+    {
+        return new HuffmanIntegerDecoder()
+        {
+            DeltaHeightContext = GetHuffmanTable(flags.HuffmanSelectionForHeight).VerifyNoOutOfBand(),
+            DeltaWidthContext = GetHuffmanTable(flags.HuffmanSelectionForWidth).VerifyHasOutOfBand(),
+            BitmapSizeContext = GetHuffmanTable(flags.HuffmanSelectionBitmapSize).VerifyNoOutOfBand(),
+            AggregationSymbolInstancesContext = GetHuffmanTable(flags.HuffmanTableSelectionAggInst).VerifyNoOutOfBand()
+        };
     }
 
     private IHeightClassReaderStrategy ParseAtDecoder() => 
@@ -49,8 +59,9 @@ public ref struct SymbolDictionaryParser
     private Memory<IBinaryBitmap> ReadExportedSymbols(IBinaryBitmap[] symbols)
     {
         var bits = new BitSource(reader);
-        var offset = StandardHuffmanTables.B1.GetInteger(ref bits);
-        var length = StandardHuffmanTables.B1.GetInteger(ref bits);
+        var tableB1 = StandardHuffmanTables.FromSelector(HuffmanTableSelection.B1);
+        var offset = tableB1.GetInteger(ref bits);
+        var length = tableB1.GetInteger(ref bits);
         return symbols.AsMemory(offset, length);
     }
 
@@ -72,8 +83,6 @@ public ref struct SymbolDictionaryParser
             throw new NotImplementedException("Parsing refinement ATflags is not supported");
     }
 
-    private IIntegerDecoder GetHuffmanTable(HuffmanTableSelection selection) => 
-         flags.UseHuffmanEncoding?
-             selection.GetTable(ref referencedSegments):
-             new ArithmeticIntegerDecoder();
+    private HuffmanLine[] GetHuffmanTable(HuffmanTableSelection selection) =>
+        selection.GetTableLines(ref referencedSegments);
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
@@ -13,7 +14,7 @@ public class ArithmeticHeightClassReader: IHeightClassReaderStrategy
         this.template = template;
     }
 
-    public void ReadHeightClassBitmaps(ref BitSource source, ref SymbolParser parser, int height)
+    public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {
         throw new NotImplementedException();
     }

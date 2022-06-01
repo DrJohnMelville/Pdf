@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictona
 
 public interface IHeightClassReaderStrategy
 {
-    void ReadHeightClassBitmaps(ref BitSource source, ref SymbolParser parser, int height);
+    void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height);
 }
 
 public class CompositeHeightClassReaderStrategy: IHeightClassReaderStrategy
@@ -16,19 +16,18 @@ public class CompositeHeightClassReaderStrategy: IHeightClassReaderStrategy
 
     private CompositeHeightClassReaderStrategy() { }
 
-    public void ReadHeightClassBitmaps(ref BitSource source, ref SymbolParser parser, int height)
+    public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {
         var rowBitmap = ConstructCompositeBitmap(ref source, ref parser, height);
-        var bitmapLength = parser.SizeReader.GetInteger(ref source);
-        var reader = source.Source;
+        var bitmapLength = parser.IntReader.BitmapSize(ref source);
         if (bitmapLength == 0)
-            rowBitmap.ReadUnencodedBitmap(ref reader);
+            rowBitmap.ReadUnencodedBitmap(ref source);
         else
-            rowBitmap.ReadMmrEncodedBitmap(ref reader, false);
-        parser.AdvancePast(reader);
+            rowBitmap.ReadMmrEncodedBitmap(ref source, false);
+        //parser.AdvancePast(reader);
     }
 
-    private unsafe BinaryBitmap ConstructCompositeBitmap(ref BitSource source, ref SymbolParser parser, int height)
+    private unsafe BinaryBitmap ConstructCompositeBitmap(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {
         int* widthPtr = stackalloc int[parser.BitmapsLeftToDecode()];
         Span<int> widths = new Span<int>(widthPtr, parser.BitmapsLeftToDecode());
@@ -46,8 +45,8 @@ public class CompositeHeightClassReaderStrategy: IHeightClassReaderStrategy
         return rowBitmap;
     }
     
-    private bool TryGetWidth(ref BitSource source, ref SymbolParser parser, out int value) => 
-        !parser.WidthReader.IsOutOfBand(value = parser.WidthReader.GetInteger(ref source));
+    private bool TryGetWidth(ref SequenceReader<byte> source, ref SymbolParser parser, out int value) => 
+        !parser.IntReader.IsOutOfBand(value = parser.IntReader.DeltaWidth(ref source));
 
     private static void AddBitmaps(
         in Span<int> widths, ref SymbolParser parser, IBinaryBitmap rowBitmap)
