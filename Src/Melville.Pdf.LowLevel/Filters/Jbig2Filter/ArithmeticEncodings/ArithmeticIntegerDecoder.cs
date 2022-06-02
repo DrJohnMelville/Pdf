@@ -2,12 +2,27 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Xml;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
-public class ArithmeticIntegerDecoder
+public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder>
 {
+    public ArithmeticIntegerDecoder(MQDecoder state) : base(state)
+    {
+    }
+
+    public override bool IsOutOfBand(int item) => item == int.MaxValue;
+
+    protected override int Read(ref SequenceReader<byte> source, ContextStateDict context)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void ClearCommonContext()
+    {
+    }
     /*
     #warning should become an local var
     private ushort prev = 1;

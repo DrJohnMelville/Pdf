@@ -1,27 +1,9 @@
 ﻿using System;
 using System.Buffers;
-using System.Diagnostics;
-using System.Linq;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
-
-public static class HuffmanDebugSupport
-{
-    public static HuffmanLine[] VerifyHasOutOfBand(this HuffmanLine[] lines)
-    {
-        Debug.Assert(HasOutOfBand(lines));
-        return lines;
-    }
-    public static HuffmanLine[] VerifyNoOutOfBand(this HuffmanLine[] lines)
-    {
-        Debug.Assert(!HasOutOfBand(lines));
-        return lines;
-    }
-
-    private static bool HasOutOfBand(this HuffmanLine[] lines) => lines.Any(i=>i.IsOutOfBandRow);
-}
 
 public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
 {

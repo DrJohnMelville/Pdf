@@ -4,12 +4,11 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
-public ref struct MQDecoder
+public class MQDecoder
 {
     private uint c;
     private ushort a;
     private byte ct;
-    private readonly ContextStateDict contextState;
     private byte B, B1;
 
     public string DebugState =>
@@ -21,9 +20,8 @@ public ref struct MQDecoder
         set => c = ((uint)value << 16) | (c & 0xFFFF);
 }
 
-    public MQDecoder(ref SequenceReader<byte> source, int contextStateqBits) : this()
+    public MQDecoder(ref SequenceReader<byte> source) 
     {
-        contextState = new ContextStateDict(contextStateqBits);
         INITDEC(ref source);
     }
     public void INITDEC(ref SequenceReader<byte> source)
@@ -64,16 +62,15 @@ public ref struct MQDecoder
         ct = nextCount;
     }
 
-    public int GetBit(ref SequenceReader<byte> source, ushort context)
+    public int GetBit(ref SequenceReader<byte> source, ref ContextEntry context)
     {
-        var ret = DECODE(ref source, context);
+        var ret = DECODE(ref source, ref context);
         Debug.Assert(ret is 0 or 1);
         return ret;
     }
 
-    private byte DECODE(ref SequenceReader<byte> source, ushort context)
+    private byte DECODE(ref SequenceReader<byte> source, ref ContextEntry currentState)
     {
-        ref var currentState = ref contextState.EntryForContext(context);
         ref var qeRow = ref QeComputer.Rows[currentState.I];
         a -= qeRow.Qe;
         byte ret;

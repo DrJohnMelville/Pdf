@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
-using System.IO;
+using System.Diagnostics;
+using System.Linq;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
@@ -41,4 +42,19 @@ public readonly struct HuffmanLine
         AdjustNumber(bitState.ForceRead(rangeLength, ref source));
     private int AdjustNumber(int raw) => rangeOffset + (rangeFactor * raw);
     public bool IsOutOfBandRow => rangeLength == 0 && rangeOffset == int.MaxValue;
+}
+
+public static class HuffmanDebugSupport
+{
+    public static HuffmanLine[] VerifyHasOutOfBand(this HuffmanLine[] lines)
+    {
+        Debug.Assert(HasOutOfBand(lines));
+        return lines;
+    }
+    public static HuffmanLine[] VerifyNoOutOfBand(this HuffmanLine[] lines)
+    {
+        Debug.Assert(!HasOutOfBand(lines));
+        return lines;
+    }
+    private static bool HasOutOfBand(this HuffmanLine[] lines) => lines.Any(i=>i.IsOutOfBandRow);
 }

@@ -24,17 +24,19 @@ public class ArithmeticDecoderTest
 
     [Fact]
     public void SequenceFromT88AnnexH2()
-    {
+    {  
         var encodedSource = CrerateSequenceReader(encoded);
-        var decoder = new MQDecoder(ref encodedSource, 1);
+        var decoder = new MQDecoder(ref encodedSource);
         
         var ansSource = CrerateSequenceReader(decoded);
         var ansReader = new BitReader();
 
+        var context = new ContextEntry();
+
         for (int i = 0; i < 32*8; i++)
         {
             ansReader.TryRead(1, ref ansSource, out var expected);
-            var actual = decoder.GetBit(ref encodedSource, 0);
+            var actual = decoder.GetBit(ref encodedSource, ref context);
             Assert.Equal(expected, actual);
             
         }
