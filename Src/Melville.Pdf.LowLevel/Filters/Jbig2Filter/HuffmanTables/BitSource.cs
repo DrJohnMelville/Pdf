@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.IO;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;

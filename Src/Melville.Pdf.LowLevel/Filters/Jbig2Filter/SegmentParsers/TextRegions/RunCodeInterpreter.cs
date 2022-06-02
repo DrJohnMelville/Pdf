@@ -1,16 +1,17 @@
-﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+﻿using System;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 
 public ref struct RunCodeInterpreter
 {
     private BitSource source;
-    public BitSource Source => source;
-    private readonly StructHuffmanTable huffmanTable;
+    public  BitSource Source => source;
+    private readonly ReadOnlySpan<HuffmanLine> huffmanTable;
     private int repeatedResult = 0;
     private int remainingRepeats = 0;
 
-    public RunCodeInterpreter(BitSource source, StructHuffmanTable huffmanTable)
+    public RunCodeInterpreter(BitSource source, ReadOnlySpan<HuffmanLine> huffmanTable)
     {
         this.source = source;
         this.huffmanTable = huffmanTable;
@@ -30,7 +31,7 @@ public ref struct RunCodeInterpreter
     }
 
     private int ReadResultFromBitstream() =>
-        InterpretCode(huffmanTable.GetInteger(ref source.Source, source.Reader));
+        InterpretCode( source.Source.ReadHuffmanInt(source.Reader, huffmanTable));
     
     private int InterpretCode(int nextCode) =>
         nextCode switch

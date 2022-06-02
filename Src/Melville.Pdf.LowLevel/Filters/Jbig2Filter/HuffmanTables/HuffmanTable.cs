@@ -39,20 +39,3 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
     public override void ClearCommonContext() => State.DiscardPartialByte();
 }
-
-
-[Obsolete("This isn't carrying it's weight -- just use a ReadOnlySpan of HuffmanLine")]
-public readonly ref struct StructHuffmanTable
-{
-    private readonly ReadOnlySpan<HuffmanLine> lines;
-
-    public StructHuffmanTable(in ReadOnlySpan<HuffmanLine> lines)
-    {
-        this.lines = lines;
-    }
-
-    public int GetInteger(ref SequenceReader<byte> source, BitReader reader)
-    {
-        return source.ReadHuffmanInt(reader, lines);
-    }
-}

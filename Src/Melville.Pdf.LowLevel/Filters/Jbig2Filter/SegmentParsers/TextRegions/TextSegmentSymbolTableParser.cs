@@ -22,7 +22,7 @@ public ref struct TextSegmentSymbolTableParser
         HuffmanTableFactory.FromIntSpan(runCodes, runCodeTable);
 
         Span<int> symbolCodeLengths = stackalloc int[table.Length];
-        var refCodeReader = new RunCodeInterpreter(src, new StructHuffmanTable(runCodeTable));
+        var refCodeReader = new RunCodeInterpreter(src, runCodeTable);
         for (int i = 0; i < symbolCodeLengths.Length; i++)
         {
             symbolCodeLengths[i] = refCodeReader.GetNextCode();

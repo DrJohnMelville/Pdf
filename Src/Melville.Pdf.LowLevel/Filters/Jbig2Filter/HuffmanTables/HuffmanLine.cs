@@ -36,11 +36,9 @@ public readonly struct HuffmanLine
     }
 
     public bool Matches(in HuffmanCode other) => code.Equals(other);
-    public int ReadNum(ref BitSource source) => rangeOffset + (rangeFactor * source.ReadInt(rangeLength));
 
     public int ReadNum(ref SequenceReader<byte> source, BitReader bitState) =>
         AdjustNumber(bitState.ForceRead(rangeLength, ref source));
-
     private int AdjustNumber(int raw) => rangeOffset + (rangeFactor * raw);
     public bool IsOutOfBandRow => rangeLength == 0 && rangeOffset == int.MaxValue;
 }

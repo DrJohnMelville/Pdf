@@ -47,9 +47,6 @@ public class ArithmeticIntegerDecoder
     {
  //       GetDecoder(ref source).GetBit(ref source, prev);
  throw new NotImplementedException("working on this");
-        var bit = source.ReadInt(1);
-        UpdatePrev(bit);
-        return bit;
     }
 
     private void UpdatePrev(int bit)
