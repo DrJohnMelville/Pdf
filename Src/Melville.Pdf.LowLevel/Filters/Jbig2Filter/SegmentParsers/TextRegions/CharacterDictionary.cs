@@ -1,26 +1,22 @@
 ﻿using System;
 using System.IO;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 
-public readonly ref struct CharacterDecoder
+public readonly ref struct CharacterDictionary
 {
-    private readonly IIntegerDecoder decoder;
-    private readonly ReadOnlySpan<Segment> segments;
+    private readonly ReadOnlySpan<Segment> dictionaries;
 
-    public CharacterDecoder(IIntegerDecoder decoder, ReadOnlySpan<Segment> segments)
+    public CharacterDictionary(ReadOnlySpan<Segment> dictionaries)
     {
-        this.decoder = decoder;
-        this.segments = segments;
+        this.dictionaries = dictionaries;
     }
-
-    public IBinaryBitmap GetBitmap(ref BitSource source)
+    
+    public IBinaryBitmap GetBitmap(int index)
     {
-        var index = decoder.GetInteger(ref source);
-        foreach (var segment in segments)
+        foreach (var segment in dictionaries)
         {
             if (segment is not DictionarySegment sds) continue;
             var exportedLength = sds.ExportedSymbols.Length;
@@ -30,4 +26,5 @@ public readonly ref struct CharacterDecoder
 
         throw new InvalidDataException("Referenced unknown symbol");
     }
+
 }

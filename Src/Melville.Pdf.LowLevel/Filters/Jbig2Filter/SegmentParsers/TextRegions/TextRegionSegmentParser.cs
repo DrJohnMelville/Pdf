@@ -51,39 +51,38 @@ public ref struct TextRegionSegmentParser
         var symbolParser = CreateSymbolWriter(huffmanFlags, charDecoder, charactersToRead, 
             CreateBitmapWriter(binaryBitmap));
 
-        symbolParser.Decode();
+        symbolParser.Decode(ref reader);
         
         return binaryBitmap;
     }
 
     private SymbolWriter CreateSymbolWriter(TextRegionHuffmanFlags huffmanFlags,
-        CharacterDecoder charDecoder, int charactersToRead, in BinaryBitmapWriter writer)
+        HuffmanLine[] huffmanCharacterDecoder, int charactersToRead, in BinaryBitmapWriter writer)
     {
         var remainingTableSpans = referencedSegments;
-        return new SymbolWriter(writer, 
-            new BitSource(reader), regionFlags,
-            huffmanFlags.SbhuffFs.GetTable(ref remainingTableSpans),
-            huffmanFlags.SbhuffDs.GetTable(ref remainingTableSpans),
-            huffmanFlags.SbhuffDt.GetTable(ref remainingTableSpans),
-            CreateDeltaTDecoder(),
-            huffmanFlags.SbhuffRdw.GetTable(ref remainingTableSpans),
-            huffmanFlags.SbhuffRdh.GetTable(ref remainingTableSpans),
-            huffmanFlags.SbhuffRdx.GetTable(ref remainingTableSpans),
-            huffmanFlags.SbhuffRdy.GetTable(ref remainingTableSpans),
-            huffmanFlags.SbHuffRSize.GetTable(ref remainingTableSpans),
-            charDecoder, charactersToRead);
+        
+        if (regionFlags.UseHuffman)
+        return new SymbolWriter(writer, regionFlags,
+            new HuffmanIntegerDecoder()
+            {
+                SymbolIdContext = huffmanCharacterDecoder,
+                FirstSContext = huffmanFlags.SbhuffFs.GetTableLines(ref remainingTableSpans),
+                DeltaSContext = huffmanFlags.SbhuffDs.GetTableLines(ref remainingTableSpans),
+                DeltaTContext = huffmanFlags.SbhuffDt.GetTableLines(ref remainingTableSpans),
+                TCoordinateContext = DirectBitstreamReaders.FromLogStripSize(regionFlags.LogStripSize),
+                RefinementDeltaWidthContext = huffmanFlags.SbhuffRdw.GetTableLines(ref remainingTableSpans),
+                RefinementDeltaHeightContext =  huffmanFlags.SbhuffRdh.GetTableLines(ref remainingTableSpans),
+                RefinementXContext =  huffmanFlags.SbhuffRdx.GetTableLines(ref remainingTableSpans),
+                RefinementYContext =  huffmanFlags.SbhuffRdy.GetTableLines(ref remainingTableSpans),
+                RefinementSizeContext =  huffmanFlags.SbHuffRSize.GetTableLines(ref remainingTableSpans),
+            }, new CharacterDictionary(referencedSegments), charactersToRead);
+
+        throw new NotImplementedException("Must use huffman encoding");
     }
 
     private BinaryBitmapWriter CreateBitmapWriter(BinaryBitmap binaryBitmap) =>
         new(binaryBitmap, regionFlags.Transposed, regionFlags.ReferenceCorner, 
             regionFlags.CombinationOperator);
-
-    private IIntegerDecoder CreateDeltaTDecoder()
-    {
-        if (regionFlags.LogStripSize == 0) return FakeReaderReturnsZero.Instance;
-        if (regionFlags.UseHuffman) return DirectReader.Instances[regionFlags.LogStripSize];
-        throw new NotImplementedException("Must use huffman coding. see ITU t88 sec 6.4.8");
-    }
 
     private BinaryBitmap CreateTargetBitmap()
     {
@@ -97,14 +96,13 @@ public ref struct TextRegionSegmentParser
         if (regionFlags.DefaultPixel) binaryBitmap.FillBlack();
     }
 
-    private CharacterDecoder ParseCharacterHuffmanTable()
+    private HuffmanLine[] ParseCharacterHuffmanTable()
     {
         Debug.Assert(regionFlags.UseHuffman);
         var sourceChars = CountSourceBitmaps();
         var lines = new HuffmanLine[sourceChars];
         TextSegmentSymbolTableParser.Parse(ref reader, lines);
-        var charDecoder = new CharacterDecoder(new HuffmanTable(lines), referencedSegments);
-        return charDecoder;
+        return lines;
     }
 
     private int CountSourceBitmaps()

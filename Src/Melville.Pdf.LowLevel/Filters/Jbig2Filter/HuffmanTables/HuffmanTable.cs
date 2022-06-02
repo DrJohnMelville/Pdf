@@ -3,33 +3,10 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Linq;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
-[Obsolete("Going to IEncodedReader")]
-public interface IIntegerDecoder
-{
-    int GetInteger(ref BitSource source);
-    bool HasOutOfBandRow();
-    bool IsOutOfBand(int value);
-}
-
-public class HuffmanTable : IIntegerDecoder
-{
-    private readonly HuffmanLine[] lines;
-
-    public HuffmanTable(params HuffmanLine[] lines)
-    {
-        this.lines = lines;
-    }
-
-    public int GetInteger(ref BitSource source)
-    {
-        return source.ReadHuffmanInt(lines);
-    }
-    public bool HasOutOfBandRow() => lines.Any(i => i.IsOutOfBandRow);
-    public bool IsOutOfBand(int value) => value == int.MaxValue;
-}
 
 public static class HuffmanDebugSupport
 {
@@ -53,19 +30,18 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
     {
     }
     
-    protected override int Read(ref SequenceReader<byte> source, HuffmanLine[] context, BitReader state)
+    protected override int Read(ref SequenceReader<byte> source, HuffmanLine[] context)
     {
-        var bitSource = new BitSource(source, state);
-        var ret = bitSource.ReadHuffmanInt(context.AsSpan());
-        source = bitSource.Source;
+        var ret = source.ReadHuffmanInt(State, context.AsSpan());
         return ret;
     }
 
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
+    public override void ClearCommonContext() => State.DiscardPartialByte();
 }
 
 
-
+[Obsolete("This isn't carrying it's weight -- just use a ReadOnlySpan of HuffmanLine")]
 public readonly ref struct StructHuffmanTable
 {
     private readonly ReadOnlySpan<HuffmanLine> lines;
@@ -75,8 +51,8 @@ public readonly ref struct StructHuffmanTable
         this.lines = lines;
     }
 
-    public int GetInteger(ref BitSource source)
+    public int GetInteger(ref SequenceReader<byte> source, BitReader reader)
     {
-        return source.ReadHuffmanInt(lines);
+        return source.ReadHuffmanInt(reader, lines);
     }
 }

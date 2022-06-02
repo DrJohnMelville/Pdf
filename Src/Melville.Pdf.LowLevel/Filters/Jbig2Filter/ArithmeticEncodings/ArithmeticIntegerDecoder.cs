@@ -6,8 +6,9 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
-public class ArithmeticIntegerDecoder: IIntegerDecoder
+public class ArithmeticIntegerDecoder
 {
+    #warning should become an local var
     private ushort prev = 1;
  
     public int GetInteger(ref BitSource source)

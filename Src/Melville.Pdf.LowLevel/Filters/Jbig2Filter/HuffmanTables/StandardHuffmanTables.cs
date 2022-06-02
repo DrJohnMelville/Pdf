@@ -261,8 +261,6 @@ public static readonly HuffmanLine[] B13 = {
         new(7, 0b1111111, 32, 25, 1)
     };
 
-    public static HuffmanTable FromSelector(HuffmanTableSelection tableSelector) =>
-        new(ArrayFromSelector(tableSelector));
     public static HuffmanLine[] ArrayFromSelector(HuffmanTableSelection tableSelector) => tableSelector switch
     {
         HuffmanTableSelection.B1 => B1,
@@ -281,5 +279,22 @@ public static readonly HuffmanLine[] B13 = {
         HuffmanTableSelection.B14 => B14,
         HuffmanTableSelection.B15 => B15,
         _ => throw new InvalidDataException("Cannot find standard huffman table: " + tableSelector)
+    };
+}
+
+public static class DirectBitstreamReaders
+{
+    public static readonly HuffmanLine[] ZeroBit = { new(0, 0, 0, 0, 0) };
+    public static readonly HuffmanLine[] OneBit = { new(0, 0, 1, 0, 1) };
+    public static readonly HuffmanLine[] TwoBit = { new(0, 0, 2, 0, 1) };
+    public static readonly HuffmanLine[] ThreeBit = { new(0, 0, 3, 0, 1) };
+
+    public static HuffmanLine[] FromLogStripSize(int logSize) => logSize switch
+    {
+        0 => ZeroBit,
+        1 => OneBit,
+        2 => TwoBit,
+        3 => ThreeBit,
+        _=> throw new InvalidDataException("Unknown LogStripSize")
     };
 }
