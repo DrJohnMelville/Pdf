@@ -1,21 +1,26 @@
 ﻿using System;
+using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 
 public ref struct RunCodeInterpreter
 {
-    private BitSource source;
-    public  BitSource Source => source;
+    public SequenceReader<byte> source;
+    private BitReader reader;
     private readonly ReadOnlySpan<HuffmanLine> huffmanTable;
     private int repeatedResult = 0;
     private int remainingRepeats = 0;
 
-    public RunCodeInterpreter(BitSource source, ReadOnlySpan<HuffmanLine> huffmanTable)
+    public RunCodeInterpreter(in SequenceReader<byte> source, BitReader reader, ReadOnlySpan<HuffmanLine> huffmanTable)
     {
         this.source = source;
+        this.reader = reader;
         this.huffmanTable = huffmanTable;
     }
+
+    public ReadOnlySequence<byte> UnexaminedSequence() => source.UnreadSequence;
 
     public int GetNextCode() => HasRepeatedResultPending() ? 
         ReturnRepeatedResult() : 
@@ -31,7 +36,7 @@ public ref struct RunCodeInterpreter
     }
 
     private int ReadResultFromBitstream() =>
-        InterpretCode( source.Source.ReadHuffmanInt(source.Reader, huffmanTable));
+        InterpretCode( source.ReadHuffmanInt(reader, huffmanTable));
     
     private int InterpretCode(int nextCode) =>
         nextCode switch
@@ -44,7 +49,7 @@ public ref struct RunCodeInterpreter
 
     private int ReturnNResults(int bitsToRead, int offset, int value)
     {
-        var repeats = source.ReadInt(bitsToRead) + offset;
+        var repeats = reader.ForceRead(bitsToRead, ref source) + offset;
         remainingRepeats = repeats - 1; // we are going to return the first repeat from this call.
         return repeatedResult = value;
     }

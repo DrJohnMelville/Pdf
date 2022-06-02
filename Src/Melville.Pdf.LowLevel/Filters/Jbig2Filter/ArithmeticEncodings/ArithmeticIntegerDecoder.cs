@@ -8,10 +8,11 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
 public class ArithmeticIntegerDecoder
 {
+    /*
     #warning should become an local var
     private ushort prev = 1;
  
-    public int GetInteger(ref BitSource source)
+    public int GetInteger(ref Seq source)
     {
         var sign = GetBit(ref source);
         if (LengthSelectionBitFound(ref source)) return AssembleNumber(sign, ReadInt(ref source, 2, 0));
@@ -59,5 +60,5 @@ public class ArithmeticIntegerDecoder
     private int ShiftBitIntoPrev(int bit) => (prev << 1) | bit;
 
     public bool HasOutOfBandRow() => true;
-    public bool IsOutOfBand(int value) => value == int.MaxValue;
+    public bool IsOutOfBand(int value) => value == int.MaxValue; */
 }

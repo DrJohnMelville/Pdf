@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Linq;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
-using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;

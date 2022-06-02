@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 
@@ -16,18 +17,19 @@ public ref struct TextSegmentSymbolTableParser
             runCodes[2 * i + 1] = datum & 7;
         }
 
-        var src = new BitSource(reader);
-        runCodes[34] = src.ReadInt(4);
+        var bitContext = new BitReader();
+        runCodes[34] = bitContext.ForceRead(4, ref reader);
         Span<HuffmanLine> runCodeTable = stackalloc HuffmanLine[35];
         HuffmanTableFactory.FromIntSpan(runCodes, runCodeTable);
 
         Span<int> symbolCodeLengths = stackalloc int[table.Length];
-        var refCodeReader = new RunCodeInterpreter(src, runCodeTable);
+        var refCodeReader = new RunCodeInterpreter(reader, bitContext, runCodeTable);
         for (int i = 0; i < symbolCodeLengths.Length; i++)
         {
             symbolCodeLengths[i] = refCodeReader.GetNextCode();
         }
-        reader = src.Source;
+
+        reader = new SequenceReader<byte>(refCodeReader.UnexaminedSequence());
         
         HuffmanTableFactory.FromIntSpan(symbolCodeLengths, table);
     }
