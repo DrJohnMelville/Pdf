@@ -29,7 +29,8 @@ public ref struct RunCodeInterpreter
         return repeatedResult;
     }
 
-    private int ReadResultFromBitstream() => InterpretCode(huffmanTable.GetInteger(ref source));
+    private int ReadResultFromBitstream() =>
+        InterpretCode(huffmanTable.GetInteger(ref source.Source, source.Reader));
     
     private int InterpretCode(int nextCode) =>
         nextCode switch

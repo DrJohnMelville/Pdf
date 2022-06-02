@@ -38,13 +38,14 @@ public ref struct SymbolDictionaryParser
         
         new SymbolParser(flags, intReader, symbols, heightClassReader).Parse(ref reader);
         
-        return new SymbolDictionarySegment(symbols, ReadExportedSymbols(symbols));
+        return new SymbolDictionarySegment(symbols, ReadExportedSymbols(symbols, intReader));
     }
 
     private IEncodedReader HuffmanIntReader()
     {
         return new HuffmanIntegerDecoder()
         {
+            ExportFlagsContext = StandardHuffmanTables.B1,
             DeltaHeightContext = GetHuffmanTable(flags.HuffmanSelectionForHeight).VerifyNoOutOfBand(),
             DeltaWidthContext = GetHuffmanTable(flags.HuffmanSelectionForWidth).VerifyHasOutOfBand(),
             BitmapSizeContext = GetHuffmanTable(flags.HuffmanSelectionBitmapSize).VerifyNoOutOfBand(),
@@ -56,12 +57,13 @@ public ref struct SymbolDictionaryParser
         new ArithmeticHeightClassReader(
             BitmapTemplateFactory.ReadContext(ref reader, flags.SymbolDictionaryTemplate));
 
-    private Memory<IBinaryBitmap> ReadExportedSymbols(IBinaryBitmap[] symbols)
+    private Memory<IBinaryBitmap> ReadExportedSymbols(IBinaryBitmap[] symbols, IEncodedReader intReader)
     {
-        var bits = new BitSource(reader);
-        var tableB1 = StandardHuffmanTables.FromSelector(HuffmanTableSelection.B1);
-        var offset = tableB1.GetInteger(ref bits);
-        var length = tableB1.GetInteger(ref bits);
+        var offset = intReader.ExportFlags(ref reader);
+        var length = intReader.ExportFlags(ref reader);
+        #warning right now this code assumes that the dictionary imports no other dictionaries, and exports all its symbols
+        Debug.Assert(offset == 0);
+        Debug.Assert(length == symbols.Length);
         return symbols.AsMemory(offset, length);
     }
 

@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -143,7 +144,6 @@ B....B..B....B..BBBB...B....B..B....B
         int leadingBits = bitData << (16 - bits);
         byte[] data = { (byte)(leadingBits >> 8), (byte)leadingBits };
         var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(data));
-        var source = new BitSource(reader);
-        Assert.Equal(result, source.ReadHuffmanInt(destination));
+        Assert.Equal(result, reader.ReadHuffmanInt(new BitReader(), destination));
     }
 }

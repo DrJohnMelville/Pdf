@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
@@ -191,9 +192,10 @@ public class StandardHuffmanTest
     [InlineData(HuffmanTableSelection.B15, "1111111 00000000000000000000000000000001 1111111 00000000000000000000000000000011", 26, 28)]
     public void ReadStandardHuffman(HuffmanTableSelection tableSelector, string data, int firstNum, int secondNum)
     {
-        var table = StandardHuffmanTables.FromSelector(tableSelector);
-        var source = new BitSource(new SequenceReader<byte>(new ReadOnlySequence<byte>(data.BitsFromBinary())));
-        Assert.Equal(firstNum, table.GetInteger(ref source));
-        Assert.Equal(secondNum, table.GetInteger(ref source));
+        var table = StandardHuffmanTables.ArrayFromSelector(tableSelector);
+        var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(data.BitsFromBinary()));
+        var bitReader = new BitReader();
+        Assert.Equal(firstNum, source.ReadHuffmanInt(bitReader, table));
+        Assert.Equal(secondNum, source.ReadHuffmanInt(bitReader, table));
     }
 }

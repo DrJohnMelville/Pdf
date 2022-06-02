@@ -20,11 +20,11 @@ public class CompositeHeightClassReaderStrategy: IHeightClassReaderStrategy
     {
         var rowBitmap = ConstructCompositeBitmap(ref source, ref parser, height);
         var bitmapLength = parser.IntReader.BitmapSize(ref source);
+        parser.IntReader.ClearCommonContext();
         if (bitmapLength == 0)
             rowBitmap.ReadUnencodedBitmap(ref source);
         else
             rowBitmap.ReadMmrEncodedBitmap(ref source, false);
-        //parser.AdvancePast(reader);
     }
 
     private unsafe BinaryBitmap ConstructCompositeBitmap(ref SequenceReader<byte> source, ref SymbolParser parser, int height)

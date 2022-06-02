@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
@@ -14,6 +15,9 @@ public class BitReader
         value = ret ?? 0;
         return ret.HasValue;
     }
+
+    public int ForceRead(int bits, ref SequenceReader<byte> input) =>
+        TryRead(bits, ref input) ?? throw new InvalidDataException("Not enough bits");
     public int? TryRead(int bits, ref SequenceReader<byte> input)
     {
         Debug.Assert(bits <= 32);

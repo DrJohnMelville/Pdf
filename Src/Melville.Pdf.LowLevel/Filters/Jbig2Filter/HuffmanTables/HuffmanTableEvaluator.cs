@@ -1,22 +1,27 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.IO;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 public static class HuffmanTableEvaluator
 {
-    public static int ReadHuffmanInt(this ref BitSource source, in ReadOnlySpan<HuffmanLine> lines)
+    public static int ReadHuffmanInt(this ref SequenceReader<byte> reader, BitReader bitState, in ReadOnlySpan<HuffmanLine> lines)
     {
-        var patternLen = 0;
-        var pattern = 0;
+        var pattern = new HuffmanCode();
         foreach (var line in lines)
         {
-            Debug.Assert(patternLen <= line.PrefixLengh, "Lines must be ascending length order");
-            while (patternLen < line.PrefixLengh) source.AddToPattern(ref pattern, ref patternLen);
-            if (line.Matches(patternLen, pattern)) return line.ReadNum(ref source);
+            Debug.Assert(pattern.PrefixLength <= line.PrefixLengh, "Lines must be ascending length order");
+            while (pattern.PrefixLength < line.PrefixLengh)
+            {
+                pattern = pattern.AddBitToPattern(ref reader, bitState);
+            }
+            if (line.Matches(pattern)) return line.ReadNum(ref reader, bitState);
         }
 
         throw new InvalidDataException("Got to the end of a huffman table");
     }
+
 }

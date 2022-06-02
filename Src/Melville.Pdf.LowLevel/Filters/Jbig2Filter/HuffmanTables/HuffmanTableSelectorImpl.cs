@@ -11,9 +11,5 @@ public static class HuffmanTableSelectorImpl
         if (sel is HuffmanTableSelection.UserSupplied)
             throw new NotImplementedException("Custom huffman table segments");
         return StandardHuffmanTables.ArrayFromSelector(sel);
-    }    
-    
-    [Obsolete("Going away")]
-    public static HuffmanTable GetTable(this HuffmanTableSelection sel, ref ReadOnlySpan<Segment> segments) => 
-        new HuffmanTable(sel.GetTableLines(ref segments));
+    }
 }

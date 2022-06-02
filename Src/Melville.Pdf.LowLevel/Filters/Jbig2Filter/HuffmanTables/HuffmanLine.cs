@@ -1,4 +1,8 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+﻿using System.Buffers;
+using System.IO;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 public readonly struct HuffmanCode
 {
@@ -10,7 +14,9 @@ public readonly struct HuffmanCode
         this.prefixData = prefixData;
         PrefixLength = prefixLength;
     }
-    public bool Matches(int patternLen, int pattern) => patternLen == PrefixLength && pattern == prefixData;
+
+    public HuffmanCode AddBitToPattern(ref SequenceReader<byte> reader, BitReader bitState) => 
+        new(PrefixLength + 1, (prefixData << 1) | bitState.ForceRead(1, ref reader));
 }
 
 public readonly struct HuffmanLine
@@ -29,7 +35,12 @@ public readonly struct HuffmanLine
         this.rangeFactor = rangeFactor;
     }
 
-    public bool Matches(int patternLen, int pattern) => code.Matches(patternLen, pattern);
+    public bool Matches(in HuffmanCode other) => code.Equals(other);
     public int ReadNum(ref BitSource source) => rangeOffset + (rangeFactor * source.ReadInt(rangeLength));
+
+    public int ReadNum(ref SequenceReader<byte> source, BitReader bitState) =>
+        AdjustNumber(bitState.ForceRead(rangeLength, ref source));
+
+    private int AdjustNumber(int raw) => rangeOffset + (rangeFactor * raw);
     public bool IsOutOfBandRow => rangeLength == 0 && rangeOffset == int.MaxValue;
 }
