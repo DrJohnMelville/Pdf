@@ -87,13 +87,10 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
     private int GetBit(
         ref SequenceReader<byte> source, ref AritmeticIntegerContext prev)
     {
-        var bit = GetDecoder(ref source).GetBit(ref source, ref prev.GetContext());
+        var bit = State.GetBit(ref source, ref prev.GetContext());
         prev.UpdateContext(bit);
         return bit;
     }
-
-    private MQDecoder GetDecoder(ref SequenceReader<byte> source) => 
-        decoder ??= new MQDecoder(ref source);
 
     public override void ClearCommonContext()
     {

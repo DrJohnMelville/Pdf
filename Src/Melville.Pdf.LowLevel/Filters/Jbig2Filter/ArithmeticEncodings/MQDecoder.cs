@@ -7,17 +7,17 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 public class MQDecoder
 {
     private uint c;
-    private ushort a;
+    private uint a;
     private byte ct;
     private byte B, B1;
 
     public string DebugState =>
         $"A:{a:X} C:{c:X} count:{ct} b:{B} b1:{B1}";
 
-    public ushort CHigh
+    public uint CHigh
     {
-        get => (ushort) (c >> 16);
-        set => c = ((uint)value << 16) | (c & 0xFFFF);
+        get => c;
+        set => c = value;
 }
 
     public MQDecoder(ref SequenceReader<byte> source) 
@@ -32,7 +32,7 @@ public class MQDecoder
         BYTEIN(ref source);
         c <<= 7;
         ct -= 7;
-        a = 0x8000;
+        a = 0x80000000;
     }
     private void BYTEIN(ref SequenceReader<byte> source)
     {
@@ -76,7 +76,7 @@ public class MQDecoder
         byte ret;
         if (CHigh < a)
         {
-            if ((a & 0x8000) != 0) return currentState.MPS;
+            if ((a & 0x80000000) != 0) return currentState.MPS;
             ret = MPS_EXCHANGE(ref currentState, ref qeRow);
         }
         else
@@ -128,6 +128,6 @@ public class MQDecoder
             a <<= 1;
             c <<= 1;
             ct--;
-        } while ((a & 0x8000) == 0);
+        } while ((a & 0x80000000) == 0);
     }
 }
