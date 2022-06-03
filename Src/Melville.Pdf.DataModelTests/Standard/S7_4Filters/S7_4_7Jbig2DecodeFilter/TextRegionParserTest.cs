@@ -52,11 +52,12 @@ B....BB....B
         };
     }
 
-    [Fact]
-    public void ParseTextSegment()
+    [Theory]
+    [InlineData("00000025 00000008 00000004 00000001 00 0C09 0010 00000005 01100000000000000000000000000000000C" +
+                "4007087041D0")] // huffman coded
+    [InlineData("00000025 00000008 00000004 00000001 00 0C08 0000 00 05 8D 6E 5A 12 40 85 FF AC")]
+    public void ParseTextSegment(string data)
     {
-        var data = "00000025 00000008 00000004 00000001 00 0C09 0010 00000005 01100000000000000000000000000000000C" +
-                   "4007087041D0";
         var sut = Parse(data.BitsFromHex());
         Assert.Equal(0x25, sut.Bitmap.Width);
         Assert.Equal(8, sut.Bitmap.Height);

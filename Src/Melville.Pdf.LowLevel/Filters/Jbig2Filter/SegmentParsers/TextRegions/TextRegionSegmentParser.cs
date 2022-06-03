@@ -3,7 +3,10 @@ using System.Buffers;
 using System.Diagnostics;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
@@ -36,49 +39,59 @@ public ref struct TextRegionSegmentParser
 
     private BinaryBitmap CreateBitmap()
     {
-        if (!regionFlags.UseHuffman)
-            throw new NotImplementedException("Only supports huffman encoding");
         var huffmanFlags = new TextRegionHuffmanFlags(
             regionFlags.UseHuffman ? reader.ReadBigEndianUint16():(ushort)0);
         if (regionFlags.UsesRefinement)
             throw new NotImplementedException("Refinement is not supported yet.");
+        
         var charactersToRead = (int)reader.ReadBigEndianUint32();
 
-        var charDecoder = ParseCharacterHuffmanTable();
-        
+        IEncodedReader encodedReader = regionFlags.UseHuffman?
+            ParseHuffmanDecoder(huffmanFlags):
+            CreateArithmeticDecoder();
         var binaryBitmap = CreateTargetBitmap();
 
-        var symbolParser = CreateSymbolWriter(huffmanFlags, charDecoder, charactersToRead, 
-            CreateBitmapWriter(binaryBitmap));
+        var symbolParser = new SymbolWriter(CreateBitmapWriter(binaryBitmap), regionFlags,
+            encodedReader, new CharacterDictionary(referencedSegments), charactersToRead);
 
         symbolParser.Decode(ref reader);
         
         return binaryBitmap;
     }
 
-    private SymbolWriter CreateSymbolWriter(TextRegionHuffmanFlags huffmanFlags,
-        HuffmanLine[] huffmanCharacterDecoder, int charactersToRead, in BinaryBitmapWriter writer)
+    private IEncodedReader ParseHuffmanDecoder(TextRegionHuffmanFlags huffmanFlags)
     {
         var remainingTableSpans = referencedSegments;
-        
-        if (regionFlags.UseHuffman)
-        return new SymbolWriter(writer, regionFlags,
-            new HuffmanIntegerDecoder()
-            {
-                SymbolIdContext = huffmanCharacterDecoder,
-                FirstSContext = huffmanFlags.SbhuffFs.GetTableLines(ref remainingTableSpans),
-                DeltaSContext = huffmanFlags.SbhuffDs.GetTableLines(ref remainingTableSpans),
-                DeltaTContext = huffmanFlags.SbhuffDt.GetTableLines(ref remainingTableSpans),
-                TCoordinateContext = DirectBitstreamReaders.FromLogStripSize(regionFlags.LogStripSize),
-                RefinementDeltaWidthContext = huffmanFlags.SbhuffRdw.GetTableLines(ref remainingTableSpans),
-                RefinementDeltaHeightContext =  huffmanFlags.SbhuffRdh.GetTableLines(ref remainingTableSpans),
-                RefinementXContext =  huffmanFlags.SbhuffRdx.GetTableLines(ref remainingTableSpans),
-                RefinementYContext =  huffmanFlags.SbhuffRdy.GetTableLines(ref remainingTableSpans),
-                RefinementSizeContext =  huffmanFlags.SbHuffRSize.GetTableLines(ref remainingTableSpans),
-            }, new CharacterDictionary(referencedSegments), charactersToRead);
-
-        throw new NotImplementedException("Must use huffman encoding");
+        var intDecoder = new HuffmanIntegerDecoder()
+        {
+            SymbolIdContext = ParseCharacterHuffmanTable(),
+            FirstSContext = huffmanFlags.SbhuffFs.GetTableLines(ref remainingTableSpans),
+            DeltaSContext = huffmanFlags.SbhuffDs.GetTableLines(ref remainingTableSpans),
+            DeltaTContext = huffmanFlags.SbhuffDt.GetTableLines(ref remainingTableSpans),
+            TCoordinateContext = DirectBitstreamReaders.FromLogStripSize(regionFlags.LogStripSize),
+            RefinementDeltaWidthContext = huffmanFlags.SbhuffRdw.GetTableLines(ref remainingTableSpans),
+            RefinementDeltaHeightContext = huffmanFlags.SbhuffRdh.GetTableLines(ref remainingTableSpans),
+            RefinementXContext = huffmanFlags.SbhuffRdx.GetTableLines(ref remainingTableSpans),
+            RefinementYContext = huffmanFlags.SbhuffRdy.GetTableLines(ref remainingTableSpans),
+            RefinementSizeContext = huffmanFlags.SbHuffRSize.GetTableLines(ref remainingTableSpans),
+        };
+        return intDecoder;
     }
+
+    private IEncodedReader CreateArithmeticDecoder() =>
+        new ArithmeticIntegerDecoder(new ArithmeticBitmapReaderContext())
+        {
+            SymbolIdContext = new ContextStateDict(9, IntLog.CeilingLog2Of((uint)CountSourceBitmaps())),
+            FirstSContext = new ContextStateDict(9),
+            DeltaSContext = new ContextStateDict(9),
+            DeltaTContext = new ContextStateDict(9),
+            TCoordinateContext = new ContextStateDict(9),
+            RefinementDeltaWidthContext = new ContextStateDict(9),
+            RefinementDeltaHeightContext = new ContextStateDict(9),
+            RefinementXContext = new ContextStateDict(9),
+            RefinementYContext = new ContextStateDict(9),
+            RefinementSizeContext = new ContextStateDict(9),
+        };
 
     private BinaryBitmapWriter CreateBitmapWriter(BinaryBitmap binaryBitmap) =>
         new(binaryBitmap, regionFlags.Transposed, regionFlags.ReferenceCorner, 

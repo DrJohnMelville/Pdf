@@ -94,7 +94,7 @@ public interface IEncodedReader
 [MacroItem("RefinementY")]
 [MacroItem("RefinementSize")]
 [MacroItem("RIBit")]
-[MacroCode("public TContext? ~0~Context {private get; init;}")]
+[MacroCode("public TContext? ~0~Context {protected get; init;}")]
 [MacroCode("public int ~0~(ref SequenceReader<byte> source) => Read(ref source, VerifyExists(~0~Context));")]
 public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
 {
@@ -105,7 +105,7 @@ public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
         this.State = state;
     }
 
-    private TContext VerifyExists(TContext? context, [CallerArgumentExpression("context")] string caller = "") =>
+    protected TContext VerifyExists(TContext? context, [CallerArgumentExpression("context")] string caller = "") =>
         context ?? throw new InvalidOperationException($"No context defined for {caller}.");
 
     public abstract bool IsOutOfBand(int item);

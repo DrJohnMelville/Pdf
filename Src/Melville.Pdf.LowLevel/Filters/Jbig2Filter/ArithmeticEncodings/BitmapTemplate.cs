@@ -1,16 +1,11 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
+﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
-public record struct ContextBitRun(sbyte X, sbyte Y, byte Length, byte MinBit)
+public readonly record struct ContextBitRun(sbyte X, sbyte Y, byte Length, byte MinBit)
 {
     public int NextBit() => MinBit + Length;
 }

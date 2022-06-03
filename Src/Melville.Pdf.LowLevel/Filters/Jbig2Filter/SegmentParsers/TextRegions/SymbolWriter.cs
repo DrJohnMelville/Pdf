@@ -58,7 +58,8 @@ public ref struct SymbolWriter
     private void DecodeSymbol(ref SequenceReader<byte> source)
     {
         var charT = integerReader.TCoordinate(ref source) + strIpT;
-        var symbol = characterDictionary.GetBitmap(integerReader.SymbolId(ref source));
+        var symbolId = integerReader.SymbolId(ref source);
+        var symbol = characterDictionary.GetBitmap(symbolId);
         target.WriteBitmap(charT, ref curS, symbol);
         curS += regionFlags.DefaultCharacteSpacing;
         remainingSymbolsToDecode--;
