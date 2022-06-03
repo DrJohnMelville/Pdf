@@ -8,7 +8,6 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictona
 
 public ref struct SymbolParser
 {
-    private SequenceReader<byte> reader = default;
     private readonly SymbolDictionaryFlags headerFlags;
     public IEncodedReader EncodedReader { get; }
     private readonly IBinaryBitmap[] result;
@@ -25,24 +24,17 @@ public ref struct SymbolParser
         this.heightClassReader = heightClassReader;
     }
 
-    public void Parse(ref SequenceReader<byte> reader)
-    {
-        this.reader = reader;
-        Parse();
-        reader = this.reader;
-    }
-
-    private void Parse()
+    public void ReadSymbols(ref SequenceReader<byte> reader)
     {
         if (headerFlags.AggregateRefinement)
             throw new NotImplementedException("Only type 1 dictionary parsing is implemented");
         do
         {
-            ReadHeightClass();
+            ReadHeightClass(ref reader);
         } while (bitmapsDecoded < result.Length);
     }
 
-    private void ReadHeightClass()
+    private void ReadHeightClass(ref SequenceReader<byte> reader)
     {
         height += EncodedReader.DeltaHeight(ref reader);
         heightClassReader.ReadHeightClassBitmaps(ref reader, ref this, height);

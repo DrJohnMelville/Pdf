@@ -1,37 +1,8 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics;
-using System.Xml;
+﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
-
-public ref struct AritmeticIntegerContext
-{
-    private ushort value;
-    private readonly ContextStateDict dict;
-
-    public AritmeticIntegerContext(ContextStateDict dict)
-    {
-        this.dict = dict;
-        value = 1;
-    }
-    public void UpdateContext(int bit)
-    {
-        Debug.Assert(bit is 0 or 1);
-        value = (ushort)(value < 256 ? ShiftBitIntoPrev(bit) : RemoveTopBit(ShiftBitIntoPrev(bit)));
-    }
-    private int RemoveTopBit(int shiftedPrev) => (shiftedPrev & 511) | 256;
-    private int ShiftBitIntoPrev(int bit) => (value << 1) | bit;
-
-
-    public ref ContextEntry GetContext()
-    {
-        return ref dict.EntryForContext(value);
-    }
-}
 
 public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder>
 {
@@ -44,8 +15,10 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
 
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
 
-    private static int[] bitsToRead = { 2, 4, 6, 8, 12, 32 };
-    private static int[] numberOffset = { 0,4,20,84, 340, 4436};
+    private static readonly (int BitsToRead, int Offset)[] encodingModes =
+    {
+        (2, 0), (4, 4), (6, 20), (8, 84), (12, 340), (32, 4436)
+    };
     
     protected override int Read(ref SequenceReader<byte> source, ContextStateDict context)
     {
@@ -53,12 +26,13 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
         var sign = GetBit(ref source, ref prev);
         var bitLen = PickBitLength(ref source, ref prev);
         return AssembleNumber(sign, 
-            ReadInt(ref source, ref prev, bitsToRead[bitLen], numberOffset[bitLen]));
+            ReadInt(ref source, ref prev, bitLen));
     }
 
     private int ReadInt(
-        ref SequenceReader<byte> source, ref AritmeticIntegerContext prev, int bits, int offset)
+        ref SequenceReader<byte> source, ref AritmeticIntegerContext prev, int encodingMode)
     {
+        var (bits, offset) = encodingModes[encodingMode];
         int value = 0;
         for (int i = 0; i < bits; i++)
         {
@@ -70,7 +44,7 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
     private int PickBitLength(ref SequenceReader<byte> reader, ref AritmeticIntegerContext context)
     {
         int i = 0;
-        while ((i < (bitsToRead.Length - 1)) &&
+        while ((i < (encodingModes.Length - 1)) &&
              !LengthSelectionBitFound(ref reader, ref context)) i++;
         return i;
     }
