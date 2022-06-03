@@ -1,29 +1,34 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
+[DebuggerDisplay("A:{a:X} C:{c:X} count:{ct} b:{B} b1:{B1}")]
 public class MQDecoder
 {
+    private const int UninitializedASentinelValue = 1;
     private uint c;
-    private uint a;
+    private uint a = UninitializedASentinelValue;
     private byte ct;
     private byte B, B1;
 
-    public string DebugState =>
-        $"A:{a:X} C:{c:X} count:{ct} b:{B} b1:{B1}";
-
-    public uint CHigh
+    public int GetBit(ref SequenceReader<byte> source, ref ContextEntry context)
     {
-        get => c;
-        set => c = value;
-}
-
-    public MQDecoder(ref SequenceReader<byte> source) 
-    {
-        INITDEC(ref source);
+        EnsureIsInitialized(ref source);
+        var ret = DECODE(ref source, ref context);
+        Debug.Assert(ret is 0 or 1);
+        return ret;
     }
+
+    private void EnsureIsInitialized(ref SequenceReader<byte> source)
+    {
+        if (IsUninitialized()) INITDEC(ref source);
+    }
+
+    //a is shifted 16 bits left so it can interact with CHigh.  This means the lower 16 bytes of A should always be
+    // 0.  We use bit 1 as a sentinel value to detect then the decoder is not initialized.
+    private bool IsUninitialized() => a == UninitializedASentinelValue;
+
     public void INITDEC(ref SequenceReader<byte> source)
     {
         source.TryRead(out B);
@@ -34,6 +39,7 @@ public class MQDecoder
         ct -= 7;
         a = 0x80000000;
     }
+    
     private void BYTEIN(ref SequenceReader<byte> source)
     {
         if (B == 0xFF)
@@ -61,27 +67,20 @@ public class MQDecoder
         c += (uint)(max - (B << byteOffset));
         ct = nextCount;
     }
-
-    public int GetBit(ref SequenceReader<byte> source, ref ContextEntry context)
-    {
-        var ret = DECODE(ref source, ref context);
-        Debug.Assert(ret is 0 or 1);
-        return ret;
-    }
-
+    
     private byte DECODE(ref SequenceReader<byte> source, ref ContextEntry currentState)
     {
         ref var qeRow = ref QeComputer.Rows[currentState.I];
         a -= qeRow.Qe;
         byte ret;
-        if (CHigh < a)
+        if (c < a)
         {
             if ((a & 0x80000000) != 0) return currentState.MPS;
             ret = MPS_EXCHANGE(ref currentState, ref qeRow);
         }
         else
         {
-            CHigh -= a;
+            c -= a;
             ret = LPS_EXCHANGE(ref currentState, ref qeRow);
         }
 

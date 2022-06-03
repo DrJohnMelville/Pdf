@@ -12,12 +12,14 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
 public record struct ContextBitRun(sbyte X, sbyte Y, byte Length, byte MinBit)
 {
-    
+    public int NextBit() => MinBit + Length;
 }
 
 public readonly struct BitmapTemplate
 {
     private readonly ContextBitRun[] runs;
+
+    public int BitsRequired() => runs[0].NextBit();
 
     public BitmapTemplate(ContextBitRun[] runs)
     {
@@ -39,7 +41,8 @@ public readonly struct BitmapTemplate
         return ret;
     }
 
-    private bool GetBit(BinaryBitmap bitmap, int row, int col) => bitmap.ContainsPixel(row, col) && bitmap[row, col];
+    private bool GetBit(BinaryBitmap bitmap, int row, int col) => 
+        bitmap.ContainsPixel(row, col) && bitmap[row, col];
 }
 
 public unsafe ref struct BitmapTemplateFactory

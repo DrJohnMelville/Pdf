@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Xml;
+using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
@@ -34,9 +35,11 @@ public ref struct AritmeticIntegerContext
 
 public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder>
 {
-   
-    public ArithmeticIntegerDecoder(MQDecoder? state = null) : base(state)
+    private readonly ArithmeticBitmapReaderContext template;
+
+    public ArithmeticIntegerDecoder(ArithmeticBitmapReaderContext template) : base(new MQDecoder())
     {
+        this.template = template;
     }
 
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
@@ -92,7 +95,6 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
         return bit;
     }
 
-    public override void ClearCommonContext()
-    {
-    }
+    public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) => 
+        target.ReadArithmeticEncodedBitmap(ref source, State, template, false, false);
 }

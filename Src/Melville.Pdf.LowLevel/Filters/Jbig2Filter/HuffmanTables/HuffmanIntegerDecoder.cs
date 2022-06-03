@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
@@ -16,7 +17,15 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
         var ret = source.ReadHuffmanInt(State, context.AsSpan());
         return ret;
     }
-
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
-    public override void ClearCommonContext() => State.DiscardPartialByte();
+    
+    public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target)
+    {
+        var bitmapLength = BitmapSize(ref source);
+        State.DiscardPartialByte();
+        if (bitmapLength == 0)
+            target.ReadUnencodedBitmap(ref source);
+        else
+            target.ReadMmrEncodedBitmap(ref source, false);
+    }
 }

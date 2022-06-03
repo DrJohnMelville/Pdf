@@ -10,21 +10,16 @@ public interface IHeightClassReaderStrategy
     void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height);
 }
 
-public class CompositeHeightClassReaderStrategy: IHeightClassReaderStrategy
+public class CompositeHeightClassReader: IHeightClassReaderStrategy
 {
-    public static CompositeHeightClassReaderStrategy Instance = new();
+    public static CompositeHeightClassReader Instance = new();
 
-    private CompositeHeightClassReaderStrategy() { }
+    private CompositeHeightClassReader() { }
 
     public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {
         var rowBitmap = ConstructCompositeBitmap(ref source, ref parser, height);
-        var bitmapLength = parser.IntReader.BitmapSize(ref source);
-        parser.IntReader.ClearCommonContext();
-        if (bitmapLength == 0)
-            rowBitmap.ReadUnencodedBitmap(ref source);
-        else
-            rowBitmap.ReadMmrEncodedBitmap(ref source, false);
+        parser.EncodedReader.ReadBitmap(ref source, rowBitmap);
     }
 
     private unsafe BinaryBitmap ConstructCompositeBitmap(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
@@ -34,7 +29,7 @@ public class CompositeHeightClassReaderStrategy: IHeightClassReaderStrategy
         int totalWidth = 0;
         int localCount = 0;
         var priorWidth = 0;
-        while (TryGetWidth(ref source, ref parser, out var widthDelta))
+        while (parser.TryGetWidth(ref source, out var widthDelta))
         {
             widths[localCount] = (priorWidth += widthDelta);
             totalWidth += priorWidth;
@@ -44,9 +39,6 @@ public class CompositeHeightClassReaderStrategy: IHeightClassReaderStrategy
         AddBitmaps(widths[..localCount], ref parser, rowBitmap);
         return rowBitmap;
     }
-    
-    private bool TryGetWidth(ref SequenceReader<byte> source, ref SymbolParser parser, out int value) => 
-        !parser.IntReader.IsOutOfBand(value = parser.IntReader.DeltaWidth(ref source));
 
     private static void AddBitmaps(
         in Span<int> widths, ref SymbolParser parser, IBinaryBitmap rowBitmap)

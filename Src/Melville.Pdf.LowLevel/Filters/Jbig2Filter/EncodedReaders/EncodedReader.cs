@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 
@@ -73,7 +74,8 @@ public interface IEncodedReader
     int RIBit(ref SequenceReader<byte> source);
 
     bool IsOutOfBand(int item);
-    void ClearCommonContext();
+
+    void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
 }
 
 [MacroItem("AggregationSymbolInstances")]
@@ -108,5 +110,5 @@ public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
 
     public abstract bool IsOutOfBand(int item);
     protected abstract int Read(ref SequenceReader<byte> source, TContext context);
-    public abstract void ClearCommonContext();
+    public abstract void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
 }

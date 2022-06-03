@@ -27,23 +27,19 @@ public ref struct SymbolDictionaryParser
     public SymbolDictionarySegment Parse()
     {
         CheckTemporaryAssumptions(flags);
-        var heightClassReader = flags.UseHuffmanEncoding?
-            CompositeHeightClassReaderStrategy.Instance:
-            ParseAtDecoder();
+        var heightClassReader = flags.UseHuffmanEncoding && !flags.AggregateRefinement?
+            (IHeightClassReaderStrategy)CompositeHeightClassReader.Instance:
+            IndividualHeightClassReader.Instance;
+        var intReader = flags.UseHuffmanEncoding ? HuffmanIntReader() : ParstAtDecoder();
         var symbols = CreateSymbolArray();
-
-        var intReader = flags.UseHuffmanEncoding
-            ? HuffmanIntReader()
-            : new ArithmeticIntegerDecoder();
         
         new SymbolParser(flags, intReader, symbols, heightClassReader).Parse(ref reader);
         
         return new SymbolDictionarySegment(symbols, ReadExportedSymbols(symbols, intReader));
     }
 
-    private IEncodedReader HuffmanIntReader()
-    {
-        return new HuffmanIntegerDecoder()
+
+    private IEncodedReader HuffmanIntReader() => new HuffmanIntegerDecoder()
         {
             ExportFlagsContext = StandardHuffmanTables.B1,
             DeltaHeightContext = GetHuffmanTable(flags.HuffmanSelectionForHeight).VerifyNoOutOfBand(),
@@ -51,11 +47,18 @@ public ref struct SymbolDictionaryParser
             BitmapSizeContext = GetHuffmanTable(flags.HuffmanSelectionBitmapSize).VerifyNoOutOfBand(),
             AggregationSymbolInstancesContext = GetHuffmanTable(flags.HuffmanTableSelectionAggInst).VerifyNoOutOfBand()
         };
-    }
 
-    private IHeightClassReaderStrategy ParseAtDecoder() => 
-        new ArithmeticHeightClassReader(
-            BitmapTemplateFactory.ReadContext(ref reader, flags.SymbolDictionaryTemplate));
+    private  ArithmeticIntegerDecoder ParstAtDecoder() => 
+        new(
+            new ArithmeticBitmapReaderContext(
+            BitmapTemplateFactory.ReadContext(ref reader, flags.SymbolDictionaryTemplate)))
+        {
+            ExportFlagsContext = new ContextStateDict(9),
+            DeltaHeightContext = new ContextStateDict(9),
+            DeltaWidthContext = new ContextStateDict(9),
+            BitmapSizeContext= new ContextStateDict(9),
+            AggregationSymbolInstancesContext = new ContextStateDict(9),
+        };
 
     private Memory<IBinaryBitmap> ReadExportedSymbols(IBinaryBitmap[] symbols, IEncodedReader intReader)
     {

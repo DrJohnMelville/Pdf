@@ -10,17 +10,17 @@ public ref struct SymbolParser
 {
     private SequenceReader<byte> reader = default;
     private readonly SymbolDictionaryFlags headerFlags;
-    public IEncodedReader IntReader { get; }
+    public IEncodedReader EncodedReader { get; }
     private readonly IBinaryBitmap[] result;
     private readonly IHeightClassReaderStrategy heightClassReader;
     private int bitmapsDecoded = 0;
     private int height = 0;
 
     public SymbolParser(SymbolDictionaryFlags headerFlags,
-        IEncodedReader intReader, IBinaryBitmap[] result, IHeightClassReaderStrategy heightClassReader)
+        IEncodedReader encodedReader, IBinaryBitmap[] result, IHeightClassReaderStrategy heightClassReader)
     {
         this.headerFlags = headerFlags;
-        IntReader = intReader;
+        EncodedReader = encodedReader;
         this.result = result;
         this.heightClassReader = heightClassReader;
     }
@@ -44,11 +44,14 @@ public ref struct SymbolParser
 
     private void ReadHeightClass()
     {
-        height += IntReader.DeltaHeight(ref reader);
+        height += EncodedReader.DeltaHeight(ref reader);
         heightClassReader.ReadHeightClassBitmaps(ref reader, ref this, height);
     }
-
-//    public void AdvancePast(in SequenceReader<byte> source) => reader = source;
+    
+    //public methods that serve the HeightClassReaders
     public int BitmapsLeftToDecode() => result.Length - bitmapsDecoded;
     public void AddBitmap(IBinaryBitmap bitmap) => result[bitmapsDecoded++] = bitmap;
+
+    public bool TryGetWidth(ref SequenceReader<byte> source, out int value) =>
+        !EncodedReader.IsOutOfBand(value = EncodedReader.DeltaWidth(ref source));
 }

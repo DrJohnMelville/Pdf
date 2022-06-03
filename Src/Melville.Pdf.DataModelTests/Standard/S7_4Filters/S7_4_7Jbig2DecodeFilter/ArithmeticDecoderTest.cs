@@ -26,7 +26,7 @@ public class ArithmeticDecoderTest
     public void SequenceFromT88AnnexH2()
     {  
         var encodedSource = CrerateSequenceReader(encoded);
-        var decoder = new MQDecoder(ref encodedSource);
+        var decoder = new MQDecoder();
         
         var ansSource = CrerateSequenceReader(decoded);
         var ansReader = new BitReader();
