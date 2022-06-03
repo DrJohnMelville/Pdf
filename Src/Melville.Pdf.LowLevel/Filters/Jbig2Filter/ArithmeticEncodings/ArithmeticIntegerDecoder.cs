@@ -7,38 +7,74 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
+public ref struct AritmeticIntegerContext
+{
+    private ushort value;
+    private readonly ContextStateDict dict;
+
+    public AritmeticIntegerContext(ContextStateDict dict)
+    {
+        this.dict = dict;
+        value = 1;
+    }
+    public void UpdateContext(int bit)
+    {
+        Debug.Assert(bit is 0 or 1);
+        value = (ushort)(value < 256 ? ShiftBitIntoPrev(bit) : RemoveTopBit(ShiftBitIntoPrev(bit)));
+    }
+    private int RemoveTopBit(int shiftedPrev) => (shiftedPrev & 511) | 256;
+    private int ShiftBitIntoPrev(int bit) => (value << 1) | bit;
+
+
+    public ref ContextEntry GetContext()
+    {
+        return ref dict.EntryForContext(value);
+    }
+}
+
 public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder>
 {
-    public ArithmeticIntegerDecoder(MQDecoder state) : base(state)
+   
+    public ArithmeticIntegerDecoder(MQDecoder? state = null) : base(state)
     {
     }
 
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
 
+    private static int[] bitsToRead = { 2, 4, 6, 8, 12, 32 };
+    private static int[] numberOffset = { 0,4,20,84, 340, 4436};
+    
     protected override int Read(ref SequenceReader<byte> source, ContextStateDict context)
     {
-        throw new NotImplementedException();
+        var prev = new AritmeticIntegerContext(context);
+        var sign = GetBit(ref source, ref prev);
+        var bitLen = PickBitLength(ref source, ref prev);
+        return AssembleNumber(sign, 
+            ReadInt(ref source, ref prev, bitsToRead[bitLen], numberOffset[bitLen]));
     }
 
-    public override void ClearCommonContext()
+    private int ReadInt(
+        ref SequenceReader<byte> source, ref AritmeticIntegerContext prev, int bits, int offset)
     {
+        int value = 0;
+        for (int i = 0; i < bits; i++)
+        {
+            value <<= 1;
+            value |= GetBit(ref source, ref prev);
+        }
+        return value + offset;
     }
-    /*
-    #warning should become an local var
-    private ushort prev = 1;
- 
-    public int GetInteger(ref Seq source)
+    private int PickBitLength(ref SequenceReader<byte> reader, ref AritmeticIntegerContext context)
     {
-        var sign = GetBit(ref source);
-        if (LengthSelectionBitFound(ref source)) return AssembleNumber(sign, ReadInt(ref source, 2, 0));
-        if (LengthSelectionBitFound(ref source)) return AssembleNumber(sign, ReadInt(ref source, 4, 4));
-        if (LengthSelectionBitFound(ref source)) return AssembleNumber(sign, ReadInt(ref source, 6, 20));
-        if (LengthSelectionBitFound(ref source)) return AssembleNumber(sign, ReadInt(ref source, 8, 84));
-        if (LengthSelectionBitFound(ref source)) return AssembleNumber(sign, ReadInt(ref source, 12, 340));
-        return AssembleNumber(sign, ReadInt(ref source, 32, 4436));
+        int i = 0;
+        while ((i < (bitsToRead.Length - 1)) &&
+             !LengthSelectionBitFound(ref reader, ref context)) i++;
+        return i;
     }
-
-    private bool LengthSelectionBitFound(ref BitSource source) => GetBit(ref source) == 0;
+    
+    private bool LengthSelectionBitFound(
+        ref SequenceReader<byte> source, ref AritmeticIntegerContext prev) => 
+        GetBit(ref source, ref prev) == 0;
 
     private int AssembleNumber(int sign, int magnitude) =>
         (sign, magnitude) switch
@@ -48,32 +84,18 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
             _ => magnitude
         };
 
-    private int ReadInt(ref BitSource source, int bits, int offset)
+    private int GetBit(
+        ref SequenceReader<byte> source, ref AritmeticIntegerContext prev)
     {
-        int value = 0;
-        for (int i = 0; i < bits; i++)
-        {
-            value <<= 1;
-            value |= GetBit(ref source);
-        }
-        return value + offset;
+        var bit = GetDecoder(ref source).GetBit(ref source, ref prev.GetContext());
+        prev.UpdateContext(bit);
+        return bit;
     }
 
-    private int GetBit(ref BitSource source)
+    private MQDecoder GetDecoder(ref SequenceReader<byte> source) => 
+        decoder ??= new MQDecoder(ref source);
+
+    public override void ClearCommonContext()
     {
- //       GetDecoder(ref source).GetBit(ref source, prev);
- throw new NotImplementedException("working on this");
     }
-
-    private void UpdatePrev(int bit)
-    {
-        Debug.Assert(bit is 0 or 1);
-        prev = (ushort)(prev < 256 ? ShiftBitIntoPrev(bit) : RemoveTopBit(ShiftBitIntoPrev(bit)));
-
-    }
-    private int RemoveTopBit(int shiftedPrev) => (shiftedPrev & 511) | 256;
-    private int ShiftBitIntoPrev(int bit) => (prev << 1) | bit;
-
-    public bool HasOutOfBandRow() => true;
-    public bool IsOutOfBand(int value) => value == int.MaxValue; */
 }

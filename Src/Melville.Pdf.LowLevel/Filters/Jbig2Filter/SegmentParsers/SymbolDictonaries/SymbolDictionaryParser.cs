@@ -34,7 +34,7 @@ public ref struct SymbolDictionaryParser
 
         var intReader = flags.UseHuffmanEncoding
             ? HuffmanIntReader()
-            : throw new NotImplementedException("aritmetic int parsing");
+            : new ArithmeticIntegerDecoder();
         
         new SymbolParser(flags, intReader, symbols, heightClassReader).Parse(ref reader);
         
