@@ -13,6 +13,7 @@ public readonly struct ContextStateDict
 {
     private readonly ContextEntry[] entries;
     public ushort Mask { get; }
+    public bool ShouldUseTypicalAlgorithm => Mask == 0;
 
     public ContextStateDict(int bitsInContextTemplate, int iiadBitLength = 0)
     {

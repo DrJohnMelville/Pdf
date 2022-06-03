@@ -81,7 +81,7 @@ public ref struct TextRegionSegmentParser
     private IEncodedReader CreateArithmeticDecoder() =>
         new ArithmeticIntegerDecoder(new ArithmeticBitmapReaderContext())
         {
-            SymbolIdContext = new ContextStateDict(9, IntLog.CeilingLog2Of((uint)CountSourceBitmaps())),
+            SymbolIdContext = ArithmiticSymbolIdContext(),
             FirstSContext = new ContextStateDict(9),
             DeltaSContext = new ContextStateDict(9),
             DeltaTContext = new ContextStateDict(9),
@@ -92,6 +92,12 @@ public ref struct TextRegionSegmentParser
             RefinementYContext = new ContextStateDict(9),
             RefinementSizeContext = new ContextStateDict(9),
         };
+
+    private ContextStateDict ArithmiticSymbolIdContext()
+    {
+        var maxSymbolSize = IntLog.CeilingLog2Of((uint)CountSourceBitmaps());
+        return new ContextStateDict(maxSymbolSize, maxSymbolSize);
+    }
 
     private BinaryBitmapWriter CreateBitmapWriter(BinaryBitmap binaryBitmap) =>
         new(binaryBitmap, regionFlags.Transposed, regionFlags.ReferenceCorner, 
