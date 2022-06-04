@@ -166,7 +166,7 @@ public unsafe ref struct BitmapTemplateFactory
         return fact.Create();
     }
 
-    private int ExpectedAdaptivePixels() => (template == GenericRegionTemplate.GB0) ?4:1;
+    public int ExpectedAdaptivePixels() => (template == GenericRegionTemplate.GB0) ?4:1;
 
     public static BitmapTemplate CreatePatternDictionaryTemplate(GenericRegionTemplate template, byte cellWidth)
     {

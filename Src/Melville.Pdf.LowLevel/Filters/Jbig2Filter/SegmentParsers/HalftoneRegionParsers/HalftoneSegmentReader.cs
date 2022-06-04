@@ -20,7 +20,9 @@ public ref struct HalftoneSegmentReader
 
     // order of arguments is correctness critial because HalftoneSegmentParser uses this order to
     // read data out of the bitstream
-    public HalftoneSegmentReader(RegionHeader regionHeader, HalftoneRegionFlags regionFlags, uint grayScaleWidth, uint grayScaleHeight, int grayScaleXOffset, int grayScaleYOffset, uint vectorX, uint vectorY, DictionarySegment dictionary)
+    public HalftoneSegmentReader(
+        RegionHeader regionHeader, HalftoneRegionFlags regionFlags, uint grayScaleWidth, uint grayScaleHeight, 
+        int grayScaleXOffset, int grayScaleYOffset, uint vectorX, uint vectorY, DictionarySegment dictionary)
     {
         this.regionHeader = regionHeader;
         this.regionFlags = regionFlags;
@@ -72,18 +74,23 @@ public ref struct HalftoneSegmentReader
     private GrayScaleBitmap ReadGrayScaleBitmap(ref SequenceReader<byte> reader, Span<int> data)
     {
         var gsb = new GrayScaleBitmap(data, grayScaleWidth);
-        var bitPlane = new BinaryBitmap(grayScaleHeight, grayScaleWidth);
-        var genericRegionReader = new GenericRegionReader(bitPlane, regionFlags.UseMMR);
-
+        var bitPlane = regionFlags.UseMMR ?
+            (Bitplane)new MmrBitplane(grayScaleHeight, grayScaleWidth):
+            new ArithmeticBitplane(
+                grayScaleHeight, grayScaleWidth, regionFlags.Template, regionFlags.EnableSkip);
+        
         var bitsPerValue = IntLog.CeilingLog2Of((uint)dictionary.ExportedSymbols.Length);
         var bitValue = 1 << (bitsPerValue - 1);
-        genericRegionReader.ReadFrom(ref reader, true);
+        
+        bitPlane.ReadFrom(ref reader);
         gsb.CopyBinaryBitmap(bitPlane, bitValue);
+  
         var priorBitValue = bitValue;
         bitValue >>= 1;
+        
         for (; bitValue > 0; bitValue >>= 1, priorBitValue >>= 1)
         {
-            genericRegionReader.ReadFrom(ref reader, true);
+            bitPlane.ReadFrom(ref reader);
             gsb.ProcessBinaryBitmap(bitPlane, bitValue, priorBitValue);
         }
 

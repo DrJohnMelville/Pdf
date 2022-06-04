@@ -20,15 +20,19 @@ public class HalftoneSegmentParserTest
         return HalftoneSegmentParser.Parse(reader, segs);
     }
 
-    [Fact]
-    public void ParseExampleHalftoneRegion()
-    {
-        var data = @"00000020 00000024 00000010 0000000F 00 
+    [Theory]
+    [InlineData(@"00000020 00000024 00000010 0000000F 00 
                    01 00000008 00000009 00000000 00000000 0400 0000 AA AA AA AA 80 08 00 80 36 D5
                    55 6B 5A D4 00 40 04 2E E9 52 D2 D2 D2 8A A5 4A
                    00 20 02 23 E0 95 24 B4 92 8A 4A 92 54 92 D2 4A
-                   29 2A 49 40 04 00 40".BitsFromHex();
-        var sut = Parse(data);
+                   29 2A 49 40 04 00 40")]
+    [InlineData(@"00000020 00000024 00000010 0000000F
+                  00 02 00 00 00 08 00 00 00 09 00 00 00 00 00 00
+                  00 00 04 00 00 00 87 CB 82 1E 66 A4 14 EB 3C 4A
+                  15 FA CC D6 F3 B1 6F 4C ED BF A7 BF FF AC")]
+    public void ParseExampleHalftoneRegion(string data)
+    {
+        var sut = Parse(data.BitsFromHex());
         Assert.Equal(32, sut.Bitmap.Width);
         Assert.Equal(36, sut.Bitmap.Height);
         Assert.Equal(16u, sut.X);

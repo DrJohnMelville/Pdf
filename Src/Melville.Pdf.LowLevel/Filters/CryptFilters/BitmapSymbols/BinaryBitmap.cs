@@ -141,6 +141,8 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     public void FillBlack() => bits.AsSpan().Fill(0xFF);
 
-    public void CopyRow(int source, int target) => 
+    //I think I am going to eventually need to genenralize this to arbitrary bitmaps.
+    //I ought to be able to use the bitmap copy infractructure to copy from myself
+    public void CopyRow(int source, int target) =>
         bits.AsSpan(source*Stride, Stride).CopyTo(bits.AsSpan(target*Stride, Stride));
 }

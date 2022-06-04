@@ -22,7 +22,8 @@ public readonly struct HalftoneRegionFlags
     /// <summary>
     /// In spec HTEMPLATE
     /// </summary>
-    public int Template => BitOperations.UnsignedInteger(data, 1, 0x11);
+    public GenericRegionTemplate Template => 
+        (GenericRegionTemplate)BitOperations.UnsignedInteger(data, 1, 0x11);
     /// <summary>
     /// In Spec HENABLESKIP
     /// </summary>
