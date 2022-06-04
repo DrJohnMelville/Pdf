@@ -20,5 +20,10 @@ public enum GenericRegionTemplate: byte
     /// Value = 3
     /// </summary>
     GB3 = 3,
+    
+    RefinementReference0 = 4,
+    RefinementReference1 = 5,
+    RefinementDestination0 = 6,
+    RefinementDestination1 = 7
 }
 

@@ -19,6 +19,7 @@ public ref struct TextRegionSegmentParser
         var regionFlags = new TextRegionFlags(reader.ReadBigEndianUint16());
 
         var parser = new TextRegionSegmentParser(reader, regionHead, regionFlags, referencedSegments);
+        
         return new TextRegionSegment(SegmentType.IntermediateTextRegion, regionHead, parser.CreateBitmap());
     }
 
@@ -52,7 +53,7 @@ public ref struct TextRegionSegmentParser
         var binaryBitmap = CreateTargetBitmap();
 
         var symbolParser = new SymbolWriter(CreateBitmapWriter(binaryBitmap), regionFlags,
-            encodedReader, new CharacterDictionary(referencedSegments), charactersToRead);
+            encodedReader, referencedSegments, charactersToRead);
 
         symbolParser.Decode(ref reader);
         
@@ -68,7 +69,7 @@ public ref struct TextRegionSegmentParser
             FirstSContext = huffmanFlags.SbhuffFs.GetTableLines(ref remainingTableSpans),
             DeltaSContext = huffmanFlags.SbhuffDs.GetTableLines(ref remainingTableSpans),
             DeltaTContext = huffmanFlags.SbhuffDt.GetTableLines(ref remainingTableSpans),
-            TCoordinateContext = DirectBitstreamReaders.FromLogStripSize(regionFlags.LogStripSize),
+            TCoordinateContext = DirectBitstreamReaders.FromBitLength(regionFlags.LogStripSize),
             RefinementDeltaWidthContext = huffmanFlags.SbhuffRdw.GetTableLines(ref remainingTableSpans),
             RefinementDeltaHeightContext = huffmanFlags.SbhuffRdh.GetTableLines(ref remainingTableSpans),
             RefinementXContext = huffmanFlags.SbhuffRdx.GetTableLines(ref remainingTableSpans),
@@ -95,7 +96,7 @@ public ref struct TextRegionSegmentParser
 
     private ContextStateDict ArithmiticSymbolIdContext()
     {
-        var maxSymbolSize = IntLog.CeilingLog2Of((uint)CountSourceBitmaps());
+        var maxSymbolSize = IntLog.CeilingLog2Of((uint)referencedSegments.CountSourceBitmaps());
         return new ContextStateDict(maxSymbolSize, maxSymbolSize);
     }
 
@@ -118,20 +119,9 @@ public ref struct TextRegionSegmentParser
     private HuffmanLine[] ParseCharacterHuffmanTable()
     {
         Debug.Assert(regionFlags.UseHuffman);
-        var sourceChars = CountSourceBitmaps();
+        var sourceChars = referencedSegments.CountSourceBitmaps();
         var lines = new HuffmanLine[sourceChars];
         TextSegmentSymbolTableParser.Parse(ref reader, lines);
         return lines;
-    }
-
-    private int CountSourceBitmaps()
-    {
-        var ret = 0;
-        foreach (var segment in referencedSegments)
-        {
-            if (segment is DictionarySegment sds) ret += sds.ExportedSymbols.Length;
-        }
-
-        return ret;
     }
 }

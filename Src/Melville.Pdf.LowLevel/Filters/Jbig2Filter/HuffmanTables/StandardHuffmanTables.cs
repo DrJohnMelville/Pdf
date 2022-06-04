@@ -289,12 +289,12 @@ public static class DirectBitstreamReaders
     public static readonly HuffmanLine[] TwoBit = { new(0, 0, 2, 0, 1) };
     public static readonly HuffmanLine[] ThreeBit = { new(0, 0, 3, 0, 1) };
 
-    public static HuffmanLine[] FromLogStripSize(int logSize) => logSize switch
+    public static HuffmanLine[] FromBitLength(int logSize) => logSize switch
     {
         0 => ZeroBit,
         1 => OneBit,
         2 => TwoBit,
         3 => ThreeBit,
-        _=> throw new InvalidDataException("Unknown LogStripSize")
+        _=> new HuffmanLine[]{new (0,0, logSize, 0, 1)}
     };
 }

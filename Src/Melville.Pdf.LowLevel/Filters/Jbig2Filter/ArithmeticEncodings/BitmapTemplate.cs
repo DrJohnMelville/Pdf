@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
@@ -22,7 +23,7 @@ public readonly struct BitmapTemplate
     {
         this.runs = runs;
     }
-    public ushort ReadContext(BinaryBitmap bitmap, int row, int col)
+    public ushort ReadContext(IBinaryBitmap bitmap, int row, int col)
     {
         ushort ret = 0;
         foreach (var run in runs)
@@ -38,7 +39,7 @@ public readonly struct BitmapTemplate
         return ret;
     }
 
-    private bool GetBit(BinaryBitmap bitmap, int row, int col) => 
+    private bool GetBit(IBinaryBitmap bitmap, int row, int col) => 
         bitmap.ContainsPixel(row, col) && bitmap[row, col];
 }
 
@@ -80,6 +81,26 @@ public unsafe ref struct BitmapTemplateFactory
                 AddRange(-1, -3, 5);
                 AddRange(0, -4, 4);
                 break;
+            case GenericRegionTemplate.RefinementReference0:
+                AddRange(-1,0,2);
+                AddRange(0,-1,3);
+                AddRange(1,-1,3);
+                break;
+            case GenericRegionTemplate.RefinementDestination0:
+                AddRange(-1,0, 2);
+                AddRange(0,-1,1);
+                break;
+            case GenericRegionTemplate.RefinementReference1:
+                AddRange(-1,0,1);
+                AddRange(0,-1,3);
+                AddRange(1,0,2);
+                break;
+            case GenericRegionTemplate.RefinementDestination1:
+                AddRange(-1,-1,3);
+                AddRange(0,-1,1);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }  
     }
 

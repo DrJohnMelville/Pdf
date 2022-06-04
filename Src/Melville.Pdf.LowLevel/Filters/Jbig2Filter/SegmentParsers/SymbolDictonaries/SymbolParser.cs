@@ -2,6 +2,7 @@
 using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
@@ -10,24 +11,34 @@ public ref struct SymbolParser
 {
     private readonly SymbolDictionaryFlags headerFlags;
     public IEncodedReader EncodedReader { get; }
-    private readonly IBinaryBitmap[] result;
+    public RefinementTemplateSet RefinementTemplateSet { get; }
+    public IIndividualBitmapReader IndividualBitmapReader { get; }
+    private readonly Memory<IBinaryBitmap> result;
     private readonly IHeightClassReaderStrategy heightClassReader;
+    private readonly ReadOnlySpan<Segment> referencedSegments;
+    
+    
     private int bitmapsDecoded = 0;
     private int height = 0;
 
     public SymbolParser(SymbolDictionaryFlags headerFlags,
-        IEncodedReader encodedReader, IBinaryBitmap[] result, IHeightClassReaderStrategy heightClassReader)
+        IEncodedReader encodedReader, Memory<IBinaryBitmap> result, IHeightClassReaderStrategy heightClassReader,
+        RefinementTemplateSet refinementTemplateSet, ReadOnlySpan<Segment> referencedSegments)
     {
         this.headerFlags = headerFlags;
         EncodedReader = encodedReader;
+        RefinementTemplateSet = refinementTemplateSet;
+        this.referencedSegments = referencedSegments;
+        IndividualBitmapReader = PickReader(headerFlags.AggregateRefinement);
         this.result = result;
         this.heightClassReader = heightClassReader;
     }
 
+    private static IIndividualBitmapReader PickReader(bool useRefinement) => 
+        useRefinement ? RefinementBitmapReader.Instance : UnrefinedBitmapReader.Instance;
+
     public void ReadSymbols(ref SequenceReader<byte> reader)
     {
-        if (headerFlags.AggregateRefinement)
-            throw new NotImplementedException("Only type 1 dictionary parsing is implemented");
         do
         {
             ReadHeightClass(ref reader);
@@ -42,8 +53,11 @@ public ref struct SymbolParser
     
     //public methods that serve the HeightClassReaders
     public int BitmapsLeftToDecode() => result.Length - bitmapsDecoded;
-    public void AddBitmap(IBinaryBitmap bitmap) => result[bitmapsDecoded++] = bitmap;
+    public void AddBitmap(IBinaryBitmap bitmap) => result.Span[bitmapsDecoded++] = bitmap;
 
     public bool TryGetWidth(ref SequenceReader<byte> source, out int value) =>
         !EncodedReader.IsOutOfBand(value = EncodedReader.DeltaWidth(ref source));
+
+    public IBinaryBitmap ReferencedSymbol(int symbolId) => 
+        referencedSegments.GetBitmap(symbolId, result.Span[..bitmapsDecoded]);
 }

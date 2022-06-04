@@ -5,6 +5,7 @@ using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
@@ -25,25 +26,34 @@ public ref struct SymbolDictionaryParser
 
     public SymbolDictionarySegment Parse()
     {
-        CheckTemporaryAssumptions(flags);
-        
-        var (intReader, symbols) = ParseBlockHeader();
-
-        new SymbolParser(flags, intReader, symbols, SelectHeightClassStrategy()).ReadSymbols(ref reader);
-        
-        return new SymbolDictionarySegment(symbols, ReadExportedSymbols(symbols, intReader));
-    }
-
-    private (IEncodedReader intReader, IBinaryBitmap[] symbols) ParseBlockHeader()
-    {
         //these method may read from the bitstream, so their order is essential
         var intReader = flags.UseHuffmanEncoding ? HuffmanIntReader() : ParseAtDecoder();
-        var symbols = CreateSymbolArray();
-        return (intReader, symbols);
+        var refinementReader = ParseRefinementInfo();
+        var exportParser = CreateSymbolDictionaryParser();
+        if (flags.AggregateRefinement)
+            intReader.PrepareForRefinementSymbolDictionary((uint)
+                referencedSegments.CountSourceBitmaps() + exportParser.NewSymbols);
+
+        if (flags.BitmapContextUsed)
+            throw new NotImplementedException("Does not yet preserve bitmap context");
+
+        var imgBuffer = ArrayPool<IBinaryBitmap>.Shared.Rent((int)exportParser.NewSymbols);
+        new SymbolParser(flags, intReader, imgBuffer.AsMemory(0,(int)exportParser.NewSymbols), 
+            SelectHeightClassStrategy(), refinementReader, referencedSegments).ReadSymbols(ref reader);
+        var ret = new SymbolDictionarySegment(exportParser.ParseExportedArray(ref reader, intReader,
+            imgBuffer, referencedSegments));
+        ArrayPool<IBinaryBitmap>.Shared.Return(imgBuffer);
+        return ret;
     }
 
+    private RefinementTemplateSet ParseRefinementInfo() => !flags.AggregateRefinement ? 
+        new RefinementTemplateSet() : // returns an empty object, which never gets touched 
+        new RefinementTemplateSet(ref reader, flags.RefAggTeqmplate);
+
+
     private IHeightClassReaderStrategy SelectHeightClassStrategy() => 
-        ShouldUseCompositeBitmaps()? CompositeHeightClassReader.Instance: IndividualHeightClassReader.Instance;
+        ShouldUseCompositeBitmaps()? CompositeHeightClassReader.Instance: 
+            IndividualHeightClassReader.Instance;
 
     private bool ShouldUseCompositeBitmaps() => flags.UseHuffmanEncoding && !flags.AggregateRefinement;
 
@@ -81,22 +91,10 @@ public ref struct SymbolDictionaryParser
         return symbols.AsMemory(offset, length);
     }
 
-    private IBinaryBitmap[] CreateSymbolArray()
+    private SymbolDictionaryExportParser CreateSymbolDictionaryParser()
     {
         var exportedSymbols = reader.ReadBigEndianUint32();
         var newSymbols = reader.ReadBigEndianUint32();
-        if (exportedSymbols != newSymbols)
-            throw new NotImplementedException("must export all symbols");
-        var symbols = new IBinaryBitmap[newSymbols];
-        return symbols;
+        return new SymbolDictionaryExportParser(exportedSymbols, newSymbols);
     }
-
-    private static void CheckTemporaryAssumptions(SymbolDictionaryFlags flags)
-    {
-        if (flags.AggregateRefinement)
-            throw new NotImplementedException("Aggregate refinement is not implemented yet");
-        if (flags.AggregateRefinement && !flags.RefAggTeqmplate)
-            throw new NotImplementedException("Parsing refinement ATflags is not supported");
-    }
-    
 }

@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
@@ -15,7 +16,7 @@ public ref struct SymbolWriter
     private readonly TextRegionFlags regionFlags;
 
     private readonly IEncodedReader integerReader;
-    private readonly CharacterDictionary characterDictionary;
+    private readonly ReadOnlySpan<Segment> characterDictionary;
 
     // these variables are the current decoding state
     private int remainingSymbolsToDecode;
@@ -24,7 +25,7 @@ public ref struct SymbolWriter
     private int curS = 0;
 
     public SymbolWriter(BinaryBitmapWriter target, TextRegionFlags regionFlags,
-        IEncodedReader integerReader, CharacterDictionary characterDictionary, int symbolCount)
+        IEncodedReader integerReader, ReadOnlySpan<Segment> characterDictionary, int symbolCount)
     {
         this.target = target;
         this.regionFlags = regionFlags;

@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 
@@ -76,6 +77,11 @@ public interface IEncodedReader
     bool IsOutOfBand(int item);
 
     void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
+
+    public void PrepareForRefinementSymbolDictionary(uint totalSymbols);
+    void InvokeSymbolRefinement(BinaryBitmap destination, IBinaryBitmap reference, int deltaX, int deltaY,
+        bool useTypicalPrediction,
+        in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source);
 }
 
 [MacroItem("AggregationSymbolInstances")]
@@ -94,7 +100,7 @@ public interface IEncodedReader
 [MacroItem("RefinementY")]
 [MacroItem("RefinementSize")]
 [MacroItem("RIBit")]
-[MacroCode("public TContext? ~0~Context {protected get; init;}")]
+[MacroCode("public TContext? ~0~Context {protected get; set;}")]
 [MacroCode("public int ~0~(ref SequenceReader<byte> source) => Read(ref source, VerifyExists(~0~Context));")]
 public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
 {
@@ -111,4 +117,9 @@ public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
     public abstract bool IsOutOfBand(int item);
     protected abstract int Read(ref SequenceReader<byte> source, TContext context);
     public abstract void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
+    public abstract void PrepareForRefinementSymbolDictionary(uint totalSymbols);
+
+    public abstract void InvokeSymbolRefinement(BinaryBitmap destination, IBinaryBitmap reference, int deltaX,
+        int deltaY, bool useTypicalPrediction,
+        in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source);
 }
