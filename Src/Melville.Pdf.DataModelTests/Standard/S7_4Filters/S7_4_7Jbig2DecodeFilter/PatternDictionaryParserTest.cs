@@ -18,19 +18,17 @@ public class PatternDictionaryParserTest
         return PatternDictionarySegmentParser.Parse(reader);
     }
 
-    public static PatternDictionarySegment SampleSegment()
+    public static PatternDictionarySegment SampleSegment(string data)
     {
-        var data =
-            "01 04 04 00 00 00 0F 20 D1 84 61 18 45 F2 F9 7C 8F 11 C3 9E 45 F2 F9 7D 42 85 0A AA 84 62 2F EE EC 44 62 22 35 2A 0A 83 B9 DC EE 77 80"
-                .BitsFromHex();
-        var sut = Parse(data);
-        return sut;
+        return Parse(data.BitsFromHex());
     }
 
-    [Fact]
-    public void ParseExamplePatternDictionary()
+    [Theory]
+    [InlineData("01 04 04 00 00 00 0F 20 D1 84 61 18 45 F2 F9 7C 8F 11 C3 9E 45 F2 F9 7D 42 85 0A AA 84 62 2F EE EC 44 62 22 35 2A 0A 83 B9 DC EE 77 80")]
+    [InlineData("06 04 04 0000000F 90 71 6B 6D 99 A7 AA 49 7D F2 E5 48 1F DC 68 BC 6E 40 BB FF AC")]
+    public void ParseExamplePatternDictionary(string data)
     {
-        var sut = SampleSegment();
+        var sut = SampleSegment(data);
         Assert.Equal(16, sut.ExportedSymbols.Length);
         Assert.Equal("....\r\n....\r\n....\r\n....", sut.ExportedSymbols.Span[0].BitmapString());
         Assert.Equal("....\r\n..B.\r\n....\r\n....", sut.ExportedSymbols.Span[1].BitmapString());

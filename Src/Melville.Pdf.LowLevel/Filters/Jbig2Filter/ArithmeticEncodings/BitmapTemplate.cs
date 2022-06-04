@@ -2,6 +2,8 @@
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Microsoft.CodeAnalysis;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
@@ -165,4 +167,17 @@ public unsafe ref struct BitmapTemplateFactory
     }
 
     private int ExpectedAdaptivePixels() => (template == GenericRegionTemplate.GB0) ?4:1;
+
+    public static BitmapTemplate CreatePatternDictionaryTemplate(GenericRegionTemplate template, byte cellWidth)
+    {
+        var fact = new BitmapTemplateFactory(template);
+        fact.AddPoint(0, (sbyte)-cellWidth);
+        if (fact.ExpectedAdaptivePixels() > 1)
+        {
+            fact.AddPoint(-1,-3);
+            fact.AddPoint(-2,2);
+            fact.AddPoint(-2,-2);
+        }
+        return fact.Create();
+    }
 }

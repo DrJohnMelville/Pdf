@@ -16,7 +16,7 @@ public class HalftoneSegmentParserTest
                 bits
             )
         );
-        ReadOnlySpan<Segment> segs = new Segment[] { PatternDictionaryParserTest.SampleSegment() };
+        ReadOnlySpan<Segment> segs = new Segment[] { PatternDictionaryParserTest.SampleSegment("01 04 04 00 00 00 0F 20 D1 84 61 18 45 F2 F9 7C 8F 11 C3 9E 45 F2 F9 7D 42 85 0A AA 84 62 2F EE EC 44 62 22 35 2A 0A 83 B9 DC EE 77 80") };
         return HalftoneSegmentParser.Parse(reader, segs);
     }
 
