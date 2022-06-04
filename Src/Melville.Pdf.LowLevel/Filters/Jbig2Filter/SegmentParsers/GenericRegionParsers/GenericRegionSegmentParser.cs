@@ -1,5 +1,9 @@
 ﻿using System.Buffers;
 using Melville.Parsing.SequenceReaders;
+using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.GenericRegionParsers;
@@ -20,7 +24,8 @@ public readonly struct GenericRegionSegmentFlags
     /// <summary>
     /// In Spec GBTEMPLATE
     /// </summary>
-    public byte GBTemplate => (byte)BitOperations.UnsignedInteger(data, 1, 3);
+    public GenericRegionTemplate GBTemplate => 
+        (GenericRegionTemplate)BitOperations.UnsignedInteger(data, 1, 3);
 
     public bool Tpgdon => BitOperations.CheckBit(data, 8);  
 
@@ -32,9 +37,25 @@ public static class GenericRegionSegmentParser
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
         var flags = new GenericRegionSegmentFlags(reader.ReadBigEndianUint8());
+
         var bitmap = regionHead.CreateTargetBitmap();
-        new GenericRegionReader(bitmap, flags.UseMmr).ReadFrom(ref reader, false);
+        if (flags.UseMmr)
+        {
+            bitmap.ReadMmrEncodedBitmap(ref reader, false);
+        }
+        else
+        {
+            var bitmapTemplate = BitmapTemplateFactory.ReadContext(ref reader, flags.GBTemplate);
+            var context =new ArithmeticBitmapReaderContext(
+                bitmapTemplate);
+
+            MQDecoder state = new MQDecoder();
+            // need to compute the tgbdcontext and pass it into the reader/
+            new AritmeticBitmapReader(bitmap, state, context, TpgdContext.Value(
+                flags.Tpgdon, bitmapTemplate, flags.GBTemplate), false).Read(ref reader);
+        }
        
+
         return new GenericRegionSegment(SegmentType.ImmediateLosslessGenericRegion,
             regionHead, bitmap);
     }

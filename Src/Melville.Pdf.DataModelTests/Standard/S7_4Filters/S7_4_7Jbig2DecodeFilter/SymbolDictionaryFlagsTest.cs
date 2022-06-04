@@ -55,12 +55,12 @@ public class SymbolDictionaryFlagsTest
         Assert.Equal(value, new SymbolDictionaryFlags(flags).BitmapContextRetained);
 
     [Theory]
-    [InlineData(0 << 10, SymbolDictionaryTemplate.V0)]
-    [InlineData(1 << 10, SymbolDictionaryTemplate.V1)]
-    [InlineData(2 << 10, SymbolDictionaryTemplate.V2)]
-    [InlineData(3 << 10, SymbolDictionaryTemplate.V3)]
-    public void TemplateSelection (ushort flags, SymbolDictionaryTemplate huffmanSel) =>
-        Assert.Equal(huffmanSel, new SymbolDictionaryFlags(flags).SymbolDictionaryTemplate);
+    [InlineData(0 << 10, GenericRegionTemplate.GB0)]
+    [InlineData(1 << 10, GenericRegionTemplate.GB1)]
+    [InlineData(2 << 10, GenericRegionTemplate.GB2)]
+    [InlineData(3 << 10, GenericRegionTemplate.GB3)]
+    public void TemplateSelection (ushort flags, GenericRegionTemplate huffmanSel) =>
+        Assert.Equal(huffmanSel, new SymbolDictionaryFlags(flags).GenericRegionTemplate);
 
     [Theory]
     [InlineData(0<<12,false)]

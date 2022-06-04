@@ -130,13 +130,17 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     public (byte[] Array, BitOffset Offset) ColumnLocation(int column) => (bits, ComputeBitPosition(0, column));
 
-    public BinaryBitmap(int height, int width)
+    public BinaryBitmap(int height, int width, byte[]? externalBits = null)
     {
         Width = width;
         Height = height;
         Stride = (width + 7) / 8;
-        bits = new byte[Stride * Height];
+        bits = externalBits ?? new byte[Stride * Height];
+        Debug.Assert(bits.Length == Stride*Height);
     }
 
     public void FillBlack() => bits.AsSpan().Fill(0xFF);
+
+    public void CopyRow(int source, int target) => 
+        bits.AsSpan(source*Stride, Stride).CopyTo(bits.AsSpan(target*Stride, Stride));
 }

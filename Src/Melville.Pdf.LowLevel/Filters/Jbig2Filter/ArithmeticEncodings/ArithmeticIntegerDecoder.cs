@@ -21,5 +21,5 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
         new SymbolIntegerDecoder(State, context).Read(ref source);
 
     public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) => 
-        target.ReadArithmeticEncodedBitmap(ref source, State, template, false, false);
+        new AritmeticBitmapReader(target, State, template, 0, false).Read(ref source);
 }

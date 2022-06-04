@@ -1,21 +1,24 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+﻿using System.Diagnostics;
 
-public enum SymbolDictionaryTemplate: byte
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+
+public enum GenericRegionTemplate: byte
 {
     /// <summary>
     /// Value = 0
     /// </summary>
-    V0 = 0,
+    GB0 = 0,
     /// <summary>
     /// Value =1
     /// </summary>
-    V1 = 1,
+    GB1 = 1,
     /// <summary>
     /// Value = 2
     /// </summary>
-    V2 = 2,
+    GB2 = 2,
     /// <summary>
     /// Value = 3
     /// </summary>
-    V3 = 3
+    GB3 = 3,
 }
+

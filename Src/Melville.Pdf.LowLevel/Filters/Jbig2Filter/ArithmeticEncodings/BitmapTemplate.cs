@@ -47,8 +47,8 @@ public unsafe ref struct BitmapTemplateFactory
     private fixed sbyte xs[MaxRuns];
     private fixed sbyte ys[MaxRuns];
     private fixed byte bitlengths[MaxRuns];
-    private readonly SymbolDictionaryTemplate template;
-    public BitmapTemplateFactory(SymbolDictionaryTemplate i)
+    private readonly GenericRegionTemplate template;
+    public BitmapTemplateFactory(GenericRegionTemplate i)
     {
         Length = 0;
         template = i;
@@ -59,22 +59,22 @@ public unsafe ref struct BitmapTemplateFactory
     {
         switch (template)
         {
-            case SymbolDictionaryTemplate.V0:
+            case GenericRegionTemplate.GB0:
                 AddRange(-2, -1, 3);
                 AddRange(-1, -2, 5);
                 AddRange(0, -4, 4);
                 break;
-            case SymbolDictionaryTemplate.V1:
+            case GenericRegionTemplate.GB1:
                 AddRange(-2, -1, 4);
                 AddRange(-1, -2, 5);
                 AddRange(0, -3, 3);
                 break;
-            case SymbolDictionaryTemplate.V2:
+            case GenericRegionTemplate.GB2:
                 AddRange(-2, -1, 3);
                 AddRange(-1, -2, 4);
                 AddRange(0, -2, 2);
                 break;
-            case SymbolDictionaryTemplate.V3:
+            case GenericRegionTemplate.GB3:
                 AddRange(-1, -3, 5);
                 AddRange(0, -4, 4);
                 break;
@@ -151,7 +151,7 @@ public unsafe ref struct BitmapTemplateFactory
         return totalBitLen;
     }
 
-    public static BitmapTemplate ReadContext(ref SequenceReader<byte> source, SymbolDictionaryTemplate template)
+    public static BitmapTemplate ReadContext(ref SequenceReader<byte> source, GenericRegionTemplate template)
     {
         var fact = new BitmapTemplateFactory(template);
         for (int i = 0; i < fact.ExpectedAdaptivePixels(); i++)
@@ -164,5 +164,5 @@ public unsafe ref struct BitmapTemplateFactory
         return fact.Create();
     }
 
-    private int ExpectedAdaptivePixels() => (template == SymbolDictionaryTemplate.V0) ?4:1;
+    private int ExpectedAdaptivePixels() => (template == GenericRegionTemplate.GB0) ?4:1;
 }

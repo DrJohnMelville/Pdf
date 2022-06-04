@@ -62,7 +62,7 @@ public ref struct SymbolDictionaryParser
     private  ArithmeticIntegerDecoder ParseAtDecoder() => 
         new(
             new ArithmeticBitmapReaderContext(
-            BitmapTemplateFactory.ReadContext(ref reader, flags.SymbolDictionaryTemplate)))
+            BitmapTemplateFactory.ReadContext(ref reader, flags.GenericRegionTemplate)))
         {
             ExportFlagsContext = new ContextStateDict(9),
             DeltaHeightContext = new ContextStateDict(9),

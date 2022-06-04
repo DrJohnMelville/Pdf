@@ -20,11 +20,13 @@ public class GenericRegionParserTest
         return GenericRegionSegmentParser.Parse(reader, Array.Empty<Segment>());
     }
 
-    [Fact]
-    public void ParseGenericSegment()
+    [Theory]
+    [InlineData("00000036 0000002C 00000004 0000000B 00 " + // region header
+                "01 26 A0 71 CE A7 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF F8 F0")]
+    [InlineData("00000036 0000002C 00000004 0000000B 00 " + // region headder
+                "08 03 FF FD FF 02 FE FE FE 04 EE ED 87 FB CB 2B FF AC")]
+    public void ParseGenericSegment(string data)
     {
-        var data = "00000036 0000002C 00000004 0000000B 00 " + // region header
-                   "01 26 A0 71 CE A7 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF F8 F0";
         var sut = Parse(data.BitsFromHex());
         Assert.Equal(54, sut.Bitmap.Width);
         Assert.Equal(44, sut.Bitmap.Height);

@@ -19,7 +19,7 @@ public class ArithmeticBitmapContextTest
 .B.B.B.B.B.B.B.B    
 BBBBBBBBBBBBBBBB
 ................".AsBinaryBitmap(3, 16);
-        var fact = new BitmapTemplateFactory(SymbolDictionaryTemplate.V1);
+        var fact = new BitmapTemplateFactory(GenericRegionTemplate.GB1);
         fact.AddPoint(row, col);
         var temolplate = fact.Create();
         Assert.Equal(result, temolplate.ReadContext(bitmap, 2,3));

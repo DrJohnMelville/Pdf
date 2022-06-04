@@ -52,8 +52,8 @@ public readonly struct SymbolDictionaryFlags
     /// <summary>
     /// In Standard SDTEMPLATE
     /// </summary>
-    public SymbolDictionaryTemplate SymbolDictionaryTemplate => 
-        (SymbolDictionaryTemplate)((flags >> 10) & 0x03);
+    public GenericRegionTemplate GenericRegionTemplate => 
+        (GenericRegionTemplate)((flags >> 10) & 0x03);
 
     /// <summary>
     /// In Standard SDRTEMPLATE
