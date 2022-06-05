@@ -19,9 +19,9 @@ public static class ReferredSymbolHelpers
     }
 
     public static IBinaryBitmap GetBitmap(this ReadOnlySpan<Segment> dictionaries, int index) =>
-        dictionaries.GetBitmap(index, Span<IBinaryBitmap>.Empty);
+        dictionaries.GetBitmap(index, ReadOnlySpan<IBinaryBitmap>.Empty);
     public static IBinaryBitmap GetBitmap(this ReadOnlySpan<Segment> dictionaries, int index,
-        Span<IBinaryBitmap> resultSpan)
+        ReadOnlySpan<IBinaryBitmap> resultSpan)
     {
         foreach (var segment in dictionaries)
         {

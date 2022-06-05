@@ -5,6 +5,7 @@ using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
@@ -52,9 +53,12 @@ public ref struct TextRegionSegmentParser
             CreateArithmeticDecoder();
         var binaryBitmap = CreateTargetBitmap();
 
-        var symbolParser = new SymbolWriter(CreateBitmapWriter(binaryBitmap), regionFlags,
-            encodedReader, referencedSegments, charactersToRead);
-
+        var symbolParser = new SymbolWriter(CreateBitmapWriter(binaryBitmap),
+            encodedReader, referencedSegments, ReadOnlySpan<IBinaryBitmap>.Empty, charactersToRead,
+            regionFlags.StripSize, regionFlags.DefaultCharacteSpacing, 
+            regionFlags.UsesRefinement, new RefinementTemplateSet());
+                // To support refinement we have to actually parse the refinementTemplateSet
+                // see the feature guard clause above
         symbolParser.Decode(ref reader);
         
         return binaryBitmap;

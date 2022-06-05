@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
@@ -35,7 +36,16 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
     public override void PrepareForRefinementSymbolDictionary(uint totalSymbols)
     {
         SymbolIdContext = DirectBitstreamReaders.FromBitLength(IntLog.CeilingLog2Of(totalSymbols));
+        FirstSContext = StandardHuffmanTables.B6;
+        DeltaSContext = StandardHuffmanTables.B8;
+        DeltaTContext = StandardHuffmanTables.B11;
+        RefinementDeltaWidthContext = StandardHuffmanTables.B15;
+        RefinementDeltaHeightContext = StandardHuffmanTables.B15;
         RefinementXContext = RefinementYContext = StandardHuffmanTables.B15;
+        RefinementYContext = RefinementYContext = StandardHuffmanTables.B15;
+        RefinementSizeContext = StandardHuffmanTables.B1;
+ //     this is a potential bug where the symbol header and the refinement algorithm specify different decoders.");
+        Debug.Assert(BitmapSizeContext == null || BitmapSizeContext == StandardHuffmanTables.B1);
         BitmapSizeContext = StandardHuffmanTables.B1;
     }
 

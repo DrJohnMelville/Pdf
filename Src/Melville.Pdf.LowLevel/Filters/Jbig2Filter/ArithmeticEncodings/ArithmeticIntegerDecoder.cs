@@ -29,8 +29,14 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
     {
         var bits = IntLog.CeilingLog2Of(totalSymbols);
         SymbolIdContext = new ContextStateDict(bits, bits);
+        FirstSContext = new ContextStateDict(9);
+        DeltaSContext = new ContextStateDict(9);
+        DeltaTContext = new ContextStateDict(9);
+        RefinementDeltaWidthContext = new ContextStateDict(9);
+        RefinementDeltaHeightContext = new ContextStateDict(9);
         RefinementXContext = new ContextStateDict(9);
         RefinementYContext = new ContextStateDict(9);
+        RefinementSizeContext = new ContextStateDict(9);
     }
 
     public override void InvokeSymbolRefinement(BinaryBitmap destination, IBinaryBitmap reference, int deltaX, int deltaY,
