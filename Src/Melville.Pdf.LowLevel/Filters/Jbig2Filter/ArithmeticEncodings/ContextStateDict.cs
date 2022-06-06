@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
 public struct ContextEntry

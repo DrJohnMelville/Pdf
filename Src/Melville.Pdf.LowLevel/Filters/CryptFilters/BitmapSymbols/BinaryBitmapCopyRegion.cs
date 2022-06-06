@@ -11,6 +11,7 @@ public readonly struct BinaryBitmapCopyRegion
 
     public BinaryBitmapCopyRegion(int row, int column, IBinaryBitmap source, IBinaryBitmap destination)
     {
+        #warning need to adjust for IBinaryBitmaps with regions that do not exist
         (DestinationFirstRow, SourceFirstRow, SourceExclusiveEndRow) = 
             ComputeOverlap(0, source.Height, row, destination.Height);
         (DestinationFirstCol, SourceFirstCol, SourceExclusiveEndCol) = 

@@ -15,12 +15,18 @@ public class TextRegionParserTest
 {
     private static TextRegionSegment Parse(byte[] bits)
     {
+        var reader = ReaderFromBits(bits);
+        return TextRegionSegmentParser.Parse(reader,  ReferredDictionary().AsSpan());
+    }
+
+    private static SequenceReader<byte> ReaderFromBits(byte[] bits)
+    {
         var reader = new SequenceReader<byte>(
             new ReadOnlySequence<byte>(
                 bits
             )
         );
-        return TextRegionSegmentParser.Parse(reader,  ReferredDictionary().AsSpan());
+        return reader;
     }
 
     private static Segment[] ReferredDictionary()
@@ -74,7 +80,29 @@ B....B..B....B..BBBB...B....B..B....B
 .BBBB....BBBBB..B.......BBBBB...BBBB.
 ................B....................
 ................B....................", "\r\n"+sut.Bitmap.BitmapString());
+    }
 
+    [Fact]
+    public void ParseRefinedTextRegion()
+    {
+        var data = "00 00 00 25 00 00 00 08 00 00 00 00 00 00 00 00 00 8C 12 00 00 00 04 A9 5C 8B F4 C3 7D 96 " +
+                   "6A 28 E5 76 8F FF AC";
+        var importedDict = new SymbolDictionarySegment(new IBinaryBitmap[]
+        {
+            ".BBBB.\r\n.....B\r\n.BBBBB\r\nB....B\r\nB....B\r\n.BBBBB".AsBinaryBitmap(6,6),
+            ".BBBB.\r\nB....B\r\nB.....\r\nB.....\r\nB....B\r\n.BBBB.".AsBinaryBitmap(6,6),
+            @"
+.BBBB....BBBB.
+.....B..B....B
+.BBBBB..B.....
+B....B..B.....
+B....B..B....B
+.BBBBB...BBBB.".AsBinaryBitmap(6, 14)
+        });
+
+        var tr = TextRegionSegmentParser.Parse(ReaderFromBits(data.BitsFromHex()), new Segment[]{importedDict});
+        Assert.Equal("Make Bitmap", tr.Bitmap.BitmapString());
+        
     }
 
     [Fact]

@@ -54,6 +54,7 @@ public class SymbolSegmentParserTest
     [Fact]
     public void RefinementDictionaryTest()
     {
+        // segment number 0x16
         var d1 = ParseSymbolDictionary("08 00 02 FF 00 00 00 01 00 00 00 01 4F E7 8D 68 1B 14 2F 3F FF AC");
         Assert.Equal(1, d1.ExportedSymbols.Length);
         VerifyCharacterA(d1.ExportedSymbols.Span[0]);
@@ -62,5 +63,14 @@ public class SymbolSegmentParserTest
             "08 02 02 FF FF FF FF FF 00 00 00 03 00 00 00 02 4F E9 D7 D5 90 C3 B5 26 A7 FB 6D 14 98 3F FF AC",
             d1);
         Assert.Equal(3, d2.ExportedSymbols.Length);
+        VerifyCharacterA(d2.ExportedSymbols.Span[0]);
+        VerifyCharacterC(d2.ExportedSymbols.Span[1]);
+        Assert.Equal(@"
+.BBBB....BBBB.
+.....B..B....B
+.BBBBB..B.....
+B....B..B.....
+B....B..B....B
+.BBBBB...BBBB.", "\r\n"+d2.ExportedSymbols.Span[2].BitmapString());
     }
 }

@@ -43,8 +43,10 @@ public ref struct TextRegionSegmentParser
     {
         var huffmanFlags = new TextRegionHuffmanFlags(
             regionFlags.UseHuffman ? reader.ReadBigEndianUint16():(ushort)0);
-        if (regionFlags.UsesRefinement)
-            throw new NotImplementedException("Refinement is not supported yet.");
+
+        var refinementTemplate = regionFlags.UsesRefinement
+            ? new RefinementTemplateSet(ref reader, regionFlags.RefinementTemplate)
+            : new RefinementTemplateSet();
         
         var charactersToRead = (int)reader.ReadBigEndianUint32();
 
@@ -56,7 +58,7 @@ public ref struct TextRegionSegmentParser
         var symbolParser = new SymbolWriter(CreateBitmapWriter(binaryBitmap),
             encodedReader, referencedSegments, ReadOnlySpan<IBinaryBitmap>.Empty, charactersToRead,
             regionFlags.StripSize, regionFlags.DefaultCharacteSpacing, 
-            regionFlags.UsesRefinement, new RefinementTemplateSet());
+            regionFlags.UsesRefinement, refinementTemplate);
                 // To support refinement we have to actually parse the refinementTemplateSet
                 // see the feature guard clause above
         symbolParser.Decode(ref reader);
@@ -79,6 +81,7 @@ public ref struct TextRegionSegmentParser
             RefinementXContext = huffmanFlags.SbhuffRdx.GetTableLines(ref remainingTableSpans),
             RefinementYContext = huffmanFlags.SbhuffRdy.GetTableLines(ref remainingTableSpans),
             RefinementSizeContext = huffmanFlags.SbHuffRSize.GetTableLines(ref remainingTableSpans),
+            RIBitContext = DirectBitstreamReaders.OneBit
         };
         return intDecoder;
     }
@@ -96,6 +99,7 @@ public ref struct TextRegionSegmentParser
             RefinementXContext = new ContextStateDict(9),
             RefinementYContext = new ContextStateDict(9),
             RefinementSizeContext = new ContextStateDict(9),
+            RIBitContext = new ContextStateDict(9)
         };
 
     private ContextStateDict ArithmiticSymbolIdContext()
