@@ -55,7 +55,7 @@ public readonly struct BinaryBitmapWriter
     {
         var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, refHeight, refWidth), refHeight, refWidth);
         
-        reader.InvokeSymbolRefinement(OffsetBitmap.Create(target, col, row, refWidth, refHeight),
-            OffsetBitmap.Create(referenceBitmap, refY, refX), false, refinementTemplateSet, ref source);
+        reader.InvokeSymbolRefinement(OffsetBitmapFactory.Create(target, row, col, refHeight, refWidth),
+            OffsetBitmapFactory.Create(referenceBitmap, refY, refX), false, refinementTemplateSet, ref source);
     }
 }

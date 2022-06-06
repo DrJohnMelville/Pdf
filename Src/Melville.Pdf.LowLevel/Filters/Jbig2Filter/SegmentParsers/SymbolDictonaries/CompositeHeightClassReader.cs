@@ -43,9 +43,6 @@ public class CompositeHeightClassReader: IHeightClassReaderStrategy
     private static void AddBitmaps(
         in Span<int> widths, ref SymbolParser parser, IBinaryBitmap rowBitmap)
     {
-        if (widths.Length == 1)
-            parser.AddBitmap(rowBitmap);
-        else
             AddMultiBitmap(widths, ref parser, rowBitmap);
     }
 
@@ -54,7 +51,7 @@ public class CompositeHeightClassReader: IHeightClassReaderStrategy
         var offset = 0;
         for (int i = 0; i < widths.Length; i++)
         {
-            parser.AddBitmap(new HorizontalStripBitmap(rowBitmap, offset, widths[i]));
+            parser.AddBitmap(OffsetBitmapFactory.CreateHorizontalStrip(rowBitmap, offset, widths[i]));
             offset += widths[i];
         }
     }

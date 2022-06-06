@@ -4,13 +4,13 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public partial class OffsetBitmap : IBinaryBitmap
 {
-    protected readonly IBinaryBitmap inner;
-    protected readonly int x;
-    protected readonly int y;
+    private readonly IBinaryBitmap inner;
+    private readonly int x;
+    private readonly int y;
     public int Width { get; }
     public int Height { get; }
-    
-    protected OffsetBitmap(IBinaryBitmap inner, int y, int x, int height, int width)
+
+    public OffsetBitmap(IBinaryBitmap inner, int y, int x, int height, int width)
     {
         this.inner = inner;
         this.x = x;
@@ -28,20 +28,9 @@ public partial class OffsetBitmap : IBinaryBitmap
 
     public virtual bool this[int row, int column]
     {
-        get
-        {
-            AssertPositionIsInBitmap(row, column);
-            return inner[row + y, x + column];
-        }
-        set
-        {
-            AssertPositionIsInBitmap(row, column);
-            inner[row + y, x + column] = value;
-        }
+        get => inner[row + y, x + column];
+        set => inner[row + y, x + column] = value;
     }
 
-    private void AssertPositionIsInBitmap(int row, int column) =>
-        Debug.Assert(this.ContainsPixel(row, column));
-
-    public virtual bool AllIncludedPointsExist() => true;
+    public bool ContainsPixel(int row, int col) => inner.ContainsPixel(row + y, col + x);
 }

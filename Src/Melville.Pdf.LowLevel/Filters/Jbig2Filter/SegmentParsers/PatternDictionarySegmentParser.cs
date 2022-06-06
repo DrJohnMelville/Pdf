@@ -51,7 +51,7 @@ public static class PatternDictionarySegmentParser
         var finalBitmaps = new IBinaryBitmap[largestGrayScale + 1];
         for (int i = 0; i <= largestGrayScale; i++)
         {
-            finalBitmaps[i] = new HorizontalStripBitmap(innerBitmap, i * width, width);
+            finalBitmaps[i] = OffsetBitmapFactory.CreateHorizontalStrip(innerBitmap, i * width, width);
         }
         return finalBitmaps;
     }

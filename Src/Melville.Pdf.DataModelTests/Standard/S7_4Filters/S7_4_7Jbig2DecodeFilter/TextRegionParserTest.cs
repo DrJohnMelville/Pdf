@@ -52,8 +52,8 @@ B....BB....B
             new SymbolDictionarySegment(new IBinaryBitmap[]{d1}),
             new SymbolDictionarySegment(new IBinaryBitmap[]
             {
-                new HorizontalStripBitmap(d2, 0,6),
-                new HorizontalStripBitmap(d2, 6,6)
+                OffsetBitmapFactory.CreateHorizontalStrip(d2, 0,6),
+                OffsetBitmapFactory.CreateHorizontalStrip(d2, 6,6)
             })
         };
     }

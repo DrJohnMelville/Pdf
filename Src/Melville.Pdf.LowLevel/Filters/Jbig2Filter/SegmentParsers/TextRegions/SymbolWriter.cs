@@ -102,9 +102,17 @@ public ref struct SymbolWriter
         var rdh = integerReader.RefinementDeltaHeight(ref source);
         var rdx = integerReader.RefinementX(ref source);
         var rdy = integerReader.RefinementY(ref source);
+        var grReferenceDX = FloorDiv2(rdw) + rdx;
         target.RefineBitsFrom(charT, ref curS, symbol, 
-            (rdh/2) + rdy, (rdw/2) + rdx,
+            FloorDiv2(rdh) + rdy, grReferenceDX,
             symbol.Height + rdh, symbol.Width+ rdw, integerReader, refinementTemplate, ref source);
+    }
+
+    private int FloorDiv2(int x)
+    {
+        var ret = (x < 0 && ((x & 0x1) == 1)) ? 
+            (x / 2) - 1 : (x /2 );
+        return ret;
     }
 
     private void CopyUnmodifiedBitmap(int charT, IBinaryBitmap symbol) => 

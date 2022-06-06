@@ -12,13 +12,7 @@ public interface IBinaryBitmap
     bool this[int row, int column] { get; set; }
     int Stride { get; }
     (byte[] Array, BitOffset Offset) ColumnLocation (int column);
-    bool AllIncludedPointsExist();
-}
-
-public static class BinaryBitmapOperations
-{
-    public static bool ContainsPixel(this IBinaryBitmap bitmap, int row, int col) =>
-        row >= 0 && col >= 0 && row < bitmap.Height & col < bitmap.Width;
+    bool ContainsPixel(int row, int col);
 }
 
 public interface IBitmapCopyTarget : IBinaryBitmap
@@ -26,6 +20,7 @@ public interface IBitmapCopyTarget : IBinaryBitmap
     void PasteBitsFrom(int row, int column, IBinaryBitmap source, CombinationOperator combOp);
 }
 
+[DebuggerDisplay("{this.BitmapString()}")]
 public class BinaryBitmap: IBitmapCopyTarget
 {
     public int Stride { get; }
@@ -130,6 +125,9 @@ public class BinaryBitmap: IBitmapCopyTarget
         return new(((row * Stride) + (col >> 3)), (byte)(col & 0b111));
     }
 
+    public bool ContainsPixel(int row, int col) =>
+        row >= 0 && col >= 0 && row < Height & col < Width;
+
     public (byte[] Array, BitOffset Offset) ColumnLocation(int column) => (bits, ComputeBitPosition(0, column));
 
     public BinaryBitmap(int height, int width, byte[]? externalBits = null)
@@ -140,9 +138,7 @@ public class BinaryBitmap: IBitmapCopyTarget
         bits = externalBits ?? new byte[Stride * Height];
         Debug.Assert(bits.Length == Stride*Height);
     }
-
-    public bool AllIncludedPointsExist() => true;
-
+    
     public void FillBlack() => bits.AsSpan().Fill(0xFF);
 
     //I think I am going to eventually need to genenralize this to arbitrary bitmaps.

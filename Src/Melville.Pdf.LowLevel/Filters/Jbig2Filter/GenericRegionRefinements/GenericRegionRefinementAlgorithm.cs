@@ -36,6 +36,7 @@ public readonly struct GenericRegionRefinementAlgorithm
                 ref var context = ref 
                     template.ContextFor(reference, target, i, j);
                 var bit = decoder.GetBit(ref source, ref context);
+                #warning -- need to use the operation here.
                 target[i, j] = bit == 1;
             }
         }
