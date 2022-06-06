@@ -1,6 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public readonly struct ArithmeticBitmapReaderContext
 {

@@ -1,8 +1,6 @@
-﻿
-using System.Diagnostics;
-using System.Threading;
+﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public class HorizontalStripBitmap : IBinaryBitmap
 {

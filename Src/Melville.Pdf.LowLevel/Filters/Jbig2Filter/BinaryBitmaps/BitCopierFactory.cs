@@ -1,7 +1,7 @@
 ﻿using System;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public static class BitCopierFactory
 {

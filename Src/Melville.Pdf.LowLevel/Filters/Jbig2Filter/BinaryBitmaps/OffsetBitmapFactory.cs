@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public partial class OffsetBitmap
 {
@@ -11,9 +11,9 @@ public partial class OffsetBitmap
         (x == 0 && y == 0 && height == inner.Height && width == inner.Width)
             ? inner
             : MandatoryCreate(inner, y, x, height, width);
-    public static OffsetBitmap MandatoryCreate(IBinaryBitmap inner, int y, int x, int height, int width) =>
+    public static BinaryBitmaps.OffsetBitmap MandatoryCreate(IBinaryBitmap inner, int y, int x, int height, int width) =>
         (inner.ContainsPixel(y, x) && inner.ContainsPixel(y + height, x + width))
-            ? new OffsetBitmap(inner, y, x, height, width)
+            ? new BinaryBitmaps.OffsetBitmap(inner, y, x, height, width)
             : new OffsetIncompleteBitmap(inner, y, x, height, width);
 
 }

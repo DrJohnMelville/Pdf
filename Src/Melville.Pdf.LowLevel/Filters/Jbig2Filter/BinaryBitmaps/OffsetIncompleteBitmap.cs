@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
 
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public partial class OffsetBitmap : IBinaryBitmap
 {
 
-    private class OffsetIncompleteBitmap : OffsetBitmap
+    private class OffsetIncompleteBitmap : BinaryBitmaps.OffsetBitmap
     {
         public OffsetIncompleteBitmap(IBinaryBitmap inner, int y, int x, int height, int width) : 
             base(inner, y, x, height, width)

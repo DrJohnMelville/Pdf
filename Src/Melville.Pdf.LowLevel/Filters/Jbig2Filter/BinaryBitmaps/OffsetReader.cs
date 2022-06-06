@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public ref struct OffsetReader
 {

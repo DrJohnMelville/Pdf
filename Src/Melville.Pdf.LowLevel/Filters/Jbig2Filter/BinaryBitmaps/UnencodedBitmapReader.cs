@@ -2,7 +2,7 @@
 using System.Buffers;
 using System.IO;
 
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public static class UnencodedBitmapReader
 {

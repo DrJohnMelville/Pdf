@@ -1,5 +1,5 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 

@@ -1,7 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
-
-namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 public interface IPrefixCopier
 {

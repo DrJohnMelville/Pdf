@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Buffers;
-using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.GenericRegionParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
