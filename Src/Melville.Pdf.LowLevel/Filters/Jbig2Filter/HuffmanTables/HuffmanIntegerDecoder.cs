@@ -47,6 +47,7 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
  //     this is a potential bug where the symbol header and the refinement algorithm specify different decoders.");
         Debug.Assert(BitmapSizeContext == null || BitmapSizeContext == StandardHuffmanTables.B1);
         BitmapSizeContext = StandardHuffmanTables.B1;
+        RIBitContext = DirectBitstreamReaders.OneBit;
     }
 
     public override void InvokeSymbolRefinement(

@@ -52,18 +52,30 @@ public ref struct SymbolWriter
 
     private void DecodeStrip(ref SequenceReader<byte> source)
     {
-        strIpT += integerReader.DeltaT(ref source) * stripSize;
+        ReadStripLocation(ref source);
+        ReadFirstSymbol(ref source);
+        ReadSubsequentSymbols(ref source);
+    }
 
+    private void ReadStripLocation(ref SequenceReader<byte> source)
+    {
+        strIpT += integerReader.DeltaT(ref source) * stripSize;
         firstS += integerReader.FirstS(ref source);
+    }
+
+    private void ReadFirstSymbol(ref SequenceReader<byte> source)
+    {
         curS = firstS;
         DecodeSymbol(ref source);
+    }
+
+    private void ReadSubsequentSymbols(ref SequenceReader<byte> source)
+    {
         while (integerReader.DeltaS(ref source) is { } deltaS and < int.MaxValue)
         {
             curS += deltaS + defaultCharacterSpacing;
-            #warning see page 27 3) c) ii -- it think I need an SBDSOFFSET in the line above
             DecodeSymbol(ref source);
         }
-        // decode subsequent symbols
     }
 
     private void DecodeSymbol(ref SequenceReader<byte> source)
@@ -71,13 +83,31 @@ public ref struct SymbolWriter
         int charT = ReadCharacterDeltaT(ref source) + strIpT;
         var symbolId = integerReader.SymbolId(ref source);
         var symbol = characterDictionary.GetBitmap(symbolId, additionalCharacters);
-        if (useRefinement)  
-            throw new NotImplementedException("Need to refine the symbol Bitmap");
-        CopyUnmodifiedBitmap(charT, symbol);
+        CopySourceBitmap(ref source, charT, symbol);
         remainingSymbolsToDecode--;
     }
 
-    private void CopyUnmodifiedBitmap(int charT, IBinaryBitmap symbol) => target.WriteBitmap(charT, ref curS, symbol);
+    private void CopySourceBitmap(ref SequenceReader<byte> source, int charT, IBinaryBitmap symbol)
+    {
+        if (useRefinement && integerReader.RIBit(ref source) == 1)
+            ReadRefinementBitmap(ref source);
+        else
+            CopyUnmodifiedBitmap(charT, symbol);
+    }
+
+    private void ReadRefinementBitmap(ref SequenceReader<byte> source)
+    {
+        throw new NotImplementedException("Need to call generic region refinement.  Code below untested");
+        //section 6.4.11 in the spec
+        var rdw = integerReader.RefinementDeltaWidth(ref source);
+        var rdh = integerReader.RefinementDeltaHeight(ref source);
+        var rdx = integerReader.RefinementX(ref source);
+        var rdy = integerReader.RefinementY(ref source);
+        // need to generalize IntegerReader.InvokeSymbolRefinement to read into an offset bitmap
+    }
+
+    private void CopyUnmodifiedBitmap(int charT, IBinaryBitmap symbol) => 
+        target.WriteBitmap(charT, ref curS, symbol);
 
     private int ReadCharacterDeltaT(ref SequenceReader<byte> source) => 
         stripSize == 1?0: integerReader.TCoordinate(ref source);

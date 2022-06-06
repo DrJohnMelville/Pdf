@@ -37,6 +37,7 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
         RefinementXContext = new ContextStateDict(9);
         RefinementYContext = new ContextStateDict(9);
         RefinementSizeContext = new ContextStateDict(9);
+        RIBitContext = new ContextStateDict(9);
     }
 
     public override void InvokeSymbolRefinement(BinaryBitmap destination, IBinaryBitmap reference, int deltaX, int deltaY,
