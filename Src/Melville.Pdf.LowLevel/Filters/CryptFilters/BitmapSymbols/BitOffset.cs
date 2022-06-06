@@ -3,11 +3,11 @@ namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
 public readonly struct BitOffset
 {
-    public uint ByteOffset { get;}
+    public int ByteOffset { get;}
     public byte BitOffsetRightOfMsb {get;} // bits are numbered 0-7 MSB to LSB
     private byte BitMask {get;} // bits are numbered 0-7 MSB to LSB
 
-    public BitOffset(uint byteOffset, byte bitOffsetRightOfMsb)
+    public BitOffset(int byteOffset, byte bitOffsetRightOfMsb)
     {
         ByteOffset = byteOffset;
         BitOffsetRightOfMsb = bitOffsetRightOfMsb;
@@ -26,4 +26,7 @@ public readonly struct BitOffset
 
     private void SetBit(byte[] buffer) => buffer[ByteOffset] |= BitMask;
     private void ClearBit(byte[] buffer) => buffer[ByteOffset] &= (byte)~BitMask;
+
+    public BitOffset AddRows(int lines, int stride) => 
+        new((lines * stride) + ByteOffset, BitOffsetRightOfMsb);
 }

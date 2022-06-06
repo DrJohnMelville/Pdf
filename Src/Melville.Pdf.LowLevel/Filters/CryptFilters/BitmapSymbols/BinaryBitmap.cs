@@ -11,6 +11,7 @@ public interface IBinaryBitmap
     bool this[int row, int column] { get; set; }
     int Stride { get; }
     (byte[] Array, BitOffset Offset) ColumnLocation (int column);
+    bool AllIncludedPointsExist();
 }
 
 public static class BinaryBitmapOperations
@@ -66,9 +67,9 @@ public class BinaryBitmap: IBitmapCopyTarget
                 var destStride = Stride;
                 
                 var currentSrc = BitBasisPointer(
-                    srcPointer, copyRegion.SourceFirstRow, sourceStride, srcLocation.Offset.ByteOffset);
+                    srcPointer, copyRegion.SourceFirstRow, sourceStride, (uint)srcLocation.Offset.ByteOffset);
                 var currentDest = BitBasisPointer(
-                    destPointer, copyRegion.DestinationFirstRow, destStride, destLocation.Offset.ByteOffset);
+                    destPointer, copyRegion.DestinationFirstRow, destStride, (uint)destLocation.Offset.ByteOffset);
                 
                 for (int i = 0; i < rows; i++)
                 {
@@ -125,7 +126,7 @@ public class BinaryBitmap: IBitmapCopyTarget
     private BitOffset ComputeBitPosition(int row, int col)
     {
         Debug.Assert(this.ContainsPixel(row,col));
-        return new((uint)((row * Stride) + (col >> 3)), (byte)(col & 0b111));
+        return new(((row * Stride) + (col >> 3)), (byte)(col & 0b111));
     }
 
     public (byte[] Array, BitOffset Offset) ColumnLocation(int column) => (bits, ComputeBitPosition(0, column));
@@ -138,6 +139,8 @@ public class BinaryBitmap: IBitmapCopyTarget
         bits = externalBits ?? new byte[Stride * Height];
         Debug.Assert(bits.Length == Stride*Height);
     }
+
+    public bool AllIncludedPointsExist() => true;
 
     public void FillBlack() => bits.AsSpan().Fill(0xFF);
 

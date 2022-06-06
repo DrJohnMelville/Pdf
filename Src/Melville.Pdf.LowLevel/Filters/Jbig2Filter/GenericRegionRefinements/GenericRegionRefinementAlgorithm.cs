@@ -9,8 +9,6 @@ public readonly struct GenericRegionRefinementAlgorithm
 {
     private readonly BinaryBitmap target;
     private readonly IBinaryBitmap reference;
-    private readonly int deltaX;
-    private readonly int deltaY;
     private readonly bool useTypicalPredicition;
     private readonly RefinementTemplateSet template;
     private readonly MQDecoder decoder;
@@ -21,8 +19,6 @@ public readonly struct GenericRegionRefinementAlgorithm
     {
         this.target = target;
         this.reference = reference;
-        this.deltaX = deltaX;
-        this.deltaY = deltaY;
         this.useTypicalPredicition = useTypicalPredicition;
         this.template = template;
         this.decoder = decoder;
@@ -37,7 +33,7 @@ public readonly struct GenericRegionRefinementAlgorithm
             for (int j = 0; j < target.Width; j++)
             {
                 ref var context = ref 
-                    template.ContextFor(reference, i + deltaY, j + deltaX, target, i, j);
+                    template.ContextFor(reference, i, j, target, i, j);
                 var bit = decoder.GetBit(ref source, ref context);
                 target[i, j] = bit == 1;
             }

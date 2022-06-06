@@ -1,4 +1,7 @@
 ﻿
+using System.Diagnostics;
+using System.Threading;
+
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
 public class HorizontalStripBitmap : IBinaryBitmap
@@ -23,4 +26,5 @@ public class HorizontalStripBitmap : IBinaryBitmap
 
     public int Stride => inner.Stride;
     public (byte[], BitOffset) ColumnLocation(int column) => inner.ColumnLocation(column + firstCol);
+    public bool AllIncludedPointsExist() => true;
 }
