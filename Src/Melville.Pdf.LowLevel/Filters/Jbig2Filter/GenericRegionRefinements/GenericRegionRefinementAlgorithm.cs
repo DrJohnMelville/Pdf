@@ -7,14 +7,14 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 
 public readonly struct GenericRegionRefinementAlgorithm
 {
-    private readonly BinaryBitmap target;
+    private readonly IBinaryBitmap target;
     private readonly IBinaryBitmap reference;
     private readonly bool useTypicalPredicition;
     private readonly RefinementTemplateSet template;
     private readonly MQDecoder decoder;
 
     public GenericRegionRefinementAlgorithm(
-        BinaryBitmap target, IBinaryBitmap reference, int deltaX, int deltaY, 
+        IBinaryBitmap target, IBinaryBitmap reference, 
         bool useTypicalPredicition, in RefinementTemplateSet template, MQDecoder decoder)
     {
         this.target = target;
@@ -33,7 +33,7 @@ public readonly struct GenericRegionRefinementAlgorithm
             for (int j = 0; j < target.Width; j++)
             {
                 ref var context = ref 
-                    template.ContextFor(reference, i, j, target, i, j);
+                    template.ContextFor(reference, target, i, j);
                 var bit = decoder.GetBit(ref source, ref context);
                 target[i, j] = bit == 1;
             }

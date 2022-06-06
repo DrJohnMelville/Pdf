@@ -15,7 +15,7 @@ public abstract class TranspositionState
     protected abstract bool ShouldPreIncrement(ReferenceCorner corner);
     public SValueComputer SelectSValueComputer(ReferenceCorner corner) =>
         SValueComputer.SelectPrePost(ShouldPreIncrement(corner));
-    public abstract int SIncrement(IBinaryBitmap source);
+    public abstract int SIncrement(int height, int width);
 
     private class NotTransposedImplementation : TranspositionState
     {
@@ -24,7 +24,7 @@ public abstract class TranspositionState
         protected override bool ShouldPreIncrement(ReferenceCorner corner) =>
             corner is ReferenceCorner.TopRight or ReferenceCorner.BottomRight;
 
-        public override int SIncrement(IBinaryBitmap source) => source.Width;
+        public override int SIncrement(int height, int width) => width;
     }
     
     private class TransposedImplementation: TranspositionState
@@ -33,6 +33,6 @@ public abstract class TranspositionState
 
         protected override bool ShouldPreIncrement(ReferenceCorner corner) =>
             corner is ReferenceCorner.BottomLeft or ReferenceCorner.BottomRight;
-        public override int SIncrement(IBinaryBitmap source) => source.Height;
+        public override int SIncrement(int height, int width) => height;
     }
 }

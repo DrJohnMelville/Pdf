@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using Microsoft.VisualBasic.CompilerServices;
+﻿using System.Diagnostics;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
 
@@ -12,13 +10,6 @@ public partial class OffsetBitmap : IBinaryBitmap
     public int Width { get; }
     public int Height { get; }
     
-    public static OffsetBitmap Create(IBinaryBitmap inner, int y, int x) => Create(inner, y, x, Math.Max(0, inner.Height - y), Math.Max(0, inner.Width - x));
-
-    public static OffsetBitmap Create(IBinaryBitmap inner, int y, int x, int height, int width) =>
-        (inner.ContainsPixel(y, x) && inner.ContainsPixel(y + height, x + width))
-            ? new OffsetBitmap(inner, y, x, height, width)
-            : new OffsetIncompleteBitmap(inner, y, x, height, width);
-
     protected OffsetBitmap(IBinaryBitmap inner, int y, int x, int height, int width)
     {
         this.inner = inner;

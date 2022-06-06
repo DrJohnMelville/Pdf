@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Buffers;
+using System.Xml.Schema;
 using Melville.Pdf.LowLevel.Filters.CryptFilters.BitmapSymbols;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 
@@ -23,23 +28,34 @@ public readonly struct BinaryBitmapWriter
 
     public void WriteBitmap(int t, ref int s, IBinaryBitmap source)
     {
-        var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, source), source);
+        var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, source.Height, source.Width),
+            source.Height, source.Width);
         target.PasteBitsFrom(row,col, source, operation);
     }
 
-    private (int row, int col) FinalBitmapPosition(int t, ref int s, IBinaryBitmap source) => 
-        transposition.BitmapPosition(t, ComputeNewSValue(ref s, source));
+    private (int row, int col) FinalBitmapPosition(int t, ref int s, int height, int width) => 
+        transposition.BitmapPosition(t, ComputeNewSValue(ref s, height, width));
 
-    private int ComputeNewSValue(ref int s, IBinaryBitmap source) => 
-        sValueComputer.ComputeSValue(ref s, transposition.SIncrement(source));
+    private int ComputeNewSValue(ref int s, int height, int width) => 
+        sValueComputer.ComputeSValue(ref s, transposition.SIncrement(height, width));
 
-    private (int row, int col) AdjustForCorner((int row, int col) position, IBinaryBitmap source) =>
+    private (int row, int col) AdjustForCorner((int row, int col) position, int height, int width) =>
         referenceCorner switch
         {
-            ReferenceCorner.BottomLeft => (1+position.row - source.Height, position.col),
+            ReferenceCorner.BottomLeft => (1+position.row - height, position.col),
             ReferenceCorner.TopLeft => position,
-            ReferenceCorner.BottomRight => (1+position.row - source.Height, 1+position.col-source.Width),
-            ReferenceCorner.TopRight => (position.row, 1+position.col - source.Width),
+            ReferenceCorner.BottomRight => (1+position.row - height, 1+position.col-width),
+            ReferenceCorner.TopRight => (position.row, 1+position.col - width),
             _ => throw new ArgumentOutOfRangeException()
         };
+
+    public void RefineBitsFrom(int t, ref int s, IBinaryBitmap referenceBitmap,
+        int refY, int refX, int refHeight, int refWidth, IEncodedReader reader,
+        RefinementTemplateSet refinementTemplateSet, ref SequenceReader<byte> source)
+    {
+        var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, refHeight, refWidth), refHeight, refWidth);
+        
+        reader.InvokeSymbolRefinement(OffsetBitmap.Create(target, col, row, refWidth, refHeight),
+            OffsetBitmap.Create(referenceBitmap, refY, refX), false, refinementTemplateSet, ref source);
+    }
 }

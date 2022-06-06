@@ -79,7 +79,7 @@ public interface IEncodedReader
     void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
 
     public void PrepareForRefinementSymbolDictionary(uint totalSymbols);
-    void InvokeSymbolRefinement(BinaryBitmap destination, IBinaryBitmap reference, int deltaX, int deltaY,
+    void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference,
         bool useTypicalPrediction,
         in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source);
 }
@@ -119,7 +119,7 @@ public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
     public abstract void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
     public abstract void PrepareForRefinementSymbolDictionary(uint totalSymbols);
 
-    public abstract void InvokeSymbolRefinement(BinaryBitmap destination, IBinaryBitmap reference, int deltaX,
-        int deltaY, bool useTypicalPrediction,
+    public abstract void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference, 
+        bool useTypicalPrediction,
         in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source);
 }

@@ -32,11 +32,18 @@ public sealed class RefinementBitmapReader : IIndividualBitmapReader
     private static void ReadSingleSourceRefinementBitmap(ref SequenceReader<byte> source, SymbolParser reader,
         BinaryBitmap bitmap)
     {
+        var referencedSymbol = ReadReferencedSymbol(ref source, reader);
+
+        reader.EncodedReader.InvokeSymbolRefinement(bitmap, referencedSymbol, false, reader.RefinementTemplateSet,
+            ref source);
+    }
+
+    private static IBinaryBitmap ReadReferencedSymbol(ref SequenceReader<byte> source, SymbolParser reader)
+    {
         var symbolId = reader.EncodedReader.SymbolId(ref source);
         var refineX = reader.EncodedReader.RefinementX(ref source);
         var refineY = reader.EncodedReader.RefinementY(ref source);
-        reader.EncodedReader.InvokeSymbolRefinement(bitmap,
-            reader.ReferencedSymbol(symbolId), refineX, refineY, false, reader.RefinementTemplateSet,
-            ref source);
+        var referencedSymbol = reader.ReferencedSymbol(symbolId);
+        return OffsetBitmap.Create(referencedSymbol, refineY, refineX);
     }
 }

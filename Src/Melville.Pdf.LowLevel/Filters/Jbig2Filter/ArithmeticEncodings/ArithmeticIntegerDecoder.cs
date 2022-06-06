@@ -40,10 +40,10 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
         RIBitContext = new ContextStateDict(9);
     }
 
-    public override void InvokeSymbolRefinement(BinaryBitmap destination, IBinaryBitmap reference, int deltaX, int deltaY,
+    public override void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference,
         bool useTypicalPrediction, in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source)
     {
-        new GenericRegionRefinementAlgorithm(destination, reference, deltaX, deltaY, useTypicalPrediction,
+        new GenericRegionRefinementAlgorithm(destination, reference, useTypicalPrediction,
             refinementTemplate, State).Read(ref source);
     }
 }

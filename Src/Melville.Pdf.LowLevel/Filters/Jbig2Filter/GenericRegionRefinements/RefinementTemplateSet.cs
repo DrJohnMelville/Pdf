@@ -40,14 +40,13 @@ public readonly struct RefinementTemplateSet
         referenceFactory.AddPoint(atY2, atX2);
     }
 
-    public ref ContextEntry ContextFor(IBinaryBitmap reference, int refRow, int refCol,
-        IBinaryBitmap destination, int destRow, int destCol) =>
+    public ref ContextEntry ContextFor(IBinaryBitmap reference,
+        IBinaryBitmap destination, int row, int col) =>
         ref contextDictionary.EntryForContext(
-            ComputeCompositeContext(reference, refRow, refCol, destination, destRow, destCol));
+            ComputeCompositeContext(reference, destination, row, col));
 
-    private ushort ComputeCompositeContext(IBinaryBitmap reference, int refRow, int refCol, 
-        IBinaryBitmap destination, int destRow, int destCol) =>
+    private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
         (ushort)(
-            (referenceTemplate.ReadContext(reference, refRow, refCol) << destinationTemplate.BitsRequired()) |
-            destinationTemplate.ReadContext(destination, destRow, destCol));
+            (referenceTemplate.ReadContext(reference, row, col) << destinationTemplate.BitsRequired()) |
+            destinationTemplate.ReadContext(destination, row, col));
 }

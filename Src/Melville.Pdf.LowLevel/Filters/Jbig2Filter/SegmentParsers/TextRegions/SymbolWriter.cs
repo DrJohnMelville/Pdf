@@ -90,20 +90,21 @@ public ref struct SymbolWriter
     private void CopySourceBitmap(ref SequenceReader<byte> source, int charT, IBinaryBitmap symbol)
     {
         if (useRefinement && integerReader.RIBit(ref source) == 1)
-            ReadRefinementBitmap(ref source);
+            ReadRefinementBitmap(charT, symbol, ref source);
         else
             CopyUnmodifiedBitmap(charT, symbol);
     }
 
-    private void ReadRefinementBitmap(ref SequenceReader<byte> source)
+    private void ReadRefinementBitmap(int charT, IBinaryBitmap symbol, ref SequenceReader<byte> source)
     {
-        throw new NotImplementedException("Need to call generic region refinement.  Code below untested");
         //section 6.4.11 in the spec
         var rdw = integerReader.RefinementDeltaWidth(ref source);
         var rdh = integerReader.RefinementDeltaHeight(ref source);
         var rdx = integerReader.RefinementX(ref source);
         var rdy = integerReader.RefinementY(ref source);
-        // need to generalize IntegerReader.InvokeSymbolRefinement to read into an offset bitmap
+        target.RefineBitsFrom(charT, ref curS, symbol, 
+            (rdh/2) + rdy, (rdw/2) + rdx,
+            symbol.Height + rdh, symbol.Width+ rdw, integerReader, refinementTemplate, ref source);
     }
 
     private void CopyUnmodifiedBitmap(int charT, IBinaryBitmap symbol) => 
