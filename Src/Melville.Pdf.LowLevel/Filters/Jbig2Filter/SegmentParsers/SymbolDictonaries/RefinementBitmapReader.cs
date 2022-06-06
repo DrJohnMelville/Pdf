@@ -44,6 +44,6 @@ public sealed class RefinementBitmapReader : IIndividualBitmapReader
         var refineX = reader.EncodedReader.RefinementX(ref source);
         var refineY = reader.EncodedReader.RefinementY(ref source);
         var referencedSymbol = reader.ReferencedSymbol(symbolId);
-        return OffsetBitmapFactory.Create(referencedSymbol, refineY, refineX);
+        return OffsetBitmapFactory.Create(referencedSymbol, -refineY, -refineX);
     }
 }

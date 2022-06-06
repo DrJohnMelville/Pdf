@@ -81,16 +81,6 @@ public ref struct SymbolDictionaryParser
             AggregationSymbolInstancesContext = new ContextStateDict(9),
         };
 
-    private Memory<IBinaryBitmap> ReadExportedSymbols(IBinaryBitmap[] symbols, IEncodedReader intReader)
-    {
-        var offset = intReader.ExportFlags(ref reader);
-        var length = intReader.ExportFlags(ref reader);
-        if (offset > 0 || length != symbols.Length)
-            throw new NotImplementedException(
-                "right now this code assumes that the dictionary imports no other dictionaries, and exports all its symbols");
-        return symbols.AsMemory(offset, length);
-    }
-
     private SymbolDictionaryExportParser CreateSymbolDictionaryParser()
     {
         var exportedSymbols = reader.ReadBigEndianUint32();

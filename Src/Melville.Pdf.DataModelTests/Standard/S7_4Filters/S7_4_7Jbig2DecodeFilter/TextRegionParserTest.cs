@@ -101,8 +101,15 @@ B....B..B....B
         });
 
         var tr = TextRegionSegmentParser.Parse(ReaderFromBits(data.BitsFromHex()), new Segment[]{importedDict});
-        Assert.Equal("Make Bitmap", tr.Bitmap.BitmapString());
-        
+        Assert.Equal(@"
+.BBBB....BBBB...BBBB....BBBB....BBBB.
+B....B.......B..B...B.......B..B....B
+B........BBBBB..B...B...BBBBB..B.....
+B.......B....B..B...B..B....B..B.....
+B....B..B....B..BBBB...B....B..B....B
+.BBBB....BBBBB..B.......BBBBB...BBBB.
+................B....................
+................B....................", "\r\n"+tr.Bitmap.BitmapString());
     }
 
     [Fact]

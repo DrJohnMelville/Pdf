@@ -121,7 +121,7 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     private BitOffset ComputeBitPosition(int row, int col)
     {
-        Debug.Assert(this.ContainsPixel(row,col));
+        Debug.Assert(ContainsPixel(row,col));
         return new(((row * Stride) + (col >> 3)), (byte)(col & 0b111));
     }
 
