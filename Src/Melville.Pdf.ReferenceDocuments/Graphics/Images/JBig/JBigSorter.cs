@@ -28,7 +28,7 @@ public class JBigSorter
         var fileFlags = new FileFlags(sourceBuffer[8]);
         SkipPageCount(fileFlags);
         if (!fileFlags.SequentialFileOrganization)
-            throw new NotImplementedException("read only organization");
+            throw new NotImplementedException("Random access JBIG organization");
         while(ParseSequential()); // empty loop is intentional
     }
 

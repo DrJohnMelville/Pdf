@@ -1,5 +1,4 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.ReferenceDocuments.Utility;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
@@ -23,55 +22,17 @@ public class JBigSampleBitStream3 : JBigSampleBitStream
     }
 }
 
-public abstract class JBigSampleBitStream: DisplayImageTest
+public abstract class JBigSampleBitStream : JBigBitStream
 {
     private readonly int page;
-    private readonly int width;
-    private readonly int height;
 
-    protected JBigSampleBitStream(int page, int width, int height) : base($"Page {page} of the JBIG sample bitstream")
+    protected JBigSampleBitStream(int page, int width, int height) : 
+        base($"Page {page} of the JBIG sample bitstream", page, width, height)
     {
         this.page = page;
-        this.width = width;
-        this.height = height;
-    }
-    private PdfStream? image;
-    protected override async ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
-    {
-        MemoryStream global = new();
-        MemoryStream specific = new();
-        
-        var sorter = new JBigSorter(SourceBits, global, specific,page); 
-        sorter.Sort();
-        global.Seek(0, SeekOrigin.Begin);
-        specific.Seek(0, SeekOrigin.Begin);
-        
-        image = new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-            .WithItem(KnownNames.Width, new PdfInteger(width))
-            .WithItem(KnownNames.Height, new PdfInteger(height))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(1))
-            .WithItem(KnownNames.DecodeParms, new PdfArray(
-                new DictionaryBuilder()
-                    .WithItem(KnownNames.JBIG2Globals,
-                        
-                        docCreator.LowLevelCreator.Add(
-                            new DictionaryBuilder().AsStream(global, StreamFormat.DiskRepresentation)))
-                    .AsDictionary()
-            ))
-            .WithFilter(FilterName.JBIG2Decode)
-            .AsStream(specific, StreamFormat.DiskRepresentation);
-        await base.AddContentToDocumentAsync(docCreator);
     }
 
-    protected override PdfStream CreateImage()
-    {
-        return image!;
-    }
-    
-     private static byte[] SourceBits => @"
+    protected override byte[] SourceBits() => @"
                                          97 4A 42 32 0D 0A 1A 0A 01 00 00 00 03 00 00 00
                                          00 00 01 00 00 00 00 18 00 01 00 00 00 01 00 00
                                          00 01 E9 CB F4 00 26 AF 04 BF F0 78 2F E0 00 40

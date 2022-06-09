@@ -20,6 +20,34 @@
       <EmbeddedResource Include="Text\Zev.ttf" />
       <None Remove="Text\GFSEustace.otf" />
       <EmbeddedResource Include="Text\GFSEustace.otf" />
+        
+      <EmbeddedResource Include="Graphics\Images\JBig\042_1.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_2.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_3.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_4.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_5.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_6.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_7.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_8.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_9.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_10.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_11.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_12.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_13.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_14.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_15.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_16.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_17.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_18.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_19.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_20.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_21.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_22.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_23.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_24.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\042_25.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\amb_1.jb2" />
+      <EmbeddedResource Include="Graphics\Images\JBig\amb_2.jb2" />
     </ItemGroup>
 
     <ItemGroup>
