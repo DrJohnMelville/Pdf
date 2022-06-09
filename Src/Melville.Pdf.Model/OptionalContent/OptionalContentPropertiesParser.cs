@@ -12,6 +12,10 @@ public readonly struct OptionalContentPropertiesParser
 
     private readonly Dictionary<PdfDictionary, OptionalGroup> ocDict = new();
 
+    public OptionalContentPropertiesParser()
+    {
+    }
+
     public static ValueTask<IOptionalContentState> ParseAsync(PdfDictionary? oCProperties) =>
         oCProperties is null ? new(AllOptionalContentVisible.Instance):
             new OptionalContentPropertiesParser().ParseProperties(oCProperties);

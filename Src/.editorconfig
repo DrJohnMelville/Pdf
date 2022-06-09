@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# Arch002: Syntax error in architecture definition file
+dotnet_diagnostic.Arch002.severity = error
