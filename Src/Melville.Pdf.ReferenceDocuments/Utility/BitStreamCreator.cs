@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
+﻿namespace Melville.Pdf.ReferenceDocuments.Utility;
 
 public static class BitStreamCreator
 {

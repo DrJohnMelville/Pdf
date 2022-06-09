@@ -4,6 +4,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;

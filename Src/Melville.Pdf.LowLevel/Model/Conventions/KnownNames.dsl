@@ -12,6 +12,7 @@ Filter:CCITTFaxDecode
 Filter:Crypt
 Filter:DCTDecode
 Filter:FlateDecode
+Filter:JBIG2Decode
 Filter:LZWDecode
 Filter:RunLengthDecode
 
@@ -69,7 +70,6 @@ ColorSpace:Indexed
 InlineImageColorSpace:G
 InlineImageColorSpace:RGB
 InlineImageColorSpace:CMYK
-//fixthis need to share
 InlineImageColorSpace:I
 
 ResourceType:ExtGState
@@ -190,6 +190,7 @@ Pdf:FontName
 Pdf:FontWeight
 Pdf:Functions
 Pdf:FunctionType
+Pdf:Gamma
 Pdf:Height
 Pdf:ICCBased
 Pdf:ID
@@ -203,7 +204,7 @@ Pdf:Intent
 Pdf:Interpolate
 Pdf:Index
 Pdf:ItalicAngle
-Pdf:Gamma
+Pdf:JBIG2Globals
 Pdf:K
 Pdf:Kids
 Pdf:Lab

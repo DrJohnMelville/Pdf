@@ -3,6 +3,7 @@ using System.Buffers;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 using Xunit.Abstractions;
 

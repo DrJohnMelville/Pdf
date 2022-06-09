@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
