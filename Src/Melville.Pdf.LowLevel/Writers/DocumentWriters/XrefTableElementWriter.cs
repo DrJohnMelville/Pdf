@@ -1,6 +1,5 @@
 ﻿using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 

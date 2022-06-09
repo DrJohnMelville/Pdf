@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Model.Document;
 

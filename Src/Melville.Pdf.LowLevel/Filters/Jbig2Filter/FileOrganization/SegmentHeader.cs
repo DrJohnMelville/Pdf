@@ -1,4 +1,4 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
+﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 
 public enum SegmentType : byte
 {

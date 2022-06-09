@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;

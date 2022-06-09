@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 public enum GenericRegionTemplate: byte
 {

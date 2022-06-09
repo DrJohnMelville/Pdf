@@ -2,7 +2,6 @@
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Hacks;
-using Melville.Pdf.LowLevel.Filters.LzwFilter;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 

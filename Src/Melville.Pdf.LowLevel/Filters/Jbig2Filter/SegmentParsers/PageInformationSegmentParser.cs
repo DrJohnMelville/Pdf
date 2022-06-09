@@ -4,9 +4,9 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 
-public static class PageHeaderParser
+public static class PageInformationSegmentParser
 {
-    public static PageInformationSegment Parse(ref SequenceReader<byte> reader, uint segmentNumber)
+    public static PageInformationSegment Parse(ref SequenceReader<byte> reader)
     {
         var width = reader.ReadBigEndianUint32();
         var height = reader.ReadBigEndianUint32();

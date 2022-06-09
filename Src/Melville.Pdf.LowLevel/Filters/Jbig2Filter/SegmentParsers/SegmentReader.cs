@@ -1,45 +1,111 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.GenericRegionParsers;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 
-public static class SegmentReader
+public readonly struct SegmentReader
 {
-    public static ValueTask<Segment> ReadFromAsync(this in SegmentHeader header, PipeReader source) =>
-        header.SegmentType switch
+    private readonly PipeReader source;
+    public readonly SegmentHeader Header;
+    private readonly IReadOnlyDictionary<uint, Segment> priorSegments;
+
+    public SegmentReader(PipeReader source, SegmentHeader header, IReadOnlyDictionary<uint, Segment> priorSegments)
+    {
+        this.source = source;
+        this.Header = header;
+        this.priorSegments = priorSegments;
+    }
+    
+    public async ValueTask SkipOverAsync()
+    {
+        var span = await ReadSpanAsync().CA();
+        source.AdvanceTo(span.End);
+    }
+    public ValueTask<Segment> ReadFromAsync() =>
+        Header.SegmentType switch
         {
             SegmentType.EndOfFile => new(Segment.EndOfFile),
             SegmentType.EndOfPage => new(Segment.EndOfPage),
-            _ => ReadDataFrom(header, source)
+            _ => ReadDataFrom()
         };
 
-    private static async ValueTask<Segment> ReadDataFrom(SegmentHeader header, PipeReader source)
+    private  async ValueTask<Segment> ReadDataFrom()
     {
-        var readResult = await source.ReadAtLeastAsync((int)header.DataLength).CA();
-        var sequence = readResult.Buffer.Slice(0, header.DataLength);
-        var ret = ReadFrom(header, sequence);
+        var sequence = await ReadSpanAsync().CA();
+        var ret = ReadFrom(sequence);
         source.AdvanceTo(sequence.End);
         return ret;
     }
 
-    private static Segment ReadFrom(in SegmentHeader header, in ReadOnlySequence<byte> data)
+    private async ValueTask<ReadOnlySequence<byte>> ReadSpanAsync()
+    {
+        var readResult = await source.ReadAtLeastAsync((int)Header.DataLength).CA();
+        var sequence = readResult.Buffer.Slice(0, Header.DataLength);
+        return sequence;
+    }
+
+    private Segment ReadFrom(in ReadOnlySequence<byte> data)
     {
         var reader = new SequenceReader<byte>(data);
-        #warning -- need to actually load the referred segments
-        ReadOnlySpan<Segment> referencedSegments = ReadOnlySpan<Segment>.Empty;
-        return header.SegmentType switch
+        using var rentedSegmentSpan = new SpanRental<Segment>(Header.ReferencedSegmentNumbers.Length);
+        var referencedSegments = rentedSegmentSpan.Span;
+        LookupSegments(referencedSegments);
+        return Header.SegmentType switch
         {
             SegmentType.SymbolDictionary => new SymbolDictionaryParser(reader, referencedSegments).Parse(),
-            SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(header, ref reader),
+            SegmentType.PatternDictionary => PatternDictionarySegmentParser.Parse(reader),
+
+            SegmentType.EndOfStripe => EndOfStripeSegmentParser.Read(Header, ref reader),
             SegmentType.EndOfPage => Segment.EndOfPage,
             SegmentType.EndOfFile => Segment.EndOfFile,
-            _ => throw new InvalidDataException("Unknown JBig2 Segment: " + header.SegmentType)
+            SegmentType.PageInformation => PageInformationSegmentParser.Parse(ref reader),
+            
+            SegmentType.ImmediateLosslessTextRegion => TextRegionSegmentParser.Parse(reader, referencedSegments),
+            SegmentType.ImmediateLosslessGenericRegion => GenericRegionSegmentParser.Parse(reader),
+            SegmentType.ImmediateLosslessHalftoneRegion => HalftoneSegmentParser.Parse(reader, referencedSegments),
+            _ => throw new InvalidDataException("Unknown JBig2 Segment: " + Header.SegmentType)
         };
     }
+
+    private void LookupSegments(Span<Segment> segments)
+    {
+        Debug.Assert(segments.Length == Header.ReferencedSegmentNumbers.Length);
+        for (int i = 0; i < Header.ReferencedSegmentNumbers.Length; i++)
+        {
+            segments[i] = priorSegments[Header.ReferencedSegmentNumbers[i]];
+        }
+    }
 }
+
+public readonly struct SpanRental<T> : IDisposable
+{
+    private readonly T[] items;
+    private readonly int length;
+    public readonly Span<T> Span => items.AsSpan(0, length);
+
+    public SpanRental(int length) : this()
+    {
+        this.length = length;
+        items = this.length <= 0? Array.Empty<T>(): ArrayPool<T>.Shared.Rent(length);
+    }
+
+
+    public void Dispose()
+    {
+        if (length <= 0) return;
+        Span.Clear();
+        ArrayPool<T>.Shared.Return(items);
+    }
+}      

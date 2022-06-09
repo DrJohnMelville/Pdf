@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Net.Mail;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;

@@ -18,7 +18,7 @@ public class PageHeaderParserTest
                 bits
             )
         );
-        return PageHeaderParser.Parse(ref reader, 210);
+        return PageInformationSegmentParser.Parse(ref reader);
     }
 
     [Fact]

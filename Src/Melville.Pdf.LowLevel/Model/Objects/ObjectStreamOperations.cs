@@ -1,17 +1,11 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Hacks.Reflection;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 

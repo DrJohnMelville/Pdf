@@ -26,7 +26,6 @@ public ref struct BitCopier
         {
             Copy(srcPointer, destPointer);
         }
-
     }
 
     public unsafe void Copy(byte* src, byte* dest)
@@ -41,9 +40,8 @@ public ref struct BitCopier
         if (HasSuffiBits())
         {
             var lastSource = Reader.ReadBye(ref src);
-            *dest = postSplicer.SplicePrefixByte(lastSource, *dest, Plan.CombinationOperator);
+            *dest = postSplicer.SplicePostFixByte(lastSource, *dest, Plan.CombinationOperator);
         }
     }
-
     private bool HasSuffiBits() => Plan.SuffixBits > 0;
 }

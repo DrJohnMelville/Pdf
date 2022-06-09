@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Globalization;
-using System.IO;
 using System.Security.Cryptography;
-using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 

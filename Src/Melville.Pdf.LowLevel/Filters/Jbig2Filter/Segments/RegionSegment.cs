@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
@@ -17,4 +18,6 @@ public class RegionSegment: Segment
         Y = header.Y;
         CombinationOperator = header.CombinationOperator;
     }
+
+    public void PlaceIn(BinaryBitmap target) => target.PasteBitsFrom((int)Y, (int)X, Bitmap, CombinationOperator);
 }

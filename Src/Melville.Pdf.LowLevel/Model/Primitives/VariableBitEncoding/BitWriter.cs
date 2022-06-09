@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Melville.Pdf.LowLevel.Filters.LzwFilter;
-using SixLabors.ImageSharp.Processing;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 

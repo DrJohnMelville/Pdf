@@ -2,8 +2,7 @@
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.GenericRegionParsers;
@@ -33,7 +32,7 @@ public readonly struct GenericRegionSegmentFlags
 
 public static class GenericRegionSegmentParser
 {
-    public static GenericRegionSegment Parse(SequenceReader<byte> reader, Segment[] empty)
+    public static GenericRegionSegment Parse(SequenceReader<byte> reader)
     {
         var regionHead = RegionHeaderParser.Parse(ref reader);
         var flags = new GenericRegionSegmentFlags(reader.ReadBigEndianUint8());

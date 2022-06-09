@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
@@ -18,7 +17,7 @@ public class GenericRegionParserTest
                 bits
             )
         );
-        return GenericRegionSegmentParser.Parse(reader, Array.Empty<Segment>());
+        return GenericRegionSegmentParser.Parse(reader);
     }
 
     [Theory]

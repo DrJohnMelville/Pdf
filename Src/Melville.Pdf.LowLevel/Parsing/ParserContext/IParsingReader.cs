@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;

@@ -6,7 +6,6 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 

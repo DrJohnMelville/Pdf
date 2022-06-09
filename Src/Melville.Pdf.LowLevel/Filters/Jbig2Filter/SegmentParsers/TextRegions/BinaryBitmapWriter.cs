@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Buffers;
-using System.Xml.Schema;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.EncodedReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-using Microsoft.VisualBasic.FileIO;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 

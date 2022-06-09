@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 

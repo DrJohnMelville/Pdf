@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Text;
 using Melville.Pdf.LowLevel.Model.Primitives;
 

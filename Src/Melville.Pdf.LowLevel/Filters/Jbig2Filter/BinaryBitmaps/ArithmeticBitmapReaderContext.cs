@@ -1,5 +1,4 @@
 ﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Buffers;
-using Microsoft.Win32.SafeHandles;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 

@@ -2,6 +2,7 @@
 using System.Buffers;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
+﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 

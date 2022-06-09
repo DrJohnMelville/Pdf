@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Text.Json.Serialization.Metadata;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;

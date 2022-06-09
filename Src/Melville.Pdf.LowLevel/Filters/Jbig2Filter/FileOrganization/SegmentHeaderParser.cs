@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Buffers;
 using System.IO.Pipelines;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Melville.Parsing.PipeReaders;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 
 public static class SegmentHeaderParser
 {

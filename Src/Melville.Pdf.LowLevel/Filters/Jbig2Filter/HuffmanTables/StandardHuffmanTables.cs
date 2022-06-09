@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;

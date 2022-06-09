@@ -1,5 +1,4 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Encryption.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes;

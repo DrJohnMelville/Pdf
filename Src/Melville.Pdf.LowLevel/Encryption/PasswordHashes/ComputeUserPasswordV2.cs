@@ -1,5 +1,4 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Encryption.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
