@@ -16,6 +16,12 @@ public class JBigSampleBitStream2 : JBigSampleBitStream
     {
     }
 }
+public class JBigSampleBitStream3 : JBigSampleBitStream
+{
+    public JBigSampleBitStream3() : base(3,37,8)
+    {
+    }
+}
 
 public abstract class JBigSampleBitStream: DisplayImageTest
 {
@@ -23,7 +29,7 @@ public abstract class JBigSampleBitStream: DisplayImageTest
     private readonly int width;
     private readonly int height;
 
-    protected JBigSampleBitStream(int page, int width, int height) : base(@"Page {page} of the JBIG sample bitstream")
+    protected JBigSampleBitStream(int page, int width, int height) : base($"Page {page} of the JBIG sample bitstream")
     {
         this.page = page;
         this.width = width;
@@ -65,7 +71,7 @@ public abstract class JBigSampleBitStream: DisplayImageTest
         return image!;
     }
     
-     private static byte[] SourceBits = @"
+     private static byte[] SourceBits => @"
                                          97 4A 42 32 0D 0A 1A 0A 01 00 00 00 03 00 00 00
                                          00 00 01 00 00 00 00 18 00 01 00 00 00 01 00 00
                                          00 01 E9 CB F4 00 26 AF 04 BF F0 78 2F E0 00 40
