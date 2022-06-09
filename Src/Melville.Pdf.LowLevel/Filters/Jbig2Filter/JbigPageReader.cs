@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -17,11 +18,20 @@ public abstract class JbigPageReader
 
     public int TotalPages => pages.Count;
     public void RequestPage(uint page) => pages.Add(page, requested);
-    public IBinaryBitmap GetPage(uint page) => pages[page];
+    public BinaryBitmap GetPage(uint page) => pages[page];
 
+    public ValueTask ProcessFileBitsAsync(Stream stream) => ProcessFileBitsAsync(PipeReader.Create(stream)); 
     public async ValueTask ProcessFileBitsAsync(PipeReader pipe)
     {
         var segmentHeadReader = await FileHeaderParser.ReadFileHeader(pipe, storedSegments).CA();
+        await ReadSegments(segmentHeadReader);
+    }
+
+    public  ValueTask ProcessSequentialSegments(Stream stream, uint pages) => 
+        ReadSegments(new SequentialSegmentHeaderReader(PipeReader.Create(stream), pages, storedSegments));
+
+    private async ValueTask ReadSegments(SegmentHeaderReader segmentHeadReader)
+    {
         while ((await segmentHeadReader.NextSegmentReader().CA() is { } reader) &&
                reader.Header.SegmentType != SegmentType.EndOfFile)
         {

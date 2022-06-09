@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
@@ -144,4 +145,14 @@ public class BinaryBitmap: IBitmapCopyTarget
     //I ought to be able to use the bitmap copy infractructure to copy from myself
     public void CopyRow(int source, int target) =>
         bits.AsSpan(source*Stride, Stride).CopyTo(bits.AsSpan(target*Stride, Stride));
+
+    public void InvertBits()
+    {
+        for (int i = 0; i < bits.Length; i++)
+        {
+            bits[i] = (byte)~bits[i];
+        }
+    }
+    
+    public Stream BitsAsStream() => new MemoryStream(bits);
 }

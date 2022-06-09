@@ -4,10 +4,30 @@ using Melville.Pdf.ReferenceDocuments.Utility;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 
-public class JBigSampleBitStream1: DisplayImageTest
+public class JBigSampleBitStream1 : JBigSampleBitStream
 {
-    public JBigSampleBitStream1() : base("Page 1 of the JBIG sample bitstream")
+    public JBigSampleBitStream1() : base(1,64,56)
     {
+    }
+}
+public class JBigSampleBitStream2 : JBigSampleBitStream
+{
+    public JBigSampleBitStream2() : base(2,64,56)
+    {
+    }
+}
+
+public abstract class JBigSampleBitStream: DisplayImageTest
+{
+    private readonly int page;
+    private readonly int width;
+    private readonly int height;
+
+    protected JBigSampleBitStream(int page, int width, int height) : base(@"Page {page} of the JBIG sample bitstream")
+    {
+        this.page = page;
+        this.width = width;
+        this.height = height;
     }
     private PdfStream? image;
     protected override async ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
@@ -15,7 +35,7 @@ public class JBigSampleBitStream1: DisplayImageTest
         MemoryStream global = new();
         MemoryStream specific = new();
         
-        var sorter = new JBigSorter(SourceBits, global, specific,1); 
+        var sorter = new JBigSorter(SourceBits, global, specific,page); 
         sorter.Sort();
         global.Seek(0, SeekOrigin.Begin);
         specific.Seek(0, SeekOrigin.Begin);
@@ -24,8 +44,8 @@ public class JBigSampleBitStream1: DisplayImageTest
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-            .WithItem(KnownNames.Width, new PdfInteger(64))
-            .WithItem(KnownNames.Height, new PdfInteger(56))
+            .WithItem(KnownNames.Width, new PdfInteger(width))
+            .WithItem(KnownNames.Height, new PdfInteger(height))
             .WithItem(KnownNames.BitsPerComponent, new PdfInteger(1))
             .WithItem(KnownNames.DecodeParms, new PdfArray(
                 new DictionaryBuilder()
