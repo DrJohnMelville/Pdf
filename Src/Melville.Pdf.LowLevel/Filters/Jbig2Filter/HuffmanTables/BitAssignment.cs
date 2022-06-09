@@ -8,6 +8,10 @@ public ref struct PrefixCode
     private short currentCode = 0;
     public short CodeLength { get; set; } = 0;
 
+    public PrefixCode() 
+    {
+    }
+
     public int NextCode()
     {
         return currentCode++;

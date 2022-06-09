@@ -11,7 +11,11 @@ public readonly struct ContentStreamValueStack
 {
     private readonly List<ContentStreamValueUnion> values = new();
     public int Count => values.Count;
-    
+
+    public ContentStreamValueStack() 
+    {
+    }
+
     public void Add(object item) => values.Add(new ContentStreamValueUnion(item));
     public void Add(in Memory<byte> item) => values.Add(new ContentStreamValueUnion(item));
     public void Add(double floating, long integer) => 

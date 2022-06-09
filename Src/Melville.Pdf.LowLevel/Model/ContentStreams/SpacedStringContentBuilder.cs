@@ -11,4 +11,8 @@ public readonly struct SpacedStringContentBuilder
     public void Add(double item) => items.Add(new(item, (long)item));
     public void Add(in Memory<byte> item) => items.Add(new(item));
     public Span<ContentStreamValueUnion> GetAllValues() => CollectionsMarshal.AsSpan(items);
+
+    public SpacedStringContentBuilder() 
+    {
+    }
 }

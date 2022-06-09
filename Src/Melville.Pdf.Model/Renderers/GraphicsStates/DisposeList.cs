@@ -6,6 +6,11 @@ namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 public readonly struct DisposeList: IDisposable
 {
     private readonly List<IDisposable> itemsToDispose = new();
+
+    public DisposeList()
+    {
+    }
+
     public T TryRegister<T>(T item) // generic so we do not box value types just to check them
     {
         if (item is IDisposable iDisposabke) itemsToDispose.Add(iDisposabke);

@@ -11,7 +11,10 @@ public readonly struct DictionaryBuilder
 {
     private readonly Dictionary<PdfName, PdfObject> attributes = new();
 
-        
+    public DictionaryBuilder()
+    {
+    }
+
     public DictionaryBuilder WithItem(PdfName name, PdfObject? value) => 
         value is null || value.IsEmptyObject()?this: WithForcedItem(name, value);
 
