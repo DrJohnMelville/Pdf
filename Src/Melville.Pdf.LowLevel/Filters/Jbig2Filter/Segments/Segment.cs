@@ -1,4 +1,6 @@
-﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
+﻿using System.Collections.Generic;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
@@ -11,5 +13,9 @@ public class Segment
     protected Segment(SegmentType type)
     {
         Type = type;
+    }
+
+    public virtual void HandleSegment(IDictionary<uint, PageBinaryBitmap> pages, uint pageNumber)
+    {
     }
 }

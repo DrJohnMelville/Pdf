@@ -8,8 +8,8 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 public interface IBinaryBitmap
 {
     int Width { get; }
-    int Height { get; }
-    bool this[int row, int column] { get; set; }
+    int Height { get;}
+    bool this[int row, int column] {  get; set; }
     int Stride { get; }
     (byte[] Array, BitOffset Offset) ColumnLocation (int column);
     bool ContainsPixel(int row, int col);
@@ -25,16 +25,15 @@ public class BinaryBitmap: IBitmapCopyTarget
 {
     public int Stride { get; }
     public int Width { get; }
-    public int Height { get; }
-    private readonly byte[] bits;
+    public int Height { get;  private set; }
+    private byte[] bits;
 
     public bool this[int row, int column]
     {
         get => ComputeBitPosition(row, column).GetBit(bits);
         set => ComputeBitPosition(row, column).WriteBit(bits, value);
     }
-
-
+    
     public void PasteBitsFrom(int row, int column, IBinaryBitmap source, CombinationOperator combOp)
     {
         var copyRegion = new BinaryBitmapCopyRegion(row, column, source, this);
@@ -130,13 +129,21 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     public (byte[] Array, BitOffset Offset) ColumnLocation(int column) => (bits, ComputeBitPosition(0, column));
 
-    public BinaryBitmap(int height, int width, byte[]? externalBits = null)
+    public BinaryBitmap(int height, int width)
     {
         Width = width;
         Height = height;
         Stride = (width + 7) / 8;
-        bits = externalBits ?? new byte[Stride * Height];
-        Debug.Assert(bits.Length == Stride*Height);
+        bits = new byte[BufferLength()];
+    }
+
+    private int BufferLength() => Stride * Height;
+
+    protected void ResizeToHeight(int newHeight)
+    {
+        Height = newHeight;
+        var newBufferLength = BufferLength();
+        if (newBufferLength > bits.Length) Array.Resize(ref bits, newBufferLength);
     }
     
     public void FillBlack() => bits.AsSpan().Fill(0xFF);
@@ -154,5 +161,5 @@ public class BinaryBitmap: IBitmapCopyTarget
         }
     }
     
-    public Stream BitsAsStream() => new MemoryStream(bits);
+    public Stream BitsAsStream() => new MemoryStream(bits, 0, BufferLength());
 }

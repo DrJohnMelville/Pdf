@@ -44,7 +44,7 @@ public abstract partial class JBigFile : JBigBitStream
     protected override byte[] SourceBits()
     {
         var stream = GetType().Assembly.GetManifestResourceStream(
-            $"Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig.{file}.jb2");
+            $"Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig.{file}.jb2")!;
         var buffer = new byte[stream.Length];
         buffer.FillBuffer(0, buffer.Length, stream.Read);
         return buffer;

@@ -12,13 +12,13 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
 public abstract class JbigPageReader
 {
-    private static readonly BinaryBitmap requested = new BinaryBitmap(1, 1);
-    protected readonly Dictionary<uint , BinaryBitmap> pages = new();
-    protected readonly Dictionary<uint, Segment> storedSegments = new();
+    private static readonly PageBinaryBitmap requested = new(1, 1);
+    protected readonly Dictionary<uint , PageBinaryBitmap> Pages = new();
+    private readonly Dictionary<uint, Segment> storedSegments = new();
 
-    public int TotalPages => pages.Count;
-    public void RequestPage(uint page) => pages.Add(page, requested);
-    public BinaryBitmap GetPage(uint page) => pages[page];
+    public int TotalPages => Pages.Count;
+    public void RequestPage(uint page) => Pages.Add(page, requested);
+    public BinaryBitmap GetPage(uint page) => Pages[page];
 
     public ValueTask ProcessFileBitsAsync(Stream stream) => ProcessFileBitsAsync(PipeReader.Create(stream)); 
     public async ValueTask ProcessFileBitsAsync(PipeReader pipe)
@@ -40,6 +40,16 @@ public abstract class JbigPageReader
             else
                 await reader.SkipOverAsync().CA();
         }
+
+        FinalizePages();
+    }
+
+    private void FinalizePages()
+    {
+        foreach (var page in Pages.Values)
+        {
+            page.DoneReading();
+        }
     }
 
     protected abstract bool WantPage(uint page);
@@ -47,21 +57,7 @@ public abstract class JbigPageReader
     private void ProcessSegment(SegmentHeader segHead, Segment segment)
     {
         storedSegments[segHead.Number] = segment;
-        switch (segment)
-        {
-            case PageInformationSegment pis:
-                HandleSegment(segHead, pis);
-                break;
-            case RegionSegment rs:
-                rs.PlaceIn(pages[segHead.Page]);
-                break;
-        }
-    }
-
-    private void HandleSegment(SegmentHeader segmentHeader, PageInformationSegment pis)
-    {
-        if (pis.Striping.IsStriped) throw new NotImplementedException("Striped Data");
-        pages[segmentHeader.Page] = new BinaryBitmap((int)pis.Height, (int)pis.Width);
+        segment.HandleSegment(Pages, segHead.Page);
     }
 }
 
@@ -69,7 +65,7 @@ public class JbigExplicitPageReader : JbigPageReader
 {
     protected override bool WantPage(uint page) => IsGlobalSegment(page) || PageWasRequested(page);
     private bool IsGlobalSegment(uint page) => page == 0;
-    private bool PageWasRequested(uint page) => pages.ContainsKey(page);
+    private bool PageWasRequested(uint page) => Pages.ContainsKey(page);
 }
 
 public class JbigAllPageReader : JbigPageReader

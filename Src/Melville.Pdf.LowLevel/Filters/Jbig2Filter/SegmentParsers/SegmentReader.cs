@@ -71,7 +71,7 @@ public readonly struct SegmentReader
             SegmentType.EndOfPage => Segment.EndOfPage,
             SegmentType.EndOfFile => Segment.EndOfFile,
             SegmentType.PageInformation => PageInformationSegmentParser.Parse(ref reader),
-            
+
             SegmentType.ImmediateLosslessTextRegion or SegmentType.ImmediateTextRegion=> 
                 TextRegionSegmentParser.Parse(reader, referencedSegments),
             SegmentType.ImmediateLosslessGenericRegion or SegmentType.ImmediateGenericRegion => 

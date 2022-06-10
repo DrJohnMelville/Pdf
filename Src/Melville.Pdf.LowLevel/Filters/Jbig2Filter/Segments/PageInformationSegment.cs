@@ -1,4 +1,7 @@
-﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
+﻿using System.Collections.Generic;
+using System.IO;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
@@ -54,4 +57,14 @@ public class PageInformationSegment : Segment
         Flags = flags;
         Striping = striping;
     }
+
+    public override void HandleSegment(IDictionary<uint, PageBinaryBitmap> pages, uint pageNumber) => 
+        pages[pageNumber] = CreateBitmap();
+
+    private PageBinaryBitmap CreateBitmap() => (Height, Striping.IsStriped) switch
+    {
+        (0xFFFF_FFFF, false) => throw new InvalidDataException("Page with unknown size must be striped"),
+        (0xFFFF_FFFF, true) => new StripedBinaryBitmap(Striping.StripeSize, Width),
+        (_) => new PageBinaryBitmap(Height, Width)
+    };
 }
