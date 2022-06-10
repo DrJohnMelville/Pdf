@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
@@ -49,13 +50,25 @@ public static class GenericRegionSegmentParser
                 bitmapTemplate);
 
             MQDecoder state = new MQDecoder();
-            // need to compute the tgbdcontext and pass it into the reader/
-            new AritmeticBitmapReader(bitmap, state, context, TpgdContext.Value(
-                flags.Tpgdon, bitmapTemplate, flags.GBTemplate), false).Read(ref reader);
+            new AritmeticBitmapReader(bitmap, state, context, TpgdonContext(flags), false)
+                .Read(ref reader);
         }
        
-
         return new GenericRegionSegment(SegmentType.ImmediateLosslessGenericRegion,
             regionHead, bitmap);
+    }
+    
+    private static ushort TpgdonContext(GenericRegionSegmentFlags flags)
+    {
+        if (!flags.Tpgdon) return 0;
+
+        return flags.GBTemplate switch
+        {
+            GenericRegionTemplate.GB0 => 0b10011_0110010_0101,
+            GenericRegionTemplate.GB1 => 0b0011_110010_101,
+            GenericRegionTemplate.GB2 => 0b001_11001_01,
+            GenericRegionTemplate.GB3 => 0b011001_0101,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

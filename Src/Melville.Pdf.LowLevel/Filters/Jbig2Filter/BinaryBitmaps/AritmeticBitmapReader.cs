@@ -30,7 +30,6 @@ public readonly struct AritmeticBitmapReader
         {
             ReadRow(ref source, i, ref duplicatedLastRow);
         }
-
     }
     private void ReadRow(ref SequenceReader<byte> source, int row, ref bool duplicatedLastRow)
     {
@@ -40,10 +39,8 @@ public readonly struct AritmeticBitmapReader
             DecodeRow(ref source, row);
     }
 
-    private bool ShouldCopyPriorRow(ref SequenceReader<byte> source, ref bool duplicatedLastRow)
-    {
-        return IsInTgbdMode() && ShouldDuplicateThisRow(ref source, ref duplicatedLastRow);
-    }
+    private bool ShouldCopyPriorRow(ref SequenceReader<byte> source, ref bool duplicatedLastRow) => 
+        IsInTgbdMode() && ShouldDuplicateThisRow(ref source, ref duplicatedLastRow);
 
     private bool IsInTgbdMode() => tgbd != 0;
 
