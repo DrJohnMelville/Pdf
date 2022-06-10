@@ -35,7 +35,6 @@ public abstract class JBigBitStream: DisplayImageTest
             .WithItem(KnownNames.DecodeParms, new PdfArray(
                 new DictionaryBuilder()
                     .WithItem(KnownNames.JBIG2Globals,
-                        
                         docCreator.LowLevelCreator.Add(
                             new DictionaryBuilder().AsStream(global, StreamFormat.DiskRepresentation)))
                     .AsDictionary()

@@ -72,9 +72,13 @@ public readonly struct SegmentReader
             SegmentType.EndOfFile => Segment.EndOfFile,
             SegmentType.PageInformation => PageInformationSegmentParser.Parse(ref reader),
             
-            SegmentType.ImmediateLosslessTextRegion => TextRegionSegmentParser.Parse(reader, referencedSegments),
-            SegmentType.ImmediateLosslessGenericRegion => GenericRegionSegmentParser.Parse(reader),
-            SegmentType.ImmediateLosslessHalftoneRegion => HalftoneSegmentParser.Parse(reader, referencedSegments),
+            SegmentType.ImmediateLosslessTextRegion or SegmentType.ImmediateTextRegion=> 
+                TextRegionSegmentParser.Parse(reader, referencedSegments),
+            SegmentType.ImmediateLosslessGenericRegion or SegmentType.ImmediateGenericRegion => 
+                GenericRegionSegmentParser.Parse(reader),
+            SegmentType.ImmediateLosslessHalftoneRegion or SegmentType.ImmediateHalftoneRegion => 
+                HalftoneSegmentParser.Parse(reader, referencedSegments),
+            SegmentType.Extension => new ExtensionSegment(SegmentType.Extension),
             _ => throw new InvalidDataException("Unknown JBig2 Segment: " + Header.SegmentType)
         };
     }

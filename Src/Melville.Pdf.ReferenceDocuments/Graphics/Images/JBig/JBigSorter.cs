@@ -27,27 +27,58 @@ public class JBigSorter
     {
         var fileFlags = new FileFlags(sourceBuffer[8]);
         SkipPageCount(fileFlags);
-        if (!fileFlags.SequentialFileOrganization)
-            throw new NotImplementedException("Random access JBIG organization");
-        while(ParseSequential()); // empty loop is intentional
+        if (fileFlags.SequentialFileOrganization)
+            ParseSequential(); // empty loop is intentional
+        else ParseRandom();
     }
 
-    private bool ParseSequential()
+    private void ParseRandom()
     {
-        var sr = new SequenceReader<byte>(new ReadOnlySequence<byte>(sourceBuffer.AsMemory(pos)));
-        var sp = sr.Position;
-        if (!SegmentHeaderParser.TryParse(ref sr, out var header) || header.SegmentType == SegmentType.EndOfFile)
-            return false;
-        var length = sr.Position.GetInteger() - sp.GetInteger();
-        var headerSpan = sourceBuffer.AsSpan(pos, length);
-        pos += length;
-        var dataSpan = sourceBuffer.AsSpan(pos, (int)header.DataLength);
-        pos += dataSpan.Length;
-        if (WantPage(header.Page) && !SegmentIsUnusedInPdf(header))
+        while (TryEnqueueOneHeader()) ; // empty loop
+        while (segments.Count > 0)
+            WriteSegment();
+    }
+
+    public record struct SegmentRecord(int Position, int Length, SegmentHeader Header);
+
+    private readonly Queue<SegmentRecord> segments = new();
+
+    private void ParseSequential()
+    {
+        while (true)
         {
-            WriteSegment(header, headerSpan, dataSpan);
+            if (!TryEnqueueOneHeader()) return;
+            WriteSegment();
         }
-        return true;
+    }
+
+    private bool TryEnqueueOneHeader() => TryEnqueueOneHeader(ParseOneHeader());
+
+    private SegmentRecord ParseOneHeader()
+    {
+        var seq = new ReadOnlySequence<byte>(sourceBuffer.AsMemory(pos));
+        var reader = new SequenceReader<byte>(seq);
+        var startingPos = reader.Position;
+        SegmentHeaderParser.TryParse(ref reader, out var header);
+        var length = (int)seq.Slice(startingPos, reader.Position).Length;
+        var segmentRecord = new SegmentRecord(pos, length, header);
+        pos += length;
+        return segmentRecord;
+    }
+
+    private bool TryEnqueueOneHeader(in SegmentRecord segmentRecord)
+    {
+        segments.Enqueue(segmentRecord);
+        return segmentRecord.Header.SegmentType != SegmentType.EndOfFile;
+    }
+
+    public void WriteSegment()
+    {
+        var header = segments.Dequeue();
+        if (WantPage(header.Header.Page) && ! SegmentIsUnusedInPdf(header.Header))
+            WriteSegment(header.Header, sourceBuffer.AsSpan(header.Position, header.Length), 
+                sourceBuffer.AsSpan(pos, (int)header.Header.DataLength));
+        pos += (int) header.Header.DataLength;
     }
 
 
