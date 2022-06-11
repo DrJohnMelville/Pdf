@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
@@ -11,6 +12,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilt
 public class StandardHuffmanTest
 {
     [Theory]
+    [InlineData(HuffmanTableSelection.B1, "00000 00000 00000", 0,0)]
     [InlineData(HuffmanTableSelection.B1, "0 0001 0 1111", 1,15)]
     [InlineData(HuffmanTableSelection.B1, "10 00000001 10 11111111", 17,271)]
     [InlineData(HuffmanTableSelection.B1, "110 00000000 00000001 110 11111111 11111111", 273,65807)]
@@ -58,6 +60,7 @@ public class StandardHuffmanTest
     [InlineData(HuffmanTableSelection.B6, "1000 000000001 1000 111111111", -1023, -513)]
     [InlineData(HuffmanTableSelection.B6, "1001 00000001 1001 11111111", -511, -257)]
     [InlineData(HuffmanTableSelection.B6, "1010 0000001 1010 1111111", -255, -129)]
+    [InlineData(HuffmanTableSelection.B6, "1011 00001 1011 11111", -31, -1)]
     [InlineData(HuffmanTableSelection.B6, "1100 000000001 1100 111111111", 513, 1023)]
     [InlineData(HuffmanTableSelection.B6, "1101 0000000001 1101 1111111111", 1025, 2047)]
     [InlineData(HuffmanTableSelection.B6, "11101 000001 11101 111111", -127, -65)]
@@ -80,18 +83,23 @@ public class StandardHuffmanTest
     [InlineData(HuffmanTableSelection.B7, "11111 00000000000000000000000000000001 11111 00000000000000000000000000000011", 2049, 2051)]
     
     [InlineData(HuffmanTableSelection.B8, "00 0 01", 0, int.MaxValue)]
+    [InlineData(HuffmanTableSelection.B8, "100 0001 5 100 1111", 5, 19)]
     [InlineData(HuffmanTableSelection.B8, "10101010", -1, -1)]
     [InlineData(HuffmanTableSelection.B8, "1011 0001 1011 1111", 23, 37)]
     [InlineData(HuffmanTableSelection.B8, "1100 00001 1100 11111", 39, 69)]
     [InlineData(HuffmanTableSelection.B8, "11010 11010", 2,2)]
+    [InlineData(HuffmanTableSelection.B8, "111010 111010", 3,3)]
+    [InlineData(HuffmanTableSelection.B8, "1110110 1110111", 20,21)]
     [InlineData(HuffmanTableSelection.B8, "11011 000001 11011 111111", 71, 133)]
     [InlineData(HuffmanTableSelection.B8, "11100 0000001 11100 1111111", 135,261)]
     [InlineData(HuffmanTableSelection.B8, "111100 0000001 111100 1111111", 263, 389)]
+    [InlineData(HuffmanTableSelection.B8, "1111101 00000001 1111101 11111111", 391, 645)]
     [InlineData(HuffmanTableSelection.B8, "111101 0000000001 111101 1111111111", 647, 1669)]
     [InlineData(HuffmanTableSelection.B8, "1111100 1111100", -2, -2)]
     [InlineData(HuffmanTableSelection.B8, "11111100 001 11111100 111", -14, -8)]
     [InlineData(HuffmanTableSelection.B8, "11111101 0 11111101 1", -5, -4)]
     [InlineData(HuffmanTableSelection.B8, "111111101 111111101", -3, -3)]
+    [InlineData(HuffmanTableSelection.B8, "1111111000 1111111001", -7, -6)]
     [InlineData(HuffmanTableSelection.B8, "111111110 00000000000000000000000000000001 111111110 00000000000000000000000000000011", -17, -19)]
     [InlineData(HuffmanTableSelection.B8, "111111111 00000000000000000000000000000001 111111111 00000000000000000000000000000011", 1671, 1673)]
     
@@ -109,9 +117,11 @@ public class StandardHuffmanTest
     [InlineData(HuffmanTableSelection.B9, "111100 00000001 111100 11111111", 524,778)]
     [InlineData(HuffmanTableSelection.B9, "111101 00000000001 111101 11111111111", 1292, 3338)]
     [InlineData(HuffmanTableSelection.B9, "1111100 0 1111100 1", -5, -4)]
+    [InlineData(HuffmanTableSelection.B9, "111010 0 111010 1", 5, 6)]
     [InlineData(HuffmanTableSelection.B9, "1111101 000000001 1111101 111111111", 780, 1290)]
     [InlineData(HuffmanTableSelection.B9, "11111100 0001 11111100 1111", -30, -16)]
     [InlineData(HuffmanTableSelection.B9, "11111101 01 11111101 11", -10, -8)]
+    [InlineData(HuffmanTableSelection.B9, "111111100 01 111111100 11", -14,-12)]
     [InlineData(HuffmanTableSelection.B9, "111111101 0 111111101 1", -7, -6)]
     [InlineData(HuffmanTableSelection.B9, "111111110 00000000000000000000000000000001 111111110 00000000000000000000000000000011", -33, -35)]
     [InlineData(HuffmanTableSelection.B9, "111111111 00000000000000000000000000000001 111111111 00000000000000000000000000000011", 3340, 3342)]
@@ -198,5 +208,50 @@ public class StandardHuffmanTest
         var bitReader = new BitReader();
         Assert.Equal(firstNum, source.ReadHuffmanInt(bitReader, table));
         Assert.Equal(secondNum, source.ReadHuffmanInt(bitReader, table));
+    }
+
+    [Theory]
+    [InlineData(HuffmanTableSelection.B1)]
+    [InlineData(HuffmanTableSelection.B2)]
+    [InlineData(HuffmanTableSelection.B3)]
+    [InlineData(HuffmanTableSelection.B4)]
+    [InlineData(HuffmanTableSelection.B5)]
+    [InlineData(HuffmanTableSelection.B6)]
+    [InlineData(HuffmanTableSelection.B7)]
+    [InlineData(HuffmanTableSelection.B8)]
+    [InlineData(HuffmanTableSelection.B9)]
+    [InlineData(HuffmanTableSelection.B10)]
+    [InlineData(HuffmanTableSelection.B11)]
+    [InlineData(HuffmanTableSelection.B12)]
+    [InlineData(HuffmanTableSelection.B13)]
+    [InlineData(HuffmanTableSelection.B14)]
+    [InlineData(HuffmanTableSelection.B15)]
+    public void VerifyTableCompleteness(HuffmanTableSelection selection)
+    {
+        var buffer = new byte[8];
+        var table = StandardHuffmanTables.ArrayFromSelector(selection);
+        for (int bits = 1; bits < 10; bits++)
+        {
+            for (int i = 0; i < 1<<bits; i++)
+            {
+                ulong data = ((ulong)i) << (64 - bits);
+                for (int j = 7; j >= 0; j--)
+                {
+                    buffer[j] = (byte)data;
+                    data >>= 8;
+                }
+
+                try
+                {
+                    var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(buffer));
+                    var bitReader = new BitReader();
+                    source.ReadHuffmanInt(bitReader, table);
+                }
+                catch (Exception )
+                {
+                    Assert.Equal("", $"Table: {selection} Length: {bits} data: {i}");
+                }
+            }
+        }
     }
 }

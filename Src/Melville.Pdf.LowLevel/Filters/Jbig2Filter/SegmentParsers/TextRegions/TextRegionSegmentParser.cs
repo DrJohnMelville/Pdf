@@ -60,8 +60,6 @@ public ref struct TextRegionSegmentParser
             encodedReader, referencedSegments, ReadOnlySpan<IBinaryBitmap>.Empty, charactersToRead,
             regionFlags.StripSize, regionFlags.DefaultCharacteSpacing, 
             regionFlags.UsesRefinement, refinementTemplate);
-                // To support refinement we have to actually parse the refinementTemplateSet
-                // see the feature guard clause above
         symbolParser.Decode(ref reader);
         
         return binaryBitmap;

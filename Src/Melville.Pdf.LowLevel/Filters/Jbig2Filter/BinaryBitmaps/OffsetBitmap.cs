@@ -1,5 +1,8 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
+﻿using System.Diagnostics;
 
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
+
+[DebuggerDisplay("{this.BitmapString()}")]
 public partial class OffsetBitmap : IBinaryBitmap
 {
     private readonly IBinaryBitmap inner;

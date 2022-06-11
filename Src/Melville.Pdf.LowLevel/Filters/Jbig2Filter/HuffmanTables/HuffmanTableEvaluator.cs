@@ -18,6 +18,7 @@ public static class HuffmanTableEvaluator
             {
                 pattern = pattern.AddBitToPattern(ref reader, bitState);
             }
+            
             if (line.Matches(pattern)) return line.ReadNum(ref reader, bitState);
         }
 
