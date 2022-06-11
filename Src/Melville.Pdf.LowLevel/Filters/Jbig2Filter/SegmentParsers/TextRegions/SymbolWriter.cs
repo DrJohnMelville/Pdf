@@ -45,8 +45,7 @@ public ref struct SymbolWriter
     {
         var deltaT = integerReader.DeltaT(ref source) * stripSize;
         strIpT = -deltaT;
-        while (remainingSymbolsToDecode > 4296) DecodeStrip(ref source);
-        DecodeStrip(ref source);
+        while (remainingSymbolsToDecode > 0) DecodeStrip(ref source);
     }
     
     
@@ -82,6 +81,7 @@ public ref struct SymbolWriter
     { 
         int charT = ReadCharacterDeltaT(ref source) + strIpT;
         var symbolId = integerReader.SymbolId(ref source);
+        Console.WriteLine($"{remainingSymbolsToDecode} --> {symbolId}");
         var symbol = characterDictionary.GetBitmap(symbolId, additionalCharacters);
         CopySourceBitmap(ref source, charT, symbol);
         remainingSymbolsToDecode--;

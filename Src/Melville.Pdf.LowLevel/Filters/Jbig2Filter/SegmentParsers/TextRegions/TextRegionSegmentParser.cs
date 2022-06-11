@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
@@ -60,9 +61,20 @@ public ref struct TextRegionSegmentParser
             encodedReader, referencedSegments, ReadOnlySpan<IBinaryBitmap>.Empty, charactersToRead,
             regionFlags.StripSize, regionFlags.DefaultCharacteSpacing, 
             regionFlags.UsesRefinement, refinementTemplate);
-        symbolParser.Decode(ref reader);
+        TryReadBitmap(symbolParser);
         
         return binaryBitmap;
+    }
+
+    private void TryReadBitmap(SymbolWriter symbolParser)
+    {
+        try
+        {
+            symbolParser.Decode(ref reader);
+        }
+        catch (InvalidDataException )
+        {
+        }
     }
 
     private IEncodedReader ParseHuffmanDecoder(TextRegionHuffmanFlags huffmanFlags)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.IO;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
@@ -39,6 +40,25 @@ public static class GenericRegionSegmentParser
         var flags = new GenericRegionSegmentFlags(reader.ReadBigEndianUint8());
 
         var bitmap = regionHead.CreateTargetBitmap();
+        TryReadBitmap(reader, flags, bitmap);
+       
+        return new GenericRegionSegment(SegmentType.ImmediateLosslessGenericRegion,
+            regionHead, bitmap);
+    }
+
+    private static void TryReadBitmap(SequenceReader<byte> reader, GenericRegionSegmentFlags flags, BinaryBitmap bitmap)
+    {
+        try
+        {
+            ReadBitmap(reader, flags, bitmap);
+        }
+        catch (InvalidDataException e)
+        {
+        }
+    }
+
+    private static void ReadBitmap(SequenceReader<byte> reader, GenericRegionSegmentFlags flags, BinaryBitmap bitmap)
+    {
         if (flags.UseMmr)
         {
             bitmap.ReadMmrEncodedBitmap(ref reader, false);
@@ -46,18 +66,15 @@ public static class GenericRegionSegmentParser
         else
         {
             var bitmapTemplate = BitmapTemplateFactory.ReadContext(ref reader, flags.GBTemplate);
-            var context =new ArithmeticBitmapReaderContext(
+            var context = new ArithmeticBitmapReaderContext(
                 bitmapTemplate);
 
             MQDecoder state = new MQDecoder();
             new ArithmeticGenericRegionDecodeProcedure(bitmap, state, context, TpgdonContext(flags), false)
                 .Read(ref reader);
         }
-       
-        return new GenericRegionSegment(SegmentType.ImmediateLosslessGenericRegion,
-            regionHead, bitmap);
     }
-    
+
     private static ushort TpgdonContext(GenericRegionSegmentFlags flags)
     {
         if (!flags.Tpgdon) return 0;

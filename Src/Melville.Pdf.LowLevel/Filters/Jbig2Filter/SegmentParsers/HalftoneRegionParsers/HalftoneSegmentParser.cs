@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using Melville.Parsing.SequenceReaders;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
@@ -39,8 +40,9 @@ public readonly struct HalftoneRegionFlags
 
 public static class HalftoneSegmentParser
 {
-    public static HalftoneSegment Parse(SequenceReader<byte> reader, in ReadOnlySpan<Segment> segs) =>
-        new HalftoneSegmentReader(
+    public static HalftoneSegment Parse(SequenceReader<byte> reader, in ReadOnlySpan<Segment> segs)
+    {
+        var halfToneWriter = new HalftoneSegmentReader(
             RegionHeaderParser.Parse(ref reader),
             new HalftoneRegionFlags(reader.ReadBigEndianUint8()),
             reader.ReadBigEndianUint32(),
@@ -49,7 +51,17 @@ public static class HalftoneSegmentParser
             reader.ReadBigEndianInt32(),
             reader.ReadBigEndianUint16(),
             reader.ReadBigEndianUint16(),
-            GetHalftoneDictionary(segs)).ReadSegment(ref reader);
+            GetHalftoneDictionary(segs));
+        var bitmap = halfToneWriter.Header.CreateTargetBitmap();
+        try
+        { 
+            halfToneWriter.ReadBitmap(ref reader, bitmap);
+        }
+        catch (InvalidDataException e)
+        {
+        }
+        return new HalftoneSegment(SegmentType.ImmediateHalftoneRegion, halfToneWriter.Header, bitmap);
+    }
 
     private static DictionarySegment GetHalftoneDictionary(ReadOnlySpan<Segment> segs) => 
         segs[0] as DictionarySegment ?? 

@@ -99,7 +99,7 @@ public class ContentStreamContext
                 target.EndMarkedRange();
                 break;
             case ContentStreamOperatorValue.ET:
-                target.EndTextObject();
+                target.EndTextObject(); 
                 break;
             case ContentStreamOperatorValue.EX:
                 target.EndCompatibilitySection();

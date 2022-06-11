@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegio
 
 public ref struct HalftoneSegmentReader
 {
-    private readonly RegionHeader regionHeader;
+    public RegionHeader Header { get; }
     private readonly HalftoneRegionFlags regionFlags;
     private readonly int grayScaleWidth; // HGW
     private readonly int grayScaleHeight; // HGW
@@ -24,7 +24,7 @@ public ref struct HalftoneSegmentReader
         RegionHeader regionHeader, HalftoneRegionFlags regionFlags, uint grayScaleWidth, uint grayScaleHeight, 
         int grayScaleXOffset, int grayScaleYOffset, uint vectorX, uint vectorY, DictionarySegment dictionary)
     {
-        this.regionHeader = regionHeader;
+        this.Header = regionHeader;
         this.regionFlags = regionFlags;
         this.grayScaleWidth = (int)grayScaleWidth;
         this.grayScaleHeight = (int)grayScaleHeight;
@@ -35,9 +35,8 @@ public ref struct HalftoneSegmentReader
         this.dictionary = dictionary;
     }
 
-    public unsafe HalftoneSegment ReadSegment(ref SequenceReader<byte> reader)
+    public unsafe void ReadBitmap(ref SequenceReader<byte> reader, BinaryBitmap targetBitmap)
     {
-        var targetBitmap = regionHeader.CreateTargetBitmap();
         FillWithBackground(targetBitmap);
 
         var spanLength = grayScaleHeight * grayScaleWidth;
@@ -46,9 +45,6 @@ public ref struct HalftoneSegmentReader
         var gsb = ReadGrayScaleBitmap(ref reader, grayScaleBitmapSpan);
 
         WriteHalftone(targetBitmap, gsb);
-
-        return new HalftoneSegment(SegmentType.ImmediateLosslessHalftoneRegion, regionHeader,
-            targetBitmap);
     }
 
     private void WriteHalftone(BinaryBitmap targetBitmap, GrayScaleBitmap gsb)
