@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
@@ -55,7 +56,7 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
         for (int j = 0; j < bitmap.Width; j++)
         {
             var bit = state.GetBit(ref source, ref context.ReadContext(bitmap, row, j));
-            if (bit == 1) bitmap[row, j] = true;
+            bitmap[row, j] = bit == 1;
         }
     }
 }

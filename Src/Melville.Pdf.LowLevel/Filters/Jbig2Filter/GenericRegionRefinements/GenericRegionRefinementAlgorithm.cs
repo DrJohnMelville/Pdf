@@ -31,11 +31,12 @@ public readonly struct GenericRegionRefinementAlgorithm
         for (int i = 0; i < target.Height; i++)
         {
             for (int j = 0; j < target.Width; j++)
-            { ref var context = ref 
+            { 
+                ref var context = ref 
                     template.ContextFor(reference, target, i, j);
                 var bit = decoder.GetBit(ref source, ref context);
                 #warning -- need to use the operation here.
-                if (bit == 1) target[i, j] = true;
+                target[i, j] = bit == 1;
             }
         }
     }
