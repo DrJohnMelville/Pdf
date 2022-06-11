@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-public readonly struct AritmeticBitmapReader
+public readonly struct ArithmeticGenericRegionDecodeProcedure
 {
     private readonly BinaryBitmap bitmap;
     private readonly MQDecoder state;
@@ -12,7 +12,7 @@ public readonly struct AritmeticBitmapReader
     private readonly ushort tgbd;
     private readonly bool useSkip;
 
-    public AritmeticBitmapReader(BinaryBitmap bitmap, MQDecoder state, ArithmeticBitmapReaderContext context, ushort tgbd,
+    public ArithmeticGenericRegionDecodeProcedure(BinaryBitmap bitmap, MQDecoder state, ArithmeticBitmapReaderContext context, ushort tgbd,
         bool useSkip)
     {
         if (useSkip) throw new NotImplementedException("skipping is not implemented");

@@ -38,7 +38,7 @@ public static class PatternDictionarySegmentParser
         if (flags.UseMmr)
             innerBitmap.ReadMmrEncodedBitmap(ref reader, false);
         else
-            new AritmeticBitmapReader(innerBitmap, new MQDecoder(), CreatePatternContext(flags, cellWidth), 0, false)
+            new ArithmeticGenericRegionDecodeProcedure(innerBitmap, new MQDecoder(), CreatePatternContext(flags, cellWidth), 0, false)
                 .Read(ref reader);
     }
 

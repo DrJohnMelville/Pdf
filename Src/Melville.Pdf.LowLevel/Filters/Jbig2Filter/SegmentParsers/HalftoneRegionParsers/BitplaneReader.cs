@@ -28,10 +28,10 @@ public class MmrBitplane : Bitplane
 
 public class ArithmeticBitplane : Bitplane
 {
-    private readonly AritmeticBitmapReader reader;
+    private readonly ArithmeticGenericRegionDecodeProcedure reader;
     public ArithmeticBitplane(int height, int width, GenericRegionTemplate template, bool skip) : base(height, width)
     {
-        reader = new AritmeticBitmapReader(this, new MQDecoder(),
+        reader = new ArithmeticGenericRegionDecodeProcedure(this, new MQDecoder(),
             new ArithmeticBitmapReaderContext(ComputeTemplate(template)), 0, skip);
     }
 
@@ -44,9 +44,10 @@ public class ArithmeticBitplane : Bitplane
         if (fact.ExpectedAdaptivePixels() > 1)
         {
             fact.AddPoint(-1,-3);
+            fact.AddPoint(-2, 2);
             fact.AddPoint(-2,-2);
         }
-
+        
         return fact.Create();
     }
 

@@ -50,7 +50,7 @@ public static class GenericRegionSegmentParser
                 bitmapTemplate);
 
             MQDecoder state = new MQDecoder();
-            new AritmeticBitmapReader(bitmap, state, context, TpgdonContext(flags), false)
+            new ArithmeticGenericRegionDecodeProcedure(bitmap, state, context, TpgdonContext(flags), false)
                 .Read(ref reader);
         }
        
