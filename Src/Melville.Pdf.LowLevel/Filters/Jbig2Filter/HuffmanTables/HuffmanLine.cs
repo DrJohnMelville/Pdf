@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
@@ -18,6 +19,14 @@ public readonly struct HuffmanCode
 
     public HuffmanCode AddBitToPattern(ref SequenceReader<byte> reader, BitReader bitState) => 
         new(PrefixLength + 1, (prefixData << 1) | bitState.ForceRead(1, ref reader));
+
+    public bool IsEqualTo(in HuffmanCode other) => PrefixLength == other.PrefixLength && prefixData == other.prefixData;
+
+    public override bool Equals(object? obj)
+    {
+        Debug.Assert(false,"Use IsEqualTo so as not to box the parameter");
+        return base.Equals(obj);
+    }
 }
 
 public readonly struct HuffmanLine
@@ -36,7 +45,10 @@ public readonly struct HuffmanLine
         this.rangeFactor = rangeFactor;
     }
 
-    public bool Matches(in HuffmanCode other) => code.Equals(other);
+    public bool Matches(in HuffmanCode other)
+    {
+        return code.IsEqualTo(other);
+    }
 
     public int ReadNum(ref SequenceReader<byte> source, BitReader bitState) =>
         AdjustNumber(bitState.ForceRead(rangeLength, ref source));

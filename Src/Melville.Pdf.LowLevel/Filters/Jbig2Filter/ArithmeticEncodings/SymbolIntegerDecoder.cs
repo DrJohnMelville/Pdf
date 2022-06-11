@@ -1,4 +1,6 @@
 ﻿using System.Buffers;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
@@ -17,7 +19,6 @@ public readonly ref struct SymbolIntegerDecoder
     {
         var ret = 1;
         while (NeedMoreBitsToFillMask(ret)) ret = ShiftBitIntoNumber(ref source, ret);
-
         return RemoveLengthMarkerBit(ret);
     }
 

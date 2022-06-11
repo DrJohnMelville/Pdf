@@ -1,13 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
-using Melville.Linq;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
@@ -39,12 +31,11 @@ public readonly struct GenericRegionRefinementAlgorithm
         for (int i = 0; i < target.Height; i++)
         {
             for (int j = 0; j < target.Width; j++)
-            {
-                ref var context = ref 
+            { ref var context = ref 
                     template.ContextFor(reference, target, i, j);
                 var bit = decoder.GetBit(ref source, ref context);
                 #warning -- need to use the operation here.
-                target[i, j] = bit == 1;
+                if (bit == 1) target[i, j] = true;
             }
         }
     }

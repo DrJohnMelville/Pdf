@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
@@ -45,8 +46,11 @@ public readonly struct RefinementTemplateSet
         ref contextDictionary.EntryForContext(
             ComputeCompositeContext(reference, destination, row, col));
 
-    private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
-        (ushort)(
-            (referenceTemplate.ReadContext(reference, row, col) << destinationTemplate.BitsRequired()) |
-            destinationTemplate.ReadContext(destination, row, col));
+    private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col)
+    {
+        var referenceContext = referenceTemplate.ReadContext(reference, row, col);
+        var destinationContext = destinationTemplate.ReadContext(destination, row, col);
+        var ret = (referenceContext << destinationTemplate.BitsRequired()) | destinationContext;
+        return (ushort)ret;
+    }
 }

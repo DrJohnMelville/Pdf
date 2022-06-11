@@ -55,7 +55,7 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
         for (int j = 0; j < bitmap.Width; j++)
         {
             var bit = state.GetBit(ref source, ref context.ReadContext(bitmap, row, j));
-            bitmap[row, j] = bit == 1;
+            if (bit == 1) bitmap[row, j] = true;
         }
     }
 }

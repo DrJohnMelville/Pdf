@@ -14,12 +14,10 @@ public static class ReferredSymbolHelpers
         {
             if (segment is DictionarySegment sds) ret += sds.ExportedSymbols.Length;
         }
-
+ 
         return ret;
     }
 
-    public static IBinaryBitmap GetBitmap(this ReadOnlySpan<Segment> dictionaries, int index) =>
-        dictionaries.GetBitmap(index, ReadOnlySpan<IBinaryBitmap>.Empty);
     public static IBinaryBitmap GetBitmap(this ReadOnlySpan<Segment> dictionaries, int index,
         ReadOnlySpan<IBinaryBitmap> resultSpan)
     {
@@ -34,5 +32,4 @@ public static class ReferredSymbolHelpers
         if (index < resultSpan.Length) return resultSpan[index];
         throw new InvalidDataException("Referenced unknown symbol");
     }
-
 }

@@ -114,8 +114,8 @@ public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
     public int SymbolId(ref SequenceReader<byte> source) => 
         ReadSymbol(ref source, VerifyExists(SymbolIdContext));
     
-    protected TContext VerifyExists(TContext? context, [CallerArgumentExpression("context")] string caller = "") =>
-        context ?? throw new InvalidOperationException($"No context defined for {caller}.");
+    protected TContext VerifyExists(TContext? context) =>
+        context ??throw new InvalidOperationException($"No context defined.");
 
     public abstract bool IsOutOfBand(int item);
     protected abstract int Read(ref SequenceReader<byte> source, TContext context);
