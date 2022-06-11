@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
-[DebuggerDisplay("A:{a:X} C:{c:X} count:{ct} b:{B} b1:{B1}")]
+[DebuggerDisplay("A:{a} C:{c} count:{ct} b:{B} b1:{B1}")]
 public class MQDecoder
 {
     private const int UninitializedASentinelValue = 1;

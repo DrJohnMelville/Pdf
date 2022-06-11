@@ -16,11 +16,12 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
     {
     }
     
-    protected override int Read(ref SequenceReader<byte> source, HuffmanLine[] context)
-    {
-        var ret = source.ReadHuffmanInt(State, context.AsSpan());
-        return ret;
-    }
+    protected override int Read(ref SequenceReader<byte> source, HuffmanLine[] context) => 
+        source.ReadHuffmanInt(State, context.AsSpan());
+
+    protected override int ReadSymbol(ref SequenceReader<byte> source, HuffmanLine[] context) =>
+        Read(ref source, context);
+
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
     
     public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target)

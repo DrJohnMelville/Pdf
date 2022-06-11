@@ -104,7 +104,7 @@ public ref struct TextRegionSegmentParser
     private ContextStateDict ArithmiticSymbolIdContext()
     {
         var maxSymbolSize = IntLog.CeilingLog2Of((uint)referencedSegments.CountSourceBitmaps());
-        return new ContextStateDict(maxSymbolSize, maxSymbolSize);
+        return new ContextStateDict(maxSymbolSize);
     }
 
     private BinaryBitmapWriter CreateBitmapWriter(BinaryBitmap binaryBitmap) =>

@@ -17,9 +17,11 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
 
     public override bool IsOutOfBand(int item) => item == int.MaxValue;
 
-    protected override int Read(ref SequenceReader<byte> source, ContextStateDict context) => 
-        context.ShouldUseTypicalAlgorithm ?
-        new TypicalIntegerDecoder(context, State).Read(ref source):
+    protected override int Read(ref SequenceReader<byte> source, ContextStateDict context) =>
+        new TypicalIntegerDecoder(context, State).Read(ref source);
+        
+
+    protected override int ReadSymbol(ref SequenceReader<byte> source, ContextStateDict context) =>
         new SymbolIntegerDecoder(State, context).Read(ref source);
 
     public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) => 
@@ -28,7 +30,7 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
     public override void PrepareForRefinementSymbolDictionary(uint totalSymbols)
     {
         var bits = IntLog.CeilingLog2Of(totalSymbols);
-        SymbolIdContext = new ContextStateDict(bits, bits);
+        SymbolIdContext = new ContextStateDict(bits);
         FirstSContext = new ContextStateDict(9);
         DeltaSContext = new ContextStateDict(9);
         DeltaTContext = new ContextStateDict(9);

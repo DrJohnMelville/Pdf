@@ -45,9 +45,11 @@ public ref struct SymbolWriter
     {
         var deltaT = integerReader.DeltaT(ref source) * stripSize;
         strIpT = -deltaT;
-        while (remainingSymbolsToDecode > 0) DecodeStrip(ref source);
+        while (remainingSymbolsToDecode > 4296) DecodeStrip(ref source);
+        DecodeStrip(ref source);
     }
-
+    
+    
     private void DecodeStrip(ref SequenceReader<byte> source)
     {
         ReadStripLocation(ref source);
@@ -58,7 +60,7 @@ public ref struct SymbolWriter
     private void ReadStripLocation(ref SequenceReader<byte> source)
     {
         strIpT += integerReader.DeltaT(ref source) * stripSize;
-        firstS += integerReader.FirstS(ref source);
+        firstS += integerReader.FirstS(ref source) ;
     }
 
     private void ReadFirstSymbol(ref SequenceReader<byte> source)
@@ -77,7 +79,7 @@ public ref struct SymbolWriter
     }
 
     private void DecodeSymbol(ref SequenceReader<byte> source)
-    {
+    { 
         int charT = ReadCharacterDeltaT(ref source) + strIpT;
         var symbolId = integerReader.SymbolId(ref source);
         var symbol = characterDictionary.GetBitmap(symbolId, additionalCharacters);

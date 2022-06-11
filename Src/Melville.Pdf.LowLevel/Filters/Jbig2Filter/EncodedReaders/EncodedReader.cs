@@ -92,7 +92,6 @@ public interface IEncodedReader
 [MacroItem("DeltaWidth")]
 [MacroItem("ExportFlags")]
 [MacroItem("FirstS")]
-[MacroItem("SymbolId")]
 [MacroItem("TCoordinate")]
 [MacroItem("RefinementDeltaHeight")]
 [MacroItem("RefinementDeltaWidth")]
@@ -111,11 +110,16 @@ public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
         this.State = state;
     }
 
+    public TContext? SymbolIdContext {protected get; set;}
+    public int SymbolId(ref SequenceReader<byte> source) => 
+        ReadSymbol(ref source, VerifyExists(SymbolIdContext));
+    
     protected TContext VerifyExists(TContext? context, [CallerArgumentExpression("context")] string caller = "") =>
         context ?? throw new InvalidOperationException($"No context defined for {caller}.");
 
     public abstract bool IsOutOfBand(int item);
     protected abstract int Read(ref SequenceReader<byte> source, TContext context);
+    protected abstract int ReadSymbol(ref SequenceReader<byte> source, TContext context);
     public abstract void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target);
     public abstract void PrepareForRefinementSymbolDictionary(uint totalSymbols);
 

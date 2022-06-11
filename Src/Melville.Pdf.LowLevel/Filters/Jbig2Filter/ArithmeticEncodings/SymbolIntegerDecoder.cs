@@ -24,9 +24,9 @@ public readonly ref struct SymbolIntegerDecoder
     private int ShiftBitIntoNumber(ref SequenceReader<byte> source, int ret) => 
         (ret << 1) | GetNextBit(ref source, ret);
 
-    private bool NeedMoreBitsToFillMask(int ret) => ret <= dict.Mask;
+    private bool NeedMoreBitsToFillMask(int ret) => ret < dict.ContextEntryCount;
 
-    private int RemoveLengthMarkerBit(int ret) => ret & dict.Mask;
+    private int RemoveLengthMarkerBit(int ret) => ret - dict.ContextEntryCount;
 
     private int GetNextBit(ref SequenceReader<byte> source, int context) => 
         decoder.GetBit(ref source, ref dict.EntryForContext((ushort)context));
