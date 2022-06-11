@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.MVVM.Wpf" Version="0.5.40" />
+      <PackageReference Include="Melville.MVVM.Wpf" Version="0.5.41" />
     </ItemGroup>
 
 </Project>
