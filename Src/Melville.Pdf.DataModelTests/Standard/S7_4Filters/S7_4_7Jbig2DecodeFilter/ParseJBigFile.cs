@@ -5,10 +5,24 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;
+
+public class ParseReferenceJBigs
+{
+    [Fact]
+    public async Task ParseF1()
+    {
+        var fact = new JbigExplicitPageReader();
+        fact.RequestPage(1);
+        await fact.ProcessFileBitsAsync(JBigSampleStreams.Get("042_1")!);
+        Assert.Equal("..", fact.GetPage(1).BitmapString());
+        
+    }
+}
 
 public class ParseJBigFile
 {
