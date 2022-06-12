@@ -81,7 +81,7 @@ public ref struct SymbolWriter
     { 
         int charT = ReadCharacterDeltaT(ref source) + strIpT;
         var symbolId = integerReader.SymbolId(ref source);
-        Console.WriteLine($"{remainingSymbolsToDecode} --> {symbolId}");
+        UdpConsole.WriteLine($"{remainingSymbolsToDecode} --> {symbolId}");
         var symbol = characterDictionary.GetBitmap(symbolId, additionalCharacters);
         CopySourceBitmap(ref source, charT, symbol);
         remainingSymbolsToDecode--;

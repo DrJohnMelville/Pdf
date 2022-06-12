@@ -42,9 +42,11 @@ public readonly struct RefinementTemplateSet
     }
 
     public ref ContextEntry ContextFor(IBinaryBitmap reference,
-        IBinaryBitmap destination, int row, int col) =>
-        ref contextDictionary.EntryForContext(
-            ComputeCompositeContext(reference, destination, row, col));
+        IBinaryBitmap destination, int row, int col)
+    {
+        var contextIndex = ComputeCompositeContext(reference, destination, row, col);
+        return ref contextDictionary.EntryForContext(contextIndex);
+    }
 
     private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col)
     {

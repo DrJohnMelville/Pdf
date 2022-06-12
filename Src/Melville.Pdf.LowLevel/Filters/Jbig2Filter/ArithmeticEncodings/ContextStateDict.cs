@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using System.Security.Authentication.ExtendedProtection;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
+[DebuggerDisplay("I: {I}  MPS: {MPS}")]
 public struct ContextEntry
 {
     public ushort I;
