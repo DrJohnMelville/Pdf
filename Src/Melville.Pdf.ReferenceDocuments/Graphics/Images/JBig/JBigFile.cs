@@ -23,7 +23,7 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 // [MacroItem("042_18", 1728, 2339)]
 // [MacroItem("042_19", 1728, 2339)]
 // [MacroItem("042_20", 1728, 2339)]
-// [MacroItem("042_21", 1728, 2339)]
+ [MacroItem("042_21", 1728, 2339)]
 // [MacroItem("042_22", 1728, 2339)]
 // [MacroItem("042_23", 1728, 2339)]
 // [MacroItem("042_24", 1728, 2339)]
