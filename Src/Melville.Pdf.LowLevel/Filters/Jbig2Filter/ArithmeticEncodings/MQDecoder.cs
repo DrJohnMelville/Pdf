@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
@@ -29,7 +30,7 @@ public class MQDecoder
     // 0.  We use bit 1 as a sentinel value to detect then the decoder is not initialized.
     private bool IsUninitialized() => a == UninitializedASentinelValue;
 
-    public void INITDEC(ref SequenceReader<byte> source)
+    public void INITDEC(ref SequenceReader<byte> source) // uses software convention pg 119
     {
         source.TryRead(out B);
         source.TryRead(out B1);
@@ -37,29 +38,25 @@ public class MQDecoder
         BYTEIN(ref source);
         c <<= 7;
         ct -= 7;
-        a = 0x80000000;
+        a = 0x8000_0000;
     }
     
-    private void BYTEIN(ref SequenceReader<byte> source)
+    private void BYTEIN(ref SequenceReader<byte> source) // software convention page 120
     {
-        if (B == 0xFF)
+        switch (B, B1)
         {
-            if (IsTerminationCode())
-            {
+            case (255, >0x8f):
                 ct = 8;
-            }
-            else
-            {
+                break;
+            case (255,_):
                 InnerReadByte(ref source, 0xFE00, 9, 7);
-            }
-            return;
+                break;
+            default:
+                InnerReadByte(ref source, 0xFF00, 8, 8);
+                break;                
         }
-
-        InnerReadByte(ref source, 0xFF00, 8, 8);
     }
-
-    private bool IsTerminationCode() => B1 > 0x8f;
-
+    
     private void InnerReadByte(ref SequenceReader<byte> source, int max, int byteOffset, byte nextCount)
     { 
         B = B1;
@@ -68,14 +65,16 @@ public class MQDecoder
         ct = nextCount;
     }
     
+    // software convention page 120
     private byte DECODE(ref SequenceReader<byte> source, ref ContextEntry currentState)
     {
         ref var qeRow = ref QeComputer.Rows[currentState.I];
         a -= qeRow.Qe;
+        Debug.Assert((a & 0xFFFF) == 0 );
         byte ret;
         if (c < a)
         {
-            if ((a & 0x80000000) != 0) return currentState.MPS;
+            if ((a & 0x8000_0000) != 0) return currentState.MPS;
             ret = MPS_EXCHANGE(ref currentState, ref qeRow);
         }
         else
@@ -90,21 +89,12 @@ public class MQDecoder
 
     private byte MPS_EXCHANGE(ref ContextEntry currentState, ref QeEntry qeRow)
     {
-        if (a  >= qeRow.Qe)
-        {
-            currentState.I = qeRow.NMPS;
-            return currentState.MPS;
-        }
+        if (a < qeRow.Qe) 
+            return ExchangeCommon(ref currentState, qeRow);
+        
+        currentState.I = qeRow.NMPS;
+        return currentState.MPS;
 
-        return ExchangeCommon(ref currentState, qeRow);
-    }
-
-    private static byte ExchangeCommon(ref ContextEntry currentState, in QeEntry qeRow)
-    {
-        var ret = (byte)(1 - currentState.MPS);
-        qeRow.TrySwitch(ref currentState);
-        currentState.I = qeRow.NLPS;
-        return ret;
     }
 
     private byte LPS_EXCHANGE(ref ContextEntry currentState, ref QeEntry qeRow)
@@ -119,8 +109,18 @@ public class MQDecoder
         return ExchangeCommon(ref currentState, qeRow);
     }
 
+    private static byte ExchangeCommon(ref ContextEntry currentState, in QeEntry qeRow)
+    {
+        var ret = (byte)(1 - currentState.MPS);
+        qeRow.TrySwitch(ref currentState);
+        currentState.I = qeRow.NLPS;
+        return ret;
+    }
+
+
     private void RENORMD(ref SequenceReader<byte> source)
     {
+        Debug.Assert((a & 0xFFFF) == 0 );
         do
         {
             if (ct == 0) BYTEIN(ref source);
@@ -128,5 +128,7 @@ public class MQDecoder
             c <<= 1;
             ct--;
         } while ((a & 0x80000000) == 0);
+        Debug.Assert((a & 0xFFFF) == 0 );
+
     }
 }

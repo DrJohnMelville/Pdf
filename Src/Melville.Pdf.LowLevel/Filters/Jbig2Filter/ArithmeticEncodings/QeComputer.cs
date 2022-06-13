@@ -5,20 +5,19 @@ public readonly struct QeEntry
     public uint Qe { get; }
     public byte NMPS { get; }
     public byte NLPS { get; }
-    public bool Switch { get; }
+    private readonly bool shouldSwitch;
 
-    public QeEntry(uint qe, byte nmps, byte nlps, bool @switch)
+    public QeEntry(uint qe, byte nmps, byte nlps, bool shouldSwitch)
     {
         Qe = qe;
         NMPS = nmps;
         NLPS = nlps;
-        Switch = @switch;
+        this.shouldSwitch = shouldSwitch;
     }
 
     public void TrySwitch(ref ContextEntry currentState)
     {
-        if (!Switch) return;
-        currentState.MPS = (byte)(1 - currentState.MPS);
+        if (shouldSwitch) currentState.InvertMPS();
     }
 }
 
