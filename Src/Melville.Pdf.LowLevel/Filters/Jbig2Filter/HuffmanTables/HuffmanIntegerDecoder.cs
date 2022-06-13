@@ -53,12 +53,12 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
 
     public override void InvokeSymbolRefinement(
         IBinaryBitmap destination, IBinaryBitmap reference,
-        bool useTypicalPrediction, in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source)
+        ushort predictionContext, in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source)
     {
         var datalen = BitmapSize(ref source);
         State.DiscardPartialByte();
-        new GenericRegionRefinementAlgorithm(destination, reference, useTypicalPrediction,
-            refinementTemplate, new MQDecoder()).Read(ref source);
+        new GenericRegionRefinementAlgorithm(destination, reference, refinementTemplate, new MQDecoder(),
+            predictionContext).Read(ref source);
         // implicitly discard any partial bytes left over in the MQDecoder.
     }
 }

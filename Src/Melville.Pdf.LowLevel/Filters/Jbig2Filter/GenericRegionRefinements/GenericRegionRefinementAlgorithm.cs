@@ -3,44 +3,71 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 
-public readonly struct GenericRegionRefinementAlgorithm
+public ref partial struct GenericRegionRefinementAlgorithm
 {
-    private readonly IBinaryBitmap target;
-    private readonly IBinaryBitmap reference;
-    private readonly bool useTypicalPredicition;
-    private readonly RefinementTemplateSet template;
-    private readonly MQDecoder decoder;
-
-    public GenericRegionRefinementAlgorithm(
-        IBinaryBitmap target, IBinaryBitmap reference, 
-        bool useTypicalPredicition, in RefinementTemplateSet template, MQDecoder decoder)
-    {
-        this.target = target;
-        this.reference = reference;
-        this.useTypicalPredicition = useTypicalPredicition;
-        this.template = template;
-        this.decoder = decoder;
-    }
-
+    [FromConstructor]private readonly IBinaryBitmap target;
+    [FromConstructor]private readonly IBinaryBitmap reference;
+    [FromConstructor]private readonly RefinementTemplateSet template;
+    [FromConstructor]private readonly MQDecoder decoder;
+    [FromConstructor] private readonly ushort ltpContext;
+    private bool ltp = false;
+    
     public void Read(ref SequenceReader<byte> source)
     {
-        if (useTypicalPredicition)
-            throw new NotImplementedException("Typical Prediction is not implemented");
-        for (int i = 0; i < target.Height; i++)
+        for (int row = 0; row < target.Height; row++)
         {
-            for (int j = 0; j < target.Width; j++)
-            { 
-                ref var context = ref 
-                    template.ContextFor(reference, target, i, j);
-                var bit = decoder.GetBit(ref source, ref context);
-                target[i, j] = bit == 1;
+            TryReadLtpBit(ref source);
+            for (int col = 0; col < target.Width; col++)
+            {
+                if (ltp && NinePixelsSame(row, col, out var value))
+                    UsePredictedValue(row, col, value);
+                else
+                    DecodePixel(ref source, row, col);
             }
         }
+    }
+
+    private void UsePredictedValue(int row, int col, bool value)
+    {
+        target[row, col] = value;
+    }
+
+    private bool NinePixelsSame(int row, int col, out bool result)
+    {
+        result = GetRefBit(row - 1, col - 1);
+
+        return
+            GetRefBit(row - 1, col) == result &&
+            GetRefBit(row - 1, col + 1) == result &&
+            GetRefBit(row, col - 1) == result &&
+            GetRefBit(row, col) == result &&
+            GetRefBit(row, col + 1) == result &&
+            GetRefBit(row + 1, col - 1) == result &&
+            GetRefBit(row + 1, col) == result &&
+            GetRefBit(row + 1, col + 1) == result;
+    }
+
+    private bool GetRefBit(int row, int col) => reference.ContainsPixel(row, col) && reference[row, col];
+
+    private void TryReadLtpBit(ref SequenceReader<byte> source)
+    {
+        if (ltpContext != 0 &&
+            decoder.GetBit(ref source, ref template.ContextFor(ltpContext)) == 1)
+            ltp = !ltp;
+    }
+
+    private void DecodePixel(ref SequenceReader<byte> source, int row, int col)
+    {
+        ref var context = ref
+            template.ContextFor(reference, target, row, col);
+        var bit = decoder.GetBit(ref source, ref context);
+        target[row, col] = bit == 1;
     }
 }
 

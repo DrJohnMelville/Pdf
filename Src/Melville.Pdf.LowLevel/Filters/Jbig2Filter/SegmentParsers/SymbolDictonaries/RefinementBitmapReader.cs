@@ -33,7 +33,7 @@ public sealed class RefinementBitmapReader : IIndividualBitmapReader
     {
         var referencedSymbol = ReadReferencedSymbol(ref source, reader);
 
-        reader.EncodedReader.InvokeSymbolRefinement(bitmap, referencedSymbol, false, reader.RefinementTemplateSet,
+        reader.EncodedReader.InvokeSymbolRefinement(bitmap, referencedSymbol, 0, reader.RefinementTemplateSet,
             ref source);
     }
 

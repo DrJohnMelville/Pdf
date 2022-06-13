@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using Melville.INPC;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
@@ -30,12 +31,20 @@ public readonly struct GenericRefinementRegionSegmentParser
         var template = new RefinementTemplateSet(ref reader, flags.UseGrTemplate1);
 
         var bitmap = regionHead.CreateTargetBitmap();
-        new GenericRegionRefinementAlgorithm(bitmap, GetReferenceBitmap(referencedSegments), flags.UseTpgron,
-            template, new MQDecoder()).Read(ref reader);
+        new GenericRegionRefinementAlgorithm(bitmap, GetReferenceBitmap(referencedSegments),
+            template, new MQDecoder(), LtpContext(flags)).Read(ref reader);
 
         return new GenericRefinementRegionSegment(SegmentType.ImmediateGenericRefinementRegion,
             regionHead, bitmap);
     }
+
+    private static ushort LtpContext(GenericRefinementRegionFlags flags) =>
+        (flags.UseTpgron, flags.UseGrTemplate1) switch
+        {
+            (false, _) => 0,
+            (true, false) => 0b000010000_0000,
+            (true, true) => 0b001000_0000
+        };
 
     private static BinaryBitmap GetReferenceBitmap(ReadOnlySpan<Segment> referencedSegments)
     {
