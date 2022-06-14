@@ -33,5 +33,7 @@ public partial class OffsetBitmap : IBinaryBitmap
         set => inner[row + y, x + column] = value;
     }
 
-    public bool ContainsPixel(int row, int col) => inner.ContainsPixel(row + y, col + x);
+    public bool ContainsPixel(int row, int col) =>
+        row >= 0 && row < Height && col >= 0 && col < Width &&
+        inner.ContainsPixel(row + y, col + x);
 }

@@ -41,8 +41,8 @@ public readonly struct RefinementTemplateSet
         referenceFactory.AddPoint(atY2, atX2);
     }
 
-    public ref ContextEntry ContextFor(IBinaryBitmap reference,
-        IBinaryBitmap destination, int row, int col)
+    public ref ContextEntry ContextFor(IBinaryBitmap reference, IBinaryBitmap destination, 
+        int row, int col)
     {
         var contextIndex = ComputeCompositeContext(reference, destination, row, col);
         return ref ContextFor(contextIndex);
