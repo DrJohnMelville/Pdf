@@ -52,8 +52,10 @@ public readonly struct BinaryBitmapWriter
         RefinementTemplateSet refinementTemplateSet, ref SequenceReader<byte> source)
     {
         var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, refHeight, refWidth), refHeight, refWidth);
-        
-        reader.InvokeSymbolRefinement(OffsetBitmapFactory.Create(target, row, col, refHeight, refWidth),
-            OffsetBitmapFactory.Create(referenceBitmap, -refY, -refX), 0, refinementTemplateSet, ref source);
+        #warning  --= I really ought to avoid creating two offset bitmaps this deep in the loop
+        reader.InvokeSymbolRefinement(
+            OffsetBitmapFactory.Create(target, row, col, refHeight, refWidth),
+            OffsetBitmapFactory.Create(referenceBitmap, -refY, -refX), 0, 
+            refinementTemplateSet, ref source);
     }
 }
