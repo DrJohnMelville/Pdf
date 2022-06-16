@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
@@ -31,6 +32,7 @@ public class CompositeHeightClassReader: IHeightClassReaderStrategy
         while (parser.TryGetWidth(ref source, out var widthDelta))
         {
             widths[localCount] = (priorWidth += widthDelta);
+            Debug.Assert(priorWidth > 0);
             totalWidth += priorWidth;
             localCount++;
         }

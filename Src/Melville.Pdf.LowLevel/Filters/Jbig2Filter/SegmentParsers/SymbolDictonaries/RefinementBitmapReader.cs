@@ -7,20 +7,20 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictona
 
 public sealed class RefinementBitmapReader : IIndividualBitmapReader
 {
-    public static RefinementBitmapReader Instance = new RefinementBitmapReader();
+    public static RefinementBitmapReader Instance = new();
     private RefinementBitmapReader() { }
 
-    public void ReadBitmap(ref SequenceReader<byte> source, SymbolParser reader, BinaryBitmap bitmap)
-    {
+    public void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap)
+    {   //  this method begins section 6.5.8.2 in the specification
         var numSyms = reader.EncodedReader.AggregationSymbolInstances(ref source);
         if (numSyms == 1)
-            ReadSingleSourceRefinementBitmap(ref source, reader, bitmap);
+            ReadSingleSourceRefinementBitmap(ref source, ref reader, bitmap);
         else
-            ReadMultiSourceRefinedBitmap(ref source, reader, bitmap, numSyms);
+            ReadMultiSourceRefinedBitmap(ref source, ref reader, bitmap, numSyms);
     }
 
     private static void ReadMultiSourceRefinedBitmap(
-        ref SequenceReader<byte> source, SymbolParser reader, BinaryBitmap bitmap, int numSyms) =>
+        ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap, int numSyms) =>
         new SymbolWriter(CreateBitmapWriter(bitmap), reader.EncodedReader,
             reader.ReferencedSegments, reader.SymbolsBeingDecoded.Span, numSyms,
             1, 0, true, reader.RefinementTemplateSet).Decode(ref source);
@@ -28,16 +28,16 @@ public sealed class RefinementBitmapReader : IIndividualBitmapReader
     private static BinaryBitmapWriter CreateBitmapWriter(BinaryBitmap bitmap) => 
         new(bitmap, false, ReferenceCorner.TopLeft, CombinationOperator.Or);
 
-    private static void ReadSingleSourceRefinementBitmap(ref SequenceReader<byte> source, SymbolParser reader,
+    private static void ReadSingleSourceRefinementBitmap(ref SequenceReader<byte> source, ref SymbolParser reader,
         BinaryBitmap bitmap)
     {
-        var referencedSymbol = ReadReferencedSymbol(ref source, reader);
+        var referencedSymbol = ReadReferencedSymbol(ref source, ref reader);
 
         reader.EncodedReader.InvokeSymbolRefinement(bitmap, referencedSymbol, 0, reader.RefinementTemplateSet,
             ref source);
     }
 
-    private static IBinaryBitmap ReadReferencedSymbol(ref SequenceReader<byte> source, SymbolParser reader)
+    private static IBinaryBitmap ReadReferencedSymbol(ref SequenceReader<byte> source, ref SymbolParser reader)
     {
         var symbolId = reader.EncodedReader.SymbolId(ref source);
         var refineX = reader.EncodedReader.RefinementX(ref source);

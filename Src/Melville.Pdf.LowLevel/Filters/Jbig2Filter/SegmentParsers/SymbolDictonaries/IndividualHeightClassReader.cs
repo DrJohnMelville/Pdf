@@ -5,7 +5,7 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictona
 
 public interface IIndividualBitmapReader
 {
-    void ReadBitmap(ref SequenceReader<byte> source, SymbolParser reader, BinaryBitmap bitmap);
+    void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap);
 }
 
 public class IndividualHeightClassReader: IHeightClassReaderStrategy
@@ -26,7 +26,7 @@ public class IndividualHeightClassReader: IHeightClassReaderStrategy
     private void CreateBitmap(ref SequenceReader<byte> source, ref SymbolParser parser, int height, int width)
     {
         var bitmap = new BinaryBitmap(height, width);
-        parser.IndividualBitmapReader.ReadBitmap(ref source, parser, bitmap);
+        parser.IndividualBitmapReader.ReadBitmap(ref source, ref parser, bitmap);
         parser.AddBitmap(bitmap);
     }
 }
@@ -36,7 +36,7 @@ public sealed class UnrefinedBitmapReader : IIndividualBitmapReader
     public static readonly UnrefinedBitmapReader Instance = new();
     private UnrefinedBitmapReader() { }
 
-    public void ReadBitmap(ref SequenceReader<byte> source, SymbolParser reader, BinaryBitmap bitmap)
+    public void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap)
     {
         reader.EncodedReader.ReadBitmap(ref source, bitmap);
     }
