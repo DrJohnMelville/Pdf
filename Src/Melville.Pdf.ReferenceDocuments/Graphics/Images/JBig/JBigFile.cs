@@ -30,7 +30,13 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 [MacroItem("042_25", 1728, 2339)]
 [MacroItem("amb_1", 800, 1200)]
 [MacroItem("amb_2", 800, 1200)]
-[MacroCode("public class JBig~0~: JBigFile { public JBig~0~() : base(\"~0~\", ~1~, ~2~) { } }")]
+[MacroItem("200__10__0", 1700,2200)]
+[MacroItem("200__10__0__stripe", 1700,2200)]
+[MacroItem("200__10__45", 1700,2200)]
+[MacroItem("200__10__45__stripe", 1700,2200)]
+[MacroItem("200__2__0", 1700,2200)]
+[MacroItem("200__2__0__stripe", 1700,2200)]
+[MacroCode("public class JBig~0~: JBigFile { public JBig~0~() : base(\"~0~\".Replace(\"__\",\"-\"), ~1~, ~2~) { } }")]
 public abstract partial class JBigFile : JBigBitStream
 {
     private readonly string file;
