@@ -292,3 +292,15 @@ RenderingTest.cs_Skia-JBig042_22|1617995109
 RenderingTest.cs_Skia-JBig042_23|1617995109
 RenderingTest.cs_Skia-JBig042_24|1617995109
 RenderingTest.cs_Skia-JBig042_25|162285711
+RenderingTest.cs_wpf-JBig200__10__0|2467556137
+RenderingTest.cs_wpf-JBig200__10__0__stripe|1004975755
+RenderingTest.cs_wpf-JBig200__10__45|2945176541
+RenderingTest.cs_wpf-JBig200__10__45__stripe|2506146985
+RenderingTest.cs_wpf-JBig200__2__0|3040606114
+RenderingTest.cs_wpf-JBig200__2__0__stripe|2940153839
+RenderingTest.cs_Skia-JBig200__10__0|3645223746
+RenderingTest.cs_Skia-JBig200__10__0__stripe|3912444794
+RenderingTest.cs_Skia-JBig200__10__45|1070394738
+RenderingTest.cs_Skia-JBig200__10__45__stripe|1885126163
+RenderingTest.cs_Skia-JBig200__2__0|2168076069
+RenderingTest.cs_Skia-JBig200__2__0__stripe|1570438879

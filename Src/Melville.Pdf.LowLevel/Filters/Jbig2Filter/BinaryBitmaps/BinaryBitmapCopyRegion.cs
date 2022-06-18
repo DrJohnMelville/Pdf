@@ -2,49 +2,45 @@
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-public readonly struct BinaryBitmapCopyRegion
+public readonly struct BinaryBitmapCopyDimension
 {
-    public int DestinationFirstRow { get; }
-    public int SourceFirstRow { get; }
-    public int SourceExclusiveEndRow { get; }
-    public int DestinationFirstCol { get; }
-    public int SourceFirstCol { get; }
-    public int SourceExclusiveEndCol { get; }
+    public int SrcBegin { get; }
+    public int SrcExclusiveEnd { get; }
+    public int DestBegin { get; }
 
-    public BinaryBitmapCopyRegion(int row, int column, IBinaryBitmap source, IBinaryBitmap destination)
+    public BinaryBitmapCopyDimension(int srcOffset, int length, int srcMax, int destOffset, int destMax)
     {
-      #warning need to adjust for IBinaryBitmaps with regions that do not exist
-        (DestinationFirstRow, SourceFirstRow, SourceExclusiveEndRow) = 
-            ComputeOverlap(0, source.Height, row, destination.Height);
-        (DestinationFirstCol, SourceFirstCol, SourceExclusiveEndCol) = 
-            ComputeOverlap(0, source.Width, column, destination.Width);
+        length = Math.Min(length, Math.Min(srcMax - srcOffset, destMax - destOffset));
 
-    }
-
-    private static void ClipTo(ref int value, ref int length, int availablelength)
-    {
-        if (value < 0)
+        var neededOffset = Math.Min(srcOffset, destOffset);
+        if (neededOffset < 0)
         {
-            length += value;
-            value = 0;
+            srcOffset -= neededOffset;
+            destOffset -= neededOffset;
+            length += neededOffset;
         }
 
-        length = Math.Min(length, availablelength - value);
-        length = Math.Max(0, length);
+        SrcBegin = srcOffset;
+        SrcExclusiveEnd = srcOffset + length;
+        DestBegin = destOffset;
     }
 
-    private static (int FirstInDestination, int FirstInSource, int ExclusiveEndInSource) 
-        ComputeOverlap(int sourceStart, int sourceEnd, int destStart, int destEnd)
+    public readonly int Length => SrcExclusiveEnd - SrcBegin;
+
+    public readonly bool IsTrivial() => Length <= 0;
+}
+
+public readonly struct BinaryBitmapCopyRegion
+{
+    public readonly BinaryBitmapCopyDimension Vertical;
+    public readonly BinaryBitmapCopyDimension Horizontal;
+
+    public BinaryBitmapCopyRegion(BinaryBitmapCopyDimension vertical, BinaryBitmapCopyDimension horizontal)
     {
-        var offset = destStart - sourceStart;
-        var length = sourceEnd - sourceStart;
-        var candidateEnd = destStart + length;
-        if (candidateEnd > destEnd) length -= (candidateEnd - destEnd);
-        var firstInSource = offset < 0 ? -offset : 0;
-        return (offset+firstInSource, firstInSource, length);
+        Horizontal = horizontal;
+        Vertical = vertical;
     }
 
-    public bool UseSlowAlgorithm => RowLength < 9;
-    public uint RowLength => (uint)(SourceExclusiveEndCol - SourceFirstCol);
-    public uint Height => (uint)(SourceExclusiveEndRow - SourceFirstRow);
+    public readonly bool UseSlowAlgorithm => Horizontal.SrcExclusiveEnd - Horizontal.SrcBegin < 9;
+    public readonly bool IsTrivial() => Horizontal.IsTrivial() || Vertical.IsTrivial();
 }
