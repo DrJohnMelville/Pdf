@@ -57,7 +57,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
         try
         {
             var doc = await DocumentRendererFactory.CreateRendererAsync(
-                await ReadDocument(generator), new WindowsDefaultFonts());
+                await RenderTestHelpers.ReadDocument(generator), WindowsDefaultFonts.Instance);
             var target = new WriteToAdlerStream();
             await renderTo(doc, target);
             return target.Computer.GetHash().ToString();
@@ -67,8 +67,17 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
             return e.Message;
         }
     }
+}
 
-    private static async Task<PdfDocument> ReadDocument(IPdfGenerator generator)
+public static class RenderTestHelpers
+{
+    public static async ValueTask<DocumentRenderer> AsDocumentRenderer(this IPdfGenerator generator)
+    {
+        return await DocumentRendererFactory.CreateRendererAsync(await ReadDocument(generator),
+            WindowsDefaultFonts.Instance);
+    }
+        
+    public static async ValueTask<PdfDocument> ReadDocument(IPdfGenerator generator)
     {
         MultiBufferStream src = new();
         await generator.WritePdfAsync(src);

@@ -97,7 +97,7 @@ public class GraphicStateDictionary
         target.SetupGet(i => i.GrapicsStateChange).Returns(gs);
         Assert.Equal(1.0, gs.Current().LineWidth);
         await new RenderEngine(page, target.Object, 
-                DocumentRendererFactory.CreateRenderer(page, new WindowsDefaultFonts()))
+                DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance))
             .RunContentStream();
         return gs;
     }

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
-BenchmarkRunner.Run<BitmapWriting>();
+// await new JbigParsing().ParseJBig();
+// Console.WriteLine("done");
+BenchmarkRunner.Run<JbigParsing >();
 
     public static class Timer
     {

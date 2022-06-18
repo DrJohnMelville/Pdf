@@ -8,6 +8,10 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 public class WindowsDefaultFonts : IDefaultFontMapper
 {
+    public static readonly WindowsDefaultFonts Instance = new WindowsDefaultFonts();
+
+    private WindowsDefaultFonts() { }
+
     private static readonly byte[] TimesNewRoman =
         { 84, 105, 109, 101, 115, 78, 101, 119, 82, 111, 109, 97, 110 };
 

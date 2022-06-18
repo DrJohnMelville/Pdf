@@ -18,7 +18,7 @@ public class DrawingMacroOperations
     {
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
         sut = new RenderEngine(page, target.Object, 
-            DocumentRendererFactory.CreateRenderer(page, new WindowsDefaultFonts()));
+            DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance));
     }
 
     [Fact]

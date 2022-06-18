@@ -27,7 +27,7 @@ public abstract class MelvillePdfRenderer : IImageRenderer
         source = null;
         source = await DocumentRendererFactory.CreateRendererAsync(
             await PdfDocument.ReadAsync(pdfBits, new SinglePasswordSource(password)),
-            new WindowsDefaultFonts()
+            WindowsDefaultFonts.Instance
         );
     }
 

@@ -25,7 +25,7 @@ public partial class PagePartViewModel: DocumentPart
         try
         {
             var image = await new RenderToDrawingGroup(
-                DocumentRendererFactory.CreateRenderer(page, new WindowsDefaultFonts()), 0)
+                DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance), 0)
                 .RenderToDrawingImage();
             image.Freeze();
             RenderedPage =image;

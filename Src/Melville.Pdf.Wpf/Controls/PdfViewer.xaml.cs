@@ -46,7 +46,7 @@ public partial class PdfViewer : UserControl
     private async void SetTo(PdfDocument document)
     {
         var drf = await DocumentRendererFactory.CreateRendererAsync(document,
-            new WindowsDefaultFonts());
+            WindowsDefaultFonts.Instance);
         await Dispatcher.BeginInvoke(()=> DataContext = new PdfViewerModel(drf), DispatcherPriority.Normal);
     }
 }

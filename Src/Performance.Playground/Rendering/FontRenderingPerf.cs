@@ -39,7 +39,7 @@ namespace Performance.Playground.Rendering
         {
             var file = File.Open(@"C:\Users\jmelv\Documents\Scratch\PDF torture test\Adalms colposcopy for sexual assault 2001.PDF", FileMode.Open);
             var dr = await DocumentRendererFactory.CreateRendererAsync(
-                await PdfDocument.ReadAsync(file), new WindowsDefaultFonts());
+                await PdfDocument.ReadAsync(file), WindowsDefaultFonts.Instance);
             return dr;
         }
     }

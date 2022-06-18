@@ -35,7 +35,7 @@ public class S9_4_2_TextPositioningOperators
         SetupMockRealizedFont();
 
         sut = new RenderEngine(pageMock.Object, targetMock.Object,
-            DocumentRendererFactory.CreateRenderer(null!, new WindowsDefaultFonts()));
+            DocumentRendererFactory.CreateRenderer(null!, WindowsDefaultFonts.Instance));
     }
     
     private class RealizedFontMock: IRealizedFont
