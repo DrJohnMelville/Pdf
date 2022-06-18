@@ -2,8 +2,23 @@
 using System.Buffers;
 using System.Diagnostics;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
+using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
+using SixLabors.ImageSharp.ColorSpaces.Conversion;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
+
+public interface ISkipBitmap
+{
+    bool ShouldSkipPixel(int row, int column);
+}
+
+public class DoNotSkip: ISkipBitmap
+{
+    public static readonly ISkipBitmap Instance = new DoNotSkip();
+    private DoNotSkip() { }
+    public bool ShouldSkipPixel(int row, int column) => false;
+}
+
 
 public readonly struct ArithmeticGenericRegionDecodeProcedure
 {
@@ -11,12 +26,11 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
     private readonly MQDecoder state;
     private readonly ArithmeticBitmapReaderContext context;
     private readonly ushort tgbd;
-    private readonly bool useSkip;
+    private readonly ISkipBitmap useSkip;
 
     public ArithmeticGenericRegionDecodeProcedure(BinaryBitmap bitmap, MQDecoder state, ArithmeticBitmapReaderContext context, ushort tgbd,
-        bool useSkip)
+        ISkipBitmap useSkip)
     {
-        if (useSkip) throw new NotImplementedException("skipping is not implemented");
         this.bitmap = bitmap;
         this.state = state;
         this.context = context;
@@ -55,7 +69,8 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
     {
         for (int j = 0; j < bitmap.Width; j++)
         {
-            var bit = state.GetBit(ref source, ref context.ReadContext(bitmap, row, j));
+            var bit = useSkip.ShouldSkipPixel(row, j) ? 0:
+                state.GetBit(ref source, ref context.ReadContext(bitmap, row, j));
             bitmap[row, j] = bit == 1;
         }
     }

@@ -53,7 +53,6 @@ public readonly ref struct GrayScaleBitmap
                 pos++;
             }
         }
-        
     }
 
     public int this[int row, int col] => data[(row * width) + col];

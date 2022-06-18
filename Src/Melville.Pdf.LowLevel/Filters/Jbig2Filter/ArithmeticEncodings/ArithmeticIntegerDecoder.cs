@@ -25,7 +25,7 @@ public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder
         new SymbolIntegerDecoder(State, context).Read(ref source);
 
     public override void ReadBitmap(ref SequenceReader<byte> source, BinaryBitmap target) => 
-        new ArithmeticGenericRegionDecodeProcedure(target, State, template, 0, false).Read(ref source);
+        new ArithmeticGenericRegionDecodeProcedure(target, State, template, 0, DoNotSkip.Instance).Read(ref source);
 
     public override void PrepareForRefinementSymbolDictionary(uint totalSymbols)
     {

@@ -35,7 +35,7 @@ public ref struct HalftoneSegmentReader
         this.dictionary = dictionary;
     }
 
-    public unsafe void ReadBitmap(ref SequenceReader<byte> reader, BinaryBitmap targetBitmap)
+    public void ReadBitmap(ref SequenceReader<byte> reader, BinaryBitmap targetBitmap)
     {
         FillWithBackground(targetBitmap);
 
@@ -57,8 +57,8 @@ public ref struct HalftoneSegmentReader
             var yColValue = yRowValue;
             for (int n = 0; n < grayScaleWidth; n++)
             {
-                targetBitmap.PasteBitsFrom(yColValue >> 8, xColValue >> 8, dictionary.ExportedSymbols.Span[gsb[m, n]],
-                    regionFlags.CombinationOperator);
+                targetBitmap.PasteBitsFrom(yColValue >> 8, xColValue >> 8,
+                    dictionary.ExportedSymbols.Span[gsb[m, n]], regionFlags.CombinationOperator);
                 xColValue += vectorX;
                 yColValue -= vectorY;
             }
@@ -71,9 +71,8 @@ public ref struct HalftoneSegmentReader
     {
         var gsb = new GrayScaleBitmap(data, grayScaleWidth);
         var bitPlane = regionFlags.UseMMR ?
-            (Bitplane)new MmrBitplane(grayScaleHeight, grayScaleWidth):
-            new ArithmeticBitplane(
-                grayScaleHeight, grayScaleWidth, regionFlags.Template, regionFlags.EnableSkip);
+            CreateMmrBitplane():
+            CreateArithmeticBitplane();
         
         var bitsPerValue = IntLog.CeilingLog2Of((uint)dictionary.ExportedSymbols.Length);
         var bitValue = 1 << (bitsPerValue - 1);
@@ -91,6 +90,22 @@ public ref struct HalftoneSegmentReader
         }
 
         return gsb;
+    }
+
+    private Bitplane CreateMmrBitplane()
+    {
+        return new MmrBitplane(grayScaleHeight, grayScaleWidth);
+    }
+
+    private Bitplane CreateArithmeticBitplane()
+    {
+        return regionFlags.EnableSkip ?
+            new SkippingBitplane(grayScaleHeight, grayScaleWidth, regionFlags.Template,
+                grayScaleXOffset, grayScaleYOffset, vectorX, vectorY, 
+                dictionary.ExportedSymbols.Span[0].Width, 
+                dictionary.ExportedSymbols.Span[0].Height,
+                (int)Header.Width, (int)Header.Height):
+            new NonskippingBitplane(grayScaleHeight, grayScaleWidth, regionFlags.Template);
     }
 
     private void FillWithBackground(BinaryBitmap targetBitmap)

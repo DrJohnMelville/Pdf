@@ -19,7 +19,7 @@ public class BinaryBitmapTest
     [InlineData(1,3, ".....\r\n....B\r\n...B.\r\n....B\r\n.....")]
     public void SimpleCopyTest(int row, int column, string result)
     {
-        var source = ".B.\r\nB.bB\r\n.B.".AsBinaryBitmap(3,3);
+        var source = ".B.\r\nB.B\r\n.B.".AsBinaryBitmap(3,3);
         var sut = new BinaryBitmap(5, 5);
         sut.PasteBitsFrom(row, column, source, CombinationOperator.Replace);
         Assert.Equal(result, sut.BitmapString());

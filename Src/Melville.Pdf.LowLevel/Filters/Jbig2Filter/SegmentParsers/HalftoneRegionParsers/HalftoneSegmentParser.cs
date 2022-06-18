@@ -24,13 +24,13 @@ public readonly struct HalftoneRegionFlags
     /// In spec HTEMPLATE
     /// </summary>
     public GenericRegionTemplate Template => 
-        (GenericRegionTemplate)BitOperations.UnsignedInteger(data, 1, 0x11);
+        (GenericRegionTemplate)BitOperations.UnsignedInteger(data, 1, 0b11);
     /// <summary>
     /// In Spec HENABLESKIP
     /// </summary>
     public bool EnableSkip => BitOperations.CheckBit(data, 0x08);
     public CombinationOperator CombinationOperator =>
-        (CombinationOperator)BitOperations.UnsignedInteger((int)data, 3, 7);
+        (CombinationOperator)BitOperations.UnsignedInteger((int)data, 4, 7);
     /// <summary>
     /// In Spec HDDEFPIXEL
     /// </summary>

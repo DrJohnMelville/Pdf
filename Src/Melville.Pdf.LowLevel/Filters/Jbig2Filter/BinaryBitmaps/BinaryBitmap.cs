@@ -13,6 +13,7 @@ public interface IBinaryBitmap
     int Stride { get; }
     (byte[] Array, BitOffset Offset) ColumnLocation (int column);
     bool ContainsPixel(int row, int col);
+    (BinaryBitmap source, int FinalRow, int FinalCol) ToBaseLocation(int row, int col);
 }
 
 public interface IBitmapCopyTarget : IBinaryBitmap
@@ -162,4 +163,7 @@ public class BinaryBitmap: IBitmapCopyTarget
     }
     
     public Stream BitsAsStream() => new MemoryStream(bits, 0, BufferLength());
+
+    public (BinaryBitmap source, int FinalRow, int FinalCol) ToBaseLocation(int row, int col) =>
+        (this, row, col);
 }

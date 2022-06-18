@@ -1,4 +1,7 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.Runtime.CompilerServices;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
@@ -26,13 +29,13 @@ public class MmrBitplane : Bitplane
     }
 }
 
-public class ArithmeticBitplane : Bitplane
+public abstract class ArithmeticBitplane : Bitplane, ISkipBitmap
 {
     private readonly ArithmeticGenericRegionDecodeProcedure reader;
-    public ArithmeticBitplane(int height, int width, GenericRegionTemplate template, bool skip) : base(height, width)
+    public ArithmeticBitplane(int height, int width, GenericRegionTemplate template) : base(height, width)
     {
         reader = new ArithmeticGenericRegionDecodeProcedure(this, new MQDecoder(),
-            new ArithmeticBitmapReaderContext(ComputeTemplate(template)), 0, skip);
+            new ArithmeticBitmapReaderContext(ComputeTemplate(template)), 0, this);
     }
 
     public override void ReadFrom(ref SequenceReader<byte> source) => reader.Read(ref source);
@@ -53,4 +56,43 @@ public class ArithmeticBitplane : Bitplane
 
     private static sbyte FirstXTemplateLocation(GenericRegionTemplate template) => 
         (sbyte)(template is GenericRegionTemplate.GB0 or GenericRegionTemplate.GB1?3:2);
+    
+    public abstract bool ShouldSkipPixel(int row, int column);
+}
+
+public sealed class NonskippingBitplane : ArithmeticBitplane
+{
+    public NonskippingBitplane(int height, int width, GenericRegionTemplate template) : base(height, width, template)
+    {
+    }
+
+    public override bool ShouldSkipPixel(int row, int column) => false;
+}
+
+public sealed partial class SkippingBitplane : ArithmeticBitplane
+{
+    [FromConstructor] private readonly int hgx;
+    [FromConstructor] private readonly int hgy;
+    [FromConstructor] private readonly int hrx;
+    [FromConstructor] private readonly int hry;
+    [FromConstructor] private readonly int patternWidth;
+    [FromConstructor] private readonly int patternHeight;
+    [FromConstructor] private readonly int targetWidth;
+    [FromConstructor] private readonly int targetHeight;
+
+    public override bool ShouldSkipPixel(int row, int column)
+    {
+        return ShouldSkipDimenstion(X(row, column), patternWidth, targetWidth) ||
+               ShouldSkipDimenstion(Y(row, column), patternHeight, targetHeight);
+    }
+
+    private int X(int row, int column) => 
+        GridVectorToBitmapPosition(hgx + (row * hry) + (column * hrx));
+    private int Y(int row, int column) => 
+        GridVectorToBitmapPosition(hgy + (row * hrx) - (column * hry));
+
+    private static int GridVectorToBitmapPosition(int x) => x >> 8;
+
+    private bool ShouldSkipDimenstion(int position, int patternSize, int targetSize) => 
+        (position + patternSize <= 0) || position >= targetSize;
 }
