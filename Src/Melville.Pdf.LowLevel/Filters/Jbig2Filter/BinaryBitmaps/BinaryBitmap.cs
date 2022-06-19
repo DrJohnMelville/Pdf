@@ -13,7 +13,13 @@ public interface IBinaryBitmap
     int Stride { get; }
     (byte[] Array, BitOffset Offset) ColumnLocation (int column);
     bool ContainsPixel(int row, int col);
-    (BinaryBitmap source, int FinalRow, int FinalCol) ToBaseLocation(int row, int col);
+    BitmapPointer PointerFor(int row, int col, int rowLength);
+}
+
+public static class BinaryBitmapOperations
+{
+    public static BitmapPointer PointerFor(this IBinaryBitmap bmp, int row, int col) =>
+        bmp.PointerFor(row, col, bmp.Width);
 }
 
 public interface IBitmapCopyTarget : IBinaryBitmap
@@ -171,6 +177,12 @@ public class BinaryBitmap: IBitmapCopyTarget
     
     public Stream BitsAsStream() => new MemoryStream(bits, 0, BufferLength());
 
-    public (BinaryBitmap source, int FinalRow, int FinalCol) ToBaseLocation(int row, int col) =>
-        (this, row, col);
+    public BitmapPointer PointerFor(int row, int col, int rowLength)
+    {
+        if (row < 0 || row >= Height) return BitmapPointer.EmptyRow;
+        var rowSpan = bits.AsSpan(row * Stride, Stride);
+        if (col < 0) return new BitmapPointer(rowSpan, (ushort)(7 - col), (ushort)(rowLength - col));
+        var (colBytes, colBits) = Math.DivRem(col, 8);
+        return new BitmapPointer(rowSpan[colBytes..], (ushort)(7 - colBits), (ushort)(rowLength - col));
+    }
 }
