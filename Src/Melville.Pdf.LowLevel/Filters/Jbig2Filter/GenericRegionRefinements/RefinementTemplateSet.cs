@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 
-public struct RefinementTemplateSet
+public readonly struct RefinementTemplateSet
 {
     private readonly BitmapTemplate referenceTemplate;
     private readonly BitmapTemplate destinationTemplate;
@@ -52,8 +52,8 @@ public struct RefinementTemplateSet
 
     private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col)
     {
-        var referenceContext = referenceTemplate.OldReadContext(reference, row, col);
-        var destinationContext = destinationTemplate.OldReadContext(destination, row, col);
+        var referenceContext = referenceTemplate.ReadContext(reference, row, col);
+        var destinationContext = destinationTemplate.ReadContext(destination, row, col);
         var ret = (referenceContext << destinationTemplate.BitsRequired()) | destinationContext;
         return (ushort)ret;
     }

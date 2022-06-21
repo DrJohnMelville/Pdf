@@ -4,12 +4,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-public partial struct BitmapPointer
+public ref partial struct BitmapPointer
 {
     private static readonly byte[] zeroArray = { 0 };
-    public static BitmapPointer EmptyRow => new(zeroArray, ushort.MaxValue, 0);
+    public static BitmapPointer EmptyRow => new(zeroArray.AsSpan(), ushort.MaxValue, 0);
     
-    [FromConstructor]private ReadOnlyMemory<byte> bits;
+    [FromConstructor]private Span<byte> bits;
     [FromConstructor]private ushort bitOffset;
     [FromConstructor] private ushort bitsLeft;
     private byte current = 0;
@@ -22,7 +22,7 @@ public partial struct BitmapPointer
         }
         else
         {
-            current = bits.Span[0];
+            current = bits[0];
         }
 
         if (bitOffset < 7)
@@ -48,7 +48,7 @@ public partial struct BitmapPointer
             return;
         }
         bits = bits[1..];
-        current = bits.Span[0];
+        current = bits[0];
         bitOffset = 7;
         
     }

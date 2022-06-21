@@ -69,9 +69,8 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
     {
         for (int j = 0; j < bitmap.Width; j++)
         {
-            ref var computedContext = ref context.ReadContext(bitmap, row, j);
             var bit = useSkip.ShouldSkipPixel(row, j) ? 0:
-                state.GetBit(ref source, ref computedContext);
+                state.GetBit(ref source, ref context.ReadContext(bitmap, row, j));
             bitmap[row, j] = bit == 1;
         }
     }

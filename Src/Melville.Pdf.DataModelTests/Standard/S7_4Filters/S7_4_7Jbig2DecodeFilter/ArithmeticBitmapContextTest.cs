@@ -23,8 +23,7 @@ BBBBBBBBBBBBBBBB
         var fact = new BitmapTemplateFactory(GenericRegionTemplate.GB1);
         fact.AddPoint(row, col);
         var temolplate = fact.Create();
-        Assert.Equal(result, temolplate.OldReadContext(bitmap, 2,3));
-        
+        Assert.Equal(result, temolplate.ReadContext(bitmap, 2,3));
     }
 }
 
