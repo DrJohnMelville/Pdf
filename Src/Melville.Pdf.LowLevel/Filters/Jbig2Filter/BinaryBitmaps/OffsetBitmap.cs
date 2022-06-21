@@ -37,6 +37,15 @@ public partial class OffsetBitmap : IBinaryBitmap
         row >= 0 && row < Height && col >= 0 && col < Width &&
         inner.ContainsPixel(row + y, col + x);
 
-    public BitmapPointer PointerFor(int row, int col, int rowLength) => 
-        inner.PointerFor(row + y, col + x, rowLength);
+    public BitmapPointer PointerFor(int row, int col)
+    {
+        return this.NoBytesLeftInRow(row, col) ?
+            BitmapPointer.EmptyRow : 
+            InnerPointerStartingAtColumn(row, col).SelectRowLength(col, Width);
+    }
+
+    private BitmapPointer InnerPointerStartingAtColumn(int row, int col) =>
+        col < 0 ? 
+            inner.PointerFor(row + y, x).WithPrefixBits(-col) : 
+            inner.PointerFor(row + y, col + x);
 }
