@@ -50,11 +50,7 @@ public readonly struct RefinementTemplateSet
 
     public ref ContextEntry ContextFor(ushort context) => ref contextDictionary.EntryForContext(context);
 
-    private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col)
-    {
-        var referenceContext = referenceTemplate.ReadContext(reference, row, col);
-        var destinationContext = destinationTemplate.ReadContext(destination, row, col);
-        var ret = (referenceContext << destinationTemplate.BitsRequired()) | destinationContext;
-        return (ushort)ret;
-    }
+    private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
+        destinationTemplate.ReadContext(destination, row, col, 
+            referenceTemplate.ReadContext(reference, row, col));
 }

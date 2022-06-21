@@ -18,12 +18,12 @@ public readonly struct BitmapTemplate
     {
         this.runs = runs;
     }
-    public ushort ReadContext(IBinaryBitmap bitmap, int row, int col)
+
+    public ushort ReadContext(IBinaryBitmap bitmap, int row, int col, ushort ret = 0)
     {
-        ushort ret = 0;
         foreach (var run in runs)
         {
-            var runPtr = bitmap.PointerFor(row + run.Y, col + run.X); 
+            var runPtr = bitmap.PointerFor(row + run.Y, col + run.X);
             for (int i = 0; i < run.Length; i++)
             {
                 ret <<= 1;
@@ -31,6 +31,7 @@ public readonly struct BitmapTemplate
                 runPtr.Increment();
             }
         }
+
         return ret;
     }
 }
