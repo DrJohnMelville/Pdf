@@ -70,13 +70,15 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
     private void DecodeRow(ref SequenceReader<byte> source, int row, ref IncrementalTemplate template)
     {
         template.SetToPosition(bitmap, row, 0);
+        var rowWriter = bitmap.StartWritingAt(row, 0);
         for (int j = 0; j < bitmap.Width; j++)
         {
             var bit = useSkip.ShouldSkipPixel(row, j) ? 0:
                 state.GetBit(ref source, ref context.GetContext(template.context));
             #warning -- there is an opportunity to optimize writing here.
-            bitmap[row, j] = bit == 1;
-            // increment must follow the bitmap writting because it reads the current context byte
+            rowWriter.AssignBit(bit == 1);
+            rowWriter.Increment();
+            // Template increment must follow the bitmap writting because it reads the current context byte
             template.Increment();
         }
     }

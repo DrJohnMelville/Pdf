@@ -48,4 +48,6 @@ public partial class OffsetBitmap : IBinaryBitmap
         col < 0 ? 
             inner.PointerFor(row + y, x).WithPrefixBits(-col) : 
             inner.PointerFor(row + y, col + x);
+
+    public BitRowWriter StartWritingAt(int row, int column) => inner.StartWritingAt(row + y, column + x);
 }

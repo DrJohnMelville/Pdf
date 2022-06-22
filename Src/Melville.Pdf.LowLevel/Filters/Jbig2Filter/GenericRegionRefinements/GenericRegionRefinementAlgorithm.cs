@@ -24,21 +24,18 @@ public ref partial struct GenericRegionRefinementAlgorithm
         for (int row = 0; row < target.Height; row++)
         {
             incrementalTemplate.SetToPosition(reference, target, row, 0);
+            var rowWriter = target.StartWritingAt(row, 0);
             TryReadLtpBit(ref source);
             for (int col = 0; col < target.Width; col++)
             {
                 if (ltp && NinePixelsSame(row, col, out var value))
-                    UsePredictedValue(row, col, value);
+                    rowWriter.AssignBit(value);
                 else
-                    DecodePixel(ref source, row, col, incrementalTemplate.context);
+                    DecodePixel(ref source, incrementalTemplate.context, ref rowWriter);
                 incrementalTemplate.Increment();
+                rowWriter.Increment();
             }
         }
-    }
-
-    private void UsePredictedValue(int row, int col, bool value)
-    {
-        target[row, col] = value;
     }
 
     private bool NinePixelsSame(int row, int col, out bool result)
@@ -65,10 +62,11 @@ public ref partial struct GenericRegionRefinementAlgorithm
             ltp = !ltp;
     }
 
-    private void DecodePixel(ref SequenceReader<byte> source, int row, int col, int contextNum)
+    private void DecodePixel(ref SequenceReader<byte> source, int contextNum,
+        ref BitRowWriter bitRowWriter)
     {
         ref var context = ref template.ContextFor(contextNum);
         var bit = decoder.GetBit(ref source, ref context);
-        target[row, col] = bit == 1;
+        bitRowWriter.AssignBit(bit == 1);
     }
 }

@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
-await new JbigParsing().ParseJBig();
-Console.WriteLine("done");
-//BenchmarkRunner.Run<JbigParsing >();
+if (true)
+{
+    await new JbigParsing().ParseJBig();
+    Console.WriteLine("done");
+}
+else
+{
+    BenchmarkRunner.Run<JbigParsing>();
+}
 
-    public static class Timer
+public static class Timer
     {
         public static async Task DoTime(Func<Task> item)
         {

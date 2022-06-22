@@ -5,22 +5,6 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-public interface IBinaryBitmap
-{
-    int Width { get; }
-    int Height { get;}
-    bool this[int row, int column] {  get; set; }
-    int Stride { get; }
-    (byte[] Array, BitOffset Offset) ColumnLocation (int column);
-    bool ContainsPixel(int row, int col);
-    BitmapPointer PointerFor(int row, int col);
-}
-
-public interface IBitmapCopyTarget : IBinaryBitmap
-{
-    void PasteBitsFrom(int row, int column, IBinaryBitmap source, CombinationOperator combOp);
-}
-
 [DebuggerDisplay("{this.BitmapString()}")]
 public class BinaryBitmap: IBitmapCopyTarget
 {
@@ -132,6 +116,12 @@ public class BinaryBitmap: IBitmapCopyTarget
         return new(((row * Stride) + (col >> 3)), (byte)(col & 0b111));
     }
 
+    public BitRowWriter StartWritingAt(int row, int column)
+    {
+        var pos = ComputeBitPosition(row, column);
+        return new BitRowWriter(bits, pos.ByteOffset, pos.BitOffsetRightOfMsb);
+    }
+
     public bool ContainsPixel(int row, int col) =>
         row >= 0 && col >= 0 && row < Height & col < Width;
 
@@ -179,11 +169,4 @@ public class BinaryBitmap: IBitmapCopyTarget
         var (colBytes, colBits) = Math.DivRem(col, 8);
         return new BitmapPointer(rowSpan[colBytes..], (int)(7 - colBits), (int)(Width - col));
     }
-}
-
-public static class BinaryBitmapOperations
-{
-    public static bool NoBytesLeftInRow(this IBinaryBitmap bitmap, int row, int col) => 
-        row < 0 || row >= bitmap.Height || col >= bitmap.Width;
-    
 }
