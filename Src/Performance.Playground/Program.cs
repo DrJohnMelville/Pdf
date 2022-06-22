@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
-// await new JbigParsing().ParseJBig();
-// Console.WriteLine("done");
-BenchmarkRunner.Run<JbigParsing >();
+await new JbigParsing().ParseJBig();
+Console.WriteLine("done");
+//BenchmarkRunner.Run<JbigParsing >();
 
     public static class Timer
     {

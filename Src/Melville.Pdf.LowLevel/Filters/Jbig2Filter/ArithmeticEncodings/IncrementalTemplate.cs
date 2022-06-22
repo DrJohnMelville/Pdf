@@ -30,7 +30,9 @@ public ref partial struct IncrementalTemplate
         return ~ret;
     }
 
-    public void SetToPosition(IBinaryBitmap bmp, int row, int column)
+    public void SetToPosition(IBinaryBitmap bmp, int row, int column) =>
+        SetToPosition(bmp, bmp, row, column);
+    public void SetToPosition(IBinaryBitmap bmp, IBinaryBitmap secondBitmap, int row, int column)
     {
         context = 0;
         for (int i = 0; i < runs.Length; i++)
@@ -43,6 +45,8 @@ public ref partial struct IncrementalTemplate
                 context = (context << 1) | ptr.CurrentValue;
                 ptr.Increment();
             }
+
+            if (run.IsLastRunInThisBitmap()) bmp = secondBitmap;
         }
     }
 

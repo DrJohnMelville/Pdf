@@ -12,6 +12,6 @@ public class JbigParsing
     public async Task ParseJBig()
     {
         var fact = new JbigAllPageReader();
-        await fact.ProcessFileBitsAsync(JBigSampleStreams.Get("042_1")!);
+        await fact.ProcessFileBitsAsync(JBigSampleStreams.Get("042_21")!);
     }
 }

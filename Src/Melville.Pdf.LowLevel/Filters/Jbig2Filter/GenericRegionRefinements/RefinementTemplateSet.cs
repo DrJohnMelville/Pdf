@@ -50,7 +50,11 @@ public readonly struct RefinementTemplateSet
 
     public ref ContextEntry ContextFor(int context) => ref contextDictionary.EntryForContext(context);
 
-    private int ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
+    private int ComputeCompositeContext(
+        IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
         destinationTemplate.ReadContext(destination, row, col, 
             referenceTemplate.ReadContext(reference, row, col));
+#warning -- eventually I need to have the two factories write to a single array to begin with.
+    public IncrementalTemplate ToIncrementalTemplate() => 
+        new IncrementalTemplate(referenceTemplate.JoinRunsWith(destinationTemplate));
 }

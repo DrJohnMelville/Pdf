@@ -20,15 +20,18 @@ public ref partial struct GenericRegionRefinementAlgorithm
     
     public void Read(ref SequenceReader<byte> source)
     {
+        var incrementalTemplate = template.ToIncrementalTemplate();
         for (int row = 0; row < target.Height; row++)
         {
+            incrementalTemplate.SetToPosition(reference, target, row, 0);
             TryReadLtpBit(ref source);
             for (int col = 0; col < target.Width; col++)
             {
                 if (ltp && NinePixelsSame(row, col, out var value))
                     UsePredictedValue(row, col, value);
                 else
-                    DecodePixel(ref source, row, col);
+                    DecodePixel(ref source, row, col, incrementalTemplate.context);
+                incrementalTemplate.Increment();
             }
         }
     }
@@ -62,32 +65,10 @@ public ref partial struct GenericRegionRefinementAlgorithm
             ltp = !ltp;
     }
 
-    private void DecodePixel(ref SequenceReader<byte> source, int row, int col)
+    private void DecodePixel(ref SequenceReader<byte> source, int row, int col, int contextNum)
     {
-        ref var context = ref
-            template.ContextFor(reference, target, row, col);
+        ref var context = ref template.ContextFor(contextNum);
         var bit = decoder.GetBit(ref source, ref context);
         target[row, col] = bit == 1;
-    }
-}
-
-
-public static class UdpConsole
-{
-    private static UdpClient? client = null;
-    private static UdpClient Client
-    {
-        get
-        {
-            client ??= new UdpClient();
-            return client ;
-        }
-    }
-
-    public static string WriteLine(string str)
-    {
-        var bytes = Encoding.UTF8.GetBytes(str);
-        Client.Send(bytes, bytes.Length, "127.0.0.1", 15321);
-        return str;
     }
 }
