@@ -41,17 +41,19 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
     public void Read(ref SequenceReader<byte> source)
     {
         bool duplicatedLastRow = false;
+        var template = context.ToIncrementalTemplate();
         for (int i = 0; i < bitmap.Height; i++)
         {
-            ReadRow(ref source, i, ref duplicatedLastRow);
+            ReadRow(ref source, i, ref duplicatedLastRow, ref template);
         }
     }
-    private void ReadRow(ref SequenceReader<byte> source, int row, ref bool duplicatedLastRow)
+    private void ReadRow(ref SequenceReader<byte> source, int row, ref bool duplicatedLastRow,
+        ref IncrementalTemplate incrementalTemplate)
     {
         if (ShouldCopyPriorRow(ref source, ref duplicatedLastRow))
             bitmap.CopyRow(row - 1, row);
         else
-            DecodeRow(ref source, row);
+            DecodeRow(ref source, row, ref incrementalTemplate);
     }
 
     private bool ShouldCopyPriorRow(ref SequenceReader<byte> source, ref bool duplicatedLastRow) => 
@@ -65,13 +67,17 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
         return duplicatedLastRow ^= bit == 1;
     }
 
-    private void DecodeRow(ref SequenceReader<byte> source, int row)
+    private void DecodeRow(ref SequenceReader<byte> source, int row, ref IncrementalTemplate template)
     {
+        template.SetToPosition(bitmap, row, 0);
         for (int j = 0; j < bitmap.Width; j++)
         {
             var bit = useSkip.ShouldSkipPixel(row, j) ? 0:
-                state.GetBit(ref source, ref context.ReadContext(bitmap, row, j));
+                state.GetBit(ref source, ref context.GetContext(template.context));
+            #warning -- there is an opportunity to optimize writing here.
             bitmap[row, j] = bit == 1;
+            // increment must follow the bitmap writting because it reads the current context byte
+            template.Increment();
         }
     }
 }

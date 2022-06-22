@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
@@ -34,4 +35,7 @@ public readonly struct BitmapTemplate
 
         return ret;
     }
+
+    public IncrementalTemplate ToIncrementalTemplate() => new(runs.AsSpan());
+
 }

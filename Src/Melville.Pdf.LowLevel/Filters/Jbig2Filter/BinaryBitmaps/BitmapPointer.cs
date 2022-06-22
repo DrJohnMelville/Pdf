@@ -1,18 +1,17 @@
 ﻿using System;
 using Melville.INPC;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-public ref partial struct BitmapPointer
+public partial struct BitmapPointer
 {
     private static readonly byte[] zeroArray = { 0 };
-    public static BitmapPointer EmptyRow => new(zeroArray.AsSpan(), int.MaxValue, 0);
+    public static BitmapPointer EmptyRow => new(zeroArray.AsMemory(), int.MaxValue, 0);
     
-    [FromConstructor]private Span<byte> bits;
+    [FromConstructor]private Memory<byte> bits;
     [FromConstructor]private int bitOffset;
     [FromConstructor] private int bitsLeft;
-    private byte current = 0;
+    private int bitMask = 0;
 
     partial void OnConstructed()
     {
@@ -20,18 +19,10 @@ public ref partial struct BitmapPointer
         {
             bitOffset = int.MaxValue;
         }
-        else
-        {
-            current = bits[0];
-        }
-
-        if (bitOffset < 7)
-        {
-            current &= (byte)((1 << (bitOffset + 1)) - 1);
-        }
+        bitMask = (1 << (bitOffset + 1)) - 1;
     }
 
-    public byte CurrentValue => (byte)((current >> bitOffset) & 0x01);
+    public int CurrentValue => ((bits.Span[0] & bitMask) >> bitOffset) & 0x01;
 
     public void Increment()
     {
@@ -48,17 +39,16 @@ public ref partial struct BitmapPointer
             return;
         }
         bits = bits[1..];
-        current = bits[0];
         bitOffset = 7;
-        
+        bitMask = 0xFF;
     }
 
     public BitmapPointer WithPrefixBits(int extraBits)
     {
         var ret = this with
         {
-            bitOffset =(int) (extraBits + bitOffset),
-            bitsLeft = (int) (extraBits + bitsLeft)
+            bitOffset =(extraBits + bitOffset),
+            bitsLeft = (extraBits + bitsLeft)
         };
         return ret;
     }

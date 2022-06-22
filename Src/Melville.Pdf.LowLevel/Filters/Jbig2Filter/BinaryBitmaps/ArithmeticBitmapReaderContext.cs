@@ -18,4 +18,6 @@ public readonly struct ArithmeticBitmapReaderContext
 
     public ref ContextEntry GetContext(int index) =>
         ref dictionary.EntryForContext(index);
+
+    public IncrementalTemplate ToIncrementalTemplate() => template.ToIncrementalTemplate();
 }
