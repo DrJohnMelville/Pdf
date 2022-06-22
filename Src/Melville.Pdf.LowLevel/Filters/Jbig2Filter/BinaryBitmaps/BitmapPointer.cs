@@ -12,6 +12,7 @@ public partial struct BitmapPointer
     [FromConstructor]private int bitOffset;
     [FromConstructor] private int bitsLeft;
     private int bitMask = 0;
+    private int readPosition = 0;
 
     partial void OnConstructed()
     {
@@ -22,7 +23,7 @@ public partial struct BitmapPointer
         bitMask = (1 << (bitOffset + 1)) - 1;
     }
 
-    public int CurrentValue => ((bits.Span[0] & bitMask) >> bitOffset) & 0x01;
+    public int CurrentValue => ((bits.Span[readPosition] & bitMask) >> bitOffset) & 0x01;
 
     public void Increment()
     {
@@ -38,7 +39,8 @@ public partial struct BitmapPointer
             bitOffset--;
             return;
         }
-        bits = bits[1..];
+
+        readPosition++;
         bitOffset = 7;
         bitMask = 0xFF;
     }
