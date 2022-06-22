@@ -111,18 +111,23 @@ public unsafe ref struct BitmapTemplateFactory
     private bool WrongRow(sbyte row, int i) => ys[i] != row;
 
     public BitmapTemplate Create() => 
-        new BitmapTemplate(CreatRunCollection(CountTotalBits()));
+        new BitmapTemplate(CreatRunCollection());
 
-    private ContextBitRun[] CreatRunCollection(int totalBitLen)
+    private ContextBitRun[] CreatRunCollection()
     {
         var runStorage = new ContextBitRun[Length];
+        WriteRunsToSpan(runStorage);
+        return runStorage;
+    }
+
+    public void WriteRunsToSpan(in Span<ContextBitRun> runStorage)
+    {
+        var totalBitLen = CountTotalBits();
         for (int i = 0; i < Length; i++)
         {
             totalBitLen -= bitlengths[i];
             runStorage[i] = new ContextBitRun(xs[i], ys[i], bitlengths[i], (byte)totalBitLen);
-        }
-
-        return runStorage;
+        } 
     }
 
     private int CountTotalBits()

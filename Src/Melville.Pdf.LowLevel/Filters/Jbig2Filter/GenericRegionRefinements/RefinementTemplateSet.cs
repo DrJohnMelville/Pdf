@@ -1,16 +1,14 @@
-﻿using System.Buffers;
-using System.Diagnostics;
+﻿using System;
+using System.Buffers;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.GenericRegionRefinements;
 
 public readonly struct RefinementTemplateSet
 {
-    private readonly BitmapTemplate referenceTemplate;
-    private readonly BitmapTemplate destinationTemplate;
+    private readonly ContextBitRun[] runs;
     private readonly ContextStateDict contextDictionary;
 
     public RefinementTemplateSet(ref SequenceReader<byte> source, bool useTemplate1)
@@ -21,15 +19,20 @@ public readonly struct RefinementTemplateSet
             useTemplate1 ? GenericRegionTemplate.RefinementDestination1 : GenericRegionTemplate.RefinementDestination0);
         if (!useTemplate1)
         {
-            REadAdaptivePixels(ref source, ref destinationFactory, ref referenceFactory);
+            ReadAdaptivePixels(ref source, ref destinationFactory, ref referenceFactory);
         }
 
-        referenceTemplate = referenceFactory.Create();
-        destinationTemplate = destinationFactory.Create();
-        contextDictionary = new ContextStateDict(referenceTemplate.BitsRequired() + destinationTemplate.BitsRequired());
+        var referenceRunLength = referenceFactory.Length;
+        var destinationRunLength = destinationFactory.Length;
+
+        runs = new ContextBitRun[referenceRunLength + destinationRunLength];
+        referenceFactory.WriteRunsToSpan(runs.AsSpan());
+        destinationFactory.WriteRunsToSpan(runs.AsSpan(referenceRunLength));
+
+        contextDictionary = new ContextStateDict(runs[0].NextBit() + runs[referenceRunLength].NextBit());
     }
 
-    private static void REadAdaptivePixels(
+    private static void ReadAdaptivePixels(
         ref SequenceReader<byte> source, ref BitmapTemplateFactory destinationFactory,
         ref BitmapTemplateFactory referenceFactory)
     {
@@ -41,20 +44,7 @@ public readonly struct RefinementTemplateSet
         referenceFactory.AddPoint(atY2, atX2);
     }
 
-    public ref ContextEntry ContextFor(IBinaryBitmap reference, IBinaryBitmap destination, 
-        int row, int col)
-    {
-        var contextIndex = ComputeCompositeContext(reference, destination, row, col);
-        return ref ContextFor(contextIndex);
-    }
-
     public ref ContextEntry ContextFor(int context) => ref contextDictionary.EntryForContext(context);
 
-    private int ComputeCompositeContext(
-        IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
-        destinationTemplate.ReadContext(destination, row, col, 
-            referenceTemplate.ReadContext(reference, row, col));
-#warning -- eventually I need to have the two factories write to a single array to begin with.
-    public IncrementalTemplate ToIncrementalTemplate() => 
-        new IncrementalTemplate(referenceTemplate.JoinRunsWith(destinationTemplate));
+    public IncrementalTemplate ToIncrementalTemplate() => new(runs);
 }

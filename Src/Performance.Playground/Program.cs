@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Channels;
 using System.Threading.Tasks;
-using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
 await new JbigParsing().ParseJBig();
