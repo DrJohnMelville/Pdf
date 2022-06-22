@@ -16,6 +16,6 @@ public readonly struct ArithmeticBitmapReaderContext
     public ref ContextEntry ReadContext(BinaryBitmap bitmap, int row, int col) =>
         ref dictionary.EntryForContext(template.ReadContext(bitmap, row, col));
 
-    public ref ContextEntry GetContext(ushort index) =>
+    public ref ContextEntry GetContext(int index) =>
         ref dictionary.EntryForContext(index);
 }

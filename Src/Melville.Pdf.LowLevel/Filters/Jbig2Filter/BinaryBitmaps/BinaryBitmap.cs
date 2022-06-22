@@ -175,9 +175,9 @@ public class BinaryBitmap: IBitmapCopyTarget
     {
         if (this.NoBytesLeftInRow(row, col)) return BitmapPointer.EmptyRow;
         var rowSpan = bits.AsSpan(row * Stride, Stride);
-        if (col < 0) return new BitmapPointer(rowSpan, (ushort)(7 - col), (ushort)(Width - col));
+        if (col < 0) return new BitmapPointer(rowSpan, (int)(7 - col), (int)(Width - col));
         var (colBytes, colBits) = Math.DivRem(col, 8);
-        return new BitmapPointer(rowSpan[colBytes..], (ushort)(7 - colBits), (ushort)(Width - col));
+        return new BitmapPointer(rowSpan[colBytes..], (int)(7 - colBits), (int)(Width - col));
     }
 }
 

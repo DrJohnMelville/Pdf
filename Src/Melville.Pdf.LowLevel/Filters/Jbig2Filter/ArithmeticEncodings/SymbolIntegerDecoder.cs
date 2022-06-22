@@ -30,5 +30,5 @@ public readonly ref struct SymbolIntegerDecoder
     private int RemoveLengthMarkerBit(int ret) => ret - dict.ContextEntryCount;
 
     private int GetNextBit(ref SequenceReader<byte> source, int context) => 
-        decoder.GetBit(ref source, ref dict.EntryForContext((ushort)context));
+        decoder.GetBit(ref source, ref dict.EntryForContext((int)context));
 }

@@ -7,18 +7,18 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 public ref partial struct BitmapPointer
 {
     private static readonly byte[] zeroArray = { 0 };
-    public static BitmapPointer EmptyRow => new(zeroArray.AsSpan(), ushort.MaxValue, 0);
+    public static BitmapPointer EmptyRow => new(zeroArray.AsSpan(), int.MaxValue, 0);
     
     [FromConstructor]private Span<byte> bits;
-    [FromConstructor]private ushort bitOffset;
-    [FromConstructor] private ushort bitsLeft;
+    [FromConstructor]private int bitOffset;
+    [FromConstructor] private int bitsLeft;
     private byte current = 0;
 
     partial void OnConstructed()
     {
         if (bits.Length == 0)
         {
-            bitOffset = ushort.MaxValue;
+            bitOffset = int.MaxValue;
         }
         else
         {
@@ -37,7 +37,7 @@ public ref partial struct BitmapPointer
     {
         if (bitsLeft <= 1)
         {
-            bitOffset = ushort.MaxValue;
+            bitOffset = int.MaxValue;
             return;
         }
         bitsLeft--;
@@ -57,14 +57,14 @@ public ref partial struct BitmapPointer
     {
         var ret = this with
         {
-            bitOffset =(ushort) (extraBits + bitOffset),
-            bitsLeft = (ushort) (extraBits + bitsLeft)
+            bitOffset =(int) (extraBits + bitOffset),
+            bitsLeft = (int) (extraBits + bitsLeft)
         };
         return ret;
     }
 
     public BitmapPointer SelectRowLength(int col, int width)
     {
-        return this with { bitsLeft = (ushort)Math.Min(width - col, bitsLeft) };
+        return this with { bitsLeft = (int)Math.Min(width - col, bitsLeft) };
     }
 }

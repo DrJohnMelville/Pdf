@@ -4,9 +4,9 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 public readonly struct SymbolDictionaryFlags
 {
-    private readonly ushort flags;
+    private readonly int flags;
 
-    public SymbolDictionaryFlags(ushort flags)
+    public SymbolDictionaryFlags(int flags)
     {
         this.flags = flags;
     }

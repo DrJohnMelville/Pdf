@@ -6,7 +6,7 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
 
 public struct TypicalIntegerDecoder 
 {
-    private ushort value;
+    private int value;
     private readonly ContextStateDict dict;
     public MQDecoder Decoder { get; }
 
@@ -71,7 +71,7 @@ public struct TypicalIntegerDecoder
     private void UpdateContext(int bit)
     {
         Debug.Assert(bit is 0 or 1);
-        value = (ushort)(value < 256 ? ShiftBitIntoPrev(bit) : RemoveTopBit(ShiftBitIntoPrev(bit)));
+        value = (int)(value < 256 ? ShiftBitIntoPrev(bit) : RemoveTopBit(ShiftBitIntoPrev(bit)));
     }
     private int RemoveTopBit(int shiftedPrev) => (shiftedPrev & 511) | 256;
     private int ShiftBitIntoPrev(int bit) => (value << 1) | bit;

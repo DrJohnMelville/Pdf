@@ -19,7 +19,7 @@ public readonly struct BitmapTemplate
         this.runs = runs;
     }
 
-    public ushort ReadContext(IBinaryBitmap bitmap, int row, int col, ushort ret = 0)
+    public int ReadContext(IBinaryBitmap bitmap, int row, int col, int ret = 0)
     {
         foreach (var run in runs)
         {

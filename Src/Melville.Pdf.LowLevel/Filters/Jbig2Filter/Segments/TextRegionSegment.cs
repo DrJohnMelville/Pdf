@@ -15,9 +15,9 @@ public enum ReferenceCorner : byte
 
 public readonly struct TextRegionHuffmanFlags
 {
-    private readonly ushort data;
+    private readonly int data;
 
-    public TextRegionHuffmanFlags(ushort data)
+    public TextRegionHuffmanFlags(int data)
     {
         this.data = data;
     }

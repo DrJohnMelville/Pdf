@@ -25,10 +25,10 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
     private readonly BinaryBitmap bitmap;
     private readonly MQDecoder state;
     private readonly ArithmeticBitmapReaderContext context;
-    private readonly ushort tgbd;
+    private readonly int tgbd;
     private readonly ISkipBitmap useSkip;
 
-    public ArithmeticGenericRegionDecodeProcedure(BinaryBitmap bitmap, MQDecoder state, ArithmeticBitmapReaderContext context, ushort tgbd,
+    public ArithmeticGenericRegionDecodeProcedure(BinaryBitmap bitmap, MQDecoder state, ArithmeticBitmapReaderContext context, int tgbd,
         ISkipBitmap useSkip)
     {
         this.bitmap = bitmap;

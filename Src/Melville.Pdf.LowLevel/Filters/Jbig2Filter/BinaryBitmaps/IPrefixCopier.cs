@@ -33,7 +33,7 @@ public sealed class SourceLessThanTargetOffsetPrefixCopier : IPrefixCopier
     public unsafe void CopyPrefix(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
         var bitDelta = copier.Plan.FirstDestBit - copier.Plan.FirstSourceBit;
-        ushort srcByte = *src++;
+        int srcByte = *src++;
         *dest = copier.Plan.PrefixSplicer().SplicePrefixByte(
             *dest, (byte)(srcByte>>bitDelta), copier.Plan.CombinationOperator);
         dest++;
@@ -47,7 +47,7 @@ public sealed class TargetLessThanSourceOffsetPrefixCopier : IPrefixCopier
     public unsafe void CopyPrefix(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
         var bitDelta = copier.Plan.FirstSourceBit - copier.Plan.FirstDestBit;
-        ushort srcByte = *src++;
+        int srcByte = *src++;
         srcByte <<= 8;
         srcByte |= *src++;
         *dest = copier.Plan.PrefixSplicer().SplicePrefixByte(

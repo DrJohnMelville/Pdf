@@ -38,7 +38,7 @@ public readonly struct GenericRefinementRegionSegmentParser
             regionHead, bitmap);
     }
 
-    private static ushort LtpContext(GenericRefinementRegionFlags flags) =>
+    private static int LtpContext(GenericRefinementRegionFlags flags) =>
         (flags.UseTpgron, flags.UseGrTemplate1) switch
         {
             (false, _) => 0,

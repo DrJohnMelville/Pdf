@@ -48,9 +48,9 @@ public readonly struct RefinementTemplateSet
         return ref ContextFor(contextIndex);
     }
 
-    public ref ContextEntry ContextFor(ushort context) => ref contextDictionary.EntryForContext(context);
+    public ref ContextEntry ContextFor(int context) => ref contextDictionary.EntryForContext(context);
 
-    private ushort ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
+    private int ComputeCompositeContext(IBinaryBitmap reference, IBinaryBitmap destination, int row, int col) =>
         destinationTemplate.ReadContext(destination, row, col, 
             referenceTemplate.ReadContext(reference, row, col));
 }

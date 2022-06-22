@@ -26,14 +26,14 @@ public readonly struct PageInformationFlags
 
 public readonly struct PageStripingInformation
 {
-    private readonly ushort rawData;
+    private readonly int rawData;
 
-    public PageStripingInformation(ushort rawData)
+    public PageStripingInformation(int rawData)
     {
         this.rawData = rawData;
     }
 
-    private const ushort StripedBitmask = 0x8000;
+    private const int StripedBitmask = 0x8000;
     public bool IsStriped => BitOperations.CheckBit(rawData, StripedBitmask);
     public int StripeSize => rawData & (~StripedBitmask);
 }

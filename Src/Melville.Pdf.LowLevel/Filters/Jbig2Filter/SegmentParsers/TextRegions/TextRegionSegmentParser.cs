@@ -44,7 +44,7 @@ public ref struct TextRegionSegmentParser
     private BinaryBitmap CreateBitmap()
     {
         var huffmanFlags = new TextRegionHuffmanFlags(
-            regionFlags.UseHuffman ? reader.ReadBigEndianUint16():(ushort)0);
+            regionFlags.UseHuffman ? reader.ReadBigEndianUint16():(int)0);
 
         var refinementTemplate = regionFlags.UsesRefinement
             ? new RefinementTemplateSet(ref reader, regionFlags.RefinementTemplate)

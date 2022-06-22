@@ -75,7 +75,7 @@ public static class GenericRegionSegmentParser
         }
     }
 
-    private static ushort TpgdonContext(GenericRegionSegmentFlags flags)
+    private static int TpgdonContext(GenericRegionSegmentFlags flags)
     {
         if (!flags.Tpgdon) return 0;
 

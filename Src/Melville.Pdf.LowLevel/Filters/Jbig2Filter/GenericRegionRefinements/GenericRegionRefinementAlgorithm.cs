@@ -15,7 +15,7 @@ public ref partial struct GenericRegionRefinementAlgorithm
     [FromConstructor]private readonly IBinaryBitmap reference;
     [FromConstructor]private readonly RefinementTemplateSet template;
     [FromConstructor]private readonly MQDecoder decoder;
-    [FromConstructor] private readonly ushort ltpContext;
+    [FromConstructor] private readonly int ltpContext;
     private bool ltp = false;
     
     public void Read(ref SequenceReader<byte> source)

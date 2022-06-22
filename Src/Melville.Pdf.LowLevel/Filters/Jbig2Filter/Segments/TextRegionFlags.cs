@@ -2,9 +2,9 @@
 
 public readonly struct TextRegionFlags
 {
-    private readonly ushort data;
+    private readonly int data;
 
-    public TextRegionFlags(ushort data)
+    public TextRegionFlags(int data)
     {
         this.data = data;
     }

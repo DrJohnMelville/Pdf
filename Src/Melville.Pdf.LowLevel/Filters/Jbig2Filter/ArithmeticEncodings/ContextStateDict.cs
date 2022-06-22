@@ -28,6 +28,6 @@ public readonly struct ContextStateDict
         entries = new ContextEntry[1 << bitsInContextTemplate];
     }
 
-    public ref ContextEntry EntryForContext(ushort context) => ref entries[context];
+    public ref ContextEntry EntryForContext(int context) => ref entries[context];
     
 }
