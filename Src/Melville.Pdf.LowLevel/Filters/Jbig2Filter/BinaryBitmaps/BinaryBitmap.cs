@@ -119,7 +119,7 @@ public class BinaryBitmap: IBitmapCopyTarget
     public BitRowWriter StartWritingAt(int row, int column)
     {
         var pos = ComputeBitPosition(row, column);
-        return new BitRowWriter(bits, pos.ByteOffset, pos.BitOffsetRightOfMsb);
+        return new BitRowWriter(bits, pos.ByteOffset, 7 -pos.BitOffsetRightOfMsb);
     }
 
     public bool ContainsPixel(int row, int col) =>
