@@ -7,6 +7,15 @@ public interface IBulkByteCopy
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier);
 }
 
+public sealed class NullBulkByteCopy: IBulkByteCopy
+{
+    public static readonly IBulkByteCopy Instance = new NullBulkByteCopy();
+    private NullBulkByteCopy() { }
+    public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
+    {
+    }
+}
+
 public sealed class AlignedReplaceBulkCopy : IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new AlignedReplaceBulkCopy();
@@ -15,7 +24,7 @@ public sealed class AlignedReplaceBulkCopy : IBulkByteCopy
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
         var length = copier.Plan.WholeBytes;
-        System.Runtime.CompilerServices.Unsafe.CopyBlock(dest, src, length);
+        System.Runtime.CompilerServices.Unsafe.CopyBlock(dest, src, (uint)length);
         src += length;
         dest += length;
     }

@@ -6,9 +6,9 @@ public ref struct BitCopier
 {
     public OffsetReader Reader;
     public readonly RowCopyPlan Plan;
-    private IPrefixCopier prefixCopier;
-    private IBulkByteCopy bulkCopier;
-    private ByteSplicer postSplicer;
+    private readonly IBulkByteCopy prefixCopier;
+    private readonly IBulkByteCopy bulkCopier;
+    private readonly IBulkByteCopy postfixCopier;
 
     public BitCopier(in RowCopyPlan plan)
     {
@@ -16,7 +16,7 @@ public ref struct BitCopier
         Plan = plan;
         prefixCopier = plan.PrefixCopier();
         bulkCopier = plan.BulkCopier();
-        postSplicer = plan.PostSplicer();
+        postfixCopier = plan.PostfixCopier();
     }
 
     public unsafe void Copy(in Span<byte> src, in Span<byte> dest)
@@ -30,18 +30,18 @@ public ref struct BitCopier
 
     public unsafe void Copy(byte* src, byte* dest)
     {
-        prefixCopier.CopyPrefix(ref src, ref dest, ref this);
+        prefixCopier.Copy(ref src, ref dest, ref this);
         bulkCopier.Copy(ref src, ref dest, ref this);
-        TryCopySuffix(src, dest);
+        postfixCopier.Copy(ref src, ref dest, ref this);
     }
 
-    private unsafe void TryCopySuffix(byte* src, byte* dest)
-    {
-        if (HasSuffiBits())
-        {
-            var lastSource = Reader.ReadBye(ref src);
-            *dest = postSplicer.SplicePostFixByte(lastSource, *dest, Plan.CombinationOperator);
-        }
-    }
-    private bool HasSuffiBits() => Plan.SuffixBits > 0;
+    // private unsafe void TryCopySuffix(byte* src, byte* dest)
+    // {
+    //     if (HasSuffiBits())
+    //     {
+    //         var lastSource = Reader.ReadBye(ref src);
+    //         *dest = postSplicer.SplicePostFixByte(lastSource, *dest, Plan.CombinationOperator);
+    //     }
+    // }
+//    private bool HasSuffiBits() => Plan.SuffixBits > 0;
 }

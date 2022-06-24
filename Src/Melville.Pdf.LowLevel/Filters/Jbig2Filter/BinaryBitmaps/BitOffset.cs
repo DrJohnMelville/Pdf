@@ -29,4 +29,6 @@ public readonly struct BitOffset
 
     public BitOffset AddRows(int lines, int stride) => 
         new((lines * stride) + ByteOffset, BitOffsetRightOfMsb);
+
+    public bool LengthCrossesByte(int length) => BitOffsetRightOfMsb + length > 8;
 }

@@ -18,7 +18,6 @@ public static class Timer
     {
         public static async Task DoTime(Func<Task> item)
         {
-            Console.WriteLine("Begin Test");
             var sw = new Stopwatch();
             sw.Start();
             await item();

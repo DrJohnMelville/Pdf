@@ -26,18 +26,24 @@ public class BinaryBitmap: IBitmapCopyTarget
             new BinaryBitmapCopyDimension(0, source.Width, source.Width, column, Width));
 
         if (copyRegion.IsTrivial()) return;
-        
-        if (copyRegion.UseSlowAlgorithm)
-            PasteBitsFromSlow(source, combOp, copyRegion);
-        else
-            PasteBitsFromFast(source, combOp, copyRegion);
+        CopyBitsFrom(source, combOp, copyRegion);
     }
 
-    private void PasteBitsFromFast(
+    private void CopyBitsFrom(
         IBinaryBitmap source, CombinationOperator combOp, in BinaryBitmapCopyRegion copyRegion)
     {
         var srcLocation = source.ColumnLocation(copyRegion.Horizontal.SrcBegin);
         var destLocation = ColumnLocation(copyRegion.Horizontal.DestBegin);
+
+        // if (
+        //     !(srcLocation.Offset.LengthCrossesByte(copyRegion.Horizontal.Length) &&
+        //       destLocation.Offset.LengthCrossesByte(copyRegion.Horizontal.Length) )
+        //     )
+        // {
+        //     PasteBitsFromSlow(source, combOp, copyRegion);
+        //     return;
+        // }
+
         unsafe
         {
             fixed(byte* srcPointer = srcLocation.Array)
@@ -45,7 +51,7 @@ public class BinaryBitmap: IBitmapCopyTarget
             {
                 var plan = BitCopierFactory.Create(
                     srcLocation.Offset.BitOffsetRightOfMsb, destLocation.Offset.BitOffsetRightOfMsb,
-                    (uint)copyRegion.Horizontal.Length, combOp);
+                    copyRegion.Horizontal.Length, combOp);
                 
                 // capture these properties 
                 var rows = copyRegion.Vertical.Length;
@@ -53,9 +59,9 @@ public class BinaryBitmap: IBitmapCopyTarget
                 var destStride = Stride;
                 
                 var currentSrc = BitBasisPointer(
-                    srcPointer, copyRegion.Vertical.SrcBegin, sourceStride, (uint)srcLocation.Offset.ByteOffset);
+                    srcPointer, copyRegion.Vertical.SrcBegin, sourceStride, srcLocation.Offset.ByteOffset);
                 var currentDest = BitBasisPointer(
-                    destPointer, copyRegion.Vertical.DestBegin, destStride, (uint)destLocation.Offset.ByteOffset);
+                    destPointer, copyRegion.Vertical.DestBegin, destStride, destLocation.Offset.ByteOffset);
                 
                 for (int i = 0; i < rows; i++)
                 {
@@ -69,7 +75,7 @@ public class BinaryBitmap: IBitmapCopyTarget
             
     }
 
-    private static unsafe byte* BitBasisPointer(byte* pointer, int row, int stride, uint column) => 
+    private static unsafe byte* BitBasisPointer(byte* pointer, int row, int stride, int column) => 
         pointer + column + (row * stride);
 
     private void PasteBitsFromSlow(
