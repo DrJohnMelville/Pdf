@@ -84,7 +84,9 @@ public class BinaryBitmapTest
         var src = "00001111 11111111 11111111 11110000".BitsFromBinary();
         var dest = result.BitsFromBinary();
         dest.AsSpan().Clear();
-        BitCopierFactory.Create(srcBits, destBits, bitlen, CombinationOperator.Replace).Copy(src.AsSpan(), dest.AsSpan());
+        new BitCopierFactory(srcBits, destBits, bitlen, CombinationOperator.Replace)
+            .Create()
+            .Copy(src.AsSpan(), dest.AsSpan());
         Assert.Equal(result.BitsFromBinary(), dest);
         
     }
@@ -109,5 +111,39 @@ public class BinaryBitmapTest
         Assert.Equal(result, dest.BitmapString());
     }
 
+    [Theory]
+    [InlineData(0,0,4, "BBBB............")]
+    [InlineData(1,0,4, "BBBB............")]
+    [InlineData(7,0,4, "B...............")]
+    [InlineData(0,1,4, ".BBBB...........")]
+    [InlineData(1,1,4, ".BBBB...........")]
+    [InlineData(0,1,6, ".BBBBBB.........")]
+    [InlineData(0,1,7, ".BBBBBBB........")]
+    [InlineData(0,6,4, "......BBBB......")]
+    [InlineData(3,6,4, "......BBBB......")]
+    [InlineData(7,6,4, "......B.........")]
+    [InlineData(6,7,4, ".......BB.......")]
+    // need some cases where 2 bits of source go into one bit of dest
+    public void ShortCopy2(int srcCol, int destCol, int length, string result)
+    {
+        var source = "BBBBBBBB ........".AsBinaryBitmap(1, 16);
+        var extSource = new OffsetBitmap(source, 0, srcCol, 1, length);
+        var dest = new BinaryBitmap(1, 16);
+        dest.PasteBitsFrom(0, destCol, extSource, CombinationOperator.Replace);
+        Assert.Equal(result, dest.BitmapString());
+    }
 
+    [Theory]
+    [InlineData("B.B..B.....B...B", 7, 4, 5, "........B.......")]
+    [InlineData("BBBB.B...B..B..B", 5, 5, 7, ".....B...B......")]
+    public void BitmapCopyBugs(string sourceString, int srcPos, int destPos, int length, string result)
+    {
+        var source = sourceString.AsBinaryBitmap(1,16);
+        var finalSource = new OffsetBitmap(source, 0, srcPos, 1, length);
+
+        var fastDest = new BinaryBitmap(1, 16);
+        fastDest.PasteBitsFrom(0, destPos, finalSource, CombinationOperator.Replace);
+        Assert.Equal(result, fastDest.BitmapString());
+        
+    }
 }

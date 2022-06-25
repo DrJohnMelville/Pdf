@@ -13,6 +13,16 @@ public enum CombinationOperator
 
 public static class CombinatiorOperatorImplementation
 {
+    public static int Combine(this CombinationOperator operation, int prior, int copied) =>
+        operation switch
+        {
+            CombinationOperator.Or => prior | copied,
+            CombinationOperator.And => prior & copied,
+            CombinationOperator.Xor => prior ^ copied,
+            CombinationOperator.Xnor => ~(prior ^ copied),
+            CombinationOperator.Replace => copied,
+            _ => throw new ArgumentOutOfRangeException(nameof(operation), operation, null)
+        };
     public static byte Combine(this CombinationOperator operation, byte prior, byte copied) =>
         operation switch
         {

@@ -1,6 +1,5 @@
 ﻿namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
-
 public sealed class NoTargetOffsetPrefixCopier : IBulkByteCopy
 {
     public static readonly NoTargetOffsetPrefixCopier Instance = new();
@@ -9,7 +8,6 @@ public sealed class NoTargetOffsetPrefixCopier : IBulkByteCopy
     {
         copier.Reader.Initialize(ref src);
     }
-    
 }
 public sealed class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
 {
@@ -20,6 +18,7 @@ public sealed class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
         *dest = copier.Plan.PrefixSplicer().SplicePrefixByte(
             *dest, *src++, copier.Plan.CombinationOperator);
         dest++;
+        copier.Reader = new OffsetReader(0);
     }
 }
 public sealed class SourceLessThanTargetOffsetPrefixCopier : IBulkByteCopy
@@ -43,12 +42,21 @@ public sealed class TargetLessThanSourceOffsetPrefixCopier : IBulkByteCopy
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
         var bitDelta = copier.Plan.FirstSourceBit - copier.Plan.FirstDestBit;
+        var srcByte = ReadTwoBytes(ref src);
+        
+        var bitsToCopy = (byte)(srcByte>>(8 - bitDelta));
+        var splicedByte = copier.Plan.PrefixSplicer().SplicePrefixByte(
+            *dest, bitsToCopy, copier.Plan.CombinationOperator);
+        *dest = splicedByte;
+        dest++;
+        copier.Reader = new OffsetReader((byte)bitDelta, srcByte);
+    }
+
+    private static unsafe int ReadTwoBytes(ref byte* src)
+    {
         int srcByte = *src++;
         srcByte <<= 8;
         srcByte |= *src++;
-        *dest = copier.Plan.PrefixSplicer().SplicePrefixByte(
-            *dest, (byte)(srcByte>>bitDelta), copier.Plan.CombinationOperator);
-        dest++;
-        copier.Reader = new OffsetReader((byte)bitDelta, srcByte);
+        return srcByte;
     }
 }
