@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
@@ -94,7 +93,7 @@ public class BinaryBitmap: IBitmapCopyTarget
         bits = new byte[BufferLength()];
     }
 
-    private int BufferLength() => Stride * Height;
+    public int BufferLength() => Stride * Height;
 
     protected void ResizeToHeight(int newHeight)
     {
@@ -107,16 +106,6 @@ public class BinaryBitmap: IBitmapCopyTarget
 
     public void CopyRow(int source, int target) =>
         bits.AsSpan(source*Stride, Stride).CopyTo(bits.AsSpan(target*Stride, Stride));
-
-    public void InvertBits()
-    {
-        for (int i = 0; i < bits.Length; i++)
-        {
-            bits[i] = (byte)~bits[i];
-        }
-    }
-    
-    public Stream BitsAsStream() => new MemoryStream(bits, 0, BufferLength());
 
     public BitmapPointer PointerFor(int row, int col)
     {
