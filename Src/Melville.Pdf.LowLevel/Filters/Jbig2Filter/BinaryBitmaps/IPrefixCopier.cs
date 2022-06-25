@@ -15,7 +15,7 @@ public sealed class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
     private EqualSourceTargetOffsetPrefixCopier() { }
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
-        *dest = copier.Plan.PrefixSplicer().SplicePrefixByte(
+        *dest = copier.Plan.PrefixSplicer.SplicePrefixByte(
             *dest, *src++, copier.Plan.CombinationOperator);
         dest++;
         copier.Reader = new OffsetReader(0);
@@ -29,7 +29,7 @@ public sealed class SourceLessThanTargetOffsetPrefixCopier : IBulkByteCopy
     {
         var bitDelta = copier.Plan.FirstDestBit - copier.Plan.FirstSourceBit;
         int srcByte = *src++;
-        *dest = copier.Plan.PrefixSplicer().SplicePrefixByte(
+        *dest = copier.Plan.PrefixSplicer.SplicePrefixByte(
             *dest, (byte)(srcByte>>bitDelta), copier.Plan.CombinationOperator);
         dest++;
         copier.Reader = new OffsetReader((byte)(8 - bitDelta), srcByte);
@@ -45,7 +45,7 @@ public sealed class TargetLessThanSourceOffsetPrefixCopier : IBulkByteCopy
         var srcByte = ReadTwoBytes(ref src);
         
         var bitsToCopy = (byte)(srcByte>>(8 - bitDelta));
-        var splicedByte = copier.Plan.PrefixSplicer().SplicePrefixByte(
+        var splicedByte = copier.Plan.PrefixSplicer.SplicePrefixByte(
             *dest, bitsToCopy, copier.Plan.CombinationOperator);
         *dest = splicedByte;
         dest++;

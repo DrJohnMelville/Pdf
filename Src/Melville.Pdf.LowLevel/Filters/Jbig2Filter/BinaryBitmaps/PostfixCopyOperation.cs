@@ -7,7 +7,7 @@ public class PostfixCopyOperation : IBulkByteCopy
     private PostfixCopyOperation() { }
     public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
     {
-        var postSplicer = copier.Plan.PostSplicer();
+        var postSplicer = copier.Plan.PostSplicer;
         var lastSource = copier.Reader.ReadBye(ref src);
         *dest = postSplicer.SplicePostFixByte(lastSource, *dest, copier.Plan.CombinationOperator);
     }
