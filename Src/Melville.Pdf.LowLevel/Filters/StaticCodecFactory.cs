@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 using Melville.Pdf.LowLevel.Filters.ExternalFilters;
 using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
+using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
@@ -30,6 +31,7 @@ public static class StaticCodecFactory
             { KnownNames.FlateDecode, new FlateCodecDefinition() },
             { KnownNames.DCTDecode, new DctDecoder() },
             { KnownNames.JBIG2Decode, new JbigToPdfAdapter()},
+            { KnownNames.JPXDecode, new JpxToPdfAdapter()},
             { KnownNames.CCITTFaxDecode, new CodecDefinition(CcittFilterFactory.Encoder, CcittFilterFactory.Decoder) }
         };
 
