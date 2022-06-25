@@ -116,6 +116,8 @@
       <EmbeddedResource Include="Graphics\Images\JBig\600-6-0.jb2" />
       <None Remove="Graphics\Images\JBig\600-6-45.jb2" />
       <EmbeddedResource Include="Graphics\Images\JBig\600-6-45.jb2" />
+      <None Remove="Graphics\Images\Jpeg2000.jp2" />
+      <EmbeddedResource Include="Graphics\Images\Jpeg2000.jp2" />
     </ItemGroup>
 
     <ItemGroup>

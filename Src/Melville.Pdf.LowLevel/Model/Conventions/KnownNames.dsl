@@ -13,6 +13,7 @@ Filter:Crypt
 Filter:DCTDecode
 Filter:FlateDecode
 Filter:JBIG2Decode
+Filter:JPXDecode
 Filter:LZWDecode
 Filter:RunLengthDecode
 
