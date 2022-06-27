@@ -47,9 +47,9 @@ namespace Melville.CSJ2K.Icc.Tags
 		/// </param>
 		protected internal ICCXYZTypeReverse(int signature, byte[] data, int offset, int length):base(signature, data, offset, length)
 		{
-            z = ICCProfile.getInt(data, offset + 2 * ICCProfile.int_size);
-            y = ICCProfile.getInt(data, offset + 3 * ICCProfile.int_size);
-            x = ICCProfile.getInt(data, offset + 4 * ICCProfile.int_size);
+            z = BitReaders.getInt(data, offset + 2 * BitReaders.int_size);
+            y = BitReaders.getInt(data, offset + 3 * BitReaders.int_size);
+            x = BitReaders.getInt(data, offset + 4 * BitReaders.int_size);
 		}
 		
 		

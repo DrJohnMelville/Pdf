@@ -71,7 +71,7 @@ namespace Melville.CSJ2K.Icc.Tags
 			}
 			static Triplet()
 			{
-				size = 3 * ICCProfile.int_size;
+				size = 3 * BitReaders.int_size;
 			}
 		}
 		
@@ -114,16 +114,16 @@ namespace Melville.CSJ2K.Icc.Tags
 		/// </param>
 		protected internal ICCTagTable(byte[] data)
 		{
-            tagCount = ICCProfile.getInt(data, offTagCount);
+            tagCount = BitReaders.getInt(data, offTagCount);
 			
 			int offset = offTags;
 			for (int i = 0; i < tagCount; ++i)
 			{
-                int signature = ICCProfile.getInt(data, offset);
-                int tagOffset = ICCProfile.getInt(data, offset + ICCProfile.int_size);
-                int length = ICCProfile.getInt(data, offset + 2 * ICCProfile.int_size);
+                int signature = BitReaders.getInt(data, offset);
+                int tagOffset = BitReaders.getInt(data, offset + BitReaders.int_size);
+                int length = BitReaders.getInt(data, offset + 2 * BitReaders.int_size);
 				trios.Add(new Triplet(signature, tagOffset, length));
-				offset += 3 * ICCProfile.int_size;
+				offset += 3 * BitReaders.int_size;
 			}
 			
 			
@@ -151,8 +151,8 @@ namespace Melville.CSJ2K.Icc.Tags
 			int ntags = trios.Count;
 			
 			int countOff = ICCProfileHeader.size;
-			int tagOff = countOff + ICCProfile.int_size;
-			int dataOff = tagOff + 3 * ntags * ICCProfile.int_size;
+			int tagOff = countOff + BitReaders.int_size;
+			int dataOff = tagOff + 3 * ntags * BitReaders.int_size;
 			
 			raf.Seek(countOff, System.IO.SeekOrigin.Begin);
 			System.IO.BinaryWriter temp_BinaryWriter;
@@ -192,7 +192,7 @@ namespace Melville.CSJ2K.Icc.Tags
 		static ICCTagTable()
 		{
 			offTagCount = ICCProfileHeader.size;
-			offTags = offTagCount + ICCProfile.int_size;
+			offTags = offTagCount + BitReaders.int_size;
 		}
 	}
 }

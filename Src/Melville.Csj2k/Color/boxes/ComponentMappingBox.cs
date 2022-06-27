@@ -8,6 +8,7 @@
 /// </summary>
 using System;
 using System.Collections.Generic;
+using Melville.CSJ2K.Icc;
 using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
 using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
 using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
@@ -69,7 +70,7 @@ namespace Melville.CSJ2K.Color.Boxes
 		public int getCMP(int channel)
 		{
 			byte[] mapping = (byte[]) map[channel];
-			return ICCProfile.getShort(mapping, 0) & 0x0000ffff;
+			return BitReaders.getShort(mapping, 0) & 0x0000ffff;
 		}
 		
 		/// <summary>Return the channel type. </summary>
@@ -107,7 +108,7 @@ namespace Melville.CSJ2K.Color.Boxes
 		
 		private int getCMP(byte[] mapping)
 		{
-			return ICCProfile.getShort(mapping, 0) & 0x0000ffff;
+			return BitReaders.getShort(mapping, 0) & 0x0000ffff;
 		}
 		
 		private short getMTYP(byte[] mapping)

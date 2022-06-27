@@ -31,21 +31,11 @@ namespace Melville.CSJ2K.Icc
 			}
 			
 		}
-		
-		/// <summary> Factory method which returns a 1 component RestrictedICCProfile</summary>
-		/// <param name="c">Gray TRC curve
-		/// </param>
-		/// <returns> the RestrictedICCProfile
-		/// </returns>
-		public static new RestrictedICCProfile createInstance(ICCCurveType c)
-		{
-			return new MonochromeInputRestrictedProfile(c);
-		}
-		
+
 		/// <summary> Construct a 1 component RestrictedICCProfile</summary>
 		/// <param name="c">Gray TRC curve
 		/// </param>
-		private MonochromeInputRestrictedProfile(ICCCurveType c):base(c)
+		public MonochromeInputRestrictedProfile(ICCCurveType c):base(c)
 		{
 		}
 		
@@ -55,7 +45,7 @@ namespace Melville.CSJ2K.Icc
 		{
 			System.Text.StringBuilder rep = new System.Text.StringBuilder("Monochrome Input Restricted ICC profile" + eol);
 			
-			rep.Append("trc[GRAY]:" + eol).Append(trc[GRAY]).Append(eol);
+			rep.Append("trc[GRAY]:" + eol).Append(trc[ICCProfile.GRAY]).Append(eol);
 			
 			return rep.ToString();
 		}

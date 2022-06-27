@@ -105,7 +105,7 @@ namespace Melville.CSJ2K.Color.Boxes
 				
 				case 1: 
 					method = Melville.CSJ2K.Color.ColorSpace.MethodEnum.ENUMERATED;
-                    int cs = Melville.CSJ2K.Icc.ICCProfile.getInt(boxHeader, 3);
+                    int cs = Melville.CSJ2K.Icc.BitReaders.getInt(boxHeader, 3);
 					switch (cs)
 					{
 						case 16: 
@@ -188,7 +188,7 @@ namespace Melville.CSJ2K.Color.Boxes
 				
 				case 2: 
 					method = Melville.CSJ2K.Color.ColorSpace.MethodEnum.ICC_PROFILED;
-                    int size = Melville.CSJ2K.Icc.ICCProfile.getInt(boxHeader, 3);
+                    int size = Melville.CSJ2K.Icc.BitReaders.getInt(boxHeader, 3);
 					iccProfile = new byte[size];
 					in_Renamed.seek(dataStart + 3);
 					in_Renamed.readFully(iccProfile, 0, size);

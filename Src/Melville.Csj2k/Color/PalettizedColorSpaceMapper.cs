@@ -43,7 +43,7 @@ namespace Melville.CSJ2K.Color
 		internal int srcChannel = 0;
 		
 		/// <summary>Access to the palette box information. </summary>
-		private PaletteBox pbox;
+		private PaletteBox? pbox;
 		
 		/// <summary> Factory method for creating instances of this class.</summary>
 		/// <param name="src">-- source of image data

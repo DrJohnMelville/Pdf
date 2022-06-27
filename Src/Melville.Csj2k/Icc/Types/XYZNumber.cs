@@ -80,7 +80,7 @@ namespace Melville.CSJ2K.Icc.Types
 		/* end class XYZNumber */
 		static XYZNumber()
 		{
-			size = 3 * ICCProfile.int_size;
+			size = 3 * BitReaders.int_size;
 		}
 	}
 }

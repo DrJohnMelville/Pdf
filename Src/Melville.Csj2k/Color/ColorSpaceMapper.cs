@@ -269,7 +269,7 @@ namespace Melville.CSJ2K.Color
             // Perform ICCProfiling or ColorSpace tranfsormation.
             if (csMap.Method == ColorSpace.MethodEnum.ICC_PROFILED)
             {
-                return ICCProfiler.createInstance(src, csMap);
+                return new ICCProfiler(src, csMap);
             }
             else
             {

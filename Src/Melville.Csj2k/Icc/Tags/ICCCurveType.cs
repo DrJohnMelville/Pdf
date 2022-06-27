@@ -72,14 +72,14 @@ namespace Melville.CSJ2K.Icc.Tags
 		/// </param>
 		/// <param name="length">of data in the data array
 		/// </param>
-		protected internal ICCCurveType(int signature, byte[] data, int offset, int length):base(signature, data, offset, offset + 2 * ICCProfile.int_size)
+		protected internal ICCCurveType(int signature, byte[] data, int offset, int length):base(signature, data, offset, offset + 2 * BitReaders.int_size)
 		{
-            type = ICCProfile.getInt(data, offset);
-            reserved = ICCProfile.getInt(data, offset + ICCProfile.int_size);
-            nEntries = ICCProfile.getInt(data, offset + 2 * ICCProfile.int_size);
+            type = BitReaders.getInt(data, offset);
+            reserved = BitReaders.getInt(data, offset + BitReaders.int_size);
+            nEntries = BitReaders.getInt(data, offset + 2 * BitReaders.int_size);
 			entry_Renamed_Field = new int[nEntries];
 			for (int i = 0; i < nEntries; ++i)
-                entry_Renamed_Field[i] = ICCProfile.getShort(data, offset + 3 * ICCProfile.int_size + i * ICCProfile.short_size) & 0xFFFF;
+                entry_Renamed_Field[i] = BitReaders.getShort(data, offset + 3 * BitReaders.int_size + i * BitReaders.short_size) & 0xFFFF;
 		}
 		
 		

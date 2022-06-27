@@ -11,8 +11,6 @@
 namespace Melville.CSJ2K.Icc
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
     using System.Text;
 
     using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
@@ -47,232 +45,24 @@ namespace Melville.CSJ2K.Icc
     /// <author> 	Bruce A. Kern
     /// </author>
 
-    public abstract class ICCProfile
+    public class ICCProfile
     {
-        private int ProfileSize
-        {
-            get
-            {
-                return header.dwProfileSize;
-            }
+        private int ProfileClass => Header!.dwProfileClass;
 
-            set
-            {
-                header.dwProfileSize = value;
-            }
+        private int PCSType => Header!.dwPCSType;
 
-        }
-
-        private int CMMTypeSignature
-        {
-            get
-            {
-                return header.dwCMMTypeSignature;
-            }
-
-            set
-            {
-                header.dwCMMTypeSignature = value;
-            }
-
-        }
-
-        private int ProfileClass
-        {
-            get
-            {
-                return header.dwProfileClass;
-            }
-
-            set
-            {
-                header.dwProfileClass = value;
-            }
-
-        }
-
-        private int ColorSpaceType
-        {
-            get
-            {
-                return header.dwColorSpaceType;
-            }
-
-            set
-            {
-                header.dwColorSpaceType = value;
-            }
-
-        }
-
-        private int PCSType
-        {
-            get
-            {
-                return header.dwPCSType;
-            }
-
-            set
-            {
-                header.dwPCSType = value;
-            }
-
-        }
-
-        private int ProfileSignature
-        {
-            get
-            {
-                return header.dwProfileSignature;
-            }
-
-            set
-            {
-                header.dwProfileSignature = value;
-            }
-
-        }
-
-        private int PlatformSignature
-        {
-            get
-            {
-                return header.dwPlatformSignature;
-            }
-
-            set
-            {
-                header.dwPlatformSignature = value;
-            }
-
-        }
-
-        private int CMMFlags
-        {
-            get
-            {
-                return header.dwCMMFlags;
-            }
-
-            set
-            {
-                header.dwCMMFlags = value;
-            }
-
-        }
-
-        private int DeviceManufacturer
-        {
-            get
-            {
-                return header.dwDeviceManufacturer;
-            }
-
-            set
-            {
-                header.dwDeviceManufacturer = value;
-            }
-
-        }
-
-        private int DeviceModel
-        {
-            get
-            {
-                return header.dwDeviceModel;
-            }
-
-            set
-            {
-                header.dwDeviceModel = value;
-            }
-
-        }
-
-        private int DeviceAttributes1
-        {
-            get
-            {
-                return header.dwDeviceAttributes1;
-            }
-
-            set
-            {
-                header.dwDeviceAttributes1 = value;
-            }
-
-        }
+        private int ProfileSignature => Header!.dwProfileSignature;
 
         private int DeviceAttributesReserved
         {
             get
             {
-                return header.dwDeviceAttributesReserved;
+                return Header!.dwDeviceAttributesReserved;
             }
 
             set
             {
-                header.dwDeviceAttributesReserved = value;
-            }
-
-        }
-
-        private int RenderingIntent
-        {
-            get
-            {
-                return header.dwRenderingIntent;
-            }
-
-            set
-            {
-                header.dwRenderingIntent = value;
-            }
-
-        }
-
-        private int CreatorSig
-        {
-            get
-            {
-                return header.dwCreatorSig;
-            }
-
-            set
-            {
-                header.dwCreatorSig = value;
-            }
-
-        }
-
-        private ICCProfileVersion ProfileVersion
-        {
-            get
-            {
-                return header.profileVersion;
-            }
-
-            set
-            {
-                header.profileVersion = value;
-            }
-
-        }
-
-        private XYZNumber PCSIlluminant
-        {
-            set
-            {
-                header.PCSIlluminant = value;
-            }
-
-        }
-
-        private ICCDateTime DateTime
-        {
-            set
-            {
-                header.dateTime = value;
+                Header!.dwDeviceAttributesReserved = value;
             }
 
         }
@@ -280,28 +70,14 @@ namespace Melville.CSJ2K.Icc
         /// <summary> Access the profile header</summary>
         /// <returns> ICCProfileHeader
         /// </returns>
-        public virtual ICCProfileHeader Header
-        {
-            get
-            {
-                return header;
-            }
-
-        }
+        public ICCProfileHeader? Header { get; private set; } = null;
 
         /// <summary> Access the profile tag table</summary>
         /// <returns> ICCTagTable
         /// </returns>
-        public virtual ICCTagTable TagTable
-        {
-            get
-            {
-                return tags;
-            }
+        public ICCTagTable TagTable => tags;
 
-        }
-
-        private static readonly string eol = System.Environment.NewLine;
+        private static readonly string eol = Environment.NewLine;
 
         /// <summary>Gray index. </summary>
         // Renamed for convenience:
@@ -315,149 +91,8 @@ namespace Melville.CSJ2K.Icc
 
         /// <summary>RGB index.  </summary>
         public const int BLUE = 2;
-
-        /// <summary>Size of native type </summary>
-        public const int boolean_size = 1;
-
-        /// <summary>Size of native type </summary>
-        public const int byte_size = 1;
-
-        /// <summary>Size of native type </summary>
-        public const int char_size = 2;
-
-        /// <summary>Size of native type </summary>
-        public const int short_size = 2;
-
-        /// <summary>Size of native type </summary>
-        public const int int_size = 4;
-
-        /// <summary>Size of native type </summary>
-        public const int float_size = 4;
-
-        /// <summary>Size of native type </summary>
-        public const int long_size = 8;
-
-        /// <summary>Size of native type </summary>
-        public const int double_size = 8;
-
-        /* Bit twiddling constant for integral types. */
-
-        public const int BITS_PER_BYTE = 8;
-
-        /* Bit twiddling constant for integral types. */
-
-        public const int BITS_PER_SHORT = 16;
-
-        /* Bit twiddling constant for integral types. */
-
-        public const int BITS_PER_INT = 32;
-
-        /* Bit twiddling constant for integral types. */
-
-        public const int BITS_PER_LONG = 64;
-
-        /* Bit twiddling constant for integral types. */
-
-        public const int BYTES_PER_SHORT = 2;
-
-        /* Bit twiddling constant for integral types. */
-
-        public const int BYTES_PER_INT = 4;
-
-        /* Bit twiddling constant for integral types. */
-
-        public const int BYTES_PER_LONG = 8;
-
+        
         /* JP2 Box structure analysis help */
-
-        private class BoxType : System.Collections.Generic.Dictionary<int, string>
-        {
-
-            private static Dictionary<int, string> map =
-                new Dictionary<int, string>();
-
-            public static void put(int type, string desc)
-            {
-                map[type] = desc;
-            }
-
-            public static string get_Renamed(int type)
-            {
-                return map[type];
-            }
-
-            public static string colorSpecMethod(int meth)
-            {
-                switch (meth)
-                {
-
-                    case 2:
-                        return "Restricted ICC Profile";
-
-                    case 1:
-                        return "Enumerated Color Space";
-
-                    default:
-                        return "Undefined Color Spec Method";
-
-                }
-            }
-
-            static BoxType()
-            {
-                {
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.BITS_PER_COMPONENT_BOX, "BITS_PER_COMPONENT_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.CAPTURE_RESOLUTION_BOX, "CAPTURE_RESOLUTION_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.CHANNEL_DEFINITION_BOX, "CHANNEL_DEFINITION_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.COLOUR_SPECIFICATION_BOX, "COLOUR_SPECIFICATION_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.COMPONENT_MAPPING_BOX, "COMPONENT_MAPPING_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.CONTIGUOUS_CODESTREAM_BOX, "CONTIGUOUS_CODESTREAM_BOX");
-                    put(
-                        CSJ2K.j2k.fileformat.FileFormatBoxes.DEFAULT_DISPLAY_RESOLUTION_BOX,
-                        "DEFAULT_DISPLAY_RESOLUTION_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.FILE_TYPE_BOX, "FILE_TYPE_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.IMAGE_HEADER_BOX, "IMAGE_HEADER_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.INTELLECTUAL_PROPERTY_BOX, "INTELLECTUAL_PROPERTY_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.JP2_HEADER_BOX, "JP2_HEADER_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.JP2_SIGNATURE_BOX, "JP2_SIGNATURE_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.PALETTE_BOX, "PALETTE_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.RESOLUTION_BOX, "RESOLUTION_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.URL_BOX, "URL_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.UUID_BOX, "UUID_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.UUID_INFO_BOX, "UUID_INFO_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.UUID_LIST_BOX, "UUID_LIST_BOX");
-                    put(CSJ2K.j2k.fileformat.FileFormatBoxes.XML_BOX, "XML_BOX");
-                }
-            }
-        }
-
-
-        /// <summary> Creates an int from a 4 character String</summary>
-        /// <param name="fourChar">string representation of an integer
-        /// </param>
-        /// <returns> the integer which is denoted by the input String.
-        /// </returns>
-        public static int getIntFromString(string fourChar)
-        {
-            byte[] bytes = SupportClass.ToByteArray(fourChar);
-            return getInt(bytes, 0);
-        }
-
-        /// <summary> Create an XYZNumber from byte [] input</summary>
-        /// <param name="data">array containing the XYZNumber representation
-        /// </param>
-        /// <param name="offset">start of the rep in the array
-        /// </param>
-        /// <returns> the created XYZNumber
-        /// </returns>
-        public static XYZNumber getXYZNumber(byte[] data, int offset)
-        {
-            int x, y, z;
-            x = ICCProfile.getInt(data, offset);
-            y = ICCProfile.getInt(data, offset + int_size);
-            z = ICCProfile.getInt(data, offset + 2 * int_size);
-            return new XYZNumber(x, y, z);
-        }
 
         /// <summary> Create an ICCProfileVersion from byte [] input</summary>
         /// <param name="data">array containing the ICCProfileVersion representation
@@ -469,204 +104,12 @@ namespace Melville.CSJ2K.Icc
         public static ICCProfileVersion getICCProfileVersion(byte[] data, int offset)
         {
             byte major = data[offset];
-            byte minor = data[offset + byte_size];
-            byte resv1 = data[offset + 2 * byte_size];
-            byte resv2 = data[offset + 3 * byte_size];
+            byte minor = data[offset + BitReaders.byte_size];
+            byte resv1 = data[offset + 2 * BitReaders.byte_size];
+            byte resv2 = data[offset + 3 * BitReaders.byte_size];
             return new ICCProfileVersion(major, minor, resv1, resv2);
         }
-
-        /// <summary> Create an ICCDateTime from byte [] input</summary>
-        /// <param name="data">array containing the ICCProfileVersion representation
-        /// </param>
-        /// <param name="offset">start of the rep in the array
-        /// </param>
-        /// <returns> the created ICCProfileVersion
-        /// </returns>
-        public static ICCDateTime getICCDateTime(byte[] data, int offset)
-        {
-            short wYear = ICCProfile.getShort(data, offset); // Number of the actual year (i.e. 1994)
-            short wMonth = ICCProfile.getShort(data, offset + ICCProfile.short_size); // Number of the month (1-12)
-            short wDay = ICCProfile.getShort(data, offset + 2 * ICCProfile.short_size); // Number of the day
-            short wHours = ICCProfile.getShort(data, offset + 3 * ICCProfile.short_size); // Number of hours (0-23)
-            short wMinutes = ICCProfile.getShort(data, offset + 4 * ICCProfile.short_size); // Number of minutes (0-59)
-            short wSeconds = ICCProfile.getShort(data, offset + 5 * ICCProfile.short_size); // Number of seconds (0-59)
-            return new ICCDateTime(wYear, wMonth, wDay, wHours, wMinutes, wSeconds);
-        }
-
-
-        /// <summary> Create a String from a byte []. Optionally swap adjacent byte
-        /// pairs.  Intended to be used to create integer String representations
-        /// allowing for endian translations.
-        /// </summary>
-        /// <param name="bfr">data array
-        /// </param>
-        /// <param name="offset">start of data in array
-        /// </param>
-        /// <param name="length">length of data in array
-        /// </param>
-        /// <param name="swap">swap adjacent bytes?
-        /// </param>
-        /// <returns> String rep of data
-        /// </returns>
-        public static string getString(byte[] bfr, int offset, int length, bool swap)
-        {
-
-            byte[] result = new byte[length];
-            int incr = swap ? -1 : 1;
-            int start = swap ? offset + length - 1 : offset;
-            for (int i = 0, j = start; i < length; ++i)
-            {
-                result[i] = bfr[j];
-                j += incr;
-            }
-            return new string(SupportClass.ToCharArray(result));
-        }
-
-        /// <summary> Create a short from a two byte [], with optional byte swapping.</summary>
-        /// <param name="bfr">data array
-        /// </param>
-        /// <param name="off">start of data in array
-        /// </param>
-        /// <param name="swap">swap bytes?
-        /// </param>
-        /// <returns> native type from representation.
-        /// </returns>
-        public static short getShort(byte[] bfr, int off, bool swap)
-        {
-
-            int tmp0 = bfr[off] & 0xff; // Clear the sign extended bits in the int.
-            int tmp1 = bfr[off + 1] & 0xff;
-
-
-            return (short)(swap ? (tmp1 << BITS_PER_BYTE | tmp0) : (tmp0 << BITS_PER_BYTE | tmp1));
-        }
-
-        /// <summary> Create a short from a two byte [].</summary>
-        /// <param name="bfr">data array
-        /// </param>
-        /// <param name="off">start of data in array
-        /// </param>
-        /// <returns> native type from representation.
-        /// </returns>
-        public static short getShort(byte[] bfr, int off)
-        {
-            int tmp0 = bfr[off] & 0xff; // Clear the sign extended bits in the int.
-            int tmp1 = bfr[off + 1] & 0xff;
-            return (short)(tmp0 << BITS_PER_BYTE | tmp1);
-        }
-
-        /// <summary> Separate bytes in an int into a byte array lsb to msb order.</summary>
-        /// <param name="d">integer to separate
-        /// </param>
-        /// <returns> byte [] containing separated int.
-        /// </returns>
-        public static byte[] setInt(int d)
-        {
-            return setInt(d, new byte[BYTES_PER_INT]);
-        }
-
-        /// <summary> Separate bytes in an int into a byte array lsb to msb order.
-        /// Return the result in the provided array
-        /// </summary>
-        /// <param name="d">integer to separate
-        /// </param>
-        /// <param name="b">return output here.
-        /// </param>
-        /// <returns> reference to output.
-        /// </returns>
-        public static byte[] setInt(int d, byte[] b)
-        {
-            if (b == null) b = new byte[BYTES_PER_INT];
-            for (int i = 0; i < BYTES_PER_INT; ++i)
-            {
-                b[i] = (byte)(d & 0x0ff);
-                d = d >> BITS_PER_BYTE;
-            }
-            return b;
-        }
-
-        /// <summary> Separate bytes in a long into a byte array lsb to msb order.</summary>
-        /// <param name="d">long to separate
-        /// </param>
-        /// <returns> byte [] containing separated int.
-        /// </returns>
-        public static byte[] setLong(long d)
-        {
-            return setLong(d, new byte[BYTES_PER_INT]);
-        }
-
-        /// <summary> Separate bytes in a long into a byte array lsb to msb order.
-        /// Return the result in the provided array
-        /// </summary>
-        /// <param name="d">long to separate
-        /// </param>
-        /// <param name="b">return output here.
-        /// </param>
-        /// <returns> reference to output.
-        /// </returns>
-        public static byte[] setLong(long d, byte[] b)
-        {
-            if (b == null) b = new byte[BYTES_PER_LONG];
-            for (int i = 0; i < BYTES_PER_LONG; ++i)
-            {
-                b[i] = (byte)(d & 0x0ff);
-                d = d >> BITS_PER_BYTE;
-            }
-            return b;
-        }
-
-
-        /// <summary> Create an int from a byte [4], with optional byte swapping.</summary>
-        /// <param name="bfr">data array
-        /// </param>
-        /// <param name="off">start of data in array
-        /// </param>
-        /// <param name="swap">swap bytes?
-        /// </param>
-        /// <returns> native type from representation.
-        /// </returns>
-        public static int getInt(byte[] bfr, int off, bool swap)
-        {
-
-            int tmp0 = getShort(bfr, off, swap) & 0xffff; // Clear the sign extended bits in the int.
-            int tmp1 = getShort(bfr, off + 2, swap) & 0xffff;
-
-            return swap ? (tmp1 << BITS_PER_SHORT | tmp0) : (tmp0 << BITS_PER_SHORT | tmp1);
-        }
-
-        /// <summary> Create an int from a byte [4].</summary>
-        /// <param name="bfr">data array
-        /// </param>
-        /// <param name="off">start of data in array
-        /// </param>
-        /// <returns> native type from representation.
-        /// </returns>
-        public static int getInt(byte[] bfr, int off)
-        {
-
-            int tmp0 = getShort(bfr, off) & 0xffff; // Clear the sign extended bits in the int.
-            int tmp1 = getShort(bfr, off + 2) & 0xffff;
-
-            return tmp0 << BITS_PER_SHORT | tmp1;
-        }
-
-        /// <summary> Create an long from a byte [8].</summary>
-        /// <param name="bfr">data array
-        /// </param>
-        /// <param name="off">start of data in array
-        /// </param>
-        /// <returns> native type from representation.
-        /// </returns>
-        public static long getLong(byte[] bfr, int off)
-        {
-
-            long tmp0 = getInt(bfr, off) & unchecked((int)0xffffffff); // Clear the sign extended bits in the int.
-            long tmp1 = getInt(bfr, off + 4) & unchecked((int)0xffffffff);
-
-            return tmp0 << BITS_PER_INT | tmp1;
-        }
-
-
+        
         /// <summary>signature    </summary>
         // Define the set of standard signature and type values
         // Because of the endian issues and byte swapping, the profile codes must
@@ -675,9 +118,6 @@ namespace Melville.CSJ2K.Icc
 
         public static readonly int kdwProfileSignature;
 
-        /// <summary>signature    </summary>
-        public static readonly int kdwProfileSigReverse;
-
         /// <summary>profile type </summary>
         public static readonly int kdwInputProfile;
 
@@ -685,19 +125,7 @@ namespace Melville.CSJ2K.Icc
         public static readonly int kdwDisplayProfile;
 
         /// <summary>tag type     </summary>
-        public static readonly int kdwRGBData;
-
-        /// <summary>tag type     </summary>
-        public static readonly int kdwGrayData;
-
-        /// <summary>tag type     </summary>
         public static readonly int kdwXYZData;
-
-        /// <summary>input type   </summary>
-        public const int kMonochromeInput = 0;
-
-        /// <summary>input type   </summary>
-        public const int kThreeCompInput = 1;
 
         /// <summary>tag signature </summary>
         public static readonly int kdwGrayTRCTag;
@@ -720,29 +148,13 @@ namespace Melville.CSJ2K.Icc
         /// <summary>tag signature </summary>
         public static readonly int kdwBlueTRCTag;
 
-        /// <summary>tag signature </summary>
-        public static readonly int kdwCopyrightTag;
 
-        /// <summary>tag signature </summary>
-        public static readonly int kdwMediaWhiteTag;
+        private ICCTagTable? tags = null;
 
-        /// <summary>tag signature </summary>
-        public static readonly int kdwProfileDescTag;
-
-
-        private ICCProfileHeader header = null;
-
-        private ICCTagTable tags = null;
-
-        private byte[] profile = null;
+        private byte[]? profile = null;
 
         //private byte[] data = null;
-        private ParameterList pl = null;
-
-        private ICCProfile()
-        {
-            throw new ICCProfileException("illegal to invoke empty constructor");
-        }
+        private ParameterList? pl = null;
 
         /// <summary> ParameterList constructor </summary>
         /// <param name="csb">provides colorspace information
@@ -763,7 +175,7 @@ namespace Melville.CSJ2K.Icc
         /// </exception>
         private void initProfile(byte[] data)
         {
-            header = new ICCProfileHeader(data);
+            Header = new ICCProfileHeader(data);
             tags = ICCTagTable.createInstance(data);
 
 
@@ -800,7 +212,7 @@ namespace Melville.CSJ2K.Icc
         {
             StringBuilder rep = new StringBuilder("[ICCProfile:");
             StringBuilder body = new StringBuilder();
-            body.Append(eol).Append(header);
+            body.Append(eol).Append(Header);
             body.Append(eol).Append(eol).Append(tags);
             rep.Append(ColorSpace.indent("  ", body));
             return rep.Append("]").ToString();
@@ -928,7 +340,7 @@ namespace Melville.CSJ2K.Icc
         /// </returns>
         /// <exception cref="ICCProfileInvalidException">no curve data
         /// </exception>
-        public virtual RestrictedICCProfile parse()
+        public RestrictedICCProfile parse()
         {
             // The next step is to determine which Restricted ICC type is used by this profile.
             // Unfortunately, the only way to do this is to look through the tag table for
@@ -967,28 +379,15 @@ namespace Melville.CSJ2K.Icc
             throw new ICCProfileInvalidException("curve data not found in profile");
         }
 
-        /// <summary> Output this ICCProfile to a RandomAccessFile</summary>
-        /// <param name="os">output file
-        /// </param>
-        public virtual void write(Stream os)
-        {
-            Header.write(os);
-            TagTable.write(os);
-        }
-
 
         /* end class ICCProfile */
 
         static ICCProfile()
         {
             kdwProfileSignature = GetTagInt("acsp");
-            kdwProfileSigReverse = GetTagInt("psca");
             kdwInputProfile = GetTagInt("scnr");
             kdwDisplayProfile = GetTagInt("mntr");
-            kdwRGBData = GetTagInt("RGB ");
-            kdwGrayData = GetTagInt("GRAY");
             kdwXYZData = GetTagInt("XYZ ");
-
             kdwGrayTRCTag = GetTagInt("kTRC");
             kdwRedColorantTag = GetTagInt("rXYZ");
             kdwGreenColorantTag = GetTagInt("gXYZ");
@@ -996,9 +395,6 @@ namespace Melville.CSJ2K.Icc
             kdwRedTRCTag = GetTagInt("rTRC");
             kdwGreenTRCTag = GetTagInt("gTRC");
             kdwBlueTRCTag = GetTagInt("bTRC");
-            kdwCopyrightTag = GetTagInt("cprt");
-            kdwMediaWhiteTag = GetTagInt("wtpt");
-            kdwProfileDescTag = GetTagInt("desc");
         }
 
         private static int GetTagInt(string tag)

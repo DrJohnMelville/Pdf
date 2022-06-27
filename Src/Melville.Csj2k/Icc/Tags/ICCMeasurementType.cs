@@ -20,15 +20,15 @@ namespace Melville.CSJ2K.Icc.Tags
         /// <param name="offset">to data in the data array</param>
         /// <param name="length">of data in the data array</param>
         protected internal ICCMeasurementType(int signature, byte[] data, int offset, int length)
-            : base(signature, data, offset, offset + 2 * ICCProfile.int_size)
+            : base(signature, data, offset, offset + 2 * BitReaders.int_size)
         {
-            type = ICCProfile.getInt(data, offset);
-            reserved = ICCProfile.getInt(data, offset + ICCProfile.int_size);
-            observer = ICCProfile.getInt(data, offset + ICCProfile.int_size);
-            backing = ICCProfile.getXYZNumber(data, offset + ICCProfile.int_size);
-            geometry = ICCProfile.getInt(data, offset + (ICCProfile.int_size*3));
-            flare = ICCProfile.getInt(data, offset + ICCProfile.int_size);
-            illuminant = ICCProfile.getInt(data, offset + ICCProfile.int_size);
+            type = BitReaders.getInt(data, offset);
+            reserved = BitReaders.getInt(data, offset + BitReaders.int_size);
+            observer = BitReaders.getInt(data, offset + BitReaders.int_size);
+            backing = BitReaders.getXYZNumber(data, offset + BitReaders.int_size);
+            geometry = BitReaders.getInt(data, offset + (BitReaders.int_size*3));
+            flare = BitReaders.getInt(data, offset + BitReaders.int_size);
+            illuminant = BitReaders.getInt(data, offset + BitReaders.int_size);
         }
     }
 }

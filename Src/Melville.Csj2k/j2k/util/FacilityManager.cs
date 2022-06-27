@@ -34,6 +34,8 @@
  * Copyright (c) 1999/2000 JJ2000 Partners.
  */
 
+using Melville.CSJ2K.Util;
+
 namespace Melville.CSJ2K.j2k.util
 {
     using System;
@@ -68,7 +70,7 @@ namespace Melville.CSJ2K.j2k.util
 
         static FacilityManager()
         {
-            _defMsgLogger = J2kSetup.GetSinglePlatformInstance<IMsgLogger>();
+            _defMsgLogger = new DotnetMsgLogger();
         }
 
         #endregion

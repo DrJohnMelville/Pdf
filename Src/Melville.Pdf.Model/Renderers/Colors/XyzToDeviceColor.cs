@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Melville.Icc.ColorTransforms;
 using Melville.Icc.Model.Tags;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
@@ -39,7 +40,5 @@ public class XyzToDeviceColor : IColorTransform
 
     public static readonly IColorTransform FromD50 = 
         new XyzToDeviceColor(new FloatColor(.96422f, 1f, .82491f));
-    // public static readonly IColorTransform FromD65 = 
-    //     new XyzToDeviceColor(new FloatColor(0.95407f,1f, 1.08883f));
 }
 

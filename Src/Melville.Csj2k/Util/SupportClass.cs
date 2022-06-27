@@ -97,7 +97,7 @@ internal class SupportClass
 	/// <param name="byteArray">Byte array to process</param>
 	/// <returns>The transformed array</returns>
 	[return:NotNullIfNotNull("byteArray")]
-	public static sbyte[] ToSByteArray(byte[]? byteArray)
+	public static sbyte[]? ToSByteArray(byte[]? byteArray)
 	{
 		sbyte[]? sbyteArray = null;
 		if (byteArray != null)
@@ -348,7 +348,7 @@ internal class SupportClass
 		private bool includeDelims = false;
 
 		/// Char representation of the String to tokenize.
-		private char[] chars = null;
+		private char[]? chars = null;
 			
 		//The tokenizer uses the default delimiter set: the space character, the tab character, the newline character, and the carriage-return character and the form-feed character
 		private string delimiters = " \t\n\r\f";		

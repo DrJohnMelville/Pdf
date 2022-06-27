@@ -42,10 +42,10 @@ namespace Melville.CSJ2K.Icc.Tags
 		/// </param>
 		protected internal ICCTextType(int signature, byte[] data, int offset, int length):base(signature, data, offset, length)
 		{
-            type = ICCProfile.getInt(data, offset);
-			offset += ICCProfile.int_size;
-            reserved = ICCProfile.getInt(data, offset);
-			offset += ICCProfile.int_size;
+            type = BitReaders.getInt(data, offset);
+			offset += BitReaders.int_size;
+            reserved = BitReaders.getInt(data, offset);
+			offset += BitReaders.int_size;
 			int size = 0;
 			while (data[offset + size] != 0)
 				++size;

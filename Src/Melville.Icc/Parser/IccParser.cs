@@ -14,7 +14,7 @@ public readonly struct IccParser
 
     public IccParser(PipeReader source)
     {
-        this.source = source.AsCountingPipeReader();
+        this.source = source.AsCountingPipeReader(); 
     }
 
     public async ValueTask<IccProfile> ParseAsync()

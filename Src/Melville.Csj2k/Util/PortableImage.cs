@@ -43,13 +43,7 @@ namespace Melville.CSJ2K.Util
         #endregion
 
         #region METHODS
-
-        public T As<T>()
-        {
-            var image = ImageFactory.New(Width, Height, ToBytes(Width, Height, NumberOfComponents, _byteScaling, Data));
-            return image.As<T>();
-        }
-
+        
         public int[] GetComponent(int number)
         {
             if (number < 0 || number >= NumberOfComponents)

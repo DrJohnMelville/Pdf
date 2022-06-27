@@ -7,6 +7,7 @@
 /// ***************************************************************************
 /// </summary>
 using System;
+using Melville.CSJ2K.Icc;
 using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
 using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
 using RandomAccessIO = Melville.CSJ2K.j2k.io.RandomAccessIO;
@@ -71,9 +72,9 @@ namespace Melville.CSJ2K.Color.Boxes
 			in_Renamed.seek(dataStart);
 			in_Renamed.readFully(bfr, 0, 14);
 
-            height = ICCProfile.getInt(bfr, 0);
-            width = ICCProfile.getInt(bfr, 4);
-            nc = ICCProfile.getShort(bfr, 8);
+            height = BitReaders.getInt(bfr, 0);
+            width = BitReaders.getInt(bfr, 4);
+            nc = BitReaders.getShort(bfr, 8);
 			bpc = (short) (bfr[10] & 0x00ff);
 			c = (short) (bfr[11] & 0x00ff);
 			unk = bfr[12] == 0?true:false;

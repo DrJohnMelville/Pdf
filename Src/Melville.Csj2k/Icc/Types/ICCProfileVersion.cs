@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.Icc.Types
 		/* end class ICCProfileVersion */
 		static ICCProfileVersion()
 		{
-			size = 4 * ICCProfile.byte_size;
+			size = 4 * BitReaders.byte_size;
 		}
 	}
 }

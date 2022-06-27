@@ -264,7 +264,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 					return mainDefDecompType;
 				
 				case DEC_SPEC_COMP_DEF: 
-					return compMainDefDecompType[n];
+					return (compMainDefDecompType?? throw new InvalidDataException("No CompDefType"))[n] ;
 				
 				case DEC_SPEC_TILE_DEF: 
 					throw new NotImplementedException();

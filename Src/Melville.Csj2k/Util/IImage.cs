@@ -5,10 +5,5 @@ namespace Melville.CSJ2K.Util
 {
     public interface IImage
     {
-        #region METHODS
-
-        T As<T>();
-
-        #endregion
     }
 }

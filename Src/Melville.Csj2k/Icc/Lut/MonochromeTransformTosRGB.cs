@@ -79,7 +79,6 @@ namespace Melville.CSJ2K.Icc.Lut
 			body.Append(eol).Append("[lut = [short[" + lut.Length + "]]]");
 			
 			// Print the FP luts.
-			//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
 			body.Append(eol).Append("fLut=  " + fLut.ToString());
 			
 			rep.Append(ColorSpace.indent("  ", body));
@@ -95,30 +94,8 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <param name="dwInputShiftValue">value used to shift samples to positive
 		/// </param>
-		public MonochromeTransformTosRGB(RestrictedICCProfile ricc, int dwInputMaxValue, int dwInputShiftValue)
+		public MonochromeTransformTosRGB(ICCProfile profile)
 		{
-			
-			if (ricc.Type != RestrictedICCProfile.kMonochromeInput)
-				throw new System.ArgumentException("MonochromeTransformTosRGB: wrong type ICCProfile supplied");
-			
-			this.dwInputMaxValue = dwInputMaxValue;
-			lut = new short[dwInputMaxValue + 1];
-			fLut = LookUpTableFP.createInstance(ricc.trc[ICCProfile.GRAY], dwInputMaxValue + 1);
-			
-			// First calculate the value for the shadow region
-			int i;
-			for (i = 0; ((i <= dwInputMaxValue) && (fLut.lut[i] <= ksRGBShadowCutoff)); i++)
-			{
-				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				lut[i] = (short) (System.Math.Floor(ksRGB8ShadowSlope * (double) fLut.lut[i] + 0.5) - dwInputShiftValue);
-			}
-			
-			// Now calculate the rest   
-			for (; i <= dwInputMaxValue; i++)
-			{
-				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-				lut[i] = (short) (System.Math.Floor(ksRGB8ScaleAfterExp * System.Math.Pow((double) fLut.lut[i], ksRGBExponent) - ksRGB8ReduceAfterExp + 0.5) - dwInputShiftValue);
-			}
 		}
 		
 		/// <summary> Populate the output block by looking up the values in the lut, using the input
@@ -130,7 +107,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <exception cref="MonochromeTransformException">
 		/// </exception>
-		public virtual void  apply(DataBlkInt inb, DataBlkInt outb)
+		public void  apply(DataBlkInt inb, DataBlkInt outb)
 		{
 
             int i, j, o; //  x, y removed
@@ -172,7 +149,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <exception cref="MonochromeTransformException">
 		/// </exception>
-		public virtual void  apply(DataBlkFloat inb, DataBlkFloat outb)
+		public void  apply(DataBlkFloat inb, DataBlkFloat outb)
 		{
 
             int i, j, o; // x, y removed
@@ -197,7 +174,6 @@ namespace Melville.CSJ2K.Icc.Lut
 			o = inb.offset;
 			for (i = 0; i < inb.h * inb.w; ++i)
 			{
-				//UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
 				j = (int) in_Renamed[i];
 				if (j < 0)
 					j = 0;

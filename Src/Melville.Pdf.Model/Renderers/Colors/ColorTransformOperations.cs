@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Melville.Icc.ColorTransforms;
 using Melville.Icc.Model.Tags;
 
 namespace Melville.Pdf.Model.Renderers.Colors;

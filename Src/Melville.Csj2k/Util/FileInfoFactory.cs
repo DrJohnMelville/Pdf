@@ -17,7 +17,7 @@ namespace Melville.CSJ2K.Util
 
         static FileInfoFactory()
         {
-            _creator = J2kSetup.GetSinglePlatformInstance<IFileInfoCreator>();
+            _creator = new DotnetFileInfoCreator();
         }
 
         #endregion

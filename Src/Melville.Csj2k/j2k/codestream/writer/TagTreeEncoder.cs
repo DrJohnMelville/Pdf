@@ -41,6 +41,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Melville.CSJ2K.j2k.util;
 using Melville.CSJ2K.j2k.io;
 namespace Melville.CSJ2K.j2k.codestream.writer
@@ -178,13 +179,13 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// level 0 (leafs). The second index is the element within the level, in
 		/// lexicographical order. 
 		/// </summary>
-		protected internal int[][] treeVbak;
+		protected internal int[][]? treeVbak;
 		
 		/// <summary>The saved tag tree state. The first index is the level, starting at
 		/// level 0 (leafs). The second index is the element within the level, in
 		/// lexicographical order. 
 		/// </summary>
-		protected internal int[][] treeSbak;
+		protected internal int[][]? treeSbak;
 		
 		/// <summary>The saved state. If true the values and states of the tree have been
 		/// saved since the creation or last reset. 
@@ -270,6 +271,8 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 		/// <param name="h">The number of elements along the horizontal direction.
 		/// 
 		/// </param>
+		[MemberNotNull(nameof(treeV))]
+		[MemberNotNull(nameof(treeS))]
 		private void  init(int w, int h)
 		{
 			int i;

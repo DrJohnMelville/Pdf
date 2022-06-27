@@ -371,13 +371,7 @@ namespace Melville.CSJ2K
 
             return imgsrc;
         }
-
-        public static byte[] ToBytes(object imageObject, ParameterList? parameters = null)
-        {
-            var imgsrc = ImageFactory.ToPortableImageSource(imageObject);
-            return ToBytes(imgsrc, parameters);
-        }
-
+        
         public static byte[] ToBytes(BlkImgDataSrc imgsrc, ParameterList? parameters = null)
         {
             // Initialize default parameters

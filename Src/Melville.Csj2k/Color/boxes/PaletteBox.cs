@@ -8,6 +8,7 @@
 /// </summary>
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Melville.CSJ2K.Icc;
 using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
 using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
 using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
@@ -72,7 +73,7 @@ namespace Melville.CSJ2K.Color.Boxes
 			// Read the number of palette entries and columns per entry.
 			in_Renamed.seek((int) dataStart);
 			in_Renamed.readFully(bfr, 0, 3);
-            nentries = ICCProfile.getShort(bfr, 0) & 0x0000ffff;
+            nentries = BitReaders.getShort(bfr, 0) & 0x0000ffff;
 			ncolumns = bfr[2] & 0x0000ffff;
 			
 			// Read the bitdepths for each column
@@ -108,7 +109,7 @@ namespace Melville.CSJ2K.Color.Boxes
 						
 						case 2:  // 16 bits
 							in_Renamed.readFully(bfr, 0, 2);
-                            b = ICCProfile.getShort(bfr, 0);
+                            b = BitReaders.getShort(bfr, 0);
 							break;
 						
 						

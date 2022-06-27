@@ -60,9 +60,9 @@ namespace Melville.CSJ2K.Icc.Tags
 		/// </param>
 		protected internal ICCXYZType(int signature, byte[] data, int offset, int length):base(signature, data, offset, length)
 		{
-            x = ICCProfile.getInt(data, offset + 2 * ICCProfile.int_size);
-            y = ICCProfile.getInt(data, offset + 3 * ICCProfile.int_size);
-            z = ICCProfile.getInt(data, offset + 4 * ICCProfile.int_size);
+            x = BitReaders.getInt(data, offset + 2 * BitReaders.int_size);
+            y = BitReaders.getInt(data, offset + 3 * BitReaders.int_size);
+            z = BitReaders.getInt(data, offset + 4 * BitReaders.int_size);
 		}
 		
 		
@@ -77,14 +77,14 @@ namespace Melville.CSJ2K.Icc.Tags
 		//UPGRADE_TODO: Class 'java.io.RandomAccessFile' was converted to 'System.IO.FileStream' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioRandomAccessFile'"
 		public virtual void  write(System.IO.Stream raf)
 		{
-            byte[] xb = ICCProfile.setLong(x);
-            byte[] yb = ICCProfile.setLong(y);
-            byte[] zb = ICCProfile.setLong(z);
+            byte[] xb = BitReaders.setLong(x);
+            byte[] yb = BitReaders.setLong(y);
+            byte[] zb = BitReaders.setLong(z);
 			
             // CONVERSION PROBLEM?
-			raf.Write(xb, ICCProfile.int_size, 0);
-			raf.Write(yb, ICCProfile.int_size, 0);
-			raf.Write(zb, ICCProfile.int_size, 0);
+			raf.Write(xb, BitReaders.int_size, 0);
+			raf.Write(yb, BitReaders.int_size, 0);
+			raf.Write(zb, BitReaders.int_size, 0);
 		}
 		
 		

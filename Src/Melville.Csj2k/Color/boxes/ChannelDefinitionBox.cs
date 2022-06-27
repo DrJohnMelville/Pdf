@@ -8,6 +8,7 @@
 /// </summary>
 using System;
 using System.Collections.Generic;
+using Melville.CSJ2K.Icc;
 using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
 using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
 using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
@@ -60,14 +61,14 @@ namespace Melville.CSJ2K.Color.Boxes
 			
 			in_Renamed.seek(dataStart);
 			in_Renamed.readFully(bfr, 0, 2);
-            ndefs = ICCProfile.getShort(bfr, 0) & 0x0000ffff;
+            ndefs = BitReaders.getShort(bfr, 0) & 0x0000ffff;
 			
 			int offset = dataStart + 2;
 			in_Renamed.seek(offset);
 			for (int i = 0; i < ndefs; ++i)
 			{
 				in_Renamed.readFully(bfr, 0, 6);
-                int channel = ICCProfile.getShort(bfr, 0);
+                int channel = BitReaders.getShort(bfr, 0);
 				int[] channel_def = new int[3];
 				channel_def[0] = getCn(bfr);
 				channel_def[1] = getTyp(bfr);
@@ -128,19 +129,19 @@ namespace Melville.CSJ2K.Color.Boxes
 		/// <summary>Return the channel from the record.</summary>
 		private int getCn(byte[] bfr)
 		{
-            return ICCProfile.getShort(bfr, 0);
+            return BitReaders.getShort(bfr, 0);
 		}
 		
 		/// <summary>Return the channel type from the record.</summary>
 		private int getTyp(byte[] bfr)
 		{
-            return ICCProfile.getShort(bfr, 2);
+            return BitReaders.getShort(bfr, 2);
 		}
 		
 		/// <summary>Return the associated channel from the record.</summary>
 		private int getAsoc(byte[] bfr)
 		{
-            return ICCProfile.getShort(bfr, 4);
+            return BitReaders.getShort(bfr, 4);
 		}
 		
 		private int getCn(int[] bfr)

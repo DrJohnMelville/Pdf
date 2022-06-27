@@ -83,7 +83,7 @@ namespace Melville.CSJ2K.Icc.Types
 		/* end class ICCDateTime*/
 		static ICCDateTime()
 		{
-			size = 6 * ICCProfile.short_size;
+			size = 6 * BitReaders.short_size;
 		}
 	}
 }

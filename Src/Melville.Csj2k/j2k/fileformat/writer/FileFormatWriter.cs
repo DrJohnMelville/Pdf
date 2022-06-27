@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.fileformat.writer
 	{
 		
 		/// <summary>The file from which to read the codestream and write file</summary>
-		private BEBufferedRandomAccessFile fi;
+		private BEBufferedRandomAccessFile? fi;
 		
 		/// <summary>The stream from which to read the codestream and to write
 		/// the JP2 file

@@ -74,7 +74,6 @@ namespace Melville.CSJ2K.j2k.image
 			}
 			
 		}
-		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
 		/// <summary> Returns the array containing the data, or null if there is no data
 		/// array. The returned array is a int array.
 		/// 
@@ -90,7 +89,7 @@ namespace Melville.CSJ2K.j2k.image
 		/// <param name="arr">The data array to use. Must be a int array.
 		/// 
 		/// </param>
-		override public System.Object Data
+		override public System.Object? Data
 		{
 			get
 			{

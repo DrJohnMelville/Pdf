@@ -40,10 +40,10 @@ namespace Melville.CSJ2K.Icc.Types
 		* those codes required for Restricted ICC use are defined here.
 		*/
 		/// <summary>Profile header signature </summary>
-        private static int kdwProfileSignature = ICCProfile.getInt(System.Text.Encoding.UTF8.GetBytes("acsp"), 0);
+        private static int kdwProfileSignature = BitReaders.getInt(System.Text.Encoding.UTF8.GetBytes("acsp"), 0);
 		
 		/// <summary>Profile header signature </summary>
-		public static int kdwProfileSigReverse = ICCProfile.getInt(System.Text.Encoding.UTF8.GetBytes("psca"),0);
+		public static int kdwProfileSigReverse = BitReaders.getInt(System.Text.Encoding.UTF8.GetBytes("psca"),0);
 
 		private const System.String kdwInputProfile = "scnr";
 		private const System.String kdwDisplayProfile = "mntr";
@@ -61,25 +61,25 @@ namespace Melville.CSJ2K.Icc.Types
 		/* Offsets into ICCProfile header byte array. */
 		
         private static int offProfileSize = 0;
-        private static int offCMMTypeSignature         = offProfileSize + ICCProfile.int_size;
-        private static int offProfileVersion           = offCMMTypeSignature + ICCProfile.int_size;	   
+        private static int offCMMTypeSignature         = offProfileSize + BitReaders.int_size;
+        private static int offProfileVersion           = offCMMTypeSignature + BitReaders.int_size;	   
         private static int offProfileClass             = offProfileVersion + ICCProfileVersion.size;
-        private static int offColorSpaceType           = offProfileClass + ICCProfile.int_size;  
-        private static int offPCSType                  = offColorSpaceType + ICCProfile.int_size;		   
-        private static int offDateTime                 = offPCSType + ICCProfile.int_size;		   
+        private static int offColorSpaceType           = offProfileClass + BitReaders.int_size;  
+        private static int offPCSType                  = offColorSpaceType + BitReaders.int_size;		   
+        private static int offDateTime                 = offPCSType + BitReaders.int_size;		   
         private static int offProfileSignature         = offDateTime + ICCDateTime.size;
-        private static int offPlatformSignature        = offProfileSignature + ICCProfile.int_size;
-        private static int offCMMFlags                 = offPlatformSignature + ICCProfile.int_size; 
-        private static int offDeviceManufacturer       = offCMMFlags + ICCProfile.int_size;
-        private static int offDeviceModel              = offDeviceManufacturer + ICCProfile.int_size;		
-        private static int offDeviceAttributes1        = offDeviceModel + ICCProfile.int_size;
-        private static int offDeviceAttributesReserved = offDeviceAttributes1 + ICCProfile.int_size;
-        private static int offRenderingIntent          = offDeviceAttributesReserved + ICCProfile.int_size;
-        private static int offPCSIlluminant            = offRenderingIntent + ICCProfile.int_size;
+        private static int offPlatformSignature        = offProfileSignature + BitReaders.int_size;
+        private static int offCMMFlags                 = offPlatformSignature + BitReaders.int_size; 
+        private static int offDeviceManufacturer       = offCMMFlags + BitReaders.int_size;
+        private static int offDeviceModel              = offDeviceManufacturer + BitReaders.int_size;		
+        private static int offDeviceAttributes1        = offDeviceModel + BitReaders.int_size;
+        private static int offDeviceAttributesReserved = offDeviceAttributes1 + BitReaders.int_size;
+        private static int offRenderingIntent          = offDeviceAttributesReserved + BitReaders.int_size;
+        private static int offPCSIlluminant            = offRenderingIntent + BitReaders.int_size;
         private static int offCreatorSig               = offPCSIlluminant + XYZNumber.size;
-        private static int offReserved                 = offCreatorSig + ICCProfile.int_size;
+        private static int offReserved                 = offCreatorSig + BitReaders.int_size;
         /// <summary>Size of the header </summary>
-        public static int size = offReserved + 44 * ICCProfile.byte_size;
+        public static int size = offReserved + 44 * BitReaders.byte_size;
 		
 		/// <summary>Header field </summary>
 		/* Header fields mapped to primitive types. */
@@ -149,23 +149,23 @@ namespace Melville.CSJ2K.Icc.Types
 		public ICCProfileHeader(byte[] data)
 		{
 
-            dwProfileSize = ICCProfile.getInt(data, offProfileSize);
-            dwCMMTypeSignature = ICCProfile.getInt(data, offCMMTypeSignature);
-            dwProfileClass = ICCProfile.getInt(data, offProfileClass);
-            dwColorSpaceType = ICCProfile.getInt(data, offColorSpaceType);
-            dwPCSType = ICCProfile.getInt(data, offPCSType);
-            dwProfileSignature = ICCProfile.getInt(data, offProfileSignature);
-            dwPlatformSignature = ICCProfile.getInt(data, offPlatformSignature);
-            dwCMMFlags = ICCProfile.getInt(data, offCMMFlags);
-            dwDeviceManufacturer = ICCProfile.getInt(data, offDeviceManufacturer);
-            dwDeviceModel = ICCProfile.getInt(data, offDeviceModel);
-            dwDeviceAttributes1 = ICCProfile.getInt(data, offDeviceAttributesReserved);
-            dwDeviceAttributesReserved = ICCProfile.getInt(data, offDeviceAttributesReserved);
-            dwRenderingIntent = ICCProfile.getInt(data, offRenderingIntent);
-            dwCreatorSig = ICCProfile.getInt(data, offCreatorSig);
+            dwProfileSize = BitReaders.getInt(data, offProfileSize);
+            dwCMMTypeSignature = BitReaders.getInt(data, offCMMTypeSignature);
+            dwProfileClass = BitReaders.getInt(data, offProfileClass);
+            dwColorSpaceType = BitReaders.getInt(data, offColorSpaceType);
+            dwPCSType = BitReaders.getInt(data, offPCSType);
+            dwProfileSignature = BitReaders.getInt(data, offProfileSignature);
+            dwPlatformSignature = BitReaders.getInt(data, offPlatformSignature);
+            dwCMMFlags = BitReaders.getInt(data, offCMMFlags);
+            dwDeviceManufacturer = BitReaders.getInt(data, offDeviceManufacturer);
+            dwDeviceModel = BitReaders.getInt(data, offDeviceModel);
+            dwDeviceAttributes1 = BitReaders.getInt(data, offDeviceAttributesReserved);
+            dwDeviceAttributesReserved = BitReaders.getInt(data, offDeviceAttributesReserved);
+            dwRenderingIntent = BitReaders.getInt(data, offRenderingIntent);
+            dwCreatorSig = BitReaders.getInt(data, offCreatorSig);
 			profileVersion = ICCProfile.getICCProfileVersion(data, offProfileVersion);
-			dateTime = ICCProfile.getICCDateTime(data, offDateTime);
-			PCSIlluminant = ICCProfile.getXYZNumber(data, offPCSIlluminant);
+			dateTime = BitReaders.getICCDateTime(data, offDateTime);
+			PCSIlluminant = BitReaders.getXYZNumber(data, offPCSIlluminant);
 			
 			for (int i = 0; i < reserved.Length; ++i)
 				reserved[i] = data[offReserved + i];

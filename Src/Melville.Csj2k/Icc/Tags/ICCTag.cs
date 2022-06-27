@@ -189,7 +189,7 @@ namespace Melville.CSJ2K.Icc.Tags
 		public static ICCTag createInstance(int signature, byte[] data, int offset, int count)
 		{
 
-            int type = ICCProfile.getInt(data, offset);
+            int type = BitReaders.getInt(data, offset);
 
             if (type == kdwTextDescType)
                 return new ICCTextDescriptionType(signature, data, offset, count);
@@ -235,7 +235,7 @@ namespace Melville.CSJ2K.Icc.Tags
 			this.data = data;
 			this.offset = offset;
 			this.count = count;
-            this.type = ICCProfile.getInt(data, offset);
+            this.type = BitReaders.getInt(data, offset);
 		}
 		
 		public override System.String ToString()

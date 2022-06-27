@@ -8,6 +8,7 @@
 /// </summary>
 using System;
 using System.Collections.Generic;
+using Melville.CSJ2K.Icc;
 using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
 using FileFormatBoxes = Melville.CSJ2K.j2k.fileformat.FileFormatBoxes;
 using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
@@ -67,7 +68,7 @@ namespace Melville.CSJ2K.Color.Boxes
 			this.in_Renamed.readFully(boxHeader, 0, 8);
 			
 			this.dataStart = boxStart + 8;
-            this.length = ICCProfile.getInt(boxHeader, 0);
+            this.length = BitReaders.getInt(boxHeader, 0);
 			this.boxEnd = boxStart + length;
 			if (length == 1)
 				throw new ColorSpaceException("extended length boxes not supported");

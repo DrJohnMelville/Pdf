@@ -52,7 +52,7 @@ namespace Melville.CSJ2K.Icc
 		public static RestrictedICCProfile createInstance(ICCCurveType rcurve, ICCCurveType gcurve, ICCCurveType bcurve, ICCXYZType rcolorant, ICCXYZType gcolorant, ICCXYZType bcolorant)
 		{
 			
-			return MatrixBasedRestrictedProfile.createInstance(rcurve, gcurve, bcurve, rcolorant, gcolorant, bcolorant);
+			return new MatrixBasedRestrictedProfile(rcurve, gcurve, bcurve, rcolorant, gcolorant, bcolorant);
 		}
 		
 		/// <summary> Factory method for creating a RestrictedICCProfile from 
@@ -64,25 +64,9 @@ namespace Melville.CSJ2K.Icc
 		/// </returns>
 		public static RestrictedICCProfile createInstance(ICCCurveType gcurve)
 		{
-			return MonochromeInputRestrictedProfile.createInstance(gcurve);
+			return new MonochromeInputRestrictedProfile(gcurve);
 		}
 		
-		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'GRAY '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'GRAY' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		protected internal static readonly int GRAY;
-		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'RED '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'RED' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		protected internal static readonly int RED;
-		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'GREEN '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'GREEN' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		protected internal static readonly int GREEN;
-		/// <summary>Component index       </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'BLUE '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'BLUE' was moved to static method 'icc.RestrictedICCProfile'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		protected internal static readonly int BLUE;
 		/// <summary>input type enumerator </summary>
 		public const int kMonochromeInput = 0;
 		/// <summary>input type enumerator </summary>
@@ -91,7 +75,7 @@ namespace Melville.CSJ2K.Icc
 		/// <summary>Curve data    </summary>
 		public ICCCurveType[] trc;
 		/// <summary>Colorant data </summary>
-		public ICCXYZType[] colorant;
+		public ICCXYZType[]? colorant;
 		
 		/// <summary> Construct the common state of all gray RestrictedICCProfiles</summary>
 		/// <param name="gcurve">curve data
@@ -100,7 +84,7 @@ namespace Melville.CSJ2K.Icc
 		{
 			trc = new ICCCurveType[1];
 			colorant = null;
-			trc[GRAY] = gcurve;
+			trc[ICCProfile.GRAY] = gcurve;
 		}
 		
 		/// <summary> Construct the common state of all 3 component RestrictedICCProfiles
@@ -123,22 +107,13 @@ namespace Melville.CSJ2K.Icc
 			trc = new ICCCurveType[3];
 			colorant = new ICCXYZType[3];
 			
-			trc[RED] = rcurve;
-			trc[GREEN] = gcurve;
-			trc[BLUE] = bcurve;
+			trc[ICCProfile.RED] = rcurve;
+			trc[ICCProfile.GREEN] = gcurve;
+			trc[ICCProfile.BLUE] = bcurve;
 			
-			colorant[RED] = rcolorant;
-			colorant[GREEN] = gcolorant;
-			colorant[BLUE] = bcolorant;
-		}
-		
-		/* end class RestrictedICCProfile */
-		static RestrictedICCProfile()
-		{
-			GRAY = ICCProfile.GRAY;
-			RED = ICCProfile.RED;
-			GREEN = ICCProfile.GREEN;
-			BLUE = ICCProfile.BLUE;
+			colorant[ICCProfile.RED] = rcolorant;
+			colorant[ICCProfile.GREEN] = gcolorant;
+			colorant[ICCProfile.BLUE] = bcolorant;
 		}
 	}
 }

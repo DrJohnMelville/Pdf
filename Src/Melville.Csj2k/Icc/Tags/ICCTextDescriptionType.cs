@@ -46,14 +46,14 @@ namespace Melville.CSJ2K.Icc.Tags
 		protected internal ICCTextDescriptionType(int signature, byte[] data, int offset, int length):base(signature, data, offset, length)
 		{
 
-            type = ICCProfile.getInt(data, offset);
-			offset += ICCProfile.int_size;
+            type = BitReaders.getInt(data, offset);
+			offset += BitReaders.int_size;
 
-            reserved = ICCProfile.getInt(data, offset);
-			offset += ICCProfile.int_size;
+            reserved = BitReaders.getInt(data, offset);
+			offset += BitReaders.int_size;
 
-            size = ICCProfile.getInt(data, offset);
-			offset += ICCProfile.int_size;
+            size = BitReaders.getInt(data, offset);
+			offset += BitReaders.int_size;
 			
 			ascii = new byte[size - 1];
 			Array.Copy(data, offset, ascii, 0, size - 1);

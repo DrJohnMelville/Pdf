@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Icc.ColorTransforms;
 using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
 using Melville.Icc.Parser;

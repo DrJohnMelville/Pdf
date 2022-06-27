@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Util
 
         static FileStreamFactory()
         {
-            _creator = J2kSetup.GetSinglePlatformInstance<IFileStreamCreator>();
+            _creator = new DotnetFileStreamCreator();
         }
 
         #endregion

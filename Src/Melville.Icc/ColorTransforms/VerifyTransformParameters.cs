@@ -1,13 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Melville.Icc.Model.Tags;
-
-public interface IColorTransform
-{
-    public int Inputs { get; }
-    public int Outputs { get; }
-    public void Transform(in ReadOnlySpan<float> input, in Span<float> output);
-}
+namespace Melville.Icc.ColorTransforms;
 
 public static class VerifyTransformParameters 
 {
