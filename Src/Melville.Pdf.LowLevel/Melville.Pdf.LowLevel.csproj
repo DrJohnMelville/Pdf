@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="CSJ2K" Version="3.0.0" />
       <PackageReference Include="Melville.Generators.INPC" Version="0.5.41" />
       <PackageReference Include="Melville.Hacks" Version="0.5.41" />
       <PackageReference Include="Melville.Linq" Version="0.5.41" />
@@ -20,7 +21,6 @@
           <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
           <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>
-      <ProjectReference Include="..\Melville.Csj2k\Melville.Csj2k.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
       <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
       <None Remove="Model\Conventions\KnownNames.dsl" />

@@ -14,7 +14,6 @@ public ref partial struct IncrementalTemplate
     public IncrementalTemplate(Span<ContextBitRun> runs) : this()
     {
         this.runs = runs;
-        #warning rent this array
         pointers = new BitmapPointer[runs.Length];
         context = 0;
         mask = ComputeMask(runs);

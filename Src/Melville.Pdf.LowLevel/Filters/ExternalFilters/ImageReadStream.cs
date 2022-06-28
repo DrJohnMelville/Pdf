@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using Melville.Parsing.Streams.Bases;
 using SixLabors.ImageSharp;
@@ -7,11 +8,16 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Melville.Pdf.LowLevel.Filters.ExternalFilters;
 
-public class ImageReadStream : DefaultBaseStream
+public class ImageReadStream : DefaultBaseStream, IImageSizeStream
 {
     private Image<Rgb24> source;
     private int currentRow;
     private int currentByte;
+
+
+    public int Width => source.Width;
+    public int Height => source.Height;
+
     public ImageReadStream(Image<Rgb24> source) : base(true, false, false)
     {
         this.source = source;

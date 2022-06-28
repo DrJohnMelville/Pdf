@@ -57,7 +57,7 @@ public static class HalftoneSegmentParser
         { 
             halfToneWriter.ReadBitmap(ref reader, bitmap);
         }
-        catch (InvalidDataException e)
+        catch (InvalidDataException)
         {
         }
         return new HalftoneSegment(SegmentType.ImmediateHalftoneRegion, halfToneWriter.Header, bitmap);

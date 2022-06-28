@@ -40,7 +40,6 @@ public ref struct HalftoneSegmentReader
         FillWithBackground(targetBitmap);
 
         var spanLength = grayScaleHeight * grayScaleWidth;
-        #warning rent this array
         var greyScaleBitmap = new int[spanLength];
         var gsb = ReadGrayScaleBitmap(ref reader, greyScaleBitmap);
 

@@ -1,6 +1,7 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
@@ -33,7 +34,7 @@ public static class PdfBitmapOperatons
             await stream.GetOrDefaultAsync(KnownNames.Interpolate, false).CA(),
             await GetByteWriterAsync(streamAttrs).CA());
     }
-
+    
     private static async ValueTask<IByteWriter> GetByteWriterAsync(BitmapRenderParameters attr)
     {
         var decode = attr.Stream.TryGetValue(KnownNames.Decode, out var arrayTask) &&

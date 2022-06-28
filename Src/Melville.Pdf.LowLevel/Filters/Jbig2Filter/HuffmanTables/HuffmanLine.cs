@@ -21,12 +21,6 @@ public readonly struct HuffmanCode
         new(PrefixLength + 1, (prefixData << 1) | bitState.ForceRead(1, ref reader));
 
     public bool IsEqualTo(in HuffmanCode other) => PrefixLength == other.PrefixLength && prefixData == other.prefixData;
-
-    public override bool Equals(object? obj)
-    {
-        Debug.Assert(false,"Use IsEqualTo so as not to box the parameter");
-        return base.Equals(obj);
-    }
 }
 
 public readonly struct HuffmanLine

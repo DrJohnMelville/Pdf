@@ -9,9 +9,7 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 public readonly record struct RegionHeader(
     uint Width, uint Height, uint X, uint Y, CombinationOperator CombinationOperator)
 {
-    #warning -- optimization opportunity -- byte align region with it's eventual target
     public BinaryBitmap CreateTargetBitmap() => new((int)Height, (int)Width);
-
 }
 
 public static class RegionHeaderParser

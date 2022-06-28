@@ -75,7 +75,6 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
         {
             var bit = useSkip.ShouldSkipPixel(row, j) ? 0:
                 state.GetBit(ref source, ref context.GetContext(template.context));
-            #warning -- there is an opportunity to optimize writing here.
             rowWriter.AssignBit(bit == 1);
             rowWriter.Increment();
             // Template increment must follow the bitmap writting because it reads the current context byte

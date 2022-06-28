@@ -52,7 +52,7 @@ public static class GenericRegionSegmentParser
         {
             ReadBitmap(reader, flags, bitmap);
         }
-        catch (InvalidDataException e)
+        catch (InvalidDataException)
         {
         }
     }
