@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using CSJ2K;
-using CSJ2K.j2k.image;
-using CSJ2K.j2k.util;
-using CSJ2K.Util;
+using Melville.CSJ2K;
+using Melville.CSJ2K.j2k.image;
+using Melville.CSJ2K.Util;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
