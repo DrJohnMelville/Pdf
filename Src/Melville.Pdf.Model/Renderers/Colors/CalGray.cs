@@ -26,7 +26,7 @@ public class CalGray : IColorSpace
     public static async ValueTask<IColorSpace> Parse(PdfDictionary parameters)
     {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
-        var wp = await DoubleColor.ParseAsync(array).CA();
+        var wp = await array.AsDoubleColor().CA();
         var gamma = await parameters.GetOrDefaultAsync(KnownNames.Gamma, 1.0).CA();
         return new CalGray(wp, gamma);
     }

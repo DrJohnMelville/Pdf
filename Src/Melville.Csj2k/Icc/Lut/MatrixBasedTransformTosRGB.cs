@@ -8,28 +8,22 @@
 /// </summary>
 
 using Melville.CSJ2K.j2k.image;
+using Melville.Icc.ColorTransforms;
 using Melville.Icc.Model;
 
 namespace Melville.CSJ2K.Icc.Lut
 {
 	public class MatrixBasedTransformTosRGB
 	{
-		private readonly IccProfile profile;
+		private readonly IColorTransform transform;
 
 		public MatrixBasedTransformTosRGB(IccProfile profile)
 		{
-			this.profile = profile.TransformTo(Profi);
+			transform = profile.DeviceToSrgb();
 		}
 
 
-		/// <summary> Performs the transform.  Pass the input throught the LookUpTableFP, apply the
-		/// matrix to the output and finally pass the intermediate buffer through the
-		/// LookUpTable8.  This operation is designated (LFP*M*L8) * Data are already 
-		/// constructed.  Although the data for only one component is returned, the
-		/// transformation must be done for all components, because the matrix application
-		/// involves a linear combination of component input to produce the output.
-		/// </summary>
-		public void  apply(DataBlkInt[] inb, DataBlkInt[] outb)
+		public void apply(DataBlkInt[] inb, DataBlkInt[] outb)
 		{
 			int[][] in_Renamed = new int[3][]; // data references.
 			int[]?[] out_Renamed = new int[3][]; // data references.
@@ -37,11 +31,11 @@ namespace Melville.CSJ2K.Icc.Lut
 			// for each component (rgb)
 			for (int c = 0; c < 3; ++c)
 			{
-				
+
 				// Reference the input and output samples.
-				in_Renamed[c] = (int[]) inb[c].Data!;
-				out_Renamed[c] = (int[]?) outb[c].Data;
-				
+				in_Renamed[c] = (int[])inb[c].Data!;
+				out_Renamed[c] = (int[]?)outb[c].Data;
+
 				// Assure a properly sized output buffer.
 				if (out_Renamed[c] == null || out_Renamed[c]!.Length < in_Renamed[c].Length)
 				{
@@ -49,10 +43,28 @@ namespace Melville.CSJ2K.Icc.Lut
 					outb[c].Data = out_Renamed[c];
 				}
 
-				in_Renamed[c].AsSpan().CopyTo(out_Renamed[c].AsSpan());
+//				in_Renamed[c].AsSpan().CopyTo(out_Renamed[c].AsSpan());
 			}
-			
+
+			Span<float> color = stackalloc float[3];
+			for ( int i = 0; i < in_Renamed[0].Length; i++)
+			{
+				color[0] = InTransform(in_Renamed[ICCProfile.RED][i]);
+				color[1] = InTransform(in_Renamed[ICCProfile.GREEN][i]);
+				color[2] = InTransform(in_Renamed[ICCProfile.BLUE][i]);
+		//		transform.Transform(color, color);
+				out_Renamed[ICCProfile.RED]![i] = OutTransform(color[0]);
+				out_Renamed[ICCProfile.GREEN]![i] = OutTransform(color[1]);
+				out_Renamed[ICCProfile.BLUE]![i] = OutTransform(color[2]);
+				// out_Renamed[0]![i] = in_Renamed[0][i];
+				// out_Renamed[1]![i] = in_Renamed[1][i];
+				// out_Renamed[2]![i] = in_Renamed[2][i];
+			}
+
 		}
+
+		private float InTransform(int x) => x + 128;
+		private int OutTransform(float x) => (int)(x - 128f);
 
 		/// <summary> Performs the transform.  Pass the input throught the LookUpTableFP, apply the
 		/// matrix to the output and finally pass the intermediate buffer through the

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
 
-namespace Melville.Pdf.Model.Renderers.Colors;
+namespace Melville.Icc.ColorTransforms;
 
 public static class LinearizedRgbToXyzMatrixFactory
 {
@@ -28,8 +28,6 @@ public static class LinearizedRgbToXyzMatrixFactory
             adjustments[0] * redCol.Z, adjustments[1] * greenCol.Z, adjustments[2] * blueCol.Z
         );
     }
-    private static FloatXyx PartialCol(float x, float y) =>
+    private static XyzNumber PartialCol(float x, float y) =>
             new(x / y, 1, (1 - (x + y)) / y);
 }
-
-public record struct FloatXyx(float X, float Y, float Z);

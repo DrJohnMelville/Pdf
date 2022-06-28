@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using Melville.Icc.ColorTransforms;
-using Melville.Icc.Model.Tags;
+﻿using Melville.Icc.Model.Tags;
 
-namespace Melville.Pdf.Model.Renderers.Colors;
+namespace Melville.Icc.ColorTransforms;
 
 public class XyzToDeviceColor : IColorTransform
 {

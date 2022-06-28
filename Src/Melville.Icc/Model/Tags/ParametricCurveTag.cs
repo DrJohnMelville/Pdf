@@ -26,10 +26,12 @@ public class ParametricCurveTag: ICurveTag
     public float E { get; }
     public float F { get; }
 
-    public float Evaluate(float input) =>(float)(
-        input >= D ? 
-            Math.Pow(A * input + B, G) + C : 
-            E * input + F);
+    public float Evaluate(float input)
+    {
+        return input >= D ? 
+            (float)(Math.Pow(A * input + B, G) + C) : 
+            E * input + F;
+    }
 
     public ParametricCurveTag(float g, float a, float b, float c, float d, float e, float f)
     {

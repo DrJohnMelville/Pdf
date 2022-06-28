@@ -1,9 +1,4 @@
-﻿using System;
-using Melville.Icc.ColorTransforms;
-using Melville.Icc.Model.Tags;
-using SharpFont.PostScript;
-
-namespace Melville.Pdf.Model.Renderers.Colors;
+﻿namespace Melville.Icc.ColorTransforms;
 
 public class LabToXyz : IColorTransform
 {

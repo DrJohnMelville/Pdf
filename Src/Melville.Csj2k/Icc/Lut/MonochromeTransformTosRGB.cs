@@ -7,6 +7,7 @@
 /// ***************************************************************************
 /// </summary>
 using System;
+using Melville.Icc.Model;
 using ColorSpace = Melville.CSJ2K.Color.ColorSpace;
 using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
 using RestrictedICCProfile = Melville.CSJ2K.Icc.RestrictedICCProfile;
@@ -23,9 +24,9 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// are used to populate the output DataBlk.
 	/// 
 	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.RestrictedICCProfile">
+	/// <seealso cref="RestrictedICCProfile">
 	/// </seealso>
-	/// <seealso cref="jj2000.j2k.icc.lut.LookUpTableFP">
+	/// <seealso cref="LookUpTableFP">
 	/// </seealso>
 	/// <version> 	1.0
 	/// </version>
@@ -94,7 +95,7 @@ namespace Melville.CSJ2K.Icc.Lut
 		/// </param>
 		/// <param name="dwInputShiftValue">value used to shift samples to positive
 		/// </param>
-		public MonochromeTransformTosRGB(ICCProfile profile)
+		public MonochromeTransformTosRGB(IccProfile profile)
 		{
 		}
 		

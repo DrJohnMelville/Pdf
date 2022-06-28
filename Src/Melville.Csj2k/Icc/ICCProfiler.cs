@@ -105,19 +105,6 @@ namespace Melville.CSJ2K.Icc
 			}
 		}
 		
-		/// <summary> Get the ICCProfile information JP2 ColorSpace</summary>
-		/// <param name="csm">provides all necessary info about the colorspace
-		/// </param>
-		/// <returns> ICCMatrixBasedInputProfile for 3 component input and
-		/// ICCMonochromeInputProfile for a 1 component source.  Returns
-		/// null if exceptions were encountered.
-		/// </returns>
-		/// <exception cref="ColorSpaceException">
-		/// </exception>
-		/// <exception cref="ICCProfileException">
-		/// </exception>
-		/// <exception cref="IllegalArgumentException">
-		/// </exception>
 		private IccProfile getICCProfile(ColorSpace csm) =>
 			Task.Run(async ()=> await 
 				new IccParser(PipeReader.Create(new MemoryStream(csm.ICCProfile!))).ParseAsync()).Result;
