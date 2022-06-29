@@ -1,19 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.CSJ2K;
 using Melville.CSJ2K.j2k.image;
 using Melville.CSJ2K.Util;
+using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
 public class JpxToPdfAdapter: ICodecDefinition
 {
-    public JpxToPdfAdapter()
-    {
-        RawImageCreator.Register();
-    }
-
     public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters)
     {
         throw new System.NotSupportedException();
@@ -22,72 +19,34 @@ public class JpxToPdfAdapter: ICodecDefinition
     public ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
     {
         var independentImage = J2kImage.FromStream(input);
-        var image = independentImage.As<Stream>();
-        return new(image);
+        return new(new JPeg200Stream(independentImage));
     }
 }
 
-public class ImageMemoryStream : MemoryStream, IImageSizeStream
+public class JPeg200Stream : DefaultBaseStream, IImageSizeStream
 {
-    public int Width { get; }
-    public int Height { get; }
+    private readonly PortableImage image;
+    private int position;
 
-    public ImageMemoryStream(byte[] buffer, int index, int count, int width, int height) : base(buffer, index, count)
+    public JPeg200Stream(PortableImage image) : base(true, false, false)
     {
-        Width = width;
-        Height = height;
-    }
-}
-
-public class RawImage : ImageBase<Stream>
-{
-    private readonly byte[] bytes;
-    private readonly int length;
-
-    public int Width { get; }
-    public int Height { get; }
-
-    public RawImage(int width, int height, byte[] bytes) : base(width, height, bytes)
-    {
-        this.bytes = bytes;
-        var pixelcount = (this.bytes.Length / 4);
-        length = pixelcount * 3;
-        Collapse(pixelcount);
-        Height = height;
-        Width = width;
+        this.image = image;
     }
 
-    private unsafe void Collapse(int pixelcount)
+    public int Width => image.Width;
+    public int Height => image.Height;
+
+    public override int Read(Span<byte> buffer)
     {
-        fixed (byte* bufPtr = bytes)
+        var maxAvail = (buffer.Length / 3) * 3;
+        maxAvail = Math.Clamp(maxAvail, 0, image.Data.Length - position);
+        for (int i = 0; i < maxAvail; i+= 3)
         {
-            var read = bufPtr;
-            var write = bufPtr;
-            for (int i = 0; i < pixelcount; i++)
-            {
-                *(write+2) = *read++; //R
-                *(write+1) = *read++; //G
-                *write = *read++; //B
-                write += 3;
-                read++; //A
-            }
+            buffer[i + 2] = (byte)(image.Data[position++] * image.ByteScaling[2]);
+            buffer[i + 1] = (byte)(image.Data[position++] * image.ByteScaling[1]);
+            buffer[i + 0] = (byte)(image.Data[position++] * image.ByteScaling[0]);
         }
-    }
 
-    protected override object GetImageObject() => new ImageMemoryStream(bytes, 0, length, Width, Height);
-}
-
-public class RawImageCreator : IImageCreator
-{
-    public static void Register() => ImageFactory.Register(new RawImageCreator());
-    
-    public bool IsDefault => true;
-
-    public IImage Create(int width, int height, byte[] bytes) =>
-        new RawImage(width, height, bytes);
-
-    public BlkImgDataSrc ToPortableImageSource(object imageObject)
-    {
-        throw new System.NotSupportedException();
+        return maxAvail;
     }
 }

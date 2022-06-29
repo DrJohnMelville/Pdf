@@ -6,16 +6,9 @@ using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevelReader.ImageViewers;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
-using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers.Bitmaps;
-using Melville.Pdf.Model.Renderers.Colors;
-using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.LowLevelReader.MainDisplay;
 

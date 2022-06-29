@@ -12,18 +12,18 @@ namespace Melville.CSJ2K.Util
 
         private const int SizeOfArgb = 4;
 
-        private readonly double[] _byteScaling;
+        public double[] ByteScaling { get; }
 
         #endregion
 
         #region CONSTRUCTORS
 
-        internal PortableImage(int width, int height, int numberOfComponents, int[] bitsUsed)
+        public PortableImage(int width, int height, int numberOfComponents, int[] bitsUsed)
         {
             Width = width;
             Height = height;
             NumberOfComponents = numberOfComponents;
-            _byteScaling = bitsUsed.Select(b => 255.0 / (1 << b)).ToArray();
+            ByteScaling = bitsUsed.Select(b => 255.0 / (1 << b)).ToArray();
 
             Data = new int[numberOfComponents * width * height];
         }
@@ -32,13 +32,13 @@ namespace Melville.CSJ2K.Util
 
         #region PROPERTIES
 
-        internal int Width { get; }
+        public int Width { get; }
 
-        internal int Height { get; }
+        public int Height { get; }
 
         public int NumberOfComponents { get; }
 
-        internal int[] Data { get; }
+        public int[] Data { get; }
 
         #endregion
 
@@ -46,7 +46,7 @@ namespace Melville.CSJ2K.Util
 
         public T As<T>()
         {
-            var image = ImageFactory.New(Width, Height, ToBytes(Width, Height, NumberOfComponents, _byteScaling, Data));
+            var image = ImageFactory.New(Width, Height, ToBytes(Width, Height, NumberOfComponents, ByteScaling, Data));
             return image.As<T>();
         }
 
@@ -68,7 +68,7 @@ namespace Melville.CSJ2K.Util
             return component;
         }
 
-        internal void FillRow(int rowIndex, int lineIndex, int rowWidth, int[] rowValues)
+        public void FillRow(int rowIndex, int lineIndex, int rowWidth, int[] rowValues)
         {
             Array.Copy(
                 rowValues,
