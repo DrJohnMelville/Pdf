@@ -28,12 +28,7 @@ namespace Melville.CSJ2K.Util
         {
             _creator = creator;
         }
-
-        internal static IImage New(int width, int height, byte[] bytes)
-        {
-            return _creator.Create(width, height, bytes);
-        }
-
+        
         internal static BlkImgDataSrc ToPortableImageSource(object imageObject)
         {
             try

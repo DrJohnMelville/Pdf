@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.CSJ2K;
-using Melville.CSJ2K.j2k.image;
 using Melville.CSJ2K.Util;
 using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Model.Objects;

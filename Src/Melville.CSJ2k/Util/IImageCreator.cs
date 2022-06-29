@@ -7,7 +7,6 @@ namespace Melville.CSJ2K.Util
 
     public interface IImageCreator : IDefaultable
     {
-        IImage Create(int width, int height, byte[] bytes);
 
         BlkImgDataSrc ToPortableImageSource(object imageObject);
     }

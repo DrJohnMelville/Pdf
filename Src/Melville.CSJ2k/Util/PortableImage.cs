@@ -6,17 +6,11 @@ using System.Linq;
 
 namespace Melville.CSJ2K.Util
 {
-    public sealed class PortableImage : IImage
+    public sealed class PortableImage 
     {
-        #region FIELDS
 
         private const int SizeOfArgb = 4;
-
         public double[] ByteScaling { get; }
-
-        #endregion
-
-        #region CONSTRUCTORS
 
         public PortableImage(int width, int height, int numberOfComponents, int[] bitsUsed)
         {
@@ -24,32 +18,14 @@ namespace Melville.CSJ2K.Util
             Height = height;
             NumberOfComponents = numberOfComponents;
             ByteScaling = bitsUsed.Select(b => 255.0 / (1 << b)).ToArray();
-
             Data = new int[numberOfComponents * width * height];
         }
-
-        #endregion
-
-        #region PROPERTIES
-
+        
         public int Width { get; }
-
         public int Height { get; }
-
         public int NumberOfComponents { get; }
-
         public int[] Data { get; }
-
-        #endregion
-
-        #region METHODS
-
-        public T As<T>()
-        {
-            var image = ImageFactory.New(Width, Height, ToBytes(Width, Height, NumberOfComponents, ByteScaling, Data));
-            return image.As<T>();
-        }
-
+        
         public int[] GetComponent(int number)
         {
             if (number < 0 || number >= NumberOfComponents)
@@ -131,7 +107,5 @@ namespace Melville.CSJ2K.Util
 
             return bytes;
         }
-
-        #endregion
     }
 }
