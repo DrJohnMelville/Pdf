@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using Melville.Parsing.Streams.Bases;
 using SixLabors.ImageSharp;
@@ -17,6 +16,8 @@ public class ImageReadStream : DefaultBaseStream, IImageSizeStream
 
     public int Width => source.Width;
     public int Height => source.Height;
+    public int ImageComponents => 3;
+    public int BitsPerComponent => 8;
 
     public ImageReadStream(Image<Rgb24> source) : base(true, false, false)
     {

@@ -26,8 +26,8 @@ public static class ImageReader
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.Height, size.Height)
             .WithItem(KnownNames.Width, size.Width)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
-            .WithItem(KnownNames.BitsPerComponent, 8)
+            .WithItem(KnownNames.ColorSpace, size.ImageComponents == 1 ?KnownNames.DefaultGray : KnownNames.DeviceRGB)
+            .WithItem(KnownNames.BitsPerComponent, size.BitsPerComponent)
             .AsStream(str)
             .WrapForRenderingAsync(new PdfPage(PdfDictionary.Empty), DeviceColor.Black);
         var ret = await image.ToWbfBitmap();
