@@ -354,3 +354,5 @@ RenderingTest.cs_Skia-JBig200__8__0__stripe|4181345264
 RenderingTest.cs_Skia-JBig200__8__45|2678651463
 RenderingTest.cs_Skia-JBig200__8__45__stripe|3591578473
 RenderingTest.cs_Skia-JBig200__lossless|28271710
+RenderingTest.cs_wpf-Jpeg2000Image|564942489
+RenderingTest.cs_Skia-Jpeg2000Image|1078842957

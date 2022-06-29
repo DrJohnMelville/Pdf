@@ -16,39 +16,11 @@ namespace Melville.CSJ2K.Icc
 	
 	/// <summary> This profile is constructed by parsing an ICCProfile and
 	/// is the profile actually applied to the image.
-	/// 
-	/// </summary>
-	/// <seealso cref="jj2000.j2k.icc.ICCProfile">
-	/// </seealso>
-	/// <version> 	1.0
-	/// </version>
-	/// <author> 	Bruce A. Kern
-	/// </author>
 	public abstract class RestrictedICCProfile
 	{
 		/// <summary>Returns the appropriate input type enum. </summary>
 		public abstract int Type{get;}
 		
-		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		protected internal static readonly System.String eol = System.Environment.NewLine;
-		
-		/// <summary> Factory method for creating a RestrictedICCProfile from 
-		/// 3 component curve and colorant data.
-		/// </summary>
-		/// <param name="rcurve">red curve
-		/// </param>
-		/// <param name="gcurve">green curve
-		/// </param>
-		/// <param name="bcurve">blue curve
-		/// </param>
-		/// <param name="rcolorant">red colorant
-		/// </param>
-		/// <param name="gcolorant">green colorant
-		/// </param>
-		/// <param name="bcolorant">blue colorant
-		/// </param>
-		/// <returns> MatrixBasedRestrictedProfile
-		/// </returns>
 		public static RestrictedICCProfile createInstance(ICCCurveType rcurve, ICCCurveType gcurve, ICCCurveType bcurve, ICCXYZType rcolorant, ICCXYZType gcolorant, ICCXYZType bcolorant)
 		{
 			

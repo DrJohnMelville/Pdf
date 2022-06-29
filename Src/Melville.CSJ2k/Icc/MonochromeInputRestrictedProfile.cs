@@ -48,18 +48,6 @@ namespace Melville.CSJ2K.Icc
 		private MonochromeInputRestrictedProfile(ICCCurveType c):base(c)
 		{
 		}
-		
-		/// <returns> String representation of a MonochromeInputRestrictedProfile
-		/// </returns>
-		public override System.String ToString()
-		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("Monochrome Input Restricted ICC profile" + eol);
-			
-			rep.Append("trc[GRAY]:" + eol).Append(trc[GRAY]).Append(eol);
-			
-			return rep.ToString();
-		}
-		
 		/* end class MonochromeInputRestrictedProfile */
 	}
 }

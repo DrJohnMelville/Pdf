@@ -33,23 +33,11 @@ namespace Melville.CSJ2K.Icc
 		/// <summary>The prefix for ICC Profiler options </summary>
 		new public const char OPT_PREFIX = 'I';
 		
-		/// <summary>Platform dependant end of line String. </summary>
-		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		new protected internal static readonly System.String eol = System.Environment.NewLine;
 		
-		// Renamed for convenience:
-		//UPGRADE_NOTE: Final was removed from the declaration of 'GRAY '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'GRAY' was moved to static method 'icc.ICCProfiler'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		private static readonly int GRAY;
-		//UPGRADE_NOTE: Final was removed from the declaration of 'RED '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'RED' was moved to static method 'icc.ICCProfiler'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		private static readonly int RED;
-		//UPGRADE_NOTE: Final was removed from the declaration of 'GREEN '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'GREEN' was moved to static method 'icc.ICCProfiler'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		private static readonly int GREEN;
-		//UPGRADE_NOTE: Final was removed from the declaration of 'BLUE '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-		//UPGRADE_NOTE: The initialization of  'BLUE' was moved to static method 'icc.ICCProfiler'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-		private static readonly int BLUE;
+		private static readonly int GRAY = RestrictedICCProfile.GRAY;
+		private static readonly int RED = RestrictedICCProfile.RED;
+		private static readonly int GREEN = RestrictedICCProfile.GREEN;
+		private static readonly int BLUE = RestrictedICCProfile.BLUE;
 		
 		// ICCProfiles.
 		internal RestrictedICCProfile ricc = null;
@@ -451,31 +439,5 @@ namespace Melville.CSJ2K.Icc
 			return getCompData(out_Renamed, c);
 		}
 		
-		/// <summary>Return a suitable String representation of the class instance. </summary>
-		public override System.String ToString()
-		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[ICCProfiler:");
-			System.Text.StringBuilder body = new System.Text.StringBuilder();
-			if (icc != null)
-			{
-				body.Append(eol).Append(Melville.CSJ2K.Color.ColorSpace.indent("  ", icc.ToString()));
-			}
-			if (xform != null)
-			{
-				//UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1043'"
-				body.Append(eol).Append(Melville.CSJ2K.Color.ColorSpace.indent("  ", xform.ToString()));
-			}
-			rep.Append(Melville.CSJ2K.Color.ColorSpace.indent("  ", body));
-			return rep.Append("]").ToString();
-		}
-		
-		/* end class ICCProfiler */
-		static ICCProfiler()
-		{
-			GRAY = RestrictedICCProfile.GRAY;
-			RED = RestrictedICCProfile.RED;
-			GREEN = RestrictedICCProfile.GREEN;
-			BLUE = RestrictedICCProfile.BLUE;
-		}
 	}
 }

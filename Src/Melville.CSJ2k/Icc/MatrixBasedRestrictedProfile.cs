@@ -70,23 +70,6 @@ namespace Melville.CSJ2K.Icc
 		{
 		}
 		
-		/// <returns> String representation of a MatrixBasedRestrictedProfile
-		/// </returns>
-		public override System.String ToString()
-		{
-			System.Text.StringBuilder rep = new System.Text.StringBuilder("[Matrix-Based Input Restricted ICC profile").Append(eol);
-			
-			rep.Append("trc[RED]:").Append(eol).Append(trc[RED]).Append(eol);
-			rep.Append("trc[RED]:").Append(eol).Append(trc[GREEN]).Append(eol);
-			rep.Append("trc[RED]:").Append(eol).Append(trc[BLUE]).Append(eol);
-			
-			rep.Append("Red colorant:  ").Append(colorant[RED]).Append(eol);
-			rep.Append("Red colorant:  ").Append(colorant[GREEN]).Append(eol);
-			rep.Append("Red colorant:  ").Append(colorant[BLUE]).Append(eol);
-			
-			return rep.Append("]").ToString();
-		}
-		
 		/* end class MatrixBasedRestrictedProfile */
 	}
 }
