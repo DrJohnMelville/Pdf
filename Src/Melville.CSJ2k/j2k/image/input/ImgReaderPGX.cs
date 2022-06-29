@@ -233,29 +233,6 @@ namespace Melville.CSJ2K.j2k.image.input
 				packBytes = 4;
 		}
 
-		/// <summary> Creates a new PGX file reader from the specified File object.
-		/// 
-		/// </summary>
-		/// <param name="in">The input file as File object.
-		/// 
-		/// </param>
-		/// <exception cref="IOException">If an I/O error occurs.
-		/// 
-		/// </exception>
-		public ImgReaderPGX(IFileInfo in_Renamed) : this(SupportClass.RandomAccessFileSupport.CreateRandomAccessFile(in_Renamed, "r"))
-		{
-		}
-
-		/// <summary> Creates a new PGX file reader from the specified file name.
-		/// 
-		/// </summary>
-		/// <param name="inName">The input file name.
-		/// 
-		/// </param>
-		public ImgReaderPGX(System.String inName):this(FileInfoFactory.New(inName))
-		{
-		}
-		
 		/// <summary> Closes the underlying RandomAccessIO from where the image data is being
 		/// read. No operations are possible after a call to this method.
 		/// 

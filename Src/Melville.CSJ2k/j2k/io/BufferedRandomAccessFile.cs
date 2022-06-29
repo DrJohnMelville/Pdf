@@ -213,7 +213,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// <exception cref="IOException">If an I/O error ocurred.
 		/// 
 		/// </exception>
-		protected internal BufferedRandomAccessFile(IFileInfo file, System.String mode, int bufferSize)
+		protected internal BufferedRandomAccessFile(FileInfo file, System.String mode, int bufferSize)
 		{
 			
 			fileName = file.Name;
@@ -223,9 +223,9 @@ namespace Melville.CSJ2K.j2k.io
 				isReadOnly = false;
 				if (mode.Equals("rw"))
 				{
-					if (file.Exists && !file.Delete())
+					if (file.Exists)
 					{
-						throw new System.IO.IOException("Could not delete existing file");
+						file.Delete();
 					}
 				}
 				mode = "rw";
@@ -234,27 +234,7 @@ namespace Melville.CSJ2K.j2k.io
 			byteBuffer = new byte[bufferSize];
 			readNewBuffer(0);
 		}
-		
-		/// <summary> Constructor. Uses the default value for the byte-buffer 
-		/// size (512 bytes).
-		/// 
-		/// </summary>
-		/// <param name="file">The file associated with the buffer
-		/// 
-		/// </param>
-		/// <param name="mode">"r" for read, "rw" or "rw+" for read and write mode
-		/// ("rw+" opens the file for update whereas "rw" removes 
-		/// it before. So the 2 modes are different only if the 
-		/// file already exists).
-		/// 
-		/// </param>
-		/// <exception cref="IOException">If an I/O error ocurred.
-		/// 
-		/// </exception>
-		protected internal BufferedRandomAccessFile(IFileInfo file, System.String mode):this(file, mode, 512)
-		{
-		}
-		
+
 		/// <summary> Constructor. Always needs a size for the buffer.
 		/// 
 		/// </summary>
@@ -273,7 +253,8 @@ namespace Melville.CSJ2K.j2k.io
 		/// <exception cref="IOException">If an I/O error ocurred.
 		/// 
 		/// </exception>
-		protected internal BufferedRandomAccessFile(System.String name, System.String mode, int bufferSize):this(FileInfoFactory.New(name), mode, bufferSize)
+		protected internal BufferedRandomAccessFile(System.String name, System.String mode, int bufferSize):
+			this(new FileInfo(name), mode, bufferSize)
 		{
 		}
 		

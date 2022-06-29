@@ -10,6 +10,7 @@
 //
 
 using System;
+using System.IO;
 using Melville.CSJ2K.Util;
 using Melville.CSJ2K.j2k.util;
 
@@ -177,11 +178,10 @@ internal class SupportClass
 		/// Creates a new random acces stream with read-write or read rights
 		/// </summary>
 		/// <param name="fileName">A relative or absolute path for the file to open</param>
-		/// <param name="mode">Mode to open the file in</param>
 		/// <returns>The new System.IO.FileStream</returns>
-		public static System.IO.Stream CreateRandomAccessFile(System.String fileName, System.String mode)
+		public static System.IO.Stream CreateRandomAccessFile(System.String fileName)
 		{
-			return FileStreamFactory.New(fileName, mode);
+			return new FileStream(fileName, FileMode.Open, FileAccess.Read);
 		}
 
 		/// <summary>
@@ -190,9 +190,9 @@ internal class SupportClass
 		/// <param name="fileName">File infomation for the file to open</param>
 		/// <param name="mode">Mode to open the file in</param>
 		/// <returns>The new System.IO.FileStream</returns>
-		public static System.IO.Stream CreateRandomAccessFile(IFileInfo fileName, System.String mode)
+		public static System.IO.Stream CreateRandomAccessFile(FileInfo fileName, System.String mode)
 		{
-			return CreateRandomAccessFile(fileName.FullName, mode);
+			return CreateRandomAccessFile(fileName.FullName);
 		} 
 
 		/// <summary>

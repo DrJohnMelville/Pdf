@@ -34,69 +34,28 @@
  * Copyright (c) 1999/2000 JJ2000 Partners.
  */
 
-namespace Melville.CSJ2K.j2k.util
+using Melville.CSJ2K.j2k.util;
+
+namespace Melville.CSJ2K.j2k.util;
+
+public static class FacilityManager
 {
-    using System;
+    private static readonly MsgLogger logger = new MsgLogger();
 
-    /// <summary> This class manages common facilities for multi-threaded
-    /// environments, It can register different facilities for each thread,
-    /// and also a default one, so that they can be referred by static
-    /// methods, while possibly having different ones for different
-    /// threads. Also a default facility exists that is used for threads
-    /// for which no particular facility has been registerd registered.
-    /// <p>Currently the only kind of facilities managed is MsgLogger.</p>
-    /// <p>An example use of this class is if 2 instances of a decoder are running
-    /// in different threads and the messages of the 2 instances should be
-    /// separated.</p>
-    /// <p>The default MsgLogger is a StreamMsgLogger that uses System.out as
-    /// the 'out' stream and System.err as the 'err' stream, and a line width of
-    /// 78. This can be changed using the registerMsgLogger() method.</p>
-    /// </summary>
-    /// <seealso cref="IMsgLogger">
-    /// </seealso>
-    /// <seealso cref="StreamMsgLogger">
-    /// </seealso>
-    public static class FacilityManager
+    public static IMsgLogger getMsgLogger() => logger;
+}
+
+public class MsgLogger : IMsgLogger
+{
+    public void printmsg(int sev, string msg)
     {
-        #region FIELDS
+    }
 
-        private static IMsgLogger _defMsgLogger;
+    public void println(string str, int flind, int ind)
+    {
+    }
 
-        #endregion
-
-        #region CONSTRUCTORS
-
-        static FacilityManager()
-        {
-            _defMsgLogger = J2kSetup.GetSinglePlatformInstance<IMsgLogger>();
-        }
-
-        #endregion
-
-        #region PROPERTIES
-
-        /// <summary>The default logger, for threads that have none associated with them </summary>
-        public static IMsgLogger DefaultMsgLogger
-        {
-            set
-            {
-                _defMsgLogger = value;
-            }
-        }
-
-        #endregion
-
-        /// <summary> Returns the MsgLogger registered with the current thread (the
-        /// thread that calls this method). If the current thread has no
-        /// registered MsgLogger then the default message logger is
-        /// returned.
-        /// </summary>
-        /// <returns> The MsgLogger registerd for the current thread, or the
-        /// default one if there is none registered for it.
-        /// </returns>
-        public static IMsgLogger getMsgLogger()
-        {
-            return _defMsgLogger;
-        }
+    public void flush()
+    {
     }
 }

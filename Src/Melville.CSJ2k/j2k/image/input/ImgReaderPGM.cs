@@ -85,19 +85,6 @@ namespace Melville.CSJ2K.j2k.image.input
 		/// </summary>
 		private DataBlkInt intBlk;
 
-		/// <summary> Creates a new PGM file reader from the specified file.
-		/// 
-		/// </summary>
-		/// <param name="file">The input file.
-		/// 
-		/// </param>
-		/// <exception cref="IOException">If an error occurs while opening the file.
-		/// 
-		/// </exception>
-		public ImgReaderPGM(IFileInfo file)
-			: this(SupportClass.RandomAccessFileSupport.CreateRandomAccessFile(file, "r"))
-		{
-		} 
 		
 		/// <summary> Creates a new PGM file reader from the specified file name.
 		/// 
@@ -108,7 +95,7 @@ namespace Melville.CSJ2K.j2k.image.input
 		/// <exception cref="IOException">If an error occurs while opening the file.
 		/// 
 		/// </exception>
-		public ImgReaderPGM(System.String fname):this(SupportClass.RandomAccessFileSupport.CreateRandomAccessFile(fname, "r"))
+		public ImgReaderPGM(System.String fname):this(SupportClass.RandomAccessFileSupport.CreateRandomAccessFile(fname))
 		{
 		}
 		
