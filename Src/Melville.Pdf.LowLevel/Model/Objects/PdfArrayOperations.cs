@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
@@ -38,4 +39,11 @@ public static class PdfArrayOperations
         }
         return ret;
     }
+
+    public static ValueTask<T[]> AsObjectOrArrayAsync<T>(this PdfObject source) where T:PdfObject => source switch
+    {
+        T item =>  new(new T[] {item}),
+        PdfArray arr => arr.AsAsync<T>(),
+        _=> new(Array.Empty<T>())
+    };
 }
