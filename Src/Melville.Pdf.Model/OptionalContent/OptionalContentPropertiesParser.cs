@@ -25,8 +25,7 @@ public readonly struct OptionalContentPropertiesParser
         var ocgs = await (await oCProperties.GetAsync<PdfArray>(KnownNames.OCGs).CA()).AsAsync<PdfDictionary>().CA();
         foreach (var ocg in ocgs)
         {
-            ocDict[ocg] = new OptionalGroup(
-                (await ocg.GetOrDefaultAsync(KnownNames.Name, PdfString.Empty).CA()).AsTextString());
+            ocDict[ocg] = await ParseOptionalGroup(ocg).CA();
         }
 
         var configs = new List<OptionalContentConfiguration>();
@@ -42,6 +41,16 @@ public readonly struct OptionalContentPropertiesParser
             ret.ConfigureWith(configs[0]);
         }
         return ret;
+    }
+
+    private static async Task<OptionalGroup> ParseOptionalGroup(PdfDictionary ocg)
+    {
+        var intent = await ocg.GetOrNullAsync<PdfArray>(KnownNames.Intent).CA();
+        return new OptionalGroup(
+            (await ocg.GetOrDefaultAsync(KnownNames.Name, PdfString.Empty).CA()).AsTextString())
+        {
+            Visible = intent != null && (await intent.AsAsync<PdfName>().CA()).Contains(KnownNames.View)
+        };
     }
 
     private  async ValueTask<OptionalContentConfiguration> ParseOptionalContentConfiguration(
