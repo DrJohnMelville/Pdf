@@ -19,16 +19,15 @@ public class FontCachingTarget : WpfPathCreator, IFontTarget
     {
         var innerender = font.BeginFontWrite(this);
         var width= await innerender.AddGlyphToCurrentString(glyph, Matrix3x2.Identity);
-        return new CachedGlyph(Geometry?.GetFlattenedPathGeometry()??new PathGeometry(),
-            Fill(), width);
+        var finalGeometry = Geometry??new PathGeometry();
+        return new CachedGlyph(finalGeometry, Fill(), width);
     }
 }
 
 public record CachedGlyph(
     PathGeometry Figures, FillRule Rule, double Width)
 {
-    public PathGeometry CreateInstance(in Transform transform) => 
-        new PathGeometry(Figures.Figures, Rule, transform);
+    public PathGeometry CreateInstance(in Transform transform) => new(Figures.Figures, Rule, transform);
 
     public PathGeometry Original(in Transform transform)
     {
