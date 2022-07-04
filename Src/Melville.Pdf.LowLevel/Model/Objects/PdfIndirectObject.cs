@@ -43,7 +43,7 @@ public class PdfIndirectObject: PdfObject, IMultableIndirectObject
             value = await accessor().CA();
             accessor = null;
         } 
-        return value;
+        return value = await value.DirectValueAsync().CA();
     }
 
     public bool TryGetDirectValue(out PdfObject result)

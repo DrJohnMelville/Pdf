@@ -23,20 +23,18 @@ public class IndirectObjectParser : IPdfObjectParser
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
         ParseResult kind;
-        PdfIndirectObject? reference;
-        do{}while(source.Reader.Source.ShouldContinue(ParseReference(await source.Reader.Source.ReadAsync().CA(), 
-                      source.IndirectResolver, out kind, out reference)));
+        int num = 0;
+        int generation = 0;
+        do{}while(source.Reader.Source.ShouldContinue(ParseReference(await source.Reader.Source.ReadAsync().CA(), out kind, out num, out  generation)));
 
         switch (kind)
         {
             case ParseResult.FoundReference:
-                return reference;
+                return source.IndirectResolver.FindIndirect(num, generation);;
                 
             case ParseResult.FoundDefinition:
                 do { } while (source.Reader.Source.ShouldContinue(SkipToObjectBeginning(await source.Reader.Source.ReadAsync().CA())));
                 var target = await source.RootObjectParser.ParseAsync(source).CA();
-                await NextTokenFinder.SkipToNextToken(source.Reader).CA();
-                do { } while (source.Reader.Source.ShouldContinue(SkipEndObj(await source.Reader.Source.ReadAsync().CA())));
                 return target;
                 
             case ParseResult.NotAReference:
@@ -52,12 +50,6 @@ public class IndirectObjectParser : IPdfObjectParser
         return (reader.TryAdvance(2) && NextTokenFinder.SkipToNextToken(ref reader), reader.Position);
 
     }
-    private (bool Success, SequencePosition Position) SkipEndObj(ReadResult source)
-    {
-        if (source.Buffer.Length < 6) return (false, source.Buffer.Start);
-        return (true, source.Buffer.GetPosition(6));
-    }
-
     private enum ParseResult
     {
         FoundReference,
@@ -66,20 +58,20 @@ public class IndirectObjectParser : IPdfObjectParser
     }
         
         
-    private (bool, SequencePosition) ParseReference(ReadResult rr,
-        IIndirectObjectResolver resolver, out ParseResult kind, out PdfIndirectObject? reference)
+    private (bool, SequencePosition) ParseReference(ReadResult rr, out ParseResult kind,
+        out  int num, out int generation)
     {
         var reader = new SequenceReader<byte>(rr.Buffer);
-        reference = null;
         kind = ParseResult.NotAReference;
+        generation = 0;
                 
-        if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out int num, out var next))
+        if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out num, out var next))
             return (rr.IsCompleted, reader.Sequence.Start);
         if (IsInvalidReferencePart(num, next))
             return (true, reader.Sequence.Start);
         if (!NextTokenFinder.SkipToNextToken(ref reader))
             return (rr.IsCompleted, reader.Sequence.Start);
-        if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out int generation, out next))
+        if (!WholeNumberParser.TryParsePositiveWholeNumber(ref reader, out generation, out next))
             return (rr.IsCompleted, reader.Sequence.Start);
         if (IsInvalidReferencePart(generation, next)) 
             return (true, reader.Sequence.Start);
@@ -90,11 +82,9 @@ public class IndirectObjectParser : IPdfObjectParser
         {
             case 'R':
                 kind = ParseResult.FoundReference;
-                reference = resolver.FindIndirect(num, generation);
                 return (true, reader.Position);
             case 'o':
                 kind = ParseResult.FoundDefinition;
-                reference = resolver.FindIndirect(num, generation);
                 return (true, reader.Position);
             default:
                 return (true, reader.Sequence.Start);
