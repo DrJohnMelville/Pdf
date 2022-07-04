@@ -20,7 +20,7 @@ public static class RandomAccessFileParser
 
         var xrefPosition = await FileTrailerLocater.Search(owner, fileTrailerSizeHint).CA();
          var dictionary = await PdfTrailerParser.ParseXrefAndTrailer(owner, xrefPosition).CA();
-        var firstFree =owner.IndirectResolver.FreeListHead();
+        var firstFree = await owner.IndirectResolver.FreeListHead().CA();
 
         return new PdfLoadedLowLevelDocument(
             major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, firstFree,
