@@ -19,17 +19,29 @@ public class IndirectObjectResolver : IIndirectObjectResolver
     {
         if (index.TryGetValue((objectNumber, generation), out var existingReference)) 
             return existingReference;
-        var ret = new PdfIndirectObject(objectNumber,
-            generation, PdfTokenValues.Null);
+        var ret = new UnknownIndirectObject(objectNumber,
+            generation);
         index.Add((objectNumber, generation), ret);
         return ret;
     }
         
     public void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor)
     {
-        var item = (IMultableIndirectObject)(FindIndirect(number, generation));
-        if (item.HasRegisteredAccessor()) return; // this occurs for the prior value of replaced objects
-        item.SetValue(valueAccessor);
+        var newItem = new IndirectObjectWithAccessor(number, generation, valueAccessor);
+        AddLocationHint(newItem);
+    }
+
+    public void AddLocationHint(PdfIndirectObject newItem)
+    {
+        var key = (newItem.ObjectNumber, newItem.GenerationNumber);
+        if (index.TryGetValue(key, out var prior))
+        {
+            var mut = prior as IMultableIndirectObject;
+            if (mut.HasRegisteredAccessor()) return;
+            mut.SetValue(newItem);
+        }
+
+        index[key] = newItem;
     }
 
     public async Task<long> FreeListHead()

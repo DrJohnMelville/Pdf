@@ -70,7 +70,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 
     public void AddDelayedObject(Func<ValueTask<PdfObject>> creator)
     {
-        var reference = new PdfIndirectObject(nextObject++, 0, creator);
+        var reference = new IndirectObjectWithAccessor(nextObject++, 0, creator);
         Objects.Add(reference);
     }
 

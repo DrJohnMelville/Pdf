@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -32,11 +33,15 @@ public class S7_5_4CrossReferenceTable
 ";
         await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
             
-        resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(4,122,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(5, 0, It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
+        resolver.Verify(CheckLocation(1,0), Times.Once);
+        resolver.Verify(CheckLocation(2,0), Times.Once);
+        resolver.Verify(CheckLocation(4,122), Times.Once);
+        resolver.Verify(CheckLocation(5,0), Times.Once);
     }
+
+    private static Expression<Action<IIndirectObjectResolver>> CheckLocation(int num, int gen) => 
+        i=>i.AddLocationHint(It.Is<PdfIndirectObject>(i=>i.ObjectNumber == num && i.GenerationNumber == gen));
+
     [Fact]
     public async Task ParseCompoundTable()
     {
@@ -52,12 +57,13 @@ public class S7_5_4CrossReferenceTable
 "; 
         await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
 
-        resolver.Verify(i=>i.AddLocationHint(0,65535,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(3,7,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(23,122,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(24, 0, It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
+        resolver.Verify(CheckLocation(0,65535), Times.Once);
+        resolver.Verify(CheckLocation(1,0), Times.Once);
+        resolver.Verify(CheckLocation(2,0), Times.Once);
+        resolver.Verify(CheckLocation(3,7), Times.Once);
+        resolver.Verify(CheckLocation(23,122
+        ), Times.Once);
+        resolver.Verify(CheckLocation(24,0), Times.Once);
         resolver.VerifyNoOtherCalls();
     }
     [Fact]
@@ -80,11 +86,11 @@ trailer
         var file = await MinimalPdfParser.MinimalPdf(1, 5).AsStringAsync();
         var ps = (file).AsParsingSource(resolver.Object);
         await RandomAccessFileParser.Parse(ps);
-        resolver.Verify(i=>i.AddLocationHint(0,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(1,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(2,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(3,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
-        resolver.Verify(i=>i.AddLocationHint(4,0,It.IsAny<Func<ValueTask<PdfObject>>>()), Times.Once);
+        resolver.Verify(CheckLocation(0,0), Times.Once);
+        resolver.Verify(CheckLocation(1,0), Times.Once);
+        resolver.Verify(CheckLocation(2,0), Times.Once);
+        resolver.Verify(CheckLocation(3,0), Times.Once);
+        resolver.Verify(CheckLocation(4,0), Times.Once);
         resolver.Verify(i=>i.FindIndirect(4,0));
         resolver.Verify(i=>i.GetObjects());
         resolver.Verify(i=>i.FreeListHead(), Times.Once);

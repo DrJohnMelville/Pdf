@@ -13,7 +13,7 @@ public interface IIndirectObjectResolver
 {
     IReadOnlyDictionary<(int, int), PdfIndirectObject> GetObjects();
     PdfIndirectObject FindIndirect(int number, int generation);
-    void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor);
+    void AddLocationHint(PdfIndirectObject newItem);
     Task<long> FreeListHead();
 }
     
@@ -21,35 +21,35 @@ public static class IndirectObjectResolverOperations
 {
     public static void RegistedDeletedBlock(
         this IIndirectObjectResolver resolver, int number, int next, int generation) =>
-        resolver.AddLocationHint(number, generation,
-            () => new ValueTask<PdfObject>(new PdfFreeListObject(next)));
+        resolver.AddLocationHint(new IndirectObjectWithAccessor(number, generation,
+            () => new ValueTask<PdfObject>(new PdfFreeListObject(next))));
     public static void RegistedNullObject(
         this IIndirectObjectResolver resolver, int number, int next, int generation) =>
-        resolver.AddLocationHint(number, generation,
-            () => new ValueTask<PdfObject>(PdfTokenValues.Null));
+        resolver.AddLocationHint(
+            new PdfIndirectObject(number, generation,PdfTokenValues.Null));
 
     public static void RegisterIndirectBlock(
         this ParsingFileOwner owner, int number, long generation, long offset)
     {
-        owner.IndirectResolver.AddLocationHint(number, (int)generation,
+        owner.IndirectResolver.AddLocationHint(new IndirectObjectWithAccessor(number, (int)generation,
             async () =>
             {
                 var rentedReader = await owner.RentReader(offset, number, (int)generation).CA();
                 return await rentedReader.RootObjectParser.ParseAsync(rentedReader).CA();
-            });
+            }));
     }
     public static void RegisterObjectStreamBlock(
         this ParsingFileOwner owner, int number, long referredStream, long referredOrdinal)
     {
         if (number == referredStream) throw new PdfParseException("A object stream may not contain itself");
-        owner.IndirectResolver.AddLocationHint(number, 0,
+        owner.IndirectResolver.AddLocationHint(new IndirectObjectWithAccessor(number, 0,
             async () =>
             {
                 var referredObject = await owner.IndirectResolver
                     .FindIndirect((int)referredStream, 0).DirectValueAsync().CA();
                 if (referredObject is not PdfStream stream) return PdfTokenValues.Null;
                 return await LoadObjectStream(owner, stream, number).CA();
-            });
+            }));
     }
         
     public static async ValueTask<PdfObject> LoadObjectStream(

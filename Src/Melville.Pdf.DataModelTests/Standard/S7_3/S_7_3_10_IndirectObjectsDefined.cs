@@ -12,7 +12,8 @@ public class S_7_3_10_IndirectObjectsDefined
     {
 
         var src = "24 543 R".AsParsingSource();
-        src.IndirectResolver.AddLocationHint(24,543, () => new ValueTask<PdfObject>(PdfTokenValues.Null));
+        src.IndirectResolver.AddLocationHint(
+            new IndirectObjectWithAccessor(24,543, () => new ValueTask<PdfObject>(PdfTokenValues.Null)));
         var result = (PdfIndirectObject)await src.ParseObjectAsync();
         Assert.Equal(24, result.ObjectNumber);
         Assert.Equal(543, result.GenerationNumber);
