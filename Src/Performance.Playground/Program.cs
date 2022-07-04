@@ -6,12 +6,12 @@ using Performance.Playground.Rendering;
 
 if (true)
 {
-    await new JbigParsing().ParseJBig();
+    await new CcittParsing().RenderSkia();
     Console.WriteLine("done");
 }
 else
 {
-    BenchmarkRunner.Run<JbigParsing>();
+    BenchmarkRunner.Run<CcittParsing>();
 }
 
 public static class Timer
