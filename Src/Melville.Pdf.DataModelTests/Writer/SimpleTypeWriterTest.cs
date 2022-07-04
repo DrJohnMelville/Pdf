@@ -74,15 +74,9 @@ public class SimpleTypeWriterTest
     [Fact]
     public async Task WriteIndirectObjectReference()
     {
-        var reference = new PdfIndirectReference(new PdfIndirectObject(34, 555, PdfBoolean.False));
+        var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
         Assert.Equal("34 555 R", await reference.WriteToStringAsync());
 
-    }
-    [Fact]
-    public async Task WriteIndirectObject()
-    {
-        var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
-        Assert.Equal("34 555 obj false endobj\n", await reference.WriteToStringAsync());
     }
     [Fact]
     public async Task WriteArray()

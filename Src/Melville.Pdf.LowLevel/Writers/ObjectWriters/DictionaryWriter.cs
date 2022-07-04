@@ -39,10 +39,6 @@ public static class DictionaryWriter
         return await writer.FlushAsync().CA();
     }
 
-    private static void WritePrefix(PipeWriter writer) => writer.WriteBytes((byte) '<', (byte) '<');
-
-    private static void WritePostfix(PipeWriter writer) => writer.WriteBytes((byte) '>', (byte) '>');
-
     private static void AddWhitespaceIfNeeded(PipeWriter writer, PdfObject item)
     {
         if (NeedsLeadingSpace(item))
@@ -52,6 +48,6 @@ public static class DictionaryWriter
     }
 
     private static bool NeedsLeadingSpace(PdfObject itemValue) => 
-        itemValue is PdfNumber or PdfIndirectObject or PdfIndirectReference 
+        itemValue is PdfNumber or PdfIndirectObject
             or PdfTokenValues;
 }

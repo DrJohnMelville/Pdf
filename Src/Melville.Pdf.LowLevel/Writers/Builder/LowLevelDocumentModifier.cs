@@ -18,12 +18,6 @@ public interface ILowLevelDocumentModifier: ILowLevelDocumentBuilder
     void DeleteObject(PdfIndirectObject objectNum);
 }
 
-public static class LowLevelDocumentModifierOperations
-{
-    public static void DeleteObject(this ILowLevelDocumentModifier mod, PdfIndirectReference item) =>
-        mod.DeleteObject(item.Target);
-}
-
 public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
 {
     private readonly LowLevelDocumentBuilder builder;
@@ -41,19 +35,19 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
     }
 
     public void DeleteObject(PdfIndirectObject objectNum) => deletedItems.Add(objectNum);
-    public void AssignValueToReference(PdfIndirectReference reference, PdfObject value)
+    public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
     {
         if (builder.Objects.Contains(reference))
         {
             builder.AssignValueToReference(reference, value);
         }else if (builder.Objects.FirstOrDefault(
-                      i => IsSameObject(i.Target, reference.Target)) is { } newObj)
+                      i => IsSameObject(i, reference)) is { } newObj)
         {
             builder.AssignValueToReference(newObj, value);
         }
         else
         {
-            builder.Add(value, reference.Target.ObjectNumber, reference.Target.GenerationNumber);
+            builder.Add(value, reference.ObjectNumber, reference.GenerationNumber);
         }
     }
 
@@ -82,8 +76,8 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         foreach (var item in builder.Objects)
         {
             lines.Add(new XrefLine(
-                item.Target.ObjectNumber, target.BytesWritten, item.Target.GenerationNumber, true));
-            await writer.Visit(item.Target).CA();
+                item.ObjectNumber, target.BytesWritten, item.GenerationNumber, true));
+            await writer.VisitTopLevelObject(item).CA();
         }
         var startXref = target.BytesWritten;
         XrefTableElementWriter.WriteXrefTitleLine(target);

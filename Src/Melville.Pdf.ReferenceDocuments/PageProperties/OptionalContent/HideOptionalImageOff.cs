@@ -26,7 +26,7 @@ public class HideOptionalImageOff: DisplayImageTest
     public HideOptionalImageOff(string helpText) : base(helpText)
     { }
 
-    private PdfIndirectReference? ocg;
+    private PdfIndirectObject? ocg;
 
     protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {

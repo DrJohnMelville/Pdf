@@ -1,27 +1,18 @@
 ﻿using System.Collections.Generic;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Document;
 
-public class PdfLowLevelDocument
+public partial class PdfLowLevelDocument
 {
-    public byte MajorVersion {get;}
-    public byte MinorVersion {get;}
-    public PdfDictionary TrailerDictionary { get; }
-    public IReadOnlyDictionary<(int ObjectNumber,int GenerationNumber), PdfIndirectReference> 
+    [FromConstructor]public byte MajorVersion {get;}
+    [FromConstructor]public byte MinorVersion {get;}
+    [FromConstructor]public PdfDictionary TrailerDictionary { get; }
+    [FromConstructor]public IReadOnlyDictionary<(int ObjectNumber,int GenerationNumber), PdfIndirectObject> 
         Objects { get; }
-
-    public PdfLowLevelDocument(
-        byte majorVersion, byte minorVersion, PdfDictionary trailerDictionary, 
-        IReadOnlyDictionary<(int, int), PdfIndirectReference> objects)
-    {
-        MajorVersion = majorVersion;
-        MinorVersion = minorVersion;
-        TrailerDictionary = trailerDictionary;
-        Objects = objects;
-    }
-
+    
     public void VerifyCanSupportObjectStreams()
     {
         if (MajorVersion < 2 && MinorVersion < 5)

@@ -22,7 +22,7 @@ public class PdfDocumentCreator
         return LowLevelCreator.CreateDocument();
     }
 
-    public PdfIndirectReference CreateResourceDictionaryItem(ItemWithResourceDictionaryCreator creator) => 
+    public PdfIndirectObject CreateResourceDictionaryItem(ItemWithResourceDictionaryCreator creator) => 
         creator.ConstructPageTree(LowLevelCreator, null, MaxPageTreeNodeSize).Reference;
 
     public void SetVersionInCatalog(byte major, byte minor) =>

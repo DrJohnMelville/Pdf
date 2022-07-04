@@ -11,8 +11,8 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 public interface IIndirectObjectResolver
 {
-    IReadOnlyDictionary<(int, int), PdfIndirectReference> GetObjects();
-    PdfIndirectReference FindIndirect(int number, int generation);
+    IReadOnlyDictionary<(int, int), PdfIndirectObject> GetObjects();
+    PdfIndirectObject FindIndirect(int number, int generation);
     void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor);
     Task<long> FreeListHead();
 }
@@ -75,7 +75,7 @@ public static class IndirectObjectResolverOperations
         
     public static void AcceptObject(IIndirectObjectResolver resolver,
         int objectNumber, PdfObject pdfObject) =>
-        ((IMultableIndirectObject)resolver.FindIndirect(objectNumber, 0).Target).SetValue(pdfObject);
+        ((IMultableIndirectObject)resolver.FindIndirect(objectNumber, 0)).SetValue(pdfObject);
 
 
 }

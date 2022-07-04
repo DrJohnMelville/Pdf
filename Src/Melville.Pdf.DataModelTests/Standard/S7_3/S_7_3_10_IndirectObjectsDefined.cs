@@ -13,9 +13,9 @@ public class S_7_3_10_IndirectObjectsDefined
 
         var src = "24 543 R".AsParsingSource();
         src.IndirectResolver.AddLocationHint(24,543, () => new ValueTask<PdfObject>(PdfTokenValues.Null));
-        var result = (PdfIndirectReference) await src.ParseObjectAsync();
-        Assert.Equal(24, result.Target.ObjectNumber);
-        Assert.Equal(543, result.Target.GenerationNumber);
+        var result = (PdfIndirectObject)await src.ParseObjectAsync();
+        Assert.Equal(24, result.ObjectNumber);
+        Assert.Equal(543, result.GenerationNumber);
         Assert.Equal(PdfTokenValues.Null, await result.DirectValueAsync());
             
     }
@@ -38,8 +38,5 @@ public class S_7_3_10_IndirectObjectsDefined
 
         var indirect = new PdfIndirectObject(1, 0, obj);
         Assert.True(ReferenceEquals(obj, await indirect.DirectValueAsync()));
-
-        var reference = new PdfIndirectReference(indirect);
-        Assert.True(ReferenceEquals(obj, await reference.DirectValueAsync()));
     }
 }

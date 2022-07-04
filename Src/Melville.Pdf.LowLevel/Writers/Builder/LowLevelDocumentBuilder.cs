@@ -8,10 +8,10 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 public interface ILowLevelDocumentBuilder
 {
-    PdfIndirectReference AsIndirectReference(PdfObject? value = null);
-    void AssignValueToReference(PdfIndirectReference reference, PdfObject value);
-    PdfIndirectReference Add(PdfObject item);
-    public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation);
+    PdfIndirectObject AsIndirectReference(PdfObject? value = null);
+    void AssignValueToReference(PdfIndirectObject reference, PdfObject value);
+    PdfIndirectObject Add(PdfObject item);
+    public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation);
     void AddToTrailerDictionary(PdfName key, PdfObject item);
     public PdfArray EnsureDocumentHasId();
     public byte[] UserPassword { get; set; }
@@ -42,7 +42,7 @@ public static class BuildEncryptedDocument
 public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 {
     private int nextObject;
-    public List<PdfIndirectReference> Objects { get;  }= new();
+    public List<PdfIndirectObject> Objects { get;  }= new();
     private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
     private ObjectStreamBuilder? objectStreamBuilder;
         
@@ -53,30 +53,28 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
         this.nextObject = nextObject;
     }
         
-    public PdfIndirectReference AsIndirectReference(PdfObject? value = null) =>
+    public PdfIndirectObject AsIndirectReference(PdfObject? value = null) =>
         value switch
         {
-            PdfIndirectReference pir => pir,
-            PdfIndirectObject pio => new PdfIndirectReference(pio),
-            _ => new(new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null))
+            PdfIndirectObject pio => pio,
+            _ => new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null)
         };
 
-    public void AssignValueToReference(PdfIndirectReference reference, PdfObject value)
+    public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
     {
-        ((IMultableIndirectObject)reference.Target).SetValue(value);
+        ((IMultableIndirectObject)reference).SetValue(value);
     }
-    public PdfIndirectReference Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
-    public PdfIndirectReference Add(PdfObject item, int objectNumber, int generation) => 
-        InnerAdd(new PdfIndirectReference(new PdfIndirectObject(objectNumber, generation, item)));
+    public PdfIndirectObject Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
+    public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation) => 
+        InnerAdd(new PdfIndirectObject(objectNumber, generation, item));
 
-    public PdfIndirectReference AddDelayedObject(Func<ValueTask<PdfObject>> creator)
+    public void AddDelayedObject(Func<ValueTask<PdfObject>> creator)
     {
-        var reference = new PdfIndirectReference(new PdfIndirectObject(nextObject++, 0, creator));
+        var reference = new PdfIndirectObject(nextObject++, 0, creator);
         Objects.Add(reference);
-        return reference;
     }
 
-    private PdfIndirectReference InnerAdd(PdfIndirectReference item)
+    private PdfIndirectObject InnerAdd(PdfIndirectObject item)
     {
         if (!(Objects.Contains(item) || TryWriteToObjectStream(item)))
         {
@@ -85,8 +83,8 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
         return item;
     }
 
-    private bool TryWriteToObjectStream(PdfIndirectReference item) =>
-        objectStreamBuilder is not null && objectStreamBuilder.TryAddRef(item.Target);
+    private bool TryWriteToObjectStream(PdfIndirectObject item) =>
+        objectStreamBuilder is not null && objectStreamBuilder.TryAddRef(item);
 
     public void AddToTrailerDictionary(PdfName key, PdfObject item) => 
         trailerDictionaryItems[key] = item;

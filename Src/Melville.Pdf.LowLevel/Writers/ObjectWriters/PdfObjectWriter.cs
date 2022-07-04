@@ -33,13 +33,14 @@ public class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
         IntegerWriter.WriteAndFlush(target, item.IntValue);
     public override ValueTask<FlushResult> Visit(PdfDouble item) =>
         DoubleWriter.Write(target, item.DoubleValue);
-    public override ValueTask<FlushResult> Visit(PdfIndirectObject item)
+
+    public override ValueTask<FlushResult> VisitTopLevelObject(PdfIndirectObject item)
     {
         currentIndirectObject = encryptor.BlockEncryption(item)?null: item;
         return IndirectObjectWriter.Write(target, item, this);
     }
 
-    public override ValueTask<FlushResult> Visit(PdfIndirectReference item) =>
+    public override ValueTask<FlushResult> Visit(PdfIndirectObject item) =>
         IndirectObjectWriter.Write(target, item);
     public override ValueTask<FlushResult> Visit(PdfName item) =>
         NameWriter.Write(target, item);

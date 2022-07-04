@@ -84,15 +84,15 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
 
     public ValueTask<DocumentPart> Visit(PdfTokenValues item) => Terminal(item.ToString());
 
-    public async ValueTask<DocumentPart> Visit(PdfIndirectObject item)
+    public async ValueTask<DocumentPart> VisitTopLevelObject(PdfIndirectObject item)
     {
         prefix = $"{prefix}{item.ObjectNumber} {item.GenerationNumber}: ";
         return (await (await item.DirectValueAsync()).Visit(this))
             .WithTarget(item.ObjectNumber, item.GenerationNumber);
     }
 
-    public ValueTask<DocumentPart> Visit(PdfIndirectReference item) =>
-        new(new ReferencePartViewModel(ConsumePrefix(), item.Target.ObjectNumber, item.Target.GenerationNumber));
+    public ValueTask<DocumentPart> Visit(PdfIndirectObject item) =>
+        new(new ReferencePartViewModel(ConsumePrefix(), item.ObjectNumber, item.GenerationNumber));
 
     public ValueTask<DocumentPart> Visit(PdfName item) => Terminal(item.ToString());
 

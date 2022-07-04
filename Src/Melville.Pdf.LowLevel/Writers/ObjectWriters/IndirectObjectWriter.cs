@@ -14,9 +14,9 @@ public static class IndirectObjectWriter
     private static byte[] ReferenceLabel = {32, 82}; // ' R'
     private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106, 10}; //  endobj
 
-    public static ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectReference item)
+    public static ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectObject item)
     {
-        target.Advance(WriteObjectHeader(target.GetSpan(25), item.Target, ReferenceLabel));
+        target.Advance(WriteObjectHeader(target.GetSpan(25), item, ReferenceLabel));
         return  target.FlushAsync();
     }
 

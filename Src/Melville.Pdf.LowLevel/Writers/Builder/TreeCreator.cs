@@ -93,7 +93,7 @@ public readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
                 .AsDictionary();
     }
 
-    private PdfIndirectReference CreateIndirectReference(PdfDictionary i) => builder.Add(i);
+    private PdfIndirectObject CreateIndirectReference(PdfDictionary i) => builder.Add(i);
 
     public T FirstKey(PdfDictionary node) => (T)LimitsArray(node)[0];
     public T LastKey(PdfDictionary node) => (T)LimitsArray(node).Last();

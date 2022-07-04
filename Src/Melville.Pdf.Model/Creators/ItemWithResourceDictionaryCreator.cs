@@ -20,8 +20,8 @@ public abstract class ItemWithResourceDictionaryCreator
         MetaData = metaData;
     }
 
-    public abstract (PdfIndirectReference Reference, int PageCount) 
-        ConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectReference? parent,
+    public abstract (PdfIndirectObject Reference, int PageCount) 
+        ConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectObject? parent,
             int maxNodeSize);
 
     protected void TryAddResources(ILowLevelDocumentCreator creator)

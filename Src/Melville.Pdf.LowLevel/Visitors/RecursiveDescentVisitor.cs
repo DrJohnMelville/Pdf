@@ -16,14 +16,14 @@ public abstract class RecursiveDescentVisitor<T>: ILowLevelVisitor<T>
     public virtual T Visit(PdfBoolean item) => Visit((PdfTokenValues)item);
     public virtual T Visit(PdfTokenValues item) => VisitAny(item);
     public virtual T Visit(PdfIndirectObject item) => VisitAny(item);
-    public virtual T Visit(PdfIndirectReference item) => VisitAny(item);
     public virtual T Visit(PdfName item) => VisitAny(item);
     public virtual T Visit(PdfInteger item) => VisitNumber(item);
     public virtual T Visit(PdfDouble item) => VisitNumber(item);
     public virtual T Visit(PdfString item) => VisitAny(item);
     public virtual T Visit(PdfStream item) => Visit((PdfDictionary)item);
     public virtual T Visit(PdfFreeListObject item) => VisitAny(item);
-        
+    public virtual T VisitTopLevelObject(PdfIndirectObject item) => VisitAny(item);
+
     public virtual T Visit(PdfArray item)
     {
         var ret = VisitAny(item);

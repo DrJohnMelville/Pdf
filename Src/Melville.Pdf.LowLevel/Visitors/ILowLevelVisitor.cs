@@ -9,11 +9,11 @@ public interface ILowLevelVisitor<out T>
     T Visit(PdfDictionary item);
     T Visit(PdfTokenValues item);
     T Visit(PdfIndirectObject item);
-    T Visit(PdfIndirectReference item);
     T Visit(PdfName item);
     T Visit(PdfInteger item);
     T Visit(PdfDouble item);
     T Visit(PdfString item);
     T Visit(PdfStream item);
     T Visit(PdfFreeListObject item);
+    T VisitTopLevelObject(PdfIndirectObject item);
 }

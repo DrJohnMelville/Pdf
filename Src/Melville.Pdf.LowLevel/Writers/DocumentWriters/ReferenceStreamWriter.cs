@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Hacks.Reflection;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -31,8 +32,9 @@ public readonly struct ReferenceStreamWriter
     }
 
     public async  ValueTask<FlushResult> Write() =>
-        await new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStream().CA())
-            .Visit(UnencryptedPdfObjectWriter()).CA();
+        await 
+            UnencryptedPdfObjectWriter().VisitTopLevelObject(
+            new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStream().CA())).CA();
 
     private PdfObjectWriter UnencryptedPdfObjectWriter() => new(target);
 

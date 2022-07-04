@@ -19,15 +19,15 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
         this.objStreamStrategy = objStreamStrategy;
     }
 
-    public override (PdfIndirectReference Reference, int PageCount) ConstructPageTree(ILowLevelDocumentCreator creator,
-        PdfIndirectReference? parent, int maxNodeSize)
+    public override (PdfIndirectObject Reference, int PageCount) ConstructPageTree(ILowLevelDocumentCreator creator,
+        PdfIndirectObject? parent, int maxNodeSize)
     {
         using var _ = objStreamStrategy.EnterObjectStreamContext(creator);
         TryAddResources(creator);
         return (CreateFinalObject(creator), 1);
     }
 
-    protected abstract PdfIndirectReference CreateFinalObject(ILowLevelDocumentCreator creator);
+    protected abstract PdfIndirectObject CreateFinalObject(ILowLevelDocumentCreator creator);
     public abstract void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data);
 
 }
@@ -43,8 +43,8 @@ public class PageCreator: ContentStreamCreator
     public override void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data) => 
         streamSegments.Add(builder.AsStream(data));
 
-    public override (PdfIndirectReference Reference, int PageCount) 
-        ConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectReference? parent,
+    public override (PdfIndirectObject Reference, int PageCount) 
+        ConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectObject? parent,
             int maxNodeSize)
     {
         if (parent is null) throw new ArgumentException("Pages must have a parent.");
@@ -52,7 +52,7 @@ public class PageCreator: ContentStreamCreator
         return base.ConstructPageTree(creator, parent, maxNodeSize);
     }
 
-    protected override PdfIndirectReference CreateFinalObject(ILowLevelDocumentCreator creator)
+    protected override PdfIndirectObject CreateFinalObject(ILowLevelDocumentCreator creator)
     {
         TryAddContent(creator);
         return creator.Add(MetaData.AsDictionary());
@@ -69,7 +69,7 @@ public class PageCreator: ContentStreamCreator
             ? CreateStreamSegment(creator, streamSegments[0])
             : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i)));
 
-    private PdfIndirectReference CreateStreamSegment(ILowLevelDocumentCreator creator, PdfStream stream) => 
+    private PdfIndirectObject CreateStreamSegment(ILowLevelDocumentCreator creator, PdfStream stream) => 
         creator.Add(stream);
 
     public void AddLastModifiedTime(PdfTime dateAndTime) => 

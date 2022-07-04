@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -9,25 +10,25 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 public class IndirectObjectResolver : IIndirectObjectResolver
 {
-    private readonly Dictionary<(int, int), PdfIndirectReference> index = new();
+    private readonly Dictionary<(int, int), PdfIndirectObject> index = new();
 
-    public IReadOnlyDictionary<(int, int), PdfIndirectReference> GetObjects() =>
+    public IReadOnlyDictionary<(int, int), PdfIndirectObject> GetObjects() =>
         index;
 
-    public PdfIndirectReference FindIndirect(int objectNumber, int generation)
+    public PdfIndirectObject FindIndirect(int objectNumber, int generation)
     {
         if (index.TryGetValue((objectNumber, generation), out var existingReference)) 
             return existingReference;
-        var ret = new PdfIndirectReference(new PdfIndirectObject(objectNumber,
-            generation, PdfTokenValues.Null));
+        var ret = new PdfIndirectObject(objectNumber,
+            generation, PdfTokenValues.Null);
         index.Add((objectNumber, generation), ret);
         return ret;
     }
         
     public void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor)
     {
-        var item = (IMultableIndirectObject)(FindIndirect(number, generation).Target);
-        if (item.HasRegisteredAccessor()) return;
+        var item = (IMultableIndirectObject)(FindIndirect(number, generation));
+        if (item.HasRegisteredAccessor()) return; // this occurs for the prior value of replaced objects
         item.SetValue(valueAccessor);
     }
 

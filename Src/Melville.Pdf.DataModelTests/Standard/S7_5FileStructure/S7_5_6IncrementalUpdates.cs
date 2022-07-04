@@ -44,13 +44,13 @@ public class S7_5_6IncrementalUpdates
         }, async (ld, modifier) =>
         {
             Assert.Equal("true", (await ld.TrailerDictionary[KnownNames.Root]).ToString());
-            Assert.Equal("2", (await ld.Objects[(2, 0)].Target.DirectValueAsync()).ToString());
-            modifier.AssignValueToReference((PdfIndirectReference) ld.TrailerDictionary.RawItems[KnownNames.Root],
+            Assert.Equal("2", (await ld.Objects[(2, 0)].DirectValueAsync()).ToString());
+            modifier.AssignValueToReference((PdfIndirectObject) ld.TrailerDictionary.RawItems[KnownNames.Root],
                 PdfBoolean.False);
         });
 
         Assert.Equal("false", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
-        Assert.Equal("2", (await ld2.Objects[(2,0)].Target.DirectValueAsync()).ToString());
+        Assert.Equal("2", (await ld2.Objects[(2,0)].DirectValueAsync()).ToString());
 
     }
     [Fact]
@@ -64,12 +64,12 @@ public class S7_5_6IncrementalUpdates
         }, async (ld, modifier) =>
         {
             var item = ld.Objects[(2, 0)];
-            Assert.Equal("200", (await item.Target.DirectValueAsync()).ToString());
+            Assert.Equal("200", (await item.DirectValueAsync()).ToString());
             modifier.DeleteObject(item);
         });
 
         Assert.Equal("true", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
-        Assert.Equal("Free Item. Next = 0", (await ld2.Objects[(2,0)].Target.DirectValueAsync()).ToString());
+        Assert.Equal("Free Item. Next = 0", (await ld2.Objects[(2,0)].DirectValueAsync()).ToString());
         Assert.Equal(2, ld2.FirstFreeBlock);
             
     }

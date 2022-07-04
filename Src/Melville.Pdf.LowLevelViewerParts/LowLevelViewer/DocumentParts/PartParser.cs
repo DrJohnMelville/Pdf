@@ -43,17 +43,17 @@ public class PartParser: IPartParser
     }
 
     private const int maxSegmentLength = 1000;
-    private async Task<DocumentPart[]> ParseItemElements(IWaitingService waiting, PdfIndirectReference[] sourceList)
+    private async Task<DocumentPart[]> ParseItemElements(IWaitingService waiting, PdfIndirectObject[] sourceList)
     {
         return TooLongForPreloadedList(sourceList)?
             CreateLazyLoadList(sourceList)
             : await CreatePreloadedList(waiting, sourceList);
     }
 
-    private static bool TooLongForPreloadedList(PdfIndirectReference[] sourceList) => 
+    private static bool TooLongForPreloadedList(PdfIndirectObject[] sourceList) => 
         sourceList.Length > maxSegmentLength;
 
-    private DocumentPart[] CreateLazyLoadList(PdfIndirectReference[] sourceList)
+    private DocumentPart[] CreateLazyLoadList(PdfIndirectObject[] sourceList)
     {
         var listLen = ComputeDecimatedLength(sourceList);
         var ret = new DocumentPart[listLen + 2];
@@ -65,21 +65,21 @@ public class PartParser: IPartParser
         return ret;
     }
 
-    private static Memory<PdfIndirectReference> MemoryForSegment(PdfIndirectReference[] sourceList, int i) => 
+    private static Memory<PdfIndirectObject> MemoryForSegment(PdfIndirectObject[] sourceList, int i) => 
         sourceList.AsMemory(i * maxSegmentLength, SegmentLength(sourceList, i));
 
-    private static int SegmentLength(PdfIndirectReference[] sourceList, int i) => 
+    private static int SegmentLength(PdfIndirectObject[] sourceList, int i) => 
         ItemAfterSegment(sourceList, i) - (i * maxSegmentLength);
 
-    private static int ItemAfterSegment(PdfIndirectReference[] sourceList, int i)
+    private static int ItemAfterSegment(PdfIndirectObject[] sourceList, int i)
     {
         return Math.Min((i+1) * maxSegmentLength, sourceList.Length);
     }
 
-    private static int ComputeDecimatedLength(PdfIndirectReference[] sourceList) => 
+    private static int ComputeDecimatedLength(PdfIndirectObject[] sourceList) => 
         (sourceList.Length + maxSegmentLength - 1) / maxSegmentLength;
 
-    private static async Task<DocumentPart[]> CreatePreloadedList(IWaitingService waiting, PdfIndirectReference[] sourceList)
+    private static async Task<DocumentPart[]> CreatePreloadedList(IWaitingService waiting, PdfIndirectObject[] sourceList)
     {
         var items = new DocumentPart[sourceList.Length + 2];
         var creator = new ItemLoader(sourceList);
@@ -98,9 +98,9 @@ public class PartParser: IPartParser
         return new ViewModelVisitor().GeneratePart("Trailer: ", lowlevel.TrailerDictionary);
     }
 
-    private static PdfIndirectReference[] OrderedListOfObjects(PdfLowLevelDocument lowlevel)
+    private static PdfIndirectObject[] OrderedListOfObjects(PdfLowLevelDocument lowlevel)
     {
-        return lowlevel.Objects.Values.OrderBy(i => i.Target.ObjectNumber).ToArray();
+        return lowlevel.Objects.Values.OrderBy(i => i.ObjectNumber).ToArray();
     }
 
     private DocumentPart GenerateHeaderElement(PdfLowLevelDocument lowlevel) =>

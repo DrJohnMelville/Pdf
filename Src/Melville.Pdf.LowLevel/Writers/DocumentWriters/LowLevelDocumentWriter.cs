@@ -59,24 +59,24 @@ public class LowLevelDocumentWriter
                 document.TrailerDictionary, userPassword).CA());
         foreach (var item in document.Objects.Values)
         {
-            if (!(await item.Target.DirectValueAsync().CA()).ShouldWriteToFile()) continue;
-            positions.DeclareIndirectObject(item.Target.ObjectNumber, target.BytesWritten);
+            if (!(await item.DirectValueAsync().CA()).ShouldWriteToFile()) continue;
+            positions.DeclareIndirectObject(item.ObjectNumber, target.BytesWritten);
             await DeclareContainedObjects(item, positions).CA();
-            await item.Target.Visit(objectWriter).CA();
+            await objectWriter.VisitTopLevelObject(item).CA();
         }
         return positions;
     }
 
-    private async Task DeclareContainedObjects(PdfIndirectReference item, XRefTable positions)
+    private async Task DeclareContainedObjects(PdfIndirectObject item, XRefTable positions)
     {
         if (await item.DirectValueAsync().CA() is IHasInternalIndirectObjects hiid)
         {
             int streamPosition = 0;
             foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbersAsync().CA())
             {
-                EnsureOuterGenerationNumberIsZero(item.Target);
+                EnsureOuterGenerationNumberIsZero(item);
                 positions.DeclareObjectStreamObject(
-                    innerObjectNumber.ObjectNumber, item.Target.ObjectNumber, streamPosition++);
+                    innerObjectNumber.ObjectNumber, item.ObjectNumber, streamPosition++);
             }
         }
     }

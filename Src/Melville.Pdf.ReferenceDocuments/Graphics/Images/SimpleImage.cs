@@ -42,7 +42,7 @@ public class UnalignedSMask: DisplayImageTest
     {
     }
 
-    private PdfIndirectReference? smask;
+    private PdfIndirectObject? smask;
     protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {
         smask = docCreator.LowLevelCreator.Add(new DictionaryBuilder()

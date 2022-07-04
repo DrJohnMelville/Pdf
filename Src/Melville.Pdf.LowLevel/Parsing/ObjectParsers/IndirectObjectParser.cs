@@ -23,9 +23,9 @@ public class IndirectObjectParser : IPdfObjectParser
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
         ParseResult kind;
-        PdfIndirectReference? reference;
+        PdfIndirectObject? reference;
         do{}while(source.Reader.Source.ShouldContinue(ParseReference(await source.Reader.Source.ReadAsync().CA(), 
-                      source.IndirectResolver, out kind, out reference!)));
+                      source.IndirectResolver, out kind, out reference)));
 
         switch (kind)
         {
@@ -67,7 +67,7 @@ public class IndirectObjectParser : IPdfObjectParser
         
         
     private (bool, SequencePosition) ParseReference(ReadResult rr,
-        IIndirectObjectResolver resolver, out ParseResult kind, out PdfIndirectReference? reference)
+        IIndirectObjectResolver resolver, out ParseResult kind, out PdfIndirectObject? reference)
     {
         var reader = new SequenceReader<byte>(rr.Buffer);
         reference = null;

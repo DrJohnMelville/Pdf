@@ -35,6 +35,6 @@ public partial class LowLevelDocumentCreator: ILowLevelDocumentCreator
     public PdfLowLevelDocument CreateDocument() => 
         new(major, minor, data.CreateTrailerDictionary(), CreateObjectList());
 
-    private Dictionary<(int, int), PdfIndirectReference> CreateObjectList() => 
-        data.Objects.ToDictionary(item => (item.Target.ObjectNumber, item.Target.GenerationNumber));
+    private Dictionary<(int, int), PdfIndirectObject> CreateObjectList() => 
+        data.Objects.ToDictionary(item => (item.ObjectNumber, item.GenerationNumber));
 }

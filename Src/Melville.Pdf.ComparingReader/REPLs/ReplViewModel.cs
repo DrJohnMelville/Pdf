@@ -18,12 +18,12 @@ public partial class ReplViewModel
 {
     private readonly IMultiRenderer renderer;
     private readonly byte[] buffer;
-    private readonly PdfIndirectReference contentStream;
+    private readonly PdfIndirectObject contentStream;
     readonly IPageSelector page;
     [AutoNotify] private string contentStreamText;
     
     public ReplViewModel(
-        string contentStreamText, IMultiRenderer renderer, byte[] buffer, PdfIndirectReference contentStream, 
+        string contentStreamText, IMultiRenderer renderer, byte[] buffer, PdfIndirectObject contentStream, 
         IPageSelector page)
     {
         this.contentStreamText = contentStreamText;

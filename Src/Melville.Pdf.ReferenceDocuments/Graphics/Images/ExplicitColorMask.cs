@@ -6,7 +6,7 @@ public class ExplicitColorMask: DisplayImageTest
     {
     }
 
-    private PdfIndirectReference? pir = null;
+    private PdfIndirectObject? pir = null;
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddResourceObject(ResourceTypeName.XObject, NameDirectory.Get("Fake"),

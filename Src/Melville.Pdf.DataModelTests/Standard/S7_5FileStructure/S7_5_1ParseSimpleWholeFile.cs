@@ -52,7 +52,7 @@ public class S7_5_1ParseSimpleWholeFile
         var pointer = builder.AsIndirectReference();
         builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.Width, pointer).AsDictionary());
         builder.AssignValueToReference(pointer, new PdfInteger(10));
-        builder.Add(pointer.Target);
+        builder.Add(pointer);
         var doc = await Write(builder.CreateDocument());
         var doc2 = await doc.ParseDocumentAsync();
         var rootDic = (PdfDictionary)await doc2.TrailerDictionary[KnownNames.Root];

@@ -37,8 +37,8 @@ public class Type0WithCidToGid : FontDefinitionTest
             .AsDictionary();
     }
 
-    private static DictionaryBuilder CreateCidFont(PdfIndirectReference descrip, PdfIndirectReference sysinfo,
-        PdfIndirectReference map)
+    private static DictionaryBuilder CreateCidFont(PdfIndirectObject descrip, PdfIndirectObject sysinfo,
+        PdfIndirectObject map)
     {
         var CIDFontBuilder = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)

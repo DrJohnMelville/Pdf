@@ -11,7 +11,7 @@ public sealed class PdfLoadedLowLevelDocument: PdfLowLevelDocument, IDisposable{
 
     public PdfLoadedLowLevelDocument(
         byte majorVersion, byte minorVersion, PdfDictionary trailerDictionary, 
-        IReadOnlyDictionary<(int, int), PdfIndirectReference> objects, long xRefPosition, 
+        IReadOnlyDictionary<(int, int), PdfIndirectObject> objects, long xRefPosition, 
         long firstFreeBlock, IDisposable fileOwner ) : 
         base(majorVersion, minorVersion, trailerDictionary, objects)
     {
