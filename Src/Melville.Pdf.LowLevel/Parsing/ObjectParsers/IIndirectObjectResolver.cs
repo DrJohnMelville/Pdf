@@ -16,7 +16,7 @@ public interface IIndirectObjectResolver
     void AddLocationHint(PdfIndirectObject newItem);
     Task<long> FreeListHead();
 }
-    
+
 public static class IndirectObjectResolverOperations
 {
     public static void RegistedDeletedBlock(
@@ -31,12 +31,8 @@ public static class IndirectObjectResolverOperations
     public static void RegisterIndirectBlock(
         this ParsingFileOwner owner, int number, long generation, long offset)
     {
-        owner.IndirectResolver.AddLocationHint(new IndirectObjectWithAccessor(number, (int)generation,
-            async () =>
-            {
-                var rentedReader = await owner.RentReader(offset, number, (int)generation).CA();
-                return await rentedReader.RootObjectParser.ParseAsync(rentedReader).CA();
-            }));
+        owner.IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation,
+            owner, offset));
     }
     public static void RegisterObjectStreamBlock(
         this ParsingFileOwner owner, int number, long referredStream, long referredOrdinal)
