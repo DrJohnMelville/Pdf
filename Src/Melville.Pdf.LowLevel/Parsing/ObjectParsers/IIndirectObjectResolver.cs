@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -38,38 +37,8 @@ public static class IndirectObjectResolverOperations
         this ParsingFileOwner owner, int number, long referredStream, long referredOrdinal)
     {
         if (number == referredStream) throw new PdfParseException("A object stream may not contain itself");
-        owner.IndirectResolver.AddLocationHint(new IndirectObjectWithAccessor(number, 0,
-            async () =>
-            {
-                var referredObject = await owner.IndirectResolver
-                    .FindIndirect((int)referredStream, 0).DirectValueAsync().CA();
-                if (referredObject is not PdfStream stream) return PdfTokenValues.Null;
-                return await LoadObjectStream(owner, stream, number).CA();
-            }));
+        Debug.Assert(referredOrdinal == 0); // assumed by this implementation
+        owner.IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(
+            number, 0, owner, referredStream));
     }
-        
-    public static async ValueTask<PdfObject> LoadObjectStream(
-        ParsingFileOwner owner, PdfStream source, int objectNumber)
-    {
-        PdfObject ret = PdfTokenValues.Null;
-        await using var data = await source.StreamContentAsync().CA();
-        var reader = owner.ParsingReaderForStream(data, 0);
-        var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
-            source, reader.Reader).CA();
-        var first = (await source.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue;
-        foreach (var location in objectLocations)
-        {
-            await reader.Reader.Source.AdvanceToLocalPositionAsync(first + location.Offset).CA();
-            var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
-            if (objectNumber == location.ObjectNumber)
-                ret = obj;
-            AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);
-        }
-
-        return ret;
-    }
-        
-    public static void AcceptObject(IIndirectObjectResolver resolver,
-        int objectNumber, PdfObject pdfObject) =>
-        ((IMultableIndirectObject)resolver.FindIndirect(objectNumber, 0)).SetValue(pdfObject);
 }
