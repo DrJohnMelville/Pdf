@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
 using Performance.Playground.Rendering;
 
-if (true)
+if (false)
 {
     await new CcittParsing().RenderSkia();
     Console.WriteLine("done");

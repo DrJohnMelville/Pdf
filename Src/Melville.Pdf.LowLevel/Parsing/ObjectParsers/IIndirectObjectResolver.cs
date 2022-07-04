@@ -19,9 +19,12 @@ public interface IIndirectObjectResolver
 public static class IndirectObjectResolverOperations
 {
     public static void RegistedDeletedBlock(
-        this IIndirectObjectResolver resolver, int number, int next, int generation) =>
-        resolver.AddLocationHint(new IndirectObjectWithAccessor(number, generation,
-            () => new ValueTask<PdfObject>(new PdfFreeListObject(next))));
+        this IIndirectObjectResolver resolver, int number, int next, int generation)
+    {
+        // resolver.AddLocationHint(new IndirectObjectWithAccessor(number, generation,
+        //     () => new ValueTask<PdfObject>(new PdfFreeListObject(next))));
+    }
+
     public static void RegistedNullObject(
         this IIndirectObjectResolver resolver, int number, int next, int generation) =>
         resolver.AddLocationHint(
