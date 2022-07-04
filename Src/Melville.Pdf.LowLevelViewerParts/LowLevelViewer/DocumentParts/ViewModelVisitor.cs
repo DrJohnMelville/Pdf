@@ -114,5 +114,5 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     }
 
     public ValueTask<DocumentPart> Visit(PdfFreeListObject item) =>
-        Terminal($"Deleted Slot. Next: " + item.NextItem);
+        Terminal(item.ToString());
 }

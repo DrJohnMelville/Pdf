@@ -141,10 +141,10 @@ public class ParseXRefStream
                 parsingReader.RegisterIndirectBlock(nextItemNumber++, c2, c1);
                 break;
             case 2:
-                parsingReader.RegisterObjectStreamBlock(nextItemNumber++, c1, c2);
+                parsingReader.RegisterObjectStreamBlock(nextItemNumber++, c1);
                 break;
             default:
-                parsingReader.IndirectResolver.RegistedNullObject(nextItemNumber++, (int)c2, (int)c1);
+                parsingReader.IndirectResolver.RegistedNullObject(nextItemNumber++, (int)c1);
                 break;
         }
     }

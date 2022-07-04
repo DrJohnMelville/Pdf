@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -24,12 +23,6 @@ public class IndirectObjectResolver : IIndirectObjectResolver
         index.Add((objectNumber, generation), ret);
         return ret;
     }
-        
-    public void AddLocationHint(int number, int generation, Func<ValueTask<PdfObject>> valueAccessor)
-    {
-        var newItem = new IndirectObjectWithAccessor(number, generation, valueAccessor);
-        AddLocationHint(newItem);
-    }
 
     public void AddLocationHint(PdfIndirectObject newItem)
     {
@@ -40,15 +33,11 @@ public class IndirectObjectResolver : IIndirectObjectResolver
             if (mut.HasRegisteredAccessor()) return;
             mut.SetValue(newItem);
         }
-
         index[key] = newItem;
     }
 
-    public async Task<long> FreeListHead()
-    {
-        return (index.TryGetValue((0, 65535), out var iRef) &&
-                (await iRef.DirectValueAsync().CA()) is PdfFreeListObject flo)
+    public long FreeListHead() =>
+        (index.TryGetValue((0, 65535), out var iRef) && iRef is PdfFreeListObject flo)
             ? flo.NextItem
             : 0;
-    }
 }
