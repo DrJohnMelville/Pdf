@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
 using Melville.Linq;
 
-namespace Melville.Pdf.WpfViewer.CompositionRoot;
+namespace Melville.Pdf.LowLevelViewerParts.ExceptionDumpers;
 
 public static class ExceptionDumper
 {

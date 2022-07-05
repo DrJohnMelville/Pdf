@@ -4,6 +4,10 @@ using System.Windows;
 using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RootWindows;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevelViewerParts.ExceptionDumpers;
+using Melville.Pdf.LowLevelViewerParts.FakeFileDialog;
+using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
 using Melville.Pdf.WpfViewer.Home;
 using Melville.WpfAppFramework.StartupBases;
 
@@ -27,6 +31,7 @@ public class Startup:StartupBase
         service.RegisterHomeViewModel<HomeViewModel>();
         service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
         service.Bind<Window>().And<IRootNavigationWindow>().To<RootNavigationWindow>().AsSingleton();
+        service.Bind<IPasswordSource>().To<PasswordQuery>();
         TryRegistedCommandLine(service);
     }
     

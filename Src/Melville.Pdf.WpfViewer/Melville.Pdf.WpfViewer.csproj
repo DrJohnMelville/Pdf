@@ -10,9 +10,11 @@
 
     <ItemGroup>
       <PackageReference Include="Melville.WpfAppFramework" Version="0.5.41" />
+      <PackageReference Include="Melville.WpfControls" Version="0.5.16" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
       <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
     </ItemGroup>
 

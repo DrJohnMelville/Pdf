@@ -6,7 +6,10 @@
              xmlns:local="clr-namespace:Melville.Pdf.WpfViewer.Home"
              xmlns:wpf="clr-namespace:Melville.Pdf.Wpf;assembly=Melville.Pdf.Wpf"
              xmlns:controls="clr-namespace:Melville.Pdf.Wpf.Controls;assembly=Melville.Pdf.Wpf"
+             xmlns:diParameterSources="clr-namespace:Melville.MVVM.Wpf.DiParameterSources;assembly=Melville.MVVM.Wpf"
+             xmlns:parserContext="clr-namespace:Melville.Pdf.LowLevel.Parsing.ParserContext;assembly=Melville.Pdf.LowLevel"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <controls:PdfViewer Source="{Binding Data, Mode=OneWay}"/>
+    <controls:PdfViewer Source="{Binding Data, Mode=OneWay}"
+                        PasswordSource="{diParameterSources:DIBinding {x:Type parserContext:IPasswordSource}}"/>
 </UserControl>

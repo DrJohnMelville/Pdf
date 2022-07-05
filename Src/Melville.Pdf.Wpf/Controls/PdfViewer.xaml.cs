@@ -4,12 +4,14 @@ using System.Windows.Threading;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.Wpf.Controls;
 
+[GenerateDP(typeof(IPasswordSource), "PasswordSource", Nullable = true)]
 public partial class PdfViewer : UserControl
 {
     public PdfViewer()
@@ -41,7 +43,8 @@ public partial class PdfViewer : UserControl
 
     private void SetTo(String fileName) => SetTo(File.OpenRead(fileName));
     private void SetTo(byte[] buf) => SetTo(new MemoryStream(buf));
-    private async void SetTo(Stream s) => SetTo(await RandomAccessFileParser.Parse(s));
+    private async void SetTo(Stream s) => SetTo(await RandomAccessFileParser.Parse(
+        new ParsingFileOwner(s, PasswordSource)));
     private void SetTo(PdfLowLevelDocument document) => SetTo(new PdfDocument(document));
     private async void SetTo(PdfDocument document)
     {

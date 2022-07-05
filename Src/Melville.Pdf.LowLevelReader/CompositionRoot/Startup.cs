@@ -7,6 +7,7 @@ using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelReader.MainDisplay;
 using Melville.Pdf.LowLevelReader.Services;
+using Melville.Pdf.LowLevelViewerParts.FakeFileDialog;
 using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
 using Melville.WpfAppFramework.StartupBases;
 namespace Melville.Pdf.LowLevelReader.CompositionRoot;

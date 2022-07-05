@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Melville.FileSystem;
+﻿using Melville.FileSystem;
 using Melville.MVVM.Wpf.MvvmDialogs;
 
-namespace Melville.Pdf.LowLevelReader.CompositionRoot;
+namespace Melville.Pdf.LowLevelViewerParts.FakeFileDialog;
 
-internal class FakeOpenAdapter : IOpenSaveFile
+public class FakeOpenAdapter : IOpenSaveFile
 {
     private readonly string path;
     public FakeOpenAdapter(string path)
