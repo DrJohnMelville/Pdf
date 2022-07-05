@@ -85,7 +85,6 @@ public readonly struct FontReader
         var registry = (await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA());
         var ordering = (await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA());
         if (supplement is not (0 or 1) ||
-            !registry.IsSameAS("Adobe") ||
             !(ordering.IsSameAS("Identity") || ordering.IsSameAS("UCS")))
             throw new NotImplementedException("Only default CID Font Orderings are implemented. ");
         return externalMapping;
