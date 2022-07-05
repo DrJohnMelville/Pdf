@@ -52,7 +52,7 @@ public class PartParserTest
         var model = await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
             waitingService.Object);
-        waitingService.Verify(i=>i.WaitBlock("Loading File", 4, false), Times.Once);`
+        waitingService.Verify(i=>i.WaitBlock("Loading File", 4, false), Times.Once);
         waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(4));
         waitingService.VerifyNoOtherCalls();
     }
