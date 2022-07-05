@@ -12,6 +12,7 @@ public class FastBitmapWriterRGB8: IByteWriter
     {
     }
 
+    #warning can this go faster if I use uint pointers instead of byte pointers
     public unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
     {
         while (input.Remaining >= 3 && output < nextPos)
