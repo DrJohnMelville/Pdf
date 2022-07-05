@@ -52,8 +52,8 @@ public class PartParserTest
         var model = await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
             waitingService.Object);
-        waitingService.Verify(i=>i.WaitBlock("Loading File", 5, false), Times.Once);
-        waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(5));
+        waitingService.Verify(i=>i.WaitBlock("Loading File", 4, false), Times.Once);`
+        waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(4));
         waitingService.VerifyNoOtherCalls();
     }
 
@@ -62,7 +62,7 @@ public class PartParserTest
     {
         var model = await BuildSingleElementFile(_=>
             new PdfArray(PdfBoolean.True, PdfBoolean.False, KnownNames.Max));
-        var array = model[2];
+        var array = model[1];
         Assert.Equal("1 0: Array", array.Title);
         Assert.Equal("[0]: true", array.Children[0].Title);
         Assert.Equal("[1]: false", array.Children[1].Title);
@@ -73,7 +73,7 @@ public class PartParserTest
     {
         var model = await BuildSingleElementFile(i=>
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.C1).AsStream("The Stream Data"));
-        var stream = (StreamPartViewModel)model[2];
+        var stream = (StreamPartViewModel)model[1];
         Assert.Equal("1 0: Stream", stream.Title);
         Assert.Equal("/Type: /C1", stream.Children[0].Title);
         Assert.Equal("/Length: 15", stream.Children[1].Title);
@@ -86,7 +86,7 @@ public class PartParserTest
     private async Task TestSingleElement(PdfObject item, string renderAs)
     {
         var model = await BuildSingleElementFile(_=>item);
-        Assert.Equal("1 0: "+renderAs, model[2].Title);
+        Assert.Equal("1 0: "+renderAs, model[1].Title);
     }
 
     private async Task<DocumentPart[]> BuildSingleElementFile(

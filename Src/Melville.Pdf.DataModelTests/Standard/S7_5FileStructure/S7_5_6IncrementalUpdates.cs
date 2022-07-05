@@ -53,24 +53,5 @@ public class S7_5_6IncrementalUpdates
         Assert.Equal("2", (await ld2.Objects[(2,0)].DirectValueAsync()).ToString());
 
     }
-    [Fact]
-    public async Task DeleteItem()
-    {
-        var ld2 = await CompositeDocument(creator =>
-        {
-            var e1 = creator.Add(PdfBoolean.True);
-            creator.AddToTrailerDictionary(KnownNames.Root, e1);
-            creator.Add(new PdfInteger(200));
-        }, async (ld, modifier) =>
-        {
-            var item = ld.Objects[(2, 0)];
-            Assert.Equal("200", (await item.DirectValueAsync()).ToString());
-            modifier.DeleteObject(item);
-        });
 
-        Assert.Equal("true", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
-        Assert.Equal("Free Item. Next = 0", (await ld2.Objects[(2,0)].DirectValueAsync()).ToString());
-        Assert.Equal(2, ld2.FirstFreeBlock);
-            
-    }
 }

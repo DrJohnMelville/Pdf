@@ -21,7 +21,7 @@ public class S7_6_5CryptFilters
         Assert.Equal(!hideString, str.Contains("plaintext string"));
         Assert.Equal(!hideStream, str.Contains("plaintext stream"));
         var doc = await str.ParseDocumentAsync();
-        Assert.Equal(4, doc.Objects.Count);
+        Assert.Equal(3, doc.Objects.Count);
         Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].DirectValueAsync()).ToString());
         Assert.Equal("plaintext stream", await (
                 await ((PdfStream)(
