@@ -1,6 +1,4 @@
-﻿S=>Subtype
-
-Box:ArtBox
+﻿Box:ArtBox
 Box:BleedBox
 Box:CropBox
 Box:MediaBox
@@ -255,6 +253,7 @@ Pdf:Resources
 Pdf:Root
 Pdf:Rows
 Pdf:Rotate
+Pdf:S
 Pdf:Separation
 Pdf:Size
 Pdf:SMask

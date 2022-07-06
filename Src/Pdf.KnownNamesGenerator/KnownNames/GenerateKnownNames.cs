@@ -58,7 +58,6 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.Append(@"    public static partial class KnownNames
             {
                 ");
-            AddConstantsToDictionary(sb);
             return sb.ToString();
         }
 
@@ -145,32 +144,5 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     "      }");
             }
         }
-
-
-        private void AddConstantsToDictionary(StringBuilder sb)
-        {
-            sb.AppendLine();
-            sb.AppendLine("        public static void AddItemsToDict() ");
-            sb.AppendLine("        {");
-
-            foreach (var (preferred, synonym) in Synonyms())
-            {
-                sb.Append("            NameDirectory.AddSynonym(");
-                sb.Append("KnownNames.");
-                sb.Append(preferred);
-                sb.Append(", ");
-                ByteStreamWriter.WriteStringAsByteArray(sb, synonym, "new");
-                sb.Append("); //");
-                sb.AppendLine(synonym);
-
-            }
-            sb.AppendLine("        }");
-        }
-
-        private static readonly Regex synonymFinder = new Regex(
-            @"^\s*([^\=\>\s]+)\=\>\s*([^\s]+)", RegexOptions.Multiline);
-        private IEnumerable<(string, string)> Synonyms() =>
-            synonymFinder.Matches(data).OfType<Match>()
-                .Select(i => (i.Groups[2].Value, i.Groups[1].Value));
     }
 }

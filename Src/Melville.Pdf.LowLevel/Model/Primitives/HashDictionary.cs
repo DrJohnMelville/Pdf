@@ -42,7 +42,6 @@ public abstract class HashDictionary<T> where T : class
         source switch
         {
             T item => DoComparison(key, item, out ret),
-            Synonym syn => syn.CheckKey(key, out ret),
             SingleLinkedList sll =>
                 DoComparison(key, sll.Datum, out ret) ||
                 SearchLinkedList(sll.Next, key, out ret),
@@ -67,34 +66,7 @@ public abstract class HashDictionary<T> where T : class
             Next = next;
         }
     }
-
-    private class Synonym
-    {
-        private readonly byte[] Key;
-        private readonly T Target;
-
-        public Synonym(byte[] key, T target)
-        {
-            Key = key;
-            Target = target;
-        }
-
-        public bool CheckKey(in ReadOnlySpan<byte> checkKey, out T item)
-        {
-            item = Target;
-            return checkKey.SequenceEqual(Key);
-        }
-    }
-        
-    public void AddSynonym(byte[] key, T target)
-    {
-        var hash = FnvHash.FnvHashAsUint(key);
-        // we set the synonyms first and there is no colision between the synonyms.
-        // this means that a synonym will always be the end of its linked list and
-        // we get to skip checking SingleLinkedList nodes for synonyms
-        store.Add(hash, new Synonym(key, target));
-    }
-
+    
     protected abstract bool Matches(in ReadOnlySpan<byte> key, T item);
     protected abstract T Create(byte[] key);
         

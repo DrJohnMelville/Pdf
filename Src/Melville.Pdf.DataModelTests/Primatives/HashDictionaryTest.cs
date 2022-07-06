@@ -47,12 +47,4 @@ public class HashDictionaryTest
         Assert.True(ReferenceEquals(o1, sut.GetOrCreate(ColidingName1)));
         Assert.True(ReferenceEquals(o2, sut.GetOrCreate(ColidingName2)));
     }
-
-    [Fact]
-    public void Synonym()
-    {
-        var target = sut.GetOrCreate("xxyy21");
-        sut.AddSynonym(ColidingName1.AsExtendedAsciiBytes(), target);
-        Assert.Equal(target, sut.GetOrCreate(ColidingName1));
-    }
 }
