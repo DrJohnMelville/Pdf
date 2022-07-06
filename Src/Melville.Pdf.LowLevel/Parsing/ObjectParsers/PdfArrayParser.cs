@@ -13,7 +13,7 @@ public class PdfArrayParser: IPdfObjectParser
         var reader = await source.Reader.Source.ReadAsync().CA();
         //This has to succeed because the prior parser looked at the prefix to get here.
         source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(1));
-        //TODO: consider renting these lists
+        #warning consider renting these lists
         var items = new List<PdfObject>();
         while (true)
         {

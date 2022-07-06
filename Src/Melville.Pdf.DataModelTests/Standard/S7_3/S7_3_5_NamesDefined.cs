@@ -33,6 +33,13 @@ public class S7_3_5_NamesDefined
 
     }
 
+    [Fact]
+    public void SandSubtypeSameKey()
+    {
+        Assert.Equal(new PdfName("S").GetHashCode(), new PdfName("Subtype").GetHashCode());
+        
+    }
+
 
     private static async Task<PdfName> TryParseStringToName(string source)
     {

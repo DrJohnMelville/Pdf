@@ -37,7 +37,7 @@ public class PdfDictionaryParser : IPdfObjectParser
             var key = await nameParser.ParseAsync(source).CA();
             if (key == PdfTokenValues.DictionaryTerminator)
             {
-                //TODO: See how much the trim helps in memory and costs in speed.
+                #warning TODO: See how much the trim helps in memory and costs in speed.
                 dictionary.TrimExcess();
 
                 return dictionary;

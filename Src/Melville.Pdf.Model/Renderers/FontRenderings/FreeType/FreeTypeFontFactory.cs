@@ -50,11 +50,15 @@ public readonly struct FreeTypeFontFactory
         return new FreeTypeFont(face, GlyphMapping ?? await CreateGlyphMap(face).CA());
     }
 
-    private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face) =>
-        (await fontDefinitionDictionary.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic)
+    private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face)
+    {
+        var fontFlags = await fontDefinitionDictionary.FontFlagsAsync().CA();
+        var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
+        return isSymbolic
             ? await
                 SymbolicEncodingParser.ParseGlyphMapping(face, await fontDefinitionDictionary.EncodingAsync().CA()).CA()
             : await RomanGlyphMapping(face).CA();
+    }
 
     private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face)
     {

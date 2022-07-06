@@ -18,6 +18,7 @@ public class IccColorSpace : IColorSpace
 
     public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {
+        #warning -- page 749/750 of the spec bombs out here -- also the I in difference renders wrong
         if (newColor.Length != transform.Inputs)
             throw new PdfParseException("Incorrect number of color parameters");
         Span<float> inputs = stackalloc float[newColor.Length];
