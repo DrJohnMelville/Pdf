@@ -258,9 +258,11 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             await target.GrapicsStateChange.CurrentState().SetNonstrokePattern(patternDict, renderer).CA();
     }
 
+    #warning this only renders tilepatterns
     private async ValueTask<PdfDictionary?> GetPatternDict(PdfName? patternName) =>
         patternName != null && (await page.GetResourceAsync(ResourceTypeName.Pattern, patternName).CA()) is
-        PdfDictionary patternDict
+        PdfDictionary patternDict &&
+            (await patternDict.GetOrDefaultAsync(KnownNames.PatternType,2).CA() == 1)
             ? patternDict
             : null;
 

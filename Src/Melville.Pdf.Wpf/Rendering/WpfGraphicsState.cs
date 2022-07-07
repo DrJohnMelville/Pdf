@@ -23,9 +23,8 @@ public class WpfGraphicsState : GraphicsState<Brush>
         return CreateBrush(pattternItem, request);
     }
 
-    private static Brush CreateBrush(DrawingGroup pattternItem, in TileBrushRequest request)
-    {
-        return new DrawingBrush(pattternItem)
+    private static Brush CreateBrush(DrawingGroup pattternItem, in TileBrushRequest request) =>
+        new DrawingBrush(pattternItem)
         {
             Stretch = Stretch.None,
             Viewbox = PatternSourceBox(request.BoundingBox),
@@ -35,7 +34,6 @@ public class WpfGraphicsState : GraphicsState<Brush>
             TileMode = TileMode.Tile,
             Transform = request.PatternTransform.WpfTransform()
         };
-    }
 
     private static Rect PatternDestinationBox(Vector2 repeatSize) => 
         new Rect(0, 0, repeatSize.X,repeatSize.Y);

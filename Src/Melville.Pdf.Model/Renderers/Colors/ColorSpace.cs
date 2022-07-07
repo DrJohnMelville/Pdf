@@ -59,7 +59,8 @@ public readonly struct ColorSpaceFactory
     {
         var array = memory.Span;
         if (array.Length == 0) return new(DeviceRgb.Instance);
-        if (array[0] is not PdfName name) throw new PdfParseException("Name expected in colorspace array");
+        if (array.Length == 1 && array[0] is PdfArray innerArray) return FromArray(innerArray);
+        if (array[0] is not PdfName name) throw new PdfParseException("'Name expected in colorspace array");
         return name.GetHashCode() switch
         {
             KnownNameKeys.CalGray => CalGray.Parse(ColorSpaceParameterAs<PdfDictionary>(array)),
