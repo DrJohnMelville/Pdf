@@ -28,17 +28,26 @@ public static class CustomFontEncodingFactory
     public static async ValueTask<IByteToUnicodeMapping> Create(
         IByteToUnicodeMapping basis, PdfArray differences)
     {
+        var dict = await DifferenceArrayToMapAsync(differences, GlyphNameToUnicodeMap.AdobeGlyphList).CA();
+        return dict.Count > 0 ? new CustomFontEncoding(basis, dict) : basis;
+    }
+
+    public static async ValueTask<Dictionary<byte, char>> DifferenceArrayToMapAsync(PdfArray differences, IGlyphNameMap nameMap)
+    {
         var dict = new Dictionary<byte, char>();
         byte currentChar = 0;
         await foreach (var item in differences.CA())
         {
             switch (item)
             {
-                case PdfNumber num: currentChar = (byte)num.IntValue; break;
-                case PdfName name: dict.Add(currentChar++, GlyphNameToUnicodeMap.AdobeGlyphList.Map(name)); break;
+                case PdfNumber num:
+                    currentChar = (byte)num.IntValue;
+                    break;
+                case PdfName name:
+                    dict.Add(currentChar++, nameMap.Map(name));
+                    break;
             }
         }
-
-        return dict.Count > 0 ? new CustomFontEncoding(basis, dict) : basis;
+        return dict;
     }
 }

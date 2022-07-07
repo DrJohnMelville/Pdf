@@ -8,6 +8,7 @@
              xmlns:freeType="clr-namespace:Melville.Pdf.Model.Renderers.FontRenderings.FreeType;assembly=Melville.Pdf.Model"
              xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              xmlns:sharpFont="clr-namespace:SharpFont;assembly=SharpFont.NetStandard"
+             xmlns:fontRenderings="clr-namespace:Melville.Pdf.Model.Renderers.FontRenderings;assembly=Melville.Pdf.Model"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -57,6 +58,18 @@
                     </TabControl>
                 </TabItem>
             </TabControl>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type fontRenderings:SimpleWidthAdjustedFont}">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" FontSize="18">SimpleWidthAdjustedFont</TextBlock>
+                <ContentPresenter Content="{Binding InnerFont}"/>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type fontRenderings:CidWidthAdjustedFont}">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" FontSize="18">CidWidthAdjustedFont</TextBlock>
+                <ContentPresenter Content="{Binding InnerFont}"/>
+            </DockPanel>
         </DataTemplate>
     </UserControl.Resources>
     <ContentPresenter Content="{Binding Font}"/>

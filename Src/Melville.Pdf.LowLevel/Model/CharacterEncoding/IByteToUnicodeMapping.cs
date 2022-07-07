@@ -20,5 +20,9 @@ public class TableMapping : IByteToUnicodeMapping
 
 public class PassthroughMapping : IByteToUnicodeMapping
 {
+    public static readonly PassthroughMapping Instannce = new();
+
+    private PassthroughMapping() { }
+
     public char MapToUnicode(byte input) => (char)input;
 }

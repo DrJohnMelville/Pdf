@@ -26,6 +26,13 @@ public static class FnvHash
             return (int)FnvHashAsUint(bytes);
         }
     }
+    public static int FnvHashAsInt( ReadOnlySpan<char> bytes)
+    {
+        unchecked
+        {
+            return (int)FnvHashAsUint(bytes);
+        }
+    }
 
     public static uint FnvHashAsUint(ReadOnlySpan<byte> bytes)
     {
@@ -33,6 +40,15 @@ public static class FnvHash
         foreach (var item in bytes)
         {
             hash = SingleHashStep(hash, item);
+        }
+        return hash;
+    }
+    public static uint FnvHashAsUint(ReadOnlySpan<char> chars)
+    {
+        var hash = offsetBasis;
+        foreach (var item in chars)
+        {
+            hash = SingleHashStep(hash, (byte)item);
         }
         return hash;
     }
