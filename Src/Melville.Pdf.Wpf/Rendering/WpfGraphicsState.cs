@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
+using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
@@ -16,7 +18,15 @@ public class WpfGraphicsState : GraphicsState<Brush>
     protected override Brush CreateSolidBrush(DeviceColor color) => new SolidColorBrush(color.AsWpfColor());
 
     protected override async ValueTask<Brush> CreatePatternBrush(
-        PdfDictionary pattern, DocumentRenderer parentRenderer)
+        PdfDictionary pattern, DocumentRenderer parentRenderer) =>
+        await pattern.GetOrDefaultAsync(KnownNames.PatternType,0).CA() switch
+        {
+            1 => await CreateTilePattern(pattern, parentRenderer),
+            2 => Brushes.Fuchsia,
+            _=> Brushes.Transparent,
+        };
+
+    private async Task<Brush> CreateTilePattern(PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.Parse(pattern);
         var pattternItem = await PatternRenderer(parentRenderer, request).Render();

@@ -23,7 +23,8 @@ public class PatternRenderer: DocumentRenderer
         this.priorState = priorState;
     }
 
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) => new(request.Pattern);
+    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) => 
+        new(request.Pattern);
 
     public override void InitializeRenderTarget(IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
         in Matrix3x2 transform)
