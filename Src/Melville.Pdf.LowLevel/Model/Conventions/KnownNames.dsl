@@ -123,6 +123,7 @@ Pdf:All
 Pdf:And
 Pdf:Ascent
 Pdf:AuthEvent
+Pdf:Background
 Pdf:BaseEncoding
 Pdf:BaseFont
 Pdf:BaseState
@@ -187,6 +188,7 @@ Pdf:FontFile3
 Pdf:FontMatrix
 Pdf:FontName
 Pdf:FontWeight
+Pdf:Function
 Pdf:Functions
 Pdf:FunctionType
 Pdf:Gamma
@@ -255,6 +257,7 @@ Pdf:Rows
 Pdf:Rotate
 Pdf:S
 Pdf:Separation
+Pdf:ShadingType
 Pdf:Size
 Pdf:SMask
 Pdf:Standard

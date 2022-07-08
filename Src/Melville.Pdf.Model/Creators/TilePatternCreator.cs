@@ -40,8 +40,7 @@ public class TilePatternCreator : ContentStreamCreator
          .WithItem(KnownNames.TilingType, (int)tile)
          .WithItem(KnownNames.XStep, xStep)
          .WithItem(KnownNames.YStep, yStep)
-         .WithItem(KnownNames.BBox, bBox.ToPdfArray)
-         .WithItem(KnownNames.PatternType, 1);
+         .WithItem(KnownNames.BBox, bBox.ToPdfArray);
     }
 
     public void AddMatrix(Matrix3x2 matrix) => MetaData.WithItem(KnownNames.Matrix, matrix.AsPdfArray());

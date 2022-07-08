@@ -120,8 +120,4 @@
       <EmbeddedResource Include="Graphics\Images\Jpeg2000.jp2" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Graphics\Patterns\FunctionPatterns" />
-    </ItemGroup>
-
 </Project>
