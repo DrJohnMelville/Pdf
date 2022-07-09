@@ -5,6 +5,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 using SkiaSharp;
 
@@ -26,7 +27,7 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         return await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
         {
             1 => await CreateTilePatternBrush(pattern, parentRenderer).CA(),
-            2 => CreateSolidBrush(new DeviceColor(255, 127, 0, 255)),
+            2 => await CreateShaderBrush(pattern),
             _ => CreateSolidBrush(DeviceColor.Invisible)
         };
     }
@@ -40,6 +41,23 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         {
             Shader = SKShader.CreateImage(tileItem.Snapshot(),
                 SKShaderTileMode.Repeat, SKShaderTileMode.Repeat).WithLocalMatrix(request.PatternTransform.Transform())
+        };
+    }
+
+    private async Task<SKPaint> CreateShaderBrush(PdfDictionary pattern)
+    {
+        var shader = await new ShaderParser(pattern,
+            await pattern.GetAsync<PdfDictionary>(KnownNames.Shading).CA()).ParseShader().CA();
+        var bitmap = new SKBitmap(new SKImageInfo((int)PageWidth, (int)PageHeight,
+            SKColorType.Bgra8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
+        unsafe
+        {
+            shader.RenderBits((uint*)bitmap.GetPixels().ToPointer(), bitmap.Width, bitmap.Height);
+        }
+
+        return new SKPaint()
+        {
+            Shader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp)
         };
     }
 }
