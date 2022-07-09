@@ -79,32 +79,21 @@ public readonly struct Type1PdfFunctionShaderFactory
     }
 }
 
-public class Type1PdfFunctionShader : IShaderWriter
+public abstract class PixelQueryFunctionalShader: IShaderWriter
 {
     private readonly Matrix3x2 pixelsToPattern;
-    private readonly Matrix3x2 patternToDomain;
-    private readonly IColorSpace colorSpace;
-    private readonly RectInterval domainInterval;
+    protected IColorSpace ColorSpace { get; }
     private readonly RectInterval bboxInterval;
-    private readonly IPdfFunction function;
-    private readonly uint backgroundColor;
+    protected uint BackgroundColor { get; }
 
-    public Type1PdfFunctionShader(
-        in Matrix3x2 pixelsToPattern, in Matrix3x2 patternToDomain, IColorSpace colorSpace,
-        RectInterval domainInterval,
-        RectInterval bboxInterval,
-        IPdfFunction function, uint backgroundColor)
+    protected PixelQueryFunctionalShader(
+        in Matrix3x2 pixelsToPattern, IColorSpace colorSpace,
+        RectInterval bboxInterval, uint backgroundColor)
     {
         this.pixelsToPattern = pixelsToPattern;
-        this.patternToDomain = patternToDomain;
-        this.colorSpace = colorSpace;
-        this.domainInterval = domainInterval;
+        ColorSpace = colorSpace;
         this.bboxInterval = bboxInterval;
-        this.function = function;
-        this.backgroundColor = backgroundColor;
-        
-        Debug.Assert(this.function.Domain.Length == 2);
-        Debug.Assert(this.function.Range.Length == colorSpace.ExpectedComponents);
+        BackgroundColor = backgroundColor;
     }
 
     public unsafe void RenderBits(uint* bits, int width, int height)
@@ -125,10 +114,35 @@ public class Type1PdfFunctionShader : IShaderWriter
     private uint ColorForPixel(in Vector2 pixel)
     {
         var patternVal = Vector2.Transform(pixel, pixelsToPattern);
-        if (bboxInterval.OutOfRange(patternVal)) return 0;
+        return bboxInterval.OutOfRange(patternVal) ? 
+            0 : 
+            GetColorFromShader(patternVal);
+    }
+
+    protected abstract uint GetColorFromShader(Vector2 patternVal);
+}
+public class Type1PdfFunctionShader : PixelQueryFunctionalShader
+{
+    private readonly Matrix3x2 patternToDomain;
+    private readonly RectInterval domainInterval;
+    private readonly IPdfFunction function;
+
+    public Type1PdfFunctionShader(
+        in Matrix3x2 pixelsToPattern, in Matrix3x2 patternToDomain, IColorSpace colorSpace, 
+        RectInterval domainInterval, RectInterval bboxInterval, IPdfFunction function, uint backgroundColor) 
+        : base(in pixelsToPattern, colorSpace, bboxInterval, backgroundColor)
+    {
+        this.patternToDomain = patternToDomain;
+        this.domainInterval = domainInterval;
+        this.function = function;
+        Debug.Assert(this.function.Domain.Length == 2);
+        Debug.Assert(this.function.Range.Length == colorSpace.ExpectedComponents);
+    }
+    protected override uint GetColorFromShader(Vector2 patternVal)
+    {
         var domainVal = Vector2.Transform(patternVal, patternToDomain);
         return domainInterval.OutOfRange(domainVal)
-            ? backgroundColor
+            ? BackgroundColor
             : ComputeColorFromFunction(domainVal);
     }
 
@@ -139,21 +153,6 @@ public class Type1PdfFunctionShader : IShaderWriter
         source[0] = domainVal.X;
         source[1] = domainVal.Y;
         function.Compute(source, nativeColor);
-        return colorSpace.SetColor(nativeColor).AsArgbUint32();
+        return ColorSpace.SetColor(nativeColor).AsArgbUint32();
     }
-}
-
-public readonly struct RectInterval
-{
-    public readonly ClosedInterval Horizontal { get; }
-    public readonly ClosedInterval Vertical { get; }
-
-    public RectInterval(ClosedInterval horizontal, ClosedInterval vertical)
-    {
-        Horizontal = horizontal;
-        Vertical = vertical;
-    }
-
-    public bool OutOfRange(in Vector2 point) =>
-        Horizontal.OutOfInterval(point.X) || Vertical.OutOfInterval(point.Y);
 }

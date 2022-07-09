@@ -147,6 +147,7 @@ Pdf:CIDToGIDMap
 Pdf:Colors
 Pdf:Columns
 Pdf:Contents
+Pdf:Coords
 Pdf:Count
 Pdf:Creator
 Pdf:CreatorInfo
@@ -174,6 +175,7 @@ Pdf:Encoding
 Pdf:Encrypt
 Pdf:EndOfLine
 Pdf:EndOfBlock
+Pdf:Extend
 Pdf:Filter
 Pdf:First
 Pdf:FirstChar

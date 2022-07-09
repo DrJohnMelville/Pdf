@@ -26,7 +26,19 @@ public partial class LowLevelViewModel
 
     public async void SetStream(Stream source)
     {
-        Root = await parser.ParseAsync(source, waiter ?? new FakeWaitingService());
+        Root = await TryParse(source);
+    }
+
+    private async Task<DocumentPart[]> TryParse(Stream source)
+    {
+        try
+        {
+            return await parser.ParseAsync(source, waiter ?? new FakeWaitingService());
+        }
+        catch (Exception e)
+        {
+            return new DocumentPart[] { new DocumentPart($"Exception: {e.Message}") };
+        }
     }
 
     public async ValueTask JumpToReference(ReferencePartViewModel target, IWaitingService waiting)
