@@ -68,12 +68,12 @@ public class Type1PdfFunctionShader : IShaderWriter
     private readonly IColorSpace colorSpace;
     private readonly ClosedInterval xDomain;
     private readonly ClosedInterval yDomain;
-    private readonly PdfFunction function;
+    private readonly IPdfFunction function;
     private readonly uint backgroundColor;
 
     public Type1PdfFunctionShader(Matrix3x2 pixelsTodomain, IColorSpace colorSpace, 
         ClosedInterval xDomain, ClosedInterval yDomain, 
-        PdfFunction function, uint backgroundColor)
+        IPdfFunction function, uint backgroundColor)
     {
         this.pixelsTodomain = pixelsTodomain;
         this.colorSpace = colorSpace;

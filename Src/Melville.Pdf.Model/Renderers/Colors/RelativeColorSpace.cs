@@ -6,9 +6,9 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 public class RelativeColorSpace : IColorSpace
 {
     private IColorSpace source;
-    private PdfFunction function;
+    private IPdfFunction function;
 
-    public RelativeColorSpace(IColorSpace source, PdfFunction function)
+    public RelativeColorSpace(IColorSpace source, IPdfFunction function)
     {
         this.source = source;
         this.function = function;

@@ -358,3 +358,5 @@ RenderingTest.cs_wpf-Jpeg2000Image|564942489
 RenderingTest.cs_Skia-Jpeg2000Image|1078842957
 RenderingTest.cs_wpf-Type1FunctionalShader|1186431942
 RenderingTest.cs_Skia-Type1FunctionalShader|77004062
+RenderingTest.cs_wpf-Type1TrippleFunctions|59209670
+RenderingTest.cs_Skia-Type1TrippleFunctions|1104087663

@@ -6,9 +6,9 @@ public readonly struct StitchedFunctionSegment
 {
     private readonly ClosedInterval domain;
     private readonly ClosedInterval encode;
-    private readonly PdfFunction innerFunction;
+    private readonly IPdfFunction innerFunction;
 
-    public StitchedFunctionSegment(ClosedInterval domain, ClosedInterval encode, PdfFunction innerFunction)
+    public StitchedFunctionSegment(ClosedInterval domain, ClosedInterval encode, IPdfFunction innerFunction)
     {
         this.domain = domain;
         this.encode = encode;
