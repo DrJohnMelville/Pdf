@@ -30,7 +30,7 @@ public class S9_4_2_TextPositioningOperators
     public S9_4_2_TextPositioningOperators()
     {
         rf = new RealizedFontMock(fw.Object);
-        targetMock.SetupGet(i => i.GrapicsStateChange).Returns(state);
+        targetMock.SetupGet(i => i.GraphicsState).Returns(state);
         targetMock.SetupSet(i => i.OptionalContentCounter = It.IsAny<OptionalContentCounter>());
         SetupMockRealizedFont();
 

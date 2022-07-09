@@ -39,7 +39,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
     
     #region Graphics State
-    [DelegateTo] private IGraphiscState StateOps => target.GrapicsStateChange;
+    [DelegateTo] private IGraphiscState StateOps => target.GraphicsState;
     
     public void SaveGraphicsState()
     {
@@ -226,12 +226,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     public async ValueTask SetStrokingColorSpace(PdfName colorSpace)
     {
-        target.GrapicsStateChange.SetStrokeColorSpace(
+        target.GraphicsState.SetStrokeColorSpace(
             await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
     }
 
     public async ValueTask SetNonstrokingColorSpace(PdfName colorSpace) =>
-        target.GrapicsStateChange.SetNonstrokeColorSpace(
+        target.GraphicsState.SetNonstrokeColorSpace(
             await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
     
     public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
@@ -243,7 +243,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask SetStrokingPattern(PdfName? patternName)
     {
         if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.GrapicsStateChange.CurrentState().SetStrokePattern(patternDict, renderer).CA();
+            await target.GraphicsState.CurrentState().SetStrokePattern(patternDict, renderer).CA();
     }
 
     public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
@@ -255,7 +255,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask SetNonstrokingPattern(PdfName? patternName)
     {
         if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.GrapicsStateChange.CurrentState().SetNonstrokePattern(patternDict, renderer).CA();
+            await target.GraphicsState.CurrentState().SetNonstrokePattern(patternDict, renderer).CA();
     }
 
     private async ValueTask<PdfDictionary?> GetPatternDict(PdfName? patternName) =>

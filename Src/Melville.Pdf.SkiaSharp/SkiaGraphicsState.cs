@@ -5,6 +5,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;

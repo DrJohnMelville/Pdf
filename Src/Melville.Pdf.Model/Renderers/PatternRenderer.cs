@@ -6,6 +6,7 @@ using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers;
@@ -24,7 +25,7 @@ public class PatternRenderer: DocumentRenderer
     }
 
     protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) => 
-        new(request.Pattern);
+        new(request.TilePattern);
 
     public override void InitializeRenderTarget(IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
         in Matrix3x2 transform)

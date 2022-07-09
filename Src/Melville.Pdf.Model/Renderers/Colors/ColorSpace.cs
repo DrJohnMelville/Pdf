@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Model;
@@ -10,6 +11,17 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
+
+public class NoPageContext : IHasPageAttributes
+{
+    public static NoPageContext Instance = new();
+
+    private NoPageContext() { }
+    public PdfDictionary LowLevel => PdfDictionary.Empty;
+    public ValueTask<Stream> GetContentBytes() => new(new MemoryStream(Array.Empty<byte>()));
+
+    public ValueTask<IHasPageAttributes?> GetParentAsync() => new((IHasPageAttributes?)null);
+}
 
 public readonly struct ColorSpaceFactory
 {

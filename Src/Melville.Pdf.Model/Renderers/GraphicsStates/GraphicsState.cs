@@ -82,6 +82,10 @@ public abstract partial  class GraphicsState: IGraphiscState, IDisposable
     [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
     [MacroItem("double", "FontSize", "0.0")]
     [MacroItem("IByteToUnicodeMapping", "ByteMapper", "CharacterEncodings.Standard")]
+    
+    //PageSizes
+    [MacroItem("double", "PageWidth", "1")]
+    [MacroItem("double", "PageHeight", "1")]
 
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
@@ -238,6 +242,12 @@ public abstract partial  class GraphicsState: IGraphiscState, IDisposable
     public void SetTypeface(IRealizedFont realizedFont)
     {
         Typeface = TryRegisterDispose(realizedFont);
+    }
+
+    public void SetPageSize(double width, double height)
+    {
+        PageWidth = width;
+        PageHeight = height;
     }
 
     #region Disposal

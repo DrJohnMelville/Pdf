@@ -10,6 +10,7 @@ using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
 namespace Melville.Pdf.Model.Renderers;
 
@@ -100,6 +101,7 @@ public abstract class DocumentRenderer: IDisposable
     public virtual void InitializeRenderTarget(IRenderTarget innerRenderer,
         in PdfRect rect, double width, double height, in Matrix3x2 transform)
     {
+        innerRenderer.GraphicsState.CurrentState().SetPageSize(width, height);
         innerRenderer.SetBackgroundRect(rect, width, height, transform);
         innerRenderer.MapUserSpaceToBitmapSpace(rect, width, height, transform);
     }

@@ -19,6 +19,9 @@ public static class MatrixExtensions
             new PdfDouble(matrix.M32)
         );
 
+    public static async ValueTask<Matrix3x2> AsMatrix3x2OrIdentityAsync(this PdfArray? array) =>
+        array is { Count: 6 } ? await array.AsMatrix3x2Async().CA(): Matrix3x2.Identity;
+    
     public static async ValueTask<Matrix3x2> AsMatrix3x2Async(this PdfArray array) =>
         new ReadOnlySpan<double>(await array.AsDoublesAsync().CA()).AsMatrix3x2();
 

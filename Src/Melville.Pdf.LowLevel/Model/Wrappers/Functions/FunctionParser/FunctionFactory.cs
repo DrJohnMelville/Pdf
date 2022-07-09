@@ -9,6 +9,13 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 public static class FunctionFactory
 {
+    public static ValueTask<PdfFunction> CreateFunctionAsync(this PdfObject source) =>
+        source switch
+        {
+            PdfDictionary dict => CreateFunctionAsync(dict),
+            #warning -- need to handle an array of functions as well
+            _=> throw new PdfParseException("Cannot parse function definition")
+};
     public static async ValueTask<PdfFunction> CreateFunctionAsync(this PdfDictionary source)
     {
         return (await source.GetAsync<PdfNumber>(KnownNames.FunctionType).CA()).IntValue switch

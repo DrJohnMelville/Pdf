@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -9,6 +10,8 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
+using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
@@ -22,7 +25,7 @@ public class WpfGraphicsState : GraphicsState<Brush>
         await pattern.GetOrDefaultAsync(KnownNames.PatternType,0).CA() switch
         {
             1 => await CreateTilePattern(pattern, parentRenderer),
-            2 => Brushes.Fuchsia,
+            2 => await CreateShaderBrush(pattern),
             _=> Brushes.Transparent,
         };
 
@@ -54,5 +57,33 @@ public class WpfGraphicsState : GraphicsState<Brush>
         DocumentRenderer parentRenderer, in TileBrushRequest request)
     {
         return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request, this), 0);
+    }
+    
+    public async ValueTask<Brush> CreateShaderBrush(PdfDictionary pattern)
+    {
+        var bmp = RenderShaderToBitmap(await new ShaderParser(pattern,
+            await pattern.GetAsync<PdfDictionary>(KnownNames.Shading)).ParseShader());
+        var viewport = new Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
+        return new ImageBrush(bmp)
+        {
+            Stretch = Stretch.None,
+            Viewbox = viewport,
+            Viewport = viewport,
+            ViewboxUnits = BrushMappingMode.Absolute,
+            ViewportUnits = BrushMappingMode.Absolute
+        };
+    }
+
+    private WriteableBitmap RenderShaderToBitmap(IShaderWriter writer)
+    {
+        var bmp = new WriteableBitmap((int)PageWidth, (int)PageHeight, 96, 96, PixelFormats.Pbgra32,
+            null);
+        bmp.Lock();
+        unsafe
+        { 
+            writer.RenderBits((uint*)bmp.BackBuffer, bmp.PixelWidth, bmp.PixelHeight);
+        }
+        bmp.Unlock();
+        return bmp;
     }
 }

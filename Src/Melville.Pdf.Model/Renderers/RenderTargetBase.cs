@@ -25,7 +25,7 @@ public interface IDrawTarget
 
 public interface IRenderTarget: IDrawTarget, IDisposable
 {
-    IGraphiscState GrapicsStateChange { get; }
+    IGraphiscState GraphicsState { get; }
     void EndPath();
     void SaveTransformAndClip();
     void RestoreTransformAndClip();
@@ -46,7 +46,7 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
     protected GraphicsStateStack<TState> State { get; } = new();
     public OptionalContentCounter? OptionalContentCounter { get; set; }
     
-    public IGraphiscState GrapicsStateChange => State;
+    public IGraphiscState GraphicsState => State;
 
     protected RenderTargetBase(T target)
     {
