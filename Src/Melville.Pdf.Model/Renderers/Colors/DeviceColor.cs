@@ -34,7 +34,7 @@ public readonly record struct DeviceColor(byte RedByte, byte GreenByte, byte Blu
 
     public uint AsArgbUint32() => (uint)
         ((Alpha << 24) |
-         (RedByte << 16) |
-         (GreenByte << 8) |
-         BlueByte);
+         (PreMulRed() << 16) |
+         (PreMulGreen() << 8) |
+         PreMulBlue());
 }

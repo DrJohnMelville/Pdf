@@ -14,7 +14,7 @@ public record struct ClosedInterval(double MinValue, double MaxValue)
         val > MaxValue ? MaxValue :
         val < MinValue ? MinValue : val;
 
-    public bool OutOfInterval(double value) => value < MinValue || value > MaxValue;
+    public readonly bool OutOfInterval(double value) => value < MinValue || value > MaxValue;
 
     public static readonly ClosedInterval NoRestriction = new(double.MinValue, double.MaxValue);
 

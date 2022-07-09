@@ -360,3 +360,10 @@ RenderingTest.cs_wpf-Type1FunctionalShader|1186431942
 RenderingTest.cs_Skia-Type1FunctionalShader|77004062
 RenderingTest.cs_wpf-Type1TrippleFunctions|59209670
 RenderingTest.cs_Skia-Type1TrippleFunctions|1104087663
+RenderingTest.cs_wpf-Type1WithDomain|4265431517
+RenderingTest.cs_wpf-Type1WithDomainAndBackground|2599231880
+RenderingTest.cs_wpf-Type1WithDomainBackgroundAndBBox|3804164795
+RenderingTest.cs_Skia-Type1WithDomain|3178939744
+RenderingTest.cs_Skia-Type1WithDomainAndBackground|352666872
+RenderingTest.cs_Skia-Type1WithDomainBackgroundAndBBox|1392822312
+RenderingTest.cs_Skia-Type1WithMatrix|38418105
