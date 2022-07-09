@@ -37,11 +37,10 @@ public static class IndirectObjectResolverOperations
             owner, offset));
     }
     public static void RegisterObjectStreamBlock(
-        this ParsingFileOwner owner, int number, long referredStream, long referredOrdinal)
+        this ParsingFileOwner owner, int number, long referredStreamOrdinal, long referredStreamGeneration)
     {
-        if (number == referredStream) throw new PdfParseException("A object stream may not contain itself");
-        Debug.Assert(referredOrdinal == 0); // assumed by this implementation
+        if (number == referredStreamOrdinal) throw new PdfParseException("A object stream may not contain itself");
         owner.IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(
-            number, 0, owner, referredStream));
+            number, 0, owner, referredStreamOrdinal));
     }
 }

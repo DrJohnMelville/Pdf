@@ -11,7 +11,9 @@ public class ObjectStreamIndirectObject : OwnedLocationIndirectObject
     private readonly long referredOrdinal;
 
     public ObjectStreamIndirectObject(
-        int objectNumber, int generationNumber, ParsingFileOwner owner, long referredOrdinal) : base(objectNumber, generationNumber, owner)
+        int objectNumber, int generationNumber, ParsingFileOwner owner, 
+        long referredOrdinal) : 
+        base(objectNumber, generationNumber, owner)
     {
         this.referredOrdinal = referredOrdinal;
     }
@@ -24,8 +26,7 @@ public class ObjectStreamIndirectObject : OwnedLocationIndirectObject
             await LoadObjectStream(owner, stream).CA();
     }
     
-    public static async ValueTask LoadObjectStream(
-        ParsingFileOwner owner, PdfStream source)
+    public static async ValueTask LoadObjectStream(ParsingFileOwner owner, PdfStream source)
     {
         await using var data = await source.StreamContentAsync().CA();
         var reader = owner.ParsingReaderForStream(data, 0);

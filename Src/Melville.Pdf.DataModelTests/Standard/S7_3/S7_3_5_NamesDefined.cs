@@ -33,13 +33,6 @@ public class S7_3_5_NamesDefined
 
     }
 
-    [Fact]
-    public void SandSubtypeSameKey()
-    {
-        Assert.Equal(new PdfName("S").GetHashCode(), new PdfName("Subtype").GetHashCode());
-        
-    }
-
 
     private static async Task<PdfName> TryParseStringToName(string source)
     {
@@ -65,14 +58,5 @@ public class S7_3_5_NamesDefined
         var n2 = await TryParseStringToName("/Width");
         Assert.True(ReferenceEquals(KnownNames.Width, n1));
         Assert.True(ReferenceEquals(n1, n2));
-    }
-
-    [Theory]
-    [InlineData("/Subtype", "/S")]
-    public async Task IsSynonym(string preferredTerm, string synonm)
-    {
-        var preferred = await TryParseStringToName(preferredTerm);
-        var foundSynonym = await TryParseStringToName(synonm);
-        Assert.True(ReferenceEquals(preferred, foundSynonym));
     }
 }

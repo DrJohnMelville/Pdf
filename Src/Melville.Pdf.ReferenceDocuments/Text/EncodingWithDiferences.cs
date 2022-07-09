@@ -15,7 +15,7 @@ public class EncodingWithDiferences : FontDefinitionTest
                 new PdfInteger(65),
                 NameDirectory.Get("AE"),
                 NameDirectory.Get("Adieresis"),
-                NameDirectory.Get("f_f")
+                NameDirectory.Get("ff")
                 ))
             .AsDictionary());
         return new DictionaryBuilder()

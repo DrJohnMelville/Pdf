@@ -27,7 +27,7 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         return await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
         {
             1 => await CreateTilePatternBrush(pattern, parentRenderer).CA(),
-            2 => await CreateShaderBrush(pattern),
+            2 => await CreateShaderBrush(pattern).CA(),
             _ => CreateSolidBrush(DeviceColor.Invisible)
         };
     }

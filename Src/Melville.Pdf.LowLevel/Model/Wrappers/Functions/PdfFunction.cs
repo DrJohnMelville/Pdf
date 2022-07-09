@@ -10,7 +10,12 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 //    object anyway.
 // PdfFunction handles the input and output mapping that is common to all functions and delegates
 // actual computation to its children.
-public abstract class PdfFunction
+
+// Later I added the IPdfFunction interface for 2 reasons
+// It lets me treat arrays of pdf functions as pdf functions. -- a common technique in the spec
+// it lets me move a lot of the helper methods out to extension methods on the interface,
+
+public abstract class PdfFunction : IPdfFunction
 {
     public ClosedInterval[] Domain { get; }
     public ClosedInterval[] Range { get; }
@@ -21,30 +26,6 @@ public abstract class PdfFunction
         Range = range;
     }
 
-    public double ComputeSingleResult(double input, int desired = 0) =>
-        ComputeSingleResult(InputSpan(input, stackalloc double[Domain.Length]), desired);
-    public double ComputeSingleResult(in ReadOnlySpan<double> input, int desired = 0)
-    {
-        Span<double> ret = stackalloc double[Range.Length];
-        Compute(input, ret);
-        return ret[desired];
-    }
-    public double[] Compute(double i) => Compute(InputSpan(i, stackalloc double[Domain.Length]));
-    public void Compute(double i, Span<double> result) => 
-        Compute(InputSpan(i, stackalloc double[Domain.Length]), result);
-
-    private ReadOnlySpan<double> InputSpan(double d, in Span<double> span)
-    {
-        span[0] = d;
-        return span;
-    }
-
-    public double[] Compute(in ReadOnlySpan<double> input)
-    {
-        var result = new double[Range.Length];
-        Compute(input, result);
-        return result;
-    }
     public void Compute(in ReadOnlySpan<double> input, in Span<double> result)
     {
         CheckSpanLengths(input.Length, result.Length);

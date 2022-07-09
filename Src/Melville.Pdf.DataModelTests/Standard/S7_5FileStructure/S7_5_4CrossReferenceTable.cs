@@ -33,10 +33,7 @@ public class S7_5_4CrossReferenceTable
 ";
         await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
             
-        resolver.Verify(CheckLocation(1,0), Times.Once);
-        resolver.Verify(CheckLocation(2,0), Times.Once);
-        resolver.Verify(CheckLocation(4,122), Times.Once);
-        resolver.Verify(CheckLocation(5,0), Times.Once);
+        resolver.Verify(CheckLocation(1,0), Times.Exactly(4));
     }
 
     private static Expression<Action<IIndirectObjectResolver>> CheckLocation(int num, int gen) => 

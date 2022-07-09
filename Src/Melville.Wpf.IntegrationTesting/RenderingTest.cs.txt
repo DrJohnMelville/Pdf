@@ -174,8 +174,8 @@ RenderingTest.cs_wpf-MacRomanCharSet|2033181839
 RenderingTest.cs_Skia-MacRomanCharSet|1951959157
 RenderingTest.cs_wpf-MacExpertCharSet|3607068759
 RenderingTest.cs_Skia-MacExpertCharSet|317535312
-RenderingTest.cs_wpf-EncodingWithDiferences|3138738070
-RenderingTest.cs_Skia-EncodingWithDiferences|2906823799
+RenderingTest.cs_wpf-EncodingWithDiferences|979083644
+RenderingTest.cs_Skia-EncodingWithDiferences|3217292081
 RenderingTest.cs_wpf-Rotate0|630456576
 RenderingTest.cs_wpf-Rotate90|2768721656
 RenderingTest.cs_wpf-Rotate180|3488542910
@@ -356,3 +356,5 @@ RenderingTest.cs_Skia-JBig200__8__45__stripe|3591578473
 RenderingTest.cs_Skia-JBig200__lossless|28271710
 RenderingTest.cs_wpf-Jpeg2000Image|564942489
 RenderingTest.cs_Skia-Jpeg2000Image|1078842957
+RenderingTest.cs_wpf-Type1FunctionalShader|1186431942
+RenderingTest.cs_Skia-Type1FunctionalShader|77004062

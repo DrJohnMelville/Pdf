@@ -4,14 +4,13 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
 
-public class Type1FunctionalShader: PatternDisplayClass
+public abstract class Type1FunctionalShaderBase: PatternDisplayClass
 {
-    public Type1FunctionalShader() : base("Type 1 shader from a pdffunction")
+    protected Type1FunctionalShaderBase(string helpText) : base(helpText)
     {
-        
     }
 
-    private PdfDictionary? function = null;
+    private PdfObject? function = null;
     protected override async ValueTask SetPagePropertiesAsync(PageCreator page)
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
@@ -38,5 +37,13 @@ public class Type1FunctionalShader: PatternDisplayClass
             .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5*72,3*72).AsPdfArray())
             .WithItem(KnownNames.PatternType, 2)
             .AsDictionary();
+    }
+}
+
+public class Type1FunctionalShader : Type1FunctionalShaderBase
+{
+    public Type1FunctionalShader() : base("Type 1 shader from a pdffunction")
+    {
+        
     }
 }
