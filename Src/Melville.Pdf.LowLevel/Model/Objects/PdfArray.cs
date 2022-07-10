@@ -29,6 +29,10 @@ public sealed class PdfArray :
         RawItems = rawItems;
     }
 
+    public PdfArray(params bool[] bools): this (bools.Select(i=>i?PdfBoolean.True : PdfBoolean.False))
+    {
+    }
+
     public IEnumerator<ValueTask<PdfObject>> GetEnumerator() =>
         RawItems.Select(i => i.DirectValueAsync()).GetEnumerator();
 

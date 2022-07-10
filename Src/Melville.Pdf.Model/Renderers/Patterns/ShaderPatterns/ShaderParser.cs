@@ -19,10 +19,11 @@ public readonly struct ShaderParser
 
     public async ValueTask<IShaderWriter> ParseShader()
     {
-        var shading = await patternDictionary.GetAsync<PdfDictionary>(KnownNames.Shading).CA();
+        var common = await CommonShaderValues.Parse(patternDictionary, shadingDictionary).CA();
         return await shadingDictionary.GetOrDefaultAsync(KnownNames.ShadingType, 0).CA() switch
         {
-            1 => await new Type1PdfFunctionShaderFactory(patternDictionary, shading).Parse().CA(),
+            1 => await new Type1PdfFunctionShaderFactory(shadingDictionary).Parse(common).CA(),
+            2=> await new Type2AxialShaderFactory(shadingDictionary).Parse(common).CA(),
             _ => throw new PdfParseException("Invalid Shader type")
         };
     }
