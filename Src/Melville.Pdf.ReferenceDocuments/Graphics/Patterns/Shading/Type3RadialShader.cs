@@ -52,3 +52,13 @@ public class Type3RadialShader: Type3RadialShaderBase
     {
     }
 }
+
+public class Type3RadialShaderWithBackground: Type3RadialShaderBase
+{
+    public Type3RadialShaderWithBackground() : base("A simple radial shader with a background")
+    {
+    }
+
+    protected override DictionaryBuilder BuildShader(ILowLevelDocumentCreator arg, PdfDictionary localFunc, DictionaryBuilder builder) => 
+        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.Background, new PdfArray(0,0, 1));
+}

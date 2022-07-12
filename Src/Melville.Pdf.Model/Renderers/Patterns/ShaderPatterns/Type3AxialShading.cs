@@ -23,35 +23,31 @@ public class Type3AxialShading : ParametricFunctionalShader
 
 public readonly struct AxialShadingComputer
 {
-    private readonly double x0, y0, r0, x1, y1, r1;
+    private readonly double x0, y0;
 
     public AxialShadingComputer(params double[] coords) : this()
     {
         Debug.Assert(coords.Length == 6);
         x0 = coords[0];
         y0 = coords[1];
-        r0 = coords[2];
-        x1 = coords[3];
-        y1 = coords[4];
-        r1 = coords[5];
+        var r0 = coords[2];
+        var x1 = coords[3];
+        var y1 = coords[4];
+        var r1 = coords[5];
         
         xDelta = x1 - x0;
         yDelta = y1 - y0;
-        rDelta = r1 - r0;
-        
-        xDeltaSq = Square(xDelta);
-        yDeltaSq = Square(yDelta);
-        rDeltaSq = Square(rDelta);
+        var rDelta = r1 - r0;
+
         x0Sq = Square(x0);
         y0Sq = Square(y0);
         r0Sq = Square(r0);
         rTFactor = 2 * r0 * rDelta;
 
-        A = xDeltaSq + yDeltaSq - rDeltaSq;
+        A = Square(xDelta) + Square(yDelta) - Square(rDelta);
     }
 
-    private readonly double xDelta, yDelta, rDelta;
-    private readonly double xDeltaSq, yDeltaSq, rDeltaSq;
+    private readonly double xDelta, yDelta;
     private readonly double x0Sq, y0Sq, r0Sq;
     private readonly double rTFactor, A;
 
@@ -74,15 +70,13 @@ public readonly struct AxialShadingComputer
             return false;
         }
 
-        tParameter = (lowRoot, highRoot) switch
-        {
-            (_, >= 0 and <= 1) => highRoot,
-            (>= 0 and <= 1, _) => lowRoot,
-            _ => highRoot
-        };
+        tParameter = SelectBiggestValidRoot(lowRoot, highRoot);
         return true;
     }
 
+    private static double SelectBiggestValidRoot(double lowRoot, double highRoot) =>
+        (highRoot > 1 && lowRoot is >= 0 and <= 1) ? lowRoot : highRoot;
+     
     private bool QuadraticFormula(double A, double B, double C, out double lowRoot, out double highRoot)
     {
         var determinant = Square(B) - (4 * A * C);
@@ -102,7 +96,8 @@ public readonly struct AxialShadingComputer
 }
 
 /*
-Derivatiion of the formula above
+Derivation of the formula above
+
 xPoint = x coordinate to check
 yPoint = y coordinate to check
 
@@ -110,7 +105,7 @@ yPoint = y coordinate to check
 [xyr]1 = coordinates and radius of second circle
 
 Compute
-t = the T coordiate for the larger circle containing (xp,yp)
+t = the T coordinate for the larger circle containing (xp,yp)
 
 define
 xDelta = x1 - x0;
@@ -139,7 +134,7 @@ Square(r0) + 2*r0*T*rDelta + Square(t*rDelta)
 
 Square(xPoint) + Square(x0) + Square(t)*Square(xDelta) - (2*xPoint * x0) - (2*xPoint*t*xDelta) +(2*x0*T*xDelta) + 
 Square( yPoint) + Square(y0) + Square(t)*Square(yDelta) - (2*yPoint * y0) - (2*yPoint*t*yDelta) +(2*y0*T*yDelta) =
-Square(r0) + 2*r0*T*rDelta + Square(t)*Square(rDelta) 
+Square(r0) + (2*r0*T*rDelta) + (Square(t)*Square(rDelta)) 
 
 Square(t)*Square(xDelta) - (T*2*xPoint*xDelta) +(T*2*x0*xDelta) + Square(xPoint) + Square(x0) - (2*xPoint * x0) + 
 Square(t)*Square(yDelta) - (T*2*yPoint*yDelta) +(T*2*y0*yDelta) + Square(yPoint) + Square(y0) - (2*yPoint * y0)  =
@@ -169,12 +164,14 @@ Square(t)*Square(xDelta) +  T * xTFactor + XConstants +
 Square(t)*Square(yDelta) +  T * yTFactor + yConstants +
 -Square(t)*Square(rDelta) - T * rTFactor - Square(r0)
 
-A = xDeltaSq + yDeltaSq - rDeltaSq
-B = xTFactor + yTFactor - rTFactor
-C = xConstants+yConstants - Square(r0)
+Define:
+    A = xDeltaSq + yDeltaSq - rDeltaSq
+    B = xTFactor + yTFactor - rTFactor
+    C = xConstants+yConstants - Square(r0)
+
+Square(T) * A + T * B + C = 0
 
 using the quadratic formula
-
 
 T =  (-B [+-] Sqrt(Square(B) - (4*A*C))) / (2*a)
 

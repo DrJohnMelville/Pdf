@@ -17,7 +17,7 @@ public abstract class PixelQueryFunctionalShader: IShaderWriter
 
     public unsafe void RenderBits(uint* bits, int width, int height)
     {
-        uint* pos = bits;
+        uint* pos = bits; 
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
