@@ -67,10 +67,11 @@ public class Type2AxialShading : ParametricFunctionalShader
         denominator = (xDelta * xDelta) + (yDelta * yDelta);
     }
 
-    protected override bool TParameterFor(Vector2 patternVal, out double tParameter)
+    protected override uint GetColorFromShader(Vector2 patternVal)
     {
-        tParameter =((xDelta * (patternVal.X - xBase)) + (yDelta * (patternVal.Y - yBase))) / denominator;
-        return true;
+        var tParameter =((xDelta * (patternVal.X - xBase)) + (yDelta * (patternVal.Y - yBase))) / denominator;
+        return ColorFromT(tParameter).Color;
     }
-    // this formula comes from section 8.7.4.5.3 in the PDF Spec
+
+
 }

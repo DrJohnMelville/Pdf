@@ -12,19 +12,22 @@ public class Type3AxialShading : ParametricFunctionalShader
     public Type3AxialShading(CommonShaderValues common,
         double[] coords, ClosedInterval domain, IPdfFunction function, bool extendLow, bool extendHigh) :
         base(common, domain, function, extendLow, extendHigh)
-
     {
         computer = new AxialShadingComputer(coords);
     }
 
-    protected override bool TParameterFor(Vector2 patternVal, out double tParameter) =>
-        computer.TParameterFor(patternVal, out tParameter);
+    protected override uint GetColorFromShader(Vector2 patternVal)
+    {
+        if (!computer.TParameterFor(patternVal, out double lowRoot, out double highRoot))
+            return BackgroundColor; // object not hit.
+        var (highCol, isBackground) = ColorFromT(highRoot);
+        return  isBackground? ColorFromT(lowRoot).Color : highCol;
+    }
 }
 
 public readonly struct AxialShadingComputer
 {
     private readonly double x0, y0;
-
     public AxialShadingComputer(params double[] coords) : this()
     {
         Debug.Assert(coords.Length == 6);
@@ -51,7 +54,7 @@ public readonly struct AxialShadingComputer
     private readonly double x0Sq, y0Sq, r0Sq;
     private readonly double rTFactor, A;
 
-    public bool TParameterFor(Vector2 patternVal, out double tParameter)
+    public bool TParameterFor(Vector2 patternVal, out double lowRoot, out double highRoot)
     {
         var xPoint = patternVal.X;
         var yPoint = patternVal.Y;
@@ -64,19 +67,9 @@ public readonly struct AxialShadingComputer
         var B = xTFactor + yTFactor - rTFactor;
         var C = xConstants + yConstants - r0Sq;
 
-        if (!QuadraticFormula(A, B, C, out var lowRoot, out var highRoot))
-        {
-            tParameter = -1;
-            return false;
-        }
-
-        tParameter = SelectBiggestValidRoot(lowRoot, highRoot);
-        return true;
+        return QuadraticFormula(A, B, C, out lowRoot, out highRoot);
     }
 
-    private static double SelectBiggestValidRoot(double lowRoot, double highRoot) =>
-        (highRoot > 1 && lowRoot is >= 0 and <= 1) ? lowRoot : highRoot;
-     
     private bool QuadraticFormula(double A, double B, double C, out double lowRoot, out double highRoot)
     {
         var determinant = Square(B) - (4 * A * C);

@@ -22,21 +22,20 @@ public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
         if (this.function.Range.Length != ColorSpace.ExpectedComponents)
             throw new PdfParseException("Function and colorspace mismatch in type 2 or 3 shader.");
     }
-
-    protected override uint GetColorFromShader(Vector2 patternVal)
+    
+    protected (uint Color, bool IsBbackground) ColorFromT(double tParameter)
     {
-        if (!TParameterFor(patternVal, out var tParameter)) return BackgroundColor;
         return (tParameter, extendLow, extendHigh) switch
         {
-            (< 0, false, _) => BackgroundColor,
-            (< 0, true, _) => ColorForT(0),
-            (> 1, _, false) => BackgroundColor,
-            (> 1, _, true) => ColorForT(1),
-            var (t, _, _) => ColorForT(t)
+            (< 0, false, _) => (BackgroundColor, true),
+            (< 0, true, _) =>  (ColorForValidT(0), false),
+            (> 1, _, false) => (BackgroundColor, true),
+            (> 1, _, true) =>  (ColorForValidT(1), false),
+            var (t, _, _) =>   (ColorForValidT(t), false)
         };
     }
 
-    private uint ColorForT(double t)
+    private uint ColorForValidT(double t)
     {
         var mappedT = new ClosedInterval(0, 1).MapTo(domain, t);
         Span<double> rawColor = stackalloc double[ColorSpace.ExpectedComponents];
@@ -49,5 +48,4 @@ public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
         return deviceColor.AsArgbUint32();
     }
 
-    protected abstract bool TParameterFor(Vector2 patternVal, out double T);
 }
