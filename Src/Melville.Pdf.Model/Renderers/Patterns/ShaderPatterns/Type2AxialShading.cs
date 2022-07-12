@@ -1,6 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -11,19 +11,19 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-public readonly struct Type2AxialShaderFactory
+public readonly struct Type2Or3ShaderFactory
 {
     private readonly PdfDictionary shading;
 
-    public Type2AxialShaderFactory(PdfDictionary shading)
+    public Type2Or3ShaderFactory(PdfDictionary shading)
     {
         this.shading = shading;
     }
 
-    public async ValueTask<IShaderWriter> Parse(CommonShaderValues common)
+    public async ValueTask<IShaderWriter> Parse(CommonShaderValues common, int expectedCoords)
     {
-        var coords = (await shading.ReadFixedLengthDoubleArray(KnownNames.Coords, 4).CA()) ??
-                     throw new PdfParseException("Cannot find coords for axial shader");
+        var coords = (await shading.ReadFixedLengthDoubleArray(KnownNames.Coords, expectedCoords).CA()) ??
+                     throw new PdfParseException("Cannot find coords for axial or radia shader");
 
         var domain = (await shading.ReadFixedLengthDoubleArray(KnownNames.Domain, 2).CA()) is { } arr
             ? new ClosedInterval(arr[0], arr[1])
@@ -32,66 +32,45 @@ public readonly struct Type2AxialShaderFactory
         var function = await (await shading[KnownNames.Function].CA()).CreateFunctionAsync().CA();
 
         var (extendLow, extendHigh) =
-            (await shading.GetOrNullAsync<PdfArray>(KnownNames.Extend).CA()) is { Count: 2} extArr
+            (await shading.GetOrNullAsync<PdfArray>(KnownNames.Extend).CA()) is { Count: 2 } extArr
                 ? (await ElementIsTrue(extArr, 0).CA(), await ElementIsTrue(extArr, 1).CA())
                 : (false, false);
 
-        return new Type2AxialShading(common, coords[0], coords[1], coords[2], coords[3],
-            domain, function, extendLow, extendHigh);
+        return expectedCoords switch
+        {
+            4 => new Type2AxialShading(common, coords, domain, function, extendLow, extendHigh),
+            6 => new Type3AxialShading(common, coords, domain, function, extendLow, extendHigh),
+            _ => throw new PdfParseException("Incorrect number of coordinates for shaker.")
+        };
     }
 
     private async ValueTask<bool> ElementIsTrue(PdfArray extArr, int index) =>
         (await extArr[index].CA()) == PdfBoolean.True;
 }
 
-public class Type2AxialShading: PixelQueryFunctionalShader
+public class Type2AxialShading : ParametricFunctionalShader
 {
     private readonly double xBase, yBase;
-    private readonly ClosedInterval domain;
-    private readonly IPdfFunction function;
-    private readonly bool extendLow;
-    private readonly bool extendHigh;
-
     private readonly double xDelta, yDelta, denominator;
 
-    public Type2AxialShading(CommonShaderValues common, 
-        double xBase, double yBase, double xEnd, double yEnd, ClosedInterval domain, 
-        IPdfFunction function, bool extendLow, bool extendHigh): base(common)
+    public Type2AxialShading(CommonShaderValues common,
+        double[] coords, ClosedInterval domain,
+        IPdfFunction function, bool extendLow, bool extendHigh) : base(common,
+        domain, function, extendLow, extendHigh)
     {
-        this.xBase = xBase;
-        this.yBase = yBase;
-        this.domain = domain;
-        this.function = function;
-        this.extendLow = extendLow;
-        this.extendHigh = extendHigh;
+        Debug.Assert(coords.Length == 4);
+        this.xBase = coords[0];
+        this.yBase = coords[1];
 
-        xDelta = xEnd - xBase;
-        yDelta = yEnd - yBase;
+        xDelta = coords[2] - xBase;
+        yDelta = coords[3] - yBase;
         denominator = (xDelta * xDelta) + (yDelta * yDelta);
-
-        if (this.function.Range.Length != ColorSpace.ExpectedComponents)
-            throw new PdfParseException("Function and colorspace mismatch in type 2 shader.");
     }
 
-    protected override uint GetColorFromShader(Vector2 patternVal) =>
-        (ComputeTForPerpindicularPoint(patternVal), extendLow, extendHigh) switch
-        {
-            (< 0, false, _) => BackgroundColor,
-            (< 0, true, _) => ColorForT(0),
-            (> 1, _, false) => BackgroundColor,
-            (> 1, _, true) => ColorForT(1),
-            var (t, _, _) => ColorForT(t)
-        };
-
-    private double ComputeTForPerpindicularPoint(Vector2 patternVal) => 
-        ((xDelta * (patternVal.X - xBase)) + (yDelta * (patternVal.Y - yBase))) / denominator;
-    // this formula comes from section 8.7.4.5.3 in the PDF Spec
-
-    private uint ColorForT(double t)
+    protected override bool TParameterFor(Vector2 patternVal, out double tParameter)
     {
-        var mappedT = new ClosedInterval(0, 1).MapTo(domain, t);
-        Span<double> rawColor = stackalloc double[ColorSpace.ExpectedComponents];
-        function.Compute(mappedT, rawColor);
-        return ColorSpace.SetColor(rawColor).AsArgbUint32();
+        tParameter =((xDelta * (patternVal.X - xBase)) + (yDelta * (patternVal.Y - yBase))) / denominator;
+        return true;
     }
+    // this formula comes from section 8.7.4.5.3 in the PDF Spec
 }

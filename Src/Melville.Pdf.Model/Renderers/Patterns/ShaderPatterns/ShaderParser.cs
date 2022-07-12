@@ -23,7 +23,8 @@ public readonly struct ShaderParser
         return await shadingDictionary.GetOrDefaultAsync(KnownNames.ShadingType, 0).CA() switch
         {
             1 => await new Type1PdfFunctionShaderFactory(shadingDictionary).Parse(common).CA(),
-            2=> await new Type2AxialShaderFactory(shadingDictionary).Parse(common).CA(),
+            2=> await new Type2Or3ShaderFactory(shadingDictionary).Parse(common, 4).CA(),
+            3=> await new Type2Or3ShaderFactory(shadingDictionary).Parse(common, 6).CA(),
             _ => throw new PdfParseException("Invalid Shader type")
         };
     }

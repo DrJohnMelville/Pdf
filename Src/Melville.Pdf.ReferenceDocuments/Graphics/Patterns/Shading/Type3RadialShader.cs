@@ -41,7 +41,7 @@ public abstract class Type3RadialShaderBase : PatternDisplayClass
     protected virtual DictionaryBuilder BuildShader(
         ILowLevelDocumentCreator arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
         .WithItem(KnownNames.Function, arg.Add(localFunc))
-        .WithItem(KnownNames.Coords, new PdfArray(0.35, .4, 0.1, .25, .5, .01))
+        .WithItem(KnownNames.Coords, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
         .WithItem(KnownNames.ShadingType, 3)
         .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB);
 }
