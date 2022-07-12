@@ -168,6 +168,11 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         }
     }
 
+    public ValueTask PaintShader(PdfName name)
+    {
+        throw new NotImplementedException();
+    }
+
     private async ValueTask<bool> InInvisibleContentRegion(PdfDictionary? visibilityGroup) => 
         ! await renderer.OptionalContentState.IsGroupVisible(visibilityGroup).CA();
 

@@ -198,6 +198,7 @@ public class ContentStreamContext
                 await SetNonstrokingColorExtended().CA();
                 break;
             case ContentStreamOperatorValue.sh:
+                await target.PaintShader(arguments.NamaAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.TStar:
                 target.MoveToNextTextLine();

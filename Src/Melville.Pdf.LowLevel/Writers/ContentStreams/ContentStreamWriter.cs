@@ -119,6 +119,13 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public void Rectangle(double x, double y, double width, double height) =>
         destPipe.WriteOperator(ContentStreamOperatorNames.re, x, y, width, height);
 
+    public ValueTask PaintShader(PdfName name)
+    {
+        destPipe.WriteName(name);
+        destPipe.WriteOperator(ContentStreamOperatorNames.sh);
+        return ValueTask.CompletedTask;
+    }
+
     #endregion
 
     #region Color Operations

@@ -107,6 +107,8 @@ public interface IDrawingOperations
     /// </summary>
     ValueTask DoAsync(PdfName name);
 
+    ValueTask PaintShader(PdfName name);
+
     /// <summary>
     /// Context stream operators BI, ID, and EI
     /// </summary>
