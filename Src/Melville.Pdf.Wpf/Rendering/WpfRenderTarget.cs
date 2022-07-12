@@ -15,8 +15,7 @@ namespace Melville.Pdf.Wpf.Rendering;
 
 public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>, IRenderTarget
 {
-    public WpfRenderTarget(DrawingContext target):
-        base(target)
+    public WpfRenderTarget(DrawingContext target): base(target)
     {
         SaveTransformAndClip();
     }
@@ -72,7 +71,7 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         if (OptionalContentCounter?.IsHidden ?? false) return;
-        var dg = ApplyBitmapScaling(bitmap, await bitmap.ToWbfBitmap().CA());
+        var dg = ApplyBitmapScaling(bitmap, await bitmap.ToWpfBitmap().CA());
         Target.DrawDrawing(dg);
     }
 

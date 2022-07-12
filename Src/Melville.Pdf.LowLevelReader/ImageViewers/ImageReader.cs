@@ -30,7 +30,7 @@ public static class ImageReader
             .WithItem(KnownNames.BitsPerComponent, size.BitsPerComponent)
             .AsStream(str)
             .WrapForRenderingAsync(new PdfPage(PdfDictionary.Empty), DeviceColor.Black);
-        var ret = await image.ToWbfBitmap();
+        var ret = await image.ToWpfBitmap();
         ret.Freeze();
         return ret;
     }

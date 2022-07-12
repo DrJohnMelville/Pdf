@@ -67,7 +67,7 @@ public static class WpfStateInterpreter
 
     #region Bitmap Translation
 
-    public static async ValueTask<BitmapSource> ToWbfBitmap(this IPdfBitmap bitmap)
+    public static async ValueTask<BitmapSource> ToWpfBitmap(this IPdfBitmap bitmap)
     {
         var ret = new WriteableBitmap(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32, null);
         ret.Lock();
