@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
@@ -25,6 +26,9 @@ public record struct ClosedInterval(double MinValue, double MaxValue)
         other.MinValue + (OffsetFromMin(value)*(other.Size/Size));
         
     private double OffsetFromMin(double value) => value - MinValue;
+
+    public ClosedInterval Intersect(ClosedInterval other) =>
+        new(Math.Max(MinValue, other.MinValue), Math.Min(MaxValue, other.MaxValue));
 }
 
 public static class ClosedIntervalOperations

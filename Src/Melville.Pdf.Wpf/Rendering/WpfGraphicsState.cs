@@ -61,8 +61,7 @@ public class WpfGraphicsState : GraphicsState<Brush>
     
     public async ValueTask<Brush> CreateShaderBrush(PdfDictionary pattern)
     {
-        var bmp = RenderShaderToBitmap(await new ShaderParser(pattern,
-            await pattern.GetAsync<PdfDictionary>(KnownNames.Shading)).ParseShader());
+        var bmp = RenderShaderToBitmap(await ShaderParser.ParseShader(pattern));
         var viewport = new Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
         return new ImageBrush(bmp)
         {

@@ -18,14 +18,12 @@ public readonly record struct CommonShaderValues(
         new ClosedInterval(double.MinValue, double.MaxValue),
         new ClosedInterval(double.MinValue, double.MaxValue));
 
-    public static async ValueTask<CommonShaderValues> Parse(PdfDictionary patternDictionary,
-        PdfDictionary shadingDictionary)
+    public static async ValueTask<CommonShaderValues> Parse(Matrix3x2 patternToPixels, PdfDictionary shadingDictionary,
+        bool supressBackground)
     {
-        var patternToPixels = await (await patternDictionary.GetOrNullAsync<PdfArray>(KnownNames.Matrix).CA())
-            .AsMatrix3x2OrIdentityAsync().CA();
         Matrix3x2.Invert(patternToPixels, out var pixelsToPattern);
         var bbox =
-            (await ArrayParsingHelper.ReadFixedLengthDoubleArray(shadingDictionary, KnownNames.BBox, 4).CA()) is { } bbArray
+            (await shadingDictionary.ReadFixedLengthDoubleArray(KnownNames.BBox, 4).CA()) is { } bbArray
                 ? new RectInterval(new ClosedInterval(bbArray[0], bbArray[2]),
                     new ClosedInterval(bbArray[1], bbArray[3]))
                 : defaultBBox;
@@ -33,15 +31,25 @@ public readonly record struct CommonShaderValues(
 
         var colorSpace = await new ColorSpaceFactory(NoPageContext.Instance)
             .FromNameOrArray(await shadingDictionary[KnownNames.ColorSpace].CA()).CA();
-        var backGroundArray = await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.Background).CA() is { } arr
-            ? await arr.AsDoublesAsync().CA()
-            : Array.Empty<double>();
+        var backGroundInt = await ComputeBackground(shadingDictionary, colorSpace, supressBackground).CA();
 
         var common = new CommonShaderValues(
-            pixelsToPattern, colorSpace, bbox, ComputeBackgroundUint(backGroundArray, colorSpace));
+            pixelsToPattern, colorSpace, bbox, backGroundInt);
         return common;
     }
-    
+
+    private static async Task<uint> ComputeBackground(
+        PdfDictionary shadingDictionary, IColorSpace colorSpace, bool supressBackground)
+    {
+        if (supressBackground) return 0;        
+        var backGroundArray = 
+            await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.Background).CA() is { } arr
+            ? await arr.AsDoublesAsync().CA()
+            : Array.Empty<double>();
+        var backGroundInt = ComputeBackgroundUint(backGroundArray, colorSpace);
+        return backGroundInt;
+    }
+
     private static uint ComputeBackgroundUint(double[] backGroundArray, IColorSpace colorSpace)
     {
         return (backGroundArray.Length == colorSpace.ExpectedComponents?colorSpace.SetColor(backGroundArray):DeviceColor.Invisible).AsArgbUint32();

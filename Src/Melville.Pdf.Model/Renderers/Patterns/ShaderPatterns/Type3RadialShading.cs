@@ -5,15 +5,15 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-public class Type3AxialShading : ParametricFunctionalShader
+public class Type3RadialShading : ParametricFunctionalShader
 {
-    private AxialShadingComputer computer;
+    private RadialShadingComputer computer;
 
-    public Type3AxialShading(CommonShaderValues common,
+    public Type3RadialShading(CommonShaderValues common,
         double[] coords, ClosedInterval domain, IPdfFunction function, bool extendLow, bool extendHigh) :
         base(common, domain, function, extendLow, extendHigh)
     {
-        computer = new AxialShadingComputer(coords);
+        computer = new RadialShadingComputer(coords);
     }
 
     protected override uint GetColorFromShader(Vector2 patternVal)
@@ -21,14 +21,15 @@ public class Type3AxialShading : ParametricFunctionalShader
         if (!computer.TParameterFor(patternVal, out double lowRoot, out double highRoot))
             return BackgroundColor; // object not hit.
         var (highCol, isBackground) = ColorFromT(highRoot);
-        return  isBackground? ColorFromT(lowRoot).Color : highCol;
+        var ret = isBackground? ColorFromT(lowRoot).Color : highCol;
+        return  ret;
     }
 }
 
-public readonly struct AxialShadingComputer
+public readonly struct RadialShadingComputer
 {
     private readonly double x0, y0;
-    public AxialShadingComputer(params double[] coords) : this()
+    public RadialShadingComputer(params double[] coords) : this()
     {
         Debug.Assert(coords.Length == 6);
         x0 = coords[0];

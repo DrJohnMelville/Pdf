@@ -46,8 +46,7 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
 
     private async Task<SKPaint> CreateShaderBrush(PdfDictionary pattern)
     {
-        var shader = await new ShaderParser(pattern,
-            await pattern.GetAsync<PdfDictionary>(KnownNames.Shading).CA()).ParseShader().CA();
+        var shader = await ShaderParser.ParseShader(pattern).CA();
         var bitmap = new SKBitmap(new SKImageInfo((int)PageWidth, (int)PageHeight,
             SKColorType.Bgra8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
         unsafe

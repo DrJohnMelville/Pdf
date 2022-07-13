@@ -24,7 +24,6 @@ public abstract class PixelQueryFunctionalShader: IShaderWriter
             {
                 uint desired = 0;
                 desired = ColorForPixel(new Vector2(j, i));
-
                 *pos++ = desired;
             }
         }

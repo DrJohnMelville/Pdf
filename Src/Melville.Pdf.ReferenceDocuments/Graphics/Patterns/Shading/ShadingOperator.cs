@@ -16,9 +16,10 @@ public class ShadingOperator: Card3x5{
         page.AddResourceObject(ResourceTypeName.Shading, NameDirectory.Get("Sh1") ,
             ll=> new DictionaryBuilder()
                 .WithItem(KnownNames.Function, ll.Add(func))
-                .WithItem(KnownNames.Coords, new PdfArray(0.25, .4, 0.1, .30, .4, .01))
+                .WithItem(KnownNames.Coords, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
                 .WithItem(KnownNames.ShadingType, 3)
                 .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
+                .WithItem(KnownNames.Background, new PdfArray(0,0,1))
                 .AsDictionary());
         await base.SetPagePropertiesAsync(page);
     }
@@ -35,7 +36,7 @@ public class ShadingOperator: Card3x5{
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        csw.ModifyTransformMatrix(Matrix3x2.CreateScale(72f*8f, 72f*5f));
+        csw.ModifyTransformMatrix(Matrix3x2.CreateScale(72f*5f, 72f*3f));
         await csw.PaintShader(NameDirectory.Get("Sh1"));
         await base.DoPaintingAsync(csw);
     }

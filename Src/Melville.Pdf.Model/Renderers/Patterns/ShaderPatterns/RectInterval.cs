@@ -16,4 +16,7 @@ public readonly struct RectInterval
 
     public bool OutOfRange(in Vector2 point) =>
         Horizontal.OutOfInterval(point.X) || Vertical.OutOfInterval(point.Y);
+
+    public RectInterval Intersect(RectInterval other) =>
+        new(Horizontal.Intersect(other.Horizontal), Vertical.Intersect(other.Vertical));
 }

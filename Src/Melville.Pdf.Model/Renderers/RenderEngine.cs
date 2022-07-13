@@ -22,6 +22,8 @@ using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers;
 
@@ -168,9 +170,27 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         }
     }
 
-    public ValueTask PaintShader(PdfName name)
+    public async ValueTask PaintShader(PdfName name)
     {
-        throw new NotImplementedException();
+        var shader = await page.GetResourceAsync(ResourceTypeName.Shading, name).CA();
+        if (shader is not PdfDictionary shaderDict) return;
+        var factory = await ShaderParser.ParseShader(
+            StateOps.CurrentState().TransformMatrix, shaderDict, true).CA();
+        StateOps.SaveGraphicsState();
+        MapBitmapToViewport();
+        var ur = Vector2.Transform(new Vector2(1, 1), StateOps.CurrentState().TransformMatrix);
+        await target.RenderBitmap(new ShaderBitmap(factory,
+            (int)StateOps.CurrentState().PageWidth, (int)StateOps.CurrentState().PageHeight)).CA();
+        StateOps.RestoreGraphicsState();
+    }
+
+    private void MapBitmapToViewport()
+    {
+        var state = StateOps.CurrentState();
+        var source = state.TransformMatrix;
+        if (!Matrix3x2.Invert(source, out var inv)) return;
+        ModifyTransformMatrix(Matrix3x2.CreateScale(
+            (float)state.PageWidth, (float)state.PageHeight)*inv);
     }
 
     private async ValueTask<bool> InInvisibleContentRegion(PdfDictionary? visibilityGroup) => 
@@ -181,7 +201,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         SaveGraphicsState();
         await TryApplyFormXObjectMatrix(formXObject).CA();
         
-        await TryClipToFormXObjectBoundingBox(formXObject);
+        await TryClipToFormXObjectBoundingBox(formXObject).CA();
 
         await Render(new PdfFormXObject(formXObject, page)).CA();
         RestoreGraphicsState();
