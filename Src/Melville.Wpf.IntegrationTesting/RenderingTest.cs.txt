@@ -382,3 +382,11 @@ RenderingTest.cs_wpf-Type2ExtendHigh|642957407
 RenderingTest.cs_wpf-Type2ExtendBoth|4206563784
 RenderingTest.cs_wpf-Type2ExtendBothWithBackground|4206563784
 RenderingTest.cs_wpf-Type2ExtendNoneWithBackground|1699903503
+RenderingTest.cs_Skia-UncoloredTilingPatternMatrix|1629865749
+RenderingTest.cs_Skia-ShadingOperator|650353879
+RenderingTest.cs_Skia-Type3RadialShader|3997004465
+RenderingTest.cs_Skia-Type3RadialShaderWithBackground|4189966192
+RenderingTest.cs_wpf-UncoloredTilingPatternMatrix|1956105017
+RenderingTest.cs_wpf-ShadingOperator|511493971
+RenderingTest.cs_wpf-Type3RadialShader|3037847863
+RenderingTest.cs_wpf-Type3RadialShaderWithBackground|2199258438
