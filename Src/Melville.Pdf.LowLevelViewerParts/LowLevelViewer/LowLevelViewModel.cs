@@ -44,12 +44,24 @@ public partial class LowLevelViewModel
         }
     }
 
-    public async ValueTask JumpToReference(ReferencePartViewModel target, IWaitingService waiting)
+    public ValueTask JumpToReference(ReferencePartViewModel target, IWaitingService waiting)
+    {
+        return JumpToReference2(target.RefersTo, waiting);
+    }
+
+    private async ValueTask JumpToReference2(CrossReference reference, IWaitingService waiting)
     {
         if (Selected is null) return;
-        if (targetHistory.Count == 0 || targetHistory.Peek()!= Selected) targetHistory.Push(Selected);
-        Selected = (await new DocumentPartSearcher(target.RefersTo, waiting)
+        if (targetHistory.Count == 0 || targetHistory.Peek() != Selected) targetHistory.Push(Selected);
+        Selected = (await new DocumentPartSearcher(reference, waiting)
             .FindAsync(Root)) ?? Selected;
+    }
+
+    public async void JumpTOPage(int page)
+    {
+        var reference = await ParsedDoc.Pages.PageForNumber(page);
+        if (reference.Object == 0) return;
+        await JumpToReference2(reference, new FakeWaitingService());
     }
 
     private readonly Stack<DocumentPart> targetHistory = new();

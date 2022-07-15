@@ -42,9 +42,21 @@ public class PartParser: IPartParser
         var items = await new ParsePdfObjectsToView(waiting, sourceList).ParseItemElements();
         await AddPrefixAndSuffix(items, lowlevel);
         return new ParsedLowLevelDocument(items, 
-            new PageLookup(await new PdfDocument(lowlevel).PagesAsync()));
+            await CreatePageLookup(lowlevel));
     }
-    
+
+    private static async Task<IPageLookup> CreatePageLookup(PdfLowLevelDocument lowlevel)
+    {
+        try
+        {
+            return new PageLookup(await new PdfDocument(lowlevel).PagesAsync());
+        }
+        catch (Exception )
+        {
+            return NoPageLookup.Instance;
+        }
+    }
+
     private async ValueTask AddPrefixAndSuffix(DocumentPart[] items, PdfLowLevelDocument lowlevel)
     {
         items[0] = GenerateHeaderElement(lowlevel);

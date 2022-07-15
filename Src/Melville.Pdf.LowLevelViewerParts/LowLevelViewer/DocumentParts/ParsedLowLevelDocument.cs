@@ -47,8 +47,27 @@ public class PageLookup : IPageLookup
         var kids = await node.KidsAsync();
         for (int i = 0; i < kids.Count; i++)
         {
-            var kid = await kids[i];
-            var kidType = await kid.
+            var kid = await kids.GetAsync<PdfDictionary>(i);
+            var kidType = await kid.GetAsync<PdfName>(KnownNames.Type);
+            if (kidType == KnownNames.Page)
+            {
+                if (page == 0)
+                {
+                    var ret = (PdfIndirectObject)kids.RawItems[i];
+                    return new CrossReference(ret.ObjectNumber, ret.GenerationNumber);
+                }
+                else
+                {
+                    page--;
+                }
+            } else if (kidType == KnownNames.Pages)
+            {
+                var nodeCount = (int)(await kid.GetAsync<PdfNumber>(KnownNames.Count)).IntValue;
+                if (page < nodeCount) return await InnerPageForNumber(new PageTree(kid), page);
+                page -= nodeCount;
+            }
         }
+
+        return new CrossReference(0, 0);
     }
 }
