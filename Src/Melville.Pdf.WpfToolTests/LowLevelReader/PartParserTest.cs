@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 using Melville.Pdf.Model.Creators;
 using Moq;
@@ -119,7 +120,7 @@ public class PartParserTest
         builder.Pages.CreatePage();
         builder.CreateDocument();
         var doc = await CreateParsedFileAsync(builder.LowLevelCreator);
-        Assert.Equal(4, doc.Pages.Length);
+        Assert.Equal(new CrossReference(1,0), doc.Pages.PageForNumber(0));
         
     }
 }

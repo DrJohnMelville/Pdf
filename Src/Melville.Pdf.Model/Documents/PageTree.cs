@@ -23,7 +23,7 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
 
     public async IAsyncEnumerator<PdfPage> GetAsyncEnumerator(CancellationToken cancellationToken = new())
     {
-        var kids = await LowLevel.GetAsync<PdfArray>(KnownNames.Kids).CA();
+        var kids = await KidsAsync().CA();
         await foreach (var kid in kids.CA())
         {
             var kidAsDict = (PdfDictionary)kid;
@@ -42,7 +42,7 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
 
     public async ValueTask<HasRenderableContentStream> GetPageAsync(long position)
     {
-        var items = await LowLevel.GetAsync<PdfArray>(KnownNames.Kids).CA();
+        var items = await KidsAsync().CA();
         foreach (var kidTask in items.RawItems)
         {
             var kid = (PdfDictionary)await kidTask.DirectValueAsync().CA();
@@ -60,7 +60,8 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
             }
             else throw new PdfParseException("Page trees should contain only pages and nodes");
         }
-
         throw new IndexOutOfRangeException();
     }
+
+    public ValueTask<PdfArray> KidsAsync() => LowLevel.GetAsync<PdfArray>(KnownNames.Kids);
 }

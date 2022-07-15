@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
+using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
@@ -40,7 +41,8 @@ public class PartParser: IPartParser
         var sourceList = OrderedListOfObjects(lowlevel);
         var items = await new ParsePdfObjectsToView(waiting, sourceList).ParseItemElements();
         await AddPrefixAndSuffix(items, lowlevel);
-        return new ParsedLowLevelDocument(items, Array.Empty<CrossReference>());
+        return new ParsedLowLevelDocument(items, 
+            new PageLookup(await new PdfDocument(lowlevel).PagesAsync()));
     }
     
     private async ValueTask AddPrefixAndSuffix(DocumentPart[] items, PdfLowLevelDocument lowlevel)
