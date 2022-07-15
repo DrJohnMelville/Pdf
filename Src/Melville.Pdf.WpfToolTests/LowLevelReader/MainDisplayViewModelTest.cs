@@ -7,6 +7,7 @@ using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevelReader.MainDisplay;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.TestHelpers.InpcTesting;
 using Moq;
 using Xunit;
@@ -31,7 +32,8 @@ public class MainDisplayViewModelTest
     }
 
     [Fact]
-    public void RootTest() => ((LowLevelViewModel)sut.Model!).AssertProperty(i=>i.Root, new DocumentPart[1]);
+    public void RootTest() => ((LowLevelViewModel)sut.Model!).AssertProperty(i=>i.ParsedDoc, 
+        new ParsedLowLevelDocument(new DocumentPart[1], Array.Empty<CrossReference>()), i=>i.Root);
     [Fact]
     public void SelectedTest() => ((LowLevelViewModel)sut.Model!).AssertProperty(i=>i.Selected, new DocumentPart("s"));
 

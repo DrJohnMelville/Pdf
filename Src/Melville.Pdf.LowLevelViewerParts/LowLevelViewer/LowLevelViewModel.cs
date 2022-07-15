@@ -9,7 +9,8 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 
 public partial class LowLevelViewModel
 {
-    [AutoNotify] private DocumentPart[] root = Array.Empty<DocumentPart>();
+    [AutoNotify] private ParsedLowLevelDocument? parsedDoc;
+    [AutoNotify] public DocumentPart[]? Root => ParsedDoc?.Root;
     [AutoNotify] private DocumentPart? selected;
     private IWaitingService? waiter;
     private readonly IPartParser parser;
@@ -26,10 +27,10 @@ public partial class LowLevelViewModel
 
     public async void SetStream(Stream source)
     {
-        Root = await TryParse(source);
+        ParsedDoc = await TryParse(source);
     }
 
-    private async Task<DocumentPart[]> TryParse(Stream source)
+    private async Task<ParsedLowLevelDocument> TryParse(Stream source)
     {
         try
         {
@@ -37,7 +38,9 @@ public partial class LowLevelViewModel
         }
         catch (Exception e)
         {
-            return new DocumentPart[] { new DocumentPart($"Exception: {e.Message}") };
+            return new ParsedLowLevelDocument(
+                new[] { new DocumentPart($"Exception: {e.Message}") },
+                Array.Empty<CrossReference>());
         }
     }
 
@@ -46,7 +49,7 @@ public partial class LowLevelViewModel
         if (Selected is null) return;
         if (targetHistory.Count == 0 || targetHistory.Peek()!= Selected) targetHistory.Push(Selected);
         Selected = (await new DocumentPartSearcher(target.RefersTo, waiting)
-            .FindAsync(root)) ?? Selected;
+            .FindAsync(Root)) ?? Selected;
     }
 
     private readonly Stack<DocumentPart> targetHistory = new();

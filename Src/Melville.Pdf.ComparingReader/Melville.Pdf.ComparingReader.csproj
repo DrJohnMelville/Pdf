@@ -30,8 +30,4 @@
       </Reference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Renderers\PageFlippers" />
-    </ItemGroup>
-
 </Project>

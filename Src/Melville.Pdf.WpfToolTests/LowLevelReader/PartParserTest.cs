@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
+using Melville.Pdf.Model.Creators;
 using Moq;
 using Xunit;
 using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
@@ -30,7 +31,7 @@ public class PartParserTest
     {
         var model =  await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf(major, minor).AsFileAsync(),waitingService.Object);
-        Assert.Equal($"PDF-{major}.{minor}", model[0].Title);
+        Assert.Equal($"PDF-{major}.{minor}", model.Root[0].Title);
     }
 
     [Fact]
@@ -39,7 +40,7 @@ public class PartParserTest
         var model = await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
             waitingService.Object);
-        var trailerNode = model.Last();
+        var trailerNode = model.Root.Last();
         Assert.Equal("Trailer: Dictionary", trailerNode.Title);
         Assert.Equal(2, trailerNode.Children.Count);
         Assert.Equal("/Size: 5", trailerNode.Children[1].Title);
@@ -94,8 +95,11 @@ public class PartParserTest
     {
         var builder = new LowLevelDocumentCreator();
         builder.Add(item(builder));
-        return await sut.ParseAsync(await builder.AsFileAsync(), waitingService.Object);
+        return (await CreateParsedFileAsync(builder)).Root;
     }
+
+    private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentCreator builder) => 
+        (await sut.ParseAsync(await builder.AsFileAsync(), waitingService.Object));
 
     [Fact] public Task RenderDoubleValue()=>TestSingleElement(new PdfDouble(3.14), "3.14");
     [Fact] public Task RenderIntegerValue()=>TestSingleElement(new PdfInteger(314), "314");
@@ -104,5 +108,18 @@ public class PartParserTest
     [Fact] public Task RenderNullValue()=>TestSingleElement(PdfTokenValues.Null, "null");
     [Fact] public Task RenderStringValue()=>TestSingleElement(PdfString.CreateAscii("Foo"), "(Foo)");
     [Fact] public Task RenderSpecialtringValue()=>TestSingleElement(PdfString.CreateAscii("o\no"), "(o\no)");
+
+    [Fact]
+    public async Task ParseFourPages()
+    {
+        var builder = new PdfDocumentCreator();
+        builder.Pages.CreatePage();
+        builder.Pages.CreatePage();
+        builder.Pages.CreatePage();
+        builder.Pages.CreatePage();
+        builder.CreateDocument();
+        var doc = await CreateParsedFileAsync(builder.LowLevelCreator);
+        Assert.Equal(4, doc.Pages.Length);
         
+    }
 }
