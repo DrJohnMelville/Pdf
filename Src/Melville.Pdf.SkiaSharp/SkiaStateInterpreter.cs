@@ -10,14 +10,14 @@ public static class SkiaStateInterpreter
 {
     public static SKPaint Brush(this SkiaGraphicsState state)
     {
-        var ret = state.NonstrokeBrush;
+        var ret = state.NonstrokeBrush.CreateBrush(state);
         ret.Style = SKPaintStyle.Fill;
         return ret;
     }
 
     public static SKPaint Pen(this SkiaGraphicsState state)
     {
-        var paint = state.StrokeBrush;
+        var paint = state.StrokeBrush.CreateBrush(state);
         paint.Style = SKPaintStyle.Stroke;
         paint.Color = state.StrokeColor.AsSkColor();
         paint.StrokeWidth = (float)state.EffectiveLineWidth();

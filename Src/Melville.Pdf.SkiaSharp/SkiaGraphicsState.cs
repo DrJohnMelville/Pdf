@@ -12,17 +12,13 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public class SkiaGraphicsState:GraphicsState<SKPaint>
-{
-    protected override SKPaint CreateSolidBrush(DeviceColor color)
-    {
-        return new SKPaint
-        {
-            Color = color.AsSkColor()   
-        };
-    }
 
-    protected override async ValueTask<SKPaint> CreatePatternBrush(PdfDictionary pattern,
+public class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
+{
+    protected override ISkiaBrushCreator CreateSolidBrush(DeviceColor color) => 
+        new SolidColorBrushCreator(color);
+
+    protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrush(PdfDictionary pattern,
         DocumentRenderer parentRenderer)
     {
         return await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
@@ -33,20 +29,15 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         };
     }
 
-    private async Task<SKPaint> CreateTilePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer)
+    private async Task<ISkiaBrushCreator> CreateTilePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.Parse(pattern).CA();
         var tileItem = await RenderWithSkia.ToSurface(
             parentRenderer.PatternRenderer(request, this), 0).CA();
-        return new SKPaint()
-        {
-            Shader = SKShader.CreateImage(tileItem.Snapshot(),
-                SKShaderTileMode.Repeat, SKShaderTileMode.Repeat)
-                .WithLocalMatrix((request.PatternTransform).Transform())
-        };
+        return new SurfacePatternHolder(tileItem, request.PatternTransform);
     }
 
-    private async Task<SKPaint> CreateShaderBrush(PdfDictionary pattern)
+    private async Task<ISkiaBrushCreator> CreateShaderBrush(PdfDictionary pattern)
     {
         var shader = await ShaderParser.ParseShader(pattern).CA();
         var bitmap = new SKBitmap(new SKImageInfo((int)PageWidth, (int)PageHeight,
@@ -56,9 +47,6 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
             shader.RenderBits((uint*)bitmap.GetPixels().ToPointer(), bitmap.Width, bitmap.Height);
         }
 
-        return new SKPaint()
-        {
-            Shader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp)
-        };
+        return new ImagePatternHolder(bitmap);
     }
 }
