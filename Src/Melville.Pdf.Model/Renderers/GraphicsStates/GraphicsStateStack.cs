@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public sealed partial class GraphicsStateStack<T> : IGraphiscState, IDisposable
+public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
     where T: GraphicsState, new()
 { 
     private readonly Stack<T> states;
@@ -31,7 +31,7 @@ public sealed partial class GraphicsStateStack<T> : IGraphiscState, IDisposable
     }
 
     [DelegateTo]
-    private IGraphiscState topState => states.Peek();
+    private IGraphicsState topState => states.Peek();
 
     public void Dispose()
     {
