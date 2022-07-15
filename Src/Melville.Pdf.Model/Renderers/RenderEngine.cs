@@ -41,7 +41,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
     
     #region Graphics State
-    [DelegateTo] private IGraphiscState StateOps => target.GraphicsState;
+    [DelegateTo] private IGraphicsState StateOps => target.GraphicsState;
     
     public void SaveGraphicsState()
     {
@@ -178,7 +178,6 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             StateOps.CurrentState().TransformMatrix, shaderDict, true).CA();
         StateOps.SaveGraphicsState();
         MapBitmapToViewport();
-        var ur = Vector2.Transform(new Vector2(1, 1), StateOps.CurrentState().TransformMatrix);
         await target.RenderBitmap(new ShaderBitmap(factory,
             (int)StateOps.CurrentState().PageWidth, (int)StateOps.CurrentState().PageHeight)).CA();
         StateOps.RestoreGraphicsState();
@@ -268,7 +267,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask SetStrokingPattern(PdfName? patternName)
     {
         if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.GraphicsState.CurrentState().SetStrokePattern(patternDict, renderer).CA();
+            await target.GraphicsState.CurrentState()
+                .SetStrokePattern(patternDict, renderer).CA();
     }
 
     public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
@@ -280,7 +280,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async ValueTask SetNonstrokingPattern(PdfName? patternName)
     {
         if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.GraphicsState.CurrentState().SetNonstrokePattern(patternDict, renderer).CA();
+            await target.GraphicsState.CurrentState()
+                .SetNonstrokePattern(patternDict, renderer).CA();
     }
 
     private async ValueTask<PdfDictionary?> GetPatternDict(PdfName? patternName) =>

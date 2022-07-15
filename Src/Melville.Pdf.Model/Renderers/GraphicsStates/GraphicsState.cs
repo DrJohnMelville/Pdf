@@ -13,7 +13,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public interface IGraphiscState : IStateChangingOperations
+public interface IGraphicsState : IStateChangingOperations
 {
     ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
     void SetStrokeColorSpace(IColorSpace colorSpace);
@@ -22,8 +22,9 @@ public interface IGraphiscState : IStateChangingOperations
     void SetTextMatrix(in Matrix3x2 value);
     void SetTextLineMatrix(in Matrix3x2 value);
     void SetBothTextMatrices(in Matrix3x2 value);
-    
+    void StoreInitialTransform();
 }
+
 
 [MacroItem("T", "StrokeBrush", "default!")]
 [MacroItem("T", "NonstrokeBrush", "default!")]
@@ -54,9 +55,10 @@ public abstract partial class GraphicsState<T> : GraphicsState, IDisposable
     protected abstract ValueTask<T> CreatePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer);
 }
 
-public abstract partial  class GraphicsState: IGraphiscState, IDisposable
+public abstract partial  class GraphicsState: IGraphicsState, IDisposable
 {
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
+    [MacroItem("Matrix3x2", "InitialTransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "TextLineMatrix", "Matrix3x2.Identity")]
     [MacroItem("double", "LineWidth", "1.0")]
@@ -260,4 +262,19 @@ public abstract partial  class GraphicsState: IGraphiscState, IDisposable
 
     public abstract ValueTask SetStrokePattern(PdfDictionary pattern, DocumentRenderer parentRenderer);
     public abstract ValueTask SetNonstrokePattern(PdfDictionary pattern, DocumentRenderer parentRenderer);
+
+    public void StoreInitialTransform()
+    {
+        InitialTransformMatrix = TransformMatrix;
+    }
+}
+
+public static class GraphicsStateOperations
+{
+    public static Matrix3x2 RevertToPixelsMatrix(this GraphicsState gs)
+    {
+        Matrix3x2.Invert(gs.InitialTransformMatrix, out var invInitial);
+        Matrix3x2.Invert(gs.TransformMatrix * invInitial, out var ret);
+        return ret;
+    }
 }

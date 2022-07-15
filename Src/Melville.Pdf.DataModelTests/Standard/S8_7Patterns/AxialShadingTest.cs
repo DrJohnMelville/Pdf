@@ -52,7 +52,7 @@ public class AxialShadingTest
     public void SlopingLineInverse(double x, double y, double low, double high)
     {
         var comp = new RadialShadingComputer( 1, 0, 0.5, 0, 0, 1);
-        Assert.Equal(true, comp.TParameterFor(new Vector2((float)x,(float)y), out var lowVal, out var highVal));
+        Assert.True(comp.TParameterFor(new Vector2((float)x,(float)y), out var lowVal, out var highVal));
         Assert.Equal(low, lowVal, 4);
         Assert.Equal(high, highVal, 4);
     }

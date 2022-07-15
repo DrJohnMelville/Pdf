@@ -13,7 +13,7 @@ namespace Melville.Pdf.Wpf.Rendering;
 
 public static class WpfStateInterpreter
 {
-    public static Brush Brush(this WpfGraphicsState state) => state.NonstrokeBrush;
+    public static Brush Brush(this WpfGraphicsState state) => state.NonstrokeBrush();
     
     public static Pen Pen(this WpfGraphicsState state)
     {
@@ -26,7 +26,7 @@ public static class WpfStateInterpreter
             DashStyle = ComputeDashStyle(state),
             LineJoin = ComputeLineJoin(state.LineJoinStyle),
             MiterLimit = state.MiterLimit,
-            Brush = state.StrokeBrush
+            Brush = state.StrokeBrush()
         };
         return pen;
     }

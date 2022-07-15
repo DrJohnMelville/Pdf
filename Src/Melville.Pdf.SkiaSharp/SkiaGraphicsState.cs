@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.AwaitConfiguration;
+﻿using System.Numerics;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
@@ -21,8 +22,8 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         };
     }
 
-    protected override async ValueTask<SKPaint> CreatePatternBrush(
-        PdfDictionary pattern, DocumentRenderer parentRenderer)
+    protected override async ValueTask<SKPaint> CreatePatternBrush(PdfDictionary pattern,
+        DocumentRenderer parentRenderer)
     {
         return await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
         {
@@ -40,7 +41,8 @@ public class SkiaGraphicsState:GraphicsState<SKPaint>
         return new SKPaint()
         {
             Shader = SKShader.CreateImage(tileItem.Snapshot(),
-                SKShaderTileMode.Repeat, SKShaderTileMode.Repeat).WithLocalMatrix(request.PatternTransform.Transform())
+                SKShaderTileMode.Repeat, SKShaderTileMode.Repeat)
+                .WithLocalMatrix((request.PatternTransform).Transform())
         };
     }
 

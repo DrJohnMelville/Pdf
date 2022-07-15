@@ -17,36 +17,52 @@ using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 namespace Melville.Pdf.Wpf.Rendering;
 
 
-public class WpfGraphicsState : GraphicsState<Brush>
+public class WpfGraphicsState : GraphicsState<Func<Brush>>
 {
-    protected override Brush CreateSolidBrush(DeviceColor color) => new SolidColorBrush(color.AsWpfColor());
+    protected override Func<Brush> CreateSolidBrush(DeviceColor color)
+    {
+        var brush = new SolidColorBrush(color.AsWpfColor());
+        return  ()=>brush;
+    }
 
-    protected override async ValueTask<Brush> CreatePatternBrush(
-        PdfDictionary pattern, DocumentRenderer parentRenderer) =>
-        await pattern.GetOrDefaultAsync(KnownNames.PatternType,0).CA() switch
+    protected override async ValueTask<Func<Brush>> CreatePatternBrush(PdfDictionary pattern,
+        DocumentRenderer parentRenderer) =>
+        await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
         {
             1 => await CreateTilePattern(pattern, parentRenderer),
             2 => await CreateShaderBrush(pattern),
-            _=> Brushes.Transparent,
+            _ => ()=>Brushes.Transparent,
         };
 
-    private async Task<Brush> CreateTilePattern(PdfDictionary pattern, DocumentRenderer parentRenderer)
+    private Brush AdjustPattern(
+        TileBrush tileBrush, in  Matrix3x2 patternMatrix)
+    {
+        tileBrush.ViewboxUnits = BrushMappingMode.Absolute;
+        tileBrush.ViewportUnits = BrushMappingMode.Absolute;
+        
+        // The graphics state stack might change in the interval when the brush is created and used
+        // By the time this method run this class may not be the top of the graphics state stack.  I pass
+        // in a reference to the top state at the time of the usage
+        var final = this.RevertToPixelsMatrix();
+        tileBrush.Transform = (patternMatrix * final).WpfTransform();
+        return tileBrush;
+    }
+
+    private async Task<Func<Brush>> CreateTilePattern(
+        PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.Parse(pattern);
         var pattternItem = await PatternRenderer(parentRenderer, request).Render();
-        return CreateBrush(pattternItem, request);
+        return ()=> AdjustPattern( CreatePatternBrush(pattternItem, request), request.PatternTransform);
     }
 
-    private static Brush CreateBrush(DrawingGroup pattternItem, in TileBrushRequest request) =>
-        new DrawingBrush(pattternItem)
+    private static DrawingBrush CreatePatternBrush(DrawingGroup pattternItem, TileBrushRequest request) =>
+        new(pattternItem)
         {
             Stretch = Stretch.None,
             Viewbox = PatternSourceBox(request.BoundingBox),
-            ViewboxUnits = BrushMappingMode.Absolute,
             Viewport = PatternDestinationBox(request.RepeatSize),
-            ViewportUnits = BrushMappingMode.Absolute,
             TileMode = TileMode.Tile,
-            Transform = request.PatternTransform.WpfTransform()
         };
 
     private static Rect PatternDestinationBox(Vector2 repeatSize) => 
@@ -60,18 +76,18 @@ public class WpfGraphicsState : GraphicsState<Brush>
         return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request, this), 0);
     }
     
-    public async ValueTask<Brush> CreateShaderBrush(PdfDictionary pattern)
+    public async ValueTask<Func<Brush>> CreateShaderBrush(PdfDictionary pattern)
     {
         var bmp = RenderShaderToBitmap(await ShaderParser.ParseShader(pattern));
         var viewport = new Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);
-        return new ImageBrush(bmp)
+        var brush = new ImageBrush(bmp)
         {
             Stretch = Stretch.None,
             Viewbox = viewport,
             Viewport = viewport,
-            ViewboxUnits = BrushMappingMode.Absolute,
-            ViewportUnits = BrushMappingMode.Absolute
         };
+
+        return () => AdjustPattern(brush, Matrix3x2.Identity);
     }
 
     private WriteableBitmap RenderShaderToBitmap(IShaderWriter writer)
