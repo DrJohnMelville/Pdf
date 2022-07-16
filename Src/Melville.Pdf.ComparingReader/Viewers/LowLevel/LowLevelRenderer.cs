@@ -19,5 +19,5 @@ public class LowLevelRenderer : IRenderer
 
     public void SetTarget(Stream pdfBits) => model.InnerModel.SetStream(pdfBits);
 
-    public void SetPage(int page) { model.InnerModel.JumpTOPage(page); }
+    public void SetPage(int page) { model.InnerModel.JumpTOPage(page-1); }
 }
