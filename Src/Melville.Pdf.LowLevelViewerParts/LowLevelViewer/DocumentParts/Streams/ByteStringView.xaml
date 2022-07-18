@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts"
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
+             xmlns:streams="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -16,7 +17,8 @@
             </TabItem>
             <TabItem Header="Text">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                    <TextBlock Text="{Binding AsAsciiString}" FontFamily="Consolas"></TextBlock>
+                    <streams:TextBoxWithFind 
+                        IsReadOnly="True" Text="{Binding AsAsciiString, Mode=OneWay, PresentationTraceSources.TraceLevel = High}" />
                 </ScrollViewer>
             </TabItem>
         </TabControl>
@@ -27,7 +29,5 @@
                 <MenuItem Header="Save to File" Click="{eventBindings:EventBinding SaveStreamToFile}"></MenuItem>
             </MenuItem>
         </Menu>
-        <!--<Button HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Click="{eventBindings:EventBinding SaveStreamToFile}">Save to File</Button>-->
     </Grid>
 </UserControl>
