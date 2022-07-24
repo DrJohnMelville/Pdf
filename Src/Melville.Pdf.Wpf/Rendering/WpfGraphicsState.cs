@@ -93,12 +93,24 @@ public class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
     {
         var bmp = new WriteableBitmap((int)PageWidth, (int)PageHeight, 96, 96, PixelFormats.Pbgra32,
             null);
+        WriteShadedBitmap(writer, bmp);
+        WaitForBitmapInitialization(bmp);
+        return bmp;
+    }
+
+    private static void WriteShadedBitmap(IShaderWriter writer, WriteableBitmap bmp)
+    {
         bmp.Lock();
         unsafe
-        { 
+        {
             writer.RenderBits((uint*)bmp.BackBuffer, bmp.PixelWidth, bmp.PixelHeight);
         }
+
         bmp.Unlock();
-        return bmp;
+    }
+
+    private static void WaitForBitmapInitialization(WriteableBitmap bmp)
+    {
+        bmp.Freeze(); // this Freeze is necessary to ensure the bitmap is loaded before we use it in the WPF viewer.
     }
 }
