@@ -6,8 +6,8 @@ namespace Melville.Icc.Model;
 
 public ref struct TrcTransformParser
 {
-    XyzArray? rXYZ = null, gXYZ = null, bXYZ = null;
-    ICurveTag? rTRC = null, gTRC = null, bTRC = null;
+    XyzArray? rXYZ = null, gXYZ = null, bXYZ = null, whitePoint = null;
+    ICurveTag? rTRC = null, gTRC = null, bTRC = null, kTRC = null;
 
     public TrcTransformParser(IccProfile profile)
     {
@@ -35,6 +35,9 @@ public ref struct TrcTransformParser
             case TransformationNames.bXYZ:
                 bXYZ = tag.Data as XyzArray;
                 break;
+            case TransformationNames.wtpt:
+                whitePoint = tag.Data as XyzArray;
+                break;
             case TransformationNames.rTRC:
                 rTRC = tag.Data as ICurveTag;
                 break;
@@ -44,16 +47,28 @@ public ref struct TrcTransformParser
             case TransformationNames.bTRC:
                 bTRC = tag.Data as ICurveTag;
                 break;
+            case TransformationNames.kTRC:
+                kTRC = tag.Data as ICurveTag;
+                break;
         }
     }
 
-    public IColorTransform? Create() =>
-        IsValid() ? new TrcTransform(
-            CreateMatrix(rXYZ.Values[0], gXYZ.Values[0], bXYZ.Values[0]), rTRC, gTRC, bTRC) : null;
+    public IColorTransform? Create()
+    {
+        if (IsValidRgb())
+            return new TrcTransform(
+                CreateMatrix(rXYZ.Values[0], gXYZ.Values[0], bXYZ.Values[0]), rTRC, gTRC, bTRC);
+        if (IsValidBlackCurve())
+            return new BlackTransform(whitePoint.Values[0], kTRC);
+        return null;
+    }
 
+    [MemberNotNullWhen(true, nameof(whitePoint), nameof(kTRC))]
+    private bool IsValidBlackCurve() =>
+        whitePoint is { Values.Count: 1 } && kTRC is not null;
 
     [MemberNotNullWhen(true, "rXYZ", "gXYZ", "bXYZ", "rTRC", "gTRC", "bTRC")]
-    private bool IsValid() =>
+    private bool IsValidRgb() =>
         rXYZ is { Values.Count: 1 } &&
         gXYZ is { Values.Count: 1 } &&
         bXYZ is { Values.Count: 1 } &&
@@ -69,3 +84,4 @@ public ref struct TrcTransformParser
             redMatrixCol.Z, greenMatrixCol.Z, blueMatrixCol.Z
         );
 }
+

@@ -14,7 +14,7 @@ public static class ColorTransformFactory
 
     public static IColorTransform DeviceToSrgb(this IccProfile profile)
     {
-        return profile.DeviceToPcsTransform(RenderIntent.Perceptual)?.Concat(ColorTransformFactory.PcsToSrgb(profile)) ??
+        return profile.DeviceToPcsTransform(RenderIntent.Perceptual)?.Concat(PcsToSrgb(profile)) ??
                throw new InvalidCastException("Cannot find ICC profile");
     }
 }

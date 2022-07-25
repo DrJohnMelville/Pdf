@@ -23,10 +23,12 @@ public enum TransformationNames : uint
      rXYZ = 0x7258595a,
      gXYZ = 0x6758595a,
      bXYZ = 0x6258595a,
+     wtpt = 0x77747074,
      
      rTRC = 0x72545243,
      gTRC = 0x67545243,
      bTRC = 0x62545243,
+     kTRC = 0x6B545243,
 }
 public static class TransformPicker
 {
@@ -55,9 +57,12 @@ public static class TransformPicker
                _ => throw new ArgumentOutOfRangeException(nameof(intent), intent, null)
           };
      public static IColorTransform? DeviceToPcsTransform(this IccProfile profile, RenderIntent intent) =>
-          TryWrapToLabConversion(profile.Header.ProfileConnectionColorSpace, SelectTransform(profile.Tags, DeviceToPcsPreferences(intent)) ??
-          new TrcTransformParser(profile).Create());
+          TryWrapToLabConversion(profile.Header.ProfileConnectionColorSpace, SelectIccProfileStyle(profile, intent));
 
+     private static IColorTransform? SelectIccProfileStyle(IccProfile profile, RenderIntent intent) =>
+          SelectTransform(profile.Tags, DeviceToPcsPreferences(intent)) ??
+          new TrcTransformParser(profile).Create();
+     
      private static IColorTransform? TryWrapToLabConversion(ColorSpace profile, IColorTransform? innerTransform) => 
           ShouldWrapLabTransform(profile, innerTransform) ? 
                new ToLabConversion(innerTransform): 
