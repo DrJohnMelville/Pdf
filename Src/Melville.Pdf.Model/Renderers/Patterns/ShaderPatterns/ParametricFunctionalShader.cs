@@ -28,9 +28,9 @@ public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
         return (tParameter, extendLow, extendHigh) switch
         {
             (< 0, false, _) => (BackgroundColor, true),
-            (< 0, true, _) =>  (ColorForValidT(0), false),
+            (< 0, true, _) =>  (ColorForValidT(0), true),
             (> 1, _, false) => (BackgroundColor, true),
-            (> 1, _, true) =>  (ColorForValidT(1), false),
+            (> 1, _, true) =>  (ColorForValidT(1), true),
             var (t, _, _) =>   (ColorForValidT(t), false)
         };
     }
