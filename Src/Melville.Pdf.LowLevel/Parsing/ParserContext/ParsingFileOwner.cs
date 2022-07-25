@@ -85,6 +85,7 @@ public sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegist
     public void RegisterIndirectBlock(int number, long generation, long offset) =>
         IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation, this, offset));
 
-    public void RegisterObjectStreamBlock(int number, long referredStreamOrdinal, long referredStreamGeneration) =>
-        IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this, referredStreamOrdinal));
+    public void RegisterObjectStreamBlock(int number, long referredStreamOrdinal, long positionInStream) =>
+        IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this, 
+            referredStreamOrdinal));
 }

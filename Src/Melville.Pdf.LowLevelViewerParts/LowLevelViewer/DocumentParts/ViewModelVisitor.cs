@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Net.NetworkInformation;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
@@ -111,6 +112,8 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
         if ((item.TryGetValue(KnownNames.Subtype, out var stTask) ||
             item.TryGetValue(KnownNames.S, out stTask))&& (await stTask) == KnownNames.Image)
             return new ImagePartViewModel(title + "Image Stream", children, item);
+        if ((await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.None).CA()) == KnownNames.XRef)
+            return new XrefPartViewModel(title + "XRef Stream", children, item);
         return new StreamPartViewModel(title + "Stream", children, item);
     }
 

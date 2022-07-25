@@ -1,10 +1,12 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
+using System.Windows;
 using Melville.FileSystem;
 using Melville.INPC;
 using Melville.Linq;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
+using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -13,7 +15,7 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 public record StreamDisplayFormat(string Name, Func<PdfStream, ValueTask<object>> Creator);
 
-public partial class StreamPartViewModel : DocumentPart
+public partial class StreamPartViewModel : DocumentPart, ICreateView
 {
     public PdfStream Source { get; }
     [AutoNotify] private IReadOnlyList<StreamDisplayFormat> formats = Array.Empty<StreamDisplayFormat>();
@@ -66,4 +68,7 @@ public partial class StreamPartViewModel : DocumentPart
     
     private static IEnumerable<string> CreateHexDump(IEnumerable<byte> data) => 
         data.BinaryFormat().Select((hexDump, index) => $"{index:X7}0  {hexDump}");
+    
+    public UIElement View() => new StreamPartView{ DataContext = this};
+
 }

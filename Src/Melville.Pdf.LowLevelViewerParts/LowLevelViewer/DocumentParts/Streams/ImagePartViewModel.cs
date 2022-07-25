@@ -26,7 +26,7 @@ public partial class ImageDisplayViewModel
 
 }
 
-public class ImagePartViewModel: StreamPartViewModel, ICreateView
+public class ImagePartViewModel: StreamPartViewModel
 {
     public ImagePartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : 
         base(title, children, source)
@@ -38,10 +38,5 @@ public class ImagePartViewModel: StreamPartViewModel, ICreateView
         await base.AddFormats(fmts);
         fmts.Add(new StreamDisplayFormat("Image", async p=>new ImageDisplayViewModel(
             await (await p.WrapForRenderingAsync(null!, new DeviceColor(255,255,255, 255))).ToWpfBitmap())));
-    }
-
-    public UIElement View()
-    {
-        return new StreamPartView{ DataContext = this};
     }
 }

@@ -19,5 +19,5 @@ public interface IIndirectObjectRegistry
     void RegisterDeletedBlock(int number, int next, int generation);
     void RegistedNullObject(int number, int next, int generation);
     void RegisterIndirectBlock(int number, long generation, long offset);
-    void RegisterObjectStreamBlock(int number, long referredStreamOrdinal, long referredStreamGeneration);
+    void RegisterObjectStreamBlock(int number, long referredStreamOrdinal, long positionInStream);
 }
