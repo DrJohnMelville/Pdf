@@ -20,19 +20,22 @@ public static class CrossReferenceStreamParser
         xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context).CA();
         if (!(xRefStreamAsPdfObject is PdfStream crossRefPdfStream))
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
-        await using (var decodedStream = await crossRefPdfStream.StreamContentAsync().CA())
-        {
-            await new ParseXRefStream(
-                await crossRefPdfStream[KnownNames.W].CA(), 
-                await crossRefPdfStream.GetOrNullAsync(KnownNames.Index).CA(), 
-                decodedStream, owner
-            ).Parse().CA();
-        }
+        await ReadXrefStreamData(owner, crossRefPdfStream).CA();
         await owner.InitializeDecryption(crossRefPdfStream).CA();
         return crossRefPdfStream;
     }
 
-    private static bool IsDigit(byte b) => b is >= (byte)'0' and <= (byte)'9';
+    public static async Task ReadXrefStreamData(IIndirectObjectRegistry owner, PdfStream crossRefPdfStream)
+    {
+        await using (var decodedStream = await crossRefPdfStream.StreamContentAsync().CA())
+        {
+            await new ParseXRefStream(
+                await crossRefPdfStream[KnownNames.W].CA(),
+                await crossRefPdfStream.GetOrNullAsync(KnownNames.Index).CA(),
+                decodedStream, owner
+            ).Parse().CA();
+        }
+    }
 }
 
 public class ParseXRefStream
@@ -44,12 +47,11 @@ public class ParseXRefStream
     private readonly int pos2;
     private readonly int rowLength;
     private readonly PipeReader source;
-    private readonly ParsingFileOwner parsingReader;
+    private readonly IIndirectObjectRegistry registry;
 
-    public ParseXRefStream(PdfObject W, PdfObject index, Stream sourceStream,
-        ParsingFileOwner parsingReader)
+    public ParseXRefStream(PdfObject W, PdfObject index, Stream sourceStream, IIndirectObjectRegistry registry)
     {
-        this.parsingReader = parsingReader;
+        this.registry = registry;
         source = PipeReader.Create(sourceStream);
         nextItemNumber = FindFirstItem(index);
         if (!(W is PdfArray arr &&
@@ -135,16 +137,16 @@ public class ParseXRefStream
         switch (c0)
         {
             case 0: 
-                parsingReader.IndirectResolver.RegistedDeletedBlock(nextItemNumber++, (int)c2, (int)c1);
+                registry.RegisterDeletedBlock(nextItemNumber++, (int)c2, (int)c1);
                 break;
             case 1:
-                parsingReader.RegisterIndirectBlock(nextItemNumber++, c2, c1);
+                registry.RegisterIndirectBlock(nextItemNumber++, c2, c1);
                 break;
             case 2:
-                parsingReader.RegisterObjectStreamBlock(nextItemNumber++, c1, c2);
+                registry.RegisterObjectStreamBlock(nextItemNumber++, c1, c2);
                 break;
             default:
-                parsingReader.IndirectResolver.RegistedNullObject(nextItemNumber++, (int)c2, (int)c1);
+                registry.RegistedNullObject(nextItemNumber++, (int)c2, (int)c1);
                 break;
         }
     }

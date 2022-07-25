@@ -13,6 +13,7 @@ public abstract class OwnedLocationIndirectObject: PdfIndirectObject
     protected OwnedLocationIndirectObject(int objectNumber, int generationNumber, ParsingFileOwner owner) : 
         base(objectNumber, generationNumber, PdfTokenValues.Null)
     {
+        Debug.Assert(owner != null);
         this.owner = owner;
     }
 

@@ -110,7 +110,7 @@ public class CrossReferenceTableParser
                 source.Owner.RegisterIndirectBlock(line, second, first);
                 break;
             case (byte)'f':
-                source.IndirectResolver.RegistedDeletedBlock(line, first, second);
+                source.Owner.RegisterDeletedBlock(line, first, second);
                 break;
             default: throw new PdfParseException("Invalid Xref Table Operation");
         }

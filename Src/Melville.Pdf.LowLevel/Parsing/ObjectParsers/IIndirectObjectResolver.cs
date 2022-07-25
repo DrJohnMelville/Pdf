@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -16,31 +14,10 @@ public interface IIndirectObjectResolver
     Task<long> FreeListHead();
 }
 
-public static class IndirectObjectResolverOperations
+public interface IIndirectObjectRegistry
 {
-    public static void RegistedDeletedBlock(
-        this IIndirectObjectResolver resolver, int number, int next, int generation)
-    {
-        // resolver.AddLocationHint(new IndirectObjectWithAccessor(number, generation,
-        //     () => new ValueTask<PdfObject>(new PdfFreeListObject(next))));
-    }
-
-    public static void RegistedNullObject(
-        this IIndirectObjectResolver resolver, int number, int next, int generation) =>
-        resolver.AddLocationHint(
-            new PdfIndirectObject(number, generation,PdfTokenValues.Null));
-
-    public static void RegisterIndirectBlock(
-        this ParsingFileOwner owner, int number, long generation, long offset)
-    {
-        owner.IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation,
-            owner, offset));
-    }
-    public static void RegisterObjectStreamBlock(
-        this ParsingFileOwner owner, int number, long referredStreamOrdinal, long referredStreamGeneration)
-    {
-        if (number == referredStreamOrdinal) throw new PdfParseException("A object stream may not contain itself");
-        owner.IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(
-            number, 0, owner, referredStreamOrdinal));
-    }
+    void RegisterDeletedBlock(int number, int next, int generation);
+    void RegistedNullObject(int number, int next, int generation);
+    void RegisterIndirectBlock(int number, long generation, long offset);
+    void RegisterObjectStreamBlock(int number, long referredStreamOrdinal, long referredStreamGeneration);
 }

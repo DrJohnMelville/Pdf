@@ -13,7 +13,7 @@ using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.E
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-public sealed partial class ParsingFileOwner: IDisposable
+public sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegistry
 {
     private readonly MultiplexedStream source;
     private long preHeaderOffset = 0;
@@ -74,4 +74,17 @@ public sealed partial class ParsingFileOwner: IDisposable
     }
 
     public void Dispose() => source.Dispose();
+
+    public void RegisterDeletedBlock(int number, int next, int generation)
+    {
+    }
+
+    public void RegistedNullObject(int number, int next, int generation) => 
+        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, generation,PdfTokenValues.Null));
+
+    public void RegisterIndirectBlock(int number, long generation, long offset) =>
+        IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation, this, offset));
+
+    public void RegisterObjectStreamBlock(int number, long referredStreamOrdinal, long referredStreamGeneration) =>
+        IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this, referredStreamOrdinal));
 }
