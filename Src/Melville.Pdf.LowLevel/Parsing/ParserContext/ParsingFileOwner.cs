@@ -75,17 +75,17 @@ public sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegist
 
     public void Dispose() => source.Dispose();
 
-    public void RegisterDeletedBlock(int number, int next, int generation)
+    public void RegisterDeletedBlock(int number, ulong next, ulong generation)
     {
     }
 
-    public void RegistedNullObject(int number, int next, int generation) => 
-        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, generation,PdfTokenValues.Null));
+    public void RegistedNullObject(int number, ulong next, ulong generation) => 
+        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, (int)generation,PdfTokenValues.Null));
 
-    public void RegisterIndirectBlock(int number, long generation, long offset) =>
-        IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation, this, offset));
+    public void RegisterIndirectBlock(int number, ulong generation, ulong offset) =>
+        IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation, this, (int)offset));
 
-    public void RegisterObjectStreamBlock(int number, long referredStreamOrdinal, long positionInStream) =>
+    public void RegisterObjectStreamBlock(int number, ulong referredStreamOrdinal, ulong positionInStream) =>
         IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this, 
-            referredStreamOrdinal));
+            (int)referredStreamOrdinal));
 }

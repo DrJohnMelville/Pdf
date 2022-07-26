@@ -40,19 +40,19 @@ public class XrefParseLogger : IIndirectObjectRegistry
 {
     public List<XrefDisplayLine> Lines = new();
 
-    public void RegisterDeletedBlock(int number, int next, int generation) => 
-        Lines.Add(new XrefDisplayLine("Deleted", number, next, generation));
+    public void RegisterDeletedBlock(int number, ulong next, ulong generation) =>
+        Lines.Add(new XrefDisplayLine("Deleted", number, (long)next, (long)generation));
 
-    public void RegistedNullObject(int number, int next, int generation)=>
-        Lines.Add(new XrefDisplayLine("Null", number, next, generation));
+    public void RegistedNullObject(int number, ulong next, ulong generation)=>
+        Lines.Add(new XrefDisplayLine("Null", number, (long)next, (long)generation));
     
-    public void RegisterIndirectBlock(int number, long generation, long offset) =>
-        Lines.Add(new XrefDisplayLine("Raw", number, generation, offset));
+    public void RegisterIndirectBlock(int number, ulong generation, ulong offset) =>
+        Lines.Add(new XrefDisplayLine("Raw", number, (long)generation, (long)offset));
 
     public void RegisterObjectStreamBlock(
-        int number, long referredStreamOrdinal, long positionInStream) =>
-        Lines.Add(new XrefDisplayLine("Object Stream", number, referredStreamOrdinal,
-            positionInStream));
+        int number, ulong referredStreamOrdinal, ulong positionInStream) =>
+        Lines.Add(new XrefDisplayLine("Object Stream", number, (long)referredStreamOrdinal,
+            (long)positionInStream));
 
     public XrefDisplayViewModel CreateViewModel() => new XrefDisplayViewModel(Lines);
 }

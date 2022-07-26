@@ -16,6 +16,7 @@ public sealed class PdfArray :
     public IReadOnlyList<PdfObject> RawItems { get; }
 
     public PdfArray(params double[] values): this (values.Select(i=>new PdfDouble(i))){}
+    public PdfArray(params int[] values): this (values.Select(i=>new PdfInteger(i))){}
     public PdfArray(params PdfObject[] rawItems) : this((IReadOnlyList<PdfObject>)rawItems)
     {
     }

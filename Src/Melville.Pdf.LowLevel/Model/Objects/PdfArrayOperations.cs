@@ -12,6 +12,9 @@ public static class PdfArrayOperations
     public static ValueTask<PdfObject> GetOrNullAsync(this PdfArray array, int index) =>
         index < 0 || index >= array.Count ? new(PdfTokenValues.Null) : array[index];
 
+    public static async ValueTask<int> IntAtAsync(this PdfArray arr, int index, int defaultVal = 0) =>
+        (await arr[index].CA()) is PdfNumber num ? (int)num.IntValue : defaultVal;
+
     public static async ValueTask<double[]> AsDoublesAsync(this PdfArray array)
     {
         var ret = new double[array.Count];
