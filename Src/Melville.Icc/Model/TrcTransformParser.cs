@@ -6,15 +6,17 @@ namespace Melville.Icc.Model;
 
 public ref struct TrcTransformParser
 {
-    XyzArray? rXYZ = null, gXYZ = null, bXYZ = null, whitePoint = null;
+    XyzArray? rXYZ = null, gXYZ = null, bXYZ = null;
     ICurveTag? rTRC = null, gTRC = null, bTRC = null, kTRC = null;
+    private readonly IccProfile profile;
 
     public TrcTransformParser(IccProfile profile)
     {
-        ReadProfile(profile);
+        this.profile = profile;
+        ReadProfile();
     }
 
-    private void ReadProfile(IccProfile profile)
+    private void ReadProfile()
     {
         foreach (var tag in profile.Tags)
         {
@@ -34,9 +36,6 @@ public ref struct TrcTransformParser
                 break;
             case TransformationNames.bXYZ:
                 bXYZ = tag.Data as XyzArray;
-                break;
-            case TransformationNames.wtpt:
-                whitePoint = tag.Data as XyzArray;
                 break;
             case TransformationNames.rTRC:
                 rTRC = tag.Data as ICurveTag;
@@ -59,13 +58,12 @@ public ref struct TrcTransformParser
             return new TrcTransform(
                 CreateMatrix(rXYZ.Values[0], gXYZ.Values[0], bXYZ.Values[0]), rTRC, gTRC, bTRC);
         if (IsValidBlackCurve())
-            return new BlackTransform(whitePoint.Values[0], kTRC);
+            return new BlackTransform(profile.WhitePoint(), kTRC);
         return null;
     }
 
-    [MemberNotNullWhen(true, nameof(whitePoint), nameof(kTRC))]
-    private bool IsValidBlackCurve() =>
-        whitePoint is { Values.Count: 1 } && kTRC is not null;
+    [MemberNotNullWhen(true, nameof(kTRC))]
+    private bool IsValidBlackCurve() => kTRC is not null;
 
     [MemberNotNullWhen(true, "rXYZ", "gXYZ", "bXYZ", "rTRC", "gTRC", "bTRC")]
     private bool IsValidRgb() =>
