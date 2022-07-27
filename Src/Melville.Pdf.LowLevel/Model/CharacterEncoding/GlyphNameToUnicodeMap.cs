@@ -17,7 +17,11 @@ public partial class GlyphNameToUnicodeMap : IGlyphNameMap
     {
         this.map = map;
     }
+    
 
     public char Map(PdfName input) =>
-        map.TryGetValue(input.GetHashCode(), out var character) ? character : (char)0;
+        TryMap(input, out var character) ? character : (char)0;
+
+    public bool TryMap(PdfName input, out char character) => 
+        map.TryGetValue(input.GetHashCode(), out character);
 }
