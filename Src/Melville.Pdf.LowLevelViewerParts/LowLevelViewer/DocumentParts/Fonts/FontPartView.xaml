@@ -38,15 +38,32 @@
                 <TabItem Header="CharMaps">
                     <TabItem.Resources>
                         <DataTemplate DataType="{x:Type sharpFont:CharMap}">
-                            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                                <ItemsControl ItemsSource="{Binding Converter={x:Static local:FaceCharacterConverter.Instance}}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel Orientation="Vertical" IsItemsHost="True"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                            </ScrollViewer>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock>Platform ID</TextBlock>
+                                <TextBlock Grid.Column="1" Text="{Binding PlatformId}" Margin="5 0 0 0"/>
+                                <TextBlock Grid.Row="1">Encoding Id</TextBlock>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding EncodingId}" Margin="5 0 0 0"/>
+                                <ScrollViewer 
+                                    Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
+                                    VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding Converter={x:Static local:FaceCharacterConverter.Instance}}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Vertical" IsItemsHost="True"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
                         </DataTemplate>
                     </TabItem.Resources>
                     <TabControl ItemsSource="{Binding Face.CharMaps}" >
