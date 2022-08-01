@@ -271,6 +271,7 @@ public readonly struct ContentStreamParser
             ']' => true,
             '<' => true,
             '>' => true,
+            '.' => true,
             _ => false,
         };
 }

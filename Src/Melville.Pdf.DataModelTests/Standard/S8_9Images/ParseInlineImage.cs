@@ -68,7 +68,7 @@ public partial class ParseInlineImage : ParserTest
     [InlineData("ASCIIHexDecode", "/AHx")]
     [InlineData("ASCII85Decode", "/A85")]
     [InlineData("LZWDecode", "/LZW")]
-    [InlineData("FlateDecode", "/FL")]
+    [InlineData("FlateDecode", "/Fl")]
     [InlineData("RunLengthDecode", "/RL")]
     [InlineData("CCITTFaxDecode", "/CCF")]
     [InlineData("DCTDecode", "/DCT")]
