@@ -55,7 +55,7 @@ public readonly struct FreeTypeFontFactory
         var fontFlags = await fontDefinitionDictionary.FontFlagsAsync().CA();
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
-        return isSymbolic || encoding == null || encoding == PdfTokenValues.Null
+          return isSymbolic
             ? await
                 SymbolicEncodingParser.ParseGlyphMapping(face, encoding, 
                     await fontDefinitionDictionary.SubTypeAsync().CA()).CA()
