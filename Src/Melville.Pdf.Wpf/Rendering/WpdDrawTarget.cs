@@ -42,7 +42,14 @@ public class WpfPathCreator : IDrawTarget
 
     public void ClosePath()
     {
-        if (figure != null) figure.IsClosed = true;
+        if (figure != null && ShouldClose(figure)) figure.IsClosed = true;
+    }
+
+    private bool ShouldClose(PathFigure pathFigure)
+    {
+        if (pathFigure.Segments.Count > 1 ||
+            (pathFigure.Segments.Count == 1 && pathFigure.Segments[0] is not LineSegment)) return true;
+        return false;
     }
 
     public virtual void SetDrawingTransform(in Matrix3x2 transform)
