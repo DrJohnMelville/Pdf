@@ -56,4 +56,4 @@ UpgradeLog*.htm
 *.bim_*.settings
 
 launchsettings.json
-*_wpftemp.csproj
+*_wpftmp.csproj
