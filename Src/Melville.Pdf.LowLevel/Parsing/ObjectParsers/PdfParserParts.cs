@@ -48,7 +48,7 @@ public static class PdfParserParts
                     {InlineImageFilterName.AHx, FilterName.ASCIIHexDecode},
                     {InlineImageFilterName.A85, FilterName.ASCII85Decode},
                     {InlineImageFilterName.LZW, FilterName.LZWDecode},
-                    {InlineImageFilterName.FL, FilterName.FlateDecode},
+                    {InlineImageFilterName.Fl, FilterName.FlateDecode},
                     {InlineImageFilterName.RL, FilterName.RunLengthDecode},
                     {InlineImageFilterName.CCF, FilterName.CCITTFaxDecode},
                     {InlineImageFilterName.DCT, FilterName.DCTDecode},

@@ -53,16 +53,17 @@ public readonly struct FreeTypeFontFactory
     private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face)
     {
         var fontFlags = await fontDefinitionDictionary.FontFlagsAsync().CA();
+        var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
-        return isSymbolic
+        return isSymbolic || encoding == null || encoding == PdfTokenValues.Null
             ? await
-                SymbolicEncodingParser.ParseGlyphMapping(face, await fontDefinitionDictionary.EncodingAsync().CA()).CA()
-            : await RomanGlyphMapping(face).CA();
+                SymbolicEncodingParser.ParseGlyphMapping(face, encoding, 
+                    await fontDefinitionDictionary.SubTypeAsync().CA()).CA()
+            : await RomanGlyphMapping(face, encoding).CA();
     }
 
-    private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face)
+    private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face, PdfObject? encoding)
     {
-        var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return new UnicodeGlyphMapping(face,
             await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping).CA());
     }

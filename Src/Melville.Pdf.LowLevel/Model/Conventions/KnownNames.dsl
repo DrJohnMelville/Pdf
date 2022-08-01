@@ -18,7 +18,7 @@ Filter:RunLengthDecode
 InlineImageFilter:AHx
 InlineImageFilter:A85
 InlineImageFilter:LZW
-InlineImageFilter:FL
+InlineImageFilter:Fl
 InlineImageFilter:RL
 InlineImageFilter:CCF
 InlineImageFilter:DCT

@@ -33,7 +33,7 @@ public readonly struct PdfFont
 
     public async ValueTask<PdfName> SubTypeAsync() => 
         await LowLevel.GetOrDefaultAsync(KnownNames.Subtype, 
-            await LowLevel.GetOrDefaultAsync(KnownNames.S, KnownNames.Type1));
+            await LowLevel.GetOrDefaultAsync(KnownNames.S, KnownNames.Type1)).CA();
     
     public ValueTask<PdfObject?> EncodingAsync() => LowLevel.GetOrNullAsync<PdfObject>(KnownNames.Encoding);
 
