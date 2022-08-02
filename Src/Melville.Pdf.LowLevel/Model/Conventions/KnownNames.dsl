@@ -120,6 +120,7 @@ Pdf:Activation
 Pdf:AESV2
 Pdf:AESV3
 Pdf:All
+Pdf:Alternate
 Pdf:And
 Pdf:Ascent
 Pdf:AuthEvent
