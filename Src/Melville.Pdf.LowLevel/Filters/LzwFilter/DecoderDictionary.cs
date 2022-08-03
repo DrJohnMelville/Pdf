@@ -58,15 +58,19 @@ public class DecoderDictionary
 
     public short AddChild(short parent, byte character)
     {
-        var index = DictionaryPosition();
+        var index = NextDictionaryPosition();
         AddChild(ref entries[index], parent, character);
         return index;
     }
 
-    private short DictionaryPosition()
+    private short NextDictionaryPosition()
     {
         // the generator can never generate a code >= maxtable size so we do not need to store
-        // more than the one extra code to immediately write the implied code to the output stream.
+        // more than the one extra code.
+        // We have to store one extra value because we write codes to the output by putting them
+        // in the dictionary and then returning the index to write.
+        // We immediately write the implied code to the output stream, and then we can reuse
+        // the top slot.
         return (short)Math.Min(nextEntry++, LzwConstants.MaxTableSize);
     }
 
