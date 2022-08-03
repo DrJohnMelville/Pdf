@@ -120,7 +120,7 @@ RenderingTest.cs_wpf-JpegImage|2888655440
 RenderingTest.cs_wpf-SimpleForm|2442653303
 RenderingTest.cs_Skia-JpegImage|1967379794
 RenderingTest.cs_Skia-SimpleForm|3130065690
-RenderingTest.cs_wpf-ClipAndScale|97231528
+RenderingTest.cs_wpf-ClipAndScale|1034424189
 RenderingTest.cs_Skia-ClipAndScale|1787685003
 RenderingTest.cs_wpf-FormObjectFromPage|911276189
 RenderingTest.cs_Skia-FormObjectFromPage|1255845827
@@ -390,3 +390,5 @@ RenderingTest.cs_wpf-UncoloredTilingPatternMatrix|1956105017
 RenderingTest.cs_wpf-ShadingOperator|511493971
 RenderingTest.cs_wpf-Type3RadialShader|3037847863
 RenderingTest.cs_wpf-Type3RadialShaderWithBackground|2199258438
+RenderingTest.cs_Skia-WpfLineRenderBug|483570532
+RenderingTest.cs_wpf-WpfLineRenderBug|159778001

@@ -62,9 +62,743 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
         var str = new DictionaryBuilder()
             .WithFilter(FilterName.ASCIIHexDecode, FilterName.LZWDecode)
             .AsStream(LzwDecodeBugText, StreamFormat.DiskRepresentation);
-        await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync();
+        var result = await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync();
+        Assert.Equal(LwzDecodeBugResult.Replace("\r\n","\r"), result);
+        
         // assertion is the lack of an exception
     }
+
+    private const string LwzDecodeBugResult = @"0.7 0.7 0.7 RG
+0 J 0 j 0.96 w 10 M []0 d
+BX /GS1 gs EX
+1 i 
+302.16 738 m
+302.16 36 l
+S
+BT
+/F5 1 Tf
+16 0 0 16 39.12 759 Tm
+0.935 0.077 0.124 rg
+0 Tc
+(EMERGENCY)Tj
+/F7 1 Tf
+11 0 0 11 35.16 18.96 Tm
+0 0 0 rg
+BX /GS2 gs EX
+0 Tw
+(8)Tj
+ET
+0.935 0.077 0.124 RG
+BX /GS1 gs EX
+36 754.32 m
+568.08 754.32 l
+S
+BT
+/F16 1 Tf
+11 0 0 11 307.56 729.24 Tm
+BX /GS2 gs EX
+(j)Tj
+/F7 1 Tf
+1.6364 0 TD
+(If patient is in shock)Tj
+/F11 1 Tf
+0 -1.2 TD
+[(\245)-661(Run in the amount of fluid listed in bo)18(x belo)8(w)64(,)99( as)]TJ
+1.0145 -1.2 TD
+-0.015 Tw
+[(fast as the fluid will flo)7(w \(wide open\).)]TJ
+-1.0145 -1.2 TD
+0 Tw
+[(\245)-661(After fluid has run in,)104( r)19(echeck P)143(,)99( BP)151(,)99( and general)]TJ
+1.0145 -1.2 TD
+-0.01 Tc
+[(appearance)-14(.)]TJ
+-1.0145 -1.2 TD
+0 Tc
+(\245)Tj
+/F13 1 Tf
+1.0145 0 TD
+-0.033 Tw
+[(If still in shoc)-21(k:)]TJ
+/F11 1 Tf
+0 -1.2 TD
+0 Tw
+[(\320)-733(r)25(epeat same amount of fluid as fast as it will)]TJ
+1.2327 -1.2 TD
+[(flo)17(w)54(,)99( then r)26(echeck patient.)]TJ
+-2.2473 -1.2 TD
+(\245)Tj
+ET
+0 0 0 RG
+0.55 w 
+364.8 622.54 m
+336.72 622.54 l
+S
+BT
+11 0 0 11 336.72 623.64 Tm
+[(Repor)-22(t NO)34(W to y)31(our r)17(e)0(f)9(e)0(r)13(ral doctor)98(.)]TJ
+T*
+[(\320)-733(while waiting to r)25(epor)-15(t,)94( follo)15(w this plan until )]TJ
+/F15 1 Tf
+19.44 0 TD
+(1)Tj
+/F11 1 Tf
+-18.2073 -1.2 TD
+(of these is true:)Tj
+/F16 1 Tf
+8 0 0 8 350.28 584.04 Tm
+(n)Tj
+/F11 1 Tf
+11 0 0 11 363.72 584.04 Tm
+(patient is out of shock.)Tj
+/F16 1 Tf
+8 0 0 8 350.28 570.84 Tm
+(n)Tj
+/F11 1 Tf
+11 0 0 11 363.72 570.84 Tm
+-0.001 Tw
+[(doctor giv)18(es diff)14(er)13(ent or)17(ders.)]TJ
+-3.4691 -13.2 TD
+-0.025 Tw
+[(\245)-661(Appl)10(y pneumatic anti-shock garment \(P)82(ASG,)]TJ
+1.0145 -1.2 TD
+(MAST)Tj
+2.5091 0.3164 TD
+0 Tw
+(\250)Tj
+0.7418 -0.3164 TD
+[(\).)95( \(See )]TJ
+/F13 1 Tf
+2.7382 0 TD
+[(Using the Pneumatic )83(Antishoc)-16(k)]TJ
+-5.9891 -1.2 TD
+[(Garment,)97( )]TJ
+/F11 1 Tf
+3.6982 0 TD
+-0.031 Tc
+[(p.)68( )]TJ
+/F15 1 Tf
+0.8618 0 TD
+0 Tc
+(80)Tj
+/F11 1 Tf
+1.1127 0 TD
+(.\))Tj
+-5.6727 -1.2 TD
+[(\320)-733(t)0(r)-24(y)0( to contact doctor )]TJ
+ET
+462.48 384.94 m
+449.16 384.94 l
+S
+BT
+11 0 0 11 449.16 386.04 Tm
+(bef)Tj
+ET
+472.8 384.94 m
+462.6 384.94 l
+S
+BT
+11 0 0 11 462.6 386.04 Tm
+(or)Tj
+ET
+478.08 384.94 m
+472.8 384.94 l
+S
+BT
+11 0 0 11 472.8 386.04 Tm
+(e inflating.)Tj
+/F16 1 Tf
+8 0 0 8 350.28 372.84 Tm
+(n)Tj
+/F7 1 Tf
+11 0 0 11 363.72 372.84 Tm
+(Caution:)Tj
+/F11 1 Tf
+4.0145 0 TD
+-0.017 Tw
+[( y)23(ou MUST r)16(epor)-15(t to y)19(our r)22(e)0(f)9(e)0(r)13(ral)]TJ
+-4.0145 -1.2 TD
+(doctor )Tj
+ET
+410.76 358.54 m
+397.44 358.54 l
+S
+BT
+11 0 0 11 397.44 359.64 Tm
+(bef)Tj
+ET
+420.96 358.54 m
+410.76 358.54 l
+S
+BT
+11 0 0 11 410.76 359.64 Tm
+(or)Tj
+ET
+426.24 358.54 m
+420.96 358.54 l
+S
+BT
+11 0 0 11 420.96 359.64 Tm
+0 Tw
+[(e inflating,)100( )]TJ
+/F13 1 Tf
+4.2545 0 TD
+(if patient has any of)Tj
+-9.4582 -1.2 TD
+(these:)Tj
+/F16 1 Tf
+7 0 0 7 363.72 333.24 Tm
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 333.24 Tm
+(chest pain.)Tj
+/F16 1 Tf
+7 0 0 7 363.72 320.04 Tm
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 320.04 Tm
+[(abnormal hear)-20(t rate or rh)41(ythm.)]TJ
+/F16 1 Tf
+7 0 0 7 363.72 306.84 Tm
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 306.84 Tm
+0.001 Tw
+[(se)13(v)23(e)0(r)24(e)0( shor)-28(tness of br)28(eath.)]TJ
+/F16 1 Tf
+7 0 0 7 363.72 293.64 Tm
+0 Tw
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 293.64 Tm
+[(br)23(eath sounds:)104( crackles.)]TJ
+-3.6873 -1.2 TD
+[(\320)-733(a)0(l)13(w)0(a)44(ys tr)-36(y IV fluids )]TJ
+ET
+453.6 279.34 m
+436.2 279.34 l
+S
+BT
+11 0 0 11 436.2 280.44 Tm
+(first.)Tj
+-9.0436 -1.2 TD
+(\320)Tj
+/F13 1 Tf
+1.2327 0 TD
+[(if you can NO)81(T r)10(eac)-17(h doctor and m)12(ust inflate suit:)]TJ
+/F16 1 Tf
+8 0 0 8 350.28 254.04 Tm
+(n)Tj
+/F11 1 Tf
+11 0 0 11 363.72 254.04 Tm
+[(inflate legs until blood pr)23(essur)18(e is )]TJ
+/F15 1 Tf
+13.7891 0 TD
+(90)Tj
+/F11 1 Tf
+1.1127 0 TD
+( or)Tj
+-14.9018 -1.2 TD
+[(v)13(elcr)26(o cracks.)]TJ
+/F16 1 Tf
+8 0 0 8 350.28 227.64 Tm
+(n)Tj
+/F11 1 Tf
+11 0 0 11 363.72 227.64 Tm
+[(do NO)64(T inflate abdominal section until y)24(o)0(u)]TJ
+T*
+-0.001 Tw
+[(talk to doctor)93(.)]TJ
+/F16 1 Tf
+8 0 0 8 350.28 201.24 Tm
+0 Tw
+(n)Tj
+/F11 1 Tf
+11 0 0 11 363.72 201.24 Tm
+[(do NO)64(T inflate abdominal section )]TJ
+/F13 1 Tf
+14.0509 0 TD
+(if patient:)Tj
+/F16 1 Tf
+7 0 0 7 363.72 188.04 Tm
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 188.04 Tm
+(is a child.)Tj
+/F16 1 Tf
+7 0 0 7 363.72 174.84 Tm
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 174.84 Tm
+[(is mor)26(e than )]TJ
+/F15 1 Tf
+5.3673 0 TD
+(20)Tj
+/F11 1 Tf
+1.1127 0 TD
+[( w)15(eeks pr)28(egnant.)]TJ
+/F16 1 Tf
+7 0 0 7 363.72 161.64 Tm
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 161.64 Tm
+(has abdominal organs coming out of a)Tj
+0 -1.2 TD
+-0.002 Tw
+[(w)21(ound \(e)20(visceration\).)]TJ
+/F16 1 Tf
+7 0 0 7 363.72 135.24 Tm
+0 Tw
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 135.24 Tm
+[(has a f)13(o)0(r)21(eign body \(impaled object\))]TJ
+T*
+-0.001 Tw
+(sticking into abdomen.)Tj
+/F16 1 Tf
+7 0 0 7 363.72 108.84 Tm
+0 Tw
+(1)Tj
+/F11 1 Tf
+11 0 0 11 377.28 108.84 Tm
+[(has uncontr)30(olled bleeding in an ar)22(ea that)]TJ
+T*
+-0.014 Tw
+[(will be outside the suit:)105( chest,)98( arms,)105( scalp)29(,)]TJ
+T*
+0 Tw
+[(face)-21(,)99( or neck.)]TJ
+/F7 1 Tf
+-26.6836 2.9564 TD
+-0.001 Tw
+[(Ag)14(e in )171(Y)130(ears)-3202(Dr)28(ops/Min)12(ute)]TJ
+/F11 1 Tf
+0.5127 -1.3091 TD
+0.001 Tw
+(Less than)Tj
+/F15 1 Tf
+3.7745 0 TD
+6.182 Tc
+-6.181 Tw
+[( 14)]TJ
+/F11 1 Tf
+7.5709 0 TD
+0 Tc
+0 Tw
+(-)Tj
+/F15 1 Tf
+0.3273 0 TD
+(6)Tj
+-10.0909 -1.3091 TD
+[(1-2)-8214(8)]TJ
+T*
+[(3-7)-7931(10)]TJ
+-0.2727 -1.3091 TD
+[(8-11)-7649(16)]TJ
+-1.3855 -1.3091 TD
+(12 )Tj
+/F11 1 Tf
+1.3855 0 TD
+0.001 Tw
+(or older)Tj
+/F15 1 Tf
+9.6436 0 TD
+0.001 Tc
+(20)Tj
+ET
+0.48 w 
+BX /GS1 gs EX
+64.08 111.36 m
+266.28 111.36 l
+S
+0.8 0.8 0.8 RG
+63.96 97.92 m
+265.92 97.92 l
+63.96 84 m
+266.4 84 l
+63.96 69.24 m
+266.28 69.24 l
+63.96 54.36 m
+266.28 54.36 l
+S
+0 0 0 RG
+1000 M 
+63.99 125.16 202.32 -84.27 re
+S
+10 M 
+164.64 125.28 m
+164.64 40.8 l
+S
+BT
+/F7 1 Tf
+11 0 0 11 337.44 542.88 Tm
+BX /GS2 gs EX
+0 Tc
+0 Tw
+[(IV FLUID FOR P)106(A)126(TIENTS IN SHOCK)]TJ
+1.0145 -1.3091 TD
+[(Ag)14(e in )183(Y)130(ears)-1740(Fluid )103(Amount in ML)]TJ
+/F11 1 Tf
+0.5018 -1.3091 TD
+0.001 Tw
+(Less than )Tj
+/F15 1 Tf
+4.0582 0 TD
+[(1)-5075(100-175)]TJ
+-2.4655 -1.3091 TD
+0 Tw
+(1)Tj
+/F11 1 Tf
+0.5564 0 TD
+(-)Tj
+/F15 1 Tf
+0.3164 0 TD
+[(2)-7661(250)]TJ
+-0.8727 -1.3091 TD
+(3)Tj
+/F11 1 Tf
+0.5564 0 TD
+(-)Tj
+/F15 1 Tf
+0.3164 0 TD
+[(7)-7661(400)]TJ
+-1.1564 -1.3091 TD
+(8)Tj
+/F11 1 Tf
+0.5564 0 TD
+(-)Tj
+/F15 1 Tf
+0.3273 0 TD
+[(11)-7379(700)]TJ
+-2.2691 -1.3091 TD
+(12)Tj
+/F11 1 Tf
+1.1018 0 TD
+0.001 Tw
+( or older)Tj
+/F15 1 Tf
+9.3818 0 TD
+-0.001 Tc
+(1000)Tj
+ET
+BX /GS1 gs EX
+335.16 525 m
+534.6 525 l
+S
+0.8 0.8 0.8 RG
+335.16 511.44 m
+534.36 511.44 l
+335.16 496.68 m
+534 496.68 l
+335.16 482.64 m
+534.36 482.64 l
+335.16 467.76 m
+534.36 467.76 l
+S
+0 0 0 RG
+424.2 539.4 m
+424.2 453 l
+S
+1000 M 
+335.44 539.41 198.92 -86.42 re
+S
+BT
+/F7 1 Tf
+11 0 0 11 36 729.24 Tm
+BX /GS2 gs EX
+0 Tc
+[(Emerg)15(ency-)]TJ
+/F9 1 Tf
+5.5964 0 TD
+0 Tw
+(1)Tj
+/F7 1 Tf
+0.5564 0 TD
+-0.001 Tw
+[(:)96( Shock)]TJ
+/F16 1 Tf
+-6.1527 -2.4 TD
+0 Tw
+(j)Tj
+/F7 1 Tf
+1.6364 0 TD
+-0.001 Tw
+[(Begin emerg)18(ency car)17(e)]TJ
+/F11 1 Tf
+0 -1.2 TD
+0.018 Tw
+[(\245)-671(Check )96(ABCs:)109( )20( )114(Airwa)39(y)89(,)99( Br)22(eathing,)93( Cir)26(culation.)]TJ
+T*
+-0.017 Tw
+[(\245)-671(Use dir)24(ect pr)18(essur)18(e to contr)25(ol se)20(v)23(e)0(r)13(e)0( bleeding.)]TJ
+1.0255 -1.2 TD
+(\(See )Tj
+/F15 1 Tf
+11 0 2.039 11 87.48 663.24 Tm
+[(1.)111( )]TJ
+/F13 1 Tf
+11 0 0 11 98.52 663.24 Tm
+0.001 Tw
+[(Use Dir)16(ect Pr)6(essur)19(e)-31(,)]TJ
+/F11 1 Tf
+7.56 0 TD
+-0.027 Tc
+0.028 Tw
+[( p.)72( )]TJ
+/F15 1 Tf
+1.1564 0 TD
+0 Tc
+0 Tw
+(6)Tj
+/F11 1 Tf
+0.5564 0 TD
+(.\))Tj
+-13.32 -1.2 TD
+[(\245)-671(H)0(a)32(v)23(e a helper position patient so that he is l)12(ying)]TJ
+1.0255 -1.2 TD
+-0.001 Tc
+(down.)Tj
+T*
+0 Tc
+[(\320)-722(ele)10(vate legs about )]TJ
+/F15 1 Tf
+8.7164 0 TD
+(12)Tj
+/F11 1 Tf
+1.1127 0 TD
+( inches higher than head)Tj
+ET
+0.55 w 10 M 
+92.64 609.34 m
+78.72 609.34 l
+S
+BT
+11 0 0 11 78.72 610.44 Tm
+(onl)Tj
+ET
+97.44 609.34 m
+92.64 609.34 l
+S
+BT
+11 0 0 11 92.64 610.44 Tm
+-0.011 Tw
+[(y if patient has no injuries to legs,)105( pelvis,)97( hips,)]TJ
+-1.2655 -1.2 TD
+-0.004 Tc
+-0.07 Tw
+(neck, back, chest, or abdomen.)Tj
+-1.2218 -1.2 TD
+0 Tc
+0 Tw
+(\320)Tj
+/F13 1 Tf
+1.2218 0 TD
+-0.013 Tw
+[(if patient has head injur)-46(y)]TJ
+/F11 1 Tf
+9.3164 0 TD
+[( or shor)-16(tness of br)23(eath,)]TJ
+-9.3164 -1.2 TD
+0 Tw
+[(it is better for him to lie flat,)112( or e)8(v)23(en to sit up a)]TJ
+T*
+[(little)-19(.)]TJ
+-2.2473 -1.2 TD
+[(\245)-671(K)67(eep patient warm,)93( but not hot.)105( Ha)38(v)13(e)0( a helper)-34(:)]TJ
+1.0255 -1.2 TD
+[(\320)-722(r)14(emo)13(v)23(e)0( w)14(et clothes.)]TJ
+T*
+[(\320)-722(place blank)26(ets o)9(v)23(er and under patient.)]TJ
+/F16 1 Tf
+-2.6618 -1.2 TD
+(j)Tj
+/F7 1 Tf
+1.6364 0 TD
+-0.002 Tw
+(Vital signs)Tj
+/F11 1 Tf
+0 -1.2 TD
+0 Tw
+[(\245)-671(Check P)152(,)99( R,)98( BP)151(.)]TJ
+/F16 1 Tf
+-1.6364 -1.2 TD
+(j)Tj
+/F7 1 Tf
+1.6364 0 TD
+[(Decide if tr)17(eatment is needed)]TJ
+/F11 1 Tf
+0 -1.2 TD
+(\245)Tj
+/F13 1 Tf
+1.0255 0 TD
+[(If patient f)16(eels OK)]TJ
+/F11 1 Tf
+6.8509 0 TD
+( )Tj
+ET
+159.6 464.14 m
+143.76 464.14 l
+S
+BT
+11 0 0 11 143.76 465.24 Tm
+[(and)8( has no obvious blood or fluid)]TJ
+-7.1345 -1.2 TD
+(loss:)Tj
+T*
+[(\320)-722(obser)-33(v)23(e)-23(.)]TJ
+T*
+[(\320)-722(y)13(ou do NO)63(T ha)42(v)23(e)0( to tr)20(eat f)11(or shock.)]TJ
+T*
+[(\320)-722(this ma)33(y just be lo)18(w BP with standing \(postural)]TJ
+1.2218 -1.2 TD
+-0.008 Tc
+[(h)34(ypotension\).)]TJ
+/F16 1 Tf
+8 0 0 8 78.72 386.04 Tm
+0 Tc
+(n)Tj
+/F11 1 Tf
+11 0 0 11 92.28 386.04 Tm
+-0.015 Tw
+[(while waiting to r)25(epor)-26(t,)105( no)6(w g)13(o)0( to )]TJ
+/F13 1 Tf
+14.0945 0 TD
+[(NER)27(V)30(OUS)-29(,)]TJ
+-14.0945 -1.2 TD
+-0.02 Tw
+[(Other Ner)-30(vous System Pr)27(oblems)-36(,)]TJ
+/F11 1 Tf
+12.2945 0 TD
+-0.027 Tc
+0.007 Tw
+[( p.)83( )]TJ
+/F15 1 Tf
+1.1018 0 TD
+0 Tc
+(452)Tj
+/F11 1 Tf
+1.6691 0 TD
+0 Tw
+(.)Tj
+-18.5455 -1.2 TD
+[(\245)-671(F)11(or other patients,)111( continue to f)19(ollow this plan.)]TJ
+/F16 1 Tf
+-1.6364 -1.2 TD
+(j)Tj
+/F7 1 Tf
+1.6364 0 TD
+[(Repor)-15(t)]TJ
+/F11 1 Tf
+3.2836 0 TD
+-0.001 Tw
+[(.)99( Ha)37(v)23(e)0( someone contact y)22(our r)16(e)0(f)9(e)0(r)13(ral doctor)]TJ
+-3.2836 -1.2 TD
+0 Tw
+[(and ar)7(range f)19(or transpor)-31(t to hospital,)110( while y)21(o)0(u)]TJ
+T*
+0.001 Tw
+[(f)10(ollow this plan.)]TJ
+/F16 1 Tf
+-1.6364 -1.2 TD
+0 Tw
+(j)Tj
+/F7 1 Tf
+1.6364 0 TD
+[(Giv)23(e o)28(xyg)11(en)]TJ
+/F11 1 Tf
+0 -1.2 TD
+[(\245)-671(Set the flo)14(w rate based on ho)6(w m)23(uch y)16(ou ha)32(v)23(e)]TJ
+1.0255 -1.2 TD
+[(a)34(vailable)-17(.)]TJ
+T*
+(\320)Tj
+/F15 1 Tf
+1.2218 0 TD
+(2)Tj
+/F11 1 Tf
+0.5564 0 TD
+(-)Tj
+/F15 1 Tf
+0.3273 0 TD
+(6)Tj
+/F11 1 Tf
+0.5564 0 TD
+[( liters b)10(y)0( nasal cann)16(ula.)]TJ
+-2.6618 -1.2 TD
+(\320)Tj
+/F15 1 Tf
+1.2218 0 TD
+(12)Tj
+/F11 1 Tf
+1.1127 0 TD
+(-)Tj
+/F15 1 Tf
+0.3273 0 TD
+(15)Tj
+/F11 1 Tf
+1.1018 0 TD
+[( liters b)11(y)0( non-r)20(ebr)11(eathing mask.)]TJ
+/F16 1 Tf
+-6.4255 -1.2 TD
+(j)Tj
+/F7 1 Tf
+1.6364 0 TD
+0.001 Tw
+[(Star)-18(t an IV)]TJ
+/F11 1 Tf
+0 -1.2 TD
+-0.01 Tc
+[(\245)-681(See )]TJ
+/F13 1 Tf
+2.6618 0 TD
+-0.012 Tw
+[(MEDICINE,)95( Star)-30(ting and Giving IV Fluids)-34(,)]TJ
+/F11 1 Tf
+14.88 0 TD
+-0.036 Tc
+0.014 Tw
+[( p.)74( R)-26(-)]TJ
+/F15 1 Tf
+1.9855 0 TD
+0 Tc
+(81)Tj
+/F11 1 Tf
+1.1127 0 TD
+0 Tw
+(.)Tj
+-20.64 -1.2 TD
+[(\245)-671(Use LA)40(CT)101(A)100(TED RINGER\325S or )]TJ
+/F15 1 Tf
+13.56 0 TD
+(0)Tj
+/F11 1 Tf
+0.5564 0 TD
+(.)Tj
+/F15 1 Tf
+0.2182 0 TD
+(9)Tj
+/F11 1 Tf
+0.5564 0 TD
+(% SODIUM)Tj
+-13.8655 -1.2 TD
+(CHLORIDE solution.)Tj
+T*
+[(\320)-722(run at maintenance rate unless patient is in)]TJ
+1.2218 -1.2 TD
+[(shock)-307(or doctor or)17(ders a faster rate)-15(.)]TJ
+/F7 1 Tf
+0.24 -2.4 TD
+-0.001 Tw
+[(MAINTENANCE RA)119(TES USING)]TJ
+/F9 1 Tf
+2.1055 -1.2 TD
+(10)Tj
+/F7 1 Tf
+1.1127 0 TD
+[( DR)10(OPS/ML )156(TUBING)]TJ
+ET
+";
 
     private static readonly string LzwDecodeBugText = @"
         80 0C 05 C3 71 04 0A 09 06 10 14 88 E0 D1 80 80 95 05 10 1A A0 A2 E1 C8 D8 40 77 10 0C 61 A4 D1 

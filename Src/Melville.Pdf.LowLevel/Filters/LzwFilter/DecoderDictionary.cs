@@ -11,7 +11,9 @@ public class DecoderDictionary
         public short StringIndex;
     }
 
-    private readonly Entry[] entries = new Entry[LzwConstants.MaxTableSize];
+    private const int DictSizeWithExtraSlot = LzwConstants.MaxTableSize + 1;
+
+    private readonly Entry[] entries = new Entry[DictSizeWithExtraSlot+1];
     private int nextEntry;
         
     public DecoderDictionary()
@@ -56,11 +58,18 @@ public class DecoderDictionary
 
     public short AddChild(short parent, byte character)
     {
-        var index = (short)nextEntry++;
+        var index = DictionaryPosition();
         AddChild(ref entries[index], parent, character);
         return index;
     }
-        
+
+    private short DictionaryPosition()
+    {
+        // the generator can never generate a code >= maxtable size so we do not need to store
+        // more than the one extra code to immediately write the implied code to the output stream.
+        return (short)Math.Min(nextEntry++, LzwConstants.MaxTableSize);
+    }
+
     private void AddChild(ref Entry entry, short parentIndex, byte character)
     {
         entry.Parent = parentIndex;

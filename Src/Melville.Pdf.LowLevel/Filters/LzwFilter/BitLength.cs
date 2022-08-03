@@ -15,8 +15,17 @@ public class BitLength
     public void SetBitLength(int bits)
     {
         Length = bits;
-        nextIncrement = (1 << bits) - sizeSwitchFlavorDelta;
+        nextIncrement = AlreadyAtMaximumBitLength() ? 
+            int.MaxValue:CurrentBitLengthExhaustedAt(bits);
     }
+
+    private bool AlreadyAtMaximumBitLength() => 
+        Length >= LzwConstants.MaxBitLength;
+
+    private int CurrentBitLengthExhaustedAt(int bits) => 
+        SmallestNumberToBigForBits(bits) - sizeSwitchFlavorDelta;
+
+    private static int SmallestNumberToBigForBits(int bits) => (1 << bits);
 
     public void CheckBitLength(int next)
     {
