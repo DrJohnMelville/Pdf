@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
@@ -22,7 +23,7 @@ public class WindowsDefaultFonts : IDefaultFontMapper
     private static readonly byte[] SegoeUISymbol =
         { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
 
-    public ValueTask<IRealizedFont>  MapDefaultFont(PdfName font, FreeTypeFontFactory factory)
+    public ValueTask<IRealizedFont>  MapDefaultFont(PdfName font, FontFlags fontFlags, FreeTypeFontFactory factory)
     {
         return font.GetHashCode() switch
         {
@@ -42,7 +43,8 @@ public class WindowsDefaultFonts : IDefaultFontMapper
                 false, false),
             KnownNameKeys.ZapfDingbats => (factory with{ByteToUnicodeMapping =  ZapfDignbatsMapping.Instance})
                 .SystemFont(SegoeUISymbol, false, false),
-            _ => factory.SystemFont(font.Bytes, false, false)
+            _ => factory.SystemFont(font.Bytes, 
+                        fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic))
         };
     }
 }

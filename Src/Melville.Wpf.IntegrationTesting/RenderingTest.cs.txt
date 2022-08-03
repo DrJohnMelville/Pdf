@@ -392,3 +392,7 @@ RenderingTest.cs_wpf-Type3RadialShader|3037847863
 RenderingTest.cs_wpf-Type3RadialShaderWithBackground|2199258438
 RenderingTest.cs_Skia-WpfLineRenderBug|483570532
 RenderingTest.cs_wpf-WpfLineRenderBug|159778001
+RenderingTest.cs_Skia-GarmondBold|446662170
+RenderingTest.cs_Skia-GarmondItalic|3673910672
+RenderingTest.cs_wpf-GarmondBold|1414725165
+RenderingTest.cs_wpf-GarmondItalic|2153894832
