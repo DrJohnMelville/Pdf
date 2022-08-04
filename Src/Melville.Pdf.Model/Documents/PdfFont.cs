@@ -47,7 +47,9 @@ public readonly struct PdfFont
 
     public async ValueTask<PdfStream?> EmbeddedStreamAsync() =>
         await DescriptorAsync().CA() is { } descriptor
-            && (descriptor.TryGetValue(KnownNames.FontFile2, out var retTask) ||
+            && (
+            descriptor.TryGetValue(KnownNames.FontFile, out var retTask) ||
+                descriptor.TryGetValue(KnownNames.FontFile2, out retTask) ||
               descriptor.TryGetValue(KnownNames.FontFile3, out retTask) )? 
                 await retTask.CA() as PdfStream : null;
 

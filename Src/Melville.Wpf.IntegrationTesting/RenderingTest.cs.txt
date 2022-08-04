@@ -396,3 +396,5 @@ RenderingTest.cs_Skia-GarmondBold|446662170
 RenderingTest.cs_Skia-GarmondItalic|3673910672
 RenderingTest.cs_wpf-GarmondBold|1414725165
 RenderingTest.cs_wpf-GarmondItalic|2153894832
+RenderingTest.cs_Skia-EmbeddedType1|74455131
+RenderingTest.cs_wpf-EmbeddedType1|4010353334
