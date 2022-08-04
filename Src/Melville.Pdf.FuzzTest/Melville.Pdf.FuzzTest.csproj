@@ -8,6 +8,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.SkiaSharp\Melville.Pdf.SkiaSharp.csproj" />
     </ItemGroup>
 
 </Project>
