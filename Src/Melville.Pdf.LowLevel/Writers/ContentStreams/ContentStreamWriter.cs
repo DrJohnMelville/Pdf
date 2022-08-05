@@ -14,7 +14,6 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
-
 public partial class ContentStreamWriter : IContentStreamOperations
 {
     private readonly ContentStreamPipeWriter destPipe;

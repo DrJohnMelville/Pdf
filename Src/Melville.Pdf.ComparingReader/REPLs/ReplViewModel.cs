@@ -35,6 +35,7 @@ public partial class ReplViewModel
 
     private async void OnContentStreamTextChanged(string newValue)
     {
+        if (buffer.Length == 0) return; // heppens in testing
         var target = await CopyOriginalFile();
         var doc = await RandomAccessFileParser.Parse(new MemoryStream(buffer));
         await WriteStreamModificationBlock(doc, await CreateReplacementStream(newValue), target);                                                                       
@@ -68,5 +69,10 @@ public partial class ReplViewModel
         var builder = new DictionaryBuilder();
         if (source is PdfDictionary sourceDict) builder.CopyFrom(sourceDict);
         return builder.AsStream(newValue);
+    }
+
+    public async ValueTask PrettyPrint()
+    {
+        ContentStreamText = await ContentStreamPrettyPrinter.PrettyPrint(ContentStreamText);
     }
 }

@@ -19,7 +19,7 @@
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <TextBox IsReadOnly="{Binding IsReadOnly}" FontFamily="{Binding FontFamily}"
-                     Text="{Binding Text}" x:Name="DisplayBox" IsInactiveSelectionHighlightEnabled="True"
+                     Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="DisplayBox" IsInactiveSelectionHighlightEnabled="True"
                      AcceptsReturn="True" AcceptsTab="True">
                 <TextBox.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="White"/>
