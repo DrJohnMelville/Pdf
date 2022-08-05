@@ -67,29 +67,28 @@ public readonly struct FontReader
         var sub = await font.Type0SubFont().CA();
         var mapper =
             await ParseCidToGidMap(await sub.CidToGidMapStream().CA(),
-                await ParseSubFontSytemInfo(
-                    await ParseType0Encoding(await font.EncodingAsync().CA()).CA(), sub).CA()).CA();
+                  await ParseType0Encoding(await font.EncodingAsync().CA()).CA()).CA();
         return await PdfFontToRealizedFont(size, sub, mapper).CA();
     }
 
     private ValueTask<IGlyphMapping> ParseCidToGidMap(PdfStream? mapStream, IGlyphMapping innerMapping) => 
         mapStream is null ? new(innerMapping) : ExplicitMappingFactory.Parse(innerMapping, mapStream);
 
-    private async ValueTask<IGlyphMapping> ParseSubFontSytemInfo(
-        IGlyphMapping externalMapping, PdfFont font)
-    {
-        var info = await font.CidSystemInfo().CA();
-        if (info == null)
-            throw new PdfParseException("No system info for CID font");
-        var supplement = await info.GetOrDefaultAsync(KnownNames.Supplement, 0).CA();
-        var registry = (await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA());
-        var ordering = (await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA());
-        // if (supplement is not (0 or 1) ||
-        //     !(ordering.IsSameAS("Identity") || ordering.IsSameAS("UCS")))
-        //        throw new NotImplementedException("Only default CID Font Orderings are implemented. Cannot use: " + ordering);
-        
-        return externalMapping;
-    }
+    // private async ValueTask<IGlyphMapping> ParseSubFontSytemInfo(
+    //     IGlyphMapping externalMapping, PdfFont font)
+    // {
+    //     var info = await font.CidSystemInfo().CA();
+    //     if (info == null)
+    //         throw new PdfParseException("No system info for CID font");
+    //     var supplement = await info.GetOrDefaultAsync(KnownNames.Supplement, 0).CA();
+    //     var registry = (await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA());
+    //     var ordering = (await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA());
+    //     // if (supplement is not (0 or 1) ||
+    //     //     !(ordering.IsSameAS("Identity") || ordering.IsSameAS("UCS")))
+    //     //        throw new NotImplementedException("Only default CID Font Orderings are implemented. Cannot use: " + ordering);
+    //     
+    //     return externalMapping;
+    // }
 
     private ValueTask<IGlyphMapping> ParseType0Encoding(PdfObject? encodingEntry)
     {

@@ -62,11 +62,10 @@ public readonly struct FreeTypeFontFactory
             : await RomanGlyphMapping(face, encoding).CA();
     }
 
-    private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face, PdfObject? encoding)
-    {
-        return new UnicodeGlyphMapping(face,
-            await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping).CA());
-    }
+    private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face, PdfObject? encoding) =>
+        GlyphMappingFactoy.FromFontFace(
+            await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping).CA(),
+            face);
 
 
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)

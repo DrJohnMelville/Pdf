@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization.Metadata;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using SharpFont;
 using SharpFont.PostScript;
+using SharpFont.TrueType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
@@ -10,22 +16,39 @@ public interface IGlyphMapping
     (uint character, uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input);
 }
 
-public class UnicodeGlyphMapping : IGlyphMapping
+public partial class SingleByteCharacterMapping : IGlyphMapping
 {
-    private Face face;
-    private IByteToUnicodeMapping charMapping;
-
-    public UnicodeGlyphMapping(Face face, IByteToUnicodeMapping charMapping)
-    {
-        this.face = face;
-        this.charMapping = charMapping;
-    }
-
+    [FromConstructor] private readonly IByteToUnicodeMapping byeToChar;
+    [FromConstructor] private readonly Dictionary<uint,uint> charToGlyph;
+    
     public (uint character, uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input)
     {
-        var character = input[0];
-        return (character, face.GetCharIndex(charMapping.MapToUnicode(character)), 1);
+        var character = byeToChar.MapToUnicode(input[0]);
+        return (character, MapCharacterToGlyph(character), 1);
     }
+
+    private uint MapCharacterToGlyph(char character) => 
+        charToGlyph.TryGetValue(character, out var glyph)?glyph:0;
+}
+
+public static class GlyphMappingFactoy
+{
+    public static SingleByteCharacterMapping FromFontFace(IByteToUnicodeMapping byteMapping,
+        Face face)
+    {
+        if (face.CharMapByInts((PlatformId)3, 1) is {} unicodeMap)
+            return new SingleByteCharacterMapping(byteMapping, ReadCharacterMapping(unicodeMap));
+        if (face.CharMapByInts((PlatformId)1, 0) is { } macMapping)
+            return new SingleByteCharacterMapping(
+                new ByteToMacCode(byteMapping), ReadCharacterMapping(macMapping));
+        throw new PdfParseException("Cannot find a character mapping");
+
+    }
+
+    private static Dictionary<uint, uint> ReadCharacterMapping(CharMap charMap) =>
+        charMap
+            .AllMappings()
+            .ToDictionary(i=>i.Char, i=>i.Glyph);
 }
 
 public class IdentityCmapMapping: IGlyphMapping

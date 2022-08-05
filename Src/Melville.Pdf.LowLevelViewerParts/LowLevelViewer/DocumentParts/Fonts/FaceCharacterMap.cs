@@ -1,5 +1,6 @@
 ﻿using System.Windows.Data;
 using Melville.MVVM.Wpf.Bindings;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
@@ -14,14 +15,6 @@ public static class FaceCharacterConverter
     public static readonly IValueConverter Instance = 
         LambdaConverter.Create<CharMap,IEnumerable<FaceCharacterMap>>(ExtractCharMap);
 
-    private static IEnumerable<FaceCharacterMap> ExtractCharMap(CharMap map)
-    {
-        map.Face.SelectCharmap(map.Encoding);
-        var charIndex = map.Face.GetFirstChar(out var glyphIndex);
-        while (charIndex != 0)
-        {
-            yield return new FaceCharacterMap(charIndex, glyphIndex);
-            charIndex = map.Face.GetNextChar(charIndex, out glyphIndex);
-        }
-    }
+    private static IEnumerable<FaceCharacterMap> ExtractCharMap(CharMap map) => 
+        map.AllMappings().Select(i => new FaceCharacterMap(i.Char, i.Glyph));
 }

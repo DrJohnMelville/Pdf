@@ -20,34 +20,20 @@ public static class SymbolicEncodingParser
                 await MapType1Font(face, encoding).CA():
             UseTrueTypeFontMapping(face);
 
-    private static async Task<UnicodeGlyphMapping> MapType1Font(Face face, PdfObject? encoding)
-    {
-        return new UnicodeGlyphMapping(face,
-            await RomanEncodingParser.InterpretEncodingValue(encoding, CharacterEncodings.Standard).CA());
-    }
+    private static async Task<SingleByteCharacterMapping> MapType1Font(Face face, PdfObject? encoding) =>
+        GlyphMappingFactoy.FromFontFace(
+            await RomanEncodingParser.InterpretEncodingValue(encoding, CharacterEncodings.Standard).CA(),
+            face);
 
-    private static IGlyphMapping UseTrueTypeFontMapping(Face face)
-    {
-        var cmap = face.CharMapByInts((PlatformId)3, 0) ?? face.CharMapByInts((PlatformId)1, 0);
+    private static IGlyphMapping UseTrueTypeFontMapping(Face face) =>
+        new DictionaryGlyphMapping( 
+             SelectCharMap(face)
+                .AllMappings()
+                .ToDictionary(i => (byte)i.Char, i => (char)i.Glyph));
 
-        // need to handle the correct plates-+
-        Dictionary<byte, char> mapping = new();
-        if (cmap is not null)
-        {
-            WriteCharMapToDictionary(cmap, mapping);
-        }
-        return new DictionaryGlyphMapping( mapping);
-    }
-
-    private static void WriteCharMapToDictionary(CharMap cmap, Dictionary<byte, char> mapping)
+    private static CharMap? SelectCharMap(Face face)
     {
-        cmap.Face.SelectCharmap(cmap.Encoding);
-        var index = cmap.Face.GetFirstChar(out var glyph);
-        while (index != 0)
-        {
-            mapping[(byte)(index & 0xff)] = (char)glyph;
-            index = cmap.Face.GetNextChar(index, out glyph);
-        }
+        return face.CharMapByInts((PlatformId)3, 0) ?? face.CharMapByInts((PlatformId)1, 0);
     }
 }
 
@@ -55,4 +41,15 @@ public static class FontFaceOperationss
 {
     public static CharMap? CharMapByInts(this Face face, PlatformId platformId, int encodingId) =>
         face.CharMaps.FirstOrDefault(i => i.PlatformId == platformId && i.EncodingId == encodingId);
+
+    public static IEnumerable<(uint Char, uint Glyph)> AllMappings(this CharMap cMap)
+    {
+        cMap.Face.SetCharmap(cMap);
+        for (uint character = cMap.Face.GetFirstChar(out var glyph);
+             character != 0;
+             character = cMap.Face.GetNextChar(character, out glyph))
+        {
+            yield return (character, glyph);
+        }
+    }
 }
