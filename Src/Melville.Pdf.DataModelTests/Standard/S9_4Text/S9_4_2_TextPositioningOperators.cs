@@ -57,7 +57,7 @@ public class S9_4_2_TextPositioningOperators
             return fw;
         }
 
-        public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
+        public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
     }
 
     private void SetupMockRealizedFont()

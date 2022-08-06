@@ -14,7 +14,7 @@ public interface IFontWriteOperation
 public interface IRealizedFont
 {
     (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input);
-    double AdjustWidth(uint character, double glyphWidth);
+    double CharacterWidth(uint character, double defaultWidth);
     IFontWriteOperation BeginFontWrite(IFontTarget target);
 }
 
@@ -27,7 +27,7 @@ public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
 
     public ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix) => new(0.0);
 
-    public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
+    public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
 
     public void RenderCurrentString(bool stroke, bool fill, bool clip)
     {

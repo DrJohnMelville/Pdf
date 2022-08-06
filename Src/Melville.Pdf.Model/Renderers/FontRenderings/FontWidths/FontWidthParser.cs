@@ -1,42 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 
 public readonly struct FontWidthParser
 {
-    private readonly IRealizedFont innerFont;
     private readonly PdfFont pdfFont;
     private readonly double sizeFactor;
 
-    public FontWidthParser(IRealizedFont innerFont, PdfFont pdfFont, double size)
+    public FontWidthParser(PdfFont pdfFont, double size)
     {
-        this.innerFont = innerFont;
         this.pdfFont = pdfFont;
         sizeFactor = size /1000;
     }
 
-    public ValueTask<IRealizedFont> Parse(int subTypeKey) => subTypeKey switch
+    public async ValueTask<IFontWidthComputer> Parse() => 
+        await Parse((await pdfFont.SubTypeAsync().CA()).GetHashCode()).CA();
+    private ValueTask<IFontWidthComputer> Parse(int subTypeKey) => subTypeKey switch
     {
-        KnownNameKeys.Type3 or KnownNameKeys.Type0 => new(innerFont),
+        KnownNameKeys.Type3 => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),
+        KnownNameKeys.Type0 => throw new NotImplementedException("Not sure how to compute widths in type 0 fonts"),
         KnownNameKeys.CIDFontType2 or KnownNameKeys.CIDFontType0 => ParseCidFontWidths(),
-        _ => ParseSimpleFont()
+        _ => ParseSimpleFontWidths()
     };
     
-    private async ValueTask<IRealizedFont> ParseSimpleFont()
+    private async ValueTask<IFontWidthComputer> ParseSimpleFontWidths()
     {
-        var pdfWidths = await pdfFont.WidthsArrayAsync().CA();
-        return pdfWidths is null ? 
-            innerFont : 
-            new ArrayWidthAdjustedFont(innerFont, await pdfFont.FirstCharAsync().CA(), PreMultiply(pdfWidths));
+        return await pdfFont.WidthsArrayAsync().CA() is {Length: > 0} pdfWidths ? 
+            new ArrayFontWidthComputer(await pdfFont.FirstCharAsync().CA(), PreMultiply(pdfWidths)) : 
+            NullFontWidthComputer.Instance;
     }
 
     private double[] PreMultiply(double[] pdfWidths)
@@ -48,11 +47,10 @@ public readonly struct FontWidthParser
         return pdfWidths;
     }
     
-    private async ValueTask<IRealizedFont> ParseCidFontWidths()
-    {
-        return new DictionaryWidthAdjustedFont(innerFont, sizeFactor * await pdfFont.DefaultWidthAsync().CA(),
-            await ParseWArray().CA());
-    }
+    private async ValueTask<IFontWidthComputer> ParseCidFontWidths() =>
+        await ParseWArray().CA() is {Count: > 0} dict?
+            new DictionaryFontWidthComputer(dict, sizeFactor * await pdfFont.DefaultWidthAsync().CA()) :
+            NullFontWidthComputer.Instance;
 
     private async ValueTask<IReadOnlyDictionary<uint,double>> ParseWArray()
     {
@@ -65,6 +63,7 @@ public readonly struct FontWidthParser
         }
 
         return ret;
+
     }
 
     private async ValueTask<int> ParseSingleArrayItem(

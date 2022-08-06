@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
-public class ZapfDignbatsMapping : IByteToUnicodeMapping
+public class ZapfDignbatsMapping : IByteToCharacterMapping
 {
     public static readonly ZapfDignbatsMapping Instance = new();
 
@@ -12,7 +12,7 @@ public class ZapfDignbatsMapping : IByteToUnicodeMapping
 
     //Zaph Diingbats to unicode mapping as defined by the unicode consortium
     // https://unicode.org/Public/MAPPINGS/VENDORS/ADOBE/zdingbat.txt
-    public char MapToUnicode(byte input) => (char)(input switch
+    public uint MapToUnicode(byte input) => (char)(input switch
     {
         0x20 => 0x20, // 0020	20	# SPACE	# space
         0x21 => 0x2701, // # UPPER BLADE SCISSORS	# a1

@@ -83,7 +83,6 @@ public abstract partial  class GraphicsState: IGraphicsState, IDisposable
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
     [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
     [MacroItem("double", "FontSize", "0.0")]
-    [MacroItem("IByteToUnicodeMapping", "ByteMapper", "CharacterEncodings.Standard")]
     
     //PageSizes
     [MacroItem("double", "PageWidth", "1")]

@@ -40,6 +40,8 @@ public static class SymbolicEncodingParser
 
 public static class FontFaceOperationss
 {
+    public static CharMap? CharMapByInts(this Face face, int platformId, int encodingId) =>
+        face.CharMapByInts((PlatformId)platformId, encodingId);
     public static CharMap? CharMapByInts(this Face face, PlatformId platformId, int encodingId) =>
         face.CharMaps.FirstOrDefault(i => i.PlatformId == platformId && i.EncodingId == encodingId);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Pdf.KnownNamesGenerator.CharacterEncodings;
@@ -31,20 +32,32 @@ public class EncodingGenerator
     private void GenerateAllEncodings(StringBuilder sb)
     {
         GeneratePreamble(sb);
-        GenerateEncoding(sb,"MacExpert", macExpertMap);
-        GenerateEncoding(sb,"Symbol", symbolMap);
-        GenerateEncoding(sb,"Standard",maps.Standard);
-        GenerateEncoding(sb,"WinAnsi",maps.Win);
-        GenerateEncoding(sb,"MacRoman",maps.Mac);
-        GenerateEncoding(sb,"Pdf",maps.Pdf);
-        CloseClassBlock(sb);
+        GenerateEncodingClass(sb);
     }
 
+    private void GenerateEncodingClass(StringBuilder sb)
+    {
+        GeneraterEncodingClassBlock(sb);
+        GenerateEncoding(sb, "MacExpert", macExpertMap);
+        GenerateEncoding(sb, "Symbol", symbolMap);
+        GenerateEncoding(sb, "Standard", maps.Standard);
+        GenerateEncoding(sb, "WinAnsi", maps.Win);
+        GenerateEncoding(sb, "MacRoman", maps.Mac);
+        GenerateEncoding(sb, "Pdf", maps.Pdf);
+        CloseClassBlock(sb);
+        
+        GenerateNamesClass(sb);
+    }
+    
     private void GeneratePreamble(StringBuilder sb)
     {
         sb.AppendLine("#nullable enable");
         sb.AppendLine("namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;");
         sb.AppendLine();
+    }
+
+    private static void GeneraterEncodingClassBlock(StringBuilder sb)
+    {
         sb.AppendLine("public static partial class CharacterEncodings {");
     }
 
@@ -55,21 +68,57 @@ public class EncodingGenerator
 
     private void GenerateEncoding(StringBuilder sb, string name, IReadOnlyDictionary<byte, string> map)
     {
-        sb.AppendLine($"    public static IByteToUnicodeMapping {name} = new TableMapping(new char[] {{");
-        sb.Append("        ");
+        sb.AppendLine($"    public static byte[][] {name} = {{");
         for (int i = 0; i < 256; i++)
         {
             var value = ComputeUnicodeForGlyph(map, i);
-            sb.Append($" (char)(0x{value}),");
+            sb.AppendLine($"        RomanCharacterNames.{value},");
         }
-        sb.AppendLine("    });");
+        sb.AppendLine("    };");
     }
 
     private string ComputeUnicodeForGlyph(IReadOnlyDictionary<byte, string> map, int i)
     {
-        if (!map.TryGetValue((byte)i, out var mappedName)) return "25CF";
-        if (!glyphNameToUnicode.TryGetValue(mappedName, out var uni))
-            throw new InvalidOperationException("Cannot find glyph named: " + mappedName);
-        return uni;
+        if (!map.TryGetValue((byte)i, out var mappedName)) return "notdef";
+        return mappedName;
+    }
+    
+    private void GenerateNamesClass(StringBuilder sb)
+    {
+        sb.AppendLine("public static class RomanCharacterNames");
+        sb.AppendLine("{");
+        foreach (var name in AllCharacterNames())
+        {
+            sb.Append("    public static readonly byte[] ");
+            sb.Append(name);
+            sb.Append(" = {");
+            OutputAsBytes(sb, name);
+            sb.AppendLine("};");
+        }
+        sb.AppendLine("}");
+    }
+
+    private IEnumerable<string> AllCharacterNames()
+    {
+        return new[]
+        {
+            macExpertMap,
+            symbolMap,
+            maps.Standard,
+            maps.Win,
+            maps.Mac,
+            maps.Pdf
+        }.SelectMany(i => i.Values)
+            .Prepend("notdef")
+            .Distinct();
+    }
+
+    private static void OutputAsBytes(StringBuilder sb, string name)
+    {
+        foreach (var character in name)
+        {
+            sb.Append((int)character);
+            sb.Append(',');
+        }
     }
 }

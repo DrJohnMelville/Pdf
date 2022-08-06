@@ -1,39 +1,40 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Melville.Parsing.SpanAndMemory;
+using Melville.INPC;
+using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public class FreeTypeFont : IRealizedFont, IDisposable
+public partial class FreeTypeFont : IRealizedFont, IDisposable
 {
-    public Face Face { get; }
-    private IGlyphMapping? glyphMap;
-    
-    public FreeTypeFont(Face face, IGlyphMapping? glyphMap)
+    [FromConstructor] private readonly Face face; 
+    [FromConstructor] private readonly IReadCharacter characterSource;
+    [FromConstructor] private readonly IMapCharacterToGlyph characterToGlyph;
+    [FromConstructor] private readonly IFontWidthComputer fontWidthComputer;
+    public void Dispose() => face.Dispose();
+
+    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
     {
-        Face = face;
-        this.glyphMap = glyphMap;
+        var (character, consumed) = characterSource.GetNextChar(input);
+        return (character, characterToGlyph.GetGlyph(character), consumed);
     }
-
-    public void Dispose() => Face.Dispose();
-
-    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => 
-        glyphMap?.SelectGlyph(input) ?? (0, 0,1);
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
-    
+
     private double RenderByte(FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
-        Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
-        nativeTarget.Decompose(Face.Glyph.Outline);
-        return Face.Glyph.Advance.X/64.0;
+        face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
+        nativeTarget.Decompose(face.Glyph.Outline);
+        return face.Glyph.Advance.X/64.0;
     }
 
-    public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
+    public double CharacterWidth(uint character, double defaultWidth) => 
+        fontWidthComputer.GetWidth(character, defaultWidth);
 
     private class FreeTypeWriteOperation: IFontWriteOperation
     {
@@ -70,7 +71,7 @@ public class FreeTypeFont : IRealizedFont, IDisposable
 
         private bool GlyphRequiresEvenOddFill()
         {
-            return (parent.Face.Glyph.Outline.Flags & OutlineFlags.EvenOddFill) != 0;
+            return (parent.face.Glyph.Outline.Flags & OutlineFlags.EvenOddFill) != 0;
         }
     }
 }

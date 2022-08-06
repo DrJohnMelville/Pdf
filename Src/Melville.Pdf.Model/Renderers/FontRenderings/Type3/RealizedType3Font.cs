@@ -48,7 +48,7 @@ public class RealizedType3Font : IRealizedFont
         return target.RenderType3Character(
             characters[glyph].CreateReader(), fontMatrix);
     }
-    public double AdjustWidth(uint character, double glyphWidth) => glyphWidth;
+    public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
 
     private class Type3Writer: IFontWriteOperation
     {

@@ -9,8 +9,8 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 
 public static class RomanEncodingParser
 {
-    public static ValueTask<IByteToUnicodeMapping> InterpretEncodingValue(
-        PdfObject? encoding, IByteToUnicodeMapping? basisEncoding, IGlyphNameMap glyphNames) =>
+    public static ValueTask<IByteToCharacterMapping> InterpretEncodingValue(
+        PdfObject? encoding, IByteToCharacterMapping? basisEncoding, IGlyphNameMap glyphNames) =>
         (encoding, encoding?.GetHashCode(), basisEncoding) switch
         {
             (null, _, null) => new(CharacterEncodings.Standard),
@@ -25,8 +25,8 @@ public static class RomanEncodingParser
             _ => throw new PdfParseException("Invalid encoding member on font.")
         };
 
-    private static async ValueTask<IByteToUnicodeMapping> ReadEncodingDictionary(
-        PdfDictionary dict, IByteToUnicodeMapping? basisEncoding, IGlyphNameMap glyphNames)
+    private static async ValueTask<IByteToCharacterMapping> ReadEncodingDictionary(
+        PdfDictionary dict, IByteToCharacterMapping? basisEncoding, IGlyphNameMap glyphNames)
     {
         var baseEncoding = await InterpretEncodingValue(
             await dict.GetOrDefaultAsync(KnownNames.BaseEncoding,(PdfName?)null).CA(), basisEncoding, glyphNames).CA();

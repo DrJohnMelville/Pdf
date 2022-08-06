@@ -1,28 +1,23 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
+using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public readonly struct FreeTypeFontFactory
+public readonly partial struct FreeTypeFontFactory
 {
-    private readonly double size;
-    public IByteToUnicodeMapping? ByteToUnicodeMapping { get; init; } = null;
-    public IGlyphMapping? GlyphMapping { get; init; } = null;
-    private readonly PdfFont fontDefinitionDictionary;
-
-    public FreeTypeFontFactory(double size, in PdfFont fontDefinitionDictionary)
-    {
-        this.size = size;
-        this.fontDefinitionDictionary = fontDefinitionDictionary;
-    }
+    [FromConstructor] private readonly double size;
+    [FromConstructor] private readonly PdfFont fontDefinitionDictionary;
 
     public ValueTask<IRealizedFont> SystemFont(byte[] name, bool bold, bool oblique)
     {
@@ -47,26 +42,30 @@ public readonly struct FreeTypeFontFactory
     private async ValueTask<IRealizedFont> FontFromFace(Face face)
     {
         face.SetCharSize(0, 64 * size, 0, 0);
-        return new FreeTypeFont(face, GlyphMapping ?? await CreateGlyphMap(face).CA());
+        return new FreeTypeFont(face, SingleByteCharacters.Instance, 
+            await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary,
+                await fontDefinitionDictionary.EncodingAsync().CA()).Parse().CA(), 
+            await new FontWidthParser(fontDefinitionDictionary, size).Parse().CA());
     }
 
-    private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face)
-    {
-        var fontFlags = await fontDefinitionDictionary.FontFlagsAsync().CA();
-        var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
-        var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
-          return isSymbolic
-            ? await
-                SymbolicEncodingParser.ParseGlyphMapping(face, encoding, 
-                    await fontDefinitionDictionary.SubTypeAsync().CA()).CA()
-            : await RomanGlyphMapping(face, encoding).CA();
-    }
+    // private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face)
+    // {
+    //     var fontFlags = await fontDefinitionDictionary.FontFlagsAsync().CA();
+    //     var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
+    //     var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
+    //       return isSymbolic
+    //         ? await
+    //             SymbolicEncodingParser.ParseGlyphMapping(face, encoding, 
+    //                 await fontDefinitionDictionary.SubTypeAsync().CA()).CA()
+    //         : await RomanGlyphMapping(face, encoding).CA();
+    // }
 
-    private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face, PdfObject? encoding) =>
-        GlyphMappingFactoy.FromFontFace(
-            await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping, 
-                GlyphNamerFactory.CreateMapping(face)).CA(),
-            face);
+    //
+    // private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face, PdfObject? encoding) =>
+    //     GlyphMappingFactoy.FromFontFace(
+    //         await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping, 
+    //             GlyphNamerFactory.CreateMapping(face)).CA(),
+    //         face);
 
 
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)

@@ -396,7 +396,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         {
             var (character, glyph) = GetNextCharacterAndGlyph(font, ref remainingI);
             var measuredGlyphWidth = await writer.AddGlyphToCurrentString(glyph, CharacterPositionMatrix()).CA();
-            AdjustTextPositionForCharacter(font.AdjustWidth(character, measuredGlyphWidth), character);
+            AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
         }
         writer.RenderCurrentString(StateOps.CurrentState().TextRender);
     }

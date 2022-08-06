@@ -8,6 +8,7 @@ using SharpFont.TrueType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
+[Obsolete]
 public interface IGlyphMapping
 {
     (uint character, uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input);
@@ -15,13 +16,13 @@ public interface IGlyphMapping
 
 public partial class SingleByteCharacterMapping : IGlyphMapping
 {
-    [FromConstructor] private readonly IByteToUnicodeMapping byeToChar;
+    [FromConstructor] private readonly IByteToCharacterMapping byeToChar;
     [FromConstructor] private readonly Dictionary<uint,uint> charToGlyph;
     
     public (uint character, uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input)
     {
         var character = byeToChar.MapToUnicode(input[0]);
-        return (character, MapCharacterToGlyph(character), 1);
+        return (character, MapCharacterToGlyph((char)character), 1);
     }
 
     private uint MapCharacterToGlyph(char character) => 
@@ -30,7 +31,7 @@ public partial class SingleByteCharacterMapping : IGlyphMapping
 
 public partial class ByteToGlyphMap : IGlyphMapping
 {
-    [FromConstructor] private readonly IByteToUnicodeMapping byteToChar;
+    [FromConstructor] private readonly IByteToCharacterMapping byteToChar;
     [FromConstructor] private readonly uint glyphCount;
 
     public (uint character, uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input)
@@ -42,14 +43,14 @@ public partial class ByteToGlyphMap : IGlyphMapping
 
 public static class GlyphMappingFactoy
 {
-    public static IGlyphMapping FromFontFace(IByteToUnicodeMapping byteMapping,
+    public static IGlyphMapping FromFontFace(IByteToCharacterMapping byteMapping,
         Face face)
     {
         if (face.CharMapByInts((PlatformId)3, 1) is {} unicodeMap)
             return new SingleByteCharacterMapping(byteMapping, ReadCharacterMapping(unicodeMap));
         if (face.CharMapByInts((PlatformId)1, 0) is { } macMapping)
             return new SingleByteCharacterMapping(
-                new ByteToMacCode(byteMapping), ReadCharacterMapping(macMapping));
+                byteMapping, ReadCharacterMapping(macMapping));
         return new ByteToGlyphMap(byteMapping, (uint)face.GlyphCount);
     }
 

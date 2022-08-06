@@ -6,18 +6,18 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 
-public class CustomFontEncoding : IByteToUnicodeMapping
+public class CustomFontEncoding : IByteToCharacterMapping
 {
-    private readonly IByteToUnicodeMapping baseEncoding;
+    private readonly IByteToCharacterMapping baseEncoding;
     private readonly IReadOnlyDictionary<byte, char> customMappings;
 
-    public CustomFontEncoding(IByteToUnicodeMapping baseEncoding, IReadOnlyDictionary<byte, char> customMappings)
+    public CustomFontEncoding(IByteToCharacterMapping baseEncoding, IReadOnlyDictionary<byte, char> customMappings)
     {
         this.baseEncoding = baseEncoding;
         this.customMappings = customMappings;
     }
 
-    public char MapToUnicode(byte input) =>
+    public uint MapToUnicode(byte input) =>
         customMappings.TryGetValue(input, out var mappedValue) ? 
             mappedValue:
             baseEncoding.MapToUnicode(input);
@@ -25,8 +25,8 @@ public class CustomFontEncoding : IByteToUnicodeMapping
 
 public static class CustomFontEncodingFactory
 {
-    public static async ValueTask<IByteToUnicodeMapping> Create(
-        IByteToUnicodeMapping basis, PdfArray differences, IGlyphNameMap glypnNames)
+    public static async ValueTask<IByteToCharacterMapping> Create(
+        IByteToCharacterMapping basis, PdfArray differences, IGlyphNameMap glypnNames)
     {
         var dict = await DifferenceArrayToMapAsync(differences, glypnNames).CA();
         return dict.Count > 0 ? new CustomFontEncoding(basis, dict) : basis;
