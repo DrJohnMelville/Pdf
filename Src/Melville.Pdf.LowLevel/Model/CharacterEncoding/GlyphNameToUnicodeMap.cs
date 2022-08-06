@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Xml.Schema;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 

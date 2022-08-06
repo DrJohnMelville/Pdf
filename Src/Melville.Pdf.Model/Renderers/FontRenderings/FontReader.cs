@@ -93,7 +93,7 @@ public readonly struct FontReader
     private ValueTask<IGlyphMapping> ParseType0Encoding(PdfObject? encodingEntry)
     {
         if (encodingEntry != KnownNames.IdentityH && encodingEntry != KnownNames.IdentityV)
-            throw new NotImplementedException("CMAP parsing is not implemented.");
+            throw new NotImplementedException("Cmaps (section 9.7.5.1) other than Identity are not yet implemented.");
         return new (IdentityCmapMapping.Instance);
     }
 }

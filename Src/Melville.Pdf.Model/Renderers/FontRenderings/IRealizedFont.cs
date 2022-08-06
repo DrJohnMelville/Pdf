@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Melville.Icc.Model.Tags;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 

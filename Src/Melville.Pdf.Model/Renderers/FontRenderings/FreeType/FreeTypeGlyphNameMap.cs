@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
@@ -28,35 +24,8 @@ public static class GlyphNamerFactory
         return GlyphNameToUnicodeMap.AdobeGlyphList;
     }
 }
-
-public readonly partial struct GlyphNameReader
-{
-    [FromConstructor] private readonly Face face;
-    private readonly Dictionary<int, char> names = new();
-    
-    public  IGlyphNameMap FontNamings()
-    {
-        Debug.Assert(face.HasGlyphNames);
-        ReadAllGlyphNames();
-        return new GlyphNameToUnicodeMap(names);
-    }
-    
-    private void ReadAllGlyphNames()
-    {
-        for (uint i = 0; i < face.GlyphCount; i++)
-        {
-            ReadSingleGlyphName(face, i);
-        }
-    }
-
-    private void ReadSingleGlyphName(Face face, uint i)
-    {
-        var nameKey = FnvHash.HashString(face.GetGlyphName(i, 30));
-        names[(int)nameKey] = (char)i;
-    }
-}
-/*
-public  class FreeTypeGlyphNameMap : IGlyphNameMap
+#warning has some unimplemented glyph naming
+/*public  class FreeTypeGlyphNameMap : IGlyphNameMap
 {
     private readonly Dictionary<PdfName, char> glyphNameKeys = new();
     public FreeTypeGlyphNameMap(Face face)
@@ -90,5 +59,4 @@ public  class FreeTypeGlyphNameMap : IGlyphNameMap
         WholeNumberParser.TryParsePositiveWholeNumber(ref seq, out int value, out byte _);
         return (char)value;
     }
-}
-*/
+}*/

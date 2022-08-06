@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization.Metadata;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using SharpFont;
-using SharpFont.PostScript;
 using SharpFont.TrueType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
