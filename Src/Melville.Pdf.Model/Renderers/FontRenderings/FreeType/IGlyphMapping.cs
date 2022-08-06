@@ -31,9 +31,21 @@ public partial class SingleByteCharacterMapping : IGlyphMapping
         charToGlyph.TryGetValue(character, out var glyph)?glyph:0;
 }
 
+public partial class ByteToGlyphMap : IGlyphMapping
+{
+    [FromConstructor] private readonly IByteToUnicodeMapping byteToChar;
+    [FromConstructor] private readonly uint glyphCount;
+
+    public (uint character, uint glyph, int bytesConsumed) SelectGlyph(in ReadOnlySpan<byte> input)
+    {
+        var character = byteToChar.MapToUnicode(input[0]);
+        return (character, character < glyphCount?character:'\0', 1);
+    }
+}
+
 public static class GlyphMappingFactoy
 {
-    public static SingleByteCharacterMapping FromFontFace(IByteToUnicodeMapping byteMapping,
+    public static IGlyphMapping FromFontFace(IByteToUnicodeMapping byteMapping,
         Face face)
     {
         if (face.CharMapByInts((PlatformId)3, 1) is {} unicodeMap)
@@ -41,7 +53,7 @@ public static class GlyphMappingFactoy
         if (face.CharMapByInts((PlatformId)1, 0) is { } macMapping)
             return new SingleByteCharacterMapping(
                 new ByteToMacCode(byteMapping), ReadCharacterMapping(macMapping));
-        return new SingleByteCharacterMapping(byteMapping, ReadCharacterMapping(face.CharMaps.First()));
+        return new ByteToGlyphMap(byteMapping, (uint)face.GlyphCount);
     }
 
     private static Dictionary<uint, uint> ReadCharacterMapping(CharMap charMap) =>
