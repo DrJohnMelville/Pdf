@@ -74,22 +74,6 @@ public readonly struct FontReader
     private ValueTask<IGlyphMapping> ParseCidToGidMap(PdfStream? mapStream, IGlyphMapping innerMapping) => 
         mapStream is null ? new(innerMapping) : ExplicitMappingFactory.Parse(innerMapping, mapStream);
 
-    // private async ValueTask<IGlyphMapping> ParseSubFontSytemInfo(
-    //     IGlyphMapping externalMapping, PdfFont font)
-    // {
-    //     var info = await font.CidSystemInfo().CA();
-    //     if (info == null)
-    //         throw new PdfParseException("No system info for CID font");
-    //     var supplement = await info.GetOrDefaultAsync(KnownNames.Supplement, 0).CA();
-    //     var registry = (await info.GetOrDefaultAsync(KnownNames.Registry, PdfString.Empty).CA());
-    //     var ordering = (await info.GetOrDefaultAsync(KnownNames.Ordering, PdfString.Empty).CA());
-    //     // if (supplement is not (0 or 1) ||
-    //     //     !(ordering.IsSameAS("Identity") || ordering.IsSameAS("UCS")))
-    //     //        throw new NotImplementedException("Only default CID Font Orderings are implemented. Cannot use: " + ordering);
-    //     
-    //     return externalMapping;
-    // }
-
     private ValueTask<IGlyphMapping> ParseType0Encoding(PdfObject? encodingEntry)
     {
         if (encodingEntry != KnownNames.IdentityH && encodingEntry != KnownNames.IdentityV)

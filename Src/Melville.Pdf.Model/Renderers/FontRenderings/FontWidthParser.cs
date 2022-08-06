@@ -36,7 +36,7 @@ public readonly struct FontWidthParser
         var pdfWidths = await pdfFont.WidthsArrayAsync().CA();
         return pdfWidths is null ? 
             innerFont : 
-            new SimpleWidthAdjustedFont(innerFont, await pdfFont.FirstCharAsync().CA(), PreMultiply(pdfWidths));
+            new ArrayWidthAdjustedFont(innerFont, await pdfFont.FirstCharAsync().CA(), PreMultiply(pdfWidths));
     }
 
     private double[] PreMultiply(double[] pdfWidths)
@@ -50,7 +50,7 @@ public readonly struct FontWidthParser
     
     private async ValueTask<IRealizedFont> ParseCidFontWidths()
     {
-        return new CidWidthAdjustedFont(innerFont, sizeFactor * await pdfFont.DefaultWidthAsync().CA(),
+        return new DictionaryWidthAdjustedFont(innerFont, sizeFactor * await pdfFont.DefaultWidthAsync().CA(),
             await ParseWArray().CA());
     }
 

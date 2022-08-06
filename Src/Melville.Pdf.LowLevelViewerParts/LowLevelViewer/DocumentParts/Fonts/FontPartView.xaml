@@ -76,13 +76,13 @@
                 </TabItem>
             </TabControl>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type fontRenderings:SimpleWidthAdjustedFont}">
+        <DataTemplate DataType="{x:Type fontRenderings:ArrayWidthAdjustedFont}">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top" FontSize="18">SimpleWidthAdjustedFont</TextBlock>
                 <ContentPresenter Content="{Binding InnerFont}"/>
             </DockPanel>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type fontRenderings:CidWidthAdjustedFont}">
+        <DataTemplate DataType="{x:Type fontRenderings:DictionaryWidthAdjustedFont}">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top" FontSize="18">CidWidthAdjustedFont</TextBlock>
                 <ContentPresenter Content="{Binding InnerFont}"/>

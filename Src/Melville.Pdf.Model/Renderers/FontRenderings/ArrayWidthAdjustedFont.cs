@@ -3,13 +3,13 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
-public partial class SimpleWidthAdjustedFont : IRealizedFont
+public partial class ArrayWidthAdjustedFont : IRealizedFont
 {
     [DelegateTo()] public IRealizedFont InnerFont { get; }
     private readonly uint first;
     private readonly double[] pdfWidths;
 
-    public SimpleWidthAdjustedFont(IRealizedFont innerFont, uint first, double[] pdfWidths)
+    public ArrayWidthAdjustedFont(IRealizedFont innerFont, uint first, double[] pdfWidths)
     {
         this.InnerFont = innerFont;
         this.first = first;
@@ -26,13 +26,13 @@ public partial class SimpleWidthAdjustedFont : IRealizedFont
     }
 }
 
-public partial class CidWidthAdjustedFont : IRealizedFont
+public partial class DictionaryWidthAdjustedFont : IRealizedFont
 {
     [DelegateTo()] public IRealizedFont InnerFont { get; }
     private readonly double defaultWidth;
     private readonly IReadOnlyDictionary<uint, double> knownWidths;
 
-    public CidWidthAdjustedFont(IRealizedFont innerFont, double defaultWidth, IReadOnlyDictionary<uint, double> knownWidths)
+    public DictionaryWidthAdjustedFont(IRealizedFont innerFont, double defaultWidth, IReadOnlyDictionary<uint, double> knownWidths)
     {
         this.InnerFont = innerFont;
         this.defaultWidth = defaultWidth;
