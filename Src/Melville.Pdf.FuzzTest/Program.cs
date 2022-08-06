@@ -19,7 +19,7 @@ public static class Program
         {
             Console.Write(pdf);
             await ParseFile.Do(pdf);
-            Console.WriteLine("... OK");
+            Console.WriteLine(" OK");
         }
 
         Console.WriteLine("Done");

@@ -416,9 +416,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         (float)StateOps.CurrentState().HorizontalTextScale / 100, 0,
         0, 1,
         0, (float)StateOps.CurrentState().TextRise);
-    
-    private byte GetAt(ReadOnlyMemory<byte> decodedString, int i) => decodedString.Span[i];
-    
+
     private void AdjustTextPositionForCharacter(double width, uint character)
     {
         var delta = CharacterSpacingAdjustment(character);

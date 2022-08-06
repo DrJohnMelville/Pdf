@@ -10,13 +10,13 @@ public static partial class PostScriptOperationsDict
     private static void AddPdfOperation(
         Dictionary<uint, IPostScriptOperation> dict, string name, IPostScriptOperation op)
     {
-        dict.Add(FnvHash.HasStringAsLowerCase(name), op);
+        dict.Add(FnvHash.HashStringAsLowerCase(name), op);
     }
 
     private static void AddSpecialOperators(Dictionary<uint, IPostScriptOperation> dict)
     {
-        dict.Add(FnvHash.HasStringAsLowerCase("if"), PostScriptOperations.If);
-        dict.Add(FnvHash.HasStringAsLowerCase("ifelse"), PostScriptOperations.IfElse);
+        dict.Add(FnvHash.HashStringAsLowerCase("if"), PostScriptOperations.If);
+        dict.Add(FnvHash.HashStringAsLowerCase("ifelse"), PostScriptOperations.IfElse);
     }
 
     public static IPostScriptOperation GetOperation(uint hash)

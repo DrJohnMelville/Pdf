@@ -120,6 +120,8 @@
       <EmbeddedResource Include="Graphics\Images\Jpeg2000.jp2" />
       <None Remove="Text\Type1Font.Fon" />
       <EmbeddedResource Include="Text\Type1Font.Fon" />
+      <None Remove="Text\FlateEncodedPiFont.fon" />
+      <EmbeddedResource Include="Text\FlateEncodedPiFont.fon" />
     </ItemGroup>
 
 </Project>

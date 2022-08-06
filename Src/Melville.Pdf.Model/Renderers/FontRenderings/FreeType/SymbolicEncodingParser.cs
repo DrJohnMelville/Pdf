@@ -22,7 +22,8 @@ public static class SymbolicEncodingParser
 
     private static async Task<SingleByteCharacterMapping> MapType1Font(Face face, PdfObject? encoding) =>
         GlyphMappingFactoy.FromFontFace(
-            await RomanEncodingParser.InterpretEncodingValue(encoding, CharacterEncodings.Standard).CA(),
+            await RomanEncodingParser.InterpretEncodingValue(encoding, CharacterEncodings.Standard, 
+                GlyphNamerFactory.CreateMapping(face)).CA(),
             face);
 
     private static IGlyphMapping UseTrueTypeFontMapping(Face face) =>

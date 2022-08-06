@@ -16,7 +16,7 @@ public class EncodingWithDiferences : FontDefinitionTest
                 NameDirectory.Get("AE"),
                 NameDirectory.Get("Adieresis"),
                 NameDirectory.Get("ff")
-                ))
+            ))
             .AsDictionary());
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)

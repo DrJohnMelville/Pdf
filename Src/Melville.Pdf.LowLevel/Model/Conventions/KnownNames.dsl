@@ -143,6 +143,7 @@ Pdf:Catalog
 Pdf:CF
 Pdf:CFM
 Pdf:CharProcs
+Pdf:CharSet
 Pdf:CIDSystemInfo
 Pdf:CIDToGIDMap
 Pdf:Colors
@@ -265,6 +266,7 @@ Pdf:Size
 Pdf:SMask
 Pdf:Standard
 Pdf:StdCF
+Pdf:StemH
 Pdf:StemV
 Pdf:StmF
 Pdf:StrF

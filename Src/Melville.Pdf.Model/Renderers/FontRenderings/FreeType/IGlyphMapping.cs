@@ -41,8 +41,7 @@ public static class GlyphMappingFactoy
         if (face.CharMapByInts((PlatformId)1, 0) is { } macMapping)
             return new SingleByteCharacterMapping(
                 new ByteToMacCode(byteMapping), ReadCharacterMapping(macMapping));
-        throw new PdfParseException("Cannot find a character mapping");
-
+        return new SingleByteCharacterMapping(byteMapping, ReadCharacterMapping(face.CharMaps.First()));
     }
 
     private static Dictionary<uint, uint> ReadCharacterMapping(CharMap charMap) =>

@@ -8,7 +8,17 @@ public static class FnvHash
     private const uint offsetBasis = 0x811c9dc5;
     private const uint prime = 0x01000193;
 
-    public static uint HasStringAsLowerCase(string s)
+    public static uint HashString(string s)
+    {
+        var hash = offsetBasis;
+        foreach (var character in s)
+        {
+            hash = SingleHashStep(hash, (byte)character);
+        }
+
+        return hash;
+    }
+    public static uint HashStringAsLowerCase(string s)
     {
         var hash = offsetBasis;
         foreach (var character in s)

@@ -64,7 +64,8 @@ public readonly struct FreeTypeFontFactory
 
     private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face, PdfObject? encoding) =>
         GlyphMappingFactoy.FromFontFace(
-            await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping).CA(),
+            await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping, 
+                GlyphNamerFactory.CreateMapping(face)).CA(),
             face);
 
 

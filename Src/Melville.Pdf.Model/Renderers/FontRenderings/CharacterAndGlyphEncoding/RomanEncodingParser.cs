@@ -10,12 +10,12 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 public static class RomanEncodingParser
 {
     public static ValueTask<IByteToUnicodeMapping> InterpretEncodingValue(
-        PdfObject? encoding, IByteToUnicodeMapping? basisEncoding) =>
+        PdfObject? encoding, IByteToUnicodeMapping? basisEncoding, IGlyphNameMap glyphNames) =>
         (encoding, encoding?.GetHashCode(), basisEncoding) switch
         {
             (null, _, null) => new(CharacterEncodings.Standard),
             (null,_, var basis)  => new (basis),
-            (PdfDictionary dict, _, _) => ReadEncodingDictionary(dict, basisEncoding),
+            (PdfDictionary dict, _, _) => ReadEncodingDictionary(dict, basisEncoding, glyphNames),
             (_, _, not null) => new (basisEncoding),
             (PdfName, KnownNameKeys.WinAnsiEncoding, _) => new(CharacterEncodings.WinAnsi),
             (PdfName, KnownNameKeys.StandardEncoding, _) => new(CharacterEncodings.Standard),
@@ -26,12 +26,12 @@ public static class RomanEncodingParser
         };
 
     private static async ValueTask<IByteToUnicodeMapping> ReadEncodingDictionary(
-        PdfDictionary dict, IByteToUnicodeMapping? basisEncoding)
+        PdfDictionary dict, IByteToUnicodeMapping? basisEncoding, IGlyphNameMap glyphNames)
     {
         var baseEncoding = await InterpretEncodingValue(
-            await dict.GetOrDefaultAsync(KnownNames.BaseEncoding,(PdfName?)null).CA(), basisEncoding).CA();
+            await dict.GetOrDefaultAsync(KnownNames.BaseEncoding,(PdfName?)null).CA(), basisEncoding, glyphNames).CA();
         return dict.TryGetValue(KnownNames.Differences, out var arrTask) &&
                (await arrTask.CA()) is PdfArray arr?
-            await CustomFontEncodingFactory.Create(baseEncoding, arr).CA(): baseEncoding;
+            await CustomFontEncodingFactory.Create(baseEncoding, arr, glyphNames).CA(): baseEncoding;
     }
 }
