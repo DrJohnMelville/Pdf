@@ -1,17 +1,31 @@
-﻿using System;
-using Melville.INPC;
+﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
-[Obsolete]
-public partial class ByteToMacCode
+public class UnicodeGlyphNameMapper : DictionaryGlyphNameMapper
 {
-    [FromConstructor] private IByteToCharacterMapping characterMapping;
+    public UnicodeGlyphNameMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
+    {
+    }
 
-    public uint MapToUnicode(byte input) => MapUnicodeToMacRoman(characterMapping.MapToUnicode(input));
+    protected override uint HashForString(byte[] name) => 
+        GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
+}
 
-    public uint MapUnicodeToMacRoman(uint input) => (input switch
+public class UnicodeViaMacMapper : UnicodeGlyphNameMapper
+{
+    public UnicodeViaMacMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
+    {
+    }
+
+    protected override uint HashForString(byte[] name)
+    {
+        var unicode = base.HashForString(name);
+        return MapUnicodeToMacRoman(unicode);
+    }
+
+    private uint MapUnicodeToMacRoman(uint input) => (input switch
     {
         // Mappings from the MacRoman encoding on poge 653 + of the pdf spec
         0xC4 => 0x80,
@@ -144,4 +158,5 @@ public partial class ByteToMacCode
         0xF8FF => 0xF0,
         _ => input
     });
+
 }

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -21,20 +21,20 @@ public readonly partial struct CharacterToGlyphMapFactory
         (await font.SubTypeAsync().CA()).GetHashCode() switch
         {
             KnownNameKeys.Type0 => throw new NotImplementedException("Type 0 character mapping not implemented"),
-            KnownNameKeys.Type1 => throw new NotImplementedException("Type 1 character mapping not implemented"),
-            KnownNameKeys.TrueType => await ParseTrueTypeMapping(),
+            KnownNameKeys.Type1 => await SingleByteNamedMapping().CA(),
+            KnownNameKeys.TrueType => await ParseTrueTypeMapping().CA(),
             _ => throw new PdfParseException("Unknown Font Type"),
 
         };
 
-    private async Task<IMapCharacterToGlyph> ParseTrueTypeMapping()
+    private async ValueTask<IMapCharacterToGlyph> ParseTrueTypeMapping()
     {
         var symbolic = (await font.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic);
-        uint[] mapping = symbolic ? await TrueTypeSymbolicMapping():
-            throw new NotImplementedException("NonSymbolic font mapping");
-        return new CharacterToGlyphArray(mapping);
+        return symbolic ? 
+            new CharacterToGlyphArray(await TrueTypeSymbolicMapping().CA()):
+            await SingleByteNamedMapping().CA();
     }
-
+    
     private async Task<uint[]> TrueTypeSymbolicMapping()
     {
         var ret = new uint[256];
@@ -48,5 +48,25 @@ public readonly partial struct CharacterToGlyphMapFactory
         }
 
         return ret;
+    }
+    
+    private async ValueTask<IMapCharacterToGlyph> SingleByteNamedMapping()
+    {
+        var array = new uint[256];
+        var nameToGlyphMapper = new NameToGlyphMappingFactory(face).Create();
+        await new SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappings().CA())
+            .WriteEncodingToArray(encoding).CA();
+        return new CharacterToGlyphArray(array);
+    }
+
+    private async Task<byte[][]?> BuiltInFontCharMappings()
+    {
+        if ((await font.SubTypeAsync().CA()) != KnownNames.Type1) return null;
+        return (await font.BaseFontNameAsync().CA()).GetHashCode() switch
+        {
+            KnownNameKeys.Symbol => CharacterEncodings.Symbol,
+            KnownNameKeys.ZapfDingbats => CharacterEncodings.ZapfDingbats,
+            _=> null
+        };
     }
 }

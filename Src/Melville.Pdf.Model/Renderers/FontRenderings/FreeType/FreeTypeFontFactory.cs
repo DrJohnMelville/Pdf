@@ -47,27 +47,7 @@ public readonly partial struct FreeTypeFontFactory
                 await fontDefinitionDictionary.EncodingAsync().CA()).Parse().CA(), 
             await new FontWidthParser(fontDefinitionDictionary, size).Parse().CA());
     }
-
-    // private async ValueTask<IGlyphMapping> CreateGlyphMap(Face face)
-    // {
-    //     var fontFlags = await fontDefinitionDictionary.FontFlagsAsync().CA();
-    //     var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
-    //     var isSymbolic = fontFlags.HasFlag(FontFlags.Symbolic);
-    //       return isSymbolic
-    //         ? await
-    //             SymbolicEncodingParser.ParseGlyphMapping(face, encoding, 
-    //                 await fontDefinitionDictionary.SubTypeAsync().CA()).CA()
-    //         : await RomanGlyphMapping(face, encoding).CA();
-    // }
-
-    //
-    // private async ValueTask<IGlyphMapping> RomanGlyphMapping(Face face, PdfObject? encoding) =>
-    //     GlyphMappingFactoy.FromFontFace(
-    //         await RomanEncodingParser.InterpretEncodingValue(encoding, ByteToUnicodeMapping, 
-    //             GlyphNamerFactory.CreateMapping(face)).CA(),
-    //         face);
-
-
+    
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)
     {
         var decodedSource = new MultiBufferStream();

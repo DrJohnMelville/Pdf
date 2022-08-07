@@ -15,6 +15,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -360,12 +361,23 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         var fontResource = await page.GetResourceAsync(ResourceTypeName.Font, font).CA();
         var typeFace = fontResource is PdfDictionary fontDic ?
-            BlockFontDispose.AsNonDisposableTypeface(await CheckCacheForFont(size, fontDic).CA()):
+            await FontFromDictionary(size, fontDic).CA():
             await SystemFontFromName(font, size).CA();
         
         StateOps.CurrentState().SetTypeface(await RendererSpecificFont(typeFace).CA());
         await StateOps.CurrentState().SetFont(font,size).CA();
     }
+
+    private ValueTask<IRealizedFont> SystemFontFromName(PdfName font, double size) =>
+        FontFromDictionary(size, new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, font)
+            .AsDictionary()
+        );
+
+    private async ValueTask<IRealizedFont> FontFromDictionary(double size, PdfDictionary fontDic) => 
+        BlockFontDispose.AsNonDisposableTypeface(await CheckCacheForFont(size, fontDic).CA());
 
     //The renderer is allowed to optimize the font rendering using render specific structures, so we include the
     // type of the renderer just so that we do not get unexpected structures if a document is rendered
@@ -377,12 +389,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private ValueTask<IRealizedFont> CheckCacheForFont(double size, PdfDictionary fontDic) =>
         renderer.Cache.Get(new FontRecord(fontDic, size), 
             r=> FontReader().DictionaryToRealizedFont(r.Dictionary,r.Size));
-
-    private ValueTask<IRealizedFont> SystemFontFromName(PdfName font, double size) =>
-        FontReader().
-            NameToRealizedFont(font, new FreeTypeFontFactory(size, 
-                new PdfFont(PdfDictionary.Empty)));
-
+    
     private FontReader FontReader() => new(renderer.FontMapper);
 
     private record struct FontRecord(PdfDictionary Dictionary, double Size);

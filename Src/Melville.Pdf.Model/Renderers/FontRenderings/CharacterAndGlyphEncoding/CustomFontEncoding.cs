@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
@@ -23,6 +24,7 @@ public class CustomFontEncoding : IByteToCharacterMapping
             baseEncoding.MapToUnicode(input);
 }
 
+[Obsolete]
 public static class CustomFontEncodingFactory
 {
     public static async ValueTask<IByteToCharacterMapping> Create(

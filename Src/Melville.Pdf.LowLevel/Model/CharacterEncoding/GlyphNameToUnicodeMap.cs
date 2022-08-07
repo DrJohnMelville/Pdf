@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
@@ -18,8 +19,11 @@ public partial class GlyphNameToUnicodeMap : IGlyphNameMap
         this.map = map;
     }
     
-    public bool TryMap(PdfName input, out char character) => 
+    public bool TryMap(PdfName input, out char character) =>
         map.TryGetValue(input.GetHashCode(), out character);
+    
+    public bool TryMap(byte[] input, out char character) => 
+        map.TryGetValue(FnvHash.FnvHashAsInt(input),out character);
 }
 
 public partial class CompositeGlyphNameMap : IGlyphNameMap
