@@ -39,15 +39,6 @@ public readonly partial struct FreeTypeFontFactory
         return await FontFromFace(face).CA();
     }
 
-    private async ValueTask<IRealizedFont> FontFromFace(Face face)
-    {
-        face.SetCharSize(0, 64 * size, 0, 0);
-        return new FreeTypeFont(face, SingleByteCharacters.Instance, 
-            await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary,
-                await fontDefinitionDictionary.EncodingAsync().CA()).Parse().CA(), 
-            await new FontWidthParser(fontDefinitionDictionary, size).Parse().CA());
-    }
-    
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)
     {
         var decodedSource = new MultiBufferStream();
@@ -55,5 +46,16 @@ public readonly partial struct FreeTypeFontFactory
         var output = new byte[decodedSource.Length];
         await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader()).CA();
         return output;
+    }
+
+    private async ValueTask<IRealizedFont> FontFromFace(Face face)
+    {
+        face.SetCharSize(0, 64 * size, 0, 0);
+        var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
+        return new FreeTypeFont(face, 
+            await new ReadCharacterFactory(fontDefinitionDictionary, encoding).Create().CA(), 
+            await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary,
+                encoding).Parse().CA(), 
+            await new FontWidthParser(fontDefinitionDictionary, size).Parse().CA());
     }
 }

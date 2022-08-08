@@ -20,7 +20,8 @@ public readonly partial struct CharacterToGlyphMapFactory
     public async ValueTask<IMapCharacterToGlyph> Parse() =>
         (await font.SubTypeAsync().CA()).GetHashCode() switch
         {
-            KnownNameKeys.Type0 => throw new NotImplementedException("Type 0 character mapping not implemented"),
+            KnownNameKeys.Type0 => await Type0CharMapping().CA(),
+            KnownNameKeys.MMType1 => throw new NotImplementedException("MultiMaster fonts not implemented."),
             KnownNameKeys.Type1 => await SingleByteNamedMapping().CA(),
             KnownNameKeys.TrueType => await ParseTrueTypeMapping().CA(),
             _ => throw new PdfParseException("Unknown Font Type"),
@@ -69,4 +70,11 @@ public readonly partial struct CharacterToGlyphMapFactory
             _=> null
         };
     }
+    
+    private async ValueTask<IMapCharacterToGlyph> Type0CharMapping()
+    {
+        return IdentityCharacterToGlyph.Instance;
+    }
+
+
 }
