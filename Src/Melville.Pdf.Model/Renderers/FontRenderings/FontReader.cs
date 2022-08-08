@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Melville.CSJ2K.j2k.wavelet;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -31,32 +33,35 @@ public readonly struct FontReader
         return fontTypeKey switch
         {
             KnownNameKeys.Type3 => await new Type3FontFactory(font.LowLevel, size).ParseAsync().CA(),
-            KnownNameKeys.Type0 => await CreateType0Font(font, size).CA(),
+            KnownNameKeys.Type0 => await CreateType0Font(font, new FreeTypeFontFactory(size, font)).CA(),
             _ => await CreateRealizedFont(font, new FreeTypeFontFactory(size, font)).CA()
         };
     }
 
 
-    private async ValueTask<IRealizedFont> CreateRealizedFont(PdfFont font, FreeTypeFontFactory factory) =>
+    private async ValueTask<IRealizedFont> CreateType0Font(PdfFont font, FreeTypeFontFactory factory)
+    {
+        Debug.Assert(KnownNames.Type0 == await font.SubTypeAsync().CA());
+        var cidFont = await font.Type0SubFont().CA();
+        if (KnownNames.CIDFontType0 == await cidFont.SubTypeAsync().CA())
+            throw new NotImplementedException("Type 0 CID fonts are not yet implemented.");
+        return await CreateRealizedFont(cidFont, factory).CA();
+    }
+      
+    private async ValueTask<IRealizedFont> CreateRealizedFont(PdfFont fontStreamSource, FreeTypeFontFactory factory) =>
+        // notice that when parsing a type 0 font the font reference in the factory may be different
+        // from the FontStreamSource paramenter.
         await (
-                await font.EmbeddedStreamAsync().CA() is { } fontAsStream ?
+                await fontStreamSource.EmbeddedStreamAsync().CA() is { } fontAsStream ?
                     factory.FromStream(fontAsStream) :
-                    SystemFontByName(font, factory)
+                    SystemFontByName(fontStreamSource, factory)
               ).CA();
 
     private async ValueTask<IRealizedFont> SystemFontByName(PdfFont font, FreeTypeFontFactory factory) =>
         await defaultMapper.MapDefaultFont(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA(), factory)
             .CA();
 
-    private async ValueTask<IRealizedFont> CreateType0Font(PdfFont font, double size)
-    {
-        var sub = await font.Type0SubFont().CA();
-        var mapper =
-            await ParseCidToGidMap(await sub.CidToGidMapStream().CA(),
-                  await ParseType0Encoding(await font.EncodingAsync().CA()).CA()).CA();
-        return await PdfFontToRealizedFont(size, sub).CA();
-    }
-
+#warning -- unused code that eventually needs to go.
     private ValueTask<IGlyphMapping> ParseCidToGidMap(PdfStream? mapStream, IGlyphMapping innerMapping) => 
         mapStream is null ? new(innerMapping) : ExplicitMappingFactory.Parse(innerMapping, mapStream);
 

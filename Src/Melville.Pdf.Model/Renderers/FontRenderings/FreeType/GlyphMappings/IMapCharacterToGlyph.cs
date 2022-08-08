@@ -8,8 +8,6 @@ public interface IMapCharacterToGlyph
     uint GetGlyph(uint character);
 }
 
-
-
 public partial class CharacterToGlyphArray: IMapCharacterToGlyph
 {
     [FromConstructor]private readonly uint[] mappings;
@@ -25,4 +23,12 @@ public partial class CharacterToGlyphArray: IMapCharacterToGlyph
         Debug.Assert(character < mappings.Length);
         return (character < mappings.Length) ? mappings[character] : 0;
     }
+}
+
+public sealed class IdentityCharacterToGlyph : IMapCharacterToGlyph
+{
+    public static IMapCharacterToGlyph Instance = new IdentityCharacterToGlyph();
+    private IdentityCharacterToGlyph() { }
+
+    public uint GetGlyph(uint character) => character;
 }

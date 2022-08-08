@@ -26,11 +26,14 @@ public readonly struct FontWidthParser
     private ValueTask<IFontWidthComputer> Parse(int subTypeKey) => subTypeKey switch
     {
         KnownNameKeys.Type3 => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),
-        KnownNameKeys.Type0 => throw new NotImplementedException("Not sure how to compute widths in type 0 fonts"),
+        KnownNameKeys.Type0 => ParseSubFontWidth(),
         KnownNameKeys.CIDFontType2 or KnownNameKeys.CIDFontType0 => ParseCidFontWidths(),
         _ => ParseSimpleFontWidths()
     };
-    
+
+    private async ValueTask<IFontWidthComputer> ParseSubFontWidth() => 
+        await new FontWidthParser(await pdfFont.Type0SubFont().CA(), sizeFactor * 1000).Parse().CA();
+
     private async ValueTask<IFontWidthComputer> ParseSimpleFontWidths()
     {
         return await pdfFont.WidthsArrayAsync().CA() is {Length: > 0} pdfWidths ? 
@@ -47,10 +50,12 @@ public readonly struct FontWidthParser
         return pdfWidths;
     }
     
-    private async ValueTask<IFontWidthComputer> ParseCidFontWidths() =>
-        await ParseWArray().CA() is {Count: > 0} dict?
-            new DictionaryFontWidthComputer(dict, sizeFactor * await pdfFont.DefaultWidthAsync().CA()) :
-            NullFontWidthComputer.Instance;
+    private async ValueTask<IFontWidthComputer> ParseCidFontWidths()
+    {
+        var dict =  await ParseWArray().CA();
+        var defaultWidth = await pdfFont.DefaultWidthAsync().CA();
+        return new DictionaryFontWidthComputer(dict, sizeFactor * defaultWidth);
+    }
 
     private async ValueTask<IReadOnlyDictionary<uint,double>> ParseWArray()
     {
