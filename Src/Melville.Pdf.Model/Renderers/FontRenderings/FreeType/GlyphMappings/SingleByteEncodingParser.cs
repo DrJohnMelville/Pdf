@@ -30,7 +30,8 @@ public readonly partial struct SingleByteEncodingParser
                 break;
             case PdfDictionary dict:
                 await WriteEncodingToArray(await dict.GetOrNullAsync(KnownNames.BaseEncoding).CA()).CA();
-                await WriteDifferences(await dict.GetAsync<PdfArray>(KnownNames.Differences).CA()).CA();
+                if ((await dict.GetOrNullAsync<PdfArray>(KnownNames.Differences).CA()) is {} differences )
+                    await WriteDifferences(differences).CA();
                 break; 
             default:
                 WriteCharacterSet(overrideEncoding?? CharacterEncodings.Standard);

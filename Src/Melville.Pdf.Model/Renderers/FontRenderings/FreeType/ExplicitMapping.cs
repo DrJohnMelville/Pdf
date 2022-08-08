@@ -28,7 +28,7 @@ public class ExplicitMapping: IGlyphMapping
         return (character, raw < mappings.Count ? mappings[(int)raw]: raw, len);
     }
 }
-
+[Obsolete]
 public readonly struct ExplicitMappingFactory
 {
     private readonly List<uint> dictionary = new();
