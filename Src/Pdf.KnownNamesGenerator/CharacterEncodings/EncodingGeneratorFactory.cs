@@ -10,7 +10,7 @@ public static class EncodingGeneratorFactory
 {
     public static EncodingGenerator Create(ImmutableArray<AdditionalText> texts)
     {
-        return new EncodingGenerator(GlyphNameParser.Parse(Inputfile(texts, "glyphlist.cedsl")),
+        return new EncodingGenerator(
             new MultiEncodingMaps(Inputfile(texts, "stdEncodings.cedsl")),
             SimpleMapParser.Parse(Inputfile(texts, "Symbol.cedsl")),
             SimpleMapParser.Parse(Inputfile(texts, "MacExpert.cedsl")));

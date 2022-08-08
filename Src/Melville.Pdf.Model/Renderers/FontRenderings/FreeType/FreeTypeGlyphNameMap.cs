@@ -1,29 +1,9 @@
 ﻿using System;
 using System.Buffers;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using SharpFont;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
-
-public static class GlyphNamerFactory
-{
-    public static IGlyphNameMap CreateMapping(Face face)
-    {
-        if (face.HasGlyphNames)
-        {
-            return new CompositeGlyphNameMap(
-                new[]
-                {
-                    new GlyphNameReader(face).FontNamings(),
-                    GlyphNameToUnicodeMap.AdobeGlyphList
-                });
-        }
-        return GlyphNameToUnicodeMap.AdobeGlyphList;
-    }
-}
 #warning has some unimplemented glyph naming
 /*public  class FreeTypeGlyphNameMap : IGlyphNameMap
 {

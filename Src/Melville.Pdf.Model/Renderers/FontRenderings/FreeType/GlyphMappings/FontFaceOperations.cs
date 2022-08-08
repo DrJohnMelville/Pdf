@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Buffers;
+using System.Collections.Generic;
 using System.Linq;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using SharpFont;
 using SharpFont.TrueType;
 
@@ -21,5 +23,16 @@ public static class FontFaceOperations
         {
             yield return (character, glyph);
         }
+    }
+
+    public static IEnumerable<(uint Glyph, string Name)> AllGlyphNames(this Face face)
+    {
+        if (!face.HasGlyphNames) yield break;
+        var buffer = ArrayPool<byte>.Shared.Rent(100);
+        for (uint i = 0; i < face.GlyphCount; i++)
+        {
+            yield return (i, face.GetGlyphName(i, buffer));
+        }
+        ArrayPool<byte>.Shared.Return(buffer);
     }
 }

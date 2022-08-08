@@ -11,11 +11,11 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 public partial class FreeTypeFont : IRealizedFont, IDisposable
 {
-    [FromConstructor] private readonly Face face; 
+    [FromConstructor] public Face Face { get; } // Lowlevel reader uses this property dynamically 
     [FromConstructor] private readonly IReadCharacter characterSource;
     [FromConstructor] private readonly IMapCharacterToGlyph characterToGlyph;
     [FromConstructor] private readonly IFontWidthComputer fontWidthComputer;
-    public void Dispose() => face.Dispose();
+    public void Dispose() => Face.Dispose();
 
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
     {
@@ -28,9 +28,9 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
 
     private double RenderByte(FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
-        face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
-        nativeTarget.Decompose(face.Glyph.Outline);
-        return face.Glyph.Advance.X/64.0;
+        Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
+        nativeTarget.Decompose(Face.Glyph.Outline);
+        return Face.Glyph.Advance.X/64.0;
     }
 
     public double CharacterWidth(uint character, double defaultWidth) => 
@@ -71,7 +71,7 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
 
         private bool GlyphRequiresEvenOddFill()
         {
-            return (parent.face.Glyph.Outline.Flags & OutlineFlags.EvenOddFill) != 0;
+            return (parent.Face.Glyph.Outline.Flags & OutlineFlags.EvenOddFill) != 0;
         }
     }
 }

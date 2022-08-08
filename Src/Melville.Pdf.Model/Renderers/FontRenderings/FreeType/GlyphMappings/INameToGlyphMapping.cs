@@ -28,14 +28,13 @@ public readonly partial struct NameToGlyphMappingFactory
     
     private INameToGlyphMapping? NamesFromFace()
     {
-        var buffer = ArrayPool<byte>.Shared.Rent(100);
         if (!face.HasGlyphNames) return null;
         var dictionary = new Dictionary<uint, uint>(face.GlyphCount);
-        for (uint i = 0; i < face.GlyphCount; i++)
+        foreach (var (glyph, name) in face.AllGlyphNames())
         {
-            dictionary[FnvHash.HashString(face.GetGlyphName(i, buffer))] = i;
+            dictionary[FnvHash.HashString(name)] = glyph;
         }
-        ArrayPool<byte>.Shared.Return(buffer);
+
         return new DictionaryGlyphNameMapper(dictionary);
     }
 
