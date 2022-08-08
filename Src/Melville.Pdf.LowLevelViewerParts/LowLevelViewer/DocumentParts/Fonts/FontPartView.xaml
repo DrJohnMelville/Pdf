@@ -74,6 +74,18 @@
                         </TabControl.ItemContainerStyle>
                     </TabControl>
                 </TabItem>
+                <TabItem Header="Glyph Names">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                        <ItemsControl 
+                            ItemsSource="{Binding Face, Converter={x:Static local:FaceGlyphNameConverter.Instance}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Vertical" IsItemsHost="True"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </TabItem>
             </TabControl>
         </DataTemplate>
     </UserControl.Resources>
