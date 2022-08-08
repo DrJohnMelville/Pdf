@@ -48,7 +48,7 @@ public readonly partial struct NameToGlyphMappingFactory
     private static Dictionary<uint, uint> MappingToDictionary(CharMap mapping) => 
         mapping.AllMappings().ToDictionary(i => i.Char, i => i.Glyph);
 
-    private INameToGlyphMapping UnicodeViaMacGlyphList()
+    private INameToGlyphMapping? UnicodeViaMacGlyphList()
     {
         var mapping = face.CharMapByInts(1, 0);
         if (mapping is null) return null;

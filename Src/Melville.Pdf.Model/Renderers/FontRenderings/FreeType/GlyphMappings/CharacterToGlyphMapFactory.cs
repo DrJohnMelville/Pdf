@@ -36,11 +36,11 @@ public readonly partial struct CharacterToGlyphMapFactory
     {
         var symbolic = (await font.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic);
         return symbolic ? 
-            new CharacterToGlyphArray(await TrueTypeSymbolicMapping().CA()):
+            new CharacterToGlyphArray(TrueTypeSymbolicMapping()):
             await SingleByteNamedMapping().CA();
     }
     
-    private async Task<uint[]> TrueTypeSymbolicMapping()
+    private uint[] TrueTypeSymbolicMapping()
     {
         var ret = new uint[256];
         var charmap = face.CharMapByInts(1, 0) ?? face.CharMapByInts(3, 0);

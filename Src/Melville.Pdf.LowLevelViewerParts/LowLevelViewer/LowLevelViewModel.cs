@@ -51,6 +51,7 @@ public partial class LowLevelViewModel
 
     private async ValueTask JumpToReference2(CrossReference reference, IWaitingService waiting)
     {
+        if (Root is null) return;
         if (Selected is not null &&
             (targetHistory.Count == 0 || targetHistory.Peek() != Selected)) targetHistory.Push(Selected);
         Selected = (await new DocumentPartSearcher(reference, waiting)
@@ -59,6 +60,7 @@ public partial class LowLevelViewModel
 
     public async void JumpTOPage(int page)
     {
+        if (ParsedDoc is null) return;
         var reference = await ParsedDoc.Pages.PageForNumber(page);
         if (reference.Object == 0) return;
         await JumpToReference2(reference, new FakeWaitingService());

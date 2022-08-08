@@ -60,15 +60,4 @@ public readonly struct FontReader
     private async ValueTask<IRealizedFont> SystemFontByName(PdfFont font, FreeTypeFontFactory factory) =>
         await defaultMapper.MapDefaultFont(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA(), factory)
             .CA();
-
-#warning -- unused code that eventually needs to go.
-    private ValueTask<IGlyphMapping> ParseCidToGidMap(PdfStream? mapStream, IGlyphMapping innerMapping) => 
-        mapStream is null ? new(innerMapping) : ExplicitMappingFactory.Parse(innerMapping, mapStream);
-
-    private ValueTask<IGlyphMapping> ParseType0Encoding(PdfObject? encodingEntry)
-    {
-        if (encodingEntry != KnownNames.IdentityH && encodingEntry != KnownNames.IdentityV)
-            throw new NotImplementedException("Cmaps (section 9.7.5.1) other than Identity are not yet implemented.");
-        return new (IdentityCmapMapping.Instance);
-    }
 }

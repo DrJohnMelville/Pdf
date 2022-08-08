@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -7,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.CharacterReaders;
 
 public readonly partial struct ReadCharacterFactory
 {

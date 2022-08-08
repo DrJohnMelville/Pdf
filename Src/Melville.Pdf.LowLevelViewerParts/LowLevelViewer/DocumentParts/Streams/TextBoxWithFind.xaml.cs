@@ -7,7 +7,6 @@ using Melville.INPC;
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 [GenerateDP(typeof(bool), "IsReadOnly")]
-[GenerateDP(typeof(FontFamily), "FontFamily")]
 [GenerateDP(typeof(string), "Text")]
 public partial class TextBoxWithFind : UserControl
 {
