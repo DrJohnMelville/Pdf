@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
+using Performance.Playground.ObjectModel;
 using Performance.Playground.Rendering;
 
 if (false)
@@ -11,7 +12,7 @@ if (false)
 }
 else
 {
-    BenchmarkRunner.Run<CcittParsing>();
+    BenchmarkRunner.Run<ArrayParsing>();
 }
 
 public static class Timer

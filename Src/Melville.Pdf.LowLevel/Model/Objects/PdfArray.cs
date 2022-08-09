@@ -13,46 +13,43 @@ public sealed class PdfArray :
     PdfObject, IReadOnlyList<ValueTask<PdfObject>>, IAsyncEnumerable<PdfObject>
 {
     public static PdfArray Empty = new PdfArray(Array.Empty<PdfObject>());
-    public IReadOnlyList<PdfObject> RawItems { get; }
+    private PdfObject[] rawItems;
+    public IReadOnlyList<PdfObject> RawItems => rawItems;
 
     public PdfArray(params double[] values): this (values.Select(i=>new PdfDouble(i))){}
     public PdfArray(params int[] values): this (values.Select(i=>new PdfInteger(i))){}
-    public PdfArray(params PdfObject[] rawItems) : this((IReadOnlyList<PdfObject>)rawItems)
+    public PdfArray(params PdfObject[] rawItems)
     {
+        this.rawItems = rawItems;
     }
 
-    public PdfArray(IEnumerable<PdfObject> rawItems) : this(rawItems.ToList())
+    public PdfArray(IEnumerable<PdfObject> rawItems) : this(rawItems.ToArray())
     {
     }
-
-    public PdfArray(IReadOnlyList<PdfObject> rawItems)
-    {
-        RawItems = rawItems;
-    }
-
+    
     public PdfArray(params bool[] bools): this (bools.Select(i=>i?PdfBoolean.True : PdfBoolean.False))
     {
     }
 
     public IEnumerator<ValueTask<PdfObject>> GetEnumerator() =>
-        RawItems.Select(i => i.DirectValueAsync()).GetEnumerator();
+        rawItems.Select(i => i.DirectValueAsync()).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public int Count => RawItems.Count;
+    public int Count => rawItems.Length;
 
-    public ValueTask<PdfObject> this[int index] => RawItems[index].DirectValueAsync();
+    public ValueTask<PdfObject> this[int index] => rawItems[index].DirectValueAsync();
     public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     public IAsyncEnumerator<PdfObject> GetAsyncEnumerator(CancellationToken cancellationToken = new()) =>
-        new Enumerator(RawItems);
+        new Enumerator(rawItems);
     
     private class Enumerator : IAsyncEnumerator<PdfObject>
     {
         private int currentPosition = -1;
-        private readonly IReadOnlyList<PdfObject> items;
+        private readonly PdfObject[] items;
             
-        public Enumerator(IReadOnlyList<PdfObject> items)
+        public Enumerator(PdfObject[] items)
         {
             this.items = items;
         }
@@ -62,7 +59,7 @@ public sealed class PdfArray :
         public async ValueTask<bool> MoveNextAsync()
         {
             currentPosition++;
-            if (currentPosition >= items.Count) return false;
+            if (currentPosition >= items.Length) return false;
             Current = await items[currentPosition].DirectValueAsync().CA();
             return true;
         }

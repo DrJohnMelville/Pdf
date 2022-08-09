@@ -76,7 +76,7 @@ public readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
     {
         return new DictionaryBuilder()
             .WithItem(KnownNames.Kids,
-                new PdfArray(ReduceLeaves(leaves).Select(CreateIndirectReference).ToList()))
+                new PdfArray(ReduceLeaves(leaves).Select(CreateIndirectReference)))
             .AsDictionary();
     }
 
@@ -88,7 +88,7 @@ public readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
         Debug.Assert(nodes.Count <= nodeSize);
         return
             new DictionaryBuilder()
-                .WithItem(KnownNames.Kids, new PdfArray(nodes.Select(CreateIndirectReference).ToList()))
+                .WithItem(KnownNames.Kids, new PdfArray(nodes.Select(CreateIndirectReference)))
                 .WithItem(KnownNames.Limits, new PdfArray(FirstKey(nodes.First()), LastKey(nodes.Last())))
                 .AsDictionary();
     }

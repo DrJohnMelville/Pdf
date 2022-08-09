@@ -79,7 +79,7 @@ public class SampledFunctionBuilder
             .WithItem(KnownNames.Encode, EncodeArray())
             .WithItem(KnownNames.Decode, DecodeArray());
 
-    private PdfArray SizeArray() => new(inputs.Select(i=>new PdfInteger(i.Sammples)).ToList());
+    private PdfArray SizeArray() => new(inputs.Select(i=>new PdfInteger(i.Sammples)));
 
     private PdfObject OrderIfNotLinear() => 
         order == SampledFunctionOrder.Linear?PdfTokenValues.Null:new PdfInteger(3);
