@@ -34,21 +34,35 @@ public class PdfDictionaryParser : IPdfObjectParser
         var reader = await source.Reader.Source.ReadAsync().CA();
         //This has to succeed because the prior parser looked at the prefix to get here.
         source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(2));
-        var dictionary = new DictionaryBuilder();
-        while (true)
-        {
-            var key = await nameParser.ParseAsync(source).CA();
-            if (key == PdfTokenValues.DictionaryTerminator)
-            {
-                return dictionary.AsArray();
-            }
 
-            var item = await valueParser.ParseAsync(source).CA();
-            if (item == PdfTokenValues.Null) continue;
-            CheckValueIsNotTerminator(item);
-            dictionary.WithItem(CheckIfKeyIsName(key), item);
-        }
+        return await ParseItemRecursive(source, 0).CA();
     }
+
+    private async ValueTask<KeyValuePair<PdfName, PdfObject>[]> ParseItemRecursive(IParsingReader source, int position)
+    {
+        var key = await nameParser.ParseAsync(source).CA();
+        if (key == PdfTokenValues.DictionaryTerminator)
+        {
+            return new KeyValuePair<PdfName, PdfObject>[position];
+        }
+
+        var item = await valueParser.ParseAsync(source).CA();
+
+        if (ShouldSkipNullValuedItem(item)) 
+            return await ParseItemRecursive(source, position).CA();
+
+        return AddItemToFinalArray(await ParseItemRecursive(source, position + 1).CA(), position, item, key);
+    }
+
+    private static KeyValuePair<PdfName, PdfObject>[] AddItemToFinalArray(
+        KeyValuePair<PdfName, PdfObject>[] ret, int position, PdfObject item, PdfObject key)
+    {
+        CheckValueIsNotTerminator(item);
+        ret[position] = new KeyValuePair<PdfName, PdfObject>(CheckIfKeyIsName(key), item);
+        return ret;
+    }
+
+    private static bool ShouldSkipNullValuedItem(PdfObject item) => ReferenceEquals(item, PdfTokenValues.Null);
     
     private static void CheckValueIsNotTerminator(PdfObject item)
     {
@@ -57,7 +71,5 @@ public class PdfDictionaryParser : IPdfObjectParser
     }
 
     private static PdfName CheckIfKeyIsName(PdfObject? name) =>
-        name is PdfName typedAsName ? 
-            typedAsName : 
-            throw new PdfParseException("Dictionary keys must be names");
+        name as PdfName ?? throw new PdfParseException("Dictionary keys must be names");
 }
