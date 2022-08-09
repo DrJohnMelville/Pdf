@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -50,23 +51,23 @@ public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
         
     public PdfDictionary CreateEncryptionDictionary(PdfArray id)
     {
-        return new PdfDictionary(DictionaryItems(id));
+        return DictionaryItems(id).AsDictionary();
     }
 
-    protected virtual Dictionary<PdfName,PdfObject> DictionaryItems(PdfArray id)
+    protected virtual DictionaryBuilder DictionaryItems(PdfArray id)
     {
-        var dict = new Dictionary<PdfName, PdfObject>();
+        var dict = new DictionaryBuilder();
         var ownerHash = ownerPasswordComputer.ComputeOwnerKey(ownerPassword,UserPassword, KeyLengthInBytes);
         var ep = new EncryptionParameters(
             ((PdfString) id.RawItems[0]).Bytes, ownerHash, Array.Empty<byte>(),
             (uint)permissions, keyLengthInBits);
-        dict.Add(KnownNames.Filter, KnownNames.Standard);
-        dict.Add(KnownNames.V, new PdfInteger(v));
-        dict.Add(KnownNames.Length, new PdfInteger(keyLengthInBits));
-        dict.Add(KnownNames.P, new PdfInteger(permissions));
-        dict.Add(KnownNames.R, new PdfInteger(r));
-        dict.Add(KnownNames.U, new PdfString(UserHashForPassword(UserPassword, ep)));
-        dict.Add(KnownNames.O, new PdfString(
+        dict.WithItem(KnownNames.Filter, KnownNames.Standard);
+        dict.WithItem(KnownNames.V, new PdfInteger(v));
+        dict.WithItem(KnownNames.Length, new PdfInteger(keyLengthInBits));
+        dict.WithItem(KnownNames.P, new PdfInteger(permissions));
+        dict.WithItem(KnownNames.R, new PdfInteger(r));
+        dict.WithItem(KnownNames.U, new PdfString(UserHashForPassword(UserPassword, ep)));
+        dict.WithItem(KnownNames.O, new PdfString(
             ownerHash));
         return dict;
     }

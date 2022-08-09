@@ -5,6 +5,7 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 

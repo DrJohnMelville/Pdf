@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Writers;
 // the next using is used by the macros
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;

@@ -21,13 +21,13 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
     }
 
     private static PdfObject CreateFinalObject(
-        IParsingReader source, Dictionary<PdfName, PdfObject> dictionary, bool isStream) =>
+        IParsingReader source, Memory<KeyValuePair<PdfName, PdfObject>> dictionary, bool isStream) =>
         isStream ? 
             ConstrutStream(source, dictionary) : 
             new PdfDictionary(dictionary);
 
     private static PdfStream ConstrutStream(
-        IParsingReader source, Dictionary<PdfName, PdfObject> dictionary) =>
+        IParsingReader source, Memory<KeyValuePair<PdfName, PdfObject>> dictionary) =>
         new(new InlineStreamSource(source.Reader.GlobalPosition, source.Owner, source.ObjectCryptContext()),
             dictionary);
 

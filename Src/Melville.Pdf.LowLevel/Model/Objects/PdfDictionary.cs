@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects.StreamDataSources;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
@@ -14,13 +15,13 @@ public class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, ValueTask<P
 {
     public static readonly PdfStream Empty =
         new PdfStream(new LiteralStreamSource(Array.Empty<byte>(), StreamFormat.DiskRepresentation),
-            new Dictionary<PdfName, PdfObject>());
+            Array.Empty<KeyValuePair<PdfName,PdfObject>>());
     
-    public IReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
+    public SmallReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
 
-    public PdfDictionary(IReadOnlyDictionary<PdfName, PdfObject> rawItems)
+    public PdfDictionary(Memory<KeyValuePair<PdfName, PdfObject>> rawItems)
     {
-        RawItems = rawItems;
+        RawItems = new SmallReadOnlyDictionary<PdfName, PdfObject>(rawItems);
     }
         
     #region Dictionary Implementation

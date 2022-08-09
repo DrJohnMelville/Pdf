@@ -14,7 +14,7 @@ public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObje
         Bytes = bytes;
     }
         
-    public virtual bool Equals(PdfByteArrayObject? other) =>
+    public bool Equals(PdfByteArrayObject? other) =>
         (!ReferenceEquals(null, other)) &&
         (ReferenceEquals(this, other) || Bytes.AsSpan().SequenceEqual(other.Bytes));
 

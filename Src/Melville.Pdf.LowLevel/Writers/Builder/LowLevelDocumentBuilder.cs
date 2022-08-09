@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -43,7 +44,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 {
     private int nextObject;
     public List<PdfIndirectObject> Objects { get;  }= new();
-    private readonly Dictionary<PdfName, PdfObject> trailerDictionaryItems = new();
+    private readonly DictionaryBuilder trailerDictionaryItems = new();
     private ObjectStreamBuilder? objectStreamBuilder;
         
     public byte[] UserPassword { get; set; } = Array.Empty<byte>();
@@ -87,12 +88,12 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
         objectStreamBuilder is not null && objectStreamBuilder.TryAddRef(item);
 
     public void AddToTrailerDictionary(PdfName key, PdfObject item) => 
-        trailerDictionaryItems[key] = item;
+        trailerDictionaryItems.WithItem(key,  item);
         
     public PdfDictionary CreateTrailerDictionary()
     {
         AddLengthToTrailerDictionary();
-        return new(new Dictionary<PdfName, PdfObject>(trailerDictionaryItems));
+        return trailerDictionaryItems.AsDictionary();
     }
     private void AddLengthToTrailerDictionary()
     {

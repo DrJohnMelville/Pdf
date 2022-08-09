@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -26,27 +28,25 @@ public class PdfDictionaryParser : IPdfObjectParser
     public async Task<PdfObject> ParseAsync(IParsingReader source) =>
         new PdfDictionary(await ParseDictionaryItemsAsync(source).CA());
 
-    public async Task<Dictionary<PdfName, PdfObject>> ParseDictionaryItemsAsync(IParsingReader source)
+    public async ValueTask<Memory<KeyValuePair<PdfName, PdfObject>>> 
+        ParseDictionaryItemsAsync(IParsingReader source)
     {
         var reader = await source.Reader.Source.ReadAsync().CA();
         //This has to succeed because the prior parser looked at the prefix to get here.
         source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(2));
-        var dictionary = new Dictionary<PdfName, PdfObject>();
+        var dictionary = new DictionaryBuilder();
         while (true)
         {
             var key = await nameParser.ParseAsync(source).CA();
             if (key == PdfTokenValues.DictionaryTerminator)
             {
-                #warning TODO: See how much the trim helps in memory and costs in speed.
-                dictionary.TrimExcess();
-
-                return dictionary;
+                return dictionary.AsArray();
             }
 
             var item = await valueParser.ParseAsync(source).CA();
             if (item == PdfTokenValues.Null) continue;
             CheckValueIsNotTerminator(item);
-            dictionary[CheckIfKeyIsName(key)] = item;
+            dictionary.WithItem(CheckIfKeyIsName(key), item);
         }
     }
     

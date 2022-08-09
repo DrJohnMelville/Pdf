@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.Text;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
+
+namespace Melville.Pdf.ReferenceDocuments.Text;
 
 public class Type3Font: FontDefinitionTest
 {

@@ -2,6 +2,7 @@
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -54,7 +55,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         InnnerConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectObject? parent,
             int maxNodeSize)
     {
-        var ret = creator.Add(MetaData.AsDictionary());
+        var ret = creator.Add(PdfTokenValues.Null);
         AddExtraFieldsFromTreeLevel(creator,parent);
         var kids = new PdfObject[children.Count];
         int count = 0;
@@ -65,6 +66,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         }
         MetaData.WithItem(KnownNames.Kids, new PdfArray(kids)).
             WithItem(KnownNames.Count, count);
+        creator.AssignValueToReference(ret, MetaData.AsDictionary());
         return (ret, count);
     }
     

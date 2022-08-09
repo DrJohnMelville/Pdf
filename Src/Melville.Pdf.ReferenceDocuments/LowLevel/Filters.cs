@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.LowLevel;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
+
+namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class FiltersGenerator : CreatePdfParser
 {

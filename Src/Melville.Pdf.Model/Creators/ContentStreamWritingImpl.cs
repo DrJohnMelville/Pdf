@@ -5,6 +5,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 

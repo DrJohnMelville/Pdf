@@ -12,7 +12,7 @@ if (false)
 }
 else
 {
-    BenchmarkRunner.Run<ArrayParsing>();
+    BenchmarkRunner.Run<DictionaryVsList>();
 }
 
 public static class Timer

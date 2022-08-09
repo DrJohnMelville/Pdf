@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamDataSources;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using Xunit;
@@ -90,21 +91,19 @@ public class SimpleTypeWriterTest
     [Fact]
     public async Task WriteDictionary()
     {
-        var array = new PdfDictionary(new Dictionary<PdfName, PdfObject>()
-        {
-            {KnownNames.Width, new PdfInteger(20)},
-            {KnownNames.Height, new PdfInteger(40)},
-        });
+        var array =
+            new DictionaryBuilder()
+                .WithItem(KnownNames.Width, 20)
+                .WithItem(KnownNames.Height, 40)
+                .AsDictionary();
         Assert.Equal("<</Width 20/Height 40>>", await array.WriteToStringAsync());
     }
 
     [Fact]
     public async Task WriteStream()
     {
-        var array = new PdfStream(new LiteralStreamSource("Hello", StreamFormat.PlainText), new Dictionary<PdfName, PdfObject>()
-        {
-            {KnownNames.Length, new PdfInteger(5)},
-        });
+        var array = new DictionaryBuilder()
+            .WithItem(KnownNames.Length, 5).AsStream("Hello");
         Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await array.WriteToStringAsync());
     }
 }

@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Writers;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;

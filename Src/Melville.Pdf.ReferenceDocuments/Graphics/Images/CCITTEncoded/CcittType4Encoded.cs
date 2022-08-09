@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.CCITTEncoded;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
+
+namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.CCITTEncoded;
 
 public class CcittType4Encoded : CcottEncodedBase
 {

@@ -62,30 +62,23 @@ public abstract class StreamTestBase
     [Fact]
     public Task EncodingTest() => VerifyEncoding(EncodedStreamAsync());
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task DecodeTest(bool singleChars)
+    [Fact]
+    public async Task DecodeTest()
     {
-        await VerifyDecodedStream(TrySingleCharStream(await DecodableStream(singleChars).StreamContentAsync(), singleChars));
+        await VerifyDecodedStream(TrySingleCharStream(await DecodableStream().StreamContentAsync()));
     }
 
-    private PdfStream DecodableStream(bool singleCharStream)
+    private PdfStream DecodableStream()
     {
-        return new PdfStream(TrySingleCharSource(new LiteralStreamSource(
-                new MultiBufferStream(dest.AsExtendedAsciiBytes()),
-                StreamFormat.DiskRepresentation), singleCharStream),
-            new Dictionary<PdfName, PdfObject>()
-            {
-                {KnownNames.Length, new PdfInteger(dest.Length)},
-                {KnownNames.Filter, compression},
-                {KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null}
-            }
-        );
+        return new DictionaryBuilder()
+            .WithItem(KnownNames.Length, dest.Length)
+            .WithItem(KnownNames.Filter, compression)
+            .WithItem(KnownNames.DecodeParms, parameters ?? PdfTokenValues.Null)
+            .AsStream(dest.AsExtendedAsciiBytes(),
+                StreamFormat.DiskRepresentation);
     }
 
-    public Stream TrySingleCharStream(Stream source, bool asSingleChars) =>
-        asSingleChars ? new OneCharAtAtimeStream(source) : source;
+    public Stream TrySingleCharStream(Stream source) => source;
     public IStreamDataSource TrySingleCharSource(IStreamDataSource source, bool asSingleChars) =>
         asSingleChars ? new SingleCharSource(source) : source;
 
@@ -105,7 +98,7 @@ public abstract class StreamTestBase
     {
         var str = EncodedStreamAsync();
         var dispSource = new StreamDisposeSource(await str.StreamContentAsync(), StreamFormat.PlainText);
-        var wrappedStream = await new PdfStream(dispSource, str.RawItems).StreamContentAsync();
+        var wrappedStream = await new DictionaryBuilder(str.RawItems).AsStream(dispSource).StreamContentAsync();
         Assert.False(dispSource.IsDisposed);
         await wrappedStream.DisposeAsync();
         Assert.True(dispSource.IsDisposed);

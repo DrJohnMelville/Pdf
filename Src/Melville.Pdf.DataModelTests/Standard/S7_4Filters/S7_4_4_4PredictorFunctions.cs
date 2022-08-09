@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
@@ -16,7 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 [MacroItem("ABCDFabcdf", "044101010102042001010102", "Paeth", "14")]
 [MacroItem("ABCDFabcdf", "014101010102016101010102", "FakeOptimal", "15")]
 [MacroCode(
-    "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new PdfDictionary( new Dictionary<PdfName, PdfObject>() { { KnownNames.Predictor, new PdfInteger(~3~) }, { KnownNames.Colors, new PdfInteger(2) }, { KnownNames.BitsPerComponent, new PdfInteger(4) }, { KnownNames.Columns, new PdfInteger(5) }})){}}")]
+    "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new DictionaryBuilder().WithItem(KnownNames.Predictor, ~3~).WithItem( KnownNames.Colors, 2).WithItem(KnownNames.BitsPerComponent, 4).WithItem(KnownNames.Columns,5).AsDictionary()){}}")]
 public partial class S7_4_4_4PredictorFunctions
 {
     [Theory]
@@ -90,7 +91,7 @@ public partial class S7_4_4_4PredictorFunctions
     [MacroItem("ABCDFabcdf", "0441420202031D1C020203", "InterlevedPaeth", "14")]
     [MacroItem("ABCDFabcdf", "0141420202031D1C020203", "InterlevedFakeOptimal", "15")]
     [MacroCode(
-        "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new PdfDictionary( new Dictionary<PdfName, PdfObject>() { { KnownNames.Predictor, new PdfInteger(~3~) }, { KnownNames.Colors, new PdfInteger(2) }, { KnownNames.BitsPerComponent, new PdfInteger(8) }, { KnownNames.Columns, new PdfInteger(5) }})){}}")]
+        "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new DictionaryBuilder().WithItem(KnownNames.Predictor, ~3~) .WithItem(KnownNames.Colors, 2).WithItem(KnownNames.BitsPerComponent, 8).WithItem( KnownNames.Columns,5).AsDictionary()){}}")]
     public static int InterlevePngTests = 0;
 
     // Input, HexEncoded Output, name, colors, bits per color
@@ -100,6 +101,6 @@ public partial class S7_4_4_4PredictorFunctions
     [MacroItem("\x01\x20\x12\x01\x20\x12\x01\x20\x01\x20\x12\x01\x20\x12\x01\x20", "01200000000000000120000000000000",
         "LineEndingPadsBytes", 3, 4)]
     [MacroCode(
-        "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new PdfDictionary( new Dictionary<PdfName, PdfObject>() { { KnownNames.Predictor, new PdfInteger(2) }, { KnownNames.Colors, new PdfInteger(~3~) }, { KnownNames.BitsPerComponent, new PdfInteger(~4~) }, { KnownNames.Columns, new PdfInteger(5) }})){}}")]
+        "public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode, new DictionaryBuilder().WithItem(KnownNames.Predictor, 2).WithItem(KnownNames.Colors, ~3~).WithItem( KnownNames.BitsPerComponent, ~4~).WithItem(KnownNames.Columns, 5).AsDictionary()){}}")]
     private static int TiffPredicter2Tests() => 9;
 }

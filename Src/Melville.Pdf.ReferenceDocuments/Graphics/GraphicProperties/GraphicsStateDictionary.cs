@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.GraphicProperties;
 

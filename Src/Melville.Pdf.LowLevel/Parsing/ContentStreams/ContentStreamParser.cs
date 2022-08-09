@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -170,8 +171,8 @@ public readonly struct ContentStreamParser
     }
     private async ValueTask<bool> ParseInlineImage(BufferFromPipe bfp)
     {
-        var dict = await PdfParserParts.InlineImageDictionaryParser
-            .ParseDictionaryItemsAsync(bfp.CreateParsingReader()).CA();
+        var dict = new DictionaryBuilder(await PdfParserParts.InlineImageDictionaryParser
+            .ParseDictionaryItemsAsync(bfp.CreateParsingReader()).CA());
         SetTypeAsImage(dict);
         bfp = await bfp.Refresh().CA();
         SequencePosition endPos;
@@ -184,17 +185,14 @@ public readonly struct ContentStreamParser
         return true;
     }
 
-     private static void SetTypeAsImage(Dictionary<PdfName, PdfObject> dict)
-    {
-        dict[KnownNames.Type] = KnownNames.XObject;
-        dict[KnownNames.Subtype] = KnownNames.Image;
+    public static void SetTypeAsImage(DictionaryBuilder dict)
+     {
+         dict.WithItem(KnownNames.Type, KnownNames.XObject)
+             .WithItem(KnownNames.Subtype, KnownNames.Image);
     }
 
-    private static PdfStream CreateStream(byte[] data, Dictionary<PdfName, PdfObject> dict)
-    {
-        return new PdfStream(
-            new LiteralStreamSource(data, StreamFormat.DiskRepresentation), dict);
-    }
+    private static PdfStream CreateStream(byte[] data, DictionaryBuilder dict) => 
+        dict.AsStream(data);
 
     private byte[] GrabStreamContent(BufferFromPipe bfp, SequencePosition endPos)
     {

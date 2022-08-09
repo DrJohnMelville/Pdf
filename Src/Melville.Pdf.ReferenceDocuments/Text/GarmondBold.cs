@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.Model.Documents;
+﻿using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
 

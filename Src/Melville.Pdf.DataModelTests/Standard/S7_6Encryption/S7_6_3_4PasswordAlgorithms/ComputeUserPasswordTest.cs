@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;

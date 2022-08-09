@@ -18,7 +18,8 @@ public class S7_7_3PageTree
     {
         var doc = CreateThreePageSimpleDocument();
 
-        Assert.Equal(3, await (await doc.PagesAsync()).CountAsync());
+        var pagesAsync = await doc.PagesAsync();
+        Assert.Equal(3, await pagesAsync.CountAsync());
         Assert.Equal(3, await ((IAsyncEnumerable<PdfPage>)(await doc.PagesAsync())).CountAsync());
     }
 

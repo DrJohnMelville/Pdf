@@ -22,7 +22,7 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
 {
     private IStreamDataSource source;
         
-    public PdfStream(IStreamDataSource source, IReadOnlyDictionary<PdfName, PdfObject> rawItems) :
+    public PdfStream(IStreamDataSource source, Memory<KeyValuePair<PdfName, PdfObject>> rawItems) :
         base(rawItems)
     {
         this.source = source;

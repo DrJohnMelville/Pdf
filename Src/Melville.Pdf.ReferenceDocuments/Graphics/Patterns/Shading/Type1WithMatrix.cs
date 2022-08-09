@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
 

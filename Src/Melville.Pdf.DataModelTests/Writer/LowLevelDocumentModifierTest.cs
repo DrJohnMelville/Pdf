@@ -51,23 +51,23 @@ public class LowLevelDocumentModifierTest
     [InlineData(0)]
     [InlineData(1234)]
     public Task NullModification(long offset) => 
-        DoDocumentModificationTests($"xref\n0 0\ntrailer\n<</Root 1 0 R/Size 2/Prev 83>>\nstartxref\n{offset}\n%%EOF",
+        DoDocumentModificationTests($"xref\n0 0\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n{offset}\n%%EOF",
             (doc, mod) => { }, baseDoc,
             offset);
 
     [Fact]
     public Task DeleteOneObject() =>
-        DoDocumentModificationTests($"xref\n0 2\n0000000001 65535 f\r\n0000000000 00000 f\r\ntrailer\n<</Root 1 0 R/Size 2/Prev 83>>\nstartxref\n1234\n%%EOF",
+        DoDocumentModificationTests($"xref\n0 2\n0000000001 65535 f\r\n0000000000 00000 f\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n1234\n%%EOF",
             (doc, mod) => mod.DeleteObject(doc.Objects[(1,0)]), baseDoc,
             1234);
     [Fact]
     public Task AddOneObject() =>
-        DoDocumentModificationTests($"2 0 obj false endobj\nxref\n2 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Size 3/Prev 83>>\nstartxref\n1255\n%%EOF",
+        DoDocumentModificationTests($"2 0 obj false endobj\nxref\n2 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 3>>\nstartxref\n1255\n%%EOF",
             (doc, mod) => mod.Add(PdfBoolean.False), baseDoc,
             1234);
     [Fact]
     public Task ReplaceOneObject() =>
-        DoDocumentModificationTests($"1 0 obj false endobj\nxref\n1 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Size 2/Prev 83>>\nstartxref\n1255\n%%EOF",
+        DoDocumentModificationTests($"1 0 obj false endobj\nxref\n1 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n1255\n%%EOF",
             (doc, mod) => mod.AssignValueToReference(doc.Objects[(1,0)],PdfBoolean.False), baseDoc,
             1234);
 
@@ -89,7 +89,7 @@ public class LowLevelDocumentModifierTest
     public Task ReplaceThreeInTwoRuns()
     {
         return DoDocumentModificationTests(
-            $"2 0 obj (Two) endobj\n3 0 obj (Three) endobj\n5 0 obj (Five) endobj\nxref\n2 2\n0000005000 00000 n\r\n0000005021 00000 n\r\n5 1\n0000005044 00000 n\r\ntrailer\n<</Size 7/Prev 161>>\nstartxref\n5066\n%%EOF",
+            $"2 0 obj (Two) endobj\n3 0 obj (Three) endobj\n5 0 obj (Five) endobj\nxref\n2 2\n0000005000 00000 n\r\n0000005021 00000 n\r\n5 1\n0000005044 00000 n\r\ntrailer\n<</Prev 161/Size 7>>\nstartxref\n5066\n%%EOF",
             (doc, mod) =>
             {
                 mod.AssignValueToReference(doc.Objects[(2,0)], PdfString.CreateAscii("Two"));
@@ -102,7 +102,7 @@ public class LowLevelDocumentModifierTest
     public Task DeleteThreeInTwoRuns()
     {
         return DoDocumentModificationTests(
-            $"xref\n0 1\n0000000005 65535 f\r\n2 2\n0000000000 00000 f\r\n0000000002 00000 f\r\n5 1\n0000000003 00000 f\r\ntrailer\n<</Size 7/Prev 161>>\nstartxref\n5000\n%%EOF",
+            $"xref\n0 1\n0000000005 65535 f\r\n2 2\n0000000000 00000 f\r\n0000000002 00000 f\r\n5 1\n0000000003 00000 f\r\ntrailer\n<</Prev 161/Size 7>>\nstartxref\n5000\n%%EOF",
             (doc, mod) =>
             {
                 mod.DeleteObject(doc.Objects[(2,0)]);

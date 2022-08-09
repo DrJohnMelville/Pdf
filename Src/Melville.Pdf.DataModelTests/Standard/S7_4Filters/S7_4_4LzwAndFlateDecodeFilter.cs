@@ -8,6 +8,7 @@ using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Xunit;
@@ -37,10 +38,11 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
         }
 
         var creator = new LowLevelDocumentCreator();
-        var param = new PdfDictionary(new Dictionary<PdfName, PdfObject>()
-        {
-            {KnownNames.EarlyChange, new PdfInteger(EarlySwitch)}
-        });
+        var param =
+            new DictionaryBuilder()
+                .WithItem(KnownNames.EarlyChange, EarlySwitch)
+                .AsDictionary();
+
         var str = new DictionaryBuilder()
             .WithFilter(FilterName.LZWDecode)
             .WithFilterParam(EarlySwitch < 2 ? param : null)
