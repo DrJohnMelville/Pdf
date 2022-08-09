@@ -57,16 +57,7 @@ public class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, ValueTask<P
     }
 
     public ValueTask<PdfObject> this[PdfName key] => RawItems[key].DirectValueAsync();
-        
     public IEnumerable<ValueTask<PdfObject>> Values => RawItems.Values.Select(i => i.DirectValueAsync());
-
-    #endregion
-        
-    #region Type and Subtype as definted in the standard 7.3.7
-
-    public PdfName? Type => RawItems.TryGetValue(KnownNames.Type, out var obj) ? obj as PdfName : null;
-    public PdfName? SubType => RawItems.TryGetValue(KnownNames.Subtype, out var obj) ||
-        RawItems.TryGetValue(KnownNames.S, out obj) ? obj as PdfName : null;
 
     #endregion
         

@@ -82,26 +82,4 @@ public class S7_3_7_DictionaryOperations
             d.Values.Select(i=>i.Result));
             
     }
-
-    [Fact]
-    public async Task DictionaryWithoutType()
-    {
-        Assert.Null((await IndirectTestDict).Type);
-        Assert.Null((await IndirectTestDict).SubType);
-    }
-    [Fact]
-    public async Task DictionaryWithType()
-    {
-        Assert.Equal(KnownNames.Image, (await CreateDict("<< /Type /Image >>")).Type);
-    }
-    [Fact]
-    public async Task DictionaryWithSubType()
-    {
-        Assert.Equal(KnownNames.Image, (await CreateDict("<< /Subtype /Image >>")).SubType);
-    }
-    [Fact]
-    public async Task DictionaryWithAbbreviatedType()
-    {
-        Assert.Equal(KnownNames.Image, (await CreateDict("<< /S /Image >>")).SubType);
-    }
 }
