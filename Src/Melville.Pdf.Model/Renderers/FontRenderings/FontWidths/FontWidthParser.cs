@@ -21,8 +21,18 @@ public readonly struct FontWidthParser
         sizeFactor = size /1000;
     }
 
-    public async ValueTask<IFontWidthComputer> Parse() => 
-        await Parse((await pdfFont.SubTypeAsync().CA()).GetHashCode()).CA();
+    public async ValueTask<IFontWidthComputer> Parse()
+    {
+        try
+        {
+            return await Parse((await pdfFont.SubTypeAsync().CA()).GetHashCode()).CA();
+        }
+        catch (Exception )
+        {
+            return NullFontWidthComputer.Instance;
+        }
+    }
+
     private ValueTask<IFontWidthComputer> Parse(int subTypeKey) => subTypeKey switch
     {
         KnownNameKeys.Type3 => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),

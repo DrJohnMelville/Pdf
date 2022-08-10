@@ -40,7 +40,7 @@ public readonly partial struct NameToGlyphMappingFactory
 
     private INameToGlyphMapping? UnicodeAndAdobeGlyphList()
     {
-        var mapping = face.CharMaps.FirstOrDefault(i => i.Encoding == Encoding.Unicode);
+        var mapping = face.CharMaps?.FirstOrDefault(i => i.Encoding == Encoding.Unicode);
         if (mapping is null) return null;
         return new UnicodeGlyphNameMapper(MappingToDictionary(mapping));
     }
