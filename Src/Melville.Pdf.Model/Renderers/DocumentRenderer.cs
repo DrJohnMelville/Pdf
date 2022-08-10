@@ -52,7 +52,11 @@ public class OwnedPageTreeDocumentRenderer : PageTreeDocumentRenderer
         this.document = document;
     }
 
-    public override void Dispose() =>  document.Dispose();
+    public override void Dispose()
+    {
+        document.Dispose();
+        base.Dispose();
+    }
 }
 
 public abstract class DocumentRenderer: IDisposable
@@ -122,6 +126,7 @@ public abstract class DocumentRenderer: IDisposable
 
     public virtual void Dispose()
     {
+        Cache.Dispose();
     }
 }
 

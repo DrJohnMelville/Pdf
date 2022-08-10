@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.Model.Renderers.DocumentPartCaches;
 
-public interface IDocumentPartCache
+public interface IDocumentPartCache: IDisposable
 {
     ValueTask<T> Get<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull ;
 }
@@ -27,5 +28,14 @@ public class DocumentPartCache: IDocumentPartCache
         var value = await creator(source).CA();
         if (value is not null) store[source] = value;
         return value;
+    }
+
+    public void Dispose()
+    {
+        foreach (var item in store.Values.OfType<IDisposable>())
+        {
+            item.Dispose();
+        }
+        store.Clear();
     }
 }

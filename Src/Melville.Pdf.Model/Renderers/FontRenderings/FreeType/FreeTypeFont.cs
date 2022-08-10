@@ -27,7 +27,7 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new FreeTypeWriteOperation(this, target.CreateDrawTarget());
 
-    private double RenderByte(FreeTypeOutlineWriter nativeTarget, uint glyph)
+    private double RenderGlyph(FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
         Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
         nativeTarget.Decompose(Face.Glyph.Outline);
@@ -54,7 +54,7 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
             uint glyph, Matrix3x2 textMatrix)
         {
             target.SetDrawingTransform(textMatrix);
-            return new (parent.RenderByte(nativeTarget, glyph));
+            return new (parent.RenderGlyph(nativeTarget, glyph));
         }
         
         public void RenderCurrentString(bool stroke, bool fill, bool clip)

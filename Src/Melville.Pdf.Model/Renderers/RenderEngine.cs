@@ -389,7 +389,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private ValueTask<IRealizedFont> CheckCacheForFont(double size, PdfDictionary fontDic) =>
         renderer.Cache.Get(new FontRecord(fontDic, size), 
             r=> FontReader().DictionaryToRealizedFont(r.Dictionary,r.Size));
-    
+     
     private FontReader FontReader() => new(renderer.FontMapper);
 
     private record struct FontRecord(PdfDictionary Dictionary, double Size);

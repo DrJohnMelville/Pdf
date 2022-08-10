@@ -32,7 +32,7 @@ public interface IGraphicsState : IStateChangingOperations
 [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
 [MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;",
     Prefix = "public override void CopyFrom(GraphicsState other){ base.CopyFrom(other);", Postfix = "}")]
-public abstract partial class GraphicsState<T> : GraphicsState, IDisposable
+public abstract partial class GraphicsState<T> : GraphicsState
 {
     protected GraphicsState()
     {

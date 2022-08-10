@@ -23,7 +23,7 @@ public static class ParseFile
     {
         try
         {
-            var doc = await DocumentRendererFactory.CreateRendererAsync(
+            using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(source), WindowsDefaultFonts.Instance);
             for (int i = 0; i < doc.TotalPages; i++)
             {
