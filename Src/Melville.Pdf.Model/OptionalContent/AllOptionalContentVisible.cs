@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
-public sealed class AllOptionalContentVisible : IOptionalContentState
+[StaticSingleton]
+public sealed partial class AllOptionalContentVisible : IOptionalContentState
 {
-    public static readonly AllOptionalContentVisible Instance = new();
-    private AllOptionalContentVisible() { }
     public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary) => new(true);
     public event EventHandler<EventArgs>? SelectedContentChanged
     {

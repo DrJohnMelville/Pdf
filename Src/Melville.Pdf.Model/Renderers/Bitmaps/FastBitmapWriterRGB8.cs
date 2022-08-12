@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Buffers;
+using Melville.INPC;
 using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public class FastBitmapWriterRGB8: IByteWriter
+[StaticSingleton]
+public partial class FastBitmapWriterRGB8: IByteWriter
 {
-    public static readonly FastBitmapWriterRGB8 Instance = new();
-
-    private FastBitmapWriterRGB8()
-    {
-    }
-
     public unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
     {
         

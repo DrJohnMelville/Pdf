@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
@@ -8,11 +9,9 @@ public interface IIndividualBitmapReader
     void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap);
 }
 
-public class IndividualHeightClassReader: IHeightClassReaderStrategy
+[StaticSingleton]
+public partial class IndividualHeightClassReader: IHeightClassReaderStrategy
 {
-    public static readonly IndividualHeightClassReader Instance = new();
-    private IndividualHeightClassReader() { }
-
     public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {
         var width = 0;
@@ -31,11 +30,9 @@ public class IndividualHeightClassReader: IHeightClassReaderStrategy
     }
 }
 
-public sealed class UnrefinedBitmapReader : IIndividualBitmapReader
+[StaticSingleton]
+public sealed partial class UnrefinedBitmapReader : IIndividualBitmapReader
 {
-    public static readonly UnrefinedBitmapReader Instance = new();
-    private UnrefinedBitmapReader() { }
-
     public void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap)
     {
         reader.EncodedReader.ReadBitmap(ref source, bitmap);

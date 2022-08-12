@@ -1,12 +1,10 @@
-﻿namespace Melville.Icc.ColorTransforms;
+﻿using Melville.INPC;
 
-public class LabToXyz : IColorTransform
+namespace Melville.Icc.ColorTransforms;
+
+[StaticSingleton]
+public partial class LabToXyz : IColorTransform
 {
-    public static readonly LabToXyz Instance = new(); 
-    private LabToXyz()
-    {
-    }
-
     public int Inputs => 3;
     public int Outputs => 3;
     private const float epsilon = 0.008856f;

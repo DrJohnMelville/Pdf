@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
 using Melville.Icc.Model;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -12,11 +13,9 @@ using Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class NoPageContext : IHasPageAttributes
+[StaticSingleton]
+public partial class NoPageContext : IHasPageAttributes
 {
-    public static NoPageContext Instance = new();
-
-    private NoPageContext() { }
     public PdfDictionary LowLevel => PdfDictionary.Empty;
     public ValueTask<Stream> GetContentBytes() => new(new MemoryStream(Array.Empty<byte>()));
 

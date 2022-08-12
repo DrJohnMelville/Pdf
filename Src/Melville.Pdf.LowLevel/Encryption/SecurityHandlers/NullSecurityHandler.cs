@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -9,14 +10,10 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
-public class NullSecurityHandler: 
+[StaticSingleton]
+public partial class NullSecurityHandler: 
     ISecurityHandler, IDocumentCryptContext, IObjectCryptContext, ICipher, ICipherOperations
 {
-    public static readonly NullSecurityHandler Instance = new();
-    private NullSecurityHandler()
-    {
-    }
-        
     public bool BlockEncryption(PdfObject item) => false;
     public byte[]? TryComputeRootKey(string password, PasswordType type) => Array.Empty<byte>();
     public IDocumentCryptContext CreateCryptContext(byte[] rootKey) => this;

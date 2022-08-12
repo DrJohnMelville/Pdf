@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -18,11 +19,9 @@ public interface IRealizedFont
     IFontWriteOperation BeginFontWrite(IFontTarget target);
 }
 
-public sealed class NullRealizedFont: IFontWriteOperation, IRealizedFont
+[StaticSingleton]
+public sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
 {
-    public static readonly NullRealizedFont Instance = new();
-
-    private NullRealizedFont() { }
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => (0, 0, 1);
 
     public ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix) => new(0.0);

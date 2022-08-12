@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Diagnostics;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
@@ -10,12 +11,9 @@ public interface IHeightClassReaderStrategy
     void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height);
 }
 
-public class CompositeHeightClassReader: IHeightClassReaderStrategy
+[StaticSingleton]
+public partial class CompositeHeightClassReader: IHeightClassReaderStrategy
 {
-    public static CompositeHeightClassReader Instance = new();
-
-    private CompositeHeightClassReader() { }
-
     public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {
         var rowBitmap = ConstructCompositeBitmap(ref source, ref parser, height);

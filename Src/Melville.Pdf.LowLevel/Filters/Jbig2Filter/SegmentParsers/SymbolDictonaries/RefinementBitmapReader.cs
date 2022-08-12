@@ -1,15 +1,14 @@
 ﻿using System.Buffers;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.SymbolDictonaries;
 
-public sealed class RefinementBitmapReader : IIndividualBitmapReader
+[StaticSingleton]
+public sealed partial class RefinementBitmapReader : IIndividualBitmapReader
 {
-    public static RefinementBitmapReader Instance = new();
-    private RefinementBitmapReader() { }
-
     public void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap)
     {   //  this method begins section 6.5.8.2 in the specification
         var numSyms = reader.EncodedReader.AggregationSymbolInstances(ref source);

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
@@ -23,10 +24,9 @@ public interface IPageLookup
     ValueTask<CrossReference> PageForNumber(int page);
 }
 
-public class NoPageLookup : IPageLookup
+[StaticSingleton]
+public partial class NoPageLookup : IPageLookup
 {
-    public static readonly NoPageLookup Instance = new();
-    private NoPageLookup() { }
     public ValueTask<CrossReference> PageForNumber(int page) => new(new CrossReference(0, 0));
 }
 

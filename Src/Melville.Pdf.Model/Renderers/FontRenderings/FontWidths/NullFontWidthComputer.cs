@@ -1,9 +1,9 @@
-﻿namespace Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
+﻿using Melville.INPC;
 
-public class NullFontWidthComputer : IFontWidthComputer
+namespace Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
+
+[StaticSingleton]
+public partial class NullFontWidthComputer : IFontWidthComputer
 {
-    public static NullFontWidthComputer Instance = new();
-
-    private NullFontWidthComputer() { }
     public double GetWidth(uint character, double defaultWidth) => defaultWidth;
 }
