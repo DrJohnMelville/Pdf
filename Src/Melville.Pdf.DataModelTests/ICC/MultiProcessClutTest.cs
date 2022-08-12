@@ -41,8 +41,8 @@ public class MultiProcessClutTest
         Span<float> input = stackalloc[] { in0 };
         Span<float> output = stackalloc float[2];
         sut.Transform(input, output);
-        Assert.Equal(out0, output[0], 3);
-        Assert.Equal(out1, output[1], 3);
+        Assert.Equal(out0, output[0], 3, MidpointRounding.ToZero);
+        Assert.Equal(out1, output[1], 3, MidpointRounding.ToZero);
         
     }
 }

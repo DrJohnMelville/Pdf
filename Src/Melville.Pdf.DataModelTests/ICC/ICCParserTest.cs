@@ -36,9 +36,9 @@ public class ICCParserTest
         Assert.Equal(0u, profile.Header.Device);
         Assert.Equal((DeviceAttributes)0, profile.Header.DeviceAttributes);
         Assert.Equal(RenderIntent.Perceptual, profile.Header.RenderIntent);
-        Assert.Equal(0.96420f, profile.Header.Illuminant.X, 4);
+        Assert.Equal(0.96420f, profile.Header.Illuminant.X, 4, MidpointRounding.ToEven);
         Assert.Equal(1f, profile.Header.Illuminant.Y);
-        Assert.Equal(0.82491f, profile.Header.Illuminant.Z, 4);
+        Assert.Equal(0.82491f, profile.Header.Illuminant.Z, 4,  MidpointRounding.ToEven);
         Assert.Equal(0u, profile.Header.Creator);
         Assert.Equal((ulong)0x34562ABF994CCd06, profile.Header.ProfileIdHigh);
         Assert.Equal((ulong)0x6D2C5721D0D68C5D, profile.Header.ProfileIdLow);
@@ -551,18 +551,18 @@ public class ICCParserTest
         var tag = await ParseTag<LutAToBTag>("<6D414220 00000000 03020000 " +
                                              "00000000 00000000 00000000 00000000 00000000>");
 
-        Assert.Equal(1, tag.Matrix.Kernel.M11, 6);
-        Assert.Equal(0, tag.Matrix.Kernel.M12, 6);
-        Assert.Equal(0, tag.Matrix.Kernel.M13, 6);
-        Assert.Equal(0, tag.Matrix.Kernel.M21, 6);
-        Assert.Equal(1, tag.Matrix.Kernel.M22, 6);
-        Assert.Equal(0, tag.Matrix.Kernel.M23, 6);
-        Assert.Equal(0, tag.Matrix.Kernel.M31, 6);
-        Assert.Equal(0, tag.Matrix.Kernel.M32, 6);
-        Assert.Equal(1, tag.Matrix.Kernel.M33, 6);
-        Assert.Equal(0, tag.Matrix.TranslateX, 6);
-        Assert.Equal(0, tag.Matrix.TranslateY, 6);
-        Assert.Equal(0, tag.Matrix.TranslateZ, 6);
+        Assert.Equal(1, tag.Matrix.Kernel.M11, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.Kernel.M12, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.Kernel.M13, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.Kernel.M21, 6, MidpointRounding.ToZero);
+        Assert.Equal(1, tag.Matrix.Kernel.M22, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.Kernel.M23, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.Kernel.M31, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.Kernel.M32, 6, MidpointRounding.ToZero);
+        Assert.Equal(1, tag.Matrix.Kernel.M33, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.TranslateX, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.TranslateY, 6, MidpointRounding.ToZero);
+        Assert.Equal(0, tag.Matrix.TranslateZ, 6, MidpointRounding.ToZero);
 
         VerifyCurveType<NullCurve>(3, tag.InputCurves);
         VerifyCurveType<NullCurve>(3, tag.MatrixCurves);
@@ -838,9 +838,9 @@ public class ICCParserTest
 
         Assert.Equal(0, tag.Samples[0]);
         tag.Initialize(1,10,233);
-        Assert.Equal(1, tag.Minimum, 3);
-        Assert.Equal(10, tag.Maximum, 3);
-        Assert.Equal(233, tag.Samples[0], 3);
+        Assert.Equal(1, tag.Minimum, 3 , MidpointRounding.ToEven);
+        Assert.Equal(10, tag.Maximum, 3, MidpointRounding.ToEven);
+        Assert.Equal(233, tag.Samples[0], 3, MidpointRounding.ToEven);
         
     }
 }

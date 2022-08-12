@@ -20,9 +20,9 @@ public class CmykIntegrationTests
         var xform = (await IccProfileLibrary.ReadCmyk()).DeviceToPcsTransform(RenderIntent.Perceptual);
         var result = new float[3];
         xform!.Transform(stackalloc float[]{c,m,y,k}, result.AsSpan());
-        Assert.Equal(l, result[0], 0);
-        Assert.Equal(a, result[1], 2);
-        Assert.Equal(b, result[2], 2);
+        Assert.Equal(l, result[0], 0, MidpointRounding.AwayFromZero);
+        Assert.Equal(a, result[1], 2, MidpointRounding.AwayFromZero);
+        Assert.Equal(b, result[2], 2, MidpointRounding.AwayFromZero);
         
     }
 }

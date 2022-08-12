@@ -51,7 +51,7 @@ public class MultiProcessCurveSetTest
     {
         var reader = FloatToBytes(2,3,4,5,6);
         var func = new FormulaSegmentType2(ref reader);
-        Assert.Equal(1694577197056, func.Evaluate(5), 4);
+        Assert.Equal(1694577197056, func.Evaluate(5), 4, MidpointRounding.AwayFromZero);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class MultiProcessCurveSetTest
     {
         var curve = TripartiteCurve();
 
-        Assert.Equal(output, curve.Evaluate(input), 3);
+        Assert.Equal(output, curve.Evaluate(input), 3, MidpointRounding.AwayFromZero);
     }
 
     private MultiProcessCurve TripartiteCurve()

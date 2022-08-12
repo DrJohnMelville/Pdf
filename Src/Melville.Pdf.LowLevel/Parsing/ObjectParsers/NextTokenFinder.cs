@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -25,7 +26,7 @@ public static class NextTokenFinder
     private static void CheckForEndOfStream(ReadResult source)
     {
         if (source.IsCompleted && source.Buffer.IsEmpty)
-            throw new InvalidOperationException("Read off end of stream.");
+            throw new PdfParseException("Read off end of stream.");
     }
 
     public static bool SkipToNextToken(this ref SequenceReader<byte> input)

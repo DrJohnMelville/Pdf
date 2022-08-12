@@ -57,7 +57,7 @@ public class Matrix3x3Test
         Assert.Equal(0.222222, inv.M23, 3);
         Assert.Equal(0.16666, inv.M31, 3);
         Assert.Equal(0.16666, inv.M32, 3);
-        Assert.Equal(0, inv.M33, 3);
+        Assert.Equal(0.0, inv.M33, 3);
         
     }
 }

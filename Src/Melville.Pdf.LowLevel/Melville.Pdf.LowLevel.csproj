@@ -10,7 +10,7 @@
       <PackageReference Include="Melville.Generators.INPC" Version="0.5.41" />
       <PackageReference Include="Melville.Hacks" Version="0.5.41" />
       <PackageReference Include="Melville.Linq" Version="0.5.41" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
       <PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
     </ItemGroup>
 

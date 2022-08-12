@@ -25,7 +25,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
         //hashes.Recording = true;
     }
 
-    private static IEnumerable<object[]> GeneratorTests() =>
+    public static IEnumerable<object[]> GeneratorTests() =>
         GeneratorFactory.AllGenerators.Select(i => new object[] { i.Prefix, i });
 
     [WpfTheory]                                                         
