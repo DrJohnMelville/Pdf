@@ -43,8 +43,6 @@ public readonly struct FontReader
     {
         Debug.Assert(KnownNames.Type0 == await font.SubTypeAsync().CA());
         var cidFont = await font.Type0SubFont().CA();
-        if (KnownNames.CIDFontType0 == await cidFont.SubTypeAsync().CA())
-            throw new NotImplementedException("Type 0 CID fonts are not yet implemented.");
         return await CreateRealizedFont(cidFont, factory).CA();
     }
       
