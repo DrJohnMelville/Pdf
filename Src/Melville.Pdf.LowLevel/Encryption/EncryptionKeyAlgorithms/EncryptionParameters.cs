@@ -30,12 +30,11 @@ public readonly struct EncryptionParameters
          await trailer.GetOrNullAsync(KnownNames.Encrypt).CA() is not PdfDictionary dict ||
          await dict.GetOrNullAsync(KnownNames.O).CA() is not PdfString ownerHash ||
          await dict.GetOrNullAsync(KnownNames.U).CA() is not PdfString userHash ||
-         await dict.GetOrNullAsync(KnownNames.P).CA() is not PdfNumber permissions ||
-         await dict.GetOrNullAsync(KnownNames.Length).CA() is not PdfNumber length
+         await dict.GetOrNullAsync(KnownNames.P).CA() is not PdfNumber permissions
         )? throw new PdfSecurityException("Required parameter missing for encryption"):
             new EncryptionParameters(
                 firstId.Bytes, ownerHash.Bytes, userHash.Bytes, (uint)permissions.IntValue, 
-                (int) length.IntValue);
+                (int)await dict.GetOrDefaultAsync(KnownNames.Length, 40).CA());
 
     public override string ToString()
     {
