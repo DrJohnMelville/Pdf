@@ -63,7 +63,28 @@ public readonly partial struct CharacterToGlyphMapFactory
         var nameToGlyphMapper = new NameToGlyphMappingFactory(face).Create();
         await new SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappings().CA())
             .WriteEncodingToArray(encoding).CA();
+        WriteBackupMappings(array);
         return new CharacterToGlyphArray(array);
+    }
+
+    private void WriteBackupMappings(uint[] array)
+    {
+        // this is nonstandard behavior to handle a small population of PDF files that appear to be malformed.
+        // the idea is to scan all of the CMaps and if there are any mappings from single bytes to a character that
+        // is currently unmapped (ie mapped to glyph 0) then we use the backup mapping.  Since undefined mappings cause
+        // unpredictible behavior, this should not affect any valid files, but it will allow some malformed files to
+        // be presented correctly.
+
+        foreach (var map in face.CharMaps)
+        {
+            foreach (var (character, glyph) in map.AllMappings())
+            {
+                if (character < 256 && array[character] == 0)
+                {
+                    array[character] = glyph;
+                }
+            }
+        }
     }
 
     private async Task<byte[][]?> BuiltInFontCharMappings()

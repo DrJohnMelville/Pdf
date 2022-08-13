@@ -276,6 +276,7 @@ Pdf:Supplement
 Pdf:Text
 Pdf:TilingType
 Pdf:Type
+Pdf:Type1C
 Pdf:U
 Pdf:Usage
 Pdf:V

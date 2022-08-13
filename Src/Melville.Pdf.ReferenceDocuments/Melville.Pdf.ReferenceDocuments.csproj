@@ -124,6 +124,8 @@
       <EmbeddedResource Include="Text\FlateEncodedPiFont.fon" />
       <None Remove="Text\SymbolicTTFontWithABrokenCMAP.TTF" />
       <EmbeddedResource Include="Text\SymbolicTTFontWithABrokenCMAP.TTF" />
+      <None Remove="Text\FlatedFontWithAdobeCmap.ttf" />
+      <EmbeddedResource Include="Text\FlatedFontWithAdobeCmap.ttf" />
     </ItemGroup>
 
 </Project>
