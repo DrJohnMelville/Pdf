@@ -44,9 +44,38 @@ public class PdfDictionaryAndStreamParser : IPdfObjectParser
         return (true, reader.Position);
     }
 
-    private static bool FindStreamSuffix(ref SequenceReader<byte> reader) => 
-        NextTokenFinder.SkipToNextToken(ref reader);
+    private static bool FindStreamSuffix(ref SequenceReader<byte> reader) => reader.SkipToNextToken();
+    
+    private const byte carriageReturn = 0x0D;
+    private const byte lineFeed = 0x0A;
+    private static readonly byte[] endOfLine = { carriageReturn, lineFeed };
 
-    private static bool SkipOverStreamSuffix(ref SequenceReader<byte> reader) => 
-        reader.TryAdvanceTo((byte)'\n');
+    //The PDF Spec section 7.8.3.1 explicitly states that the Stream keyword wil be terminated by either a
+    // CR/LF sequence or a LF alone, because otherwise we would not know if the LF after the CR was a line terminator
+    // or the first character of the stream.  In fact, though PDFs that use CR alone exist and are parsed successfully by
+    // PDF reader.  Thus if we find a CR we will look for a following LF, but if the next character is not a LF we
+    // presume it is the first character of the stream.
+    private static bool SkipOverStreamSuffix(ref SequenceReader<byte> reader)
+    {
+        if (!GetNextDelimiter(ref reader, out var delim)) return false;
+        if (delim is lineFeed) return true;
+        return TrySkipOptionalLineFeed(ref reader);
+    }
+
+    private static bool GetNextDelimiter(ref SequenceReader<byte> reader, out byte value)
+    {
+        value = 0;
+        return reader.TryReadToAny(out ReadOnlySequence<byte> _, endOfLine, false) &&
+               reader.TryRead(out value);
+    }
+
+    private static bool TrySkipOptionalLineFeed(ref SequenceReader<byte> reader)
+    {
+        if (!reader.TryPeek(0, out var item)) return false;
+        if (item == lineFeed)
+        {
+            reader.Advance(1);
+        }
+        return true;
+    }
 }

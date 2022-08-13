@@ -11,11 +11,15 @@ public class S7_3_8_StreamsDefined
     private static long GetPosition(PdfStream obj) => 
         (long)(obj.GetField("source")!.GetField("sourceFilePosition")!);
 
-    [Fact]
-    public async Task ParseSimpleStream()
+    [Theory]
+    [InlineData("<</LENGTH 6>> stream\r\n123456\r\nendstream", 22)]
+    [InlineData("<</LENGTH 6>> stream\n123456\r\nendstream", 21)]
+    // PDF Spec section 7.3.8.1 says this is illegal but real pdf files do it, and PDF reader accepts it.
+    [InlineData("<</LENGTH 6>> stream\r123456\r\nendstream", 21)]
+    public async Task ParseSimpleStream(string data, int expectedPosition)
     {
-        var obj = (PdfStream)await "<</LENGTH 6>> stream\r\n123456\r\nendstream".ParseObjectAsync();
-        Assert.Equal(22, GetPosition(obj));
+        var obj = (PdfStream)await data.ParseObjectAsync();
+        Assert.Equal(expectedPosition, GetPosition(obj));
     }
 
     [Fact]
