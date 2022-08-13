@@ -1,8 +1,12 @@
 ﻿using System.Drawing;
+using System.Net.Mime;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using Melville.INPC;
+using Melville.MVVM.Wpf.Bindings;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
@@ -13,6 +17,8 @@ public partial class TextBoxWithFind : UserControl
     public TextBoxWithFind()
     {
         InitializeComponent();
+        DisplayBox.TextChanged += UpdateFooter;
+        DisplayBox.SelectionChanged += UpdateFooter;
     }
 
     private void FindNext(object sender, RoutedEventArgs e)
@@ -45,5 +51,23 @@ public partial class TextBoxWithFind : UserControl
     private int LinesBefore(int targetIndex)
     {
         return LineCounter.Matches(DisplayBox.Text[..targetIndex]).Count;
+    }
+    
+    
+    private void UpdateFooter(object sender, EventArgs e)
+    {
+        Footer.Text = DisplayBox.SelectionLength is >0 and <= 32?
+            SelectedHex(DisplayBox.SelectedText):
+            PositionString();
+    }
+
+    private string SelectedHex(string text) =>
+        $"<{string.Join(" ", text.Select(i => ((int)i).ToString("X")))}>";
+    
+    private string PositionString()
+    {
+        var offset = DisplayBox.SelectionStart;
+        var LineMatches = LineCounter.Matches(DisplayBox.Text[..offset]);
+        return $"Offset: 0x{offset:X} Line: {LineMatches.Count + 1}, Col: {offset - LineMatches.Select(i => i.Index).LastOrDefault(0)}";
     }
 }

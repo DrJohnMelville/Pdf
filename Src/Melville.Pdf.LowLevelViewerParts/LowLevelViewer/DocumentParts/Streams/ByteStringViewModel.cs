@@ -17,15 +17,9 @@ public class ByteStringViewModel
     public byte[] Bytes { get; }
 
     public string HexDump =>
-        string.Join("\r\n", Bytes.Take(10240).BinaryFormat().Select((hexDump, index) => $"{index:X7}0  {hexDump}"));
+        string.Join("\r\n", Bytes.BinaryFormat().Select((hexDump, index) => $"{index:X7}0  {hexDump}"));
 
-    public string AsAsciiString => ExtendedAsciiEncoding.ExtendedAsciiString(
-        TruncatedBytesSpan());
-
-    private Span<byte> TruncatedBytesSpan()
-    {
-        return Bytes.AsSpan(0, Math.Min(Bytes.Length, 10240));
-    }
+    public string AsAsciiString => ExtendedAsciiEncoding.ExtendedAsciiString(Bytes);
 
     public async Task SaveStreamToFile([FromServices] IOpenSaveFile fileDlg)
     {

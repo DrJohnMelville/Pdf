@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams"
+             xmlns:bindings="clr-namespace:Melville.MVVM.Wpf.Bindings;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TextBoxWithFind}}}">
@@ -15,8 +16,9 @@
             </Grid.ColumnDefinitions>
             <TextBlock>Find:</TextBlock>
             <TextBox Grid.Column="1" Margin="10 0" x:Name="QueryBox" />
-            <Button Grid.Column="2" Content="Next" Click="FindNext" x:Name="NextButton" />
+            <Button Grid.Column="2" Content="Find" IsDefault="True" Click="FindNext" x:Name="NextButton" />
         </Grid>
+        <TextBox IsReadOnly="True" DockPanel.Dock="Bottom" x:Name="Footer">Initializing</TextBox>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <TextBox IsReadOnly="{Binding IsReadOnly}" FontFamily="{Binding FontFamily}"
                      Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="DisplayBox" IsInactiveSelectionHighlightEnabled="True"

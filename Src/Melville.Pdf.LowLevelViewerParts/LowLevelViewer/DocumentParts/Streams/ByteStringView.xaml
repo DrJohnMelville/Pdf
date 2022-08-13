@@ -16,10 +16,8 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Text">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                     <streams:TextBoxWithFind 
                         IsReadOnly="True" Text="{Binding AsAsciiString, Mode=OneWay, PresentationTraceSources.TraceLevel = High}" />
-                </ScrollViewer>
             </TabItem>
         </TabControl>
         <Menu HorizontalAlignment="Right" VerticalAlignment="Top">
