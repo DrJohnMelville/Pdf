@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -27,34 +28,35 @@ public readonly partial struct CharacterToGlyphMapFactory
             KnownNameKeys.Type0 => await Type0CharMapping().CA(),
             KnownNameKeys.MMType1 => throw new NotImplementedException("MultiMaster fonts not implemented."),
             KnownNameKeys.Type1 => await SingleByteNamedMapping().CA(),
-            KnownNameKeys.TrueType => await ParseTrueTypeMapping().CA(),
+            KnownNameKeys.TrueType => await ParseTrueTypeMapping((await font.FontFlagsAsync().CA())).CA(),
             _ => throw new PdfParseException("Unknown Font Type"),
 
         };
 
-    private async ValueTask<IMapCharacterToGlyph> ParseTrueTypeMapping()
+    // this is a variance from the spec.  If a symbolic true type font lacks a valid CMAP for mapping
+    // we fall back and attempt to map the font as a roman font.
+    private ValueTask<IMapCharacterToGlyph> ParseTrueTypeMapping(FontFlags fontFlags) => 
+        TryMapAsSymbolicFont(fontFlags) is {} ret? new(ret): SingleByteNamedMapping();
+
+    private IMapCharacterToGlyph? TryMapAsSymbolicFont(FontFlags fontFlags) => 
+        fontFlags.HasFlag(FontFlags.Symbolic) ? TrueTypeSymbolicMapping(): null;
+
+    private IMapCharacterToGlyph? TrueTypeSymbolicMapping()
     {
-        var symbolic = (await font.FontFlagsAsync().CA()).HasFlag(FontFlags.Symbolic);
-        return symbolic ? 
-            new CharacterToGlyphArray(TrueTypeSymbolicMapping()):
-            await SingleByteNamedMapping().CA();
-    }
-    
-    private uint[] TrueTypeSymbolicMapping()
-    {
+        var charmap = ValidCharMap(face.CharMapByInts(1, 0)) ?? ValidCharMap(face.CharMapByInts(3, 0));
+        if (charmap is null) return null;
         var ret = new uint[256];
-        var charmap = face.CharMapByInts(1, 0) ?? face.CharMapByInts(3, 0);
-        if (charmap is not null)
+        foreach (var (character, glyph) in charmap.AllMappings())
         {
-            foreach (var (character, glyph) in charmap.AllMappings())
-            {
-                ret[character & 0xFF] = glyph;
-            }
+            ret[character & 0xFF] = glyph;
         }
 
-        return ret;
+        return new CharacterToGlyphArray(ret);
     }
-    
+
+    private CharMap? ValidCharMap(CharMap? input) => 
+        input?.AllMappings().Any()??false?input:null;
+
     private async ValueTask<IMapCharacterToGlyph> SingleByteNamedMapping()
     {
         var array = new uint[256];
