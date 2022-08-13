@@ -400,3 +400,5 @@ RenderingTest.cs_Skia-EmbeddedType1|74455131
 RenderingTest.cs_wpf-EmbeddedType1|4010353334
 RenderingTest.cs_Skia-DifferenceWithFontGlyphName|1073520069
 RenderingTest.cs_wpf-DifferenceWithFontGlyphName|1821344809
+RenderingTest.cs_wpf-SymbolicFontWithBrokenCmaps|3584054994
+RenderingTest.cs_Skia-SymbolicFontWithBrokenCmaps|871948460
