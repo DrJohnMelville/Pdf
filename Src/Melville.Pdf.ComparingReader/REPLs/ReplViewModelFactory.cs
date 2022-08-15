@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Buffers;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Pdf.ComparingReader.Renderers;
@@ -33,17 +36,39 @@ public readonly struct ReplViewModelFactory
                 (crossReference.Value.Object, crossReference.Value.Generation), out var indir) &&
             await indir.DirectValueAsync() is PdfStream stream)
         {
-            var content = await new StreamReader(await stream.StreamContentAsync()).ReadToEndAsync();
-            return new ReplViewModel(content, renderer, buffer, indir, pageSel);
+            var text = await ReadContentString(stream);
+            return new ReplViewModel(text, renderer, buffer, indir, pageSel);
         }
         return await CreateFromCurrentPage(doc, buffer);
+    }
+
+    private static async Task<string> ReadContentString(PdfStream stream)
+    {
+        await using var source = await stream.StreamContentAsync();
+        return await ReadContentString(source);
+    }
+
+    private static async Task<string> ReadContentString(Stream source)
+    {
+        var sb = new StringBuilder();
+        var strBuffer = ArrayPool<byte>.Shared.Rent(4096);
+        int len = 0;
+        do
+        {
+            len = await source.ReadAsync(strBuffer.AsMemory());
+            sb.Append(ExtendedAsciiEncoding.ExtendedAsciiString(strBuffer.AsSpan(0, len)));
+        } while (len > 0);
+
+        ArrayPool<byte>.Shared.Return(strBuffer);
+        var text = sb.ToString();
+        return text;
     }
 
     private async Task<ReplViewModel> CreateFromCurrentPage(PdfDocument doc, byte[] buffer)
     {
         var page = await (await doc.PagesAsync()).GetPageAsync(pageSel.Page - 1);
         var content = (PdfIndirectObject)page.LowLevel.RawItems[KnownNames.Contents];
-        var replContent = await new StreamReader(await page.GetContentBytes()).ReadToEndAsync();
+        var replContent = await ReadContentString(await page.GetContentBytes());
         return new(replContent, renderer, buffer, content, pageSel);
     }
 }
