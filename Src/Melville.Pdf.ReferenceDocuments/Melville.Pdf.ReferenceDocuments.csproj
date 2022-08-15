@@ -126,6 +126,8 @@
       <EmbeddedResource Include="Text\SymbolicTTFontWithABrokenCMAP.TTF" />
       <None Remove="Text\FlatedFontWithAdobeCmap.ttf" />
       <EmbeddedResource Include="Text\FlatedFontWithAdobeCmap.ttf" />
+      <None Remove="Graphics\Images\CMYKJpeg.jpg" />
+      <EmbeddedResource Include="Graphics\Images\CMYKJpeg.jpg" />
     </ItemGroup>
 
 </Project>
