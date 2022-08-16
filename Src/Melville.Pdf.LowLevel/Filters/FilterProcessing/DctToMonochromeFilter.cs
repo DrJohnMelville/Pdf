@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -37,3 +39,19 @@ public class DctToMonochromeFilter : IApplySingleFilter
             : innerStream;
     }
 }
+
+// public partial class DctFilterPicker: IApplySingleFilter
+// {
+//     [FromConstructor] private IApplySingleFilter inner;
+//     
+//     public ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
+//     {
+//         throw new NotSupportedException("JPEG encoding is not supported in this framework");
+//     }
+//
+//     public ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)
+//     {
+//         return filter == KnownNames.DCTDecode?
+//             PickDctFilter(source)
+//     }
+// }

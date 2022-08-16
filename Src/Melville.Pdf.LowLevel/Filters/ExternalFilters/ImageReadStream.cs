@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Melville.CSJ2K.j2k.io;
 using Melville.Parsing.Streams.Bases;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
@@ -7,9 +8,10 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Melville.Pdf.LowLevel.Filters.ExternalFilters;
 
-public class ImageReadStream : DefaultBaseStream, IImageSizeStream
+public class ImageReadStream<TPixel> : DefaultBaseStream, IImageSizeStream 
+    where TPixel : unmanaged, IPixel<TPixel>
 {
-    private Image<Rgb24> source;
+    private Image<TPixel> source;
     private int currentRow;
     private int currentByte;
 
@@ -19,9 +21,15 @@ public class ImageReadStream : DefaultBaseStream, IImageSizeStream
     public int ImageComponents => 3;
     public int BitsPerComponent => 8;
 
-    public ImageReadStream(Image<Rgb24> source) : base(true, false, false)
+    public ImageReadStream(Image<TPixel> source) : base(true, false, false)
     {
         this.source = source;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) source.Dispose();
+        base.Dispose(disposing);
     }
 
     public override int Read(Span<byte> buffer)
