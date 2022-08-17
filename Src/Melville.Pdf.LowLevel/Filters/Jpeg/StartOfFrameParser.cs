@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Melville.INPC;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
-
 namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 
 public partial class JpegStreamFactory

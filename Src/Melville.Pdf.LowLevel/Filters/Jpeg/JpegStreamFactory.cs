@@ -53,6 +53,7 @@ public partial class JpegStreamFactory
       JpegBlockType.ApplicationDefaultHeader => VerifyApp0Segment.Instance,
       JpegBlockType.StartOfFrame => StartOfFrameParser.Instance,
       JpegBlockType.QuantizationTable => QuantizationTableParser.Instance,
+      JpegBlockType.DefineHuffmanTable => HuffmanTableParser.Instance,
       _ => IgnoreBlockParser.Instance
     } ;
 
