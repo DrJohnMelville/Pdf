@@ -6,7 +6,7 @@ namespace Melville.Icc.Model;
 
 public partial class ToLabConversion : IColorTransform
 {
-    [DelegateTo]private readonly IColorTransform innerTransform;
+    [DelegateTo()] private readonly IColorTransform innerTransform;
 
     public ToLabConversion(IColorTransform innerTransform)
     {
