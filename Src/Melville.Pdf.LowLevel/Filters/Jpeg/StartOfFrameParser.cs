@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics;
 using Melville.INPC;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -19,6 +20,12 @@ public partial class JpegStreamFactory
             var width = data.ReadBigEndianUint16();
             var componentData = ReadAllComponents(ref data);
             factory.frameData = new JpegFrameData(width, height, precision, componentData);
+            Debug.WriteLine($"    ImageSize: ({width}, {height})");
+            Debug.WriteLine($"    Precision: {precision}");
+            foreach (var component in componentData)
+            {
+                Debug.WriteLine($"    {component.Id}: xSamp: {component.HorizontalSamplingFactor} ysamp: {component.HorizontalSamplingFactor} QuantTable: {component.QuantTableNumber}");
+            }
         }
 
         private CompnentData[] ReadAllComponents(ref SequenceReader<byte> data)

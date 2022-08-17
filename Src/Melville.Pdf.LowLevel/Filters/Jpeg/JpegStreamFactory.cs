@@ -14,6 +14,7 @@ public partial class JpegStreamFactory
     private const int JpegTagSize = 2;
     private readonly PipeReader source;
     private JpegFrameData? frameData;
+    private readonly QuantizationTable?[] quantizationTables = new QuantizationTable?[16];
 
     public JpegStreamFactory(Stream sourceStream)
     {
@@ -51,7 +52,8 @@ public partial class JpegStreamFactory
     {
       JpegBlockType.ApplicationDefaultHeader => VerifyApp0Segment.Instance,
       JpegBlockType.StartOfFrame => StartOfFrameParser.Instance,
-        _ => IgnoreBlockParser.Instance
+      JpegBlockType.QuantizationTable => QuantizationTableParser.Instance,
+      _ => IgnoreBlockParser.Instance
     } ;
 
     private async ValueTask<int> ReadU16()
