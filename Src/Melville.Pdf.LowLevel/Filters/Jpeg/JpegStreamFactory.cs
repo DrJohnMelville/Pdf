@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
@@ -13,7 +14,8 @@ public partial class JpegStreamFactory
 {
     private const int JpegTagSize = 2;
     private readonly PipeReader source;
-    private JpegFrameData? frameData;
+    private JpegHeaderData? frameData;
+    private readonly List<KeyValuePair<int, HuffmanTable>> huffmanTables = new();
     private readonly QuantizationTable?[] quantizationTables = new QuantizationTable?[16];
 
     public JpegStreamFactory(Stream sourceStream)
@@ -33,6 +35,7 @@ public partial class JpegStreamFactory
                     break;
                 case JpegBlockType.StartOfScan:
                     Debug.WriteLine("StartOfScan");
+                    await ParseBlock(StartOfScanParser.Instance).CA();
                     return new ReadJpegStream(source, TryGetFrameData());
                 case JpegBlockType.EndOfImage:
                     Debug.Assert(false, "Should not have end of image before start of SCAN");
@@ -45,7 +48,7 @@ public partial class JpegStreamFactory
         }
     }
 
-    private JpegFrameData TryGetFrameData() =>
+    private JpegHeaderData TryGetFrameData() =>
         frameData?? throw new PdfParseException("Jpeg Mission Start Of Frame Tag");
 
     private IJpegBlockParser PickParser(JpegBlockType type) => type switch

@@ -18,36 +18,36 @@ public partial class JpegStreamFactory
             var height = data.ReadBigEndianUint16();
             var width = data.ReadBigEndianUint16();
             var componentData = ReadAllComponents(ref data);
-            factory.frameData = new JpegFrameData(width, height, precision, componentData);
+            factory.frameData = new JpegHeaderData(width, height, precision, componentData);
             Debug.WriteLine($"    ImageSize: ({width}, {height})");
             Debug.WriteLine($"    Precision: {precision}");
             foreach (var component in componentData)
             {
-                Debug.WriteLine($"    {component.Id}: xSamp: {component.HorizontalSamplingFactor} ysamp: {component.HorizontalSamplingFactor} QuantTable: {component.QuantTableNumber}");
+                Debug.WriteLine($"    {component.Id}: xSamp: {component.HorizontalSamplingFactor} ysamp: {component.VerticalSamplingFactor} QuantTable: {component.QuantTableNumber}");
             }
         }
 
-        private CompnentData[] ReadAllComponents(ref SequenceReader<byte> data)
+        private ComponentData[] ReadAllComponents(ref SequenceReader<byte> data)
         {
             var components = data.ReadBigEndianUint8();
             if (components is < 1 or > 4) throw new PdfParseException("Unknown number of JPEG components");
-            var componentData = new CompnentData[components];
+            var componentData = new ComponentData[components];
             ParseAllComponentData(ref data, componentData);
             return componentData;
         }
 
-        private void ParseAllComponentData(ref SequenceReader<byte> data, CompnentData[] componentData)
+        private void ParseAllComponentData(ref SequenceReader<byte> data, ComponentData[] componentData)
         {
             for (int i = 0; i < componentData.Length; i++) 
                 componentData[i] = ParseComponentData(ref data);
         }
 
-        private CompnentData ParseComponentData(ref SequenceReader<byte> data)
+        private ComponentData ParseComponentData(ref SequenceReader<byte> data)
         {
             Span<byte> componentData = stackalloc byte[3];
             data.TryCopyTo(componentData);
             data.Advance(3);
-            return new CompnentData((ComponentId)componentData[0], componentData[1], componentData[2]);
+            return new ComponentData((ComponentId)componentData[0], componentData[1], componentData[2]);
         }
     }
 }

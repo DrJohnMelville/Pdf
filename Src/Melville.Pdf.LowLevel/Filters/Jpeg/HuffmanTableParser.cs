@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Melville.INPC;
@@ -11,16 +12,18 @@ namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 
 public partial class JpegStreamFactory
 {
+    private void AddHuffmanTable(int index, HuffmanTable table) =>
+        huffmanTables.Add(new KeyValuePair<int, HuffmanTable>(
+            index, table));
+    
     [StaticSingleton]
     public partial class HuffmanTableParser : IJpegBlockParser
     {
         public void ParseBlock(SequenceReader<byte> data, JpegStreamFactory factory)
         {
-            int tableType = data.ReadBigEndianUint8();
-            int tableNumber = tableType & 0xf;
-            tableType >>= 4;
-            Debug.WriteLine(    $"Table: {tableNumber} Type: {tableType}");
-            ParseTable(ref data);
+            int index = data.ReadBigEndianUint8();
+            Debug.WriteLine($"    Table: {index & 0xF} Type: {(HuffmanTableType)(index & 0xF0)}");
+            factory.AddHuffmanTable(index, ParseTable(ref data));
         }
 
         public HuffmanTable ParseTable(ref SequenceReader<byte> data)
@@ -69,6 +72,7 @@ public partial class JpegStreamFactory
 
 public readonly partial struct HuffmanTable
 {
+    public static readonly HuffmanTable Empty = new(Array.Empty<HuffmanLine>());
     [FromConstructor] private readonly HuffmanLine[] lines;
 
     public int Read(ref SequenceReader<byte> input, BitReader reader)
@@ -85,7 +89,7 @@ public readonly partial struct HuffmanTable
 
             if (key == line.Code) return line.CodedValue;
         }
-        throw new PdfParseException("Key does not exist in Huffman tab;e");
+        throw new PdfParseException("Key does not exist in Huffman table");
     }
 }
 public readonly partial struct HuffmanLine
