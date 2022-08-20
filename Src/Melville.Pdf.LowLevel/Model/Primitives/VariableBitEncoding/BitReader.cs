@@ -22,20 +22,10 @@ public class BitReader
     {
         Debug.Assert(bits <= 32);
         if (!TryAccumulateEnoughBits(bits, ref input)) return null;
-        return TakeHighNBits(bits);
-    }
-
-    private int TakeHighNBits(int bits)
-    {
         bitsRemaining -= bits;
-        var ret = AllBitsAbove();
-        ClearBitsAbove();
-        return ret;
+        (var ret, residue) = residue.SplitHighAndLowBits(bitsRemaining);
+        return (int)ret;
     }
-
-    private void ClearBitsAbove() => residue &= BitUtilities.Mask(bitsRemaining);
-
-    private int AllBitsAbove() => (int)residue >> bitsRemaining;
 
     private bool TryAccumulateEnoughBits(int bits, ref SequenceReader<byte> input)
     {
@@ -48,17 +38,10 @@ public class BitReader
     private bool TryReadByte(ref SequenceReader<byte> input)
     {
         if (!input.TryRead(out var newByte)) return false;
-        AddToBottomOfResidue(newByte);
+        residue = residue.AddLeastSignificantByte(newByte);
+        bitsRemaining += 8;
         return true;
     }
-
-    private void AddToBottomOfResidue(byte newByte)
-    {
-        residue <<= 8;
-        residue |= newByte;
-        bitsRemaining += 8;
-    }
-
     public void DiscardPartialByte()
     {
         residue = 0;
