@@ -9,21 +9,6 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 
 namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 
-public readonly struct JpegPixelBuffer
-{
-    private readonly byte[] data;
-    private readonly int stride;
-    private readonly int componentCount;
-    
-    public JpegPixelBuffer(int width, int componentCount) : this()
-    {
-        this.componentCount = componentCount;
-        this.stride = width*this.componentCount;
-        data = new byte[8 * stride];
-    }
-
-}
-
 public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
 {
     private readonly PipeReader source;
@@ -58,6 +43,12 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
 
     private async ValueTask LoadData()
     {
-        
+        for (int i = 0; i < widthInBlocks; i++)
+        {
+            var offset = pixels.McuStart(i);
+            for (int j = 0; j < context.ImageComponents; j++)
+            {
+            }
+        }
     }
 }
