@@ -21,8 +21,10 @@ public readonly struct JpegPixelBuffer
         return data.AsMemory(mcu * 8 * componentCount);
     }
 
+    #warning -- evaluate this statically once it works -- it ought to end up in a code segment
     public int[] ZizZagDecodingOffsets() => new int[]
     {
+        Off(0,0),
         Off(0,1), Off(1,0),         
         Off(2,0), Off(1,1), Off(0,2),
         Off(0,3), Off(1,2), Off(2,1), Off(3,0),

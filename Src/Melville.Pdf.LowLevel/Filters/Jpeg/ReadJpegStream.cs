@@ -21,7 +21,6 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
     private JpegPixelBuffer pixels;
     private int totalLinesRead = 0;
     private readonly int widthInBlocks;
-    private readonly int[] undoZArray;
 
     public ReadJpegStream(AsyncBitSource source, JpegHeaderData context) : 
         base(true, false, false)
@@ -30,8 +29,6 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
         this.context = context;
         widthInBlocks = ComputeWidthInWholeBlocks(context.Width);
         pixels = new JpegPixelBuffer(widthInBlocks, context.ImageComponents);
-        undoZArray = pixels.ZizZagDecodingOffsets();
-        Debug.Assert(undoZArray.Length == 63);
     }
     
     private static int ComputeWidthInWholeBlocks(int width)
@@ -55,28 +52,8 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
             var offset = pixels.McuStart(i);
             for (int j = 0; j < context.ImageComponents; j++)
             {
-                var componentBase = offset.Slice(j);
-                SetDcValue(componentBase, (byte)await context.ReadDcAsync(j, source).CA());
-                for (int acBytes = 0; acBytes < 63; acBytes++)
-                {
-                    var (leadingZeros, number) = await context.ReadAcAsync(j, source).CA();
-                    //NEED TO HANDLE (0,0) as the end of bytes signmal
-                    for (int k = 0; k < leadingZeros; k++)
-                    {
-                        SetByte(componentBase, acBytes++, 0);
-                    }
-                    
-                    if (acBytes < 63)
-                    {
-                        SetByte(componentBase, acBytes, (byte)number);
-                    }
-                }
+                await context.Components[j].ReadMcuAsync(source).CA();
             }
         }
     }
-
-    private void SetDcValue(Memory<byte> componentBase, byte value) => componentBase.Span[0] = value;
-
-    private void SetByte(in Memory<byte> componentBase, int acBytes, byte value) =>
-        componentBase.Span[undoZArray[acBytes]] = value;
 }
