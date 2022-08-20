@@ -8,4 +8,6 @@ public static class BitUtilities
         (i >> lowBitsToKeep, i & Mask(lowBitsToKeep));
 
     public static uint AddLeastSignificantByte(this uint i, byte b) => (i << 8) | b;
+
+    public static int Exp2(int exp) => 1 << exp;
 }

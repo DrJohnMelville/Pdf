@@ -1,5 +1,8 @@
-﻿using Melville.INPC;
+﻿using System.Threading.Tasks;
+using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 
@@ -33,6 +36,16 @@ public partial class JpegHeaderData: IImageSizeStream
         }
         throw new PdfParseException($"Cannot find JPEG component {id}");
     }
+
+    public async ValueTask<int> ReadDcAsync(int componentIndex, AsyncBitSource source)
+    {
+        return commponentCoeffs[componentIndex] +=  
+            await Components[componentIndex].ReadDeltaDcAsync(source);
+    }
+
+    public ValueTask<(int LeadingZeros, int AcNumber)> ReadAcAsync(
+        int componentIndex, AsyncBitSource source) => 
+        Components[componentIndex].ReadAcAsync(source);
 }
 
 public readonly partial struct ComponentData
@@ -46,7 +59,28 @@ public readonly partial struct ComponentData
 
     public int HorizontalSamplingFactor => samplingFactors & 0b1111;
     public int VerticalSamplingFactor => (samplingFactors>>4) & 0b1111;
-    
+
+    public async ValueTask<int> ReadDeltaDcAsync(AsyncBitSource source)
+    {
+        var dcBitLen = await DcHuffman.ReadAsync(source).CA();
+        var dcBits = (int)await source.ReadBitsAsync(dcBitLen).CA();
+        return DecodeNumber(dcBitLen, dcBits);
+    }
+
+    public static int DecodeNumber(int bitLen, int bits)
+    {
+        var l = BitUtilities.Exp2(bitLen - 1);
+        return (int)(bits >= l ? bits : bits - (2 * l - 1));
+    }
+
+    public async ValueTask<(int LeadingZeros, int AcNumber)> ReadAcAsync(AsyncBitSource source)
+    {
+        var code = (await AcHuffman.ReadAsync(source).CA());
+        var leadingZeros = code >> 4;
+        code &= 0xF;
+        var bits = await source.ReadBitsAsync(code).CA();
+        return (leadingZeros, DecodeNumber(code, (int)bits));
+    }
 }
 
 public enum ComponentId

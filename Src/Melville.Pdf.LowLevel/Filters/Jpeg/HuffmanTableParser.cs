@@ -3,7 +3,9 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
@@ -85,6 +87,22 @@ public readonly partial struct HuffmanTable
             {
                 bitlen++;
                 key = (key << 1) | reader.ForceRead(1, ref input);
+            }
+
+            if (key == line.Code) return line.CodedValue;
+        }
+        throw new PdfParseException("Key does not exist in Huffman table");
+    }
+    public async ValueTask<int> ReadAsync(AsyncBitSource input)
+    {
+        int key = 0;
+        int bitlen = 0;
+        foreach (var line in lines)
+        {
+            while (bitlen < line.BitLength)
+            {
+                bitlen++;
+                key = (key << 1) | await input.ReadBitAsync().CA();
             }
 
             if (key == line.Code) return line.CodedValue;

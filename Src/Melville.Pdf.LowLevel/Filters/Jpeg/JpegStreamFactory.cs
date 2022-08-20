@@ -36,7 +36,7 @@ public partial class JpegStreamFactory
                 case JpegBlockType.StartOfScan:
                     Debug.WriteLine("StartOfScan");
                     await ParseBlock(StartOfScanParser.Instance).CA();
-                    return new ReadJpegStream(source, TryGetFrameData());
+                    return new ReadJpegStream(await AsyncBitSource.Create(source).CA(), TryGetFrameData());
                 case JpegBlockType.EndOfImage:
                     Debug.Assert(false, "Should not have end of image before start of SCAN");
                     break;
