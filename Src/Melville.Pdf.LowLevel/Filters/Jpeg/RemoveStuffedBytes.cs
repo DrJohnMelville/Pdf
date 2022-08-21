@@ -17,14 +17,14 @@ public partial class RemoveStuffedBytes : IAsyncByteSource
 
     public async ValueTask<byte> GetByte()
     {
-        (var ret, nextByte) = (nextByte, await innerSource.GetByte().CA());
-        if (IsStuffedByte(ret))
+        var priorWasFF = nextByte == 0xff;
+        nextByte = await innerSource.GetByte().CA();
+        if (CurrentByteIsStuffedByte(priorWasFF))
         {
             nextByte = await innerSource.GetByte().CA();
-            ret = 0xFF;
         }
-        return ret;
+        return nextByte;
     }
 
-    private bool IsStuffedByte(byte ret) => ret == 0 && nextByte == 0xFF;
+    private bool CurrentByteIsStuffedByte(bool priorWasFF) => priorWasFF && nextByte == 0;
 }

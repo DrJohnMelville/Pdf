@@ -27,27 +27,27 @@ public partial class JpegStreamFactory
             }
         }
 
-        private ComponentData[] ReadAllComponents(ref SequenceReader<byte> data)
+        private ComponentReader[] ReadAllComponents(ref SequenceReader<byte> data)
         {
             var components = data.ReadBigEndianUint8();
             if (components is < 1 or > 4) throw new PdfParseException("Unknown number of JPEG components");
-            var componentData = new ComponentData[components];
+            var componentData = new ComponentReader[components];
             ParseAllComponentData(ref data, componentData);
             return componentData;
         }
 
-        private void ParseAllComponentData(ref SequenceReader<byte> data, ComponentData[] componentData)
+        private void ParseAllComponentData(ref SequenceReader<byte> data, ComponentReader[] componentData)
         {
             for (int i = 0; i < componentData.Length; i++) 
                 componentData[i] = ParseComponentData(ref data);
         }
 
-        private ComponentData ParseComponentData(ref SequenceReader<byte> data)
+        private ComponentReader ParseComponentData(ref SequenceReader<byte> data)
         {
             Span<byte> componentData = stackalloc byte[3];
             data.TryCopyTo(componentData);
             data.Advance(3);
-            return new ComponentData((ComponentId)componentData[0], componentData[1], componentData[2]);
+            return new ComponentReader((ComponentId)componentData[0], componentData[1], componentData[2]);
         }
     }
 }

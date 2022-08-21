@@ -26,36 +26,6 @@ public class JpegPixelBufferTest
     };
     private static readonly byte[] rowOfZeros = new byte[24];
 
-    [Fact]
-    public void UndoZigZagAtRoot()
-    {
-        ZizZagTest(0, i => new byte[] { (byte)i, 0, 0 }, 0, i => i.Concat(rowOfZeros));
-    }
-    [Fact]
-    public void UndoZigZagComponent1()
-    {
-        ZizZagTest(1, i => new byte[] { 0, (byte)i, 0}, 0, i => i.Concat(rowOfZeros));
-    }
-    [Fact]
-    public void UndoZigZagComponent2()
-    {
-        ZizZagTest(2, i => new byte[] { 0, 0, (byte)i}, 0, i => i.Concat(rowOfZeros));
-    }
-    [Fact]
-    public void UndoZigZagAtRootMCU2()
-    {
-        ZizZagTest(0, i => new byte[] { (byte)i, 0, 0 }, 1, i => rowOfZeros.Concat(i));
-    }
-    [Fact]
-    public void UndoZigZagComponent1MCU2()
-    {
-        ZizZagTest(1, i => new byte[] { 0, (byte)i, 0}, 1, i => rowOfZeros.Concat(i));
-    }
-    [Fact]
-    public void UndoZigZagComponent2MCU2()
-    {
-        ZizZagTest(2, i => new byte[] { 0, 0, (byte)i}, 1, i => rowOfZeros.Concat(i));
-    }
 
     private static void ZizZagTest(int componentIndex, Func<int, IEnumerable<byte>> componentSel, int mcu, Func<byte[], IEnumerable<byte>> zeroOffsetter)
     {

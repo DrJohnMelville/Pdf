@@ -8,10 +8,10 @@ public partial class JpegHeaderData: IImageSizeStream
     public int Width { get; }
     public int Height { get; }
     public int BitsPerComponent { get; }
-    public ComponentData[] Components { get; }
+    public ComponentReader[] Components { get; }
     public int ImageComponents => Components.Length;
 
-    public JpegHeaderData(int width, int height, int bitsPerComponent, ComponentData[] components)
+    public JpegHeaderData(int width, int height, int bitsPerComponent, ComponentReader[] components)
     {
         Width = width;
         Height = height;

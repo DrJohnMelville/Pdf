@@ -1,11 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Buffers.Text;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 
-public readonly partial struct ComponentData
+public readonly partial struct ComponentReader
 {
     [FromConstructor] public ComponentId Id { get; }
     [FromConstructor] private readonly int samplingFactors;
@@ -21,7 +23,7 @@ public readonly partial struct ComponentData
     public async ValueTask ReadMcuAsync(AsyncBitSource source)
     {
         await ReadDcAsync(source).CA();
-        await ReadAvValuesAsync(source).CA();
+        await ReadAcValuesAsync(source).CA();
     }
 
     private async ValueTask ReadDcAsync(AsyncBitSource source)
@@ -33,29 +35,40 @@ public readonly partial struct ComponentData
 
     public static int DecodeNumber(int bitLen, int bits)
     {
-        var l = BitUtilities.Exp2(bitLen - 1);
-        return (int)(bits >= l ? bits : bits - (2 * l - 1));
+        if (bitLen == 0) return 0;
+        var baseValue = BitUtilities.Exp2(bitLen - 1);
+        return (bits >= baseValue ? bits : 1+ bits - (2 *baseValue));
     }
 
-    private async ValueTask ReadAvValuesAsync(AsyncBitSource source)
+    private async ValueTask ReadAcValuesAsync(AsyncBitSource source)
     {
         int pos = 1;
-        while (pos < 65)
+        while (pos < 64)
         {
             var (zeroCount, bitsToRead) = await ReadAcAsync(source).CA();
-            if (zeroCount == 0 && bitsToRead == 0) zeroCount = (uint)(65 - pos);
-            for (int i = 0; i < zeroCount; i++)
+            if (zeroCount == 0 && bitsToRead == 0)
             {
-                mcuValues[pos++] = 0;
+                FillZeros(64 - pos, ref pos);
+                return;
             }
-            if (pos >= 65) break;
             var valueBits = await source.ReadBitsAsync((int)bitsToRead).CA();
-            mcuValues[pos++] = DecodeNumber((int)bitsToRead, (int)valueBits);
+            var finalValue = DecodeNumber((int)bitsToRead, (int)valueBits);
+            FillZeros((int)zeroCount, ref pos);
+            mcuValues[ZizZagPositions.ZigZagToMatrix[pos++]] = finalValue;
+        }
+    }
+
+    private void FillZeros(int zeroCount, ref int pos)
+    {
+        for (int i = 0; i < zeroCount; i++)
+        {
+            mcuValues[ZizZagPositions.ZigZagToMatrix[pos++]] = 0;
         }
     }
 
     private async ValueTask<(uint LeadingZeros, uint AcNumber)> ReadAcAsync(AsyncBitSource source)
     {
-        return ((uint)await AcHuffman.ReadAsync(source).CA()).SplitHighAndLowBits(4);
+        var acCode = ((uint)await AcHuffman.ReadAsync(source).CA());
+        return acCode.SplitHighAndLowBits(4);
     }
 }

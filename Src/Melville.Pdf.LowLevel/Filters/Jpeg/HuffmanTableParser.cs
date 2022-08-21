@@ -72,6 +72,7 @@ public partial class JpegStreamFactory
     }
 }
 
+#warning -- take a look at whether faster huffman tables makes sense for either PDF or jpeg -- maybe not
 public readonly partial struct HuffmanTable
 {
     public static readonly HuffmanTable Empty = new(Array.Empty<HuffmanLine>());
