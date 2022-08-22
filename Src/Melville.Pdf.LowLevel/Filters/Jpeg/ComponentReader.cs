@@ -45,30 +45,40 @@ public readonly partial struct ComponentReader
         int pos = 1;
         while (pos < 64)
         {
-            var (zeroCount, bitsToRead) = await ReadAcAsync(source).CA();
-            if (zeroCount == 0 && bitsToRead == 0)
-            {
-                FillZeros(64 - pos, ref pos);
-                return;
-            }
+            var (zeroCount, bitsToRead) =  
+                ((uint)await AcHuffman.ReadAsync(source).CA())
+                .SplitHighAndLowBits(4);
+            if (TryHandleEndOfBlock(zeroCount, bitsToRead, pos)) return;
+            
             var valueBits = await source.ReadBitsAsync((int)bitsToRead).CA();
             var finalValue = DecodeNumber((int)bitsToRead, (int)valueBits);
-            FillZeros((int)zeroCount, ref pos);
-            mcuValues[ZizZagPositions.ZigZagToMatrix[pos++]] = finalValue;
+         
+            pos = HandleAcPair((int)zeroCount, finalValue, pos);
         }
     }
 
-    private void FillZeros(int zeroCount, ref int pos)
+    private bool TryHandleEndOfBlock(uint zeroCount, uint bitsToRead, int pos)
     {
-        for (int i = 0; i < zeroCount; i++)
+        if (IsNotEndOfBlockCode(zeroCount, bitsToRead)) return false;
+        HandleAcPair(63 - pos, 0, pos);
+        return true;
+    }
+
+    private static bool IsNotEndOfBlockCode(uint zeroCount, uint bitsToRead)
+    {
+        return zeroCount != 0 || bitsToRead != 0;
+    }
+
+    private int HandleAcPair(int zeros, int finalValue, int pos)
+    {
+        for (int i = 0; i < zeros; i++)
         {
-            mcuValues[ZizZagPositions.ZigZagToMatrix[pos++]] = 0;
+            PlaceMatrixValue(0, pos++);
         }
+        PlaceMatrixValue(finalValue, pos++);
+        return pos;
     }
 
-    private async ValueTask<(uint LeadingZeros, uint AcNumber)> ReadAcAsync(AsyncBitSource source)
-    {
-        var acCode = ((uint)await AcHuffman.ReadAsync(source).CA());
-        return acCode.SplitHighAndLowBits(4);
-    }
+    private int PlaceMatrixValue(int finalValue, int pos) => 
+        mcuValues[ZizZagPositions.ZigZagToMatrix[pos]] = finalValue;
 }

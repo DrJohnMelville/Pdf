@@ -68,7 +68,6 @@ public class ComponentReaderTest
 
     private static readonly HuffmanTable dcHuffman = new(new HuffmanLine[]
     {
-//        new(bitLength, code, value)
         new(2, 0b000, 00),
         new(3, 0b010, 01),
         new(3, 0b011, 02),
