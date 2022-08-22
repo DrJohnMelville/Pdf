@@ -22,6 +22,7 @@ public readonly partial struct ComponentReader
     [FromConstructor] private readonly ComponentDefinition definition;
     [FromConstructor] private readonly HuffmanTable acHuffman;
     [FromConstructor] private readonly HuffmanTable dcHuffman;
+    [FromConstructor] private readonly QuantizationTable quantizationTable;
 
     private readonly int[] mcuValues = new int[64];
     
@@ -84,6 +85,9 @@ public readonly partial struct ComponentReader
         return pos;
     }
 
-    private int PlaceMatrixValue(int finalValue, int pos) => 
-        mcuValues[ZizZagPositions.ZigZagToMatrix[pos]] = finalValue;
+    private int PlaceMatrixValue(int finalValue, int pos)
+    {
+        var destination = ZizZagPositions.ZigZagToMatrix[pos];
+        return mcuValues[destination] = quantizationTable.Dequantize(pos,finalValue);
+    }
 }

@@ -37,5 +37,8 @@ public partial class JpegStreamFactory
 
 public readonly partial struct QuantizationTable
 {
+    // Per t.81 b.2.4.1 quantization table elements are stored in zigzag order
     [FromConstructor] private readonly int[] table;
+
+    public int Dequantize(int zizZagIndex, int value) => table[zizZagIndex] * value;
 }

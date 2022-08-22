@@ -31,19 +31,25 @@ public class ComponentReaderTest
     public void DecodeNumberTest(int len, int code, int value) =>
         Assert.Equal(value, ComponentReader.DecodeNumber(len, code));
 
+    private static async Task ReadSampleMcu(ComponentReader sut)
+    {
+        await sut.ReadMcuAsync(
+            new AsyncBitSource(
+                new AsyncByteSource(
+                    PipeReader.Create(new MemoryStream(
+                        //DC -30   (0,2) (0,-5)  (1,-2)   (0,1)  (0,-2)  (2,1)  (3,1)   (3,1)    EOB  
+                        "110_00001 01_10 100_010 11011_01 00_1   01_01   11100_1 1110101 1110101 1010".BitsFromBinary()
+                    )))));
+    }
+
     [Fact]
     public async Task ParseSampleBitstream()
     {
         var sut = new ComponentReader(new ComponentDefinition(ComponentId.Y, 1, 1),
-            acHuffmanTable, dcHuffman);
+            acHuffmanTable, dcHuffman,
+            new QuantizationTable(Enumerable.Repeat(1,64).ToArray()));
 
-        await sut.ReadMcuAsync(
-            new AsyncBitSource(
-                new AsyncByteSource(
-                    PipeReader.Create(new MemoryStream( 
-                        //DC -30   (0,2) (0,-5)  (1,-2)   (0,1)  (0,-2)  (2,1)  (3,1)   (3,1)    EOB  
-                        "110_00001 01_10 100_010 11011_01 00_1   01_01   11100_1 1110101 1110101 1010".BitsFromBinary()
-                        )))));
+        await ReadSampleMcu(sut);
 
         Assert.Equal(new int[]
         {
@@ -56,6 +62,34 @@ public class ComponentReaderTest
             0,  0,  0,  0, 0, 0, 0, 0,
             0,  0,  0,  0, 0, 0, 0, 0
         }, (int[])sut.GetField("mcuValues")!);
+    }
+    [Fact]
+    public async Task ParseSampleBitstreamAndQuantize()
+    {
+        var sut = new ComponentReader(new ComponentDefinition(ComponentId.Y, 1, 1),
+            acHuffmanTable, dcHuffman,
+            new QuantizationTable(CreateAscendingQuantArray()));
+
+        await ReadSampleMcu(sut);
+
+        Assert.Equal(new int[]
+        {
+            -30,  4,  3, -8, 0, 0, 0, 0,
+            -45, -20,  0,  12, 0, 0, 0, 0,
+            0,  0,  0,  20, 0, 0, 0, 0,
+            25,  0,  0,  0, 0, 0, 0, 0,
+            0,  0,  0,  0, 0, 0, 0, 0,
+            0,  0,  0,  0, 0, 0, 0, 0,
+            0,  0,  0,  0, 0, 0, 0, 0,
+            0,  0,  0,  0, 0, 0, 0, 0
+        }, (int[])sut.GetField("mcuValues")!);
+    }
+
+    private static int[] CreateAscendingQuantArray()
+    {
+        return Enumerable.Range(0, 64)
+            .Select(i => ZizZagPositions.ZigZagToMatrix[i] + 1)
+            .ToArray();
     }
 
     private string Format8x8(int[] values) =>

@@ -23,7 +23,11 @@ public partial class JpegStreamFactory
         }
         throw new PdfParseException("Cannot find JPEG huffman table");
     }
-
+    private QuantizationTable GetQuantizationTable(int quantizationTableIndex)
+    {
+        return quantizationTables[quantizationTableIndex] ??
+               throw new PdfParseException("Jpeg references undefined quantization table");
+    }
     [StaticSingleton]
     public partial class StartOfScanParser : IJpegBlockParser
     {
@@ -47,7 +51,8 @@ public partial class JpegStreamFactory
                 Debug.Assert(cmpId == componentDefinition.Id);
                 readers[i] = new ComponentReader(componentDefinition,
                     factory.GetHuffmanTable(HuffmanTableType.AC, acHuff),
-                    factory.GetHuffmanTable(HuffmanTableType.DC, dcHuff));
+                    factory.GetHuffmanTable(HuffmanTableType.DC, dcHuff),
+                    factory.GetQuantizationTable(componentDefinition.QuantTableNumber));
             }
 
             factory.componentReaders = readers;
