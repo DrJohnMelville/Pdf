@@ -34,11 +34,8 @@ public class ComponentReaderTest
     [Fact]
     public async Task ParseSampleBitstream()
     {
-        var sut = new ComponentReader(ComponentId.Y, 1, 1)
-        {
-            DcHuffman = dcHuffman,
-            AcHuffman = acHuffmanTable
-        };
+        var sut = new ComponentReader(new ComponentDefinition(ComponentId.Y, 1, 1),
+            acHuffmanTable, dcHuffman);
 
         await sut.ReadMcuAsync(
             new AsyncBitSource(

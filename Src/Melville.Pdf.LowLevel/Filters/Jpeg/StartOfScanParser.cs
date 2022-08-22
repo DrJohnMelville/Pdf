@@ -33,6 +33,9 @@ public partial class JpegStreamFactory
                             throw new PdfParseException("JPEG must have SOF block before SOS block.");
             var compCount = data.ReadBigEndianUint8();
             Debug.WriteLine($"    Components: {compCount}");
+            if (compCount != factory.frameData.ImageComponents)
+                throw new PdfParseException("Inconsisten JPEG component number");
+            var readers = new ComponentReader[compCount];
             for (int i = 0; i < compCount; i++)
             {
                 var cmpId = (ComponentId)data.ReadBigEndianUint8();
@@ -40,11 +43,14 @@ public partial class JpegStreamFactory
                 var acHuff = dcHuff & 0xf;
                 dcHuff >>= 8;
                 Debug.WriteLine($"    ComponentId: {cmpId}  acHuff: {acHuff}  dcHuff: {dcHuff}");
-                frameData.UpdateHuffmanTables(cmpId,
-                    factory.GetHuffmanTable(HuffmanTableType.DC, dcHuff),
-                    factory.GetHuffmanTable(HuffmanTableType.AC, acHuff)
-                    );
+                var componentDefinition = factory.frameData.Components[i];
+                Debug.Assert(cmpId == componentDefinition.Id);
+                readers[i] = new ComponentReader(componentDefinition,
+                    factory.GetHuffmanTable(HuffmanTableType.AC, acHuff),
+                    factory.GetHuffmanTable(HuffmanTableType.DC, dcHuff));
             }
+
+            factory.componentReaders = readers;
         }
     }
 }

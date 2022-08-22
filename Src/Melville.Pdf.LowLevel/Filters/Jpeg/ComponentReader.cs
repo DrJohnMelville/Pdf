@@ -7,19 +7,24 @@ using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 
-public readonly partial struct ComponentReader
+public readonly partial struct ComponentDefinition
 {
     [FromConstructor] public ComponentId Id { get; }
     [FromConstructor] private readonly int samplingFactors;
     [FromConstructor] public int QuantTableNumber { get; }
-    private readonly int[] mcuValues = new int[64];
-
-    public HuffmanTable AcHuffman { get; init; } = HuffmanTable.Empty;
-    public HuffmanTable DcHuffman { get; init; } = HuffmanTable.Empty;
-
     public int HorizontalSamplingFactor => samplingFactors & 0b1111;
     public int VerticalSamplingFactor => (samplingFactors>>4) & 0b1111;
 
+}
+
+public readonly partial struct ComponentReader
+{
+    [FromConstructor] private readonly ComponentDefinition definition;
+    [FromConstructor] private readonly HuffmanTable acHuffman;
+    [FromConstructor] private readonly HuffmanTable dcHuffman;
+
+    private readonly int[] mcuValues = new int[64];
+    
     public async ValueTask ReadMcuAsync(AsyncBitSource source)
     {
         await ReadDcAsync(source).CA();
@@ -28,7 +33,7 @@ public readonly partial struct ComponentReader
 
     private async ValueTask ReadDcAsync(AsyncBitSource source)
     {
-        var dcBitLen = await DcHuffman.ReadAsync(source).CA();
+        var dcBitLen = await dcHuffman.ReadAsync(source).CA();
         var dcBits = (int)await source.ReadBitsAsync(dcBitLen).CA();
         mcuValues[0] = DecodeNumber(dcBitLen, dcBits);
     }
@@ -46,7 +51,7 @@ public readonly partial struct ComponentReader
         while (pos < 64)
         {
             var (zeroCount, bitsToRead) =  
-                ((uint)await AcHuffman.ReadAsync(source).CA())
+                ((uint)await acHuffman.ReadAsync(source).CA())
                 .SplitHighAndLowBits(4);
             if (TryHandleEndOfBlock(zeroCount, bitsToRead, pos)) return;
             

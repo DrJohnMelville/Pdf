@@ -16,28 +16,35 @@ namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
 {
     private readonly AsyncBitSource source;
-    private readonly JpegHeaderData context;
+    
+    public int Width { get; }
+    public int Height { get; }
+    public int BitsPerComponent { get; }
+    public ComponentReader[] Components { get; }
+    public int ImageComponents => Components.Length;
     
     private JpegPixelBuffer pixels;
     private int totalLinesRead = 0;
     private readonly int widthInBlocks;
 
-    public ReadJpegStream(AsyncBitSource source, JpegHeaderData context) : 
-        base(true, false, false)
+    public ReadJpegStream(
+        AsyncBitSource source, int width, int height, int bitsPerComponent, 
+        ComponentReader[] components): base(true,false,false)
     {
         this.source = source;
-        this.context = context;
-        widthInBlocks = ComputeWidthInWholeBlocks(context.Width);
-        pixels = new JpegPixelBuffer(widthInBlocks, context.ImageComponents);
+        Width = width;
+        Height = height;
+        BitsPerComponent = bitsPerComponent;
+        Components = components;
+        widthInBlocks = ComputeWidthInWholeBlocks(Width);
+        pixels = new JpegPixelBuffer(widthInBlocks, ImageComponents);
     }
     
     private static int ComputeWidthInWholeBlocks(int width)
     {
         return (width + 7) / 8;
     }
-
-
-    [DelegateTo] private IImageSizeStream SizeInfo => context;
+    
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
@@ -50,9 +57,9 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
         for (int i = 0; i < widthInBlocks; i++)
         {
             var offset = pixels.McuStart(i);
-            for (int j = 0; j < context.ImageComponents; j++)
+            for (int j = 0; j < ImageComponents; j++)
             {
-                await context.Components[j].ReadMcuAsync(source).CA();
+                await Components[j].ReadMcuAsync(source).CA();
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ public partial class JpegStreamFactory
     private const int JpegTagSize = 2;
     private readonly PipeReader source;
     private JpegHeaderData? frameData;
+    private ComponentReader[]? componentReaders;
     private readonly List<KeyValuePair<int, HuffmanTable>> huffmanTables = new();
     private readonly QuantizationTable?[] quantizationTables = new QuantizationTable?[16];
 
@@ -36,7 +38,12 @@ public partial class JpegStreamFactory
                 case JpegBlockType.StartOfScan:
                     Debug.WriteLine("StartOfScan");
                     await ParseBlock(StartOfScanParser.Instance).CA();
-                    return new ReadJpegStream(await AsyncBitSource.Create(source).CA(), TryGetFrameData());
+                    VerifyCompleteJpegHeaders();
+                    return new ReadJpegStream(
+                        await AsyncBitSource.Create(source).CA(),
+                            frameData.Width, frameData.Height, frameData.BitsPerComponent,
+                            componentReaders
+                        );
                 case JpegBlockType.EndOfImage:
                     Debug.Assert(false, "Should not have end of image before start of SCAN");
                     break;
@@ -46,6 +53,14 @@ public partial class JpegStreamFactory
                     break;
             }
         }
+    }
+
+    [MemberNotNull(nameof(frameData))]
+    [MemberNotNull(nameof(componentReaders))]
+    private void VerifyCompleteJpegHeaders()
+    {
+        if (frameData == null) throw new PdfParseException("No frame data for jpeg");
+        if (componentReaders == null) throw new PdfParseException("No component readers");
     }
 
     private JpegHeaderData TryGetFrameData() =>
