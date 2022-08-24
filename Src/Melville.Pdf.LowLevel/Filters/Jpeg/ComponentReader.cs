@@ -24,7 +24,7 @@ public readonly partial struct ComponentReader
     [FromConstructor] private readonly HuffmanTable dcHuffman;
     [FromConstructor] private readonly QuantizationTable quantizationTable;
 
-    private readonly int[] mcuValues = new int[64];
+    private readonly Matrix8x8<double> mcuValues = new();
     
     public async ValueTask ReadMcuAsync(AsyncBitSource source)
     {
@@ -36,7 +36,7 @@ public readonly partial struct ComponentReader
     {
         var dcBitLen = await dcHuffman.ReadAsync(source).CA();
         var dcBits = (int)await source.ReadBitsAsync(dcBitLen).CA();
-        mcuValues[0] = DecodeNumber(dcBitLen, dcBits);
+        PlaceMatrixValue(DecodeNumber(dcBitLen, dcBits), 0);
     }
 
     public static int DecodeNumber(int bitLen, int bits)
@@ -85,9 +85,12 @@ public readonly partial struct ComponentReader
         return pos;
     }
 
-    private int PlaceMatrixValue(int finalValue, int pos)
+    private void PlaceMatrixValue(int finalValue, int pos)
     {
         var destination = ZizZagPositions.ZigZagToMatrix[pos];
-        return mcuValues[destination] = quantizationTable.Dequantize(pos,finalValue);
+        mcuValues[destination] = quantizationTable.Dequantize(pos,finalValue);
     }
+
+    public double ReadValue(int row, int col) => 
+        DiscreteCosineTransformation.GetInverseElement(row, col, mcuValues);
 }

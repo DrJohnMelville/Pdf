@@ -24,8 +24,9 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
     public int ImageComponents => Components.Length;
     
     private JpegPixelBuffer pixels;
-    private int totalLinesRead = 0;
-    private readonly int widthInBlocks;
+    private int currentBlockLinesRead = 8;
+    private int totalLinesToRead;
+    private int bytesInLineRead = 0;
 
     public ReadJpegStream(
         AsyncBitSource source, int width, int height, int bitsPerComponent, 
@@ -36,30 +37,75 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
         Height = height;
         BitsPerComponent = bitsPerComponent;
         Components = components;
-        widthInBlocks = ComputeWidthInWholeBlocks(Width);
-        pixels = new JpegPixelBuffer(widthInBlocks, ImageComponents);
+        totalLinesToRead = height;
+        pixels = new JpegPixelBuffer(width, ImageComponents);
     }
     
-    private static int ComputeWidthInWholeBlocks(int width)
-    {
-        return (width + 7) / 8;
-    }
     
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
-        await LoadData().CA();
-        return 0;
+//        if (totalLinesToRead < 250) return 0;
+        if (currentBlockLinesRead >= 8)
+        {
+            await LoadData().CA();
+            currentBlockLinesRead = 0;
+            bytesInLineRead = 0;
+        }
+        return TryCopyBuffer(buffer.Span);
+    }
+
+    private int TryCopyBuffer(Span<byte> bufferSpan)
+    {
+        var localReadSize = 0;
+        while (currentBlockLinesRead < 8 && totalLinesToRead > 0)
+        {
+            if (pixels.HasMoreBytesInLine(bytesInLineRead))
+            {
+                var sourceLine = pixels.PartialByteLine(currentBlockLinesRead, bytesInLineRead);
+                var target = bufferSpan[localReadSize..];
+                if (target.Length < sourceLine.Length)
+                {
+                    sourceLine.Slice(0, target.Length).CopyTo(target);
+                    localReadSize += target.Length;
+                    return localReadSize;
+                }
+                sourceLine.CopyTo(target);
+                localReadSize += sourceLine.Length;
+            }
+            currentBlockLinesRead++;
+            bytesInLineRead = 0;
+            totalLinesToRead--;
+        }
+
+        return localReadSize;
     }
 
     private async ValueTask LoadData()
     {
-        for (int i = 0; i < widthInBlocks; i++)
+        for (int i = 0; i < pixels.WidthInBlocks; i++)
         {
-            var offset = pixels.McuStart(i);
             for (int j = 0; j < ImageComponents; j++)
             {
                 await Components[j].ReadMcuAsync(source).CA();
+            }
+            TransferMCUToBuffer(i);
+        }
+    }
+
+    private void TransferMCUToBuffer(int mcu)
+    {
+        for (int row = 0; row < 8; row++)
+        {
+            #warning -- height or width may not be a multiple of 8
+            var offset = pixels.McuLine(mcu, row);
+            var index = 0;
+            for (int col = 0; col < 8; col++)
+            {
+                foreach (var component in Components)
+                {
+                    offset[index++] = (byte)(component.ReadValue(row, col) + 128);
+                }
             }
         }
     }

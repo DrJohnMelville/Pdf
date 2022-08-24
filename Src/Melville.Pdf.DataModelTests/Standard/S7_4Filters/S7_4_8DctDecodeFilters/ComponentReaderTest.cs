@@ -51,7 +51,7 @@ public class ComponentReaderTest
 
         await ReadSampleMcu(sut);
 
-        Assert.Equal(new int[]
+        Assert.Equal(new double[]
         {
             -30,  2,  1, -2, 0, 0, 0, 0,
             -5, -2,  0,  1, 0, 0, 0, 0,
@@ -61,8 +61,14 @@ public class ComponentReaderTest
             0,  0,  0,  0, 0, 0, 0, 0,
             0,  0,  0,  0, 0, 0, 0, 0,
             0,  0,  0,  0, 0, 0, 0, 0
-        }, (int[])sut.GetField("mcuValues")!);
+        }, GetMcuIntermediates(sut));
     }
+    
+    private static double[] GetMcuIntermediates(ComponentReader sut)
+    {
+        return (double[])sut.GetField("mcuValues")!.GetField("data")!;
+    }
+
     [Fact]
     public async Task ParseSampleBitstreamAndQuantize()
     {
@@ -72,23 +78,36 @@ public class ComponentReaderTest
 
         await ReadSampleMcu(sut);
 
-        Assert.Equal(new int[]
+        Assert.Equal(new double[]
         {
-            -30,  4,  3, -8, 0, 0, 0, 0,
-            -45, -20,  0,  12, 0, 0, 0, 0,
-            0,  0,  0,  20, 0, 0, 0, 0,
-            25,  0,  0,  0, 0, 0, 0, 0,
-            0,  0,  0,  0, 0, 0, 0, 0,
-            0,  0,  0,  0, 0, 0, 0, 0,
-            0,  0,  0,  0, 0, 0, 0, 0,
-            0,  0,  0,  0, 0, 0, 0, 0
-        }, (int[])sut.GetField("mcuValues")!);
+            
+            -480, 022, 010, -32, 000, 000, 000, 000,
+            -60, -24, 000, 019, 000, 000, 000, 000,
+            000, 000, 000, 024, 000, 000, 000, 000,
+            014, 000, 000, 000, 000, 000, 000, 000,
+            000, 000, 000, 000, 000, 000, 000, 000,
+            000, 000, 000, 000, 000, 000, 000, 000,
+            000, 000, 000, 000, 000, 000, 000, 000,
+            000, 000, 000, 000, 000, 000, 000, 000
+            
+        }, GetMcuIntermediates(sut));
     }
 
     private static int[] CreateAscendingQuantArray()
     {
+        var qmatrix = new int[]
+        {
+            16, 11, 10, 16, 124, 140, 151, 160,
+            12, 12, 14, 19, 126, 158, 160, 155,
+            14, 14, 16, 24, 140, 157, 169, 156,
+            14, 17, 22, 29, 151, 187, 180, 162,
+            18, 22, 37, 56, 168, 109, 103, 177,
+            24, 25, 55, 64, 181, 104, 113, 192,
+            49, 64, 78, 87, 103, 121, 120, 101,
+            72, 92, 95, 98, 112, 110, 103, 109
+        };
         return Enumerable.Range(0, 64)
-            .Select(i => ZizZagPositions.ZigZagToMatrix[i] + 1)
+            .Select(i => qmatrix[ZizZagPositions.ZigZagToMatrix[i]])
             .ToArray();
     }
 
