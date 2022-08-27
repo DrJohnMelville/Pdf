@@ -18,6 +18,7 @@ Writers => Model
 
 #ImageSharp is restricted to ExternalFilters
 Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> SixLabors.ImageSharp.*
+Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> Melville.JpegLibrary.*
 
 #CSj2K 
 Melville.Pdf.LowLevel.Filters.JpxDecodeFilters.* ^=> Melville.CSJ2K.*

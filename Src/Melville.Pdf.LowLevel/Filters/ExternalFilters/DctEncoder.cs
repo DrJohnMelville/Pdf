@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.JpegLibrary.PipeAmdStreamAdapters;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.Jpeg;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -17,9 +18,10 @@ public class DctDecoder : ICodecDefinition
         throw new NotSupportedException();
     }
 
-    public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
+    public ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
     {
-        return await new JpegStreamFactory(input).Construct().CA();
+        return JpegStreamFactory2.FromStream(input);
+//        return await new JpegStreamFactory(input).Construct().CA();
 //        return await ReadInFormat<Rgb24>(input).CA();
     }
 

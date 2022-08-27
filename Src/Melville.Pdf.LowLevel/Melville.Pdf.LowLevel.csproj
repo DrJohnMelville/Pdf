@@ -21,6 +21,7 @@
           <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>
       <ProjectReference Include="..\Melville.CSJ2k\Melville.CSJ2K.csproj" />
+      <ProjectReference Include="..\Melville.JpegLibrary\Melville.JpegLibrary.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
       <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
       <None Remove="Model\Conventions\KnownNames.dsl" />
