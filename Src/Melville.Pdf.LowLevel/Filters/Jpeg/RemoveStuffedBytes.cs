@@ -12,7 +12,6 @@ public partial class RemoveStuffedBytes : IAsyncByteSource
     public async ValueTask Initialize()
     {
         await innerSource.Initialize().CA();
-        await GetByte().CA();
     }
 
     public async ValueTask<byte> GetByte()

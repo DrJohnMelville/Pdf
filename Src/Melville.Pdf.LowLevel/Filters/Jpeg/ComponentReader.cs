@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -17,7 +18,7 @@ public readonly partial struct ComponentDefinition
 
 }
 
-public readonly partial struct ComponentReader
+public partial class ComponentReader
 {
     [FromConstructor] private readonly ComponentDefinition definition;
     [FromConstructor] private readonly HuffmanTable acHuffman;
@@ -30,13 +31,15 @@ public readonly partial struct ComponentReader
     {
         await ReadDcAsync(source).CA();
         await ReadAcValuesAsync(source).CA();
+        
     }
 
+    private int priorDcValue;
     private async ValueTask ReadDcAsync(AsyncBitSource source)
     {
         var dcBitLen = await dcHuffman.ReadAsync(source).CA();
         var dcBits = (int)await source.ReadBitsAsync(dcBitLen).CA();
-        PlaceMatrixValue(DecodeNumber(dcBitLen, dcBits), 0);
+        PlaceMatrixValue(priorDcValue+=DecodeNumber(dcBitLen, dcBits), 0);
     }
 
     public static int DecodeNumber(int bitLen, int bits)

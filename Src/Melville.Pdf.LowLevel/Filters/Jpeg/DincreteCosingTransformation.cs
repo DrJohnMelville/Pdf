@@ -2,22 +2,6 @@
 
 namespace Melville.Pdf.LowLevel.Filters.Jpeg;
 
-/*
-    just to be very optimmistic
-    here is the color conversion code in python
-    def Clamp(col):
-    col = 255 if col>255 else col
-    col = 0 if col<0 else col
-    return  int(col)
-
-def ColorConversion(Y, Cr, Cb):
-    R = Cr*(2-2*.299) + Y
-    B = Cb*(2-2*.114) + Y
-    G = (Y - .114*B - .299*R)/.587
-    return (Clamp(R+128),Clamp(G+128),Clamp(B+128) )
- */
-
-
 public static class DiscreteCosineTransformation
 {
     public static double GetInverseElement(int y, int x, in Matrix8x8<double> inputs)

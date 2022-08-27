@@ -92,4 +92,20 @@ public class IdctTest
         });
         Assert.Equal(value, DiscreteCosineTransformation.GetInverseElement(row, column, ksource), 1);
     }
+
+    [Fact]
+    public void AllWhite()
+    {
+        var data = new double[64];
+        data[0] = 1016;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                var inverseElement = DiscreteCosineTransformation.GetInverseElement(i,j,
+                    new Matrix8x8<double>(data));
+                Assert.Equal(255, inverseElement, 1);
+            }
+        }
+    }
 }

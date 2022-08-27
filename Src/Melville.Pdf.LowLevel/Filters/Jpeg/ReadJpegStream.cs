@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
@@ -95,6 +96,7 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
 
     private void TransferMCUToBuffer(int mcu)
     {
+        int componentLength = Components.Length;
         for (int row = 0; row < 8; row++)
         {
             #warning -- height or width may not be a multiple of 8
@@ -102,11 +104,26 @@ public partial class ReadJpegStream: DefaultBaseStream, IImageSizeStream
             var index = 0;
             for (int col = 0; col < 8; col++)
             {
-                foreach (var component in Components)
-                {
-                    offset[index++] = (byte)(component.ReadValue(row, col) + 128);
-                }
+                var innerOffset = offset.Slice(index, componentLength);
+                ReadAllComponents(innerOffset, row, col);
+                index += componentLength;
             }
         }
+    }
+
+    private void ReadAllComponents(in Span<byte> offset, int row, int col)
+    {
+        Debug.Assert(offset.Length == 3);
+        double Y = Components[0].ReadValue(row, col);
+        double Cr = Components[1].ReadValue(row, col) - 128;
+        double Cb= Components[2].ReadValue(row, col) - 128;
+  
+        var R = Cr*(2-2*.299) + Y;
+        var B = Cb * (2 - 2 * .114) + Y;
+        var G = (Y - .114 * B - .299 * R) / .587;
+
+        offset[0] = (byte)R.Clamp(0, 255);
+        offset[1] = (byte)G.Clamp(0, 255);
+        offset[2] = (byte)B.Clamp(0, 255);
     }
 }
