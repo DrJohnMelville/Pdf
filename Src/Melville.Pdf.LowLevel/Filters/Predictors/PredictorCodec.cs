@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -8,7 +9,8 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
-public class PredictorCodec : ICodecDefinition
+[StaticSingleton()]
+public partial class PredictorCodec : ICodecDefinition
 {
     private const int FirstPngPredictor = 10;
     private const int LastPngPredictor = 15;

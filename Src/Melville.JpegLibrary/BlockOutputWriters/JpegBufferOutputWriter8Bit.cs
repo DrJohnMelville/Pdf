@@ -56,4 +56,4 @@ public class JpegBufferOutputWriter8Bit : JpegBlockOutputWriter
     {
         return (byte)Math.Clamp(input, (short)0, (short)255);
     }
-}
+} 

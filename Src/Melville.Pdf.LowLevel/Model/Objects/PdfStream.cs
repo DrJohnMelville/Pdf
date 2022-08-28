@@ -51,14 +51,12 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
                 new FilterProcessor(
                     await FilterList().CA(),
                     await FilterParamList().CA(),
-                    await CreateDecoder(innerEncryptor).CA())).CA();
+                    CreateDecoder(innerEncryptor))).CA();
 
     #warning -- we can reuse much of the IApplySingleFilterStack
-    private  ValueTask<IApplySingleFilter> CreateDecoder(IObjectCryptContext innerEncryptor) =>
-        DctToMonochromeFilter.TryApply(this, 
+    private  IApplySingleFilter CreateDecoder(IObjectCryptContext innerEncryptor) =>
             new CryptSingleFilter(source, innerEncryptor,
-                new SinglePredictionFilter(
-                    new StaticSingleFilter())));
+                SinglePredictionFilter.Instance);
 
     private async ValueTask<IReadOnlyList<PdfObject>> FilterList() => 
         (await this.GetOrNullAsync(KnownNames.Filter).CA()).AsList();

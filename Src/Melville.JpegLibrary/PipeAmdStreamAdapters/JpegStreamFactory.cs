@@ -23,11 +23,14 @@ public static class JpegStreamFactory2
         decoder.SetInput(input);
         decoder.Identify();
         #warning rent this array
-        var output = new byte[decoder.Width * decoder.Height * decoder.NumberOfComponents];
+        var bufferLength = decoder.Width * decoder.Height * decoder.NumberOfComponents;
+        var output = ArrayPool<byte>.Shared.Rent(bufferLength);
         var outputWriter =
             new JpegBufferOutputWriter8Bit(decoder.Width, decoder.Height, decoder.NumberOfComponents, output);
         decoder.SetOutputWriter(outputWriter);
         decoder.Decode();
-        return new MemoryStream(output);
+        return decoder.NumberOfComponents == 3 ? 
+            new YCrCbStream(output, bufferLength):
+            new StraightCopyStream(output, bufferLength);
     }
 }
