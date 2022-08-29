@@ -111,6 +111,9 @@ public class JpegDecoder
             case JpegMarker.DefineQuantizationTable:
                 ProcessDefineQuantizationTable(ref reader, loadQuantizationTables);
                 break;
+            case JpegMarker.App14:
+                ProcessAdobeTag(ref reader);
+                break;
             case JpegMarker.DefineRestart0:
             case JpegMarker.DefineRestart1:
             case JpegMarker.DefineRestart2:
@@ -130,6 +133,25 @@ public class JpegDecoder
         return true;
     }
 
+    public int? App14EncodingByte { get; private set; } = null;
+    private void ProcessAdobeTag(ref JpegReader reader)
+    {
+        if (!reader.TryReadLength(out ushort length))
+        {
+            ThrowInvalidDataException(reader.ConsumedByteCount,
+                "Unexpected end of input data when reading segment length.");
+            return;
+        }
+        if (!reader.TryReadBytes(length, out var dataSegment))
+        {
+            ThrowInvalidDataException(reader.ConsumedByteCount, "Unexpected end of input data reached.");
+            return;
+        }
+
+        if (dataSegment.Length >= 12) App14EncodingByte = dataSegment.Slice(11).FirstSpan[0];
+
+    }
+
     private static void ProcessOtherMarker(ref JpegReader reader)
     {
         if (!reader.TryReadLength(out ushort length))
@@ -138,7 +160,6 @@ public class JpegDecoder
                 "Unexpected end of input data when reading segment length.");
             return;
         }
-
         if (!reader.TryAdvance(length))
         {
             ThrowInvalidDataException(reader.ConsumedByteCount, "Unexpected end of input data reached.");

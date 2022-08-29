@@ -404,3 +404,7 @@ RenderingTest.cs_wpf-SymbolicFontWithBrokenCmaps|3584054994
 RenderingTest.cs_Skia-SymbolicFontWithBrokenCmaps|871948460
 RenderingTest.cs_wpf-FontWithAdobeCustomCmap|366604030
 RenderingTest.cs_Skia-FontWithAdobeCustomCmap|3951261574
+RenderingTest.cs_wpf-CmykJpegImage|2290982135
+RenderingTest.cs_wpf-JpegImageGray|1277278822
+RenderingTest.cs_Skia-CmykJpegImage|984186444
+RenderingTest.cs_Skia-JpegImageGray|2467434447
