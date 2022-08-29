@@ -2,12 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.JpegLibrary.PipeAmdStreamAdapters;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Filters.Jpeg;
 using Melville.Pdf.LowLevel.Model.Objects;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace Melville.Pdf.LowLevel.Filters.ExternalFilters;
 
@@ -18,16 +13,7 @@ public class DctDecoder : ICodecDefinition
         throw new NotSupportedException();
     }
 
-    public ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
-    {
-        return JpegStreamFactory2.FromStream(input);
-//        return await new JpegStreamFactory(input).Construct().CA();
-//        return await ReadInFormat<Rgb24>(input).CA();
-    }
+    public ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters) => 
+        JpegStreamFactory.FromStream(input);
 
-    private static async Task<Stream> ReadInFormat<T>(Stream input) where T : unmanaged, IPixel<T>
-    {
-        var img = await Image.LoadAsync<T>(input).CA();
-        return new ImageReadStream<T>(img);
-    }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Buffers;
-using System.Diagnostics;
+﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.HalftoneRegionParsers;
-using SixLabors.ImageSharp.ColorSpaces.Conversion;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 

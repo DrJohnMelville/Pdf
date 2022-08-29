@@ -1,14 +1,11 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
-using System.IO.Pipes;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.Intrinsics.X86;
 using Melville.JpegLibrary.BlockOutputWriters;
 using Melville.JpegLibrary.Decoder;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-public static class JpegStreamFactory2
+public static class JpegStreamFactory
 {
     public static ValueTask<Stream> FromStream(Stream s) => FromPipe(PipeReader.Create(s), s.Length);
 
