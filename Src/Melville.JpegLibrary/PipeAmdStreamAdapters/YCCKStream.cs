@@ -18,8 +18,7 @@ public class YCCKStream: ConvertingStream
             for (int i = 0; i < count; i++)
             {
                 var (red,green,blue) = YCbCrToRgbConverter.YCbCrToRGB(
-                    sourcePtr[0], sourcePtr[1], sourcePtr[2]);
-                sourcePtr += 3;
+                    *sourcePtr++, *sourcePtr++, *sourcePtr++);
                 *destPtr++ = (byte)(255 - red);
                 *destPtr++ = (byte)(255 - green);
                 *destPtr++ = (byte)(255 - blue);
