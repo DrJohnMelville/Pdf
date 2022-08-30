@@ -17,12 +17,12 @@ public static class FontFaceOperations
     public static IEnumerable<(uint Char, uint Glyph)> AllMappings(this CharMap cMap)
     {
         cMap.Face.SetCharmap(cMap);
-        for (uint character = cMap.Face.GetFirstChar(out var glyph);
-             character != 0;
-             character = cMap.Face.GetNextChar(character, out glyph))
+        uint character = cMap.Face.GetFirstChar(out var glyph);
+        do
         {
             yield return (character, glyph);
-        }
+            character = cMap.Face.GetNextChar(character, out glyph);
+        } while (character != 0);
     }
 
     public static IEnumerable<(uint Glyph, string Name)> AllGlyphNames(this Face face)
