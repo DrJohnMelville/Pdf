@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
@@ -27,22 +30,40 @@ public class WindowsDefaultFonts : IDefaultFontMapper
     {
         return font.GetHashCode() switch
         {
-            KnownNameKeys.Courier => factory.SystemFont(CourierNew, false, false),
-            KnownNameKeys.CourierBold => factory.SystemFont(CourierNew, true, false),
-            KnownNameKeys.CourierOblique => factory.SystemFont(CourierNew, false, true),
-            KnownNameKeys.CourierBoldOblique => factory.SystemFont(CourierNew, true, true),
-            KnownNameKeys.Helvetica => factory.SystemFont(Arial, false, false),
-            KnownNameKeys.HelveticaBold => factory.SystemFont(Arial, true, false),
-            KnownNameKeys.HelveticaOblique => factory.SystemFont(Arial, false, true),
-            KnownNameKeys.HelveticaBoldOblique => factory.SystemFont(Arial, true, true),
-            KnownNameKeys.TimesRoman => factory.SystemFont(TimesNewRoman, false, false),
-            KnownNameKeys.TimesBold => factory.SystemFont(TimesNewRoman, true, false),
-            KnownNameKeys.TimesOblique => factory.SystemFont(TimesNewRoman, false, true),
-            KnownNameKeys.TimesBoldOblique => factory.SystemFont(TimesNewRoman, true, true),
-            KnownNameKeys.Symbol => factory.SystemFont(SegoeUISymbol,
-                false, false), KnownNameKeys.ZapfDingbats => factory.SystemFont(SegoeUISymbol, false, false),
-            _ => factory.SystemFont(font.Bytes, 
+            KnownNameKeys.Courier => SystemFont(CourierNew, fontFlags, factory,  false, false),
+            KnownNameKeys.CourierBold => SystemFont(CourierNew, fontFlags, factory,  true, false),
+            KnownNameKeys.CourierOblique => SystemFont(CourierNew, fontFlags, factory,  false, true),
+            KnownNameKeys.CourierBoldOblique => SystemFont(CourierNew, fontFlags, factory,  true, true),
+            KnownNameKeys.Helvetica => SystemFont(Arial, fontFlags, factory,  false, false),
+            KnownNameKeys.HelveticaBold => SystemFont(Arial, fontFlags, factory,  true, false),
+            KnownNameKeys.HelveticaOblique => SystemFont(Arial, fontFlags, factory,  false, true),
+            KnownNameKeys.HelveticaBoldOblique => SystemFont(Arial, fontFlags, factory,  true, true),
+            KnownNameKeys.TimesRoman => SystemFont(TimesNewRoman, fontFlags, factory,  false, false),
+            KnownNameKeys.TimesBold => SystemFont(TimesNewRoman, fontFlags, factory,  true, false),
+            KnownNameKeys.TimesOblique => SystemFont(TimesNewRoman, fontFlags, factory,  false, true),
+            KnownNameKeys.TimesBoldOblique => SystemFont(TimesNewRoman, fontFlags, factory,  true, true),
+            KnownNameKeys.Symbol => SystemFont(SegoeUISymbol, fontFlags, factory,  false, false), 
+            KnownNameKeys.ZapfDingbats => SystemFont(SegoeUISymbol, fontFlags, factory,  false, false),
+            _ => SystemFont(font.Bytes, fontFlags, factory, 
                         fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic))
         };
+    }
+
+    private async ValueTask<IRealizedFont> SystemFont(
+        byte[] name, FontFlags flags, FreeTypeFontFactory factory, bool bold, bool italic)
+    {
+        var fontReference = GlobalFreeTypeResources.SystemFontLibrary().FontFromName(name, bold, italic)??
+                            GlobalFreeTypeResources.SystemFontLibrary().FontFromName(FontNameFromFlags(flags), bold, italic)??
+                            throw new PdfParseException("Could not replace font.");
+        await using var stream = File.Open(fontReference.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return await factory.FromCSharpStream(stream, fontReference.Index).CA();
+    }
+
+    private byte[] FontNameFromFlags(FontFlags fontFlags)
+    {
+        if (fontFlags.HasFlag(FontFlags.Symbolic)) return SegoeUISymbol;
+        if (fontFlags.HasFlag(FontFlags.FixedPitch)) return CourierNew;
+        if (fontFlags.HasFlag(FontFlags.Serif)) return TimesNewRoman;
+        return Arial;
     }
 }

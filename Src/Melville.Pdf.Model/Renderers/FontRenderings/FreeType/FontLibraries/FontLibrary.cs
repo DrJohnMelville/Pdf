@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using SharpFont.Fnt;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
@@ -12,26 +14,39 @@ public class FontLibrary
         this.families = families;
     }
 
-    public FontReference FontFromName(byte[] fontName, bool bold, bool italic)
+    public FontReference? FontFromName(byte[] fontName, bool bold, bool italic)
     {
-        return FindFontFamily(fontName).SelectFace(bold, italic);
+        var strName = fontName.ExtendedAsciiString();
+        return FindFontFamily(fontName)?.SelectFace(bold, italic);
     }
 
-    private FontFamily FindFontFamily(byte[] fontName)
+    private FontFamily? FindFontFamily(byte[] fontName) =>
+        families
+            .Where(i => StartsWith(i.FamilyName, fontName))
+            .MinBy(i => i.FamilyName.Length);
+
+    private bool StartsWith(string familyName, byte[] fontName)
     {
-        int currentLen = -1;
-        FontFamily? result = null;
-        foreach (var family in families)
+        var familyIndex = 0;
+        var fontIndex = 0;
+        while (true)
         {
-            var len = fontName.CommonPrefixLength(family.FamilyName);
-            if (len > currentLen || 
-                (len == currentLen && family.FamilyName.Length < (result?.FamilyName.Length??1000)))
-            {
-                currentLen = len;
-                result = family;
-            }
+            SkipSpaces(familyName, ref familyIndex);
+            SkipSpaces(fontName, ref fontIndex);
+            if (fontIndex >= fontName.Length) return true;
+            if (familyIndex >= familyName.Length) return false;
+            if (familyName[familyIndex] != fontName[fontIndex]) return false;
+            fontIndex++;
+            familyIndex++;
         }
-        return result ?? families.First();
     }
 
+    private static void SkipSpaces(string name, ref int index)
+    {
+        while (index < name.Length && name[index] == 32) index++;
+    }
+    private static void SkipSpaces(byte[] name, ref int index)
+    {
+        while (index < name.Length && name[index] == 32) index++;
+    }
 }

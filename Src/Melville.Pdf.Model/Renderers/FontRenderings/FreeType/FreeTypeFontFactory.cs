@@ -19,23 +19,16 @@ public readonly partial struct FreeTypeFontFactory
     [FromConstructor] private readonly double size;
     [FromConstructor] private readonly PdfFont fontDefinitionDictionary;
 
-    public ValueTask<IRealizedFont> SystemFont(byte[] name, bool bold, bool oblique)
-    {
-        var fontRef = GlobalFreeTypeResources.SystemFontLibrary().FontFromName(name, bold, oblique);
-        var face = GlobalFreeTypeResources.SharpFontLibrary.NewFace(fontRef.FileName, fontRef.Index);
-        return FontFromFace(face);
-    }
-    
     public async ValueTask<IRealizedFont> FromStream(PdfStream pdfStream)
     {
-        var source = await pdfStream.StreamContentAsync().CA();
+        await using var source = await pdfStream.StreamContentAsync().CA();
         return await FromCSharpStream(source).CA();
     }
 
-    private async ValueTask<IRealizedFont> FromCSharpStream(Stream source)
+    public async ValueTask<IRealizedFont> FromCSharpStream(Stream source, int index = 0)
     {
         var face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(
-            await UncompressToBufferAsync(source).CA(), 0);
+            await UncompressToBufferAsync(source).CA(), index);
         return await FontFromFace(face).CA();
     }
 
