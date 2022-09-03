@@ -75,7 +75,8 @@ public readonly partial struct CharacterToGlyphMapFactory
         // unpredictible behavior, this should not affect any valid files, but it will allow some malformed files to
         // be presented correctly.
 
-        foreach (var map in face.CharMaps)
+        if (face.CharMaps is not { } charMaps) return;
+        foreach (var map in charMaps)
         {
             foreach (var (character, glyph) in map.AllMappings())
             {
