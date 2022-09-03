@@ -17,11 +17,9 @@ public static class Program
         var pdfs = GatherPdfs(cmdLineArgs[0]);
         foreach (var pdf in pdfs)
         {
-            Console.Write(pdf);
             await ParseFile.Do(pdf);
-            Console.WriteLine(" OK");
         }
-
+        Console.WriteLine();
         Console.WriteLine("Done");
     }
 

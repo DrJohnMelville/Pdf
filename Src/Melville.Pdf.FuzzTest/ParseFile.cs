@@ -16,10 +16,10 @@ public static class ParseFile
     public static async ValueTask Do(string fileName)
     {
         await using var stream = File.OpenRead(fileName);
-        await Do(stream);
+        await Do(stream, fileName);
     }
 
-    private static async ValueTask Do(FileStream source)
+    private static async ValueTask Do(FileStream source, string name)
     {
         try
         {
@@ -27,13 +27,14 @@ public static class ParseFile
                 await PdfDocument.ReadAsync(source), WindowsDefaultFonts.Instance);
             for (int i = 0; i < doc.TotalPages; i++)
             {
-                Console.Write(".");
+                Console.Write($"{name} {i+1}/{doc.TotalPages}");
                 await RenderPage(doc, i);
+                ClearLine();
             }
         }
         catch (Exception e)
         {
-            OutputException(-1, e);
+            OutputException(e);
         }
     }
 
@@ -45,14 +46,19 @@ public static class ParseFile
         }
         catch (Exception e)
         {
-            OutputException(page, e);
+            OutputException(e);
         }
     }
+    static void ClearLine(){
+        Console.SetCursorPosition(0, Console.CursorTop);
+        Console.Write(new string(' ', Console.WindowWidth)); 
+        Console.SetCursorPosition(0, Console.CursorTop - 1);
+    }
 
-    private static void OutputException(int page, Exception e)
+
+    private static void OutputException(Exception e)
     {
         Console.WriteLine();
-        Console.WriteLine($"Page {page}");
-        Console.WriteLine(e.Message);
+        Console.WriteLine("    " +e.Message);
     }
 }
