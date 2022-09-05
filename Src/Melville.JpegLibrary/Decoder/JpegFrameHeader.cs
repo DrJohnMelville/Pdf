@@ -65,7 +65,7 @@ public readonly struct JpegFrameHeader
         JpegFrameComponentSpecificationParameters[] components = new JpegFrameComponentSpecificationParameters[numberOfComponenets];
         for (int i = 0; i < components.Length; i++)
         {
-            if (!JpegFrameComponentSpecificationParameters.TryParse(buffer, out components[i]))
+            if (!JpegFrameComponentSpecificationParameters.TryParse(buffer, components.Length, out components[i]))
             {
                 frameHeader = default;
                 return false;
@@ -112,7 +112,7 @@ public readonly struct JpegFrameHeader
         JpegFrameComponentSpecificationParameters[] components = new JpegFrameComponentSpecificationParameters[numberOfComponenets];
         for (int i = 0; i < components.Length; i++)
         {
-            if (!JpegFrameComponentSpecificationParameters.TryParse(buffer, out components[i]))
+            if (!JpegFrameComponentSpecificationParameters.TryParse(buffer, components.Length, out components[i]))
             {
                 frameHeader = default;
                 return false;

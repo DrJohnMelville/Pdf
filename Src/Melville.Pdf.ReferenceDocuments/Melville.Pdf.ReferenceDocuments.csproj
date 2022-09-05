@@ -130,6 +130,8 @@
       <EmbeddedResource Include="Graphics\Images\CMYKJpeg.jpg" />
       <None Remove="Graphics\Images\JPEGGray.jpg" />
       <EmbeddedResource Include="Graphics\Images\JPEGGray.jpg" />
+      <None Remove="Graphics\Images\Jpeg\JpegHuffmanBug.jpg" />
+      <EmbeddedResource Include="Graphics\Images\Jpeg\JpegHuffmanBug.jpg" />
     </ItemGroup>
 
 </Project>

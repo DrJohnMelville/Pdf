@@ -19,11 +19,11 @@ public readonly struct JpegFrameComponentSpecificationParameters
     public byte QuantizationTableSelector { get; }
 
     [SkipLocalsInit]
-    public static bool TryParse(ReadOnlySequence<byte> buffer, out JpegFrameComponentSpecificationParameters component)
+    public static bool TryParse(ReadOnlySequence<byte> buffer, int totalComponents, out JpegFrameComponentSpecificationParameters component)
     {
-        if (buffer.IsSingleSegment)
+        if (buffer.IsSingleSegment || buffer.FirstSpan.Length > 2)
         {
-            return TryParse(buffer.FirstSpan, out component);
+            return TryParse(buffer.FirstSpan, totalComponents, out component);
         }
 
         if (buffer.Length < 3)
@@ -34,16 +34,11 @@ public readonly struct JpegFrameComponentSpecificationParameters
 
         Span<byte> local = stackalloc byte[3];
         buffer.Slice(0, 3).CopyTo(local);
-
-        byte quantizationTableSelector = local[2];
-        byte samplingFactor = local[1];
-        byte identifier = local[0];
-
-        component = new JpegFrameComponentSpecificationParameters(identifier, (byte)(samplingFactor >> 4), (byte)(samplingFactor & 0xf), quantizationTableSelector);
-        return true;
+        return TryParse(local, totalComponents, out component);
     }
 
-    public static bool TryParse(ReadOnlySpan<byte> buffer, out JpegFrameComponentSpecificationParameters component)
+    public static bool TryParse(ReadOnlySpan<byte> buffer, int totalComponents, 
+        out JpegFrameComponentSpecificationParameters component)
     {
         if (buffer.Length < 3)
         {
@@ -54,6 +49,8 @@ public readonly struct JpegFrameComponentSpecificationParameters
         byte quantizationTableSelector = buffer[2];
         byte samplingFactor = buffer[1];
         byte identifier = buffer[0];
+
+        if (totalComponents == 1) samplingFactor = 0x11;
 
         component = new JpegFrameComponentSpecificationParameters(identifier, (byte)(samplingFactor >> 4), (byte)(samplingFactor & 0xf), quantizationTableSelector);
         return true;
