@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -16,13 +17,27 @@ public static class FontFaceOperations
 
     public static IEnumerable<(uint Char, uint Glyph)> AllMappings(this CharMap cMap)
     {
-        cMap.Face.SetCharmap(cMap);
+        if (TrySetCharMap(cMap)) yield break;
         uint character = cMap.Face.GetFirstChar(out var glyph);
         do
         {
             yield return (character, glyph);
             character = cMap.Face.GetNextChar(character, out glyph);
         } while (character != 0);
+    }
+
+    private static bool TrySetCharMap(CharMap cMap)
+    {
+        try
+        {
+            cMap.Face.SetCharmap(cMap);
+        }
+        catch (FreeTypeException e)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public static IEnumerable<(uint Glyph, string Name)> AllGlyphNames(this Face face)
