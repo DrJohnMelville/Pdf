@@ -1,9 +1,33 @@
-# Pdf
+# Introducting Melville.PDF
 
-This may be a pipe dream, but it may turn into something I have wanted for a long time -- a liberally licensed, open source PDF reader and renderer for .NET.  I am sick of "almost free" or "tied to windows" or "you have to use AGPL if you want the modern version." PDF libraries in .NET.
+The purpose of Melville.PDF is simple:  make PDF documents show up in .NET apps __for free__.
+Free means free! Free as in speech?  Free as in beer? Who cares?  Free does not mean:
+- There is an old version for free but the modern version is locked behind a paywall.
+- The version is free if you agree to give your software away.
+- It's free but it only works on Windows, or only on the desktop,
+- The free version works for short files, or watermarks your files or anything else.
+- The free lite version is so feature strapped that you will eventually have to buy the Pro version.
 
-The other significant value I espouse if clean code, as chambioned by Bob Martin.  PDF is an intricate and complicated format.  I hope to provide APIs at different levels with clean architectural boundaries between them.  I hope to isolate code into small reusible classes.  I hope to support the effort with an excellently engineered test suite.
+In short free means free.
 
-A clean architecture means not being tied to any particular UI or any particular framework.  I love WPF, but an interested by .net MAUI.  I also write server side code, so you souldn't have to have a UI dependency at all.  That means a lot of small projects.  I hope you will be able to use the parts you want and ignore the rest.
+I have recently become a fan of [Bob Martin](https://blog.cleancoder.com/) and his dogma surrounding
+[Clean Code](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882).  You will
+have to decide for yourself if my code is clean.  Jumping into any codebase is difficult.  I added some 
+introductory material under [Architecture](Docs/Architecture/Overview.md) to  orient you to the codebase.
 
-So it might be a pipe dream: but here we go.
+# Enough Gabbing -- Show Me Some Code!
+
+1. The Wpf Way -- Show PDF in a Control
+````xaml
+<UserControl x:Class="Melville.Pdf.WpfViewer.Home.HomeView"
+             ...
+             xmlns:controls="clr-namespace:Melville.Pdf.Wpf.Controls;assembly=Melville.Pdf.Wpf"
+              >
+    <controls:PdfViewer Source="C:\File.pdf"/>
+</UserControl>
+
+````
+2. Using Skia Sharp -- save PDF page to a png file
+````c#
+
+````

@@ -22,13 +22,13 @@ public sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegist
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private readonly IPasswordSource passwordSource;
 
+    #warning eliminate the nulls here -- low level factory should resolve these
     public ParsingFileOwner(Stream source, IPasswordSource? passwordSource = null,
         IIndirectObjectResolver? indirectResolver = null)
     {
         this.source = new MultiplexedStream(source);
-        this.passwordSource = passwordSource ?? new NullPasswordSource();
+        this.passwordSource = passwordSource ?? NullPasswordSource.Instance;
         IndirectResolver = indirectResolver ?? new IndirectObjectResolver();
-        if (!source.CanSeek) throw new PdfParseException("PDF Parsing requires a seekable stream");
     }
     
     public void SetPreheaderOffset(long offset) => preHeaderOffset = offset;

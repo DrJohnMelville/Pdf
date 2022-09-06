@@ -18,7 +18,7 @@ using Moq;
 using Xunit;
 using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
 
-namespace Melville.Pdf.WpfToolTests.LowLevelReader;
+namespace Melville.Pdf.WpfToolTests.LowLevelViewer;
 
 public class PartParserTest
 {

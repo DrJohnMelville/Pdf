@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -32,13 +33,10 @@ public static class TestParser
         IIndirectObjectResolver? indirectObjectResolver =null) => 
         new(new OneCharAtAtimeStream(bytes), null, indirectObjectResolver);
         
-    public static Task<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) => 
+    public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) =>
         RandomAccessFileParser.Parse(str.AsParsingSource(), sizeHint);
-    public static Task<PdfLoadedLowLevelDocument> ParseWithPassword(
-        this string str, string password, PasswordType type)
-    {
-        var ps = new ParsingFileOwner(new MemoryStream(str.AsExtendedAsciiBytes()), 
-            new ConstantPasswordSource(type, password));
-        return RandomAccessFileParser.Parse(ps);
-    }
+    
+    public static ValueTask<PdfLoadedLowLevelDocument> ParseWithPassword(
+        this string str, string password, PasswordType type) =>
+        new PdfLowLevelReader(new ConstantPasswordSource(type, password)).ReadFrom(str.AsExtendedAsciiBytes());
 }

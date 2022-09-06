@@ -32,7 +32,6 @@ public class S7_5_5FileTrailer
     [InlineData("%PDF-1.5\r\nHas the word trailer")]
     public Task MalformedPDFFiles(string text)
     {
-        return Assert.ThrowsAsync<PdfParseException>(() => 
-            text.ParseDocumentAsync());
+        return Assert.ThrowsAsync<PdfParseException>(() => text.ParseDocumentAsync().AsTask());
     }
 }

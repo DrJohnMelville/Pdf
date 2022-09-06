@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -10,12 +11,9 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
-public class WindowsDefaultFonts : IDefaultFontMapper
+[StaticSingleton]
+public partial class WindowsDefaultFonts : IDefaultFontMapper
 {
-    public static readonly WindowsDefaultFonts Instance = new WindowsDefaultFonts();
-
-    private WindowsDefaultFonts() { }
-
     private static readonly byte[] TimesNewRoman =
         { 84, 105, 109, 101, 115, 78, 101, 119, 82, 111, 109, 97, 110 };
 

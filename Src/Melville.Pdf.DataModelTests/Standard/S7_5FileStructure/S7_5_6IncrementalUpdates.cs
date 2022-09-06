@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -25,12 +26,13 @@ public class S7_5_6IncrementalUpdates
         var stream = new MultiBufferStream();
         await doc.WriteToAsync(stream);
 
-        var ld = await RandomAccessFileParser.Parse(stream.CreateReader());
+        var pdfLowLevelReader = new PdfLowLevelReader();
+        var ld = await pdfLowLevelReader.ReadFrom(stream);
         var modifier = new LowLevelDocumentModifier(ld);
         await modify(ld, modifier);
         await modifier.WriteModificationTrailer(stream);
             
-        return await RandomAccessFileParser.Parse(stream.CreateReader());
+        return await pdfLowLevelReader.ReadFrom(stream);
     }
         
     [Fact]

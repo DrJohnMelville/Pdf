@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -14,9 +15,8 @@ public readonly struct PdfDocument: IDisposable
 {
     public PdfLowLevelDocument LowLevel { get; }
 
-    public static async ValueTask<PdfDocument> ReadAsync(Stream source, IPasswordSource? passwords = null) => 
-        new(
-            await RandomAccessFileParser.Parse(new ParsingFileOwner(source, passwords)).CA());
+    public static async ValueTask<PdfDocument> ReadAsync(Stream source, IPasswordSource? passwords = null) =>
+        new(await new PdfLowLevelReader(passwords).ReadFrom(source).CA());
 
     public PdfDocument(PdfLowLevelDocument lowLevel)
     {

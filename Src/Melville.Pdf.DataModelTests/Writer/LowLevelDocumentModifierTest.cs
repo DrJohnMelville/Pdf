@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -32,7 +33,7 @@ public class LowLevelDocumentModifierTest
     {
         var ms = new MultiBufferStream();
         await doc.WriteToAsync(ms);
-        return await RandomAccessFileParser.Parse(ms.CreateReader());
+        return await new PdfLowLevelReader().ReadFrom(ms.CreateReader());
     }
 
     private async Task DoDocumentModificationTests(

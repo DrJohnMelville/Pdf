@@ -5,6 +5,7 @@ using Melville.INPC;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.Viewers.LowLevel;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -38,7 +39,7 @@ public partial class ReplViewModel
     {
         if (buffer.Length == 0) return; // heppens in testing
         var target = await CopyOriginalFile();
-        var doc = await RandomAccessFileParser.Parse(new MemoryStream(buffer));
+        var doc = await new PdfLowLevelReader().ReadFrom(buffer);
         await WriteStreamModificationBlock(doc, await CreateReplacementStream(newValue), target);                                                                       
         renderer.SetTarget(target, page.Page);
     }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -13,12 +14,13 @@ public interface IPasswordSource
     ValueTask<(string?, PasswordType)> GetPassword();
 }
 
-public class NullPasswordSource : IPasswordSource
+[StaticSingleton()]
+public partial class NullPasswordSource : IPasswordSource
 {
     public ValueTask<(string?, PasswordType)> GetPassword() =>
         throw new InvalidDataException(
             "This file is encrypted.  To open encrypted files pass an IPasswordSource to the " +
-            "ParsingFileOwner constructor.");
+            "PdfLowLevelReader or PdfReader constructor.");
 }
 
 public class ConstantPasswordSource : IPasswordSource

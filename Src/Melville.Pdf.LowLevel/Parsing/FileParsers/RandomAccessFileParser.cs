@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -8,9 +7,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 public static class RandomAccessFileParser
 {
-    public static Task<PdfLoadedLowLevelDocument> Parse(Stream source) => Parse(new ParsingFileOwner(source));
-
-    public static async Task<PdfLoadedLowLevelDocument> Parse(
+    public static async ValueTask<PdfLoadedLowLevelDocument> Parse(
         ParsingFileOwner owner, int fileTrailerSizeHint = 30)
     {
         byte major, minor;
@@ -26,5 +23,4 @@ public static class RandomAccessFileParser
             major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, firstFree,
             owner);
     }
-
 }

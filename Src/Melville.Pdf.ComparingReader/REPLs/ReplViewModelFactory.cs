@@ -30,7 +30,7 @@ public readonly struct ReplViewModelFactory
         var srcReader = renderer.GetCurrentTargetReader();
         var buffer = new byte[srcReader.Length];
         await buffer.FillBufferAsync(0, (int)srcReader.Length, srcReader);
-        var doc = await PdfDocument.ReadAsync(new MemoryStream(buffer), new NullPasswordSource());
+        var doc = await PdfDocument.ReadAsync(new MemoryStream(buffer));
 
         if (crossReference.HasValue && doc.LowLevel.Objects.TryGetValue(
                 (crossReference.Value.Object, crossReference.Value.Generation), out var indir) &&

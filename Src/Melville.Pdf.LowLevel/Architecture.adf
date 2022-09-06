@@ -16,9 +16,13 @@ Writers => Model
 * => System.*
 * => Melville.Parsing.*
 
-#ImageSharp is restricted to ExternalFilters
+#JpegLibrary
 Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> SixLabors.ImageSharp.*
 Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> Melville.JpegLibrary.*
 
 #CSj2K 
 Melville.Pdf.LowLevel.Filters.JpxDecodeFilters.* ^=> Melville.CSJ2K.*
+
+
+#Factory uses the parser
+Melville.Pdf.LowLevel.PdfLowLevelReader => Melville.Pdf.LowLevel.*

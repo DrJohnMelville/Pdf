@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -54,10 +55,10 @@ public class RoundTripEncryptedFiles
         Assert.Contains(text, streamSource);
     }
 
-    private static  Task<PdfLoadedLowLevelDocument> ParseTarget(
+    private static ValueTask<PdfLoadedLowLevelDocument> ParseTarget(
         MultiBufferStream target, PasswordType passwordType, string password) =>
-        RandomAccessFileParser.Parse(new ParsingFileOwner(target.CreateReader(),
-            new ConstantPasswordSource(passwordType, password)));
+        new PdfLowLevelReader(new ConstantPasswordSource(passwordType, password))
+            .ReadFrom(target);
 
     private async ValueTask VerifyNumber(PdfDictionary encrypt, PdfName pdfName, int expected)
     {

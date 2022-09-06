@@ -4,7 +4,7 @@ using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
-using Melville.Pdf.LowLevelReader.MainDisplay;
+using Melville.Pdf.LowLevelViewer.MainDisplay;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
@@ -13,7 +13,7 @@ using Moq;
 using Xunit;
 using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
 
-namespace Melville.Pdf.WpfToolTests.LowLevelReader;
+namespace Melville.Pdf.WpfToolTests.LowLevelViewer;
 
 public class MainDisplayViewModelTest
 {

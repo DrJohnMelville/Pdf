@@ -6,11 +6,11 @@ using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
-using Melville.Pdf.LowLevelReader.ImageViewers;
+using Melville.Pdf.LowLevelViewer.ImageViewers;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
-namespace Melville.Pdf.LowLevelReader.MainDisplay;
+namespace Melville.Pdf.LowLevelViewer.MainDisplay;
 
 public interface ICloseApp
 {

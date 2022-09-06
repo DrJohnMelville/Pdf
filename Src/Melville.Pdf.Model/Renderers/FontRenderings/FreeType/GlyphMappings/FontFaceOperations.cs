@@ -32,7 +32,7 @@ public static class FontFaceOperations
         {
             cMap.Face.SetCharmap(cMap);
         }
-        catch (FreeTypeException e)
+        catch (FreeTypeException)
         {
             return true;
         }

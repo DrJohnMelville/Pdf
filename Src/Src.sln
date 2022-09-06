@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Performance.Playground", "P
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{7808232A-94F8-4390-9D4E-A9CBCC067CBB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Pdf.LowLevelReader", "Melville.Pdf.LowLevelReader\Melville.Pdf.LowLevelReader.csproj", "{90BBCB23-3170-47F8-96E4-E2469A660C9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Pdf.LowLevelViewer", "Melville.Pdf.LowLevelViewer\Melville.Pdf.LowLevelViewer.csproj", "{90BBCB23-3170-47F8-96E4-E2469A660C9D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Pdf.WpfToolTests", "Melville.Pdf.WpfToolTests\Melville.Pdf.WpfToolTests.csproj", "{BE2B7930-9513-4F0F-BE1A-05D3F4073FB5}"
 EndProject

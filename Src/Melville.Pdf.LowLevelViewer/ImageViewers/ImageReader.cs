@@ -14,7 +14,7 @@ using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Wpf.Rendering;
 
-namespace Melville.Pdf.LowLevelReader.ImageViewers;
+namespace Melville.Pdf.LowLevelViewer.ImageViewers;
 
 public static class ImageReader
 {

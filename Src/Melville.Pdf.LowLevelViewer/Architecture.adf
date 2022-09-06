@@ -1,5 +1,5 @@
 ﻿#Composition root can see everything. 
-Melville.Pdf.LowLevelReader.CompositionRoot.* +=> *
+Melville.Pdf.LowLevelViewer.CompositionRoot.* +=> *
 
 #Everyone can use global resources
 * => Melville.MVVM.*
@@ -14,15 +14,15 @@ Melville.Pdf.LowLevelReader.CompositionRoot.* +=> *
 * !=> *View
 
 Group MainDisplay
-     Melville.Pdf.LowLevelReader.MainDisplay.*
+     Melville.Pdf.LowLevelViewer.MainDisplay.*
 Group DocumentParts
-     Melville.Pdf.LowLevelReader.DocumentParts.*
+     Melville.Pdf.LowLevelViewer.DocumentParts.*
 Group Passwords
-     Melville.Pdf.LowLevelReader.PasswordDialogs.*
+     Melville.Pdf.LowLevelViewer.PasswordDialogs.*
 Group ImageViewers
-    Melville.Pdf.LowLevelReader.ImageViewers.*
+    Melville.Pdf.LowLevelViewer.ImageViewers.*
 
-Melville.Pdf.LowLevelReader.Services.* +=> Melville.Pdf.LowLevelReader.* 
+Melville.Pdf.LowLevelViewer.Services.* +=> Melville.Pdf.LowLevelViewer.* 
 
 MainDisplay => DocumentParts
 MainDisplay => ImageViewers

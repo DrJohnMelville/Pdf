@@ -24,7 +24,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.ComparingReader\Melville.Pdf.ComparingReader.csproj" />
       <ProjectReference Include="..\Melville.Pdf.DataModelTests\Melville.Pdf.DataModelTests.csproj" />
-      <ProjectReference Include="..\Melville.Pdf.LowLevelReader\Melville.Pdf.LowLevelReader.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.LowLevelViewer\Melville.Pdf.LowLevelViewer.csproj" />
     </ItemGroup>
 
 </Project>

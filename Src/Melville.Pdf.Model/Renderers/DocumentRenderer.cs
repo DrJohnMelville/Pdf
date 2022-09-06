@@ -14,51 +14,6 @@ using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public class ExplicitDocumentRenderer : DocumentRenderer
-{
-    private readonly HasRenderableContentStream content;
-    public ExplicitDocumentRenderer(
-        IDefaultFontMapper fontMapper, IDocumentPartCache cache, HasRenderableContentStream content,
-        IOptionalContentState ocs) : 
-        base(1, fontMapper, cache, ocs)
-    {
-        this.content = content;
-    }
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) => new(content);
-}
-
-public class PageTreeDocumentRenderer : DocumentRenderer
-{
-    private readonly PageTree tree;
-
-    public PageTreeDocumentRenderer(int totalPages, IDefaultFontMapper fontMapper, IDocumentPartCache cache, 
-        PageTree tree, IOptionalContentState ocs) :
-        base(totalPages, fontMapper, cache, ocs)
-    {
-        this.tree = tree;
-    }
-
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) =>
-        tree.GetPageAsync(page);
-}
-
-public class OwnedPageTreeDocumentRenderer : PageTreeDocumentRenderer
-{
-    private readonly PdfDocument document;
-    public OwnedPageTreeDocumentRenderer(
-        int totalPages, IDefaultFontMapper fontMapper, IDocumentPartCache cache, PageTree tree, 
-        IOptionalContentState ocs, PdfDocument document) : base(totalPages, fontMapper, cache, tree, ocs)
-    {
-        this.document = document;
-    }
-
-    public override void Dispose()
-    {
-        document.Dispose();
-        base.Dispose();
-    }
-}
-
 public abstract class DocumentRenderer: IDisposable
 {
     public int TotalPages { get; }
@@ -128,24 +83,4 @@ public abstract class DocumentRenderer: IDisposable
     {
         Cache.Dispose();
     }
-}
-
-public static class DocumentRendererFactory
-{
-    public static DocumentRenderer CreateRenderer(
-        HasRenderableContentStream page, IDefaultFontMapper fontFactory) =>
-        new ExplicitDocumentRenderer(fontFactory, new DocumentPartCache(), page,
-            AllOptionalContentVisible.Instance);
-    
-    public static async ValueTask<DocumentRenderer> CreateRendererAsync(
-        PdfDocument document, IDefaultFontMapper fontFactory)
-    {
-        var pages = await document.PagesAsync().CA();
-        var pageCount = (int)await pages.CountAsync().CA();
-        return new OwnedPageTreeDocumentRenderer(pageCount, fontFactory, new DocumentPartCache(), pages,
-            await OptionalContentPropertiesParser.ParseAsync(
-                await document.OptionalContentProperties().CA()).CA(), document);
-    }
-    
-    
 }

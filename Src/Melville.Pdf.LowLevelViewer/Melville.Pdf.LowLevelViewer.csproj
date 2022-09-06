@@ -5,7 +5,7 @@
         <LangVersion>10.0</LangVersion>
         <TargetFramework>net6.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
-        <RootNamespace>Melville.Pdf.LowLevelReader</RootNamespace>
+        <RootNamespace>Melville.Pdf.LowLevelViewer</RootNamespace>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     </PropertyGroup>
 

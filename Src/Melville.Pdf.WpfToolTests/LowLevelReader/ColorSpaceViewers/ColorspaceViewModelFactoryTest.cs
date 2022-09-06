@@ -9,7 +9,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
 using Xunit;
 
-namespace Melville.Pdf.WpfToolTests.LowLevelReader.ColorSpaceViewers;
+namespace Melville.Pdf.WpfToolTests.LowLevelViewer.ColorSpaceViewers;
 
 public class ColorspaceViewModelFactoryTest
 {

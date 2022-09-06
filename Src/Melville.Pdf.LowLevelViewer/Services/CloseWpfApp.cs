@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using Melville.Pdf.LowLevelReader.MainDisplay;
+using Melville.Pdf.LowLevelViewer.MainDisplay;
 
-namespace Melville.Pdf.LowLevelReader.Services;
+namespace Melville.Pdf.LowLevelViewer.Services;
 
 public class CloseWpfApp:ICloseApp
 {

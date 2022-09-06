@@ -5,12 +5,12 @@ using Melville.IOC.IocContainers;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RootWindows;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.LowLevelReader.MainDisplay;
-using Melville.Pdf.LowLevelReader.Services;
+using Melville.Pdf.LowLevelViewer.MainDisplay;
+using Melville.Pdf.LowLevelViewer.Services;
 using Melville.Pdf.LowLevelViewerParts.FakeFileDialog;
 using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
 using Melville.WpfAppFramework.StartupBases;
-namespace Melville.Pdf.LowLevelReader.CompositionRoot;
+namespace Melville.Pdf.LowLevelViewer.CompositionRoot;
 
 public class Startup: StartupBase
 {
