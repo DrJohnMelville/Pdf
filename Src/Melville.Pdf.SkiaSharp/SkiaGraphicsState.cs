@@ -32,7 +32,7 @@ public class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
     private async Task<ISkiaBrushCreator> CreateTilePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.Parse(pattern).CA();
-        var tileItem = await RenderWithSkia.ToSurface(
+        var tileItem = await RenderWithSkia.ToSurfaceAsync(
             parentRenderer.PatternRenderer(request, this), 0).CA();
         return new SurfacePatternHolder(tileItem, request.PatternTransform);
     }

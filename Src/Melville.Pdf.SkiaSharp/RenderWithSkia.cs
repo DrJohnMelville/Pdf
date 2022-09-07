@@ -7,16 +7,16 @@ namespace Melville.Pdf.SkiaSharp
 {
     public static class RenderWithSkia
     {
-        public static async ValueTask ToPngStream(
+        public static async ValueTask ToPngStreamAsync(
             DocumentRenderer doc, int page, Stream target, int width = -1, int height = -1)
         {
-            using var surface = await ToSurface(doc, page, width, height).CA();
+            using var surface = await ToSurfaceAsync(doc, page, width, height).CA();
             using var image = surface.Snapshot();
             using var data = image.Encode();
             data.SaveTo(target);
         }
 
-        public static async ValueTask<SKSurface> ToSurface(DocumentRenderer doc, int page, int width = -1, int height = -1)
+        public static async ValueTask<SKSurface> ToSurfaceAsync(DocumentRenderer doc, int page, int width = -1, int height = -1)
         {
             SKSurface surface = null!;
             await doc.RenderPageTo(page, (rect, adjustOutput) =>

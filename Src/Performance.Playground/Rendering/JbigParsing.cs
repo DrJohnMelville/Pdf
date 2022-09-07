@@ -38,7 +38,7 @@ public class CcittParsing
     {
         AwaitConfig.ResumeOnCalledThread(false);
         using var dr = await LoadDocument();
-        await RenderWithSkia.ToSurface(dr, 9); 
+        await RenderWithSkia.ToSurfaceAsync(dr, 9); 
     }
     [Benchmark]
     public void RenderWpf()

@@ -31,8 +31,8 @@ public readonly struct PdfReader
         DocumentRenderer dr => new(dr),
         _=> ReadFromLowLevelLateBound(input)
     };
-    
-    public async ValueTask<DocumentRenderer> ReadFromLowLevelLateBound(object input) => 
+
+    private async ValueTask<DocumentRenderer> ReadFromLowLevelLateBound(object input) => 
         await ReadFrom(await LowLevelReader().ReadFrom(input).CA()).CA();
 
     public async ValueTask<DocumentRenderer> ReadFromFile(string input) =>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.Model;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
@@ -49,15 +50,14 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
     private static Task<string> ComputeSkiaHash(IPdfGenerator generator) =>
         ComputeGenericHash(generator, (documentRenderer, target) => 
-            RenderWithSkia.ToPngStream(documentRenderer, 0, target, -1, 1024));
+            RenderWithSkia.ToPngStreamAsync(documentRenderer, 0, target, -1, 1024));
 
     private static async Task<string> ComputeGenericHash(IPdfGenerator generator,
         Func<DocumentRenderer, Stream, ValueTask> renderTo)
     {
         try
         {
-            var doc = await DocumentRendererFactory.CreateRendererAsync(
-                await RenderTestHelpers.ReadDocument(generator), WindowsDefaultFonts.Instance);
+            var doc = await RenderTestHelpers.ReadDocument(generator);
             var target = new WriteToAdlerStream();
             await renderTo(doc, target);
             return target.Computer.GetHash().ToString();
@@ -77,12 +77,11 @@ public static class RenderTestHelpers
             WindowsDefaultFonts.Instance);
     }
         
-    public static async ValueTask<PdfDocument> ReadDocument(IPdfGenerator generator)
+    public static async ValueTask<DocumentRenderer> ReadDocument(IPdfGenerator generator)
     {
         MultiBufferStream src = new();
         await generator.WritePdfAsync(src);
-        var doc = await PdfDocument.ReadAsync(
-            src.CreateReader(), new ConstantPasswordSource(PasswordType.User, generator.Password));
-        return doc;
+        return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
+            .ReadFrom(src.CreateReader());
     }
 }

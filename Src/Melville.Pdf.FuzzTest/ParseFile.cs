@@ -42,7 +42,7 @@ public static class ParseFile
     {
         try
         {
-            await RenderWithSkia.ToSurface(doc, page);
+            await RenderWithSkia.ToSurfaceAsync(doc, page);
         }
         catch (Exception e)
         {

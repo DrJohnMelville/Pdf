@@ -22,7 +22,7 @@ namespace Performance.Playground.Rendering
         {
             AwaitConfig.ResumeOnCalledThread(false);
             using var dr = await LoadDocument();
-            await RenderWithSkia.ToSurface(dr, 1); 
+            await RenderWithSkia.ToSurfaceAsync(dr, 1); 
         }
         [Benchmark]
         public void RenderWpf()
