@@ -84,8 +84,8 @@ not to include so I could ship the first version.
       The result, I am sure, is a PDF generation framework much more focused on
       ability to produce unusual variants of PDF syntax over anything that might
       be useful in creating real documents.
-    - Forms of any kind.
-    - Text or Graphics extraction
+- Forms of any kind.
+- Text or Graphics extraction
 
 # What's next on the roadmap?
 
