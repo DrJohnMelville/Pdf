@@ -43,7 +43,7 @@ public class S7_7_3PageTree
         var doc = CreateThreePageSimpleDocument();
         var pagesTree = await doc.PagesAsync();
         Assert.Equal(await pagesTree.ElementAtAsync(position),
-            await pagesTree.GetPageAsync(position));
+            await pagesTree.GetPageAsync(position+1));
         
     }
     private static PdfDocument CreateFourPageComplexDocument()
@@ -81,8 +81,10 @@ public class S7_7_3PageTree
 
     private static async Task TestEnumeratorAndAccessor(int position, PageTree pagesTree)
     {
-        Assert.Equal(await pagesTree.ElementAtAsync(position),
-            await pagesTree.GetPageAsync(position));
+        var btIndex = await pagesTree.ElementAtAsync(position);
+        var byPageNumber = await pagesTree.GetPageAsync(position+1);
+        Assert.Equal(btIndex,
+            byPageNumber);
     }
 
     [Fact]

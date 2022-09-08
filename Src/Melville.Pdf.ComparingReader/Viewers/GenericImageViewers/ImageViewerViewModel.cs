@@ -40,7 +40,7 @@ public abstract class MelvillePdfRenderer : IImageRenderer
 
     private ValueTask<ImageSource> TryRenderPage(int page) =>
         IsValidPageRender(page)
-            ?  Render(source, page - 1)
+            ?  Render(source, page)
             : new(new DrawingImage());
 
     [MemberNotNullWhen(true, nameof(source))]

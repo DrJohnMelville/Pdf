@@ -41,7 +41,6 @@ public partial class PageSelectorViewModel: IPageSelector
     [AutoNotify] private int page = 1;
     [AutoNotify] private int maxPage = 1;
     [AutoNotify] private int minPage = 1;
-    [AutoNotify] public int ZeroBasisPage => Page - 1;
     private int PageSetFilter(int newPage) => newPage.Clamp(MinPage, MaxPage);
     private void OnMaxPageChanged(int newValue) => page = minPage;
 

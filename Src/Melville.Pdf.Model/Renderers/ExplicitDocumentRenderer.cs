@@ -16,5 +16,5 @@ public class ExplicitDocumentRenderer : DocumentRenderer
     {
         this.content = content;
     }
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) => new(content);
+    protected override ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber) => new(content);
 }

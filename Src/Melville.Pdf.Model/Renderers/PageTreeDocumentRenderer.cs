@@ -17,6 +17,6 @@ public class PageTreeDocumentRenderer : DocumentRenderer
         this.tree = tree;
     }
 
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) =>
-        tree.GetPageAsync(page);
+    protected override ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber) =>
+        tree.GetPageAsync(oneBasedPageNumber);
 }

@@ -40,7 +40,7 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
         }
     }
 
-    public async ValueTask<HasRenderableContentStream> GetPageAsync(long position)
+    public async ValueTask<HasRenderableContentStream> GetPageAsync(long pageNumberOneBased)
     {
         var items = await KidsAsync().CA();
         foreach (var kidTask in items.RawItems)
@@ -49,18 +49,26 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
             var type = await kid.GetAsync<PdfName>(KnownNames.Type).CA();
             if (type == KnownNames.Page)
             {
-                if (position == 0) return new PdfPage(kid);
-                position--;
+                if (IsDesiredPage(pageNumberOneBased)) return new PdfPage(kid);
+                pageNumberOneBased--;
             }
             else if (type == KnownNames.Pages)
             {
                 var nodeCount = (await kid.GetAsync<PdfNumber>(KnownNames.Count).CA()).IntValue;
-                if (position < nodeCount) return await new PageTree(kid).GetPageAsync(position).CA();
-                position -= nodeCount;
+                if (pageNumberOneBased <= nodeCount) return await new PageTree(kid).GetPageAsync(pageNumberOneBased).CA();
+                pageNumberOneBased -= nodeCount;
             }
             else throw new PdfParseException("Page trees should contain only pages and nodes");
         }
         throw new IndexOutOfRangeException();
+    }
+
+    private static bool IsDesiredPage(long position)
+    {
+        // Notice that asking for page 0 or page 1 both produce the first page.  This is intenntional, it
+        // allows us to use natural page numbering for documents, which is one based, but allows
+        //  a lot of the tests, which render page 0 to work correctly.
+        return position <= 1;
     }
 
     public ValueTask<PdfArray> KidsAsync() => LowLevel.GetAsync<PdfArray>(KnownNames.Kids);

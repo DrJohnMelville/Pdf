@@ -13,12 +13,12 @@ namespace Melville.Pdf.Wpf.Rendering;
 public readonly struct RenderToDrawingGroup
 {
     private readonly DocumentRenderer doc;
-    private readonly int page;
+    private readonly int oneBasedPageNumber;
 
-    public RenderToDrawingGroup(DocumentRenderer doc, int page)
+    public RenderToDrawingGroup(DocumentRenderer doc, int oneBasedPageNumber)
     {
         this.doc = doc;
-        this.page = page;
+        this.oneBasedPageNumber = oneBasedPageNumber;
     }
 
     public async ValueTask RenderToPngStream(Stream stream) =>
@@ -70,7 +70,7 @@ public readonly struct RenderToDrawingGroup
     {
         AwaitConfig.ResumeOnCalledThread(true);
         var d2 = doc;
-        return doc.RenderPageTo(page, (rect, preTransform) =>
+        return doc.RenderPageTo(oneBasedPageNumber, (rect, preTransform) =>
         {
             var innerRenderer = new WpfRenderTarget(dc);
             d2.InitializeRenderTarget(innerRenderer, rect, rect.Width, rect.Height, preTransform);

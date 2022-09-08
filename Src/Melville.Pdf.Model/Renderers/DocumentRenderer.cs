@@ -33,9 +33,9 @@ public abstract class DocumentRenderer: IDisposable
     public DocumentRenderer PatternRenderer(in TileBrushRequest request, GraphicsState priorState) => 
         new PatternRenderer(FontMapper, Cache, request, priorState, OptionalContentState);
 
-    public async ValueTask RenderPageTo(int page, Func<PdfRect, Matrix3x2, IRenderTarget> target)
+    public async ValueTask RenderPageTo(int oneBasedPageNumber, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
-        var pageStruct = await GetPageContent(page).CA();
+        var pageStruct = await GetPageContent(oneBasedPageNumber).CA();
         var cropRect = await GetCropDimensionsAsync(pageStruct).CA();
         var rotation = CreateRotateMatrix( cropRect, await pageStruct.GetDefaultRotationAsync().CA());
         
@@ -77,7 +77,7 @@ public abstract class DocumentRenderer: IDisposable
     private static int Scale(double freeDimension, float setValue, double setDimension) => 
         (int)(freeDimension * (setValue / setDimension));
 
-    protected abstract ValueTask<HasRenderableContentStream> GetPageContent(int page);
+    protected abstract ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber);
 
     public virtual void Dispose()
     {

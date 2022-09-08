@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
@@ -25,12 +26,21 @@ public static class ParseFile
         {
             using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(source), WindowsDefaultFonts.Instance);
-            for (int i = 0; i < doc.TotalPages; i++)
+#if false
+            await Parallel.ForEachAsync(Enumerable.Range(1, doc.TotalPages), async (i,_) =>
             {
-                Console.Write($"{name} {i+1}/{doc.TotalPages}");
+                Console.Write($"{name} {i}/{doc.TotalPages}");
+                await RenderPage(doc, i);
+                ClearLine();
+            });
+#else
+            for (int i = 1; i <= doc.TotalPages; i++)
+            {
+                Console.Write($"{name} {i}/{doc.TotalPages}");
                 await RenderPage(doc, i);
                 ClearLine();
             }
+#endif
         }
         catch (Exception e)
         {

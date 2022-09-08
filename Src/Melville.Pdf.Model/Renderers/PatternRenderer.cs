@@ -24,7 +24,7 @@ public class PatternRenderer: DocumentRenderer
         this.priorState = priorState;
     }
 
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int page) => 
+    protected override ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber) => 
         new(request.TilePattern);
 
     public override void InitializeRenderTarget(IRenderTarget innerRenderer, in PdfRect rect, double width, double height,

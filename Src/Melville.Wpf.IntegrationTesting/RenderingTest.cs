@@ -8,7 +8,6 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
-using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
@@ -71,12 +70,6 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
 public static class RenderTestHelpers
 {
-    public static async ValueTask<DocumentRenderer> AsDocumentRenderer(this IPdfGenerator generator)
-    {
-        return await DocumentRendererFactory.CreateRendererAsync(await ReadDocument(generator),
-            WindowsDefaultFonts.Instance);
-    }
-        
     public static async ValueTask<DocumentRenderer> ReadDocument(IPdfGenerator generator)
     {
         MultiBufferStream src = new();

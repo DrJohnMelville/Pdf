@@ -19,7 +19,7 @@ public partial class PdfViewerModel
         this.document = document;
         
         InitalizePageFlipper();
-        RenderPage(0);
+        RenderPage(1);
         ConfigureOptionalContentDisplay(this.document.OptionalContentState);
     }
 
@@ -43,21 +43,21 @@ public partial class PdfViewerModel
         PageSelector.PropertyChanged += TryChangePage;
     }
 
-    private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPage(PageSelector.ZeroBasisPage);
+    private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPage(PageSelector.Page);
 
     #region Rendering
-    private int lastIndex = -1;
-    private async void RenderPage(int pageIndex)
+    private int lastPageNumber = -1;
+    private async void RenderPage(int oneBasedPageNumber)
     {
-        if (pageIndex == lastIndex) return;
-        lastIndex = pageIndex;
-        var image = await new RenderToDrawingGroup(document, pageIndex).RenderToDrawingVisual();
+        if (oneBasedPageNumber == lastPageNumber) return;
+        lastPageNumber = oneBasedPageNumber;
+        var image = await new RenderToDrawingGroup(document, oneBasedPageNumber).RenderToDrawingVisual();
         PageImage = image;
     }
     private void RedrawPage(object? sender, EventArgs e)
     {
-        var savedRenderIndex = lastIndex;
-        lastIndex = -1;
+        var savedRenderIndex = lastPageNumber;
+        lastPageNumber = -1;
         RenderPage(savedRenderIndex);
     }
 
