@@ -14,7 +14,7 @@ public class PasswordQuery:IPasswordSource
         this.worker = worker;
     }
 
-    public ValueTask<(string?, PasswordType)> GetPassword()
+    public ValueTask<(string?, PasswordType)> GetPasswordAsync()
     {
         var vm = new PasswordDialogViewModel();
         var dialogResult = worker.Run(()=> dialogLauncher.ShowModalDialog(

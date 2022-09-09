@@ -2,6 +2,7 @@
 using Melville.INPC;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.DiParameterSources;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 
@@ -9,15 +10,15 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 
 public partial class LowLevelViewModel
 {
+    private readonly IPasswordSource passwordSource;
     [AutoNotify] private ParsedLowLevelDocument? parsedDoc;
     [AutoNotify] public DocumentPart[]? Root => ParsedDoc?.Root;
     [AutoNotify] private DocumentPart? selected;
     private IWaitingService? waiter;
-    private readonly IPartParser parser;
-
-    public LowLevelViewModel(IPartParser parser)
+ 
+    public LowLevelViewModel(IPasswordSource passwordSource)
     {
-        this.parser = parser;
+        this.passwordSource = passwordSource;
     }
 
     public void SetVisualTreeRunner(IWaitingService waiter)
@@ -34,7 +35,7 @@ public partial class LowLevelViewModel
     {
         try
         {
-            return await parser.ParseAsync(source, waiter ?? new FakeWaitingService());
+            return await (await CreateParser()).ParseAsync(source, waiter ?? new FakeWaitingService());
         }
         catch (Exception e)
         {
@@ -42,6 +43,12 @@ public partial class LowLevelViewModel
                 new[] { new DocumentPart($"Exception: {e.Message}") },
                 NoPageLookup.Instance);
         }
+    }
+
+    private async Task<PartParser> CreateParser()
+    {
+        var (password, passwordType) = await passwordSource.GetPasswordAsync();
+        return new PartParser(new ConstantPasswordSource(passwordType, password));
     }
 
     public ValueTask JumpToReference(ReferencePartViewModel target, IWaitingService waiting)

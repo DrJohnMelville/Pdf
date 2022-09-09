@@ -15,18 +15,18 @@ namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 
 public interface IImageRenderer
 {
-    ValueTask  SetSource(Stream pdfBits, string password);
+    ValueTask SetSource(Stream pdfBits, string password, PasswordType passwordType);
     ValueTask<ImageSource> LoadPage(int page);
 }
 
 public abstract class MelvillePdfRenderer : IImageRenderer
 {
     private DocumentRenderer? source;
-    public async ValueTask SetSource(Stream pdfBits, string password)
+    public async ValueTask SetSource(Stream pdfBits, string password, PasswordType passwordType)
     {
         source = null;
         source = await DocumentRendererFactory.CreateRendererAsync(
-            await PdfDocument.ReadAsync(pdfBits, new SinglePasswordSource(password)),
+            await PdfDocument.ReadAsync(pdfBits, new ConstantPasswordSource(passwordType ,password)),
             WindowsDefaultFonts.Instance
         );
     }
@@ -48,18 +48,6 @@ public abstract class MelvillePdfRenderer : IImageRenderer
         source != null && page >= 1 && page <= source.TotalPages;
 
     protected abstract ValueTask<ImageSource> Render(DocumentRenderer source, int page);
-}
-
-public class SinglePasswordSource : IPasswordSource
-{
-    private readonly string password;
-
-    public SinglePasswordSource(string password)
-    {
-        this.password = password;
-    }
-
-    public ValueTask<(string?, PasswordType)> GetPassword() => new((password, PasswordType.User));
 }
 
 public partial class ImageViewerViewModel : IRenderer
@@ -91,8 +79,8 @@ public partial class ImageViewerViewModel : IRenderer
     {
         try
         {
-            var (password, _) = await passwords.GetPassword();
-            await renderer.SetSource(pdfBits, password ?? "");
+            var (password, passwordType) = await passwords.GetPasswordAsync();
+            await renderer.SetSource(pdfBits, password ?? "", passwordType);
             return true;
         }
         catch (Exception e)

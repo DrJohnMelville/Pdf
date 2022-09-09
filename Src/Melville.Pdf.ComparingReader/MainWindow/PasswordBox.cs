@@ -8,7 +8,7 @@ public class PasswordBox : IPasswordSource
     public string Password { get; set; } = "";
     public PasswordType Type { get; set; }
     
-    public ValueTask<(string?, PasswordType)> GetPassword()
+    public ValueTask<(string?, PasswordType)> GetPasswordAsync()
     {
         return new((Password, Type));
     }

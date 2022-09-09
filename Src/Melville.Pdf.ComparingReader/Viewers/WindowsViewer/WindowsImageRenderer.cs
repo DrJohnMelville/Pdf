@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Windows.Data.Pdf;
 using Windows.Storage.Streams;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.Viewers.WindowsViewer;
@@ -20,7 +21,7 @@ public class WindowsImageRenderer : IImageRenderer
         this.pageSel = pageSel;
     }
 
-    public async ValueTask SetSource(Stream pdfBits, string password)
+    public async ValueTask SetSource(Stream pdfBits, string password, PasswordType passwordType)
     {
         document = null;
         document = await PdfDocument.LoadFromStreamAsync(pdfBits.AsRandomAccessStream(), password);

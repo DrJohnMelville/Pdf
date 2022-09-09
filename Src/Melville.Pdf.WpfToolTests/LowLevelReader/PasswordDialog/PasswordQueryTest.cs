@@ -34,7 +34,7 @@ public class PasswordQueryTest
             It.IsAny<double>(), It.IsAny<double>(),
             It.IsAny<string>())).Returns(false);
 
-        Assert.Equal((null, PasswordType.User), await sut.GetPassword());
+        Assert.Equal((null, PasswordType.User), await sut.GetPasswordAsync());
     }
     [Fact]
     public async Task OkUserPassword()
@@ -49,7 +49,7 @@ public class PasswordQueryTest
                 return true;
             });
 
-        Assert.Equal(("User", PasswordType.User), await sut.GetPassword());
+        Assert.Equal(("User", PasswordType.User), await sut.GetPasswordAsync());
     }
     [Fact]
     public async Task OkOwnerPassword()
@@ -64,6 +64,6 @@ public class PasswordQueryTest
                 return true;
             });
 
-        Assert.Equal(("Owner", PasswordType.Owner), await sut.GetPassword());
+        Assert.Equal(("Owner", PasswordType.Owner), await sut.GetPasswordAsync());
     }
 }

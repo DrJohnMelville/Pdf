@@ -32,7 +32,7 @@ public static class SecurityHandlerOperations
     {
         while (true)
         {
-            var (password, type) = await source.GetPassword().CA();
+            var (password, type) = await source.GetPasswordAsync().CA();
             if (password == null)
                 throw new PdfSecurityException("User cancelled pdf decryption by not providing password.");
             if (handler.TryComputeRootKey(password, type) is { } rootKey) 

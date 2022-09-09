@@ -86,6 +86,8 @@ not to include so I could ship the first version.
       be useful in creating real documents.
 - Forms of any kind.
 - Text or Graphics extraction
+- Annotations
+- Transparency (Partial support)
 
 # What's next on the roadmap?
 
