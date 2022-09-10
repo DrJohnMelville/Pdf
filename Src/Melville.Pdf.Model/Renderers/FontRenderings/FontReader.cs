@@ -22,7 +22,7 @@ public readonly struct FontReader
     }
     
     public ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, FreeTypeFontFactory factory) =>
-        defaultMapper.MapDefaultFont(name, FontFlags.None, factory);
+        defaultMapper.FontFromName(name, FontFlags.None, factory);
 
     public  ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict, double size) => 
          PdfFontToRealizedFont(size, new PdfFont(fontDict));
@@ -56,6 +56,6 @@ public readonly struct FontReader
               ).CA();
 
     private async ValueTask<IRealizedFont> SystemFontByName(PdfFont font, FreeTypeFontFactory factory) =>
-        await defaultMapper.MapDefaultFont(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA(), factory)
+        await defaultMapper.FontFromName(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA(), factory)
             .CA();
 }

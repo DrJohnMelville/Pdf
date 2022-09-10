@@ -23,9 +23,6 @@ public static class GlobalFreeTypeResources
     public static FontLibrary SystemFontLibrary() =>
         systemFontLibrary ?? SetFontDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
 
-    public static FontLibrary SetFontDirectory(string fontFolder)
-    {
-        systemFontLibrary = new FontLibraryBuilder(GlobalFreeTypeResources.SharpFontLibrary).BuildFrom(fontFolder);
-        return systemFontLibrary;
-    }
+    public static FontLibrary SetFontDirectory(string fontFolder) => 
+        systemFontLibrary = new FontLibraryBuilder(SharpFontLibrary).BuildFrom(fontFolder);
 }

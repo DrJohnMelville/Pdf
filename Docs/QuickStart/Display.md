@@ -73,3 +73,48 @@ or as a constructor parameter to the PdfReader.
 ````c#
      var document = await new PdfReader(myPasswordSource).ReadFromFile("File.Pdf");
 ````
+
+## 4. Using your own named font mapper.
+Most of the fonts used in most PDF documents are embedded directly in the document.  PDF, however, defines 14 standard fonts
+which must be supplied by conforming readers.  Furthermore, PDF allows non-embedded fonts which must be mapped to system
+fonts, either by name, or using a FontFlags enum to pick an acceptable replacement font.
+
+Default font mapping can be specified using an implementation of IDefaultFontMapper.  The canonicial, and currently only, 
+implementation is WindowsDefaultFonts.  IDefaultFontMapper is defined as:
+
+````c#
+public interface IDefaultFontMapper
+{
+    ValueTask<IRealizedFont> FontFromName(PdfName font, FontFlags flags, FreeTypeFontFactory factory);
+}
+````
+The FontFromName method attempt first to find a font matching the name.  Failing that it selects a font based on
+the FontFlags enum.  The method must return a correct font for the 14 standard PDF Font names which are:
+- Courier
+- CourierBold
+- CourierOblique
+- CourierBoldOblique
+- Helvetica
+- HelveticaBold
+- HelveticaOblique
+- HelveticaBoldOblique
+- Times
+- TimesBold
+- TimesOblique
+- TimesBoldOblique
+- Symbol
+- ZapfDingbats
+
+IRealizedFont is a complicated interface which is responsible for actually painting characters from the font.  Overriding 
+IRealizedFont is not an introductory topic.  WindowsDefaultFonts gets its fonts from 
+GlobalFreeTypeResources.SystemFontLibrary.  The system font library defaults to all font files found in the font directory
+which C# stores in Enviornment.SpecialFolders.Fonts.  You can set a different font folder by calling 
+GlobalFreeTypeResources.SetFontDirectory.
+
+Once you have an IDefaultFontMapper just pass it in to the PdfReader constructor.
+````c#
+     var document = await new PdfReader(myPasswordSource).ReadFromFile("File.Pdf");
+````
+The WPF PdfViewer control does not have a convenience method to use custom font mapping.  If you are using WPF then you
+are on windows and the default windows mapper is highly likely to serve you well.  If needed you could use your own
+PdfReader to read the file into a DocumentRenderer and then bind the Source property on the PdfViewer.

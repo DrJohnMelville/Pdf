@@ -8,5 +8,5 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 public interface IDefaultFontMapper
 {
-    public ValueTask<IRealizedFont> MapDefaultFont(PdfName font, FontFlags flags, FreeTypeFontFactory factory);
+    ValueTask<IRealizedFont> FontFromName(PdfName font, FontFlags flags, FreeTypeFontFactory factory);
 }

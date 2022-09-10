@@ -24,7 +24,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static readonly byte[] SegoeUISymbol =
         { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
 
-    public ValueTask<IRealizedFont>  MapDefaultFont(PdfName font, FontFlags fontFlags, FreeTypeFontFactory factory)
+    public ValueTask<IRealizedFont>  FontFromName(PdfName font, FontFlags fontFlags, FreeTypeFontFactory factory)
     {
         return font.GetHashCode() switch
         {
