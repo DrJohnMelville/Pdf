@@ -11,7 +11,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.CharacterReaders;
 public readonly partial struct ReadCharacterFactory
 {
     [FromConstructor] private readonly PdfFont font;
-    [FromConstructor] private readonly PdfObject? encoding;
+    [FromConstructor] private readonly PdfEncoding encoding;
 
     public async ValueTask<IReadCharacter> Create()
     {
@@ -22,9 +22,7 @@ public readonly partial struct ReadCharacterFactory
 
     private IReadCharacter ParseType0FontEncoding()
     {
-        if (encoding is not PdfName encName)
-            throw new NotImplementedException("Only BuiltIn CDI encodings are supported");
-        if (!(encName == KnownNames.IdentityH || encName == KnownNames.IdentityV))
+        if (!encoding.IsIdentityCdiEncoding())
             throw new NotImplementedException("Only identity CDI encodings are supported");
         return TwoByteCharacters.Instance;
     }

@@ -33,11 +33,12 @@ public readonly struct PdfFont
 
     public async ValueTask<PdfName> SubTypeAsync() => 
         await LowLevel.GetOrDefaultAsync(KnownNames.Subtype, 
-            await LowLevel.GetOrDefaultAsync(KnownNames.S, KnownNames.Type1)).CA();
+            await LowLevel.GetOrDefaultAsync(KnownNames.S, KnownNames.Type1).CA()).CA();
     
-    public ValueTask<PdfObject?> EncodingAsync() => LowLevel.GetOrNullAsync<PdfObject>(KnownNames.Encoding);
+    public async ValueTask<PdfEncoding> EncodingAsync() => 
+        new(await LowLevel.GetOrNullAsync(KnownNames.Encoding).CA());
 
-    public ValueTask<PdfDictionary?> DescriptorAsync() =>
+    private ValueTask<PdfDictionary?> DescriptorAsync() =>
         LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.FontDescriptor);
 
     public async ValueTask<FontFlags> FontFlagsAsync() =>

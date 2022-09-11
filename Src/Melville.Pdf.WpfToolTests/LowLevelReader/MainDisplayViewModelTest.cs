@@ -4,6 +4,7 @@ using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewer.MainDisplay;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
@@ -28,7 +29,7 @@ public class MainDisplayViewModelTest
     public MainDisplayViewModelTest()
     {
         file.SetupGet(i => i.Path).Returns("c:\\ddd.pdf");
-        sut = new(new LowLevelViewModel(parser.Object));
+        sut = new(new LowLevelViewModel(NullPasswordSource.Instance));
     }
 
     [Fact]

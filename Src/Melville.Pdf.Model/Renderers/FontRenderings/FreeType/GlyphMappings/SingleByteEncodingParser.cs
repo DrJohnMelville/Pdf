@@ -21,7 +21,7 @@ public readonly partial struct SingleByteEncodingParser
     }
 #endif
 
-    public async ValueTask WriteEncodingToArray(PdfObject? encoding)
+    public async ValueTask WriteEncodingToArray(PdfObject encoding)
     {
         switch (encoding)
         {
@@ -39,7 +39,8 @@ public readonly partial struct SingleByteEncodingParser
         }
     }
     
-    private byte[][] CharactersFromName(PdfName name) => name.GetHashCode() switch
+    private byte[][] CharactersFromName(PdfName name) => 
+        name.GetHashCode() switch
     {
         KnownNameKeys.MacRomanEncoding => CharacterEncodings.MacRoman,
         KnownNameKeys.MacExpertEncoding => CharacterEncodings.MacExpert,

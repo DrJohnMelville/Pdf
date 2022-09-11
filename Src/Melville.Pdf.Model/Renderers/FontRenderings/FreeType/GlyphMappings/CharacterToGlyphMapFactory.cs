@@ -20,7 +20,7 @@ public readonly partial struct CharacterToGlyphMapFactory
 {
     [FromConstructor] private readonly Face face;
     [FromConstructor] private readonly PdfFont font;
-    [FromConstructor] private readonly PdfObject? encoding;
+    [FromConstructor] private readonly PdfEncoding encoding;
 
     public async ValueTask<IMapCharacterToGlyph> Parse() =>
         (await font.SubTypeAsync().CA()).GetHashCode() switch
@@ -62,7 +62,7 @@ public readonly partial struct CharacterToGlyphMapFactory
         var array = new uint[256];
         var nameToGlyphMapper = new NameToGlyphMappingFactory(face).Create();
         await new SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappings().CA())
-            .WriteEncodingToArray(encoding).CA();
+            .WriteEncodingToArray(encoding.LowLevel).CA();
         WriteBackupMappings(array);
         return new CharacterToGlyphArray(array);
     }
