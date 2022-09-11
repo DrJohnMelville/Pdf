@@ -18,7 +18,7 @@ The WPF PdfViewer control lives in Melville.Pdf.Wpf.  The Pdf control is quite s
 grow in the future.  The Source property on the PdfViewer is of type object and it can take any of the
 following types:
 - A string, which is interpreted as the path of the PDF file on the file system.
-- A byte[]
+- A byte[ ] array.
 - A Stream, which must be readable and seekable with a known length.
 - A PdfLowLevelDocument which presents the PDF file as a graph of Pdf objects.
 - A PdfDocument, which is a thin ["Costume Type"](../Architecture/Costumes.md) around PdfLowLevelDocument
