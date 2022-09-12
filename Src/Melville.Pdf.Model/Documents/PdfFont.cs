@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -22,14 +23,9 @@ public enum FontFlags: int
     ForceBold = 1<<18
 }
 
-public readonly struct PdfFont
+public readonly partial struct PdfFont
 {
-    public PdfFont(PdfDictionary lowLevel)
-    {
-        LowLevel = lowLevel;
-    }
-
-    public readonly PdfDictionary LowLevel { get; }
+    [FromConstructor]public readonly PdfDictionary LowLevel { get; }
 
     public async ValueTask<PdfName> SubTypeAsync() => 
         await LowLevel.GetOrDefaultAsync(KnownNames.Subtype, 
