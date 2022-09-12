@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+﻿using System.Diagnostics;
+using Melville.Parsing.VariableBitEncoding;
 
-namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+namespace Melville.CCITT;
 
 public ref struct CcittBitWriter
 {

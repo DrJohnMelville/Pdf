@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers;
+using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 

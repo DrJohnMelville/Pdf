@@ -1,13 +1,9 @@
-﻿
-using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics;
-using System.IO;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Melville.Parsing.StreamFilters;
+using Melville.Parsing.VariableBitEncoding;
 
-namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+namespace Melville.CCITT;
 
 public class CcittType4Decoder : IStreamFilterDefinition
 {
@@ -74,7 +70,7 @@ public class CcittType4Decoder : IStreamFilterDefinition
       case CcittCodeOperation.Vertical: DoVertical(code.VerticalOffset);  break;
       case CcittCodeOperation.EndOfLine: DoEndOfLine(); break;
       default:
-        throw new PdfParseException($"Code {code.Operation} should not have escaped the CccitCodeReader");
+        throw new InvalidDataException($"Code {code.Operation} should not have escaped the CccitCodeReader");
     }
   }
 

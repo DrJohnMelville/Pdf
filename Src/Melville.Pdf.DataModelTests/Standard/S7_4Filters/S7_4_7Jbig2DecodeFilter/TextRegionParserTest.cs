@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Buffers;
+using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 

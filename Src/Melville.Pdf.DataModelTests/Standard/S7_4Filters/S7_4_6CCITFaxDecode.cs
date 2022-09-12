@@ -1,19 +1,19 @@
 ﻿using System;
+using Melville.CCITT;
 using Melville.INPC;
+using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 // the next using is used by the macros
 using Melville.Pdf.DataModelTests.StreamUtilities;
-using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
 public ref struct CCITEncodingTestBuilder
 {
-    private CcittBitWriter writer = new(new byte[100], new BitWriter());
+    private CcittBitWriter writer = new((Span<byte>)new byte[100], (BitWriter)new BitWriter());
 
     public CCITEncodingTestBuilder()
     {

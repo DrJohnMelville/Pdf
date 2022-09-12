@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 
-namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+namespace Melville.CCITT;
 
 public record struct LineComparison(int A1, int A2, int B1, int B2)
 {

@@ -2,7 +2,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Linq;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
 

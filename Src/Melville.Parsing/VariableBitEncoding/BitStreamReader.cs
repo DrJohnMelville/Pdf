@@ -1,10 +1,8 @@
 ﻿using System.Buffers;
-using System.IO;
 using System.IO.Pipelines;
-using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+namespace Melville.Parsing.VariableBitEncoding;
 
 public readonly struct BitStreamReader
 {

@@ -1,9 +1,7 @@
-﻿using System.IO;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
+﻿using System.IO.Pipelines;
 using Melville.Hacks;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+namespace Melville.Parsing.VariableBitEncoding;
 
 public readonly struct BitStreamWriter
 {

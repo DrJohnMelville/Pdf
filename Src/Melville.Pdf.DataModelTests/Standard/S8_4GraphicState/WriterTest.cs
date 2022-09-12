@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.Streams;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;

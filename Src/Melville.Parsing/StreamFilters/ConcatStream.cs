@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
-namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
+namespace Melville.Parsing.StreamFilters;
 
 public class ConcatStream : ConcatStreamBase
 {

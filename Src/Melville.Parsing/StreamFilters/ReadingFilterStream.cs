@@ -1,13 +1,9 @@
-﻿using System;
-using System.Buffers;
-using System.IO;
+﻿using System.Buffers;
 using System.IO.Pipelines;
-using System.Threading;
-using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
-namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
+namespace Melville.Parsing.StreamFilters;
 
 public class ReadingFilterStream : DefaultBaseStream
 {

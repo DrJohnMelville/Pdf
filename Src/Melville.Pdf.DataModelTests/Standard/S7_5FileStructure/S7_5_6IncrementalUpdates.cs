@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;

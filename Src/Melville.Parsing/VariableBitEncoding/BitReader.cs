@@ -1,8 +1,7 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using System.IO;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+namespace Melville.Parsing.VariableBitEncoding;
 
 public class BitReader
 {

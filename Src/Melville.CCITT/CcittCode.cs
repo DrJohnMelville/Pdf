@@ -1,4 +1,4 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+﻿namespace Melville.CCITT;
 
 public record struct CcittCode(CcittCodeOperation Operation, ushort Length)
 {

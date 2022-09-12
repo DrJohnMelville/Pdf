@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+namespace Melville.Parsing.VariableBitEncoding;
 
 public class BitWriter
 {

@@ -1,4 +1,4 @@
-﻿namespace Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+﻿namespace Melville.Parsing.VariableBitEncoding;
 
 public static class BitUtilities
 {

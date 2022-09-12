@@ -2,7 +2,6 @@
 using System.IO;
 using BenchmarkDotNet.Attributes;
 using Melville.Parsing.Streams;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Performance.Playground.Writers
 {

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
-namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
+namespace Melville.Parsing.StreamFilters;
 
 // Many of the filters, like ASCII85Decode and RLE can produce more than one
 // byte of output at a certian point in the input.  This wrapper class guarentees that the reads

@@ -1,8 +1,8 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Melville.Parsing.VariableBitEncoding;
 
-namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+namespace Melville.CCITT;
 
 public enum CcittCodeOperation : byte
 {

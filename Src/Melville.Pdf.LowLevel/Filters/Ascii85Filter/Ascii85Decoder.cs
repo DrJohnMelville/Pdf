@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Buffers;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter;

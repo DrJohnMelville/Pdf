@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters;

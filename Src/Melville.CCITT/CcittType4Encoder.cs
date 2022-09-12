@@ -1,4 +1,4 @@
-﻿namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+﻿namespace Melville.CCITT;
 
 public class CcittType4Encoder : CcittEncoderBase
 {

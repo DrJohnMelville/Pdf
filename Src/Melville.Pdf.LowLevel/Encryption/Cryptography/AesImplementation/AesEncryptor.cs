@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
+using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 

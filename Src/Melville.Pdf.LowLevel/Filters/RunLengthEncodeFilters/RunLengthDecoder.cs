@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Buffers;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
+using Melville.Parsing.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 

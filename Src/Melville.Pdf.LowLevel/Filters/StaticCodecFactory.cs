@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
@@ -9,7 +10,6 @@ using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 

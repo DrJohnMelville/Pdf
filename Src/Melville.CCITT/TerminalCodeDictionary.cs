@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Melville.INPC;
+﻿using Melville.INPC;
 
-namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+namespace Melville.CCITT;
 
 
 public partial class TerminalCodeDictionary: ICodeDictionay

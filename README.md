@@ -45,7 +45,7 @@ For more examples and explanations please got to [QuickStart](Docs/QuickStart/Di
 
 # Who else contributed?
 I made an effort to contain the dependencies as much as I can.  The goal is to be free, and that means I 
-need to control the number of people who can make an ownership claim to the source code.  In the end I took
+need to control the number of people who can make an ownership claim to the source code.  So far, I have taken,
 3 dependencies, as discussed below.
 - [Freetype](http://freetype.org/license.html) via [SharpFont](https://github.com/Robmaister/SharpFont) is
 used for font file parsing.  This is the only native code dependency in the project, and much as I know

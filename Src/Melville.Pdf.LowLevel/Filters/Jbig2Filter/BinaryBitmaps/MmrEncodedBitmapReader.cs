@@ -1,5 +1,5 @@
 ﻿using System.Buffers;
-using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+using Melville.CCITT;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
 
@@ -25,7 +25,7 @@ public static class MmrEncodedBitmapReader
 
     private const int KValueThatGetsIgnored = 1000;
     private static CcittType4Decoder CreateMmrDecoder(BinaryBitmap bitmap) => new(
-        new CcittParameters(KValueThatGetsIgnored, 
+        (CcittParameters)new CcittParameters(KValueThatGetsIgnored, 
             encodedByteAlign:false, bitmap.Width, bitmap.Height, endOfBlock:false, blackIs1: true), 
-        new TwoDimensionalLineCodeDictionary());
+        (ICodeDictionay)new TwoDimensionalLineCodeDictionary());
 }

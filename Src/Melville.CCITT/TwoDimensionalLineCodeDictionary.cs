@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+﻿namespace Melville.CCITT;
 
 /// <summary>
 /// This dictionary implements CCITT Group 4 or the ITU Rec T.6 protocool

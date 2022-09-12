@@ -1,7 +1,6 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 
-namespace Melville.Pdf.LowLevel.Filters.StreamFilters;
+namespace Melville.Parsing.StreamFilters;
 
 public interface IStreamFilterDefinition
 {

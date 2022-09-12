@@ -19,6 +19,7 @@
           <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
           <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>
+      <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
       <ProjectReference Include="..\Melville.CSJ2k\Melville.CSJ2K.csproj" />
       <ProjectReference Include="..\Melville.JpegLibrary\Melville.JpegLibrary.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />

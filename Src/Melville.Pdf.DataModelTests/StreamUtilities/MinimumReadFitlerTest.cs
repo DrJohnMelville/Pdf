@@ -2,9 +2,9 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.Parsing.StreamFilters;
 using Melville.Parsing.Streams.Bases;
 using Melville.Pdf.LowLevel.Filters;
-using Melville.Pdf.LowLevel.Filters.StreamFilters;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+using Melville.CCITT;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.CcittParts;

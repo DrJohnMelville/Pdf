@@ -1,5 +1,4 @@
-﻿global using Melville.Pdf.LowLevel.Filters.StreamFilters;
-global using System;
+﻿global using System;
 global using System.Threading.Tasks;
 global using System.Text;
 global using Melville.Pdf.LowLevel.Model.Conventions;

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
+using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 

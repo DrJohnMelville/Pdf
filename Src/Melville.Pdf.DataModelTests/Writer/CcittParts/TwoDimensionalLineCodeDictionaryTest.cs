@@ -1,11 +1,11 @@
-﻿using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+﻿using Melville.CCITT;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.CcittParts;
 
 public class TwoDimensionalLineCodeDictionaryTest
 {
-    private readonly CcittCodeReader sut = new(new TwoDimensionalLineCodeDictionary());
+    private readonly CcittCodeReader sut = new((ICodeDictionay)new TwoDimensionalLineCodeDictionary());
 
     [Theory]
     [InlineData("0001", CcittCodeOperation.Pass, 0)]

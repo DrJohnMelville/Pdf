@@ -1,6 +1,6 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
+using Melville.CCITT;
+using Melville.Parsing.VariableBitEncoding;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.CcittParts;

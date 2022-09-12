@@ -1,10 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
-
-namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
+﻿namespace Melville.CCITT;
 
 public readonly struct CcittParameters
 {
@@ -27,17 +21,6 @@ public readonly struct CcittParameters
         BlackIs1 = blackIs1;
         (WhiteByte, BlackByte) = BlackIs1?((byte)0,(byte)1):( (byte)1, (byte)0);
     }
-
-    public static ValueTask<CcittParameters> FromPdfObject(PdfObject? parameters) =>
-        FromDictionary(parameters as PdfDictionary ?? PdfDictionary.Empty);
-    public static async ValueTask<CcittParameters> FromDictionary(PdfDictionary parameters) =>
-        new((int)await parameters.GetOrDefaultAsync(KnownNames.K, 0).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.EncodedByteAlign, false).CA(),
-            (int)await parameters.GetOrDefaultAsync(KnownNames.Columns, 1728).CA(),
-            (int)await parameters.GetOrDefaultAsync(KnownNames.Rows, 0).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.EndOfBlock, true).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.BlackIs1, false).CA()
-        );
 
     public bool[] CreateWhiteRow()
     {

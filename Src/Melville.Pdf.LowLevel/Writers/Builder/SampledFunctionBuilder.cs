@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
+using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Model.Primitives.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
