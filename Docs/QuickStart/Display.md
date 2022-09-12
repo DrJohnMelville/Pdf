@@ -79,8 +79,7 @@ Most of the fonts used in most PDF documents are embedded directly in the docume
 which must be supplied by conforming readers.  Furthermore, PDF allows non-embedded fonts which must be mapped to system
 fonts, either by name, or using a FontFlags enum to pick an acceptable replacement font.
 
-Default font mapping can be specified using an implementation of IDefaultFontMapper.  The canonicial, and currently only, 
-implementation is WindowsDefaultFonts.  IDefaultFontMapper is defined as:
+Default font mapping can be specified using an implementation of IDefaultFontMapper.  IDefaultFontMapper is defined as:
 
 ````c#
 public interface IDefaultFontMapper
@@ -105,11 +104,17 @@ the FontFlags enum.  The method must return a correct font for the 14 standard P
 - Symbol
 - ZapfDingbats
 
-IRealizedFont is a complicated interface which is responsible for actually painting characters from the font.  Overriding 
-IRealizedFont is not an introductory topic.  WindowsDefaultFonts gets its fonts from 
-GlobalFreeTypeResources.SystemFontLibrary.  The system font library defaults to all font files found in the font directory
-which C# stores in Enviornment.SpecialFolders.Fonts.  You can set a different font folder by calling 
-GlobalFreeTypeResources.SetFontDirectory.
+Melville.PDF supplies two implementations of IDefaultFontMapper.
+- WindowsDefaultFontMapper loads fonts from the GlobalTypeResources.SystemFontLibrary.  The default fonts
+are mapped to core fonts that have shipped with every version of Windows for over a decade.  Other font
+names are loaded from the system font library if a font with the correct name exists, otherwise a default
+font is substituted.
+- The SelfContainedDefaultFonts class is in Melville.Pdf.FontLibrary keeps font rendering completely 
+independent of the SystemFontLibrary.  Default fonts are mapped to open source font programs contained
+within the Melville.Pdf.FontLibrary assembly.  This increases the size of the program, and will not use
+fonts referenced but not embedded in the PDF that fortuitously happen to be found in the system font library.
+This class however provides predictable rendering regardless of fonts which may have been removed from the
+system font library.
 
 Once you have an IDefaultFontMapper just pass it in to the PdfReader constructor.
 ````c#
