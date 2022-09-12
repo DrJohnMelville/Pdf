@@ -1,10 +1,8 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
-using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.JBig2;
+using Melville.JBig2.BinaryBitmaps;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 

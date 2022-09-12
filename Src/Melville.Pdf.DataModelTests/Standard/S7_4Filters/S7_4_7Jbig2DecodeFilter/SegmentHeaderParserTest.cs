@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Buffers;
+using Melville.JBig2.FileOrganization;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 

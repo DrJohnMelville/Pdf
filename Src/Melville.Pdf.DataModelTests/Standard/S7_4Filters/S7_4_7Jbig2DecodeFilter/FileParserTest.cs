@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
-using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.JBig2.FileOrganization;
+using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 

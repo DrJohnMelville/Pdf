@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.HuffmanTables;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Melville.JBig2.HuffmanTables;
+using Melville.JBig2.Segments;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;

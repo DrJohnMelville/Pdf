@@ -1,6 +1,6 @@
-﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.ArithmeticEncodings;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+﻿using Melville.JBig2.ArithmeticEncodings;
+using Melville.JBig2.BinaryBitmaps;
+using Melville.JBig2.Segments;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters.S7_4_7Jbig2DecodeFilter;

@@ -21,6 +21,7 @@
       </ProjectReference>
       <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
       <ProjectReference Include="..\Melville.CSJ2k\Melville.CSJ2K.csproj" />
+      <ProjectReference Include="..\Melville.JBig2\Melville.JBig2.csproj" />
       <ProjectReference Include="..\Melville.JpegLibrary\Melville.JpegLibrary.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
       <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
@@ -34,6 +35,18 @@
 
     <ItemGroup>
       <Folder Include="Filters\CryptFilters\BitmapSymbols" />
+      <Folder Include="Filters\Jbig2Filter\ArithmeticEncodings" />
+      <Folder Include="Filters\Jbig2Filter\BinaryBitmaps" />
+      <Folder Include="Filters\Jbig2Filter\EncodedReaders" />
+      <Folder Include="Filters\Jbig2Filter\FileOrganization" />
+      <Folder Include="Filters\Jbig2Filter\GenericRegionRefinements" />
+      <Folder Include="Filters\Jbig2Filter\HuffmanTables" />
+      <Folder Include="Filters\Jbig2Filter\SegmentDictionaries" />
+      <Folder Include="Filters\Jbig2Filter\SegmentParsers\GenericRegionParsers" />
+      <Folder Include="Filters\Jbig2Filter\SegmentParsers\HalftoneRegionParsers" />
+      <Folder Include="Filters\Jbig2Filter\SegmentParsers\SymbolDictonaries" />
+      <Folder Include="Filters\Jbig2Filter\SegmentParsers\TextRegions" />
+      <Folder Include="Filters\Jbig2Filter\Segments" />
       <Folder Include="Model\Primitives\PipeReaderWithPositions" />
     </ItemGroup>
 </Project>

@@ -1,9 +1,8 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
+using Melville.JBig2.FileOrganization;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.FileOrganization;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 

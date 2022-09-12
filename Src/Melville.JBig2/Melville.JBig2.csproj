@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Melville.Generators.INPC" Version="0.5.42" />
+      <PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
+      <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+    </ItemGroup>
+
+</Project>

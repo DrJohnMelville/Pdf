@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Melville.JBig2.BinaryBitmaps;
+using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 

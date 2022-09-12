@@ -1,6 +1,6 @@
-﻿using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers.TextRegions;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+﻿using Melville.JBig2.BinaryBitmaps;
+using Melville.JBig2.SegmentParsers.TextRegions;
+using Melville.JBig2.Segments;
 using Moq;
 using Xunit;
 

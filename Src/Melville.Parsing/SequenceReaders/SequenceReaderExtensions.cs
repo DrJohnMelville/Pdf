@@ -101,4 +101,13 @@ public static  partial class SequenceReaderExtensions
     public static void Skip32BitPad(ref this SequenceReader<byte> reader) => reader.Advance(4);
     public static void Skip16BitPad(ref this SequenceReader<byte> reader) => reader.Advance(2);
     public static void Skip8BitPad(ref this SequenceReader<byte> reader) => reader.Advance(1);
+
+    public static bool TryAdvance<T>(this ref SequenceReader<T> input, int positions) 
+        where T:unmanaged, IEquatable<T>
+    {
+        if (input.Remaining < positions) return false;
+        input.Advance(positions);
+        return true;
+    }
+
 }

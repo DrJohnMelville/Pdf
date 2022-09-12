@@ -24,8 +24,10 @@ Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> Melville.JpegLibrary.*
 Melville.Pdf.LowLevel.Filters.JpxDecodeFilters.* ^=> Melville.CSJ2K.*
 
 #CCITT
-#Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters.* ^=> Melville.CCITT.*
-Melville.Pdf.LowLevel.Filters.* ^=> Melville.CCITT.*
+Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters.* ^=> Melville.CCITT.*
+
+#JBIG2
+Melville.Pdf.LowLevel.Filters.Jbig2Filter.* ^=> Melville.JBig2.*
 
 #Factory uses the parser
 Melville.Pdf.LowLevel.PdfLowLevelReader => Melville.Pdf.LowLevel.*

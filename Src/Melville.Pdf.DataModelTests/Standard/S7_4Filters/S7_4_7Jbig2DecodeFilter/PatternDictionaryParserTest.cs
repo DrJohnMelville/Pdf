@@ -1,8 +1,7 @@
 ﻿using System.Buffers;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.BinaryBitmaps;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.SegmentParsers;
-using Melville.Pdf.LowLevel.Filters.Jbig2Filter.Segments;
+using Melville.JBig2.BinaryBitmaps;
+using Melville.JBig2.SegmentParsers;
+using Melville.JBig2.Segments;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 

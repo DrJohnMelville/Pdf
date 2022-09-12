@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Diagnostics.Tracing.StackSources;
+using Melville.JBig2;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Filters.Jbig2Filter;
