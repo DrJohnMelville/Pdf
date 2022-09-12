@@ -40,6 +40,10 @@ IDrawTarget, IRenderTarget, and IGraphicsState interfaces that are the target of
 renderer assemblies implement these interfaces using various output technologies.  The PdfReader class is 
 defined in Melville.Pdf.Model.  PdfReader parses a variety of input objects to a DocumentRenderer class.
 
+**Pdf.KnownNameGenerator** is a compile time library that defines a number of source generators which 
+generate parts of Pdf.LowLevel.  This includes the KnownName constants, content stream operator constants,
+postscript interpreter operator classes, and the standard character mappings.  
+
 ### The Subordinate Parsers
 The PDF standard relies on many file formats defined outside of the PDF specification.  Many of these formats
 might be useful outside of the context of PDF parsing.  For convenience, these parsers are packaged as 
@@ -48,8 +52,21 @@ independent assemblies.
 **Melville.Parsing** is a utility library that contains code common to many of the parser implementations
 throughout Melville.Pdf.  
 
-**Melville.ICC* parses International Color Consortium (ICC) profiles and performs color space conversions as
+**Melville.ICC** parses International Color Consortium (ICC) profiles and performs color space conversions as
 specified in ICC.1:2004-10.
+
+**Melville.JpegLibrary** reads the JPEG stream format.  This assembly was copied from yigolden's
+[JpegLibrary](https://github.com/yigolden/JpegLibrary).  I have fixed some bugs in monochrome JPEG decoding
+and recognizing the App14 (0xFF0E) tag to define the Jpeg colorspace.
+
+**Melville.CSJ2k** reads Jpeg2000 image files.  This assembly was copied from cureos'
+[csj2k](https://github.com/cureos/csj2k).  I have made very light changes to this assembly in order to get
+raw bitstreams without excessive copying or needless memory consumption.
+
+Both Melville.Jpeg and Melville.CSJ2k have potential for better integration with the rest of the library in
+the future.  CSJ2k has a limited ICC engine that could be replaced with Melville.ICC.  Both use arithmetic
+decoders which duplicate the arithmetic decoder in the JPX parser.  Both could be better integrated with
+the async pattern used throughout the remainder of the the parser.
 
 ## Patterns
 - [Costume Pattern](Costumes.md)
