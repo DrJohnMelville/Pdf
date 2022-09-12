@@ -6,6 +6,7 @@ using System.Windows.Media;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.Model;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
@@ -25,11 +26,12 @@ public abstract class MelvillePdfRenderer : IImageRenderer
     public async ValueTask SetSource(Stream pdfBits, string password, PasswordType passwordType)
     {
         source = null;
-        source = await DocumentRendererFactory.CreateRendererAsync(
-            await PdfDocument.ReadAsync(pdfBits, new ConstantPasswordSource(passwordType ,password)),
-            WindowsDefaultFonts.Instance
-        );
+        // if the reader throws I want the source to be null
+        source = await new PdfReader(new ConstantPasswordSource(passwordType, password), FontSource())
+            .ReadFrom(pdfBits);
     }
+
+    protected abstract IDefaultFontMapper FontSource();
 
     public async ValueTask<ImageSource> LoadPage(int page)
     {

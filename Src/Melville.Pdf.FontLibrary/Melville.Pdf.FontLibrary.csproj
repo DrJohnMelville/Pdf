@@ -7,4 +7,37 @@
         <LangVersion>10.0</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <None Remove="Symbola.ttf" />
+      <EmbeddedResource Include="Symbola.ttf" />
+      <None Remove="Courier Prime.ttf" />
+      <EmbeddedResource Include="Courier Prime.ttf" />
+      <None Remove="Courier Prime Bold.ttf" />
+      <EmbeddedResource Include="Courier Prime Bold.ttf" />
+      <None Remove="Courier Prime Bold Italic.ttf" />
+      <EmbeddedResource Include="Courier Prime Bold Italic.ttf" />
+      <None Remove="Courier Prime Italic.ttf" />
+      <EmbeddedResource Include="Courier Prime Italic.ttf" />
+      <None Remove="Roboto-Bold.ttf" />
+      <EmbeddedResource Include="Roboto-Bold.ttf" />
+      <None Remove="Roboto-BoldItalic.ttf" />
+      <EmbeddedResource Include="Roboto-BoldItalic.ttf" />
+      <None Remove="Roboto-Italic.ttf" />
+      <EmbeddedResource Include="Roboto-Italic.ttf" />
+      <None Remove="Roboto-Regular.ttf" />
+      <EmbeddedResource Include="Roboto-Regular.ttf" />
+      <None Remove="LinLibertine_R.otf" />
+      <EmbeddedResource Include="LinLibertine_R.otf" />
+      <None Remove="LinLibertine_RB.otf" />
+      <EmbeddedResource Include="LinLibertine_RB.otf" />
+      <None Remove="LinLibertine_RBI.otf" />
+      <EmbeddedResource Include="LinLibertine_RBI.otf" />
+      <None Remove="LinLibertine_RI.otf" />
+      <EmbeddedResource Include="LinLibertine_RI.otf" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -51,3 +51,4 @@ Melville.Pdf.ComparingReader.* ^=> Melville.Pdf.Wpf.*
 
 #External Dependency for the SkiaSharp Viewer
 Melville.Pdf.ComparingReader.Viewers.SkiaViewer.* ^=> Melville.Pdf.SkiaSharp.* 
+Melville.Pdf.ComparingReader.Viewers.SkiaViewer.* ^=> Melville.Pdf.FontLibrary.* 
