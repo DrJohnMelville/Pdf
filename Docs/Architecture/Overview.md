@@ -1,6 +1,6 @@
 ﻿# Architcture Overview
 
-## High Level Overview
+## Assembly Summaries
 
 Melville.Pdf is composed of a number of different assemblies.  A detailed description of each assembly
 is [here.](AssemblySummaries.md)
@@ -11,4 +11,9 @@ formats included in PDF are located in Melville.ICC, Melville.JpegLibrary, Melvi
 and Melville.JBIG2.
 
 ## Patterns
+Every codebase hase its idiosyncrasies, and because it has one principal author, I am sure that Melville.Pdf
+has more than most.  In this section I will attempt to document some of the practices I use when I write
+code, or techniques I developed for this project.
+
+- [Why is everything async?](Async.md)
 - [Costume Pattern](Costumes.md)
