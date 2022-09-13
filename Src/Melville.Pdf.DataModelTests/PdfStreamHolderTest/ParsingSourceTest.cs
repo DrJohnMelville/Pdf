@@ -24,7 +24,7 @@ public class ParsingSourceTest
     }
 
     private readonly ParsingFileOwner owner = 
-        new(IndexedStream(), Mock.Of<IPasswordSource?>(), Mock.Of<IIndirectObjectResolver?>());
+        new(IndexedStream(), Mock.Of<IPasswordSource>(), Mock.Of<IIndirectObjectResolver>());
 
     private SequencePosition ConfirmBytes(ReadOnlySequence<byte> seq, params byte[] values)
     {

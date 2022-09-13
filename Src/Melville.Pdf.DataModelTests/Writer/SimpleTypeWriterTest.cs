@@ -52,7 +52,7 @@ public class SimpleTypeWriterTest
     [InlineData("Hel lo", "/Hel#20lo")]
     public async Task WriteName(string source, string dest)
     {
-        Assert.Equal(dest, await new PdfName(source).WriteToStringAsync());
+        Assert.Equal(dest, await NameDirectory.Get(source).WriteToStringAsync());
     }
     [Theory]
     [InlineData(0, "0")]

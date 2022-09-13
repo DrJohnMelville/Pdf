@@ -53,7 +53,7 @@ public class NameParser: PdfAtomParser
     {
         if (!bytes.TryRead(out var solius)) return false;
         if (solius != (byte)'/')
-            throw new PdfParseException("Names must stsrt with a '/'.");
+            throw new PdfParseException("Names must start with a '/'.");
         return true;
     }
         

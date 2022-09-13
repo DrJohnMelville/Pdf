@@ -2,6 +2,7 @@
 using System.Runtime.Intrinsics.Arm;
 using Melville.FileSystem;
 using Melville.MVVM.WaitingServices;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
@@ -31,8 +32,7 @@ public class PartParser: IPartParser
 
     public async Task<ParsedLowLevelDocument> ParseAsync(Stream source, IWaitingService waiting)
     {
-        PdfLowLevelDocument lowlevel = await RandomAccessFileParser.Parse(
-            new ParsingFileOwner(source, passwordSource));
+        PdfLowLevelDocument lowlevel = await new PdfLowLevelReader(passwordSource).ReadFrom(source);
         return await GenerateUIList(waiting, lowlevel);
     }
 
