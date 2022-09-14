@@ -133,7 +133,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     @$"      public readonly struct {items.Key}Name 
       {{
          private readonly PdfName name;
-         internal {items.Key}Name(PdfName name){{ this.name = name;}}
+         public {items.Key}Name(PdfName name){{ this.name = name;}}
          public static implicit operator PdfName({items.Key}Name wrapper) => wrapper.name; ");
                 foreach (var (value, name, type) in items)
                 {

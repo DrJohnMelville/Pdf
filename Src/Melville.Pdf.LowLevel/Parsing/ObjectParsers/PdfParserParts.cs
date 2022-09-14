@@ -22,10 +22,10 @@ public static class PdfParserParts
     public static readonly LiteralTokenParser DictionatryTermination = new(PdfTokenValues.DictionaryTerminator);
 // order is important, declarations after this comment rely on others.
     public static readonly PdfDictionaryParser Dictionary = 
-        new(ContentStreamComposite, Composite, PdfDictionaryParser.InlineImagePrefix);
+        new(ContentStreamComposite, Composite);
     public static readonly IndirectObjectParser Indirects = new(Number);
     public static readonly PdfDictionaryParser EmbeddedDictionaryParser =
-        new(ContentStreamComposite, ContentStreamComposite, PdfDictionaryParser.InlineImagePrefix);
+        new(ContentStreamComposite, ContentStreamComposite);
 
     public static readonly PdfDictionaryParser InlineImageDictionaryParser =
         new(new ExpandSynonymsParser(new InlineImageNameParser(),
@@ -56,5 +56,5 @@ public static class PdfParserParts
                     {InlineImageColorSpaceName.RGB, ColorSpaceName.DeviceRGB},
                     {InlineImageColorSpaceName.CMYK, ColorSpaceName.DeviceCMYK},
                     {InlineImageColorSpaceName.I, ColorSpaceName.Indexed},
-                }), PdfDictionaryParser.InlineImagePrefix);
+                }));
 }

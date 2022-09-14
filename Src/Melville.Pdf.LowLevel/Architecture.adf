@@ -17,7 +17,6 @@ Writers => Model
 * => Melville.Parsing.*
 
 #JpegLibrary
-Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> SixLabors.ImageSharp.*
 Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> Melville.JpegLibrary.*
 
 #CSj2K 

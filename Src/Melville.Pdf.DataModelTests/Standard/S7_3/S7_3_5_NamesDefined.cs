@@ -16,7 +16,7 @@ public class S7_3_5_NamesDefined
     [InlineData("Fo\u1234o")]
     public void NameCanRenderInUtf8(string name)
     {
-        Assert.Equal("/" + name, NameDirectory.Get(name).ToString());
+        Assert.Equal("/" + name, new PdfName(name).ToString());
     }
 
     [Theory]
