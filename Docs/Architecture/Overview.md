@@ -11,12 +11,12 @@ formats included in PDF are located in Melville.ICC, Melville.JpegLibrary, Melvi
 and Melville.JBIG2.
 
 ## My Roslyn Tools
-Roslyn, the C# compiler is extensible in 2 important fashion.  Analyzers allow the compiler to enforce additional rules specific codebase.  Code generators can examine source code and create additional code that sits along side the examined code.  I use both of these features in Melville.Pdf.
+Roslyn, the C# compiler, supports 2 important user extensions.  Analyzers allow the compiler to enforce additional rules specific to a given project or dependency.  Code generators can examine source code and create additional code that sits along side the examined code.  I use both of these features in Melville.Pdf.
 - [The Architecture Analyzer](Achitecture.md)
 - [Code Generators](CodeGenerators.md)
 
 ## Patterns
-Every codebase hase its idiosyncrasies, and because it has one principal author, I am sure that Melville.Pdf
+Every codebase hase its idiosyncrasies.  Because it has one principal author, I am sure that Melville.Pdf
 has more than most.  In this section I will attempt to document some of the practices I use when I write
 code, or techniques I developed for this project.
 
