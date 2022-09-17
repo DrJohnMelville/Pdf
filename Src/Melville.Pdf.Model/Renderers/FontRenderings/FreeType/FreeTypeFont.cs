@@ -37,7 +37,7 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
     public double CharacterWidth(uint character, double defaultWidth) => 
         fontWidthComputer.GetWidth(character, defaultWidth);
 
-    private class FreeTypeWriteOperation: IFontWriteOperation
+    private sealed class FreeTypeWriteOperation: IFontWriteOperation
     {
         private readonly FreeTypeFont parent;
         private readonly IDrawTarget target;
@@ -48,7 +48,11 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
             this.target = target;
             this.parent = parent;
             nativeTarget = new FreeTypeOutlineWriter(this.target);
+            GrabFreeTypeMutex();
         }
+
+        private void GrabFreeTypeMutex() => GlobalFreeTypeResources.FreeTypeMutex.Wait();
+        public void Dispose() => GlobalFreeTypeResources.FreeTypeMutex.Release();
 
         public ValueTask<double> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)

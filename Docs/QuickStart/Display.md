@@ -39,16 +39,11 @@ var document = await new PdfReader().ReadFromFile("File.Pdf");
 var output = new MemoryStream();
 await RenderWithSkia.ToPngStreamAsync(document, 1, output);
 ````
-We are using the SkiaSharp binding here so we start by referencing Melville.Pdf.SkiaSharp.  The PdfReader object has 
-ReadFrom and ReadFromFile overrides which look very fsamiliar given the list of acceptable sources as well.  PdfReader
-will convert any of the legal sources into a DocumentRenderer.  
+We are using the SkiaSharp binding here so we start by referencing Melville.Pdf.SkiaSharp.  The PdfReader object has ReadFrom and ReadFromFile overrides which look very fsamiliar given the list of acceptable sources as well.  PdfReader will convert any of the legal sources into a DocumentRenderer.  
 
-The RenderWithSkiaObject is a facade that will render a page from a DocumentRenderer to a SkSurface object, or render
-to a SkSurface and then save that surface in PMG format.  The Melville.Pdf.Wpf project includes a similar class, 
-RenderToDrawingGroup, which renders pages to a variety of WPF image representations or a PNG stream.  The PNG generation 
-methods exist primarily to support the integration testing.  I will not be adding support to write to multiple image 
-formats.  The code is available and the trivial task of adopting this code to any desired target format is left as an 
-exercise for the reader.
+The RenderWithSkiaObject is a facade that will render a page from a DocumentRenderer to a SkSurface object, or render to a SkSurface and then save that surface in PMG format.  The Melville.Pdf.Wpf project includes a similar class, RenderToDrawingGroup, which renders pages to a variety of WPF image representations or a PNG stream.  The PNG generation methods exist primarily to support the integration testing.  I will not be adding support to write to multiple image formats.  The code is available and the trivial task of adopting this code to any desired target format is left as an exercise for the reader.
+
+The DocumentRenderer class is thread safe.  It is just fine to call DocumentRenderer.RenderPageTo() simultaneously on different threads, or have overlapping calls on the same thread.  The two threads might both need to access the same source stream if they access require PDF objects that have not been cached yet.  Melville.PDF will negotiate consistent access between the various threads.    
 
 ## 3. Opening a password protected PDF
 Users provide passwords to Melville.Pdf by implementing the IPasswordType interface, which itself declares a single method

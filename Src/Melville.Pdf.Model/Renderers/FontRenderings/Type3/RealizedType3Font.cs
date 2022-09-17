@@ -64,6 +64,8 @@ public class RealizedType3Font : IRealizedFont
         public ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix) => 
             parent.AddGlyphToCurrentString(glyph, textMatrix, target);
         
-        public void RenderCurrentString(bool stroke, bool fill, bool clip) { }    
+        public void RenderCurrentString(bool stroke, bool fill, bool clip) { }
+
+        public void Dispose() { }
     }
 }

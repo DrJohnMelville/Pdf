@@ -397,7 +397,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
         var font = StateOps.CurrentState().Typeface;
-        var writer = font.BeginFontWrite(this);
+        using var writer = font.BeginFontWrite(this);
         var remainingI = decodedString;
         while (remainingI.Length > 0)
         {

@@ -26,13 +26,20 @@ public static class ParseFile
         {
             using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(source), WindowsDefaultFonts.Instance);
-#if false
+#if true
+            Console.Write($"{name} 0/{doc.TotalPages}");
+            int completed = 0;
+            object mutex = new();
             await Parallel.ForEachAsync(Enumerable.Range(1, doc.TotalPages), async (i,_) =>
             {
-                Console.Write($"{name} {i}/{doc.TotalPages}");
                 await RenderPage(doc, i);
-                ClearLine();
+                lock (mutex)
+                {
+                    ClearLine();
+                    Console.Write($"{name} {++completed}/{doc.TotalPages}");
+                }
             });
+            ClearLine();
 #else
             for (int i = 1; i <= doc.TotalPages; i++)
             {

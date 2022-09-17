@@ -59,7 +59,8 @@ public class WpfCachedFont : IRealizedFont
             return (cachedCharacter.Width);
         }
         
-        public void RenderCurrentString(bool stroke, bool fill, bool clip) => innerWriter.RenderCurrentString(stroke, fill, clip);
+        public void RenderCurrentString(bool stroke, bool fill, bool clip) => 
+            innerWriter.RenderCurrentString(stroke, fill, clip);
 
         public ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix) => 
             fontTarget.RenderType3Character(s, fontMatrix);
@@ -69,5 +70,7 @@ public class WpfCachedFont : IRealizedFont
 
         private static WpfDrawTarget RequiredDrawTargetToTargetWpf(IDrawTarget target) =>
             (WpfDrawTarget)target;
+
+        public void Dispose() => innerWriter.Dispose();
     }
 }

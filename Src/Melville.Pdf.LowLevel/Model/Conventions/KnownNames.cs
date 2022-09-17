@@ -14,7 +14,13 @@ public static class NameDirectory
         return item;
     }
     
-    public static PdfName Get(ReadOnlySpan<byte> nameText) => allKnownNames.GetOrCreate(nameText);
+    public static PdfName Get(ReadOnlySpan<byte> nameText)
+    {
+        lock (allKnownNames)
+        {
+            return allKnownNames.GetOrCreate(nameText);
+        }
+    }
 
     public static PdfName Get(string nameText)
     {

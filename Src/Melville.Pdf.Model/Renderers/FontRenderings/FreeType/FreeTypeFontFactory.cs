@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.INPC;
@@ -24,19 +25,27 @@ public readonly partial struct FreeTypeFontFactory
         await using var source = await pdfStream.StreamContentAsync().CA();
         return await FromCSharpStream(source).CA();
     }
-
+    
     public async ValueTask<IRealizedFont> FromCSharpStream(Stream source, int index = 0)
     {
-        var face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(
-            await UncompressToBufferAsync(source).CA(), index);
-        return await FontFromFace(face).CA();
+        var fontAsBytes = await UncompressToBufferAsync(source).CA();
+        await GlobalFreeTypeResources.FreeTypeMutex.WaitAsync().CA();
+        try
+        {
+            var face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(fontAsBytes, index);
+            return await FontFromFace(face).CA();
+        }
+        finally
+        {
+            GlobalFreeTypeResources.FreeTypeMutex.Release();
+        }
     }
 
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)
     {
         var decodedSource = new MultiBufferStream();
         await source.CopyToAsync(decodedSource).CA();
-        var output = new byte[decodedSource.Length];
+        var output = new byte[decodedSource.Length]; // We cannot rent this because Face keeps the reference.
         await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader()).CA();
         return output;
     }

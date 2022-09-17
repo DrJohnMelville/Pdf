@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 
@@ -15,12 +16,21 @@ public class DocumentPartCache: IDocumentPartCache
 {
     private readonly Dictionary<object, object> store = new();
 
-
-    public ValueTask<T> Get<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull
-         =>
-        store.TryGetValue(source, out var value) && value is T valAsT
-            ? new ValueTask<T>(valAsT)
-            : FindAndStoreValue(source, creator);
+    private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
+    public async ValueTask<T> Get<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull
+    {
+        await semaphore.WaitAsync().CA();
+        try
+        {
+            return store.TryGetValue(source, out var value) && value is T valAsT
+                ? valAsT
+                : await FindAndStoreValue(source, creator).CA();
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+    }
 
     private async ValueTask<T> FindAndStoreValue<T, TSource>(
         TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull
