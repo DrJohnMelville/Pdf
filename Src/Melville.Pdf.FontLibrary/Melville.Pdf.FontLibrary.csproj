@@ -3,8 +3,11 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <LangVersion>10.0</LangVersion>
+        
+        <Title>Melville.Pdf.FontLibrary</Title>
+        <PackageDescription>This library contains default font definitions that allow Melville.Pdf to be configured to
+        render PDF files without referencing the system font folder.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>

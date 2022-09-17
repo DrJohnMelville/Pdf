@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Data;
-using System.Linq;
-using ArchitectureAnalyzer.Analyzer;
-using ArchitectureAnalyzer.Models;
+﻿using System.Collections.Immutable;
 using ArchitectureAnalyzer.Parsers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using CSharpExtensions = Microsoft.CodeAnalysis.CSharp.CSharpExtensions;
 
 namespace ArchitectureAnalyzer.Analyzer;
 
@@ -43,16 +37,10 @@ public class AllowedDependencyAnalyzer : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(verifier.CheckTypeAction, SyntaxKind.IdentifierName);
         context.RegisterSyntaxNodeAction(verifier.CheckTypeAction, SyntaxKind.GenericName);
     }
-
-#pragma warning disable RS1013
-    //The suppressed warning tells us that if all we do in the start action is register an
-    // end action we could just register a compiler action instead.  But in the good path we do
-    // register actions, this warning is spurious because it does not recognize it is on the error
-    // path so the intended registrations did not happen.
+    
     private static void ReportRuleParseError(CompilationStartAnalysisContext context, string errorMessage)
     {
-        context.RegisterCompilationEndAction(cac => cac.ReportDiagnostic(
-            Diagnostic.Create(DependencyDiagnostics.ParseError, null, errorMessage)));
+        context.RegisterSyntaxNodeAction(cac => cac.ReportDiagnostic(
+            Diagnostic.Create(DependencyDiagnostics.ParseError, null, errorMessage)), SyntaxKind.CompilationUnit);
     }
-#pragma warning restore RS1013
 }

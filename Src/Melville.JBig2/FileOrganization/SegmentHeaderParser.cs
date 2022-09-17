@@ -1,5 +1,7 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.Parsing.PipeReaders;
 using Melville.Parsing.SequenceReaders;
 

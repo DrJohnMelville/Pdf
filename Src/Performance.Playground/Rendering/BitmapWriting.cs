@@ -7,6 +7,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 using Xunit;
 
 namespace Performance.Playground.Rendering;
+#pragma warning disable xUnit1013
 
 public class BitmapWriting
 {

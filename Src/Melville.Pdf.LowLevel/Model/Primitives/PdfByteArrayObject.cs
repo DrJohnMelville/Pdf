@@ -7,7 +7,6 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 
 public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObject>
 {
-    #warning -- in c# 11 this neads to becomea  readonlySpan which will be able to point directly to a code segment
     public byte[] Bytes { get; }
 
     protected PdfByteArrayObject(byte[] bytes)

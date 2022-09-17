@@ -1,5 +1,7 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.JBig2.HuffmanTables;

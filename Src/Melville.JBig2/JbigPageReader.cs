@@ -1,4 +1,7 @@
-﻿using System.IO.Pipelines;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;

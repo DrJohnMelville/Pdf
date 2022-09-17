@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using Melville.JBig2.ArithmeticEncodings;
 using Melville.JBig2.BinaryBitmaps;

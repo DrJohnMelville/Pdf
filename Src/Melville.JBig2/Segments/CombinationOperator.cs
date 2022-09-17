@@ -1,4 +1,6 @@
-﻿namespace Melville.JBig2.Segments;
+﻿using System;
+
+namespace Melville.JBig2.Segments;
 
 public enum CombinationOperator
 {

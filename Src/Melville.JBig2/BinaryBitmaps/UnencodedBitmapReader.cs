@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.IO;
 
 namespace Melville.JBig2.BinaryBitmaps;
 

@@ -5,6 +5,8 @@ using BenchmarkDotNet.Running;
 using Performance.Playground.ObjectModel;
 using Performance.Playground.Rendering;
 
+#pragma warning disable CS0162
+
 if (false)
 {
     await new CcittParsing().RenderSkia();

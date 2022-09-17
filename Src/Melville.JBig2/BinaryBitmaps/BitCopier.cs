@@ -1,4 +1,5 @@
-﻿using Melville.INPC;
+﻿using System;
+using Melville.INPC;
 
 namespace Melville.JBig2.BinaryBitmaps;
 

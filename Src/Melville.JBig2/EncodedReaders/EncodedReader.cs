@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.INPC;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.GenericRegionRefinements;

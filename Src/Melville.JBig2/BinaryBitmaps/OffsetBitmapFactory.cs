@@ -1,4 +1,6 @@
-﻿namespace Melville.JBig2.BinaryBitmaps;
+﻿using System;
+
+namespace Melville.JBig2.BinaryBitmaps;
 
 
 public static class OffsetBitmapFactory

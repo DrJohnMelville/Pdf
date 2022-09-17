@@ -1,4 +1,6 @@
-﻿using Melville.JBig2.BinaryBitmaps;
+﻿using System;
+using System.IO;
+using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers;

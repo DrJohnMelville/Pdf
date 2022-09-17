@@ -3,10 +3,11 @@
     <PropertyGroup>
         <TargetFramework>net6.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <UseWpf>true</UseWpf>
-        <LangVersion>10</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Title>Melville.Pdf.Wpf</Title>
+        <PackageDescription>Render PDF files to a WPF Drawing Group.  Also includes a PDF viewer WPF control.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>

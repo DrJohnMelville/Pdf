@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <LangVersion>10.0</LangVersion>
+        
         <TargetFramework>net6.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
         <RootNamespace>Melville.Pdf.LowLevelViewer</RootNamespace>

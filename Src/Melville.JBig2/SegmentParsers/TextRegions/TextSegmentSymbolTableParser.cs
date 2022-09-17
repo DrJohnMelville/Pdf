@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using Melville.JBig2.HuffmanTables;
 using Melville.Parsing.VariableBitEncoding;
 

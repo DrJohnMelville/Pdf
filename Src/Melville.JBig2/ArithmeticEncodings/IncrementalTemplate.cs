@@ -1,4 +1,5 @@
-﻿using Melville.JBig2.BinaryBitmaps;
+﻿using System;
+using Melville.JBig2.BinaryBitmaps;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 

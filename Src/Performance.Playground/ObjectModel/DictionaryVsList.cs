@@ -10,12 +10,10 @@ namespace Performance.Playground.ObjectModel;
 public class DictionaryVsList
 {
     [Params(1, 2, 5, 10)] public int N { get; set; }
-
-    private IDictionary<PdfName, PdfObject> dict;
-
+    
     [Params(false, true)] public bool New { get; set; }
 
-    private IReadOnlyDictionary<PdfName, PdfObject> sut;
+    private IReadOnlyDictionary<PdfName, PdfObject> sut = null!;
 
     [GlobalSetup]
     public void CreateDictionary()

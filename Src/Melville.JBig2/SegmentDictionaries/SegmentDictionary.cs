@@ -1,4 +1,5 @@
-﻿using Melville.JBig2.Segments;
+﻿using System.Collections.Generic;
+using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentDictionaries;
 

@@ -1,5 +1,8 @@
 ﻿using System.Buffers;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.JBig2.SegmentParsers;
 using Melville.JBig2.Segments;
 using Melville.Parsing.AwaitConfiguration;

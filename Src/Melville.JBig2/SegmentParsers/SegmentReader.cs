@@ -1,6 +1,10 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.SegmentParsers.GenericRegionParsers;
 using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;

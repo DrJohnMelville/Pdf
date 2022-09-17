@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.Segments;
 

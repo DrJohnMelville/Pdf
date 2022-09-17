@@ -1,4 +1,5 @@
-﻿using Melville.JBig2.BinaryBitmaps;
+﻿using System.Collections.Generic;
+using Melville.JBig2.BinaryBitmaps;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.SegmentParsers;
 

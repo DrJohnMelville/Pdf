@@ -1,4 +1,8 @@
-﻿namespace Melville.JBig2.BinaryBitmaps;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Melville.JBig2.BinaryBitmaps;
 
 public static class BitmapOperationsDebugOperations
 {

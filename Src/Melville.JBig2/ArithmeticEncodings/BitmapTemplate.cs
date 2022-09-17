@@ -1,4 +1,6 @@
-﻿namespace Melville.JBig2.ArithmeticEncodings;
+﻿using System;
+
+namespace Melville.JBig2.ArithmeticEncodings;
 
 public readonly record struct ContextBitRun(sbyte X, sbyte Y, byte Length, byte MinBit)
 {

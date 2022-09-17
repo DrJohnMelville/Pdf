@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.IO;
 using Melville.JBig2.FileOrganization;
 using Melville.JBig2.Segments;
 using Melville.Parsing.SequenceReaders;

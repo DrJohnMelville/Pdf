@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.Streams.Bases;
+﻿using System;
+using Melville.Parsing.Streams.Bases;
 
 namespace Melville.JBig2;
 

@@ -2,8 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>10</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <Title>Melville.Pdf.Model</Title>
+        <PackageDescription>Reads PDF files as a series of pages.  If you want to render PDF pages
+        you probably want to include one of the Melville.PDF.[Output Technology] packages rather than
+        this one.</PackageDescription>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
     </PropertyGroup>
 
     <ItemGroup>
