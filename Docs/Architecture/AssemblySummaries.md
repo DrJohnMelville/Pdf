@@ -65,7 +65,7 @@ the async pattern used throughout the remainder of the the parser.
 
 **Melville.CCITT** parses CCITT Fax encoded streams according to ITU Recommendations T.4 and T.6.
 
-**Melville.JBig2** parses JBIG2 en`coded streams according to ITU Recommendation T.86.  Melville.JBig2 depends
+**Melville.JBig2** parses JBIG2 encoded streams according to ITU Recommendation T.86.  Melville.JBig2 depends
 on Melville.CCITT.
 
 ## The Testing Libraries
@@ -124,5 +124,5 @@ Pdf object.
 Melville.Pdf.ComparingReader and Melville.Pdf.LowLevelReader.  
 
 **Melville.Pdf.WpfViewer** is a minimal shell around the WPF PdfViewer control.  It is minimally functional
-as a PdfReader.  This app also gives a pretty good idea of what the performance of the renderer will be, so
+as a PDF reader.  This app also gives a pretty good idea of what the performance of the renderer will be, so
 I use it for informal "good enough" performance testing. 

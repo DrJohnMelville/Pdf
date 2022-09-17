@@ -1,4 +1,4 @@
-# Introducting Melville.PDF
+# Introducing Melville.PDF
 
 The purpose of Melville.PDF is simple:  make PDF documents show up in .NET apps __for free__.
 Free means free! Free as in speech?  Free as in beer? Who cares?  Free does not mean:
@@ -83,7 +83,7 @@ not to include so I could ship the first version.
       much PDF Generation, and I do not a "customer" to drive a rational design.
       The result, I am sure, is a PDF generation framework much more focused on
       ability to produce unusual variants of PDF syntax over anything that might
-      be useful in creating real documents.
+      be useful in creating real documents.  Most notably, I do not implement JPEG and JPEG2000 encoders.
 - Forms of any kind.
 - Text or Graphics extraction
 - Annotations
@@ -100,8 +100,7 @@ project.  Here are things I am likely to take this up next.
       the [ISO 32000:2](https://www.pdfa.org/resource/iso-32000-pdf/) specification
       docuument.  My next step is going to be a page by page trip through the relevant
       spec to include the 2.0 PDF enchancements, including 256 bit encryption support.  I also plan to
-      use this as a quality milestone.  I want to include more test coverage with examples from the specification
-      and so forth.
+      use this as a quality milestone.  I want to include more test coverage with examples from the specification, and so forth.
     - Right now just about everything in the library is public.  After re-reading Microsoft's
       [Framework Design Guidelines](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/) I
       decided that Melville.Pdf isn't a framework, it's a library.  You use it to render PDF's, and I doubt
