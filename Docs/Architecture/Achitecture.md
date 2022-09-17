@@ -48,7 +48,7 @@ In the next two lines the => operator indicates that the Parser depends on the m
 
 The remaining lines are used to cabin the dependency on external libraries to the minimum usable scope.  The ^=> operator grants the left hand argument exclusive access to the resource on the right.
 
-For example, Melville.Pdf.LowLevel depends on Melville.JpegLibrary.  Melville.JpegLibrary is the fourth library that has been used to read Jpegs.  Each time the change was trivial because the architecture analyzer ensures access to the jpeg library is exclusively limited to the namespace Melville.Pdf.LowLevel.ExternalFilters which contains a single class containing 19 lines of code.  Each time I switched libraries the changes were restricted to a single, trivial class.
+For example, Melville.Pdf.LowLevel depends on Melville.JpegLibrary.  Melville.JpegLibrary is the fourth library that has been used to read Jpegs.  Each time the change was trivial because the architecture analyzer ensures access to the jpeg library is exclusively limited to the namespace Melville.Pdf.LowLevel.JpegLibrary which contains a single class containing 19 lines of code.  Each time I switched libraries the changes were restricted to a single, trivial class.
 
 For Reference the architecture analyzer recognizes the following operators.
 

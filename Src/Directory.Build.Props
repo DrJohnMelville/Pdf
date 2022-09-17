@@ -1,10 +1,12 @@
 ﻿<Project>
     <PropertyGroup>
         <Version>0.0.1</Version>
+        <LangVersion>10</LangVersion>
+
         <Authors>John Melville, MS, MD</Authors>
         <Company>Melville Computing</Company>
-        <Copyright>2021 John Melville, MS, MD</Copyright>
+        <Copyright>2022 John Melville, MS, MD</Copyright>
         <Nullable>enable</Nullable>
-        <LangVersion>9</LangVersion>
+        <RepositoryUrl>https://github.com/DrJohnMelville/Pdf</RepositoryUrl>
     </PropertyGroup>
 </Project>

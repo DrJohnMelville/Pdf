@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Filters;
-using Melville.Pdf.LowLevel.Filters.ExternalFilters;
+using Melville.Pdf.LowLevel.Filters.JpegFilter;
 using Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;

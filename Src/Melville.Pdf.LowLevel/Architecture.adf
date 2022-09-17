@@ -12,21 +12,14 @@ Group Writers
 Parser => Model
 Writers => Model
 
-gkhn
 #Everyone can use various external resources
 * => System.*
 * => Melville.Parsing.*
 
-#JpegLibrary
-Melville.Pdf.LowLevel.Filters.ExternalFilters.* ^=> Melville.JpegLibrary.*
-
-#CSj2K 
+#Various external libraries are cabined to small portions of the code
+Melville.Pdf.LowLevel.Filters.JpegFilter.* ^=> Melville.JpegLibrary.*
 Melville.Pdf.LowLevel.Filters.JpxDecodeFilters.* ^=> Melville.CSJ2K.*
-
-#CCITT
 Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters.* ^=> Melville.CCITT.*
-
-#JBIG2
 Melville.Pdf.LowLevel.Filters.Jbig2Filter.* ^=> Melville.JBig2.*
 
 #Factory uses the parser

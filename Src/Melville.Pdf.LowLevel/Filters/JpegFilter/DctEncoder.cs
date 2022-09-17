@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Melville.JpegLibrary.PipeAmdStreamAdapters;
 using Melville.Pdf.LowLevel.Model.Objects;
 
-namespace Melville.Pdf.LowLevel.Filters.ExternalFilters;
+namespace Melville.Pdf.LowLevel.Filters.JpegFilter;
 
 public class DctDecoder : ICodecDefinition
 {
