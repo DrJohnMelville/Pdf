@@ -22,4 +22,4 @@ code, or techniques I developed for this project.
 
 - [Why is everything async?](Async.md)
 - [Costume Pattern](Costumes.md)
-- [Names in Pdf](Names.Pdf)
+- [Names in Pdf](Names.md)

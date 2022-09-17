@@ -139,7 +139,7 @@ public partial class Impl
 Notice that the generator recognizes that the class already has an implementation of OpC and does not generate a delegating member for OpC.  (The effect of the code above is to throw an exception for every operation defined in IParent.  A more interesting implementation of Target() would lead to a more useful class.)
 
 ## GenerateDp 
-The WPF framework makes extensive use of dependency properties -- enriched properties that support change notification, visual tree inheritance, binding, and other useful properties.  Defining dependency properties, however, requires significant bioler plate code.  GenerateDP allows the elimination of much of the boilerplate.  For example:
+The WPF framework makes extensive use of dependency properties -- enriched properties that support change notification, visual tree inheritance, binding, and other useful properties.  Defining dependency properties, however, requires significant boilerplate code.  GenerateDP allows the elimination of much of the boilerplate.  For example:
 
 ````c#
 [GenerateDP(typeof(int), "IntProp", Attached = true, Default = 10, Nullable = true)]
@@ -216,7 +216,7 @@ public partial class Impl: DependencyObject
 ````
 
 ## MacroItem / MacroCode
-This generator is inspired by the C macro system.  (I know, much maligned, but I really liked it.)  The Macro generator is useful when defining types that are essentially strongly types property bags.  The system is also used in places to declare common operations over multiple number types, but this may go away as I adopt C# 11.  A "Property Bag" example includes the GraphicsState class, which defines 26 properties all of which have default values, but must be copied individually for the clone operation.  The following code:
+This generator is inspired by the C macro system.  (I know, much maligned, but I really liked it.)  The macro generator is useful when defining types that are essentially strongly types property bags.  The system is also used in places to declare common operations over multiple number types, but this may go away as I adopt C# 11.  A "Property Bag" example includes the GraphicsState class, which defines 26 properties all of which have default values, but must be copied individually for the clone operation.  The following code:
 
 ````c#
 public abstract partial  class GraphicsState: IGraphicsState, IDisposable
@@ -318,7 +318,7 @@ public abstract partial class GraphicsState
     }
 }
 ````
-Notice that [MacroItems] define items that are fed into the [MacroCode] instances.  Within the [MacroCode] parameter ~0~, ~1~, ~2~, and etc are replaced with the zero based n'th argument to MacroItem.  Notice that each [MacroCode] interacts with each [MacroItem] which allows both the definitions and the CopyFrom method to be created from the same set of [MarcoItem]s.
+Notice that [MacroItems] define items that are fed into the [MacroCode] instances.  Within the [MacroCode] parameter ```````~0~, ~1~, ~2~,``````` and etc are replaced with the zero based n'th argument to MacroItem.  Notice that each [MacroCode] interacts with each [MacroItem] which allows both the definitions and the CopyFrom method to be created from the same set of [MarcoItem]s.
 
 The code generation algorithm (in pseudocode) might look something like
 

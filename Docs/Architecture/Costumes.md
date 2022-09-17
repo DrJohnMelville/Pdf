@@ -65,4 +65,4 @@ This costume pattern is quite common in the codebase.  For costumes that are rea
 add fields to the object.  There are a few wrapper types used like costumes, but are actually classes.  PdfPages and 
 TilePatterns are objects because there is an inheritance hierarchy of objects that have a content stream.  Pdf functions
 are classes because there is expensive parsing before a function can be evaluated and it makes sense to cache the parsed
-function representations.  Most of the other high level pdf objects are costume types.
+function representations.  Most of the other high level pdf objects are standard, struct based, costume types.

@@ -118,7 +118,7 @@ system font library.
 
 Once you have an IDefaultFontMapper just pass it in to the PdfReader constructor.
 ````c#
-     var document = await new PdfReader(myPasswordSource).ReadFromFile("File.Pdf");
+     var document = await new PdfReader(myFontMapper).ReadFromFile("File.Pdf");
 ````
 The WPF PdfViewer control does not have a convenience method to use custom font mapping.  If you are using WPF then you
 are on windows and the default windows mapper is highly likely to serve you well.  If needed you could use your own
