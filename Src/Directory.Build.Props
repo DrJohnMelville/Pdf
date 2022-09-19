@@ -8,5 +8,6 @@
         <Copyright>2022 John Melville, MS, MD</Copyright>
         <Nullable>enable</Nullable>
         <RepositoryUrl>https://github.com/DrJohnMelville/Pdf</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 </Project>

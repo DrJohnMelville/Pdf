@@ -18,6 +18,8 @@ introductory material under [Architecture](Docs/Architecture/Overview.md) to  or
 # Enough Gabbing -- Show Me Some Code!
 
 1. The Wpf Way -- Show PDF in a Control
+
+Using Melville.Pdf.Wpf from Nuget. [![NuGet version (Melville.Pdf.Wpf)](https://img.shields.io/nuget/v/Melville.Pdf.Wpf.svg)](https://www.nuget.org/packages/Melville.Pdf.Wpf/)
 ````xaml
 <UserControl x:Class="Melville.Pdf.WpfViewer.Home.HomeView"
              ...
@@ -28,6 +30,8 @@ introductory material under [Architecture](Docs/Architecture/Overview.md) to  or
 
 ````
 2. Using Skia Sharp -- save PDF page to a png file
+
+Using Melville.Pdf.SkiaSharp from Nuget. [![NuGet version (Melville.Pdf.SkiaSharp)](https://img.shields.io/nuget/v/Melville.Pdf.SkiaSharp.svg)](https://www.nuget.org/packages/Melville.SkiaSharp.Wpf/)
 ````c#
 using System.IO;
 using System.Threading.Tasks;

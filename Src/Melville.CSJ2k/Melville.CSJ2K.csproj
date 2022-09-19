@@ -6,7 +6,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>disable</Nullable>
 
-        <Title>Melville.CSJ2k</Title>
+        <Title>Melville.CSJ2K</Title>
         <PackageDescription>Read Jpeg 2000 files.  This is a fork of https://github.com/cureos/csj2k</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
