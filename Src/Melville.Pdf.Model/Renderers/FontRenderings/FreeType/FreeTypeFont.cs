@@ -51,8 +51,8 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
             GrabFreeTypeMutex();
         }
 
-        private void GrabFreeTypeMutex() => GlobalFreeTypeResources.FreeTypeMutex.Wait();
-        public void Dispose() => GlobalFreeTypeResources.FreeTypeMutex.Release();
+        private void GrabFreeTypeMutex() => GlobalFreeTypeMutex.WaitFor();
+        public void Dispose() => GlobalFreeTypeMutex.Release();
 
         public ValueTask<double> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)

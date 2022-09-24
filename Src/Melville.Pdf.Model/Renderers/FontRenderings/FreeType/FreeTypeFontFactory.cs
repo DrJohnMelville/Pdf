@@ -29,7 +29,7 @@ public readonly partial struct FreeTypeFontFactory
     public async ValueTask<IRealizedFont> FromCSharpStream(Stream source, int index = 0)
     {
         var fontAsBytes = await UncompressToBufferAsync(source).CA();
-        await GlobalFreeTypeResources.FreeTypeMutex.WaitAsync().CA();
+        await GlobalFreeTypeMutex.WaitForAsync().CA();
         try
         {
             var face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(fontAsBytes, index);
@@ -37,7 +37,7 @@ public readonly partial struct FreeTypeFontFactory
         }
         finally
         {
-            GlobalFreeTypeResources.FreeTypeMutex.Release();
+            GlobalFreeTypeMutex.Release();
         }
     }
 

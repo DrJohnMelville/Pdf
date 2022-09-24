@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 using SharpFont;
 
@@ -26,7 +25,4 @@ public static class GlobalFreeTypeResources
 
     public static FontLibrary SetFontDirectory(string fontFolder) => 
         systemFontLibrary = new FontLibraryBuilder(SharpFontLibrary).BuildFrom(fontFolder);
-    
-    public static readonly SemaphoreSlim FreeTypeMutex = new(1);
-
 }
