@@ -116,6 +116,8 @@ project.  Here are things I am likely to take this up next.
 - Document outline and page thumbnails
 - More work on the Wpf viewer control to support at least zoom and rotation.
 
+Recently released work is detailed on the [Release history](Docs/ReleaseNotes.md) page.
+
 I am extremely fortunate to have good employment as a physician at the
 [Medical University of South Caroline](https://medicine.musc.edu/departments/pediatrics/divisions/child-abuse-pediatrics/faculty)
 meaning that programming can be just a hobby for me.  I will probably work on the things above as time allows.
