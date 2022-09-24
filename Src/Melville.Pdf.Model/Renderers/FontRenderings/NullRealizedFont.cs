@@ -20,6 +20,7 @@ public sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
     }
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => this;
+    public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => this;
 
     public void Dispose() { }
 }

@@ -16,6 +16,7 @@ public interface IRealizedFont
     (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input);
     double CharacterWidth(uint character, double defaultWidth);
     IFontWriteOperation BeginFontWrite(IFontTarget target);
+    IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target);
 }
 
 public static class FontWriteOperationsImpl

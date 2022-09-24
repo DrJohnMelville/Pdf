@@ -57,6 +57,8 @@ public class S9_4_2_TextPositioningOperators
             return fw;
         }
 
+        public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => BeginFontWrite(target);
+
         public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
     }
 

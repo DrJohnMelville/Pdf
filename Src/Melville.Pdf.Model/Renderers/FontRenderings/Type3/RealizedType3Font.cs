@@ -41,6 +41,7 @@ public class RealizedType3Font : IRealizedFont
         (ushort)(input - firstCharacter).Clamp(0, characters.Length-1);
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new Type3Writer(this, target);
+    public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => BeginFontWrite(target);
 
     private ValueTask<double> AddGlyphToCurrentString(uint glyph,
         Matrix3x2 charMatrix, IFontTarget target)

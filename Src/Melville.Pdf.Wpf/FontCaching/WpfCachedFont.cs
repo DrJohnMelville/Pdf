@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Wpf.Rendering;
 
@@ -25,11 +26,13 @@ public class WpfCachedFont : IRealizedFont
         inner.GetNextGlyph(input);
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new CachedOperation(this,target);
+    public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => BeginFontWrite(target);
 
     private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyph(uint glyph, Transform transform)
     {
         if (cache.TryGetValue(glyph, out var quick)) return (quick,quick.CreateInstance(transform));
         var slow = await new FontCachingTarget().RenderGlyph(inner, glyph);
+        
         cache.Add(glyph, slow);
         return (slow,slow.Original(transform));
     }

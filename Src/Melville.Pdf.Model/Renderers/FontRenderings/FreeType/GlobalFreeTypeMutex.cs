@@ -28,5 +28,8 @@ public static class GlobalFreeTypeMutex
         RecordLocation();        
     }
 
-    public static void Release() => freeTypeMutex.Release();
+    public static void Release()
+    {
+        freeTypeMutex.Release();
+    }
 }
