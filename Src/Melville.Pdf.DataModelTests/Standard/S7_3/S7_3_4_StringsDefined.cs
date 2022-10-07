@@ -62,6 +62,8 @@ public class S7_3_4_StringsDefined
     [InlineData("(a\rb))", "a\nb")]
     [InlineData("(a\nb))", "a\nb")]
     [InlineData("(a\n\nb))", "a\n\nb")]
+    [InlineData("(a\r\n\nb))", "a\n\nb")]
+    [InlineData("(a\r\n\r\nb))", "a\n\nb")]
     
     // strings using octal escapes
     [InlineData("(a\\1b))", "a\x0001b")]

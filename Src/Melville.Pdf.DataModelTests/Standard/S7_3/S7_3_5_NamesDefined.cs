@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
@@ -40,10 +41,19 @@ public class S7_3_5_NamesDefined
     }
 
     [Theory]
-    [InlineData("/ /", "")]
-    [InlineData("/Foo /", "Foo")]
-    [InlineData("/Foo", "Foo")]
-    [InlineData("/Two#20Words /", "Two Words")]
+    [InlineData("/","")]
+    [InlineData("/Name1","Name1")]
+    [InlineData("/ASomewhatLongerName","ASomewhatLongerName")]
+    [InlineData("/A;NameWith-Various***Characters?","A;NameWith-Various***Characters?")]
+    [InlineData("/1.2","1.2")]
+    [InlineData("/$$","$$")]
+    [InlineData("/@pattern","@pattern")]
+    [InlineData("/.notdef",".notdef")]
+    [InlineData("/Lime#20Green","Lime Green")]
+    [InlineData("/Paired#28#29parentheses","Paired()parentheses")]
+    [InlineData("/The_Key_of_F#23_Minor","The_Key_of_F#_Minor")]
+    [InlineData("/A#42","AB")]
+    
     public async Task ParseNameSucceed(string source, string result)
     {
         var name = await TryParseStringToName(source);

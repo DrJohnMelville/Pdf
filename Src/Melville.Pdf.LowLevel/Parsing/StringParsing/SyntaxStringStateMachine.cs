@@ -89,9 +89,10 @@ public ref struct SyntaxStringStateMachine
         // special behaviors for those three characters
 
         //End of line 
-        (State.Normal, '\r' or '\n') => WithValue('\n', State.EndOfLine),
+        (State.Normal, '\r') => WithValue('\n', State.EndOfLine),
         (State.Escaped, '\r' or '\n') => State.EndOfLine,
-        (State.EndOfLine, '\r' or '\n') => State.EndOfLine,
+        (State.EndOfLine, '\r') => State.EndOfLine,
+        (State.EndOfLine, '\n') => State.Normal,
         (State.EndOfLine, _) => WithNextChar(input, State.Normal),
 
         // octal literals
