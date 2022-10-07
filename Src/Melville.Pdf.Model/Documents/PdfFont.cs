@@ -26,9 +26,7 @@ public readonly partial struct PdfFont
 {
     [FromConstructor]public readonly PdfDictionary LowLevel { get; }
 
-    public async ValueTask<PdfName> SubTypeAsync() => 
-        await LowLevel.GetOrDefaultAsync(KnownNames.Subtype, 
-            await LowLevel.GetOrDefaultAsync(KnownNames.S, KnownNames.Type1).CA()).CA();
+    public PdfName SubType() => LowLevel.SubTypeOrNull() ?? KnownNames.Type1;
     
     public async ValueTask<PdfEncoding> EncodingAsync() => 
         new(await LowLevel.GetOrNullAsync(KnownNames.Encoding).CA());
@@ -62,7 +60,7 @@ public readonly partial struct PdfFont
     
 
     public async ValueTask<PdfName> OsFontNameAsync() =>
-        ComputeOsFontName((await SubTypeAsync().CA()).GetHashCode(), await BaseFontNameAsync().CA());
+        ComputeOsFontName(SubType().GetHashCode(), await BaseFontNameAsync().CA());
     
     private PdfName ComputeOsFontName(int fontType, PdfName baseFontName) =>
         fontType == KnownNameKeys.MMType1?

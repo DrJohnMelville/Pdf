@@ -12,9 +12,9 @@ public readonly partial struct ReadCharacterFactory
     [FromConstructor] private readonly PdfFont font;
     [FromConstructor] private readonly PdfEncoding encoding;
 
-    public async ValueTask<IReadCharacter> Create()
+    public IReadCharacter Create()
     {
-        return KnownNames.Type0 == await font.SubTypeAsync().CA() ?
+        return KnownNames.Type0 == font.SubType() ?
            ParseType0FontEncoding(): 
            SingleByteCharacters.Instance;
     }

@@ -158,7 +158,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         if (await InInvisibleContentRegion(await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()))
             return;
-        switch ((await inlineImage.GetAsync<PdfName>(KnownNames.Subtype).CA()).GetHashCode())
+        switch ((inlineImage.SubTypeOrNull()??KnownNames.Image).GetHashCode())
         {
             case KnownNameKeys.Image:
                 await target.RenderBitmap(

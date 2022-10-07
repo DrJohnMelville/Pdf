@@ -66,4 +66,5 @@ public static class PdfDictionaryOperations
         value == PdfTokenValues.Null ||
         value is PdfArray { Count: 0 } ||
         value is PdfDictionary { Count: 0 } and not PdfStream;
+
 }

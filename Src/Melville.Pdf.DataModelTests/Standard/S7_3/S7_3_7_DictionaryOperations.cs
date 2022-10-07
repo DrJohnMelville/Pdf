@@ -80,6 +80,17 @@ public class S7_3_7_DictionaryOperations
 
         Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False}, 
             d.Values.Select(i=>i.Result));
-            
+    }
+
+    [Theory]
+    [InlineData("<</Subtype /Font>>")]
+    [InlineData("<</S /Font>>")]
+    public async Task SisSubtypeEquivilence(string text)
+    {
+        var item = await CreateDict(text);
+        Assert.Equal(KnownNames.Font, item.SubTypeOrNull());
+        Assert.True(item.TryGetSubType(out var st));
+        Assert.Equal(KnownNames.Font, st);
+        
     }
 }

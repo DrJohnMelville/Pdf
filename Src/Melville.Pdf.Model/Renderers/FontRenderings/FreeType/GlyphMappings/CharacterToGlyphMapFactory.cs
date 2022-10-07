@@ -23,21 +23,21 @@ public readonly partial struct CharacterToGlyphMapFactory
     [FromConstructor] private readonly PdfFont font;
     [FromConstructor] private readonly PdfEncoding encoding;
 
-    public async ValueTask<IMapCharacterToGlyph> Parse() =>
-        (await font.SubTypeAsync().CA()).GetHashCode() switch
+    public ValueTask<IMapCharacterToGlyph> Parse() =>
+        (font.SubType()).GetHashCode() switch
         {
-            KnownNameKeys.Type0 => await Type0CharMapping().CA(),
+            KnownNameKeys.Type0 => Type0CharMapping(),
             KnownNameKeys.MMType1 => throw new NotImplementedException("MultiMaster fonts not implemented."),
-            KnownNameKeys.Type1 => await SingleByteNamedMapping().CA(),
-            KnownNameKeys.TrueType => await ParseTrueTypeMapping((await font.FontFlagsAsync().CA())).CA(),
+            KnownNameKeys.Type1 => SingleByteNamedMapping(),
+            KnownNameKeys.TrueType =>  ParseTrueTypeMapping(),
             _ => throw new PdfParseException("Unknown Font Type"),
 
         };
 
     // this is a variance from the spec.  If a symbolic true type font lacks a valid CMAP for mapping
     // we fall back and attempt to map the font as a roman font.
-    private ValueTask<IMapCharacterToGlyph> ParseTrueTypeMapping(FontFlags fontFlags) => 
-        TryMapAsSymbolicFont(fontFlags) is {} ret? new(ret): SingleByteNamedMapping();
+    private async ValueTask<IMapCharacterToGlyph> ParseTrueTypeMapping() => 
+        TryMapAsSymbolicFont(await font.FontFlagsAsync().CA()) ?? await SingleByteNamedMapping().CA();
 
     private IMapCharacterToGlyph? TryMapAsSymbolicFont(FontFlags fontFlags) => 
         fontFlags.HasFlag(FontFlags.Symbolic) ? TrueTypeSymbolicMapping(): null;
@@ -52,7 +52,7 @@ public readonly partial struct CharacterToGlyphMapFactory
             ret[character & 0xFF] = glyph;
         }
 
-        return new FontRenderings.GlyphMappings.CharacterToGlyphArray(ret);
+        return new CharacterToGlyphArray(ret);
     }
 
     private CharMap? ValidCharMap(CharMap? input) => 
@@ -91,7 +91,7 @@ public readonly partial struct CharacterToGlyphMapFactory
 
     private async Task<byte[][]?> BuiltInFontCharMappings()
     {
-        if ((await font.SubTypeAsync().CA()) != KnownNames.Type1) return null;
+        if (font.SubType() != KnownNames.Type1) return null;
         return (await font.BaseFontNameAsync().CA()).GetHashCode() switch
         {
             KnownNameKeys.Symbol => CharacterEncodings.Symbol,

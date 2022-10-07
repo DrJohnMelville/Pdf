@@ -27,21 +27,21 @@ public readonly struct FontReader
     public  ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict, double size) => 
          PdfFontToRealizedFont(size, new PdfFont(fontDict));
 
-    private async ValueTask<IRealizedFont> PdfFontToRealizedFont(double size, PdfFont font)
+    private ValueTask<IRealizedFont> PdfFontToRealizedFont(double size, PdfFont font)
     {
-        var fontTypeKey = (await font.SubTypeAsync().CA()).GetHashCode();
+        var fontTypeKey = font.SubType().GetHashCode();
         return fontTypeKey switch
         {
-            KnownNameKeys.Type3 => await new Type3FontFactory(font.LowLevel, size).ParseAsync().CA(),
-            KnownNameKeys.Type0 => await CreateType0Font(font, new FreeTypeFontFactory(size, font)).CA(),
-            _ => await CreateRealizedFont(font, new FreeTypeFontFactory(size, font)).CA()
+            KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel, size).ParseAsync(),
+            KnownNameKeys.Type0 => CreateType0Font(font, new FreeTypeFontFactory(size, font)),
+            _ => CreateRealizedFont(font, new FreeTypeFontFactory(size, font))
         };
     }
 
 
     private async ValueTask<IRealizedFont> CreateType0Font(PdfFont font, FreeTypeFontFactory factory)
     {
-        Debug.Assert(KnownNames.Type0 == await font.SubTypeAsync().CA());
+        Debug.Assert(KnownNames.Type0 == font.SubType());
         var cidFont = await font.Type0SubFont().CA();
         return await CreateRealizedFont(cidFont, factory).CA();
     }

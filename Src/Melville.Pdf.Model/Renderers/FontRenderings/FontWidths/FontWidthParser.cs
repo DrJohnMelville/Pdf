@@ -25,7 +25,7 @@ public readonly struct FontWidthParser
     {
         try
         {
-            return await Parse((await pdfFont.SubTypeAsync().CA()).GetHashCode()).CA();
+            return await Parse(pdfFont.SubType().GetHashCode()).CA();
         }
         catch (Exception )
         {

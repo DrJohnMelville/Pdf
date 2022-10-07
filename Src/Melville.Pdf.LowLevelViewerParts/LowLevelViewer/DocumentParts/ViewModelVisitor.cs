@@ -109,8 +109,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     {
         var title = ConsumePrefix();
         var children = await ParseDictionaryChildren(item);
-        if ((item.TryGetValue(KnownNames.Subtype, out var stTask) ||
-            item.TryGetValue(KnownNames.S, out stTask))&& (await stTask) == KnownNames.Image)
+        if (item.SubTypeOrNull() == KnownNames.Image)
             return new ImagePartViewModel(title + "Image Stream", children, item);
         if ((await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.None).CA()) == KnownNames.XRef)
             return new XrefPartViewModel(title + "XRef Stream", children, item);
