@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -26,15 +28,24 @@ public class PdfArrayParser : IPdfObjectParser
         //
         // Very big arrays can blow the stack of course, after 1000 iterations, which is bigger than 99% of pdf arrays
         // we bail out to a heap based solution
+        
         var element = await reader.RootObjectParser.ParseAsync(reader).CA();
+        
         if (element == PdfTokenValues.ArrayTerminator) return new PdfObject[currentLocation];
-        if (currentLocation >= RecursiveLimit) return await ReadArrayElements(reader).CA();
-        var ret = await RecursiveReadArray(reader, currentLocation + 1).CA();
+        var ret = await ReadRestOfArray(reader, currentLocation).CA();
+        
         ret[currentLocation] = element;
         return ret;
     }
 
-    private static async ValueTask<PdfObject[]> ReadArrayElements(IParsingReader reader)
+    private static ValueTask<PdfObject[]> ReadRestOfArray(IParsingReader reader, int currentLocation) =>
+        IsBigArray(currentLocation) ? 
+            ReadEndOfBigArrayUsingHeap(reader) 
+            : RecursiveReadArray(reader, currentLocation + 1);
+
+    private static bool IsBigArray(int currentLocation) => currentLocation >= RecursiveLimit;
+
+    private static async ValueTask<PdfObject[]> ReadEndOfBigArrayUsingHeap(IParsingReader reader)
     {
         var items = new List<PdfObject>();
         while (true)
@@ -46,12 +57,8 @@ public class PdfArrayParser : IPdfObjectParser
     }
     private static PdfObject[] CopyToHighPositions(List<PdfObject> items)
     {
-        var ret = new PdfObject[items.Count + RecursiveLimit];
-        int position = RecursiveLimit;
-        foreach (var item in items)
-        {
-            ret[position++] = item;
-        }
+        var ret = new PdfObject[items.Count + RecursiveLimit + 1];
+        CollectionsMarshal.AsSpan(items).CopyTo(ret.AsSpan(RecursiveLimit + 1));
         return ret;
     }
 }

@@ -11,17 +11,27 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 public class S7_3_6_ArraysDefined
 {
     [Theory]
-    [InlineData("[] /fd", 0)]
-    [InlineData("[.5] sd", 1)] // this is a bug check leading period should invoke number parser
-    [InlineData("[123.5] sd", 1)]
-    [InlineData("[123.5 (this is a string () inside)]/wdg", 2)]
-    [InlineData("[true false null] /", 3)]
-    [InlineData("[[true false] null] /", 2)]
-    [InlineData("[/WIDTH /HGH /X1 /HEIGHT] /aaz", 4)]
+    [InlineData("[549 3.14 false (Ralph) /SomeName]", 5)]
+    [InlineData("[]", 0)]
+    [InlineData("[.5]", 1)] // this is a bug check leading period should invoke number parser
+    [InlineData("[123.5]", 1)]
+    [InlineData("[123.5 (this is a string () inside)]", 2)]
+    [InlineData("[true false null]", 3)]
+    [InlineData("[[true false] null]", 2)]
     [InlineData("[/WIDTH /HGH /X1 /HEIGHT]", 4)]
     public async Task ParseArray(string src, int length)
     {
         var obj = (PdfArray) await src.ParseObjectAsync();
         Assert.Equal(length, obj.RawItems.Count);
+    }
+
+    [Fact]
+    public async Task ReadBigArray()
+    {
+        var expected = Enumerable.Range(0, 2000).ToArray();
+        var source = $"[{string.Join(" ", expected)}]";
+        var parsed = (PdfArray)await source.ParseObjectAsync();
+        var asInts = await parsed.AsIntsAsync();
+        Assert.Equal(expected, asInts);
     }
 }
