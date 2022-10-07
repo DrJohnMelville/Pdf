@@ -9,17 +9,29 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_3_NumbersDefined
 {
+
     [Theory]
-    [InlineData("1/", 1, 1)]
-    [InlineData("6/", 6, 6)]
-    [InlineData("34/", 34, 34)]
+    // from standard section 7.3.3 example 1
+    [InlineData("123", 123)]
+    [InlineData("43455", 43455)]
+    [InlineData("+17", 17)]
+    [InlineData("-98", -98)]
+    [InlineData("0", 0)]
+    public Task SpecExample1Items(string input, int value) => ParseNumberSucceed(input, value, value);
+
+    [Theory]
+    // from standard section 7.3.3 example 2
+    [InlineData("34.5", 34.5)]
+    [InlineData("-3.62", -3.62)]
+    [InlineData("+123.6", 123.6)]
+    [InlineData("4.", 4)]
+    [InlineData("-.002", -0.002)]
+    public Task SpecExample2Items(string input, double value) => ParseNumberSucceed(input, (int)value, value);
+    
+    
+    [Theory]
     [InlineData("%comment\r\n34/", 34, 34)]
-    [InlineData("+34/", 34, 34)]
-    [InlineData("-34/", -34, -34)]
-    [InlineData("-34./", -34, -34)]
-    [InlineData("134.567/", 134, 134.567)]
-    [InlineData("134.567", 134, 134.567)]
-    [InlineData("134", 134, 134)]
+    // from standard sec
     public async Task ParseNumberSucceed(string source, int intValue, double doubleValue)
     {
         var num = (PdfNumber)await source.ParseObjectAsync(); 

@@ -35,22 +35,24 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
         (ReadResult source, out IPdfObjectParser? parser)
     {
         var reader = new SequenceReader<byte>(source.Buffer);
-        if (reader.TryRead(out var firstByte))
+        if (TryReadTwoBytes(ref reader, out var firstByte, out var secondByte) ||
+            source.IsCompleted)
         {
-            if (reader.TryRead(out var secondByte))
-            {
-                parser = PickParserOverride((char)firstByte, (char)secondByte);
-                return (true, source.Buffer.Start);
-            }
-            if (source.IsCompleted && firstByte == ']')
-            {
-                parser = PdfParserParts.ArrayTermination;
-                return (true, source.Buffer.Start);
-            }
+            parser = PickParserOverride((char)firstByte, (char)secondByte);
+            return (true, source.Buffer.Start);
         }
-
         parser = null;
         return (false, source.Buffer.Start);
+    }
+
+    private bool TryReadTwoBytes(
+        ref SequenceReader<byte> source, out byte firstByte, out byte secondByte)
+    {
+        if (source.TryRead(out firstByte))
+            if (source.TryRead(out secondByte))
+                return true;
+        secondByte = 0;
+        return false;
     }
 
     protected virtual IPdfObjectParser? PickParserOverride(char firstByte, char secondByte) =>

@@ -12,6 +12,8 @@ public sealed class S7_3_2_BooleansDefined
     [Theory]
     [InlineData("true /", true)]
     [InlineData("false /", false)]
+    [InlineData("true", true)]
+    [InlineData("false", false)]
     public async Task ParseBoolSucceed(string text, bool value)
     {
         var item = (PdfBoolean) await text.ParseObjectAsync();
