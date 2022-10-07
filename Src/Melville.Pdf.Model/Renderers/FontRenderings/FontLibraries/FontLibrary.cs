@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using SharpFont.Fnt;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 
 public class FontLibrary
 {

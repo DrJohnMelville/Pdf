@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -7,7 +8,9 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
@@ -24,7 +27,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static readonly byte[] SegoeUISymbol =
         { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
 
-    public async ValueTask<IRealizedFont>  FontFromName(
+    public async ValueTask<IRealizedFont> FontFromName(
         PdfName font, FontFlags fontFlags, FreeTypeFontFactory factory)
     {
         return font.GetHashCode() switch
@@ -52,15 +55,23 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private  ValueTask<IRealizedFont> SystemFont(
         byte[] name, FreeTypeFontFactory factory, bool bold, bool italic)
     {
-        var fontReference = GlobalFreeTypeResources.SystemFontLibrary().FontFromName(name, bold, italic);
+        var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
         return fontReference?.ReaiizeUsing(factory) 
                ?? throw new IOException("Could not find required font file.");
     }
     private  async ValueTask<IRealizedFont?> TrySystemFont(
         byte[] name, FreeTypeFontFactory factory, bool bold, bool italic)
     {
-        var fontReference = GlobalFreeTypeResources.SystemFontLibrary().FontFromName(name, bold, italic);
+        var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
         if (fontReference is null) return null;
         return await fontReference.ReaiizeUsing(factory).CA();
     }
+
+
+    private static FontLibrary? systemFontLibrary;
+    private static FontLibrary SystemFontLibrary() => 
+        systemFontLibrary ?? SetFontDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
+
+    public static FontLibrary SetFontDirectory(string fontFolder) => 
+        systemFontLibrary = new FontLibraryBuilder(GlobalFreeTypeResources.SharpFontLibrary).BuildFrom(fontFolder);
 }

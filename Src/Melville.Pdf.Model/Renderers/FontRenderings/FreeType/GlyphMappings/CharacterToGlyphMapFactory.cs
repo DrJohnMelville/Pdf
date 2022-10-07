@@ -12,6 +12,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
@@ -51,7 +52,7 @@ public readonly partial struct CharacterToGlyphMapFactory
             ret[character & 0xFF] = glyph;
         }
 
-        return new CharacterToGlyphArray(ret);
+        return new FontRenderings.GlyphMappings.CharacterToGlyphArray(ret);
     }
 
     private CharMap? ValidCharMap(CharMap? input) => 
@@ -61,10 +62,10 @@ public readonly partial struct CharacterToGlyphMapFactory
     {
         var array = new uint[256];
         var nameToGlyphMapper = new NameToGlyphMappingFactory(face).Create();
-        await new SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappings().CA())
+        await new FontRenderings.GlyphMappings.SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappings().CA())
             .WriteEncodingToArray(encoding.LowLevel).CA();
         WriteBackupMappings(array);
-        return new CharacterToGlyphArray(array);
+        return new FontRenderings.GlyphMappings.CharacterToGlyphArray(array);
     }
 
     private void WriteBackupMappings(uint[] array)
@@ -72,7 +73,7 @@ public readonly partial struct CharacterToGlyphMapFactory
         // this is nonstandard behavior to handle a small population of PDF files that appear to be malformed.
         // the idea is to scan all of the CMaps and if there are any mappings from single bytes to a character that
         // is currently unmapped (ie mapped to glyph 0) then we use the backup mapping.  Since undefined mappings cause
-        // unpredictible behavior, this should not affect any valid files, but it will allow some malformed files to
+        // undefined behavior, this should not affect any valid files, but it will allow some malformed files to
         // be presented correctly.
 
         if (face.CharMaps is not { } charMaps) return;
@@ -107,42 +108,4 @@ public readonly partial struct CharacterToGlyphMapFactory
                 PipeReader.Create(await mapStream.StreamContentAsync().CA())).Parse().CA():
              IdentityCharacterToGlyph.Instance;
     }
-}
-
-public readonly partial struct CMapStreamParser
-{
-    private readonly List<uint> dictionary = new();
-    [FromConstructor] private readonly PipeReader pipe;
-    
-    public async ValueTask<IMapCharacterToGlyph> Parse()
-    {
-        return new CharacterToGlyphArray(await ReadList().CA());
-    }
-
-    private async ValueTask<IReadOnlyList<uint>> ReadList()
-    {
-        while (await pipe.ReadAsync().CA() is { } result &&
-               (result.Buffer.Length > 1 || !result.IsCompleted))
-        {
-            ProcessItems(result.Buffer);
-        }
-        return dictionary;
-    }
-
-    private void ProcessItems(ReadOnlySequence<byte> buffer)
-    {
-        var reader = new SequenceReader<byte>(buffer);
-        while (CanReadUshort(reader)) dictionary.Add(ReadUShort(ref reader));
-        pipe.AdvanceTo(reader.Position, buffer.End);
-    }
-
-    private static uint ReadUShort(ref SequenceReader<byte> reader)
-    {
-        Trace.Assert(reader.TryRead(out var hiByte));
-        Trace.Assert(reader.TryRead(out var lowByte));
-        var value = (uint)((hiByte << 8) | lowByte);
-        return value;
-    }
-
-    private static bool CanReadUshort(in SequenceReader<byte> reader) => reader.Remaining >= 2;
 }

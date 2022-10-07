@@ -2,9 +2,9 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.CharacterReaders;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using SharpFont;
 

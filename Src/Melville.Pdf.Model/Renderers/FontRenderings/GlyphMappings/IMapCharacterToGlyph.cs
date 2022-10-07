@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Melville.INPC;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 public interface IMapCharacterToGlyph
 {

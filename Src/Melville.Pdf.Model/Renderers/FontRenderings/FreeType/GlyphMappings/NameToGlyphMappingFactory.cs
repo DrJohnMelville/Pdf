@@ -4,28 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
-
-public interface INameToGlyphMapping
-{
-    uint GetGlyphFor(byte[] name);
-}
 
 public readonly partial struct NameToGlyphMappingFactory
 {
     [FromConstructor] private readonly Face face;
 
-    public INameToGlyphMapping Create()
-    {
-        return new CompositeGlyphNameMapper(
+    public INameToGlyphMapping Create() =>
+        new CompositeGlyphNameMapper(
             NamesFromFace(),
             UnicodeAndAdobeGlyphList(),
             UnicodeViaMacGlyphList()
         );
-    }
-    
+
     private INameToGlyphMapping? NamesFromFace()
     {
         if (!face.HasGlyphNames) return null;

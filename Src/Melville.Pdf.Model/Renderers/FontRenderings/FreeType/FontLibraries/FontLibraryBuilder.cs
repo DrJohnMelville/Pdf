@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 using SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
@@ -60,7 +61,8 @@ public readonly struct FontLibraryBuilder
     }
 
     private void RegisterFaceWithStyle(FontReference fontReference, string? family, StyleFlags style) => 
-        GetOrCreateFamily(family??"Unnamed").Register(fontReference, style);
+        GetOrCreateFamily(family??"Unnamed").Register(
+            fontReference, style.HasFlag(StyleFlags.Bold), style.HasFlag(StyleFlags.Italic));
 
     private FontFamily GetOrCreateFamily(string family)
     {

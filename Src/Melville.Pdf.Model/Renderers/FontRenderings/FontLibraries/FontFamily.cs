@@ -1,7 +1,8 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 using SharpFont;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 
 public class FontFamily
 {
@@ -16,9 +17,9 @@ public class FontFamily
     public FontReference? Italic { get; set; }
     public FontReference? BoldItalic { get; set; }
 
-    public void Register(FontReference fontReference, StyleFlags style)
+    public void Register(FontReference fontReference, bool isBold, bool isItalic)
     {
-        switch (IsStyle(style, StyleFlags.Bold), IsStyle(style, StyleFlags.Italic))
+        switch (isBold, isItalic)
         {
             case (true, true): BoldItalic ??= fontReference; break;
             case (true, false): Bold ??= fontReference; break;
@@ -26,8 +27,6 @@ public class FontFamily
             default: Normal ??= fontReference; break;
         }
     }
-
-    private static bool IsStyle(StyleFlags style, StyleFlags styleFlags) => (style & styleFlags) != 0;
 
     public FontReference SelectFace(bool bold, bool italic) =>
         (bold, italic) switch

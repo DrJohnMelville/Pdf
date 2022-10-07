@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-public class UnicodeGlyphNameMapper : DictionaryGlyphNameMapper
+public class UnicodeGlyphNameMapper : FontRenderings.GlyphMappings.DictionaryGlyphNameMapper
 {
     public UnicodeGlyphNameMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
     {

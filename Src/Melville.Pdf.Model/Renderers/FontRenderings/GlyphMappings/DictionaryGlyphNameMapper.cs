@@ -1,8 +1,14 @@
 ﻿using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
+
+public interface INameToGlyphMapping
+{
+    uint GetGlyphFor(byte[] name);
+}
 
 public partial class DictionaryGlyphNameMapper: INameToGlyphMapping
 {

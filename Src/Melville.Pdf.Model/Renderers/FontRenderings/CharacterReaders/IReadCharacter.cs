@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.CharacterReaders;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 
 public interface IReadCharacter
 {

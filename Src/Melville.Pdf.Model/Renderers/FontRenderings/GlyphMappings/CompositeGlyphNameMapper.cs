@@ -1,4 +1,6 @@
-﻿namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+﻿using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+
+namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 public class CompositeGlyphNameMapper : INameToGlyphMapping
 {

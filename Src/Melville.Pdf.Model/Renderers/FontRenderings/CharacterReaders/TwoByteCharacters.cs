@@ -1,7 +1,7 @@
 ﻿using System;
 using Melville.INPC;
 
-namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.CharacterReaders;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 
 [StaticSingleton]
 public sealed partial class TwoByteCharacters : IReadCharacter

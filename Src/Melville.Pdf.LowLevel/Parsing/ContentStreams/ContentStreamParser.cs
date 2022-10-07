@@ -243,7 +243,7 @@ public readonly struct ContentStreamParser
     {
         var reader = copiedReader;
         //If the EI we found is really the end of the image, then the text after the EI ought to 
-        // look like a content stream, which has a rather restricted sytax.  For right now we just check
+        // look like a content stream, which has a rather restricted syntax.  For right now we just check
         // if the next 20 characters are legal characters in a content stream
         for (int i = 0; i < 20; i++)
         {
