@@ -147,6 +147,7 @@ Pdf:CharSet
 Pdf:CIDSystemInfo
 Pdf:CIDToGIDMap
 Pdf:Colors
+Pdf:ColorTransform
 Pdf:Columns
 Pdf:Contents
 Pdf:Coords

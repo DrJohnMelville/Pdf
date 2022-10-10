@@ -1,21 +1,24 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
+using Melville.INPC;
 using Melville.JpegLibrary.BlockOutputWriters;
 using Melville.JpegLibrary.Decoder;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-public static class JpegStreamFactory
+public readonly partial struct JpegStreamFactory
 {
-    public static ValueTask<Stream> FromStream(Stream s) => FromPipe(PipeReader.Create(s), s.Length);
+    [FromConstructor] private readonly long colorTransformFromPdf;
+    
+    public ValueTask<Stream> FromStream(Stream s) => FromPipe(PipeReader.Create(s), s.Length);
 
-    private static async ValueTask<Stream> FromPipe(PipeReader pipe, long length)
+    private async ValueTask<Stream> FromPipe(PipeReader pipe, long length)
     {
         var seq = await pipe.ReadAtLeastAsync((int)length);
         return FromReadOnlySequence(seq.Buffer);
     }
 
-    private static Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
+    private Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
     {
         var decoder = new JpegDecoder();
         decoder.SetInput(input);
@@ -30,7 +33,7 @@ public static class JpegStreamFactory
         return SelectDecoding(decoder, output, bufferLength);
     }
 
-    private static Stream SelectDecoding(JpegDecoder decoder, byte[] output, int bufferLength)
+    private Stream SelectDecoding(JpegDecoder decoder, byte[] output, int bufferLength)
     {
         if (decoder.App14EncodingByte.HasValue)
             return (decoder.App14EncodingByte.Value, decoder.NumberOfComponents) switch
@@ -40,8 +43,10 @@ public static class JpegStreamFactory
                 _ => new StraightCopyStream(output, bufferLength)
             };
 
-        if (ImageIsNotSubsampled(decoder)) return new StraightCopyStream(output, bufferLength);
-
+        if (ColorTransformExplicitlyProhibited() ||
+            ColorTransformImplicitlyProhibited(decoder)||
+            ImageIsNotSubsampled(decoder)) return new StraightCopyStream(output, bufferLength);
+        
         return decoder.NumberOfComponents switch
         {
             3 => new YCrCbStream(output, bufferLength),
@@ -50,6 +55,11 @@ public static class JpegStreamFactory
         };
     }
 
-    private static bool ImageIsNotSubsampled(JpegDecoder decoder) =>
+    private bool ColorTransformImplicitlyProhibited(JpegDecoder decoder) => 
+        colorTransformFromPdf == -1 && decoder.NumberOfComponents != 3;
+
+    private bool ColorTransformExplicitlyProhibited() => colorTransformFromPdf == 0;
+
+    private bool ImageIsNotSubsampled(JpegDecoder decoder) =>
         decoder.NumberOfComponents == 1 || decoder.GetMaximumHorizontalSampling() == 1;
 }
