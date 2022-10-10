@@ -1,7 +1,7 @@
 ﻿<Project>
     <PropertyGroup>
         <Version>0.1.1-dev</Version>
-        <LangVersion>10</LangVersion>
+        <LangVersion>preview</LangVersion>
         <Authors>John Melville, MS, MD</Authors>
         <Company>Melville Computing</Company>
         <Copyright>2022 John Melville, MS, MD</Copyright>
