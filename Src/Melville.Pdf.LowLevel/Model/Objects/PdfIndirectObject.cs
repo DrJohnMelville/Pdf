@@ -15,7 +15,7 @@ public class PdfIndirectObject: PdfObject, IMultableIndirectObject
 {
     public int ObjectNumber { get; }
     public int GenerationNumber { get; }
-    protected PdfObject value = PdfTokenValues.Null;
+    protected PdfObject value;
 
     public PdfIndirectObject(int objectNumber, int generationNumber, PdfObject value)
     {

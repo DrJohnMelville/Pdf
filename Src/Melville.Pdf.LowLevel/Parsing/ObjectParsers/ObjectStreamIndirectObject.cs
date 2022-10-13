@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class ObjectStreamIndirectObject : OwnedLocationIndirectObject
+internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
 {
     private readonly long referredOrdinal;
 
@@ -25,7 +25,7 @@ public class ObjectStreamIndirectObject : OwnedLocationIndirectObject
         if (referredObject is PdfStream stream)
             await LoadObjectStream(owner, stream).CA();
     }
-    
+
     public static async ValueTask LoadObjectStream(ParsingFileOwner owner, PdfStream source)
     {
         await using var data = await source.StreamContentAsync().CA();
@@ -39,6 +39,8 @@ public class ObjectStreamIndirectObject : OwnedLocationIndirectObject
             var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
             AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);
         }
+       #warning need to implement objectstream extends page  
+      //  if (source.GetOrNullAsync<PdfStream>(KnownNames.Extends))
     }
 
     private static void AcceptObject(IIndirectObjectResolver resolver,

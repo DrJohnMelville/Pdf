@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class RawLocationIndirectObject : OwnedLocationIndirectObject
+internal class RawLocationIndirectObject : OwnedLocationIndirectObject
 {
     private readonly long location;
 

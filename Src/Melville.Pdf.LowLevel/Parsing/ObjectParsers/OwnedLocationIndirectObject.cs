@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public abstract class OwnedLocationIndirectObject: PdfIndirectObject
+internal abstract class OwnedLocationIndirectObject: PdfIndirectObject
 {
     private ParsingFileOwner? owner;
 
@@ -29,11 +29,14 @@ public abstract class OwnedLocationIndirectObject: PdfIndirectObject
     public override bool TryGetDirectValue(out PdfObject result)
     {
         result = value;
-        return owner == null;
+        return HasFinalValue();
     }
+
+    private bool HasFinalValue() => owner == null;
 
     protected void SetFinalValue(PdfObject value)
     {
+        if (HasFinalValue()) return;
         this.value = value;
         owner = null;
     }

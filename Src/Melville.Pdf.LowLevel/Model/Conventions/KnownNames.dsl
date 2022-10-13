@@ -179,6 +179,7 @@ Pdf:Encrypt
 Pdf:EndOfLine
 Pdf:EndOfBlock
 Pdf:Extend
+Pdf:Extends
 Pdf:Filter
 Pdf:First
 Pdf:FirstChar
