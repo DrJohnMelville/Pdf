@@ -10,7 +10,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
 public class CountingPipeReaderTest
 {
-    private readonly CountingPipeReader sut;
+    private readonly ByteSource sut;
 
     public CountingPipeReaderTest()
     {

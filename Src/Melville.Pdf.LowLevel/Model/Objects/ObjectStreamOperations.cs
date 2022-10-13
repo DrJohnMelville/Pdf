@@ -20,27 +20,27 @@ public static class ObjectStreamOperations
     {
         await using var decoded = await stream.StreamContentAsync().CA();
         return await GetIncludedObjectNumbers(stream, 
-            new PipeReaderWithPosition(PipeReader.Create(decoded), 0)).CA();
+            new ByteSourceWithGlobalPosition(PipeReader.Create(decoded), 0)).CA();
     }
 
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbers(
-        PdfStream stream, IPipeReaderWithPosition reader) =>
+        PdfStream stream, IByteSourceWithGlobalPosition reader) =>
         await reader.GetIncludedObjectNumbers(
             (await stream.GetAsync<PdfNumber>(KnownNames.N).CA()).IntValue,
             (await stream.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue).CA();
 
     public static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbers(
-        this IPipeReaderWithPosition reader, long count, long first)
+        this IByteSourceWithGlobalPosition reader, long count, long first)
     {
-        var source = await reader.Source.ReadAsync().CA();
+        var source = await reader.ReadAsync().CA();
         while (source.Buffer.Length < first)
         {
-            reader.Source.AdvanceTo(source.Buffer.Start, source.Buffer.End);
-            source = await reader.Source.ReadAsync().CA();
+            reader.AdvanceTo(source.Buffer.Start, source.Buffer.End);
+            source = await reader.ReadAsync().CA();
         }
 
         var ret = FillInts(new SequenceReader<byte>(source.Buffer), count);
-        reader.Source.AdvanceTo(source.Buffer.GetPosition(first));
+        reader.AdvanceTo(source.Buffer.GetPosition(first));
         return ret;
     }
 

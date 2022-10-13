@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -42,10 +43,10 @@ public class ParsingSourceTest
     public async Task ReadFiveBytes()
     {
         var sut = (await owner.RentReader(0)).Reader;
-        var result = await sut.Source.ReadAsync();
+        var result = await sut.ReadAsync();
         var sp =ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
         Assert.Equal(0, sut.GlobalPosition);
-        sut.Source.AdvanceTo( sp);
+        sut.AdvanceTo( sp);
         Assert.Equal(5, sut.GlobalPosition);
     }
     [Fact]
@@ -53,18 +54,18 @@ public class ParsingSourceTest
     {
         {
             var sut = await owner.RentReader(0);
-            var result = await sut.Reader.Source.ReadAsync();
+            var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 0, 1, 2, 3, 4);
             Assert.Equal(0, sut.Reader.GlobalPosition);
-            sut.Reader.Source.AdvanceTo(sp);
+            sut.Reader.AdvanceTo(sp);
             Assert.Equal(5, sut.Reader.GlobalPosition);
         }
 
         {
             var sut = await owner.RentReader(45);
-            var result = await sut.Reader.Source.ReadAsync();
+            var result = await sut.Reader.ReadAsync();
             var sp = ConfirmBytes(result.Buffer, 45, 46, 47, 48);
-            sut.Reader.Source.AdvanceTo( sp);
+            sut.Reader.AdvanceTo( sp);
             Assert.Equal(49, sut.Reader.GlobalPosition);
         }
     }

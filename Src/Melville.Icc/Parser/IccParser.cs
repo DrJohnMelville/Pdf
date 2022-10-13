@@ -9,12 +9,12 @@ namespace Melville.Icc.Parser;
 
 public readonly struct IccParser
 {
-    private readonly CountingPipeReader source;
+    private readonly IByteSource source;
     
 
     public IccParser(PipeReader source)
     {
-        this.source = source.AsCountingPipeReader(); 
+        this.source = new ByteSource(source); 
     }
 
     public async ValueTask<IccProfile> ParseAsync()

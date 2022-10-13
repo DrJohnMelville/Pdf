@@ -11,7 +11,7 @@ public interface IParsingReader
     IPdfObjectParser RootObjectParser { get; }
     IIndirectObjectResolver IndirectResolver { get; }
     ParsingFileOwner Owner { get; }
-    IPipeReaderWithPosition Reader { get; }
+    IByteSourceWithGlobalPosition Reader { get; }
     IObjectCryptContext ObjectCryptContext();
 }
 
@@ -22,13 +22,13 @@ public class ParsingReader: IParsingReader
     public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;
     public IObjectCryptContext ObjectCryptContext ()=> NullSecurityHandler.Instance;
     
-    public IPipeReaderWithPosition Reader { get; }
+    public IByteSourceWithGlobalPosition Reader { get; }
 
     public ParsingFileOwner Owner { get; }
 
     public ParsingReader(ParsingFileOwner owner, PipeReader reader, long lastSeek)
     {
         Owner = owner;
-        this.Reader = new PipeReaderWithPosition(reader, lastSeek);
+        this.Reader = new ByteSourceWithGlobalPosition(reader, lastSeek);
     }
 }

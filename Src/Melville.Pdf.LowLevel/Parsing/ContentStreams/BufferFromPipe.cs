@@ -81,12 +81,12 @@ public class ContentStreamParsingReader : IParsingReader
 
     public ParsingFileOwner Owner => throw new NotSupportedException();
 
-    public IPipeReaderWithPosition Reader {get;}
+    public IByteSourceWithGlobalPosition Reader {get;}
 
     public IObjectCryptContext ObjectCryptContext() => NullSecurityHandler.Instance;
 
     public ContentStreamParsingReader(PipeReader reader)
     {
-        Reader = new PipeReaderWithPosition(reader, 0);
+        Reader = new ByteSourceWithGlobalPosition(reader, 0);
     }
 }

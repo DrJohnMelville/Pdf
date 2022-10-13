@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -21,7 +22,7 @@ public class CrossReferenceTableParser
 
     public async Task Parse()
     {
-        while (!ParseNextLine(await source.Reader.Source.ReadAsync().CA()))
+        while (!ParseNextLine(await source.Reader.ReadAsync().CA()))
         {
         }       
     }
@@ -30,7 +31,7 @@ public class CrossReferenceTableParser
     {
         var reader = new SequenceReader<byte>(data.Buffer);
         var ret = ParseNextLine(ref reader);
-        source.Reader.Source.AdvanceTo(reader.Position, data.Buffer.End);
+        source.Reader.AdvanceTo(reader.Position, data.Buffer.End);
         return ret;
     }
 

@@ -26,7 +26,7 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
         IPdfObjectParser parser;
         do
         {
-        } while (source.Reader.Source.ShouldContinue(PickParser(await source.Reader.Source.ReadAsync().CA(), out parser!)));
+        } while (source.Reader.ShouldContinue(PickParser(await source.Reader.ReadAsync().CA(), out parser!)));
 
         return await parser.ParseAsync(source).CA();
     }

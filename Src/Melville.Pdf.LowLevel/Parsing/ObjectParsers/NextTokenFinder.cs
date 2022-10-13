@@ -11,9 +11,9 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 public static class NextTokenFinder
 {
-    public static async ValueTask SkipToNextToken(IPipeReaderWithPosition source)
+    public static async ValueTask SkipToNextToken(IByteSourceWithGlobalPosition source)
     {
-        do {} while (source.Source.ShouldContinue(SkipToNextToken2(await source.Source.ReadAsync().CA())));
+        do {} while (source.ShouldContinue(SkipToNextToken2(await source.ReadAsync().CA())));
     }
 
     private static (bool Success, SequencePosition Position) SkipToNextToken2(ReadResult source)

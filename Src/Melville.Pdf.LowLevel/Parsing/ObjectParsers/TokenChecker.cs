@@ -9,12 +9,12 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 public static class TokenChecker
 {
-    public static async ValueTask<bool> CheckToken(IPipeReaderWithPosition reader, byte[] template)
+    public static async ValueTask<bool> CheckToken(IByteSourceWithGlobalPosition reader, byte[] template)
     {
         bool result = false;
         do
         {
-        } while (reader.Source.ShouldContinue(VerifyTag(await reader.Source.ReadAsync().CA(), template, out result)));
+        } while (reader.ShouldContinue(VerifyTag(await reader.ReadAsync().CA(), template, out result)));
 
         return result;
     }

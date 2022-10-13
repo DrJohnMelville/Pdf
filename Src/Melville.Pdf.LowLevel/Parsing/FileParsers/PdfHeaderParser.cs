@@ -11,10 +11,10 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 public static class PdfHeaderParser
 {
-    public static async ValueTask<(byte Major, byte Minor)> ParseHeadder(IPipeReaderWithPosition context)
+    public static async ValueTask<(byte Major, byte Minor)> ParseHeadder(IByteSourceWithGlobalPosition context)
     {
         byte major, minor;
-        do {} while(context.Source.ShouldContinue(ParseDocumentHeader(await context.Source.ReadAsync().CA(),
+        do {} while(context.ShouldContinue(ParseDocumentHeader(await context.ReadAsync().CA(),
                         out major, out minor)));
 
         return (major, minor);

@@ -23,13 +23,13 @@ public static class FileTrailerLocater
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
             var context = await source.RentReader(start).CA();
             var reader = context.Reader;
-            while (SearchForS(await reader.Source.ReadAsync().CA(), reader, end, out var foundPos))
+            while (SearchForS(await reader.ReadAsync().CA(), reader, end, out var foundPos))
             {
                 if (!foundPos) continue;
                 if (await TokenChecker.CheckToken(context.Reader, startXRef).CA())
                 {
                     await NextTokenFinder.SkipToNextToken(reader).CA();
-                    do { } while (reader.Source.ShouldContinue(GetLong(await reader.Source.ReadAsync().CA(), out xrefPosition)));
+                    do { } while (reader.ShouldContinue(GetLong(await reader.ReadAsync().CA(), out xrefPosition)));
                     return xrefPosition;
                 }
             }
@@ -53,7 +53,7 @@ public static class FileTrailerLocater
     }
         
 
-    private static bool SearchForS(ReadResult readResult, IPipeReaderWithPosition source, long max, out bool foundOne)
+    private static bool SearchForS(ReadResult readResult, IByteSourceWithGlobalPosition source, long max, out bool foundOne)
     {
         if (readResult.IsCompleted || source.GlobalPosition > max)
         {
@@ -63,14 +63,14 @@ public static class FileTrailerLocater
         var reader = new SequenceReader<byte>(readResult.Buffer);
         if (reader.TryAdvanceTo((byte) 's'))
         {
-            source.Source.AdvanceTo(reader.Position);
+            source.AdvanceTo(reader.Position);
             foundOne = true;
             return true;
         }
             
 
         foundOne = false;
-        source.Source.AdvanceTo(readResult.Buffer.End);
+        source.AdvanceTo(readResult.Buffer.End);
         return true;
     }
     private static readonly byte[] startXRef = 

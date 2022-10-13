@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -35,7 +36,7 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
         var first = (await source.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue;
         foreach (var location in objectLocations)
         {
-            await reader.Reader.Source.AdvanceToLocalPositionAsync(first + location.Offset).CA();
+            await reader.Reader.AdvanceToLocalPositionAsync(first + location.Offset).CA();
             var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
             AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);
         }

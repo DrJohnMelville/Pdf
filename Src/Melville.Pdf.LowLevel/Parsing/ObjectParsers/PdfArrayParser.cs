@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -12,9 +13,9 @@ public class PdfArrayParser : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        var reader = await source.Reader.Source.ReadAsync().CA();
+        var reader = await source.Reader.ReadAsync().CA();
         //This has to succeed because the prior parser looked at the prefix to get here.
-        source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(1));
+        source.Reader.AdvanceTo(reader.Buffer.GetPosition(1));
         return new PdfArray(await RecursiveReadArray(source, 0).CA());
     }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -29,9 +30,9 @@ public class PdfDictionaryParser : IPdfObjectParser
     public async ValueTask<Memory<KeyValuePair<PdfName, PdfObject>>> 
         ParseDictionaryItemsAsync(IParsingReader source)
     {
-        var reader = await source.Reader.Source.ReadAsync().CA();
+        var reader = await source.Reader.ReadAsync().CA();
         //This has to succeed because the prior parser looked at the prefix to get here.
-        source.Reader.Source.AdvanceTo(reader.Buffer.GetPosition(2));
+        source.Reader.AdvanceTo(reader.Buffer.GetPosition(2));
 
         return await ParseItemRecursive(source, 0).CA();
     }

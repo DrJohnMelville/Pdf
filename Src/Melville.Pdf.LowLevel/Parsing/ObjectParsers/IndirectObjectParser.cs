@@ -26,7 +26,7 @@ public class IndirectObjectParser : IPdfObjectParser
         ParseResult kind;
         int num = 0;
         int generation = 0;
-        do{}while(source.Reader.Source.ShouldContinue(ParseReference(await source.Reader.Source.ReadAsync().CA(), out kind, out num, out  generation)));
+        do{}while(source.Reader.ShouldContinue(ParseReference(await source.Reader.ReadAsync().CA(), out kind, out num, out  generation)));
 
         switch (kind)
         {
@@ -34,7 +34,7 @@ public class IndirectObjectParser : IPdfObjectParser
                 return source.IndirectResolver.FindIndirect(num, generation);;
                 
             case ParseResult.FoundDefinition:
-                do { } while (source.Reader.Source.ShouldContinue(SkipToObjectBeginning(await source.Reader.Source.ReadAsync().CA())));
+                do { } while (source.Reader.ShouldContinue(SkipToObjectBeginning(await source.Reader.ReadAsync().CA())));
                 var target = await source.RootObjectParser.ParseAsync(source).CA();
                 return target;
                 
