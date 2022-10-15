@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -14,6 +15,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
+using Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
@@ -144,5 +146,25 @@ public class S7_5_7ObjectStreams
         var output = await str.GetIncludedObjectNumbersAsync();
         Assert.Equal(1, output[0].ObjectNumber);
         Assert.Equal(2, output[1].ObjectNumber);
+    }
+
+    [Fact]
+    public async Task DoNotEncryptStringsInContentStreams()
+    {
+        var ms = new MemoryStream();
+        await new EncryptedRefStm().WritePdfAsync(ms);
+        Assert.DoesNotContain("String In", ms.ToArray().ExtendedAsciiString());
+        ms.Seek(0, SeekOrigin.Begin);
+        
+        // string is inside an encrypted stream and so no plaintext
+        var doc = await 
+            new PdfLowLevelReader(new ConstantPasswordSource(PasswordType.User, "User")).ReadFromAsync(ms);
+        var embeddedStream = "String in Stream Context.";
+        Assert.Equal(embeddedStream, (await doc.Objects[(2,0)].DirectValueAsync()).ToString());
+        
+        // string is not encoded inside stream
+        var objSter = (PdfStream)(await doc.Objects[(3, 0)].DirectValueAsync());
+        var strText = await new StreamReader(await objSter.StreamContentAsync()).ReadToEndAsync();
+        Assert.Contains(strText, strText);
     }
 }
