@@ -20,6 +20,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_7ObjectStreams
 {
+    #warning need a test with an empty objectstream because it uncovered a bug that assumed at least one child elt.
     [Theory]
     [InlineData("1 0 2 6 11111\n22222")]
     [InlineData("1 0 2 5 1111122222")]
@@ -40,6 +41,22 @@ public class S7_5_7ObjectStreams
 
         await AssertIndirect(res, 1, "11111");
         await AssertIndirect(res, 2, "22222");
+    }
+
+    [Fact]
+    public async Task EmptyObjectStream()
+    {
+        var os = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.ObjStm)
+            .WithItem(KnownNames.N, 0)
+            .WithItem(KnownNames.First, 0)
+            .AsStream(Array.Empty<byte>());
+
+        var res = new IndirectObjectResolver();
+        var pfo = new ParsingFileOwner(new MemoryStream(), NullPasswordSource.Instance, res);
+
+        await ObjectStreamIndirectObject.LoadObjectStream(pfo, os);
+
     }
 
     private static async Task AssertIndirect(IndirectObjectResolver res, int objectNumber, string expected)

@@ -11,6 +11,7 @@ public class ObjectStreamPage: CreatePdfParser
 {
     public ObjectStreamPage() : base("Document using an object stream.")
     {
+#warning ObjectStreamPage test does not put anything into the object stream -- 
     }
 
     public override async ValueTask WritePdfAsync(Stream target) =>

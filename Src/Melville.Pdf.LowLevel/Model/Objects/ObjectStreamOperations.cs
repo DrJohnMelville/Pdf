@@ -29,7 +29,7 @@ public static class ObjectStreamOperations
             (await stream.GetAsync<PdfNumber>(KnownNames.N).CA()).IntValue,
             (await stream.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue).CA();
 
-    public static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbers(
+    private static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbers(
         this IByteSourceWithGlobalPosition reader, long count, long first)
     {
         var source = await reader.ReadAsync().CA();
@@ -40,6 +40,7 @@ public static class ObjectStreamOperations
         }
 
         var ret = FillInts(new SequenceReader<byte>(source.Buffer), count);
+        SetNextOffsets(ret);
         reader.AdvanceTo(source.Buffer.GetPosition(first));
         return ret;
     }
@@ -55,9 +56,21 @@ public static class ObjectStreamOperations
 
         return ret;
     }
+
+    private static void SetNextOffsets(ObjectLocation[] ret)
+    {
+        if (ret.Length < 1) return; // some files have empty objectstreams
+        for (int i = 1; i < ret.Length; i++)
+        {
+            ret[i - 1].NextOffset = ret[i].Offset;
+        }
+
+        ret[^1].NextOffset = int.MaxValue;
+    }
 }
 public struct ObjectLocation
 {
     public int ObjectNumber;
     public int Offset;
+    public int NextOffset;
 }

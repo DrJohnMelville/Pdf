@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO.Pipelines;
+using System.Threading;
+using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -30,13 +33,14 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
     public static async ValueTask LoadObjectStream(ParsingFileOwner owner, PdfStream source)
     {
         await using var data = await source.StreamContentAsync().CA();
-        var reader = owner.ParsingReaderForStream(data, 0);
+        var reader = new SubsetParsingReader( owner.ParsingReaderForStream(data, 0));
         var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
             source, reader.Reader).CA();
         var first = (await source.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue;
         foreach (var location in objectLocations)
         {
             await reader.Reader.AdvanceToLocalPositionAsync(first + location.Offset).CA();
+            reader.ExclusiveEndPosition = first + location.NextOffset;
             var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
             AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);
         }
@@ -50,4 +54,36 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
         var obj = resolver.FindIndirect(objectNumber, 0)as ObjectStreamIndirectObject;
         obj?.SetFinalValue(pdfObject);
     }
+}
+
+public partial class SubsetParsingReader : IParsingReader, IByteSourceWithGlobalPosition
+{
+    public long ExclusiveEndPosition { get; set; } = long.MaxValue;
+    
+    [DelegateTo] [FromConstructor] private readonly IParsingReader inner;
+    [DelegateTo] private IByteSourceWithGlobalPosition innerReader => inner.Reader;
+    public IByteSourceWithGlobalPosition Reader => this;
+
+    public bool TryRead(out ReadResult result)
+    {
+        if (!inner.Reader.TryRead(out result)) return false;
+        result = ClipResult(result);
+        return true;
+    }
+
+    public async ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default) =>
+        ClipResult(await innerReader.ReadAsync(cancellationToken).CA());
+
+    private ReadResult ClipResult(ReadResult result) =>
+        ResultDoesNotOverflowAllowedLength(result) ? 
+            result : 
+            SliceToAllowedLength(result);
+
+    private long MaxReadLength() => ExclusiveEndPosition - innerReader.Position;
+
+    private bool ResultDoesNotOverflowAllowedLength(ReadResult result) => 
+        result.IsCanceled ||result.Buffer.Length <= MaxReadLength();
+
+    private ReadResult SliceToAllowedLength(ReadResult result) => 
+        new ReadResult(result.Buffer.Slice(0, MaxReadLength()), false, true);
 }
