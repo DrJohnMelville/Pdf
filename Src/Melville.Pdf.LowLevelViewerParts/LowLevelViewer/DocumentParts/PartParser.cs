@@ -32,7 +32,7 @@ public class PartParser: IPartParser
 
     public async Task<ParsedLowLevelDocument> ParseAsync(Stream source, IWaitingService waiting)
     {
-        PdfLowLevelDocument lowlevel = await new PdfLowLevelReader(passwordSource).ReadFrom(source);
+        PdfLowLevelDocument lowlevel = await new PdfLowLevelReader(passwordSource).ReadFromAsync(source);
         return await GenerateUIList(waiting, lowlevel);
     }
 

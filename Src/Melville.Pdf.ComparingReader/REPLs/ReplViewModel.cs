@@ -39,7 +39,7 @@ public partial class ReplViewModel
     {
         if (buffer.Length == 0) return; // heppens in testing
         var target = await CopyOriginalFile();
-        var doc = await new PdfLowLevelReader().ReadFrom(buffer);
+        var doc = await new PdfLowLevelReader().ReadFromAsync(buffer);
         await WriteStreamModificationBlock(doc, await CreateReplacementStream(newValue), target);                                                                       
         renderer.SetTarget(target, page.Page);
     }

@@ -58,7 +58,7 @@ public readonly struct PdfReader
         };
 
     private async ValueTask<DocumentRenderer> ReadFromLowLevelLateBound(object input) => 
-        await ReadFrom(await LowLevelReader().ReadFrom(input).CA()).CA();
+        await ReadFrom(await LowLevelReader().ReadFromAsync(input).CA()).CA();
 
     /// <summary>
     /// Read a pdf file into a DocumentRenderer
@@ -74,7 +74,7 @@ public readonly struct PdfReader
     /// <param name="input">A byte array containing the PDF data.</param>
     /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
     public async ValueTask<DocumentRenderer> ReadFrom(byte[] input) =>
-        await ReadFrom(await LowLevelReader().ReadFrom(input).CA()).CA();
+        await ReadFrom(await LowLevelReader().ReadFromAsync(input).CA()).CA();
     
     /// <summary>
     /// Read a pdf file into a DocumentRenderer
@@ -82,7 +82,7 @@ public readonly struct PdfReader
     /// <param name="input">A stream containing the PDF data.  The stream must support reading and seeking.</param>
     /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
     public async ValueTask<DocumentRenderer> ReadFrom(Stream input) =>
-        await ReadFrom(await LowLevelReader().ReadFrom(input).CA()).CA();
+        await ReadFrom(await LowLevelReader().ReadFromAsync(input).CA()).CA();
 
     private PdfLowLevelReader LowLevelReader() => new PdfLowLevelReader(passwordSource);
 

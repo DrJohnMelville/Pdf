@@ -32,6 +32,8 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
 
     public static async ValueTask LoadObjectStream(ParsingFileOwner owner, PdfStream source)
     {
+        await TryLoadExtendedBaseStream(owner, source).CA();
+
         await using var data = await source.StreamContentAsync().CA();
         var reader = new SubsetParsingReader( owner.ParsingReaderForStream(data, 0));
         var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
@@ -44,8 +46,13 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
             var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
             AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);
         }
-       #warning need to implement objectstream extends page  
-      //  if (source.GetOrNullAsync<PdfStream>(KnownNames.Extends))
+    }
+
+    private static async ValueTask TryLoadExtendedBaseStream(ParsingFileOwner owner, PdfStream source)
+    {
+        var refstr = await source.GetOrNullAsync<PdfStream>(KnownNames.Extends).CA();
+        if (refstr is { } referredStream)
+            await LoadObjectStream(owner, referredStream).CA();
     }
 
     private static void AcceptObject(IIndirectObjectResolver resolver,

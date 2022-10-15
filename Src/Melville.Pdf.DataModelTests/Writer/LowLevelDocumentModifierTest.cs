@@ -32,7 +32,7 @@ public class LowLevelDocumentModifierTest
     {
         var ms = new MultiBufferStream();
         await doc.WriteToAsync(ms);
-        return await new PdfLowLevelReader().ReadFrom(ms.CreateReader());
+        return await new PdfLowLevelReader().ReadFromAsync(ms.CreateReader());
     }
 
     private async Task DoDocumentModificationTests(

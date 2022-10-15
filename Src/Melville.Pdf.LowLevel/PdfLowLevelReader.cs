@@ -20,21 +20,21 @@ public readonly struct PdfLowLevelReader
     }
 
 
-    public ValueTask<PdfLoadedLowLevelDocument> ReadFrom(object argument) => argument switch
+    public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(object argument) => argument switch
     {
         string s => ReadFromFile(s),
-        byte[] s => ReadFrom(s),
-        Stream s => ReadFrom(s),
+        byte[] s => ReadFromAsync(s),
+        Stream s => ReadFromAsync(s),
         _ => throw new ArgumentException("Must be string, byte array, or stream.", nameof(argument))
     };
 
     public ValueTask<PdfLoadedLowLevelDocument> ReadFromFile(string path) =>
-        ReadFrom(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read));
+        ReadFromAsync(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read));
 
-    public ValueTask<PdfLoadedLowLevelDocument> ReadFrom(byte[] input) =>
-        ReadFrom(new MemoryStream(input));
+    public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(byte[] input) =>
+        ReadFromAsync(new MemoryStream(input));
 
-    public ValueTask<PdfLoadedLowLevelDocument> ReadFrom(Stream input) =>
+    public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(Stream input) =>
         RandomAccessFileParser.Parse(
             new ParsingFileOwner(input, passwordSource, new IndirectObjectResolver()));
 }

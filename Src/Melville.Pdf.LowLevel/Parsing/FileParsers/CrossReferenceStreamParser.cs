@@ -29,13 +29,6 @@ public static class CrossReferenceStreamParser
     {
         var parser = await new XrefStreamParserFactory(crossRefPdfStream, owner).Create().CA();
         await parser.Parse(PipeReader.Create(await crossRefPdfStream.StreamContentAsync().CA())).CA();
-        // await using (var decodedStream = await crossRefPdfStream.StreamContentAsync().CA())
-        // {
-        //     await new ParseXRefStream(
-        //         await crossRefPdfStream[KnownNames.W].CA(),
-        //         await crossRefPdfStream.GetOrNullAsync(KnownNames.Index).CA(),
-        //         decodedStream, owner
-        //     ).Parse().CA();
-        // }
+
     }
 }

@@ -36,7 +36,6 @@ internal abstract class OwnedLocationIndirectObject: PdfIndirectObject
 
     protected void SetFinalValue(PdfObject value)
     {
-        if (HasFinalValue()) return;
         this.value = value;
         owner = null;
     }

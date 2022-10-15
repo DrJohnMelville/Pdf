@@ -16,7 +16,7 @@ public readonly struct PdfDocument: IDisposable
     public PdfLowLevelDocument LowLevel { get; }
 
     public static async ValueTask<PdfDocument> ReadAsync(Stream source, IPasswordSource? passwords = null) =>
-        new(await new PdfLowLevelReader(passwords).ReadFrom(source).CA());
+        new(await new PdfLowLevelReader(passwords).ReadFromAsync(source).CA());
 
     public PdfDocument(PdfLowLevelDocument lowLevel)
     {

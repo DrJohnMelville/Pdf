@@ -57,7 +57,7 @@ public class RoundTripEncryptedFiles
     private static ValueTask<PdfLoadedLowLevelDocument> ParseTarget(
         MultiBufferStream target, PasswordType passwordType, string password) =>
         new PdfLowLevelReader(new ConstantPasswordSource(passwordType, password))
-            .ReadFrom(target);
+            .ReadFromAsync(target);
 
     private async ValueTask VerifyNumber(PdfDictionary encrypt, PdfName pdfName, int expected)
     {
