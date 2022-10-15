@@ -11,7 +11,6 @@ public class ObjectStreamPage: CreatePdfParser
 {
     public ObjectStreamPage() : base("Document using an object stream.")
     {
-#warning ObjectStreamPage test does not put anything into the object stream -- 
     }
 
     public override async ValueTask WritePdfAsync(Stream target) =>
@@ -24,8 +23,7 @@ public class ObjectStreamPage: CreatePdfParser
                          new DictionaryBuilder()))
         {
             var page = creator.Pages.CreatePageInObjectStream();
-            var fontName = 
-                page.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);
+            var fontName = page.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);
             await page.AddToContentStreamAsync(i=>
             {
                 using var block = i.StartTextBlock();

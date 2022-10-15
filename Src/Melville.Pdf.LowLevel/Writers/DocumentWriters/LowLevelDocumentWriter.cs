@@ -39,7 +39,6 @@ public class LowLevelDocumentWriter
         document.VerifyCanSupportObjectStreams();
         var objectOffsets = await WriteHeaderAndObjects(1).CA();
         long xRefStart = target.BytesWritten;
-        objectOffsets.DeclareIndirectObject(objectOffsets.Entries.Length-1, xRefStart);
         await new ReferenceStreamWriter(target, document, objectOffsets).Write().CA();
         await TrailerWriter.WriteTerminalStartXrefAndEof(target, xRefStart).CA();
     }

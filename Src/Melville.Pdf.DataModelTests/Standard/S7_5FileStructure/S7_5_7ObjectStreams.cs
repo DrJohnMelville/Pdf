@@ -20,7 +20,6 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_7ObjectStreams
 {
-    #warning need a test with an empty objectstream because it uncovered a bug that assumed at least one child elt.
     [Theory]
     [InlineData("1 0 2 6 11111\n22222")]
     [InlineData("1 0 2 5 1111122222")]
