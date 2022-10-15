@@ -147,10 +147,13 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 
         public void Dispose()
         {
-            var obs = parent.objectStreamBuilder ??
+            var capturedBuilder = parent.objectStreamBuilder ??
                       throw new InvalidOperationException("No parent object stream builder");
             parent.objectStreamBuilder = null;
-            parent.AddDelayedObject(()=> obs.CreateStream(dictionaryBuilder));
+            if (capturedBuilder.HasValues())
+            {
+                parent.AddDelayedObject(()=> capturedBuilder.CreateStream(dictionaryBuilder));
+            }
         }
     }
 }

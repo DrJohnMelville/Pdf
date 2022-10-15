@@ -9,7 +9,13 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 public class ObjectStreamBuilder
 {
     private readonly List<PdfIndirectObject> members = new();
-    
+
+
+    public ObjectStreamBuilder()
+    {
+        ;
+    }
+
     public bool TryAddRef(PdfIndirectObject obj)
     {
         if (!(obj.TryGetDirectValue(out var directValue) && IsLegalWrite(obj, directValue))) return false;
@@ -28,4 +34,6 @@ public class ObjectStreamBuilder
         }
         return await writer.Build(builder, members.Count).CA();
     }
+
+    public bool HasValues() => members.Count > 0;
 }
