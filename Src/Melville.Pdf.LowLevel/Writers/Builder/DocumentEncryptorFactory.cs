@@ -16,7 +16,7 @@ public static class DocumentEncryptorFactory
         int V, int keyLengthInBits) =>
         new(userPassword, ownerPassword,
             V, 3, keyLengthInBits, restrictedPermissions,
-            new ComputeOwnerPasswordV3(),
+            ComputeOwnerPasswordV3.Instance,
             new ComputeUserPasswordV3(),
             new GlobalEncryptionKeyComputerV3());
 
@@ -46,13 +46,21 @@ public static class DocumentEncryptorFactory
         string userPassword, string ownerPassword, PdfPermission restrictedPermissions, 
         PdfName encryptor, int keyLengthInBytes) =>
         V4(userPassword, ownerPassword, restrictedPermissions, 
-            KnownNames.StdCF, KnownNames.StdCF, new V4CfDictionary(encryptor, keyLengthInBytes));
+            KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF, 
+            new V4CfDictionary(encryptor, keyLengthInBytes));
 
     public static ILowLevelDocumentEncryptor V4(
         string userPassword, string ownerPassword, PdfPermission restrictedPermissions,
-        PdfName streamEnc, PdfName stringEnc, in V4CfDictionary encryptors)
-    {
-        return new V4Encryptor(userPassword, ownerPassword, 128, restrictedPermissions,
-            streamEnc, stringEnc, encryptors);
-    }
+        PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc, in V4CfDictionary encryptors) =>
+        new V4Encryptor(userPassword, ownerPassword, 128, restrictedPermissions,
+            streamEnc, stringEnc, embededFileEnc, encryptors);
+
+    public static ILowLevelDocumentEncryptor V6(
+        string user, string owner, PdfPermission restrictedPermissions) => V6(
+        user, owner, restrictedPermissions, KnownNames.StmF, KnownNames.StrF, KnownNames.StmF);
+    public static ILowLevelDocumentEncryptor V6(
+        string user, string owner, PdfPermission restrictedPermissions,
+        PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc) =>
+        new V6Encryptor(user, owner, restrictedPermissions,
+            streamEnc, stringEnc, embededFileEnc);
 }

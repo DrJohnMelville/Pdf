@@ -172,6 +172,7 @@ Pdf:Domain
 Pdf:DW
 Pdf:DW2
 Pdf:EarlyChange
+Pdf:EFF
 Pdf:Encode
 Pdf:EncodedByteAlign
 Pdf:Encoding

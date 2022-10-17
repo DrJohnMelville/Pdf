@@ -42,6 +42,13 @@ public class Encryptedv4Aes128 : EncryptedFileWriter
     public Encryptedv4Aes128() : base("Document Encrypted v4 with AES 128 bit", 
         DocumentEncryptorFactory.V4("User","Owner", PdfPermission.None, KnownNames.AESV2, 16)){}
 }
+public class EncryptedV6 : EncryptedFileWriter {
+    public EncryptedV6() : base("Document Encrypted v6 with AES 256 Bit",
+        DocumentEncryptorFactory.V6("User", "Owner", PdfPermission.None))
+    {
+    }
+    
+}
 public class EncryptedV4StreamsPlain : EncryptedFileWriter
 {
     public EncryptedV4StreamsPlain() : base("Document Encrypted v4 with plaintext streams", 

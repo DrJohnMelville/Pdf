@@ -58,7 +58,7 @@ public static class SecurityHandlerFactory
     {
         return new RootKeyComputer( new GlobalEncryptionKeyComputerV3(),
             new ComputeUserPasswordV3(),
-            new ComputeOwnerPasswordV3(),
+            ComputeOwnerPasswordV3.Instance,
             parameters);
     }
 }

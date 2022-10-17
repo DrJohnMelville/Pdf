@@ -31,29 +31,47 @@ public readonly struct V4CfDictionary
 
     public PdfDictionary Build() => items.AsDictionary();
 }
-public class V4Encryptor: ComputeEncryptionDictionary
+
+public class EncryptorWithCfsDictionary : ComputeEncryptionDictionary
 {
     private readonly PdfName defStream;
     private readonly PdfName defString;
+    private readonly PdfName defEmbeddedFile;
     private readonly PdfDictionary cfs;
 
-    public V4Encryptor(
-        string userPassword, string ownerPassword, int keyLengthInBits, PdfPermission permissionsRestricted,
-        PdfName defStream, PdfName defString, in V4CfDictionary cfs) : 
-        base(userPassword, ownerPassword, 4,4, keyLengthInBits, permissionsRestricted, 
-            new ComputeOwnerPasswordV3(), new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3())
+    public EncryptorWithCfsDictionary(
+        string userPassword, string ownerPassword, int v, int r, int keyLengthInBits, 
+        PdfPermission permissionsRestricted, IComputeOwnerPassword ownerPasswordComputer, 
+        IComputeUserPassword userPasswordComputer, IGlobalEncryptionKeyComputer keyComputer, 
+        PdfName defStream, PdfName defString, PdfName defEmbeddedFile, V4CfDictionary cfs) : 
+        base(userPassword, ownerPassword, v, r, keyLengthInBits, permissionsRestricted, 
+            ownerPasswordComputer, userPasswordComputer, keyComputer)
     {
         this.defStream = defStream;
         this.defString = defString;
+        this.defEmbeddedFile = defEmbeddedFile;
         this.cfs = cfs.Build();
     }
-
+    
     protected override DictionaryBuilder DictionaryItems(PdfArray id)
     {
         var ret = base.DictionaryItems(id);
         ret.WithItem(KnownNames.CF, cfs);
         ret.WithItem(KnownNames.StrF, defString);
         ret.WithItem(KnownNames.StmF, defStream);
+        ret.WithItem(KnownNames.EFF, defEmbeddedFile);
         return ret;
+    }
+
+}
+public class V4Encryptor: EncryptorWithCfsDictionary
+{
+    public V4Encryptor(
+        string userPassword, string ownerPassword, int keyLengthInBits, PdfPermission permissionsRestricted,
+        PdfName defStream, PdfName defString, PdfName defEmbeddedFile, in V4CfDictionary cfs) : 
+        base(userPassword, ownerPassword, 4,4, keyLengthInBits, permissionsRestricted, 
+            ComputeOwnerPasswordV3.Instance, new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3(),
+            defStream, defString, defEmbeddedFile, cfs)
+    {
     }
 }

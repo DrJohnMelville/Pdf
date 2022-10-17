@@ -63,7 +63,8 @@ public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
             (uint)permissions, keyLengthInBits);
         dict.WithItem(KnownNames.Filter, KnownNames.Standard);
         dict.WithItem(KnownNames.V, new PdfInteger(v));
-        dict.WithItem(KnownNames.Length, new PdfInteger(keyLengthInBits));
+        if (keyLengthInBits > 0)
+            dict.WithItem(KnownNames.Length, new PdfInteger(keyLengthInBits));
         dict.WithItem(KnownNames.P, new PdfInteger(permissions));
         dict.WithItem(KnownNames.R, new PdfInteger(r));
         dict.WithItem(KnownNames.U, new PdfString(UserHashForPassword(UserPassword, ep)));

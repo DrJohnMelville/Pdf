@@ -73,7 +73,9 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
             service.Bind<IOpenSaveFile>().To<OpenSaveFileAdapter>();
            service.Bind<IList<ReferenceDocumentNode>>().ToMethod(ReferenceDocumentFactory.Create);
             service.Bind<ICommandLineSelection>().ToMethod(() => new CommandLineSelection(this.CommandLineParameters));
-            service.Bind<IPasswordSource>().To<PasswordBox>().AsSingleton();
+            service.Bind<IPasswordSource>().To<PasswordBox>()
+                .FixResult(i=>((PasswordBox)i).Password = "User")
+                .AsSingleton();
             service.Bind<Window>().And<IRootNavigationWindow>().To<RootNavigationWindow>().AsSingleton();
         }
     }

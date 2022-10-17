@@ -17,7 +17,7 @@ public class FiltersGenerator : CreatePdfParser
         builder.Pages.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.StandardEncoding);
 
         BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, new V4Encryptor("", "", 128,
-            PdfPermission.None, KnownNames.Identity, KnownNames.Identity,
+            PdfPermission.None, KnownNames.Identity, KnownNames.Identity, KnownNames.Identity,
             new V4CfDictionary(KnownNames.V2, 128 / 8)));
 
         await CreatePage(builder, "Rc4 Crypt Filter", FilterName.Crypt,

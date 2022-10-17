@@ -58,7 +58,7 @@ public class S7_6_5CryptFilters
     {
         var creator = new LowLevelDocumentCreator();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            Encoder(hideStream), Encoder(hideString), new V4CfDictionary(KnownNames.V2, 16)));
+            Encoder(hideStream), Encoder(hideString), Encoder(hideStream), new V4CfDictionary(KnownNames.V2, 16)));
         await VerifyStringAndStreamEncoding(hideStream, hideString, creator);
     }
 
@@ -67,7 +67,7 @@ public class S7_6_5CryptFilters
     {
         var creator = new LowLevelDocumentCreator();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            KnownNames.StdCF, KnownNames.StdCF, new V4CfDictionary(KnownNames.V2, 16)));
+            KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF, new V4CfDictionary(KnownNames.V2, 16)));
         return VerifyStringAndStreamEncoding(false, true, creator, KnownNames.Identity);
     }
 
@@ -76,7 +76,7 @@ public class S7_6_5CryptFilters
     {
         var creator = new LowLevelDocumentCreator();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            KnownNames.Identity, KnownNames.StdCF, new V4CfDictionary(KnownNames.V2, 16)));
+            KnownNames.Identity, KnownNames.StdCF, KnownNames.StmF, new V4CfDictionary(KnownNames.V2, 16)));
         return VerifyStringAndStreamEncoding(true, true, creator, KnownNames.StdCF);
     }
 
@@ -85,7 +85,7 @@ public class S7_6_5CryptFilters
     {
         var creator = new LowLevelDocumentCreator();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            Encoder(true), Encoder(true), new V4CfDictionary(KnownNames.None, 16)));
+            Encoder(true), Encoder(true),Encoder(true), new V4CfDictionary(KnownNames.None, 16)));
         return VerifyStringAndStreamEncoding(false, false, creator);
             
     }

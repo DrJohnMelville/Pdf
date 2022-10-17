@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -64,10 +65,9 @@ public class SecurityHandlerV4 : ISecurityHandler
         this.handlers = handlers;
     }
 
-    public byte[]? TryComputeRootKey(string password, PasswordType type)
-    {
-        return rootKeyComputer.TryComputeRootKey(password.AsExtendedAsciiBytes(), type);
-    }
+    public byte[]? TryComputeRootKey(string password, PasswordType type) => 
+        rootKeyComputer.TryComputeRootKey(password.AsPdfDocBytes(), type);
+
     public IDocumentCryptContext CreateCryptContext(byte[] rootKey) =>
         new DocumentCryptContextV4(handlers.ToDictionary(
             handlerPair => handlerPair.Key,
