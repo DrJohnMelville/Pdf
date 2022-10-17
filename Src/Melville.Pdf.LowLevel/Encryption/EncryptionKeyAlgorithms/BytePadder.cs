@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
@@ -17,11 +18,12 @@ public static class BytePadder
     {
         Debug.Assert(destination.Length == 32);
         int origBytes = Math.Min(input.Length, 32);
-        ExtendedAsciiEncoding.EncodeToSpan(input[..origBytes], destination);
+        PdfDocEncodingConversion.FillPdfDocBytes(input.AsSpan(0,origBytes), destination);
         PdfPasswordPaddingBytes.AsSpan(0, 32-origBytes).CopyTo(destination[origBytes..]);
     }
 
-    public static string PasswordFromBytes(ReadOnlySpan<byte> input) => input.ExtendedAsciiString();
+    public static string PasswordFromBytes(ReadOnlySpan<byte> input) =>
+        input.PdfDocEncodedString();
 
     public static readonly byte[] PdfPasswordPaddingBytes =
     {

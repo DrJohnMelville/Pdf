@@ -1,14 +1,17 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel;
+using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
@@ -21,6 +24,17 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
 public class RoundTripEncryptedFiles
 {
+
+    [Fact]
+    public void VerifyThatDefaultPasswordBytesRoundTripInPdfDocEncoding()
+    {
+        // this is an important property because it means that ComputeOwnerPasswordv2.UserKeyFromOwnerKey does not need
+        // to trim the user password to its original length because the 32 bit password returned will round trip through
+        // the string representation to a password that is equivilant to the original.
+        Assert.True(BytePadder.PdfPasswordPaddingBytes.AsSpan().SequenceEqual(
+            BytePadder.PdfPasswordPaddingBytes.PdfDocEncodedString().AsPdfDocBytes()));
+    }
+    
     private async Task TestEncryptedFile(CreatePdfParser gen, int V, int R, int keyLengthInBits)
     {
         var target = await gen.AsMultiBuf();
