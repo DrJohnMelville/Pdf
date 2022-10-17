@@ -11,11 +11,11 @@ public static class ExtendedAsciiEncoding
         return ret;
     }
 
-    public static void EncodeToSpan(string s, in Span<byte> ret)
+    public static void EncodeToSpan(ReadOnlySpan<char> input, in Span<byte> ret)
     {
-        for (int i = 0; i < s.Length; i++)
+        for (int i = 0; i < input.Length; i++)
         {
-            ret[i] = (byte)s[i];
+            ret[i] = (byte)input[i];
         }
     }
 

@@ -38,6 +38,6 @@ public class ComputerEncryptionKeyAlgorithm2Test
 
 public static class QuickStringParser
 {
-    public static async ValueTask<byte[]> PdfStringBytesAsync(this string s) =>
-        ((PdfString)await s.ParseObjectAsync()).Bytes;
+    public static async ValueTask<string> PdfStringBytesAsync(this string s) =>
+        ((PdfString)await s.ParseObjectAsync()).ToString();
 }

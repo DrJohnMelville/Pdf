@@ -7,21 +7,26 @@ namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
 public interface IGlobalEncryptionKeyComputer
 {
-    byte[] ComputeKey(in ReadOnlySpan<byte> userPassword, in EncryptionParameters parameters);
+    byte[] ComputeKey(string userPassword, in EncryptionParameters parameters);
 }
 public class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
 {
-    public byte[] ComputeKey(in ReadOnlySpan<byte> userPassword, in EncryptionParameters parameters)
+    public byte[] ComputeKey(string userPassword, in EncryptionParameters parameters)
     {
-
+        #warning -- can rent the userpassword array
         HashAlgorithm hash = MD5.Create();
-        hash.AddData(BytePadder.Pad(userPassword));
+        AddPaddedUserPasswordToHash(userPassword, hash);
         hash.AddData(parameters.OwnerPasswordHash);
         AddLittleEndianInt(hash, parameters.Permissions);
         hash.AddData(parameters.IdFirstElement);
         var bytesInKey = parameters.KeyLengthInBits/8;
         var bits = V3Spin(hash, bytesInKey);
         return (bits.Length == bytesInKey) ? bits : bits[..bytesInKey];
+    }
+
+    private static void AddPaddedUserPasswordToHash(string userPassword, HashAlgorithm hash)
+    {
+        hash.AddData(BytePadder.Pad(userPassword));
     }
 
     protected virtual byte[] V3Spin(HashAlgorithm hash, int bytesInKey)

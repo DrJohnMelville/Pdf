@@ -21,12 +21,12 @@ public class V6Encryptor: EncryptorWithCfsDictionary
 
 public class ComputeOwnerPasswordv6 : IComputeOwnerPassword
 {
-    public byte[] UserKeyFromOwnerKey(in ReadOnlySpan<byte> ownerKey, EncryptionParameters parameters)
+    public string UserKeyFromOwnerKey(string ownerKey, EncryptionParameters parameters)
     {
         throw new NotImplementedException();
     }
 
-    public byte[] ComputeOwnerKey(in ReadOnlySpan<byte> ownerKey, in ReadOnlySpan<byte> userKey, int keyLenInBytes)
+    public byte[] ComputeOwnerKey(string ownerKey, string userKey, int keyLenInBytes)
     {
         throw new NotImplementedException();
     }

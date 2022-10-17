@@ -60,7 +60,7 @@ public class SecurityHandler : ISecurityHandler
     }
 
     public byte[]? TryComputeRootKey(string password, PasswordType type) => 
-        rootKeyComputer.TryComputeRootKey(password.AsPdfDocBytes(), type);
+        rootKeyComputer.TryComputeRootKey(password, type);
 
     public IDocumentCryptContext CreateCryptContext(byte[] rootKey) => 
         new DocumentCryptContext(rootKey, keySpecializer, cipherFactory, blockEncryption);

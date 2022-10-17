@@ -15,7 +15,7 @@ public interface ILowLevelDocumentBuilder
     public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation);
     void AddToTrailerDictionary(PdfName key, PdfObject item);
     public PdfArray EnsureDocumentHasId();
-    public byte[] UserPassword { get; set; }
+    public string UserPassword { get; set; }
     IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
 }
 
@@ -47,7 +47,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
     private readonly DictionaryBuilder trailerDictionaryItems = new();
     private ObjectStreamBuilder? objectStreamBuilder;
         
-    public byte[] UserPassword { get; set; } = Array.Empty<byte>();
+    public string UserPassword { get; set; } = "";
 
     public LowLevelDocumentBuilder(int nextObject = 1)
     {

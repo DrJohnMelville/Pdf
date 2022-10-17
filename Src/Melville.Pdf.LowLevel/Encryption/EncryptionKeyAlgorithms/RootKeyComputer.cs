@@ -19,7 +19,7 @@ public class RootKeyComputer
         this.parameters = parameters;
     }
 
-    private byte[]? KeyFromUserPassword(in ReadOnlySpan<byte> userPassword)
+    private byte[]? KeyFromUserPassword(in string userPassword)
     {
         var key = keyComputer.ComputeKey(userPassword, parameters);
         var userHash = userHashComputer.ComputeHash(key, parameters);
@@ -27,7 +27,7 @@ public class RootKeyComputer
         return matches ? key : null;
     }
 
-    public byte[]? TryComputeRootKey(in ReadOnlySpan<byte> password, PasswordType type)
+    public byte[]? TryComputeRootKey(string password, PasswordType type)
     {
         if (type == PasswordType.Owner)
             return TryComputeRootKey(ownerHashComputer.UserKeyFromOwnerKey(password, parameters), PasswordType.User);

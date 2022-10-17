@@ -6,29 +6,26 @@ namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 
 public interface IComputeOwnerPassword
 {
-    byte[] UserKeyFromOwnerKey(in ReadOnlySpan<byte> ownerKey, EncryptionParameters parameters);
-
-    byte[] ComputeOwnerKey(
-        in ReadOnlySpan<byte> ownerKey, in ReadOnlySpan<byte> userKey, int keyLenInBytes);
+    string UserKeyFromOwnerKey(string ownerKey, EncryptionParameters parameters);
+    byte[] ComputeOwnerKey(string ownerKey, string userKey, int keyLenInBytes);
 }
 public class ComputeOwnerPasswordV2: IComputeOwnerPassword
 {
-    public byte[] UserKeyFromOwnerKey(in ReadOnlySpan<byte> ownerKey, EncryptionParameters parameters) => 
+    public string UserKeyFromOwnerKey(string ownerKey, EncryptionParameters parameters) => 
         InnerUserKeyFromOwnerKey(ownerKey, parameters.OwnerPasswordHash, parameters.KeyLengthInBytes);
 
-    private byte[] InnerUserKeyFromOwnerKey(
-        ReadOnlySpan<byte> ownerKey, byte[] ownerPasswordHash, int keyLengthInBytes)
+    private string InnerUserKeyFromOwnerKey(
+        string ownerKey, byte[] ownerPasswordHash, int keyLengthInBytes)
     {
         var hash = OwnerPasswordHash(ownerKey);
         var userPass = new byte[ownerPasswordHash.Length];
         ownerPasswordHash.CopyTo(userPass, 0);
         SequentialRc4Encryptor.EncryptDownNTimes(
             hash[..keyLengthInBytes], userPass, SequentialEncryptionCount());
-        return userPass;
+        return BytePadder.PasswordFromBytes(userPass);
     }
 
-    public byte[] ComputeOwnerKey(
-        in ReadOnlySpan<byte> ownerKey, in ReadOnlySpan<byte> userKey, int keyLenInBytes)
+    public byte[] ComputeOwnerKey(string ownerKey, string userKey, int keyLenInBytes)
     {
         var ownerHash = OwnerPasswordHash(ownerKey);
         var ret = BytePadder.Pad(userKey);
@@ -39,7 +36,7 @@ public class ComputeOwnerPasswordV2: IComputeOwnerPassword
 
     protected virtual int SequentialEncryptionCount() => 1;
 
-    private byte[] OwnerPasswordHash(in ReadOnlySpan<byte> ownerPassword)
+    private byte[] OwnerPasswordHash(in string ownerPassword)
     {
         Span<byte> paddedPassword = stackalloc byte[32];
         BytePadder.Pad(ownerPassword, paddedPassword);

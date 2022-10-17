@@ -11,13 +11,13 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 public interface ILowLevelDocumentEncryptor
 {
     public PdfDictionary CreateEncryptionDictionary(PdfArray id);
-    public byte[] UserPassword { get; }
+    public string UserPassword { get; }
 }
 
 public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
 {
-    private readonly byte[] ownerPassword;
-    public byte[] UserPassword { get; set; }
+    private readonly string ownerPassword;
+    public string UserPassword { get; set; }
     private readonly int permissions;
     private readonly IComputeOwnerPassword ownerPasswordComputer;
     private readonly IComputeUserPassword userPasswordComputer;
@@ -38,8 +38,8 @@ public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
         IComputeUserPassword userPasswordComputer, 
         IGlobalEncryptionKeyComputer keyComputer)
     {
-        this.UserPassword = userPassword.AsExtendedAsciiBytes();
-        this.ownerPassword = ownerPassword.AsExtendedAsciiBytes();
+        this.UserPassword = userPassword;
+        this.ownerPassword = ownerPassword;
         this.permissions = ~(int)permissionsRestricted;
         this.v = v;
         this.r = r;
@@ -74,7 +74,7 @@ public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
     }
 
     public byte[] UserHashForPassword(
-        in ReadOnlySpan<byte> userPassword, in EncryptionParameters parameters)
+        in string userPassword, in EncryptionParameters parameters)
     {
         var key = keyComputer.ComputeKey(userPassword, parameters);
         var ret = userPasswordComputer.ComputeHash(key, parameters);

@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Diagnostics;
+using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
 public static class BytePadder
 {
-    public static byte[] Pad(in ReadOnlySpan<byte> input)
+    public static byte[] Pad(string input)
     {
         var ret = new byte[32];
         Pad(input, ret);
         return ret;
     }
 
-    public static void Pad(in ReadOnlySpan<byte> input, in Span<byte> destination)
+    public static void Pad(string input, in Span<byte> destination)
     {
         Debug.Assert(destination.Length == 32);
         int origBytes = Math.Min(input.Length, 32);
-        input[..origBytes].CopyTo(destination);
+        ExtendedAsciiEncoding.EncodeToSpan(input[..origBytes], destination);
         PdfPasswordPaddingBytes.AsSpan(0, 32-origBytes).CopyTo(destination[origBytes..]);
     }
+
+    public static string PasswordFromBytes(ReadOnlySpan<byte> input) => input.ExtendedAsciiString();
 
     public static readonly byte[] PdfPasswordPaddingBytes =
     {

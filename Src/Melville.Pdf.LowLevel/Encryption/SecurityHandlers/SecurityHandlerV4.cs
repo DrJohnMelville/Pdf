@@ -66,7 +66,7 @@ public class SecurityHandlerV4 : ISecurityHandler
     }
 
     public byte[]? TryComputeRootKey(string password, PasswordType type) => 
-        rootKeyComputer.TryComputeRootKey(password.AsPdfDocBytes(), type);
+        rootKeyComputer.TryComputeRootKey(password, type);
 
     public IDocumentCryptContext CreateCryptContext(byte[] rootKey) =>
         new DocumentCryptContextV4(handlers.ToDictionary(
