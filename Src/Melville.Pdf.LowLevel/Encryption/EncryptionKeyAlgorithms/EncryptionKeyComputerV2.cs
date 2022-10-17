@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Linq;
 using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
@@ -13,7 +14,6 @@ public class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
 {
     public byte[] ComputeKey(string userPassword, in EncryptionParameters parameters)
     {
-        #warning -- can rent the userpassword array
         HashAlgorithm hash = MD5.Create();
         AddPaddedUserPasswordToHash(userPassword, hash);
         hash.AddData(parameters.OwnerPasswordHash);
@@ -26,7 +26,10 @@ public class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
 
     private static void AddPaddedUserPasswordToHash(string userPassword, HashAlgorithm hash)
     {
-        hash.AddData(BytePadder.Pad(userPassword));
+        var data = ArrayPool<byte>.Shared.Rent(32);
+        BytePadder.Pad(userPassword, data.AsSpan(0, 32));
+        hash.AddData(data, 32);
+        ArrayPool<byte>.Shared.Return(data);
     }
 
     protected virtual byte[] V3Spin(HashAlgorithm hash, int bytesInKey)
