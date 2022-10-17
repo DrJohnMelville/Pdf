@@ -55,13 +55,13 @@ need to control the number of people who can make an ownership claim to the sour
 used for font file parsing.  This is the only native code dependency in the project, and much as I know
 it will make portability a headache, this was a necessity.  PDF allows a lot of different font formats and
 writing parsers for them all would have added another year to the project.  This is a genuine NuGet 
-dependency.
+dependency.  Freetype is licensed under GPL and a BSD-style FreeType License.  SharpFont is licensed under the MIT license.
 - [JpegLibrary](https://github.com/yigolden/JpegLibrary) is the source of my JPEG parsing code.  I "forked"
 this library into my own codebase in Melville.JpegLibrary.  I have added some bugfixes and other features
-to this code to make it parse some of the unusual JPEG images this project had introduced me to.
+to this code to make it parse some of the unusual JPEG images this project had introduced me to.  JpegLibrary is licensed under the MIT License.
 - My JPEG2000 parser is another "unofficial fork" of [csj2k](https://github.com/cureos/csj2k).  I made
 some superficial modifications to make it library play nicer with the stream based filter paradigm which
-is fairly fundamental to PDF,
+is fairly fundamental to PDF.  CSJ2k is licensed under th BSD license.
 
 I made significant efforts to keep Melville.Pdf agnostic with regard to rendering or display technologies.
 To help me toward this end I developed the initial library with two initial targets, WPF and SkiaSharp.
