@@ -26,7 +26,7 @@ public readonly struct V4CfDictionary
         new DictionaryBuilder()
             .WithItem(KnownNames.AuthEvent, authEvent)
             .WithItem(KnownNames.CFM, cfm)
-            .WithItem(KnownNames.Length, new PdfInteger(lengthInBytes))
+            .WithItem(KnownNames.Length, lengthInBytes)
             .AsDictionary();
 
     public PdfDictionary Build() => items.AsDictionary();

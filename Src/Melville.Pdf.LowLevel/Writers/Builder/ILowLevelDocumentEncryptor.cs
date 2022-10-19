@@ -68,13 +68,11 @@ public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
         dict.WithItem(KnownNames.P, new PdfInteger(permissions));
         dict.WithItem(KnownNames.R, new PdfInteger(r));
         dict.WithItem(KnownNames.U, new PdfString(UserHashForPassword(UserPassword, ep)));
-        dict.WithItem(KnownNames.O, new PdfString(
-            ownerHash));
+        dict.WithItem(KnownNames.O, new PdfString(ownerHash));
         return dict;
     }
 
-    public byte[] UserHashForPassword(
-        in string userPassword, in EncryptionParameters parameters)
+    public byte[] UserHashForPassword(in string userPassword, in EncryptionParameters parameters)
     {
         var key = keyComputer.ComputeKey(userPassword, parameters);
         var ret = userPasswordComputer.ComputeHash(key, parameters);
