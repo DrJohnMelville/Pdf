@@ -23,7 +23,7 @@ public static class SecurityHandlerFactory
             
         return (V,R)switch
         {
-            (0 or 3, _) => throw new PdfSecurityException("Undocumented Algorithms are not supported"),
+            (0 or 3, _) or (_, 5) => throw new PdfSecurityException("Undocumented Algorithms are not supported"),
             (4, _) => await SecurityHandlerV4Builder.Create(RootKeyComputerV3(parameters),dict).CA(),
             (1 or 2, 2) =>  SecurityHandlerV2( parameters, dict),
             (1 or 2, 3) =>  SecurityHandlerV3(parameters, dict),

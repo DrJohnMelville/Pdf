@@ -51,7 +51,12 @@ public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
         
     public PdfDictionary CreateEncryptionDictionary(PdfArray id)
     {
-        return DictionaryItems(id).AsDictionary();
+        return DictionaryItems(id)
+            .WithItem(KnownNames.Filter, KnownNames.Standard)
+            .WithItem(KnownNames.V, 5) 
+            .WithItem(KnownNames.R,6)
+            .WithItem(KnownNames.Length, 256)
+            .AsDictionary();
     }
 
     protected virtual DictionaryBuilder DictionaryItems(PdfArray id)

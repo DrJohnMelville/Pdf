@@ -60,7 +60,8 @@ public static class DocumentEncryptorFactory
         user, owner, restrictedPermissions, KnownNames.StmF, KnownNames.StrF, KnownNames.StmF);
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions,
-        PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc) =>
+        PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc, V4CfDictionary? dictionary = null) =>
         new V6Encryptor(user, owner, restrictedPermissions,
-            streamEnc, stringEnc, embededFileEnc);
+            streamEnc, stringEnc, embededFileEnc,
+             dictionary ?? new V4CfDictionary(KnownNames.AESV3, 32, KnownNames.DocOpen));
 }
