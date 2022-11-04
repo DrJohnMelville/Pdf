@@ -10,7 +10,7 @@ public class ByteWriter16 : ByteWriter
     {
     }
 
-    public override unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
+    public override unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {
         while (output < nextPos && input.TryPeek(out var high) && input.TryPeek(1, out var low))
         {

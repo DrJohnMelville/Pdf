@@ -5,7 +5,7 @@ public class PostfixCopyOperation : IBulkByteCopy
     public static readonly IBulkByteCopy Instance = new PostfixCopyOperation();
 
     private PostfixCopyOperation() { }
-    public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
+    public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
         var postSplicer = copier.Plan.PostSplicer;
         var lastSource = copier.Reader.ReadBye(ref src);

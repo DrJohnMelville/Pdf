@@ -8,7 +8,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 [StaticSingleton]
 public partial class FastBitmapWriterRGB8: IByteWriter
 {
-    public unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
+    public unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {
         
         while (input.Remaining >= 3 && output < nextPos)

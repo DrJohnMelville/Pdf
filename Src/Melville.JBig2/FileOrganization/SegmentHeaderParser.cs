@@ -78,7 +78,8 @@ public static class SegmentHeaderParser
     }
 
     private const int ReferredSegmentCountMask = 0x1FFFFFFF;
-    private static bool TryFallbackToLongSegmentCountFormat(ref SequenceReader<byte> source, ref uint referredSegments)
+    private static bool TryFallbackToLongSegmentCountFormat(
+        scoped ref SequenceReader<byte> source, scoped ref uint referredSegments)
     {
         if (UseLongReferredSegmentFormat(referredSegments))
         {

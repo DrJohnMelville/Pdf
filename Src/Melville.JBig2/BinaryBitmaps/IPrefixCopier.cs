@@ -5,7 +5,7 @@ namespace Melville.JBig2.BinaryBitmaps;
 [StaticSingleton]
 public sealed partial class NoTargetOffsetPrefixCopier : IBulkByteCopy
 {
-    public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
+    public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
         copier.Reader.Initialize(ref src);
     }
@@ -13,7 +13,7 @@ public sealed partial class NoTargetOffsetPrefixCopier : IBulkByteCopy
 [StaticSingleton]
 public sealed partial class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
 {
-    public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
+    public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
         *dest = copier.Plan.PrefixSplicer.SplicePrefixByte(
             *dest, *src++, copier.Plan.CombinationOperator);
@@ -24,7 +24,7 @@ public sealed partial class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
 [StaticSingleton]
 public sealed partial class SourceLessThanTargetOffsetPrefixCopier : IBulkByteCopy
 {
-    public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
+    public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
         var bitDelta = copier.Plan.FirstDestBit - copier.Plan.FirstSourceBit;
         int srcByte = *src++;
@@ -37,7 +37,7 @@ public sealed partial class SourceLessThanTargetOffsetPrefixCopier : IBulkByteCo
 [StaticSingleton()]
 public sealed partial class TargetLessThanSourceOffsetPrefixCopier : IBulkByteCopy
 {
-    public unsafe void Copy(ref byte* src, ref byte* dest, ref BitCopier copier)
+    public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
         var bitDelta = copier.Plan.FirstSourceBit - copier.Plan.FirstDestBit;
         var srcByte = ReadTwoBytes(ref src);

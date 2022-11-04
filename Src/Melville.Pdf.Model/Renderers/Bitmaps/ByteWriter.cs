@@ -5,7 +5,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 public interface IByteWriter
 {
-    unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, 
+    unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, 
          byte* nextPos);
     int MinimumInputSize { get; }
 }
@@ -26,7 +26,7 @@ public abstract class ByteWriter: IByteWriter
     }
     
     public abstract unsafe void WriteBytes(
-        ref SequenceReader<byte> input, ref byte* output, byte* nextPos);
+        scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos);
 
     protected unsafe void PushComponent(ref byte* output, int numerator)
     {

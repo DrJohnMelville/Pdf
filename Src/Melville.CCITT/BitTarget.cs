@@ -8,7 +8,7 @@ public ref struct BitTarget
     private readonly BitWriter writer;
     public int BytesWritten { get; set; }
 
-    public BitTarget(in Span<byte> target, BitWriter writer)
+    public BitTarget(Span<byte> target, BitWriter writer)
     {
         this.target = target;
         this.writer = writer;

@@ -43,8 +43,8 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
             ReadRow(ref source, i, ref duplicatedLastRow, ref template);
         }
     }
-    private void ReadRow(ref SequenceReader<byte> source, int row, ref bool duplicatedLastRow,
-        ref IncrementalTemplate incrementalTemplate)
+    private void ReadRow(ref SequenceReader<byte> source, int row, scoped ref bool duplicatedLastRow,
+        scoped ref IncrementalTemplate incrementalTemplate)
     {
         if (ShouldCopyPriorRow(ref source, ref duplicatedLastRow))
             bitmap.CopyRow(row - 1, row);
@@ -52,12 +52,12 @@ public readonly struct ArithmeticGenericRegionDecodeProcedure
             DecodeRow(ref source, row, ref incrementalTemplate);
     }
 
-    private bool ShouldCopyPriorRow(ref SequenceReader<byte> source, ref bool duplicatedLastRow) => 
+    private bool ShouldCopyPriorRow(ref SequenceReader<byte> source, scoped ref bool duplicatedLastRow) => 
         IsInTgbdMode() && ShouldDuplicateThisRow(ref source, ref duplicatedLastRow);
 
     private bool IsInTgbdMode() => tgbd != 0;
 
-    private bool ShouldDuplicateThisRow(ref SequenceReader<byte> source, ref bool duplicatedLastRow)
+    private bool ShouldDuplicateThisRow(scoped ref SequenceReader<byte> source, scoped ref bool duplicatedLastRow)
     {
         var bit = state.GetBit(ref source, ref context.GetContext(tgbd));
         return duplicatedLastRow ^= bit == 1;

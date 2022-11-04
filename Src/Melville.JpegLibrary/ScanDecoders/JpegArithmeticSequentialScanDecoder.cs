@@ -180,7 +180,8 @@ internal class JpegArithmeticSequentialScanDecoder : JpegArithmeticScanDecoder
         reader.TryAdvance(bytesConsumed);
     }
 
-    private void ReadBlock(ref JpegBitReader reader, JpegArithmeticDecodingComponent component, ref JpegBlock8x8 destinationBlock)
+    private void ReadBlock(
+        ref JpegBitReader reader, JpegArithmeticDecodingComponent component, scoped ref JpegBlock8x8 destinationBlock)
     {
         ref short destinationRef = ref Unsafe.As<JpegBlock8x8, short>(ref destinationBlock);
 

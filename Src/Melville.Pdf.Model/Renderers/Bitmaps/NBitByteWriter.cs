@@ -16,7 +16,7 @@ public class NBitByteWriter : ByteWriter
     private static byte MaxValueForBits(int bits) => (byte)((1 << bits) - 1);
 
     public override unsafe void WriteBytes(
-        ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
+        scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {
         while (output < nextPos && input.TryRead(out var readVal))
         {

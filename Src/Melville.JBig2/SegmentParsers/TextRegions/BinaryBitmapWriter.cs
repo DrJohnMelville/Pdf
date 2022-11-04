@@ -47,9 +47,9 @@ public readonly struct BinaryBitmapWriter
             _ => throw new ArgumentOutOfRangeException()
         };
 
-    public void RefineBitsFrom(int t, ref int s, IBinaryBitmap referenceBitmap,
+    public void RefineBitsFrom(int t, scoped ref int s, IBinaryBitmap referenceBitmap,
         int refY, int refX, int refHeight, int refWidth, IEncodedReader reader,
-        RefinementTemplateSet refinementTemplateSet, ref SequenceReader<byte> source)
+        RefinementTemplateSet refinementTemplateSet, scoped ref SequenceReader<byte> source)
     {
         var (row, col) = AdjustForCorner(FinalBitmapPosition(t, ref s, refHeight, refWidth), refHeight, refWidth);
         reader.InvokeSymbolRefinement(

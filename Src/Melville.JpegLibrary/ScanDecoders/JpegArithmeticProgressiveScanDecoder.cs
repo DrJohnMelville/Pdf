@@ -202,7 +202,8 @@ internal class JpegArithmeticProgressiveScanDecoder : JpegArithmeticScanDecoder
         }
     }
 
-    private bool HandleRestart(ref JpegBitReader bitReader, ref JpegReader reader, ref JpegScanHeader scanHeader, ref JpegArithmeticDecodingComponent componentRef, int componentCount)
+    private bool HandleRestart(ref JpegBitReader bitReader, ref JpegReader reader, scoped ref JpegScanHeader scanHeader, 
+        scoped ref JpegArithmeticDecodingComponent componentRef, int componentCount)
     {
         if (_restartInterval > 0 && (--_mcusBeforeRestart) == 0)
         {

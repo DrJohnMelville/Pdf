@@ -80,7 +80,7 @@ public interface IEncodedReader
     public void PrepareForRefinementSymbolDictionary(uint totalSymbols);
     void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference,
         int predictionContext,
-        in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source);
+        scoped in RefinementTemplateSet refinementTemplate, scoped ref SequenceReader<byte> source);
 }
 
 [MacroItem("AggregationSymbolInstances")]
@@ -124,5 +124,5 @@ public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
 
     public abstract void InvokeSymbolRefinement(IBinaryBitmap destination, IBinaryBitmap reference, 
         int predictionContext,
-        in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source);
+        scoped in RefinementTemplateSet refinementTemplate, scoped ref SequenceReader<byte> source);
 }

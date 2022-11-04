@@ -45,7 +45,7 @@ public ref struct HalftoneSegmentReader
         WriteHalftone(targetBitmap, gsb);
     }
 
-    private void WriteHalftone(BinaryBitmap targetBitmap, GrayScaleBitmap gsb)
+    private void WriteHalftone(BinaryBitmap targetBitmap, scoped GrayScaleBitmap gsb)
     {
         var xRowValue = grayScaleXOffset;
         var yRowValue = grayScaleYOffset;

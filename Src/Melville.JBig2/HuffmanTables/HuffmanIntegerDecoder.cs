@@ -53,7 +53,8 @@ public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
 
     public override void InvokeSymbolRefinement(
         IBinaryBitmap destination, IBinaryBitmap reference,
-        int predictionContext, in RefinementTemplateSet refinementTemplate, ref SequenceReader<byte> source)
+        int predictionContext, scoped in RefinementTemplateSet refinementTemplate,
+        scoped ref SequenceReader<byte> source)
     {
         var datalen = BitmapSize(ref source);
         State.DiscardPartialByte();

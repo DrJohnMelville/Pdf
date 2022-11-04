@@ -11,14 +11,14 @@ public ref struct OffsetReader
         this.buffer = buffer;
     }
 
-    public unsafe void Initialize(ref byte* src)
+    public unsafe void Initialize(scoped ref byte* src)
     {
         //rejected an alternate implementation where we let readoffser = 8 is rejected because that
         // would read one extra byte off the end of the array.
         if (readOffset > 0) ReadBye(ref src);
     }
 
-    public unsafe byte ReadBye(ref byte* src)
+    public unsafe byte ReadBye(scoped ref byte* src)
     {
         buffer = (buffer << 8) | *src++;
         return (byte)(buffer >> readOffset);

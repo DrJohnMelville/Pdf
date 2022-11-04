@@ -8,7 +8,7 @@ public ref struct CcittBitWriter
     private readonly BitWriter writer;
     private BitTarget target;
 
-    public CcittBitWriter(in Span<byte> destination, BitWriter writer)
+    public CcittBitWriter(Span<byte> destination, BitWriter writer)
     {
         this.writer = writer;
         target = new BitTarget(destination, writer);

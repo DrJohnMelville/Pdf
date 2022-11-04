@@ -287,7 +287,8 @@ internal sealed class JpegHuffmanBaselineScanDecoder : JpegHuffmanScanDecoder
         reader.TryAdvance(bytesConsumed);
     }
 
-    private static void ReadBlockBaseline(ref JpegBitReader reader, JpegHuffmanDecodingComponent component, ref JpegBlock8x8 destinationBlock)
+    private static void ReadBlockBaseline(
+        ref JpegBitReader reader, JpegHuffmanDecodingComponent component, scoped ref JpegBlock8x8 destinationBlock)
     {
         ref short destinationRef = ref Unsafe.As<JpegBlock8x8, short>(ref destinationBlock);
 

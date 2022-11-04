@@ -32,7 +32,7 @@ public class StencilWriter : IByteWriter
     private static bool ZeroIsMarkingValue(double[]? decode) => 
         decode == null || decode.Length < 1  || decode[0] < 0.5;
     
-    public unsafe void WriteBytes(ref SequenceReader<byte> input, ref byte* output, byte* nextPos)
+    public unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {
         Debug.Assert(nextPos > output);
         uint* iOutput = (uint*)output;

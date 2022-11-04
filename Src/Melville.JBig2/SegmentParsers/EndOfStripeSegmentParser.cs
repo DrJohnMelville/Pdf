@@ -7,6 +7,6 @@ namespace Melville.JBig2.SegmentParsers;
 
 public static class EndOfStripeSegmentParser
 {
-    public static Segment Read(in SegmentHeader header, ref SequenceReader<byte> reader) => 
+    public static Segment Read(scoped in SegmentHeader header, scoped ref SequenceReader<byte> reader) => 
         new EndOfStripeSegment(reader.ReadBigEndianUint32());
 }

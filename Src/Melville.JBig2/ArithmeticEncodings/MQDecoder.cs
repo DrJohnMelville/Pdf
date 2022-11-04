@@ -12,7 +12,7 @@ public class MQDecoder
     private byte ct;
     private byte B, B1;
 
-    public int GetBit(ref SequenceReader<byte> source, ref ContextEntry context)
+    public int GetBit(scoped ref SequenceReader<byte> source, scoped ref ContextEntry context)
     {
         EnsureIsInitialized(ref source);
         var ret = DECODE(ref source, ref context);
@@ -65,7 +65,7 @@ public class MQDecoder
     }
     
     // software convention page 120
-    private byte DECODE(ref SequenceReader<byte> source, ref ContextEntry currentState)
+    private byte DECODE(scoped ref SequenceReader<byte> source, scoped ref ContextEntry currentState)
     {
         ref var qeRow = ref QeComputer.Rows[currentState.I];
         a -= qeRow.Qe;

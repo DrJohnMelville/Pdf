@@ -73,7 +73,7 @@ public class NameParser: PdfAtomParser
     }
 
     private static NextCharResult ParseTwoCharacterHexSequence(
-        ref SequenceReader<byte> bytes, ref byte character)
+        scoped ref SequenceReader<byte> bytes, scoped ref byte character)
     {
         if (!(bytes.TryRead(out var mostSig) && bytes.TryRead(out var leastSig)))
         {
