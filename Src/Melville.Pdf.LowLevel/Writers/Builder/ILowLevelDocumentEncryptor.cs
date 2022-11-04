@@ -53,9 +53,9 @@ public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
     {
         return DictionaryItems(id)
             .WithItem(KnownNames.Filter, KnownNames.Standard)
-            .WithItem(KnownNames.V, 5) 
-            .WithItem(KnownNames.R,6)
-            .WithItem(KnownNames.Length, 256)
+            .WithItem(KnownNames.V, v) 
+            .WithItem(KnownNames.R,r)
+            .WithItem(KnownNames.Length, keyLengthInBits)
             .AsDictionary();
     }
 
