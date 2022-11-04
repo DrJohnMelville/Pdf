@@ -80,12 +80,12 @@ public ref struct HashAlgorithm2B
         {
             DoSingleRound();
         }
-        for (round = 0; IsProperEndingRound(round); round++)
+        for (; !IsProperEndingRound(round); round++)
         {
             DoSingleRound();
         }
     }
-
+    
     private bool IsProperEndingRound(int round) => encrypted[^1] <= (round - 32);
 
     private void DoSingleRound()

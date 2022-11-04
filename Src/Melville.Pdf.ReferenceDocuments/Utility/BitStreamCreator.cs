@@ -1,7 +1,23 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.Utility;
+﻿using System.Buffers;
+
+namespace Melville.Pdf.ReferenceDocuments.Utility;
 
 public static class BitStreamCreator
 {
+    private static readonly char[] hexDigits = { '0', '1', '2', '3','4', '5','6','7','8','9','A','B','C','D','E','F'};
+    public static string HexFromBits(this Span<byte> bits)
+    {
+        Span<char> ret = stackalloc char[bits.Length * 2];
+        int position = 0;
+        foreach (var item in bits)
+        {
+            ret[position++] = hexDigits[item >> 4];
+            ret[position++] = hexDigits[item & 0xF];
+        }
+
+        return new string(ret);
+    }
+
     public static byte[] BitsFromHex(params string[] sources)
     {
         return string.Join("", sources).BitsFromHex();

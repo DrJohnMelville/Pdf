@@ -1,11 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms.V6Algorithms;
 
@@ -46,22 +49,10 @@ public class V6Creator
     Assert.Equal("5", (await dict.GetAsync<PdfObject>(KnownNames.V)).ToString());
     Assert.Equal("6", (await dict.GetAsync<PdfObject>(KnownNames.R)).ToString());
     Assert.Equal("256", (await dict.GetAsync<PdfObject>(KnownNames.Length)).ToString());
-    Assert.Equal("<000000000000000000000000000000000000000000000000000000000000000059D66D8A8192A7F2176FF01AC0BD50B4>".BitsFromHex(),
-        (await dict.GetAsync<PdfString>(KnownNames.U)).Bytes);
-    // Assert.Equal("<9339F5439BC00EE5DD113FE21796E2D7A2FA0D2864CC86F1947F925A1521849259D66D8A8192A7F2176FF01AC0BD50B4>".BitsFromHex(),
-    //     (await dict.GetAsync<PdfObject>(KnownNames.U)).ToString().AsExtendedAsciiBytes());
-        
+    Assert.Equal("9339F5439BC00EE5DD113FE21796E2D7A2FA0D2864CC86F1947F925A1521849259D66D8A8192A7F2176FF01AC0BD50B4",
+        (await dict.GetAsync<PdfString>(KnownNames.U)).Bytes.AsSpan().HexFromBits());
     }
 
-    [Fact]
-    public unsafe void Simple()
-    {
-        ReadOnlySpan<char> source = "Hello".AsSpan();
-        Span<byte> dest = stackalloc byte[2];
-        
-        Encoding.UTF8.GetEncoder().Convert(source, dest, true, 
-            out var charUsed, out var bytesUsed, out var completed);
-    }
 }
 
 /* some sampe data from a v5/6 encrupted file
