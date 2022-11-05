@@ -61,7 +61,7 @@ public static class DocumentEncryptorFactory
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions,
         PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc, V4CfDictionary? dictionary = null) =>
-        new V6Encryptor(user, owner, restrictedPermissions,
+        new EncryptionV6.V6Encryptor(user, owner, restrictedPermissions,
             streamEnc, stringEnc, embededFileEnc,
              dictionary ?? new V4CfDictionary(KnownNames.AESV3, 32, KnownNames.DocOpen));
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace Melville.Pdf.LowLevel.Writers.Builder;
+namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
 internal ref struct SpanWriter
 {

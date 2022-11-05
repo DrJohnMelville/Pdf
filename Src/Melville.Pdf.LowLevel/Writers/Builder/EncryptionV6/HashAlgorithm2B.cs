@@ -3,9 +3,8 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Text;
 using Melville.Pdf.LowLevel.Encryption.StringFilters;
-using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
-namespace Melville.Pdf.LowLevel.Writers.Builder;
+namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
 // iText implementation 
 // https://github.com/itext/itext7-dotnet/blob/a3ce063817293592763c212248213bbdaa0fc53c/itext/itext.kernel/itext/kernel/crypto/securityhandler/StandardHandlerUsingAes256.cs
@@ -59,7 +58,7 @@ public ref struct HashAlgorithm2B
         ArrayPool<byte>.Shared.Return(encryptedSource);
     }
 
-    private int MaxCipherLength() => crypto.CipherLength(MaxK1Size());
+    private int MaxCipherLength() => crypto.Cbc.CipherLength(MaxK1Size());
     private int MaxK1Size() => 64 * MaxK1RepeatLength();
     private int MaxK1RepeatLength() => 64 + password.Length + userKeyHash.Length;
 
@@ -146,6 +145,6 @@ public ref struct HashAlgorithm2B
 
     private void DoEncryption()
     {
-        encrypted = crypto.Encrypt(k[..16], k[16..32], k1, encryptedSource);
+        encrypted = crypto.Cbc.Encrypt(k[..16], k[16..32], k1, encryptedSource);
     }
 }

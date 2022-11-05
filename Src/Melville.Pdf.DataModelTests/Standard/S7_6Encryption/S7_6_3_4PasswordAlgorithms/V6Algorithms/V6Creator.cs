@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 using Xunit.Abstractions;
+using V6Encryptor = Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6.V6Encryptor;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms.V6Algorithms;
 
@@ -35,6 +36,7 @@ public class V6Creator
     public async Task ComputeV6EncryptDictionary()
     {
         var rng = new RngStub(
+             "72F8431B6E1D37EA7EFB2BE8C0B4B6CCB16CCC7962DA71400258CAA2F7E4C6C0".BitsFromHex(),
              "59D66D8A8192A7F2176FF01AC0BD50B4".BitsFromHex(),
              "56569AAB5856B73AF0D38D86BA03C104".BitsFromHex()
             );
@@ -52,8 +54,16 @@ public class V6Creator
     Assert.Equal("256", (await dict.GetAsync<PdfObject>(KnownNames.Length)).ToString());
     Assert.Equal("9339F5439BC00EE5DD113FE21796E2D7A2FA0D2864CC86F1947F925A1521849259D66D8A8192A7F2176FF01AC0BD50B4",
         (await dict.GetAsync<PdfString>(KnownNames.U)).Bytes.AsSpan().HexFromBits());
+    Assert.Equal("7263A4774ED221E01C50DFB1772B1EB1565F42EA12696C2981802D1787423EE2",
+        (await dict.GetAsync<PdfString>(KnownNames.UE)).Bytes.AsSpan().HexFromBits());
     Assert.Equal("2662FD1939D25F33DA79A35FC18BD18F9E363E704AA8C792452B440DB17B093456569AAB5856B73AF0D38D86BA03C104",
         (await dict.GetAsync<PdfString>(KnownNames.O)).Bytes.AsSpan().HexFromBits());
+    Assert.Equal("5C106EAA70A47C00E476B8FF8CDF36D208D4D29B9C390B2F9A4DC86F41B8ED74",
+        (await dict.GetAsync<PdfString>(KnownNames.OE)).Bytes.AsSpan().HexFromBits());
+    Assert.Equal(-4, (await dict.GetAsync<PdfNumber>(KnownNames.P)).IntValue);
+    Assert.Equal("C78CE80AABBAF32EF29E84C78E1473A3",
+        (await dict.GetAsync<PdfString>(KnownNames.Perms)).Bytes.AsSpan().HexFromBits());
+
     }
 
 }

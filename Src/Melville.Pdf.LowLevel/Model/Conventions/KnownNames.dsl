@@ -233,6 +233,7 @@ Pdf:None
 Pdf:Not
 Pdf:Nums
 Pdf:O
+Pdf:OE
 Pdf:OFF
 Pdf:OC
 Pdf:OCG
@@ -252,6 +253,7 @@ Pdf:Pages
 Pdf:Parent
 Pdf:PatternType
 Pdf:PDF
+Pdf:Perms
 Pdf:Predictor
 Pdf:Prev
 Pdf:R
@@ -281,6 +283,7 @@ Pdf:TilingType
 Pdf:Type
 Pdf:Type1C
 Pdf:U
+Pdf:UE
 Pdf:Usage
 Pdf:V
 Pdf:VE
