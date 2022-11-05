@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Text;
 using Melville.Pdf.LowLevel.Encryption.StringFilters;
+using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 

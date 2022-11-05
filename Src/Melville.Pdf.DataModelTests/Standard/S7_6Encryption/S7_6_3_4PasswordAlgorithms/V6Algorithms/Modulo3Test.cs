@@ -1,5 +1,6 @@
 ﻿using System;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms.V6Algorithms;

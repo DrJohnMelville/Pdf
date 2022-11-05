@@ -2,6 +2,7 @@
 using Melville.CSJ2K.Color;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;

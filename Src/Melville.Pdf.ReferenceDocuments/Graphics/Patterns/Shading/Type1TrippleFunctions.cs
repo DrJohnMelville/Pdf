@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
 

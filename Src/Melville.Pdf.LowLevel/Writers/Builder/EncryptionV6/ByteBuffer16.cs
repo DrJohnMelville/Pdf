@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Melville.Pdf.LowLevel.Writers.Builder;
+namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
 internal readonly struct ByteBuffer16
 {

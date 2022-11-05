@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 

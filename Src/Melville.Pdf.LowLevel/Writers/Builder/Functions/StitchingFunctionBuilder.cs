@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
-namespace Melville.Pdf.LowLevel.Writers.Builder;
+namespace Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
 public readonly struct StitchedFunction
 {
