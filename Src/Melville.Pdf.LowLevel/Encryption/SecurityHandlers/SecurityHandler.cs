@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
@@ -42,23 +43,13 @@ public static class SecurityHandlerOperations
     }
 }
 
-public class SecurityHandler : ISecurityHandler
+public partial class SecurityHandler : ISecurityHandler
 {
-    private readonly IKeySpecializer keySpecializer;
-    private readonly ICipherFactory cipherFactory;
-    private readonly RootKeyComputer rootKeyComputer;
-    private PdfObject? blockEncryption;
+    [FromConstructor]private readonly IKeySpecializer keySpecializer;
+    [FromConstructor]private readonly ICipherFactory cipherFactory;
+    [FromConstructor]private readonly IRootKeyComputer rootKeyComputer;
+    [FromConstructor]private readonly PdfObject? blockEncryption;
         
-    public SecurityHandler(IKeySpecializer keySpecializer, 
-        ICipherFactory cipherFactory,
-        RootKeyComputer rootKeyComputer, PdfObject? blockEncryption)
-    {
-        this.keySpecializer = keySpecializer;
-        this.cipherFactory = cipherFactory;
-        this.rootKeyComputer = rootKeyComputer;
-        this.blockEncryption = blockEncryption;
-    }
-
     public byte[]? TryComputeRootKey(string password, PasswordType type) => 
         rootKeyComputer.TryComputeRootKey(password, type);
 

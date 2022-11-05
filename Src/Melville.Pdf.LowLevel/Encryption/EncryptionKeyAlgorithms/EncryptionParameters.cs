@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -6,24 +7,15 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public readonly struct EncryptionParameters
+public readonly partial struct EncryptionParameters
 {
-    public byte[] IdFirstElement {get;}
-    public byte[] OwnerPasswordHash {get;}
-    public byte[] UserPasswordHash {get;}
-    public uint Permissions {get;}
-    public int KeyLengthInBits {get;}
+    [FromConstructor]public byte[] IdFirstElement {get;}
+    [FromConstructor]public byte[] OwnerPasswordHash {get;}
+    [FromConstructor]public byte[] UserPasswordHash {get;}
+    [FromConstructor]public uint Permissions {get;}
+    [FromConstructor]public int KeyLengthInBits {get;}
     public int KeyLengthInBytes => KeyLengthInBits / 8;
-
-    public EncryptionParameters(byte[] idFirstElement, byte[] ownerPasswordHash, byte[] userPasswordHash, uint permissions, int keyLengthInBits)
-    {
-        IdFirstElement = idFirstElement;
-        OwnerPasswordHash = ownerPasswordHash;
-        UserPasswordHash = userPasswordHash;
-        Permissions = permissions;
-        KeyLengthInBits = keyLengthInBits;
-    }
-
+    
     public static async ValueTask<EncryptionParameters> Create(PdfDictionary trailer) =>
         (await trailer.GetOrNullAsync(KnownNames.ID).CA() is not PdfArray id ||
          await id[0].CA() is not PdfString firstId ||
@@ -36,12 +28,12 @@ public readonly struct EncryptionParameters
                 firstId.Bytes, ownerHash.Bytes, userHash.Bytes, (uint)permissions.IntValue, 
                 (int)await dict.GetOrDefaultAsync(KnownNames.Length, 40).CA());
 
-    public override string ToString()
-    {
-        return $"IdFirstElt: {IdFirstElement.AsHex()}\r\n" +
-               $"Owner: {OwnerPasswordHash.AsHex()}\r\n" +
-               $"User: {UserPasswordHash.AsHex()}\r\n" +
-               $"Permissions: {Permissions}\r\n" +
-               $"KeyLengthInBits: {KeyLengthInBits}";
-    }
+    public override string ToString() =>
+        $"""
+        IdFirstElt: {IdFirstElement.AsHex()}
+        Owner: {OwnerPasswordHash.AsHex()}
+        User: {UserPasswordHash.AsHex()}
+        Permissions: {Permissions}
+        KeyLengthInBits: {KeyLengthInBits}
+        """;
 }

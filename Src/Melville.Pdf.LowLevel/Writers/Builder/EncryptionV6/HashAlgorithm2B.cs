@@ -103,20 +103,12 @@ public ref struct HashAlgorithm2B
         int round;
         for (round = 0; round < 64; round++)
         {
-            WriteRoundKey(round);
             DoSingleRound();
         }
         for (; !IsProperEndingRound(round); round++)
         {
-            WriteRoundKey(round);
             DoSingleRound();
         }
-    }
-
-    private void WriteRoundKey(int round)
-    {
-        if (userKeyHash.Length < 10) return;
-        Console.WriteLine($"{round:000}: {HexFromBits(k)}");
     }
 
     private bool IsProperEndingRound(int round) => encrypted[^1] <= (round - 32);

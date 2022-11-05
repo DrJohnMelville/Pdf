@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -54,17 +55,11 @@ public class ObjectContextV4: IObjectCryptContext
             .NamedCipher(name);
 }
 
-public class SecurityHandlerV4 : ISecurityHandler
+public partial class SecurityHandlerV4 : ISecurityHandler
 {
-    private readonly Dictionary<PdfName, ISecurityHandler> handlers;
-    private readonly RootKeyComputer rootKeyComputer;
-
-    public SecurityHandlerV4(RootKeyComputer rootKeyComputer, Dictionary<PdfName, ISecurityHandler> handlers)
-    {
-        this.rootKeyComputer = rootKeyComputer;
-        this.handlers = handlers;
-    }
-
+    [FromConstructor]private readonly IRootKeyComputer rootKeyComputer;
+    [FromConstructor]private readonly Dictionary<PdfName, ISecurityHandler> handlers;
+    
     public byte[]? TryComputeRootKey(string password, PasswordType type) => 
         rootKeyComputer.TryComputeRootKey(password, type);
 

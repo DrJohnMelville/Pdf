@@ -4,7 +4,12 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public class RootKeyComputer
+public interface IRootKeyComputer
+{
+    byte[]? TryComputeRootKey(string password, PasswordType type);
+}
+
+public class RootKeyComputer : IRootKeyComputer
 {
     private readonly IGlobalEncryptionKeyComputer keyComputer;
     private readonly IComputeUserPassword userHashComputer;
@@ -27,12 +32,8 @@ public class RootKeyComputer
         return matches ? key : null;
     }
 
-    public byte[]? TryComputeRootKey(string password, PasswordType type)
-    {
-        if (type == PasswordType.Owner)
-            return TryComputeRootKey(ownerHashComputer.UserKeyFromOwnerKey(password, parameters), PasswordType.User);
-        return KeyFromUserPassword(password);
-
-    }
-        
+    public byte[]? TryComputeRootKey(string password, PasswordType type) => 
+        type == PasswordType.Owner ? 
+            TryComputeRootKey(ownerHashComputer.UserKeyFromOwnerKey(password, parameters), PasswordType.User) : 
+            KeyFromUserPassword(password);
 }

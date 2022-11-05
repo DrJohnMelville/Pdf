@@ -27,10 +27,7 @@ public readonly struct V6Cryptography
         _=> throw new ArgumentOutOfRangeException(nameof(algorithm), "Invalid algorithm")
     };
 
-    public EncryptionStrategy Ecb =>
-        new EncryptionStrategy(Aes, EncryptedLengthEcb.Instance, EncryptEcb.Instance, DecryptEcb.Instance);
-
-    public EncryptionStrategy Cbc =>
-        new(Aes, EncryptedLengthCbc.Instance, EncryptCbc.Instance, DecryptCbc.Instance);
+    public EncryptionStrategy Ecb => new(Aes, EncryptedLengthEcb.Instance, EncryptEcb.Instance, DecryptEcb.Instance);
+    public EncryptionStrategy Cbc => new(Aes, EncryptedLengthCbc.Instance, EncryptCbc.Instance, DecryptCbc.Instance);
     
 }

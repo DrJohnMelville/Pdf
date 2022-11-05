@@ -18,7 +18,6 @@ namespace Melville.Wpf.IntegrationTesting;
 public class RenderingTest: IClassFixture<StringTestDatabase>
 {
     private readonly StringTestDatabase hashes;
-
     public RenderingTest(StringTestDatabase hashes)
     {
         this.hashes = hashes; 

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
@@ -11,6 +12,8 @@ public interface IKeySpecializer
 
 public class Rc4KeySpecializer: IKeySpecializer
 {
+    public static Rc4KeySpecializer Instance = new();
+    protected Rc4KeySpecializer(){}
     public ReadOnlySpan<byte> ComputeKeyForObject(byte[] rootKey, int objectNumber, int generationNumber)
     {
         Debug.Assert(objectNumber > 0); // test for a former buggy implementation
@@ -40,12 +43,22 @@ public class Rc4KeySpecializer: IKeySpecializer
     private static int EncryptionKeyLength(int baseKeyLength) => Math.Min(baseKeyLength + 5, 16);
 }
 
-public class AesKeySpecializer: Rc4KeySpecializer
+[StaticSingleton("AesInstance")]
+public partial class AesKeySpecializer: Rc4KeySpecializer
 {
     private static readonly byte[] aesSalt = {0x73,0x41,0x6c,0x54 };
     protected override void AddObjectData(int objectNumber, int generationNumber, MD5 md5)
     {
         base.AddObjectData(objectNumber, generationNumber, md5);
         md5.AddData(aesSalt);
+    }
+}
+
+[StaticSingleton]
+public partial class AesV6KeySpecializer : IKeySpecializer
+{
+    public ReadOnlySpan<byte> ComputeKeyForObject(byte[] rootKey, int objectNumber, int generationNumber)
+    {
+        return rootKey;
     }
 }
