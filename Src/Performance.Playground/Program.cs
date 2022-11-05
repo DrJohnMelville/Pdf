@@ -2,14 +2,15 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
+using Performance.Playground.Encryption;
 using Performance.Playground.ObjectModel;
 using Performance.Playground.Rendering;
 
 #pragma warning disable CS0162
 
-if (false)
+if (true)
 {
-    await new CcittParsing().RenderSkia();
+    await new LoadV6File().TestParser();
     Console.WriteLine("done");
 }
 else

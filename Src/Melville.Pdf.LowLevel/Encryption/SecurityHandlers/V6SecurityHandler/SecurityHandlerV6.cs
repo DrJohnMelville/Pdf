@@ -32,6 +32,7 @@ public partial class RootKeyComputerV6 : IRootKeyComputer
     {
         var fileEncryptionKey = new byte[32];
         HashAlgorithm2B.ComputePasswordHash(password, key.KeySalt, extraBytes, fileEncryptionKey, crypto);
+        crypto.Cbc.Decrypt(fileEncryptionKey, stackalloc byte[16], key.EncryptedFileKey, fileEncryptionKey);
         return fileEncryptionKey;
     }
 }

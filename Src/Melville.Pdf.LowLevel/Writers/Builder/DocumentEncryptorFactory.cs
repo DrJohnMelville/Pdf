@@ -57,7 +57,7 @@ public static class DocumentEncryptorFactory
 
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions) => V6(
-        user, owner, restrictedPermissions, KnownNames.StmF, KnownNames.StrF, KnownNames.StmF);
+        user, owner, restrictedPermissions, KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF);
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions,
         PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc, V4CfDictionary? dictionary = null) =>
