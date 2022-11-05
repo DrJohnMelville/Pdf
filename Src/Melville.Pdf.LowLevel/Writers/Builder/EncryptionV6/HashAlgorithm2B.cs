@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.Security.Cryptography;
+using System.Text;
+using Melville.Pdf.LowLevel.Encryption.StringFilters;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -10,6 +11,19 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 public ref struct HashAlgorithm2B
 {
+    public static void ComputePasswordHash(
+        string passwordText, Span<byte> salt, Span<byte> extraBytes, Span<byte> target, 
+        V6Cryptography crypto)
+    {
+        Span<byte> paddedPassword = stackalloc byte[127];
+        Encoding.UTF8.GetEncoder().Convert(
+            passwordText.SaslPrep(), paddedPassword, true, out _, out var bytesUsed, out _);
+        using var hasher = new HashAlgorithm2B(paddedPassword[..bytesUsed], salt,
+            extraBytes, crypto);
+        hasher.ComputeHash(target);
+    }
+
+    
     private readonly byte[] kSource;
     private Span<byte> k = Span<byte>.Empty;
     private readonly byte[] k1Source  = Array.Empty<byte>();
@@ -20,18 +34,15 @@ public ref struct HashAlgorithm2B
     private readonly ReadOnlySpan<byte> password;
     private readonly ReadOnlySpan<byte> passwordSalt;
     private readonly ReadOnlySpan<byte> userKeyHash;
-    
-    private HashAlgorithm[] hashAlgorithms = {
-        SHA256.Create(), SHA384.Create(), SHA512.Create(),
-    };
 
-    private readonly Aes aes = Aes.Create();
-    
+    private readonly V6Cryptography crypto;
 
-    public HashAlgorithm2B(
-        ReadOnlySpan<byte> password, ReadOnlySpan<byte> passwordSalt, ReadOnlySpan<byte> userKeyHash)
+    private HashAlgorithm2B(
+        ReadOnlySpan<byte> password, ReadOnlySpan<byte> passwordSalt, ReadOnlySpan<byte> userKeyHash,
+        V6Cryptography crypto)
     {
         this.userKeyHash = userKeyHash;
+        this.crypto = crypto;
         this.password = password;
         this.passwordSalt = passwordSalt;
         kSource = ArrayPool<byte>.Shared.Rent(64);
@@ -40,18 +51,18 @@ public ref struct HashAlgorithm2B
         encryptedSource = ArrayPool<byte>.Shared.Rent(MaxCipherLength());
     }
 
-    public void Dispose()
+    private void Dispose()
     {
         ArrayPool<byte>.Shared.Return(kSource);
         ArrayPool<byte>.Shared.Return(k1Source);
         ArrayPool<byte>.Shared.Return(encryptedSource);
     }
 
-    private int MaxCipherLength() => aes.GetCiphertextLengthCbc(MaxK1Size(), PaddingMode.None);
+    private int MaxCipherLength() => crypto.CipherLength(MaxK1Size());
     private int MaxK1Size() => 64 * MaxK1RepeatLength();
     private int MaxK1RepeatLength() => 64 + password.Length + userKeyHash.Length;
 
-    public void ComputeHash(Span<byte> outputBuffer)
+    private void ComputeHash(Span<byte> outputBuffer)
     {
         Debug.Assert(outputBuffer.Length >= 32);
         ComputeInitialK();
@@ -61,16 +72,30 @@ public ref struct HashAlgorithm2B
 
     private void ComputeInitialK()
     {
-        Span<byte> concatenated = stackalloc byte[password.Length + passwordSalt.Length];
+        Span<byte> concatenated = stackalloc byte[password.Length + passwordSalt.Length + userKeyHash.Length];
         password.CopyTo(concatenated);
         passwordSalt.CopyTo(concatenated[password.Length..]);
+        userKeyHash.CopyTo(concatenated[(password.Length+passwordSalt.Length)..]);
         ComputeNewK(concatenated, 0);
     }
 
-    private void ComputeNewK(scoped ReadOnlySpan<byte> source, int desiredHash)
+    private void ComputeNewK(scoped Span<byte> source, int desiredHash)
     {
-        hashAlgorithms[desiredHash].TryComputeHash(source, kSource, out var newKLength);
-        k = kSource.AsSpan(..newKLength);
+        k = crypto.Hash(desiredHash, source, kSource);
+    }
+    
+    private static readonly char[] hexDigits = { '0', '1', '2', '3','4', '5','6','7','8','9','A','B','C','D','E','F'};
+    private static string HexFromBits(Span<byte> bits)
+    {
+        Span<char> ret = stackalloc char[bits.Length * 2];
+        int position = 0;
+        foreach (var item in bits)
+        {
+            ret[position++] = hexDigits[item >> 4];
+            ret[position++] = hexDigits[item & 0xF];
+        }
+
+        return new string(ret);
     }
 
     private void DoManyEncryptionRounds()
@@ -78,14 +103,22 @@ public ref struct HashAlgorithm2B
         int round;
         for (round = 0; round < 64; round++)
         {
+            WriteRoundKey(round);
             DoSingleRound();
         }
         for (; !IsProperEndingRound(round); round++)
         {
+            WriteRoundKey(round);
             DoSingleRound();
         }
     }
-    
+
+    private void WriteRoundKey(int round)
+    {
+        if (userKeyHash.Length < 10) return;
+        Console.WriteLine($"{round:000}: {HexFromBits(k)}");
+    }
+
     private bool IsProperEndingRound(int round) => encrypted[^1] <= (round - 32);
 
     private void DoSingleRound()
@@ -97,50 +130,21 @@ public ref struct HashAlgorithm2B
     
     private void ComputeK1()
     {
-        var pos =  WriteFirstK1Segment();
-        Make63Copies(ref pos);
-        k1 = k1Source.AsSpan(..pos);
+        var writer = new SpanWriter(k1Source);
+        WriteFirstK1Segment(ref writer);
+        writer.DuplicateNTimes(63);
+        k1 = writer.BuiltSpan();
     }
 
-    private int WriteFirstK1Segment()
+    private void WriteFirstK1Segment(ref SpanWriter writer)
     {
-        var pos = 0;
-        AppendAt(password, ref pos);
-        AppendAt(k, ref pos);
-        AppendAt(userKeyHash, ref pos);
-        return pos;
+        writer.Append(password);
+        writer.Append(k);
+        writer.Append(userKeyHash);
     }
 
-    private void Make63Copies(scoped ref int pos)
-    {
-        var source = new ReadOnlySpan<byte>(k1Source, 0, pos);
-        for (int i = 0; i < 63; i++)
-        {
-            AppendAt(source, ref pos);
-        }
-    }
-
-    private void AppendAt(scoped in ReadOnlySpan<byte> source, scoped ref int destPos)
-    {
-        source.CopyTo(k1Source.AsSpan(destPos..));
-        destPos += source.Length;
-    }
-    
     private void DoEncryption()
     {
-        aes.Key = MakeArray16(k[..16]);
-        var encryptedLength = aes.EncryptCbc(k1, k[16..32], encryptedSource, PaddingMode.None);
-        encrypted = encryptedSource.AsSpan(..encryptedLength);
+        encrypted = crypto.Encrypt(k[..16], k[16..32], k1, encryptedSource);
     }
-    
-    private readonly byte[] byteBuffer = new byte[16];
-
-    private byte[] MakeArray16(in Span<byte> input)
-    {
-        Debug.Assert(input.Length == 16);
-        input.CopyTo(byteBuffer);
-        return byteBuffer;
-    }
-
-
 }

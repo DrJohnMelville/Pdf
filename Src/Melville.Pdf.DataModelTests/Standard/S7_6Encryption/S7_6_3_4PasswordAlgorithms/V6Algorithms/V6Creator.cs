@@ -16,7 +16,7 @@ public class RngStub:IRandomNumberSource
 {
     private readonly byte[][] sources;
     private int next = 0;
-
+    
     public RngStub(params byte[][] sources)
     {
         this.sources = sources;
@@ -30,6 +30,7 @@ public class RngStub:IRandomNumberSource
 
 public class V6Creator
 {
+    public V6Creator(ITestOutputHelper toh) => Console.SetOut(new OutputAdapter(toh));
     [Fact]
     public async Task ComputeV6EncryptDictionary()
     {
@@ -51,13 +52,30 @@ public class V6Creator
     Assert.Equal("256", (await dict.GetAsync<PdfObject>(KnownNames.Length)).ToString());
     Assert.Equal("9339F5439BC00EE5DD113FE21796E2D7A2FA0D2864CC86F1947F925A1521849259D66D8A8192A7F2176FF01AC0BD50B4",
         (await dict.GetAsync<PdfString>(KnownNames.U)).Bytes.AsSpan().HexFromBits());
+    Assert.Equal("2662FD1939D25F33DA79A35FC18BD18F9E363E704AA8C792452B440DB17B093456569AAB5856B73AF0D38D86BA03C104",
+        (await dict.GetAsync<PdfString>(KnownNames.O)).Bytes.AsSpan().HexFromBits());
     }
 
 }
 
-/* some sampe data from a v5/6 encrupted file
+public class OutputAdapter : TextWriter
+{
+    private readonly ITestOutputHelper toh;
 
-Password is: User.  Not sure if that is 
+    public OutputAdapter(ITestOutputHelper toh)
+    {
+        this.toh = toh;
+    }
+
+    public override Encoding Encoding => Encoding.UTF8;
+
+    public override void WriteLine(string? value) => toh.WriteLine(value);
+    public override void WriteLine(string format, params object?[] arg) => toh.WriteLine(format, arg);
+}
+
+/* some sampe data from a v5/6 encryupted file
+
+Password is: User.  for both owner and user passwords
 
 TrailerDictionary
 <<
