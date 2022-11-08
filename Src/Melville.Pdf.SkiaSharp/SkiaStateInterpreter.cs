@@ -39,6 +39,10 @@ public static class SkiaStateInterpreter
     {
         if (state.IsDashedStroke()) 
             paint.PathEffect = CreatePathEffect(state.DashArray, state.DashPhase);
+        else
+        {
+            paint.PathEffect = null;
+        }
     }
 
     private static SKPathEffect CreatePathEffect(double[] dashes, double phase) => 

@@ -9,19 +9,31 @@ public class Type3Font: FontDefinitionTest
         TextToRender = "abaabb";
     }
 
+    protected override void SetPageProperties(PageCreator page)
+    {
+        base.SetPageProperties(page);
+        page.AddResourceObject(ResourceTypeName.ExtGState, NameDirectory.Get("GS1"),
+            new DictionaryBuilder()
+                .WithItem(KnownNames.LW, 15)
+                .WithItem(KnownNames.D,
+                    new PdfArray(new PdfArray(30), new PdfInteger(0)))
+                .AsDictionary());
+    }
+
     protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
     {
         var triangle = arg.Add(new DictionaryBuilder().AsStream(@"
+/GS1 gs
 1000 0 0 0 750 750 d1
 0 0 m
 375 750 l
 750 0 l
-f
+s
 "));
         var square = arg.Add(new DictionaryBuilder().AsStream(@"
 1000 0 0 0 750 750 d1
 0 0 750 750 re
-f"));
+s"));
         var triName = NameDirectory.Get("triangle");
         var sqName = NameDirectory.Get("square");
         var chanProcs = arg.Add(new DictionaryBuilder()

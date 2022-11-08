@@ -65,7 +65,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
 
     public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
-        await StateOps.LoadGraphicStateDictionary(
+         await StateOps.LoadGraphicStateDictionary(
             await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName).CA() as 
                 PdfDictionary ?? throw new PdfParseException($"Cannot find GraphicsState {dictionaryName}")).CA();
     #endregion

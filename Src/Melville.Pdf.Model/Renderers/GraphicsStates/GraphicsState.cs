@@ -121,12 +121,7 @@ public abstract partial  class GraphicsState: IGraphicsState, IDisposable
     {
         DashPhase = (await entryValue.GetAsync<PdfNumber>(1).CA()).DoubleValue;
         var pattern = await entryValue.GetAsync<PdfArray>(0).CA();
-        var patternNums = new double[pattern.Count];
-        for (int i = 0; i < pattern.Count; i++)
-        {
-            patternNums[i] = (await pattern.GetAsync<PdfNumber>(i).CA()).DoubleValue;
-        }
-        DashArray = patternNums;
+        DashArray = await pattern.AsDoublesAsync().CA();
     }
     
     // as of 11/18/2021 this parameter is ignored by both the Pdf and Skia renderers, but
