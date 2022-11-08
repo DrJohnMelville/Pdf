@@ -410,3 +410,9 @@ RenderingTest.cs_Skia-CmykJpegImage|984186444
 RenderingTest.cs_Skia-JpegImageGray|2467434447
 RenderingTest.cs_wpf-JpegHuffmanBug|3793030790
 RenderingTest.cs_Skia-JpegHuffmanBug|3101727255
+RenderingTest.cs_Skia-SegmentedContentStream|4265236402
+RenderingTest.cs_Skia-EncryptedV6|2142476240
+RenderingTest.cs_wpf-SegmentedContentStream|2332488482
+RenderingTest.cs_wpf-EncryptedV6|3723711324
+RenderingTest.cs_Skia-CompatibilitySection|2874131714
+RenderingTest.cs_wpf-CompatibilitySection|3448790987
