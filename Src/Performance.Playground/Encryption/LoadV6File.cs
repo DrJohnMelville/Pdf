@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
+using Melville.JpegLibrary.PipeAmdStreamAdapters;
+using Melville.JpegLibrary.Readers;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -8,7 +11,9 @@ public class LoadV6File
 {
     public async Task TestParser()
     {
-        var reader = await new PdfLowLevelReader(new ConstantPasswordSource(PasswordType.User, "User"))
-            .ReadFromFile(@"C:\Users\jmelv\Documents\Scratch\SodaPDF-protected-camp form.pdf");
+        await new StreamReader(
+                await new JpegStreamFactory().FromStream(
+                    File.Open(@"C:\Users\jmelv\Documents\Scratch\questionable Jpeg.jpg", FileMode.Open)))
+            .ReadToEndAsync();
     }
 }

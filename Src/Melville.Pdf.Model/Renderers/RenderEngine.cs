@@ -156,18 +156,30 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        if (await InInvisibleContentRegion(await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()))
+        if (await InInvisibleContentRegion(await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()).CA())
             return;
         switch ((inlineImage.SubTypeOrNull()??KnownNames.Image).GetHashCode())
         {
             case KnownNameKeys.Image:
-                await target.RenderBitmap(
-                    await inlineImage.WrapForRenderingAsync(page, StateOps.CurrentState().NonstrokeColor).CA()).CA();
+                await TryRenderBitmap(inlineImage);
                 break;
             case KnownNameKeys.Form:
                 await RunTargetGroup(inlineImage).CA();
                 break;
             default: throw new PdfParseException("Cannot do the provided object");
+        }
+    }
+
+    private async Task TryRenderBitmap(PdfStream inlineImage)
+    {
+        try
+        {
+            await target.RenderBitmap(
+                await inlineImage.WrapForRenderingAsync(page, StateOps.CurrentState().NonstrokeColor).CA()).CA();
+        }
+        catch (Exception)
+        {
+            // any error in loading the bitmap causes the bitmap to be ignored.
         }
     }
 
