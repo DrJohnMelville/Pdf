@@ -5,6 +5,7 @@ using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
 using Xunit;
 
@@ -31,7 +32,6 @@ public class DrawingMacroOperations
         target.Verify(i=>i.LineTo(24,32), Times.Once);
         target.Verify(i=>i.LineTo(7,32), Times.Once);
         target.Verify(i=>i.ClosePath(), Times.Once);
-        target.VerifySet(i=>i.OptionalContentCounter = It.IsAny<OptionalContentCounter>());
         target.VerifyNoOtherCalls();
     }
 
@@ -89,7 +89,6 @@ public class DrawingMacroOperations
         if (closePath) target.Verify(i=>i.ClosePath());
         target.Verify(i => i.PaintPath(stroke, fill, evenOddFillRule));
         target.Verify(i => i.EndPath());
-        target.VerifySet(i=>i.OptionalContentCounter = It.IsAny<OptionalContentCounter>());
         target.VerifyNoOtherCalls();
     }
 }

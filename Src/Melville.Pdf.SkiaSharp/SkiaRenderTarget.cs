@@ -30,12 +30,11 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
 
     
     public override IDrawTarget CreateDrawTarget() =>
-        new SkiaDrawTarget(Target, State, OptionalContentCounter);
+        new SkiaDrawTarget(Target, State);
 
 
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
-        if (OptionalContentCounter?.IsHidden??false) return;
         using var skBitmap = ScreenFormatBitmap(bitmap);
         await FillBitmapAsync(bitmap, skBitmap).CA();
         SetBitmapScaleQuality(bitmap);

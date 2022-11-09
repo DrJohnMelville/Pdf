@@ -13,6 +13,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
 using Xunit;
 
@@ -31,7 +32,6 @@ public class S9_4_2_TextPositioningOperators
     {
         rf = new RealizedFontMock(fw.Object);
         targetMock.SetupGet(i => i.GraphicsState).Returns(state);
-        targetMock.SetupSet(i => i.OptionalContentCounter = It.IsAny<OptionalContentCounter>());
         SetupMockRealizedFont();
 
         sut = new RenderEngine(pageMock.Object, targetMock.Object,

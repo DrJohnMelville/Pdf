@@ -65,12 +65,11 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     }
     
     public override IDrawTarget CreateDrawTarget() => 
-        new WpfDrawTarget(Target, State, OptionalContentCounter);
+        new WpfDrawTarget(Target, State);
 
     private static readonly Rect unitRectangle = new Rect(0, 0, 1, 1);
     public async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
-        if (OptionalContentCounter?.IsHidden ?? false) return;
         var dg = ApplyBitmapScaling(bitmap, await bitmap.ToWpfBitmap().CA());
         Target.DrawDrawing(dg);
     }

@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Security.AccessControl;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
@@ -11,16 +12,14 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
 {
     private readonly SKCanvas target;
     private readonly GraphicsStateStack<SkiaGraphicsState> state;
-    private readonly OptionalContentCounter? counter;
     private SKPath compositePath = new();
     private SKPath? path = null;
 
     public SkiaDrawTarget(
-        SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state, OptionalContentCounter? counter)
+        SKCanvas target, GraphicsStateStack<SkiaGraphicsState> state)
     {
         this.target = target;
         this.state = state;
-        this.counter = counter;
     }
 
     public void Dispose() => path?.Dispose();
@@ -71,7 +70,6 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
 
     private void InnerPaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        if (counter?.IsHidden??false) return;
         if (fill && state.Current().Brush() is { } brush)
         {
             SetCurrentFillRule(evenOddFillRule);

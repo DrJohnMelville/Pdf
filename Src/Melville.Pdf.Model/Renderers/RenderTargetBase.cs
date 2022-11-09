@@ -35,7 +35,6 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform);
     void MapUserSpaceToBitmapSpace(in PdfRect rect, double xPixels, double yPixels, in Matrix3x2 adjustOutput);
     void CloneStateFrom(GraphicsState priorState);
-    OptionalContentCounter? OptionalContentCounter { get; set; }
     IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
 }
 
@@ -44,7 +43,6 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
 {
     protected T Target { get; }
     protected GraphicsStateStack<TState> State { get; } = new();
-    public OptionalContentCounter? OptionalContentCounter { get; set; }
     
     public IGraphicsState GraphicsState => State;
 
@@ -72,6 +70,7 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
     public abstract IDrawTarget CreateDrawTarget();
 
     protected IDrawTarget? currentShape = null;
+    
     [DelegateTo()]
     private IDrawTarget CurrentShape() => currentShape ??= CreateDrawTarget();
 

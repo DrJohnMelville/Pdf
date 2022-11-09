@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Melville.Hacks.Reflection;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
 using Xunit;
 
@@ -18,8 +17,9 @@ public class OptionalContentCounterTest
     private readonly PdfDictionary Off = new DictionaryBuilder().AsDictionary();
     private readonly Mock<IOptionalContentState> state = new();
     private readonly Mock<IHasPageAttributes> attrs = new();
-    
-    private readonly OptionalContentCounter sut;
+    private readonly Mock<IRenderTarget> target = new();
+
+    private readonly OptionalContentTarget sut;
 
     public OptionalContentCounterTest()
     {
@@ -32,7 +32,7 @@ public class OptionalContentCounterTest
                     .WithItem(KnownNames.OFF, Off)
                     .AsDictionary())
                 .AsDictionary());
-        sut = new OptionalContentCounter(state.Object, attrs.Object);
+        sut = new OptionalContentTarget(state.Object, target.Object);
     }
 
     [Fact]
@@ -56,13 +56,13 @@ public class OptionalContentCounterTest
     [Fact]
     public async Task EncounterInvisibleGroupNameMakesInvisible()
     {
-        await sut.EnterGroup(KnownNames.OC, KnownNames.OFF);
+        await sut.EnterGroup(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task EncounterVisibleGroupNameLeavesVisible()
     {
-        await sut.EnterGroup(KnownNames.OC, KnownNames.OFF);
+        await sut.EnterGroup(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
@@ -72,9 +72,9 @@ public class OptionalContentCounterTest
         Assert.True(sut.IsHidden);
         await sut.EnterGroup(KnownNames.OC, On);
         Assert.True(sut.IsHidden);
-        sut.Pop();
+        sut.PopContentGroup();
         Assert.True(sut.IsHidden);
-        sut.Pop();
+        sut.PopContentGroup();
         Assert.False(sut.IsHidden);
     }
 

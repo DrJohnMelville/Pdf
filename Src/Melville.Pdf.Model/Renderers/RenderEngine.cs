@@ -20,6 +20,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 namespace Melville.Pdf.Model.Renderers;
@@ -27,14 +28,14 @@ namespace Melville.Pdf.Model.Renderers;
 public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
-    private readonly IRenderTarget target;
+    private readonly OptionalContentTarget target;
     private readonly DocumentRenderer renderer;
     public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer)
     {
         this.page = page;
-        this.target = target;
+        this.target = new OptionalContentTarget(renderer.OptionalContentState,
+            target);
         this.renderer = renderer;
-        target.OptionalContentCounter = new OptionalContentCounter(this.renderer.OptionalContentState, page);
     }
     
     #region Graphics State
@@ -152,7 +153,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        if (await InInvisibleContentRegion(await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()).CA())
+        if (await target.CanSkipXObjectDoOperation(
+                await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()).CA())
             return;
         switch ((inlineImage.SubTypeOrNull()??KnownNames.Image).GetHashCode())
         {
@@ -200,10 +202,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         ModifyTransformMatrix(Matrix3x2.CreateScale(
             (float)state.PageWidth, (float)state.PageHeight)*inv);
     }
-
-    private async ValueTask<bool> InInvisibleContentRegion(PdfDictionary? visibilityGroup) => 
-        ! await renderer.OptionalContentState.IsGroupVisible(visibilityGroup).CA();
-
+    
     private async ValueTask RunTargetGroup(PdfStream formXObject)
     {
         SaveGraphicsState();
@@ -391,8 +390,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     // type of the renderer just so that we do not get unexpected structures if a document is rendered
     // in more than one renderer.
     private ValueTask<IRealizedFont> RendererSpecificFont(IRealizedFont typeFace) =>
-        renderer.Cache.Get((Renderer: target.GetType(), TypeFace:typeFace), r=>
-            new ValueTask<IRealizedFont>(target.WrapRealizedFont(r.TypeFace)));
+        renderer.Cache.Get(typeFace, r=> new ValueTask<IRealizedFont>(
+            ((IRenderTarget)target).WrapRealizedFont(r)));
 
     private ValueTask<IRealizedFont> CheckCacheForFont(double size, PdfDictionary fontDic) =>
         renderer.Cache.Get(new FontRecord(fontDic, size), 
@@ -560,13 +559,13 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public void BeginMarkedRange(PdfName tag) {}
 
-    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) =>
-        target.OptionalContentCounter?.EnterGroup(tag, dictName) ?? ValueTask.CompletedTask;
+    public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) => 
+        target.EnterGroup(tag, dictName, page);
 
     public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) =>
-        target.OptionalContentCounter?.EnterGroup(tag, dictionary) ?? ValueTask.CompletedTask;
+        target.EnterGroup(tag, dictionary);
 
-    public void EndMarkedRange() => target.OptionalContentCounter?.Pop();
+    public void EndMarkedRange() => target.PopContentGroup();
     #endregion
 
     #region Compatability Operators

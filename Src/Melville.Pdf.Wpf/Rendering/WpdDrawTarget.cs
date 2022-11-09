@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using Melville.Pdf.Wpf.FontCaching;
 
 namespace Melville.Pdf.Wpf.Rendering;
@@ -68,15 +69,12 @@ public class WpfDrawTarget : WpfPathCreator
 {
     private readonly DrawingContext context;
     private readonly GraphicsStateStack<WpfGraphicsState> state;
-    private readonly OptionalContentCounter? optionalContentCounter;
     private readonly GeometryGroup geoGroup = new GeometryGroup();
   
-    public WpfDrawTarget(DrawingContext context, GraphicsStateStack<WpfGraphicsState> state,
-        OptionalContentCounter? optionalContentCounter)
+    public WpfDrawTarget(DrawingContext context, GraphicsStateStack<WpfGraphicsState> state)
     {
         this.context = context;
         this.state = state;
-        this.optionalContentCounter = optionalContentCounter;
     }
 
     public override PathGeometry RequireGeometry()
@@ -100,7 +98,6 @@ public class WpfDrawTarget : WpfPathCreator
     public override void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         SetCurrentFillRule(evenOddFillRule);
-        if (optionalContentCounter?.IsHidden ?? false) return;
         InnerPathPaint(stroke, fill, geoGroup);
     }
 
