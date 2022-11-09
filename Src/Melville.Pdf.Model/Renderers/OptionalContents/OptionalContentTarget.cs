@@ -5,7 +5,6 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
-using Melville.Pdf.Model.Renderers.Bitmaps;
 
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
 
