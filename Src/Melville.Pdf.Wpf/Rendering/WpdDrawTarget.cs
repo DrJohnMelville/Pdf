@@ -101,8 +101,8 @@ public class WpfDrawTarget : WpfPathCreator
 
     private void InnerPathPaint(bool stroke, bool fill, Geometry pathToPaint) =>
         context.DrawGeometry(
-            fill ? state.Current().Brush() : null, 
-            stroke ? state.Current().Pen() : null, 
+            fill ? state.StronglyTypedCurrentState().Brush() : null, 
+            stroke ? state.StronglyTypedCurrentState().Pen() : null, 
             pathToPaint);
 
     private void SetCurrentFillRule(bool evenOddFillRule) =>
@@ -111,7 +111,7 @@ public class WpfDrawTarget : WpfPathCreator
     public override void ClipToPath(bool evenOddRule)
     {
         SetCurrentFillRule(evenOddRule);
-        state.Current().WpfStackframesPushed++;
+        state.StronglyTypedCurrentState().WpfStackframesPushed++;
         context.PushClip(geoGroup);
     }
 }

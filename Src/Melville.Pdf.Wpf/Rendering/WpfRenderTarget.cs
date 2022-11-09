@@ -41,7 +41,7 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
 
     private void IncrementSavePoints()
     {
-        State.Current().WpfStackframesPushed++;
+        State.StronglyTypedCurrentState().WpfStackframesPushed++;
     }
 
     public override void ClipToPath(bool evenOddRule)
@@ -79,7 +79,7 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     }
 
     private BitmapScalingMode SelectScalingMode(IPdfBitmap bitmap) =>
-        bitmap.ShouldInterpolate(State.Current().TransformMatrix)
+        bitmap.ShouldInterpolate(State.StronglyTypedCurrentState().TransformMatrix)
             ? BitmapScalingMode.HighQuality
             : BitmapScalingMode.NearestNeighbor;
 

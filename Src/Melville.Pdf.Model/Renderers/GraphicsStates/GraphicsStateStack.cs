@@ -9,11 +9,14 @@ public partial class StackTransitionEventArgs<T>: EventArgs
     [FromConstructor] public T Context { get; } 
 }
 
-public sealed partial class GraphicsStateStack<T> : IDisposable
+public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
     where T: GraphicsState, new()
 { 
     private readonly Stack<T> states;
-    public T Current() => states.Peek();
+
+    [DelegateTo]
+    private IGraphicsState TopState() => StronglyTypedCurrentState();
+    public T StronglyTypedCurrentState() => states.Peek();
 
     public event EventHandler<StackTransitionEventArgs<T>>? ContextPushed;
     public event EventHandler<StackTransitionEventArgs<T>>? BeforeContextPopped; 
@@ -27,15 +30,15 @@ public sealed partial class GraphicsStateStack<T> : IDisposable
     public void SaveGraphicsState()
     {
         var newTop = new T();
-        newTop.CopyFrom(Current());
+        newTop.CopyFrom(StronglyTypedCurrentState());
         states.Push(newTop);
         ContextPushed?.Invoke(this, WrapArgs(newTop));
     }
 
     public void RestoreGraphicsState()
     {
-        BeforeContextPopped?.Invoke(this, WrapArgs(Current()));
-        Current().Dispose();
+        BeforeContextPopped?.Invoke(this, WrapArgs(StronglyTypedCurrentState()));
+        StronglyTypedCurrentState().Dispose();
         states.Pop();
     }
 

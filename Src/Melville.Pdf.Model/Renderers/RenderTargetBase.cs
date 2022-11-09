@@ -25,8 +25,6 @@ public interface IDrawTarget
 
 public interface IRenderTarget: IDrawTarget, IDisposable
 {
-    void SaveGraphicsState();
-    void RestoreGraphicsState();
     IGraphicsState GraphicsState { get; }
     void EndPath();
     void Transform(in Matrix3x2 newTransform);
@@ -38,13 +36,13 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
 }
 
-public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IRenderTarget, IDisposable
+public abstract partial class RenderTargetBase<T, TState>: IRenderTarget
    where TState:GraphicsState, new()
 {
     protected T Target { get; }
     protected GraphicsStateStack<TState> State { get; } = new();
     
-    public IGraphicsState GraphicsState => State.Current();
+    public IGraphicsState GraphicsState => State;
     public void SaveGraphicsState() => State.SaveGraphicsState();
 
     public void RestoreGraphicsState() => State.RestoreGraphicsState();
@@ -88,8 +86,8 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IRenderT
 
     public void CloneStateFrom(GraphicsState priorState)
     {
-        if (priorState is TState ts) State.Current().CopyFrom(ts);
-        State.Current().ResetTransformMatrix();
+        if (priorState is TState ts) State.StronglyTypedCurrentState().CopyFrom(ts);
+        State.StronglyTypedCurrentState().ResetTransformMatrix();
             
     }
 

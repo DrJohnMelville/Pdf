@@ -11,15 +11,15 @@ public class GraphicStateStackTest
     [Fact]
     public void PushAndPop()
     {
-        Assert.Equal(1.0, stack.Current().LineWidth);
-        stack.Current().SetLineWidth(2.0);
-        Assert.Equal(2.0, stack.Current().LineWidth);
+        Assert.Equal(1.0, stack.StronglyTypedCurrentState().LineWidth);
+        stack.StronglyTypedCurrentState().SetLineWidth(2.0);
+        Assert.Equal(2.0, stack.StronglyTypedCurrentState().LineWidth);
         stack.SaveGraphicsState();
-        Assert.Equal(2.0, stack.Current().LineWidth);
-        stack.Current().SetLineWidth(5.0);
-        Assert.Equal(5.0, stack.Current().LineWidth);
+        Assert.Equal(2.0, stack.StronglyTypedCurrentState().LineWidth);
+        stack.StronglyTypedCurrentState().SetLineWidth(5.0);
+        Assert.Equal(5.0, stack.StronglyTypedCurrentState().LineWidth);
         stack.RestoreGraphicsState();
-        Assert.Equal(2.0, stack.Current().LineWidth);
+        Assert.Equal(2.0, stack.StronglyTypedCurrentState().LineWidth);
     }
     
 }

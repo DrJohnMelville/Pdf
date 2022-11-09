@@ -70,13 +70,13 @@ public class SkiaDrawTarget : IDrawTarget, IDisposable
 
     private void InnerPaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        if (fill && state.Current().Brush() is { } brush)
+        if (fill && state.StronglyTypedCurrentState().Brush() is { } brush)
         {
             SetCurrentFillRule(evenOddFillRule);
             target.DrawPath(compositePath, brush);
         }
 
-        if (stroke && state.Current().Pen() is { } pen)
+        if (stroke && state.StronglyTypedCurrentState().Pen() is { } pen)
         {
             target.DrawPath(compositePath, pen);
         }

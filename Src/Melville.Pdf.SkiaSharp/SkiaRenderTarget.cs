@@ -26,7 +26,7 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
 
     
     public override void Transform(in Matrix3x2 newTransform) => 
-        Target.SetMatrix(State.Current().Transform());
+        Target.SetMatrix(State.StronglyTypedCurrentState().Transform());
 
     
     public override IDrawTarget CreateDrawTarget() =>
@@ -45,7 +45,7 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
     private readonly SKPaint fillPaint = new();
     private void SetBitmapScaleQuality(IPdfBitmap bitmap)
     {
-        fillPaint.FilterQuality = bitmap.ShouldInterpolate(State.Current().TransformMatrix)
+        fillPaint.FilterQuality = bitmap.ShouldInterpolate(State.StronglyTypedCurrentState().TransformMatrix)
             ? SKFilterQuality.High
             : SKFilterQuality.None;
     }
