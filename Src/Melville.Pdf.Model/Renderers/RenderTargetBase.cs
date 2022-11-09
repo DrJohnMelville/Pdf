@@ -27,7 +27,6 @@ public interface IRenderTarget: IDrawTarget, IDisposable
 {
     IGraphicsState GraphicsState { get; }
     void EndPath();
-    void Transform(in Matrix3x2 newTransform);
     ValueTask RenderBitmap(IPdfBitmap bitmap);
     IDrawTarget CreateDrawTarget();
     void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform);
@@ -61,10 +60,7 @@ public abstract partial class RenderTargetBase<T, TState>: IRenderTarget
                     Matrix3x2.CreateTranslation(0, (float)yPixels);
         GraphicsState.ModifyTransformMatrix(xform);
         GraphicsState.StoreInitialTransform();
-        Transform(xform);
     }
-
-    public abstract void Transform(in Matrix3x2 newTransform);
     
     #region Draw Shapes
 

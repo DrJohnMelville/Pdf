@@ -19,6 +19,11 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     public WpfRenderTarget(DrawingContext target): base(target)
     {
         State.BeforeContextPopped += PopTransformAndClip;
+        State.TransformPushed += (_, e) =>
+        {
+            IncrementSavePoints();
+            Target.PushTransform(e.NewMatrix.WpfTransform());
+        };
     }
 
     private void PopTransformAndClip(object? sender, StackTransitionEventArgs<WpfGraphicsState> e)
@@ -31,14 +36,7 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     }
 
     #region Path and transform state
-
-
-    public override void Transform(in Matrix3x2 newTransform)
-    {
-        IncrementSavePoints();
-        Target.PushTransform(newTransform.WpfTransform());
-   }
-
+    
     private void IncrementSavePoints()
     {
         State.StronglyTypedCurrentState().WpfStackframesPushed++;

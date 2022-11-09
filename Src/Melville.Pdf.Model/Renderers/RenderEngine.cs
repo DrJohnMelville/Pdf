@@ -46,7 +46,6 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         if (newTransform.IsIdentity) return;
         StateOps.ModifyTransformMatrix(in newTransform);
-        target.Transform(newTransform);
     }
 
 

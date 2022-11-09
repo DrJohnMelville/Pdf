@@ -15,7 +15,7 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
     {
         State.ContextPushed += (_, __) => Target.Save();
         State.BeforeContextPopped += (_, __) => Target.Restore();
-        
+        State.TransformPushed += (_, e) => Target.SetMatrix(e.CumulativeMatrix.Transform());
     }
 
     public override void SetBackgroundRect(
@@ -23,11 +23,6 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
     {
         Target.Clear(SKColors.White);
     }
-
-    
-    public override void Transform(in Matrix3x2 newTransform) => 
-        Target.SetMatrix(State.StronglyTypedCurrentState().Transform());
-
     
     public override IDrawTarget CreateDrawTarget() =>
         new SkiaDrawTarget(Target, State);
