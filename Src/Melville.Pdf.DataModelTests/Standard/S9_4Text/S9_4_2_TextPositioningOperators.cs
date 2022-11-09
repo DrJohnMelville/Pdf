@@ -31,7 +31,7 @@ public class S9_4_2_TextPositioningOperators
     public S9_4_2_TextPositioningOperators()
     {
         rf = new RealizedFontMock(fw.Object);
-        targetMock.SetupGet(i => i.GraphicsState).Returns(state);
+        targetMock.SetupGet(i => i.GraphicsState).Returns(()=>state.Current());
         SetupMockRealizedFont();
 
         sut = new RenderEngine(pageMock.Object, targetMock.Object,
@@ -67,7 +67,7 @@ public class S9_4_2_TextPositioningOperators
         fw.Setup(i => i.AddGlyphToCurrentString(It.IsAny<uint>(), It.IsAny<Matrix3x2>()))
             .Returns( ValueTask.FromResult(10.0));
         fw.Setup(i => i.RenderCurrentString(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>()));
-        state.CurrentState().SetTypeface(rf);
+        state.Current().SetTypeface(rf);
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class S9_4_2_TextPositioningOperators
     public async Task ShowSpacedStream(double horizontalScale, float xPosition, int fontSize)
     {
         sut.SetHorizontalTextScaling(horizontalScale);
-        await state.CurrentState().SetFont(KnownNames.Helvetica, fontSize); 
+        await state.Current().SetFont(KnownNames.Helvetica, fontSize); 
         await sut.ShowSpacedString(
             new []
             {

@@ -25,10 +25,10 @@ public interface IDrawTarget
 
 public interface IRenderTarget: IDrawTarget, IDisposable
 {
+    void SaveGraphicsState();
+    void RestoreGraphicsState();
     IGraphicsState GraphicsState { get; }
     void EndPath();
-    void SaveTransformAndClip();
-    void RestoreTransformAndClip();
     void Transform(in Matrix3x2 newTransform);
     ValueTask RenderBitmap(IPdfBitmap bitmap);
     IDrawTarget CreateDrawTarget();
@@ -38,13 +38,16 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
 }
 
-public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposable
+public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IRenderTarget, IDisposable
    where TState:GraphicsState, new()
 {
     protected T Target { get; }
     protected GraphicsStateStack<TState> State { get; } = new();
     
-    public IGraphicsState GraphicsState => State;
+    public IGraphicsState GraphicsState => State.Current();
+    public void SaveGraphicsState() => State.SaveGraphicsState();
+
+    public void RestoreGraphicsState() => State.RestoreGraphicsState();
 
     protected RenderTargetBase(T target)
     {
@@ -58,8 +61,8 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
                     Matrix3x2.CreateTranslation((float)-rect.Left, (float)-rect.Bottom) *
                     Matrix3x2.CreateScale((float)(xPixels / rect.Width), (float)(-yPixels / rect.Height)) *
                     Matrix3x2.CreateTranslation(0, (float)yPixels);
-        State.ModifyTransformMatrix(xform);
-        State.StoreInitialTransform();
+        GraphicsState.ModifyTransformMatrix(xform);
+        GraphicsState.StoreInitialTransform();
         Transform(xform);
     }
 
@@ -85,8 +88,8 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
 
     public void CloneStateFrom(GraphicsState priorState)
     {
-        if (priorState is TState ts) State.CurrentState().CopyFrom(ts);
-        State.CurrentState().ResetTransformMatrix();
+        if (priorState is TState ts) State.Current().CopyFrom(ts);
+        State.Current().ResetTransformMatrix();
             
     }
 
@@ -94,4 +97,9 @@ public abstract partial class RenderTargetBase<T, TState>: IDrawTarget, IDisposa
     {
         State.Dispose();
     }
+
+    public abstract ValueTask RenderBitmap(IPdfBitmap bitmap);
+
+    public abstract void SetBackgroundRect(
+        in PdfRect rect, double width, double height, in Matrix3x2 transform);
 }

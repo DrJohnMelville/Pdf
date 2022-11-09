@@ -4,8 +4,6 @@ using System.Windows;
 using System.Windows.Media;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
-using Melville.Pdf.Model.Renderers.OptionalContents;
-using Melville.Pdf.Wpf.FontCaching;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
@@ -113,6 +111,7 @@ public class WpfDrawTarget : WpfPathCreator
     public override void ClipToPath(bool evenOddRule)
     {
         SetCurrentFillRule(evenOddRule);
+        state.Current().WpfStackframesPushed++;
         context.PushClip(geoGroup);
     }
 }

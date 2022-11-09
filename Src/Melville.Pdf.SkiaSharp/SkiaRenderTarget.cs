@@ -8,23 +8,23 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsState>, IRenderTarget
+public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsState>
 {
     public SkiaRenderTarget(SKCanvas target) : 
         base(target)
     {
+        State.ContextPushed += (_, __) => Target.Save();
+        State.BeforeContextPopped += (_, __) => Target.Restore();
+        
     }
 
-    public void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform)
+    public override void SetBackgroundRect(
+        in PdfRect rect, double width, double height, in Matrix3x2 transform)
     {
         Target.Clear(SKColors.White);
     }
 
-
-    public void SaveTransformAndClip() => Target.Save();
-
-    public void RestoreTransformAndClip() => Target.Restore();
-
+    
     public override void Transform(in Matrix3x2 newTransform) => 
         Target.SetMatrix(State.Current().Transform());
 
@@ -33,7 +33,7 @@ public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsSta
         new SkiaDrawTarget(Target, State);
 
 
-    public async ValueTask RenderBitmap(IPdfBitmap bitmap)
+    public override async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         using var skBitmap = ScreenFormatBitmap(bitmap);
         await FillBitmapAsync(bitmap, skBitmap).CA();

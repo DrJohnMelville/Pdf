@@ -19,6 +19,7 @@ namespace Melville.Pdf.Wpf.Rendering;
 
 public class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
 {
+    public int WpfStackframesPushed { get; set; }
     protected override Func<WpfGraphicsState,Brush> CreateSolidBrush(DeviceColor color)
     {
         var brush = new SolidColorBrush(color.AsWpfColor());

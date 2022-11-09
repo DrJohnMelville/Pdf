@@ -95,7 +95,7 @@ public class GraphicStateDictionary
     {
         var gs = new GraphicsStateStack<TestGraphicsState>();
         var target = new Mock<IRenderTarget>();
-        target.SetupGet(i => i.GraphicsState).Returns(gs);
+        target.SetupGet(i => i.GraphicsState).Returns(()=>gs.Current());
         Assert.Equal(1.0, gs.Current().LineWidth);
         await new RenderEngine(page, target.Object, 
                 DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance))

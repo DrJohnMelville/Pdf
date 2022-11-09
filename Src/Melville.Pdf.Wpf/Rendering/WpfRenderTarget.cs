@@ -9,33 +9,29 @@ using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
+using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Wpf.FontCaching;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
-public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>, IRenderTarget
+public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>
 {
     public WpfRenderTarget(DrawingContext target): base(target)
     {
-        SaveTransformAndClip();
+        State.BeforeContextPopped += PopTransformAndClip;
     }
 
-    #region Path and transform state
-
-    private Stack<int> savePoints = new();
-    public void SaveTransformAndClip()
+    private void PopTransformAndClip(object? sender, StackTransitionEventArgs<WpfGraphicsState> e)
     {
-        savePoints.Push(0);
-    }
-
-    public void RestoreTransformAndClip()
-    {
-        var pops = savePoints.Pop();
+        var pops = e.Context.WpfStackframesPushed;
         for (int i = 0; i < pops; i++)
         {
             Target.Pop();
         }
     }
+
+    #region Path and transform state
+
 
     public override void Transform(in Matrix3x2 newTransform)
     {
@@ -45,19 +41,19 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
 
     private void IncrementSavePoints()
     {
-        savePoints.Push(1+savePoints.Pop());
+        State.Current().WpfStackframesPushed++;
     }
 
     public override void ClipToPath(bool evenOddRule)
     {
         if(currentShape is null) return;
         currentShape.ClipToPath(evenOddRule);
-        IncrementSavePoints();
     }
 
     #endregion
 
-    public void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform)
+    public override void SetBackgroundRect(
+        in PdfRect rect, double width, double height, in Matrix3x2 transform)
     {
         var clipRectangle = new Rect(0,0, width, height);
         Target.DrawRectangle(Brushes.White, null, clipRectangle);
@@ -68,7 +64,7 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
         new WpfDrawTarget(Target, State);
 
     private static readonly Rect unitRectangle = new Rect(0, 0, 1, 1);
-    public async ValueTask RenderBitmap(IPdfBitmap bitmap)
+    public override async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
         var dg = ApplyBitmapScaling(bitmap, await bitmap.ToWpfBitmap().CA());
         Target.DrawDrawing(dg);
@@ -83,7 +79,7 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     }
 
     private BitmapScalingMode SelectScalingMode(IPdfBitmap bitmap) =>
-        bitmap.ShouldInterpolate(State.CurrentState().TransformMatrix)
+        bitmap.ShouldInterpolate(State.Current().TransformMatrix)
             ? BitmapScalingMode.HighQuality
             : BitmapScalingMode.NearestNeighbor;
 

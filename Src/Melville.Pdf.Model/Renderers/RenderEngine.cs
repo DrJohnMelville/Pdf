@@ -40,19 +40,11 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     #region Graphics State
     [DelegateTo] private IGraphicsState StateOps => target.GraphicsState;
+
+    public void SaveGraphicsState() => target.SaveGraphicsState();
+    public void RestoreGraphicsState()=> target.RestoreGraphicsState();
+
     
-    public void SaveGraphicsState()
-    {
-        StateOps.SaveGraphicsState();
-        target.SaveTransformAndClip();
-    }
-
-    public void RestoreGraphicsState()
-    {
-        StateOps.RestoreGraphicsState();
-        target.RestoreTransformAndClip();
-    }
-
     public void ModifyTransformMatrix(in Matrix3x2 newTransform)
     {
         if (newTransform.IsIdentity) return;

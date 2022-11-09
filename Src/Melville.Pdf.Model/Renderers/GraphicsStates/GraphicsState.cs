@@ -83,7 +83,7 @@ public abstract partial  class GraphicsState: IGraphicsState, IDisposable
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
     [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
     [MacroItem("double", "FontSize", "0.0")]
-    
+
     //PageSizes
     [MacroItem("double", "PageWidth", "1")]
     [MacroItem("double", "PageHeight", "1")]
@@ -91,8 +91,8 @@ public abstract partial  class GraphicsState: IGraphicsState, IDisposable
     // code
     [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
     [MacroCode("    ~1~ = other.~1~;", Prefix = "public virtual void CopyFrom(GraphicsState other){", Postfix = "}")]
-    public void SaveGraphicsState() { }
-    public void RestoreGraphicsState() { }
+    public void SaveGraphicsState() => throw new NotSupportedException("Needs to be intercepted");
+    public void RestoreGraphicsState()=> throw new NotSupportedException("Needs to be intercepted");
 
     public void ModifyTransformMatrix(in Matrix3x2 newTransform) => 
         TransformMatrix = newTransform * TransformMatrix;
