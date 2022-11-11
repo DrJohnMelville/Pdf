@@ -51,10 +51,11 @@ public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
 }
 
 public static class ByteOrderDetector {
-    public static Encoding DetectByteOrder(in ReadOnlySpan<byte> bytes)
+    public static (Encoding encoding, int BomLength) DetectByteOrder(in ReadOnlySpan<byte> bytes)
     {
-        if (UnicodeEncoder.BigEndian.HasUtf16BOM(bytes)) return UnicodeEncoder.BigEndian.Encoder;
-        if (UnicodeEncoder.LittleEndian.HasUtf16BOM(bytes)) return UnicodeEncoder.LittleEndian.Encoder;
-        return PdfDocEncoding.Instance;
+        if (UnicodeEncoder.BigEndian.HasUtf16BOM(bytes)) return (UnicodeEncoder.BigEndian.Encoder, 2);
+        if (UnicodeEncoder.LittleEndian.HasUtf16BOM(bytes)) return (UnicodeEncoder.LittleEndian.Encoder, 2);
+        if (UnicodeEncoder.Utf8.HasUtf16BOM(bytes)) return (UnicodeEncoder.Utf8.Encoder, 3);
+        return (PdfDocEncoding.Instance, 0);
     }
 }
