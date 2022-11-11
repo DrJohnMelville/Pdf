@@ -37,7 +37,7 @@ public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
                AsPdfDocEnccodedString();
     }
 
-    public PdfTime AsPdfTime() => Bytes.AsPdfTime();
+    public PdfTime AsPdfTime() => new PdfTimeParser(AsTextString().AsSpan()).AsPdfTime();
     public DateTime AsDateTime => AsPdfTime().DateTime;
     public static PdfString CreateDate(PdfTime time) => new PdfString(time.AsPdfBytes());
 

@@ -26,11 +26,30 @@ public class S7_9_4Dates
     {
         Assert.Equal(pdfFormat, PdfString.CreateDate(rec).AsTextString());
     }   
+
     [Theory]
     [MemberData(nameof(DateTimeTests))]
-    public void TestDateTimeParser(string pdfFormat, PdfTime rec)
+    public void TestDateTimeParserAscii(string pdfFormat, PdfTime rec)
     {
         Assert.Equal(rec, PdfString.CreateAscii(pdfFormat).AsPdfTime());
+    }
+[Theory]
+    [MemberData(nameof(DateTimeTests))]
+    public void TestDateTimeParserUtf8(string pdfFormat, PdfTime rec)
+    {
+        Assert.Equal(rec, PdfString.CreateUtf8(pdfFormat).AsPdfTime());
+    }
+[Theory]
+    [MemberData(nameof(DateTimeTests))]
+    public void TestDateTimeParserUtf16(string pdfFormat, PdfTime rec)
+    {
+        Assert.Equal(rec, PdfString.CreateUtf16(pdfFormat).AsPdfTime());
+    }
+[Theory]
+    [MemberData(nameof(DateTimeTests))]
+    public void TestDateTimeParserWithApostrophes(string pdfFormat, PdfTime rec)
+    {
+        Assert.Equal(rec, PdfString.CreateUtf16(pdfFormat+"'").AsPdfTime());
     }
 
     [Fact]
