@@ -17,9 +17,8 @@ public class OptionalContentCounterTest
     private readonly PdfDictionary Off = new DictionaryBuilder().AsDictionary();
     private readonly Mock<IOptionalContentState> state = new();
     private readonly Mock<IHasPageAttributes> attrs = new();
-    private readonly Mock<IRenderTarget> target = new();
 
-    private readonly OptionalContentTarget sut;
+    private readonly OptionalContentCounter sut;
 
     public OptionalContentCounterTest()
     {
@@ -32,7 +31,7 @@ public class OptionalContentCounterTest
                     .WithItem(KnownNames.OFF, Off)
                     .AsDictionary())
                 .AsDictionary());
-        sut = new OptionalContentTarget(state.Object, target.Object);
+        sut = new OptionalContentCounter(state.Object);
     }
 
     [Fact]

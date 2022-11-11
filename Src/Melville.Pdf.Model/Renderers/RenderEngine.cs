@@ -27,17 +27,10 @@ namespace Melville.Pdf.Model.Renderers;
 
 public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
-    private readonly IHasPageAttributes page;
-    private readonly IRenderTarget target;
-    private readonly DocumentRenderer renderer;
-    private readonly IOptionalContentTarget optionalContent;
-    public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer)
-    {
-        this.page = page;
-        this.target = target;
-        optionalContent = (target as IOptionalContentTarget) ?? NullOptionalContentTarget.Instance;
-        this.renderer = renderer;
-    }
+    [FromConstructor]private readonly IHasPageAttributes page;
+    [FromConstructor]private readonly IRenderTarget target;
+    [FromConstructor]private readonly DocumentRenderer renderer;
+    [FromConstructor]private readonly IOptionalContentCounter optionalContent;
     
     #region Graphics State
     [DelegateTo] private IGraphicsState StateOps => target.GraphicsState;
@@ -234,7 +227,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
 
     private ValueTask Render(IHasPageAttributes xObject) =>
-        new RenderEngine(xObject, target, renderer).RunContentStream();
+        new RenderEngine(xObject, target, renderer, optionalContent).RunContentStream();
 
     public async ValueTask RunContentStream() =>
         await new ContentStreamParser(this).Parse(
@@ -503,7 +496,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     #region Type 3 font rendering
 
-    public IDrawTarget CreateDrawTarget() => target.CreateDrawTarget();
+    public IDrawTarget CreateDrawTarget() => optionalContent.WrapDrawTarget(target.CreateDrawTarget());
 
     public async ValueTask<double> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix)

@@ -4,7 +4,7 @@ namespace Melville.Pdf.Model.Renderers.OptionalContents;
 
 internal partial class OptionalContentDrawTarget : IDrawTarget
 {
-    [FromConstructor] private readonly OptionalContentTarget parent;
+    [FromConstructor] private readonly OptionalContentCounter parent;
     [DelegateTo] [FromConstructor] private readonly IDrawTarget innerTarget;
         
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)

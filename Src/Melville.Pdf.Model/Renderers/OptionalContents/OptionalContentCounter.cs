@@ -7,19 +7,17 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
-
-public interface IOptionalContentTarget 
+public interface IOptionalContentCounter 
 {
     ValueTask<bool> CanSkipXObjectDoOperation(PdfDictionary? visibilityGroup);
     ValueTask EnterGroup(PdfName oc, PdfName off, IHasPageAttributes attributeSource);
     ValueTask EnterGroup(PdfName oc, PdfDictionary? off);
     void PopContentGroup();
+    public IDrawTarget WrapDrawTarget(IDrawTarget inner);
 }
-
-public partial class OptionalContentTarget: IOptionalContentTarget, IRenderTarget
+public partial class OptionalContentCounter: IOptionalContentCounter
 {
     [FromConstructor]private readonly IOptionalContentState contentState;
-    [DelegateTo] [FromConstructor] private IRenderTarget innerTarget;
     
     private uint groupsBelowDeepestVisibleGroup = 0;
 
@@ -41,6 +39,6 @@ public partial class OptionalContentTarget: IOptionalContentTarget, IRenderTarge
     {
         if (IsHidden) groupsBelowDeepestVisibleGroup--;
     }
-    
-    public IDrawTarget CreateDrawTarget() => new OptionalContentDrawTarget(this, innerTarget.CreateDrawTarget());
+
+    public IDrawTarget WrapDrawTarget(IDrawTarget inner) => new OptionalContentDrawTarget(this, inner);
 }

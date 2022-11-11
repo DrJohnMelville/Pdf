@@ -12,6 +12,7 @@ using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
 using Xunit;
 
@@ -28,7 +29,8 @@ public class ColorMacrosTest
         target.SetupGet(i => i.GraphicsState).Returns(()=>state.StronglyTypedCurrentState());
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
         sut = new RenderEngine(page, target.Object, 
-            DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance));
+            DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
+            NullOptionalContentCounter.Instance);
     }
 
     [Fact]

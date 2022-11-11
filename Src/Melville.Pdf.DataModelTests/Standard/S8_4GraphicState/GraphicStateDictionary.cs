@@ -11,6 +11,7 @@ using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
+using Melville.Pdf.Model.Renderers.OptionalContents;
 using Moq;
 using Xunit;
 
@@ -98,7 +99,8 @@ public class GraphicStateDictionary
         target.SetupGet(i => i.GraphicsState).Returns(()=>gs.StronglyTypedCurrentState());
         Assert.Equal(1.0, gs.StronglyTypedCurrentState().LineWidth);
         await new RenderEngine(page, target.Object, 
-                DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance))
+                DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
+                NullOptionalContentCounter.Instance)
             .RunContentStream();
         return gs;
     }
