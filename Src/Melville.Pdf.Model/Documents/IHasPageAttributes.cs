@@ -64,8 +64,8 @@ public static partial class PdfPageAttributes
             .DefaultIfEmpty(new PdfRect?())
             .FirstOrDefaultAsync();
 
-    // In the PDF Spec Version 7.7.3.3 Table 30, only mediabox and cropbpx are inheritable
-    // for symmetry we implement them all is inheritable.  This is harmless, because a writer
+    // In the PDF Spec Version 7.7.3.3 Table 30, only mediabox and cropbox are inheritable
+    // for symmetry we implement them all boxes inheritable.  This is harmless, because a writer
     // would have no reason to put a noninheritable property anywhere but in the page node.
     public static async ValueTask<PdfRect?> GetBoxAsync(
         this IHasPageAttributes item, BoxName boxType) =>
@@ -73,7 +73,7 @@ public static partial class PdfPageAttributes
         await GetBoxOrDefaultAsync(item, FallbackBox(boxType)).CA();
     
     // Standard 7.7.3.3 states that media box is required, however Adobe reader parses files without mediaboxes
-    // without complaining -- so we just default to letter size peper.
+    // without complaining -- so we just default to letter size paper.
     private static ValueTask<PdfRect?> GetBoxOrDefaultAsync(
         IHasPageAttributes item, BoxName? boxType) =>
         boxType.HasValue ? item.GetBoxAsync(boxType.Value): new(UsLetterSizedBox());

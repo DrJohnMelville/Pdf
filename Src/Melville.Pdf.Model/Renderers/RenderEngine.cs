@@ -226,8 +226,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         }
     }
 
-    private ValueTask Render(IHasPageAttributes xObject) =>
-        new RenderEngine(xObject, target, renderer, optionalContent).RunContentStream();
+    private async ValueTask Render(IHasPageAttributes xObject)
+    {
+        var otherEngine = new RenderEngine(xObject, target, renderer, optionalContent);
+        await otherEngine.RunContentStream().CA();
+        CopyLastGlyphMetrics(otherEngine);
+    }
 
     public async ValueTask RunContentStream() =>
         await new ContentStreamParser(this).Parse(
@@ -499,23 +503,37 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public IDrawTarget CreateDrawTarget() => optionalContent.WrapDrawTarget(target.CreateDrawTarget());
 
     public async ValueTask<double> RenderType3Character(
-        Stream s, Matrix3x2 fontMatrix)
+        Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
         if (StateOps.CurrentState().TextRender != TextRendering.Invisible)
         {
-            await DrawType3Character(s, fontMatrix).CA();
+            await DrawType3Character(s, fontMatrix, fontDictionary).CA();
         }
         var ret = CharacterSizeInTextSpace(fontMatrix);
         return ret.X;
     }
 
-    private async Task DrawType3Character(Stream s, Matrix3x2 fontMatrix)
+    private async Task DrawType3Character(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
         SaveGraphicsState();
         var textMatrix = StateOps.CurrentState().TextMatrix;
-        ModifyTransformMatrix(fontMatrix* textMatrix);
-        await new ContentStreamParser(this).Parse(PipeReader.Create(s)).CA();
+        ModifyTransformMatrix(fontMatrix * textMatrix);
+      //  await new ContentStreamParser(this).Parse(PipeReader.Create(s)).CA();
+
+        await Render(new Type3FontPseudoPage(page, fontDictionary, s)).CA();
         RestoreGraphicsState();
+    }
+
+    public partial class Type3FontPseudoPage : IHasPageAttributes
+    {
+        [FromConstructor] private readonly IHasPageAttributes parent;
+        [FromConstructor] private readonly PdfDictionary fontDecl;
+        [FromConstructor] private readonly Stream characterDecl;
+
+        public PdfDictionary LowLevel => fontDecl;
+        public ValueTask<Stream> GetContentBytes() => new(characterDecl);
+
+        public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);
     }
 
     private Vector2 CharacterSizeInTextSpace(Matrix3x2 fontMatrix) =>
@@ -523,6 +541,17 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             fontMatrix);
 
     private double lastWx, lastWy, lastLlx, lastLly, lastUrx, lastUry;
+
+    private void CopyLastGlyphMetrics(RenderEngine other)
+    {
+        lastWx = other.lastWx;
+        lastWy = other.lastWy;
+        lastLlx = other.lastLlx;
+        lastLly = other.lastLly;
+        lastUrx = other.lastUrx;
+        lastUry = other.lastUry;
+        
+    }
 
     public void SetColoredGlyphMetrics(double wX, double wY)
     {

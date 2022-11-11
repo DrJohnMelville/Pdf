@@ -161,9 +161,9 @@ RenderingTest.cs_Skia-BuiltInTrueType|2725999165
 RenderingTest.cs_Skia-EmbeddedTrueType|2231360049
 RenderingTest.cs_Skia-ScriptFontBug|2958240832
 RenderingTest.cs_wpf-EmbeddedOpenType|1655201848
-RenderingTest.cs_wpf-Type3Font|3069889078
+RenderingTest.cs_wpf-Type3Font|4164672424
 RenderingTest.cs_Skia-EmbeddedOpenType|1813864934
-RenderingTest.cs_Skia-Type3Font|2924899270
+RenderingTest.cs_Skia-Type3Font|1685217035
 RenderingTest.cs_Skia-StandardCharSet|1166360848
 RenderingTest.cs_wpf-StandardCharSet|1515172571
 RenderingTest.cs_wpf-SymbolCharSet|1145721059
@@ -416,3 +416,5 @@ RenderingTest.cs_wpf-SegmentedContentStream|2332488482
 RenderingTest.cs_wpf-EncryptedV6|3723711324
 RenderingTest.cs_Skia-CompatibilitySection|2874131714
 RenderingTest.cs_wpf-CompatibilitySection|3448790987
+RenderingTest.cs_wpf-Type3FontWithOwnResource|4164672424
+RenderingTest.cs_Skia-Type3FontWithOwnResource|1685217035

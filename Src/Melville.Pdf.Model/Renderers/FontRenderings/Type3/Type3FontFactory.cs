@@ -47,7 +47,8 @@ public readonly struct Type3FontFactory
 
         return new RealizedType3Font(characters, (byte)firstChar,
             (await ReadTransformMatrix().CA() *
-             Matrix3x2.CreateScale((float)size, (float)size)));
+             Matrix3x2.CreateScale((float)size, (float)size)),
+            font);
     }
 
     private async Task<Matrix3x2> ReadTransformMatrix()

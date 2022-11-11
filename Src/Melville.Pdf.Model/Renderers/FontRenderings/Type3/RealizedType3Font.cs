@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SpanAndMemory;
 using Melville.Parsing.Streams;
@@ -13,23 +14,16 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 public interface IFontTarget
 {
-    ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix);
+    ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
     IDrawTarget CreateDrawTarget();
 }
 
-public class RealizedType3Font : IRealizedFont
+public partial class RealizedType3Font : IRealizedFont
 {
-    private readonly MultiBufferStream[] characters;
-    private readonly byte firstCharacter;
-    private readonly Matrix3x2 fontMatrix;
-    
-    public RealizedType3Font(MultiBufferStream[] characters, byte firstCharacter, 
-        Matrix3x2 fontMatrix)
-    {
-        this.characters = characters;
-        this.firstCharacter = firstCharacter;
-        this.fontMatrix = fontMatrix;
-    }
+    [FromConstructor]private readonly MultiBufferStream[] characters;
+    [FromConstructor]private readonly byte firstCharacter;
+    [FromConstructor]private readonly Matrix3x2 fontMatrix;
+    [FromConstructor]private readonly PdfDictionary rawFont;
 
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
     {
@@ -47,7 +41,7 @@ public class RealizedType3Font : IRealizedFont
         Matrix3x2 charMatrix, IFontTarget target)
     {
         return target.RenderType3Character(
-            characters[glyph].CreateReader(), fontMatrix);
+            characters[glyph].CreateReader(), fontMatrix, rawFont);
     }
     public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
 
