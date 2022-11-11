@@ -523,19 +523,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         await Render(new Type3FontPseudoPage(page, fontDictionary, s)).CA();
         RestoreGraphicsState();
     }
-
-    public partial class Type3FontPseudoPage : IHasPageAttributes
-    {
-        [FromConstructor] private readonly IHasPageAttributes parent;
-        [FromConstructor] private readonly PdfDictionary fontDecl;
-        [FromConstructor] private readonly Stream characterDecl;
-
-        public PdfDictionary LowLevel => fontDecl;
-        public ValueTask<Stream> GetContentBytes() => new(characterDecl);
-
-        public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);
-    }
-
+    
     private Vector2 CharacterSizeInTextSpace(Matrix3x2 fontMatrix) =>
         Vector2.Transform(new Vector2((float)lastWx, (float)(lastUry - lastLly)),
             fontMatrix);
