@@ -28,13 +28,14 @@ namespace Melville.Pdf.Model.Renderers;
 public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
-    private readonly OptionalContentTarget target;
+    private readonly IRenderTarget target;
     private readonly DocumentRenderer renderer;
+    private readonly IOptionalContentTarget optionalContent;
     public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer)
     {
         this.page = page;
-        this.target = new OptionalContentTarget(renderer.OptionalContentState,
-            target);
+        this.target = target;
+        optionalContent = (target as IOptionalContentTarget) ?? NullOptionalContentTarget.Instance;
         this.renderer = renderer;
     }
     
@@ -151,7 +152,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        if (await target.CanSkipXObjectDoOperation(
+        if (await optionalContent.CanSkipXObjectDoOperation(
                 await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()).CA())
             return;
         switch ((inlineImage.SubTypeOrNull()??KnownNames.Image).GetHashCode())
@@ -558,12 +559,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public void BeginMarkedRange(PdfName tag) {}
 
     public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) => 
-        target.EnterGroup(tag, dictName, page);
+        optionalContent.EnterGroup(tag, dictName, page);
 
     public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) =>
-        target.EnterGroup(tag, dictionary);
+        optionalContent.EnterGroup(tag, dictionary);
 
-    public void EndMarkedRange() => target.PopContentGroup();
+    public void EndMarkedRange() => optionalContent.PopContentGroup();
     #endregion
 
     #region Compatability Operators
