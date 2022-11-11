@@ -34,10 +34,5 @@ internal partial class OptionalContentTarget: IRenderTarget
         if (IsHidden) groupsBelowDeepestVisibleGroup--;
     }
     
-    // I have to override both ere and in OptionalContentDrawTarget because innerTarget sometimes creates an
-    // IDrawTarget under the covers and I do not get the chance to wrap it.
-    public void PaintPath(bool stroke, bool fill, bool evenOddFillRule) => 
-        innerTarget.ConditionalPaintPath(!IsHidden, stroke, fill, evenOddFillRule);
-
     public IDrawTarget CreateDrawTarget() => new OptionalContentDrawTarget(this, innerTarget.CreateDrawTarget());
 }

@@ -41,13 +41,6 @@ public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphi
     {
         State.StronglyTypedCurrentState().WpfStackframesPushed++;
     }
-
-    public override void ClipToPath(bool evenOddRule)
-    {
-        if(currentShape is null) return;
-        currentShape.ClipToPath(evenOddRule);
-    }
-
     #endregion
 
     public override void SetBackgroundRect(

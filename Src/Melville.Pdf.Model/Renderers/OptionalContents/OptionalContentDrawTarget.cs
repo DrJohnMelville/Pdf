@@ -9,6 +9,7 @@ internal partial class OptionalContentDrawTarget : IDrawTarget
         
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        innerTarget.ConditionalPaintPath(!parent.IsHidden, stroke, fill, evenOddFillRule);
+        var show = !parent.IsHidden;
+        innerTarget.PaintPath(show && stroke, show && fill, evenOddFillRule);
     }
 }

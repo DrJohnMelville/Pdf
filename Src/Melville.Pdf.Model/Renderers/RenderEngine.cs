@@ -57,6 +57,16 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     #region Drawing Operations
 
+    private IDrawTarget? currentShape = null;
+    
+    private IDrawTarget CurrentShape() => currentShape ??= CreateDrawTarget();
+    public void EndPathWithNoOp()
+    {
+        (currentShape as IDisposable)?.Dispose();
+        currentShape = null;
+    }
+
+    
     private double firstX, firstY;
     private double lastX, lasty;
 
@@ -65,51 +75,51 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public void MoveTo(double x, double y)
     {
-        target.MoveTo(x, y);
+        CurrentShape().MoveTo(x, y);
         SetLast(x,y);
         SetFirst(x,y);
     }
 
     public void LineTo(double x, double y)
     {
-        target.LineTo(x, y);
+        CurrentShape().LineTo(x, y);
         SetLast(x,y);
     }
 
     public void CurveTo(double control1X, double control1Y, double control2X, double control2Y, double finalX, double finalY)
     {
-        target.CurveTo(control1X, control1Y, control2X, control2Y, finalX, finalY);
+        CurrentShape().CurveTo(control1X, control1Y, control2X, control2Y, finalX, finalY);
         SetLast(finalX, finalY);
     }
 
     public void CurveToWithoutInitialControl(double control2X, double control2Y, double finalX, double finalY)
     {
-        target.CurveTo(lastX, lasty, control2X, control2Y, finalX, finalY);
+        CurrentShape().CurveTo(lastX, lasty, control2X, control2Y, finalX, finalY);
         SetLast(finalX, finalY);
     }
 
     public void CurveToWithoutFinalControl(double control1X, double control1Y, double finalX, double finalY)
     {
-        target.CurveTo(control1X, control1Y, finalX, finalY, finalX, finalY);
+        CurrentShape().CurveTo(control1X, control1Y, finalX, finalY, finalX, finalY);
         SetLast(finalX, finalY);
     }
 
     public void ClosePath()
     {
-        target.ClosePath();
+        CurrentShape().ClosePath();
         SetLast(firstX, firstY);
     }
 
     public void Rectangle(double x, double y, double width, double height)
     {
+        var target = CurrentShape();
         target.MoveTo(x,y);
         target.LineTo(x+width,y);
         target.LineTo(x+width,y+height);
         target.LineTo(x,y+height);
         target.ClosePath();
     }
-
-    public void EndPathWithNoOp() => target.EndPath();
+    
     public void StrokePath() => PaintPath(true, false, false);
     public void CloseAndStrokePath() => CloseAndPaintPath(true, false, false);
     public void FillPath() => PaintPath(false, true, false);
@@ -127,13 +137,13 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
     private void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        target.PaintPath(stroke, fill, evenOddFillRule);
+        CurrentShape().PaintPath(stroke, fill, evenOddFillRule);
         EndPathWithNoOp();
     }
 
-    public void ClipToPath() => target.ClipToPath(false);
+    public void ClipToPath() => CurrentShape().ClipToPath(false);
 
-    public void ClipToPathEvenOdd() => target.ClipToPath(true);
+    public void ClipToPathEvenOdd() => CurrentShape().ClipToPath(true);
 
     public async ValueTask DoAsync(PdfName name) =>
         await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name).CA()) as PdfStream ??

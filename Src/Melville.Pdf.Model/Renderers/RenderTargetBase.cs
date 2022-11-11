@@ -23,10 +23,9 @@ public interface IDrawTarget
     void ClipToPath(bool evenOddRule);
 }
 
-public interface IRenderTarget: IDrawTarget, IDisposable
+public interface IRenderTarget: IDisposable
 {
     IGraphicsState GraphicsState { get; }
-    void EndPath();
     ValueTask RenderBitmap(IPdfBitmap bitmap);
     IDrawTarget CreateDrawTarget();
     void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform);
@@ -35,16 +34,13 @@ public interface IRenderTarget: IDrawTarget, IDisposable
     IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
 }
 
-public abstract partial class RenderTargetBase<T, TState>: IRenderTarget
+public abstract class RenderTargetBase<T, TState>: IRenderTarget
    where TState:GraphicsState, new()
 {
     protected T Target { get; }
     protected GraphicsStateStack<TState> State { get; } = new();
     
     public IGraphicsState GraphicsState => State;
-    public void SaveGraphicsState() => State.SaveGraphicsState();
-
-    public void RestoreGraphicsState() => State.RestoreGraphicsState();
 
     protected RenderTargetBase(T target)
     {
@@ -65,19 +61,6 @@ public abstract partial class RenderTargetBase<T, TState>: IRenderTarget
     #region Draw Shapes
 
     public abstract IDrawTarget CreateDrawTarget();
-
-    protected IDrawTarget? currentShape = null;
-    
-    [DelegateTo()]
-    private IDrawTarget CurrentShape() => currentShape ??= CreateDrawTarget();
-
-    public virtual void ClipToPath(bool evenOddRule) => CurrentShape().ClipToPath(evenOddRule);
-    
-    public void EndPath()
-    {
-        (currentShape as IDisposable)?.Dispose();
-        currentShape = null;
-    }
     #endregion
 
     public void CloneStateFrom(GraphicsState priorState)

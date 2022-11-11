@@ -14,10 +14,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 public class DrawingMacroOperations
 {
     private readonly Mock<IRenderTarget> target = new();
+    private readonly Mock<IDrawTarget> drawTarget = new();
     private readonly RenderEngine sut;
 
     public DrawingMacroOperations()
     {
+        target.Setup(i => i.CreateDrawTarget()).Returns(drawTarget.Object);
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
         sut = new RenderEngine(page, target.Object, 
             DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance));
@@ -27,12 +29,12 @@ public class DrawingMacroOperations
     public void Rectangle()
     {
         sut.Rectangle(7,13,17, 19);
-        target.Verify(i=>i.MoveTo(7,13), Times.Once);
-        target.Verify(i=>i.LineTo(24,13), Times.Once);
-        target.Verify(i=>i.LineTo(24,32), Times.Once);
-        target.Verify(i=>i.LineTo(7,32), Times.Once);
-        target.Verify(i=>i.ClosePath(), Times.Once);
-        target.VerifyNoOtherCalls();
+        drawTarget.Verify(i=>i.MoveTo(7,13), Times.Once);
+        drawTarget.Verify(i=>i.LineTo(24,13), Times.Once);
+        drawTarget.Verify(i=>i.LineTo(24,32), Times.Once);
+        drawTarget.Verify(i=>i.LineTo(7,32), Times.Once);
+        drawTarget.Verify(i=>i.ClosePath(), Times.Once);
+        drawTarget.VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -86,9 +88,10 @@ public class DrawingMacroOperations
 
     private void VerifyPathOperation(bool stroke, bool fill, bool evenOddFillRule, bool closePath)
     {
-        if (closePath) target.Verify(i=>i.ClosePath());
-        target.Verify(i => i.PaintPath(stroke, fill, evenOddFillRule));
-        target.Verify(i => i.EndPath());
+        if (closePath) drawTarget.Verify(i=>i.ClosePath());
+        drawTarget.Verify(i => i.PaintPath(stroke, fill, evenOddFillRule));
+        drawTarget.VerifyNoOtherCalls();
+        target.Verify(i=>i.CreateDrawTarget(), Times.Once);
         target.VerifyNoOtherCalls();
     }
 }
