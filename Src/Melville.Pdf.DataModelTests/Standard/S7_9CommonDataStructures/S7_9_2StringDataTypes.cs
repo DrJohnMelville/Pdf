@@ -31,6 +31,19 @@ public class S7_9_2StringDataTypes
         Assert.Equal(text, encoded.AsUtf16());
         Assert.Equal(text, encoded.AsTextString());
     }
+    [Theory]
+    [InlineData("","")]
+    [InlineData("a","\xEF\xBB\x00BFa")]
+    [InlineData("akh","\xEF\xBB\x00BFakh")]
+    [InlineData("a₧","ï»¿aâ‡§")]
+    public void RoundTripUtf8(string text, string utfAscii)
+    {
+        var encoded = PdfString.CreateUtf8(text);
+        Assert.Equal(text, encoded.AsUtf8());
+        Assert.Equal(text, encoded.AsTextString());
+        var asciiRep = encoded.AsAsciiString();
+        Assert.Equal(utfAscii, asciiRep);
+    }
 
     [Fact]
     public void CorrectlyDecodeUtf16LE()

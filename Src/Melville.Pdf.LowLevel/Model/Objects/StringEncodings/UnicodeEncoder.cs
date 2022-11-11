@@ -6,15 +6,16 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 public sealed class UnicodeEncoder
 {
-    public static UnicodeEncoder BigEndian = new UnicodeEncoder(true);
-    public static UnicodeEncoder LittleEndian = new UnicodeEncoder(false);
+    public static UnicodeEncoder BigEndian = new UnicodeEncoder(new UnicodeEncoding(true, true));
+    public static UnicodeEncoder LittleEndian = new UnicodeEncoder(new UnicodeEncoding(false, true));
+    public static UnicodeEncoder Utf8 = new UnicodeEncoder(new UTF8Encoding(true));
         
-    public readonly UnicodeEncoding Encoder;
+    public readonly Encoding Encoder;
     private readonly byte[] preamble;
 
-    public UnicodeEncoder(bool bigEndian)
+    private UnicodeEncoder(Encoding encoder)
     {
-        Encoder = new UnicodeEncoding(bigEndian, true);
+        Encoder = encoder;
         preamble = Encoder.GetPreamble();
     }
 
@@ -24,7 +25,7 @@ public sealed class UnicodeEncoder
         var len = preamble.Length+Encoder.GetByteCount(text);
         var ret = new byte[len ];
         preamble.CopyTo(ret, 0);
-        Encoder.GetBytes(text, 0, text.Length, ret, 2);
+        Encoder.GetBytes(text, 0, text.Length, ret, preamble.Length);
         return ret;
     }
     public string GetString(byte[] bytes)
@@ -34,11 +35,11 @@ public sealed class UnicodeEncoder
             if (bytes.Length == 0) return "";
             throw new PdfParseException("Invalid ByteOrderMark on UtfString");
         }
-        return Encoder.GetString(bytes.AsSpan(2));
+        return Encoder.GetString(bytes.AsSpan(preamble.Length));
     }
 
     public string? TryGetFromBOM(in ReadOnlySpan<byte> bytes) =>
-        HasUtf16BOM(bytes) ? Encoder.GetString(bytes[2..]) : null;
+        HasUtf16BOM(bytes) ? Encoder.GetString(bytes[preamble.Length..]) : null;
 
     public bool HasUtf16BOM(in ReadOnlySpan<byte> bytes) =>
         bytes.Length > 1 && preamble.AsSpan().SequenceEqual(bytes[..preamble.Length]);

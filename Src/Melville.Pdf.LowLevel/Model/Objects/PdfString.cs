@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -32,6 +33,7 @@ public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
         ReadOnlySpan<byte> span = new ReadOnlySpan<byte>(Bytes);
         return UnicodeEncoder.BigEndian.TryGetFromBOM(span) ??
                UnicodeEncoder.LittleEndian.TryGetFromBOM(span) ??
+               UnicodeEncoder.Utf8.TryGetFromBOM(span)??
                AsPdfDocEnccodedString();
     }
 
@@ -41,6 +43,11 @@ public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
 
     public int CompareTo(PdfString? other) => 
         other == null ? 1 : Bytes.AsSpan().SequenceCompareTo(other.Bytes);
+
+    public static PdfString CreateUtf8(string text) => 
+        new(UnicodeEncoder.Utf8.GetBytesWithBOM(text));
+
+    public string AsUtf8() => UnicodeEncoder.Utf8.GetString(Bytes);
 }
 
 public static class ByteOrderDetector {
