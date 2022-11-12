@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
-public interface IDrawingOperations
+public interface IPathDrawingOperations
 {
     /// <summary>
     /// Content stream operator x y m
@@ -101,14 +101,19 @@ public interface IDrawingOperations
     /// Content stream operator W*
     /// </summary>
     void ClipToPathEvenOdd();
+    
+}
 
+public interface IDrawingOperations: IPathDrawingOperations
+{
     /// <summary>
     /// Content stream operator name Do
     /// </summary>
     ValueTask DoAsync(PdfName name);
-
+    /// <summary>
+    /// Content stream operator name sh
+    /// </summary>
     ValueTask PaintShader(PdfName name);
-
     /// <summary>
     /// Context stream operators BI, ID, and EI
     /// </summary>

@@ -422,3 +422,5 @@ RenderingTest.cs_wpf-ZeroLineIsDot|3289637470
 RenderingTest.cs_wpf-ClosedNullLineIsDot|3289637470
 RenderingTest.cs_Skia-ZeroLineIsDot|3380476834
 RenderingTest.cs_Skia-ClosedNullLineIsDot|3380476834
+RenderingTest.cs_wpf-FillTrivialPath|2432644591
+RenderingTest.cs_Skia-FillTrivialPath|3414429199

@@ -10,7 +10,7 @@ namespace Melville.Pdf.Model.Renderers;
 public partial class TrivialPathDetector : IDrawTarget
 {
     [DelegateTo]private IDrawTarget innerTarget = null!;
-    private IGraphicsState graphicsState;
+    private IGraphicsState graphicsState = null!;
     private TrivialPathDetectorState state;
     private double firstX;
     private double firstY;

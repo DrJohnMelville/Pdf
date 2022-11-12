@@ -90,10 +90,10 @@ public class TrivialPathDetectionTest
         VerifyTotalDraw(Times.Exactly(numberOfDraws));
     }
     [Theory]
-    [InlineData(LineCap.Round, 1)]
-    [InlineData(LineCap.Butt, 0)]
-    [InlineData(LineCap.Square, 0)]
-    public void TrivialDrawAtEndDoesNotCancelPainting(LineCap cap, int numberOfDraws)
+    [InlineData(LineCap.Round)]
+    [InlineData(LineCap.Butt)]
+    [InlineData(LineCap.Square)]
+    public void TrivialDrawAtEndDoesNotCancelPainting(LineCap cap)
     {
         SetLineCapMode(cap);
         sut.MoveTo(10,10);
