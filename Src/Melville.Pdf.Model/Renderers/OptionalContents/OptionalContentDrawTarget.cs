@@ -4,12 +4,20 @@ namespace Melville.Pdf.Model.Renderers.OptionalContents;
 
 internal partial class OptionalContentDrawTarget : IDrawTarget
 {
-    [FromConstructor] private readonly OptionalContentCounter parent;
-    [DelegateTo] [FromConstructor] private readonly IDrawTarget innerTarget;
+    private OptionalContentCounter parent = null!;
+    [DelegateTo] private IDrawTarget target = null!;
+
+    public OptionalContentDrawTarget With(OptionalContentCounter parent, IDrawTarget target)
+    {
+        this.parent = parent;
+        this.target = target;
+        return this;
+    }
         
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
         var show = !parent.IsHidden;
-        innerTarget.PaintPath(show && stroke, show && fill, evenOddFillRule);
+        target.PaintPath(show && stroke, show && fill, evenOddFillRule);
+        parent.ReturnDrawTarget(this);
     }
 }

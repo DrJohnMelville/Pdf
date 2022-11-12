@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.ObjectRentals;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
@@ -40,6 +41,8 @@ public partial class OptionalContentCounter: IOptionalContentCounter
         if (IsHidden) groupsBelowDeepestVisibleGroup--;
     }
 
-    
-    public IDrawTarget WrapDrawTarget(IDrawTarget inner) => new OptionalContentDrawTarget(this, inner);
+
+    private static readonly ObjectRentalManager<OptionalContentDrawTarget> targets = new (10);
+    public IDrawTarget WrapDrawTarget(IDrawTarget inner) => targets.Rent().With(this, inner);
+    internal void ReturnDrawTarget(OptionalContentDrawTarget item) => targets.Return(item);
 }
