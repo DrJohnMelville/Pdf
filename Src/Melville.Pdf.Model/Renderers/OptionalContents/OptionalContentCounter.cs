@@ -40,5 +40,6 @@ public partial class OptionalContentCounter: IOptionalContentCounter
         if (IsHidden) groupsBelowDeepestVisibleGroup--;
     }
 
+    
     public IDrawTarget WrapDrawTarget(IDrawTarget inner) => new OptionalContentDrawTarget(this, inner);
 }

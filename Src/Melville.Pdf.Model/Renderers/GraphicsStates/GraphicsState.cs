@@ -66,7 +66,7 @@ public abstract partial  class GraphicsState: IGraphicsState, IDisposable
     [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter")]
     [MacroItem("LineCap", "LineCap", "LineCap.Butt")]
     [MacroItem("double", "DashPhase", "0.0")]
-    [MacroItem("double", "FlatnessTolerance", "0.0")]
+    [MacroItem("double", "FlatnessTolerance", "1.0")]
     [MacroItem("double[]", "DashArray", "Array.Empty<double>()")]
     [MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric")]
     [MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance")]

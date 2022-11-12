@@ -12,4 +12,5 @@ public interface IOptionalContentState
     ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModel(PdfArray? order);
     event EventHandler<EventArgs>? SelectedContentChanged; 
     OptionalContentConfiguration? SelectedConfiguration { get; set; }
+    bool AllVisible();
 }

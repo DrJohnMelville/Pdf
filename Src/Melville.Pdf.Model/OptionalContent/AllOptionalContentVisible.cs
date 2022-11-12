@@ -16,6 +16,7 @@ public sealed partial class AllOptionalContentVisible : IOptionalContentState
         remove {}
     }
     public OptionalContentConfiguration? SelectedConfiguration { get; set; }
+    public bool AllVisible() => true;
 
     public IReadOnlyList<OptionalContentConfiguration> Configurations =>
         Array.Empty<OptionalContentConfiguration>();

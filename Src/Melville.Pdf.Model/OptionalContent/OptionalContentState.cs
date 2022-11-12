@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -14,6 +15,7 @@ public partial class OptionalContentState : IOptionalContentState
     public IReadOnlyList<OptionalContentConfiguration> Configurations { get; }
     [AutoNotify] private OptionalContentConfiguration? selectedConfiguration;
     public event EventHandler<EventArgs>? SelectedContentChanged; 
+    private bool allVisible = true;
 
     public OptionalContentState(Dictionary<PdfDictionary, OptionalGroup> groupStates,
         IReadOnlyList<OptionalContentConfiguration> configurations)
@@ -21,6 +23,12 @@ public partial class OptionalContentState : IOptionalContentState
         this.groupStates = groupStates;
         Configurations = configurations;
         RegisterGroupStateChangeNotifications(groupStates);
+    }
+
+    public bool AllVisible() => allVisible;
+    private void RecomputeAllVisible()
+    {
+        allVisible = groupStates.Values.All(i => i.Visible);
     }
 
     private void RegisterGroupStateChangeNotifications(Dictionary<PdfDictionary, OptionalGroup> groupStates)
@@ -36,6 +44,7 @@ public partial class OptionalContentState : IOptionalContentState
         {
             selectedConfiguration?.HandleRadioButtonExclusivity(og);
         } 
+        RecomputeAllVisible();
         SelectedContentChanged?.Invoke(this, EventArgs.Empty);
     }
 
