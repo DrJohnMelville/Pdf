@@ -41,48 +41,63 @@ public class DrawingMacroOperations
     [Fact]
     public void StrokePath()
     {
+        DrawNontrivialLine();
         sut.StrokePath();
         VerifyPathOperation(true, false, false, false);
     }
+
+    private void DrawNontrivialLine()
+    {
+        sut.MoveTo(10, 10);
+        sut.LineTo(10, 12);
+    }
+
     [Fact]
     public void CloseAndStrokePath()
     {
+        DrawNontrivialLine();
         sut.CloseAndStrokePath();
         VerifyPathOperation(true, false, false, true);
     }
     [Fact]
     public void FillPath()
     {
+        DrawNontrivialLine();
         sut.FillPath();
         VerifyPathOperation(false, true, false, false);
     }
     [Fact]
     public void FillEvenOdd()
     {
+        DrawNontrivialLine();
         sut.FillPathEvenOdd();
         VerifyPathOperation(false, true, true, false);
     }
     [Fact]
     public void FillAndStrokePath()
     {
+        DrawNontrivialLine();
         sut.FillAndStrokePath();
         VerifyPathOperation(true, true, false, false);
     }
     [Fact]
     public void FillAndStrokePathEvenOdd()
     {
+        DrawNontrivialLine();
         sut.FillAndStrokePathEvenOdd();
         VerifyPathOperation(true, true, true, false);
     }
     [Fact]
     public void CloseFillAndStrokePath()
     {
+        DrawNontrivialLine();
         sut.CloseFillAndStrokePath();
         VerifyPathOperation(true, true, false, true);
     }
     [Fact]
     public void CloseFillAndStrokePathEvenOdd()
     {
+        DrawNontrivialLine();
         sut.CloseFillAndStrokePathEvenOdd();
         VerifyPathOperation(true, true, true, true);
     }
@@ -90,9 +105,12 @@ public class DrawingMacroOperations
     private void VerifyPathOperation(bool stroke, bool fill, bool evenOddFillRule, bool closePath)
     {
         if (closePath) drawTarget.Verify(i=>i.ClosePath());
+        drawTarget.Verify(i=>i.MoveTo(10,10));
+        drawTarget.Verify(i=>i.LineTo(10,12));
         drawTarget.Verify(i => i.PaintPath(stroke, fill, evenOddFillRule));
         drawTarget.VerifyNoOtherCalls();
         target.Verify(i=>i.CreateDrawTarget(), Times.Once);
+        target.VerifyGet(i=>i.GraphicsState, Times.AtLeast(1));
         target.VerifyNoOtherCalls();
     }
 }

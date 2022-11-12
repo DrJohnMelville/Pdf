@@ -418,3 +418,7 @@ RenderingTest.cs_Skia-CompatibilitySection|2874131714
 RenderingTest.cs_wpf-CompatibilitySection|3448790987
 RenderingTest.cs_wpf-Type3FontWithOwnResource|4164672424
 RenderingTest.cs_Skia-Type3FontWithOwnResource|1685217035
+RenderingTest.cs_wpf-ZeroLineIsDot|3289637470
+RenderingTest.cs_wpf-ClosedNullLineIsDot|3289637470
+RenderingTest.cs_Skia-ZeroLineIsDot|3380476834
+RenderingTest.cs_Skia-ClosedNullLineIsDot|3380476834

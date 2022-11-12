@@ -42,5 +42,5 @@ public sealed class UnicodeEncoder
         HasUtf16BOM(bytes) ? Encoder.GetString(bytes[preamble.Length..]) : null;
 
     public bool HasUtf16BOM(in ReadOnlySpan<byte> bytes) =>
-        bytes.Length > 1 && preamble.AsSpan().SequenceEqual(bytes[..preamble.Length]);
+        bytes.Length >= preamble.Length && preamble.AsSpan().SequenceEqual(bytes[..preamble.Length]);
 }

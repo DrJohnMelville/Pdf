@@ -53,6 +53,10 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     private IDrawTarget? currentShape = null;
     
+    public IDrawTarget CreateDrawTarget() => 
+        TrivialPathDetectorFactory.Wrap( target.GraphicsState,
+        optionalContent.WrapDrawTarget(
+            target.CreateDrawTarget()));
     private IDrawTarget CurrentShape() => currentShape ??= CreateDrawTarget();
     public void EndPathWithNoOp()
     {
@@ -499,9 +503,6 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     #endregion
 
     #region Type 3 font rendering
-
-    public IDrawTarget CreateDrawTarget() => optionalContent.WrapDrawTarget(target.CreateDrawTarget());
-
     public async ValueTask<double> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
