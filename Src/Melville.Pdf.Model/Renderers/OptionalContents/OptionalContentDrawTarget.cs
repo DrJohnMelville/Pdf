@@ -1,8 +1,9 @@
-﻿using Melville.INPC;
+﻿using System;
+using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
 
-internal partial class OptionalContentDrawTarget : IDrawTarget
+internal partial class OptionalContentDrawTarget : IDrawTarget, IDisposable
 {
     private OptionalContentCounter parent = null!;
     [DelegateTo] private IDrawTarget target = null!;
@@ -18,6 +19,10 @@ internal partial class OptionalContentDrawTarget : IDrawTarget
     {
         var show = !parent.IsHidden;
         target.PaintPath(show && stroke, show && fill, evenOddFillRule);
+    }
+
+    public void Dispose()
+    {
         parent.ReturnDrawTarget(this);
     }
 }

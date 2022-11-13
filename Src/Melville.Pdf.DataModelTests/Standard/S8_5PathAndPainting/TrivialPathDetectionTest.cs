@@ -17,7 +17,7 @@ public class TrivialPathDetectionTest
 
     public TrivialPathDetectionTest()
     {
-        sut = new PathDrawingAdapter(drawTarget.Object, graphicsState.Object);
+        sut = new PathDrawingAdapter(graphicsState.Object, drawTarget.Object);
     }
     private void SetLineCapMode(LineCap cap)
     {

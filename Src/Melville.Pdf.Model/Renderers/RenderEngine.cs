@@ -39,7 +39,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         this.target = target;
         this.renderer = renderer;
         this.optionalContent = optionalContent;
-        pathDrawing = new PathDrawingAdapter(null, target.GraphicsState);
+        pathDrawing = new PathDrawingAdapter(target.GraphicsState, null);
     }
 
     #region Graphics State
