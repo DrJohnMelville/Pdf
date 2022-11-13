@@ -27,11 +27,21 @@ namespace Melville.Pdf.Model.Renderers;
 
 public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
-    [FromConstructor]private readonly IHasPageAttributes page;
-    [FromConstructor]private readonly IRenderTarget target;
-    [FromConstructor]private readonly DocumentRenderer renderer;
-    [FromConstructor]private readonly IOptionalContentCounter optionalContent;
-    
+    private readonly IHasPageAttributes page;
+    private readonly IRenderTarget target;
+    private readonly DocumentRenderer renderer;
+    private readonly IOptionalContentCounter optionalContent;
+    private readonly PathDrawingAdapter pathDrawing;
+
+    public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer, IOptionalContentCounter optionalContent)
+    {
+        this.page = page;
+        this.target = target;
+        this.renderer = renderer;
+        this.optionalContent = optionalContent;
+        pathDrawing = new PathDrawingAdapter(null, target.GraphicsState);
+    }
+
     #region Graphics State
     [DelegateTo] private IGraphicsState StateOps => target.GraphicsState;
     
@@ -51,22 +61,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     #region Drawing Operations
     public IDrawTarget CreateDrawTarget() => 
-        TrivialPathDetectorFactory.Wrap( target.GraphicsState,
         optionalContent.WrapDrawTarget(
-            target.CreateDrawTarget()));
-    private PathDrawingAdapter? pathDrawing;
+            target.CreateDrawTarget());
 
     [DelegateTo]
     private IPathDrawingOperations PathDrawingOperations() =>
-        pathDrawing =
-        pathDrawing is null || pathDrawing.IsInvalid? new PathDrawingAdapter(CreateDrawTarget()):
-            pathDrawing;
-   
-    public void EndPathWithNoOp()
-    {
-        PathDrawingOperations().EndPathWithNoOp();
-        pathDrawing = null;
-    }
+        pathDrawing.IsInvalid? pathDrawing.WithNewTarget(CreateDrawTarget()): pathDrawing;
 
     public async ValueTask DoAsync(PdfName name) =>
         await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name).CA()) as PdfStream ??

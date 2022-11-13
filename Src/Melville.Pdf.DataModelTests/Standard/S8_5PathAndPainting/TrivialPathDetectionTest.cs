@@ -13,11 +13,11 @@ public class TrivialPathDetectionTest
 {
     private readonly Mock<IDrawTarget> drawTarget = new();
     private readonly Mock<IGraphicsState> graphicsState = new();
-    private readonly TrivialPathDetector sut;
+    private readonly PathDrawingAdapter sut;
 
     public TrivialPathDetectionTest()
     {
-        sut = new TrivialPathDetector().With(drawTarget.Object, graphicsState.Object);
+        sut = new PathDrawingAdapter(drawTarget.Object, graphicsState.Object);
     }
     private void SetLineCapMode(LineCap cap)
     {
@@ -30,7 +30,7 @@ public class TrivialPathDetectionTest
     public void BlockTrivialPathFills()
     {
         sut.MoveTo(10, 10);
-        sut.PaintPath(true, true, true);
+        sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Never);
     }
 
@@ -45,15 +45,7 @@ public class TrivialPathDetectionTest
     {
         sut.MoveTo(10, 10);
         sut.LineTo(10, 20);
-        sut.PaintPath(true, true, true);
-        VerifyTotalDraw(Times.Once);
-    }
-    [Fact]
-    public void DrawConicCurve()
-    {
-        sut.MoveTo(10, 10);
-        sut.ConicCurveTo(1,2,3,4);
-        sut.PaintPath(true, true, true);
+        sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Once);
     }
     [Fact]
@@ -61,7 +53,7 @@ public class TrivialPathDetectionTest
     {
         sut.MoveTo(10, 10);
         sut.CurveTo(1,2,3,4,5,6);
-        sut.PaintPath(true, true, true);
+        sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Once);
     }
 
@@ -74,7 +66,7 @@ public class TrivialPathDetectionTest
         SetLineCapMode(cap);
         sut.MoveTo(10,10);
         sut.LineTo(10,10);
-        sut.PaintPath(true, true, true);
+        sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Exactly(numberOfDraws));
     }
     [Theory]
@@ -86,7 +78,7 @@ public class TrivialPathDetectionTest
         SetLineCapMode(cap);
         sut.MoveTo(10,10);
         sut.ClosePath();
-        sut.PaintPath(true, true, true);
+        sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Exactly(numberOfDraws));
     }
     [Theory]
@@ -100,7 +92,7 @@ public class TrivialPathDetectionTest
         sut.LineTo(20,10);
         sut.LineTo(10,10);
         sut.LineTo(10,10);
-        sut.PaintPath(true, true, true);
+        sut.FillAndStrokePathEvenOdd();;
         VerifyTotalDraw(Times.Once);
     }
 }
