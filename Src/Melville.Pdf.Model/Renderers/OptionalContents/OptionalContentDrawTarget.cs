@@ -5,24 +5,20 @@ namespace Melville.Pdf.Model.Renderers.OptionalContents;
 
 internal partial class OptionalContentDrawTarget : IDrawTarget, IDisposable
 {
-    private OptionalContentCounter parent = null!;
+    private OptionalContentCounter optionalContentCounter = null!;
     [DelegateTo] private IDrawTarget target = null!;
 
-    public OptionalContentDrawTarget With(OptionalContentCounter parent, IDrawTarget target)
+    public OptionalContentDrawTarget With(OptionalContentCounter optionalContentCounter, IDrawTarget target)
     {
-        this.parent = parent;
+        this.optionalContentCounter = optionalContentCounter;
         this.target = target;
         return this;
     }
         
     public void PaintPath(bool stroke, bool fill, bool evenOddFillRule)
     {
-        var show = !parent.IsHidden;
-        target.PaintPath(show && stroke, show && fill, evenOddFillRule);
+        if (!optionalContentCounter.IsHidden) target.PaintPath(stroke, fill, evenOddFillRule);
     }
 
-    public void Dispose()
-    {
-        parent.ReturnDrawTarget(this);
-    }
+    public void Dispose() => optionalContentCounter.ReturnDrawTarget(this);
 }

@@ -62,6 +62,10 @@ public class WpfPathCreator : IDrawTarget
     public virtual void ClipToPath(bool evenOddRule)
     {
     }
+
+    public void Dispose()
+    {
+    }
 }
 public class WpfDrawTarget : WpfPathCreator
 {

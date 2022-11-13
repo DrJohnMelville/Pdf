@@ -12,13 +12,14 @@ public sealed partial class PathDrawingAdapter : TrivialPathStateMachine,  IPath
 
     public PathDrawingAdapter WithNewTarget(IDrawTarget target)
     {
+        EndPathWithNoOp();
         this.target = target;
         ResetState();
         return this;
     }
     public void EndPathWithNoOp()
     {
-        (target as IDisposable)?.Dispose();
+        target?.Dispose();
         target = null;
     }
 

@@ -10,7 +10,7 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 namespace Melville.Pdf.Model.Renderers;
 
 
-public interface IDrawTarget
+public interface IDrawTarget: IDisposable
 {
     void SetDrawingTransform(in Matrix3x2 transform);
     void MoveTo(double x, double y);

@@ -25,12 +25,6 @@ public abstract partial class TrivialPathStateMachine
         state = TrivialPathDetectorState.Start;
         FirstX = FirstY = CurrentX = CurrentY = 0.0;
     }
-    
-    protected void RegisterDrawOperationLastPoint(double x, double y)
-    {
-        (CurrentX, CurrentY) = (x, y);
-        CheckLineForStateChange();
-    }
 
     protected void RegisterInitialMove(double x, double y)
     {
@@ -41,6 +35,12 @@ public abstract partial class TrivialPathStateMachine
     private void TryTransitionToInitialMoveState()
     {
         if (state is TrivialPathDetectorState.Start) state = TrivialPathDetectorState.InitialMoveTo;
+    }
+
+    protected void RegisterDrawOperationLastPoint(double x, double y)
+    {
+        (CurrentX, CurrentY) = (x, y);
+        CheckLineForStateChange();
     }
 
     private void CheckLineForStateChange()

@@ -108,6 +108,7 @@ public class DrawingMacroOperations
         drawTarget.Verify(i=>i.MoveTo(10,10));
         drawTarget.Verify(i=>i.LineTo(10,12));
         drawTarget.Verify(i => i.PaintPath(stroke, fill, evenOddFillRule));
+        drawTarget.Verify(i=>i.Dispose());
         drawTarget.VerifyNoOtherCalls();
         target.Verify(i=>i.CreateDrawTarget(), Times.Once);
         target.VerifyGet(i=>i.GraphicsState, Times.AtLeast(1));
