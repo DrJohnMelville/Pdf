@@ -43,7 +43,12 @@ public readonly struct ColorSpaceFactory
 
     private async ValueTask<IColorSpace> SearchForDefault(PdfName name, Func<ValueTask<IColorSpace>> space) =>
         await (await page.GetResourceAsync(ResourceTypeName.ColorSpace, name).CA() is PdfArray array
-            ?  FromArray(array): space()).CA();
+            ?  ExcludeIllegalDefault(array): space()).CA();
+
+    private async ValueTask<IColorSpace> ExcludeIllegalDefault(PdfArray array)
+    {
+        return (await FromArray(array).CA()).AsValidDefaultColorSpace();
+    }
 
     public ValueTask<IColorSpace> FromNameOrArray(PdfObject datum) => datum switch
     {

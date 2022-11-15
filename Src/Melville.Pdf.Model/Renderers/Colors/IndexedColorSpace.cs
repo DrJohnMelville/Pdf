@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -9,15 +10,11 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class IndexedColorSpace: IColorSpace
+public partial class IndexedColorSpace: IColorSpace
 {
-    private readonly DeviceColor[] palette;
-
-    public IndexedColorSpace(DeviceColor[] palette)
-    {
-        this.palette = palette;
-    }
-
+    [FromConstructor]private readonly DeviceColor[] palette;
+    [FromConstructor]private readonly IColorSpace baseColorSpace;
+    
     public DeviceColor SetColor(in ReadOnlySpan<double> newColor) =>
         palette[Math.Clamp((int)newColor[0], 0, palette.Length - 1)];
     public DeviceColor DefaultColor() => palette[0];
@@ -28,7 +25,7 @@ public class IndexedColorSpace: IColorSpace
     {
         var subColorSpace = await new ColorSpaceFactory(page).FromNameOrArray(array.Span[1]).CA();
         int length = (int) (1 + ((PdfNumber)array.Span[2]).IntValue);
-        return new IndexedColorSpace(await GetValues(array.Span[3], subColorSpace, length).CA());
+        return new IndexedColorSpace(await GetValues(array.Span[3], subColorSpace, length).CA(), subColorSpace);
     }
 
     private static ValueTask<DeviceColor[]> GetValues(
@@ -64,4 +61,6 @@ public class IndexedColorSpace: IColorSpace
 
     public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) =>
         new ClosedInterval[] { new(0, (1 << bitsPerComponent) - 1) };
+
+    public IColorSpace AsValidDefaultColorSpace() => baseColorSpace.AsValidDefaultColorSpace();
 }

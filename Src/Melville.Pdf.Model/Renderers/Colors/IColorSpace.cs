@@ -12,6 +12,8 @@ public interface IColorSpace
     DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor);
     public int ExpectedComponents { get; }
     ClosedInterval[] ColorComponentRanges(int bitsPerComponent);
+    // Pdf 2.0 Spec defines which color spaces must substitute a different color space
+    public IColorSpace AsValidDefaultColorSpace() => this;
 }
 
 public static class IColorSpaceOperations
