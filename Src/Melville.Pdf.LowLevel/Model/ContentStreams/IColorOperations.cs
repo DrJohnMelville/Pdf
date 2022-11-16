@@ -5,6 +5,8 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+//PDF spec 2.0 clause 8.6.8 dictates color operators which are turned off at certian times
+// all the operators in this interface get turned off at the right times.
 public interface IColorOperations
 {
     /// <summary>
@@ -17,6 +19,15 @@ public interface IColorOperations
     /// </summary>
     ValueTask SetNonstrokingColorSpace(PdfName colorSpace);
 
+    /// <summary>
+    /// Content stream operator SC
+    /// </summary>
+    void SetStrokeColor(in ReadOnlySpan<double> components);
+
+    /// <summary>
+    /// Content stream operator sc
+    /// </summary>
+    void SetNonstrokingColor(in ReadOnlySpan<double> components);
     
     /// <summary>
     /// Content stream operator SCN
@@ -59,15 +70,9 @@ public interface IColorOperations
     ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black);
     
     /// <summary>
-    /// Content stream operator SC
+    /// Content stream operator renderingIntent ri
     /// </summary>
-    void SetStrokeColor(in ReadOnlySpan<double> components);
-
-    /// <summary>
-    /// Content stream operator sc
-    /// </summary>
-    void SetNonstrokingColor(in ReadOnlySpan<double> components);
-
+    void SetRenderIntent(RenderIntentName intent);
 
 }
 

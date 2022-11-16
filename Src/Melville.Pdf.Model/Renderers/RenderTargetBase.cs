@@ -55,7 +55,7 @@ public abstract class RenderTargetBase<T, TState>: IRenderTarget
                     Matrix3x2.CreateScale((float)(xPixels / rect.Width), (float)(-yPixels / rect.Height)) *
                     Matrix3x2.CreateTranslation(0, (float)yPixels);
         GraphicsState.ModifyTransformMatrix(xform);
-        GraphicsState.StoreInitialTransform();
+        GraphicsState.CurrentState().StoreInitialTransform();
     }
     
     #region Draw Shapes

@@ -16,7 +16,6 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
-using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -32,13 +31,20 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private readonly DocumentRenderer renderer;
     private readonly IOptionalContentCounter optionalContent;
     private readonly PathDrawingAdapter pathDrawing;
+    private readonly SwitchingColorStrategy colorSwitcher;
+    [DelegateTo] private IColorOperations colorOperations => colorSwitcher.CurrentTarget;
+    
 
-    public RenderEngine(IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer, IOptionalContentCounter optionalContent)
+    public RenderEngine(
+        IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer, 
+        IOptionalContentCounter optionalContent)
     {
         this.page = page;
         this.target = target;
         this.renderer = renderer;
         this.optionalContent = optionalContent;
+        colorSwitcher = new SwitchingColorStrategy(
+            new ColorMacroExpansions(target.GraphicsState, page, renderer));
         pathDrawing = new PathDrawingAdapter(target.GraphicsState, null);
     }
 
@@ -54,7 +60,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
 
     public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
-         await StateOps.LoadGraphicStateDictionary(
+         await StateOps.CurrentState().LoadGraphicStateDictionary(
             await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName).CA() as 
                 PdfDictionary ?? throw new PdfParseException($"Cannot find GraphicsState {dictionaryName}")).CA();
     #endregion
@@ -178,93 +184,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         );
 
     #endregion
-
-    #region Color Implementation
     
-    public async ValueTask SetStrokingColorSpace(PdfName colorSpace)
-    {
-        target.GraphicsState.SetStrokeColorSpace(
-            await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
-    }
-
-    public async ValueTask SetNonstrokingColorSpace(PdfName colorSpace) =>
-        target.GraphicsState.SetNonstrokeColorSpace(
-            await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
-    
-    public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
-    {
-        if (colors.Length > 0) SetStrokeColor(colors);
-        return SetStrokingPattern(patternName);
-    }
-
-    private async ValueTask SetStrokingPattern(PdfName? patternName)
-    {
-        if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.GraphicsState.CurrentState()
-                .SetStrokePattern(patternDict, renderer).CA();
-    }
-
-    public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
-    {
-        if (colors.Length > 0) SetNonstrokingColor(colors);
-        return SetNonstrokingPattern(patternName);
-    }
-
-    private async ValueTask SetNonstrokingPattern(PdfName? patternName)
-    {
-        if ((await GetPatternDict(patternName).CA()) is { } patternDict)
-            await target.GraphicsState.CurrentState()
-                .SetNonstrokePattern(patternDict, renderer).CA();
-    }
-
-    private async ValueTask<PdfDictionary?> GetPatternDict(PdfName? patternName) =>
-        patternName != null && (await page.GetResourceAsync(ResourceTypeName.Pattern, patternName).CA()) is
-        PdfDictionary patternDict
-            ? patternDict
-            : null;
-
-        public async ValueTask SetStrokeGray(double grayLevel)
-    {
-        await SetStrokingColorSpace(KnownNames.DeviceGray).CA();
-        SetStrokeColor(stackalloc double[] { grayLevel });
-    }
-
-    public async ValueTask SetStrokeRGB(double red, double green, double blue)
-    {
-        await SetStrokingColorSpace(KnownNames.DeviceRGB).CA();
-        SetStrokeColor(stackalloc double[] { red, green, blue });
-    }
-
-    public async ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
-    {
-        await SetStrokingColorSpace(KnownNames.DeviceCMYK).CA();
-        SetStrokeColor(stackalloc double[] { cyan, magenta, yellow, black });
-    }
-
-    public async ValueTask SetNonstrokingGray(double grayLevel)
-    {
-        await SetNonstrokingColorSpace(KnownNames.DeviceGray).CA();
-        SetNonstrokingColor(stackalloc double[] { grayLevel });
-    }
-
-    public async ValueTask SetNonstrokingRGB(double red, double green, double blue)
-    {
-        await SetNonstrokingColorSpace(KnownNames.DeviceRGB).CA();
-        SetNonstrokingColor(stackalloc double[] { red, green, blue });
-    }
-
-    public async ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
-    {
-        await SetNonstrokingColorSpace(KnownNames.DeviceCMYK).CA();
-        SetNonstrokingColor(stackalloc double[] { cyan, magenta, yellow, black });
-    }
-    #endregion
-
     #region Text Operations
 
     public void BeginTextObject()
     {
-        StateOps.SetBothTextMatrices(Matrix3x2.Identity);
+        StateOps.CurrentState().SetBothTextMatrices(Matrix3x2.Identity);
     }
 
     public void EndTextObject()
@@ -272,7 +197,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
 
     public void MovePositionBy(double x, double y) =>
-        StateOps.SetBothTextMatrices(
+        StateOps.CurrentState().SetBothTextMatrices(
             Matrix3x2.CreateTranslation((float)x,(float)y) 
             * StateOps.CurrentState().TextLineMatrix);
 
@@ -283,7 +208,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
  
     public void SetTextMatrix(double a, double b, double c, double d, double e, double f) =>
-        StateOps.SetBothTextMatrices(new Matrix3x2(
+        StateOps.CurrentState().SetBothTextMatrices(new Matrix3x2(
             (float)a,(float)b,(float)c,(float)d,(float)e,(float)f));
 
     public void MoveToNextTextLine() => 
@@ -434,6 +359,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         if (StateOps.CurrentState().TextRender != TextRendering.Invisible)
         {
             await DrawType3Character(s, fontMatrix, fontDictionary).CA();
+            colorSwitcher.TurnOn();
         }
         var ret = CharacterSizeInTextSpace(fontMatrix);
         return ret.X;
@@ -445,8 +371,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         var textMatrix = StateOps.CurrentState().TextMatrix;
         ModifyTransformMatrix(fontMatrix * textMatrix);
       //  await new ContentStreamParser(this).Parse(PipeReader.Create(s)).CA();
-
-        await Render(new Type3FontPseudoPage(page, fontDictionary, s)).CA();
+      await Render(new Type3FontPseudoPage(page, fontDictionary, s)).CA();
+      
         RestoreGraphicsState();
     }
     
@@ -464,7 +390,6 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         lastLly = other.lastLly;
         lastUrx = other.lastUrx;
         lastUry = other.lastUry;
-        
     }
 
     public void SetColoredGlyphMetrics(double wX, double wY)
@@ -480,6 +405,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         lastLly = llY;
         lastUrx = urX;
         lastUry = urY;
+        colorSwitcher.TurnOff();
     }
 
     #endregion

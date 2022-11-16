@@ -15,16 +15,7 @@ namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
 public interface IGraphicsState : IStateChangingOperations
 {
-    ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
-    void SetStrokeColorSpace(IColorSpace colorSpace);
-    void SetStrokeColor(in ReadOnlySpan<double> components);
-    void SetNonstrokeColorSpace(IColorSpace colorSpace);
-    void SetNonstrokingColor(in ReadOnlySpan<double> components);
     GraphicsState CurrentState();
-    void SetTextMatrix(in Matrix3x2 value);
-    void SetTextLineMatrix(in Matrix3x2 value);
-    void SetBothTextMatrices(in Matrix3x2 value);
-    void StoreInitialTransform();
 }
 
 
@@ -57,7 +48,7 @@ public abstract partial class GraphicsState<T> : GraphicsState
     protected abstract ValueTask<T> CreatePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer);
 }
 
-public abstract partial  class GraphicsState: IGraphicsState, IDisposable
+public abstract partial class GraphicsState: IGraphicsState, IDisposable
 {
     [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
     [MacroItem("Matrix3x2", "InitialTransformMatrix", "Matrix3x2.Identity")]

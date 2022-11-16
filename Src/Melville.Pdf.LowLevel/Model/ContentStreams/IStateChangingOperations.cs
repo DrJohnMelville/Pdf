@@ -50,13 +50,7 @@ public interface IStateChangingOperations
     /// Note the parameters are flipped from the PDF representation to accomodate a params extension method.
     /// </summary>
     void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray);
-
-    /// <summary>
-    /// Content stream operator renderingIntent ri
-    /// </summary>
-    /// <param name="intent"></param>
-    void SetRenderIntent(RenderIntentName intent);
-
+    
     /// <summary>
     /// Content stream operator tolerance i
     /// </summary>
