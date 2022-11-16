@@ -57,6 +57,17 @@ public interface IColorOperations
     /// Content stream operator k
     /// </summary>
     ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black);
+    
+    /// <summary>
+    /// Content stream operator SC
+    /// </summary>
+    void SetStrokeColor(in ReadOnlySpan<double> components);
+
+    /// <summary>
+    /// Content stream operator sc
+    /// </summary>
+    void SetNonstrokingColor(in ReadOnlySpan<double> components);
+
 
 }
 
@@ -71,7 +82,7 @@ public static class ColorCSOperationsHelpers
         this IColorOperations target, ColorSpaceName colorSpace) =>
         target.SetNonstrokingColorSpace(colorSpace);
 
-    public static void SetStrokeColor(this IStateChangingOperations target, params double[] colors) =>
+    public static void SetStrokeColor(this IColorOperations target, params double[] colors) =>
         target.SetStrokeColor(new ReadOnlySpan<double>(colors));
     public static ValueTask SetStrokeColorExtended(this IColorOperations target, params double[] colors) =>
         target.SetStrokeColorExtended(null, new ReadOnlySpan<double>(colors));
@@ -79,7 +90,7 @@ public static class ColorCSOperationsHelpers
         this IColorOperations target, PdfName? name, params double[] colors) =>
         target.SetStrokeColorExtended(name, new ReadOnlySpan<double>(colors));
 
-    public static void SetNonstrokingColor(this IStateChangingOperations target, params double[] colors) =>
+    public static void SetNonstrokingColor(this IColorOperations target, params double[] colors) =>
         target.SetNonstrokingColor(new ReadOnlySpan<double>(colors));
     public static ValueTask SetNonstrokingColorExtended(this IColorOperations target, params double[] colors) =>
         target.SetNonstrokingColorExtended(null, new ReadOnlySpan<double>(colors));

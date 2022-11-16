@@ -17,7 +17,9 @@ public interface IGraphicsState : IStateChangingOperations
 {
     ValueTask LoadGraphicStateDictionary(PdfDictionary dictionary);
     void SetStrokeColorSpace(IColorSpace colorSpace);
+    void SetStrokeColor(in ReadOnlySpan<double> components);
     void SetNonstrokeColorSpace(IColorSpace colorSpace);
+    void SetNonstrokingColor(in ReadOnlySpan<double> components);
     GraphicsState CurrentState();
     void SetTextMatrix(in Matrix3x2 value);
     void SetTextLineMatrix(in Matrix3x2 value);

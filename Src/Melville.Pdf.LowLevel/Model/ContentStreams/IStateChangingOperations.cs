@@ -101,17 +101,6 @@ public interface IStateChangingOperations
     /// </summary>
     void SetTextRise(double value);
     #endregion
-    
-    /// <summary>
-    /// Content stream operator SC
-    /// </summary>
-    void SetStrokeColor(in ReadOnlySpan<double> components);
-
-    /// <summary>
-    /// Content stream operator sc
-    /// </summary>
-    void SetNonstrokingColor(in ReadOnlySpan<double> components);
-
 }
 
 public static class StateChangingCSOperationsHelpers
