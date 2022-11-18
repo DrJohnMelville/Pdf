@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -87,8 +88,7 @@ public abstract class DocumentRenderer: IDisposable
 
     protected abstract ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber);
 
-    public virtual void Dispose()
-    {
-        Cache.Dispose();
-    }
+    public virtual void Dispose() => Cache.Dispose();
+    
+    public virtual IColorOperations AdjustColorOperationsModel(IColorOperations inner) => inner;
 }

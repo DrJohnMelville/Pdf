@@ -44,7 +44,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         this.renderer = renderer;
         this.optionalContent = optionalContent;
         colorSwitcher = new SwitchingColorStrategy(
-            new ColorMacroExpansions(target.GraphicsState, page, renderer));
+            renderer.AdjustColorOperationsModel(
+                new ColorMacroExpansions(target.GraphicsState, page, renderer)));
         pathDrawing = new PathDrawingAdapter(target.GraphicsState, null);
     }
 

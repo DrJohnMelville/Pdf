@@ -50,5 +50,4 @@ public class BlockColorOperatorsTest: IDisposable
     [Fact] public void BlockNonstrokinhRG() => sut.SetNonstrokingRGB(1,2,3);
     [Fact] public void BlockNonstrokinhK() => sut.SetNonstrokingCMYK(1,2,3, 4);
     [Fact] public void BlockRenderIntent() => sut.SetRenderIntent(RenderIntentName.Perceptual);
-    
 }

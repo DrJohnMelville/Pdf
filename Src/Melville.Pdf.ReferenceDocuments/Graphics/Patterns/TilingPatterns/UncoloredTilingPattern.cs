@@ -25,6 +25,9 @@ public class UncoloredTilingPattern : ColoredTilePattern
 0 Tw
 (\001) Tj
 
+.3 .4 .6 RG % verify that color operations are ignores
+.3 .4 .6 rg % verify that color operations are ignored
+
 0.7478 -0.007 TD
 (\002) Tj
 

@@ -10,7 +10,7 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
-public record class PdfTilePattern(PdfDictionary LowLevel) : HasRenderableContentStream(LowLevel)
+public record PdfTilePattern(PdfDictionary LowLevel) : HasRenderableContentStream(LowLevel)
 {
     public override ValueTask<Stream> GetContentBytes() => ((PdfStream)LowLevel).StreamContentAsync();
 
@@ -23,4 +23,7 @@ public record class PdfTilePattern(PdfDictionary LowLevel) : HasRenderableConten
         LowLevel.TryGetValue(KnownNames.Matrix, out var matTask) && await matTask.CA() is PdfArray matArray
             ? await matArray.AsMatrix3x2Async().CA()
             : Matrix3x2.Identity;
+
+    public async ValueTask<int> PaintType() =>
+        (int)(await LowLevel.GetAsync<PdfNumber>(KnownNames.PaintType).CA()).IntValue;
 }

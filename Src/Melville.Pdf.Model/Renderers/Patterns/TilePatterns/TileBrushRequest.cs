@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
@@ -12,7 +13,8 @@ public record struct
         PdfTilePattern TilePattern,
         Matrix3x2 PatternTransform,
         PdfRect BoundingBox,
-        Vector2 RepeatSize)
+        Vector2 RepeatSize,
+        int TilePatternType)
 {
     public static async ValueTask<TileBrushRequest> Parse(PdfDictionary dict)
     {
@@ -21,6 +23,7 @@ public record struct
         var boundingBox = (await pdfPattern.BBox().CA());
         var repeatSize = new Vector2(
             (float)await pdfPattern.XStep().CA(), (float)await pdfPattern.YStep().CA());
-        return new(pdfPattern, patternTransform, boundingBox, repeatSize);
+        var patternType = await pdfPattern.PaintType().CA();
+        return new(pdfPattern, patternTransform, boundingBox, repeatSize, patternType);
     }
 }

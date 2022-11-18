@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
@@ -41,4 +42,9 @@ public class PatternRenderer: DocumentRenderer
 
     public override (int width, int height) ScalePageToRequestedSize(in PdfRect pageSize, Vector2 requestedSize) => 
         ((int)request.RepeatSize.X, (int)request.RepeatSize.Y);
+
+    public override IColorOperations AdjustColorOperationsModel(IColorOperations inner) =>
+        request.TilePatternType == 2? 
+            NullColorOperations.Instance : 
+            base.AdjustColorOperationsModel(inner);
 }
