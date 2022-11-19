@@ -10,7 +10,10 @@ using Performance.Playground.Rendering;
 
 if (false)
 {
-    await new LoadV6File().TestParser();
+    Console.WriteLine("Begin");
+    var pageRendering = new PageRendering();
+    await pageRendering.CreateStream();
+    await pageRendering.RenderSkia();
     Console.WriteLine("done");
 }
 else

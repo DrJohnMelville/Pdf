@@ -7,10 +7,12 @@ namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
 {
+    private const uint NotComputedYet = 0xDEADBEEF;
     private readonly ClosedInterval domain;
     private readonly IPdfFunction function;
     private readonly bool extendLow;
     private readonly bool extendHigh;
+    private readonly uint[] buffer = new uint[1001];
 
     protected ParametricFunctionalShader(in CommonShaderValues values, ClosedInterval domain, IPdfFunction function, bool extendLow, bool extendHigh) : base(in values)
     {
@@ -21,6 +23,8 @@ public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
 
         if (this.function.Range.Length != ColorSpace.ExpectedComponents)
             throw new PdfParseException("Function and colorspace mismatch in type 2 or 3 shader.");
+        
+        buffer.AsSpan().Fill(NotComputedYet);
     }
     
     protected (uint Color, bool IsBbackground) ColorFromT(double tParameter)
@@ -34,14 +38,28 @@ public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
             var (t, _, _) =>   (ColorForValidT(t), false)
         };
     }
+    
+    
 
     private uint ColorForValidT(double t)
     {
         var mappedT = new ClosedInterval(0, 1).MapTo(domain, t);
-        Span<double> rawColor = stackalloc double[ColorSpace.ExpectedComponents];
-        function.Compute(mappedT, rawColor);
-        var deviceColor = ColorSpace.SetColor(rawColor); 
-        return deviceColor.AsArgbUint32();
+        return GetValue(ref BufferSlotForT(mappedT), mappedT);
     }
 
+    private ref uint BufferSlotForT(double mappedT) => ref buffer[(int)(mappedT * 1000)];
+
+    private uint GetValue(ref uint bufferSpot, double mappedT)
+    {
+        if (bufferSpot == NotComputedYet) bufferSpot = ColorFroMappedT(mappedT);
+        return bufferSpot;
+    }
+
+    private uint ColorFroMappedT(double mappedT)
+    {
+        Span<double> rawColor = stackalloc double[ColorSpace.ExpectedComponents];
+        function.Compute(mappedT, rawColor);
+        var deviceColor = ColorSpace.SetColor(rawColor);
+        return deviceColor.AsArgbUint32();
+    }
 }
