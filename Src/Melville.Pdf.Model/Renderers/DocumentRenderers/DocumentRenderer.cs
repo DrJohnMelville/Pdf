@@ -5,7 +5,6 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
@@ -14,7 +13,7 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.OptionalContents;
 using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
-namespace Melville.Pdf.Model.Renderers;
+namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 
 public abstract class DocumentRenderer: IDisposable
 {

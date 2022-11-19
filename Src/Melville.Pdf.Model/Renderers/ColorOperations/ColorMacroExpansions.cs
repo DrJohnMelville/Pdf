@@ -7,9 +7,10 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
-namespace Melville.Pdf.Model.Renderers;
+namespace Melville.Pdf.Model.Renderers.ColorOperations;
 
 public partial class ColorMacroExpansions : IColorOperations
 {

@@ -8,14 +8,14 @@ using Performance.Playground.Rendering;
 
 #pragma warning disable CS0162
 
-if (true)
+if (false)
 {
     await new LoadV6File().TestParser();
     Console.WriteLine("done");
 }
 else
 {
-    BenchmarkRunner.Run<DictionaryVsList>();
+    BenchmarkRunner.Run<PageRendering>();
 }
 
 public static class Timer

@@ -5,7 +5,7 @@ using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
-namespace Melville.Pdf.Model.Renderers;
+namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 
 public static class DocumentRendererFactory
 {

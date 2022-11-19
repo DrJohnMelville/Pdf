@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
+using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
@@ -45,6 +46,6 @@ public class PatternRenderer: DocumentRenderer
 
     public override IColorOperations AdjustColorOperationsModel(IColorOperations inner) =>
         request.TilePatternType == 2? 
-            NullColorOperations.Instance : 
+            ColorOperations.NullColorOperations.Instance : 
             base.AdjustColorOperationsModel(inner);
 }

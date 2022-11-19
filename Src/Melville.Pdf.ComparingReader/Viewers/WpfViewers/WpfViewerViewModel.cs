@@ -2,6 +2,7 @@
 using System.Windows.Media;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.Model.Renderers;
+using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Wpf;
 using Melville.Pdf.Wpf.Rendering;

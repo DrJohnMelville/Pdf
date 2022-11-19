@@ -16,6 +16,8 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
+using Melville.Pdf.Model.Renderers.ColorOperations;
+using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -45,7 +47,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         this.optionalContent = optionalContent;
         colorSwitcher = new SwitchingColorStrategy(
             renderer.AdjustColorOperationsModel(
-                new ColorMacroExpansions(target.GraphicsState, page, renderer)));
+                new ColorOperations.ColorMacroExpansions(target.GraphicsState, page, renderer)));
         pathDrawing = new PathDrawingAdapter(target.GraphicsState, null);
     }
 
