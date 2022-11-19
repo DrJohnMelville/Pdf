@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TieredPGO>true</TieredPGO>      
+        <TargetFramework>net7.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
         <RootNamespace>Melville.Pdf.LowLevelViewer</RootNamespace>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
