@@ -15,10 +15,10 @@ using SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 
+[GenerateDP(typeof(ImageSource), "GlyphImage")]
 [GenerateDP(typeof(PageSelectorViewModel), "GlyphSelector")]
 public partial class FreeTypeGlyphPreview : UserControl
 {
-    [GenerateDP(typeof(ImageSource), "GlyphImage")]
     public FreeTypeGlyphPreview()
     {
         InitializeComponent();

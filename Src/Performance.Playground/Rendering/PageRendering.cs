@@ -13,6 +13,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 using Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
@@ -27,7 +28,7 @@ public class PageRendering
     [GlobalSetup]
     public async Task CreateStream()
     {
-        await new Type2ExtendBoth().WritePdfAsync(data);
+        await new JBigFile.JBig200__8__45__stripe().WritePdfAsync(data);
     }
     
     [Benchmark]

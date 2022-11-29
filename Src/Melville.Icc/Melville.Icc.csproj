@@ -11,8 +11,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Melville.Generators.INPC" Version="0.5.42" />
-        <PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
+        <PackageReference Include="Melville.Generators.INPC" Version="0.6.4" />
+        <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -8,7 +8,7 @@ using Performance.Playground.Rendering;
 
 #pragma warning disable CS0162
 
-if (false)
+if (true)
 {
     Console.WriteLine("Begin");
     var pageRendering = new PageRendering();

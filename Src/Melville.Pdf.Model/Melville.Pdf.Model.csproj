@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Generators.INPC" Version="0.5.42" />
+      <PackageReference Include="Melville.Generators.INPC" Version="0.6.4" />
       <PackageReference Include="SharpFont.NetStandard" Version="1.0.5" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
