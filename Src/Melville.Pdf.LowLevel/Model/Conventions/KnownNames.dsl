@@ -30,6 +30,7 @@ InlineImageField:F
 InlineImageField:H
 InlineImageField:IM
 InlineImageField:I
+InlineImageField:L
 InlineImageField:W
 
 BuiltInFont:TimesRoman!Times-Roman

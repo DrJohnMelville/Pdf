@@ -40,6 +40,7 @@ public static class PdfParserParts
                 {InlineImageFieldName.H, KnownNames.Height},
                 {InlineImageFieldName.IM, KnownNames.ImageMask},
                 {InlineImageFieldName.I, KnownNames.Interpolate},
+                {InlineImageFieldName.L, KnownNames.Length},
                 {InlineImageFieldName.W, KnownNames.Width}
             }), 
             new ExpandSynonymsParser(ContentStreamComposite,
