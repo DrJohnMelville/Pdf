@@ -1,16 +1,11 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
+﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects.StreamDataSources;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
@@ -140,7 +135,7 @@ public readonly struct ContentStreamParser
             switch (reader.TryPeek(out var character), CharClassifier.Classify(character), bfp.Done, opCode)
             {
                 case (true, _, _, (int)ContentStreamOperatorValue.BI):
-                    return ParseInlineImage(bfp);
+                    return InlineImageParser.ParseInlineImage(bfp, target);
                 case (false,_, true, not 0):
                 case (true, not CharacterClass.Regular, _, _):    
                     bfp.Consume(reader.Position);
@@ -168,45 +163,5 @@ public readonly struct ContentStreamParser
         var dict = await PdfParserParts.EmbeddedDictionaryParser.ParseAsync(bfp.CreateParsingReader()).CA();
         target.HandleDictionary(dict);
         return true;
-    }
-    private async ValueTask<bool> ParseInlineImage(BufferFromPipe bfp)
-    {
-        var dict = new DictionaryBuilder(await PdfParserParts.InlineImageDictionaryParser
-            .ParseDictionaryItemsAsync(bfp.CreateParsingReader()).CA());
-        SetTypeAsImage(dict);
-        bfp = await bfp.Refresh().CA();
-        SequencePosition endPos;
-        while (!(DiscoverLengthFromContext.Instance.SearchForEndSequence(bfp, out endPos)))
-        {
-            bfp = await bfp.InvalidateAndRefresh().CA();
-        }
-
-        await target.HandleInlineImage(dict.AsStream(GrabStreamContent(bfp, endPos))).CA();
-        return true;
-    }
-
-    public static void SetTypeAsImage(DictionaryBuilder dict)
-     {
-         dict.WithItem(KnownNames.Type, KnownNames.XObject)
-             .WithItem(KnownNames.Subtype, KnownNames.Image);
-    }
-
-    private byte[] GrabStreamContent(BufferFromPipe bfp, SequencePosition endPos)
-    {
-        var buffer = TrimInitialWhiteSpaceAndTerminalOperator(bfp, endPos);
-        var data = CopeSequenceToBuffer(buffer);
-        bfp.Consume(endPos);
-        return data;
-    }
-
-    private static ReadOnlySequence<byte> TrimInitialWhiteSpaceAndTerminalOperator(
-        in BufferFromPipe bfp, SequencePosition endPos) => bfp.Buffer.Slice(
-        1, bfp.Buffer.Length-3);
-
-    private byte[] CopeSequenceToBuffer(ReadOnlySequence<byte> buffer)
-    {
-        var data = new byte[buffer.Length];
-        buffer.CopyTo(data);
-        return data;
     }
 }

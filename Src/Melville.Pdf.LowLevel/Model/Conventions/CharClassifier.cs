@@ -21,4 +21,8 @@ public static class CharClassifier
             _ => CharacterClass.Regular
         };
     }
+
+    public static bool IsWhite(byte input) => Classify(input) == CharacterClass.White;
+    public static bool IsDelimiter(byte input) => Classify(input) == CharacterClass.Delimiter;
+    public static bool IsRegular(byte input) => Classify(input) == CharacterClass.Regular;
 }
