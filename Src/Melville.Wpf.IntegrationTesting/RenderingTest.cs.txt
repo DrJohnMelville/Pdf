@@ -428,3 +428,5 @@ RenderingTest.cs_Skia-ResourceDictionaryInForm|239842060
 RenderingTest.cs_Skia-ResourceDictionaryInPage|1174754222
 RenderingTest.cs_wpf-ResourceDictionaryInForm|778240709
 RenderingTest.cs_wpf-ResourceDictionaryInPage|3440582752
+RenderingTest.cs_wpf-NegativeSize|2946474737
+RenderingTest.cs_Skia-NegativeSize|1664367666

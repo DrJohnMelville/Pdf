@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.Hacks;
@@ -49,14 +50,18 @@ public readonly partial struct FreeTypeFontFactory
         await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader()).CA();
         return output;
     }
-
     private async ValueTask<IRealizedFont> FontFromFace(Face face)
     {
-        face.SetCharSize(0, 64 * size, 0, 0);
+        face.SetCharSize(0, Math.Abs(64 * size), 0, 0);
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
-        return new FreeTypeFont(face, 
+        return
+            TrySubstituteInvertedSizeFont(
+        new FreeTypeFont(face, 
             new FontRenderings.GlyphMappings.ReadCharacterFactory(fontDefinitionDictionary, encoding).Create(), 
             await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary, encoding).Parse().CA(), 
-            await new FontWidthParser(fontDefinitionDictionary, size).Parse().CA());
+            await new FontWidthParser(fontDefinitionDictionary, size).Parse().CA()));
     }
+
+    private IRealizedFont TrySubstituteInvertedSizeFont(FreeTypeFont freeTypeFont) => 
+        size >= 0 ? freeTypeFont : new InvertedSizeFont(freeTypeFont);
 }
