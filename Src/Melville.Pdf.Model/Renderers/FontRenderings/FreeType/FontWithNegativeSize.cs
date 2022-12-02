@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
- partial class InvertedSizeFont : IRealizedFont
+ partial class FontWithNegativeSize : IRealizedFont
 {
     [DelegateTo] [FromConstructor] private readonly IRealizedFont font;
 

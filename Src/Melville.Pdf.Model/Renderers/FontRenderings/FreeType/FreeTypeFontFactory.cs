@@ -63,5 +63,5 @@ public readonly partial struct FreeTypeFontFactory
     }
 
     private IRealizedFont TrySubstituteInvertedSizeFont(FreeTypeFont freeTypeFont) => 
-        size >= 0 ? freeTypeFont : new InvertedSizeFont(freeTypeFont);
+        size >= 0 ? freeTypeFont : new FontWithNegativeSize(freeTypeFont);
 }
