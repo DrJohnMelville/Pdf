@@ -6,6 +6,7 @@ namespace Melville.Pdf.ReferenceDocuments.Text;
 public abstract class FontDefinitionTest : Card3x5
 {
     protected string TextToRender { get; set; } = "Is Text";
+    protected double FontSize { get; set; } = 70;
     protected FontDefinitionTest(string helpText) : base (helpText)
     {
     }
@@ -30,7 +31,7 @@ public abstract class FontDefinitionTest : Card3x5
 
     private async Task WriteString(ContentStreamWriter csw, ContentStreamWriter.TextBlock tr, PdfName font, int yOffset)
     {
-        await csw.SetFont(font, 70);
+        await csw.SetFont(font, FontSize);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);
         tr.ShowString(TextToRender);
     }
