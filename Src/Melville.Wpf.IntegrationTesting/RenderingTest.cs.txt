@@ -430,3 +430,9 @@ RenderingTest.cs_wpf-ResourceDictionaryInForm|778240709
 RenderingTest.cs_wpf-ResourceDictionaryInPage|3440582752
 RenderingTest.cs_wpf-NegativeSize|2946474737
 RenderingTest.cs_Skia-NegativeSize|1664367666
+RenderingTest.cs_wpf-Type3FontInvisible3|2290224491
+RenderingTest.cs_wpf-Type3FontInvisible7|2290224491
+RenderingTest.cs_wpf-Type3FontNegativeSize|2606965218
+RenderingTest.cs_Skia-Type3FontInvisible3|4036557329
+RenderingTest.cs_Skia-Type3FontInvisible7|4036557329
+RenderingTest.cs_Skia-Type3FontNegativeSize|1296683878

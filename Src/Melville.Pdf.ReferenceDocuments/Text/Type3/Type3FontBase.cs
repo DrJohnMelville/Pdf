@@ -1,21 +1,22 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.Type3;
 
-public class Type3FontWithOwnResource: FontDefinitionTest
+public abstract class Type3FontBase: FontDefinitionTest
 {
-    public Type3FontWithOwnResource() : base("Render a type 3 font with its own resources")
+    protected Type3FontBase(string name) : base(name)
     {
         TextToRender = "abaabb";
     }
-    
-    private static PdfDictionary LineStyleDict()
+    protected override void SetPageProperties(PageCreator page)
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.LW, 15)
-            .WithItem(KnownNames.D,
-                new PdfArray(new PdfArray(30), new PdfInteger(0)))
-            .AsDictionary();
+        base.SetPageProperties(page);
+        page.AddResourceObject(ResourceTypeName.ExtGState, NameDirectory.Get("GS1"),
+            new DictionaryBuilder()
+                .WithItem(KnownNames.LW, 15)
+                .WithItem(KnownNames.D,
+                    new PdfArray(new PdfArray(30), new PdfInteger(0)))
+                .AsDictionary());
     }
 
     protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
@@ -23,6 +24,8 @@ public class Type3FontWithOwnResource: FontDefinitionTest
         var triangle = arg.Add(new DictionaryBuilder().AsStream(@"
 /GS1 gs
 1000 0 0 0 750 750 d1
+0 0 1 RG %prove color setting operations have no effect
+0 0 1 rg
 0 0 m
 375 750 l
 750 0 l
@@ -68,10 +71,6 @@ s"));
             .WithItem(KnownNames.FirstChar, new PdfInteger(97))
             .WithItem(KnownNames.LastChar, new PdfInteger(98))
             .WithItem(KnownNames.Widths, new PdfArray(new PdfInteger(1000), new PdfInteger(1000)))
-            .WithItem(KnownNames.Resources,
-                new DictionaryBuilder()
-                    .WithItem(KnownNames.ExtGState, new DictionaryBuilder()
-                        .WithItem(NameDirectory.Get("GS1"), LineStyleDict()).AsDictionary()).AsDictionary())
             .AsDictionary();
     }
 }

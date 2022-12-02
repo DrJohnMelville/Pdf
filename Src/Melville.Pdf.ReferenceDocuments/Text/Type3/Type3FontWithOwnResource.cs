@@ -1,23 +1,21 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.Type3;
 
-public class Type3Font: FontDefinitionTest
+public class Type3FontWithOwnResource: FontDefinitionTest
 {
-    public Type3Font() : base("Render a type 3 font")
+    public Type3FontWithOwnResource() : base("Render a type 3 font with its own resources")
     {
         TextToRender = "abaabb";
     }
-
-    protected override void SetPageProperties(PageCreator page)
+    
+    private static PdfDictionary LineStyleDict()
     {
-        base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ExtGState, NameDirectory.Get("GS1"),
-            new DictionaryBuilder()
-                .WithItem(KnownNames.LW, 15)
-                .WithItem(KnownNames.D,
-                    new PdfArray(new PdfArray(30), new PdfInteger(0)))
-                .AsDictionary());
+        return new DictionaryBuilder()
+            .WithItem(KnownNames.LW, 15)
+            .WithItem(KnownNames.D,
+                new PdfArray(new PdfArray(30), new PdfInteger(0)))
+            .AsDictionary();
     }
 
     protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
@@ -70,6 +68,10 @@ s"));
             .WithItem(KnownNames.FirstChar, new PdfInteger(97))
             .WithItem(KnownNames.LastChar, new PdfInteger(98))
             .WithItem(KnownNames.Widths, new PdfArray(new PdfInteger(1000), new PdfInteger(1000)))
+            .WithItem(KnownNames.Resources,
+                new DictionaryBuilder()
+                    .WithItem(KnownNames.ExtGState, new DictionaryBuilder()
+                        .WithItem(NameDirectory.Get("GS1"), LineStyleDict()).AsDictionary()).AsDictionary())
             .AsDictionary();
     }
 }

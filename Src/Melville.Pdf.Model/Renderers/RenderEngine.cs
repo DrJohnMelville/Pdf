@@ -359,7 +359,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask<double> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
-        if (StateOps.CurrentState().TextRender != TextRendering.Invisible)
+        if (!(StateOps.CurrentState().TextRender is TextRendering.Invisible or TextRendering.Clip))
         {
             await DrawType3Character(s, fontMatrix, fontDictionary).CA();
             colorSwitcher.TurnOn();
@@ -373,10 +373,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         SaveGraphicsState();
         var textMatrix = StateOps.CurrentState().TextMatrix;
         ModifyTransformMatrix(fontMatrix * textMatrix);
-      //  await new ContentStreamParser(this).Parse(PipeReader.Create(s)).CA();
-      await Render(new Type3FontPseudoPage(page, fontDictionary, s)).CA();
-      
-        RestoreGraphicsState();
+        await Render(new Type3FontPseudoPage(page, fontDictionary, s)).CA();
+      RestoreGraphicsState();
     }
     
     private Vector2 CharacterSizeInTextSpace(Matrix3x2 fontMatrix) =>

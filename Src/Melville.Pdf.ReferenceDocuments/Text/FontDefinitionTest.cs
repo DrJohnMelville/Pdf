@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using System.ComponentModel.Design;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
@@ -26,7 +27,13 @@ public abstract class FontDefinitionTest : Card3x5
         using var tr = csw.StartTextBlock();
         await csw.SetStrokeRGB(1.0, 0.0, 0.0);
         await WriteString(csw, tr, Font1, 25);
+        await BetweenFontWrites(csw);
         await WriteString(csw, tr, Font2, 125);
+    }
+
+    protected virtual ValueTask BetweenFontWrites(ContentStreamWriter csw)
+    {
+        return ValueTask.CompletedTask;
     }
 
     private async Task WriteString(ContentStreamWriter csw, ContentStreamWriter.TextBlock tr, PdfName font, int yOffset)
