@@ -424,3 +424,7 @@ RenderingTest.cs_Skia-ZeroLineIsDot|3380476834
 RenderingTest.cs_Skia-ClosedNullLineIsDot|3380476834
 RenderingTest.cs_wpf-FillTrivialPath|2432644591
 RenderingTest.cs_Skia-FillTrivialPath|3414429199
+RenderingTest.cs_Skia-ResourceDictionaryInForm|239842060
+RenderingTest.cs_Skia-ResourceDictionaryInPage|1174754222
+RenderingTest.cs_wpf-ResourceDictionaryInForm|778240709
+RenderingTest.cs_wpf-ResourceDictionaryInPage|3440582752
