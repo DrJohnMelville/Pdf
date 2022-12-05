@@ -1,11 +1,11 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
 
 public class DifferenceWithFontGlyphName : FontDefinitionTest
 {
-    
+
     public DifferenceWithFontGlyphName() : base("Uses an encoding dictionary to make a different font array")
     {
         TextToRender = "Text\x01";

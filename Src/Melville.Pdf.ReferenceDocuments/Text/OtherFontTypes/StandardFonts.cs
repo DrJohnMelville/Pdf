@@ -1,8 +1,8 @@
 ﻿using Melville.Pdf.LowLevel.Model.Wrappers;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.OtherFontTypes;
 
-public class StandardFonts: CreatePdfParser
+public class StandardFonts : CreatePdfParser
 {
     public StandardFonts() : base("Display the 14 standard fonts")
     {
@@ -25,26 +25,26 @@ public class StandardFonts: CreatePdfParser
                 block.ShowString($"This is {(PdfName)font}");
                 ypos -= 25;
             }
-            
+
         });
-        await LowLevelDocumentWriterOperations.WriteToAsync(creator.CreateDocument(), target);
+        await creator.CreateDocument().WriteToAsync(target);
     }
 
     private IEnumerable<BuiltInFontName> AllFonts() => new BuiltInFontName[]
     {
-        BuiltInFontName.Courier, 
-        BuiltInFontName.CourierBold, 
-        BuiltInFontName.CourierOblique, 
-        BuiltInFontName.CourierBoldOblique, 
-        BuiltInFontName.Helvetica, 
-        BuiltInFontName.HelveticaBold, 
-        BuiltInFontName.HelveticaOblique, 
-        BuiltInFontName.HelveticaBoldOblique, 
-        BuiltInFontName.TimesRoman, 
-        BuiltInFontName.TimesBold, 
+        BuiltInFontName.Courier,
+        BuiltInFontName.CourierBold,
+        BuiltInFontName.CourierOblique,
+        BuiltInFontName.CourierBoldOblique,
+        BuiltInFontName.Helvetica,
+        BuiltInFontName.HelveticaBold,
+        BuiltInFontName.HelveticaOblique,
+        BuiltInFontName.HelveticaBoldOblique,
+        BuiltInFontName.TimesRoman,
+        BuiltInFontName.TimesBold,
         BuiltInFontName.TimesOblique,
         BuiltInFontName.TimesBoldOblique,
-        BuiltInFontName.Symbol, 
+        BuiltInFontName.Symbol,
         BuiltInFontName.ZapfDingbats,
     };
 }

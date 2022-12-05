@@ -1,4 +1,4 @@
-﻿namespace Melville.Pdf.ReferenceDocuments.Text;
+﻿namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
 
 public class StandardCharSet : DisplayCharSet
 {

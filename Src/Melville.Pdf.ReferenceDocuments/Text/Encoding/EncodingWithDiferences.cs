@@ -1,10 +1,10 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
 
 public class EncodingWithDiferences : FontDefinitionTest
 {
-    
+
     public EncodingWithDiferences() : base("Uses an encoding dictionary to make a different font array")
     {
         TextToRender = "ABC DE";

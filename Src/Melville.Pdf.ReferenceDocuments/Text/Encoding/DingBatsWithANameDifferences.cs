@@ -1,10 +1,10 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
 
 public class DingBatsWithANameDifferences : FontDefinitionTest
 {
-    
+
     public DingBatsWithANameDifferences() : base("Uses an encoding dictionary To recode dingbats with postscript A names")
     {
         TextToRender = "\u0001\u0002\u0003\u0004";

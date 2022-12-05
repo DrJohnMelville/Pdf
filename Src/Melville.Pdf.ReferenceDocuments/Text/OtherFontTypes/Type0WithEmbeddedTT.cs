@@ -1,6 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.OtherFontTypes;
 
 public class Type0WithEmbeddedTT : Type0Base
 {
@@ -9,7 +9,7 @@ public class Type0WithEmbeddedTT : Type0Base
     }
 }
 
-public class Type0WithTightDefaultCharSpacing: Type0Base
+public class Type0WithTightDefaultCharSpacing : Type0Base
 {
     public Type0WithTightDefaultCharSpacing() : base("Type 0 with a DW parameter of 500, which should be tight chars.")
     {
@@ -20,7 +20,7 @@ public class Type0WithTightDefaultCharSpacing: Type0Base
         return base.CidFontBuilder(arg).WithItem(KnownNames.DW, 500);
     }
 }
-public class Type0WithIndividualCharSpacing: Type0Base
+public class Type0WithIndividualCharSpacing : Type0Base
 {
     public Type0WithIndividualCharSpacing() : base("Type 0 with a first parameter type, which should be individual widths.")
     {

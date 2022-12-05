@@ -2,15 +2,15 @@
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.TextRenderings;
 
 public abstract class TextAttributeTest : Card3x5
 {
-    protected TextAttributeTest(string helpText) : base (helpText)
+    protected TextAttributeTest(string helpText) : base(helpText)
     {
     }
 
-    private static readonly PdfName fontName = NameDirectory.Get("F1"); 
+    private static readonly PdfName fontName = NameDirectory.Get("F1");
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(fontName, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);
@@ -22,10 +22,10 @@ public abstract class TextAttributeTest : Card3x5
         {
             await csw.SetStrokeRGB(1.0, 0.0, 0.0);
             await csw.SetFont(fontName, 70);
-            tr.SetTextMatrix(1,0,0,1,30,25);
+            tr.SetTextMatrix(1, 0, 0, 1, 30, 25);
             tr.ShowString("Is Text");
             SetTestedParameter(csw);
-            tr.SetTextMatrix(1,0,0,1,30,125);
+            tr.SetTextMatrix(1, 0, 0, 1, 30, 125);
             tr.ShowString("Is Text");
         }
     }
@@ -43,12 +43,12 @@ public abstract class ClippingTextAttributeTest : TextAttributeTest
     {
         await base.DoPaintingAsync(csw);
         await csw.SetNonstrokingRGB(0, 1, 0);
-        csw.Rectangle(10,130, 300, 20);
+        csw.Rectangle(10, 130, 300, 20);
         csw.FillPath();
     }
 }
 
-public class CharacterSpacing: TextAttributeTest
+public class CharacterSpacing : TextAttributeTest
 {
     public CharacterSpacing() : base("Set the Character Spacing")
     {
@@ -59,7 +59,7 @@ public class CharacterSpacing: TextAttributeTest
         csw.SetCharSpace(30);
     }
 }
-public class TextRise: TextAttributeTest
+public class TextRise : TextAttributeTest
 {
     public TextRise() : base("Set the TextRise")
     {
@@ -70,7 +70,7 @@ public class TextRise: TextAttributeTest
         csw.SetTextRise(30);
     }
 }
-public class WordSpacing: TextAttributeTest
+public class WordSpacing : TextAttributeTest
 {
     public WordSpacing() : base("Set the Word Spacing")
     {
@@ -107,7 +107,7 @@ public class StrokeAndFillText : TextAttributeTest
     {
     }
 
-    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+    protected override void SetTestedParameter(ContentStreamWriter csw) =>
         csw.SetTextRender(TextRendering.FillAndStroke);
 }
 
@@ -117,7 +117,7 @@ public class InvisibleText : TextAttributeTest
     {
     }
 
-    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+    protected override void SetTestedParameter(ContentStreamWriter csw) =>
         csw.SetTextRender(TextRendering.Invisible);
 }
 
@@ -127,7 +127,7 @@ public class StrokeAndClip : ClippingTextAttributeTest
     {
     }
 
-    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+    protected override void SetTestedParameter(ContentStreamWriter csw) =>
         csw.SetTextRender(TextRendering.StrokeAndClip);
 }
 
@@ -137,7 +137,7 @@ public class FillAndClip : ClippingTextAttributeTest
     {
     }
 
-    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+    protected override void SetTestedParameter(ContentStreamWriter csw) =>
         csw.SetTextRender(TextRendering.FillAndClip);
 }
 public class StrokeFillAndClip : ClippingTextAttributeTest
@@ -146,7 +146,7 @@ public class StrokeFillAndClip : ClippingTextAttributeTest
     {
     }
 
-    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+    protected override void SetTestedParameter(ContentStreamWriter csw) =>
         csw.SetTextRender(TextRendering.FillStrokeAndClip);
 }
 
@@ -156,6 +156,6 @@ public class ClipToText : ClippingTextAttributeTest
     {
     }
 
-    protected override void SetTestedParameter(ContentStreamWriter csw) => 
+    protected override void SetTestedParameter(ContentStreamWriter csw) =>
         csw.SetTextRender(TextRendering.Clip);
 }

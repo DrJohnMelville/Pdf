@@ -1,22 +1,22 @@
 ﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
 
 public abstract class DisplayCharSet : Card3x5
 {
     private readonly BuiltInFontName name;
     private readonly PdfObject fontEncodingName;
 
-    protected DisplayCharSet(BuiltInFontName name) : this (name, FontEncodingName.StandardEncoding){}
+    protected DisplayCharSet(BuiltInFontName name) : this(name, FontEncodingName.StandardEncoding) { }
 
     protected DisplayCharSet(BuiltInFontName name, FontEncodingName fontEncodingName) :
         this(name, (PdfName)fontEncodingName)
     {
     }
 
-    protected DisplayCharSet(BuiltInFontName name, PdfObject fontEncodingName) : 
-        base ($"All Characters of the {name} Charset")
+    protected DisplayCharSet(BuiltInFontName name, PdfObject fontEncodingName) :
+        base($"All Characters of the {name} Charset")
     {
         this.name = name;
         this.fontEncodingName = fontEncodingName;
@@ -33,12 +33,12 @@ public abstract class DisplayCharSet : Card3x5
     {
         using (var tr = csw.StartTextBlock())
         {
-            tr.SetTextMatrix(1,0,0,1,30,224);
+            tr.SetTextMatrix(1, 0, 0, 1, 30, 224);
             csw.SetTextLeading(12);
             await csw.SetFont(fontName, 12);
-            for (int i = 0; i < 16; i++) 
+            for (int i = 0; i < 16; i++)
             {
-                await tr.MoveToNextLineAndShowString(Enumerable.Range(0,16).Select(j=>(byte)(16*i + j)).ToArray());
+                await tr.MoveToNextLineAndShowString(Enumerable.Range(0, 16).Select(j => (byte)(16 * i + j)).ToArray());
             }
         }
     }

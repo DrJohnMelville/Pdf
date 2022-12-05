@@ -1,6 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
 
 public class WinAnsiCharSet : DisplayCharSet
 {

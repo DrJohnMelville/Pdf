@@ -2,21 +2,21 @@
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.TextRenderings;
 
 public class WriteSpacedText : Card3x5
 {
-    public WriteSpacedText() : base ("White text using the TJ operator")
+    public WriteSpacedText() : base("White text using the TJ operator")
     {
     }
 
-    private static readonly PdfName Font1 = NameDirectory.Get("F1"); 
+    private static readonly PdfName Font1 = NameDirectory.Get("F1");
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(Font1, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);
     }
 
-    
+
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
         using var tr = csw.StartTextBlock();

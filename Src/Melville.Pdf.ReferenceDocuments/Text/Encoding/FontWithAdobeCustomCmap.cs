@@ -1,7 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
 
 public class FontWithAdobeCustomCmap : FontDefinitionTest
 {
@@ -18,7 +18,7 @@ public class FontWithAdobeCustomCmap : FontDefinitionTest
      */
     public FontWithAdobeCustomCmap() : base("This symbol font uses and adobe custom CMAP.  This may be a correct file.")
     {
-        this.TextToRender = "\xB6";
+        TextToRender = "\xB6";
     }
 
     protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
@@ -40,7 +40,7 @@ public class FontWithAdobeCustomCmap : FontDefinitionTest
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.Type1)
-            .WithItem(KnownNames.FirstChar,0)
+            .WithItem(KnownNames.FirstChar, 0)
             .WithItem(KnownNames.FontDescriptor, descrip)
             .WithItem(KnownNames.BaseFont, NameDirectory.Get("JLPYHV+UniversalStd-NewsmithCommPo"))
             .AsDictionary();

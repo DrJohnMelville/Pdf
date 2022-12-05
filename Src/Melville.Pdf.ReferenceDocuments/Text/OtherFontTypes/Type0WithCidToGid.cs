@@ -1,6 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.OtherFontTypes;
 
 public class Type0WithCidToGid : FontDefinitionTest
 {
@@ -52,6 +52,6 @@ public class Type0WithCidToGid : FontDefinitionTest
         return CIDFontBuilder;
     }
 
-    private byte[] CreateCDIDToGID() => 
+    private byte[] CreateCDIDToGID() =>
         Enumerable.Range(20, 10).SelectMany(i => new byte[] { 0, (byte)i }).ToArray();
 }

@@ -2,7 +2,7 @@
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 
-namespace Melville.Pdf.ReferenceDocuments.Text;
+namespace Melville.Pdf.ReferenceDocuments.Text.TrueType;
 
 public class EmbeddedTrueType : FontDefinitionTest
 {
