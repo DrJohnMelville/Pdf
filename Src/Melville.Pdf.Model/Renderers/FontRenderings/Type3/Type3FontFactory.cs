@@ -11,12 +11,10 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 public readonly struct Type3FontFactory
 {
     private readonly PdfDictionary font;
-    private readonly double size;
 
-    public Type3FontFactory(PdfDictionary font, double size)
+    public Type3FontFactory(PdfDictionary font)
     {
         this.font = font;
-        this.size = size;
     }
 
     public async ValueTask<IRealizedFont> ParseAsync()
@@ -45,10 +43,7 @@ public readonly struct Type3FontFactory
             }
         }
 
-        return new RealizedType3Font(characters, (byte)firstChar,
-            (await ReadTransformMatrix().CA() *
-             Matrix3x2.CreateScale((float)size, (float)size)),
-            font);
+        return new RealizedType3Font(characters, (byte)firstChar, await ReadTransformMatrix().CA(), font);
     }
 
     private async Task<Matrix3x2> ReadTransformMatrix()

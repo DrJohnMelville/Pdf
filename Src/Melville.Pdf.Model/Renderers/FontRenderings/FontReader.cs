@@ -21,20 +21,17 @@ public readonly struct FontReader
         this.defaultMapper = defaultMapper;
     }
     
-    public ValueTask<IRealizedFont> NameToRealizedFont(PdfName name, FreeTypeFontFactory factory) =>
-        defaultMapper.FontFromName(name, FontFlags.None, factory);
+    public  ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict) => 
+         PdfFontToRealizedFont(new PdfFont(fontDict));
 
-    public  ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict, double size) => 
-         PdfFontToRealizedFont(size, new PdfFont(fontDict));
-
-    private ValueTask<IRealizedFont> PdfFontToRealizedFont(double size, PdfFont font)
+    private ValueTask<IRealizedFont> PdfFontToRealizedFont(PdfFont font)
     {
         var fontTypeKey = font.SubType().GetHashCode();
         return fontTypeKey switch
         {
-            KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel, size).ParseAsync(),
-            KnownNameKeys.Type0 => CreateType0Font(font, new FreeTypeFontFactory(size, font)),
-            _ => CreateRealizedFont(font, new FreeTypeFontFactory(size, font))
+            KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel).ParseAsync(),
+            KnownNameKeys.Type0 => CreateType0Font(font, new FreeTypeFontFactory(font)),
+            _ => CreateRealizedFont(font, new FreeTypeFontFactory(font))
         };
     }
 

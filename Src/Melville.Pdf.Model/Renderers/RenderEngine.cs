@@ -221,38 +221,31 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         var fontResource = await page.GetResourceAsync(ResourceTypeName.Font, font).CA();
         var typeFace = fontResource is PdfDictionary fontDic ?
-            await FontFromDictionary(size, fontDic).CA():
-            await SystemFontFromName(font, size).CA();
+            await FontFromDictionary(fontDic).CA():
+            await SystemFontFromName(font).CA();
         
         StateOps.CurrentState().SetTypeface(await RendererSpecificFont(typeFace).CA());
         await StateOps.CurrentState().SetFont(font,size).CA();
     }
 
-    private ValueTask<IRealizedFont> SystemFontFromName(PdfName font, double size) =>
-        FontFromDictionary(size, new DictionaryBuilder()
+    private ValueTask<IRealizedFont> SystemFontFromName(PdfName font) =>
+        FontFromDictionary(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.Type1)
             .WithItem(KnownNames.BaseFont, font)
             .AsDictionary()
         );
 
-    private async ValueTask<IRealizedFont> FontFromDictionary(double size, PdfDictionary fontDic) => 
-        BlockFontDispose.AsNonDisposableTypeface(await CheckCacheForFont(size, fontDic).CA());
+    private async ValueTask<IRealizedFont> FontFromDictionary(PdfDictionary fontDic) => 
+        BlockFontDispose.AsNonDisposableTypeface(await CheckCacheForFont(fontDic).CA());
 
-    //The renderer is allowed to optimize the font rendering using render specific structures, so we include the
-    // type of the renderer just so that we do not get unexpected structures if a document is rendered
-    // in more than one renderer.
     private ValueTask<IRealizedFont> RendererSpecificFont(IRealizedFont typeFace) =>
-        renderer.Cache.Get(typeFace, r=> new ValueTask<IRealizedFont>(
-            ((IRenderTarget)target).WrapRealizedFont(r)));
+        renderer.Cache.Get(typeFace, r=> new ValueTask<IRealizedFont>(target.WrapRealizedFont(r)));
 
-    private ValueTask<IRealizedFont> CheckCacheForFont(double size, PdfDictionary fontDic) =>
-        renderer.Cache.Get(new FontRecord(fontDic, size), 
-            r=> FontReader().DictionaryToRealizedFont(r.Dictionary,r.Size));
+    private ValueTask<IRealizedFont> CheckCacheForFont(PdfDictionary fontDic) =>
+        renderer.Cache.Get(fontDic, r=> FontReader().DictionaryToRealizedFont(r));
      
     private FontReader FontReader() => new(renderer.FontMapper);
-
-    private record struct FontRecord(PdfDictionary Dictionary, double Size);
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
@@ -279,15 +272,19 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private Matrix3x2 CharacterPositionMatrix() =>
         (GlyphAdjustmentMatrix() * StateOps.CurrentState().TextMatrix);
 
+#warning turn off font size hinting since I do scaling myself
+#warning use the formulas on page 310-311 to update the text matrix
+
+
     private Matrix3x2 GlyphAdjustmentMatrix() => new(
-        (float)StateOps.CurrentState().HorizontalTextScale / 100, 0,
-        0, 1,
+        (float) (StateOps.CurrentState().FontSize * StateOps.CurrentState().HorizontalTextScale / 100), 0,
+        0, (float)StateOps.CurrentState().FontSize,
         0, (float)StateOps.CurrentState().TextRise);
 
     private void AdjustTextPositionForCharacter(double width, uint character)
     {
         var delta = CharacterSpacingAdjustment(character);
-        UpdateTextPosition(width+delta);
+        UpdateTextPosition(width*StateOps.CurrentState().FontSize+delta);
     }
 
     private double CharacterSpacingAdjustment(uint character) =>
@@ -371,7 +368,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     private async Task DrawType3Character(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
         SaveGraphicsState();
-        var textMatrix = StateOps.CurrentState().TextMatrix;
+        var textMatrix = CharacterPositionMatrix();
         ModifyTransformMatrix(fontMatrix * textMatrix);
         await Render(new Type3FontPseudoPage(page, fontDictionary, s)).CA();
       RestoreGraphicsState();

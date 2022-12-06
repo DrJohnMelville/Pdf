@@ -33,7 +33,7 @@ public partial class FreeTypeFont : IRealizedFont, IDisposable
 
     private double RenderGlyph(FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
-        Face.LoadGlyph(glyph, LoadFlags.NoBitmap, LoadTarget.Normal);
+        Face.LoadGlyph(glyph, LoadFlags.NoBitmap | LoadFlags.NoHinting, LoadTarget.Normal);
         nativeTarget.Decompose(Face.Glyph.Outline);
         return Face.Glyph.Advance.X/64.0;
     }

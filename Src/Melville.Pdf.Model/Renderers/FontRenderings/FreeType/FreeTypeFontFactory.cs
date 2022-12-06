@@ -18,7 +18,6 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 public readonly partial struct FreeTypeFontFactory
 {
-    [FromConstructor] private readonly double size;
     [FromConstructor] private readonly PdfFont fontDefinitionDictionary;
 
     public async ValueTask<IRealizedFont> FromStream(PdfStream pdfStream)
@@ -52,16 +51,12 @@ public readonly partial struct FreeTypeFontFactory
     }
     private async ValueTask<IRealizedFont> FontFromFace(Face face)
     {
-        face.SetCharSize(0, Math.Abs(64 * size), 0, 0);
+        face.SetCharSize(0, 64, 0, 0);
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return
-            TrySubstituteInvertedSizeFont(
-        new FreeTypeFont(face, 
-            new FontRenderings.GlyphMappings.ReadCharacterFactory(fontDefinitionDictionary, encoding).Create(), 
-            await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary, encoding).Parse().CA(), 
-            await new FontWidthParser(fontDefinitionDictionary, size).Parse().CA()));
+            new FreeTypeFont(face,
+                new FontRenderings.GlyphMappings.ReadCharacterFactory(fontDefinitionDictionary, encoding).Create(), 
+                await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary, encoding).Parse().CA(), 
+                await new FontWidthParser(fontDefinitionDictionary).Parse().CA());
     }
-
-    private IRealizedFont TrySubstituteInvertedSizeFont(FreeTypeFont freeTypeFont) => 
-        size >= 0 ? freeTypeFont : new FontWithNegativeSize(freeTypeFont);
 }

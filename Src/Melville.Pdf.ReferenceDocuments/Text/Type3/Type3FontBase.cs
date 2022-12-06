@@ -34,7 +34,7 @@ s
         var square = arg.Add(new DictionaryBuilder().AsStream(@"
 1000 0 0 0 750 750 d1
 0 0 750 750 re
-s"));
+B"));
         var triName = NameDirectory.Get("triangle");
         var sqName = NameDirectory.Get("square");
         var chanProcs = arg.Add(new DictionaryBuilder()

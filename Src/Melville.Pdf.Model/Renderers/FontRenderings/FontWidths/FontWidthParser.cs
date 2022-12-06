@@ -13,12 +13,11 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 public readonly struct FontWidthParser
 {
     private readonly PdfFont pdfFont;
-    private readonly double sizeFactor;
+    private const double sizeFactor = 1.0/1000;
 
-    public FontWidthParser(PdfFont pdfFont, double size)
+    public FontWidthParser(PdfFont pdfFont)
     {
         this.pdfFont = pdfFont;
-        sizeFactor = size /1000;
     }
 
     public async ValueTask<IFontWidthComputer> Parse()
@@ -42,7 +41,7 @@ public readonly struct FontWidthParser
     };
 
     private async ValueTask<IFontWidthComputer> ParseSubFontWidth() => 
-        await new FontWidthParser(await pdfFont.Type0SubFont().CA(), sizeFactor * 1000).Parse().CA();
+        await new FontWidthParser(await pdfFont.Type0SubFont().CA()).Parse().CA();
 
     private async ValueTask<IFontWidthComputer> ParseSimpleFontWidths()
     {
