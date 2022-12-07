@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model;
-using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.SkiaSharp;

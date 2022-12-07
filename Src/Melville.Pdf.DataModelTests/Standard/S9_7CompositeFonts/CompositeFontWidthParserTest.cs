@@ -26,10 +26,10 @@ public class CompositeFontWidthParserTest
                         new PdfInteger(500), new PdfInteger(750), new PdfInteger(250))))
                 .AsDictionary()
             )).Parse();
-        Assert.Equal(500*17f/1000, sut.GetWidth(0x04, 0),3);
-        Assert.Equal(750*17f/1000, sut.GetWidth(0x05, 0),3);
-        Assert.Equal(250*17f/1000, sut.GetWidth(0x06, 0), 3);
-        Assert.Equal(17f, sut.GetWidth(0x07, 0));
+        Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
+        Assert.Equal(750*1f/1000, sut.GetWidth(0x05, 0),3);
+        Assert.Equal(250*1f/1000, sut.GetWidth(0x06, 0), 3);
+        Assert.Equal(1f, sut.GetWidth(0x07, 0));
         
     }
     [Fact]
@@ -44,10 +44,10 @@ public class CompositeFontWidthParserTest
                     new PdfInteger(6), new PdfInteger(7), new PdfDouble(1233)))
                 .AsDictionary()
             )).Parse();
-        Assert.Equal(500*17f/1000, sut.GetWidth(0x04, 0),3);
-        Assert.Equal(1000*17f/1000, sut.GetWidth(0x05, 0),3);
-        Assert.Equal(1233*17f/1000, sut.GetWidth(0x06, 0), 3);
-        Assert.Equal(1233*17f/1000, sut.GetWidth(0x07, 0),3);
+        Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
+        Assert.Equal(1000*1f/1000, sut.GetWidth(0x05, 0),3);
+        Assert.Equal(1233*1f/1000, sut.GetWidth(0x06, 0), 3);
+        Assert.Equal(1233*1f/1000, sut.GetWidth(0x07, 0),3);
         
     }
     [Fact]
@@ -62,10 +62,10 @@ public class CompositeFontWidthParserTest
                 .WithItem(KnownNames.DW, 34)
                 .AsDictionary()
             )).Parse();
-        Assert.Equal(500*17f/1000, sut.GetWidth(0x04, 0),3);
-        Assert.Equal(34*17f/1000, sut.GetWidth(0x05, 0),3);
-        Assert.Equal(1233*17f/1000, sut.GetWidth(0x06, 0), 3);
-        Assert.Equal(1233*17f/1000, sut.GetWidth(0x07, 0),3);
+        Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
+        Assert.Equal(34*1f/1000, sut.GetWidth(0x05, 0),3);
+        Assert.Equal(1233*1f/1000, sut.GetWidth(0x06, 0), 3);
+        Assert.Equal(1233*1f/1000, sut.GetWidth(0x07, 0),3);
         
     }
     [Fact]
@@ -78,10 +78,10 @@ public class CompositeFontWidthParserTest
                     new PdfInteger(4), new PdfInteger(6),new PdfInteger(500)))
                 .AsDictionary()
             )).Parse();
-        Assert.Equal(500*17f/1000, sut.GetWidth(0x04, 0));
-        Assert.Equal(500*17f/1000, sut.GetWidth(0x05, 0));
-        Assert.Equal(500*17f/1000, sut.GetWidth(0x06, 0));
-        Assert.Equal(17f, sut.GetWidth(0x07, 0));
+        Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0));
+        Assert.Equal(500*1f/1000, sut.GetWidth(0x05, 0));
+        Assert.Equal(500*1f/1000, sut.GetWidth(0x06, 0));
+        Assert.Equal(1f, sut.GetWidth(0x07, 0));
         
     }
 }

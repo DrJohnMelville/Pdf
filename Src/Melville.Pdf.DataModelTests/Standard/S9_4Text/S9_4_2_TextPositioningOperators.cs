@@ -33,6 +33,7 @@ public class S9_4_2_TextPositioningOperators
     {
         rf = new RealizedFontMock(fw.Object);
         targetMock.SetupGet(i => i.GraphicsState).Returns(()=>state.StronglyTypedCurrentState());
+        state.CurrentState().SetFont(KnownNames.Courier, 1.0);
         SetupMockRealizedFont();
 
         sut = new RenderEngine(pageMock.Object, targetMock.Object,
@@ -162,7 +163,7 @@ public class S9_4_2_TextPositioningOperators
 
     [Theory]
     [InlineData(100,9, 1)]
-    [InlineData(100,8, 2)]
+    [InlineData(100,18, 2)]
     [InlineData(50,4.5, 1)]
     [InlineData(1000,90, 1)]
     public async Task ShowSpacedStream(double horizontalScale, float xPosition, int fontSize)

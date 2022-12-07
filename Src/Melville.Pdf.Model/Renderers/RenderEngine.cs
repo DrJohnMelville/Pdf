@@ -269,17 +269,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         return (character, glyph);
     }
 
-    private Matrix3x2 CharacterPositionMatrix() =>
-        (GlyphAdjustmentMatrix() * StateOps.CurrentState().TextMatrix);
+    private Matrix3x2 CharacterPositionMatrix() => StateOps.CurrentState().GlyphTransformMatrix();
 
-#warning turn off font size hinting since I do scaling myself
-#warning use the formulas on page 310-311 to update the text matrix
-
-
-    private Matrix3x2 GlyphAdjustmentMatrix() => new(
-        (float) (StateOps.CurrentState().FontSize * StateOps.CurrentState().HorizontalTextScale), 0,
-        0, (float)StateOps.CurrentState().FontSize,
-        0, (float)StateOps.CurrentState().TextRise);
 
     private void AdjustTextPositionForCharacter(double width, uint character)
     {
