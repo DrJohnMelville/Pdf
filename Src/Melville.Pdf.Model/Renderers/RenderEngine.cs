@@ -53,6 +53,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     #region Graphics State
     [DelegateTo] private IGraphicsState StateOps => target.GraphicsState;
+    private GraphicsState GraphicsState => StateOps.CurrentState();
     
     
     public void ModifyTransformMatrix(in Matrix3x2 newTransform)
@@ -63,7 +64,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
 
     public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
-         await StateOps.CurrentState().LoadGraphicStateDictionary(
+         await GraphicsState.LoadGraphicStateDictionary(
             await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName).CA() as 
                 PdfDictionary ?? throw new PdfParseException($"Cannot find GraphicsState {dictionaryName}")).CA();
     #endregion
@@ -103,7 +104,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         try
         {
             await target.RenderBitmap(
-                await inlineImage.WrapForRenderingAsync(page, StateOps.CurrentState().NonstrokeColor).CA()).CA();
+                await inlineImage.WrapForRenderingAsync(page, GraphicsState.NonstrokeColor).CA()).CA();
         }
         catch (Exception)
         {
@@ -116,19 +117,18 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         var shader = await page.GetResourceAsync(ResourceTypeName.Shading, name).CA();
         if (shader is not PdfDictionary shaderDict) return;
         var factory = await ShaderParser.ParseShader(
-            StateOps.CurrentState().TransformMatrix, shaderDict, true).CA();
+            GraphicsState.TransformMatrix, shaderDict, true).CA();
         StateOps.SaveGraphicsState();
         MapBitmapToViewport();
         await target.RenderBitmap(new ShaderBitmap(factory,
-            (int)StateOps.CurrentState().PageWidth, (int)StateOps.CurrentState().PageHeight)).CA();
+            (int)GraphicsState.PageWidth, (int)GraphicsState.PageHeight)).CA();
         StateOps.RestoreGraphicsState();
     }
 
     private void MapBitmapToViewport()
     {
-        var state = StateOps.CurrentState();
-        var source = state.TransformMatrix;
-        if (!Matrix3x2.Invert(source, out var inv)) return;
+        var state = GraphicsState;
+        if (!Matrix3x2.Invert(state.TransformMatrix, out var inv)) return;
         ModifyTransformMatrix(Matrix3x2.CreateScale(
             (float)state.PageWidth, (float)state.PageHeight)*inv);
     }
@@ -190,19 +190,16 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     #region Text Operations
 
-    public void BeginTextObject()
-    {
-        StateOps.CurrentState().SetBothTextMatrices(Matrix3x2.Identity);
-    }
+    public void BeginTextObject() => GraphicsState.SetBothTextMatrices(Matrix3x2.Identity);
 
     public void EndTextObject()
     {
     }
 
     public void MovePositionBy(double x, double y) =>
-        StateOps.CurrentState().SetBothTextMatrices(
+        GraphicsState.SetBothTextMatrices(
             Matrix3x2.CreateTranslation((float)x,(float)y) 
-            * StateOps.CurrentState().TextLineMatrix);
+            * GraphicsState.TextLineMatrix);
 
     public void MovePositionByWithLeading(double x, double y)
     {
@@ -211,21 +208,21 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
  
     public void SetTextMatrix(double a, double b, double c, double d, double e, double f) =>
-        StateOps.CurrentState().SetBothTextMatrices(new Matrix3x2(
+        GraphicsState.SetBothTextMatrices(new Matrix3x2(
             (float)a,(float)b,(float)c,(float)d,(float)e,(float)f));
 
     public void MoveToNextTextLine() => 
-        MovePositionBy(0, - StateOps.CurrentState().TextLeading);
+        MovePositionBy(0, - GraphicsState.TextLeading);
 
     public async ValueTask SetFont(PdfName font, double size)
     {
         var fontResource = await page.GetResourceAsync(ResourceTypeName.Font, font).CA();
-        var typeFace = fontResource is PdfDictionary fontDic ?
+        var genericRealizedFont = fontResource is PdfDictionary fontDic ?
             await FontFromDictionary(fontDic).CA():
             await SystemFontFromName(font).CA();
         
-        StateOps.CurrentState().SetTypeface(await RendererSpecificFont(typeFace).CA());
-        await StateOps.CurrentState().SetFont(font,size).CA();
+        GraphicsState.SetTypeface(await RendererSpecificFont(genericRealizedFont).CA());
+        await GraphicsState.SetFont(font,size).CA();
     }
 
     private ValueTask<IRealizedFont> SystemFontFromName(PdfName font) =>
@@ -249,7 +246,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
-        var font = StateOps.CurrentState().Typeface;
+        var font = GraphicsState.Typeface;
         using var writer = font.BeginFontWrite(this);
         var remainingI = decodedString;
         while (remainingI.Length > 0)
@@ -258,7 +255,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             var measuredGlyphWidth = await writer.AddGlyphToCurrentString(glyph, CharacterPositionMatrix()).CA();
             AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
         }
-        writer.RenderCurrentString(StateOps.CurrentState().TextRender);
+        writer.RenderCurrentString(GraphicsState.TextRender);
     }
 
     private static (uint character, uint glyph) GetNextCharacterAndGlyph(
@@ -269,33 +266,33 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         return (character, glyph);
     }
 
-    private Matrix3x2 CharacterPositionMatrix() => StateOps.CurrentState().GlyphTransformMatrix();
+    private Matrix3x2 CharacterPositionMatrix() => GraphicsState.GlyphTransformMatrix();
 
 
     private void AdjustTextPositionForCharacter(double width, uint character)
     {
         var delta = CharacterSpacingAdjustment(character);
-        UpdateTextPosition(width*StateOps.CurrentState().FontSize+delta);
+        UpdateTextPosition(width*GraphicsState.FontSize+delta);
     }
 
     private double CharacterSpacingAdjustment(uint character) =>
-        StateOps.CurrentState().CharacterSpacing + ApplicableWordSpacing(character);
+        GraphicsState.CharacterSpacing + ApplicableWordSpacing(character);
 
     private double ApplicableWordSpacing(uint character) => 
-        IsSpaceCharacter(character)? StateOps.CurrentState().WordSpacing:0;
+        IsSpaceCharacter(character)? GraphicsState.WordSpacing:0;
 
     private bool IsSpaceCharacter(uint character) => character == 0x20;
 
     private void UpdateTextPosition(double width)
     { 
-        StateOps.CurrentState().SetTextMatrix(
+        GraphicsState.SetTextMatrix(
             IncrementAlongActiveVector(ScaleHorizontalOffset(width))*
-            StateOps.CurrentState().TextMatrix
+            GraphicsState.TextMatrix
         );
     }
 
     private double ScaleHorizontalOffset(double width) => 
-        width * StateOps.CurrentState().HorizontalTextScale;
+        width * GraphicsState.HorizontalTextScale;
 
     private Matrix3x2 IncrementAlongActiveVector(double width) =>
             Matrix3x2.CreateTranslation((float)width, 0.0f);
@@ -328,7 +325,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             switch (value.Type)
             {
                 case ContentStreamValueType.Number:
-                    var delta = StateOps.CurrentState().FontSize * value.Floating / 1000.0;
+                    var delta = GraphicsState.FontSize * value.Floating / 1000.0;
                     UpdateTextPosition(-delta);
                     break;
                 case ContentStreamValueType.Memory:
@@ -347,7 +344,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask<double> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
-        if (!(StateOps.CurrentState().TextRender is TextRendering.Invisible or TextRendering.Clip))
+        if (!(GraphicsState.TextRender is TextRendering.Invisible or TextRendering.Clip))
         {
             await DrawType3Character(s, fontMatrix, fontDictionary).CA();
             colorSwitcher.TurnOn();
