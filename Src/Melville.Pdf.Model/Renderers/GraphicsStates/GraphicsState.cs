@@ -73,7 +73,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     [MacroItem("double", "WordSpacing", "0.0")]
     [MacroItem("double", "TextLeading", "0.0")]
     [MacroItem("double", "TextRise", "0.0")]
-    [MacroItem("double", "HorizontalTextScale", "100.0")]
+    [MacroItem("double", "HorizontalTextScale", "1.0")]
     [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
     [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
     [MacroItem("double", "FontSize", "0.0")]
@@ -169,7 +169,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     
     public void SetCharSpace(double value) => CharacterSpacing = value;
     public void SetWordSpace(double value) => WordSpacing = value;
-    public void SetHorizontalTextScaling(double value) => HorizontalTextScale = value;
+    public void SetHorizontalTextScaling(double value) => HorizontalTextScale = value/100.0;
     public void SetTextLeading(double value) => TextLeading = value;
     public ValueTask SetFont(PdfName font, double size)
     {

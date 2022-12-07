@@ -56,6 +56,6 @@ public class GraphicStateTest
     [Fact] public void WordSpacingTest() => PropTest(nameof(sut.WordSpacing), 0.0, 5.0, i => i.SetWordSpace(5));
     [Fact] public void TextLeadingTest() => PropTest(nameof(sut.TextLeading), 0.0, 5.0, i => i.SetTextLeading(5));
     [Fact] public void TextRiseTest() => PropTest(nameof(sut.TextRise), 0.0, 5.0, i => i.SetTextRise(5));
-    [Fact] public void HorizTextScaleTest() => PropTest(nameof(sut.HorizontalTextScale), 100.0, 5.0, i => i.SetHorizontalTextScaling(5));
+    [Fact] public void HorizTextScaleTest() => PropTest(nameof(sut.HorizontalTextScale), 1.0, 0.05, i => i.SetHorizontalTextScaling(5));
     [Fact] public void SetTextRenderTest() => PropTest(nameof(sut.TextRender), TextRendering.Fill, TextRendering.Stroke, i => i.SetTextRender(TextRendering.Stroke));
 } 

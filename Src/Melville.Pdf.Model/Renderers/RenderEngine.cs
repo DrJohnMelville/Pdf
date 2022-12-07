@@ -277,7 +277,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
 
     private Matrix3x2 GlyphAdjustmentMatrix() => new(
-        (float) (StateOps.CurrentState().FontSize * StateOps.CurrentState().HorizontalTextScale / 100), 0,
+        (float) (StateOps.CurrentState().FontSize * StateOps.CurrentState().HorizontalTextScale), 0,
         0, (float)StateOps.CurrentState().FontSize,
         0, (float)StateOps.CurrentState().TextRise);
 
@@ -304,7 +304,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
 
     private double ScaleHorizontalOffset(double width) => 
-        width * StateOps.CurrentState().HorizontalTextScale/100.0;
+        width * StateOps.CurrentState().HorizontalTextScale;
 
     private Matrix3x2 IncrementAlongActiveVector(double width) =>
             Matrix3x2.CreateTranslation((float)width, 0.0f);
