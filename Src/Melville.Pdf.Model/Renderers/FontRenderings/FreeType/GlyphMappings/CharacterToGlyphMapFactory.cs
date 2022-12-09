@@ -27,7 +27,7 @@ public readonly partial struct CharacterToGlyphMapFactory
         (font.SubType()).GetHashCode() switch
         {
             KnownNameKeys.Type0 => Type0CharMapping(),
-            KnownNameKeys.MMType1 => throw new NotImplementedException("MultiMaster fonts not implemented."),
+            KnownNameKeys.MMType1 => SingleByteNamedMapping(),
             KnownNameKeys.Type1 => SingleByteNamedMapping(),
             KnownNameKeys.TrueType =>  ParseTrueTypeMapping(),
             _ => throw new PdfParseException("Unknown Font Type"),

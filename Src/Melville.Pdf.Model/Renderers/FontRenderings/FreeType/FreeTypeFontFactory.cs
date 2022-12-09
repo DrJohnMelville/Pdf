@@ -1,15 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Threading;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
-using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers.FontRenderings.CharacterAndGlyphEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 using SharpFont;
