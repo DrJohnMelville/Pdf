@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
@@ -24,7 +25,12 @@ public static class ConsumeInitialGarbage
         var sr = new SequenceReader<byte>(result.Buffer);
         while (true)
         {
-            if (!sr.TryPeek(out var item)) return (false, result.Buffer.Start);
+            if (!sr.TryPeek(out var item))
+            {
+                if (result.IsCompleted)
+                    throw new PdfParseException("No PDF data found to parse");
+                return (false, result.Buffer.Start);
+            }
             if (item == '%') return (true, sr.Position);
             //otherwise
             offset++;

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -12,10 +14,11 @@ public static class PdfTrailerParser
 {
     public static async ValueTask< PdfDictionary> ParseXrefAndTrailer(ParsingFileOwner source, long xrefPosition)
     {
-        return await XrefAndTrailer(source, xrefPosition).CA();
+        return await XrefAndTrailer(source, xrefPosition, null).CA();
     }
         
-    private static async Task<PdfDictionary> XrefAndTrailer(ParsingFileOwner source, long xrefPosition)
+    private static async Task<PdfDictionary> XrefAndTrailer(
+        ParsingFileOwner source, long xrefPosition, List<long>? priorPositions)
     {
         PdfDictionary? trailerDictionary;
 
@@ -33,9 +36,23 @@ public static class PdfTrailerParser
 
         if (trailerDictionary.TryGetValue(KnownNames.Prev, out var prev) && (await prev.CA()) is PdfNumber offset)
         {
-            await XrefAndTrailer(source, offset.IntValue).CA();
+            AddToPriorPositions(xrefPosition, ref priorPositions);
+            await TryReadPriorTRailer(source, priorPositions, offset.IntValue).CA();
         }
         return  trailerDictionary;
+    }
+
+    private static async Task TryReadPriorTRailer(
+        ParsingFileOwner source, List<long>? priorPositions, long offsetVal)
+    {
+        if (priorPositions.Contains(offsetVal)) return;
+        await XrefAndTrailer(source, offsetVal, priorPositions).CA();
+    }
+
+    private static void AddToPriorPositions(long xrefPosition, ref List<long>? priorPositions)
+    {
+        priorPositions ??= new List<long>();
+        priorPositions.Add(xrefPosition);
     }
 
     private static async Task<PdfDictionary?> ReadSingleRefTrailerBlock(IParsingReader context)
