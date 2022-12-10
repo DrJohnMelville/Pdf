@@ -8,7 +8,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-
 public class PdfArrayParser : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
@@ -19,7 +18,7 @@ public class PdfArrayParser : IPdfObjectParser
         return new PdfArray(await RecursiveReadArray(source, 0).CA());
     }
 
-    private const int RecursiveLimit = 1000;
+    private const int RecursiveLimit = 500;
 
     private static async ValueTask<PdfObject[]> RecursiveReadArray(
         IParsingReader reader, int currentLocation)

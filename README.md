@@ -75,8 +75,7 @@ binary royalty-free distribution, including usage in closed source and commercia
 This first release of Melville.Pdf is really focused on one goal, to render
 PDF documents in .NET applications.  Years ago, someone whom I cannot
 remember told me that ["To Ship is to Choose."](https://devblogs.microsoft.com/powershell/diy-ternary-operator/)  Here are the things I chose
-not to include so I could ship the first version.
-- 256 bit encryption
+not to include so I could ship this version.
 - Public Key Encryption
 - Types 4-7 Shader patterns
 - Document navigation features like document outlines or page thumbnails.
@@ -95,16 +94,13 @@ not to include so I could ship the first version.
 
 # What's next on the roadmap?
 
-This first version -- 0.1 is technically a beta.,  I have tried to keep the
+My second release has added PDF 2.0 compliance including 256 bit encryption.  I am still considering this a beta because I have not gone through the library and made all the internal details internal.  There is a decent chance I will break some use case, so I want to do that early.  Let me know if I break something important.
+
+I have tried to keep the
 code quality high, but you will have to judge that.  I hope to continue this
 project.  Here are things I am likely to take this up next.
 
-- Quality and Pdf 2.0 Compliance
-    - A year and a half into this project I finally ponied up the $200 for
-      the [ISO 32000:2](https://www.pdfa.org/resource/iso-32000-pdf/) specification
-      docuument.  My next step is going to be a page by page trip through the relevant
-      spec to include the 2.0 PDF enchancements, including 256 bit encryption support.  I also plan to
-      use this as a quality milestone.  I want to include more test coverage with examples from the specification, and so forth.
+- Quality
     - Right now just about everything in the library is public.  After re-reading Microsoft's
       [Framework Design Guidelines](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/) I
       decided that Melville.Pdf isn't a framework, it's a library.  You use it to render PDF's, and I doubt
@@ -119,7 +115,7 @@ project.  Here are things I am likely to take this up next.
 Recently released work is detailed on the [Release history](Docs/ReleaseNotes.md) page.
 
 I am extremely fortunate to have good employment as a physician at the
-[Medical University of South Caroline](https://medicine.musc.edu/departments/pediatrics/divisions/child-abuse-pediatrics/faculty)
+[Medical University of South Carolina](https://medicine.musc.edu/departments/pediatrics/divisions/child-abuse-pediatrics/faculty)
 meaning that programming can be just a hobby for me.  I will probably work on the things above as time allows.
 My commit history ought to convince you that I really like programming.  I take my amateur status
 seriously, though.  It means I take the time to write the code correctly.  I am not committing to any specific

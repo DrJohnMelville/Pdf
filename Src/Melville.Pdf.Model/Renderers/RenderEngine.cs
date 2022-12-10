@@ -29,30 +29,22 @@ namespace Melville.Pdf.Model.Renderers;
 public partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
-    private readonly IRenderTarget target;
-    private readonly DocumentRenderer renderer;
-    private readonly IOptionalContentCounter optionalContent;
+    private readonly SinglePageRenderContext pageRenderContext;
     private readonly PathDrawingAdapter pathDrawing;
     private readonly SwitchingColorStrategy colorSwitcher;
     [DelegateTo] private IColorOperations colorOperations => colorSwitcher.CurrentTarget;
     
 
-    public RenderEngine(
-        IHasPageAttributes page, IRenderTarget target, DocumentRenderer renderer, 
-        IOptionalContentCounter optionalContent)
+    public RenderEngine(IHasPageAttributes page, SinglePageRenderContext pageRenderContext)
     {
         this.page = page;
-        this.target = target;
-        this.renderer = renderer;
-        this.optionalContent = optionalContent;
-        colorSwitcher = new SwitchingColorStrategy(
-            renderer.AdjustColorOperationsModel(
-                new ColorOperations.ColorMacroExpansions(target.GraphicsState, page, renderer)));
-        pathDrawing = new PathDrawingAdapter(target.GraphicsState, null);
+        this.pageRenderContext = pageRenderContext;
+        colorSwitcher = pageRenderContext.CreateColorSwitcher(page);
+        pathDrawing = new PathDrawingAdapter(pageRenderContext.Target.GraphicsState, null);
     }
 
     #region Graphics State
-    [DelegateTo] private IGraphicsState StateOps => target.GraphicsState;
+    [DelegateTo] private IGraphicsState StateOps => pageRenderContext.Target.GraphicsState;
     private GraphicsState GraphicsState => StateOps.CurrentState();
     
     
@@ -71,8 +63,8 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     
     #region Drawing Operations
     public IDrawTarget CreateDrawTarget() => 
-        optionalContent.WrapDrawTarget(
-            target.CreateDrawTarget());
+        pageRenderContext.OptionalContent.WrapDrawTarget(
+            pageRenderContext.Target.CreateDrawTarget());
 
     [DelegateTo]
     private IPathDrawingOperations PathDrawingOperations() =>
@@ -84,7 +76,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        if (await optionalContent.CanSkipXObjectDoOperation(
+        if (await pageRenderContext.OptionalContent.CanSkipXObjectDoOperation(
                 await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()).CA())
             return;
         switch ((inlineImage.SubTypeOrNull()??KnownNames.Image).GetHashCode())
@@ -103,7 +95,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     {
         try
         {
-            await target.RenderBitmap(
+            await pageRenderContext.Target.RenderBitmap(
                 await inlineImage.WrapForRenderingAsync(page, GraphicsState.NonstrokeColor).CA()).CA();
         }
         catch (Exception)
@@ -120,7 +112,7 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
             GraphicsState.TransformMatrix, shaderDict, true).CA();
         StateOps.SaveGraphicsState();
         MapBitmapToViewport();
-        await target.RenderBitmap(new ShaderBitmap(factory,
+        await pageRenderContext.Target.RenderBitmap(new ShaderBitmap(factory,
             (int)GraphicsState.PageWidth, (int)GraphicsState.PageHeight)).CA();
         StateOps.RestoreGraphicsState();
     }
@@ -166,9 +158,11 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     private async ValueTask Render(IHasPageAttributes xObject)
     {
-        var otherEngine = new RenderEngine(xObject, target, renderer, optionalContent);
+        if (!pageRenderContext.ItemsBeingRendered.TryPush(xObject.LowLevel)) return;
+        var otherEngine = new RenderEngine(xObject, pageRenderContext);
         await otherEngine.RunContentStream().CA();
         CopyLastGlyphMetrics(otherEngine);
+        pageRenderContext.ItemsBeingRendered.PopItem();
     }
 
     public async ValueTask RunContentStream() =>
@@ -237,12 +231,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
         BlockFontDispose.AsNonDisposableTypeface(await CheckCacheForFont(fontDic).CA());
 
     private ValueTask<IRealizedFont> RendererSpecificFont(IRealizedFont typeFace) =>
-        renderer.Cache.Get(typeFace, r=> new ValueTask<IRealizedFont>(target.WrapRealizedFont(r)));
+        pageRenderContext.Renderer.Cache.Get(typeFace, r=> new ValueTask<IRealizedFont>(pageRenderContext.Target.WrapRealizedFont(r)));
 
     private ValueTask<IRealizedFont> CheckCacheForFont(PdfDictionary fontDic) =>
-        renderer.Cache.Get(fontDic, r=> FontReader().DictionaryToRealizedFont(r));
+        pageRenderContext.Renderer.Cache.Get(fontDic, r=> FontReader().DictionaryToRealizedFont(r));
      
-    private FontReader FontReader() => new(renderer.FontMapper);
+    private FontReader FontReader() => new(pageRenderContext.Renderer.FontMapper);
 
     public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
     {
@@ -407,12 +401,12 @@ public partial class RenderEngine: IContentStreamOperations, IFontTarget
     public void BeginMarkedRange(PdfName tag) {}
 
     public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName) => 
-        optionalContent.EnterGroup(tag, dictName, page);
+        pageRenderContext.OptionalContent.EnterGroup(tag, dictName, page);
 
     public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary) =>
-        optionalContent.EnterGroup(tag, dictionary);
+        pageRenderContext.OptionalContent.EnterGroup(tag, dictionary);
 
-    public void EndMarkedRange() => optionalContent.PopContentGroup();
+    public void EndMarkedRange() => pageRenderContext.OptionalContent.PopContentGroup();
     #endregion
 
     #region Compatability Operators

@@ -99,9 +99,9 @@ public class GraphicStateDictionary
         var target = new Mock<IRenderTarget>();
         target.SetupGet(i => i.GraphicsState).Returns(()=>gs.StronglyTypedCurrentState());
         Assert.Equal(1.0, gs.StronglyTypedCurrentState().LineWidth);
-        await new RenderEngine(page, target.Object, 
+        await new RenderEngine(page, new(target.Object, 
                 DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
-                NullOptionalContentCounter.Instance)
+                NullOptionalContentCounter.Instance))
             .RunContentStream();
         return gs;
     }

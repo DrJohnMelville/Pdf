@@ -25,9 +25,9 @@ public class BlockColorOperatorsTest: IDisposable
     {
         target.SetupGet(i => i.GraphicsState).Returns(state.Object);
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
-        sut = new RenderEngine(page, target.Object, 
+        sut = new RenderEngine(page, new(target.Object, 
             DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
-            NullOptionalContentCounter.Instance);
+            NullOptionalContentCounter.Instance));
         sut.SetUncoloredGlyphMetrics(1, 2, 3, 4, 5, 6);
         target.VerifyGet(i=>i.GraphicsState, Times.Exactly(2));
     }

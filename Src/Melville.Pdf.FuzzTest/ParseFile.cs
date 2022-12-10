@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.Model.Documents;
@@ -17,18 +18,18 @@ public static class ParseFile
 {
     public static async ValueTask Do(string fileName)
     {
+        ClearLine();
+        Console.WriteLine($"{fileName}");
         await using var stream = File.OpenRead(fileName);
-        await Do(stream, fileName);
+        await Do(stream, fileName); 
     }
 
-    private static async ValueTask Do(FileStream source, string name)
+    private static async ValueTask Do(FileStream source, string path)
     {
         try
         {
             using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(source), WindowsDefaultFonts.Instance);
-#if true
-            Console.Write($"{name} 0/{doc.TotalPages}");
             int completed = 0;
             object mutex = new();
             await Parallel.ForEachAsync(Enumerable.Range(1, doc.TotalPages), async (i,_) =>
@@ -36,23 +37,18 @@ public static class ParseFile
                 await RenderPage(doc, i);
                 lock (mutex)
                 {
-                    ClearLine();
-                    Console.Write($"{name} {++completed}/{doc.TotalPages}");
+                    if (++completed % 10 == 0)
+                    {
+                        ClearLine();
+                        Console.Write($" {completed}/{doc.TotalPages}");
+                    }
                 }
             });
-            ClearLine();
-#else
-            for (int i = 1; i <= doc.TotalPages; i++)
-            {
-                Console.Write($"{name} {i}/{doc.TotalPages}");
-                await RenderPage(doc, i);
-                ClearLine();
-            }
-#endif
         }
         catch (Exception e)
         {
-            OutputException(e);
+            ClearLine();
+            OutputException(e, path);
         }
     }
 
@@ -64,19 +60,19 @@ public static class ParseFile
         }
         catch (Exception e)
         {
-            OutputException(e);
+            OutputException(e, $"Page {page}");
         }
     }
     static void ClearLine(){
         Console.SetCursorPosition(0, Console.CursorTop);
         Console.Write(new string(' ', Console.WindowWidth)); 
-        Console.SetCursorPosition(0, Console.CursorTop - 1);
+        Console.SetCursorPosition(0, Console.CursorTop);
     }
 
 
-    private static void OutputException(Exception e)
+    private static void OutputException(Exception e, string page)
     {
-        Console.WriteLine();
+        Console.WriteLine(page);
         Console.WriteLine("    " +e.Message);
     }
 }

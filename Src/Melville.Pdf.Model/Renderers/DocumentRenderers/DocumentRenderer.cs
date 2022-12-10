@@ -56,7 +56,7 @@ public abstract class DocumentRenderer: IDisposable
         await pageStruct.GetBoxAsync(BoxName.CropBox).CA() ?? new PdfRect(0,0,1,1);
 
     private RenderEngine CreateRenderEngine(HasRenderableContentStream page, IRenderTarget target) =>
-        new(page, target, this, OptionalContentEngine());
+        new(page, new (target, this, OptionalContentEngine()));
 
     private IOptionalContentCounter OptionalContentEngine()
     {

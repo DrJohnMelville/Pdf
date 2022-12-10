@@ -22,9 +22,9 @@ public class DrawingMacroOperations
     {
         target.Setup(i => i.CreateDrawTarget()).Returns(drawTarget.Object);
         var page = new PdfPage(new DictionaryBuilder().AsDictionary());
-        sut = new RenderEngine(page, target.Object, 
+        sut = new RenderEngine(page, new(target.Object, 
             DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
-            NullOptionalContentCounter.Instance);
+            NullOptionalContentCounter.Instance));
     }
 
     [Fact]

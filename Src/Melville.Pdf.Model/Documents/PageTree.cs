@@ -42,23 +42,38 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
 
     public async ValueTask<HasRenderableContentStream> GetPageAsync(long pageNumberOneBased)
     {
+        List<PdfObject> priorNodes = new();
         var items = await KidsAsync().CA();
-        foreach (var kidTask in items.RawItems)
+        // this is an unrolled recursive function so I 
+        for (int i = 0; i < items.RawItems.Count; i++)
         {
-            var kid = (PdfDictionary)await kidTask.DirectValueAsync().CA();
-            var type = await kid.GetAsync<PdfName>(KnownNames.Type).CA();
-            if (type == KnownNames.Page)
+            var kid = (PdfDictionary)await items.RawItems[i].DirectValueAsync().CA();
+            var type = (await kid.GetAsync<PdfName>(KnownNames.Type).CA()).GetHashCode();
+            switch (type)
             {
-                if (IsDesiredPage(pageNumberOneBased)) return new PdfPage(kid);
-                pageNumberOneBased--;
+                case KnownNameKeys.Page:
+                    if (IsDesiredPage(pageNumberOneBased)) return new PdfPage(kid);
+                    pageNumberOneBased--;
+                    break;
+                case KnownNameKeys.Pages:
+                    if (priorNodes.Contains(kid))
+                        throw new PdfParseException("Cycle in Page Tree");
+                    priorNodes.Add(kid);
+
+                    var subNode = new PageTree(kid);
+                    var nodeCount = await subNode.CountAsync().CA();
+                    if (pageNumberOneBased <= nodeCount)
+                    {
+                        items = await subNode.KidsAsync().CA();
+                        i = -1;
+                        break;
+                    }
+
+                    pageNumberOneBased -= nodeCount;
+                    break;
+                default:
+                    throw new PdfParseException("Page trees should contain only pages and nodes");
             }
-            else if (type == KnownNames.Pages)
-            {
-                var nodeCount = (await kid.GetAsync<PdfNumber>(KnownNames.Count).CA()).IntValue;
-                if (pageNumberOneBased <= nodeCount) return await new PageTree(kid).GetPageAsync(pageNumberOneBased).CA();
-                pageNumberOneBased -= nodeCount;
-            }
-            else throw new PdfParseException("Page trees should contain only pages and nodes");
         }
         throw new IndexOutOfRangeException();
     }
