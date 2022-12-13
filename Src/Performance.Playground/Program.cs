@@ -5,15 +5,14 @@ using BenchmarkDotNet.Running;
 using Performance.Playground.Encryption;
 using Performance.Playground.ObjectModel;
 using Performance.Playground.Rendering;
-
+ 
 #pragma warning disable CS0162
 
 if (true)
 {
     Console.WriteLine("Begin");
-    var pageRendering = new PageRendering();
-    await pageRendering.CreateStream();
-    await pageRendering.RenderSkia();
+    var pageRendering = new ThreadingBug();
+    await pageRendering.ReadMulti();
     Console.WriteLine("done");
 }
 else
@@ -25,7 +24,7 @@ public static class Timer
     {
         public static async Task DoTime(Func<Task> item)
         {
-            var sw = new Stopwatch();
+            var sw = new Stopwatch(); 
             sw.Start();
             await item();
             sw.Stop();
