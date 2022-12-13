@@ -45,7 +45,7 @@ public static class PdfTrailerParser
     private static async Task TryReadPriorTRailer(
         ParsingFileOwner source, List<long>? priorPositions, long offsetVal)
     {
-        if (priorPositions.Contains(offsetVal)) return;
+        if (priorPositions?.Contains(offsetVal) ?? false) return;
         await XrefAndTrailer(source, offsetVal, priorPositions).CA();
     }
 

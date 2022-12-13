@@ -34,7 +34,7 @@ internal class MultiBuffer
         {
             bytesRead += CopyBytes(block.Data.AsSpan(blockOffset), buffer.Slice(bytesRead));
             if (bytesRead >= buffer.Length) break;
-            block = block.ForceNextNode();
+            block = block.TryNextNode();
             blockOffset = 0;
         }
 

@@ -10,7 +10,7 @@ public readonly partial struct V6EncryptionKey
     [FromConstructor]private readonly byte[] data;
     [FromConstructor] private readonly byte[] encryptedFileKey;
     
-    partial void OnConstructed() => Debug.Assert(data.Length == 48);
+    partial void OnConstructed() =>  Debug.Assert(data.Length >= 48);
 
     public Span<byte> Hash => data.AsSpan(0, 32);
     public Span<byte> ValidationSalt => data.AsSpan(32,8);

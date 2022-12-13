@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
@@ -13,6 +15,18 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.SkiaSharp;
 
 namespace Melville.Pdf.FuzzTest;
+
+public static class NotParallel
+{
+    public static async Task ForEachAsync<TSource>(IEnumerable<TSource> source,
+        Func<TSource, CancellationToken, ValueTask> body)
+    {
+        foreach (var item in source)
+        {
+            await body(item, CancellationToken.None);
+        }
+    }
+}
 
 public static class ParseFile
 {
@@ -52,11 +66,13 @@ public static class ParseFile
         }
     }
 
+
+
     private static async Task RenderPage(DocumentRenderer doc, int page)
     {
         try
         {
-            await RenderWithSkia.ToSurfaceAsync(doc, page);
+            await RenderWithSkia.ToSurfaceAsync(doc, 1);
         }
         catch (Exception e)
         {

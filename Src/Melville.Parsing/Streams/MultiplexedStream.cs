@@ -1,4 +1,5 @@
-﻿using Melville.Parsing.AwaitConfiguration;
+﻿using System.Runtime.InteropServices.ComTypes;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
@@ -47,7 +48,7 @@ public sealed class MultiplexedStream: IDisposable
         await mutex.WaitAsync().CA();
         try
         {
-             EnsureProperReadPosition(position);
+            EnsureProperReadPosition(position);
              return await source.ReadAsync(buffer, cancellationToken).CA();
         }
         finally

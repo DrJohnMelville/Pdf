@@ -72,6 +72,17 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static FontLibrary SystemFontLibrary() => 
         systemFontLibrary ?? SetFontDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
 
-    public static FontLibrary SetFontDirectory(string fontFolder) => 
-        systemFontLibrary = new FontLibraryBuilder(GlobalFreeTypeResources.SharpFontLibrary).BuildFrom(fontFolder);
+    public static FontLibrary SetFontDirectory(string fontFolder)
+    {
+        GlobalFreeTypeMutex.WaitFor();
+        try
+        {
+            return systemFontLibrary =
+                new FontLibraryBuilder(GlobalFreeTypeResources.SharpFontLibrary).BuildFrom(fontFolder);
+        }
+        finally
+        {
+            GlobalFreeTypeMutex.Release();
+        }
+    }
 }

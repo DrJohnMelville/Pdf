@@ -14,14 +14,10 @@ internal class MultiBufferNode
         Next = null;
     }
 
-    public MultiBufferNode ForceNextNode()
-    {
-        if (Next == null)
-        {
-            Next = new MultiBufferNode(new byte[Data.Length], EndPosition);
-        }
-        return Next;
-    }
+    public MultiBufferNode ForceNextNode() => 
+        Next ??= new MultiBufferNode(new byte[Data.Length], EndPosition);
+
+    public MultiBufferNode TryNextNode() => Next ?? throw new InvalidOperationException("Walked off end of buffer");
 
     public MultiBufferPosition FindPosition(long position)
     {
