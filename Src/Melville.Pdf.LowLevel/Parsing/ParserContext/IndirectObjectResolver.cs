@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -29,8 +30,8 @@ public class IndirectObjectResolver : IIndirectObjectResolver
         var key = (newItem.ObjectNumber, newItem.GenerationNumber);
         if (index.TryGetValue(key, out var prior))
         {
-            var mut = prior as IMultableIndirectObject;
-            if (mut.HasRegisteredAccessor()) return;
+            Debug.Assert(prior is UnknownIndirectObject);
+            if (prior is not UnknownIndirectObject mut || mut.HasRegisteredAccessor()) return;
             mut.SetValue(newItem);
         }
         index[key] = newItem;

@@ -5,6 +5,8 @@ Melville.Pdf.ComparingReader.CompositionRoot.* +=> *
 * => Melville.INPC.IExternalNotifyPropertyChanged
 * => System.*
 * => Melville.Parsing.*
+* => Melville.FileSystem.*
+* => Melville.MVVM.*
 
 #Renderers plug into the Main Window and Viewers plug into renderers.
 Group MainWindow
@@ -13,16 +15,27 @@ Group Renderers
     Melville.Pdf.ComparingReader.Renderers.* 
 Group REPL
     Melville.Pdf.ComparingReader.REPLs.*
+Group SavePages
+    Melville.Pdf.ComparingReader.SavePagesImpl.*
+Group LowLevel
+    Melville.Pdf.ComparingReader.Viewers.LowLevel.*
+    Melville.Pdf.LowLevel.*
+    Melville.Pdf.LowLevelViewerParts.LowLevelViewer.*
        
 MainWindow => Renderers
 MainWindow => REPL
-MainWindow => Melville.MVVM.*
 MainWindow => Melville.FileSystem.*
 
 REPL => Renderers
 REPL => Melville.Pdf.ReferenceDocuments.*
 REPL => Melville.Pdf.LowLevel.*
 REPL => Melville.Pdf.Model.*
+REPL=>LowLevel
+REPL=>SavePages
+
+SavePages => Melville.Pdf.Model.*
+SavePages => Melville.Pdf.LowLevel.*
+
 
 Melville.Pdf.ComparingReader.Viewers.* => Renderers
 Melville.Pdf.ComparingReader.Viewers.* => Melville.Pdf.LowLevel.Parsing.ParserContext.*
@@ -33,12 +46,7 @@ MainWindow => Melville.Pdf.LowLevel.Parsing.ParserContext.*
 Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree.* => Melville.Pdf.ReferenceDocuments.*
 
 #External Dependency for the Low Level Pdf Viewer
-Group LowLevel
-    Melville.Pdf.ComparingReader.Viewers.LowLevel.*
-    Melville.Pdf.LowLevel.*
-    Melville.Pdf.LowLevelViewerParts.LowLevelViewer.*
 MainWindow => LowLevel
-REPL=>LowLevel
 
 Melville.Pdf.ComparingReader.Viewers.* +=> Melville.Pdf.ComparingReader.Viewers.GenericImageViewers.*
 

@@ -1,17 +1,17 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.MVVM.Wpf.DiParameterSources;
+using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Renderers;
-using Melville.Pdf.ComparingReader.Viewers.LowLevel;
+using Melville.Pdf.ComparingReader.SavePagesImpl;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.FileParsers;
-using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.REPLs;
@@ -76,5 +76,15 @@ public partial class ReplViewModel
     public async ValueTask PrettyPrint()
     {
         ContentStreamText = await ContentStreamPrettyPrinter.PrettyPrint(ContentStreamText);
+    }
+
+    public async ValueTask SavePage([FromServices]IOpenSaveFile osf)
+    {
+        var outputFile = osf.GetSaveFile(null, "pdf", "PDF Files (*.pdf)|*.pdf", "Select file to save page to");
+        if (outputFile is null) return;
+        var doc = new PdfDocument(await new PdfLowLevelReader().ReadFromAsync(buffer));
+        var pageObj = await (await doc.PagesAsync()).GetPageAsync(page.Page);
+        await using var output = await outputFile.CreateWrite();
+        await new PageExtractor(doc, new PdfPage(pageObj.LowLevel), ContentStreamText).WriteAsync(output);
     }
 }

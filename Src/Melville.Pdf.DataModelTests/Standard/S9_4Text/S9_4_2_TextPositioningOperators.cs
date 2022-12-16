@@ -124,20 +124,20 @@ public class S9_4_2_TextPositioningOperators
     [Theory]
     [InlineData("e", 10)]
     [InlineData("ee", 20)]
-    public void DrawString(string input, float xPos)
+    public async Task DrawString(string input, float xPos)
     {
-        sut.ShowString(input.AsExtendedAsciiBytes());
+        await sut.ShowString(input.AsExtendedAsciiBytes());
         Assert.Equal(Matrix3x2.Identity, sut.CurrentState().TextLineMatrix);
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, xPos, 0), sut.CurrentState().TextMatrix);
     }
 
     [Fact]
-    public void DrawHorizontalCompressedStream()
+    public async Task DrawHorizontalCompressedStream()
     {
         sut.SetCharSpace(20);
         sut.SetWordSpace(30);
         sut.SetHorizontalTextScaling(50);
-        sut.ShowString(" ".AsExtendedAsciiBytes());
+        await sut.ShowString(" ".AsExtendedAsciiBytes());
         Assert.Equal(new Matrix3x2(1,0,0,1,30, 0), sut.CurrentState().TextMatrix);
         
     }

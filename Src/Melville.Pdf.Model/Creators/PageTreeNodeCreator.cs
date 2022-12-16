@@ -55,7 +55,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         InnnerConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectObject? parent,
             int maxNodeSize)
     {
-        var ret = creator.Add(PdfTokenValues.Null);
+        var ret = creator.Add(null);
         AddExtraFieldsFromTreeLevel(creator,parent);
         var kids = new PdfObject[children.Count];
         int count = 0;

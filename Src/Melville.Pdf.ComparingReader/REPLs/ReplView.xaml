@@ -9,8 +9,11 @@
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid easyGrids:GridOperations.ColsAndRows="*,* /1*, 4*">
-        <Button Content="Pretty Print Content Stream" Click="{eventBindings:EventBinding PrettyPrint}"/>
+    <Grid easyGrids:GridOperations.ColsAndRows="*,* /auto, *">
+        <WrapPanel>
+            <Button Content="Pretty Print Content Stream" Click="{eventBindings:EventBinding PrettyPrint}"/>
+            <Button Content="Save Page To File" Click="{eventBindings:EventBinding SavePage}"/>
+        </WrapPanel>
         <streams:TextBoxWithFind Grid.Row="1" Text = "{Binding ContentStreamText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                       Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top">

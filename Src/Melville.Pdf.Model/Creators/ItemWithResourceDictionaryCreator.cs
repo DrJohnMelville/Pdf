@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -24,6 +25,9 @@ public abstract class ItemWithResourceDictionaryCreator
     public abstract (PdfIndirectObject Reference, int PageCount) 
         ConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectObject? parent,
             int maxNodeSize);
+
+    public void AddMetadata(PdfName name, PdfObject item) =>
+        MetaData.WithItem(name, item);
 
     protected void TryAddResources(ILowLevelDocumentCreator creator)
     {

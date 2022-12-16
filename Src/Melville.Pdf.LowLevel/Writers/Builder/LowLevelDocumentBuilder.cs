@@ -11,7 +11,7 @@ public interface ILowLevelDocumentBuilder
 {
     PdfIndirectObject AsIndirectReference(PdfObject? value = null);
     void AssignValueToReference(PdfIndirectObject reference, PdfObject value);
-    PdfIndirectObject Add(PdfObject item);
+    PdfIndirectObject Add(PdfObject? item);
     public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation);
     void AddToTrailerDictionary(PdfName key, PdfObject item);
     public PdfArray EnsureDocumentHasId();
@@ -58,14 +58,15 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
         value switch
         {
             PdfIndirectObject pio => pio,
+            null=> new UnknownIndirectObject(nextObject++, 0),
             _ => new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null)
         };
 
     public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
     {
-        ((IMultableIndirectObject)reference).SetValue(value);
+        ((UnknownIndirectObject)reference).SetValue(value);
     }
-    public PdfIndirectObject Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
+    public PdfIndirectObject Add(PdfObject? item) => InnerAdd(AsIndirectReference(item));
     public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation) => 
         InnerAdd(new PdfIndirectObject(objectNumber, generation, item));
 
