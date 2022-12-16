@@ -32,17 +32,3 @@ public class PdfIndirectObject: PdfObject
     public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
 }
-
-public class UnknownIndirectObject : PdfIndirectObject
-{
-    public UnknownIndirectObject(int objectNumber, int generationNumber) : 
-        base(objectNumber, generationNumber, PdfTokenValues.ArrayTerminator)
-    {
-    }
-    public void SetValue(PdfObject value)
-    {
-        this.value = value;
-    }
-
-    public bool HasRegisteredAccessor() => value != PdfTokenValues.ArrayTerminator;
-}

@@ -23,9 +23,12 @@ public class DeepCopyTest
 
     public DeepCopyTest()
     {
-        creator.Setup(i => i.Add(It.IsAny<PdfObject>())).Returns((PdfObject i) =>
-            i as PdfIndirectObject ?? new PdfIndirectObject(3,4, i));
-        creator.Setup(i => i.AsIndirectReference(null)).Returns((PdfObject? o) => new UnknownIndirectObject(3, 4));
+        creator.Setup(i => i.Add(It.IsAny<PdfObject>())).Returns((PdfObject i) => i switch
+        {
+            null => new PromisedIndirectObject(3, 4),
+            PdfIndirectObject pio => pio,
+            _ => new PdfIndirectObject(5, 6, i)
+        });
         sut = new DeepCopy(creator.Object);
     }
 
@@ -107,7 +110,7 @@ public class DeepCopyTest
     private async Task AssertSameIndirectobject(PdfObject a, PdfObject b)
     {
         Assert.NotSame(a, b);
-        Assert.IsType<UnknownIndirectObject>(b);
+        Assert.IsType<PromisedIndirectObject>(b);
         Assert.IsType<PdfIndirectObject>(a);
         await DeepAssertSame(await a.DirectValueAsync(), await b.DirectValueAsync());
     }

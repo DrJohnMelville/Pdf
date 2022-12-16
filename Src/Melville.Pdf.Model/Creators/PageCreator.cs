@@ -36,6 +36,7 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
 public class PageCreator: ContentStreamCreator
 {
     private readonly List<PdfStream> streamSegments = new();
+    private PromisedIndirectObject? promisedPageObject;
     public PageCreator(IObjectStreamCreationStrategy objStreamStrategy) : base(objStreamStrategy)
     {
         MetaData.WithItem(KnownNames.Type, KnownNames.Page);
@@ -56,7 +57,17 @@ public class PageCreator: ContentStreamCreator
     protected override PdfIndirectObject CreateFinalObject(ILowLevelDocumentCreator creator)
     {
         TryAddContent(creator);
-        return creator.Add(MetaData.AsDictionary());
+        return creator.Add(TryUsePromisedObject(MetaData.AsDictionary()));
+    }
+
+    public PromisedIndirectObject InitializePromiseObject(ILowLevelDocumentBuilder builder) =>
+        promisedPageObject = (PromisedIndirectObject)builder.AsIndirectReference();
+
+    public PdfObject TryUsePromisedObject(PdfObject value)
+    {
+        if (promisedPageObject == null) return value;
+        promisedPageObject.SetValue(value);
+        return promisedPageObject;
     }
 
     private void TryAddContent(ILowLevelDocumentCreator creator)

@@ -26,24 +26,17 @@ public readonly partial struct DeepCopy
     private async ValueTask<PdfObject> CloneIndirectObject(PdfIndirectObject pio)
     {
         if (buffer.TryGetValue((pio.GenerationNumber, pio.ObjectNumber), out var item)) return item;
-        var newPio = ReserveIndirectMapping(pio);
-        ((UnknownIndirectObject)newPio).SetValue(await Clone(await pio.DirectValueAsync().CA()).CA());
+        var newPio = creator.Add(null);
+        ReserveIndirectMapping(pio, newPio);
+        ((PromisedIndirectObject)newPio).SetValue(await Clone(await pio.DirectValueAsync().CA()).CA());
         return newPio;
     }
 
-    public PdfIndirectObject ReserveIndirectMapping(PdfIndirectObject pio)
+    public void ReserveIndirectMapping(PdfIndirectObject pio, PdfIndirectObject promise)
     {
-        var newPio = creator.AsIndirectReference(null);
-        buffer.Add((pio.GenerationNumber, pio.ObjectNumber), newPio);
-        return newPio;
+        buffer.Add((pio.GenerationNumber, pio.ObjectNumber), promise);
     }
-
-    public void SetIndirectMapping(PdfIndirectObject source, PdfObject target)
-    {
-        var mappedPio = buffer[(source.GenerationNumber, source.ObjectNumber)];
-        ((UnknownIndirectObject)mappedPio).SetValue(target);
-    }
-
+    
     private async Task<PdfStream> CopyPdfStream(PdfStream ps) =>
         (await CopyPdfDictionary(ps).CA()).AsStream(
             await ps.StreamContentAsync(StreamFormat.DiskRepresentation).CA(), StreamFormat.DiskRepresentation);

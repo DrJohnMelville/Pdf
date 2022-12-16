@@ -58,13 +58,13 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
         value switch
         {
             PdfIndirectObject pio => pio,
-            null=> new UnknownIndirectObject(nextObject++, 0),
+            null=> new PromisedIndirectObject(nextObject++, 0),
             _ => new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null)
         };
 
     public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
     {
-        ((UnknownIndirectObject)reference).SetValue(value);
+        ((PromisedIndirectObject)reference).SetValue(value);
     }
     public PdfIndirectObject Add(PdfObject? item) => InnerAdd(AsIndirectReference(item));
     public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation) => 

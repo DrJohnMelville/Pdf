@@ -19,7 +19,7 @@ public class IndirectObjectResolver : IIndirectObjectResolver
     {
         if (index.TryGetValue((objectNumber, generation), out var existingReference)) 
             return existingReference;
-        var ret = new UnknownIndirectObject(objectNumber,
+        var ret = new PromisedIndirectObject(objectNumber,
             generation);
         index.Add((objectNumber, generation), ret);
         return ret;
@@ -30,8 +30,8 @@ public class IndirectObjectResolver : IIndirectObjectResolver
         var key = (newItem.ObjectNumber, newItem.GenerationNumber);
         if (index.TryGetValue(key, out var prior))
         {
-            Debug.Assert(prior is UnknownIndirectObject);
-            if (prior is not UnknownIndirectObject mut || mut.HasRegisteredAccessor()) return;
+            Debug.Assert(prior is PromisedIndirectObject);
+            if (prior is not PromisedIndirectObject mut || mut.HasRegisteredAccessor()) return;
             mut.SetValue(newItem);
         }
         index[key] = newItem;
