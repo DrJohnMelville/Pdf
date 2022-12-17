@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
@@ -24,7 +26,14 @@ public readonly struct MaskBitmap
     private byte AlphaAt(int row, int col) => Mask[3 + PixelPosition(row,col)];
     public byte RedAt(int row, int col) => Mask[PixelPosition(row, col)];
 
-    private int PixelPosition(int row, int col) => 4 * (col + (row * Width));
+    private int PixelPosition(int row, int col)
+    {
+        Debug.Assert(row >= 0);
+        Debug.Assert(row < Height);
+        Debug.Assert(col >= 0);
+        Debug.Assert(col < Width);
+        return 4 * (col + (row * Width));
+    }
 
     public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
     {
@@ -36,9 +45,8 @@ public readonly struct MaskBitmap
 
     private static unsafe ValueTask FillBuffer(byte[] buffer, IPdfBitmap wrapped)
     {
-        fixed (byte* pointer = buffer)
-        {
-            return wrapped.RenderPbgra(pointer);
-        }
+        var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        byte *pointer = (byte*)handle.AddrOfPinnedObject();
+        return new(wrapped.RenderPbgra(pointer).AsTask().ContinueWith(_=>handle.Free()));
     }
 }

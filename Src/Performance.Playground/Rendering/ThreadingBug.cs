@@ -27,8 +27,7 @@ public class ThreadingBug
 
     private static Stream ReadFile()
     {
-        using var doc= File.Open(
-            @"C:\Users\jmelv\Documents\Scratch\it7\itext7-dotnet\itext.tests\itext.kernel.tests\resources\itext\kernel\pdf\PageFlushingTest\100pages.pdf",
+        using var doc= File.Open(@"C:\Users\jmelv\Documents\Scratch\1Page.pdf",
             FileMode.Open);
         var ret = new MultiBufferStream();
         doc.CopyTo(ret);
