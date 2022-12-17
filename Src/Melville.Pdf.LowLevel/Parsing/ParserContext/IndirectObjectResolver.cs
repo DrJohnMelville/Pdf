@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
@@ -30,7 +31,6 @@ public class IndirectObjectResolver : IIndirectObjectResolver
         var key = (newItem.ObjectNumber, newItem.GenerationNumber);
         if (index.TryGetValue(key, out var prior))
         {
-            Debug.Assert(prior is PromisedIndirectObject);
             if (prior is not PromisedIndirectObject mut || mut.HasRegisteredAccessor()) return;
             mut.SetValue(newItem);
         }

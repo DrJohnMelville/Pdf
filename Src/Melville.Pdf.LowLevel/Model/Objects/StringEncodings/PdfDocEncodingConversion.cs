@@ -14,12 +14,16 @@ public static class PdfDocEncodingConversion
     }
 
 
-    public static unsafe void PdfDocEncodedString(Span<char> span, nint sourcePointerAsNativeInt)
+    private static unsafe void PdfDocEncodedString(Span<char> span, nint sourcePointerAsNativeInt)
     {
         byte* sourcePosition = (byte*)sourcePointerAsNativeInt;
-        for (int i = 0; i < span.Length; i++)
+        fixed (char* fixedSpanPtr = span)
         {
-            span[i] = Map[*sourcePosition++];
+            var endPtr = fixedSpanPtr + span.Length;
+            for (char* spanPtr = fixedSpanPtr; spanPtr < endPtr; spanPtr++)
+            {
+                *spanPtr = Map[*sourcePosition++];
+            }
         }
     }
 
