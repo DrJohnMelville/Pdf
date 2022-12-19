@@ -8,6 +8,15 @@ namespace Melville.Pdf.SkiaSharp
 {
     public static class RenderWithSkia
     {
+        /// <summary>
+        /// Render a given page of a pdf document to a PNG formatted image
+        /// </summary>
+        /// <param name="doc">The PDF document to render</param>
+        /// <param name="oneBasedPageNumber">The page number to render, first page being page 1.</param>
+        /// <param name="target">A writable stream to receive the output PNG bits.</param>
+        /// <param name="width">Optional parameter for the width of the desired image.</param>
+        /// <param name="height">Optional par</param>
+        /// <returns></returns>
         public static async ValueTask ToPngStreamAsync(
             DocumentRenderer doc, int oneBasedPageNumber, Stream target, int width = -1, int height = -1)
         {
