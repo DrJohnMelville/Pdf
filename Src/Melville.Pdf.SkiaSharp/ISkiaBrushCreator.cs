@@ -5,12 +5,12 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public interface ISkiaBrushCreator: IDisposable
+internal interface ISkiaBrushCreator: IDisposable
 {
     SKPaint CreateBrush(SkiaGraphicsState topState);
 }
 
-public class SolidColorBrushCreator : ISkiaBrushCreator
+internal class SolidColorBrushCreator : ISkiaBrushCreator
 {
     private readonly SKPaint value;
 
@@ -24,7 +24,7 @@ public class SolidColorBrushCreator : ISkiaBrushCreator
     public SKPaint CreateBrush(SkiaGraphicsState topState) => value;
 }
 
-public abstract class IntermediateBrushHolder<T>: ISkiaBrushCreator where T : IDisposable
+internal abstract class IntermediateBrushHolder<T>: ISkiaBrushCreator where T : IDisposable
 {
     protected readonly T value;
     private readonly List<IDisposable> items = new();
@@ -50,7 +50,7 @@ public abstract class IntermediateBrushHolder<T>: ISkiaBrushCreator where T : ID
     public abstract SKPaint CreateBrush(SkiaGraphicsState topState);
 }
 
-public class SurfacePatternHolder : IntermediateBrushHolder<SKSurface>
+internal class SurfacePatternHolder : IntermediateBrushHolder<SKSurface>
 {
     private readonly Matrix3x2 patternTransform;
     public SurfacePatternHolder(SKSurface value, Matrix3x2 patternTransform) : base(value)
@@ -70,7 +70,7 @@ public class SurfacePatternHolder : IntermediateBrushHolder<SKSurface>
     }
 }
 
-public class ImagePatternHolder : IntermediateBrushHolder<SKBitmap>
+internal class ImagePatternHolder : IntermediateBrushHolder<SKBitmap>
 {
     public ImagePatternHolder(SKBitmap value) : base(value)
     {

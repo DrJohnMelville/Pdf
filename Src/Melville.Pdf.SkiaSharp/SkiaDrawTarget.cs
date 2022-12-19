@@ -8,7 +8,7 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public class SkiaDrawTarget : IDrawTarget, IDisposable
+internal class SkiaDrawTarget : IDrawTarget, IDisposable
 {
     private readonly SKCanvas target;
     private readonly GraphicsStateStack<SkiaGraphicsState> state;

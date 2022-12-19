@@ -8,7 +8,7 @@ using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;
 
-public partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsState>
+internal partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsState>
 {
     public SkiaRenderTarget(SKCanvas target) : 
         base(target)

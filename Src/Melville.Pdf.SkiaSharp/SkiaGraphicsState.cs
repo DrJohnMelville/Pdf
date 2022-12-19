@@ -14,7 +14,7 @@ using SkiaSharp;
 namespace Melville.Pdf.SkiaSharp;
 
 
-public class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
+internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
 {
     protected override ISkiaBrushCreator CreateSolidBrush(DeviceColor color) => 
         new SolidColorBrushCreator(color);

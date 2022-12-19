@@ -6,16 +6,16 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.SkiaSharp;
 using SkiaSharp;
 
-public static class SkiaStateInterpreter
+internal static class SkiaStateInterpreter
 {
-    public static SKPaint Brush(this SkiaGraphicsState state)
+    internal static SKPaint Brush(this SkiaGraphicsState state)
     {
         var ret = state.NonstrokeBrush.CreateBrush(state);
         ret.Style = SKPaintStyle.Fill;
         return ret;
     }
 
-    public static SKPaint Pen(this SkiaGraphicsState state)
+    internal static SKPaint Pen(this SkiaGraphicsState state)
     {
         var paint = state.StrokeBrush.CreateBrush(state);
         paint.Style = SKPaintStyle.Stroke;
