@@ -14,7 +14,7 @@ using Melville.Pdf.Wpf.FontCaching;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
-public partial class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>
+internal class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsState>
 {
     public WpfRenderTarget(DrawingContext target): base(target)
     {

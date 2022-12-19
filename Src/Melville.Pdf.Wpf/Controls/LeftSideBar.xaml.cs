@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.Wpf.Controls;
 
-public partial class LeftSideBar : UserControl
+internal partial class LeftSideBar : UserControl
 {
     public LeftSideBar()
     {

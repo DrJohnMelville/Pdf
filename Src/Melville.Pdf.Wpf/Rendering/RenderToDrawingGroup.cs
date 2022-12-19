@@ -11,17 +11,31 @@ using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
+/// <summary>
+/// Facade object thjat handles rendering PDF files to various WPF objects.
+///
+/// Most of the methods on this class eventually call RenderToDrawingVisual to do the actual painting
+/// </summary>
 public readonly struct RenderToDrawingGroup
 {
     private readonly DocumentRenderer doc;
     private readonly int oneBasedPageNumber;
 
+    /// <summary>
+    /// Create a RenderToDrawingGroup struct.
+    /// </summary>
+    /// <param name="doc">The pdf document to render.</param>
+    /// <param name="oneBasedPageNumber">The page number of the page to render.  First page is page 1.</param>
     public RenderToDrawingGroup(DocumentRenderer doc, int oneBasedPageNumber)
     {
         this.doc = doc;
         this.oneBasedPageNumber = oneBasedPageNumber;
     }
 
+    /// <summary>
+    /// Render a PDF page to a PNG image.
+    /// </summary>
+    /// <param name="stream">Writeable stream to receive the PNG bits.</param>
     public async ValueTask RenderToPngStream(Stream stream) =>
         await WriteToBufferStream(
                 DrawingGroupToBitmap(await Render())).CreateReader()
@@ -45,6 +59,10 @@ public readonly struct RenderToDrawingGroup
         return mbs;
     }
 
+    /// <summary>
+    /// Render the current document and page to a DrawingImage
+    /// </summary>
+    /// <returns>The rendered page.</returns>
     public async ValueTask<DrawingImage> RenderToDrawingImage()
     {
         var image = new DrawingImage(await Render());
@@ -52,6 +70,10 @@ public readonly struct RenderToDrawingGroup
         return image;
     }
 
+    /// <summary>
+    /// Render the current document and page to a DrawingGroup
+    /// </summary>
+    /// <returns>The rendered page.</returns>
     public async ValueTask<DrawingGroup> Render()
     {
         var dg = new DrawingGroup();
@@ -80,6 +102,10 @@ public readonly struct RenderToDrawingGroup
         });
    }
 
+    /// <summary>
+    /// Render the current document and page to a DrawingVisual
+    /// </summary>
+    /// <returns>The rendered page.</returns>
     public async ValueTask<DrawingVisual> RenderToDrawingVisual()
     {
         var ret = new DrawingVisual();

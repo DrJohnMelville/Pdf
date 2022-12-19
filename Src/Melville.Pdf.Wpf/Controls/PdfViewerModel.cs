@@ -8,12 +8,12 @@ using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.Controls;
 
-public partial class PdfViewerModel
+internal partial class PdfViewerModel
 {
     private readonly DocumentRenderer document;
     [AutoNotify] private DrawingVisual? pageImage;
     [AutoNotify] private IReadOnlyList<IOptionalContentDisplayGroup>? optionalContentDisplay;
-    public PageSelectorViewModel PageSelector { get; } = new PageSelectorViewModel(); 
+    public IPageSelector PageSelector { get; } = new PageSelectorViewModel(); 
 
     public PdfViewerModel(DocumentRenderer document)
     {
@@ -41,7 +41,8 @@ public partial class PdfViewerModel
     private void InitalizePageFlipper()
     {
         PageSelector.MaxPage = document.TotalPages;
-        PageSelector.PropertyChanged += TryChangePage;
+        if (PageSelector is INotifyPropertyChanged inpc)
+         inpc.PropertyChanged += TryChangePage;
     }
 
     private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPage(PageSelector.Page);

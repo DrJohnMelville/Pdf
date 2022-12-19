@@ -9,7 +9,7 @@ using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.FontCaching;
 
-public class FontCachingTarget : WpfPathCreator, IFontTarget
+internal class FontCachingTarget : WpfPathCreator, IFontTarget
 {
     public ValueTask<double> RenderType3Character(
         Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary) => 
@@ -26,7 +26,7 @@ public class FontCachingTarget : WpfPathCreator, IFontTarget
     }
 }
 
-public record CachedGlyph(
+internal record CachedGlyph(
     PathGeometry Figures, FillRule Rule, double Width)
 {
     public PathGeometry CreateInstance(in Transform transform) => new(Figures.Figures, Rule, transform);

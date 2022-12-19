@@ -7,6 +7,11 @@ using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.Controls;
 
+/// <summary>
+/// This is a small record class that holds the size of page rendering for the WPF PageDisplay class
+/// </summary>
+/// <param name="Width"></param>
+/// <param name="Height"></param>
 public record PageSize(double Width, double Height);
 
 [GenerateDP(typeof(PageSize), "PageSize", Attached = true)]

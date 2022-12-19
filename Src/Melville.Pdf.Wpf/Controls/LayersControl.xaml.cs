@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.Wpf.Controls;
 
-public partial class LayersControl : UserControl
+internal partial class LayersControl : UserControl
 {
     public LayersControl()
     {

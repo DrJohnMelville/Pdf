@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Wrappers;
@@ -11,7 +10,7 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Wpf.Rendering;
 
-public static class WpfStateInterpreter
+internal static class WpfStateInterpreter
 {
     public static Brush Brush(this WpfGraphicsState state) => state.NonstrokeBrush(state);
     

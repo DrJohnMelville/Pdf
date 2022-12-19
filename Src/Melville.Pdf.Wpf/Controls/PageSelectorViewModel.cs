@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 using Accessibility;
 using Melville.Hacks;
@@ -7,35 +6,42 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Wpf.Controls;
 
+/// <summary>
+/// This interface represents UI that can select the displayed page within a PDF document.
+/// </summary>
 public interface IPageSelector
 {
+    /// <summary>
+    /// The page currently being dispplayed.  The first page is number 1.
+    /// </summary>
     int Page { get; set; }
+    /// <summary>
+    /// Total number of pages in the document, which is also the number of the last page.
+    /// </summary>
     int MaxPage { get; set; }
+    /// <summary>
+    /// Go to the next page.
+    /// </summary>
     void Increment();
+    /// <summary>
+    /// Go to the last page;
+    /// </summary>
     void ToEnd();
+    /// <summary>
+    /// Go to the previous page.
+    /// </summary>
     void Decrement();
+    /// <summary>
+    /// Go to the first page.
+    /// </summary>
     void ToStart();
+    /// <summary>
+    /// Set the displayed page without sending a property changed notification.
+    /// </summary>
+    /// <param name="newPageNumber">Page to display.  First page is page 1.</param>
     public void SetPageSilent(int newPageNumber);
 }
 
-public class SimpleCommand : ICommand
-{
-    private readonly Action<object?> execute;
-    private readonly Func<object?, bool> canExecute;
-
-    public SimpleCommand(Action<object?> execute, Func<object?, bool> canExecute, INotifyPropertyChanged target)
-    {
-        this.execute = execute;
-        this.canExecute = canExecute;
-        target.PropertyChanged += (_, _) => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    public bool CanExecute(object? parameter) => canExecute(parameter);
-
-    public void Execute(object? parameter) => execute(parameter);
-
-    public event EventHandler? CanExecuteChanged;
-}
 public partial class PageSelectorViewModel: IPageSelector
 {
     [AutoNotify] private int page = 1;
@@ -57,11 +63,19 @@ public partial class PageSelectorViewModel: IPageSelector
         ToEndCommand = new SimpleCommand(_=>ToEnd(), _ => Page < MaxPage, this);
     }
 
+    /// <inheritdoc />
     public void Increment() => Page++;
+    /// <inheritdoc />
     public void Decrement() => Page--;
+    /// <inheritdoc />
     public void ToStart() => Page = MinPage;
+    /// <inheritdoc />
     public void ToEnd() => Page = MaxPage;
 
-    [AutoNotify] public string DisplayString => $"{Page} of {MaxPage}";
+    /// <summary>
+    /// String to display in the textbox containing the current and total number of pages.
+    /// </summary>
+    public string DisplayString => $"{Page} of {MaxPage}";
+    /// <inheritdoc />
     public void SetPageSilent(int newPageNumber) => page = newPageNumber;
 }

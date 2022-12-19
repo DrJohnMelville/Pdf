@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 
 namespace Melville.Pdf.Wpf.DebugMethods;
 
-public class ImagePreviewWindow : Window
+internal class ImagePreviewWindow : Window
 {
     public void Create(BitmapSource bmp)
     {

@@ -3,7 +3,7 @@ using System.Windows.Media.Imaging;
 
 namespace Melville.Pdf.Wpf.DebugMethods;
 
-public static class BitmapDumper
+internal static class BitmapDumper
 {
     [Conditional("DEBUG")]
     public static void DumpBitmap(this BitmapSource bmp)

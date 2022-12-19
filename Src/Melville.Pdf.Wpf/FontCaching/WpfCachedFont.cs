@@ -12,7 +12,7 @@ using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.FontCaching;
 
-public class WpfCachedFont : IRealizedFont
+internal class WpfCachedFont : IRealizedFont
 {
     private readonly IRealizedFont inner;
     private readonly Dictionary<uint, CachedGlyph> cache = new();
