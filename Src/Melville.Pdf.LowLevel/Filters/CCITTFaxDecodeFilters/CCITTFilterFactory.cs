@@ -9,25 +9,11 @@ namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
 public class CcittFilterFactory
 {
-    public static async ValueTask<IStreamFilterDefinition> Encoder(PdfObject? arg) => SelectEncoderType(
-        await ParseCcittOptionsAsync(arg).CA());
-
-    private static IStreamFilterDefinition SelectEncoderType(CcittParameters args) => args.K switch
-    {
-        < 0 => new CcittType4Encoder(args),
-        0 => new CcittType31dEncoder(args),
-        > 0 => new CcittType3SwitchingEncoder(args)
-    };
+    public static async ValueTask<IStreamFilterDefinition> Encoder(PdfObject? arg) => 
+        CcittCodecFactory.SelectEncoder(await ParseCcittOptionsAsync(arg).CA());
 
     public static async ValueTask<IStreamFilterDefinition> Decoder(PdfObject? arg) => 
-        SelectDecoderType(await ParseCcittOptionsAsync(arg).CA());
-
-    private static IStreamFilterDefinition SelectDecoderType(CcittParameters args) => args.K switch
-    {
-        < 0 => new CcittType4Decoder(args, new TwoDimensionalLineCodeDictionary()),
-        0 => new CcittType4Decoder(args, new Type3K0LineCodeDictionary()),
-        > 0 => new CcittType4Decoder(args, new Type3SwitchingLineCodeDictionary())
-    };
+        CcittCodecFactory.SelectDecoder(await ParseCcittOptionsAsync(arg).CA());
 
     public static ValueTask<CcittParameters> ParseCcittOptionsAsync(PdfObject? parameters) =>
         FromDictionary(parameters as PdfDictionary ?? PdfDictionary.Empty);

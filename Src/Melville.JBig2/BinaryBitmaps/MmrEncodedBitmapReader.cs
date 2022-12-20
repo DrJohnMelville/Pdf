@@ -15,7 +15,7 @@ public static class MmrEncodedBitmapReader
     }
 
     private static void TryRequireTerminator(ref SequenceReader<byte> reader, bool requireTerminator,
-        CcittType4Decoder ccittType4Decoder)
+        IJBigMmrFilter ccittType4Decoder)
     {
         if (requireTerminator)
         {
@@ -23,9 +23,8 @@ public static class MmrEncodedBitmapReader
         }
     }
 
-    private const int KValueThatGetsIgnored = 1000;
-    private static CcittType4Decoder CreateMmrDecoder(BinaryBitmap bitmap) => new(
-        (CcittParameters)new CcittParameters(KValueThatGetsIgnored, 
-            encodedByteAlign:false, bitmap.Width, bitmap.Height, endOfBlock:false, blackIs1: true), 
-        (ICodeDictionay)new TwoDimensionalLineCodeDictionary());
+    private const int selectTwoDimensionalEncoding = -1;
+    private static IJBigMmrFilter CreateMmrDecoder(BinaryBitmap bitmap) =>
+        (IJBigMmrFilter)CcittCodecFactory.SelectDecoder(new CcittParameters(selectTwoDimensionalEncoding,
+            encodedByteAlign: false, bitmap.Width, bitmap.Height, endOfBlock: false, blackIs1: true));
 }

@@ -1,6 +1,6 @@
 ﻿namespace Melville.CCITT;
 
-public abstract class Type3LineCodeDictionary : ICodeDictionay
+internal abstract class Type3LineCodeDictionary : ICodeDictionay
 {
     
     public bool TryReadCode(in (int BitLength, int SourceBits) input, bool isWhiteRun, out CcittCode code)
@@ -24,7 +24,7 @@ public abstract class Type3LineCodeDictionary : ICodeDictionay
 /// <summary>
 /// This type implements Group 3, 1-D from the ITU Rec T.4
 /// </summary>
-public class Type3K0LineCodeDictionary : Type3LineCodeDictionary
+internal class Type3K0LineCodeDictionary : Type3LineCodeDictionary
 {
     protected override bool IsEndOfLineCode((int BitLength, int SourceBits) input) => 
         input == (12, 0b000000000001);
@@ -36,7 +36,7 @@ public class Type3K0LineCodeDictionary : Type3LineCodeDictionary
 /// <summary>
 /// This type implements Group 3 2-D from the ITU Rec T.4
 /// </summary>
-public class Type3SwitchingLineCodeDictionary: Type3LineCodeDictionary
+internal class Type3SwitchingLineCodeDictionary: Type3LineCodeDictionary
 {
     private readonly ICodeDictionay twoDimensional;
     private readonly ICodeDictionay oneDimensional = new MakeUpExpander(TerminalCodeDictionary.Instance);

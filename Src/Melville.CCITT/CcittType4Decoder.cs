@@ -5,7 +5,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.CCITT;
 
-public class CcittType4Decoder : IStreamFilterDefinition
+internal class CcittType4Decoder : IJBigMmrFilter
 {
   private readonly CcittParameters parameters;
   private LinePair lines;
@@ -163,9 +163,9 @@ public class CcittType4Decoder : IStreamFilterDefinition
 
   public void RequireTerminator(ref SequenceReader<byte> source)
   {
-    if (!this.reader.TryReadEndOfFileCode(ref source, out var done) || !done)
-    {
-      throw new InvalidDataException("An expected CCIT End of Frame code is not found");
+        if (!this.reader.TryReadEndOfFileCode(ref source, out var done) || !done)
+        {
+            throw new InvalidDataException("An expected CCIT End of Frame code is not found");
+        }
     }
-  }
 }
