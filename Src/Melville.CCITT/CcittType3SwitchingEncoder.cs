@@ -2,7 +2,7 @@
 
 namespace Melville.CCITT;
 
-public class CcittType31dEncoder : CcittEncoderBase
+internal class CcittType31dEncoder : CcittEncoderBase
 {
     public CcittType31dEncoder(CcittParameters parameters) : base(parameters)
     {
@@ -16,7 +16,7 @@ public class CcittType31dEncoder : CcittEncoderBase
         Debug.Assert(result);
     }
 }
-public class CcittType3SwitchingEncoder : CcittEncoderBase
+internal class CcittType3SwitchingEncoder : CcittEncoderBase
 {
     private int positionInRowGroup = 0;
     public CcittType3SwitchingEncoder(in CcittParameters parameters) : base(parameters)

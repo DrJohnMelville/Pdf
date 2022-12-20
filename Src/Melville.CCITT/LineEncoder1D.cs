@@ -1,6 +1,6 @@
 ﻿namespace Melville.CCITT;
 
-public class LineEncoder1D : ILineEncoder
+internal class LineEncoder1D : ILineEncoder
 {
     public static readonly ILineEncoder Instance = new LineEncoder1D();
     private LineEncoder1D() { }

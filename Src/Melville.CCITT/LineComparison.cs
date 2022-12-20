@@ -2,7 +2,7 @@
 
 namespace Melville.CCITT;
 
-public record struct LineComparison(int A1, int A2, int B1, int B2)
+internal record struct LineComparison(int A1, int A2, int B1, int B2)
 {
     public bool CanPassEncode => B2 < A1;
     

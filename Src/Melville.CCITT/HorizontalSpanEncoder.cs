@@ -1,6 +1,6 @@
 ﻿namespace Melville.CCITT;
 
-public static class HorizontalSpanEncoder
+internal static class HorizontalSpanEncoder
 {
     public static bool Write(ref BitTarget target, bool firstRunWhite, int firstRun, int secondRun)
     {

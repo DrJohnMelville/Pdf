@@ -2,7 +2,7 @@
 
 namespace Melville.CCITT;
 
-public readonly struct LinePair
+internal readonly struct LinePair
 {
     private bool[] PriorLine { get; }
     public bool[] CurrentLine { get; }

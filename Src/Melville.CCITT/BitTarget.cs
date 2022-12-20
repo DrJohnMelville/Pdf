@@ -2,7 +2,7 @@
 
 namespace Melville.CCITT;
 
-public ref struct BitTarget
+internal ref struct BitTarget
 {
     private readonly Span<byte> target;
     private readonly BitWriter writer;

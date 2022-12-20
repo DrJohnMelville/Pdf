@@ -1,6 +1,6 @@
 ﻿namespace Melville.CCITT;
 
-public class MakeUpExpander : ICodeDictionay
+internal class MakeUpExpander : ICodeDictionay
 {
     private readonly ICodeDictionay innerDictionary;
     private int extraPixels = 0;

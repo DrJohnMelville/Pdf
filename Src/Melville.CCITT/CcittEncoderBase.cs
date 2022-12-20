@@ -4,7 +4,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.CCITT;
 
-public abstract class CcittEncoderBase : IStreamFilterDefinition
+internal abstract class CcittEncoderBase : IStreamFilterDefinition
 {
     protected readonly CcittParameters Parameters;
     private readonly BitWriter bitWriter = new();

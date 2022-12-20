@@ -3,7 +3,7 @@
 namespace Melville.CCITT;
 
 
-public partial class TerminalCodeDictionary: ICodeDictionay
+internal partial class TerminalCodeDictionary: ICodeDictionay
 {
     public static ICodeDictionay Instance = new TerminalCodeDictionary();
 

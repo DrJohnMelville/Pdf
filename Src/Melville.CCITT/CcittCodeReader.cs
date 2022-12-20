@@ -4,7 +4,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.CCITT;
 
-public enum CcittCodeOperation : byte
+internal enum CcittCodeOperation : byte
 {
     Pass = 0,
     HorizontalBlack = 1,
@@ -16,14 +16,14 @@ public enum CcittCodeOperation : byte
     NoCode = 7,
 }
 
-public interface ICodeDictionay
+internal interface ICodeDictionay
 {
     bool TryReadCode(
         in (int BitLength, int SourceBits) input, bool isWhiteRun, out CcittCode code);
     bool IsAtValidEndOfLine { get; }
 }
 
-public partial class CcittCodeReader
+internal partial class CcittCodeReader
 {
     private readonly BitReader reader = new();
     private int currentWord = 0;

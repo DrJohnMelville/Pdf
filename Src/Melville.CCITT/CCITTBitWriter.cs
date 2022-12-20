@@ -3,7 +3,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.CCITT;
 
-public ref struct CcittBitWriter
+internal ref struct CcittBitWriter
 {
     private readonly BitWriter writer;
     private BitTarget target;

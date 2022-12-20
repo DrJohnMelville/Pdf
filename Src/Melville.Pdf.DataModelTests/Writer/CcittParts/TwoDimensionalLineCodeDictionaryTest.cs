@@ -16,11 +16,11 @@ public class TwoDimensionalLineCodeDictionaryTest
     [InlineData("010", CcittCodeOperation.Vertical, 2)]
     [InlineData("000010", CcittCodeOperation.Vertical, 1)]
     [InlineData("0000010", CcittCodeOperation.Vertical, 0)]
-    public void ReadVerticalOrPassThrough(string input, CcittCodeOperation op, int length)
+    public void ReadVerticalOrPassThrough(string input, object op, int length)
     {
         var reader = StringToByteArray.CreateSequence(input);
         Assert.True(sut.TryReadCode(ref reader, true, out var code));
-        Assert.Equal(op, code.Operation);
+        Assert.Equal((CcittCodeOperation)op, code.Operation);
         Assert.Equal(length, code.Length);
     }
 

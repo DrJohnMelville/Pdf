@@ -1,6 +1,6 @@
 ﻿namespace Melville.CCITT;
 
-public class CcittType4Encoder : CcittEncoderBase
+internal class CcittType4Encoder : CcittEncoderBase
 {
    
     public CcittType4Encoder(in CcittParameters parameters): base(parameters)

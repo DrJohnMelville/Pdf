@@ -8,9 +8,9 @@ public class LineComparisonTest
 {
     [Theory]
     [MemberData(nameof(TestCases))]
-    public void LineComparisonTestCase(LinePair pair, LineComparison result, int a0)
+    public void LineComparisonTestCase(object pair, object result, int a0)
     {
-        Assert.Equal(result, pair.CompareLinesFrom(a0));
+        Assert.Equal((LineComparison)result, ((LinePair)pair).CompareLinesFrom(a0));
     }
     public static object[][] TestCases()
     {

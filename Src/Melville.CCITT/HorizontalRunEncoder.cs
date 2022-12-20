@@ -2,7 +2,7 @@
 
 namespace Melville.CCITT;
 
-public class HorizontalRunEncoder
+internal class HorizontalRunEncoder
 {
     private readonly (byte, uint)[] terminatingSpans;
     private readonly (byte, uint)[] makeupSpans;
