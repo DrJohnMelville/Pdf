@@ -3,7 +3,7 @@
 namespace Melville.Icc.ColorTransforms;
 
 [StaticSingleton]
-public partial class LabToXyz : IColorTransform
+internal partial class LabToXyz : IColorTransform
 {
     public int Inputs => 3;
     public int Outputs => 3;

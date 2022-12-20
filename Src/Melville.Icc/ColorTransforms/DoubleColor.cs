@@ -2,10 +2,16 @@
 
 namespace Melville.Icc.ColorTransforms;
 
+/// <summary>
+/// Record struct that represents a RGB triple with doubles, valued 0-1
+/// </summary>
 public record struct DoubleColor(double Red, double Green, double Blue)
 {
 }
 
+/// <summary>
+/// Record struct that represents a RGB tripple with floats.
+/// </summary>
 public record struct FloatColor(float Red, float Green, float Blue)
 {
     public static implicit operator FloatColor(DoubleColor col) =>

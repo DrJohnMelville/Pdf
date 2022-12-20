@@ -3,7 +3,7 @@ using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.ColorTransforms;
 
-public static class LinearizedRgbToXyzMatrixFactory
+internal static class LinearizedRgbToXyzMatrixFactory
 {
     public static Matrix3x3 XyzFromSrgb(in FloatColor whitePoint) =>
         ToArbiitraryRgb(whitePoint, 0.64f, 0.33f, 0.30f, 0.60f, 0.15f, 0.06f);

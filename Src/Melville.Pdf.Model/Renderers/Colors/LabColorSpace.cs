@@ -68,7 +68,7 @@ public class LabColorSpace : IColorSpace
         var L = commonPart + (aInterval.Clip(newColor[1]) / 500);
         var M = commonPart;
         var N = commonPart - (bInterval.Clip(newColor[2]) / 200);
-        return new XyzToDeviceColor(whitePoint).ToDeviceColor(stackalloc float[]
+        return XyzToRgbTransformFactory.Create(whitePoint).ToDeviceColor(stackalloc float[]
         {
             (float)(whitePoint.Red * GFunc(L)),
             (float)(whitePoint.Green * GFunc(M)),

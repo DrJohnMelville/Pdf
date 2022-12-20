@@ -19,7 +19,7 @@ public class CalGray : IColorSpace
     public CalGray(DoubleColor whitePoint, double gamma)
     {
         this.whitePoint = whitePoint;
-        xyzToDeviceTransform = new XyzToDeviceColor(whitePoint);
+        xyzToDeviceTransform = XyzToRgbTransformFactory.Create(whitePoint);
         this.gamma = gamma;
     }
 

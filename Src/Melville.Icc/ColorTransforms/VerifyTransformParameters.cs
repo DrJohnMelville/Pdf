@@ -2,7 +2,7 @@
 
 namespace Melville.Icc.ColorTransforms;
 
-public static class VerifyTransformParameters 
+internal static class VerifyTransformParameters 
 {
     [Conditional("DEBUG")]
     public static void VerifyTransform(

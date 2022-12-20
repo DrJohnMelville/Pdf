@@ -1,8 +1,9 @@
-﻿using Melville.Icc.Model.Tags;
+﻿using System.Security.Cryptography.X509Certificates;
+using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.ColorTransforms;
 
-public class XyzToDeviceColor : IColorTransform
+internal class XyzToDeviceColor : IColorTransform
 {
     private readonly Matrix3x3 xyYXToRGB;
     
@@ -34,8 +35,4 @@ public class XyzToDeviceColor : IColorTransform
 
     private float GammaCorrect(float f) =>
         (float)((f <= 0.0031308 ? 12.92*f: 1.055*Math.Pow(f,1/2.4) - 0.055));
-
-    public static readonly IColorTransform FromD50 = 
-        new XyzToDeviceColor(new FloatColor(.96422f, 1f, .82491f));
 }
-
