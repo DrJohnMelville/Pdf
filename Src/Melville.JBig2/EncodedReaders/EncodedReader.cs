@@ -6,7 +6,7 @@ using Melville.JBig2.GenericRegionRefinements;
 
 namespace Melville.JBig2.EncodedReaders;
 
-public interface IEncodedReader
+internal interface IEncodedReader
 {
     /// <summary>
     ///  In Spec: IAAI
@@ -100,7 +100,7 @@ public interface IEncodedReader
 [MacroItem("RIBit")]
 [MacroCode("public TContext? ~0~Context {protected get; set;}")]
 [MacroCode("public int ~0~(ref SequenceReader<byte> source) => Read(ref source, VerifyExists(~0~Context));")]
-public abstract partial class EncodedReader<TContext, TState>: IEncodedReader
+internal abstract partial class EncodedReader<TContext, TState>: IEncodedReader
 {
     protected TState State { get; }
 

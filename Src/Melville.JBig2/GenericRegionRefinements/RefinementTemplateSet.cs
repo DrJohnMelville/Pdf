@@ -6,7 +6,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.GenericRegionRefinements;
 
-public readonly struct RefinementTemplateSet
+internal readonly struct RefinementTemplateSet
 {
     private readonly ContextBitRun[] runs;
     private readonly ContextStateDict contextDictionary;

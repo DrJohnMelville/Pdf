@@ -3,7 +3,7 @@ using Melville.JBig2.BinaryBitmaps;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
-public ref partial struct IncrementalTemplate
+internal ref partial struct IncrementalTemplate
 {
     private readonly Span<ContextBitRun> runs;
     private readonly Span<BitmapPointer> pointers;

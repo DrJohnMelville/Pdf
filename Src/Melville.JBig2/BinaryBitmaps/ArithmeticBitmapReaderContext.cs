@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public readonly struct ArithmeticBitmapReaderContext
+internal readonly struct ArithmeticBitmapReaderContext
 {
     private readonly BitmapTemplate template;
     private readonly ContextStateDict dictionary;

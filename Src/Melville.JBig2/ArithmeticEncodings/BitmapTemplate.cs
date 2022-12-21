@@ -2,14 +2,14 @@
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
-public readonly record struct ContextBitRun(sbyte X, sbyte Y, byte Length, byte MinBit)
+internal readonly record struct ContextBitRun(sbyte X, sbyte Y, byte Length, byte MinBit)
 {
     public int NextBit() => MinBit + Length;
 
     public bool IsLastRunInThisBitmap() => MinBit == 0;
 }
 
-public readonly struct BitmapTemplate
+internal readonly struct BitmapTemplate
 {
     private readonly ContextBitRun[] runs;
     public int BitsRequired() => runs[0].NextBit();

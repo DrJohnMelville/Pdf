@@ -6,7 +6,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
-public readonly struct SymbolDictionaryExportParser
+internal readonly struct SymbolDictionaryExportParser
 {
     private readonly uint exportedSymbols;
     public uint NewSymbols { get; }

@@ -8,7 +8,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
-public ref partial struct SymbolWriter
+internal ref partial struct SymbolWriter
 {
     [FromConstructor] private readonly BinaryBitmapWriter target;
     [FromConstructor] private readonly IEncodedReader integerReader;

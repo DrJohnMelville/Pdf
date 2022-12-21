@@ -7,7 +7,7 @@ using Melville.JBig2.Segments;
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
 [StaticSingleton]
-public sealed partial class RefinementBitmapReader : IIndividualBitmapReader
+internal sealed partial class RefinementBitmapReader : IIndividualBitmapReader
 {
     public void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap)
     {   //  this method begins section 6.5.8.2 in the specification

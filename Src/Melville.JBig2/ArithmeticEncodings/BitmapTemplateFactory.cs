@@ -5,7 +5,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
-public unsafe ref struct BitmapTemplateFactory
+internal unsafe ref struct BitmapTemplateFactory
 {
     private const int MaxRuns = 7;
     public int Length { get; private set; }

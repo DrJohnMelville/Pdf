@@ -4,13 +4,13 @@ using Melville.JBig2.BinaryBitmaps;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
-public interface IIndividualBitmapReader
+internal interface IIndividualBitmapReader
 {
     void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap);
 }
 
 [StaticSingleton]
-public partial class IndividualHeightClassReader: IHeightClassReaderStrategy
+internal partial class IndividualHeightClassReader: IHeightClassReaderStrategy
 {
     public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {
@@ -31,7 +31,7 @@ public partial class IndividualHeightClassReader: IHeightClassReaderStrategy
 }
 
 [StaticSingleton]
-public sealed partial class UnrefinedBitmapReader : IIndividualBitmapReader
+internal sealed partial class UnrefinedBitmapReader : IIndividualBitmapReader
 {
     public void ReadBitmap(ref SequenceReader<byte> source, ref SymbolParser reader, BinaryBitmap bitmap)
     {

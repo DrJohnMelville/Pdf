@@ -7,7 +7,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
-public ref struct SymbolParser
+internal ref struct SymbolParser
 {
     private readonly SymbolDictionaryFlags headerFlags;
     public IEncodedReader EncodedReader { get; }

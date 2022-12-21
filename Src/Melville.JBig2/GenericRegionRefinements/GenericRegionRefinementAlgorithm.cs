@@ -5,7 +5,7 @@ using Melville.JBig2.BinaryBitmaps;
 
 namespace Melville.JBig2.GenericRegionRefinements;
 
-public ref partial struct GenericRegionRefinementAlgorithm
+internal ref partial struct GenericRegionRefinementAlgorithm
 {
     [FromConstructor]private readonly IBinaryBitmap target;
     [FromConstructor]private readonly IBinaryBitmap reference;

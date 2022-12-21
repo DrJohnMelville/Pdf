@@ -10,7 +10,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.JBig2.HuffmanTables;
 
-public class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
+internal class HuffmanIntegerDecoder : EncodedReader<HuffmanLine[], BitReader>
 {
     public HuffmanIntegerDecoder() : base(new BitReader())
     {

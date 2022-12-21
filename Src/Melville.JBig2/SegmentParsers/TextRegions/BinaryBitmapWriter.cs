@@ -7,7 +7,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
-public readonly struct BinaryBitmapWriter
+internal readonly struct BinaryBitmapWriter
 {
     private readonly IBitmapCopyTarget target;
     private readonly TranspositionState transposition;

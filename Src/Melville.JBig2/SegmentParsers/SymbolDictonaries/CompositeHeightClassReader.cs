@@ -6,13 +6,13 @@ using Melville.JBig2.BinaryBitmaps;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
-public interface IHeightClassReaderStrategy
+internal interface IHeightClassReaderStrategy
 {
     void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height);
 }
 
 [StaticSingleton]
-public partial class CompositeHeightClassReader: IHeightClassReaderStrategy
+internal partial class CompositeHeightClassReader: IHeightClassReaderStrategy
 {
     public void ReadHeightClassBitmaps(ref SequenceReader<byte> source, ref SymbolParser parser, int height)
     {

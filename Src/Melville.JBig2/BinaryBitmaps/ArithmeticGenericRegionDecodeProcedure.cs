@@ -3,12 +3,12 @@ using Melville.JBig2.ArithmeticEncodings;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public interface ISkipBitmap
+internal interface ISkipBitmap
 {
     bool ShouldSkipPixel(int row, int column);
 }
 
-public class DoNotSkip: ISkipBitmap
+internal class DoNotSkip: ISkipBitmap
 {
     public static readonly ISkipBitmap Instance = new DoNotSkip();
     private DoNotSkip() { }
@@ -16,7 +16,7 @@ public class DoNotSkip: ISkipBitmap
 }
 
 
-public readonly struct ArithmeticGenericRegionDecodeProcedure
+internal readonly struct ArithmeticGenericRegionDecodeProcedure
 {
     private readonly BinaryBitmap bitmap;
     private readonly MQDecoder state;

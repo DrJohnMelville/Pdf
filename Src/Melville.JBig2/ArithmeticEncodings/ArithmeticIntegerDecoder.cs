@@ -6,7 +6,7 @@ using Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
-public class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder>
+internal class ArithmeticIntegerDecoder: EncodedReader<ContextStateDict, MQDecoder>
 {
     private readonly ArithmeticBitmapReaderContext template;
 
