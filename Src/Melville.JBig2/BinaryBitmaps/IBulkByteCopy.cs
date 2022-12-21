@@ -2,12 +2,12 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public interface IBulkByteCopy
+internal interface IBulkByteCopy
 {
     public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier);
 }
 
-public sealed class NullBulkByteCopy: IBulkByteCopy
+internal sealed class NullBulkByteCopy: IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new NullBulkByteCopy();
     private NullBulkByteCopy() { }
@@ -16,7 +16,7 @@ public sealed class NullBulkByteCopy: IBulkByteCopy
     }
 }
 
-public sealed class AlignedReplaceBulkCopy : IBulkByteCopy
+internal sealed class AlignedReplaceBulkCopy : IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new AlignedReplaceBulkCopy();
 
@@ -29,7 +29,7 @@ public sealed class AlignedReplaceBulkCopy : IBulkByteCopy
         dest += length;
     }
 }
-public sealed class SourceOffsetBulkCopy : IBulkByteCopy
+internal sealed class SourceOffsetBulkCopy : IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new SourceOffsetBulkCopy();
     private SourceOffsetBulkCopy() { }
@@ -42,7 +42,7 @@ public sealed class SourceOffsetBulkCopy : IBulkByteCopy
         }
     }
 }
-public sealed class SourceOffsetBulkOperation : IBulkByteCopy
+internal sealed class SourceOffsetBulkOperation : IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new SourceOffsetBulkOperation();
     private SourceOffsetBulkOperation() { }
@@ -56,7 +56,7 @@ public sealed class SourceOffsetBulkOperation : IBulkByteCopy
         }
     }
 }
-public sealed class AlignedBulkOperation : IBulkByteCopy
+internal sealed class AlignedBulkOperation : IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new AlignedBulkOperation();
     private AlignedBulkOperation() { }

@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public class SingleByteCopy : IBulkByteCopy
+internal class SingleByteCopy : IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new SingleByteCopy();
     protected SingleByteCopy() { }

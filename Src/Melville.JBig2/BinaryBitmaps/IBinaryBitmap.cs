@@ -11,3 +11,8 @@ public interface IBinaryBitmap
     bool ContainsPixel(int row, int col);
     BitmapPointer PointerFor(int row, int col);
 }
+
+public static class IBinaryBitmapOperations
+{
+    public static int BufferLength(this IBinaryBitmap bitmap) => bitmap.Stride * bitmap.Height;
+}

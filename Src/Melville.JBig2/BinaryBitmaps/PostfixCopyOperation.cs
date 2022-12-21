@@ -1,6 +1,6 @@
 ﻿namespace Melville.JBig2.BinaryBitmaps;
 
-public class PostfixCopyOperation : IBulkByteCopy
+internal class PostfixCopyOperation : IBulkByteCopy
 {
     public static readonly IBulkByteCopy Instance = new PostfixCopyOperation();
 

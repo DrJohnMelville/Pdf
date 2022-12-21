@@ -4,7 +4,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public readonly partial struct BitCopierFactory
+internal readonly partial struct BitCopierFactory
 {
     [FromConstructor]private readonly int sourceBit;
     [FromConstructor]private readonly int destBit;

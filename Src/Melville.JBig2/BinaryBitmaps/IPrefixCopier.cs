@@ -3,7 +3,7 @@
 namespace Melville.JBig2.BinaryBitmaps;
 
 [StaticSingleton]
-public sealed partial class NoTargetOffsetPrefixCopier : IBulkByteCopy
+internal sealed partial class NoTargetOffsetPrefixCopier : IBulkByteCopy
 {
     public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
@@ -11,7 +11,7 @@ public sealed partial class NoTargetOffsetPrefixCopier : IBulkByteCopy
     }
 }
 [StaticSingleton]
-public sealed partial class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
+internal sealed partial class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
 {
     public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
@@ -22,7 +22,7 @@ public sealed partial class EqualSourceTargetOffsetPrefixCopier : IBulkByteCopy
     }
 }
 [StaticSingleton]
-public sealed partial class SourceLessThanTargetOffsetPrefixCopier : IBulkByteCopy
+internal sealed partial class SourceLessThanTargetOffsetPrefixCopier : IBulkByteCopy
 {
     public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {
@@ -35,7 +35,7 @@ public sealed partial class SourceLessThanTargetOffsetPrefixCopier : IBulkByteCo
     }
 }
 [StaticSingleton()]
-public sealed partial class TargetLessThanSourceOffsetPrefixCopier : IBulkByteCopy
+internal sealed partial class TargetLessThanSourceOffsetPrefixCopier : IBulkByteCopy
 {
     public unsafe void Copy(scoped ref byte* src, scoped ref byte* dest, scoped ref BitCopier copier)
     {

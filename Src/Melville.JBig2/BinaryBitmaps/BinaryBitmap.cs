@@ -5,7 +5,7 @@ using Melville.JBig2.Segments;
 namespace Melville.JBig2.BinaryBitmaps;
 
 [DebuggerDisplay("{this.BitmapString()}")]
-public class BinaryBitmap: IBitmapCopyTarget
+internal class BinaryBitmap: IBitmapCopyTarget
 {
     public int Stride { get; }
     public int Width { get; }
@@ -90,15 +90,12 @@ public class BinaryBitmap: IBitmapCopyTarget
         Width = width;
         Height = height;
         Stride = (width + 7) / 8;
-        bits = new byte[BufferLength()];
+        bits = new byte[this.BufferLength()];
     }
-
-    public int BufferLength() => Stride * Height;
-
     protected void ResizeToHeight(int newHeight)
     {
         Height = newHeight;
-        var newBufferLength = BufferLength();
+        var newBufferLength = this.BufferLength();
         if (newBufferLength > bits.Length) Array.Resize(ref bits, newBufferLength);
     }
     

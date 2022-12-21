@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public ref partial struct BitCopier
+internal ref partial struct BitCopier
 {
     [FromConstructor]public OffsetReader Reader;
     [FromConstructor]public readonly RowCopyPlan Plan;

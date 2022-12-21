@@ -17,7 +17,7 @@ public abstract class JbigPageReader
 
     public int TotalPages => Pages.Count;
     public void RequestPage(uint page) => Pages.Add(page, requested);
-    public BinaryBitmap GetPage(uint page) => Pages[page];
+    public IBinaryBitmap GetPage(uint page) => Pages[page];
 
     public ValueTask ProcessFileBitsAsync(Stream stream) => ProcessFileBitsAsync((PipeReader)PipeReader.Create(stream)); 
     public async ValueTask ProcessFileBitsAsync(PipeReader pipe)

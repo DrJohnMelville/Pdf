@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public interface IBitmapCopyTarget : IBinaryBitmap
+internal interface IBitmapCopyTarget : IBinaryBitmap
 {
     void PasteBitsFrom(int row, int column, IBinaryBitmap source, CombinationOperator combOp);
 }
