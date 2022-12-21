@@ -1,13 +1,9 @@
-﻿
-using System.Diagnostics;
-using System.Reflection;
-using System.Text;
-using Melville.Icc.Model;
+﻿using System.Text;
 
 
 namespace Melville.Icc.Model;
 
-public static class Visualizations
+internal static class Visualizations
 {
     public static string As4CC(uint source) =>
         Encoding.UTF8.GetString(stackalloc byte[]

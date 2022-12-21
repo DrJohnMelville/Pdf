@@ -6,7 +6,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Parser;
 
-public static class TagParser
+internal static class TagParser
 {
     public static object Parse(ReadOnlySequence<byte> input)
     {

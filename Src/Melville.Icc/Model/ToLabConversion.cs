@@ -4,7 +4,7 @@ using Melville.INPC;
 
 namespace Melville.Icc.Model;
 
-public partial class ToLabConversion : IColorTransform
+internal partial class ToLabConversion : IColorTransform
 {
     [DelegateTo()] private readonly IColorTransform innerTransform;
 
@@ -23,7 +23,8 @@ public partial class ToLabConversion : IColorTransform
 
     private static float AbTransform(float a) => (a * 256f) - 128f;
 }
-public partial class FromLabConversion : IColorTransform
+
+internal partial class FromLabConversion : IColorTransform
 {
     [DelegateTo]private readonly IColorTransform innerTransform;
 

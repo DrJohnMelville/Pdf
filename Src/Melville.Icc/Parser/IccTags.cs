@@ -1,6 +1,6 @@
 ﻿namespace Melville.Icc.Parser;
 
-public static class IccTags
+internal static class IccTags
 {
     public const uint bACS = 0x62414353;
     public const uint chrm = 0x6368726d;

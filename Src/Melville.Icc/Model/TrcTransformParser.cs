@@ -4,7 +4,7 @@ using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.Model;
 
-public ref struct TrcTransformParser
+internal ref struct TrcTransformParser
 {
     XyzArray? rXYZ = null, gXYZ = null, bXYZ = null;
     ICurveTag? rTRC = null, gTRC = null, bTRC = null, kTRC = null;

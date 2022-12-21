@@ -1,5 +1,8 @@
 ﻿namespace Melville.Icc.Model;
 
+/// <summary>
+/// Attributes of a device targeted by an ICC profile   
+/// </summary>
 [Flags]
 public enum DeviceAttributes : ulong
 {

@@ -3,7 +3,7 @@ using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.Model;
 
-public class TrcTransform : IColorTransform
+internal class TrcTransform : IColorTransform
 {
     private readonly Matrix3x3 matrix;
     private readonly ICurveTag rTrc;

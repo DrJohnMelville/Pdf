@@ -1,5 +1,8 @@
 ﻿namespace Melville.Icc.Model;
 
+/// <summary>
+/// The type of device described by this profile
+/// </summary>
 public enum ProfileClass : uint
 {
     Input = 0x73636372,

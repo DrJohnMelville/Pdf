@@ -1,5 +1,8 @@
 ﻿namespace Melville.Icc.Model;
 
+/// <summary>
+/// Describes colorspaces that an ICC profile might convert to or from.  See Table 19 on page 21 of the ICC spec
+/// </summary>
 public enum ColorSpace : uint
 {
     XYZ = 0X58595A20,

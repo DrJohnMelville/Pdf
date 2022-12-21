@@ -7,16 +7,21 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Parser;
 
+/// <summary>
+/// Parses an ICC profile from a pipereader;
+/// </summary>
 public readonly struct IccParser
 {
     private readonly IByteSource source;
-    
-
     public IccParser(PipeReader source)
     {
         this.source = new ByteSource(source); 
     }
 
+    /// <summary>
+    /// Parse an ICC profile from the PipeReader passed in the constructor.
+    /// </summary>
+    /// <returns>ICC profile </returns>
     public async ValueTask<IccProfile> ParseAsync()
     {
         var readResult = await GetMinSizeAsync(132).CA();

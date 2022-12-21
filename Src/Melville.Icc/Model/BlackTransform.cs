@@ -3,7 +3,7 @@ using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.Model;
 
-public class BlackTransform : IColorTransform
+internal class BlackTransform : IColorTransform
 {
     private readonly XyzNumber whitePoint;
     private readonly ICurveTag kTrc;

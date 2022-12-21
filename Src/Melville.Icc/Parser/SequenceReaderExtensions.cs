@@ -5,7 +5,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Parser;
 
-public static class IccSequenceReaderExtensions
+internal static class IccSequenceReaderExtensions
 {
     public static XyzNumber ReadXyzNumber(this ref SequenceReader<byte> source) => 
         new(source.Reads15Fixed16(), source.Reads15Fixed16(), source.Reads15Fixed16());
