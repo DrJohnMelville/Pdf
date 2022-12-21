@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Melville.JBig2.HuffmanTables;
 
-public static class HuffmanTableFactory
+internal static class HuffmanTableFactory
 {
     public static void FromIntSpan(in ReadOnlySpan<int> lengths, in Span<HuffmanLine> table)
     {

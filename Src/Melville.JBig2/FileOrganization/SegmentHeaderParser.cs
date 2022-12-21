@@ -7,7 +7,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.FileOrganization;
 
-public static class SegmentHeaderParser
+internal static class SegmentHeaderParser
 {
     
     private static SegmentHeader endOfFile = 

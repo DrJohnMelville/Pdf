@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.Segments;
 
-public readonly struct SymbolDictionaryFlags
+internal readonly struct SymbolDictionaryFlags
 {
     private readonly int flags;
 

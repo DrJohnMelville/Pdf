@@ -5,7 +5,7 @@ namespace Melville.JBig2.BinaryBitmaps;
 
 internal static class BitmapOperationsDebugOperations
 {
-    public static string BitmapString(this IBinaryBitmap src) =>
+    public static string BitmapString(this IJBigBitmap src) =>
         string.Join("\r\n", Enumerable.Range(0, src.Height).Select(i=>
             string.Join("", Enumerable.Range(0,src.Width).Select(j=>src[i,j]?"B":"."))
         ));

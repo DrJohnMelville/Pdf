@@ -6,7 +6,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.JBig2.HuffmanTables;
 
-public static class HuffmanTableEvaluator
+internal static class HuffmanTableEvaluator
 {
     public static int ReadHuffmanInt(this ref SequenceReader<byte> reader, BitReader bitState, in ReadOnlySpan<HuffmanLine> lines)
     {

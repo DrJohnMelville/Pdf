@@ -5,7 +5,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
-public readonly ref struct GrayScaleBitmap
+internal readonly ref struct GrayScaleBitmap
 {
     private readonly Span<int> data;
     private readonly int width;

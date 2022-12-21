@@ -49,7 +49,7 @@ public readonly struct HuffmanLine
     public bool IsOutOfBandRow => rangeLength == 0 && rangeOffset == int.MaxValue;
 }
 
-public static class HuffmanDebugSupport
+internal static class HuffmanDebugSupport
 {
     public static HuffmanLine[] VerifyHasOutOfBand(this HuffmanLine[] lines)
     {

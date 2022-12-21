@@ -3,7 +3,7 @@
 namespace Melville.JBig2.BinaryBitmaps;
 
 [DebuggerDisplay("{this.BitmapString()}")]
-public partial class OffsetBitmap : IBinaryBitmap
+internal partial class OffsetBitmap : IBinaryBitmap
 {
     private readonly IBinaryBitmap inner;
     private readonly int x;

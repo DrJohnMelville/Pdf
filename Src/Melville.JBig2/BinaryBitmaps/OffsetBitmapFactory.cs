@@ -3,7 +3,7 @@
 namespace Melville.JBig2.BinaryBitmaps;
 
 
-public static class OffsetBitmapFactory
+internal static class OffsetBitmapFactory
 {
     public static IBinaryBitmap Create(IBinaryBitmap inner, int y, int x) => 
         Create(inner, y, x, Math.Max(0, inner.Height - y), Math.Max(0, inner.Width - x));

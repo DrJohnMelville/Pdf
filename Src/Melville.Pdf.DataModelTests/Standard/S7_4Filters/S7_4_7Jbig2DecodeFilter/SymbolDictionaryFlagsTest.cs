@@ -23,23 +23,23 @@ public class SymbolDictionaryFlagsTest
     [InlineData(0<<2, HuffmanTableSelection.B4)]
     [InlineData(1<<2, HuffmanTableSelection.B5)]
     [InlineData(3<<2, HuffmanTableSelection.UserSupplied)]
-    public void HuffmanDH(ushort flags, HuffmanTableSelection huffmanSel) =>
+    public void HuffmanDH(ushort flags, object huffmanSel) =>
         Assert.Equal(huffmanSel, new SymbolDictionaryFlags(flags).HuffmanSelectionForHeight);
     [Theory]
     [InlineData(0<<4, HuffmanTableSelection.B2)]
     [InlineData(1<<4, HuffmanTableSelection.B3)]
     [InlineData(3<<4, HuffmanTableSelection.UserSupplied)]
-    public void HuffmanDW(ushort flags, HuffmanTableSelection huffmanSel) =>
+    public void HuffmanDW(ushort flags, object huffmanSel) =>
         Assert.Equal(huffmanSel, new SymbolDictionaryFlags(flags).HuffmanSelectionForWidth);
     [Theory]
     [InlineData(0<<6, HuffmanTableSelection.B1)]
     [InlineData(1<<6, HuffmanTableSelection.UserSupplied)]
-    public void HuffmanBMSize(ushort flags, HuffmanTableSelection huffmanSel) =>
+    public void HuffmanBMSize(ushort flags, object huffmanSel) =>
         Assert.Equal(huffmanSel, new SymbolDictionaryFlags(flags).HuffmanSelectionBitmapSize);
     [Theory]
     [InlineData(0<<7, HuffmanTableSelection.B1)]
     [InlineData(1<<7, HuffmanTableSelection.UserSupplied)]
-    public void HuffmanAggInst(ushort flags, HuffmanTableSelection huffmanSel) =>
+    public void HuffmanAggInst(ushort flags, object huffmanSel) =>
         Assert.Equal(huffmanSel, new SymbolDictionaryFlags(flags).HuffmanTableSelectionAggInst);
 
     [Theory]

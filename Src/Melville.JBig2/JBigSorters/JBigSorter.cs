@@ -1,11 +1,16 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
+﻿using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.IO;
 using Melville.JBig2.FileOrganization;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.CountingReaders;
 
-namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
+namespace Melville.JBig2.JBigSorters;
 
+/// <summary>
+/// Given a JBig file sort it into the global and specific segments needed to render a given page.
+///
+/// This is used to generate some of the JBig tests
+/// </summary>
 public class JBigSorter
 {
     private readonly byte[] sourceBuffer;
@@ -14,6 +19,13 @@ public class JBigSorter
     private readonly int desiredPage;
     private int pos = 9;
     
+    /// <summary>
+    /// Sort a JBig into global and specific segments
+    /// </summary>
+    /// <param name="source">The source JBIG</param>
+    /// <param name="globals">Stream that receives the global segments</param>
+    /// <param name="specific">Stream that receives the specific segments</param>
+    /// <param name="desiredPage">The page to render/</param>
     public JBigSorter(byte[] source, MemoryStream globals, MemoryStream specific, int desiredPage)
     {
         sourceBuffer = source;
@@ -38,7 +50,7 @@ public class JBigSorter
             WriteSegment();
     }
 
-    public record struct SegmentRecord(int Position, int Length, SegmentHeader Header);
+    private record struct SegmentRecord(int Position, int Length, SegmentHeader Header);
 
     private readonly Queue<SegmentRecord> segments = new();
 

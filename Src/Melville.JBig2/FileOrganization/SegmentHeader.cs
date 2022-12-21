@@ -1,6 +1,6 @@
 ﻿namespace Melville.JBig2.FileOrganization;
 
-public enum SegmentType : byte
+internal enum SegmentType : byte
 {
     SymbolDictionary = 0,
     
@@ -31,7 +31,7 @@ public enum SegmentType : byte
     Extension = 62
 }
 
-public record struct SegmentHeader(uint Number, SegmentType SegmentType, uint Page, uint DataLength,
+internal record struct SegmentHeader(uint Number, SegmentType SegmentType, uint Page, uint DataLength,
     uint[] ReferencedSegmentNumbers)
 {
     

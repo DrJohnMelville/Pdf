@@ -42,8 +42,9 @@ public class SegmentHeaderParserTest
     
     [Theory]
     [MemberData(nameof(SegmentHeaderExamples))]
-    public void ReadSegment(byte[] data, SegmentHeader result)
+    public void ReadSegment(byte[] data, object result1)
     {
+        var result = (SegmentHeader)result1;
         var reader = ReaderFromBytes(data);
         Assert.True(SegmentHeaderParser.TryParse(ref reader, out var header));
         RequireEntireBlock(data);

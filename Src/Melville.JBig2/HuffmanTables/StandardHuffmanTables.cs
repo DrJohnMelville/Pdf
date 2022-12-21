@@ -3,12 +3,12 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.HuffmanTables;
 
-public enum HuffmanTableSelection : byte
+internal enum HuffmanTableSelection : byte
 {
     UserSupplied, B1,B2,B3,B4,B5,B6,B7,B8,B9,B10,B11,B12,B13,B14,B15
 }
 
-public static class HuffmanTableSelector
+internal static class HuffmanTableSelector
 {
     public static HuffmanTableSelection Select(
         int flags, int position, 
@@ -26,7 +26,7 @@ public static class HuffmanTableSelector
  
 }
 
-public class StandardHuffmanTables
+internal class StandardHuffmanTables
 {
     public static readonly HuffmanLine[] B1 =
     {

@@ -201,9 +201,9 @@ public class StandardHuffmanTest
     [InlineData(HuffmanTableSelection.B15, "1111101 0001 1111101 1111", 10, 24)]
     [InlineData(HuffmanTableSelection.B15, "1111110 00000000000000000000000000000001 1111110 00000000000000000000000000000011", -26, -28)]
     [InlineData(HuffmanTableSelection.B15, "1111111 00000000000000000000000000000001 1111111 00000000000000000000000000000011", 26, 28)]
-    public void ReadStandardHuffman(HuffmanTableSelection tableSelector, string data, int firstNum, int secondNum)
+    public void ReadStandardHuffman(object tableSelector, string data, int firstNum, int secondNum)
     {
-        var table = StandardHuffmanTables.ArrayFromSelector(tableSelector);
+        var table = StandardHuffmanTables.ArrayFromSelector((HuffmanTableSelection)tableSelector);
         var source = new SequenceReader<byte>(new ReadOnlySequence<byte>(data.BitsFromBinary()));
         var bitReader = new BitReader();
         Assert.Equal(firstNum, source.ReadHuffmanInt(bitReader, table));
@@ -226,10 +226,10 @@ public class StandardHuffmanTest
     [InlineData(HuffmanTableSelection.B13)]
     [InlineData(HuffmanTableSelection.B14)]
     [InlineData(HuffmanTableSelection.B15)]
-    public void VerifyTableCompleteness(HuffmanTableSelection selection)
+    public void VerifyTableCompleteness(object selection)
     {
         var buffer = new byte[8];
-        var table = StandardHuffmanTables.ArrayFromSelector(selection);
+        var table = StandardHuffmanTables.ArrayFromSelector((HuffmanTableSelection)selection);
         for (int bits = 1; bits < 10; bits++)
         {
             for (int i = 0; i < 1<<bits; i++)
