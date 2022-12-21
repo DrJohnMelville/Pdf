@@ -12,7 +12,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers;
 
-public readonly partial struct GenericRefinementRegionFlags
+internal readonly partial struct GenericRefinementRegionFlags
 {
     [FromConstructor] private readonly byte data;
 
@@ -20,7 +20,7 @@ public readonly partial struct GenericRefinementRegionFlags
     public bool UseTpgron => BitOperations.CheckBit(data, 0x02);
 }
 
-public readonly struct GenericRefinementRegionSegmentParser
+internal readonly struct GenericRefinementRegionSegmentParser
 {
     public static GenericRefinementRegionSegment Parse(
         SequenceReader<byte> reader, ReadOnlySpan<Segment> referencedSegments)

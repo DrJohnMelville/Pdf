@@ -29,9 +29,9 @@ public class BinaryBitmapWriterTest
     [InlineData(ReferenceCorner.BottomLeft, true, 10, 13, 16)]
     [InlineData(ReferenceCorner.TopRight, true, 10, 9, 16)]
     [InlineData(ReferenceCorner.BottomRight, true, 10, 9, 16)]
-    public void DisplayCornerTest(ReferenceCorner corner, bool transposed, int row, int column, int finalS)
+    public void DisplayCornerTest(object corner, bool transposed, int row, int column, int finalS)
     {
-        var sut = new BinaryBitmapWriter(target.Object, transposed, corner, CombinationOperator.Or);
+        var sut = new BinaryBitmapWriter(target.Object, transposed, (ReferenceCorner)corner, CombinationOperator.Or);
         var s = 10;
         sut.WriteBitmap(13, ref s, source.Object);
         target.Verify(i=>i.PasteBitsFrom(row, column, source.Object, CombinationOperator.Or));

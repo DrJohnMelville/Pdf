@@ -10,7 +10,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.FileOrganization;
 
-public static class FileHeaderParser
+internal static class FileHeaderParser
 {
     public static ValueTask<SegmentHeaderReader> ReadFileHeader(
         Stream input, IReadOnlyDictionary<uint, Segment> priorSegments) => 
@@ -55,7 +55,7 @@ public static class FileHeaderParser
     }
 }
 
-public abstract class SegmentHeaderReader
+internal abstract class SegmentHeaderReader
 {
     protected PipeReader Pipe { get; }
     public uint Pages { get; }
@@ -73,7 +73,7 @@ public abstract class SegmentHeaderReader
     protected abstract ValueTask<SegmentHeader> NextSegmentHeader();
 }
 
-public class SequentialSegmentHeaderReader : SegmentHeaderReader
+internal class SequentialSegmentHeaderReader : SegmentHeaderReader
 {
     public SequentialSegmentHeaderReader(PipeReader pipe, uint pages, IReadOnlyDictionary<uint, Segment> priorSegments) : base(pipe, pages, priorSegments)
     {
@@ -82,7 +82,7 @@ public class SequentialSegmentHeaderReader : SegmentHeaderReader
     protected override ValueTask<SegmentHeader> NextSegmentHeader() => SegmentHeaderParser.ParseAsync(Pipe);
 }
 
-public class RandomAccessSegmentHeaderReader : SegmentHeaderReader
+internal class RandomAccessSegmentHeaderReader : SegmentHeaderReader
 {
     private Queue<SegmentHeader> headers;
 

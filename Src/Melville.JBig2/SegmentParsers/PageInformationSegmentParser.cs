@@ -4,7 +4,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers;
 
-public static class PageInformationSegmentParser
+internal static class PageInformationSegmentParser
 {
     public static PageInformationSegment Parse(ref SequenceReader<byte> reader)
     {

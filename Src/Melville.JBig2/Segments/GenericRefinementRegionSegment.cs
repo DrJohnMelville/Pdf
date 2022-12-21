@@ -4,7 +4,7 @@ using Melville.JBig2.SegmentParsers;
 
 namespace Melville.JBig2.Segments;
 
-public class GenericRefinementRegionSegment: RegionSegment
+internal class GenericRefinementRegionSegment: RegionSegment
 {
     public GenericRefinementRegionSegment(SegmentType type, in RegionHeader header, BinaryBitmap bitmap) :
         base(type, in header, bitmap)

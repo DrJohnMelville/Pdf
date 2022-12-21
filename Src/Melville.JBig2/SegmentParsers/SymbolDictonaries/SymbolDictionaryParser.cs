@@ -10,7 +10,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers.SymbolDictonaries;
 
-public ref struct SymbolDictionaryParser
+internal ref struct SymbolDictionaryParser
 {
     private SequenceReader<byte> reader;
     private ReadOnlySpan<Segment> referencedSegments;

@@ -5,13 +5,13 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers;
 
-public readonly record struct RegionHeader(
+internal readonly record struct RegionHeader(
     uint Width, uint Height, uint X, uint Y, CombinationOperator CombinationOperator)
 {
     public BinaryBitmap CreateTargetBitmap() => new((int)Height, (int)Width);
 }
 
-public static class RegionHeaderParser
+internal static class RegionHeaderParser
 {
     public static RegionHeader Parse(ref SequenceReader<byte> reader)
     {

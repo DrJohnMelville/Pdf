@@ -14,7 +14,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
-public ref struct TextRegionSegmentParser
+internal ref struct TextRegionSegmentParser
 {
     public static TextRegionSegment Parse(SequenceReader<byte> reader, ReadOnlySpan<Segment> referencedSegments)
     {

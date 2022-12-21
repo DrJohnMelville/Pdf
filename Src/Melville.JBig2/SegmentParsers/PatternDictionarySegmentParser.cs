@@ -6,7 +6,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers;
 
-public static class PatternDictionarySegmentParser
+internal static class PatternDictionarySegmentParser
 {
     public readonly struct PatternDictionaryFlags
     {

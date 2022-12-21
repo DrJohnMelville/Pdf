@@ -3,7 +3,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.HuffmanTables;
 
-public static class HuffmanTableSelectorImpl
+internal static class HuffmanTableSelectorImpl
 {
     public static HuffmanLine[] GetTableLines(this HuffmanTableSelection sel, ref ReadOnlySpan<Segment> segments)
     {

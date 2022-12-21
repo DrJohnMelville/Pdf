@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public static class BitmapOperationsDebugOperations
+internal static class BitmapOperationsDebugOperations
 {
     public static string BitmapString(this IBinaryBitmap src) =>
         string.Join("\r\n", Enumerable.Range(0, src.Height).Select(i=>

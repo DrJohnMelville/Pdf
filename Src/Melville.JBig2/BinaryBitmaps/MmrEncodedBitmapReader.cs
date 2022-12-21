@@ -3,7 +3,7 @@ using Melville.CCITT;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public static class MmrEncodedBitmapReader
+internal static class MmrEncodedBitmapReader
 {
     public static void ReadMmrEncodedBitmap(
         this BinaryBitmap bitmap, ref SequenceReader<byte> reader, bool requireTerminator)

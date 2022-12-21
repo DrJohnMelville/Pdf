@@ -5,7 +5,7 @@ using Melville.JBig2.FileOrganization;
 
 namespace Melville.JBig2.Segments;
 
-public readonly struct PageInformationFlags
+internal readonly struct PageInformationFlags
 {
     private readonly byte flags;
 
@@ -24,7 +24,7 @@ public readonly struct PageInformationFlags
     public bool OverrideCombinator => BitOperations.CheckBit(flags, 0x40);
 }
 
-public readonly struct PageStripingInformation
+internal readonly struct PageStripingInformation
 {
     private readonly int rawData;
 
@@ -38,7 +38,7 @@ public readonly struct PageStripingInformation
     public int StripeSize => rawData & (~StripedBitmask);
 }
 
-public class PageInformationSegment : Segment
+internal class PageInformationSegment : Segment
 {
     public uint Width { get; }
     public uint Height { get; }

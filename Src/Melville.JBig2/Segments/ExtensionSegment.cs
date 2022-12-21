@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.Segments;
 
-public class ExtensionSegment : Segment
+internal class ExtensionSegment : Segment
 {
     public ExtensionSegment(SegmentType type) : base(type)
     {

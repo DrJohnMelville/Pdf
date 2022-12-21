@@ -15,7 +15,7 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.JBig2.SegmentParsers;
 
-public readonly struct SegmentReader
+internal readonly struct SegmentReader
 {
     private readonly PipeReader source;
     public readonly SegmentHeader Header;

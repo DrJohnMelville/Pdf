@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Melville.JBig2.ArithmeticEncodings;
 
 [DebuggerDisplay("A:{a} C:{c} count:{ct} b:{B} b1:{B1}")]
-public class MQDecoder
+internal class MQDecoder
 {
     private const int UninitializedASentinelValue = 1;
     private uint c;

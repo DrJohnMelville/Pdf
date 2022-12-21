@@ -4,7 +4,7 @@ using Melville.JBig2.FileOrganization;
 
 namespace Melville.JBig2.Segments;
 
-public class SymbolDictionarySegment : DictionarySegment
+internal class SymbolDictionarySegment : DictionarySegment
 {
     public SymbolDictionarySegment(IBinaryBitmap[] allSymbols) :
         this(allSymbols.AsMemory()){}

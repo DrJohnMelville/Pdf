@@ -6,7 +6,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
-public abstract class Bitplane: BinaryBitmap
+internal abstract class Bitplane: BinaryBitmap
 {
     protected Bitplane(int height, int width) : base(height, width)
     {
@@ -15,7 +15,7 @@ public abstract class Bitplane: BinaryBitmap
     public abstract void ReadFrom(ref SequenceReader<byte> source);
 }
 
-public class MmrBitplane : Bitplane
+internal class MmrBitplane : Bitplane
 {
     public MmrBitplane(int height, int width) : base(height, width)
     {
@@ -27,7 +27,7 @@ public class MmrBitplane : Bitplane
     }
 }
 
-public abstract class ArithmeticBitplane : Bitplane, ISkipBitmap
+internal abstract class ArithmeticBitplane : Bitplane, ISkipBitmap
 {
     private readonly ArithmeticGenericRegionDecodeProcedure reader;
     public ArithmeticBitplane(int height, int width, GenericRegionTemplate template) : base(height, width)
@@ -58,7 +58,7 @@ public abstract class ArithmeticBitplane : Bitplane, ISkipBitmap
     public abstract bool ShouldSkipPixel(int row, int column);
 }
 
-public sealed class NonskippingBitplane : ArithmeticBitplane
+internal sealed class NonskippingBitplane : ArithmeticBitplane
 {
     public NonskippingBitplane(int height, int width, GenericRegionTemplate template) : base(height, width, template)
     {
@@ -67,7 +67,7 @@ public sealed class NonskippingBitplane : ArithmeticBitplane
     public override bool ShouldSkipPixel(int row, int column) => false;
 }
 
-public sealed partial class SkippingBitplane : ArithmeticBitplane
+internal sealed partial class SkippingBitplane : ArithmeticBitplane
 {
     [FromConstructor] private readonly int hgx;
     [FromConstructor] private readonly int hgy;

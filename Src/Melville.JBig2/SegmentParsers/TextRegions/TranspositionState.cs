@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
-public abstract class TranspositionState
+internal abstract class TranspositionState
 {
     public static readonly TranspositionState NotTransposed = new NotTransposedImplementation();
     public static readonly TranspositionState Transposed = new TransposedImplementation();

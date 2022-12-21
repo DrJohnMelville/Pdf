@@ -5,7 +5,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers;
 
-public static class ReferredSymbolHelpers
+internal static class ReferredSymbolHelpers
 {
     public static int CountSourceBitmaps(this ReadOnlySpan<Segment> segments)
     {

@@ -12,7 +12,7 @@ namespace Melville.JBig2;
 public abstract class JbigPageReader
 {
     private static readonly PageBinaryBitmap requested = new(1, 1);
-    protected readonly Dictionary<uint , PageBinaryBitmap> Pages = new();
+    private protected readonly Dictionary<uint , PageBinaryBitmap> Pages = new();
     private readonly Dictionary<uint, Segment> storedSegments = new();
 
     public int TotalPages => Pages.Count;

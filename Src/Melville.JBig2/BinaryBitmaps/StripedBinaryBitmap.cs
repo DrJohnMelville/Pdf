@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public class PageBinaryBitmap : BinaryBitmap
+internal class PageBinaryBitmap : BinaryBitmap
 {
     public PageBinaryBitmap(uint height, uint width) : base((int)height, (int)width)
     {
@@ -17,7 +17,7 @@ public class PageBinaryBitmap : BinaryBitmap
     {
     }
 }
-public class StripedBinaryBitmap : PageBinaryBitmap
+internal class StripedBinaryBitmap : PageBinaryBitmap
 {
     private readonly int maxStripe;
     private int finalizedSize = 0;

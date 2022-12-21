@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.ArithmeticEncodings;
 
-public readonly ref struct SymbolIntegerDecoder
+internal readonly ref struct SymbolIntegerDecoder
 {
     private readonly MQDecoder decoder;
     private readonly ContextStateDict dict;

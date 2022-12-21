@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Melville.JBig2.ArithmeticEncodings;
 
 
-public struct TypicalIntegerDecoder 
+internal struct TypicalIntegerDecoder 
 {
     private int value;
     private readonly ContextStateDict dict;

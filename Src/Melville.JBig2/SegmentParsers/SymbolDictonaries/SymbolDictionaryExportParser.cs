@@ -40,7 +40,7 @@ internal readonly struct SymbolDictionaryExportParser
     }
 }
 
-public ref struct BitmapSorter
+internal ref struct BitmapSorter
 {
     private readonly ReadOnlySpan<Segment> segments;
     private readonly ReadOnlySpan<IBinaryBitmap> newBitmaps;

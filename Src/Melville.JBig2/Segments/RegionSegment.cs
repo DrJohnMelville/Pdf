@@ -5,7 +5,7 @@ using Melville.JBig2.SegmentParsers;
 
 namespace Melville.JBig2.Segments;
 
-public class RegionSegment: Segment
+internal class RegionSegment: Segment
 {
     public uint X { get; }
     public uint Y { get; }

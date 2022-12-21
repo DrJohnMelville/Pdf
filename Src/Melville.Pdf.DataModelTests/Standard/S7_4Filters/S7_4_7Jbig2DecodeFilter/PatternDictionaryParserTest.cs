@@ -19,7 +19,7 @@ public class PatternDictionaryParserTest
         return PatternDictionarySegmentParser.Parse(reader);
     }
 
-    public static PatternDictionarySegment SampleSegment(string data)
+    internal static PatternDictionarySegment SampleSegment(string data)
     {
         return Parse(data.BitsFromHex());
     }

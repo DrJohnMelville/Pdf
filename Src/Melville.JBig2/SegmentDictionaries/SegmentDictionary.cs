@@ -3,11 +3,11 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentDictionaries;
 
-public interface ISegmentDictionary
+internal interface ISegmentDictionary
 {
     Segment this[uint segmentNumber] { get; set; }
 }
-public class SegmentDictionary: ISegmentDictionary
+internal class SegmentDictionary: ISegmentDictionary
 {
     private Dictionary<uint, Segment> item = new();
 

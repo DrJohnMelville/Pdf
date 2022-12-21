@@ -1,6 +1,6 @@
 ﻿namespace Melville.JBig2.Segments;
 
-public readonly struct TextRegionFlags
+internal readonly struct TextRegionFlags
 {
     private readonly int data;
 

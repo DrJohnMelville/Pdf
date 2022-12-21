@@ -5,7 +5,7 @@ using Melville.JBig2.SegmentParsers;
 
 namespace Melville.JBig2.Segments;
 
-public enum ReferenceCorner : byte
+internal enum ReferenceCorner : byte
 {
     BottomLeft = 0,
     TopLeft = 1,
@@ -13,7 +13,7 @@ public enum ReferenceCorner : byte
     TopRight = 3
 };
 
-public readonly struct TextRegionHuffmanFlags
+internal readonly struct TextRegionHuffmanFlags
 {
     private readonly int data;
 
@@ -71,7 +71,7 @@ public readonly struct TextRegionHuffmanFlags
         ? HuffmanTableSelection.UserSupplied : HuffmanTableSelection.B1;
 }
 
-public class TextRegionSegment: RegionSegment
+internal class TextRegionSegment: RegionSegment
 {
     public TextRegionSegment(SegmentType type, in RegionHeader header, BinaryBitmap bitmap) : base(type, in header, bitmap)
     {

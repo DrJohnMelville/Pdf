@@ -28,7 +28,7 @@ public class TextRegionFlagsTest
     [InlineData(ReferenceCorner.TopLeft, 1<<4)]
     [InlineData(ReferenceCorner.BottomRight, 2<<4)]
     [InlineData(ReferenceCorner.TopRight, 3<<4)]
-    public void ReferenceCornerTest(ReferenceCorner result, ushort value) =>
+    public void ReferenceCornerTest(object result, ushort value) =>
         Assert.Equal(result, new TextRegionFlags(value).ReferenceCorner);
     [Theory]
     [InlineData(1<<6, true)]

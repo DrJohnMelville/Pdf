@@ -4,7 +4,7 @@ using Melville.JBig2.FileOrganization;
 
 namespace Melville.JBig2.Segments;
 
-public class Segment
+internal class Segment
 {
     public static readonly Segment EndOfPage = new(SegmentType.EndOfPage);
     public static readonly Segment EndOfFile = new(SegmentType.EndOfFile);

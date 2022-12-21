@@ -4,7 +4,7 @@ using Melville.JBig2.FileOrganization;
 
 namespace Melville.JBig2.Segments;
 
-public class EndOfStripeSegment: Segment 
+internal class EndOfStripeSegment: Segment 
 {
     public uint YCoordinate { get; }
 

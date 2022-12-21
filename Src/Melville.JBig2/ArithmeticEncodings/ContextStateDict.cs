@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace Melville.JBig2.ArithmeticEncodings;
 
 [DebuggerDisplay("I: {I}  MPS: {MPS}")]
-public struct ContextEntry
+internal struct ContextEntry
 {
     public byte I;
     public byte MPS;
@@ -16,7 +16,7 @@ public struct ContextEntry
 }
 
 
-public readonly struct ContextStateDict
+internal readonly struct ContextStateDict
 {
     private readonly ContextEntry[] entries;
     public int ContextEntryCount => entries.Length;

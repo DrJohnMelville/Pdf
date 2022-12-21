@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public static class UnencodedBitmapReader
+internal static class UnencodedBitmapReader
 {
     public static void ReadUnencodedBitmap(this BinaryBitmap bitmap,  ref SequenceReader<byte> reader)
     {

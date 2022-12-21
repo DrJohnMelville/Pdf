@@ -1,6 +1,6 @@
 namespace Melville.JBig2.ArithmeticEncodings;
 
-public readonly struct QeEntry
+internal readonly struct QeEntry
 {
     public uint Qe { get; }
     public byte NMPS { get; }
@@ -21,7 +21,7 @@ public readonly struct QeEntry
     }
 }
 
-public static class QeComputer
+internal static class QeComputer
 {
     public static readonly QeEntry[] Rows =
     {

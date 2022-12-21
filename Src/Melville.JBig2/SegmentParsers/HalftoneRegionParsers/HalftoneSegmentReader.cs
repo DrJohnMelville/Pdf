@@ -5,7 +5,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
-public ref struct HalftoneSegmentReader
+internal ref struct HalftoneSegmentReader
 {
     public RegionHeader Header { get; }
     private readonly HalftoneRegionFlags regionFlags;

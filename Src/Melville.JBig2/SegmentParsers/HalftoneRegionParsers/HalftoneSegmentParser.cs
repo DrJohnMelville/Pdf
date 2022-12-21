@@ -38,7 +38,7 @@ public readonly struct HalftoneRegionFlags
         
 }
 
-public static class HalftoneSegmentParser
+internal static class HalftoneSegmentParser
 {
     public static HalftoneSegment Parse(SequenceReader<byte> reader, in ReadOnlySpan<Segment> segs)
     {

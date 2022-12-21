@@ -5,7 +5,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers;
 
-public static class EndOfStripeSegmentParser
+internal static class EndOfStripeSegmentParser
 {
     public static Segment Read(scoped in SegmentHeader header, scoped ref SequenceReader<byte> reader) => 
         new EndOfStripeSegment(reader.ReadBigEndianUint32());

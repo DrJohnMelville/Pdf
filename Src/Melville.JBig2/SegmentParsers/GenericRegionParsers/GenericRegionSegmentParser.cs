@@ -9,7 +9,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers.GenericRegionParsers;
 
-public readonly struct GenericRegionSegmentFlags
+internal readonly struct GenericRegionSegmentFlags
 {
     private readonly byte data;
 
@@ -32,7 +32,7 @@ public readonly struct GenericRegionSegmentFlags
 
 }
 
-public static class GenericRegionSegmentParser
+internal static class GenericRegionSegmentParser
 {
     public static GenericRegionSegment Parse(SequenceReader<byte> reader)
     {
