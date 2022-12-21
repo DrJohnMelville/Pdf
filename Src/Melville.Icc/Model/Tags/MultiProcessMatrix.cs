@@ -5,20 +5,30 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents a multiprocess transdorm as a matrix multiplication and translation 
+/// </summary>
 public class MultiProcessMatrix : IColorTransform
 {
+    /// <inheritdoc />
     public int Inputs { get; }
+
+    /// <inheritdoc />
     public int Outputs { get; }
+
+    /// <summary>
+    /// Values that form the transform matrix
+    /// </summary>
     public IReadOnlyList<float> Values;
 
-    public MultiProcessMatrix(int inputs, int outputs, params float[] values)
+    internal MultiProcessMatrix(int inputs, int outputs, params float[] values)
     {
         Inputs = inputs;
         Outputs = outputs;
         Values = values;
     }
     
-    public static MultiProcessMatrix Parse(ref SequenceReader<byte> reader)
+    internal static MultiProcessMatrix Parse(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
         var inputs = reader.ReadBigEndianUint16();
@@ -26,6 +36,8 @@ public class MultiProcessMatrix : IColorTransform
         return new MultiProcessMatrix(inputs, outputs,
          reader.ReadIEEE754FloatArray((inputs * outputs) + outputs));
     }
+
+    /// <inheritdoc />
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
         Span<float> intermediate = stackalloc float[Outputs];

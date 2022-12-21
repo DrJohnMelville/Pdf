@@ -4,7 +4,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
-public abstract class ProfileArray<T> 
+internal abstract class ProfileArray<T> 
 {
     public IReadOnlyList<T> Values { get; }
     protected ProfileArray(ref SequenceReader<byte> reader)
@@ -22,7 +22,7 @@ public abstract class ProfileArray<T>
     protected abstract T GetItem(ref SequenceReader<byte> reader);
 }
 
-public class U16Fixed16Array : ProfileArray<float>
+internal class U16Fixed16Array : ProfileArray<float>
 {
     public U16Fixed16Array(ref SequenceReader<byte> reader): base(ref reader)
     {
@@ -32,7 +32,7 @@ public class U16Fixed16Array : ProfileArray<float>
     protected override float GetItem(ref SequenceReader<byte> reader) => reader.Readu16Fixed16();
 }
 
-public class UInt16Array : ProfileArray<ushort>
+internal class UInt16Array : ProfileArray<ushort>
 {
     public UInt16Array(ref SequenceReader<byte> reader): base(ref reader)
     {
@@ -42,7 +42,7 @@ public class UInt16Array : ProfileArray<ushort>
     protected override ushort GetItem(ref SequenceReader<byte> reader) => reader.ReadBigEndianUint16();
 }
 
-public class UInt32Array : ProfileArray<uint>
+internal class UInt32Array : ProfileArray<uint>
 {
     public UInt32Array(ref SequenceReader<byte> reader): base(ref reader)
     {
@@ -52,7 +52,7 @@ public class UInt32Array : ProfileArray<uint>
     protected override uint GetItem(ref SequenceReader<byte> reader) => reader.ReadBigEndianUint32();
 }
 
-public class UInt64Array : ProfileArray<ulong>
+internal class UInt64Array : ProfileArray<ulong>
 {
     public UInt64Array(ref SequenceReader<byte> reader): base(ref reader)
     {
@@ -61,7 +61,7 @@ public class UInt64Array : ProfileArray<ulong>
     protected override int ItemSizeInBytes() => 8;
     protected override ulong GetItem(ref SequenceReader<byte> reader) => reader.ReadBigEndianUint64();
 }
-public class XyzArray : ProfileArray<XyzNumber>
+internal class XyzArray : ProfileArray<XyzNumber>
 {
     public XyzArray(ref SequenceReader<byte> reader): base(ref reader)
     {

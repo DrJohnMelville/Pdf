@@ -5,7 +5,13 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
-public record struct SingleUincodeString(ushort Langugae, ushort Country, string Value);
+/// <summary>
+/// Represents a string localized to a specific language and culture.
+/// </summary>
+/// <param name="Language">Language code as specified in ISO 639-1</param>
+/// <param name="Country">Country code as specified in ISO 3166-1</param>
+/// <param name="Value">String value as Unicode UTF-16BE</param>
+public record struct SingleUincodeString(ushort Language, ushort Country, string Value);
 
 public class MultiLocalizedUnicodeTag
 {

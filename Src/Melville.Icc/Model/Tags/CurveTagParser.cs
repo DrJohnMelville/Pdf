@@ -4,7 +4,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
-public static class CurveTagParser
+internal static class CurveTagParser
 {
     public static ICurveTag Parse(ref SequenceReader<byte> reader)
     {
@@ -24,7 +24,7 @@ public static class CurveTagParser
     private static ICurveTag CreateCurveSegment(float[] points)
     {
         var ret = new SampledCurveSegment(points);
-        ret.Initialize(0,1,points[0]);
+        ((ICurveSegment)ret).Initialize(0,1,points[0]);
         return ret;
     }
 }

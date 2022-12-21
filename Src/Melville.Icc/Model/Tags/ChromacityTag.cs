@@ -6,10 +6,19 @@ namespace Melville.Icc.Model.Tags;
 
 public class ChromacityTag 
 {
+    /// <summary>
+    /// Number of channels represent by this tag.
+    /// </summary>
     public ushort Channels { get; }
+    /// <summary>
+    /// Phosphor or colorant tyoe
+    /// </summary>
     public Colorant Colorant { get; }
+    /// <summary>
+    /// The chromacity values for each channel
+    /// </summary>
     public (float X, float Y)[] Coordinates { get; } 
-    public ChromacityTag(ref SequenceReader<byte> reader)
+    internal ChromacityTag(ref SequenceReader<byte> reader)
     {
         reader.ReadBigEndianUint32(); // throw away padding
         Channels = reader.ReadBigEndianUint16();

@@ -91,7 +91,7 @@ public class ICCParserTest
     [Fact]
     public async Task ParseColorOrder()
     {
-        var tag = await ParseTag<ColorOrderTag>("<636c726f00000000 00000003 030201>");
+        var tag = await ParseTag<ColorantOrderTag>("<636c726f00000000 00000003 030201>");
         Assert.Equal(3, tag.Colors.Count);
         Assert.Equal(3, tag.Colors[0]);
         Assert.Equal(2, tag.Colors[1]);
@@ -314,13 +314,13 @@ public class ICCParserTest
     private static void VerifyMultiLocalizedStream(MultiLocalizedUnicodeTag tag)
     {
         Assert.Equal(3, tag.Encodings.Count);
-        Assert.Equal(1, tag.Encodings[0].Langugae);
+        Assert.Equal(1, tag.Encodings[0].Language);
         Assert.Equal(4, tag.Encodings[0].Country);
         Assert.Equal("abcde", tag.Encodings[0].Value);
-        Assert.Equal(2, tag.Encodings[1].Langugae);
+        Assert.Equal(2, tag.Encodings[1].Language);
         Assert.Equal(7, tag.Encodings[1].Country);
         Assert.Equal("ABCDEFG", tag.Encodings[1].Value);
-        Assert.Equal(1, tag.Encodings[2].Langugae);
+        Assert.Equal(1, tag.Encodings[2].Language);
         Assert.Equal(9, tag.Encodings[2].Country);
         Assert.Equal("abcde", tag.Encodings[2].Value);
     }
@@ -421,9 +421,9 @@ public class ICCParserTest
     {
         Assert.Equal(CurveMeasurement.StatusA, curve.Unit);
         Assert.Equal(3, curve.Channels.Count);
-        Assert.Equal(3, curve.Channels[0].response.Count);
-        Assert.Equal(3, curve.Channels[1].response.Count);
-        Assert.Equal(3, curve.Channels[2].response.Count);
+        Assert.Equal(3, curve.Channels[0].Response.Count);
+        Assert.Equal(3, curve.Channels[1].Response.Count);
+        Assert.Equal(3, curve.Channels[2].Response.Count);
 
         Assert.Equal(4, curve.Channels[0].MaximumColorantValue.X);
         Assert.Equal(5, curve.Channels[0].MaximumColorantValue.Y);
@@ -435,24 +435,24 @@ public class ICCParserTest
         Assert.Equal(11, curve.Channels[2].MaximumColorantValue.Y);
         Assert.Equal(12, curve.Channels[2].MaximumColorantValue.Z);
 
-        Assert.Equal(1, curve.Channels[0].response[0].DeviceValue);
-        Assert.Equal(2, curve.Channels[0].response[0].MeasurementValue);
-        Assert.Equal(3, curve.Channels[0].response[1].DeviceValue);
-        Assert.Equal(4, curve.Channels[0].response[1].MeasurementValue);
-        Assert.Equal(5, curve.Channels[0].response[2].DeviceValue);
-        Assert.Equal(6, curve.Channels[0].response[2].MeasurementValue);
-        Assert.Equal(7, curve.Channels[1].response[0].DeviceValue);
-        Assert.Equal(8, curve.Channels[1].response[0].MeasurementValue);
-        Assert.Equal(9, curve.Channels[1].response[1].DeviceValue);
-        Assert.Equal(10, curve.Channels[1].response[1].MeasurementValue);
-        Assert.Equal(11, curve.Channels[1].response[2].DeviceValue);
-        Assert.Equal(12, curve.Channels[1].response[2].MeasurementValue);
-        Assert.Equal(1, curve.Channels[2].response[0].DeviceValue);
-        Assert.Equal(2, curve.Channels[2].response[0].MeasurementValue);
-        Assert.Equal(3, curve.Channels[2].response[1].DeviceValue);
-        Assert.Equal(4, curve.Channels[2].response[1].MeasurementValue);
-        Assert.Equal(5, curve.Channels[2].response[2].DeviceValue);
-        Assert.Equal(6, curve.Channels[2].response[2].MeasurementValue);
+        Assert.Equal(1, curve.Channels[0].Response[0].DeviceValue);
+        Assert.Equal(2, curve.Channels[0].Response[0].MeasurementValue);
+        Assert.Equal(3, curve.Channels[0].Response[1].DeviceValue);
+        Assert.Equal(4, curve.Channels[0].Response[1].MeasurementValue);
+        Assert.Equal(5, curve.Channels[0].Response[2].DeviceValue);
+        Assert.Equal(6, curve.Channels[0].Response[2].MeasurementValue);
+        Assert.Equal(7, curve.Channels[1].Response[0].DeviceValue);
+        Assert.Equal(8, curve.Channels[1].Response[0].MeasurementValue);
+        Assert.Equal(9, curve.Channels[1].Response[1].DeviceValue);
+        Assert.Equal(10, curve.Channels[1].Response[1].MeasurementValue);
+        Assert.Equal(11, curve.Channels[1].Response[2].DeviceValue);
+        Assert.Equal(12, curve.Channels[1].Response[2].MeasurementValue);
+        Assert.Equal(1, curve.Channels[2].Response[0].DeviceValue);
+        Assert.Equal(2, curve.Channels[2].Response[0].MeasurementValue);
+        Assert.Equal(3, curve.Channels[2].Response[1].DeviceValue);
+        Assert.Equal(4, curve.Channels[2].Response[1].MeasurementValue);
+        Assert.Equal(5, curve.Channels[2].Response[2].DeviceValue);
+        Assert.Equal(6, curve.Channels[2].Response[2].MeasurementValue);
     }
 
     [Fact]
@@ -792,7 +792,7 @@ public class ICCParserTest
         VerifySegment(curve.Segments[1]);
     }
 
-    private void VerifySegment(ICurveSegment curveSegment)
+    private void VerifySegment(ICurveTag curveSegment)
     {
         var fs = (FormulaSegmentType0)curveSegment;
         Assert.NotNull(fs);
@@ -837,7 +837,7 @@ public class ICCParserTest
         }
 
         Assert.Equal(0, tag.Samples[0]);
-        tag.Initialize(1,10,233);
+        ((ICurveSegment)tag).Initialize(1,10,233);
         Assert.Equal(1, tag.Minimum, 3 , MidpointRounding.ToEven);
         Assert.Equal(10, tag.Maximum, 3, MidpointRounding.ToEven);
         Assert.Equal(233, tag.Samples[0], 3, MidpointRounding.ToEven);

@@ -58,7 +58,7 @@ public class MultiProcessCurveSetTest
     public void LinearInterpolation()
     {
         var segment = new SampledCurveSegment(0, 100);
-        segment.Initialize(1,11, 0);
+        ((ICurveSegment)segment).Initialize(1,11, 0);
 
         Assert.Equal(55, segment.Evaluate(6.5f));
         Assert.Equal(70, segment.Evaluate(8f));
@@ -68,7 +68,7 @@ public class MultiProcessCurveSetTest
     public void Triangle()
     {
         var segment = new SampledCurveSegment(0, 20, 10);
-        segment.Initialize(0, 2, 10);
+        ((ICurveSegment)segment).Initialize(0, 2, 10);
 
         Assert.Equal(12.5, segment.Evaluate(0.25f));
         Assert.Equal(15, segment.Evaluate(0.5f));

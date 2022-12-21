@@ -5,7 +5,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
-public class NullColorTransform : IColorTransform
+internal class NullColorTransform : IColorTransform
 {
     public static NullColorTransform Instance(int inputs) => inputs switch {
         1 => one,

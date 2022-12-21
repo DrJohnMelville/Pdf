@@ -4,14 +4,23 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// A NamedColor2Type line from the ICC spec
+/// </summary>
+/// <param name="Name">Name of the color</param>
+/// <param name="PcsValue">PCS coordinates for the color</param>
+/// <param name="DeviceValue">Device coordinate for the color</param>
 public record struct NamedColorElememt(string Name, XyzNumber PcsValue, ushort[] DeviceValue);
 
+/// <summary>
+/// A set of NamedColorToType rows from the ICC spec;0
+/// </summary>
 public class NamedColorTag 
 {
     public uint VendorSpecificFlag { get; }
     public IReadOnlyList<NamedColorElememt> Colors { get; }
 
-    public NamedColorTag(ref SequenceReader<byte> reader)
+    internal NamedColorTag(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
         VendorSpecificFlag = reader.ReadBigEndianUint32();

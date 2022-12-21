@@ -1,22 +1,30 @@
 ﻿using System.Buffers;
 using Melville.Icc.Parser;
+using Melville.INPC;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents a scalar function.
+/// </summary>
 public interface ICurveTag
 {
+    /// <summary>
+    /// Evaluate the curve function for a given input.
+    /// </summary>
+    /// <param name="input">The input scalar</param>
+    /// <returns>Scalar output of the function.</returns>
     public float Evaluate(float input);
 }
 
-public class NullCurve : ICurveTag
+[StaticSingleton]
+public partial class NullCurve : ICurveTag
 {
-    public static ICurveTag Instance = new NullCurve();
-    private NullCurve(){}
     public float Evaluate(float input) => input;
 }
 
-public class ParametricCurveTag: ICurveTag
+public partial class ParametricCurveTag: ICurveTag
 {
     public float G { get; }
     public float A { get; }
@@ -26,6 +34,7 @@ public class ParametricCurveTag: ICurveTag
     public float E { get; }
     public float F { get; }
 
+    /// <inheritdoc />
     public float Evaluate(float input)
     {
         return input >= D ? 
@@ -33,7 +42,7 @@ public class ParametricCurveTag: ICurveTag
             E * input + F;
     }
 
-    public ParametricCurveTag(float g, float a, float b, float c, float d, float e, float f)
+    internal ParametricCurveTag(float g, float a, float b, float c, float d, float e, float f)
     {
         G = g;
         A = a;
@@ -44,7 +53,7 @@ public class ParametricCurveTag: ICurveTag
         F = f;
     }
 
-    public ParametricCurveTag(ref SequenceReader<byte> reader)
+    internal ParametricCurveTag(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
         var type = reader.ReadBigEndianUint16();

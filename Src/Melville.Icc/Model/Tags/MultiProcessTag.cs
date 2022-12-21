@@ -6,19 +6,24 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
-
+/// <summary>
+/// Defines an ICC transform as a sequence of component transforms.
+/// </summary>
 public class MultiProcessTag: IColorTransform
 {
     private IColorTransform[] elements;
+    /// <summary>
+    /// The sequence of transforms that make up this transform.
+    /// </summary>
     public IReadOnlyList<IColorTransform> Elements => elements;
 
-    public MultiProcessTag(params IColorTransform[]
+    internal MultiProcessTag(params IColorTransform[]
         elements)
     {
         this.elements = elements;
     }
 
-    public MultiProcessTag(ref SequenceReader<byte> reader)
+    internal MultiProcessTag(ref SequenceReader<byte> reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
@@ -46,9 +51,13 @@ public class MultiProcessTag: IColorTransform
         return (ushort)elt.Outputs;
     }
 
+    /// <inheritdoc />
     public int Inputs => Elements.First().Inputs;
+
+    /// <inheritdoc />
     public int Outputs => Elements.Last().Outputs;
 
+    /// <inheritdoc />
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
         this.VerifyTransform(input, output);

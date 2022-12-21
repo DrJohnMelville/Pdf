@@ -4,13 +4,17 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents a type 0 curve segment in a SampledCurveSegment or MultiProcessCurveSet.
+/// </summary>
 public class FormulaSegmentType0 : ICurveSegment
 {
     public float Gamma { get; }
     public float A { get; }
     public float B { get; }
     public float C { get; }
-    public FormulaSegmentType0(ref SequenceReader<byte> reader)
+
+    internal FormulaSegmentType0(ref SequenceReader<byte> reader)
     {
         Gamma = reader.ReadIEEE754Float();
         A = reader.ReadIEEE754Float();
@@ -18,12 +22,18 @@ public class FormulaSegmentType0 : ICurveSegment
         C = reader.ReadIEEE754Float();
     }
 
+
+    /// <inheritdoc />
     public float Evaluate(float input) => (float)(Math.Pow(A * input + B, Gamma) + C);
-    public void Initialize(float minimum, float maximum, float valueAtMinimum)
+
+    void ICurveSegment.Initialize(float minimum, float maximum, float valueAtMinimum)
     { 
     }
 }
 
+/// <summary>
+/// Represents a type 1 curve segment in a SampledCurveSegment or MultiProcessCurveSet.
+/// </summary>
 public class FormulaSegmentType1 : ICurveSegment
 {
     public float Gamma { get; }
@@ -31,7 +41,7 @@ public class FormulaSegmentType1 : ICurveSegment
     public float B { get; }
     public float C { get; }
     public float D { get; }
-    public FormulaSegmentType1(ref SequenceReader<byte> reader)
+    internal FormulaSegmentType1(ref SequenceReader<byte> reader)
     {
         Gamma = reader.ReadIEEE754Float();
         A = reader.ReadIEEE754Float();
@@ -40,14 +50,18 @@ public class FormulaSegmentType1 : ICurveSegment
         D = reader.ReadIEEE754Float();
     }
 
+    /// <inheritdoc />
     public float Evaluate(float input) =>
         (float)(A * Math.Log10(B * Math.Pow(input, Gamma) + C) + D);
 
-    public void Initialize(float minimum, float maximum, float valueAtMinimum)
+    void ICurveSegment.Initialize(float minimum, float maximum, float valueAtMinimum)
     { 
     }
 }
 
+/// <summary>
+/// Represents a type 2 curve segment in a SampledCurveSegment or MultiProcessCurveSet.
+/// </summary>
 public class FormulaSegmentType2 : ICurveSegment
 {
     public float A { get; }
@@ -65,8 +79,10 @@ public class FormulaSegmentType2 : ICurveSegment
         E = reader.ReadIEEE754Float();
     }
 
+    /// <inheritdoc />
     public float Evaluate(float input) => (float)(A * Math.Pow(B, C * input + D) + E);
-    public void Initialize(float minimum, float maximum, float valueAtMinimum)
+
+    void ICurveSegment.Initialize(float minimum, float maximum, float valueAtMinimum)
     { 
     }
 }

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices.ComTypes;
 
 namespace Melville.Icc.Model.Tags;
 
-public static class Interpolation
+internal static class Interpolation
 {
     public static float InterpolateFloatArray(
         in ReadOnlySpan<float> points, float min, float max, float value)

@@ -4,6 +4,15 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Information about a single profile, combined with others to make an ICC profile.
+/// </summary>
+/// <param name="Manufacturer">Manufacturer signature</param>
+/// <param name="Device">Device signature</param>
+/// <param name="DeviceAttributes">Device attributes from the underlying profile</param>
+/// <param name="DeviceTechnology">Rendering technology such as CRT, dye sublimation, and etc</param>
+/// <param name="ManufacturerName">Displayable version of the manufacturer name</param>
+/// <param name="DeviceName">Displayable version of the device name</param>
 public record struct ProfileSequenceDescriptionElement(
     uint Manufacturer,
     uint Device,
@@ -13,10 +22,16 @@ public record struct ProfileSequenceDescriptionElement(
     MultiLocalizedUnicodeTag DeviceName
 );
 
+/// <summary>
+/// ICC tag class representing a serries of transforms combined to make the current ICC transform 
+/// </summary>
 public class ProfileSequenceDescriptionTag 
 {
+    /// <summary>
+    /// List of information about the profiles that were combined to make this profile.
+    /// </summary>
     public IReadOnlyList<ProfileSequenceDescriptionElement> Profiles { get; }
-    public ProfileSequenceDescriptionTag(ref SequenceReader<byte> reader)
+    internal ProfileSequenceDescriptionTag(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
         var profiles = new ProfileSequenceDescriptionElement[reader.ReadBigEndianUint32()];

@@ -5,15 +5,16 @@ namespace Melville.Icc.Model.Tags;
 
 public class LutBToATag : GenericLut
 {
-    public LutBToATag(ICurveTag[] inputCurves, IColorTransform lookupTable, ICurveTag[] matrixCurves, 
+    internal LutBToATag(ICurveTag[] inputCurves, IColorTransform lookupTable, ICurveTag[] matrixCurves, 
         AugmentedMatrix3x3 matrix, ICurveTag[] outputCurves) : base(inputCurves, matrixCurves, matrix, outputCurves, lookupTable)
     {
     }
 
-    public LutBToATag(ref SequenceReader<byte> reader): base(ref reader, true)
+    internal LutBToATag(ref SequenceReader<byte> reader): base(ref reader, true)
     {
     }
 
+    /// <inheritdoc />
     public override void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
         this.VerifyTransform(input, output);

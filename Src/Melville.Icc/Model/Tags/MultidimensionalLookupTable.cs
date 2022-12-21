@@ -5,17 +5,29 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents a color transform specified in the ICC profile as a multidimensional lookup table.
+/// </summary>
 public class MultidimensionalLookupTable: IColorTransform
 {
+    /// <summary>
+    ///  Number of entries along each dimension of the lookup table
+    /// </summary>
     public IReadOnlyList<int> DimensionLengths { get; }
 
     private readonly float[] points;
+    /// <summary>
+    /// Lookup table point data
+    /// </summary>
     public IReadOnlyList<float> Points => points;
 
+    /// <inheritdoc />
     public int Inputs { get; }
+
+    /// <inheritdoc />
     public int Outputs { get; }
 
-    public MultidimensionalLookupTable(
+    internal MultidimensionalLookupTable(
         IReadOnlyList<int> dimensionLengths, int outputs, params float[] points)
     {
         DimensionLengths = dimensionLengths;
@@ -24,7 +36,7 @@ public class MultidimensionalLookupTable: IColorTransform
         Inputs = DimensionLengths.Count;
     }
 
-    public MultidimensionalLookupTable(ref SequenceReader<byte> reader)
+    internal MultidimensionalLookupTable(ref SequenceReader<byte> reader)
     {
         reader.Skip32BitPad();
         Inputs = reader.ReadBigEndianUint16();
@@ -33,7 +45,7 @@ public class MultidimensionalLookupTable: IColorTransform
         points = reader.ReadIEEE754FloatArray(TotalPoints());
     }
     
-    public MultidimensionalLookupTable(ref SequenceReader<byte> reader, int outputs)
+    internal MultidimensionalLookupTable(ref SequenceReader<byte> reader, int outputs)
     { 
         DimensionLengths = ParseDimensionList(ref reader);
         var dimensionSize = reader.ReadBigEndianUint8();
@@ -56,6 +68,8 @@ public class MultidimensionalLookupTable: IColorTransform
         }
         return dimensions;
     }
+
+    /// <inheritdoc />
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
         Span<int> indices = stackalloc int[Inputs];
@@ -96,7 +110,7 @@ public class MultidimensionalLookupTable: IColorTransform
         InterpolateOutputValues(output, fraction, highResult);
     }
 
-    public void Lookup(in Span<int> indices, Span<float> output)
+    private void Lookup(in Span<int> indices, Span<float> output)
     {
         var size = Outputs;
         var position = 0;

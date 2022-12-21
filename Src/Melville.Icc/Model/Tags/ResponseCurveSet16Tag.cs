@@ -4,6 +4,9 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Describes the measurment units for a ResponseCurve
+/// </summary>
 public enum CurveMeasurement : uint
 {
     StatusA = 0x53746141,
@@ -17,12 +20,27 @@ public enum CurveMeasurement : uint
     DinNarrowPolarized = 0x434e4e50
 }
 
+/// <summary>
+/// A single element of a response curve
+/// </summary>
+/// <param name="DeviceValue">Value in device units</param>
+/// <param name="MeasurementValue">Corresponding measuremment in the indicated unitis for this curve.</param>
 public record struct Response16Number(ushort DeviceValue, float MeasurementValue);
 
+/// <summary>
+/// A channel in a ICC response curve set
+/// </summary>
+/// <param name="MaximumColorantValue">XYZ value of the maximum colorant value for this channel</param>
+/// <param name="Response">Response data for a single channel</param>
 public record struct ResponseCurveChannel(
     XyzNumber MaximumColorantValue,
-    IReadOnlyList<Response16Number> response);
+    IReadOnlyList<Response16Number> Response);
 
+/// <summary>
+/// ICC response curve set
+/// </summary>
+/// <param name="Unit">The measurement unit for this response curve.</param>
+/// <param name="Channels">The response curve for each channel of the transform</param>
 public record struct ResponseCurve(
     CurveMeasurement Unit,
     IReadOnlyList<ResponseCurveChannel> Channels);
@@ -30,7 +48,7 @@ public record struct ResponseCurve(
 public class ResponseCurveSet16Tag 
 {
     public IReadOnlyList<ResponseCurve> Curves { get; }
-    public ResponseCurveSet16Tag(ref SequenceReader<byte> reader)
+    internal ResponseCurveSet16Tag(ref SequenceReader<byte> reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();

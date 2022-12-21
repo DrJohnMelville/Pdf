@@ -5,27 +5,51 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents the Lut8 and LUT16 tags in the ICC spec.  These two tags differ only by the precision of the constants use.
+/// This distinction is lost after parsing in this implementation.  Given a LutXTag you cannot figure out if it was created from
+/// 8 or 16 bit data
+/// </summary>
 public class LutXTag: IColorTransform 
 {
     public Matrix3x3 Matrix { get; }
+
+    /// <inheritdoc />
     public int Inputs { get; }
+
+    /// <inheritdoc />
     public int Outputs { get; }
+    /// <summary>
+    /// Number of grid points in each dimension of the lookup table.
+    /// </summary>
     public byte GridPoints { get; }
+
+    /// <summary>
+    /// Number of complete color entries in the input table.
+    /// </summary>
     public ushort InputTableEntries { get; }
+    /// <summary>
+    /// Number of complete color entries in the output table.
+    /// </summary>
     public ushort OutputTableEntries { get; }
 
     private readonly float[] inputTables;
+    /// <summary>
+    /// Input table entries
+    /// </summary>
     public IReadOnlyList<float> InputTables => inputTables;
 
     private readonly float[] clut;
+    // Look up table
     public IReadOnlyList<float> Clut => clut;
 
     private readonly float[] outputTables;
+    // Output table entries
     public IReadOnlyList<float> OutputTables => outputTables;
 
     private IColorTransform clutTransform;
 
-    public LutXTag(byte inputs, byte outputs, float[] inputTables, 
+    internal LutXTag(byte inputs, byte outputs, float[] inputTables, 
          Matrix3x3 matrix,
         float[] clut, float[] outputTables)
     {
@@ -41,7 +65,7 @@ public class LutXTag: IColorTransform
         clutTransform = ComputeClutTransform();
     }
 
-    public LutXTag(ref SequenceReader<byte> reader, int tablePrecisionInBytes)
+    internal LutXTag(ref SequenceReader<byte> reader, int tablePrecisionInBytes)
     {
         reader.Skip32BitPad();
         Inputs = reader.ReadBigEndianUint8();
@@ -78,6 +102,7 @@ public class LutXTag: IColorTransform
         return NullColorTransform.Instance(Inputs);
     }
 
+    /// <inheritdoc />
     public void Transform(in ReadOnlySpan<float> input, in Span<float> output)
     {
         this.VerifyTransform(input, output);

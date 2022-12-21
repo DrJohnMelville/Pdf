@@ -4,11 +4,15 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
-public class ColorOrderTag 
+/// <summary>
+/// This tag represents the order in which colorants are laid down in a multi-color device.  Indexes in this table refer to the
+/// ColorantTableTag
+/// </summary>
+public class ColorantOrderTag 
 {
     public IReadOnlyList<byte> Colors { get; }
 
-    public ColorOrderTag(ref SequenceReader<byte> data)
+    internal ColorantOrderTag(ref SequenceReader<byte> data)
     {
         data.ReadBigEndianUint32(); // discard padding
         var cols = new byte[data.ReadBigEndianUint32()];

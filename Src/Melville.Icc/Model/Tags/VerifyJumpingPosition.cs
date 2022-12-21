@@ -5,7 +5,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
-public static class VerifyJumpingPosition
+internal static class VerifyJumpingPosition
 {
     [Conditional("DEBUG")]
     public static void VerifyInCorrectPositionForTagRelativeOffsets(

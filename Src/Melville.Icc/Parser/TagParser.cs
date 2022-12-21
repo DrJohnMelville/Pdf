@@ -20,7 +20,7 @@ public static class TagParser
         {
             IccTags.bACS or IccTags.eACS => NullColorTransform.Parse(ref reader),
             IccTags.chrm => new ChromacityTag(ref reader),
-            IccTags.clro => new ColorOrderTag(ref reader),
+            IccTags.clro => new ColorantOrderTag(ref reader),
             IccTags.clrt => new ColorantTableTag(ref reader),
             IccTags.clut => new MultidimensionalLookupTable(ref reader),
             IccTags.curv => CurveTagParser.Parse(ref reader),

@@ -6,32 +6,35 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// This is a base class which represents the LutAToB and LutBToA Tags.  These two tags are parsed identically but computed
+/// in different orders.
+/// </summary>
 public abstract class GenericLut: IColorTransform 
 {
-    public AugmentedMatrix3x3 Matrix => matrix;
-
     private readonly ICurveTag[] inputCurves;
     public IReadOnlyList<ICurveTag> InputCurves => inputCurves;
 
     private readonly ICurveTag[] matrixCurves;
-    private readonly AugmentedMatrix3x3 matrix;
     public IReadOnlyList<ICurveTag> MatrixCurves => matrixCurves;
+
+    public AugmentedMatrix3x3 Matrix { get; }
 
     private readonly ICurveTag[] outputCurves;
     public IReadOnlyList<ICurveTag> OutputCurves => outputCurves;
 
     public IColorTransform LookupTable { get; }
 
-    public GenericLut(ICurveTag[] inputCurves, ICurveTag[] matrixCurves, AugmentedMatrix3x3 matrix, ICurveTag[] outputCurves, IColorTransform lookupTable)
+    private protected GenericLut(ICurveTag[] inputCurves, ICurveTag[] matrixCurves, AugmentedMatrix3x3 matrix, ICurveTag[] outputCurves, IColorTransform lookupTable)
     {
         this.inputCurves = inputCurves;
         this.matrixCurves = matrixCurves;
-        this.matrix = matrix;
+        this.Matrix = matrix;
         this.outputCurves = outputCurves;
         LookupTable = lookupTable;
     }
 
-    protected GenericLut(ref SequenceReader<byte> reader, bool bIsInput)
+    private protected GenericLut(ref SequenceReader<byte> reader, bool bIsInput)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
@@ -43,7 +46,7 @@ public abstract class GenericLut: IColorTransform
         outputCurves = outputs;
         reader.Skip16BitPad();
         ReadCurves(bIsInput ? inputs : outputs, ref reader);
-        matrix = ReadMatrix(ref reader);
+        Matrix = ReadMatrix(ref reader);
         ReadCurves(matrixCurves, ref reader);
         LookupTable = ParseClut(ref reader);
         ReadCurves(bIsInput ? outputs : inputs, ref reader);
@@ -101,8 +104,13 @@ public abstract class GenericLut: IColorTransform
         return new AugmentedMatrix3x3(ref pos);
     }
 
+    /// <inheritdoc />
     public int Inputs => inputCurves.Length;
+
+    /// <inheritdoc />
     public int Outputs => outputCurves.Length;
+
+    /// <inheritdoc />
     public abstract void Transform(in ReadOnlySpan<float> input, in Span<float> output);
 
     protected void CurveTransform(

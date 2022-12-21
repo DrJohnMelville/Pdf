@@ -1,5 +1,8 @@
 ﻿namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents different hardware devices which can be described with an ICC profile.
+/// </summary>
 public enum DeviceTechnology : uint
 {
     FilmScanner = 0x6673636e, // fscn

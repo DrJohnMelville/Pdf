@@ -23,7 +23,7 @@
                 <TextBlock>Save Graphics State</TextBlock>
                 <TextBlock>Q</TextBlock>
                 <TextBlock>Restore Graphics State</TextBlock>
-                <TextBlock>a b c d e f cm</TextBlock>
+                <TextBlock>matrix b c d e f cm</TextBlock>
                 <TextBlock>Transform</TextBlock>
                 <TextBlock>width w</TextBlock>
                 <TextBlock>Set line width</TextBlock>
@@ -127,7 +127,7 @@
                 <TextBlock>Move Text Position</TextBlock>
                 <TextBlock>x y TD</TextBlock>
                 <TextBlock>Move text position with leading</TextBlock>
-                <TextBlock>a b c d e f Tm</TextBlock>
+                <TextBlock>matrix b c d e f Tm</TextBlock>
                 <TextBlock>Set Text Matrix</TextBlock>
                 <TextBlock>T*</TextBlock>
                 <TextBlock>Move to next line</TextBlock>

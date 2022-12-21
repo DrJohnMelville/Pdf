@@ -1,6 +1,6 @@
 ﻿namespace Melville.Icc.Model.Tags;
 
-public static class OneDimensionalLookupTable
+internal static class OneDimensionalLookupTable
 {
     public static void LookupInPlace(in Span<float> data, in Span<float> tables)
     {

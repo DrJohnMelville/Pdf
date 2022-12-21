@@ -4,13 +4,19 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents an ICC date time tag.
+/// </summary>
 public class DateTimeTag 
 {
+    /// <summary>
+    /// The datetime represented in this tag.
+    /// </summary>
     public DateTime DateTime { get; }
 
-    public DateTimeTag(ref SequenceReader<byte> reader)
+    internal DateTimeTag(ref SequenceReader<byte> reader)
     {
-        reader.ReadBigEndianUint32(); // buffer
+        reader.Skip32BitPad();
         DateTime = reader.ReadDateTimeNumber();
     }
 }
