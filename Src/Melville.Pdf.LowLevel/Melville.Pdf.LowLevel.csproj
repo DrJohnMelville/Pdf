@@ -39,18 +39,6 @@
 
     <ItemGroup>
       <Folder Include="Filters\CryptFilters\BitmapSymbols" />
-      <Folder Include="Filters\Jbig2Filter\ArithmeticEncodings" />
-      <Folder Include="Filters\Jbig2Filter\BinaryBitmaps" />
-      <Folder Include="Filters\Jbig2Filter\EncodedReaders" />
-      <Folder Include="Filters\Jbig2Filter\FileOrganization" />
-      <Folder Include="Filters\Jbig2Filter\GenericRegionRefinements" />
-      <Folder Include="Filters\Jbig2Filter\HuffmanTables" />
-      <Folder Include="Filters\Jbig2Filter\SegmentDictionaries" />
-      <Folder Include="Filters\Jbig2Filter\SegmentParsers\GenericRegionParsers" />
-      <Folder Include="Filters\Jbig2Filter\SegmentParsers\HalftoneRegionParsers" />
-      <Folder Include="Filters\Jbig2Filter\SegmentParsers\SymbolDictonaries" />
-      <Folder Include="Filters\Jbig2Filter\SegmentParsers\TextRegions" />
-      <Folder Include="Filters\Jbig2Filter\Segments" />
       <Folder Include="Model\Primitives\PipeReaderWithPositions" />
     </ItemGroup>
 </Project>

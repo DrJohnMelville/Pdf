@@ -27,6 +27,9 @@ public class JbigToPdfAdapter: ICodecDefinition
         await reader.ProcessSequentialSegments(input, 1).CA();
         var page = reader.GetPage(1);
         var (ary, _) = page.ColumnLocation(0);
+
+        // in the JBIG spec 0 represents a white (background) pixel and 1 represents black,  Since this is the opposite of
+        // how DeviceGray color palate works -- we will invert all the bits
         return new InvertingMemoryStream(ary, page.BufferLength());
     }
 }

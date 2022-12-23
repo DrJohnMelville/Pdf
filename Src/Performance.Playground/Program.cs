@@ -11,8 +11,8 @@ using Performance.Playground.Rendering;
 if (true)
 {
     Console.WriteLine("Begin");
-    var pageRendering = new ThreadingBug();
-    await pageRendering.ReadMulti();
+    var pageRendering = new JbigParsing();
+    await pageRendering.ParseJBig();
     Console.WriteLine("done");
 }
 else
