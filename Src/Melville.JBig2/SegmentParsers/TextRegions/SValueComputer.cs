@@ -1,6 +1,6 @@
 ﻿namespace Melville.JBig2.SegmentParsers.TextRegions;
 
-public abstract class SValueComputer
+internal abstract class SValueComputer
 {
     private SValueComputer()
     {

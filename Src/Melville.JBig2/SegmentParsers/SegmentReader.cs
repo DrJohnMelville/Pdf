@@ -99,7 +99,7 @@ internal readonly struct SegmentReader
     }
 }
 
-public readonly struct SpanRental<T> : IDisposable
+internal readonly struct SpanRental<T> : IDisposable
 {
     private readonly T[] items;
     private readonly int length;

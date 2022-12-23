@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public readonly struct ByteSplicer
+internal readonly struct ByteSplicer
 {
     private readonly byte highMask;
     private readonly byte lowMask;

@@ -41,11 +41,11 @@ public class BinaryBitmapWriterTest
     [Theory]
     [InlineData(CombinationOperator.Replace)]
     [InlineData(CombinationOperator.And)]
-    public void BitOperationTest(CombinationOperator op)
+    public void BitOperationTest(object op)
     {
-        var sut = new BinaryBitmapWriter(target.Object, false, ReferenceCorner.TopLeft, op);
+        var sut = new BinaryBitmapWriter(target.Object, false, ReferenceCorner.TopLeft, (CombinationOperator)op);
         var s = 10;
         sut.WriteBitmap(13, ref s, source.Object);
-        target.Verify(i=>i.PasteBitsFrom(It.IsAny<int>(), It.IsAny<int>(), source.Object, op));
+        target.Verify(i=>i.PasteBitsFrom(It.IsAny<int>(), It.IsAny<int>(), source.Object, (CombinationOperator)op));
     }
 }

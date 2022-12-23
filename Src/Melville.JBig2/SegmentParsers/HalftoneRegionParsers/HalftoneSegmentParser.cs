@@ -7,7 +7,7 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 
-public readonly struct HalftoneRegionFlags
+internal readonly struct HalftoneRegionFlags
 {
     private readonly byte data;
 

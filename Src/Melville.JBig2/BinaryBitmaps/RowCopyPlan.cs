@@ -3,7 +3,7 @@ using Melville.JBig2.Segments;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public readonly  struct RowCopyPlan
+internal readonly  struct RowCopyPlan
 {
     public readonly int FirstSourceBit;
     public readonly int FirstDestBit;

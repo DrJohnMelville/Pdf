@@ -1,7 +1,7 @@
 ﻿using System;
 using Melville.Parsing.Streams.Bases;
 
-namespace Melville.JBig2;
+namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
 public sealed class InvertingMemoryStream : DefaultBaseStream
 {
@@ -9,7 +9,7 @@ public sealed class InvertingMemoryStream : DefaultBaseStream
     private readonly int length;
     private int offset = 0;
 
-    public InvertingMemoryStream(byte[] data, int length): base(true, false, false)
+    public InvertingMemoryStream(byte[] data, int length) : base(true, false, false)
     {
         this.data = data;
         this.length = length;
@@ -22,8 +22,8 @@ public sealed class InvertingMemoryStream : DefaultBaseStream
         var len = Math.Min(buffer.Length, RemainingBytes);
         for (int i = 0; i < len; i++)
         {
-            buffer[i] = (byte) ~data[offset++];
+            buffer[i] = (byte)~data[offset++];
         }
         return len;
-    } 
+    }
 }

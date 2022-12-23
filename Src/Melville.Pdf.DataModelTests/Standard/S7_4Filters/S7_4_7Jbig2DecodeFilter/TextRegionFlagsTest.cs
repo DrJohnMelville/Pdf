@@ -40,7 +40,7 @@ public class TextRegionFlagsTest
     [InlineData(CombinationOperator.And, 1<<7)]
     [InlineData(CombinationOperator.Xor, 2<<7)]
     [InlineData(CombinationOperator.Xnor, 3<<7)]
-    public void CombinationOperatorTest(CombinationOperator result, ushort value) =>
+    public void CombinationOperatorTest(object result, ushort value) =>
         Assert.Equal(result, new TextRegionFlags(value).CombinationOperator);
 
     [Theory]

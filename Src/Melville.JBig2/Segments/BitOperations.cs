@@ -1,6 +1,6 @@
 ﻿namespace Melville.JBig2.Segments;
 
-public static class BitOperations
+internal static class BitOperations
 {
     public static bool CheckBit(this int source, int bit) => (source & bit) == bit;
     public static int SetBit(this int source, int bit) => source | bit;

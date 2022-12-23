@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.Segments;
 
-public enum CombinationOperator
+internal enum CombinationOperator
 {
     Or = 0,
     And = 1,
@@ -11,7 +11,7 @@ public enum CombinationOperator
     Replace = 4,
 }
 
-public static class CombinatiorOperatorImplementation
+internal static class CombinatiorOperatorImplementation
 {
     public static int Combine(this CombinationOperator operation, int prior, int copied) =>
         operation switch

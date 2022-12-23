@@ -5,7 +5,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
-public ref struct TextSegmentSymbolTableParser
+internal ref struct TextSegmentSymbolTableParser
 {
     public static void Parse(ref SequenceReader<byte> reader, in Span<HuffmanLine> table)
     { 

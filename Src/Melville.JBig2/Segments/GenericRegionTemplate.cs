@@ -1,6 +1,6 @@
 ﻿namespace Melville.JBig2.Segments;
 
-public enum GenericRegionTemplate: byte
+internal enum GenericRegionTemplate: byte
 {
     /// <summary>
     /// Value = 0

@@ -33,11 +33,11 @@ public class BinaryBitmapTest
     [InlineData(CombinationOperator.Or, ".BBB")]
     [InlineData(CombinationOperator.Xor, ".BB.")]
     [InlineData(CombinationOperator.Xnor, "B..B")]
-    public void CombinationTest(CombinationOperator op, string result)
+    public void CombinationTest(object op, string result)
     {
         var a = "..BB".AsBinaryBitmap(1,4);
         var b = ".B.B".AsBinaryBitmap(1,4);
-        a.PasteBitsFrom(0,0, b, op);
+        a.PasteBitsFrom(0,0, b, (CombinationOperator)op);
         Assert.Equal(result, a.BitmapString());
         
     }

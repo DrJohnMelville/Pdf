@@ -46,15 +46,15 @@ public class PageHeaderParserTest
     [InlineData(CombinationOperator.And)]
     [InlineData(CombinationOperator.Xor)]
     [InlineData(CombinationOperator.Xnor)]
-    public void CombOperator(CombinationOperator op)
+    public void CombOperator(object op)
     {
         var data = "00 00 00 40 00 00 00 38 00 00 00 00 00 00 00 00 00 00 00".BitsFromHex();
         var sut = Parse(data);
         Assert.Equal(CombinationOperator.Or, sut.Flags.DefaultOperator);
         
-        data[^3] |= (byte)((byte)op << 3);
+        data[^3] |= (byte)((byte)(CombinationOperator)op << 3);
         sut = Parse(data);
-        Assert.Equal(op, sut.Flags.DefaultOperator);
+        Assert.Equal((CombinationOperator)op, sut.Flags.DefaultOperator);
     }
 /*    [Theory]
     [InlineData(PageInformationFlags.Lossless)]

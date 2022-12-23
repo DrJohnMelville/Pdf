@@ -59,7 +59,7 @@ public class SymbolDictionaryFlagsTest
     [InlineData(1 << 10, GenericRegionTemplate.GB1)]
     [InlineData(2 << 10, GenericRegionTemplate.GB2)]
     [InlineData(3 << 10, GenericRegionTemplate.GB3)]
-    public void TemplateSelection (ushort flags, GenericRegionTemplate huffmanSel) =>
+    public void TemplateSelection (ushort flags, object huffmanSel) =>
         Assert.Equal(huffmanSel, new SymbolDictionaryFlags(flags).GenericRegionTemplate);
 
     [Theory]
