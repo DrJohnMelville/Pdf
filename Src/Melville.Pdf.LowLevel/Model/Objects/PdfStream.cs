@@ -46,7 +46,7 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
             source.SourceFormat, desiredFormat).CA();
     }
 
-    private async Task<IFilterProcessor> CreateFilterProcessor(IObjectCryptContext innerEncryptor) =>
+    private async Task<FilterProcessorBase> CreateFilterProcessor(IObjectCryptContext innerEncryptor) =>
         await DefaultEncryptionSelector.TryAddDefaultEncryption(this, source, innerEncryptor,
                 new FilterProcessor(
                     await FilterList().CA(),

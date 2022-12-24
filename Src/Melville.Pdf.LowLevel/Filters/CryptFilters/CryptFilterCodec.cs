@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.CryptFilters;
 
-public class CryptSingleFilter: IApplySingleFilter
+internal class CryptSingleFilter: IApplySingleFilter
 {
     private readonly IApplySingleFilter innerFilter;
     private readonly IStreamDataSource streamDataSource;

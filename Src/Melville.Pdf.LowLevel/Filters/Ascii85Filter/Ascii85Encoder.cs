@@ -4,7 +4,7 @@ using Melville.Parsing.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 
-public class Ascii85Encoder : IStreamFilterDefinition
+internal class Ascii85Encoder : IStreamFilterDefinition
 {
     public int MinWriteSize => 7;
 

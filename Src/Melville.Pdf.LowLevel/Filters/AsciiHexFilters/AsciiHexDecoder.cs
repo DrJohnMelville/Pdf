@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 
-public class AsciiHexDecoder : IStreamFilterDefinition
+internal class AsciiHexDecoder : IStreamFilterDefinition
 {
     public (SequencePosition SourceConsumed, int bytesWritten, bool Done)
         Convert(ref SequenceReader<byte> source, in Span<byte> destination)

@@ -38,7 +38,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Filters\CryptFilters\BitmapSymbols" />
       <Folder Include="Model\Primitives\PipeReaderWithPositions" />
     </ItemGroup>
 </Project>

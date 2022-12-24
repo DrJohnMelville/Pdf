@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
-public class CcittFilterFactory
+internal class CcittFilterFactory
 {
     public static async ValueTask<IStreamFilterDefinition> Encoder(PdfObject? arg) => 
         CcittCodecFactory.SelectEncoder(await ParseCcittOptionsAsync(arg).CA());

@@ -6,12 +6,12 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
-public static class DefaultEncryptionSelector
+internal static class DefaultEncryptionSelector
 {
-    public static async ValueTask<IFilterProcessor> TryAddDefaultEncryption(
+    public static async ValueTask<FilterProcessorBase> TryAddDefaultEncryption(
         PdfStream stream, IStreamDataSource source, IObjectCryptContext encryptor,
-        IFilterProcessor inner) =>
-        await ShouldApplyDefaultEncryption(stream)
+        FilterProcessorBase inner) =>
+        await ShouldApplyDefaultEncryption(stream).CA()
             ? new DefaultEncryptionFilterProcessor(inner, source, encryptor)
             : inner;
     
@@ -19,13 +19,14 @@ public static class DefaultEncryptionSelector
         !(await stream.GetOrNullAsync(KnownNames.Type).CA() == KnownNames.XRef ||
           await stream.HasFilterOfType(KnownNames.Crypt).CA());
 }
-public class DefaultEncryptionFilterProcessor : FilterProcessorBase
+
+internal class DefaultEncryptionFilterProcessor : FilterProcessorBase
 {
-    private readonly IFilterProcessor innerProcessor;
+    private readonly FilterProcessorBase innerProcessor;
     private readonly IStreamDataSource streamSource;
     private readonly IObjectCryptContext encryptor;
 
-    public DefaultEncryptionFilterProcessor(IFilterProcessor innerProcessor, IStreamDataSource streamSource,
+    public DefaultEncryptionFilterProcessor(FilterProcessorBase innerProcessor, IStreamDataSource streamSource,
         IObjectCryptContext encryptor)
     {
         this.innerProcessor = innerProcessor;

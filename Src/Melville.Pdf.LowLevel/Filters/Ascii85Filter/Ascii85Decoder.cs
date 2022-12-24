@@ -5,15 +5,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 
-public static class Ascii85Constants
-{
-    public const byte FirstChar = (byte)'!';
-    public const byte IncompleteGroupPadding = (byte)'u';
-    public const byte FirstTerminatingChar = (byte)'~';
-    public const byte SecondTerminatingChar = (byte)'>';
-}
-
-public class Ascii85Decoder : IStreamFilterDefinition
+internal class Ascii85Decoder : IStreamFilterDefinition
 {
     public int MinWriteSize => 4;
         

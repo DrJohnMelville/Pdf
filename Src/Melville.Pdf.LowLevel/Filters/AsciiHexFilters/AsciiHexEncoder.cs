@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Filters.AsciiHexFilters;
 
-public class AsciiHexEncoder : IStreamFilterDefinition
+internal class AsciiHexEncoder : IStreamFilterDefinition
 {
     public int MinWriteSize => 2;
 

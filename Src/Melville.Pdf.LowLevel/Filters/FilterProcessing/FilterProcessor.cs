@@ -7,19 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
-public enum StreamFormat
-{
-    DiskRepresentation = int.MinValue,
-    ImplicitEncryption = -1,
-    PlainText = int.MaxValue
-}
-public interface IFilterProcessor
-{
-    ValueTask<Stream> StreamInDesiredEncoding(
-        Stream src, StreamFormat sourceFormat, StreamFormat desiredEncoding);
-}
-
-public abstract class FilterProcessorBase: IFilterProcessor
+internal abstract class FilterProcessorBase
 {
     public async ValueTask<Stream> StreamInDesiredEncoding(Stream src, StreamFormat sourceFormat,
         StreamFormat desiredEncoding)
@@ -39,7 +27,7 @@ public abstract class FilterProcessorBase: IFilterProcessor
 
 }
 
-public class FilterProcessor: FilterProcessorBase
+internal class FilterProcessor: FilterProcessorBase
 {
 
     private readonly IReadOnlyList<PdfObject> filters;
