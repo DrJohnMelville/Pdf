@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-public static class YCbCrToRgbConverter
+internal static class YCbCrToRgbConverter
 {
     private const int ClampTableOffset = 256;
     private const int Shift = 16;

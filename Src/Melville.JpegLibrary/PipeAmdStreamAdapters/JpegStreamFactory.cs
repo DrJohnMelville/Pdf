@@ -6,19 +6,38 @@ using Melville.JpegLibrary.Decoder;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
+/// <summary>
+/// Creates a stream that decodes a JPEG image into a stream of bytes representing color data
+/// </summary>
 public readonly partial struct JpegStreamFactory
 {
     [FromConstructor] private readonly long colorTransformFromPdf;
     
+    /// <summary>
+    /// Create a JPegDecoder stream from a stream
+    /// </summary>
+    /// <param name="s">A readable stream containing a JPEG image file</param>
+    /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
     public ValueTask<Stream> FromStream(Stream s) => FromPipe(PipeReader.Create(s), s.Length);
 
-    private async ValueTask<Stream> FromPipe(PipeReader pipe, long length)
+    /// <summary>
+    /// Create a Jpeg stream from a pipereader.
+    /// </summary>
+    /// <param name="pipe">The pipe reader.</param>
+    /// <param name="length">The length of the data</param>
+    /// <returns>A stream representing the image</returns>
+    public async ValueTask<Stream> FromPipe(PipeReader pipe, long length)
     {
         var seq = await pipe.ReadAtLeastAsync((int)length);
         return FromReadOnlySequence(seq.Buffer);
     }
 
-    private Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
+    /// <summary>
+    /// Create a JpegStream from a sequence of bytes
+    /// </summary>
+    /// <param name="input">The JPEG data as a sequence.</param>
+    /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
+    public Stream FromReadOnlySequence(ReadOnlySequence<byte> input)
     {
         var decoder = new JpegDecoder();
         decoder.SetInput(input);

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Melville.JpegLibrary.ScanDecoders;
 
-public readonly struct JpegScanHeader
+internal readonly struct JpegScanHeader
 {
     public JpegScanHeader(byte numberOfComponents, JpegScanComponentSpecificationParameters[]? components, byte startOfSpectralSelection, byte endOfSpectralSelection, byte successiveApproximationBitPositionHigh, byte successiveApproximationBitPositionLow)
     {

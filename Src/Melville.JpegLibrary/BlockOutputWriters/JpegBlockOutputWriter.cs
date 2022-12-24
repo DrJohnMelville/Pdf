@@ -3,7 +3,7 @@
 /// <summary>
 /// A output writer that write spatial block to the destination buffer.
 /// </summary>
-public abstract partial class JpegBlockOutputWriter
+internal abstract class JpegBlockOutputWriter
 {
     /// <summary>
     /// Write a 8x8 spatial block into the destination buffer.

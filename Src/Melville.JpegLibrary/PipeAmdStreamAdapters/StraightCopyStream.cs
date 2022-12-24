@@ -1,6 +1,6 @@
 ﻿namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-public class StraightCopyStream : RentedArrayReadingStream
+internal class StraightCopyStream : RentedArrayReadingStream
 {
     public StraightCopyStream(byte[] data, int length) : base(data, length)
     {

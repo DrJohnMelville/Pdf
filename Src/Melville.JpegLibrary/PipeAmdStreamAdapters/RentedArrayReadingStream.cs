@@ -4,7 +4,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-public abstract class RentedArrayReadingStream : DefaultBaseStream
+internal abstract class RentedArrayReadingStream : DefaultBaseStream
 {
     private readonly byte[] data;
     private int length;

@@ -14,7 +14,7 @@ using Melville.JpegLibrary.ScanDecoders;
 
 namespace Melville.JpegLibrary.Decoder;
 
-public class JpegDecoder
+internal class JpegDecoder
 {
     private ReadOnlySequence<byte> _inputBuffer;
 

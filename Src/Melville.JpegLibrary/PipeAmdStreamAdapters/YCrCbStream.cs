@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-public abstract partial class ConvertingStream : RentedArrayReadingStream
+internal abstract partial class ConvertingStream : RentedArrayReadingStream
 {
     [FromConstructor] private int components;
     
@@ -16,7 +16,8 @@ public abstract partial class ConvertingStream : RentedArrayReadingStream
 
     protected abstract void ConvertColors(ReadOnlySpan<byte> ycbcr, Span<byte> rgb, int count);
 }
-public class YCrCbStream: ConvertingStream
+
+internal class YCrCbStream: ConvertingStream
 {
     public YCrCbStream(byte[] data, int length) : base(data, length, 3)
     {

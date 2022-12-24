@@ -1,6 +1,6 @@
 ﻿namespace Melville.JpegLibrary.Decoder;
 
-public enum JpegMarker : byte
+internal enum JpegMarker : byte
 {
     Padding = 0xFF,
     StartOfImage = 0xD8,

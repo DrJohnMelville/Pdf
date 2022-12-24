@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Melville.JpegLibrary.HuffmanCoding;
 
-public class JpegHuffmanDecodingTable
+internal class JpegHuffmanDecodingTable
 {
     internal JpegHuffmanDecodingTable(byte tableClass, byte identifier)
     {

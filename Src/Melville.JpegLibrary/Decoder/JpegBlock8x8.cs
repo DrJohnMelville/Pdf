@@ -2,7 +2,7 @@
 
 namespace Melville.JpegLibrary.Decoder;
 
-public unsafe struct JpegBlock8x8
+internal unsafe struct JpegBlock8x8
 {
     private fixed short _data[64];
 

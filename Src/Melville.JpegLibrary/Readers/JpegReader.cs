@@ -5,7 +5,7 @@ using Melville.JpegLibrary.Decoder;
 
 namespace Melville.JpegLibrary.Readers;
 
-public struct JpegReader
+internal struct JpegReader
 {
     private ReadOnlySequence<byte> _data;
     private int _initialLength;

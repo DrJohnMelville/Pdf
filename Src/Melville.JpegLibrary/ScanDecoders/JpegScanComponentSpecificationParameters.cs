@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Melville.JpegLibrary.ScanDecoders;
 
-public readonly struct JpegScanComponentSpecificationParameters
+internal readonly struct JpegScanComponentSpecificationParameters
 {
     public JpegScanComponentSpecificationParameters(byte scanComponentSelector, byte dcEntropyCodingTableSelector, byte acEntropyCodingTableSelector)
     {

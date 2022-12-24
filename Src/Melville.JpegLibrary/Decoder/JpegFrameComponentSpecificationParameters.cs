@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Melville.JpegLibrary.Decoder;
 
-public readonly struct JpegFrameComponentSpecificationParameters
+internal readonly struct JpegFrameComponentSpecificationParameters
 {
     public JpegFrameComponentSpecificationParameters(byte identifier, byte horizontalSamplingFactor, byte verticalSamplingFactor, byte quantizationTableSelector)
     {

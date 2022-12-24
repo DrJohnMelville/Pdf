@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Melville.JpegLibrary.BlockOutputWriters;
 
-public class JpegBufferOutputWriter8Bit : JpegBlockOutputWriter
+internal class JpegBufferOutputWriter8Bit : JpegBlockOutputWriter
 {
     private readonly int _width;
     private readonly int _height;

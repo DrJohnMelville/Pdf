@@ -2,7 +2,7 @@
 
 namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
-public class YCCKStream: ConvertingStream
+internal class YCCKStream: ConvertingStream
 {
     public YCCKStream(byte[] data, int length) : base(data, length, 4)
     {

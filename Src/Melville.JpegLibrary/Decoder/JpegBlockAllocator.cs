@@ -7,7 +7,7 @@ using Melville.JpegLibrary.Maths;
 
 namespace Melville.JpegLibrary.Decoder;
 
-public sealed class JpegBlockAllocator : IDisposable
+internal sealed class JpegBlockAllocator : IDisposable
 {
     private readonly MemoryPool<byte> _memoryPool;
     private IMemoryOwner<byte>? _bufferHandle;

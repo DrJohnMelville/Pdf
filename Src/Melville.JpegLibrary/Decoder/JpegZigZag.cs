@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Melville.JpegLibrary.Decoder;
 
-public static class JpegZigZag
+internal static class JpegZigZag
 {
     private static ReadOnlySpan<byte> s_blockToBuffer => new byte[]
     {

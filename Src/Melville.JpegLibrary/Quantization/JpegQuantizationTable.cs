@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Melville.JpegLibrary.Quantization;
 
-public readonly struct JpegQuantizationTable
+internal readonly struct JpegQuantizationTable
 {
     private readonly ushort[] _elements;
 
