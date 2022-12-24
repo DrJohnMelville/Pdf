@@ -6,11 +6,11 @@ using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public interface IGlobalEncryptionKeyComputer
+internal interface IGlobalEncryptionKeyComputer
 {
     byte[] ComputeKey(string userPassword, in EncryptionParameters parameters);
 }
-public class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
+internal class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
 {
     public byte[] ComputeKey(string userPassword, in EncryptionParameters parameters)
     {
@@ -51,7 +51,7 @@ public class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
     }
 }
 
-public class GlobalEncryptionKeyComputerV3 : GlobalEncryptionKeyComputerV2
+internal class GlobalEncryptionKeyComputerV3 : GlobalEncryptionKeyComputerV2
 {
     protected override byte[] V3Spin(HashAlgorithm hash, int bytesInKey)
     {
@@ -59,8 +59,7 @@ public class GlobalEncryptionKeyComputerV3 : GlobalEncryptionKeyComputerV2
         for (int i = 0; i < 50; i++)
         {
             hash.AddData(ret, bytesInKey);
-            hash.FinalizeHash();
-            ret = hash.Hash ?? throw new PdfSecurityException("Hash codes should exist");
+            ret = base.V3Spin(hash, bytesInKey);
         }
         return ret;
     }

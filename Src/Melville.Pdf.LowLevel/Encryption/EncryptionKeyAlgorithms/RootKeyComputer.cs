@@ -9,7 +9,7 @@ public interface IRootKeyComputer
     byte[]? TryComputeRootKey(string password, PasswordType type);
 }
 
-public class RootKeyComputer : IRootKeyComputer
+internal class RootKeyComputer : IRootKeyComputer
 {
     private readonly IGlobalEncryptionKeyComputer keyComputer;
     private readonly IComputeUserPassword userHashComputer;

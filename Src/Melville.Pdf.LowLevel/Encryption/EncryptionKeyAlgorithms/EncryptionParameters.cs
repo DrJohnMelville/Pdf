@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public readonly partial struct EncryptionParameters
+internal readonly partial struct EncryptionParameters
 {
     [FromConstructor]public byte[] IdFirstElement {get;}
     [FromConstructor]public byte[] OwnerPasswordHash {get;}

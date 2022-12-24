@@ -14,7 +14,7 @@ public interface ILowLevelDocumentEncryptor
     public string UserPassword { get; }
 }
 
-public class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
+internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
 {
     private readonly string ownerPassword;
     public string UserPassword { get; set; }

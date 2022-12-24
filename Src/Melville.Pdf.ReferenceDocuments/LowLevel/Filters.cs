@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
-public class FiltersGenerator : CreatePdfParser
+internal class FiltersGenerator : CreatePdfParser
 {
     public FiltersGenerator() : base("Document using all filter types.")
     {
@@ -16,8 +16,10 @@ public class FiltersGenerator : CreatePdfParser
         var builder = new PdfDocumentCreator();
         builder.Pages.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.StandardEncoding);
 
-        BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, new V4Encryptor("", "", 128,
-            PdfPermission.None, KnownNames.Identity, KnownNames.Identity, KnownNames.Identity,
+        BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, 
+            
+            DocumentEncryptorFactory.V4("","", PdfPermission.None, 
+            KnownNames.Identity, KnownNames.Identity, KnownNames.Identity,
             new V4CfDictionary(KnownNames.V2, 128 / 8)));
 
         await CreatePage(builder, "Rc4 Crypt Filter", FilterName.Crypt,

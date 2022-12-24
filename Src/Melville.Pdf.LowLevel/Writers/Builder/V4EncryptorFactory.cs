@@ -32,7 +32,7 @@ public readonly struct V4CfDictionary
     public PdfDictionary Build() => items.AsDictionary();
 }
 
-public class EncryptorWithCfsDictionary : ComputeEncryptionDictionary
+internal class EncryptorWithCfsDictionary : ComputeEncryptionDictionary
 {
     private readonly PdfName defStream;
     private readonly PdfName defString;
@@ -64,7 +64,7 @@ public class EncryptorWithCfsDictionary : ComputeEncryptionDictionary
     }
 
 }
-public class V4Encryptor: EncryptorWithCfsDictionary
+internal class V4Encryptor: EncryptorWithCfsDictionary
 {
     public V4Encryptor(
         string userPassword, string ownerPassword, int keyLengthInBits, PdfPermission permissionsRestricted,
