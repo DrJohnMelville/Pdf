@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 
-public class AesCipher: ICipher
+internal class AesCipher: ICipher
 {
     private Aes encryptor;
         

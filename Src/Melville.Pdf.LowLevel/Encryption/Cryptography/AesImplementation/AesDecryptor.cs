@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 
-public class AesDecryptor: ICipherOperations
+internal class AesDecryptor: ICipherOperations
 {
     private readonly Aes encryptor;
 

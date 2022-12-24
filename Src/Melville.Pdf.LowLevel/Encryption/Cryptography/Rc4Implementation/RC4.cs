@@ -2,13 +2,13 @@ using System;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
-static class SwapExt
+internal static class SwapExt
 {
     public static void Swap<T>(this T[] array, int index1, int index2) => 
         (array[index1], array[index2]) = (array[index2], array[index1]);
 }
 
-public class RC4
+internal class RC4
 {
     public RC4()
     {

@@ -8,7 +8,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
-public class Rc4Stream : DefaultBaseStream
+internal class Rc4Stream : DefaultBaseStream
 {
     private readonly Stream innerStream;
     private readonly RC4 encryptor;

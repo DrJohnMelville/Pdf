@@ -9,7 +9,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.AesImplementation;
 
-public class AesDecodeStream : DefaultBaseStream
+internal class AesDecodeStream : DefaultBaseStream
         
 {
     private readonly Stream input;

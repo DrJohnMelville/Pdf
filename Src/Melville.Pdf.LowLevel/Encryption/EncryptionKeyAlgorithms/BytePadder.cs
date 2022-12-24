@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public static class BytePadder
+internal static class BytePadder
 {
     public static byte[] Pad(string input)
     {

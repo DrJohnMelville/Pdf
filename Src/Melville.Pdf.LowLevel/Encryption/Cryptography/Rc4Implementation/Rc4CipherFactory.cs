@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
 [StaticSingleton]
-public partial class Rc4CipherFactory : ICipherFactory
+internal partial class Rc4CipherFactory : ICipherFactory
 {
     public ICipher CipherFromKey(in ReadOnlySpan<byte> finalKey) =>
         new Rc4Cipher(finalKey);

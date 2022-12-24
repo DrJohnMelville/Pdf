@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 namespace Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
-public class Rc4Cipher: ICipherOperations, ICipher
+internal class Rc4Cipher: ICipherOperations, ICipher
 {
     private readonly RC4 cryptoImplementation;
 
