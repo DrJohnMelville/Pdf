@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers.V6SecurityHandler;
 
-public partial class RootKeyComputerV6 : IRootKeyComputer
+internal partial class RootKeyComputerV6 : IRootKeyComputer
 {
     [FromConstructor] private V6EncryptionKey userKey;
     [FromConstructor] private V6EncryptionKey ownerKey;

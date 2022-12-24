@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Encryption.StringFilters;
 
-public static class SaslCharacterMapping
+internal static class SaslCharacterMapping
 {
     public static string MapChars(string input)
     {

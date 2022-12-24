@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Melville.Pdf.LowLevel.Encryption.StringFilters;
 
-public static class StringPrep
+internal static class StringPrep
 {
     public static string SaslPrep(this string input)
     {

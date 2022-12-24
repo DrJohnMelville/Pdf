@@ -10,13 +10,13 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
-public interface ISecurityHandler
+internal interface ISecurityHandler
 {
     byte[]? TryComputeRootKey(string password, PasswordType type);
     IDocumentCryptContext CreateCryptContext(byte[] rootKey);
 }
 
-public static class SecurityHandlerOperations
+internal static class SecurityHandlerOperations
 {
     public static async ValueTask<IDocumentCryptContext> InteractiveGetCryptContext(
         this ISecurityHandler handler, IPasswordSource source)

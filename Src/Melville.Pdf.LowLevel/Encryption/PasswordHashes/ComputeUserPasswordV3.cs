@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 
-public sealed class ComputeUserPasswordV3 : IComputeUserPassword
+internal sealed class ComputeUserPasswordV3 : IComputeUserPassword
 {
     public byte[] ComputeHash(in ReadOnlySpan<byte> encryptionKey, EncryptionParameters parameters)
     {

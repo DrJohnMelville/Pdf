@@ -5,12 +5,12 @@ using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public interface IKeySpecializer
+internal interface IKeySpecializer
 {
     ReadOnlySpan<byte> ComputeKeyForObject(byte[] rootKey, int objectNumber, int generationNumber);
 }
 
-public class Rc4KeySpecializer: IKeySpecializer
+internal class Rc4KeySpecializer: IKeySpecializer
 {
     public static Rc4KeySpecializer Instance = new();
     protected Rc4KeySpecializer(){}
@@ -44,7 +44,7 @@ public class Rc4KeySpecializer: IKeySpecializer
 }
 
 [StaticSingleton("AesInstance")]
-public partial class AesKeySpecializer: Rc4KeySpecializer
+internal partial class AesKeySpecializer: Rc4KeySpecializer
 {
     private static readonly byte[] aesSalt = {0x73,0x41,0x6c,0x54 };
     protected override void AddObjectData(int objectNumber, int generationNumber, MD5 md5)
@@ -55,7 +55,7 @@ public partial class AesKeySpecializer: Rc4KeySpecializer
 }
 
 [StaticSingleton]
-public partial class AesV6KeySpecializer : IKeySpecializer
+internal partial class AesV6KeySpecializer : IKeySpecializer
 {
     public ReadOnlySpan<byte> ComputeKeyForObject(byte[] rootKey, int objectNumber, int generationNumber)
     {

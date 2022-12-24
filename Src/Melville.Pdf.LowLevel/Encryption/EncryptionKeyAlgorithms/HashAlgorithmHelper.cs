@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public static class HashAlgorithmHelper
+internal static class HashAlgorithmHelper
 {
     public static void AddData(this HashAlgorithm ha, byte[] data)
     {

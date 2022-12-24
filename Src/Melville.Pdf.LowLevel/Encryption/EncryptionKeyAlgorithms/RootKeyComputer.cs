@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
-public interface IRootKeyComputer
+internal interface IRootKeyComputer
 {
     byte[]? TryComputeRootKey(string password, PasswordType type);
 }

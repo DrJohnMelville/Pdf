@@ -5,7 +5,7 @@ using Melville.INPC;
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 
 [StaticSingleton()]
-public partial class ComputeOwnerPasswordV3 : ComputeOwnerPasswordV2
+internal partial class ComputeOwnerPasswordV3 : ComputeOwnerPasswordV2
 {
     protected override int SequentialEncryptionCount() => 20;
 

@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
-public readonly partial struct CryptFilterReader
+internal readonly partial struct CryptFilterReader
 {
     [FromConstructor] private readonly IRootKeyComputer rootKeyComputer;
     [FromConstructor] private readonly PdfDictionary encryptionDictionary;

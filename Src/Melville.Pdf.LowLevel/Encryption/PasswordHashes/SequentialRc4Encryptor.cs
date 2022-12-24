@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 
-public static class SequentialRc4Encryptor
+internal static class SequentialRc4Encryptor
 {
     public static void EncryptNTimes   (in ReadOnlySpan<byte> encryptionKey, byte[] hash, int interationsDesired)
     {

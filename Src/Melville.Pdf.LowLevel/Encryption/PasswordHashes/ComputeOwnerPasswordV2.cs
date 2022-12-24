@@ -4,12 +4,12 @@ using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
 namespace Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 
-public interface IComputeOwnerPassword
+internal interface IComputeOwnerPassword
 {
     string UserKeyFromOwnerKey(string ownerKey, EncryptionParameters parameters);
     byte[] ComputeOwnerKey(string ownerKey, string userKey, int keyLenInBytes);
 }
-public class ComputeOwnerPasswordV2: IComputeOwnerPassword
+internal class ComputeOwnerPasswordV2: IComputeOwnerPassword
 {
     public string UserKeyFromOwnerKey(string ownerKey, EncryptionParameters parameters) => 
         InnerUserKeyFromOwnerKey(ownerKey, parameters.OwnerPasswordHash, parameters.KeyLengthInBytes);

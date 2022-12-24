@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers.V6SecurityHandler;
 
-public static class SecurityHandlerV6Factory
+internal static class SecurityHandlerV6Factory
 {
     public async static ValueTask<ISecurityHandler> Create(PdfDictionary dict) => 
         await CryptFilterReader.Create(await ReadV6Keys(dict).CA(), dict).CA();

@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
-public static class SecurityHandlerFactory
+internal static class SecurityHandlerFactory
 {
     public static async ValueTask<ISecurityHandler> CreateSecurityHandler(
         PdfDictionary trailer, PdfDictionary dict)
