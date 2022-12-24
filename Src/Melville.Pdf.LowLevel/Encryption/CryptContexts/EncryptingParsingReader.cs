@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.CryptContexts;
 
-public partial class EncryptingParsingReader : IParsingReader
+internal partial class EncryptingParsingReader : IParsingReader
 {
     [DelegateTo]
     private readonly IParsingReader inner;

@@ -11,7 +11,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
 [StaticSingleton]
-public partial class NullSecurityHandler: 
+internal partial class NullSecurityHandler: 
     ISecurityHandler, IDocumentCryptContext, IObjectCryptContext, ICipher, ICipherOperations
 {
     public bool BlockEncryption(PdfObject item) => false;

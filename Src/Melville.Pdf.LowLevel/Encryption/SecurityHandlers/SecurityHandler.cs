@@ -43,7 +43,7 @@ public static class SecurityHandlerOperations
     }
 }
 
-public partial class SecurityHandler : ISecurityHandler
+internal partial class SecurityHandler : ISecurityHandler
 {
     [FromConstructor]private readonly IKeySpecializer keySpecializer;
     [FromConstructor]private readonly ICipherFactory cipherFactory;

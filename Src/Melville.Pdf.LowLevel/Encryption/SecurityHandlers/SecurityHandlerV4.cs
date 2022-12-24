@@ -11,7 +11,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
-public class DocumentCryptContextV4: IDocumentCryptContext
+internal class DocumentCryptContextV4: IDocumentCryptContext
 {
     private Dictionary<PdfName, IDocumentCryptContext> contexts;
         
@@ -26,7 +26,7 @@ public class DocumentCryptContextV4: IDocumentCryptContext
 
     public bool BlockEncryption(PdfObject item) => contexts.Values.Any(i => i.BlockEncryption(item));
 }
-public class ObjectContextV4: IObjectCryptContext
+internal class ObjectContextV4: IObjectCryptContext
 {
     private readonly IReadOnlyDictionary<PdfName, IDocumentCryptContext> context;
     private readonly int objectNumber;
@@ -55,7 +55,7 @@ public class ObjectContextV4: IObjectCryptContext
             .NamedCipher(name);
 }
 
-public partial class SecurityHandlerV4 : ISecurityHandler
+internal partial class SecurityHandlerV4 : ISecurityHandler
 {
     [FromConstructor]private readonly IRootKeyComputer rootKeyComputer;
     [FromConstructor]private readonly Dictionary<PdfName, ISecurityHandler> handlers;

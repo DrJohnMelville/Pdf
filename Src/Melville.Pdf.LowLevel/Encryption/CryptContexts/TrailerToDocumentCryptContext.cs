@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.CryptContexts;
 
-public static class TrailerToDocumentCryptContext
+internal static class TrailerToDocumentCryptContext
 {
     public static async ValueTask<IDocumentCryptContext> CreateCryptContext(
         PdfDictionary trailer, string? userPassword)

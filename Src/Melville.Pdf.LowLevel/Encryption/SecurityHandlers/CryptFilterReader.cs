@@ -70,7 +70,7 @@ public readonly partial struct CryptFilterReader
         _ => throw new PdfSecurityException("Unknown Security Handler Type: " + cfm)
     };
 
-    public static async ValueTask<SecurityHandlerV4> Create(IRootKeyComputer rootKeyComputer, PdfDictionary encryptionDictionary)
+    public static async ValueTask<ISecurityHandler> Create(IRootKeyComputer rootKeyComputer, PdfDictionary encryptionDictionary)
     {
         var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF).CA();
         var finalDictionary =

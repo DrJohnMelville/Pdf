@@ -7,10 +7,23 @@ namespace Melville.Pdf.LowLevel.Encryption.CryptContexts;
 
 public interface IDocumentCryptContext
 {
+    /// <summary>
+    /// Creates an Object encryption context for an object with the given object and generation number.
+    /// In the pre v6 encryption schemes, every object is encrypted with a unique key.
+    /// </summary>
+    /// <param name="objectNumber">The object number of the item to be encrypted</param>
+    /// <param name="generationNumber">The generation number of the item to be encrypted.'</param>
+    /// <returns></returns>
     IObjectCryptContext ContextForObject(int objectNumber, int generationNumber);
+    /// <summary>
+    /// Determine whether or not the given object should be encrypted.  Some objects, like the document root and encryption dictionary
+    /// cannot be enrypted because a reader must parse them to get the encryption parameters to create a decryptor
+    /// </summary>
+    /// <param name="item">A PDF object</param>
+    /// <returns></returns>
     bool BlockEncryption(PdfObject item);
 }
-public class DocumentCryptContext : IDocumentCryptContext
+internal class DocumentCryptContext : IDocumentCryptContext
 {
     private readonly byte[] rootKey;
     private readonly IKeySpecializer keySpecializer;
