@@ -19,7 +19,7 @@ public class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
     {
     }
 
-    public PdfObjectWriter(PipeWriter target, IDocumentCryptContext encryptor) : base()
+    internal PdfObjectWriter(PipeWriter target, IDocumentCryptContext encryptor) : base()
     {
         this.target = target;
         this.encryptor = encryptor;

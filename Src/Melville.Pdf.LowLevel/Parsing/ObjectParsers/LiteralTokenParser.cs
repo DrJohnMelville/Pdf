@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class LiteralTokenParser : PdfAtomParser
+internal class LiteralTokenParser : PdfAtomParser
 {
     private PdfTokenValues literal;
 

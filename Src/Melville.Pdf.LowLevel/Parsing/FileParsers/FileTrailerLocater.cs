@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-public static class FileTrailerLocater
+internal static class FileTrailerLocater
 {
     public static async Task<long> Search(ParsingFileOwner source, int fileTrailerSizeHint)
     {

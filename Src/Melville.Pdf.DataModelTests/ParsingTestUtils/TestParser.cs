@@ -20,16 +20,16 @@ public static class TestParser
     public static Task<PdfObject> ParseObjectAsync(this byte[] bytes) => 
         ParseObjectAsync(AsParsingSource(bytes));
 
-    public static async Task<PdfObject> ParseObjectAsync(this ParsingFileOwner source, long position = 0)
+    internal static async Task<PdfObject> ParseObjectAsync(this ParsingFileOwner source, long position = 0)
     {
         var reader = await source.RentReader(position);
         return await PdfParserParts.Composite.ParseAsync(reader);
     }
 
-    public static ParsingFileOwner AsParsingSource(this string str, 
+    internal static ParsingFileOwner AsParsingSource(this string str, 
         IIndirectObjectResolver? indirectObjectResolver =null) =>
         AsParsingSource(str.AsExtendedAsciiBytes(), indirectObjectResolver);
-    public static ParsingFileOwner AsParsingSource(this byte[] bytes, 
+    internal static ParsingFileOwner AsParsingSource(this byte[] bytes, 
         IIndirectObjectResolver? indirectObjectResolver =null) => 
         new(new OneCharAtAtimeStream(bytes), NullPasswordSource.Instance, 
             indirectObjectResolver?? new IndirectObjectResolver());

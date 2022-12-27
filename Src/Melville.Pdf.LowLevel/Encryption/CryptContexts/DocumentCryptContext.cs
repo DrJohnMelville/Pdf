@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Encryption.CryptContexts;
 
-public interface IDocumentCryptContext
+internal interface IDocumentCryptContext
 {
     /// <summary>
     /// Creates an Object encryption context for an object with the given object and generation number.

@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 [StaticSingleton()]
-public partial class SinglePredictionFilter : IApplySingleFilter
+internal partial class SinglePredictionFilter : IApplySingleFilter
 {
     public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
     {

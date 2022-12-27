@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class PdfDictionaryAndStreamParser : IPdfObjectParser
+internal class PdfDictionaryAndStreamParser : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {

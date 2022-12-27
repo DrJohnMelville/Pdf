@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-public static class PdfTrailerParser
+internal static class PdfTrailerParser
 {
     public static async ValueTask< PdfDictionary> ParseXrefAndTrailer(ParsingFileOwner source, long xrefPosition)
     {

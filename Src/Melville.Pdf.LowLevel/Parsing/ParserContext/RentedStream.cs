@@ -8,7 +8,7 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-public partial class ParsingFileOwner
+internal partial class ParsingFileOwner
 {
     public partial class RentedStream : Stream
     {

@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class InlineStreamSource: IStreamDataSource
+internal class InlineStreamSource: IStreamDataSource
 {
     private long sourceFilePosition;
     private readonly ParsingFileOwner parsingFileOwner;

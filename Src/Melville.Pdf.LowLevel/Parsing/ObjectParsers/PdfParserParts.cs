@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public static class PdfParserParts
+internal static class PdfParserParts
 {
     public static readonly IPdfObjectParser ContentStreamComposite = new PdfCompositeObjectParserBase(); 
     public static readonly IPdfObjectParser Composite = new PdfCompositeObjectParser();

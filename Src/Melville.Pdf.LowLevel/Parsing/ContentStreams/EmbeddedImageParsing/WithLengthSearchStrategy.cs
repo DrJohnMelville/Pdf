@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
-public partial class WithLengthSearchStrategy: EndSearchStrategy
+internal partial class WithLengthSearchStrategy: EndSearchStrategy
 {
     [FromConstructor] private readonly int length;
 

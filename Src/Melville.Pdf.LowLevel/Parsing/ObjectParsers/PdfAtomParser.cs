@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public abstract class PdfAtomParser : IPdfObjectParser
+internal abstract class PdfAtomParser : IPdfObjectParser
 {
     public abstract bool TryParse(
         ref SequenceReader<byte> reader, bool final, IParsingReader source, [NotNullWhen(true)] out PdfObject? obj);
@@ -30,7 +30,7 @@ public abstract class PdfAtomParser : IPdfObjectParser
     }
 }
 
-public static class DecryptStringOperation
+internal static class DecryptStringOperation
 {
     public static PdfString CreateDecryptedString(this IParsingReader reader, byte[] text) =>
         new(reader.ObjectCryptContext().StringCipher().Decrypt().CryptSpan(text));

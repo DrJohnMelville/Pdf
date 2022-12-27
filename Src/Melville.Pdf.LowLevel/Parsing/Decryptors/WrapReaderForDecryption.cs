@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Parsing.Decryptors;
 
-public interface IWrapReaderForDecryption
+internal interface IWrapReaderForDecryption
 {
     IParsingReader Wrap(IParsingReader reader, int objectNumber, int generationNumber);
 }

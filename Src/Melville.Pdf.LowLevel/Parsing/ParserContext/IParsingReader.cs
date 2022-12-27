@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-public interface IParsingReader
+internal interface IParsingReader
 {
     IPdfObjectParser RootObjectParser { get; }
     IIndirectObjectResolver IndirectResolver { get; }
@@ -16,7 +16,7 @@ public interface IParsingReader
 }
 
 
-public class ParsingReader: IParsingReader
+internal class ParsingReader: IParsingReader
 {
     public IPdfObjectParser RootObjectParser => PdfParserParts.Composite;
     public IIndirectObjectResolver IndirectResolver => Owner.IndirectResolver;

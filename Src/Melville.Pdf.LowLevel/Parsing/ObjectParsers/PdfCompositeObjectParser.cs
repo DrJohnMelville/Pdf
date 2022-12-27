@@ -11,14 +11,14 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public interface IPdfObjectParser
+internal interface IPdfObjectParser
 {
     public Task<PdfObject> ParseAsync(IParsingReader source);
 
 }
 
 
-public class PdfCompositeObjectParserBase : IPdfObjectParser
+internal class PdfCompositeObjectParserBase : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
@@ -73,7 +73,7 @@ public class PdfCompositeObjectParserBase : IPdfObjectParser
         };
 }
 
-public class InlineImageNameParser : PdfCompositeObjectParserBase
+internal class InlineImageNameParser : PdfCompositeObjectParserBase
 {
     private static readonly LiteralTokenParser term = new(PdfTokenValues.InlineImageDictionaryTerminator);
     
@@ -85,7 +85,7 @@ public class InlineImageNameParser : PdfCompositeObjectParserBase
         };
 }
 
-public class ExpandSynonymsParser : IPdfObjectParser
+internal class ExpandSynonymsParser : IPdfObjectParser
 {
     private readonly IPdfObjectParser inner;
     private IDictionary<PdfObject, PdfObject> expansions;
@@ -103,7 +103,7 @@ public class ExpandSynonymsParser : IPdfObjectParser
     }
 }
 
-public class PdfCompositeObjectParser : PdfCompositeObjectParserBase
+internal class PdfCompositeObjectParser : PdfCompositeObjectParserBase
 {
     protected override IPdfObjectParser? PickParserOverride(char firstByte, char secondByte) =>
         (firstByte, secondByte) switch

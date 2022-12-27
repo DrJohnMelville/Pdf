@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-public class CrossReferenceTableParser
+internal class CrossReferenceTableParser
 {
     private readonly IParsingReader source;
     private int firstUnspecifiedLine = 0;

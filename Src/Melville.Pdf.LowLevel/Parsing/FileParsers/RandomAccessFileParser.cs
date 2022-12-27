@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-public static class RandomAccessFileParser
+internal static class RandomAccessFileParser
 {
     public static async ValueTask<PdfLoadedLowLevelDocument> Parse(
         ParsingFileOwner owner, int fileTrailerSizeHint = 30)

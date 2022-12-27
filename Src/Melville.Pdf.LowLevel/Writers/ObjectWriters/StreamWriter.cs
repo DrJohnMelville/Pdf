@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class StreamWriter
+internal static class StreamWriter
 {
     private static byte[] streamToken = {32, 115, 116, 114, 101, 97, 109, 13, 10}; //  stream\r\n
     private static byte[] endStreamToken = 

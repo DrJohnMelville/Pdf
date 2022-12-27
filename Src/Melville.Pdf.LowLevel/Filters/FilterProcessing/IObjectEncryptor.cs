@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
-public interface IObjectCryptContext
+internal interface IObjectCryptContext
 {
     public ICipher StringCipher();
     public ICipher StreamCipher();
@@ -12,7 +12,7 @@ public interface IObjectCryptContext
         
 }
     
-public interface ICipherOperations
+internal interface ICipherOperations
 {
     /// <summary>
     /// Encrypt or decrypt a span of bytes.  If the length of plaintext is the same as the length of the
@@ -22,13 +22,13 @@ public interface ICipherOperations
     Stream CryptStream(Stream input);
 }
 
-public interface ICipher
+internal interface ICipher
 {
     ICipherOperations Encrypt();
     ICipherOperations Decrypt();
 }
 
-public class ErrorObjectEncryptor: IObjectCryptContext
+internal class ErrorObjectEncryptor: IObjectCryptContext
 {
     private ErrorObjectEncryptor() { }
     public static IObjectCryptContext Instance { get; } = new ErrorObjectEncryptor();

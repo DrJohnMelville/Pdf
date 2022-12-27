@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
-public static class InlineImageParser
+internal static class InlineImageParser
 {
     public static async ValueTask<bool> ParseInlineImage(BufferFromPipe bfp, ContentStreamContext target)
     {

@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
-public class EndSearchStrategy
+internal class EndSearchStrategy
 {
     public static EndSearchStrategy Instance { get; } = new();
 

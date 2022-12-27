@@ -63,7 +63,7 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
     }
 }
 
-public partial class SubsetParsingReader : IParsingReader, IByteSourceWithGlobalPosition
+internal partial class SubsetParsingReader : IParsingReader, IByteSourceWithGlobalPosition
 {
     public long ExclusiveEndPosition { get; set; } = long.MaxValue;
     

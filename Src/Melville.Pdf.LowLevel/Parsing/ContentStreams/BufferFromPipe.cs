@@ -11,7 +11,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-public readonly struct BufferFromPipe
+internal readonly struct BufferFromPipe
 {
     private readonly PipeReader reader;
     private readonly ReadResult result;
@@ -69,7 +69,7 @@ public readonly struct BufferFromPipe
     }
 }
 
-public class ContentStreamParsingReader : IParsingReader
+internal class ContentStreamParsingReader : IParsingReader
 {
     public void Dispose()
     {

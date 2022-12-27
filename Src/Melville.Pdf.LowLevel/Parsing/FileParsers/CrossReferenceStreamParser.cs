@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 public static class CrossReferenceStreamParser
 {
-    public static async Task<PdfDictionary> Read(ParsingFileOwner owner, long offset)
+    internal static async Task<PdfDictionary> Read(ParsingFileOwner owner, long offset)
     {
         PdfObject? xRefStreamAsPdfObject ;
         var context = await owner.RentReader(offset).CA();

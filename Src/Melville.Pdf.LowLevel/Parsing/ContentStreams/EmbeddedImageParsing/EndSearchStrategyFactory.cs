@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
-public static class EndSearchStrategyFactory
+internal static class EndSearchStrategyFactory
 {
     public static EndSearchStrategy Create(DictionaryBuilder dict)
     {

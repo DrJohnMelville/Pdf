@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
 [FromConstructor]
-public partial class WhiteSpaceAndLengthSearchStrategy : WithLengthSearchStrategy
+internal partial class WhiteSpaceAndLengthSearchStrategy : WithLengthSearchStrategy
 {
     protected override bool SkipBytes(ref SequenceReader<byte> seqReader)
     {

@@ -36,8 +36,9 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     public async ValueTask<long> DeclaredLengthAsync() => 
         TryGetValue(KnownNames.Length, out var len) && await len.CA() is PdfNumber num ? num.IntValue : -1;
 
-    public async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText,
-        IObjectCryptContext? encryptor = null)
+    public ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText) =>
+        StreamContentAsync(desiredFormat, null);
+    internal async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat, IObjectCryptContext? encryptor)
     {
         var processor =
             await CreateFilterProcessor(encryptor ?? ErrorObjectEncryptor.Instance).CA();

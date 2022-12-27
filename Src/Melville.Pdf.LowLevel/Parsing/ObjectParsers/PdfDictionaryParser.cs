@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class PdfDictionaryParser : IPdfObjectParser
+internal class PdfDictionaryParser : IPdfObjectParser
 {
     // public static readonly byte[] StandardPrefix = { (byte)'<', (byte)'<' };
     // public static readonly byte[] InlineImagePrefix = { (byte)'B', (byte)'I' };

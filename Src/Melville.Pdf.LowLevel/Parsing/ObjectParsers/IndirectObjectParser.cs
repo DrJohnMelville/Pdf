@@ -12,7 +12,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class IndirectObjectParser : IPdfObjectParser
+internal class IndirectObjectParser : IPdfObjectParser
 {
     private readonly IPdfObjectParser fallbackNumberParser;
 

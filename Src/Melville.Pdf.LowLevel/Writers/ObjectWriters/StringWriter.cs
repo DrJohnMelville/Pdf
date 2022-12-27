@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class StringWriter
+internal static class StringWriter
 {
     public static ValueTask<FlushResult> Write(
         PipeWriter writer, PdfString value, IObjectCryptContext encryptor)

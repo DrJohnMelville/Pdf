@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 [StaticSingleton()]
-public partial class StaticSingleFilter: IApplySingleFilter
+internal partial class StaticSingleFilter: IApplySingleFilter
 {
     public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter) =>
         await 

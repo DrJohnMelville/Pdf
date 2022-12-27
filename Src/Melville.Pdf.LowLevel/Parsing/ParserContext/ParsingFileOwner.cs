@@ -13,7 +13,7 @@ using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.E
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-public sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegistry
+internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegistry
 {
     private readonly MultiplexedStream source;
     private long preHeaderOffset = 0;

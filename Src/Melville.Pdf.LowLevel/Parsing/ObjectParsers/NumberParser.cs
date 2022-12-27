@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public class NumberParser: PdfAtomParser
+internal class NumberParser: PdfAtomParser
 {
     public override bool TryParse(
         ref SequenceReader<byte> reader, bool final, IParsingReader source, 
