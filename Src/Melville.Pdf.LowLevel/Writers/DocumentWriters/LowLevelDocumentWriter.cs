@@ -6,6 +6,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -90,5 +91,14 @@ public class LowLevelDocumentWriter
     {
         var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
         return new XRefTable(maxObject, extraSlots);
+    }
+}
+
+internal static class PdfLowLevelDocumentVesrionChecks
+{
+    public static void VerifyCanSupportObjectStreams(this PdfLowLevelDocument document)
+    {
+        if (document.MajorVersion < 2 && document.MinorVersion < 5)
+            throw new PdfParseException("Object streams unavailable before pdf version 1.5");
     }
 }

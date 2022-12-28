@@ -4,12 +4,18 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Document;
 
+/// <summary>
+/// This represents a pdf document that was loaded from a stream.  It has some additional fields needed to write out a modified stream.
+///
+/// The class adds  nothing public to PdfLowLevelDocument, but users need to be able tor reference this type by name to pass it into
+/// certian APIs that require a PDFLoadedLowLevelDocument.
+/// </summary>
 public sealed class PdfLoadedLowLevelDocument: PdfLowLevelDocument, IDisposable{
-    public long XRefPosition { get; }
-    public long FirstFreeBlock { get; }
+    internal long XRefPosition { get; }
+    internal long FirstFreeBlock { get; }
     private readonly IDisposable fileOwner;
 
-    public PdfLoadedLowLevelDocument(
+    internal PdfLoadedLowLevelDocument(
         byte majorVersion, byte minorVersion, PdfDictionary trailerDictionary, 
         IReadOnlyDictionary<(int, int), PdfIndirectObject> objects, long xRefPosition, 
         long firstFreeBlock, IDisposable fileOwner ) : 
