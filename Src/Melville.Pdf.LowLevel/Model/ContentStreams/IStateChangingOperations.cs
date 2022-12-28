@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -95,19 +94,4 @@ public interface IStateChangingOperations
     /// </summary>
     void SetTextRise(double value);
     #endregion
-}
-
-public static class StateChangingCSOperationsHelpers
-{
-
-    //This extension method is essentially a no-op it exists only to add a hint to the
-    //intellisense that we might want to use a built in font name for this method
-    public static void SetFont(
-        this IStateChangingOperations target, BuiltInFontName fontName, double size) =>
-        target.SetFont(fontName, size);
-    
-    public static void SetLineDashPattern(
-        this IStateChangingOperations target, double dashPhase = 0, params double[] dashArray) =>
-        target.SetLineDashPattern(dashPhase, dashArray.AsSpan());
-    
 }

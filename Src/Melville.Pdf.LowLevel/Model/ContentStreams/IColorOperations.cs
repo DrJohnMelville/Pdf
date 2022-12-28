@@ -75,31 +75,3 @@ public interface IColorOperations
     void SetRenderIntent(RenderIntentName intent);
 
 }
-
-public static class ColorCSOperationsHelpers
-{
-    // the next two methods are no-ops than hint the intellisense to the specific
-    // subclass of pdfName
-    public static ValueTask SetStrokingColorSpace(
-        this IColorOperations target, ColorSpaceName colorSpace) =>
-        target.SetStrokingColorSpace(colorSpace);
-    public static ValueTask SetNonstrokingColorSpace(
-        this IColorOperations target, ColorSpaceName colorSpace) =>
-        target.SetNonstrokingColorSpace(colorSpace);
-
-    public static void SetStrokeColor(this IColorOperations target, params double[] colors) =>
-        target.SetStrokeColor(new ReadOnlySpan<double>(colors));
-    public static ValueTask SetStrokeColorExtended(this IColorOperations target, params double[] colors) =>
-        target.SetStrokeColorExtended(null, new ReadOnlySpan<double>(colors));
-    public static ValueTask SetStrokeColorExtended(
-        this IColorOperations target, PdfName? name, params double[] colors) =>
-        target.SetStrokeColorExtended(name, new ReadOnlySpan<double>(colors));
-
-    public static void SetNonstrokingColor(this IColorOperations target, params double[] colors) =>
-        target.SetNonstrokingColor(new ReadOnlySpan<double>(colors));
-    public static ValueTask SetNonstrokingColorExtended(this IColorOperations target, params double[] colors) =>
-        target.SetNonstrokingColorExtended(null, new ReadOnlySpan<double>(colors));
-    public static ValueTask SetNonstrokingColorExtended(
-        this IColorOperations target, PdfName? name, params double[] colors) =>
-        target.SetNonstrokingColorExtended(name, new ReadOnlySpan<double>(colors));
-}
