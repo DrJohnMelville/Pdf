@@ -3,6 +3,7 @@ using Melville.Pdf.LowLevel.Filters.Predictors;
 using Xunit;
 //Rider reports that the usings are unneeded, it does not know the Macro expander uses it.
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -61,7 +62,7 @@ public partial class S7_4_4_4PredictorFunctions
         Assert.Equal(result, new PaethPngPredictor().Predict(upperLeft, up, left));
     }
 
-    public static TheoryData<IPngPredictor> Predictors => new()
+    public static TheoryData<object> Predictors => new()
     {
         new NonePngPredictor(),
         new SubPngPredictor(),
@@ -72,8 +73,9 @@ public partial class S7_4_4_4PredictorFunctions
 
     [Theory]
     [MemberData(nameof(Predictors))]
-    public void AllPossibleRoundTripTests(IPngPredictor pred)
+    public void AllPossibleRoundTripTests(object pred2)
     {
+        var pred = (IPngPredictor)pred2;
         for (int i = 0; i < 256; i++)
         {
             for (int l = 0; l < 256; l++)

@@ -5,7 +5,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-public class LzwEncodeFilter : IStreamFilterDefinition
+internal class LzwEncodeFilter : IStreamFilterDefinition
 {
     private readonly BitWriter output = new();
     private readonly EncoderDictionary dictionary = new();

@@ -4,7 +4,7 @@ using Melville.Parsing.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
-public abstract class PngPredictingFilter: IStreamFilterDefinition
+internal abstract class PngPredictingFilter: IStreamFilterDefinition
 {
     protected PngPredictionBuffer Buffer;
 

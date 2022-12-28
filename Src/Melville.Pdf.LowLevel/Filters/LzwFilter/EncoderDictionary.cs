@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-public class EncoderDictionary
+internal class EncoderDictionary
 {
     private struct Entry
     {

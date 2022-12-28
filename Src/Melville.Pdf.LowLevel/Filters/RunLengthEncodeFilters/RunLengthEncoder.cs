@@ -4,7 +4,7 @@ using Melville.Parsing.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 
-public class RunLengthEncoder : IStreamFilterDefinition
+internal class RunLengthEncoder : IStreamFilterDefinition
 {
     public int MinWriteSize => 129;
             

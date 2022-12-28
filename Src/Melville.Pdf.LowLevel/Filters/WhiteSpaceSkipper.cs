@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Filters;
 
-public static class WhiteSpaceSkipper
+internal static class WhiteSpaceSkipper
 {
     public static bool TryReadNonWhitespace(this ref SequenceReader<byte> source, out byte item)
     {

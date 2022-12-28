@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
-public class PngPredictingEncoder: PngPredictingFilter
+internal class PngPredictingEncoder: PngPredictingFilter
 {
     private readonly byte predictorByte;
     private readonly IPngPredictor predictor;

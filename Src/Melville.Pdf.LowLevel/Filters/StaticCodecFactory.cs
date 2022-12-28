@@ -15,7 +15,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters;
 
-public static class StaticCodecFactory
+internal static class StaticCodecFactory
 {
     public static ICodecDefinition CodecFor(PdfName name) => codecs[name];
 

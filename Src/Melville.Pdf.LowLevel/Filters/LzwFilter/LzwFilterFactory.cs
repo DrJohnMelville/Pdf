@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-public static class LzwFilterFactory
+internal static class LzwFilterFactory
 {
     public static async ValueTask<IStreamFilterDefinition> Decoder(PdfObject? p) => 
         new LzwDecodeFilter(await p.EarlySwitchLength().CA());

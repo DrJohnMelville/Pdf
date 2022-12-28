@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
 [StaticSingleton()]
-public partial class PredictorCodec : ICodecDefinition
+internal partial class PredictorCodec : ICodecDefinition
 {
     private const int FirstPngPredictor = 10;
     private const int LastPngPredictor = 15;

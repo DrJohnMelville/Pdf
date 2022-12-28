@@ -6,7 +6,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
-public static class ScanLineLengthComputer
+internal static class ScanLineLengthComputer
 {
     public static int ComputeGroupsPerRow(int colors, int bitsPerColor, int colorsPerRow, int groupSize)
     {
@@ -21,7 +21,8 @@ public static class ScanLineLengthComputer
 
     public static int BitsToBytesRoundUp(int bitsPerRow) => (bitsPerRow + 7) / 8;
 }
-public abstract class TiffPredictor2Filter: IStreamFilterDefinition
+
+internal abstract class TiffPredictor2Filter: IStreamFilterDefinition
 {
     private int bitsPerColor;
     private int groupsPerRow;
@@ -75,7 +76,8 @@ public abstract class TiffPredictor2Filter: IStreamFilterDefinition
 
     protected abstract int ComputeAdjustedValue(int readValue, ref int bufferSlot);
 }
-public class TiffPredictor2Encoder: TiffPredictor2Filter
+
+internal class TiffPredictor2Encoder: TiffPredictor2Filter
 {
     public TiffPredictor2Encoder(int colors, int bitsPerColor, int colorsPerRow) : 
         base(colors, bitsPerColor, colorsPerRow)
@@ -89,7 +91,7 @@ public class TiffPredictor2Encoder: TiffPredictor2Filter
     }
 }
 
-public class TiffPredictor2Decoder : TiffPredictor2Filter
+internal class TiffPredictor2Decoder : TiffPredictor2Filter
 {
     public TiffPredictor2Decoder(int colors, int bitsPerColor, int colorsPerRow) : base(colors, bitsPerColor, colorsPerRow)
     {

@@ -2,29 +2,33 @@
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
-public interface IPngPredictor
+internal interface IPngPredictor
 {
     int Predict(byte upperLeft, byte up, byte left);
 }
-    
-public class NonePngPredictor:IPngPredictor
+
+internal class NonePngPredictor:IPngPredictor
 {
     public int Predict(byte upperLeft, byte up, byte left) => 0;
 }
-public class SubPngPredictor:IPngPredictor
+
+internal class SubPngPredictor:IPngPredictor
 {
     public int Predict(byte upperLeft, byte up, byte left) => left;
 }
-public class UpPngPredictor:IPngPredictor
+
+internal class UpPngPredictor:IPngPredictor
 {
     public int Predict(byte upperLeft, byte up, byte left) => up;
 }
-public class AveragePngPredictor:IPngPredictor
+
+internal class AveragePngPredictor:IPngPredictor
 {
     public int Predict(byte upperLeft, byte up, byte left) =>
         (byte)((up+left)/2);
 }
-public class PaethPngPredictor:IPngPredictor
+
+internal class PaethPngPredictor:IPngPredictor
 {
     public int Predict(byte upperLeft, byte up, byte left)
     {
@@ -39,7 +43,7 @@ public class PaethPngPredictor:IPngPredictor
     }
 }
 
-public static class PredictorFactory
+internal static class PredictorFactory
 {
     private static readonly IPngPredictor[] decoders;
     static PredictorFactory()
@@ -59,7 +63,7 @@ public static class PredictorFactory
     public static IPngPredictor Get(int index) => decoders[index];
 }
 
-public static class PngPredictorOperations
+internal static class PngPredictorOperations
 {
     public static byte Encode(
         this IPngPredictor pred, byte upperLeft, byte up, byte left, byte value) =>

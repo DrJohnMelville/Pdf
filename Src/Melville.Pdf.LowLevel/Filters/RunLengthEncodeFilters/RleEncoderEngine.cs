@@ -3,7 +3,7 @@ using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 
-public ref struct RleEncoderEngine
+internal ref struct RleEncoderEngine
 {
     private SequenceReader<byte> source;
     private Span<byte> destination;

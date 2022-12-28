@@ -7,13 +7,13 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters;
 
-public interface ICodecDefinition
+internal interface ICodecDefinition
 {
     public ValueTask<Stream>  EncodeOnReadStream(Stream data, PdfObject? parameters);
     ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters);
 }
 
-public class CodecDefinition: ICodecDefinition
+internal class CodecDefinition: ICodecDefinition
 {
     private readonly Func<PdfObject?, ValueTask<IStreamFilterDefinition>> encoder;
     private readonly Func<PdfObject?, ValueTask<IStreamFilterDefinition>> decoder;

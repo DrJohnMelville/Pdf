@@ -1,6 +1,6 @@
 ﻿namespace Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 
-public static class RleConstants
+internal static class RleConstants
 {
     public const byte EndOfStream = 128;
 

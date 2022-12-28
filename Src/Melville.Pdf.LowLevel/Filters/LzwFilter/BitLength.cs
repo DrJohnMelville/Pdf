@@ -1,6 +1,6 @@
 ﻿namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
-public class BitLength
+internal class BitLength
 {
     public int Length { get; private set; }
     private int nextIncrement;

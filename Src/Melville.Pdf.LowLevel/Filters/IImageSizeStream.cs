@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Filters;
 
-public interface IImageSizeStream
+internal interface IImageSizeStream
 {
     int Width { get; }
     int Height { get; }

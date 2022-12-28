@@ -1,6 +1,6 @@
 ﻿namespace Melville.Pdf.LowLevel.Filters.Predictors;
 
-public class PngPredictionBuffer
+internal class PngPredictionBuffer
 {
     private byte[] priorLine;
     private byte[] currentLine;
