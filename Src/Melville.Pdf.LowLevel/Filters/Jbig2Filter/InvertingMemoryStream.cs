@@ -3,7 +3,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
-public sealed class InvertingMemoryStream : DefaultBaseStream
+internal sealed class InvertingMemoryStream : DefaultBaseStream
 {
     private readonly byte[] data;
     private readonly int length;

@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
-public class JpxToPdfAdapter: ICodecDefinition
+internal class JpxToPdfAdapter: ICodecDefinition
 {
     public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters)
     {

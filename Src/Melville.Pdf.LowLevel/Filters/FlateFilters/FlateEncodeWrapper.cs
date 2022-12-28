@@ -9,7 +9,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
 
-public sealed class FlateEncodeWrapper: DefaultBaseStream
+internal sealed class FlateEncodeWrapper: DefaultBaseStream
 {
 
     private enum State

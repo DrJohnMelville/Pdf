@@ -29,7 +29,7 @@ public static class StaticCodecFactory
             { KnownNames.RunLengthDecode, ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()) },
             { KnownNames.LZWDecode, new CodecDefinition(LzwFilterFactory.Encoder, LzwFilterFactory.Decoder)},
             { KnownNames.FlateDecode, new FlateCodecDefinition() },
-            { KnownNames.DCTDecode, new DctDecoder() },
+            { KnownNames.DCTDecode, new DctCodec() },
             { KnownNames.JBIG2Decode, new JbigToPdfAdapter()},
             { KnownNames.JPXDecode, new JpxToPdfAdapter()},
             { KnownNames.CCITTFaxDecode, new CodecDefinition(CcittFilterFactory.Encoder, CcittFilterFactory.Decoder) }

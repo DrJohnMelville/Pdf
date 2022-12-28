@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
-public class JbigToPdfAdapter: ICodecDefinition
+internal class JbigToPdfAdapter: ICodecDefinition
 {
     public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) => 
         throw new NotSupportedException();

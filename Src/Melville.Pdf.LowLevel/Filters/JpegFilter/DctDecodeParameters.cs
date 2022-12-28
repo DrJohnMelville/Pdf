@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.JpegFilter;
 
-public readonly partial struct DctDecodeParameters
+internal readonly partial struct DctDecodeParameters
 {
     private readonly PdfDictionary dict;
 

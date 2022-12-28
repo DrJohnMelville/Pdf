@@ -7,7 +7,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
 
-public class Adler32Computer
+internal class Adler32Computer
 {
     private ulong s1;
     private ulong s2;
@@ -49,7 +49,7 @@ public class Adler32Computer
     }
 }
 
-public class ReadAdlerStream : DefaultBaseStream
+internal class ReadAdlerStream : DefaultBaseStream
 {
     public Adler32Computer Computer { get; }= new();
     private readonly Stream source;

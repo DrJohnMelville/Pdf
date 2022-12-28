@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.JpegFilter;
 
-public class DctDecoder : ICodecDefinition
+internal class DctCodec : ICodecDefinition
 {
     public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters)
     {

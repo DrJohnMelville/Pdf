@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
 
-public class FlateCodecDefinition: ICodecDefinition
+internal class FlateCodecDefinition: ICodecDefinition
 {
     public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) => 
         new(new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4));

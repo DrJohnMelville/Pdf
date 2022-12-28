@@ -4,7 +4,7 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
-public class JPeg200GrayStream : DefaultBaseStream, IImageSizeStream
+internal class JPeg200GrayStream : DefaultBaseStream, IImageSizeStream
 {
     private readonly PortableImage image;
     private int position;
