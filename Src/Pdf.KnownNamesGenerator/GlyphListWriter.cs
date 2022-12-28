@@ -42,7 +42,7 @@ public class GlyphListWriter
         output.AppendLine();
         output.AppendLine("public partial class GlyphNameToUnicodeMap");
         output.AppendLine("{");
-        output.AppendLine("    public static readonly GlyphNameToUnicodeMap AdobeGlyphList = new(new Dictionary <int, char>()");
+        output.AppendLine("    public static readonly IGlyphNameMap AdobeGlyphList = new GlyphNameToUnicodeMap(new Dictionary <int, char>()");
         output.AppendLine("    {");
         
     }
