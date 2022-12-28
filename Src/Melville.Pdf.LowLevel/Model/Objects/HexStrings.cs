@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public static class HexStrings
+internal static class HexStrings
 {
     public static string AsHex(this byte[] str) =>
         ((IEnumerable<byte>)str).AsHex();

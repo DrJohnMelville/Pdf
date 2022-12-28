@@ -9,12 +9,12 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public interface IHasInternalIndirectObjects
+internal interface IHasInternalIndirectObjects
 {
     ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync();
 }
 
-public static class ObjectStreamOperations
+internal static class ObjectStreamOperations
 {
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(this PdfStream stream)
     {

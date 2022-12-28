@@ -4,7 +4,7 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public class IndirectObjectWithAccessor : PdfIndirectObject
+internal class IndirectObjectWithAccessor : PdfIndirectObject
 {
     private Func<ValueTask<PdfObject>>? accessor;
 
