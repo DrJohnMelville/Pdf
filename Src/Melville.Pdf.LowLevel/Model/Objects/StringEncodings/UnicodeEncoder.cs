@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
-public sealed class UnicodeEncoder
+internal sealed class UnicodeEncoder
 {
     public static UnicodeEncoder BigEndian = new UnicodeEncoder(new UnicodeEncoding(true, true));
     public static UnicodeEncoder LittleEndian = new UnicodeEncoder(new UnicodeEncoding(false, true));

@@ -4,17 +4,17 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 
-namespace Melville.Pdf.LowLevel.Model.Objects.StreamDataSources;
+namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public class LiteralStreamSource: IStreamDataSource
+internal class LiteralStreamSource : IStreamDataSource
 {
     private MultiBufferStream source;
     public StreamFormat SourceFormat { get; }
-    public LiteralStreamSource(string data, StreamFormat sourceFormat): 
-        this (data.AsExtendedAsciiBytes(), sourceFormat)
+    public LiteralStreamSource(string data, StreamFormat sourceFormat) :
+        this(data.AsExtendedAsciiBytes(), sourceFormat)
     {
     }
-    public LiteralStreamSource(byte[] buffer, StreamFormat sourceFormat): 
+    public LiteralStreamSource(byte[] buffer, StreamFormat sourceFormat) :
         this(new MultiBufferStream(buffer), sourceFormat)
     {
     }
