@@ -110,8 +110,7 @@ public readonly struct ContentStreamParser
         while (true)
         {
             if (!reader.TryPeek(out var peeked)) return false;
-            if (CharClassifier.Classify(peeked) != CharacterClass.White &&
-                (char)peeked is not ('[' or ']')) return true;
+            if (!CharClassifier.IsWhite(peeked) && peeked is not ((byte)'[' or (byte)']')) return true;
             reader.Advance(1);
         }
     }

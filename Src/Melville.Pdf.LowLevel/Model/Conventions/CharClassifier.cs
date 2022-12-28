@@ -1,5 +1,11 @@
-﻿namespace Melville.Pdf.LowLevel.Model.Conventions;
+﻿using System;
+using System.Buffers;
 
+namespace Melville.Pdf.LowLevel.Model.Conventions;
+
+/// <summary>
+/// PDF specifies three classes of characters, whitespace, delimiters, and regular.  This represents that concept
+/// </summary>
 public enum CharacterClass
 {
     Regular = 0,
@@ -7,22 +13,41 @@ public enum CharacterClass
     Delimiter = 2
 }
 
+/// <summary>
+/// PDF specifies three classes of characters, whitespace, delimiters, and regular.  This classifies all characters into exactly one
+/// of these classes.
+/// </summary>
 public static class CharClassifier
 {
-    public static CharacterClass Classify(byte input)
-    {
-        return input switch
+    /// <summary>
+    /// Classifies a byte into one of 3 character classes.
+    /// </summary>
+    /// <param name="input">The byte to classify</param>
+    /// <returns>The class that byte beloings to.</returns>
+    public static CharacterClass Classify(byte input) =>
+        input switch
         {
-            0 or 0x9 or 0xA or 0xC or 0xD or 0x20
-                => CharacterClass.White,
-            (byte)'(' or (byte)')' or (byte)'<' or (byte)'>' or (byte)'[' or (byte)']' or
-                (byte)'{' or (byte)'}' or (byte)'/' or (byte)'%' 
-                => CharacterClass.Delimiter,
+            var x when IsWhite(x) => CharacterClass.White,
+            var x when IsDelimiter(x)=> CharacterClass.Delimiter,
             _ => CharacterClass.Regular
         };
-    }
 
-    public static bool IsWhite(byte input) => Classify(input) == CharacterClass.White;
-    public static bool IsDelimiter(byte input) => Classify(input) == CharacterClass.Delimiter;
-    public static bool IsRegular(byte input) => Classify(input) == CharacterClass.Regular;
+    /// <summary>
+    /// Check if the given character is a whitespace character
+    /// </summary>
+    /// <param name="input">Character to check</param>
+    /// <returns>True if the character is whitespace, false otherwise.</returns>
+    public static bool IsWhite(byte input) => "\x00\x09\x0A\x0C\x0D\x20"u8.Contains(input);
+    /// <summary>
+    /// Check if the given character is a delimiter character
+    /// </summary>
+    /// <param name="input">Character to check</param>
+    /// <returns>True if the character is a delimiter character, false otherwise.</returns>
+    public static bool IsDelimiter(byte input) => "()<>[]{}/%"u8.Contains(input);
+    /// <summary>
+    /// Check if the given character is a regular character
+    /// </summary>
+    /// <param name="input">Character to check</param>
+    /// <returns>True if the character is a regular character, false otherwise.</returns>
+    public static bool IsRegular(byte input) => !(IsWhite(input) || IsDelimiter(input));
 }

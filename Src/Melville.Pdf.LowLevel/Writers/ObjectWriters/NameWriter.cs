@@ -70,5 +70,5 @@ public static class NameWriter
     }
 
     private static bool IsSpecialNameChar(byte item) =>
-        CharClassifier.Classify(item) != CharacterClass.Regular || item == (byte)'#';
+        !CharClassifier.IsRegular(item) || item == (byte)'#';
 }

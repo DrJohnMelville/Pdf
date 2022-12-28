@@ -52,29 +52,25 @@ internal class EndSearchStrategy
             if (!reader.TryRead(out var current)) return isDone;
             if (!IsLegalContentStreamChar(current, i)) return false;
         }
-
         return true;
     }
 
     private bool IsLegalContentStreamChar(byte current, int position) =>
-        position == 0 ? CharClassifier.Classify(current) == CharacterClass.White || current == 0 : IsLegalContentStreamChar(current);
+        position == 0 ? CharClassifier.IsWhite(current) || current == 0 : IsLegalContentStreamChar(current);
 
     private bool IsLegalContentStreamChar(byte current) =>
-        (Char)current switch
-        {
-            >= 'A' and <= 'Z' => true,
-            >= 'a' and <= 'z' => true,
-            >= '0' and <= '9' => true,
-            '\0' or '\x09' or '\x0A' or '\x0C' or '\x0D' or '\x20' => true,
-            '+' => true,
-            '-' => true,
-            '*' => true,
-            '/' => true,
-            '[' => true,
-            ']' => true,
-            '<' => true,
-            '>' => true,
-            '.' => true,
-            _ => false,
-        };
+        (char)current  is
+            (>= 'A' and <= 'Z') or
+            (>= 'a' and <= 'z') or
+            (>= '0' and <= '9') or
+            '\0' or '\x09' or '\x0A' or '\x0C' or '\x0D' or '\x20' or
+            '+' or
+            '-' or
+            '*' or
+            '/' or
+            '[' or
+            ']' or
+            '<' or
+            '>' or
+            '.';
 }

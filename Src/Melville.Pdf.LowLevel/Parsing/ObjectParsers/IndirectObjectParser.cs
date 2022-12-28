@@ -93,5 +93,5 @@ internal class IndirectObjectParser : IPdfObjectParser
     }
 
     private  bool IsInvalidReferencePart(int num, byte next) =>
-        num < 0 || CharClassifier.Classify(next) != CharacterClass.White;
+        num < 0 || !CharClassifier.IsWhite(next);
 }

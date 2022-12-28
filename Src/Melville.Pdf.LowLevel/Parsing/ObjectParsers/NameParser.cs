@@ -84,6 +84,6 @@ internal class NameParser: PdfAtomParser
     }
 
     private static NextCharResult DoesCharTerminateName(byte character) =>
-        CharClassifier.Classify(character) == CharacterClass.Regular?
+        CharClassifier.IsRegular(character)?
             NextCharResult.NonTerminatingChar: NextCharResult.Terminating;
 }

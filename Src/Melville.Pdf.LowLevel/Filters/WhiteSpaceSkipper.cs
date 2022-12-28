@@ -10,7 +10,7 @@ internal static class WhiteSpaceSkipper
         while (true)
         {
             if (!source.TryRead(out item)) return false;
-            if (CharClassifier.Classify(item) != CharacterClass.White)
+            if (!CharClassifier.IsWhite(item))
                 return true;
         }
             

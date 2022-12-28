@@ -72,7 +72,7 @@ internal class HexStringParser: PdfAtomParser
         do
         {
             if (!reader.TryRead(out item)) return Nibble.OutOfSpace;
-        } while (CharClassifier.Classify(item) == CharacterClass.White);
+        } while (CharClassifier.IsWhite(item));
         return HexMath.ByteToNibble(item);
     }
 }
