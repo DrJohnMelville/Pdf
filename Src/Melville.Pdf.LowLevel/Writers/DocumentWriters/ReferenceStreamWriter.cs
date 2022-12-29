@@ -50,22 +50,22 @@ public readonly struct ReferenceStreamWriter
             .WithMultiItem(document.TrailerDictionary.RawItems.Where(i => i.Key != KnownNames.Size))
             .WithItem(KnownNames.Type, KnownNames.XRef)
             .WithItem(KnownNames.W, WidthsAsArray())
-            .WithItem(KnownNames.Size, new PdfInteger(objectOffsets.Entries.Length))
+            .WithItem(KnownNames.Size, objectOffsets.Entries.Length)
             .WithFilter(FilterName.FlateDecode)
             .WithFilterParam(FilterParam())
             .AsStream(data);
     }
 
     private PdfDictionary FilterParam() => new DictionaryBuilder()
-        .WithItem(KnownNames.Predictor, new PdfInteger(12))
-        .WithItem(KnownNames.Columns, new PdfInteger(columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3))
+        .WithItem(KnownNames.Predictor, 12)
+        .WithItem(KnownNames.Columns, columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)
         .AsDictionary();
 
     private PdfObject WidthsAsArray() =>
         new PdfArray(
-            new PdfInteger(columnWidths.Item1),
-            new PdfInteger(columnWidths.Item2),
-            new PdfInteger(columnWidths.Item3)
+            columnWidths.Item1,
+            columnWidths.Item2,
+            columnWidths.Item3
         );
     private async ValueTask GenerateXrefStreamAsync(Stream arg)
     {

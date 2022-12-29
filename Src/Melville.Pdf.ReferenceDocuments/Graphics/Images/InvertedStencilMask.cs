@@ -20,10 +20,10 @@ public class InvertedStencilMask : DisplayImageTest
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.Width, new PdfInteger(3))
-            .WithItem(KnownNames.Height, new PdfInteger(3))
+            .WithItem(KnownNames.Width, 3)
+            .WithItem(KnownNames.Height, 3)
             .WithItem(KnownNames.ImageMask, PdfBoolean.True)
-            .WithItem(KnownNames.Decode, new PdfArray(new PdfInteger(1), new PdfInteger(0)))
+            .WithItem(KnownNames.Decode, new PdfArray(1, 0))
             .AsStream(GenerateImage());
     }
 

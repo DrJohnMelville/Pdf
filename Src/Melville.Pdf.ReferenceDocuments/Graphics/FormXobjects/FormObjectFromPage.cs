@@ -12,7 +12,7 @@ public class FormObjectFromPage: FormXObjectBase
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddResourceObject(ResourceTypeName.ExtGState, dictionaryName, new DictionaryBuilder()
-            .WithItem(KnownNames.LW, new PdfInteger(8)).AsDictionary());
+            .WithItem(KnownNames.LW, 8).AsDictionary());
         base.SetPageProperties(page);
     }
 
@@ -21,6 +21,6 @@ public class FormObjectFromPage: FormXObjectBase
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Form)
             .WithItem(KnownNames.BBox, new PdfArray(
-                new PdfInteger(0), new PdfInteger(0), new PdfInteger(100), new PdfInteger(100)))
+                0, 0, 100, 100))
             .AsStream("/GS1 gs  0 0 m 50 50 l S");
 }

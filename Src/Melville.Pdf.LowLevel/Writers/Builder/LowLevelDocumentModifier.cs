@@ -84,7 +84,7 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         DeletedItemLines(lines);
         WriteRevisedXrefTable(target, lines);
         await target.FlushAsync().CA();
-        builder.AddToTrailerDictionary(KnownNames.Prev, new PdfInteger(priorXref));
+        builder.AddToTrailerDictionary(KnownNames.Prev, priorXref);
         await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref).CA();
     }
 

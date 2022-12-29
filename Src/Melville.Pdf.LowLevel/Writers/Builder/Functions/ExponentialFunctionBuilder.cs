@@ -36,15 +36,15 @@ public class ExponentialFunctionBuilder
     private DictionaryBuilder DictionaryItems()
     {
         var ret = new DictionaryBuilder();
-        ret.WithItem(KnownNames.FunctionType, new PdfInteger(2));
+        ret.WithItem(KnownNames.FunctionType, 2);
         ret.WithItem(KnownNames.Domain, DomainArray());
-        ret.WithItem(KnownNames.N, new PdfDouble(exponent));
+        ret.WithItem(KnownNames.N, exponent);
         if (!RangeIsDefault()) 
             ret.WithItem(KnownNames.Range, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count));
         if (!TrivialC0())
-            ret.WithItem(KnownNames.C0, new PdfArray(mappings.Select(i=>new PdfDouble(i.Bounds.MinValue))));
+            ret.WithItem(KnownNames.C0, new PdfArray(mappings.Select(i=>(PdfNumber)i.Bounds.MinValue)));
         if (!TrivialC1())
-            ret.WithItem(KnownNames.C1, new PdfArray(mappings.Select(i=>new PdfDouble(i.Bounds.MaxValue))));
+            ret.WithItem(KnownNames.C1, new PdfArray(mappings.Select(i=>(PdfNumber)i.Bounds.MaxValue)));
         return ret;
     }
 
@@ -52,7 +52,7 @@ public class ExponentialFunctionBuilder
     private bool TrivialC1() => mappings.Count == 1 && mappings[0].Bounds.MaxValue == 1;
 
     private PdfArray DomainArray() => 
-        new(new PdfDouble(domain.MinValue), new PdfDouble(domain.MaxValue));
+        new(domain.MinValue, domain.MaxValue);
 
     private bool RangeIsDefault() => 
         mappings.All(i =>i.Range.Equals(ClosedInterval.NoRestriction));

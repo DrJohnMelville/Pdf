@@ -15,9 +15,9 @@ public class SmallSimpleImage: DisplayImageTest
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
-            .WithItem(KnownNames.Width, new PdfInteger(3))
-            .WithItem(KnownNames.Height, new PdfInteger(3))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
+            .WithItem(KnownNames.Width, 3)
+            .WithItem(KnownNames.Height, 3)
+            .WithItem(KnownNames.BitsPerComponent, 8)
             .AsStream(GenerateImage());
     }
 

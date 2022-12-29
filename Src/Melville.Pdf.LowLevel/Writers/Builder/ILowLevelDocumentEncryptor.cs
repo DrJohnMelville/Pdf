@@ -67,11 +67,11 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
             ((PdfString) id.RawItems[0]).Bytes, ownerHash, Array.Empty<byte>(),
             (uint)permissions, keyLengthInBits);
         dict.WithItem(KnownNames.Filter, KnownNames.Standard);
-        dict.WithItem(KnownNames.V, new PdfInteger(v));
+        dict.WithItem(KnownNames.V, v);
         if (keyLengthInBits > 0)
-            dict.WithItem(KnownNames.Length, new PdfInteger(keyLengthInBits));
-        dict.WithItem(KnownNames.P, new PdfInteger(permissions));
-        dict.WithItem(KnownNames.R, new PdfInteger(r));
+            dict.WithItem(KnownNames.Length, keyLengthInBits);
+        dict.WithItem(KnownNames.P, permissions);
+        dict.WithItem(KnownNames.R, r);
         dict.WithItem(KnownNames.U, new PdfString(UserHashForPassword(UserPassword, ep)));
         dict.WithItem(KnownNames.O, new PdfString(ownerHash));
         return dict;

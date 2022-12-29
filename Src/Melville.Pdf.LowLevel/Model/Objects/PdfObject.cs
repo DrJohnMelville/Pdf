@@ -36,13 +36,13 @@ public abstract class PdfObject
     /// Create a PdfDouble from a C# double
     /// </summary>
     /// <param name="value">The desired C# value</param>
-    public static implicit operator PdfObject(double value) => new PdfDouble(value);
+    public static implicit operator PdfObject(double value) => (PdfDouble)value;
 
     /// <summary>
     /// Create a PdfInteger from a C# integer
     /// </summary>
     /// <param name="value">The desired C# value</param>
-    public static implicit operator PdfObject(int value) => new PdfInteger(value);
+    public static implicit operator PdfObject(int value) => (PdfInteger)value;
 
     /// <summary>
     /// Create a PdfBoolean from a bool.
@@ -54,5 +54,5 @@ public abstract class PdfObject
     /// Create a PdfString from a C# string
     /// </summary>
     /// <param name="value">The desired C# value</param>
-    public static implicit operator PdfObject(string value) => PdfString.CreateAscii(value);
+    public static implicit operator PdfObject(string value) => (PdfString)value;
 }

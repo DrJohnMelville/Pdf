@@ -33,7 +33,7 @@ public class StitchingFunctionBuilder
 
     public PdfDictionary Create() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.FunctionType, new PdfInteger(3))
+            .WithItem(KnownNames.FunctionType, 3)
             .WithItem(KnownNames.Domain, DomainArray())
             .WithItem(KnownNames.Bounds, BoundsArray())
             .WithItem(KnownNames.Encode, functions.Select(i => i.Encode).AsPdfArray(functions.Count))
@@ -41,10 +41,10 @@ public class StitchingFunctionBuilder
             .AsDictionary();
 
     private PdfArray BoundsArray() =>
-        new(functions.Select(i=>new PdfDouble(i.ExclusiveMaximum)).SkipLast(1));
+        new(functions.Select(i=>(PdfNumber)i.ExclusiveMaximum).SkipLast(1));
 
     private PdfArray DomainArray() => 
-        new(new PdfDouble(minimum), new PdfDouble(CurrentMaxInterval()));
+        new(minimum, CurrentMaxInterval());
 
     private double CurrentMaxInterval() => 
         functions.Select(i=>i.ExclusiveMaximum).DefaultIfEmpty(minimum).Last();

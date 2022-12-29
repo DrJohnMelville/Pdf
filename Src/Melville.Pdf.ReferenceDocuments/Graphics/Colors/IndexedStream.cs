@@ -16,15 +16,15 @@ public class IndexedStream: ColorBars
         page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS2"), new PdfArray(
             KnownNames.Lab, new DictionaryBuilder()
                 .WithItem(KnownNames.WhitePoint, new PdfArray(
-                    new PdfDouble(0.9505), new PdfDouble(1.000), new PdfDouble(1.0890)))
+                    0.9505, 1.000, 1.0890))
                 .WithItem(KnownNames.Range, new PdfArray(
-                    new PdfDouble(-128),new PdfDouble(127),new PdfDouble(-128),new PdfDouble(127)
+                    -128,127,-128,127
                 ))
                 .AsDictionary()));        
         page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"),
             i=>new PdfArray(
                 KnownNames.Indexed, KnownNames.DeviceRGB,// NameDirectory.Get("CS2"), 
-                new PdfInteger(3),
+                3,
                 i.Add(new DictionaryBuilder().AsStream(
                     new byte[]
                     {

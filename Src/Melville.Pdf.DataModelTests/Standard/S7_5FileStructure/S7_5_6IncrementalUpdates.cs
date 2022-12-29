@@ -41,7 +41,7 @@ public class S7_5_6IncrementalUpdates
         {
             var e1 = creator.Add(PdfBoolean.True);
             creator.AddToTrailerDictionary(KnownNames.Root, e1);
-            creator.Add(new PdfInteger(2));
+            creator.Add(2);
         }, async (ld, modifier) =>
         {
             Assert.Equal("true", (await ld.TrailerDictionary[KnownNames.Root]).ToString());

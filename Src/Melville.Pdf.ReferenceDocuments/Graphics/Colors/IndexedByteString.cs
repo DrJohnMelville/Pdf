@@ -21,7 +21,7 @@ public class IndexedByteString: ColorBars
     {
         return new PdfArray(
             KnownNames.Indexed, KnownNames.DeviceRGB, 
-            new PdfInteger(3),
+            3,
             new PdfString(new byte[]
             {
                 0xff, 0, 0,

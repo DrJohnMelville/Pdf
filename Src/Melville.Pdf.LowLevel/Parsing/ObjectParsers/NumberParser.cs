@@ -16,8 +16,8 @@ internal class NumberParser: PdfAtomParser
         if (parser.InnerTryParse(ref reader, final))
         {
             obj = parser.HasFractionalPart()
-                ? new PdfDouble(parser.DoubleValue())
-                : new PdfInteger(parser.IntegerValue());
+                ? parser.DoubleValue()
+                : parser.IntegerValue();
             return true;
         };
         obj = PdfTokenValues.Null;

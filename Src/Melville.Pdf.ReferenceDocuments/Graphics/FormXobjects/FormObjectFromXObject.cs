@@ -13,7 +13,7 @@ public class FormObjectFromXObject: FormXObjectBase
     private static PdfDictionary SettingDict()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.LW, new PdfInteger(8)).AsDictionary();
+            .WithItem(KnownNames.LW, 8).AsDictionary();
     }
 
     protected override PdfStream FormDefinition() =>
@@ -21,7 +21,7 @@ public class FormObjectFromXObject: FormXObjectBase
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Form)
             .WithItem(KnownNames.BBox, new PdfArray(
-                new PdfInteger(0), new PdfInteger(0), new PdfInteger(100), new PdfInteger(100)))
+                0, 0, 100, 100))
             .WithItem(KnownNames.Resources, new DictionaryBuilder()
                 .WithItem(KnownNames.ExtGState, new DictionaryBuilder()
                     .WithItem(dictionaryName, SettingDict())

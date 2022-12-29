@@ -54,6 +54,7 @@ public static class PdfDictionaryOperations
         this PdfDictionary dict, PdfName name, long defaultValue) =>
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is PdfNumber definiteObj? definiteObj.IntValue: defaultValue;
+    
     /// <summary>
     /// Get the boolean value from a key, or a default if the item does not exist or is the wrong type
     /// </summary>
@@ -66,6 +67,7 @@ public static class PdfDictionaryOperations
         this PdfDictionary dict, PdfName name, bool defaultValue) =>
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is PdfBoolean definiteObj? definiteObj == PdfBoolean.True: defaultValue;
+    
     /// <summary>
     /// Get the double value from a key, or a default if the item does not exist or is the wrong type
     /// </summary>
@@ -78,6 +80,7 @@ public static class PdfDictionaryOperations
         this PdfDictionary dict, PdfName name, double defaultValue) =>
         dict.TryGetValue(name, out var obj) && 
         await obj.CA() is PdfNumber definiteObj? definiteObj.DoubleValue: defaultValue;
+
     /// <summary>
     /// Get the value from a key, or a default if the item does not exist or is not the correct type
     /// </summary>

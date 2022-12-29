@@ -16,13 +16,13 @@ public class ResourceDictionaryInForm : FormXObjectBase
                 .WithItem(KnownNames.ExtGState, new DictionaryBuilder()
                     .WithItem(KnownNames.AHx, new DictionaryBuilder()
                         .WithItem(KnownNames.LW, 5)
-                        .WithItem(KnownNames.D, new PdfArray(new PdfArray(30, 10), new PdfInteger(0)))
+                        .WithItem(KnownNames.D, new PdfArray(new PdfArray(30, 10), 0))
                         .AsDictionary())
                     .AsDictionary())
                 .AsDictionary()
             )
             .WithItem(KnownNames.BBox, new PdfArray(
-                new PdfInteger(0), new PdfInteger(0), new PdfInteger(100), new PdfInteger(100)))
+                0, 0, 100, 100))
             .AsStream("/AHx gs 0 0 m 50 50 l S");
 }
 
@@ -37,7 +37,7 @@ public class ResourceDictionaryInPage : FormXObjectBase
         base.SetPageProperties(page);
         page.AddResourceObject(ResourceTypeName.ExtGState, KnownNames.AHx, new DictionaryBuilder()
                 .WithItem(KnownNames.LW, 5)
-                .WithItem(KnownNames.D, new PdfArray(new PdfArray(20, 10), new PdfInteger(0)))
+                .WithItem(KnownNames.D, new PdfArray(new PdfArray(20, 10), 0))
                 .AsDictionary());
     }
 
@@ -46,6 +46,6 @@ public class ResourceDictionaryInPage : FormXObjectBase
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Form)
             .WithItem(KnownNames.BBox, new PdfArray(
-                new PdfInteger(0), new PdfInteger(0), new PdfInteger(100), new PdfInteger(100)))
+                0, 0, 100, 100))
             .AsStream("/AHx gs 0 0 m 50 50 l S");
 }

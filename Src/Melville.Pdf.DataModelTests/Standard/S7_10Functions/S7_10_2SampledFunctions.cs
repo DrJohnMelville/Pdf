@@ -33,10 +33,10 @@ public class S7_10_2SampledFunctions
         var funcDict = new DictionaryBuilder()
             .WithItem(KnownNames.BitsPerSample, 8)
             .WithItem(KnownNames.FunctionType, 0)
-            .WithItem(KnownNames.Decode, new PdfArray(new PdfInteger(3), new PdfInteger(10)))
-            .WithItem(KnownNames.Range, new PdfArray(new PdfInteger(-10), new PdfInteger(20)))
-            .WithItem(KnownNames.Domain, new PdfArray(new PdfInteger(0), new PdfInteger(1)))
-            .WithItem(KnownNames.Size, new PdfArray(new PdfInteger(2)))
+            .WithItem(KnownNames.Decode, new PdfArray(3, 10))
+            .WithItem(KnownNames.Range, new PdfArray(-10, 20))
+            .WithItem(KnownNames.Domain, new PdfArray(0, 1))
+            .WithItem(KnownNames.Size, new PdfArray(2))
             .AsStream(new byte[] { 0xFF, 0x00 });
         var func = await funcDict.CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(input));

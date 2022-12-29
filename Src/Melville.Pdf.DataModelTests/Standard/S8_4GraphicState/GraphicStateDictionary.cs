@@ -37,28 +37,28 @@ public class GraphicStateDictionary
     [Fact]
     public async Task SetLineWidthWithDictionary()
     {
-        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LW, new PdfInteger(10));
+        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LW, 10);
         var gs = await ComputeFinalGraphicsStack(page);
         Assert.Equal(10.0, gs.StronglyTypedCurrentState().LineWidth);
     }
     [Fact]
     public async Task SetMiterLimitWithDictionary()
     {
-        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.ML, new PdfInteger(20));
+        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.ML, 20);
         var gs = await ComputeFinalGraphicsStack(page);
         Assert.Equal(20.0, gs.StronglyTypedCurrentState().MiterLimit);
     }
     [Fact]
     public async Task SetFlatnessWithDictionary()
     {
-        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.FL, new PdfInteger(20));
+        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.FL, 20);
         var gs = await ComputeFinalGraphicsStack(page);
         Assert.Equal(20.0, gs.StronglyTypedCurrentState().FlatnessTolerance);
     }
     [Fact]
     public async Task SetLineCapsWithDictionary()
     {
-        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LC, new PdfInteger((int)LineCap.Round));
+        var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LC, (int)LineCap.Round);
         var gs = await ComputeFinalGraphicsStack(page);
         Assert.Equal(LineCap.Round, gs.StronglyTypedCurrentState().LineCap);
     }
@@ -66,7 +66,7 @@ public class GraphicStateDictionary
     public async Task SetLineJoinWithDictionary()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LJ, 
-            new PdfInteger((int)LineJoinStyle.Round));
+            (int)LineJoinStyle.Round);
         var gs = await ComputeFinalGraphicsStack(page);
         Assert.Equal(LineJoinStyle.Round, gs.StronglyTypedCurrentState().LineJoinStyle);
     }
@@ -83,8 +83,8 @@ public class GraphicStateDictionary
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.D, 
             new PdfArray(
-                new PdfArray(new PdfInteger(1), new PdfInteger(2)),
-                new PdfInteger(3)
+                new PdfArray(1, 2),
+                3
                 ));
         var gs = await ComputeFinalGraphicsStack(page);
         Assert.Equal(3.0, gs.StronglyTypedCurrentState().DashPhase);

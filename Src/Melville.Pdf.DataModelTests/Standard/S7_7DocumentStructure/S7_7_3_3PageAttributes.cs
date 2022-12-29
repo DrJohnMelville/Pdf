@@ -55,7 +55,7 @@ public class S7_7_3_3PageAttributes
         var name = NameDirectory.Get("N1");
         var doc = await RoundTripPageWith(i =>
         {
-            PdfObject obj = new PdfInteger(10);
+            PdfObject obj = 10;
             i.AddResourceObject(ResourceTypeName.XObject, name, obj);
         });
         Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceAsync(ResourceTypeName.XObject, name)))?.IntValue);
@@ -67,7 +67,7 @@ public class S7_7_3_3PageAttributes
         var doc = await RoundTripPageWith(j => { }, 
             i =>
             {
-                PdfObject obj = new PdfInteger(10);
+                PdfObject obj = 10;
                 i.AddResourceObject(ResourceTypeName.XObject, name, obj);
             });
         Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceAsync(ResourceTypeName.XObject, name)))?.IntValue);

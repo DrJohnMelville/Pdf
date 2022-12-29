@@ -15,7 +15,7 @@ public class CalGray: ColorBars
         base.SetPageProperties(page);
         page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"), new PdfArray(
             KnownNames.CalGray, new DictionaryBuilder().WithItem(KnownNames.WhitePoint, new PdfArray(
-                new PdfDouble(0.9505), new PdfDouble(1.000), new PdfDouble(1.0890))).AsDictionary()));
+                0.9505, 1.000, 1.0890)).AsDictionary()));
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)

@@ -18,9 +18,9 @@ public class ExplicitType1FontWidth : FontDefinitionTest
             .WithItem(KnownNames.FirstChar, 'A')
             .WithItem(KnownNames.LastChar, 'C')
             .WithItem(KnownNames.Widths, new PdfArray(
-                new PdfInteger(250),
-                new PdfInteger(1500),
-                new PdfInteger(1000)
+                250,
+                1500,
+                1000
             ))
             .AsDictionary();
 }

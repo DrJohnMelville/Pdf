@@ -15,13 +15,13 @@ public class DecodeArray: DisplayImageTest
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
-            .WithItem(KnownNames.Width, new PdfInteger(256))
-            .WithItem(KnownNames.Height, new PdfInteger(256))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
+            .WithItem(KnownNames.Width, 256)
+            .WithItem(KnownNames.Height, 256)
+            .WithItem(KnownNames.BitsPerComponent, 8)
             .WithItem(KnownNames.Decode, new PdfArray(
-                new PdfDouble(1.0), new PdfDouble(0.0),
-                new PdfDouble(0.25), new PdfDouble(0.75),
-                new PdfDouble(0.75), new PdfDouble(0.75)
+                1.0, 0.0,
+                0.25, 0.75,
+                0.75, 0.75
             ))
             .AsStream(GenerateImage());
     }

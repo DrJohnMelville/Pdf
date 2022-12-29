@@ -35,7 +35,7 @@ internal class FiltersGenerator : CreatePdfParser
         await CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
             FilterName.RunLengthDecode);
         await CreatePage(builder, "LZW -- LateChange" + RandomString(9270), FilterName.LZWDecode,
-            new DictionaryBuilder().WithItem(KnownNames.EarlyChange, new PdfInteger(0)).AsDictionary());
+            new DictionaryBuilder().WithItem(KnownNames.EarlyChange, 0).AsDictionary());
         await CreatePage(builder, "LZW -- " + RandomString(9270), FilterName.LZWDecode);
         await CreatePage(builder, "Ascii Hex", FilterName.ASCIIHexDecode);
         await CreatePage(builder, "Ascii 85", FilterName.ASCII85Decode);
@@ -66,9 +66,9 @@ internal class FiltersGenerator : CreatePdfParser
     private static ValueTask PredictionPage(PdfDocumentCreator builder, string text, int Predictor) =>
         CreatePage(builder, text, FilterName.FlateDecode,
             new DictionaryBuilder()
-                .WithItem(KnownNames.Colors, new PdfInteger(2))
-                .WithItem(KnownNames.Columns, new PdfInteger(5))
-                .WithItem(KnownNames.Predictor, new PdfInteger(Predictor))
+                .WithItem(KnownNames.Colors, 2)
+                .WithItem(KnownNames.Columns, 5)
+                .WithItem(KnownNames.Predictor, Predictor)
                 .AsDictionary());
 
 

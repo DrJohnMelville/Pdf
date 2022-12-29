@@ -21,9 +21,9 @@ public abstract class IndexedImageBase : DisplayImageTest
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.ColorSpace, IndexedColorspace())
-            .WithItem(KnownNames.Width, new PdfInteger(3))
-            .WithItem(KnownNames.Height, new PdfInteger(3))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(sampleBits));
+            .WithItem(KnownNames.Width, 3)
+            .WithItem(KnownNames.Height, 3)
+            .WithItem(KnownNames.BitsPerComponent, sampleBits);
         if (interpolate.HasValue)
             builder.WithItem(KnownNames.Interpolate,
                 interpolate.Value ? PdfBoolean.True : PdfBoolean.False);
@@ -35,7 +35,7 @@ public abstract class IndexedImageBase : DisplayImageTest
     {
         return new PdfArray(
             KnownNames.Indexed, KnownNames.DeviceRGB,
-            new PdfInteger(8),
+            8,
             new PdfString(new byte[]
             {
                 0x00, 0x00, 0x00,

@@ -17,9 +17,9 @@ public class LabColorSpace: ColorBars
         page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"), new PdfArray(
             KnownNames.Lab, new DictionaryBuilder()
                 .WithItem(KnownNames.WhitePoint, new PdfArray(
-                    new PdfDouble(0.9505), new PdfDouble(1.000), new PdfDouble(1.0890)))
+                    0.9505, 1.000, 1.0890))
                 .WithItem(KnownNames.Range, new PdfArray(
-                        new PdfDouble(MinA),new PdfDouble(127),new PdfDouble(-128),new PdfDouble(127)
+                        MinA,127,-128,127
                 ))
                 .AsDictionary()));
 

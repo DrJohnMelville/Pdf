@@ -71,19 +71,19 @@ public class SampledFunctionBuilder
 
     private DictionaryBuilder DictionaryEntries(in DictionaryBuilder members) =>
         members
-            .WithItem(KnownNames.FunctionType, new PdfInteger(0))
+            .WithItem(KnownNames.FunctionType, 0)
             .WithItem(KnownNames.Domain, inputs.Select(i => i.Domain).AsPdfArray(inputs.Count))
             .WithItem(KnownNames.Range, outputs.Select(i => i.Range).AsPdfArray(outputs.Count))
             .WithItem(KnownNames.Size, SizeArray())
-            .WithItem(KnownNames.BitsPerSample, new PdfInteger(bitsPerSample))
+            .WithItem(KnownNames.BitsPerSample, bitsPerSample)
             .WithItem(KnownNames.Order, OrderIfNotLinear())
             .WithItem(KnownNames.Encode, EncodeArray())
             .WithItem(KnownNames.Decode, DecodeArray());
 
-    private PdfArray SizeArray() => new(inputs.Select(i=>new PdfInteger(i.Sammples)));
+    private PdfArray SizeArray() => new(inputs.Select(i=>(PdfNumber)i.Sammples));
 
     private PdfObject OrderIfNotLinear() => 
-        order == SampledFunctionOrder.Linear?PdfTokenValues.Null:new PdfInteger(3);
+        order == SampledFunctionOrder.Linear?PdfTokenValues.Null:3;
 
     private PdfObject EncodeArray() =>
         EncodeArrayIsTrivial()

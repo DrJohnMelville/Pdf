@@ -16,20 +16,20 @@ public class CalRgb: ColorBars
         page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"), new PdfArray(
             KnownNames.CalRGB, new DictionaryBuilder()
                 .WithItem(KnownNames.WhitePoint, new PdfArray(
-                new PdfDouble(0.9505), new PdfDouble(1.000), new PdfDouble(1.0890)))
+                0.9505, 1.000, 1.0890))
                 .WithItem(KnownNames.Gamma, new PdfArray(
-                    new PdfDouble(1.8),new PdfDouble(1.8),new PdfDouble(1.8)
+                    1.8,1.8,1.8
                     ))
                 .WithItem(KnownNames.Matrix, new PdfArray(
-                    new PdfDouble(0.4497),
-                    new PdfDouble(0.2446),
-                    new PdfDouble(0.0252),
-                    new PdfDouble(0.3163),
-                    new PdfDouble(0.6720),
-                    new PdfDouble(0.1412),
-                    new PdfDouble(0.1854),
-                    new PdfDouble(0.0833),
-                    new PdfDouble(0.9227)
+                    0.4497,
+                    0.2446,
+                    0.0252,
+                    0.3163,
+                    0.6720,
+                    0.1412,
+                    0.1854,
+                    0.0833,
+                    0.9227
                     ))
                 .AsDictionary()));
 

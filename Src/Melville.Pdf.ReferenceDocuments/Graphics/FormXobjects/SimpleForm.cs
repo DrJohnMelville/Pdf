@@ -13,6 +13,6 @@ public class SimpleForm: FormXObjectBase
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Form)
             .WithItem(KnownNames.BBox, new PdfArray(
-                new PdfInteger(0), new PdfInteger(0), new PdfInteger(100), new PdfInteger(100)))
+                0, 0, 100, 100))
             .AsStream("0 0 m 50 50 l S");
 }

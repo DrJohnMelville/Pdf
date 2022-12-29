@@ -68,7 +68,7 @@ public class SimpleTypeWriterTest
     [InlineData(-1234.54, "-1234.54")]
     public async Task WriteDoubles(double source, string dest)
     {
-        Assert.Equal(dest, await new PdfDouble(source).WriteToStringAsync());
+        Assert.Equal(dest, await ((PdfDouble)source).WriteToStringAsync());
     }
 
     [Fact]

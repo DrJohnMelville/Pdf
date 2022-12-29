@@ -11,7 +11,7 @@ public class S7_9_5Rectangles
     public async Task SimpleRectangle()
     {
         var rect = await PdfRect.CreateAsync(new PdfArray(
-            new PdfInteger(1), new PdfInteger(2), new PdfInteger(3), new PdfInteger(4)));
+            1, 2, 3, 4));
         Assert.Equal(1, rect.Left);
         Assert.Equal(2, rect.Bottom);
         Assert.Equal(3, rect.Right);

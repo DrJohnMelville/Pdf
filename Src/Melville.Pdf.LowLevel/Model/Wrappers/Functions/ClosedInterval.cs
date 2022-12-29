@@ -40,8 +40,8 @@ public static class ClosedIntervalOperations
         var numArray = new List<PdfObject>(count*2);
         foreach (var item in source)
         {
-            numArray.Add(new PdfDouble(item.MinValue));
-            numArray.Add(new PdfDouble(item.MaxValue));
+            numArray.Add(item.MinValue);
+            numArray.Add(item.MaxValue);
         }
         return new PdfArray(numArray);
     }

@@ -18,9 +18,9 @@ public class Jpeg2000Image: DisplayImageTest
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-            .WithItem(KnownNames.Width, new PdfInteger(768))
-            .WithItem(KnownNames.Height, new PdfInteger(512))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
+            .WithItem(KnownNames.Width, 768)
+            .WithItem(KnownNames.Height, 512)
+            .WithItem(KnownNames.BitsPerComponent, 8)
             .WithFilter(FilterName.JPXDecode)
             .AsStream(img!, StreamFormat.DiskRepresentation);
     }

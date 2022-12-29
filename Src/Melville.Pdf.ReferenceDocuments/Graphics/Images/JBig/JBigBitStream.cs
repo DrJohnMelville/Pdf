@@ -31,9 +31,9 @@ public abstract class JBigBitStream: DisplayImageTest
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-            .WithItem(KnownNames.Width, new PdfInteger(width))
-            .WithItem(KnownNames.Height, new PdfInteger(height))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(1))
+            .WithItem(KnownNames.Width, width)
+            .WithItem(KnownNames.Height, height)
+            .WithItem(KnownNames.BitsPerComponent, 1)
             .WithItem(KnownNames.DecodeParms, new PdfArray(
                 new DictionaryBuilder()
                     .WithItem(KnownNames.JBIG2Globals,

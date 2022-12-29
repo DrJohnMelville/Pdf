@@ -17,8 +17,8 @@ public class JpegHuffmanBug: DisplayImageTest
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-            .WithItem(KnownNames.Width, new PdfInteger(632))
-            .WithItem(KnownNames.Height, new PdfInteger(279))
+            .WithItem(KnownNames.Width, 632)
+            .WithItem(KnownNames.Height, 279)
             .WithItem(KnownNames.BitsPerComponent, 8)
             .WithFilter(FilterName.DCTDecode)
             .AsStream(img!, StreamFormat.DiskRepresentation);

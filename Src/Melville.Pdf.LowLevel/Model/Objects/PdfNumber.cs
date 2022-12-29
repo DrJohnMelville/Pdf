@@ -14,13 +14,13 @@ public abstract class PdfNumber: PdfObject, IComparable<PdfNumber>
     /// Create a PdfDouble from a C# double
     /// </summary>
     /// <param name="value">The desired C# value</param>
-    public static implicit operator PdfNumber(double value) => new PdfDouble(value);
+    public static implicit operator PdfNumber(double value) => (PdfDouble)value;
 
     /// <summary>
     /// Create a PdfInteger from a C# integer
     /// </summary>
     /// <param name="value">The desired C# value</param>
-    public static implicit operator PdfNumber(int value) => new PdfInteger(value);
+    public static implicit operator PdfNumber(int value) => (PdfInteger)(value);
 
 }
 
@@ -60,5 +60,5 @@ public sealed class PdfDouble : PdfNumber, IComparable<PdfDouble>
     /// Create a PdfDouble from a C# double
     /// </summary>
     /// <param name="value">The desired C# value</param>
-    public static implicit operator PdfDouble(double value) => new PdfDouble(value);
+    public static implicit operator PdfDouble(double value) => new(value);
 }

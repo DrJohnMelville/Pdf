@@ -74,13 +74,13 @@ public class LowLevelDocumentModifierTest
     private static PdfLowLevelDocument SixItemDocument()
     {
         var creator = new LowLevelDocumentCreator();
-        creator.Add(new PdfInteger(0));
-        creator.Add(new PdfInteger(1));
-        creator.Add(new PdfInteger(3));
-        creator.Add(new PdfInteger(3));
-        creator.Add(new PdfInteger(4));
-        creator.Add(new PdfInteger(5));
-        creator.Add(new PdfInteger(6));
+        creator.Add(0);
+        creator.Add(1);
+        creator.Add(3);
+        creator.Add(3);
+        creator.Add(4);
+        creator.Add(5);
+        creator.Add(6);
         var loaded = creator.CreateDocument();
         return loaded;
     }

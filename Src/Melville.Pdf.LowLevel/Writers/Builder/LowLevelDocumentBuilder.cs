@@ -98,7 +98,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
     }
     private void AddLengthToTrailerDictionary()
     {
-        AddToTrailerDictionary(KnownNames.Size, new PdfInteger(nextObject));
+        AddToTrailerDictionary(KnownNames.Size, nextObject);
     }
 
     public PdfArray EnsureDocumentHasId() =>

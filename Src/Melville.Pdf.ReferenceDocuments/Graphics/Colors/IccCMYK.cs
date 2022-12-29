@@ -19,7 +19,7 @@ public class IccCMYK: ColorBars
             {
 
                 var strRef = cr.Add(new DictionaryBuilder()
-                    .WithItem(KnownNames.N, new PdfInteger(4))
+                    .WithItem(KnownNames.N, 4)
                     .AsStream(IccProfileLibrary.GetIccProfileData("Cmyk.icc")));
                 return new PdfArray(KnownNames.ICCBased, strRef);
             }

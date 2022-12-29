@@ -26,15 +26,15 @@ public class FontWithAdobeCustomCmap : FontDefinitionTest
         var fontStream = GetType().Assembly.GetManifestResourceStream(
             "Melville.Pdf.ReferenceDocuments.Text.FlatedFontWithAdobeCmap.ttf")!;
         var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1, new PdfInteger(fontStream.Length))
+            .WithItem(KnownNames.Length1, fontStream.Length)
             .WithItem(KnownNames.Subtype, KnownNames.Type1C)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream, StreamFormat.DiskRepresentation));
-        var widthArray = arg.Add(new PdfArray(Enumerable.Repeat<PdfObject>(new PdfInteger(600), 256)));
+        var widthArray = arg.Add(new PdfArray(Enumerable.Repeat<PdfObject>(600, 256)));
         var descrip = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
-            .WithItem(KnownNames.Flags, new PdfInteger(4))
-            .WithItem(KnownNames.FontBBox, new PdfArray(new PdfInteger(-511), new PdfInteger(-250), new PdfInteger(1390), new PdfInteger(750)))
+            .WithItem(KnownNames.Flags, 4)
+            .WithItem(KnownNames.FontBBox, new PdfArray(-511, -250, 1390, 750))
             .WithItem(KnownNames.FontFile3, stream)
             .AsDictionary());
         return new DictionaryBuilder()

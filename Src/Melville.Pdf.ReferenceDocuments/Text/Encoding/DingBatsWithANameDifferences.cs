@@ -15,7 +15,7 @@ public class DingBatsWithANameDifferences : FontDefinitionTest
         var enc = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Encoding)
             .WithItem(KnownNames.Differences, new PdfArray(
-                new PdfInteger(1),
+                1,
                 NameDirectory.Get("a109"),
                 NameDirectory.Get("a110"),
                 NameDirectory.Get("a111"),

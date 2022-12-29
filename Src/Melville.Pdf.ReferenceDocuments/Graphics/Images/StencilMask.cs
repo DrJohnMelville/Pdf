@@ -20,8 +20,8 @@ public class StencilMask : DisplayImageTest
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.XObject)
             .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.Width, new PdfInteger(3))
-            .WithItem(KnownNames.Height, new PdfInteger(3))
+            .WithItem(KnownNames.Width, 3)
+            .WithItem(KnownNames.Height, 3)
             .WithItem(KnownNames.ImageMask, PdfBoolean.True)
             .AsStream(new byte[]{
                 0b01000000,

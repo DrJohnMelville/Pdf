@@ -103,8 +103,8 @@ public class PartParserTest
     private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentCreator builder) => 
         (await sut.ParseAsync(await builder.AsFileAsync(), waitingService.Object));
 
-    [Fact] public Task RenderDoubleValue()=>TestSingleElement(new PdfDouble(3.14), "3.14");
-    [Fact] public Task RenderIntegerValue()=>TestSingleElement(new PdfInteger(314), "314");
+    [Fact] public Task RenderDoubleValue()=>TestSingleElement(3.14, "3.14");
+    [Fact] public Task RenderIntegerValue()=>TestSingleElement(314, "314");
     [Fact] public Task RenderTrueValue()=>TestSingleElement(PdfBoolean.True, "true");
     [Fact] public Task RenderFalseValue()=>TestSingleElement(PdfBoolean.False, "false");
     [Fact] public Task RenderNullValue()=>TestSingleElement(PdfTokenValues.Null, "null");

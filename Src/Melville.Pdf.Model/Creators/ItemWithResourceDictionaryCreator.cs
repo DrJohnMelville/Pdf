@@ -64,7 +64,7 @@ public abstract class ItemWithResourceDictionaryCreator
 
     public void AddBox(BoxName name, in PdfRect rect) => MetaData.WithItem(name, rect.ToPdfArray);
 
-    public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.Rotate, new PdfInteger(rotation));
+    public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.Rotate, rotation);
 
     public PdfName AddStandardFont(
         string assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>

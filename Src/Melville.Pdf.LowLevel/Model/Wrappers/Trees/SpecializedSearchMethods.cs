@@ -10,5 +10,5 @@ public static class SpecializedSearchMethods
     public static ValueTask<PdfObject> Search(this PdfTree<PdfNumber> tree, int num) =>
         tree.Search(new PdfInteger(num));
     public static ValueTask<PdfObject> Search(this PdfTree<PdfNumber> tree, double num) =>
-        tree.Search(new PdfDouble(num));
+        tree.Search(num);
 }

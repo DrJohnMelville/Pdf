@@ -11,12 +11,12 @@ public static class MatrixExtensions
 {
     public static PdfArray AsPdfArray(this in Matrix3x2 matrix) =>
         new(
-            new PdfDouble(matrix.M11),
-            new PdfDouble(matrix.M12),
-            new PdfDouble(matrix.M21),
-            new PdfDouble(matrix.M22),
-            new PdfDouble(matrix.M31),
-            new PdfDouble(matrix.M32)
+            matrix.M11,
+            matrix.M12,
+            matrix.M21,
+            matrix.M22,
+            matrix.M31,
+            matrix.M32
         );
 
     public static async ValueTask<Matrix3x2> AsMatrix3x2OrIdentityAsync(this PdfArray? array) =>

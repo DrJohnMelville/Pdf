@@ -13,13 +13,13 @@ public class Type0WithCidToGid : FontDefinitionTest
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Zev.ttf")!;
         var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1, new PdfInteger(fontStream.Length))
+            .WithItem(KnownNames.Length1, fontStream.Length)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream));
         var descrip = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
-            .WithItem(KnownNames.Flags, new PdfInteger(32))
-            .WithItem(KnownNames.FontBBox, new PdfArray(new PdfInteger(-511), new PdfInteger(-250), new PdfInteger(1390), new PdfInteger(750)))
+            .WithItem(KnownNames.Flags, 32)
+            .WithItem(KnownNames.FontBBox, new PdfArray(-511, -250, 1390, 750))
             .WithItem(KnownNames.FontFile2, stream)
             .AsDictionary());
         var sysinfo = arg.Add(new DictionaryBuilder()

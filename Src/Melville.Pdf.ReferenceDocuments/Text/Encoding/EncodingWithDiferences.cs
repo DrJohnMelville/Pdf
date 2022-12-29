@@ -14,7 +14,7 @@ public class EncodingWithDiferences : FontDefinitionTest
     {
         var enc = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Differences, new PdfArray(
-                new PdfInteger(65),
+                65,
                 NameDirectory.Get("AE"),
                 NameDirectory.Get("Adieresis"),
                 NameDirectory.Get("ff")

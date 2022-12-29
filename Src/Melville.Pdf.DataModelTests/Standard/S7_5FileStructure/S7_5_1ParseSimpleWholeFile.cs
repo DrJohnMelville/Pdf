@@ -50,7 +50,7 @@ public class S7_5_1ParseSimpleWholeFile
         var builder = new LowLevelDocumentCreator();
         var pointer = builder.AsIndirectReference();
         builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.Width, pointer).AsDictionary());
-        builder.AssignValueToReference(pointer, new PdfInteger(10));
+        builder.AssignValueToReference(pointer, 10);
         builder.Add(pointer);
         var doc = await Write(builder.CreateDocument());
         var doc2 = await doc.ParseDocumentAsync();

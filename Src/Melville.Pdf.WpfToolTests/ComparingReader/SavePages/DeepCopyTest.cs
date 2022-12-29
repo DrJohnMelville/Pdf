@@ -32,8 +32,8 @@ public class DeepCopyTest
         sut = new DeepCopy(creator.Object);
     }
 
-    [Fact] public Task CopyInt() => PassthroughCopy(new PdfInteger(1));
-    [Fact] public Task CopyReal() => PassthroughCopy(new PdfDouble(1.5));
+    [Fact] public Task CopyInt() => PassthroughCopy(1);
+    [Fact] public Task CopyReal() => PassthroughCopy(1.5);
     [Fact] public Task CopyString() => PassthroughCopy(PdfString.CreateAscii("Hello World"));
     [Fact] public Task CopyName() => PassthroughCopy(KnownNames.Length);
     [Fact] public Task CopyBool() => PassthroughCopy(PdfBoolean.True);
@@ -48,8 +48,8 @@ public class DeepCopyTest
     [Fact]
     public async Task CopyArray()
     {
-        var datum = new PdfArray(new PdfInteger(1), 
-            new PdfArray(new PdfInteger(2)),
+        var datum = new PdfArray(1, 
+            new PdfArray(2),
             new PdfIndirectObject(1,1,PdfBoolean.False));
         var clone = await sut.Clone(datum);
         await DeepAssertSame(datum, clone);
