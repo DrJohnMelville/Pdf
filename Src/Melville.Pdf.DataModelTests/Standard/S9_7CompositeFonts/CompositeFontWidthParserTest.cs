@@ -39,9 +39,8 @@ public class CompositeFontWidthParserTest
                 .WithItem(KnownNames.Type, KnownNames.Font)
                 .WithItem(KnownNames.Subtype, KnownNames.CIDFontType2)
                 .WithItem(KnownNames.W, new PdfArray(
-                    new PdfInteger(4), new PdfArray(
-                        new PdfInteger(500)),
-                    new PdfInteger(6), new PdfInteger(7), new PdfDouble(1233)))
+                    4, new PdfArray(500),
+                    6,7,1233))
                 .AsDictionary()
             )).Parse();
         Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);

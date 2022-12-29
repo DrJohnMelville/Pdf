@@ -28,7 +28,7 @@ public class PdfIndirectObject: PdfObject
         result = value;
         return true;
     }
-    
-    public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+
+    internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
 }

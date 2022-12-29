@@ -13,7 +13,7 @@ public class PdfName: PdfByteArrayObject, IEquatable<PdfName>
     internal PdfName(byte[] name): base(name){}
     internal PdfName(string s):this(Encoding.UTF8.GetBytes(s)){}
     public override string ToString() => "/"+Encoding.UTF8.GetString(Bytes);
-    public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+    internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     public static implicit operator PdfName(string s) => NameDirectory.Get(s);
 

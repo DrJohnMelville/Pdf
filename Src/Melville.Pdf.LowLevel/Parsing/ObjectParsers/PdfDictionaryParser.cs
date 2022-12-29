@@ -25,7 +25,7 @@ internal class PdfDictionaryParser : IPdfObjectParser
     }
 
     public async Task<PdfObject> ParseAsync(IParsingReader source) =>
-        new PdfDictionary(await ParseDictionaryItemsAsync(source).CA());
+        new PdfDictionaryConcrete(await ParseDictionaryItemsAsync(source).CA());
 
     public async ValueTask<Memory<KeyValuePair<PdfName, PdfObject>>> 
         ParseDictionaryItemsAsync(IParsingReader source)

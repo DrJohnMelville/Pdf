@@ -70,19 +70,4 @@ public static class PdfArrayOperations
         }
         return ret;
     }
-
-    /// <summary>
-    /// At a number of places in the PDF spec a single item array can be replaced by just the item. This method resolves this,
-    /// a given pdf object is converted into an array of a gived PdfObject child.  IF it is a bare object an array is synthesized.
-    /// All indirect references are resolved.
-    /// </summary>
-    /// <typeparam name="T">Desired PdfObject child type</typeparam>
-    /// <param name="source">A PdfObject or PdfArray</param>
-    /// <returns>A C# array of PdfObjects that implements the semantics above.</returns>
-    public static ValueTask<T[]> AsObjectOrArrayAsync<T>(this PdfObject source) where T:PdfObject => source switch
-    {
-        T item =>  new(new T[] {item}),
-        PdfArray arr => arr.AsAsync<T>(),
-        _=> new(Array.Empty<T>())
-    };
 }

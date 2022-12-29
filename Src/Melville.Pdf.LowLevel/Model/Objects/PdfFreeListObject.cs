@@ -10,7 +10,7 @@ public class PdfFreeListObject : PdfObject
     }
 
     public long NextItem { get; }
-    public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+    internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
     public override bool ShouldWriteToFile() => false;
     public override string ToString() => $"Free Item. Next = " + NextItem;
 }

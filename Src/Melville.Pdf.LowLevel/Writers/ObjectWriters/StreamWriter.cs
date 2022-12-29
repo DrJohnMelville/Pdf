@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
@@ -23,11 +25,25 @@ internal static class StreamWriter
         diskrep = await EnsureStreamHasKnownLength(rawStream).CA();
             
         await DictionaryWriter.WriteAsync(target, innerWriter, 
-            item.MergeItems((KnownNames.Length, new PdfInteger(diskrep.Length)))).CA();
+            MergeDictionaryItems(item.RawItems, (KnownNames.Length, new PdfInteger(diskrep.Length)))).CA();
         target.WriteBytes(streamToken);
         await diskrep.CopyToAsync(target).CA();
         target.WriteBytes(endStreamToken);
         return await target.FlushAsync().CA();
+    }
+
+    private static IEnumerable<KeyValuePair<PdfName, PdfObject>> MergeDictionaryItems(
+        IEnumerable<KeyValuePair<PdfName, PdfObject>> sources, params (PdfName Key, PdfObject Item)[] items)
+    {
+        foreach (var source in sources)
+        {
+            if (!items.Any(i => i.Key ==  source.Key)) yield return source;
+        }
+
+        foreach (var item in items)
+        {
+            yield return KeyValuePair.Create(item.Key, item.Item);
+        }
     }
 
     private static async Task<Stream> EnsureStreamHasKnownLength(Stream rawStream)

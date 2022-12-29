@@ -24,20 +24,6 @@ public sealed class PdfArray :
     private readonly PdfObject[] rawItems;
     public IReadOnlyList<PdfObject> RawItems => rawItems;
 
-    /// <summary>
-    /// Helper constructor to create a PDF array with all double members
-    /// </summary>
-    /// <param name="values">One or more doubles to include in the array</param>
-    public PdfArray(params double[] values): this (values.Select(i=>new PdfDouble(i))){}
-    /// <summary>
-    /// Helper constructor to create a PDF array with all integer members
-    /// </summary>
-    /// <param name="values">One or more integers to include in the array</param>
-    public PdfArray(params int[] values): this (values.Select(i=>new PdfInteger(i))){}
-    /// <summary>
-    /// Construct a PDF array with an array of PdfObjects
-    /// </summary>
-    /// <param name="values">One or more doubles to include in the array</param>
     public PdfArray(params PdfObject[] rawItems)
     {
         this.rawItems = rawItems;
@@ -47,14 +33,6 @@ public sealed class PdfArray :
     /// </summary>
     /// <param name="rawItems"></param>
     public PdfArray(IEnumerable<PdfObject> rawItems) : this(rawItems.ToArray())
-    {
-    }
-
-    /// <summary>
-    /// Helper constructor to create a PDF array with all boolean members
-    /// </summary>
-    /// <param name="values">One or more booleans to include in the array</param>
-    public PdfArray(params bool[] bools): this (bools.Select(i=>i?PdfBoolean.True : PdfBoolean.False))
     {
     }
 
@@ -80,7 +58,8 @@ public sealed class PdfArray :
     /// <param name="index">The index of the array to retrieve.</param>
     /// <returns>A ValueTask&lt;PdfObject&gt; that contains the returned object.</returns>
     public ValueTask<PdfObject> this[int index] => rawItems[index].DirectValueAsync();
-    public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+
+    internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     /// <summary>
     /// This method allows the PdfArray to be enumerated in await foreach statements.  This operation

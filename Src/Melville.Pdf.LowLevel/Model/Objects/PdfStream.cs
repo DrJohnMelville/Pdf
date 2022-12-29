@@ -18,7 +18,7 @@ public interface IStreamDataSource
     StreamFormat SourceFormat { get; }
 }
     
-public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
+public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
 {
     private IStreamDataSource source;
         
@@ -28,7 +28,7 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
         this.source = source;
     }
 
-    public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+    internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     private async ValueTask<Stream> SourceStreamAsync() => 
         await source.OpenRawStream(await DeclaredLengthAsync().CA()).CA();
@@ -59,9 +59,9 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
                 SinglePredictionFilter.Instance);
 
     private async ValueTask<IReadOnlyList<PdfObject>> FilterList() => 
-        (await this.GetOrNullAsync(KnownNames.Filter).CA()).AsList();
+        (await this.GetOrNullAsync(KnownNames.Filter).CA()).ObjectAsUnresolvedList();
     private async ValueTask<IReadOnlyList<PdfObject>> FilterParamList() => 
-        (await this.GetOrNullAsync(KnownNames.DecodeParms).CA()).AsList();
+        (await this.GetOrNullAsync(KnownNames.DecodeParms).CA()).ObjectAsUnresolvedList();
 
     public async ValueTask<bool> HasFilterOfType(PdfName filterType)
     {

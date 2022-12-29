@@ -16,16 +16,16 @@ public static class DictionaryWriter
 
     public static ValueTask<FlushResult> WriteAsync(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
-        IReadOnlyDictionary<PdfName, PdfObject> items) =>
+        IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
         WriteAsync(writer, innerWriter, items, standardPrefix, standardSuffix);
     public static ValueTask<FlushResult> WriteInlineImageDict(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
-        IReadOnlyDictionary<PdfName, PdfObject> items) =>
+        IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
         WriteAsync(writer, innerWriter, items, inlineImagePrefix, inlineImageSuffix);
 
     private static async ValueTask<FlushResult> WriteAsync(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 
-        IReadOnlyDictionary<PdfName, PdfObject> items, byte[] prefix, byte[] suffix)
+        IEnumerable<KeyValuePair<PdfName, PdfObject>> items, byte[] prefix, byte[] suffix)
     {
         writer.WriteBytes(prefix);
         foreach (var item in items)

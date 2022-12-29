@@ -32,13 +32,14 @@ public readonly struct DictionaryBuilder
     }
 
     public DictionaryBuilder WithItem(PdfName name, PdfObject? value) => 
-        value is null || value.IsEmptyObject()?this: WithForcedItem(name, value);
+        IsEmptyObject(value)?this: WithForcedItem(name, value);
 
-    public DictionaryBuilder WithItem(PdfName name, long value) => WithItem(name, new PdfInteger(value));
-    public DictionaryBuilder WithItem(PdfName name, double value) => WithItem(name, new PdfDouble(value));
-    public DictionaryBuilder WithItem(PdfName name, string value) => WithItem(name, PdfString.CreateAscii(value));
-    public DictionaryBuilder WithItem(PdfName name, bool value) => 
-        WithItem(name, value?PdfBoolean.True:PdfBoolean.False);
+
+    public static bool IsEmptyObject([NotNullWhen(false)]PdfObject? value) =>
+        value is null ||
+        value == PdfTokenValues.Null ||
+        value is PdfArray { Count: 0 } ||
+        value is PdfDictionary { Count: 0 } and not PdfStream;
 
     public DictionaryBuilder WithForcedItem(PdfName name, PdfObject value)
     {
@@ -61,7 +62,7 @@ public readonly struct DictionaryBuilder
     public DictionaryBuilder WithMultiItem(IEnumerable<KeyValuePair<PdfName, PdfObject>> items) => 
         items.Aggregate(this, (agg, item) => agg.WithItem(item.Key, item.Value));
 
-    public PdfDictionary AsDictionary() => new(attributes.ToArray());
+    public PdfDictionary AsDictionary() => new PdfDictionaryConcrete(attributes.ToArray());
 
     public PdfStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
         new(new LiteralStreamSource(stream.Stream, format), AsArray());

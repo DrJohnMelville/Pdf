@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -16,7 +15,7 @@ public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
     public PdfString(byte[] bytes): base(bytes) { }
     public override string ToString() => Bytes.PdfDocEncodedString();
     public bool TestEqual(string s) => TestEqual(s.AsExtendedAsciiBytes());
-    public override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+    internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     public static PdfString CreateAscii(string str) => new(str.AsExtendedAsciiBytes());
     public String AsAsciiString() => Bytes.PdfDocEncodedString();
@@ -48,14 +47,10 @@ public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
         new(UnicodeEncoder.Utf8.GetBytesWithBOM(text));
 
     public string AsUtf8() => UnicodeEncoder.Utf8.GetString(Bytes);
-}
 
-public static class ByteOrderDetector {
-    public static (Encoding encoding, int BomLength) DetectByteOrder(in ReadOnlySpan<byte> bytes)
-    {
-        if (UnicodeEncoder.BigEndian.HasUtf16BOM(bytes)) return (UnicodeEncoder.BigEndian.Encoder, 2);
-        if (UnicodeEncoder.LittleEndian.HasUtf16BOM(bytes)) return (UnicodeEncoder.LittleEndian.Encoder, 2);
-        if (UnicodeEncoder.Utf8.HasUtf16BOM(bytes)) return (UnicodeEncoder.Utf8.Encoder, 3);
-        return (PdfDocEncoding.Instance, 0);
-    }
+    /// <summary>
+    /// Create a PdfString from a C# string
+    /// </summary>
+    /// <param name="value">The desired C# value</param>
+    public static implicit operator PdfString(string value) => PdfString.CreateAscii(value);
 }

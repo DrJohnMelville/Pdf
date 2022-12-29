@@ -17,7 +17,7 @@ public class S7_5_5FileTrailer
     {
         var doc = await (await MinimalPdfParser.MinimalPdf(1, 7).AsStringAsync()).ParseDocumentAsync(2);
         Assert.NotNull(doc.TrailerDictionary);
-        Assert.IsType<PdfDictionary>(doc.TrailerDictionary);
+        Assert.IsType<PdfDictionaryConcrete>(doc.TrailerDictionary);
             
     }
    

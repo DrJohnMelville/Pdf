@@ -19,7 +19,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public ValueTask<DocumentPart> GeneratePart(string newPrefix, PdfObject item)
     {
         prefix = newPrefix;
-        return item.Visit(this);
+        return item.InvokeVisitor(this);
     }
 
     private string ConsumePrefix()
@@ -88,7 +88,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public async ValueTask<DocumentPart> VisitTopLevelObject(PdfIndirectObject item)
     {
         prefix = $"{prefix}{item.ObjectNumber} {item.GenerationNumber}: ";
-        return (await (await item.DirectValueAsync()).Visit(this))
+        return (await (await item.DirectValueAsync()).InvokeVisitor(this))
             .WithTarget(item.ObjectNumber, item.GenerationNumber);
     }
 

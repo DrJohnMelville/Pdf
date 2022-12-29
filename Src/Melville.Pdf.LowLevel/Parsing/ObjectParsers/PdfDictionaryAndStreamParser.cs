@@ -24,7 +24,7 @@ internal class PdfDictionaryAndStreamParser : IPdfObjectParser
         IParsingReader source, Memory<KeyValuePair<PdfName, PdfObject>> dictionary, bool isStream) =>
         isStream ? 
             ConstrutStream(source, dictionary) : 
-            new PdfDictionary(dictionary);
+            new PdfDictionaryConcrete(dictionary);
 
     private static PdfStream ConstrutStream(
         IParsingReader source, Memory<KeyValuePair<PdfName, PdfObject>> dictionary) =>

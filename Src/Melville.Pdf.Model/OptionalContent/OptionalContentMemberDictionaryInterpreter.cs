@@ -26,7 +26,7 @@ public readonly struct OptionalContentMemberDictionaryInterpreter
 
     private async ValueTask<bool> EvaluateUsingOcgs() =>
         await EvaluateUsingP(
-            (await Ocgs().CA()).AsList(), 
+            (await Ocgs().CA()).ObjectAsUnresolvedList(), 
             await PDictionary().CA()).CA();
 
     private ValueTask<PdfName> PDictionary() => dictionary.GetOrDefaultAsync(KnownNames.P, KnownNames.AnyOn);
