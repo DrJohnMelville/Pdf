@@ -12,13 +12,17 @@ public class PdfName: PdfByteArrayObject, IEquatable<PdfName>
 
     internal PdfName(byte[] name): base(name){}
     internal PdfName(string s):this(Encoding.UTF8.GetBytes(s)){}
+
+    /// <inheritdoc />
     public override string ToString() => "/"+Encoding.UTF8.GetString(Bytes);
     internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
+    /// <summary>
+    /// Create a PdfName from a string.  This method will return identical objects for identical strings.
+    /// </summary>
+    /// <param name="s"></param>
     public static implicit operator PdfName(string s) => NameDirectory.Get(s);
 
-    public PdfName FilterTo(Regex excludedPattern) => 
-        NameDirectory.Get(excludedPattern.Replace(Encoding.UTF8.GetString(Bytes), ""));
-
+    /// <inheritdoc />
     public bool Equals(PdfName? other) => Equals((PdfByteArrayObject?)other);
 }

@@ -26,7 +26,7 @@ internal abstract class OwnedLocationIndirectObject: PdfIndirectObject
         return await base.DirectValueAsync().CA();
     }
 
-    public override bool TryGetDirectValue(out PdfObject result)
+    internal override bool TryGetDirectValue(out PdfObject result)
     {
         result = value;
         return HasFinalValue();

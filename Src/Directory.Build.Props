@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Melville.Pdf.DataModelTests"/>
+		<InternalsVisibleTo Include="Melville.Pdf.WpfToolTests"/>
 		<InternalsVisibleTo Include="Performance.Playground"/>
 		<InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
 	</ItemGroup>

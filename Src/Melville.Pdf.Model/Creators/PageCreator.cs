@@ -60,7 +60,7 @@ public class PageCreator: ContentStreamCreator
         return creator.Add(TryUsePromisedObject(MetaData.AsDictionary()));
     }
 
-    public PromisedIndirectObject InitializePromiseObject(ILowLevelDocumentBuilder builder) =>
+    public PdfIndirectObject InitializePromiseObject(ILowLevelDocumentBuilder builder) =>
         promisedPageObject = (PromisedIndirectObject)builder.AsIndirectReference();
 
     public PdfObject TryUsePromisedObject(PdfObject value)

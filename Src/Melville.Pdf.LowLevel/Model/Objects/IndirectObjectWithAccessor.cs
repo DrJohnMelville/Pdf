@@ -23,7 +23,7 @@ internal class IndirectObjectWithAccessor : PdfIndirectObject
         return value = await value.DirectValueAsync().CA();
     }
 
-    public override bool TryGetDirectValue(out PdfObject result)
+    internal override bool TryGetDirectValue(out PdfObject result)
     {
         result = value;
         return accessor == null;

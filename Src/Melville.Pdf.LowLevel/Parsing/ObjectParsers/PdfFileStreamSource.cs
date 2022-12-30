@@ -7,14 +7,14 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-internal class InlineStreamSource: IStreamDataSource
+internal class PdfFileStreamSource: IStreamDataSource
 {
     private long sourceFilePosition;
     private readonly ParsingFileOwner parsingFileOwner;
     private readonly IObjectCryptContext decryptor;
     public StreamFormat SourceFormat => StreamFormat.DiskRepresentation;
 
-    public InlineStreamSource(
+    public PdfFileStreamSource(
         long sourceFilePosition, ParsingFileOwner parsingFileOwner, IObjectCryptContext decryptor)
     {
         this.sourceFilePosition = sourceFilePosition;

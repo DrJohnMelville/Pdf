@@ -1,6 +1,6 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public class PromisedIndirectObject : PdfIndirectObject
+public sealed class PromisedIndirectObject : PdfIndirectObject
 {
     public PromisedIndirectObject(int objectNumber, int generationNumber) : 
         base(objectNumber, generationNumber, PdfTokenValues.ArrayTerminator)

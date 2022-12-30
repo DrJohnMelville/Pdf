@@ -82,4 +82,10 @@ public class MinimumReadSizeFilter : DefaultBaseStream
         source.Dispose();
         base.Dispose(disposing);
     }
+
+    public async override ValueTask DisposeAsync()
+    {
+        await source.DisposeAsync().CA();
+        await base.DisposeAsync().CA();
+    }
 }

@@ -28,7 +28,7 @@ internal class PdfDictionaryAndStreamParser : IPdfObjectParser
 
     private static PdfStream ConstrutStream(
         IParsingReader source, Memory<KeyValuePair<PdfName, PdfObject>> dictionary) =>
-        new(new InlineStreamSource(source.Reader.GlobalPosition, source.Owner, source.ObjectCryptContext()),
+        new(new PdfFileStreamSource(source.Reader.GlobalPosition, source.Owner, source.ObjectCryptContext()),
             dictionary);
 
     private static byte[] streamSuffix = {115, 116, 114, 101, 97, 109}; // stream
