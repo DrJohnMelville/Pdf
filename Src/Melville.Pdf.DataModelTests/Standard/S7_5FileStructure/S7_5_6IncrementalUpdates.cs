@@ -17,7 +17,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 public class S7_5_6IncrementalUpdates
 {
     public async Task<PdfLoadedLowLevelDocument> CompositeDocument(Action<ILowLevelDocumentCreator> create,
-        Func<PdfLoadedLowLevelDocument, ILowLevelDocumentModifier,Task> modify)
+        Func<PdfLoadedLowLevelDocument, ILowLevelDocumentBuilder,Task> modify)
     {
         var creator = new LowLevelDocumentCreator();
         create(creator);

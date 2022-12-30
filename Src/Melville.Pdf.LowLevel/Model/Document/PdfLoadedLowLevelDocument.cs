@@ -12,18 +12,16 @@ namespace Melville.Pdf.LowLevel.Model.Document;
 /// </summary>
 public sealed class PdfLoadedLowLevelDocument: PdfLowLevelDocument, IDisposable{
     internal long XRefPosition { get; }
-    internal long FirstFreeBlock { get; }
     private readonly IDisposable fileOwner;
 
     internal PdfLoadedLowLevelDocument(
         byte majorVersion, byte minorVersion, PdfDictionary trailerDictionary, 
         IReadOnlyDictionary<(int, int), PdfIndirectObject> objects, long xRefPosition, 
-        long firstFreeBlock, IDisposable fileOwner ) : 
+        IDisposable fileOwner ) : 
         base(majorVersion, minorVersion, trailerDictionary, objects)
     {
         this.fileOwner = fileOwner;
         XRefPosition = xRefPosition;
-        FirstFreeBlock = firstFreeBlock;
     }
 
     public void Dispose() => fileOwner.Dispose();

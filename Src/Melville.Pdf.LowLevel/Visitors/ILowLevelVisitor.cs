@@ -14,6 +14,5 @@ public interface ILowLevelVisitor<out T>
     T Visit(PdfDouble item);
     T Visit(PdfString item);
     T Visit(PdfStream item);
-    T Visit(PdfFreeListObject item);
     T VisitTopLevelObject(PdfIndirectObject item);
 }

@@ -56,11 +56,6 @@ public class LowLevelDocumentModifierTest
             offset);
 
     [Fact]
-    public Task DeleteOneObject() =>
-        DoDocumentModificationTests($"xref\n0 2\n0000000001 65535 f\r\n0000000000 00000 f\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n1234\n%%EOF",
-            (doc, mod) => mod.DeleteObject(doc.Objects[(1,0)]), baseDoc,
-            1234);
-    [Fact]
     public Task AddOneObject() =>
         DoDocumentModificationTests($"2 0 obj false endobj\nxref\n2 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 3>>\nstartxref\n1255\n%%EOF",
             (doc, mod) => mod.Add(PdfBoolean.False), baseDoc,
@@ -95,19 +90,6 @@ public class LowLevelDocumentModifierTest
                 mod.AssignValueToReference(doc.Objects[(2,0)], PdfString.CreateAscii("Two"));
                 mod.AssignValueToReference(doc.Objects[(3,0)], PdfString.CreateAscii("Three"));
                 mod.AssignValueToReference(doc.Objects[(5,0)], PdfString.CreateAscii("Five"));
-            }
-            , SixItemDocument(), 5000);
-    }
-    [Fact]
-    public Task DeleteThreeInTwoRuns()
-    {
-        return DoDocumentModificationTests(
-            $"xref\n0 1\n0000000005 65535 f\r\n2 2\n0000000000 00000 f\r\n0000000002 00000 f\r\n5 1\n0000000003 00000 f\r\ntrailer\n<</Prev 161/Size 7>>\nstartxref\n5000\n%%EOF",
-            (doc, mod) =>
-            {
-                mod.DeleteObject(doc.Objects[(2,0)]);
-                mod.DeleteObject(doc.Objects[(3,0)]);
-                mod.DeleteObject(doc.Objects[(5,0)]);
             }
             , SixItemDocument(), 5000);
     }

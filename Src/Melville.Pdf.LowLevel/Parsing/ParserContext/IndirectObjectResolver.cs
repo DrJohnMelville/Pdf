@@ -36,12 +36,4 @@ public class IndirectObjectResolver : IIndirectObjectResolver
         }
         index[key] = newItem;
     }
-
-    public async Task<long> FreeListHead()
-    {
-        return (index.TryGetValue((0, 65535), out var iRef) &&
-                (await iRef.DirectValueAsync().CA()) is PdfFreeListObject flo)
-            ? flo.NextItem
-            : 0;
-    }
 }

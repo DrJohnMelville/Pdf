@@ -59,7 +59,6 @@ public class LowLevelDocumentWriter
                 document.TrailerDictionary, userPassword).CA());
         foreach (var item in document.Objects.Values)
         {
-            if (!(await item.DirectValueAsync().CA()).ShouldWriteToFile()) continue;
             positions.DeclareIndirectObject(item.ObjectNumber, target.BytesWritten);
             await DeclareContainedObjects(item, positions).CA();
             await objectWriter.VisitTopLevelObject(item).CA();

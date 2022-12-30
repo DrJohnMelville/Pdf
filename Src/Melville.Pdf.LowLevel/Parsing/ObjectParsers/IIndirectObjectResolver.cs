@@ -11,7 +11,6 @@ public interface IIndirectObjectResolver
     IReadOnlyDictionary<(int, int), PdfIndirectObject> GetObjects();
     PdfIndirectObject FindIndirect(int number, int generation);
     void AddLocationHint(PdfIndirectObject newItem);
-    Task<long> FreeListHead();
 }
 
 public interface IIndirectObjectRegistry

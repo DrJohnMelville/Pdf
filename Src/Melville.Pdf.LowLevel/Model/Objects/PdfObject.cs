@@ -27,12 +27,6 @@ public abstract class PdfObject
     internal abstract T Visit<T>(ILowLevelVisitor<T> visitor);
 
     /// <summary>
-    /// This method differentiates objects appearing in the file from deleted list objects
-    /// </summary>
-    /// <returns>True if this is a PDF data object, false if a free list entry.</returns>
-    public virtual bool ShouldWriteToFile() => true;
-
-    /// <summary>
     /// Create a PdfDouble from a C# double
     /// </summary>
     /// <param name="value">The desired C# value</param>

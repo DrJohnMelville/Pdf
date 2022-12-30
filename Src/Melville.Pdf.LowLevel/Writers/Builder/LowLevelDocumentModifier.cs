@@ -13,28 +13,19 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-public interface ILowLevelDocumentModifier: ILowLevelDocumentBuilder
-{
-    void DeleteObject(PdfIndirectObject objectNum);
-}
-
-public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
+public partial class LowLevelDocumentModifier : ILowLevelDocumentBuilder
 {
     private readonly LowLevelDocumentBuilder builder;
     [DelegateTo()]
     private ILowLevelDocumentBuilder innerBuilder => builder;
     private readonly long priorXref;
-    private readonly long freeLisHead;
-    private readonly List<PdfIndirectObject> deletedItems = new();
 
-    public LowLevelDocumentModifier(int nextObjectNum, long priorXref, long freeLisHead)
+    public LowLevelDocumentModifier(int nextObjectNum, long priorXref)
     {
         builder = new LowLevelDocumentBuilder(nextObjectNum);
         this.priorXref = priorXref;
-        this.freeLisHead = freeLisHead;
     }
 
-    public void DeleteObject(PdfIndirectObject objectNum) => deletedItems.Add(objectNum);
     public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
     {
         if (builder.Objects.Contains(reference))
@@ -56,7 +47,7 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
 
 
     public LowLevelDocumentModifier(PdfLoadedLowLevelDocument document) : 
-        this(document.Objects.Keys.Max(i=>i.ObjectNumber), document.XRefPosition, document.FirstFreeBlock)
+        this(document.Objects.Keys.Max(i=>i.ObjectNumber), document.XRefPosition)
     {
         foreach (var (key, value) in document.TrailerDictionary.RawItems)
         {
@@ -81,7 +72,6 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         }
         var startXref = target.BytesWritten;
         XrefTableElementWriter.WriteXrefTitleLine(target);
-        DeletedItemLines(lines);
         WriteRevisedXrefTable(target, lines);
         await target.FlushAsync().CA();
         builder.AddToTrailerDictionary(KnownNames.Prev, priorXref);
@@ -103,18 +93,6 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
     //If we are writing an empty xref table we still need a 0 0 header for a single empty block.
     private static int FirstObjectNumber(IList<XrefLine> segment) => 
         segment.Count > 0?segment[0].ObjectNumber:0;
-
-    private void DeletedItemLines(IList<XrefLine> lines)
-    {
-        if (deletedItems.Count == 0) return;
-        var currentFreeHead = freeLisHead;
-        foreach (var i in deletedItems)
-        {
-            lines.Add(new XrefLine(i.ObjectNumber, currentFreeHead, i.GenerationNumber, false));
-            currentFreeHead = i.ObjectNumber;
-        }
-        lines.Add(new XrefLine(0, currentFreeHead, 65535, false));
-    }
 
     private IEnumerable<IList<XrefLine>> XRefSegments(IEnumerable<XrefLine> lines)
     {

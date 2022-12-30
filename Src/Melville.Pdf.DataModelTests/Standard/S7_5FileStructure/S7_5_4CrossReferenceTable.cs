@@ -80,7 +80,6 @@ trailer
         resolver.Verify(CheckLocation(0,0), Times.Exactly(4));
         resolver.Verify(i=>i.FindIndirect(4,0));
         resolver.Verify(i=>i.GetObjects());
-        resolver.Verify(i=>i.FreeListHead(), Times.Once);
         resolver.VerifyNoOtherCalls();
     }
 }
