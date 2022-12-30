@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Melville.Hacks;
-using Melville.INPC;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -16,22 +13,6 @@ using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
-
-public partial class SingleCharSource : IStreamDataSource
-{
-    [DelegateTo]
-    private readonly IStreamDataSource source;
-
-    public SingleCharSource(IStreamDataSource source)
-    {
-        this.source = source;
-    }
-
-    public async ValueTask<Stream> OpenRawStream(long streamLength)
-    {
-        return new OneCharAtAtimeStream(await source.OpenRawStream(streamLength));
-    }
-}
 
 public abstract class StreamTestBase
 {
@@ -49,30 +30,41 @@ public abstract class StreamTestBase
         this.parameters = parameters;
     }
 
-    private PdfStream EncodedStreamAsync() =>
-        StreamBuilder().AsStream(source);
 
     private DictionaryBuilder StreamBuilder() =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Filter, compression)
             .WithItem(KnownNames.DecodeParms, parameters);
 
-    [Fact]
-    public Task EncodingTest() => VerifyEncoding(EncodedStreamAsync());
+    private PdfStream StreamWithPlainTextBacking() =>
+        StreamBuilder().AsStream(source);
 
-    [Fact]
-    public async Task DecodeTest()
-    {
-        await VerifyDecodedStream(TrySingleCharStream(await DecodableStream().StreamContentAsync()));
-    }
-
-    private PdfStream DecodableStream() =>
+    private PdfStream StreamWithEncodedBacking() =>
         StreamBuilder()
             .WithItem(KnownNames.Length, dest.Length)
             .AsStream(dest.AsExtendedAsciiBytes(),
                 StreamFormat.DiskRepresentation);
 
-    public Stream TrySingleCharStream(Stream source) => source;
+    [Fact]
+    public Task EncodingTest() => VerifyEncoding(StreamWithPlainTextBacking());
+
+    [Fact]
+    public async Task DecodeTest()
+    {
+        await VerifyDecodedStream(await StreamWithEncodedBacking().StreamContentAsync());
+    }
+    [Fact]
+    public async Task DecodeWhenGettingOneCharAtATime()
+    {
+        var src = new OneCharAtAtimeStream(dest.AsExtendedAsciiBytes());
+
+        var strSourceMock = MockStreamSource(src);
+
+        var pdfStream = StreamBuilder().AsStream(strSourceMock.Object);
+        var innerStream = await pdfStream.StreamContentAsync();
+        await VerifyDecodedStream(innerStream);
+    }
+
 
     private async Task VerifyEncoding(PdfStream stream) => 
         Assert.Equal(SimulateStreamOutput(), await stream.WriteToStringAsync());
@@ -88,39 +80,43 @@ public abstract class StreamTestBase
     [Fact]
     public async Task VerifyDisposalAsync()
     {
-        var strSourceMock = new Mock<IStreamDataSource>();
-        var streamMock = new Mock<Stream>();
-        streamMock.Setup(i => i.ReadAsync(It.IsAny<Memory<byte>>(), It.IsAny<CancellationToken>())).ReturnsAsync(0);
-        strSourceMock.Setup(i => i.OpenRawStream(It.IsAny<long>())).ReturnsAsync(streamMock.Object);
-        strSourceMock.SetupGet(i => i.SourceFormat).Returns(StreamFormat.DiskRepresentation);
-        strSourceMock.Setup(i => i.WrapStreamWithDecryptor(It.IsAny<Stream>())).Returns((Stream s) => s);
-
-        var pdfStream = StreamBuilder().AsStream(strSourceMock.Object);
-        streamMock.Verify(i=>i.DisposeAsync(), Times.Never);
-        var innerStream = await pdfStream.StreamContentAsync();
+        var (streamMock, innerStream) = await DisposeStreamRig();
+        streamMock.Verify(i => i.DisposeAsync(), Times.Never);
         await innerStream.DisposeAsync();
         streamMock.Verify(i => i.DisposeAsync(), Times.Once);
+    }
+
+    private async Task<(Mock<Stream> streamMock, Stream innerStream)> DisposeStreamRig()
+    {
+        var streamMock = new Mock<Stream>();
+        var strSourceMock = MockStreamSource(streamMock.Object);
+
+        var pdfStream = StreamBuilder().AsStream(strSourceMock.Object);
+        var innerStream = await pdfStream.StreamContentAsync();
+        return (streamMock, innerStream);
+    }
+
+    private static Mock<IStreamDataSource> MockStreamSource(Stream readFrom)
+    {
+        var strSourceMock = new Mock<IStreamDataSource>();
+        strSourceMock.Setup(i => i.OpenRawStream(It.IsAny<long>())).ReturnsAsync(readFrom);
+        strSourceMock.SetupGet(i => i.SourceFormat).Returns(StreamFormat.DiskRepresentation);
+        strSourceMock.Setup(i => i.WrapStreamWithDecryptor(It.IsAny<Stream>())).Returns((Stream s) => s);
+        return strSourceMock;
     }
 
     [Fact]
     public async Task VerifyDisposal()
     {
-        var strSourceMock = new Mock<IStreamDataSource>();
-        var streamMock = new Mock<Stream>();
-        streamMock.Setup(i => i.ReadAsync(It.IsAny<Memory<byte>>(), It.IsAny<CancellationToken>())).ReturnsAsync(0);
-        strSourceMock.Setup(i => i.OpenRawStream(It.IsAny<long>())).ReturnsAsync(streamMock.Object);
-        strSourceMock.SetupGet(i => i.SourceFormat).Returns(StreamFormat.DiskRepresentation);
-        strSourceMock.Setup(i => i.WrapStreamWithDecryptor(It.IsAny<Stream>())).Returns((Stream s) => s);
+        var (streamMock, innerStream) = await DisposeStreamRig();
 
-        var pdfStream = StreamBuilder().AsStream(strSourceMock.Object);
-        streamMock.Verify(i=>i.Close(), Times.Never);
-        var innerStream = await pdfStream.StreamContentAsync();
+        streamMock.Verify(i => i.Close(), Times.Never);
         innerStream.Dispose();
         streamMock.Verify(i => i.Close(), Times.Once);
     }
 
     private ValueTask<PdfStream> StreamWithEncodedBackEnd() =>
-         ToStreamWithEncodedBackEnd(EncodedStreamAsync());
+         ToStreamWithEncodedBackEnd(StreamWithPlainTextBacking());
 
     private async ValueTask<PdfStream> ToStreamWithEncodedBackEnd(PdfStream str) =>
         new DictionaryBuilder(str.RawItems).AsStream(
