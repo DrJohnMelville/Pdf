@@ -9,6 +9,12 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 
 public static class StreamAsTextStream
 {
+    /// <summary>
+    /// Intepret a PdfStream as a text stream and create the approprate TextReader by examining the
+    /// byte order mark.
+    /// </summary>
+    /// <param name="source">The source PDF string.</param>
+    /// <returns>A text reader that will properly decode the text stream.</returns>
     public static async ValueTask<TextReader> TextStreamReader(this PdfStream source)
     {
         var stream = await source.StreamContentAsync().CA();

@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public interface IStreamDataSource
+internal interface IStreamDataSource
 {
     ValueTask<Stream> OpenRawStream(long streamLength);
     Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName);
@@ -22,7 +22,7 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
 {
     private IStreamDataSource source;
         
-    public PdfStream(IStreamDataSource source, Memory<KeyValuePair<PdfName, PdfObject>> rawItems) :
+    internal PdfStream(IStreamDataSource source, Memory<KeyValuePair<PdfName, PdfObject>> rawItems) :
         base(rawItems)
     {
         this.source = source;
@@ -33,9 +33,17 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     private async ValueTask<Stream> SourceStreamAsync() => 
         await source.OpenRawStream(await DeclaredLengthAsync().CA()).CA();
 
-    public async ValueTask<long> DeclaredLengthAsync() => 
-        TryGetValue(KnownNames.Length, out var len) && await len.CA() is PdfNumber num ? num.IntValue : -1;
+    /// <summary>
+    /// The length of the stream as declared in the stream dictionary.
+    /// </summary>
+    /// <returns></returns>
+    public ValueTask<long> DeclaredLengthAsync() => this.GetOrDefaultAsync(KnownNames.Length, -1);
 
+    /// <summary>
+    /// Retrieves a C# stream that will read the stream contents in the desired format.
+    /// </summary>
+    /// <param name="desiredFormat">The filters that should be applied to the read stream.</param>
+    /// <returns></returns>
     public ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat = StreamFormat.PlainText) =>
         StreamContentAsync(desiredFormat, null);
     internal async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat, IObjectCryptContext? encryptor)
@@ -63,7 +71,7 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     private async ValueTask<IReadOnlyList<PdfObject>> FilterParamList() => 
         (await this.GetOrNullAsync(KnownNames.DecodeParms).CA()).ObjectAsUnresolvedList();
 
-    public async ValueTask<bool> HasFilterOfType(PdfName filterType)
+    internal async ValueTask<bool> HasFilterOfType(PdfName filterType)
     {
         foreach (var item in await FilterList().CA())
         {
@@ -72,7 +80,7 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
         return false;
     }
 
-    public async ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync()
+    async ValueTask<IEnumerable<ObjectLocation>> IHasInternalIndirectObjects.GetInternalObjectNumbersAsync()
     {
         if (await this.GetOrNullAsync(KnownNames.Type).CA() != KnownNames.ObjStm)
             return Array.Empty<ObjectLocation>();

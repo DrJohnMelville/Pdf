@@ -66,7 +66,7 @@ public readonly struct DictionaryBuilder
 
     public PdfStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
         new(new LiteralStreamSource(stream.Stream, format), AsArray());
-    public PdfStream AsStream(IStreamDataSource source) =>
+    internal PdfStream AsStream(IStreamDataSource source) =>
         new(source, AsArray());
 
     public KeyValuePair<PdfName, PdfObject>[] AsArray() => attributes.ToArray();

@@ -31,8 +31,8 @@ public class IndirectObjectResolver : IIndirectObjectResolver
         var key = (newItem.ObjectNumber, newItem.GenerationNumber);
         if (index.TryGetValue(key, out var prior))
         {
-            if (prior is not PromisedIndirectObject mut || mut.HasRegisteredAccessor()) return;
-            mut.SetValue(newItem);
+            if (prior is not PromisedIndirectObject mut) return;
+            mut.SetIfHasNoValue(newItem);
         }
         index[key] = newItem;
     }

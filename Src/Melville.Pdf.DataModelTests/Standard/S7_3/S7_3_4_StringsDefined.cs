@@ -22,7 +22,6 @@ public class S7_3_4_StringsDefined
     {
         var str = PdfString.CreateAscii(a);
         Assert.Equal(areEqual, b.Equals(str.ToString()));
-        Assert.Equal(areEqual, str.TestEqual(b));
     }
 
     [Theory]

@@ -9,7 +9,7 @@ public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObje
 {
     public byte[] Bytes { get; }
 
-    protected PdfByteArrayObject(byte[] bytes)
+    private protected PdfByteArrayObject(byte[] bytes)
     {
         Bytes = bytes;
     }
