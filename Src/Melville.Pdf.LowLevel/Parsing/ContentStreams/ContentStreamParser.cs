@@ -118,7 +118,7 @@ public readonly struct ContentStreamParser
     private bool ParseNumber(in BufferFromPipe bfp)
     {
         var reader = bfp.CreateReader();
-        var parser = new NumberWtihFractionParser();
+        var parser = new NumberWithFractionParser();
         if (!parser.InnerTryParse(ref reader, bfp.Done)) return false;
         bfp.Consume(reader.Position);
         target.HandleNumber(parser.DoubleValue(), parser.IntegerValue());

@@ -6,19 +6,28 @@ using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
-//This class is an optimization for the small dictionaries of PdfName,PdfObject that are so very prevelent
-// in PDF.  For sizes on 1- 10 the TryGetValue operation can be 2-5 times faster than the
-// standard Dictionary implementation
+/// <summary>
+/// This class is an optimization for the small dictionaries of PdfName,PdfObject that are so very prevelent
+/// in PDF.  For sizes on 1- 10 the TryGetValue operation can be 2-5 times faster than the
+/// standard Dictionary implementation
+/// </summary>
+/// <typeparam name="TKey">The type of the key to the dictionary</typeparam>
+/// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
 public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDictionary<TKey, TValue>
      where TKey: class
 {
     [FromConstructor] private readonly Memory<KeyValuePair<TKey, TValue>> data;
 
+    /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    /// <inheritdoc />
     public int Count => data.Length;
+
+    /// <inheritdoc />
     public bool ContainsKey(TKey key) => TryGetValue(key, out _);
 
+    /// <inheritdoc />
     public bool TryGetValue(TKey key, [NotNullWhen(true)] out TValue? value)
     {
         for (int i = 0; i < data.Length; i++)
@@ -34,9 +43,11 @@ public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDic
         return false;
     }
 
+    /// <inheritdoc />
     public TValue this[TKey key] =>
         TryGetValue(key, out var ret) ? ret : throw new KeyNotFoundException("Key not found in dictionary");
 
+    /// <inheritdoc />
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
         for (int i = 0; i < data.Length; i++)
@@ -45,11 +56,9 @@ public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDic
         }
     }
 
-    private KeyValuePair<TKey,TValue> GetItem(int i)
-    {
-        return data.Span[i];
-    }
+    private KeyValuePair<TKey,TValue> GetItem(int i) => data.Span[i];
 
+    /// <inheritdoc />
     public IEnumerable<TKey> Keys
     {
         get
@@ -60,6 +69,8 @@ public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDic
             }
         }
     }
+
+    /// <inheritdoc />
     public IEnumerable<TValue> Values 
     {
         get

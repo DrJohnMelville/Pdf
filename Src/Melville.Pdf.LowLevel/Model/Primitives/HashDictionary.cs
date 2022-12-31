@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
-public abstract class HashDictionary<T> where T : class
+internal abstract class HashDictionary<T> where T : class
 {
     // the dictionary either holds the value, a synonym declaration, or a linkedListPair
     // The idea of this class is that FNV-1 is a very good hash, so there will be very, very
@@ -74,7 +74,7 @@ public abstract class HashDictionary<T> where T : class
         Create(keyAsArray ?? key.ToArray());
 }
 
-public class NameDictionay : HashDictionary<PdfName>
+internal class NameDictionay : HashDictionary<PdfName>
 {
     protected override PdfName Create(byte[] key) => new(key);
     protected override bool Matches(in ReadOnlySpan<byte> key, PdfName item) => 

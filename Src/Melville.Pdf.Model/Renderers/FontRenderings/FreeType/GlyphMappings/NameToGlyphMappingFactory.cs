@@ -26,7 +26,7 @@ public readonly partial struct NameToGlyphMappingFactory
         var dictionary = new Dictionary<uint, uint>(face.GlyphCount);
         foreach (var (glyph, name) in face.AllGlyphNames())
         {
-            dictionary[FnvHash.HashString(name)] = glyph;
+            dictionary[FnvHash.FnvHashAsUint(name)] = glyph;
         }
 
         return new DictionaryGlyphNameMapper(dictionary);

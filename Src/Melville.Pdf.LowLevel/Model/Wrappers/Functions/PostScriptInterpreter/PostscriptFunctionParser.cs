@@ -163,21 +163,21 @@ public readonly struct PostscriptTokenizer
             case (byte) '9':
             case (byte) '+':
             case (byte) '-':
-                var numParser = new NumberWtihFractionParser();
+                var numParser = new NumberWithFractionParser();
                 if (!numParser.InnerTryParse(ref reader, false)) return false;
                 result = new PushConstantOperation(numParser.DoubleValue());
                 return true;
             default:
-                var hash = FnvHash.EmptyStringHash();
+                var hash = new FnvComputer();
                 while (true)
                 {
                     if (!reader.TryPeek(out byte ret)) return false;
                     if (!IsChar(ret))
                     {
-                        result = PostScriptOperationsDict.GetOperation(hash);
+                        result = PostScriptOperationsDict.GetOperation(hash.HashAsUint());
                         return true;
                     }
-                    hash = FnvHash.SingleHashStep(hash, ret);
+                    hash.SingleHashStep(ret);
                     reader.Advance(1);
                 }
         }

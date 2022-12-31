@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Primatives;
 
-public static class HashDictionaryHelper
+internal static class HashDictionaryHelper
 {
     public static T GetOrCreate<T>(this HashDictionary<T> dict, string name) where T:class
     {

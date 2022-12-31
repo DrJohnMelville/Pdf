@@ -12,7 +12,7 @@ internal class NumberParser: PdfAtomParser
         ref SequenceReader<byte> reader, bool final, IParsingReader source, 
         [NotNullWhen(true)] out PdfObject? obj)
     {
-        var parser = new NumberWtihFractionParser();
+        var parser = new NumberWithFractionParser();
         if (parser.InnerTryParse(ref reader, final))
         {
             obj = parser.HasFractionalPart()

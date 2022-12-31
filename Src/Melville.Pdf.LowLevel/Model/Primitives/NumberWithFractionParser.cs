@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
-public ref struct NumberWtihFractionParser
+internal ref struct NumberWithFractionParser
 {
     private long value;
     private int sign;

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
-public static class IntegerWriter
+internal static class IntegerWriter
 {
     public static ValueTask<FlushResult> WriteAndFlush(PipeWriter target, long item)
     {

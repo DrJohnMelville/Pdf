@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using Melville.Pdf.LowLevel.Model.Objects;
 
@@ -13,20 +12,18 @@ public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObje
     {
         Bytes = bytes;
     }
-        
+
+    /// <inheritdoc />
     public bool Equals(PdfByteArrayObject? other) =>
         (!ReferenceEquals(null, other)) &&
         (ReferenceEquals(this, other) || Bytes.AsSpan().SequenceEqual(other.Bytes));
 
-    public bool IsSameAS(string s) => 
-        s.Length == Bytes.Length && 
-        s.Zip(Bytes, static (t, i) => t == i).All(static i=>i);
-
+    /// <inheritdoc />
     public override bool Equals(object? obj) => 
         ReferenceEquals(this, obj) || obj is PdfByteArrayObject other && Equals(other);
 
+    /// <inheritdoc />
     public override int GetHashCode() => FnvHash.FnvHashAsInt(Bytes);
-    public bool TestEqual(ReadOnlySpan<byte> other) => other.SequenceEqual(Bytes);
 
     private string DebugViewAableValue => RoundTripableRepresentation(Bytes);
     private static string RoundTripableRepresentation(byte[]? inputBytes)

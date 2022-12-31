@@ -36,8 +36,4 @@
       <AdditionalFiles Include="Model\CharacterEncoding\Symbol.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\MacExpert.cedsl" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Model\Primitives\PipeReaderWithPositions" />
-    </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@ using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
-public static class WholeNumberParser
+internal static class WholeNumberParser
 {
     /// <summary>
     /// Notice that this method reads one byte beyond the number and returns the last byte.
