@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
-public static class StitchedFunctionParser
+internal static class StitchedFunctionParser
 {
     public static async ValueTask<PdfFunction> Parse(PdfDictionary source)
     {

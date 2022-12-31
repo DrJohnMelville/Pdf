@@ -36,6 +36,12 @@ public class S7_10_5PostscriptFunctions
             
     }
 
+    [Fact]
+    public void HashLowerCase()
+    {
+        Assert.Equal(FnvHash.HashLowerCase("abs"u8), FnvHash.HashLowerCase("Abs"u8));
+    }
+
 
     [Theory]
     [InlineData("10.3", "10.3", "{abs}")]

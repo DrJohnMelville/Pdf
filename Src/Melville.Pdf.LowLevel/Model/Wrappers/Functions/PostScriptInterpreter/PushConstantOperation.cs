@@ -1,6 +1,6 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-public class PushConstantOperation: IPostScriptOperation
+internal class PushConstantOperation: IPostScriptOperation
 {
     private double value;
 

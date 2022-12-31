@@ -3,7 +3,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-public class PostscriptFunction: PdfFunction
+internal class PostscriptFunction: PdfFunction
 {
     private IPostScriptOperation operation;
     public PostscriptFunction(ClosedInterval[] domain, ClosedInterval[] range, IPostScriptOperation operation) : base(domain, range)

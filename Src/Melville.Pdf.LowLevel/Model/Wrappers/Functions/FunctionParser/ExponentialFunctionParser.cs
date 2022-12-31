@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
-public static class ExponentialFunctionParser
+internal static class ExponentialFunctionParser
 {
     public static async ValueTask<PdfFunction> Parse(PdfDictionary source)
     {

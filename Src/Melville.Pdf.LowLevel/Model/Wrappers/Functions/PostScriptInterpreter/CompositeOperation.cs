@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-public class CompositeOperation: IPostScriptOperation
+internal class CompositeOperation: IPostScriptOperation
 {
     private List<IPostScriptOperation> operations = new();
     public void AddOperation(IPostScriptOperation op) => operations.Add(op);

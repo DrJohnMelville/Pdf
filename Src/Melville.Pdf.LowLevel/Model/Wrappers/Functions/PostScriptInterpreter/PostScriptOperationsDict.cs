@@ -3,21 +3,10 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-public static partial class PostScriptOperationsDict
+internal static partial class PostScriptOperationsDict
 {
-    private static readonly IReadOnlyDictionary<uint, IPostScriptOperation> operationsDict = CreateDict();
-
-    private static void AddPdfOperation(
-        Dictionary<uint, IPostScriptOperation> dict, string name, IPostScriptOperation op)
-    {
-        dict.Add(FnvHash.HashStringAsLowerCase(name), op);
-    }
-
-    private static void AddSpecialOperators(Dictionary<uint, IPostScriptOperation> dict)
-    {
-        dict.Add(FnvHash.HashStringAsLowerCase("if"), PostScriptOperations.If);
-        dict.Add(FnvHash.HashStringAsLowerCase("ifelse"), PostScriptOperations.IfElse);
-    }
+    private static readonly IReadOnlyDictionary<uint, IPostScriptOperation> operationsDict = 
+            PostScriptOperations.CreateDictionary();
 
     public static IPostScriptOperation GetOperation(uint hash)
     {

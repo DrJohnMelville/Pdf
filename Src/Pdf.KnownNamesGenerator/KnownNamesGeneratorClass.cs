@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis;
 using Pdf.KnownNamesGenerator.CharacterEncodings;
 using Pdf.KnownNamesGenerator.ContentStreamOperations;
 using Pdf.KnownNamesGenerator.KnownNames;
-using Pdf.KnownNamesGenerator.PostScriptOps;
 
 namespace Pdf.KnownNamesGenerator
 {
@@ -46,8 +45,6 @@ namespace Pdf.KnownNamesGenerator
         
         private void Generate(IncrementalGeneratorPostInitializationContext context)
         {
-            context.AddSource("PostScriptOperations.Generated.cs",
-                GeneratePostScriptOperations.ClassText());
             context.AddSource("ContentStreamOperations.Generated.cs",
                 GenerateContentStreamOperations.ClassText());
         }

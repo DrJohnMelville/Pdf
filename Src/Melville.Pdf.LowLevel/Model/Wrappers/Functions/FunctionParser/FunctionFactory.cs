@@ -10,6 +10,12 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 public static class FunctionFactory
 {
+    /// <summary>
+    /// Created a Pdf Function from a PdfDictionary or PdfArray
+    /// </summary>
+    /// <param name="source">A PdfDictionary or PdfArray that defines the function.</param>
+    /// <returns>The PdfFunction defined by the source.</returns>
+    /// <exception cref="PdfParseException">Source does not define a PdfFunction.</exception>
     public static ValueTask<IPdfFunction> CreateFunctionAsync(this PdfObject source) =>
         source switch
         {
@@ -18,6 +24,12 @@ public static class FunctionFactory
             _=> throw new PdfParseException("Cannot parse function definition")
         };
     
+    /// <summary>
+    /// Parse a PdfDictionary into a PdfFunction
+    /// </summary>
+    /// <param name="source">The PdfDictionary that defines the function</param>
+    /// <returns>The PdfFunction defined by source.</returns>
+    /// <exception cref="PdfParseException">The source does not define a PdfFunction</exception>
     public static async ValueTask<IPdfFunction> CreateFunctionAsync(this PdfDictionary source) =>
         (await source.GetAsync<PdfNumber>(KnownNames.FunctionType).CA()).IntValue switch
         {

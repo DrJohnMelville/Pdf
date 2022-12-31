@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-public class PostscriptStack : List<double>
+internal class PostscriptStack : List<double>
 {
     public void Push(double item) => Add(item);
 

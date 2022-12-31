@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
-public static class SampledFunctionParser
+internal static class SampledFunctionParser
 {
     public static async Task<SampledFunctionBase> Parse( PdfStream source)
     {

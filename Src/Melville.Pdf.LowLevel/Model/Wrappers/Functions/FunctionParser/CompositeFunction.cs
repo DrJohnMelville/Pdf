@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
-public class CompositeFunction : IPdfFunction
+internal class CompositeFunction : IPdfFunction
 {
     private readonly IPdfFunction[] innerFunctions;
 

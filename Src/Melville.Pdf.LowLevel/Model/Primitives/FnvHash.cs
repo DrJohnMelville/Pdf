@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -9,17 +10,12 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 /// </summary>
 public static class FnvHash
 {
-    /// <summary>
-    /// Hash a string using all lower case letters
-    /// </summary>
-    /// <param name="s">The source string.</param>
-    /// <returns>The hash </returns>
-    public static uint HashStringAsLowerCase(string s)
+    public static uint HashLowerCase(in ReadOnlySpan<byte> input)
     {
         var computer = new FnvComputer();
-        foreach (var item in s)
+        foreach (var item in input)
         {
-            computer.SingleHashStep((byte)Char.ToLower(item));
+            computer.SingleLowerCaseHashStep(item);
         }
         return computer.HashAsUint();
     }
@@ -100,6 +96,21 @@ public ref struct FnvComputer
         }
     }
 
+
+    /// <summary>
+    /// Compute a single step of the FNV hash; using only lower case letters.
+    /// </summary>
+    /// <param name="item">The data for the FNV hash.</param>
+    public void SingleLowerCaseHashStep(byte item) => SingleHashStep(ToLowerCase(item));
+
+    private static byte ToLowerCase(byte input)
+    {
+        const byte aValue = (byte)'A';
+        const byte zValue = (byte)'Z';
+        const byte lowerAValue = (byte)'a';
+        return input is >= aValue and <= zValue ? (byte)(input + (lowerAValue - aValue)) : input;
+    }
+
     /// <summary>
     /// The current hash value as a uint.
     /// </summary>
@@ -117,4 +128,5 @@ public ref struct FnvComputer
             return (int)hashValue;
         }
     }
+
 }

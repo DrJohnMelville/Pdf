@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
-public static class FunctionParsingMethods
+internal static class FunctionParsingMethods
 {
     public static async ValueTask<ClosedInterval[]> 
         ReadIntervals(this PdfDictionary source, PdfName name)

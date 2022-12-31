@@ -11,7 +11,7 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-public static class PostscriptFunctionParser
+internal static class PostscriptFunctionParser
 {
     public static async Task<PdfFunction> Parse(PdfStream source)
     {
@@ -23,7 +23,7 @@ public static class PostscriptFunctionParser
     }
 }
 
-public readonly struct PostscriptLanguageParser
+internal readonly struct PostscriptLanguageParser
 {
     private readonly PostscriptTokenizer reader;
     private readonly Stack<CompositeOperation> composites;
@@ -100,7 +100,7 @@ public readonly struct PostscriptLanguageParser
     }
 }
     
-public readonly struct PostscriptTokenizer
+internal readonly struct PostscriptTokenizer
 {
     private readonly PipeReader reader;
 

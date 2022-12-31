@@ -1,9 +1,78 @@
 ﻿using System;
+using System.Collections.Generic; // used by the generated 
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-public static partial class PostScriptOperations
+           // sentinels
+[MacroItem("Open_Brace", "throw new NotSupportedException();")]
+[MacroItem("Close_Brace", "throw new NotSupportedException();")]
+[MacroItem("If", "throw new NotSupportedException();")]
+[MacroItem("IfElse", "")]
+            // arithmetic operators
+[MacroItem("Abs", "s.Push(Math.Abs(s.Pop()));")]
+[MacroItem("Add", "s.Push(s.Pop()+s.Pop());")]
+[MacroItem("Atan", "var den = s.Pop();var num = s.Pop(); s.Push(CanonicalDegrees(RadToDeg( Math.Atan2(num, den))));")]
+[MacroItem("Ceiling", "s.Push(Math.Ceiling(s.Pop()));")]
+[MacroItem("Cos", "s.Push(Math.Cos(DegToRad(s.Pop())));")]
+[MacroItem("Cvi", "s.Push((int)s.Pop());")]
+[MacroItem("Cvr", "")]
+[MacroItem("Div", "var den = s.Pop();var num = s.Pop(); s.Push(num/den);")]
+[MacroItem("Exp", "var exp = s.Pop();var @base = s.Pop(); s.Push(Math.Pow(@base, exp));")]
+[MacroItem("Floor", "s.Push(Math.Floor(s.Pop()));")]
+[MacroItem("Idiv", "var den = (long)s.Pop();var num = (long)s.Pop(); s.Push(num/den);")]
+[MacroItem("ln", "s.Push(Math.Log(s.Pop()));")]
+[MacroItem("log", "s.Push(Math.Log10(s.Pop()));")]
+[MacroItem("Mod", "var den = (long)s.Pop();var num = (long)s.Pop(); s.Push(num%den);")]
+[MacroItem("Mul", "s.Push(s.Pop()*s.Pop());")]
+[MacroItem("Neg", "s.Push(-s.Pop());")]
+[MacroItem("Round", "s.Push(PostscriptRound(s.Pop()));")]
+[MacroItem("Sin", "s.Push(Math.Sin(DegToRad(s.Pop())));")]
+[MacroItem("Sqrt", "s.Push(Math.Sqrt(s.Pop()));")]
+[MacroItem("Sub", "var den = s.Pop();var num = s.Pop(); s.Push(num - den);")]
+[MacroItem("Truncate", "s.Push(Math.Truncate(s.Pop()));")]
+            
+            // relational boolean and butwise operators
+[MacroItem("And", "var b = (long) s.Pop(); var a = (long)s.Pop(); s.Push(a&b);")]
+[MacroItem("Or", "var b = (long) s.Pop(); var a = (long)s.Pop(); s.Push(a|b);")]
+[MacroItem("Xor", "var b = (long) s.Pop(); var a = (long)s.Pop(); s.Push(a^b);")]
+[MacroItem("Not", "s.Push(~(long)s.Pop());")]
+[MacroItem("BitShift", "var b = (int) s.Pop(); var a = (long)s.Pop(); s.Push(PostscriptBitShift(a,b));")]
+[MacroItem("Eq", "s.Push(PostscriptEqual(s.Pop(),s.Pop()));")]
+[MacroItem("Ne", "s.Push(PostscriptNotEqual(s.Pop(),s.Pop()));")]
+[MacroItem("True", "s.Push(-1.0);")]
+[MacroItem("False", "s.Push(0.0);")]
+[MacroItem("Ge", "var b = s.Pop(); var a = s.Pop(); s.Push(a>=b?-1:0);")]
+[MacroItem("Gt", "var b = s.Pop(); var a = s.Pop(); s.Push(a> b?-1:0);")]
+[MacroItem("Le", "var b = s.Pop(); var a = s.Pop(); s.Push(a<=b?-1:0);")]
+[MacroItem("Lt", "var b = s.Pop(); var a = s.Pop(); s.Push(a< b?-1:0);")]
+            
+            // stack operators
+[MacroItem("Copy", "PostscriptCopy(s);")]
+[MacroItem("Dup", "s.Push(s.Peek());")]
+[MacroItem("Exch", "s.Exchange();")]
+[MacroItem("Index", "s.Push(s.Peek((int)s.Pop()));")]
+[MacroItem("Pop", "s.Pop();")]
+[MacroItem("Roll", "var delta= (int) s.Pop(); var count = (int)s.Pop(); RollSpan(s.AsSpan()[^count..], delta);")]
+[MacroCode("""
+    internal sealed class Operation~0~:IPostScriptOperation
+    {
+        public void Do(PostscriptStack s) 
+        {
+            ~1~
+        }
+    }
+    """)]
+[MacroCode("internal static readonly IPostScriptOperation ~0~ = new Operation~0~();")]
+[MacroCode("""    dict.Add(FnvHash.HashLowerCase("~0~"u8), PostScriptOperations.~0~);""", 
+    Prefix = """
+             internal static Dictionary<uint, IPostScriptOperation> CreateDictionary() 
+                 {
+                     var dict = new Dictionary<uint, IPostScriptOperation>(); 
+             """,
+    Postfix = "return dict; }")]
+internal static partial class PostScriptOperations
 {
     private static double DegToRad(double angle) => angle * Math.PI / 180;
     private static double RadToDeg(double angle) => angle * 180 / Math.PI;
