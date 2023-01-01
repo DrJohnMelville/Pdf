@@ -56,7 +56,7 @@ public readonly struct ContentStreamPipeWriter
         WriteDoubleSpan(values);
         WriteOperator(operation);
     }
-    public void WriteOperator(byte[] operation, ReadOnlySpan<byte> stringValue)
+    public void WriteOperator(in ReadOnlySpan<byte> operation, ReadOnlySpan<byte> stringValue)
     {
         WriteString(stringValue);
         WriteOperator(operation);

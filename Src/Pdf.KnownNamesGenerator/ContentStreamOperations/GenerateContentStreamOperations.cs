@@ -13,14 +13,18 @@ public class GenerateContentStreamOperations
     }
     private static void ClassText(StringBuilder sb)
     {
+        sb.AppendLine("using System;");
         sb.AppendLine("namespace Melville.Pdf.LowLevel.Model.ContentStreams;");
         sb.AppendLine();
         sb.AppendLine("public static class ContentStreamOperatorNames");
         sb.AppendLine("{");
         foreach (var (op, name) in operators)
         {
-            sb.Append($"    public static readonly byte[] {name} = ((");
-            ByteStreamWriter.WriteByteDecl(sb, op);
+            sb.AppendLine($""""
+                      public static ReadOnlySpan<byte> {name} => """
+                      {op}
+                      """u8.ToArray();
+                  """");
         }
         sb.AppendLine("}");
             

@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
-internal static partial class PostScriptOperationsDict
+internal static class PostScriptOperationsDict
 {
     private static readonly IReadOnlyDictionary<uint, IPostScriptOperation> operationsDict = 
             PostScriptOperations.CreateDictionary();

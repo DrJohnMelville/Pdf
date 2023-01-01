@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -387,18 +388,32 @@ public partial class ContentStreamWriter : IContentStreamOperations
     void IMarkedContentCSOperations.EndMarkedRange() => 
         destPipe.WriteOperator(ContentStreamOperatorNames.EMC);
 
-    public struct DeferedClosingTask: IDisposable
+    public unsafe struct DeferedClosingTask: IDisposable
     {
         private readonly ContentStreamPipeWriter writer;
-        private readonly byte[] closingOperator;
+        private fixed byte closingOperator[4];
+        private readonly int closingOperatorLength;
 
-        public DeferedClosingTask(ContentStreamPipeWriter writer, byte[] closingOperator)
-        {
+        private Span<byte> ClosingOperatorSpan(byte* basePtr) =>
+            new Span<byte>(basePtr, Math.Min(4, closingOperatorLength));
+
+        public DeferedClosingTask(ContentStreamPipeWriter writer, in ReadOnlySpan<byte> closingOperator)
+        {  
             this.writer = writer;
-            this.closingOperator = closingOperator;
+            closingOperatorLength = closingOperator.Length;
+            fixed (byte* opPtr = this.closingOperator)
+            {
+                closingOperator.CopyTo(ClosingOperatorSpan(opPtr));
+            }
         }
 
-        public void Dispose() => writer.WriteOperator(closingOperator);
+        public void Dispose()
+        {
+            fixed (byte* opPtr = closingOperator)
+            {
+                writer.WriteOperator(ClosingOperatorSpan(opPtr));
+            }
+        }
     }
     #endregion
 
