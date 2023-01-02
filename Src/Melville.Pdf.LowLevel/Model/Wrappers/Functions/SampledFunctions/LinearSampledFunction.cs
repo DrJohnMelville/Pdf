@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
-public sealed class LinearSampledFunction : SampledFunctionBase
+internal sealed class LinearSampledFunction : SampledFunctionBase
 {
     public LinearSampledFunction(ClosedInterval[] domain, ClosedInterval[] range, int[] sizes, ClosedInterval[] encode, double[] values) : base(domain, range, sizes, encode, values)
     {

@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
-public readonly struct StitchedFunctionSegment
+internal readonly struct StitchedFunctionSegment
 {
     private readonly ClosedInterval domain;
     private readonly ClosedInterval encode;
@@ -30,7 +30,8 @@ public readonly struct StitchedFunctionSegment
     private void EvaluateInnerFunction(ReadOnlySpan<double> input, Span<double> result) => 
         innerFunction.Compute(domain.MapTo(encode, input[0]), result);
 }
-public sealed class StitchedFunction:PdfFunction
+
+internal sealed class StitchedFunction:PdfFunction
 {
     private StitchedFunctionSegment[] segments;
     public StitchedFunction(

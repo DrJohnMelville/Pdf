@@ -4,7 +4,7 @@ using Melville.Hacks;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
-public readonly struct MultiDimensionalArray<T>
+internal readonly struct MultiDimensionalArray<T>
 {
     private readonly int[] sizes;
     private readonly int[] dimensionLengthInValuesArray;

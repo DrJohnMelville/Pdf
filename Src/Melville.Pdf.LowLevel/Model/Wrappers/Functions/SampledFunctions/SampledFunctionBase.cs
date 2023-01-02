@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
-public abstract class SampledFunctionBase : PdfFunction
+internal abstract class SampledFunctionBase : PdfFunction
 {
     private readonly ClosedInterval[] encode;
     private readonly MultiDimensionalArray<double> values;

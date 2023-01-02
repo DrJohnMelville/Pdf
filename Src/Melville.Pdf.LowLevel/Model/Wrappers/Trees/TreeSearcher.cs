@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
-public readonly struct TreeSearcher<T> where T:PdfObject, IComparable<T>
+internal readonly struct TreeSearcher<T> where T:PdfObject, IComparable<T>
 {
     private readonly PdfDictionary source;
     private readonly T key;

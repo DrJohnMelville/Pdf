@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
-public sealed class ExponentialInterpolationFunction: PdfFunction
+internal sealed class ExponentialInterpolationFunction: PdfFunction
 {
     private readonly ClosedInterval[] transforms;
     private readonly double exponent;

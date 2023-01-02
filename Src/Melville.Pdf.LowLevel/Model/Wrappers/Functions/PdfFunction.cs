@@ -17,15 +17,19 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 public abstract class PdfFunction : IPdfFunction
 {
+    /// <inheritdoc />
     public ClosedInterval[] Domain { get; }
+
+    /// <inheritdoc />
     public ClosedInterval[] Range { get; }
 
-    protected PdfFunction(ClosedInterval[] domain, ClosedInterval[] range)
+    private protected PdfFunction(ClosedInterval[] domain, ClosedInterval[] range)
     {
         Domain = domain;
         Range = range;
     }
 
+    /// <inheritdoc />
     public void Compute(in ReadOnlySpan<double> input, in Span<double> result)
     {
         CheckSpanLengths(input.Length, result.Length);

@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
-public static class PdfTreeElementNamer
+internal static class PdfTreeElementNamer
 {
     //Trees use a different name for the array in the leaf nodes depending on whether or
     // not they are name trees or number trees.  Since I cannot require static members in an

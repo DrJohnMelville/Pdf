@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
-public class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
+internal class TreeEnumerator<T> : IAsyncEnumerator<PdfObject>
 {
     private PdfArray? currentLeafArray;
     private int currentLeafIndex;

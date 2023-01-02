@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
-public sealed class CubicSampledFunction: SampledFunctionBase
+internal sealed class CubicSampledFunction: SampledFunctionBase
 {
     public CubicSampledFunction(
         ClosedInterval[] domain, ClosedInterval[] range, int[] sizes, ClosedInterval[] encode, 
