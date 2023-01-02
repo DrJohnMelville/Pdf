@@ -61,7 +61,7 @@ public class PageCreator: ContentStreamCreator
     }
 
     public PdfIndirectObject InitializePromiseObject(ILowLevelDocumentBuilder builder) =>
-        promisedPageObject = (PromisedIndirectObject)builder.AsIndirectReference();
+        promisedPageObject = builder.CreatePromiseObject();
 
     public PdfObject TryUsePromisedObject(PdfObject value)
     {

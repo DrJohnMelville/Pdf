@@ -23,6 +23,6 @@ public sealed class PromisedIndirectObject : PdfIndirectObject
         if (!HasValue()) SetValue(value);
     }
 
-    private bool HasValue() => value != UnsetValueSentinel;
+    internal override bool HasValue() => value != UnsetValueSentinel;
     private static PdfTokenValues UnsetValueSentinel => PdfTokenValues.ArrayTerminator;
 }

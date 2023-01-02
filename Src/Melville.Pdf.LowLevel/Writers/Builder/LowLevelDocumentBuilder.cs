@@ -7,40 +7,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-public interface ILowLevelDocumentBuilder
-{
-    PdfIndirectObject AsIndirectReference(PdfObject? value = null);
-    void AssignValueToReference(PdfIndirectObject reference, PdfObject value);
-    PdfIndirectObject Add(PdfObject? item);
-    public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation);
-    void AddToTrailerDictionary(PdfName key, PdfObject item);
-    public PdfArray EnsureDocumentHasId();
-    public string UserPassword { get; set; }
-    IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
-}
-
-public static class LowLevelDocumentBuilderOperations
-{
-    public static void AddRootElement(
-        this ILowLevelDocumentBuilder creator, PdfDictionary rootElt) =>
-        creator.AddToTrailerDictionary(KnownNames.Root, creator.Add(rootElt));
-}
-
-public static class BuildEncryptedDocument
-{
-    public static void AddEncryption(
-        this ILowLevelDocumentBuilder builder,ILowLevelDocumentEncryptor encryptor)
-    {
-        builder.UserPassword = encryptor.UserPassword;
-        builder.AddToTrailerDictionary(
-            KnownNames.Encrypt,
-            builder.Add(
-                encryptor.CreateEncryptionDictionary(builder.EnsureDocumentHasId())));
-    }
-        
-}
-    
-public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
+internal class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 {
     private int nextObject;
     public List<PdfIndirectObject> Objects { get;  }= new();
@@ -54,19 +21,22 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
         this.nextObject = nextObject;
     }
         
-    public PdfIndirectObject AsIndirectReference(PdfObject? value = null) =>
+    public PdfIndirectObject AsIndirectReference(PdfObject value) =>
         value switch
         {
             PdfIndirectObject pio => pio,
-            null=> new PromisedIndirectObject(nextObject++, 0),
-            _ => new PdfIndirectObject(nextObject++, 0, value ?? PdfTokenValues.Null)
+            null=> throw new ArgumentException("To create unbound indirect objects use CreatePromiseObject.  Value cannot be null."),
+            _ => new PdfIndirectObject(nextObject++, 0, value)
         };
+
+    public PromisedIndirectObject CreatePromiseObject() => new(nextObject++, 0);
+
 
     public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
     {
         ((PromisedIndirectObject)reference).SetValue(value);
     }
-    public PdfIndirectObject Add(PdfObject? item) => InnerAdd(AsIndirectReference(item));
+    public PdfIndirectObject Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
     public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation) => 
         InnerAdd(new PdfIndirectObject(objectNumber, generation, item));
 
@@ -90,7 +60,7 @@ public class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 
     public void AddToTrailerDictionary(PdfName key, PdfObject item) => 
         trailerDictionaryItems.WithItem(key,  item);
-        
+
     public PdfDictionary CreateTrailerDictionary()
     {
         AddLengthToTrailerDictionary();

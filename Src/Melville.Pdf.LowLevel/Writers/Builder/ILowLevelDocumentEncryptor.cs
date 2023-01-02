@@ -8,9 +8,20 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
+/// <summary>
+/// This class allows a LowLevelDocumentWriter to write an encrypted document.
+/// </summary>
 public interface ILowLevelDocumentEncryptor
 {
+    /// <summary>
+    /// Create an encryption dictionary that describes the encryption in this document.
+    /// </summary>
+    /// <param name="id">The ID element from the document root.</param>
+    /// <returns>The encryption dictionary</returns>
     public PdfDictionary CreateEncryptionDictionary(PdfArray id);
+    /// <summary>
+    /// The user password that will read a document encrypted with this encryptor.
+    /// </summary>
     public string UserPassword { get; }
 }
 

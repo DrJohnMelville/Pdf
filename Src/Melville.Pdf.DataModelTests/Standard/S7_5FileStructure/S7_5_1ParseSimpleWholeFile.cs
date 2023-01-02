@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
+using System.Reflection;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.Streams;
@@ -48,9 +49,9 @@ public class S7_5_1ParseSimpleWholeFile
     public async Task GenerateDocumentWithDelayedIndirect()
     {
         var builder = new LowLevelDocumentCreator();
-        var pointer = builder.AsIndirectReference();
+        var pointer = builder.CreatePromiseObject();
         builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.Width, pointer).AsDictionary());
-        builder.AssignValueToReference(pointer, 10);
+        pointer.SetValue(10);
         builder.Add(pointer);
         var doc = await Write(builder.CreateDocument());
         var doc2 = await doc.ParseDocumentAsync();

@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Xunit;
@@ -17,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 public class S7_5_6IncrementalUpdates
 {
     public async Task<PdfLoadedLowLevelDocument> CompositeDocument(Action<ILowLevelDocumentCreator> create,
-        Func<PdfLoadedLowLevelDocument, ILowLevelDocumentBuilder,Task> modify)
+        Func<PdfLoadedLowLevelDocument, LowLevelDocumentModifier,Task> modify)
     {
         var creator = new LowLevelDocumentCreator();
         create(creator);

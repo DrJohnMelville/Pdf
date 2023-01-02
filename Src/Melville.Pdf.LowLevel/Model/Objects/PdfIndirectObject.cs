@@ -37,4 +37,6 @@ public class PdfIndirectObject: PdfObject
     }
 
     internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
+
+    internal virtual bool HasValue() => true;
 }

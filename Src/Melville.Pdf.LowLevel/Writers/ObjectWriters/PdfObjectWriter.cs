@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -36,6 +37,8 @@ public class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
 
     public override ValueTask<FlushResult> VisitTopLevelObject(PdfIndirectObject item)
     {
+        if (!item.HasValue())
+            throw new InvalidOperationException("Promised indirect objects must be assigned befor writing the file");
         currentIndirectObject = encryptor.BlockEncryption(item)?null: item;
         return IndirectObjectWriter.WriteObjectDefinition(target, item, this);
     }

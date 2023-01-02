@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.ComparingReader.SavePagesImpl;
@@ -25,10 +26,11 @@ public class DeepCopyTest
     {
         creator.Setup(i => i.Add(It.IsAny<PdfObject>())).Returns((PdfObject i) => i switch
         {
-            null => new PromisedIndirectObject(3, 4),
+            null => throw new ArgumentException(),
             PdfIndirectObject pio => pio,
             _ => new PdfIndirectObject(5, 6, i)
         });
+        creator.Setup(i => i.AddPromisedObject()).Returns(() => new PromisedIndirectObject(3, 4));
         sut = new DeepCopy(creator.Object);
     }
 

@@ -55,7 +55,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         InnnerConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectObject? parent,
             int maxNodeSize)
     {
-        var ret = creator.Add(null);
+        var ret = creator.AddPromisedObject();
         AddExtraFieldsFromTreeLevel(creator,parent);
         var kids = new PdfObject[children.Count];
         int count = 0;
@@ -66,7 +66,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         }
         MetaData.WithItem(KnownNames.Kids, new PdfArray(kids)).
             WithItem(KnownNames.Count, count);
-        creator.AssignValueToReference(ret, MetaData.AsDictionary());
+        ret.SetValue(MetaData.AsDictionary());
         return (ret, count);
     }
     

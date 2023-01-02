@@ -16,9 +16,9 @@ public partial class LowLevelDocumentCreator: ILowLevelDocumentCreator
 {
     private byte major = 1;
     private byte minor = 7;
-    private readonly LowLevelDocumentBuilder data;
+    private readonly ILowLevelDocumentBuilder data;
 
-    public LowLevelDocumentCreator(LowLevelDocumentBuilder? data = null)
+    public LowLevelDocumentCreator(ILowLevelDocumentBuilder? data = null)
     {
         this.data = data ?? new LowLevelDocumentBuilder();
     }

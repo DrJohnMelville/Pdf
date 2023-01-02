@@ -26,7 +26,7 @@ public readonly partial struct DeepCopy
     private async ValueTask<PdfObject> CloneIndirectObject(PdfIndirectObject pio)
     {
         if (buffer.TryGetValue((pio.GenerationNumber, pio.ObjectNumber), out var item)) return item;
-        var newPio = creator.Add(null);
+        var newPio = creator.AddPromisedObject();
         ReserveIndirectMapping(pio, newPio);
         ((PromisedIndirectObject)newPio).SetValue(await Clone(await pio.DirectValueAsync().CA()).CA());
         return newPio;
