@@ -43,7 +43,7 @@ public class XrefParseLogger : IIndirectObjectRegistry
     public void RegisterDeletedBlock(int number, ulong next, ulong generation) =>
         Lines.Add(new XrefDisplayLine("Deleted", number, (long)next, (long)generation));
 
-    public void RegistedNullObject(int number, ulong next, ulong generation)=>
+    public void RegisterNullObject(int number, ulong next, ulong generation)=>
         Lines.Add(new XrefDisplayLine("Null", number, (long)next, (long)generation));
     
     public void RegisterIndirectBlock(int number, ulong generation, ulong offset) =>

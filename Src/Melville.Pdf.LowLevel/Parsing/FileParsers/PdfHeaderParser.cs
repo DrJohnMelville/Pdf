@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-public static class PdfHeaderParser
+internal static class PdfHeaderParser
 {
     public static async ValueTask<(byte Major, byte Minor)> ParseHeadder(IByteSourceWithGlobalPosition context)
     {

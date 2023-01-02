@@ -147,7 +147,7 @@ public record struct Matrix3x3(
     /// Multiplicative inverse of the matrix.
     /// </summary>
     /// <returns>The inverse matrix</returns>
-    /// <throws>DivideByZeroException if the matrix does not have an inverse</throws>
+    /// <exception cref="DivideByZeroException">If the matrix does not have an inverse</exception>
     // special case for inversion of the 3x3 matrix using partial determinants
     // https://en.wikipedia.org/wiki/Invertible_matrix#Inversion_of_3_%C3%97_3_matrices
     [Pure]

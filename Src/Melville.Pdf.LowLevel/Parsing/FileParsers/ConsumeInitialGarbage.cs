@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-public static class ConsumeInitialGarbage
+internal static class ConsumeInitialGarbage
 {
     public static async ValueTask<int> CheckForOffset(IByteSourceWithGlobalPosition context)
     {

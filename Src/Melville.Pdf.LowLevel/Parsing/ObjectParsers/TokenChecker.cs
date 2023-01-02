@@ -7,7 +7,7 @@ using Melville.Parsing.CountingReaders;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public static class TokenChecker
+internal static class TokenChecker
 {
     public static async ValueTask<bool> CheckToken(IByteSourceWithGlobalPosition reader, byte[] template)
     {

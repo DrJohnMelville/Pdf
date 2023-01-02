@@ -4,9 +4,18 @@ using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
+/// <summary>
+/// Defines a password as either a user or an owner passwork.
+/// </summary>
 public enum PasswordType
 {
+    /// <summary>
+    /// The password is a user password.
+    /// </summary>
     User,
+    /// <summary>
+    /// The password is an owner password.
+    /// </summary>
     Owner
 }
 
@@ -28,15 +37,26 @@ public interface IPasswordSource
     ValueTask<(string?, PasswordType)> GetPasswordAsync();
 }
 
+/// <summary>
+/// A password source that thrown an exception on trying to open encrypted files.
+/// </summary>
 [StaticSingleton()]
 public partial class NullPasswordSource : IPasswordSource
 {
+    /// <summary>
+    /// Always throws an exception.
+    /// </summary>
+    /// <returns>Never</returns>
+    /// <exception cref="InvalidDataException">Always</exception>
     public ValueTask<(string?, PasswordType)> GetPasswordAsync() =>
         throw new InvalidDataException(
             "This file is encrypted.  To open encrypted files pass an IPasswordSource to the " +
             "PdfLowLevelReader or PdfReader constructor.");
 }
 
+/// <summary>
+/// IPasswordSource that returns a serries of passwords in order.
+/// </summary>
 public class ConstantPasswordSource : IPasswordSource
 {
     private readonly PasswordType type;

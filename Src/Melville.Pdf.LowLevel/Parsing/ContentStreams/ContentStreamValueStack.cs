@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-public readonly struct ContentStreamValueStack
+internal readonly struct ContentStreamValueStack
 {
     private readonly List<ContentStreamValueUnion> values = new();
     public int Count => values.Count;

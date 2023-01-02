@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public static class EndOfLineFinder
+internal static class EndOfLineFinder
 {
     private static readonly byte[] EndOfLineMarkers = {10, 13};
 

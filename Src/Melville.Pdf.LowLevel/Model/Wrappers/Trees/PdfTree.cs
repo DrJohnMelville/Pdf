@@ -31,7 +31,7 @@ public readonly struct PdfTree<T>: IAsyncEnumerable<PdfObject> where T : PdfObje
     /// </summary>
     /// <param name="key">The key of the desired value.</param>
     /// <returns>The value corresponding to the indicated key</returns>
-    /// <throws>NotFoundException if the desired key is not found.</throws> 
+    /// <exception cref="KeyNotFoundException">If the desired key is not found.</exception>
     public ValueTask<PdfObject> Search(T key) => new TreeSearcher<T>(LowLevelSource, key).Search();
 
     /// <summary>

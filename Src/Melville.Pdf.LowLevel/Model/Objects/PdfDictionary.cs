@@ -56,7 +56,7 @@ public abstract class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, Va
     /// </summary>
     /// <param name="key">The key for the desired value</param>
     /// <returns>The value corresponding to the key</returns>
-    /// <throws>KeyNotFoundException if the key is not present in the dictionary</throws>
+    /// <exception cref="KeyNotFoundException">If the key is not present in the dictionary</exception>
     public ValueTask<PdfObject> this[PdfName key] => RawItems[key].DirectValueAsync();
 
 

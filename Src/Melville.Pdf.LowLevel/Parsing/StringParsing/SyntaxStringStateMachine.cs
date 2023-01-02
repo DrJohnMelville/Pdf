@@ -2,14 +2,14 @@
 
 namespace Melville.Pdf.LowLevel.Parsing.StringParsing;
 
-public enum SyntaxStringResult
+internal enum SyntaxStringResult
 {
     ByteProduced,
     EndOfString,
     EndOfInput
 }
 
-public ref struct SyntaxStringStateMachine
+internal ref struct SyntaxStringStateMachine
 {
     private enum State
     {

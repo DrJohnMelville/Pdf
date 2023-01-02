@@ -14,7 +14,7 @@ public static class IndirectObjectWriter
     private static byte[] ReferenceLabel = {32, 82}; // ' R'
     private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106, 10}; //  endobj
 
-    public static ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectObject item)
+    public static ValueTask<FlushResult> WriteObjectReference(PipeWriter target, PdfIndirectObject item)
     {
         target.Advance(WriteObjectHeader(target.GetSpan(25), item, ReferenceLabel));
         return  target.FlushAsync();
@@ -27,8 +27,8 @@ public static class IndirectObjectWriter
         return position + suffix.Length;
     }
 
-    public static async ValueTask<FlushResult> Write(PipeWriter target, PdfIndirectObject item,
-        ILowLevelVisitor<ValueTask<FlushResult>> innerWriter)
+    public static async ValueTask<FlushResult> WriteObjectDefinition(
+        PipeWriter target, PdfIndirectObject item,  ILowLevelVisitor<ValueTask<FlushResult>> innerWriter)
     {
         target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 
         await target.FlushAsync().CA();

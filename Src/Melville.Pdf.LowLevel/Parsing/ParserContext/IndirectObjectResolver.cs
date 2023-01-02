@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-public class IndirectObjectResolver : IIndirectObjectResolver
+internal class IndirectObjectResolver : IIndirectObjectResolver
 {
     private readonly Dictionary<(int, int), PdfIndirectObject> index = new();
 

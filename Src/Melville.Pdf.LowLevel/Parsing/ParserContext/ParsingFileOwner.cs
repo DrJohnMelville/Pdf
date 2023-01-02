@@ -78,7 +78,7 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     {
     }
 
-    public void RegistedNullObject(int number, ulong next, ulong generation) => 
+    public void RegisterNullObject(int number, ulong next, ulong generation) => 
         IndirectResolver.AddLocationHint(new PdfIndirectObject(number, (int)generation,PdfTokenValues.Null));
 
     public void RegisterIndirectBlock(int number, ulong generation, ulong offset) =>

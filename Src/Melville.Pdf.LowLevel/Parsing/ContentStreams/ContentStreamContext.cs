@@ -10,7 +10,13 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-public class ContentStreamContext
+/// <summary>
+/// A PDF content stream is a stream of arguments and operators in postfix notation.
+/// The purpose of this class is to convert a sequence of arguments and operators (
+/// expressed as a sequence of calls to the handle... methods) into a a serries of
+/// callse to the target object witih the apppopriate number and type of arguments.
+/// </summary>
+internal class ContentStreamContext
 {
     private readonly IContentStreamOperations target;
     private readonly ContentStreamValueStack arguments = new();

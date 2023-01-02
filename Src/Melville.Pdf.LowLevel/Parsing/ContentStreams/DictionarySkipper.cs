@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-public ref struct DictionarySkipper
+internal ref struct DictionarySkipper
 {
     private SequenceReader<byte> source;
     private byte next;

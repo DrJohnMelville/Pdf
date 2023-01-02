@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-public static class NextTokenFinder
+internal static class NextTokenFinder
 {
     public static async ValueTask SkipToNextToken(IByteSourceWithGlobalPosition source)
     {

@@ -11,18 +11,30 @@ using Melville.Pdf.LowLevel.Parsing.StringParsing;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
+/// <summary>
+/// Parses a content stream (expressed as a PipeReader) and "renders" it to an IContentStreamOperations.
+/// </summary>
 public readonly struct ContentStreamParser
 {
     private readonly ContentStreamContext target;
 
+    /// <summary>
+    /// Create the ContentStreamParser
+    /// </summary>
+    /// <param name="target">The target we wish to render the stream to.</param>
     public ContentStreamParser(IContentStreamOperations target)
     {
         this.target = new ContentStreamContext(target);
     }
 
+    /// <summary>
+    /// Render the content stream operations in the given source pipereader.
+    /// </summary>
+    /// <param name="source">The content stream to parse.</param>
+    /// <returns>A valuetask representing this operation.</returns>
     public async ValueTask Parse(PipeReader source)
     {
-        bool done = false;
+        bool done;
         do
         {
             var bfp = await BufferFromPipe.Create(source).CA();

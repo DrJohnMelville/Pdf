@@ -1,18 +1,37 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects;
+﻿using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Visitors;
 
-public interface ILowLevelVisitor<out T>
+/// <summary>
+/// This interface is used to define visitors for the PdfLowLevelObjects
+/// </summary>
+/// <typeparam name="T">Output type of the visitor</typeparam>
+[MacroItem("PdfArray")]
+[MacroItem("PdfBoolean")]
+[MacroItem("PdfDictionary")]
+[MacroItem("PdfTokenValues")]
+[MacroItem("PdfIndirectObject")]
+[MacroItem("PdfName")]
+[MacroItem("PdfInteger")]
+[MacroItem("PdfDouble")]
+[MacroItem("PdfString")]
+[MacroItem("PdfStream")]
+[MacroCode("""
+
+            /// <summary>
+            /// Visit a ~0~.
+            /// </summary>
+            /// <param name="item">The ~0~ to visit </param>
+            /// <returns>A result of the visit operation.</returns>
+            T Visit(~0~ item); 
+        """)]
+public partial interface ILowLevelVisitor<out T>
 {
-    T Visit(PdfArray item);
-    T Visit(PdfBoolean item);
-    T Visit(PdfDictionary item);
-    T Visit(PdfTokenValues item);
-    T Visit(PdfIndirectObject item);
-    T Visit(PdfName item);
-    T Visit(PdfInteger item);
-    T Visit(PdfDouble item);
-    T Visit(PdfString item);
-    T Visit(PdfStream item);
+    /// <summary>
+    /// Visit a PdfIndirectObject as a top level object definition.
+    /// </summary>
+    /// <param name="item">The PdfIndirectObject to visit </param>
+    /// <returns>A return value.</returns>
     T VisitTopLevelObject(PdfIndirectObject item);
 }

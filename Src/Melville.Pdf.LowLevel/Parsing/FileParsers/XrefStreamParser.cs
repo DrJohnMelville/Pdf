@@ -110,7 +110,7 @@ public readonly struct XrefStreamParser
                 registry.RegisterObjectStreamBlock(index, c1, c2);
                 break;
             default:
-                registry.RegistedNullObject(index, c2, c1);
+                registry.RegisterNullObject(index, c2, c1);
                 break;
         }
     }
