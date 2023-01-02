@@ -116,10 +116,13 @@ OptionalContentMemberFunction:AllOff
 OptionalContentMemberFunction:AnyOn
 OptionalContentMemberFunction:AnyOff
 
+Encryptor:AESV2
+Encryptor:AESV3
+Encryptor:V2
+
+
 Pdf:AC
 Pdf:Activation
-Pdf:AESV2
-Pdf:AESV3
 Pdf:All
 Pdf:Alternate
 Pdf:And
@@ -288,7 +291,6 @@ Pdf:UE
 Pdf:Usage
 Pdf:V
 Pdf:VE
-Pdf:V2
 Pdf:View
 Pdf:ViewState
 Pdf:Version

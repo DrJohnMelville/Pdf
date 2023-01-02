@@ -29,7 +29,7 @@ public class EncryptionAlgorithmsActuallyEncryptTest
 
     [Fact]
     public Task AesLength128() => 
-        CreateAndTestDocument(DocumentEncryptorFactory.V4("User", "Owner", PdfPermission.None, KnownNames.AESV2, 8));
+        CreateAndTestDocument(DocumentEncryptorFactory.V4("User", "Owner", PdfPermission.None, EncryptorName.AESV2, 8));
     [Fact]
     public Task Rc4Length128() => 
         CreateAndTestDocument(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
