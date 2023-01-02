@@ -5,7 +5,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
 public delegate double SimpleFunctionResult(ReadOnlySpan<double> input);
 
-public readonly struct SampledFunctionOutput
+internal readonly struct SampledFunctionOutput
 {
     public ClosedInterval Range { get; }
     public ClosedInterval Decode { get; }

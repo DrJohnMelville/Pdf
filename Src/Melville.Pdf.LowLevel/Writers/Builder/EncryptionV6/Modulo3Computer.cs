@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
-public static class Modulo3Computer
+internal static class Modulo3Computer
 {
     public static int Mod3(this in Span<byte> bytes) => Mod3((ReadOnlySpan<byte>)bytes);
     /// <summary>

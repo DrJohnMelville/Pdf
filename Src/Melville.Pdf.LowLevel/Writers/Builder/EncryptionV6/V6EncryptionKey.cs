@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
-public readonly partial struct V6EncryptionKey
+internal readonly partial struct V6EncryptionKey
 {
     [FromConstructor]private readonly byte[] data;
     [FromConstructor] private readonly byte[] encryptedFileKey;

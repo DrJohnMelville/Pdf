@@ -4,7 +4,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
-public readonly partial struct EncryptionStrategy
+internal readonly partial struct EncryptionStrategy
 {
     [FromConstructor] private readonly Aes aesImplementation;
     [FromConstructor]private readonly IEncryptedLength lengthStrategy;
@@ -27,22 +27,22 @@ public readonly partial struct EncryptionStrategy
     
 }
 
-public interface IEncryptedLength
+internal interface IEncryptedLength
 {
     int CipherLength(Aes aes, int messageLength);
 }
 [StaticSingleton]
-public partial class EncryptedLengthEcb: IEncryptedLength
+internal partial class EncryptedLengthEcb: IEncryptedLength
 {
     public int CipherLength(Aes aes, int messageLength) => aes.GetCiphertextLengthEcb(messageLength, PaddingMode.None);
 }
 [StaticSingleton]
-public partial class EncryptedLengthCbc: IEncryptedLength
+internal partial class EncryptedLengthCbc: IEncryptedLength
 {
     public int CipherLength(Aes aes, int messageLength) => aes.GetCiphertextLengthCbc(messageLength, PaddingMode.None);
 }
 
-public interface IEncryptionTransform
+internal interface IEncryptionTransform
 {
     int Transform(Aes aes, Span<byte> source, Span<byte> iv, Span<byte> destination);
 }
@@ -54,19 +54,19 @@ public partial class EncryptEcb : IEncryptionTransform
         aes.EncryptEcb(source, destination, PaddingMode.None);
 } 
 [StaticSingleton]
-public partial class DecryptEcb : IEncryptionTransform
+internal partial class DecryptEcb : IEncryptionTransform
 {
     public int Transform(Aes aes, Span<byte> source, Span<byte> iv, Span<byte> destination) =>
         aes.DecryptEcb(source, destination, PaddingMode.None);
 } 
 [StaticSingleton]
-public partial class EncryptCbc : IEncryptionTransform
+internal partial class EncryptCbc : IEncryptionTransform
 {
     public int Transform(Aes aes, Span<byte> source, Span<byte> iv, Span<byte> destination) =>
         aes.EncryptCbc(source, iv, destination, PaddingMode.None);
 } 
 [StaticSingleton]
-public partial class DecryptCbc : IEncryptionTransform
+internal partial class DecryptCbc : IEncryptionTransform
 {
     public int Transform(Aes aes, Span<byte> source, Span<byte> iv, Span<byte> destination) =>
         aes.DecryptCbc(source, iv, destination, PaddingMode.None);

@@ -12,12 +12,10 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
-public enum SampledFunctionOrder
-{
-    Linear = 1,
-    Cubic = 3
-}
-public class SampledFunctionBuilder
+/// <summary>
+/// This builder allows me to construct sampled functions
+/// </summary>
+public readonly struct SampledFunctionBuilder
 {
     private readonly List<SampledFunctionInput> inputs = new();
     private readonly List<SampledFunctionOutput> outputs = new();
@@ -25,6 +23,11 @@ public class SampledFunctionBuilder
     private readonly SampledFunctionOrder order;
     private readonly ClosedInterval sampleDomain;
 
+    /// <summary>
+    /// Create a smapled function builder.
+    /// </summary>
+    /// <param name="bitsPerSample">The number of bits used to store each sample.</param>
+    /// <param name="order">Selects linear or bicubic interpolation.</param>
     public SampledFunctionBuilder(
         int bitsPerSample, SampledFunctionOrder order = SampledFunctionOrder.Linear)
     {
@@ -46,29 +49,74 @@ public class SampledFunctionBuilder
             throw new ArgumentException("Invalid sample bit length");
     }
 
+    /// <summary>
+    /// Add an input to the sampled function.
+    /// </summary>
+    /// <param name="samples">The number of samples to generate in this dimension.</param>
+    /// <param name="domain">The domain for the input.</param>
+    /// <param name="encode">The encoding interval for the input/</param>
     public void AddInput(int samples, in ClosedInterval domain, in ClosedInterval? encode = null) => 
-        AddInput(new SampledFunctionInput(domain, encode??(0, samples-1), samples));
-    public void AddInput(SampledFunctionInput sfi) => inputs.Add(sfi);
+        inputs.Add(new SampledFunctionInput(domain, encode??(0, samples-1), samples));
 
+    /// <summary>
+    /// Add an output to a sampled function with four inputs
+    /// </summary>
+    /// <param name="defn">A C# function that will be sampled to define the function</param>
+    /// <param name="range">The range of the output</param>
+    /// <param name="decode">The decode array for the output</param>
     public void AddOutput(
         Func<double, double, double, double, double> defn, 
         ClosedInterval range, ClosedInterval? decode = null) =>
         AddOutput(arg => defn(arg[0], arg[1], arg[2], arg[3]), range, decode);
+
+    /// <summary>
+    /// Add an output to a sampled function with three inputs
+    /// </summary>
+    /// <param name="defn">A C# function that will be sampled to define the function</param>
+    /// <param name="range">The range of the output</param>
+    /// <param name="decode">The decode array for the output</param>
     public void AddOutput(
         Func<double, double, double, double> defn, ClosedInterval range, ClosedInterval? decode = null) =>
         AddOutput(arg => defn(arg[0], arg[1], arg[2]), range, decode);
+
+    /// <summary>
+    /// Add an output to a sampled function with two inputs
+    /// </summary>
+    /// <param name="defn">A C# function that will be sampled to define the function</param>
+    /// <param name="range">The range of the output</param>
+    /// <param name="decode">The decode array for the output</param>
     public void AddOutput(
         Func<double, double, double> defn, ClosedInterval range, ClosedInterval? decode = null) =>
         AddOutput(arg => defn(arg[0], arg[1]), range, decode);
+
+    /// <summary>
+    /// Add an output to a sampled function with one input
+    /// </summary>
+    /// <param name="defn">A C# function that will be sampled to define the function</param>
+    /// <param name="range">The range of the output</param>
+    /// <param name="decode">The decode array for the output</param>
     public void AddOutput(
         Func<double, double> defn, ClosedInterval range, ClosedInterval? decode = null) =>
         AddOutput(arg => defn(arg[0]), range, decode);
+
+
+    /// <summary>
+    /// Add an output to a sampled function with an arbitrary number
+    /// </summary>
+    /// <param name="defn">A SimpleFunctionResult that will be sampled to define the function</param>
+    /// <param name="range">The range of the output</param>
+    /// <param name="decode">The decode array for the output</param>
     public void AddOutput(
         SimpleFunctionResult defn, ClosedInterval range, ClosedInterval? decode = null) =>
         AddOutput(new SampledFunctionOutput(range, decode ?? range, defn));
-    public void AddOutput(SampledFunctionOutput sfo) => outputs.Add(sfo);
 
+    private void AddOutput(SampledFunctionOutput sfo) => outputs.Add(sfo);
 
+    /// <summary>
+    /// Create the PdfStream defining this function.
+    /// </summary>
+    /// <param name="members">A DictionaryBuilder that should be used to build the stream.</param>
+    /// <returns>The stream that defines this function.</returns>
     private DictionaryBuilder DictionaryEntries(in DictionaryBuilder members) =>
         members
             .WithItem(KnownNames.FunctionType, 0)
@@ -80,7 +128,7 @@ public class SampledFunctionBuilder
             .WithItem(KnownNames.Encode, EncodeArray())
             .WithItem(KnownNames.Decode, DecodeArray());
 
-    private PdfArray SizeArray() => new(inputs.Select(i=>(PdfNumber)i.Sammples));
+    private PdfArray SizeArray() => new(inputs.Select(i=>(PdfNumber)i.Samples));
 
     private PdfObject OrderIfNotLinear() => 
         order == SampledFunctionOrder.Linear?PdfTokenValues.Null:3;
@@ -97,7 +145,11 @@ public class SampledFunctionBuilder
             ? PdfTokenValues.Null
             : outputs.Select(i => i.Decode).AsPdfArray(outputs.Count);
 
-    private bool DecodeArrayIsTrivial() => outputs.All(i => i.DecodeTrivial(bitsPerSample));
+    private bool DecodeArrayIsTrivial()
+    {
+        var capturedBitsPerSample = bitsPerSample;
+        return outputs.All(i => i.DecodeTrivial(capturedBitsPerSample));
+    }
 
     private async ValueTask<MultiBufferStream> SamplesStream()
     {
@@ -121,7 +173,7 @@ public class SampledFunctionBuilder
             return;
         }
 
-        for (int i = 0; i < inputs[index].Sammples; i++)
+        for (int i = 0; i < inputs[index].Samples; i++)
         {
             indices[index] = i;
             values[index] = inputs[index].InputAtSampleLocation(i);

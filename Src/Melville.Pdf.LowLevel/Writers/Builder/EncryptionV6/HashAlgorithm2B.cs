@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 // iText implementation 
 // https://github.com/itext/itext7-dotnet/blob/a3ce063817293592763c212248213bbdaa0fc53c/itext/itext.kernel/itext/kernel/crypto/securityhandler/StandardHandlerUsingAes256.cs
 
-public ref struct HashAlgorithm2B
+internal ref struct HashAlgorithm2B
 {
     public static void ComputePasswordHash(
         string passwordText, Span<byte> salt, Span<byte> extraBytes, Span<byte> target, 

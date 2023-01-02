@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
-public partial class V6Encryptor : ILowLevelDocumentEncryptor
+internal partial class V6Encryptor : ILowLevelDocumentEncryptor
 {
     [FromConstructor] public string UserPassword { get; set; }
     [FromConstructor] private readonly string ownerPassword;

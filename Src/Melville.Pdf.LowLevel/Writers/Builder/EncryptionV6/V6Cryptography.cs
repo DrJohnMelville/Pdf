@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 
-public readonly struct V6Cryptography
+internal readonly struct V6Cryptography
 {
     public HashAlgorithm Sha256 { get; } = SHA256.Create();
     public HashAlgorithm Sha384 { get; } = SHA384.Create();

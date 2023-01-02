@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -7,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
-public readonly struct ExponentialInterval
+internal readonly struct ExponentialInterval
 {
     public ClosedInterval Bounds { get; }
     public ClosedInterval Range { get; }
@@ -19,18 +20,32 @@ public readonly struct ExponentialInterval
     }
 }
 
-public class ExponentialFunctionBuilder
+/// <summary>
+/// Exponential interpolation functions are defined in 7.10.3 of the pdf 2.0 spec.
+/// An exponential function is a 1-> n fucnction where each of the n outputs is the
+/// function result 0-1 scaled to various values.
+/// </summary>
+public readonly struct ExponentialFunctionBuilder
 {
-    private ClosedInterval domain;
-    private double exponent;
-    private List<ExponentialInterval> mappings = new();
+    private readonly ClosedInterval domain;
+    private readonly double exponent;
+    private readonly List<ExponentialInterval> mappings = new();
 
+    /// <summary>
+    /// Create an exponential function builder
+    /// </summary>
+    /// <param name="exponent">Exponent for the interpolation function</param>
+    /// <param name="domain">The domain of the function</param>
     public ExponentialFunctionBuilder(double exponent, ClosedInterval? domain = null)
     {
         this.exponent = exponent;
         this.domain = domain ?? new ClosedInterval(0,1);
     }
 
+    /// <summary>
+    /// Render the described function as a Pdf Dictionary.
+    /// </summary>
+    /// <returns>A PdfDictionary declaring this function</returns>
     public PdfDictionary Create() => DictionaryItems().AsDictionary();
 
     private DictionaryBuilder DictionaryItems()
@@ -57,8 +72,19 @@ public class ExponentialFunctionBuilder
     private bool RangeIsDefault() => 
         mappings.All(i =>i.Range.Equals(ClosedInterval.NoRestriction));
 
+    /// <summary>
+    /// Add an output channel with the given maximum and minimum but no clipping.
+    /// </summary>
+    /// <param name="min">The output value when x = 0</param>
+    /// <param name="max">The output value when x = 1</param>
     public void AddFunction(double min, double max) =>
         AddFunction(min, max, (double.MinValue, double.MaxValue));
+    /// <summary>
+    /// Add an output channel with the given maximum and minimum with output clipping.
+    /// </summary>
+    /// <param name="min">The output value when x = 0</param>
+    /// <param name="max">The output value when x = 1</param>
+    /// <param name="range">A range to which the output should be clipped.</param>
     public void AddFunction(double min, double max,  ClosedInterval range) => 
         mappings.Add(new ExponentialInterval((min, max), range));
 }
