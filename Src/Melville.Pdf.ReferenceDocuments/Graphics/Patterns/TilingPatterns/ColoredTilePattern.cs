@@ -38,7 +38,7 @@ ET
     }
 
 
-    protected override PdfObject CreatePattern(ILowLevelDocumentCreator lldc)
+    protected override PdfObject CreatePattern(ILowLevelDocumentBuilder lldc)
     {
         var tpc = CreatePatternCreator();
 
@@ -47,7 +47,7 @@ ET
         return tpc.ConstructPageTree(lldc, null, 100).Reference;
     }
 
-    private static PdfDictionary EncodedDingbatsFont(ILowLevelDocumentCreator lldc) =>
+    private static PdfDictionary EncodedDingbatsFont(ILowLevelDocumentBuilder lldc) =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.Type1)

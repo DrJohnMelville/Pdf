@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-internal class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
+internal partial class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
 {
     private int nextObject;
     public List<PdfIndirectObject> Objects { get;  }= new();
@@ -37,6 +40,7 @@ internal class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
         ((PromisedIndirectObject)reference).SetValue(value);
     }
     public PdfIndirectObject Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
+
     public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation) => 
         InnerAdd(new PdfIndirectObject(objectNumber, generation, item));
 
@@ -105,26 +109,9 @@ internal class LowLevelDocumentBuilder : ILowLevelDocumentBuilder
     private static DictionaryBuilder ExpandDefaultBuilder(DictionaryBuilder? dictionaryBuilder) => 
         dictionaryBuilder?? new DictionaryBuilder().WithFilter(FilterName.FlateDecode);
 
-    private class ObjectStreamContextImpl : IDisposable
+    public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7)
     {
-        private readonly LowLevelDocumentBuilder parent;
-        private readonly DictionaryBuilder dictionaryBuilder;
-
-        public ObjectStreamContextImpl(LowLevelDocumentBuilder parent, DictionaryBuilder dictionaryBuilder)
-        {
-            this.parent = parent;
-            this.dictionaryBuilder = dictionaryBuilder;
-        }
-
-        public void Dispose()
-        {
-            var capturedBuilder = parent.objectStreamBuilder ??
-                      throw new InvalidOperationException("No parent object stream builder");
-            parent.objectStreamBuilder = null;
-            if (capturedBuilder.HasValues())
-            {
-                parent.AddDelayedObject(()=> capturedBuilder.CreateStream(dictionaryBuilder));
-            }
-        }
+        return new PdfLowLevelDocument(major, minor, CreateTrailerDictionary(), Objects.ToDictionary(
+            static item => (item.ObjectNumber, item.GenerationNumber) ));
     }
 }

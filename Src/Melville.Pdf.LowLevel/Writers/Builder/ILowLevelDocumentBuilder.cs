@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
+
+public static class LowLevelDocumentBuilderFactory
+{
+    public static ILowLevelDocumentBuilder New() => new LowLevelDocumentBuilder();
+}
 
 /// <summary>
 /// Clients use this interface to add objects to a PDF document which can then be written in the PDF format.
@@ -68,6 +74,8 @@ public interface ILowLevelDocumentBuilder
     /// <returns></returns>
     IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
 
+    PdfLowLevelDocument CreateDocument (byte major = 1, byte minor = 7);
+
     /// <summary>
     /// Add an object with a specific object and generation number.
     /// </summary>
@@ -76,7 +84,4 @@ public interface ILowLevelDocumentBuilder
     /// <param name="generation">The desired generation number</param>
     /// <returns></returns>
     internal PdfIndirectObject Add(PdfObject item, int objectNumber, int generation);
-
-    internal PdfDictionary CreateTrailerDictionary();
-    internal List<PdfIndirectObject> Objects { get; }
 }

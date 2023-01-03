@@ -105,7 +105,7 @@ public class S7_5_7ObjectStreams
         
     private static async Task<string> DocWithObjectStream()
     {
-        var builder = new LowLevelDocumentCreator();
+        var builder = LowLevelDocumentBuilderFactory.New();
         using (builder.ObjectStreamContext(new DictionaryBuilder()))
         {
             builder.Add(PdfString.CreateAscii("One"));
@@ -116,7 +116,7 @@ public class S7_5_7ObjectStreams
     }
     private static async Task<string> DocWithObjectStreamWithHighObjectNumber()
     {
-        var builder = new LowLevelDocumentCreator();
+        var builder = LowLevelDocumentBuilderFactory.New();
         using (builder.ObjectStreamContext(new DictionaryBuilder()))
         {
             builder.Add(PdfString.CreateAscii("One"));
@@ -126,7 +126,7 @@ public class S7_5_7ObjectStreams
         return fileAsString;
     }
 
-    private static async Task<string> DocCreatorToString(LowLevelDocumentCreator builder)
+    private static async Task<string> DocCreatorToString(ILowLevelDocumentBuilder builder)
     {
         var ms = new MultiBufferStream();
         var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());

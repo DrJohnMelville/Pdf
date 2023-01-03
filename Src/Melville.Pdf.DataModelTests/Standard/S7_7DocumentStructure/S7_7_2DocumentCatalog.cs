@@ -16,8 +16,7 @@ public class S7_7_2DocumentCatalog
     public async Task DefaultVersions(byte major, byte minor, string result)
     {
         var creator = new PdfDocumentCreator();
-        creator.LowLevelCreator.SetVersion(major, minor);
-        var doc = new PdfDocument(creator.CreateDocument());
+        var doc = new PdfDocument(creator.CreateDocument(major, minor));
         Assert.Equal(result, (await doc.VersionAsync()).ToString());
     }
 

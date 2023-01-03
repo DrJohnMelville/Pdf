@@ -36,7 +36,7 @@ public class TilePatternCreatorTest
             csw.Rectangle(1, 2, 3, 4);
             return ValueTask.CompletedTask;
         });
-        var (ir, num) = builder.ConstructPageTree(new LowLevelDocumentCreator(), null, 10);
+        var (ir, num) = builder.ConstructPageTree(new LowLevelDocumentBuilder(), null, 10);
         var str = await (await ir.DirectValueAsync()).WriteToStringAsync();
         Assert.Contains(partialString, str);
     }

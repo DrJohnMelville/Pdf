@@ -9,7 +9,7 @@ public class GarmondBold : FontDefinitionTest
     {
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentCreator arg) =>
+    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg) =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.TrueType)
@@ -27,7 +27,7 @@ public class GarmondItalic : FontDefinitionTest
     {
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentCreator arg) =>
+    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg) =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.TrueType)

@@ -28,13 +28,12 @@ public class S7_5_1ParseSimpleWholeFile
     }
     private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
     {
-        var builder = new LowLevelDocumentCreator();
-        builder.SetVersion(majorVersion, minorVersion);
+        var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
         builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
         builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
-        return await Write(builder.CreateDocument());
+        return await Write(builder.CreateDocument(majorVersion, minorVersion));
     }
 
     private async Task RoundTripPdfAsync(string pdf)
@@ -48,7 +47,7 @@ public class S7_5_1ParseSimpleWholeFile
     [Fact]
     public async Task GenerateDocumentWithDelayedIndirect()
     {
-        var builder = new LowLevelDocumentCreator();
+        var builder = new LowLevelDocumentBuilder();
         var pointer = builder.CreatePromiseObject();
         builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.Width, pointer).AsDictionary());
         pointer.SetValue(10);
@@ -62,7 +61,7 @@ public class S7_5_1ParseSimpleWholeFile
     [Fact]
     public async Task DocumentWithStream()
     {
-        var builder = new LowLevelDocumentCreator();
+        var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Image).AsStream("Stream data"));
         var doc = builder.CreateDocument();

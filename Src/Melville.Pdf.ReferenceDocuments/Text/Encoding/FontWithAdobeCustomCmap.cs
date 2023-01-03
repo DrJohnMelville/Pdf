@@ -21,7 +21,7 @@ public class FontWithAdobeCustomCmap : FontDefinitionTest
         TextToRender = "\xB6";
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
+    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream(
             "Melville.Pdf.ReferenceDocuments.Text.FlatedFontWithAdobeCmap.ttf")!;

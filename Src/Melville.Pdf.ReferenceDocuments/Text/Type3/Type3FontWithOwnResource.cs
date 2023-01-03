@@ -18,7 +18,7 @@ public class Type3FontWithOwnResource: FontDefinitionTest
             .AsDictionary();
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
+    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
     {
         var triangle = arg.Add(new DictionaryBuilder().AsStream(@"
 /GS1 gs

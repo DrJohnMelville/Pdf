@@ -27,31 +27,28 @@ public class FileWriterTest
 
     private async Task<string> OutputSimpleDocument(byte majorVersion = 1, byte minorVersion = 7)
     {
-        var builder = new LowLevelDocumentCreator();
-        builder.SetVersion(majorVersion, minorVersion);
+        var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
-        return await Write(builder.CreateDocument());
+        return await Write(builder.CreateDocument(majorVersion, minorVersion));
     }
     private async Task<string> OutputTwoItemDocument(byte majorVersion = 1, byte minorVersion = 7)
     {
-        var builder = new LowLevelDocumentCreator();
-        builder.SetVersion(majorVersion, minorVersion);
+        var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
         builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
         builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
-        return await Write(builder.CreateDocument());
+        return await Write(builder.CreateDocument(majorVersion, minorVersion));
     }
     private async Task<string> OutputTwoItemRefStream(byte majorVersion = 1, byte minorVersion = 7)
     {
-        var builder = new LowLevelDocumentCreator();
-        builder.SetVersion(majorVersion, minorVersion);
+        var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
         builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
         builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
-        PdfLowLevelDocument doc = builder.CreateDocument();
+        PdfLowLevelDocument doc = builder.CreateDocument(majorVersion, minorVersion);
         var target = new TestWriter();
         var writer = new LowLevelDocumentWriter(target.Writer, doc);
         await writer.WriteWithReferenceStream();
@@ -74,8 +71,7 @@ public class FileWriterTest
     [InlineData(1,60)]
     public Task ThrowWhenWritingInvalidVersionNumber(byte majorVersion, byte minorVersion)
     {
-        var builder = new LowLevelDocumentCreator();
-        builder.SetVersion(majorVersion, minorVersion);
+        var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
         return Assert.ThrowsAsync<ArgumentException>(

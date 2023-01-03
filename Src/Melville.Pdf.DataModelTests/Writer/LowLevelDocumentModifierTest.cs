@@ -21,7 +21,7 @@ public class LowLevelDocumentModifierTest
 
     public LowLevelDocumentModifierTest()
     {
-        var builder = new LowLevelDocumentCreator();
+        var builder = new LowLevelDocumentBuilder();
         var rootref = builder.Add(PdfBoolean.True);
         builder.Add(PdfBoolean.False);
         builder.AddToTrailerDictionary(KnownNames.Root, rootref);
@@ -68,7 +68,7 @@ public class LowLevelDocumentModifierTest
 
     private static PdfLowLevelDocument SixItemDocument()
     {
-        var creator = new LowLevelDocumentCreator();
+        var creator = new LowLevelDocumentBuilder();
         creator.Add(0);
         creator.Add(1);
         creator.Add(3);

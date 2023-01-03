@@ -10,7 +10,7 @@ public class Type1WithMatrix : Type1FunctionalShaderBase
         
     }
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentCreator arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Matrix, (
                 Matrix3x2.CreateRotation(0.2f)

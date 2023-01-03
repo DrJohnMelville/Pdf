@@ -16,7 +16,7 @@ public abstract class PatternDisplayClass : Card3x5
             KnownNames.Pattern, KnownNames.DeviceRGB));
     }
 
-    protected abstract PdfObject CreatePattern(ILowLevelDocumentCreator arg);
+    protected abstract PdfObject CreatePattern(ILowLevelDocumentBuilder arg);
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {

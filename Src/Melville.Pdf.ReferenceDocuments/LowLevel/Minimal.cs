@@ -11,14 +11,12 @@ public class MinimalPdfParser: CreatePdfParser
     }
 
     public override async ValueTask WritePdfAsync(Stream target) =>
-        await MinimalPdf(1, 7).CreateDocument().WriteToAsync(target);
+        await MinimalPdf().WriteToAsync(target);
 
-    public static ILowLevelDocumentCreator MinimalPdf(int major, int minor)
+    public static PdfLowLevelDocument MinimalPdf(byte major = 1, byte minor = 7)
     {
         var builder = new PdfDocumentCreator();
-        builder.LowLevelCreator.SetVersion((byte)major, (byte)minor);
         builder.Pages.CreatePage();
-        builder.CreateDocument();
-        return builder.LowLevelCreator;
+        return builder.CreateDocument(major, minor);
     }
 }

@@ -17,7 +17,7 @@ public class DefaultRgb: ColorBars
             CreateColorSpace);
     }
 
-    private PdfObject CreateColorSpace(ILowLevelDocumentCreator i)
+    private PdfObject CreateColorSpace(ILowLevelDocumentBuilder i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));

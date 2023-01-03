@@ -20,7 +20,7 @@ public abstract class FontDefinitionTest : Card3x5
         page.AddResourceObject(ResourceTypeName.Font, Font2, CreateFont);
     }
 
-    protected abstract PdfObject CreateFont(ILowLevelDocumentCreator arg);
+    protected abstract PdfObject CreateFont(ILowLevelDocumentBuilder arg);
     
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {

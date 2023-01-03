@@ -13,10 +13,10 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_6IncrementalUpdates
 {
-    public async Task<PdfLoadedLowLevelDocument> CompositeDocument(Action<ILowLevelDocumentCreator> create,
+    public async Task<PdfLoadedLowLevelDocument> CompositeDocument(Action<ILowLevelDocumentBuilder> create,
         Func<PdfLoadedLowLevelDocument, LowLevelDocumentModifier,Task> modify)
     {
-        var creator = new LowLevelDocumentCreator();
+        var creator = new LowLevelDocumentBuilder();
         create(creator);
         var doc = creator.CreateDocument();
         var stream = new MultiBufferStream();

@@ -8,7 +8,7 @@ public class BuiltInTrueType : FontDefinitionTest
     {
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentCreator arg) =>
+    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg) =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.TrueType)

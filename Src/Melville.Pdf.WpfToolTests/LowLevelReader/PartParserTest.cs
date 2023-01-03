@@ -29,7 +29,7 @@ public class PartParserTest
     [InlineData(1,7)]
     [InlineData(1,3)]
     [InlineData(2,0)]
-    public async Task ParseHeader(int major, int minor)
+    public async Task ParseHeader(byte major, byte minor)
     {
         var model =  await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf(major, minor).AsFileAsync(),waitingService.Object);
@@ -40,7 +40,7 @@ public class PartParserTest
     public async Task ParseFinalDictionary()
     {
         var model = await sut.ParseAsync(
-            await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
+            await MinimalPdfParser.MinimalPdf().AsFileAsync(),
             waitingService.Object);
         var trailerNode = model.Root.Last();
         Assert.Equal("Trailer: Dictionary", trailerNode.Title);
@@ -53,7 +53,7 @@ public class PartParserTest
     public async Task ReportWaitingTime()
     {
         var model = await sut.ParseAsync(
-            await MinimalPdfParser.MinimalPdf(1, 7).AsFileAsync(),
+            await MinimalPdfParser.MinimalPdf().AsFileAsync(),
             waitingService.Object);
         waitingService.Verify(i=>i.WaitBlock("Loading File", 4, false), Times.Once);
         waitingService.Verify(i=>i.MakeProgress(It.IsAny<string?>()), Times.Exactly(4));
@@ -93,14 +93,14 @@ public class PartParserTest
     }
 
     private async Task<DocumentPart[]> BuildSingleElementFile(
-        Func<ILowLevelDocumentCreator,PdfObject> item)
+        Func<ILowLevelDocumentBuilder,PdfObject> item)
     {
-        var builder = new LowLevelDocumentCreator();
+        var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));
         return (await CreateParsedFileAsync(builder)).Root;
     }
 
-    private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentCreator builder) => 
+    private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentBuilder builder) => 
         (await sut.ParseAsync(await builder.AsFileAsync(), waitingService.Object));
 
     [Fact] public Task RenderDoubleValue()=>TestSingleElement(3.14, "3.14");

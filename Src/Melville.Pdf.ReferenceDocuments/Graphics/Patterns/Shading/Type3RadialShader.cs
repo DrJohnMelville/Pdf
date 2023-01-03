@@ -28,20 +28,20 @@ public abstract class Type3RadialShaderBase : PatternDisplayClass
         return await fbuilder.CreateSampledFunction();
     }
 
-    protected override PdfObject CreatePattern(ILowLevelDocumentCreator arg) =>
+    protected override PdfObject CreatePattern(ILowLevelDocumentBuilder arg) =>
         BuildPattern(arg, 
             BuildShader(arg, function ?? throw new InvalidOperationException("No func defined"), 
                 new DictionaryBuilder()).AsDictionary(),
             new DictionaryBuilder()).AsDictionary();
 
     protected virtual DictionaryBuilder BuildPattern(
-        ILowLevelDocumentCreator arg, PdfDictionary shading, DictionaryBuilder builder) => builder
+        ILowLevelDocumentBuilder arg, PdfDictionary shading, DictionaryBuilder builder) => builder
         .WithItem(KnownNames.Shading, arg.Add(shading))
         .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
         .WithItem(KnownNames.PatternType, 2);
 
     protected virtual DictionaryBuilder BuildShader(
-        ILowLevelDocumentCreator arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
+        ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
         .WithItem(KnownNames.Function, arg.Add(localFunc))
         .WithItem(KnownNames.Coords, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
         .WithItem(KnownNames.ShadingType, 3)
@@ -61,6 +61,6 @@ public class Type3RadialShaderWithBackground: Type3RadialShaderBase
     {
     }
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentCreator arg, PdfDictionary localFunc, DictionaryBuilder builder) => 
+    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.Background, new PdfArray(0,0, 1));
 }

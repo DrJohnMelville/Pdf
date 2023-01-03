@@ -10,7 +10,7 @@ public class DingBatsWithANameDifferences : FontDefinitionTest
         TextToRender = "\u0001\u0002\u0003\u0004";
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
+    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
     {
         var enc = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Encoding)

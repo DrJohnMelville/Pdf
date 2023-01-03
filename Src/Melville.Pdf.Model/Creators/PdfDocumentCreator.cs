@@ -9,18 +9,18 @@ namespace Melville.Pdf.Model.Creators;
 
 public class PdfDocumentCreator
 {
-    public ILowLevelDocumentCreator LowLevelCreator { get; } = new LowLevelDocumentCreator();
+    public ILowLevelDocumentBuilder LowLevelCreator { get; } = LowLevelDocumentBuilderFactory.New();
     private readonly DictionaryBuilder catalogItems = new();
     public PageTreeNodeCreator Pages { get; } = new();
     public int MaxPageTreeNodeSize { get; set; } = 100;
 
-    public PdfLowLevelDocument CreateDocument()
+    public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7)
     {
         var pageTree = CreateResourceDictionaryItem(Pages);
         catalogItems.WithItem(KnownNames.Pages, pageTree);
         LowLevelCreator.AddToTrailerDictionary(KnownNames.Root, LowLevelCreator.Add(
             catalogItems.AsDictionary()));
-        return LowLevelCreator.CreateDocument();
+        return LowLevelCreator.CreateDocument(major, minor);
     }
 
     public PdfIndirectObject CreateResourceDictionaryItem(ItemWithResourceDictionaryCreator creator) => 

@@ -37,7 +37,7 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
             buffer[i] = (byte) rnd.Next(256);
         }
 
-        var creator = new LowLevelDocumentCreator();
+        var creator = new LowLevelDocumentBuilder();
         var param =
             new DictionaryBuilder()
                 .WithItem(KnownNames.EarlyChange, EarlySwitch)

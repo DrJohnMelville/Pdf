@@ -8,7 +8,7 @@ public class EmbeddedOpenType : FontDefinitionTest
     {
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentCreator arg)
+    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.GFSEustace.otf")!;
         var stream = arg.Add(new DictionaryBuilder()

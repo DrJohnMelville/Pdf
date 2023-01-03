@@ -44,7 +44,7 @@ public class EncryptionAlgorithmsActuallyEncryptTest
             PdfString.CreateAscii("12345678901234567890123456789012"),
             PdfString.CreateAscii("12345678901234567890123456789012")));
         docBuilder.AddEncryption(encryptionDeclaration);
-        var creator = new LowLevelDocumentCreator(docBuilder);
+        var creator = docBuilder;
 
         docBuilder.Add(PdfString.CreateAscii("Encrypted String"));
         docBuilder.Add(new DictionaryBuilder().AsStream("This is an encrypted stream"));
@@ -59,6 +59,5 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         var stream = (PdfStream)await doc2.Objects[(3,0)].DirectValueAsync();
         Assert.Equal("This is an encrypted stream", await new StreamReader(
             await stream.StreamContentAsync()).ReadToEndAsync());
-            
     }
 }

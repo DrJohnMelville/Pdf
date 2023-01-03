@@ -74,7 +74,7 @@ trailer
     public async Task LodFileTableWhenLoadingFiles()
     {
         var resolver = new Mock<IIndirectObjectResolver>();
-        var file = await MinimalPdfParser.MinimalPdf(1, 5).AsStringAsync();
+        var file = await MinimalPdfParser.MinimalPdf(1,5).AsStringAsync();
         var ps = (file).AsParsingSource(resolver.Object);
         await RandomAccessFileParser.Parse(ps);
         resolver.Verify(CheckLocation(0,0), Times.Exactly(4));

@@ -22,9 +22,9 @@ public class S_7_5_8CrossReferenceStreams
     [Fact]
     public async Task GenerateAndParseFileWithReferenceStream()
     {
-        var document = MinimalPdfParser.MinimalPdf(1, 7);
+        var document = MinimalPdfParser.MinimalPdf();
         var ms = new MultiBufferStream();
-        var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), document.CreateDocument());
+        var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), document);
         await writer.WriteWithReferenceStream();
         var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
         Assert.DoesNotContain(fileAsString, "trailer");

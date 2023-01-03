@@ -15,7 +15,7 @@ public abstract class ItemWithResourceDictionaryCreator
 {
     protected DictionaryBuilder MetaData { get; }
     protected Dictionary<(PdfName DictionaryName, PdfName ItemName), 
-            Func<ILowLevelDocumentCreator,PdfObject>> Resources { get; } = new();
+            Func<ILowLevelDocumentBuilder,PdfObject>> Resources { get; } = new();
 
     protected ItemWithResourceDictionaryCreator(DictionaryBuilder metaData)
     {
@@ -23,13 +23,13 @@ public abstract class ItemWithResourceDictionaryCreator
     }
 
     public abstract (PdfIndirectObject Reference, int PageCount) 
-        ConstructPageTree(ILowLevelDocumentCreator creator, PdfIndirectObject? parent,
+        ConstructPageTree(ILowLevelDocumentBuilder creator, PdfIndirectObject? parent,
             int maxNodeSize);
 
     public void AddMetadata(PdfName name, PdfObject item) =>
         MetaData.WithItem(name, item);
 
-    protected void TryAddResources(ILowLevelDocumentCreator creator)
+    protected void TryAddResources(ILowLevelDocumentBuilder creator)
     {
         if (Resources.Count == 0) return;
         var res = new DictionaryBuilder();
@@ -41,17 +41,17 @@ public abstract class ItemWithResourceDictionaryCreator
     }
 
     private PdfObject DictionaryValues(
-        ILowLevelDocumentCreator creator, 
+        ILowLevelDocumentBuilder creator, 
         IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
-            Func<ILowLevelDocumentCreator,PdfObject>>> subDictionary) =>
+            Func<ILowLevelDocumentBuilder,PdfObject>>> subDictionary) =>
         subDictionary.Key == KnownNames.ProcSet
             ? subDictionary.First().Value(creator)
             : CreateDictionary(subDictionary, creator);
 
     private PdfDictionary CreateDictionary(
         IEnumerable<KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
-            Func<ILowLevelDocumentCreator, PdfObject>>> items,
-        ILowLevelDocumentCreator creator) => items
+            Func<ILowLevelDocumentBuilder, PdfObject>>> items,
+        ILowLevelDocumentBuilder creator) => items
             .Aggregate(new DictionaryBuilder(),
                 (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value(creator))))
             .AsDictionary();
@@ -59,7 +59,7 @@ public abstract class ItemWithResourceDictionaryCreator
     public void AddResourceObject(ResourceTypeName resourceType, PdfName name, PdfObject obj) =>
         AddResourceObject(resourceType, name, _ => obj);
     public void AddResourceObject(
-        ResourceTypeName resourceType, PdfName name, Func<ILowLevelDocumentCreator,PdfObject> obj) =>
+        ResourceTypeName resourceType, PdfName name, Func<ILowLevelDocumentBuilder,PdfObject> obj) =>
         Resources[(resourceType, name)] = obj;
 
     public void AddBox(BoxName name, in PdfRect rect) => MetaData.WithItem(name, rect.ToPdfArray);
