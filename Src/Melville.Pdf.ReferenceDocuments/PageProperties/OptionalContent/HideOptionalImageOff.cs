@@ -41,7 +41,7 @@ public class HideOptionalImageOff: DisplayImageTest
             .WithItem(KnownNames.Usage, usageDictionary)
             .AsDictionary());
 
-        docCreator.AddToCatalog(KnownNames.OCProperties, new DictionaryBuilder()
+        docCreator.AddToRootDictionary(KnownNames.OCProperties, new DictionaryBuilder()
             .WithItem(KnownNames.OCGs, new PdfArray(ocg))
             .WithItem(KnownNames.D, new DictionaryBuilder()
                 .WithItem(OnOrOff(), new PdfArray(ocg))

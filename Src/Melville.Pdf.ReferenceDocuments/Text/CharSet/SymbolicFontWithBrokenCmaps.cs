@@ -10,7 +10,7 @@ public class SymbolicFontWithBrokenCmaps : FontDefinitionTest
     {
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
+    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.SymbolicTTFontWithABrokenCMAP.TTF")!;
         var stream = arg.Add(new DictionaryBuilder()

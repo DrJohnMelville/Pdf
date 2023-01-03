@@ -93,14 +93,14 @@ public class PartParserTest
     }
 
     private async Task<DocumentPart[]> BuildSingleElementFile(
-        Func<ILowLevelDocumentBuilder,PdfObject> item)
+        Func<IPdfObjectRegistry,PdfObject> item)
     {
         var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));
         return (await CreateParsedFileAsync(builder)).Root;
     }
 
-    private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentBuilder builder) => 
+    private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentCreator builder) => 
         (await sut.ParseAsync(await builder.AsFileAsync(), waitingService.Object));
 
     [Fact] public Task RenderDoubleValue()=>TestSingleElement(3.14, "3.14");

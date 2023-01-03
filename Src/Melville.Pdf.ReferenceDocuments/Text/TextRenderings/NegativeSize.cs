@@ -12,7 +12,7 @@ public class NegativeSize: FontDefinitionTest
         FontSize = -70;
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
+    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
     {
         return new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)

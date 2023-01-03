@@ -126,7 +126,7 @@ public class S7_5_7ObjectStreams
         return fileAsString;
     }
 
-    private static async Task<string> DocCreatorToString(ILowLevelDocumentBuilder builder)
+    private static async Task<string> DocCreatorToString(ILowLevelDocumentCreator builder)
     {
         var ms = new MultiBufferStream();
         var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());

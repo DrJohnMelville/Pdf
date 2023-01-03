@@ -14,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures;
 
 public class S7_9Trees
 {
-    private readonly ILowLevelDocumentBuilder builder = new LowLevelDocumentBuilder();
+    private readonly ILowLevelDocumentCreator builder = LowLevelDocumentBuilderFactory.New();
 
     private PdfDictionary CreateNumberTree(int count)
     {

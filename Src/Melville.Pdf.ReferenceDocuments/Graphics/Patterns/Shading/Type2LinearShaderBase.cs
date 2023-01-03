@@ -28,20 +28,20 @@ public abstract class Type2LinearShaderBase : PatternDisplayClass
         return await fbuilder.CreateSampledFunction();
     }
 
-    protected override PdfObject CreatePattern(ILowLevelDocumentBuilder arg) =>
+    protected override PdfObject CreatePattern(IPdfObjectRegistry arg) =>
         BuildPattern(arg, 
             BuildShader(arg, function ?? throw new InvalidOperationException("No func defined"), 
                 new DictionaryBuilder()).AsDictionary(),
             new DictionaryBuilder()).AsDictionary();
 
     protected virtual DictionaryBuilder BuildPattern(
-        ILowLevelDocumentBuilder arg, PdfDictionary shading, DictionaryBuilder builder) => builder
+        IPdfObjectRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
             .WithItem(KnownNames.Shading, arg.Add(shading))
             .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
             .WithItem(KnownNames.PatternType, 2);
 
     protected virtual DictionaryBuilder BuildShader(
-        ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
+        IPdfObjectRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
             .WithItem(KnownNames.Function, arg.Add(localFunc))
             .WithItem(KnownNames.Coords, new PdfArray(0, .2, 0, .8))
             .WithItem(KnownNames.ShadingType, 2)
@@ -59,7 +59,7 @@ public class Type2ExtendLow : Type2LinearShaderBase
 {
     public Type2ExtendLow() : base ("Axial shader that extends its low extent"){}
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Extend, new PdfArray(true, false));
 }
@@ -68,7 +68,7 @@ public class Type2ExtendHigh : Type2LinearShaderBase
 {
     public Type2ExtendHigh() : base ("Axial shader that extends its high extent"){}
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Extend, new PdfArray(false, true));
 }
@@ -77,7 +77,7 @@ public class Type2ExtendBoth : Type2LinearShaderBase
 {
     public Type2ExtendBoth() : base ("Axial shader that extends both ends"){}
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Extend, new PdfArray(true, true));
 }
@@ -86,7 +86,7 @@ public class Type2ExtendBothWithBackground : Type2LinearShaderBase
 {
     public Type2ExtendBothWithBackground() : base ("Axial shader that extends both ends with a background"){}
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Extend, new PdfArray(true, true))
             .WithItem(KnownNames.Background, new PdfArray(0, 1, 0));
@@ -96,7 +96,7 @@ public class Type2ExtendNoneWithBackground : Type2LinearShaderBase
 {
     public Type2ExtendNoneWithBackground() : base ("Axial shader that extends both ends with a background"){}
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Background, new PdfArray(0, 1, 0));
 }

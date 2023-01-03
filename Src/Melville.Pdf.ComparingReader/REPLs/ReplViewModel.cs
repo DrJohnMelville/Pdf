@@ -54,7 +54,7 @@ public partial class ReplViewModel
     private async Task WriteStreamModificationBlock(PdfLoadedLowLevelDocument doc, PdfStream newStream,
         MultiBufferStream target)
     {
-        var modifier = new LowLevelDocumentModifier(doc);
+        var modifier = doc.Modify();
         modifier.AssignValueToReference(contentStream, newStream);
         await modifier.WriteModificationTrailer(target);
     }

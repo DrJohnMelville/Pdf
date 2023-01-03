@@ -3,14 +3,14 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-internal partial class LowLevelDocumentBuilder
+internal partial class PdfObjectRegistry
 {
     private class ObjectStreamContextImpl : IDisposable
     {
-        private readonly LowLevelDocumentBuilder parent;
+        private readonly PdfObjectRegistry parent;
         private readonly DictionaryBuilder dictionaryBuilder;
 
-        public ObjectStreamContextImpl(LowLevelDocumentBuilder parent, DictionaryBuilder dictionaryBuilder)
+        public ObjectStreamContextImpl(PdfObjectRegistry parent, DictionaryBuilder dictionaryBuilder)
         {
             this.parent = parent;
             this.dictionaryBuilder = dictionaryBuilder;

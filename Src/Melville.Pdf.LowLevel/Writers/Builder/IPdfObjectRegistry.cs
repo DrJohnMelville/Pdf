@@ -8,18 +8,36 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 public static class LowLevelDocumentBuilderFactory
 {
-    public static ILowLevelDocumentBuilder New() => new LowLevelDocumentBuilder();
+    public static ILowLevelDocumentCreator New() => new LowLevelDocumentBuilder();
+
+    public static ILowLevelDocumentModifier Modify(this PdfLoadedLowLevelDocument doc) =>
+        new LowLevelDocumentModifier(doc);
 }
 
-/// <summary>
-/// Clients use this interface to add objects to a PDF document which can then be written in the PDF format.
-/// </summary>
-public interface ILowLevelDocumentBuilder
+public interface ILowLevelDocumentCreator : IPdfObjectRegistry
+{
+    /// <summary>
+    /// Create a Pdf Document with a given version and the current contents.
+    ///
+    /// It is the consumer's responsibility to only use PDF features for the version declared.
+    /// </summary>
+    /// <param name="major">The major version of PDF standard for the document</param>
+    /// <param name="minor">The minor version of PDF standard for the document.</param>
+    /// <returns></returns>
+    PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7);
+
+    /// <summary>
+    /// Ensure that the document trailer has an ID array -- creating one if necessary.
+    /// </summary>
+    /// <returns>The ID array</returns>
+    public PdfArray EnsureDocumentHasId();
+
+}
+
+public interface IPdfObjectRegistry
 {
     /// <summary>
     /// Create a PdfIndirectObject that points to a given object.  This does not add the object to the document.
-    ///
-    /// If value is null, this creates a promised object, and the 
     /// </summary>
     /// <param name="value">The PdfObject to be pointed to.</param>
     /// <returns>A PdfIndirectObject with a number than points to value.</returns>
@@ -57,24 +75,11 @@ public interface ILowLevelDocumentBuilder
     void AddToTrailerDictionary(PdfName key, PdfObject item);
 
     /// <summary>
-    /// Ensure that the document trailer has an ID array -- creating one if necessary.
-    /// </summary>
-    /// <returns>The ID array</returns>
-    public PdfArray EnsureDocumentHasId();
-    
-    /// <summary>
-    /// User password for encrypted documents.
-    /// </summary>
-    public string UserPassword { get; set; }
-    
-    /// <summary>
     /// Creates a objectstream context.  Objects added before the context is destroyed will be added to the object stream.
     /// </summary>
     /// <param name="dictionaryBuilder">The dictionary builder to use in constructing the object string.</param>
     /// <returns></returns>
     IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
-
-    PdfLowLevelDocument CreateDocument (byte major = 1, byte minor = 7);
 
     /// <summary>
     /// Add an object with a specific object and generation number.

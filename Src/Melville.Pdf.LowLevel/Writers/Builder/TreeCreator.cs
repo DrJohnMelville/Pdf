@@ -13,23 +13,23 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 public static class TreeCreator
 {
     public static PdfDictionary CreateTree<T>(
-        this ILowLevelDocumentBuilder builder, int nodeSize, params (T, PdfObject)[] items)
+        this IPdfObjectRegistry builder, int nodeSize, params (T, PdfObject)[] items)
         where T : PdfObject, IComparable<T> =>
         CreateTree(builder, nodeSize, (IEnumerable<(T, PdfObject)>)items);
 
     public static PdfDictionary CreateTree<T>(
-        this ILowLevelDocumentBuilder builder, int nodeSize, IEnumerable<(T Key, PdfObject Item)> items)
+        this IPdfObjectRegistry builder, int nodeSize, IEnumerable<(T Key, PdfObject Item)> items)
         where T : PdfObject, IComparable<T> =>
         new TreeCreator<T>(builder, nodeSize).CreateTree(items);
 }
 
 public readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
 {
-    private readonly ILowLevelDocumentBuilder builder;
+    private readonly IPdfObjectRegistry builder;
     private readonly int nodeSize;
     private readonly PdfName finalArrayName;
 
-    public TreeCreator(ILowLevelDocumentBuilder builder, int nodeSize)
+    public TreeCreator(IPdfObjectRegistry builder, int nodeSize)
     {
         this.builder = builder;
         this.nodeSize = nodeSize;

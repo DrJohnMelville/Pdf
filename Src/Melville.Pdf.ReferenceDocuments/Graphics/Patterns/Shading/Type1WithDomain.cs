@@ -9,7 +9,7 @@ public class Type1WithDomain : Type1FunctionalShaderBase
         
     }
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Domain, new PdfArray(0.3,0.6, 0.25, 0.75));
 }
@@ -21,7 +21,7 @@ public class Type1WithDomainAndBackground : Type1FunctionalShaderBase
         
     }
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Domain, new PdfArray(0.3,0.6, 0.25, 0.75))
             .WithItem(KnownNames.Background, new PdfArray(1.0, 0,0));
@@ -34,7 +34,7 @@ public class Type1WithDomainBackgroundAndBBox : Type1FunctionalShaderBase
         
     }
 
-    protected override DictionaryBuilder BuildShader(ILowLevelDocumentBuilder arg, PdfObject[] localFunc,
+    protected override DictionaryBuilder BuildShader(IPdfObjectRegistry arg, PdfObject[] localFunc,
         DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.Domain, new PdfArray(0.3, 0.6, 0.25, 0.75))

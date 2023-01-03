@@ -17,7 +17,7 @@ public class DefaultCmyk: ColorBars
             CreateColorSpace);
     }
 
-    private PdfObject CreateColorSpace(ILowLevelDocumentBuilder i)
+    private PdfObject CreateColorSpace(IPdfObjectRegistry i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));

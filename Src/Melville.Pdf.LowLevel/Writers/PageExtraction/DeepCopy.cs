@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Writers.PageExtraction;
 
 public readonly partial struct DeepCopy
 {
-    [FromConstructor] private readonly ILowLevelDocumentBuilder creator;
+    [FromConstructor] private readonly IPdfObjectRegistry creator;
     private readonly Dictionary<(int, int), PdfObject> buffer = new();
 
     public async ValueTask<PdfObject> Clone(PdfObject itemValue) => itemValue switch

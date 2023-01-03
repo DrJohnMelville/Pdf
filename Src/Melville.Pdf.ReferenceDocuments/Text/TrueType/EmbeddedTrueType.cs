@@ -10,7 +10,7 @@ public class EmbeddedTrueType : FontDefinitionTest
     {
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
+    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Zev.ttf")!;
         var stream = arg.Add(new DictionaryBuilder()

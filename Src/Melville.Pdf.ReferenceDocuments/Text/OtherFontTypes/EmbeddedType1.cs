@@ -9,7 +9,7 @@ public class EmbeddedType1 : FontDefinitionTest
         TextToRender = "1jn";
     }
 
-    protected override PdfObject CreateFont(ILowLevelDocumentBuilder arg)
+    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Type1Font.Fon")!;
         var stream = arg.Add(new DictionaryBuilder()

@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
 public static class BuilderShortcuts
 {
-    public static async Task<Stream> AsStreamAsync(this ILowLevelDocumentBuilder creator, byte major = 1, byte minor = 7)
+    public static async Task<Stream> AsStreamAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7)
     {
         var doc = creator.CreateDocument(major, minor);
         var output = new MultiBufferStream();
@@ -21,13 +21,13 @@ public static class BuilderShortcuts
         return output.CreateReader();
     }
 
-    public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentBuilder creator, byte major = 1, byte minor = 7) => 
+    public static async Task<byte[]> AsBytesAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7) => 
         (await AsStreamAsync(creator, major, minor)).ReadToArray();
 
-    public static async Task<IFile> AsFileAsync(this ILowLevelDocumentBuilder creator, byte major = 1, byte minor = 7) =>
+    public static async Task<IFile> AsFileAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7) =>
         new MemoryFile("S:\\d.pdf", await creator.AsBytesAsync(major, minor));
 
-    public static async Task<String> AsStringAsync(this ILowLevelDocumentBuilder creator, byte major = 1, byte minor = 7) =>
+    public static async Task<String> AsStringAsync(this ILowLevelDocumentCreator creator, byte major = 1, byte minor = 7) =>
         ExtendedAsciiEncoding.ExtendedAsciiString(await creator.AsBytesAsync(major, minor));
 
     public static async Task<Stream> AsStreamAsync(this PdfLowLevelDocument creator)

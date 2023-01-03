@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -13,19 +14,38 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-public partial class LowLevelDocumentModifier : ILowLevelDocumentBuilder
+public interface ILowLevelDocumentModifier : IPdfObjectRegistry
 {
-    private readonly LowLevelDocumentBuilder builder;
+    void AssignValueToReference(PdfIndirectObject reference, PdfObject value);
+    ValueTask WriteModificationTrailer(Stream stream) =>
+        WriteModificationTrailer(PipeWriter.Create(stream), stream.Position);
+
+    ValueTask WriteModificationTrailer(PipeWriter cpw, long startPosition);
+
+}
+
+internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
+{
+    private readonly PdfObjectRegistry builder;
     [DelegateTo()]
-    private ILowLevelDocumentBuilder innerBuilder => builder;
+    private IPdfObjectRegistry innerBuilder => builder;
     private readonly long priorXref;
 
     public LowLevelDocumentModifier(int nextObjectNum, long priorXref)
     {
-        builder = new LowLevelDocumentBuilder(nextObjectNum);
+        builder = new PdfObjectRegistry(nextObjectNum);
         this.priorXref = priorXref;
     }
 
+    public LowLevelDocumentModifier(PdfLoadedLowLevelDocument document) :
+        this(document.Objects.Keys.Max(i => i.ObjectNumber), document.XRefPosition)
+    {
+        foreach (var (key, value) in document.TrailerDictionary.RawItems)
+        {
+            builder.AddToTrailerDictionary(key, value);
+        }
+    }
+    
     public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
     {
         if (builder.Objects.Contains(reference))
@@ -46,21 +66,9 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentBuilder
         a.ObjectNumber == b.ObjectNumber && a.GenerationNumber == b.GenerationNumber;
 
 
-    public LowLevelDocumentModifier(PdfLoadedLowLevelDocument document) : 
-        this(document.Objects.Keys.Max(i=>i.ObjectNumber), document.XRefPosition)
-    {
-        foreach (var (key, value) in document.TrailerDictionary.RawItems)
-        {
-            builder.AddToTrailerDictionary(key, value);
-        }
-    }
-
-        
-    public ValueTask WriteModificationTrailer(Stream stream) =>
-        WriteModificationTrailer(PipeWriter.Create(stream), stream.Position);
     public ValueTask WriteModificationTrailer(PipeWriter cpw, long startPosition) =>
         WriteModificationTrailer(new CountingPipeWriter(cpw, startPosition));
-    public async ValueTask WriteModificationTrailer(CountingPipeWriter target)
+    private async ValueTask WriteModificationTrailer(CountingPipeWriter target)
     {
         var lines = new List<XrefLine>();
         var writer = new PdfObjectWriter(target);
@@ -112,18 +120,10 @@ public partial class LowLevelDocumentModifier : ILowLevelDocumentBuilder
     }
 }
 
-public readonly struct XrefLine
+public readonly partial struct XrefLine
 {
-    public int ObjectNumber { get; }
-    public long Offset { get; }
-    public int Generation { get; }
-    public bool Used { get; }
-
-    public XrefLine(int objectNumber, long offset, int generation, bool used)
-    {
-        ObjectNumber = objectNumber;
-        Offset = offset;
-        Generation = generation;
-        Used = used;
-    }
+    [FromConstructor] public int ObjectNumber { get; }
+    [FromConstructor] public long Offset { get; }
+    [FromConstructor] public int Generation { get; }
+    [FromConstructor] public bool Used { get; }
 }

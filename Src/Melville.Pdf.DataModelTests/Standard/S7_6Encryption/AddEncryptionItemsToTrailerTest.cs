@@ -26,7 +26,7 @@ public class AddEncryptionItemsToTrailerTest
             PdfString.CreateAscii("12345678901234567890123456789012"),
             PdfString.CreateAscii("12345678901234567890123456789012")));
         docBuilder.AddEncryption(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
-        trailer = docBuilder.CreateTrailerDictionary();
+        trailer = docBuilder.CreateDocument().TrailerDictionary;
     }
         
     [Fact]

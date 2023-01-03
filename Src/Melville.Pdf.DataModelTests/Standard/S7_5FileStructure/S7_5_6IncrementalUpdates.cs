@@ -13,8 +13,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_6IncrementalUpdates
 {
-    public async Task<PdfLoadedLowLevelDocument> CompositeDocument(Action<ILowLevelDocumentBuilder> create,
-        Func<PdfLoadedLowLevelDocument, LowLevelDocumentModifier,Task> modify)
+    private async Task<PdfLoadedLowLevelDocument> CompositeDocument(Action<IPdfObjectRegistry> create,
+        Func<PdfLoadedLowLevelDocument, ILowLevelDocumentModifier, Task> modify)
     {
         var creator = new LowLevelDocumentBuilder();
         create(creator);
@@ -24,7 +24,7 @@ public class S7_5_6IncrementalUpdates
 
         var pdfLowLevelReader = new PdfLowLevelReader();
         var ld = await pdfLowLevelReader.ReadFromAsync(stream);
-        var modifier = new LowLevelDocumentModifier(ld);
+        var modifier = ld.Modify();
         await modify(ld, modifier);
         await modifier.WriteModificationTrailer(stream);
             

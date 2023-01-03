@@ -9,17 +9,16 @@ namespace Melville.Pdf.Model.Creators;
 
 public class PdfDocumentCreator
 {
-    public ILowLevelDocumentBuilder LowLevelCreator { get; } = LowLevelDocumentBuilderFactory.New();
-    private readonly DictionaryBuilder catalogItems = new();
+    public ILowLevelDocumentCreator LowLevelCreator { get; } = LowLevelDocumentBuilderFactory.New();
+    private readonly DictionaryBuilder rootItems = new();
     public PageTreeNodeCreator Pages { get; } = new();
     public int MaxPageTreeNodeSize { get; set; } = 100;
 
     public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7)
     {
         var pageTree = CreateResourceDictionaryItem(Pages);
-        catalogItems.WithItem(KnownNames.Pages, pageTree);
-        LowLevelCreator.AddToTrailerDictionary(KnownNames.Root, LowLevelCreator.Add(
-            catalogItems.AsDictionary()));
+        rootItems.WithItem(KnownNames.Pages, pageTree);
+        LowLevelCreator.AddRootElement(rootItems.AsDictionary());
         return LowLevelCreator.CreateDocument(major, minor);
     }
 
@@ -28,7 +27,7 @@ public class PdfDocumentCreator
 
     public void SetVersionInCatalog(byte major, byte minor) =>
         SetVersionInCatalog(NameDirectory.Get($"{major}.{minor}"));
-    public void SetVersionInCatalog(PdfName version) => catalogItems.WithItem(KnownNames.Version, version);
+    public void SetVersionInCatalog(PdfName version) => rootItems.WithItem(KnownNames.Version, version);
 
-    public void AddToCatalog(PdfName name, PdfObject obj) => catalogItems.WithItem(name, obj);
+    public void AddToRootDictionary(PdfName name, PdfObject obj) => rootItems.WithItem(name, obj);
 }

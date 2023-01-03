@@ -14,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 public class S7_6_5CryptFilters
 {
     private async Task VerifyStringAndStreamEncoding(bool hideStream, bool hideString,
-        ILowLevelDocumentBuilder creator, PdfName? cryptFilterTypeForStream = null)
+        ILowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream = null)
     {
         creator.Add(PdfString.CreateAscii("plaintext string"));
         creator.Add(InsertedStream(creator, cryptFilterTypeForStream));
@@ -31,7 +31,7 @@ public class S7_6_5CryptFilters
     }
 
     private PdfStream InsertedStream(
-        ILowLevelDocumentBuilder creator, PdfName? cryptFilterTypeForStream)
+        IPdfObjectRegistry creator, PdfName? cryptFilterTypeForStream)
     {
         var builder = cryptFilterTypeForStream == null ?
             new DictionaryBuilder():

@@ -20,7 +20,7 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
         this.objStreamStrategy = objStreamStrategy;
     }
 
-    public override (PdfIndirectObject Reference, int PageCount) ConstructPageTree(ILowLevelDocumentBuilder creator,
+    public override (PdfIndirectObject Reference, int PageCount) ConstructPageTree(IPdfObjectRegistry creator,
         PdfIndirectObject? parent, int maxNodeSize)
     {
         using var _ = objStreamStrategy.EnterObjectStreamContext(creator);
@@ -28,7 +28,7 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
         return (CreateFinalObject(creator), 1);
     }
 
-    protected abstract PdfIndirectObject CreateFinalObject(ILowLevelDocumentBuilder creator);
+    protected abstract PdfIndirectObject CreateFinalObject(IPdfObjectRegistry creator);
     public abstract void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data);
 
 }
@@ -46,7 +46,7 @@ public class PageCreator: ContentStreamCreator
         streamSegments.Add(builder.AsStream(data));
 
     public override (PdfIndirectObject Reference, int PageCount) 
-        ConstructPageTree(ILowLevelDocumentBuilder creator, PdfIndirectObject? parent,
+        ConstructPageTree(IPdfObjectRegistry creator, PdfIndirectObject? parent,
             int maxNodeSize)
     {
         if (parent is null) throw new ArgumentException("Pages must have a parent.");
@@ -54,13 +54,13 @@ public class PageCreator: ContentStreamCreator
         return base.ConstructPageTree(creator, parent, maxNodeSize);
     }
 
-    protected override PdfIndirectObject CreateFinalObject(ILowLevelDocumentBuilder creator)
+    protected override PdfIndirectObject CreateFinalObject(IPdfObjectRegistry creator)
     {
         TryAddContent(creator);
         return creator.Add(TryUsePromisedObject(MetaData.AsDictionary()));
     }
 
-    public PdfIndirectObject InitializePromiseObject(ILowLevelDocumentBuilder builder) =>
+    public PdfIndirectObject InitializePromiseObject(IPdfObjectRegistry builder) =>
         promisedPageObject = builder.CreatePromiseObject();
 
     public PdfObject TryUsePromisedObject(PdfObject value)
@@ -70,18 +70,18 @@ public class PageCreator: ContentStreamCreator
         return promisedPageObject;
     }
 
-    private void TryAddContent(ILowLevelDocumentBuilder creator)
+    private void TryAddContent(IPdfObjectRegistry creator)
     {
         if (streamSegments.Count > 0)
             MetaData.WithItem(KnownNames.Contents, CreateContents(creator));
     }
 
-    private PdfObject CreateContents(ILowLevelDocumentBuilder creator) =>
+    private PdfObject CreateContents(IPdfObjectRegistry creator) =>
         streamSegments.Count == 1
             ? CreateStreamSegment(creator, streamSegments[0])
             : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i)));
 
-    private PdfIndirectObject CreateStreamSegment(ILowLevelDocumentBuilder creator, PdfStream stream) => 
+    private PdfIndirectObject CreateStreamSegment(IPdfObjectRegistry creator, PdfStream stream) => 
         creator.Add(stream);
 
     public void AddLastModifiedTime(PdfTime dateAndTime) => 
