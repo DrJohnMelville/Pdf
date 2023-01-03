@@ -16,7 +16,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 public interface ILowLevelDocumentModifier : IPdfObjectRegistry
 {
-    void AssignValueToReference(PdfIndirectObject reference, PdfObject value);
+    void ReplaceReferenceObject(PdfIndirectObject reference, PdfObject value);
     ValueTask WriteModificationTrailer(Stream stream) =>
         WriteModificationTrailer(PipeWriter.Create(stream), stream.Position);
 
@@ -46,20 +46,9 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         }
     }
     
-    public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
+    public void ReplaceReferenceObject(PdfIndirectObject reference, PdfObject value)
     {
-        if (builder.Objects.Contains(reference))
-        {
-            builder.AssignValueToReference(reference, value);
-        }else if (builder.Objects.FirstOrDefault(
-                      i => IsSameObject(i, reference)) is { } newObj)
-        {
-            builder.AssignValueToReference(newObj, value);
-        }
-        else
-        {
             builder.Add(value, reference.ObjectNumber, reference.GenerationNumber);
-        }
     }
 
     private bool IsSameObject(PdfIndirectObject a, PdfIndirectObject b) =>

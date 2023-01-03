@@ -63,7 +63,7 @@ public class LowLevelDocumentModifierTest
     [Fact]
     public Task ReplaceOneObject() =>
         DoDocumentModificationTests($"1 0 obj false endobj\nxref\n1 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n1255\n%%EOF",
-            (doc, mod) => mod.AssignValueToReference(doc.Objects[(1,0)],PdfBoolean.False), baseDoc,
+            (doc, mod) => mod.ReplaceReferenceObject(doc.Objects[(1,0)],PdfBoolean.False), baseDoc,
             1234);
 
     private static PdfLowLevelDocument SixItemDocument()
@@ -87,9 +87,9 @@ public class LowLevelDocumentModifierTest
             $"2 0 obj (Two) endobj\n3 0 obj (Three) endobj\n5 0 obj (Five) endobj\nxref\n2 2\n0000005000 00000 n\r\n0000005021 00000 n\r\n5 1\n0000005044 00000 n\r\ntrailer\n<</Prev 161/Size 7>>\nstartxref\n5066\n%%EOF",
             (doc, mod) =>
             {
-                mod.AssignValueToReference(doc.Objects[(2,0)], PdfString.CreateAscii("Two"));
-                mod.AssignValueToReference(doc.Objects[(3,0)], PdfString.CreateAscii("Three"));
-                mod.AssignValueToReference(doc.Objects[(5,0)], PdfString.CreateAscii("Five"));
+                mod.ReplaceReferenceObject(doc.Objects[(2,0)], PdfString.CreateAscii("Two"));
+                mod.ReplaceReferenceObject(doc.Objects[(3,0)], PdfString.CreateAscii("Three"));
+                mod.ReplaceReferenceObject(doc.Objects[(5,0)], PdfString.CreateAscii("Five"));
             }
             , SixItemDocument(), 5000);
     }

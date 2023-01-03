@@ -42,9 +42,8 @@ internal partial class LowLevelDocumentBuilder : ILowLevelDocumentCreator
         return new PdfString(ret);
     }
 
-    public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7)
-    {
-        return new PdfLowLevelDocument(major, minor, registry.CreateTrailerDictionary(), registry.Objects.ToDictionary(
-            static item => (item.ObjectNumber, item.GenerationNumber) ));
-    }
+    public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7) =>
+        new PdfLowLevelDocument(major, minor, registry.CreateTrailerDictionary(), 
+            registry.Objects.ToDictionary(
+                static item => (item.ObjectNumber, item.GenerationNumber) ));
 }

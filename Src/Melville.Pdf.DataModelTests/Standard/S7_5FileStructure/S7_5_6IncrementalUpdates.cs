@@ -43,7 +43,7 @@ public class S7_5_6IncrementalUpdates
         {
             Assert.Equal("true", (await ld.TrailerDictionary[KnownNames.Root]).ToString());
             Assert.Equal("2", (await ld.Objects[(2, 0)].DirectValueAsync()).ToString());
-            modifier.AssignValueToReference((PdfIndirectObject) ld.TrailerDictionary.RawItems[KnownNames.Root],
+            modifier.ReplaceReferenceObject((PdfIndirectObject) ld.TrailerDictionary.RawItems[KnownNames.Root],
                 PdfBoolean.False);
         });
 

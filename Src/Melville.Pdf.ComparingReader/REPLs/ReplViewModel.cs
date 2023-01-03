@@ -55,7 +55,7 @@ public partial class ReplViewModel
         MultiBufferStream target)
     {
         var modifier = doc.Modify();
-        modifier.AssignValueToReference(contentStream, newStream);
+        modifier.ReplaceReferenceObject(contentStream, newStream);
         await modifier.WriteModificationTrailer(target);
     }
 
