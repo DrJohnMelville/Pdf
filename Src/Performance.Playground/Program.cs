@@ -11,8 +11,9 @@ using Performance.Playground.Rendering;
 if (true)
 {
     Console.WriteLine("Begin");
-    var pageRendering = new JbigParsing();
-    await pageRendering.ParseJBig();
+    var pr = new PageRendering();
+    await pr.CreateStream();
+    await pr.RenderSkia();
     Console.WriteLine("done");
 }
 else

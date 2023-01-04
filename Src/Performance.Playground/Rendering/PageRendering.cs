@@ -15,6 +15,7 @@ using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 using Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
+using Melville.Pdf.ReferenceDocuments.Text.TrueType;
 using Melville.Pdf.SkiaSharp;
 using Melville.Pdf.Wpf.Rendering;
 using SkiaSharp;
@@ -28,12 +29,12 @@ public class PageRendering
     [GlobalSetup]
     public async Task CreateStream()
     {
-        await new JBigFile.JBig200__8__45__stripe().WritePdfAsync(data);
+        await new EmbeddedTrueType().WritePdfAsync(data);
     }
     
     [Benchmark]
     public async Task RenderSkia()
-    {
+    { 
         AwaitConfig.ResumeOnCalledThread(false);
         using var dr = await LoadDocument();
         await RenderWithSkia.ToSurfaceAsync(dr, 1, 2000); 
