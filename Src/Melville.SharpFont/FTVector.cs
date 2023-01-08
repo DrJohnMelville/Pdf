@@ -25,9 +25,9 @@ SOFTWARE.*/
 using System;
 using System.Runtime.InteropServices;
 
-using SharpFont.Internal;
+using Melville.SharpFont.Internal;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A simple structure used to store a 2D vector.

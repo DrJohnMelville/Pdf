@@ -5,7 +5,7 @@ using System.Linq;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
-using SharpFont;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 

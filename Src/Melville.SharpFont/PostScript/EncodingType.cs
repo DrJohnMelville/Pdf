@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.PostScript
+namespace Melville.SharpFont.PostScript
 {
 	/// <summary>
 	/// An enumeration describing the ‘Encoding’ entry in a Type 1 dictionary.

@@ -23,10 +23,9 @@ SOFTWARE.*/
 #endregion
 
 using System;
+using Melville.SharpFont.Internal;
 
-using SharpFont.Internal;
-
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// The data exchange structure for the increase-x-height property.

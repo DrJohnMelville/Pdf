@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary><para>
 	/// A list of values that are used to select a specific hinting algorithm to use by the hinter. You should OR one

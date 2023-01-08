@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Internal;
 
-using SharpFont.Internal;
-
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A simple structure used to pass more or less generic parameters to <see cref="Library.OpenFace"/>.

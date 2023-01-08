@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// Constants used as the tag of <see cref="Parameter"/> structures.

@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using FT_Long = System.IntPtr;
 using FT_ULong = System.UIntPtr;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A structure used to hold an outline's bounding box, i.e., the

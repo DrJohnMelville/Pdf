@@ -25,13 +25,12 @@ SOFTWARE.*/
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Cache;
+using Melville.SharpFont.Internal;
+using Melville.SharpFont.NetStandard;
+using Melville.SharpFont.TrueType;
 
-using SharpFont.Cache;
-using SharpFont.Internal;
-using SharpFont.NetStandard;
-using SharpFont.TrueType;
-
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary><para>
 	/// A handle to a FreeType library instance. Each ‘library’ is completely independent from the others; it is the

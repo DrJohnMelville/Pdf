@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.MultipleMasters.Internal;
 
-using SharpFont.MultipleMasters.Internal;
-
-namespace SharpFont.MultipleMasters
+namespace Melville.SharpFont.MultipleMasters
 {
 	/// <summary><para>
 	/// A simple structure used to model a given axis in design space for Multiple Masters fonts.

@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// FreeType error codes.

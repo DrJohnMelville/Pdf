@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Cache.Internal;
 
-using SharpFont.Cache.Internal;
-
-namespace SharpFont.Cache
+namespace Melville.SharpFont.Cache
 {
 	/// <summary>
 	/// A structure used to describe a given character size in either pixels or points to the cache manager.

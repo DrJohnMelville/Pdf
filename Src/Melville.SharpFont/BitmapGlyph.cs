@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Internal;
 
-using SharpFont.Internal;
-
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A structure used for bitmap glyph images. This really is a ‘sub-class’ of <see cref="Glyph"/>.

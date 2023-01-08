@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// An enumeration type that lists the supported size request types.

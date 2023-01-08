@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// An enumeration type used to describe the format of pixels in a given bitmap. Note that additional formats may

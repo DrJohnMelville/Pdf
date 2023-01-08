@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.TrueType
+namespace Melville.SharpFont.TrueType
 {
 	/// <summary>
 	/// A list of valid values for the ‘encoding_id’ for TT_PLATFORM_APPLE_UNICODE charmaps and name entries.

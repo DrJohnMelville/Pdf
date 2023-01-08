@@ -25,7 +25,7 @@ SOFTWARE.*/
 using System;
 using System.Runtime.InteropServices;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A simple structure used to store a 2D vector unit vector. Uses <see cref="Fixed2Dot14"/> types.

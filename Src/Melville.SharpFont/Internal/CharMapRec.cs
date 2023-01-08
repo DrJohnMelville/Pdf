@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.TrueType;
 
-using SharpFont.TrueType;
-
-namespace SharpFont.Internal
+namespace Melville.SharpFont.Internal
 {
 	/// <summary>
 	/// Internally represents a CharMap.

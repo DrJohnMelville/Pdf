@@ -25,7 +25,7 @@ SOFTWARE.*/
 using System;
 using System.Runtime.InteropServices;
 
-namespace SharpFont.Cache.Internal
+namespace Melville.SharpFont.Cache.Internal
 {
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct ScalerRec

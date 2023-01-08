@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A list of bit flags used in the ‘fsType’ field of the OS/2 table in a

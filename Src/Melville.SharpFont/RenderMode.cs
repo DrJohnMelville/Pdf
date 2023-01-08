@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary><para>
 	/// An enumeration type that lists the render modes supported by FreeType 2. Each mode corresponds to a specific

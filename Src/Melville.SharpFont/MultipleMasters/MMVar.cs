@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.MultipleMasters.Internal;
 
-using SharpFont.MultipleMasters.Internal;
-
-namespace SharpFont.MultipleMasters
+namespace Melville.SharpFont.MultipleMasters
 {
 	/// <summary><para>
 	/// A structure used to model the axes and space of a Multiple Masters or GX var distortable font.

@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A list of constants used for the glyph-to-script-map property to specify the script submodule the auto-hinter

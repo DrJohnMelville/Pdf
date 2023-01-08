@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A list of bit-flags used to indicate the style of a given face. These are used in the ‘style_flags’ field of

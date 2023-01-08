@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Internal;
 
-using SharpFont.Internal;
-
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary><para>
 	/// A function pointer type used to describe the signature of a ‘move to’ function during outline

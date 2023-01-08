@@ -7,8 +7,8 @@
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
              xmlns:freeType="clr-namespace:Melville.Pdf.Model.Renderers.FontRenderings.FreeType;assembly=Melville.Pdf.Model"
              xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
-             xmlns:sharpFont="clr-namespace:SharpFont;assembly=SharpFont.NetStandard"
              xmlns:fontRenderings="clr-namespace:Melville.Pdf.Model.Renderers.FontRenderings;assembly=Melville.Pdf.Model"
+             xmlns:sharpFont="clr-namespace:Melville.SharpFont;assembly=Melville.SharpFont"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>

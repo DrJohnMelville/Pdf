@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Internal;
 
-using SharpFont.Internal;
-
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A structure used to model the metrics of a single glyph. The values are expressed in 26.6 fractional pixel

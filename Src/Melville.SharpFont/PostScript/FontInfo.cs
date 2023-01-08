@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.PostScript.Internal;
 
-using SharpFont.PostScript.Internal;
-
-namespace SharpFont.PostScript
+namespace Melville.SharpFont.PostScript
 {
 	/// <summary>
 	/// A structure used to model a Type 1 or Type 2 FontInfo dictionary. Note that for Multiple Master fonts, each

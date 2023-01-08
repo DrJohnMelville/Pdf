@@ -24,9 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
-using SharpFont.Internal;
+using Melville.SharpFont.Internal;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// This structure models the metrics of a bitmap strike (i.e., a set of

@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using FT_Long = System.IntPtr;
 using FT_ULong = System.UIntPtr;
 
-namespace SharpFont.Fnt.Internal
+namespace Melville.SharpFont.Fnt.Internal
 {
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct HeaderRec

@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.TrueType
+namespace Melville.SharpFont.TrueType
 {
 	/// <summary>
 	/// A list of valid values for the ‘platform_id’ identifier code in <see cref="CharMap"/> and

@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
-using SharpFont;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 

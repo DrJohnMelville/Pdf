@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// Provide a consistent means for using pointers as references.

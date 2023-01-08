@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A list of bit flags used in the ‘face_flags’ field of the <see cref="Face"/> structure. They inform client

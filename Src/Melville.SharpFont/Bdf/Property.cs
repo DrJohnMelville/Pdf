@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Bdf.Internal;
 
-using SharpFont.Bdf.Internal;
-
-namespace SharpFont.Bdf
+namespace Melville.SharpFont.Bdf
 {
 	/// <summary>
 	/// This structure models a given BDF/PCF property.

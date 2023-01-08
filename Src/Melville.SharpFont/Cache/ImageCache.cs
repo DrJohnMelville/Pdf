@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.Cache
+namespace Melville.SharpFont.Cache
 {
 	/// <summary>
 	/// A handle to an glyph image cache object. They are designed to hold many distinct glyph images while not

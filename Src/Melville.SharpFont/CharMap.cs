@@ -24,11 +24,10 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Internal;
+using Melville.SharpFont.TrueType;
 
-using SharpFont.Internal;
-using SharpFont.TrueType;
-
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// The base charmap structure.

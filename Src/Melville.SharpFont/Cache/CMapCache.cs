@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.Cache
+namespace Melville.SharpFont.Cache
 {
 	/// <summary>
 	/// An opaque handle used to model a charmap cache. This cache is to hold character codes -> glyph indices

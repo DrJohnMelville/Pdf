@@ -9,7 +9,7 @@ using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
-using SharpFont;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers;
 

@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Cache.Internal;
 
-using SharpFont.Cache.Internal;
-
-namespace SharpFont.Cache
+namespace Melville.SharpFont.Cache
 {
 	/// <summary>
 	/// A handle to a small bitmap cache. These are special cache objects used to store small glyph bitmaps (and

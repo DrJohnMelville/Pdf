@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.TrueType.Internal;
 
-using SharpFont.TrueType.Internal;
-
-namespace SharpFont.TrueType
+namespace Melville.SharpFont.TrueType
 {
 	/// <summary>
 	/// The maximum profile is a table containing many max values which can be used to pre-allocate arrays. This

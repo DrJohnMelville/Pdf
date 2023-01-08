@@ -23,10 +23,9 @@ SOFTWARE.*/
 #endregion
 
 using System;
+using Melville.SharpFont.Fnt.Internal;
 
-using SharpFont.Fnt.Internal;
-
-namespace SharpFont.Fnt
+namespace Melville.SharpFont.Fnt
 {
 	/// <summary>
 	/// Describes the general appearance of the font.

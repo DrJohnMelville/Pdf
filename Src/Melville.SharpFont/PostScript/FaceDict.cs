@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.PostScript.Internal;
 
-using SharpFont.PostScript.Internal;
-
-namespace SharpFont.PostScript
+namespace Melville.SharpFont.PostScript
 {
 	/// <summary>
 	/// A structure used to represent data in a CID top-level dictionary.

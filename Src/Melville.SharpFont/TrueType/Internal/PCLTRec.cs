@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using FT_Long = System.IntPtr;
 using FT_ULong = System.UIntPtr;
 
-namespace SharpFont.TrueType.Internal
+namespace Melville.SharpFont.TrueType.Internal
 {
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	internal unsafe struct PCLTRec

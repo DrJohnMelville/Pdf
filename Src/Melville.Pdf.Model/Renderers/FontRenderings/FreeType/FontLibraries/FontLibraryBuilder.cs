@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
-using SharpFont;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 

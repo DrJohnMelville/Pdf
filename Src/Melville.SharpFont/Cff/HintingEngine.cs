@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.Cff
+namespace Melville.SharpFont.Cff
 {
 	/// <summary>
 	/// A list of constants used for the hinting-engine property to select the hinting engine for CFF fonts.

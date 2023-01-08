@@ -24,9 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
-using SharpFont.Internal;
+using Melville.SharpFont.Internal;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// FreeType root glyph slot class structure. A glyph slot is a container where individual glyphs can be loaded, be

@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using FT_Long = System.IntPtr;
 using FT_ULong = System.UIntPtr;
 
-namespace SharpFont.MultipleMasters.Internal
+namespace Melville.SharpFont.MultipleMasters.Internal
 {
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct MMAxisRec

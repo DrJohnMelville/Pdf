@@ -26,7 +26,7 @@ using System;
 using System.Runtime.InteropServices;
 
 
-namespace SharpFont.Internal
+namespace Melville.SharpFont.Internal
 {
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct SizeRec

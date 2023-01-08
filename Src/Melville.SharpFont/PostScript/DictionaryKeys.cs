@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.PostScript
+namespace Melville.SharpFont.PostScript
 {
 	/// <summary>
 	/// An enumeration used in calls to <see cref="Face.GetPSFontValue"/> to identify the Type 1 dictionary entry to

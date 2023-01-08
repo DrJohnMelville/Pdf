@@ -25,9 +25,9 @@ SOFTWARE.*/
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using SharpFont.Internal;
+using Melville.SharpFont.Internal;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// This structure is used to describe an outline to the scan-line converter.

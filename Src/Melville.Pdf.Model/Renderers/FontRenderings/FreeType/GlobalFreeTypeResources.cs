@@ -2,7 +2,7 @@
 using System.IO;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
-using SharpFont;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 

@@ -1,7 +1,7 @@
 ﻿using System.Windows.Data;
 using Melville.MVVM.Wpf.Bindings;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
-using SharpFont;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 

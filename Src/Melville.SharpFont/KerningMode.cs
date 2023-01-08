@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// An enumeration used to specify which kerning values to return in <see cref="Face.GetKerning"/>.

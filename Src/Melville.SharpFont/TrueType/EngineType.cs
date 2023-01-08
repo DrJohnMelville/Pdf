@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.TrueType
+namespace Melville.SharpFont.TrueType
 {
 	/// <summary>
 	/// A list of values describing which kind of TrueType bytecode engine is implemented in a given

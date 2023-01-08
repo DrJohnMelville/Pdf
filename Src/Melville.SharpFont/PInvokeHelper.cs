@@ -25,7 +25,7 @@ SOFTWARE.*/
 using System;
 using System.Runtime.InteropServices;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// Helpful methods to make marshalling simpler.

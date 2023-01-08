@@ -25,7 +25,7 @@ SOFTWARE.*/
 using System;
 using System.Collections.Generic;
 
-namespace SharpFont.Cache
+namespace Melville.SharpFont.Cache
 {
 	/// <summary><para>
 	/// This object corresponds to one instance of the cache-subsystem. It is used to cache one or more

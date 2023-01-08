@@ -24,10 +24,10 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.Internal;
 using Microsoft.VisualBasic;
-using SharpFont.Internal;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A structure used to describe a bitmap or pixmap to the raster. Note that we now manage pixmaps of various

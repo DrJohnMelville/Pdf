@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace SharpFont.NetStandard
+namespace Melville.SharpFont.NetStandard
 {
 	public static class ArchitectureDllImport
 	{

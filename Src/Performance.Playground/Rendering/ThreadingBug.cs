@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.SkiaSharp;
-using SharpFont.Internal;
+using Melville.SharpFont.Internal;
 
 namespace Performance.Playground.Rendering;
 

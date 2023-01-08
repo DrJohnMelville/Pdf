@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.Bdf
+namespace Melville.SharpFont.Bdf
 {
 	/// <summary>
 	/// A list of BDF property types.

@@ -25,7 +25,7 @@ SOFTWARE.*/
 using System;
 using System.Runtime.InteropServices;
 
-namespace SharpFont.Bdf.Internal
+namespace Melville.SharpFont.Bdf.Internal
 {
 	[StructLayout(LayoutKind.Explicit, Pack = 0)]
 	internal struct PropertyRec

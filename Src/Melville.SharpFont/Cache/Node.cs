@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.Cache
+namespace Melville.SharpFont.Cache
 {
 	/// <summary><para>
 	/// An opaque handle to a cache node object. Each cache node is reference-counted. A node with a count of 0 might

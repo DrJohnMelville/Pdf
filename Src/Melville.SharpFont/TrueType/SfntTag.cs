@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont.TrueType
+namespace Melville.SharpFont.TrueType
 {
 	/// <summary>
 	/// An enumeration used to specify the index of an SFNT table. Used in the <see cref="Face.GetSfntTable"/> API

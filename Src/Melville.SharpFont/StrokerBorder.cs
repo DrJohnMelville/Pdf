@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// These values are used to select a given stroke border in <see cref="Stroker.GetBorderCounts"/> and

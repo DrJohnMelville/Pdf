@@ -25,7 +25,7 @@ SOFTWARE.*/
 using System;
 using System.Runtime.InteropServices;
 
-namespace SharpFont.MultipleMasters.Internal
+namespace Melville.SharpFont.MultipleMasters.Internal
 {
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct VarNamedStyleRec

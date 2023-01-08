@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.TrueType.Internal;
 
-using SharpFont.TrueType.Internal;
-
-namespace SharpFont.TrueType
+namespace Melville.SharpFont.TrueType
 {
 	/// <summary><para>
 	/// A structure used to model a TrueType OS/2 table. This is the long table version. All fields comply to the

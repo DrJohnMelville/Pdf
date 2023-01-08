@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Melville.Icc.Model;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
-using SharpFont;
+using Melville.SharpFont;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;

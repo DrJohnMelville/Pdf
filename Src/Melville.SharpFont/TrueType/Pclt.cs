@@ -24,10 +24,9 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
+using Melville.SharpFont.TrueType.Internal;
 
-using SharpFont.TrueType.Internal;
-
-namespace SharpFont.TrueType
+namespace Melville.SharpFont.TrueType
 {
 	/// <summary>
 	/// A structure used to model a TrueType PCLT table. All fields comply to the TrueType specification.

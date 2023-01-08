@@ -5,7 +5,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Wpf.Controls;
 using Melville.Pdf.Wpf.Rendering;
-using SharpFont;
+using Melville.SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 

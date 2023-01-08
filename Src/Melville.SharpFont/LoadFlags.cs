@@ -24,7 +24,7 @@ SOFTWARE.*/
 
 using System;
 
-namespace SharpFont
+namespace Melville.SharpFont
 {
 	/// <summary>
 	/// A list of bit-field constants used with <see cref="Face.LoadGlyph"/> to indicate what kind of operations to

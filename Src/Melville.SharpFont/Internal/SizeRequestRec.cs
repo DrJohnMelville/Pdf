@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using FT_Long = System.IntPtr;
 using FT_ULong = System.UIntPtr;
 
-namespace SharpFont.Internal
+namespace Melville.SharpFont.Internal
 {
 	/// <summary>
 	/// Internally represents a <see cref="SizeRequest"/>.
