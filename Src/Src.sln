@@ -72,6 +72,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.CCITT", "Melville.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.JBig2", "Melville.JBig2\Melville.JBig2.csproj", "{1AFB32B5-349B-4B6C-97A4-EA6AE8DB8DC6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.SharpFont", "Melville.SharpFont\Melville.SharpFont.csproj", "{08BEF6FC-AC1F-4AB5-8982-7FC4E6B06186}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -178,6 +180,10 @@ Global
 		{1AFB32B5-349B-4B6C-97A4-EA6AE8DB8DC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AFB32B5-349B-4B6C-97A4-EA6AE8DB8DC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AFB32B5-349B-4B6C-97A4-EA6AE8DB8DC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08BEF6FC-AC1F-4AB5-8982-7FC4E6B06186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08BEF6FC-AC1F-4AB5-8982-7FC4E6B06186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08BEF6FC-AC1F-4AB5-8982-7FC4E6B06186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08BEF6FC-AC1F-4AB5-8982-7FC4E6B06186}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -211,6 +217,7 @@ Global
 		{E1C428F4-9C6C-496B-B1BA-B201E8C02D52} = {FD4F4F5B-F293-4B46-ABE9-99CF3C5D588D}
 		{E8E77C4E-24CB-40E9-89DB-8A09F8F00E74} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
 		{1AFB32B5-349B-4B6C-97A4-EA6AE8DB8DC6} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
+		{08BEF6FC-AC1F-4AB5-8982-7FC4E6B06186} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {92BF3689-00AF-4389-ADC7-0F79911E5618}
