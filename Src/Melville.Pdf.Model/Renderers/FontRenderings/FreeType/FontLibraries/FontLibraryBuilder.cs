@@ -12,9 +12,9 @@ public readonly struct FontLibraryBuilder
     private readonly Library sharpFontLibrary;
     private readonly Dictionary<string, FontFamily> fonts = new( );
 
-    public FontLibraryBuilder(Library sharpFontLibrary)
+    public FontLibraryBuilder()
     {
-        this.sharpFontLibrary = sharpFontLibrary;
+        sharpFontLibrary = GlobalFreeTypeResources.SharpFontLibrary;
     }
 
     public FontLibrary BuildFrom(string fontFolder)

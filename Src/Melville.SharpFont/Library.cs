@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Melville.SharpFont.Cache;
 using Melville.SharpFont.Internal;
-using Melville.SharpFont.NetStandard;
 using Melville.SharpFont.TrueType;
 
 namespace Melville.SharpFont
@@ -69,10 +68,10 @@ namespace Melville.SharpFont
 		/// that you're trying to run your program as a 64-bit process and have a 32-bit version of FreeType or vice
 		/// versa. See the SharpFont.Examples project for how to handle this situation.
 		/// </remarks>
-		public Library()
+		public Library(string? explicitForder)
 			: this(false)
 		{
-			ArchitectureDllImport.LoadArchitectureDependencyDirectory();
+			ArchitectureDllImport.LoadArchitectureDependencyDirectory(explicitForder);
 
 			IntPtr libraryRef;
 			Error err = FT.FT_Init_FreeType(out libraryRef);
@@ -87,10 +86,10 @@ namespace Melville.SharpFont
 		/// Initializes a new instance of the <see cref="Library"/> class.
 		/// </summary>
 		/// <param name="memory">A custom FreeType memory manager.</param>
-		public Library(Memory memory)
+		public Library(Memory memory, string? explicitFolder)
 			: this(false)
 		{
-			ArchitectureDllImport.LoadArchitectureDependencyDirectory();
+			ArchitectureDllImport.LoadArchitectureDependencyDirectory(explicitFolder);
 
 			IntPtr libraryRef;
 			Error err = FT.FT_New_Library(memory.Reference, out libraryRef);

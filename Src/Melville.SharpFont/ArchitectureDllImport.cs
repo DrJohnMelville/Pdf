@@ -1,38 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Melville.SharpFont.NetStandard
+namespace Melville.SharpFont
 {
 	public static class ArchitectureDllImport
 	{
-		public const string DefaultDllDirectory = "";
-		public static Dictionary<Architecture, string> ArchitectureDlls = new Dictionary<Architecture, string>()
-		{
-			{ Architecture.X64, "x64" },
-			{ Architecture.X86, "x86" },
-			{ Architecture.Arm, DefaultDllDirectory },
-			{ Architecture.Arm64, DefaultDllDirectory }
-		};
+        public static void LoadArchitectureDependencyDirectory(string? explicitFolder)
+        {
+            var finalDllFolder = explicitFolder ?? InferredDllLocation();
+            if (!string.IsNullOrWhiteSpace(finalDllFolder))
+                SetDllDirectory(finalDllFolder);
+        }
+        private static string InferredDllLocation() => RuntimeInformation.ProcessArchitecture switch
+        {
+            Architecture.X86 => PathForArchitecture("x86"),
+            Architecture.X64 => PathForArchitecture("x64"),
+            var arch => throw new ArgumentOutOfRangeException(
+                $"Using the {arch} architecture requires the user to explicitly set the " +
+                $"Freetype6.dll folder by calling GlobalFreetypeResources.LoadFontLibrary in Melville.PDF " +
+                $"or passing a string to the Library constructor in Melville.SharpFont")
+        };
 
-		[DllImport("kernel32.dll", SetLastError = true)]
-		public static extern bool SetDllDirectory(string lpPathName);
+        private static string PathForArchitecture(string dllPath) => 
+            Path.Combine(ThisAssemblyFolder(), "lib", dllPath);
 
-		public static void LoadArchitectureDependencyDirectory()
-		{
-			if (!ArchitectureDlls.TryGetValue(RuntimeInformation.ProcessArchitecture, out var dllPath))
-			{
-				dllPath = DefaultDllDirectory;
-			}
-
-			if (!string.IsNullOrWhiteSpace(dllPath))
-			{
-				var path = Path.Combine(Directory.GetCurrentDirectory(), "lib", dllPath);
-				if (Directory.Exists(path))
-				{
-					SetDllDirectory(path);
-				}
-			}
-		}
-	}
+        private static string ThisAssemblyFolder() =>
+            Path.GetDirectoryName(typeof(ArchitectureDllImport).Assembly.Location) ??
+            throw new InvalidOperationException("Cannot find folder for Melville.SharpFont");
+        
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetDllDirectory(string lpPathName);
+    }
 }

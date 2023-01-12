@@ -78,7 +78,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
         try
         {
             return systemFontLibrary =
-                new FontLibraryBuilder(GlobalFreeTypeResources.SharpFontLibrary).BuildFrom(fontFolder);
+                new FontLibraryBuilder().BuildFrom(fontFolder);
         }
         finally
         {
