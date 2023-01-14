@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class ByteWritingImplementation
+internal static class ByteWritingImplementation
 {
     public static void WriteSpace(this PipeWriter dest) => dest.WriteByte((byte)' ');
     public static void WriteLineFeed(this PipeWriter dest) => dest.WriteByte((byte)'\n');

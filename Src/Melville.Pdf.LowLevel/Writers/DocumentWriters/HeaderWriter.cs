@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-public static class HeaderWriter
+internal static class HeaderWriter
 {
 
     public static void WriteHeader(PipeWriter tar, byte majorVersion, byte minorVersion)

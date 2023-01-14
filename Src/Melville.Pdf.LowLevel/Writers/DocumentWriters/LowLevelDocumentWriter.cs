@@ -6,18 +6,25 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
+/// <summary>
+/// This class takes a low level document and writes it out to a PipeWriter in Pdf Format
+/// </summary>
 public class LowLevelDocumentWriter
 {
-    private readonly CountingPipeWriter target;
-    private readonly PdfLowLevelDocument document;
+    protected readonly CountingPipeWriter target;
+    protected readonly PdfLowLevelDocument document;
     private readonly string? userPassword;
 
-
+    /// <summary>
+    /// Create a LowLevelDocumentWriter
+    /// </summary>
+    /// <param name="target">The PipeWriter to receive the document</param>
+    /// <param name="document">The document to write</param>
+    /// <param name="userPassword">The user password with which to encrypt the doucment</param>
     public LowLevelDocumentWriter(
         PipeWriter target, PdfLowLevelDocument document, string? userPassword = null)
     {
@@ -26,34 +33,47 @@ public class LowLevelDocumentWriter
         this.userPassword = userPassword;
     }
 
+    /// <summary>
+    /// Write the document specified in the constructor to the pipe specified in the constructor.
+    /// This method uses a classical XREF table to write the object references
+    /// </summary>
+    /// <returns></returns>
     public async Task WriteAsync()
     {
             
-        var objectOffsets = await WriteHeaderAndObjects(0).CA();
-        long xRefStart = target.BytesWritten;
+        var objectOffsets = await WriteHeaderAndObjects().CA();
+        await WriteReferencesAndTrailer(objectOffsets, target.BytesWritten).CA();
+    }
+
+    /// <summary>
+    /// Number of blank slots to add to the end of the XRef table.  The XrefStreamLowLevelDocumentWriter
+    /// uses this to reserve a final slot for the xrefstream.
+    /// </summary>
+    /// <returns>The number of slots to reserve</returns>
+    private protected virtual int ExtraSlotsNeeded() => 0;
+
+    /// <summary>
+    /// Write the references and trailer.  There are 2 styles, classic Xref table and XrefStream.
+    /// Different objects write the different styles
+    /// </summary>
+    /// <param name="objectOffsets">The table of object locations</param>
+    /// <param name="xRefStart">Location within the stream of the current position</param>
+    /// <returns></returns>
+    private protected virtual async Task WriteReferencesAndTrailer(XRefTable objectOffsets, long xRefStart)
+    {
         await NewXrefTableWriter.WriteXrefsForNewFile(target, objectOffsets).CA();
         await TrailerWriter.WriteTrailerWithDictionary(target, document.TrailerDictionary, xRefStart).CA();
     }
 
-    public async Task WriteWithReferenceStream()
-    {
-        document.VerifyCanSupportObjectStreams();
-        var objectOffsets = await WriteHeaderAndObjects(1).CA();
-        long xRefStart = target.BytesWritten;
-        await new ReferenceStreamWriter(target, document, objectOffsets).Write().CA();
-        await TrailerWriter.WriteTerminalStartXrefAndEof(target, xRefStart).CA();
-    }
-
-    private async Task<XRefTable> WriteHeaderAndObjects( int extraSlots)
+    private async Task<XRefTable> WriteHeaderAndObjects()
     {
         HeaderWriter.WriteHeader(target, document.MajorVersion, document.MinorVersion);
-        var objectOffsets = await WriteObjectList(document, extraSlots).CA();
-        return objectOffsets;
+        return await WriteObjectList(document).CA();
     }
 
-    private async Task<XRefTable> WriteObjectList(PdfLowLevelDocument document, int extraSlots)
+    private async Task<XRefTable> WriteObjectList(PdfLowLevelDocument document)
     {
-        var positions= CreateIndexArray(document, extraSlots);
+        var positions= CreateIndexArray(document);
         var objectWriter = new PdfObjectWriter(target,
             await TrailerToDocumentCryptContext.CreateCryptContext(
                 document.TrailerDictionary, userPassword).CA());
@@ -86,18 +106,9 @@ public class LowLevelDocumentWriter
             throw new InvalidOperationException("Object streams must hae a generation number of 0.");
     }
 
-    private XRefTable CreateIndexArray(PdfLowLevelDocument document, int extraSlots)
+    private XRefTable CreateIndexArray(PdfLowLevelDocument document)
     {
         var maxObject = document.Objects.Keys.Max(i => i.ObjectNumber);
-        return new XRefTable(maxObject, extraSlots);
-    }
-}
-
-internal static class PdfLowLevelDocumentVesrionChecks
-{
-    public static void VerifyCanSupportObjectStreams(this PdfLowLevelDocument document)
-    {
-        if (document.MajorVersion < 2 && document.MinorVersion < 5)
-            throw new PdfParseException("Object streams unavailable before pdf version 1.5");
+        return new XRefTable(maxObject, ExtraSlotsNeeded());
     }
 }

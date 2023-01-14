@@ -50,8 +50,8 @@ public class FileWriterTest
         builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
         PdfLowLevelDocument doc = builder.CreateDocument(majorVersion, minorVersion);
         var target = new TestWriter();
-        var writer = new LowLevelDocumentWriter(target.Writer, doc);
-        await writer.WriteWithReferenceStream();
+        var writer = new XrefStreamLowLevelDocumentWriter(target.Writer, doc);
+        await writer.WriteAsync();
         return target.Result();
     }
 

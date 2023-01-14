@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-public readonly struct ObjectStreamWriter
+internal readonly struct ObjectStreamWriter
 {
     private readonly MultiBufferStream refs;
     private readonly CountingPipeWriter referenceStreamWriter;

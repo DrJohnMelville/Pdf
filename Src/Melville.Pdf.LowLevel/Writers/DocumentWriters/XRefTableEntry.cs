@@ -3,7 +3,7 @@ using System.IO.Pipelines;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-public readonly struct XRefTableEntry
+internal readonly struct XRefTableEntry
 {
     public int Type { get; }
     public long Column1 { get; }

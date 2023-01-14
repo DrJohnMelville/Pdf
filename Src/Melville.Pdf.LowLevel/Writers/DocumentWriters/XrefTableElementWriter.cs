@@ -1,11 +1,13 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-public static class XrefTableElementWriter
+internal static class XrefTableElementWriter
 {
-    private static readonly byte[] xrefHeader = {120, 114, 101, 102, 10}; // xref\n
+    private static ReadOnlySpan<byte> xrefHeader => "xref\n"u8;
+
     public static void WriteXrefTitleLine(PipeWriter target)
     {
         target.WriteBytes(xrefHeader);

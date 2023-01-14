@@ -6,15 +6,9 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-public class ObjectStreamBuilder
+internal class ObjectStreamBuilder
 {
     private readonly List<PdfIndirectObject> members = new();
-
-
-    public ObjectStreamBuilder()
-    {
-        ;
-    }
 
     public bool TryAddRef(PdfIndirectObject obj)
     {

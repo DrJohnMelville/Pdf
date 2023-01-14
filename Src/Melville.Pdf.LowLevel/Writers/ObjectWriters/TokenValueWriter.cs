@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class TokenValueWriter
+internal static class TokenValueWriter
 {
     public static ValueTask<FlushResult> Write(PipeWriter target, PdfTokenValues item)
     {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-public static class NewXrefTableWriter
+internal static class NewXrefTableWriter
 {
     /// <summary>
     /// This method writes out an xref table with the offsets indicated.

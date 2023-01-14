@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
+internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
 {
     private readonly PipeWriter target;
     private IDocumentCryptContext encryptor;

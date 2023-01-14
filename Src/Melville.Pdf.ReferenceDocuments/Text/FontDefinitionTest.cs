@@ -36,10 +36,10 @@ public abstract class FontDefinitionTest : Card3x5
         return ValueTask.CompletedTask;
     }
 
-    private async Task WriteString(ContentStreamWriter csw, ContentStreamWriter.TextBlock tr, PdfName font, int yOffset)
+    private async Task WriteString(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
     {
         await csw.SetFont(font, FontSize);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);
-        tr.ShowString(TextToRender);
+        await tr.ShowString(TextToRender);
     }
 }

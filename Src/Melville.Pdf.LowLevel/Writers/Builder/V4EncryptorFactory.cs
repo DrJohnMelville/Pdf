@@ -8,19 +8,32 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
+/// <summary>
+/// Builder struct for the definition of a V4 encryption dictionaries.  This defines named sets of encryption settings.
+/// </summary>
 public readonly struct V4CfDictionary
 {
     private readonly DictionaryBuilder items = new();
 
-    public V4CfDictionary(PdfName cfm, int keyLengthInBytes, PdfName? authEvent = null)
-    {
+    /// <summary>
+    /// Create a v4 dictionary
+    /// </summary>
+    /// <param name="cfm">Encryption algorithm for the default encryption.</param>
+    /// <param name="keyLengthInBytes">Key length for the default encryption</param>
+    /// <param name="authEvent">When the password would be checked.  (Melville.PDF does not honor this parameter.)</param>
+    public V4CfDictionary(PdfName cfm, int keyLengthInBytes, PdfName? authEvent = null) => 
         AddDefinition(KnownNames.StdCF, cfm, keyLengthInBytes, authEvent);
-    }
 
-    public void AddDefinition(PdfName name, PdfName cfm, int lengthInBytes, PdfName? authEvent = null)
-    {
+    /// <summary>
+    /// Add a named encryption algorithm to the dictionary.
+    /// </summary>
+    /// <param name="name">Name of the encryption settings</param>
+    /// <param name="cfm">Encryption algorithm  used</param>
+    /// <param name="lengthInBytes">Length of the encryption key used.</param>
+    /// <param name="authEvent">When the password would be checked.  (Melville.PDF does not honor this parameter.)</param>
+    public void AddDefinition(
+        PdfName name, PdfName cfm, int lengthInBytes, PdfName? authEvent = null) => 
         items.WithItem(name, CreateDefinition(cfm, lengthInBytes, authEvent??KnownNames.DocOpen));
-    }
 
     private PdfObject CreateDefinition(PdfName cfm, int lengthInBytes, PdfName authEvent) =>
         new DictionaryBuilder()
@@ -29,7 +42,7 @@ public readonly struct V4CfDictionary
             .WithItem(KnownNames.Length, lengthInBytes)
             .AsDictionary();
 
-    public PdfDictionary Build() => items.AsDictionary();
+    internal PdfDictionary Build() => items.AsDictionary();
 }
 
 internal class EncryptorWithCfsDictionary : ComputeEncryptionDictionary

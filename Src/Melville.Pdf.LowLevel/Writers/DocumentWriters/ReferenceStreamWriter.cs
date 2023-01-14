@@ -15,7 +15,7 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-public readonly struct ReferenceStreamWriter
+internal readonly struct ReferenceStreamWriter
 {
     private readonly PipeWriter target;
     private readonly PdfLowLevelDocument document;

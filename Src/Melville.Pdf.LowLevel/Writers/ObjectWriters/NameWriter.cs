@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class NameWriter
+internal static class NameWriter
 {
     public static ValueTask<FlushResult> Write(PipeWriter target, PdfName name)
     {

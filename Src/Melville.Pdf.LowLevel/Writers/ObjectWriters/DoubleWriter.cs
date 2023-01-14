@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class DoubleWriter
+internal static class DoubleWriter
 {
     public static ValueTask<FlushResult> Write(PipeWriter target, double item)
     {
@@ -21,7 +21,7 @@ public static class DoubleWriter
     }
 }
 
-public ref struct DoubleSpanWriter
+internal ref struct DoubleSpanWriter
 {
     private Span<byte> span;
     private int length;

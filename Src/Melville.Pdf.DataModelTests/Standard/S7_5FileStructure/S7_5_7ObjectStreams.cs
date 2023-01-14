@@ -129,8 +129,8 @@ public class S7_5_7ObjectStreams
     private static async Task<string> DocCreatorToString(ILowLevelDocumentCreator builder)
     {
         var ms = new MultiBufferStream();
-        var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());
-        await writer.WriteWithReferenceStream();
+        var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());
+        await writer.WriteAsync();
         var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
         return fileAsString;
     }

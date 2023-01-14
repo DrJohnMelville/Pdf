@@ -11,7 +11,7 @@ using StringWriter = Melville.Pdf.LowLevel.Writers.ObjectWriters.StringWriter;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
-public readonly struct ContentStreamPipeWriter
+internal readonly struct ContentStreamPipeWriter
 {
     private readonly PipeWriter destPipe;
 

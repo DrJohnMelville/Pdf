@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -13,9 +14,8 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class StreamWriter
 {
-    private static byte[] streamToken = {32, 115, 116, 114, 101, 97, 109, 13, 10}; //  stream\r\n
-    private static byte[] endStreamToken = 
-        {13, 10, 101, 110, 100, 115, 116, 114, 101, 97, 109}; //  \r\nendstream
+    private static ReadOnlySpan<byte> StreamToken => " stream\r\n"u8;
+    private static ReadOnlySpan<byte> EndStreamToken => "\r\nendstream"u8;
     public static async ValueTask<FlushResult> Write(
         PipeWriter target, PdfObjectWriter innerWriter, PdfStream item,
         IObjectCryptContext encryptor)
@@ -26,9 +26,9 @@ internal static class StreamWriter
             
         await DictionaryWriter.WriteAsync(target, innerWriter, 
             MergeDictionaryItems(item.RawItems, (KnownNames.Length, new PdfInteger(diskrep.Length)))).CA();
-        target.WriteBytes(streamToken);
+        target.WriteBytes(StreamToken);
         await diskrep.CopyToAsync(target).CA();
-        target.WriteBytes(endStreamToken);
+        target.WriteBytes(EndStreamToken);
         return await target.FlushAsync().CA();
     }
 

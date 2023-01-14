@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-public class XRefTable
+internal class XRefTable
 {
     private readonly int extraSlots;
     private XRefTableEntry[] entries;

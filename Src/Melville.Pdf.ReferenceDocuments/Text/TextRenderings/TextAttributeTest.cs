@@ -23,10 +23,10 @@ public abstract class TextAttributeTest : Card3x5
             await csw.SetStrokeRGB(1.0, 0.0, 0.0);
             await csw.SetFont(fontName, 70);
             tr.SetTextMatrix(1, 0, 0, 1, 30, 25);
-            tr.ShowString("Is Text");
+            await tr.ShowString("Is Text");
             SetTestedParameter(csw);
             tr.SetTextMatrix(1, 0, 0, 1, 30, 125);
-            tr.ShowString("Is Text");
+            await tr.ShowString("Is Text");
         }
     }
 

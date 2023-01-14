@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-public static class TreeCreator
+internal static class TreeCreator
 {
     public static PdfDictionary CreateTree<T>(
         this IPdfObjectRegistry builder, int nodeSize, params (T, PdfObject)[] items)
@@ -23,7 +23,7 @@ public static class TreeCreator
         new TreeCreator<T>(builder, nodeSize).CreateTree(items);
 }
 
-public readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
+internal readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
 {
     private readonly IPdfObjectRegistry builder;
     private readonly int nodeSize;

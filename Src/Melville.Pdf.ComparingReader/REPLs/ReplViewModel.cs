@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Wpf.Controls;
 
@@ -85,6 +86,6 @@ public partial class ReplViewModel
         var doc = new PdfDocument(await new PdfLowLevelReader().ReadFromAsync(buffer));
         var pageObj = await (await doc.PagesAsync()).GetPageAsync(page.Page);
         await using var output = await outputFile.CreateWrite();
-        await new PageExtractor(doc, new PdfPage(pageObj.LowLevel), ContentStreamText).WriteAsync(output);
+        await new PageExtractor(new PdfPage(pageObj.LowLevel), ContentStreamText).WriteAsync(output);
     }
 }

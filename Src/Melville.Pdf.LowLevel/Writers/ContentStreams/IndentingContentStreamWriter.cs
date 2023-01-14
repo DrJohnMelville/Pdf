@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -10,14 +11,23 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters; // for generated code
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
+/// <summary>
+/// This contentstream writer is a thin wrapper around a ContentStreamWriter that it
+/// creates in the constructor.  This class adds whitespace to pretty print and indent the
+/// content stream.
+/// </summary>
 public partial class IndentingContentStreamWriter : IContentStreamOperations
 {
 
     private readonly PipeWriter destPipe;
     private readonly ContentStreamWriter target;
     private int indentLevel = 0;
-    private static readonly byte[] indentText = { 32, 32, 32, 32 };
+    private static ReadOnlySpan<byte> IndentText => "    "u8;
 
+    /// <summary>
+    /// Create an IndentingContentStreamWriter
+    /// </summary>
+    /// <param name="destPipe">The pipe to receive the output content stream</param>
     public IndentingContentStreamWriter(PipeWriter destPipe)
     {
         this.destPipe = destPipe;
@@ -42,50 +52,58 @@ public partial class IndentingContentStreamWriter : IContentStreamOperations
         }
     }
 
-    private void WriteSingleIndent() => destPipe.WriteBytes(indentText);
+    private void WriteSingleIndent() => destPipe.WriteBytes(IndentText);
 
+    /// <inheritdoc />
     public void BeginCompatibilitySection()
     {
         Indented().BeginCompatibilitySection();
         IncreaseIndent();
     }
 
+    /// <inheritdoc />
     public void EndCompatibilitySection()
     {
         DecreaseIndent();
         Indented().EndCompatibilitySection();
     }
 
+    /// <inheritdoc />
     public void BeginTextObject()
     {
         Indented().BeginTextObject();
         IncreaseIndent();
     }
 
+    /// <inheritdoc />
     public void EndTextObject()
     {
         DecreaseIndent();
         Indented().EndTextObject();
     }
 
+    /// <inheritdoc />
     public void BeginMarkedRange(PdfName tag)
     {
         Indented().BeginMarkedRange(tag);
         IncreaseIndent();
     }
 
+    /// <inheritdoc />
     public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
     {
         await Indented().BeginMarkedRangeAsync(tag, dictName).CA();
         IncreaseIndent();
     }
 
+    /// <inheritdoc />
     public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
     {
         await Indented().BeginMarkedRangeAsync(tag, dictionary).CA();
         IncreaseIndent();
     }
 
+    /// <inheritdoc />
     public void EndMarkedRange()
     {
         DecreaseIndent();
@@ -93,12 +111,14 @@ public partial class IndentingContentStreamWriter : IContentStreamOperations
     }
 
 
+    /// <inheritdoc />
     public void SaveGraphicsState()
     {
         Indented().SaveGraphicsState();
         IncreaseIndent();
     }
 
+    /// <inheritdoc />
     public void RestoreGraphicsState()
     {
         DecreaseIndent();

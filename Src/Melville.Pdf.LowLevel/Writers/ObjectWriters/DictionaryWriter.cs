@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -7,21 +9,21 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class DictionaryWriter
+internal static class DictionaryWriter
 {
-    private static readonly byte[] standardPrefix = { (byte)'<', (byte)'<' };
-    private static readonly byte[] standardSuffix = { (byte)'>', (byte)'>' };
-    private static readonly byte[] inlineImagePrefix = { (byte)'B', (byte)'I' };
-    private static readonly byte[] inlineImageSuffix = {(byte)'\n', (byte)'I', (byte)'D', (byte)'\n' };
+    private static readonly byte[] StandardPrefix = "<<"u8.ToArray();
+    private static readonly byte[] StandardSuffix = ">>"u8.ToArray();
+    private static readonly byte[] InlineImagePrefix = "BI"u8.ToArray();
+    private static readonly byte[] InlineImageSuffix = "\nID\n"u8.ToArray();
 
     public static ValueTask<FlushResult> WriteAsync(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
         IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
-        WriteAsync(writer, innerWriter, items, standardPrefix, standardSuffix);
+        WriteAsync(writer, innerWriter, items, StandardPrefix, StandardSuffix);
     public static ValueTask<FlushResult> WriteInlineImageDict(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
         IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
-        WriteAsync(writer, innerWriter, items, inlineImagePrefix, inlineImageSuffix);
+        WriteAsync(writer, innerWriter, items, InlineImagePrefix, InlineImageSuffix);
 
     private static async ValueTask<FlushResult> WriteAsync(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 

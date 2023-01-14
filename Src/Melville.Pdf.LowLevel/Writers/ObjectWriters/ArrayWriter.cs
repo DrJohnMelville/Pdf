@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class ArrayWriter
+internal static class ArrayWriter
 {
     public static async ValueTask<FlushResult> Write(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 

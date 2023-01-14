@@ -14,12 +14,31 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
+/// <summary>
+/// This interface allows additions and replacement of objects in a PdfLowLevelDocument
+/// Then a follow up trailer can be written that modifies a PDF document using the new or replaced objects.
+/// </summary>
 public interface ILowLevelDocumentModifier : IPdfObjectRegistry
 {
+    /// <summary>
+    /// Give an indirect object reference a new value
+    /// </summary>
+    /// <param name="reference">The reference to reassign</param>
+    /// <param name="value">The new value</param>
     void ReplaceReferenceObject(PdfIndirectObject reference, PdfObject value);
+    /// <summary>
+    /// Append the modification trailer to a stream.
+    /// </summary>
+    /// <param name="stream">The stream to be appended to.</param>
+    /// <returns>The valuetask that monitors the completion.</returns>
     ValueTask WriteModificationTrailer(Stream stream) =>
         WriteModificationTrailer(PipeWriter.Create(stream), stream.Position);
-
+    /// <summary>
+    /// Writes out a modification trailer to a PipeWriter.
+    /// </summary>
+    /// <param name="cpw">The pipe writer to write to</param>
+    /// <param name="startPosition">The index at which the trailer starts.</param>
+    /// <returns>ValueTask controlling the completion of the operation.</returns>
     ValueTask WriteModificationTrailer(PipeWriter cpw, long startPosition);
 
 }

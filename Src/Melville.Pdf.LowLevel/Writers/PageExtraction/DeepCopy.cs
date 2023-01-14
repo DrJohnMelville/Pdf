@@ -9,11 +9,21 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.LowLevel.Writers.PageExtraction;
 
+/// <summary>
+/// This struct copies a pdf object, and all the objects that it transitively references
+/// into a new IPdfObjectRegistry.  This is used in the ComparingReader to extract a single page from
+/// a PDF file.
+/// </summary>
 public readonly partial struct DeepCopy
 {
     [FromConstructor] private readonly IPdfObjectRegistry creator;
     private readonly Dictionary<(int, int), PdfObject> buffer = new();
 
+    /// <summary>
+    /// Clone an object, making a deep copy
+    /// </summary>
+    /// <param name="itemValue">The item to clone</param>
+    /// <returns>The clones item</returns>
     public async ValueTask<PdfObject> Clone(PdfObject itemValue) => itemValue switch
     {
         PdfIndirectObject pio => await CloneIndirectObject(pio).CA(),
@@ -32,6 +42,11 @@ public readonly partial struct DeepCopy
         return newPio;
     }
 
+    /// <summary>
+    /// Reserve an object number and associate it with the given indirect object
+    /// </summary>
+    /// <param name="pio">The source indirect object that maps to the reserved object</param>
+    /// <param name="promise">The object mapping to the indirect object in the copy</param>
     public void ReserveIndirectMapping(PdfIndirectObject pio, PdfIndirectObject promise)
     {
         buffer.Add((pio.GenerationNumber, pio.ObjectNumber), promise);

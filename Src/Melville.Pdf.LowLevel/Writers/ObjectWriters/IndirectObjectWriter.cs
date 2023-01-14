@@ -8,11 +8,11 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-public static class IndirectObjectWriter
+internal static class IndirectObjectWriter
 {
-    private static byte[] ObjectLabel = {32, 111, 98, 106, 32}; // ' obj '
-    private static byte[] ReferenceLabel = {32, 82}; // ' R'
-    private static byte[] endObjLabel = {32, 101, 110, 100, 111, 98, 106, 10}; //  endobj
+    private static ReadOnlySpan<byte> ObjectLabel => " obj "u8;
+    private static ReadOnlySpan<byte> ReferenceLabel => " R"u8;
+    private static ReadOnlySpan<byte> EndObjLabel => " endobj\n"u8;
 
     public static ValueTask<FlushResult> WriteObjectReference(PipeWriter target, PdfIndirectObject item)
     {
@@ -20,10 +20,10 @@ public static class IndirectObjectWriter
         return  target.FlushAsync();
     }
 
-    private static int WriteObjectHeader(Span<byte> buffer, PdfIndirectObject item, byte[] suffix)
+    private static int WriteObjectHeader(Span<byte> buffer, PdfIndirectObject item, ReadOnlySpan<byte> suffix)
     {
         var position = WriteObjectIdDigits(buffer, item);
-        suffix.AsSpan().CopyTo(buffer.Slice(position));
+        suffix.CopyTo(buffer.Slice(position));
         return position + suffix.Length;
     }
 
@@ -33,7 +33,7 @@ public static class IndirectObjectWriter
         target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 
         await target.FlushAsync().CA();
         await (await item.DirectValueAsync().CA()).Visit(innerWriter).CA();
-        target.WriteBytes(endObjLabel);
+        target.WriteBytes(EndObjLabel);
         return await target.FlushAsync().CA();
     }
         

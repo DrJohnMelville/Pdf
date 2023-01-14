@@ -61,7 +61,7 @@ public class TextObjectOperationsTest : WriterTest
     {
         using (var block = sut.StartTextBlock())
         {
-            block.ShowString("ABC");
+            await block.ShowString("ABC");
         }
         Assert.Equal("BT\n(ABC)Tj\nET\n", await WrittenText() );
     }
@@ -70,7 +70,7 @@ public class TextObjectOperationsTest : WriterTest
     {
         using (var block = sut.StartTextBlock())
         {
-            block.MoveToNextLineAndShowString("ABC");
+            await block.MoveToNextLineAndShowString("ABC");
         }
         Assert.Equal("BT\n(ABC)'\nET\n", await WrittenText() );
     }
@@ -79,7 +79,7 @@ public class TextObjectOperationsTest : WriterTest
     {
         using (var block = sut.StartTextBlock())
         {
-            block.MoveToNextLineAndShowString(2, 3, "ABC");
+            await block.MoveToNextLineAndShowString(2, 3, "ABC");
         }
         Assert.Equal("BT\n2 3(ABC)\"\nET\n", await WrittenText() );
     }
@@ -89,7 +89,7 @@ public class TextObjectOperationsTest : WriterTest
     {
         using (var block = sut.StartTextBlock())
         {
-            block.ShowSpacedString("A", 2, "B", 3, "C", "D", 4, 5);
+            await block.ShowSpacedString("A", 2, "B", 3, "C", "D", 4, 5);
         }
         Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenText() );
         

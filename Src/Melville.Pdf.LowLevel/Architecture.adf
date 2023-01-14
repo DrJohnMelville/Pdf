@@ -12,6 +12,9 @@ Group Writers
 Parser => Model
 Writers => Model
 
+#special case for the pretty printer which is both a parser and a writer.
+Melville.Pdf.LowLevel.Writers.ContentStreams.ContentStreamPrettyPrinter => Parser
+
 #Everyone can use various external resources
 * => System.*
 * => Melville.Parsing.*

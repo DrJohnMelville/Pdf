@@ -24,8 +24,8 @@ public class S_7_5_8CrossReferenceStreams
     {
         var document = MinimalPdfParser.MinimalPdf();
         var ms = new MultiBufferStream();
-        var writer = new LowLevelDocumentWriter(PipeWriter.Create(ms), document);
-        await writer.WriteWithReferenceStream();
+        var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), document);
+        await writer.WriteAsync();
         var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
         Assert.DoesNotContain(fileAsString, "trailer");
         var doc = await (fileAsString).ParseDocumentAsync();
