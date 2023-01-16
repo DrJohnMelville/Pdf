@@ -3,7 +3,7 @@ using System.IO.Pipelines;
 
 namespace Melville.Pdf.LowLevel.Writers;
 
-public static class PipeWriterExtension
+internal static class PipeWriterExtension
 {
     public static void WriteBytes(this PipeWriter pw, ReadOnlySpan<byte> text)
     {

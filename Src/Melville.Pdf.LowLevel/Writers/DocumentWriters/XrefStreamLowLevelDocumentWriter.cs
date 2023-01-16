@@ -19,8 +19,8 @@ public class XrefStreamLowLevelDocumentWriter: LowLevelDocumentWriter
     /// <inheritdoc />
     private protected override async Task WriteReferencesAndTrailer(XRefTable objectOffsets, long xRefStart)
     {
-        await new ReferenceStreamWriter(target, document, objectOffsets).Write().CA();
-        await TrailerWriter.WriteTerminalStartXrefAndEof(target, xRefStart).CA();
+        await new ReferenceStreamWriter(Target, document, objectOffsets).Write().CA();
+        await TrailerWriter.WriteTerminalStartXrefAndEof(Target, xRefStart).CA();
     }
 
     /// <inheritdoc />

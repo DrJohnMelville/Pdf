@@ -4,7 +4,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.LowLevel.Writers;
 
-public partial class CountingPipeWriter: PipeWriter
+internal partial class CountingPipeWriter: PipeWriter
 {
     public long BytesWritten { get; private set; }
     [DelegateTo] private readonly PipeWriter innerWriter;

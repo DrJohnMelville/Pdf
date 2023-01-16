@@ -15,7 +15,8 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 /// </summary>
 public class LowLevelDocumentWriter
 {
-    protected readonly CountingPipeWriter target;
+    private readonly CountingPipeWriter target;
+    protected PipeWriter Target => target;
     protected readonly PdfLowLevelDocument document;
     private readonly string? userPassword;
 
@@ -61,20 +62,20 @@ public class LowLevelDocumentWriter
     /// <returns></returns>
     private protected virtual async Task WriteReferencesAndTrailer(XRefTable objectOffsets, long xRefStart)
     {
-        await NewXrefTableWriter.WriteXrefsForNewFile(target, objectOffsets).CA();
-        await TrailerWriter.WriteTrailerWithDictionary(target, document.TrailerDictionary, xRefStart).CA();
+        await NewXrefTableWriter.WriteXrefsForNewFile(Target, objectOffsets).CA();
+        await TrailerWriter.WriteTrailerWithDictionary(Target, document.TrailerDictionary, xRefStart).CA();
     }
 
     private async Task<XRefTable> WriteHeaderAndObjects()
     {
-        HeaderWriter.WriteHeader(target, document.MajorVersion, document.MinorVersion);
+        HeaderWriter.WriteHeader(Target, document.MajorVersion, document.MinorVersion);
         return await WriteObjectList(document).CA();
     }
 
     private async Task<XRefTable> WriteObjectList(PdfLowLevelDocument document)
     {
         var positions= CreateIndexArray(document);
-        var objectWriter = new PdfObjectWriter(target,
+        var objectWriter = new PdfObjectWriter(Target,
             await TrailerToDocumentCryptContext.CreateCryptContext(
                 document.TrailerDictionary, userPassword).CA());
         foreach (var item in document.Objects.Values)
