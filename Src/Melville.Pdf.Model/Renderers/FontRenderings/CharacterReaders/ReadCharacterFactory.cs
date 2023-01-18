@@ -7,7 +7,7 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 
-public readonly partial struct ReadCharacterFactory
+internal readonly partial struct ReadCharacterFactory
 {
     [FromConstructor] private readonly PdfFont font;
     [FromConstructor] private readonly PdfEncoding encoding;

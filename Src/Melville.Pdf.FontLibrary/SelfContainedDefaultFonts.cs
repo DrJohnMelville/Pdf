@@ -4,38 +4,37 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 namespace Melville.Pdf.FontLibrary;
 
 [StaticSingleton]
 public partial class SelfContainedDefaultFonts: IDefaultFontMapper
 {
-    public ValueTask<IRealizedFont>  FontFromName(
-        PdfName font, FontFlags fontFlags, FreeTypeFontFactory factory)
+    public DefaultFontReference  FontFromName(
+        PdfName font, FontFlags fontFlags)
     {
         return font.GetHashCode() switch
         {
-            KnownNameKeys.Courier => SystemFont("Courier Prime.ttf", factory),
-            KnownNameKeys.CourierBold => SystemFont("Courier Prime Bold.ttf", factory),
-            KnownNameKeys.CourierOblique => SystemFont("Courier Prime Italic.ttf", factory),
-            KnownNameKeys.CourierBoldOblique => SystemFont("Courier Prime Bold Italic.ttf", factory),
-            KnownNameKeys.Helvetica => SystemFont("Roboto-Regular.ttf", factory),
-            KnownNameKeys.HelveticaBold => SystemFont("Roboto-Bold.ttf", factory),
-            KnownNameKeys.HelveticaOblique => SystemFont("Roboto-Italic.ttf", factory),
-            KnownNameKeys.HelveticaBoldOblique => SystemFont("Roboto-BoldItalic.ttf", factory),
-            KnownNameKeys.TimesRoman => SystemFont("LinLibertine_R.otf", factory),
-            KnownNameKeys.TimesBold => SystemFont("LinLibertine_RB.otf", factory),
-            KnownNameKeys.TimesOblique => SystemFont("LinLibertine_RI.otf", factory),
-            KnownNameKeys.TimesBoldOblique => SystemFont("LinLibertine_RBI.otf", factory),
-            KnownNameKeys.Symbol => SystemFont("Symbola.ttf", factory), 
-            KnownNameKeys.ZapfDingbats => SystemFont("Symbola.ttf", factory),
-            _ => FontFromName(fontFlags.MapBuiltInFont(), fontFlags, factory)
+            KnownNameKeys.Courier => SystemFont("Courier Prime.ttf"),
+            KnownNameKeys.CourierBold => SystemFont("Courier Prime Bold.ttf"),
+            KnownNameKeys.CourierOblique => SystemFont("Courier Prime Italic.ttf"),
+            KnownNameKeys.CourierBoldOblique => SystemFont("Courier Prime Bold Italic.ttf"),
+            KnownNameKeys.Helvetica => SystemFont("Roboto-Regular.ttf"),
+            KnownNameKeys.HelveticaBold => SystemFont("Roboto-Bold.ttf"),
+            KnownNameKeys.HelveticaOblique => SystemFont("Roboto-Italic.ttf"),
+            KnownNameKeys.HelveticaBoldOblique => SystemFont("Roboto-BoldItalic.ttf"),
+            KnownNameKeys.TimesRoman => SystemFont("LinLibertine_R.otf"),
+            KnownNameKeys.TimesBold => SystemFont("LinLibertine_RB.otf"),
+            KnownNameKeys.TimesOblique => SystemFont("LinLibertine_RI.otf"),
+            KnownNameKeys.TimesBoldOblique => SystemFont("LinLibertine_RBI.otf"),
+            KnownNameKeys.Symbol => SystemFont("Symbola.ttf"), 
+            KnownNameKeys.ZapfDingbats => SystemFont("Symbola.ttf"),
+            _ => FontFromName(fontFlags.MapBuiltInFont(), fontFlags)
         };
     }
 
-    private ValueTask<IRealizedFont> SystemFont(string fileName, FreeTypeFontFactory factory) =>
-        factory.FromCSharpStream(
+    private DefaultFontReference SystemFont(string fileName) =>
+        new DefaultFontReference(
             GetType().Assembly.GetManifestResourceStream("Melville.Pdf.FontLibrary." + fileName) ??
-            throw new InvalidOperationException("Cannot find font resource: " + fileName));
+            throw new InvalidOperationException("Cannot find font resource: " + fileName), 0);
 }

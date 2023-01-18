@@ -12,7 +12,7 @@ public class ColoredTileRotated : ColoredTilePattern
     protected override TilePatternCreator CreatePatternCreator()
     {
         var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 100, 100,
-            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
+            new PdfRect(0, 0, 100, 100));
         tpc.AddMatrix(Matrix3x2.CreateScale(0.4f)*Matrix3x2.CreateRotation((float)(0.4)));
         return tpc;
     }

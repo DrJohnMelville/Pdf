@@ -10,7 +10,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 
-public readonly struct FontWidthParser
+internal readonly struct FontWidthParser
 {
     private readonly PdfFont pdfFont;
     private const double sizeFactor = 1.0/1000;

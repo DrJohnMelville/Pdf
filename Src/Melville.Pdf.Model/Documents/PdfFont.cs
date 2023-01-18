@@ -22,7 +22,7 @@ public enum FontFlags: int
     ForceBold = 1<<18
 }
 
-public readonly partial struct PdfFont
+internal readonly partial struct PdfFont
 {
     [FromConstructor]public readonly PdfDictionary LowLevel { get; }
 

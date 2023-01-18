@@ -10,7 +10,7 @@ using TwoByteCharacters = Melville.Pdf.Model.Renderers.FontRenderings.CharacterR
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-public readonly partial struct ReadCharacterFactory
+internal readonly partial struct ReadCharacterFactory
 {
     [FromConstructor] private readonly PdfFont font;
     [FromConstructor] private readonly PdfEncoding encoding;

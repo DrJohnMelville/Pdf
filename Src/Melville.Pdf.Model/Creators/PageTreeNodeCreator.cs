@@ -9,24 +9,43 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
+/// <summary>
+/// This creates the nodes of the page tree.
+/// </summary>
 public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
 {
     private readonly IList<ItemWithResourceDictionaryCreator> children;
+    private readonly int maxNodeSize;
 
-    private PageTreeNodeCreator(DictionaryBuilder metaData, IList<ItemWithResourceDictionaryCreator> children):
+    private PageTreeNodeCreator(DictionaryBuilder metaData, IList<ItemWithResourceDictionaryCreator> children, int maxNodeSize):
         base(metaData)
     {
         this.children = children;
+        this.maxNodeSize = maxNodeSize;
         metaData.WithItem(KnownNames.Type, KnownNames.Pages);
     }
-    public PageTreeNodeCreator():this(new() ,new List<ItemWithResourceDictionaryCreator>())
+    public PageTreeNodeCreator(int maxNodeSize):this(new() ,new List<ItemWithResourceDictionaryCreator>(), maxNodeSize)
     {
     }
 
+    /// <summary>
+    /// Create a PageCreator that utilizes root level objects
+    /// </summary>
+    /// <returns>A PageCreator that can be used to define the page.</returns>
     public PageCreator CreatePage() => AddAndReturn(new PageCreator(NoObjectStream.Instance));
+
+    /// <summary>
+    /// A page creator that writes all of its objects to an object stream.
+    /// </summary>
+    /// <returns>The page creator used to define the page.</returns>
     public PageCreator CreatePageInObjectStream() => 
         AddAndReturn(new PageCreator(EncodeInObjectStream.Instance));
-    public PageTreeNodeCreator CreateNode() => AddAndReturn(new PageTreeNodeCreator());
+
+    /// <summary>
+    /// Create a subnode of this PageTreeNode
+    /// </summary>
+    /// <returns>The child PageTreeNodeCreator</returns>
+    public PageTreeNodeCreator CreateSubnode() => AddAndReturn(new PageTreeNodeCreator(maxNodeSize));
 
     private T AddAndReturn<T>(T ret) where T:ItemWithResourceDictionaryCreator
     {
@@ -35,25 +54,23 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
     }
 
 
-
+    /// <inheritdoc />
     public override (PdfIndirectObject Reference, int PageCount)
-        ConstructPageTree(IPdfObjectRegistry creator, PdfIndirectObject? parent,
-            int maxNodeSize) =>
-        TrySegmentedPageTree(maxNodeSize).InnnerConstructPageTree(creator, parent, maxNodeSize);
+        ConstructItem(IPdfObjectRegistry creator, PdfIndirectObject? parent) =>
+        TrySegmentedPageTree().InnnerConstructPageTree(creator, parent);
 
-    private PageTreeNodeCreator TrySegmentedPageTree(int maxNodeSize) =>
+    private PageTreeNodeCreator TrySegmentedPageTree() =>
         children.Count <= maxNodeSize ? this : 
-            SegmentedTree(maxNodeSize).TrySegmentedPageTree(maxNodeSize);
+            SegmentedTree().TrySegmentedPageTree();
 
-    private PageTreeNodeCreator SegmentedTree(int maxNodeSize) => new(MetaData, 
+    private PageTreeNodeCreator SegmentedTree() => new(MetaData, 
         children.Chunk(maxNodeSize)
         .Select(i => (ItemWithResourceDictionaryCreator)new PageTreeNodeCreator(
-            new(),i)).ToArray()
+            new(),i, maxNodeSize)).ToArray(), maxNodeSize
         );
 
     private (PdfIndirectObject Reference, int PageCount)
-        InnnerConstructPageTree(IPdfObjectRegistry creator, PdfIndirectObject? parent,
-            int maxNodeSize)
+        InnnerConstructPageTree(IPdfObjectRegistry creator, PdfIndirectObject? parent)
     {
         var ret = creator.AddPromisedObject();
         AddExtraFieldsFromTreeLevel(creator,parent);
@@ -61,7 +78,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         int count = 0;
         for (int i = 0; i < kids.Length; i++)
         {
-            (kids[i], var localCount) = children[i].ConstructPageTree(creator, ret, maxNodeSize);
+            (kids[i], var localCount) = children[i].ConstructItem(creator, ret);
             count += localCount;
         }
         MetaData.WithItem(KnownNames.Kids, new PdfArray(kids)).

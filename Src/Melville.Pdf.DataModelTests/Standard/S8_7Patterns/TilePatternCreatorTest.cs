@@ -24,7 +24,7 @@ public class TilePatternCreatorTest
     public async Task CreateTilePattern(string partialString)
     {
         var builder = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.Constant,
-            17, 21, new PdfRect(10, 20, 30, 40), NoObjectStream.Instance);
+            17, 21, new PdfRect(10, 20, 30, 40));
         builder.AddMatrix(new Matrix3x2(15,25,35,45,55,65));
         await TestTilePattern(partialString, builder);
     }
@@ -36,7 +36,7 @@ public class TilePatternCreatorTest
             csw.Rectangle(1, 2, 3, 4);
             return ValueTask.CompletedTask;
         });
-        var (ir, num) = builder.ConstructPageTree(new LowLevelDocumentBuilder(), null, 10);
+        var (ir, num) = builder.ConstructItem(new LowLevelDocumentBuilder(), null);
         var str = await (await ir.DirectValueAsync()).WriteToStringAsync();
         Assert.Contains(partialString, str);
     }
@@ -46,8 +46,7 @@ public class TilePatternCreatorTest
     public async Task TilePatternPaintType(PatternPaintType paint, string partialString)
     {
         var builder = new TilePatternCreator(paint, PatternTileType.Constant, 1, 1, 
-            new PdfRect(10, 20, 30, 40),
-            NoObjectStream.Instance);
+            new PdfRect(10, 20, 30, 40));
         await TestTilePattern(partialString, builder);
     }
     [Theory]
@@ -57,7 +56,7 @@ public class TilePatternCreatorTest
     public async Task TilePatternTileType(PatternTileType tile, string partialString)
     {
         var builder = new TilePatternCreator(PatternPaintType.Colored, tile, 1,1,
-            new PdfRect(10, 20, 30, 40), NoObjectStream.Instance);
+            new PdfRect(10, 20, 30, 40));
         await TestTilePattern(partialString, builder);
     }
 }

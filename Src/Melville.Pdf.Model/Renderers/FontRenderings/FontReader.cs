@@ -53,6 +53,13 @@ public readonly struct FontReader
               ).CA();
 
     private async ValueTask<IRealizedFont> SystemFontByName(PdfFont font, FreeTypeFontFactory factory) =>
-        await defaultMapper.FontFromName(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA(), factory)
-            .CA();
+        await defaultMapper
+            .FontFromName(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA())
+            .ToFontAsync(factory).CA();
+}
+
+internal static class MapDefaultFontReferenceToFont
+{
+    public static ValueTask<IRealizedFont> ToFontAsync(this DefaultFontReference reference, FreeTypeFontFactory factory) =>
+        factory.FromCSharpStream(reference.Source, reference.Index);
 }

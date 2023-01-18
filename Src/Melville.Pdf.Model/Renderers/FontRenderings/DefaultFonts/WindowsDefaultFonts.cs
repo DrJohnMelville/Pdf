@@ -27,44 +27,44 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static readonly byte[] SegoeUISymbol =
         { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
 
-    public async ValueTask<IRealizedFont> FontFromName(
-        PdfName font, FontFlags fontFlags, FreeTypeFontFactory factory)
+    public DefaultFontReference FontFromName(
+        PdfName font, FontFlags fontFlags)
     {
         return font.GetHashCode() switch
         {
-            KnownNameKeys.Courier => await SystemFont(CourierNew, factory,  false, false).CA(),
-            KnownNameKeys.CourierBold => await SystemFont(CourierNew, factory,  true, false).CA(),
-            KnownNameKeys.CourierOblique => await SystemFont(CourierNew, factory,  false, true).CA(),
-            KnownNameKeys.CourierBoldOblique => await SystemFont(CourierNew, factory,  true, true).CA(),
-            KnownNameKeys.Helvetica => await SystemFont(Arial, factory,  false, false).CA(),
-            KnownNameKeys.HelveticaBold => await SystemFont(Arial, factory,  true, false).CA(),
-            KnownNameKeys.HelveticaOblique => await SystemFont(Arial, factory,  false, true).CA(),
-            KnownNameKeys.HelveticaBoldOblique => await SystemFont(Arial, factory,  true, true).CA(),
-            KnownNameKeys.TimesRoman => await SystemFont(TimesNewRoman, factory,  false, false).CA(),
-            KnownNameKeys.TimesBold => await SystemFont(TimesNewRoman, factory,  true, false).CA(),
-            KnownNameKeys.TimesOblique => await SystemFont(TimesNewRoman, factory,  false, true).CA(),
-            KnownNameKeys.TimesBoldOblique => await SystemFont(TimesNewRoman, factory,  true, true).CA(),
-            KnownNameKeys.Symbol => await SystemFont(SegoeUISymbol, factory,  false, false).CA(), 
-            KnownNameKeys.ZapfDingbats => await SystemFont(SegoeUISymbol, factory,  false, false).CA(),
-            _ => await TrySystemFont(font.Bytes, factory, 
-                        fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic)).CA()??
-                 await FontFromName(fontFlags.MapBuiltInFont(), fontFlags, factory).CA()
+            KnownNameKeys.Courier => SystemFont(CourierNew,  false, false),
+            KnownNameKeys.CourierBold => SystemFont(CourierNew,  true, false),
+            KnownNameKeys.CourierOblique => SystemFont(CourierNew,  false, true),
+            KnownNameKeys.CourierBoldOblique => SystemFont(CourierNew,  true, true),
+            KnownNameKeys.Helvetica => SystemFont(Arial,  false, false),
+            KnownNameKeys.HelveticaBold => SystemFont(Arial,  true, false),
+            KnownNameKeys.HelveticaOblique => SystemFont(Arial,  false, true),
+            KnownNameKeys.HelveticaBoldOblique => SystemFont(Arial,  true, true),
+            KnownNameKeys.TimesRoman => SystemFont(TimesNewRoman,  false, false),
+            KnownNameKeys.TimesBold => SystemFont(TimesNewRoman,  true, false),
+            KnownNameKeys.TimesOblique => SystemFont(TimesNewRoman,  false, true),
+            KnownNameKeys.TimesBoldOblique => SystemFont(TimesNewRoman,  true, true),
+            KnownNameKeys.Symbol => SystemFont(SegoeUISymbol,  false, false), 
+            KnownNameKeys.ZapfDingbats => SystemFont(SegoeUISymbol,  false, false),
+            _ => TrySystemFont(font.Bytes, 
+                        fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic))??
+                 FontFromName(fontFlags.MapBuiltInFont(), fontFlags)
         };
     }
 
-    private  ValueTask<IRealizedFont> SystemFont(
-        byte[] name, FreeTypeFontFactory factory, bool bold, bool italic)
+    private  DefaultFontReference SystemFont(
+        byte[] name, bool bold, bool italic)
     {
         var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
-        return fontReference?.ReaiizeUsing(factory) 
+        return fontReference?.AsDefaultFontReference()
                ?? throw new IOException("Could not find required font file.");
     }
-    private  async ValueTask<IRealizedFont?> TrySystemFont(
-        byte[] name, FreeTypeFontFactory factory, bool bold, bool italic)
+    private  DefaultFontReference? TrySystemFont(
+        byte[] name, bool bold, bool italic)
     {
         var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
         if (fontReference is null) return null;
-        return await fontReference.ReaiizeUsing(factory).CA();
+        return fontReference.AsDefaultFontReference();
     }
 
 

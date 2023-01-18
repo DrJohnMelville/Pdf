@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 
 namespace Melville.Pdf.Model.Documents;
 
+#warning -- should eventually be able to make this internal
 public interface IHasPageAttributes
 {
     PdfDictionary LowLevel { get; }
@@ -17,7 +18,7 @@ public interface IHasPageAttributes
 
 }
 
-public static partial class PdfPageAttributes
+internal static class PdfPageAttributesOperations
 {
     private static async IAsyncEnumerable<PdfObject> InheritedPageProperties(IHasPageAttributes item, PdfName name)
     {

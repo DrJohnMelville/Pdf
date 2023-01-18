@@ -11,7 +11,7 @@ public class ColoredTileMissingMatrix : ColoredTilePattern
     protected override TilePatternCreator CreatePatternCreator()
     {
         var tpc = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.NoDistortion, 100, 100,
-            new PdfRect(0, 0, 100, 100), NoObjectStream.Instance);
+            new PdfRect(0, 0, 100, 100));
         return tpc;
     }
 

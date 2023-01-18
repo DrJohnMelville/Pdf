@@ -50,7 +50,7 @@ public class S7_7_3PageTree
     {
         var creator = new PdfDocumentCreator();
         creator.Pages.CreatePage();
-        var node = creator.Pages.CreateNode();
+        var node = creator.Pages.CreateSubnode();
         node.CreatePage();
         node.CreatePage();
         creator.Pages.CreatePage();
@@ -111,7 +111,7 @@ public class S7_7_3PageTree
 
     private static PdfDocument FifteenPageDocumentTree()
     {
-        var creator = new PdfDocumentCreator() { MaxPageTreeNodeSize = 3 };
+        var creator = new PdfDocumentCreator(3);
         for (int i = 0; i < 15; i++)
         {
             creator.Pages.CreatePage();

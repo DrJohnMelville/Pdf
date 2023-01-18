@@ -9,18 +9,39 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.Documents;
 
+/// <summary>
+/// This is a costume type that represents the PageTree structure in a PdfDocument.
+/// Helper methods expose the PageTree as a sequence of pages.
+/// </summary>
 public readonly struct PageTree: IAsyncEnumerable<PdfPage>
 {
+    /// <summary>
+    /// Low level PdfDictionary representing this PageTree
+    /// </summary>
     public PdfDictionary LowLevel { get; }
 
+    /// <summary>
+    /// Create a PageTree from a low level PdfDictionary
+    /// </summary>
+    /// <param name="lowLevel">The low level dictionary defining the root of the page tree.</param>
     public PageTree(PdfDictionary lowLevel)
     {
         LowLevel = lowLevel;
     }
 
+    /// <summary>
+    /// Gets the number of pages in the tree
+    /// </summary>
+    /// <returns>The number of pages in the tree.</returns>
     public async ValueTask<long> CountAsync() => 
         (await LowLevel.GetAsync<PdfNumber>(KnownNames.Count).CA()).IntValue;
 
+    /// <summary>
+    /// Enumerates the pages in the tree.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token to stop the async enumeration</param>
+    /// <returns>Enumerates the pages in the tree, in the proper page order.</returns>
+    /// <exception cref="PdfParseException">Thew dictionary in LowLevel is not a valid PageTree.</exception>
     public async IAsyncEnumerator<PdfPage> GetAsyncEnumerator(CancellationToken cancellationToken = new())
     {
         var kids = await KidsAsync().CA();
@@ -40,6 +61,13 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
         }
     }
 
+    /// <summary>
+    /// Get a page by number.
+    /// </summary>
+    /// <param name="pageNumberOneBased">1 based number of the page to retrieve.</param>
+    /// <returns></returns>
+    /// <exception cref="PdfParseException">Thew dictionary in LowLevel is not a valid PageTree.</exception>
+    /// <exception cref="IndexOutOfRangeException">No page exists with the given number</exception>
     public async ValueTask<HasRenderableContentStream> GetPageAsync(long pageNumberOneBased)
     {
         List<PdfObject> priorNodes = new();
@@ -86,5 +114,10 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
         return position <= 1;
     }
 
+    /// <summary>
+    /// The Kids entry in the PageTree dictionary.  This is a lower level construct regarding the representation
+    /// of a large array of pages in PDF as a tree.
+    /// </summary>
+    /// <returns>The Kids array.</returns>
     public ValueTask<PdfArray> KidsAsync() => LowLevel.GetAsync<PdfArray>(KnownNames.Kids);
 }

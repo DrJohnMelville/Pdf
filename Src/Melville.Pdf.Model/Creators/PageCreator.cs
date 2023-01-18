@@ -11,59 +11,46 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
-public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
-{
-    private readonly IObjectStreamCreationStrategy objStreamStrategy;
-    
-    protected ContentStreamCreator(IObjectStreamCreationStrategy objStreamStrategy): base(new())
-    {
-        this.objStreamStrategy = objStreamStrategy;
-    }
-
-    public override (PdfIndirectObject Reference, int PageCount) ConstructPageTree(IPdfObjectRegistry creator,
-        PdfIndirectObject? parent, int maxNodeSize)
-    {
-        using var _ = objStreamStrategy.EnterObjectStreamContext(creator);
-        TryAddResources(creator);
-        return (CreateFinalObject(creator), 1);
-    }
-
-    protected abstract PdfIndirectObject CreateFinalObject(IPdfObjectRegistry creator);
-    public abstract void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data);
-
-}
-
 public class PageCreator: ContentStreamCreator
 {
     private readonly List<PdfStream> streamSegments = new();
     private PromisedIndirectObject? promisedPageObject;
-    public PageCreator(IObjectStreamCreationStrategy objStreamStrategy) : base(objStreamStrategy)
+    internal PageCreator(IObjectStreamCreationStrategy objStreamStrategy) : base(objStreamStrategy)
     {
         MetaData.WithItem(KnownNames.Type, KnownNames.Page);
     }
 
+    /// <inheritdoc />
     public override void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data) => 
         streamSegments.Add(builder.AsStream(data));
 
+    /// <inheritdoc />
     public override (PdfIndirectObject Reference, int PageCount) 
-        ConstructPageTree(IPdfObjectRegistry creator, PdfIndirectObject? parent,
-            int maxNodeSize)
+        ConstructItem(IPdfObjectRegistry creator, PdfIndirectObject? parent)
     {
         if (parent is null) throw new ArgumentException("Pages must have a parent.");
         MetaData.WithItem(KnownNames.Parent, parent);
-        return base.ConstructPageTree(creator, parent, maxNodeSize);
+        return base.ConstructItem(creator, parent);
     }
 
+    /// <inheritdoc />
     protected override PdfIndirectObject CreateFinalObject(IPdfObjectRegistry creator)
     {
         TryAddContent(creator);
         return creator.Add(TryUsePromisedObject(MetaData.AsDictionary()));
     }
 
+    /// <summary>
+    /// Create an indirect object that will eventually become the Page dictionary.  This is used
+    /// wehn the page definition needs to refer back to the page object.  A client can get the
+    /// promised indirect object that will later be filled in with the page value.
+    /// </summary>
+    /// <param name="builder">The IPdfObjectRegistry from which to create the promise object</param>
+    /// <returns>the promise object</returns>
     public PdfIndirectObject InitializePromiseObject(IPdfObjectRegistry builder) =>
         promisedPageObject = builder.CreatePromiseObject();
 
-    public PdfObject TryUsePromisedObject(PdfObject value)
+    private PdfObject TryUsePromisedObject(PdfObject value)
     {
         if (promisedPageObject == null) return value;
         promisedPageObject.SetValue(value);
@@ -84,6 +71,10 @@ public class PageCreator: ContentStreamCreator
     private PdfIndirectObject CreateStreamSegment(IPdfObjectRegistry creator, PdfStream stream) => 
         creator.Add(stream);
 
+    /// <summary>
+    /// Add a last modified time to the page object.
+    /// </summary>
+    /// <param name="dateAndTime">The last modified time to add</param>
     public void AddLastModifiedTime(PdfTime dateAndTime) => 
         MetaData.WithItem(KnownNames.LastModified, PdfString.CreateDate(dateAndTime));
 }

@@ -12,7 +12,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public readonly partial struct FreeTypeFontFactory
+internal readonly partial struct FreeTypeFontFactory
 {
     [FromConstructor] private readonly PdfFont fontDefinitionDictionary;
 

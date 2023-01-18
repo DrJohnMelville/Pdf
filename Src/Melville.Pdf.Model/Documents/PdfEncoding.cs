@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Documents;
 
-public readonly partial struct PdfEncoding
+internal readonly partial struct PdfEncoding
 {
     [FromConstructor] public PdfObject LowLevel { get; }
 

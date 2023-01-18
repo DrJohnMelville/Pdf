@@ -17,7 +17,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
-public readonly partial struct CharacterToGlyphMapFactory
+internal readonly partial struct CharacterToGlyphMapFactory
 {
     [FromConstructor] private readonly Face face;
     [FromConstructor] private readonly PdfFont font;
