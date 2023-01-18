@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public static class BitmapPointerMath
+internal static class BitmapPointerMath
 {
     public static unsafe void PushPixel(ref byte* output, in DeviceColor color)
     {

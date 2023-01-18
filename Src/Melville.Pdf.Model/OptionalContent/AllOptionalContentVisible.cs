@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 namespace Melville.Pdf.Model.OptionalContent;
 
 [StaticSingleton]
-public sealed partial class AllOptionalContentVisible : IOptionalContentState
+internal sealed partial class AllOptionalContentVisible : IOptionalContentState
 {
     public ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary) => new(true);
     public event EventHandler<EventArgs>? SelectedContentChanged

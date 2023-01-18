@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public class NBitByteWriter : ByteWriter
+internal class NBitByteWriter : ByteWriter
 {
     private int bits;
 

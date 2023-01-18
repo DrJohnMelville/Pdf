@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
-public readonly struct OptionalContentMemberDictionaryInterpreter
+internal readonly struct OptionalContentMemberDictionaryInterpreter
 {
     private readonly PdfDictionary dictionary;
     private readonly IOptionalContentState state;

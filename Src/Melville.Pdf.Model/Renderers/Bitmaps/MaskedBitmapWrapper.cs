@@ -1,6 +1,6 @@
 ﻿namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public abstract class MaskedBitmapWriter : IComponentWriter
+internal abstract class MaskedBitmapWriter : IComponentWriter
 {
     private readonly IComponentWriter innerWriter;
     protected MaskBitmap Mask { get; }
@@ -45,7 +45,7 @@ public abstract class MaskedBitmapWriter : IComponentWriter
     }
 }
 
-public class HardMaskedBitmapWriter: MaskedBitmapWriter
+internal class HardMaskedBitmapWriter: MaskedBitmapWriter
 {
     public HardMaskedBitmapWriter(
         IComponentWriter innerWriter, MaskBitmap mask, int parentWidth, int parentHeight) : 
@@ -56,7 +56,7 @@ public class HardMaskedBitmapWriter: MaskedBitmapWriter
     protected override byte AlphaForByte(byte alpha, double atRow, double atCol) =>
         (byte)(Mask.ShouldWrite((int)atRow, (int)atCol) ? alpha : 0);
 }
-public class SoftMaskedBitmapWriter: MaskedBitmapWriter
+internal class SoftMaskedBitmapWriter: MaskedBitmapWriter
 {
     public SoftMaskedBitmapWriter(
         IComponentWriter innerWriter, MaskBitmap mask, int parentWidth, int parentHeight) : 

@@ -5,28 +5,15 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public class StencilWriter : IByteWriter
+internal class StencilWriter : IByteWriter
 {
-    private DeviceColor color;
-    private bool markingValue;
-    private uint zeroColor;
-    private uint oneColor;
+   private readonly uint zeroColor;
+    private readonly uint oneColor;
     
     public StencilWriter(double[]? decode, DeviceColor color)
     {
-        this.color = color.AsPreMultiplied();
-        if (ZeroIsMarkingValue(decode))
-        {
-            zeroColor = color.AsArgbUint32();
-            oneColor = 0;
-        }
-        else
-        {
-            oneColor = color.AsArgbUint32();
-            zeroColor = 0;
-            
-        }
-        markingValue = ZeroIsMarkingValue(decode);
+        var drawColor = color.AsPreMultiplied().AsArgbUint32();
+        (zeroColor, oneColor) = ZeroIsMarkingValue(decode) ? (drawColor, 0u) : (0, drawColor);
     }
 
     private static bool ZeroIsMarkingValue(double[]? decode) => 

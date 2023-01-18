@@ -4,7 +4,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
-public partial class OptionalGroup: IOptionalContentDisplayGroup
+internal partial class OptionalGroup: IOptionalContentDisplayGroup
 {
     public string Name { get; }
     [AutoNotify] private bool visible = false;

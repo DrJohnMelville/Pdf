@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
-public partial class OptionalContentState : IOptionalContentState
+internal partial class OptionalContentState : IOptionalContentState
 {
     private Dictionary<PdfDictionary, OptionalGroup> groupStates;
     public IReadOnlyList<OptionalContentConfiguration> Configurations { get; }

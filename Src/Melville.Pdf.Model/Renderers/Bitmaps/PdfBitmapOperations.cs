@@ -10,15 +10,25 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttributes Page, DeviceColor FillColor,
+internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttributes Page, DeviceColor FillColor,
     int Width, int Height)
 {
 }
 
-public static class PdfBitmapOperatons
+public static class PdfBitmapOperations
 {
+    /// <summary>
+    /// Buffer size needed to render the bitmap.
+    /// </summary>
+    /// <param name="bitmap">Bitmap to inquire about</param>
+    /// <returns>Buffer size, in bytes, needed to render the bitmap.</returns>
     public static int ReqiredBufferSize(this IPdfBitmap bitmap) => 4 * TotalPixels(bitmap);
+    /// <summary>
+    /// Number of pxels in the bitmap/
+    /// </summary>
+    /// <param name="bitmap">Bitmap to inquire about</param>
     public static int TotalPixels(this IPdfBitmap bitmap) => bitmap.Width * bitmap.Height;
+
 
     public static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
         this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor)

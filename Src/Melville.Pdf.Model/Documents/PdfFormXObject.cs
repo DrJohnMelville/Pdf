@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Documents;
 
-public class PdfFormXObject: IHasPageAttributes
+internal class PdfFormXObject: IHasPageAttributes
 {
     private readonly PdfStream lowLevel;
     private readonly IHasPageAttributes parent;

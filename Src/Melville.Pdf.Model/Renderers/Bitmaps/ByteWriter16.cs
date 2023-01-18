@@ -3,7 +3,7 @@ using System.Buffers;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public class ByteWriter16 : ByteWriter
+internal class ByteWriter16 : ByteWriter
 {
     public ByteWriter16(IComponentWriter writer) :
         base(UInt16.MaxValue, writer)

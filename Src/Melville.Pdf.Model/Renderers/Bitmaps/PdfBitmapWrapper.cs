@@ -5,7 +5,7 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public class PdfBitmapWrapper : IPdfBitmap
+internal class PdfBitmapWrapper : IPdfBitmap
 {
     public int Width { get; }
     public int Height { get; }
@@ -40,7 +40,7 @@ public class PdfBitmapWrapper : IPdfBitmap
     }
 }
 
-unsafe readonly struct BitmapWriter
+internal unsafe readonly struct BitmapWriter
 {
     private readonly byte* buffer;
     private readonly PipeReader reader;

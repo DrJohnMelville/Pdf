@@ -8,7 +8,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public readonly struct MaskBitmap
+internal readonly struct MaskBitmap
 {
     private byte[] Mask { get; }
     public int Width { get; }
@@ -37,7 +37,7 @@ public readonly struct MaskBitmap
 
     public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
     {
-        var wrapped = await PdfBitmapOperatons.WrapForRenderingAsync(stream, page, DeviceColor.Black).CA();
+        var wrapped = await PdfBitmapOperations.WrapForRenderingAsync(stream, page, DeviceColor.Black).CA();
         var buffer = new byte[wrapped.ReqiredBufferSize()];
         await FillBuffer(buffer, wrapped).CA();
         return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);

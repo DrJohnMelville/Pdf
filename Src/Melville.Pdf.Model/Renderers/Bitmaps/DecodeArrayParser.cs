@@ -4,7 +4,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public static class DecodeArrayParser
+internal static class DecodeArrayParser
 {
     public static ClosedInterval[] SpecifiedOrDefaultDecodeIntervals(
         IColorSpace colorSpace, double[]? decode, int bitsPerComponent) =>

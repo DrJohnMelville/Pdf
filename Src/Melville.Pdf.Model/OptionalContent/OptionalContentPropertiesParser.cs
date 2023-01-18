@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
-public readonly struct OptionalContentPropertiesParser
+internal readonly struct OptionalContentPropertiesParser
 {
 
     private readonly Dictionary<PdfDictionary, OptionalGroup> ocDict = new();

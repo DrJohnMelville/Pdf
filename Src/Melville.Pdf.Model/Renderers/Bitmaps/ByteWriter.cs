@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public interface IByteWriter
+internal interface IByteWriter
 {
     unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, 
          byte* nextPos);
@@ -11,7 +11,7 @@ public interface IByteWriter
 }
 
 
-public abstract class ByteWriter: IByteWriter
+internal abstract class ByteWriter: IByteWriter
 {
     protected int MaxValue { get; }
     private readonly IComponentWriter componentWriter;

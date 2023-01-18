@@ -3,7 +3,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-public class ColorMaskComponentWriter: IComponentWriter
+internal class ColorMaskComponentWriter: IComponentWriter
 {
     private readonly IComponentWriter innerWriter;
     private readonly (int,int)[] HiddenInterval;

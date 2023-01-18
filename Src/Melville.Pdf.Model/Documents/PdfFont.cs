@@ -7,21 +7,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Documents;
 
-[Flags]
-public enum FontFlags: int
-{
-    None =  0,
-    FixedPitch = 1,
-    Serif = 1 << 1,
-    Symbolic = 1 << 2,
-    Script = 1 << 3,
-    NonSymbolic = 1 << 5,
-    Italic = 1 <<6,
-    AllCap = 1 << 16,
-    SmallCap = 1 << 17,
-    ForceBold = 1<<18
-}
-
 internal readonly partial struct PdfFont
 {
     [FromConstructor]public readonly PdfDictionary LowLevel { get; }

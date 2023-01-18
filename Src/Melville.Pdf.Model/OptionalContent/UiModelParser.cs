@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
-public readonly struct UiModelParser
+internal readonly struct UiModelParser
 {
     private readonly Dictionary<PdfDictionary, OptionalGroup> groupStates;
 
@@ -50,7 +50,7 @@ public readonly struct UiModelParser
         {
             PdfString str => new OptionalContentPickerTitle(str.AsTextString(),
                 await ParseChildren(array).CA()),
-            PdfDictionary dict => new OptionalContentPickerSuperClass(groupStates[dict],
+            PdfDictionary dict => new OptionalGroupUiView(groupStates[dict],
                 await ParseChildren(array).CA()),
             _=> throw new PdfParseException("Unexpected Order member in optional content group")
         };
