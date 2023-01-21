@@ -10,7 +10,7 @@ using Melville.Pdf.Model.Renderers.OptionalContents;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public partial class SinglePageRenderContext
+internal partial class SinglePageRenderContext
 {
     [FromConstructor] public IRenderTarget Target { get; }
     [FromConstructor] public DocumentRenderer Renderer { get; }

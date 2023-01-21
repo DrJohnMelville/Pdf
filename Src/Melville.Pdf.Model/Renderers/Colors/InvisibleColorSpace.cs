@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class InvisibleColorSpace: IColorSpace
+internal class InvisibleColorSpace: IColorSpace
 {
     public DeviceColor SetColor(in ReadOnlySpan<double> newColor) => DeviceColor.Invisible;
 

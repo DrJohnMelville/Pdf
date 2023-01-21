@@ -4,7 +4,6 @@ using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
-using Melville.Icc.Model;
 using Melville.Icc.Parser;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -13,8 +12,17 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public static class IccProfileColorSpace
+
+/// <summary>
+/// Parse a ICCProfile from a PdfStream
+/// </summary>
+public static class IccProfileColorSpaceParser
 {
+    /// <summary>
+    /// Parse a ICC profile from a PDF stream
+    /// </summary>
+    /// <param name="stream">The source to read the ICC profile from.</param>
+    /// <returns>The ICC colorspace read from the stream.</returns>
     public static async ValueTask<IColorSpace> ParseAsync(PdfStream stream)
     {
         try
@@ -41,6 +49,11 @@ public static class IccProfileColorSpace
             _ => throw new PdfParseException("Cannot construct default colorspace")
         };
 
+    /// <summary>
+    /// Parse an ICC colorspace from a C@ Stream
+    /// </summary>
+    /// <param name="source">C# stream to read the profile from.</param>
+    /// <returns>Colorspace using the ICC profile.</returns>
     public static async ValueTask<IColorSpace> ParseAsync(Stream source)
     {
         var profile = await new IccParser(PipeReader.Create(source)).ParseAsync().CA();

@@ -10,7 +10,7 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public partial class IndexedColorSpace: IColorSpace
+internal partial class IndexedColorSpace: IColorSpace
 {
     [FromConstructor]private readonly DeviceColor[] palette;
     [FromConstructor]private readonly IColorSpace baseColorSpace;

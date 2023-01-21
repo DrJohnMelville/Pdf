@@ -60,6 +60,6 @@ public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
         Span<double> rawColor = stackalloc double[ColorSpace.ExpectedComponents];
         function.Compute(mappedT, rawColor);
         var deviceColor = ColorSpace.SetColor(rawColor);
-        return deviceColor.AsArgbUint32();
+        return deviceColor.AsPreMultiplied().AsArgbUint32();
     }
 }

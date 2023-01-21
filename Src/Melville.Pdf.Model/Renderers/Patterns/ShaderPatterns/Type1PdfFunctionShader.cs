@@ -77,6 +77,6 @@ public class Type1PdfFunctionShader : PixelQueryFunctionalShader
         source[0] = domainVal.X;
         source[1] = domainVal.Y;
         function.Compute(source, nativeColor);
-        return ColorSpace.SetColor(nativeColor).AsArgbUint32();
+        return ColorSpace.SetColor(nativeColor).AsPreMultiplied().AsArgbUint32();
     }
 }

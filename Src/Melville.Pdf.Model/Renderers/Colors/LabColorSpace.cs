@@ -13,7 +13,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class LabColorSpace : IColorSpace
+internal class LabColorSpace : IColorSpace
 {
     private readonly DoubleColor whitePoint;
     private readonly ClosedInterval aInterval;

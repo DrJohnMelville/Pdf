@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 namespace Melville.Pdf.Model.Renderers.ColorOperations;
 
 [StaticSingleton()]
-public partial class NullColorOperations : IColorOperations
+internal partial class NullColorOperations : IColorOperations
 {
     public ValueTask SetStrokingColorSpace(PdfName colorSpace) => ValueTask.CompletedTask;
 

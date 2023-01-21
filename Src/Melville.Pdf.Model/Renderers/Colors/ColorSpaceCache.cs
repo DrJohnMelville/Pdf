@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public partial class ColorSpaceCache : IColorSpace
+internal partial class ColorSpaceCache : IColorSpace
 {
     [DelegateTo] private readonly IColorSpace inner;
     private ColorSpaceCacheEntry[] cache;
@@ -56,7 +56,7 @@ public partial class ColorSpaceCache : IColorSpace
     }
 }
 
-public class ColorSpaceCacheEntry
+internal class ColorSpaceCacheEntry
 {
     public double[] Input { get; }
     public DeviceColor Output { get; private set; }

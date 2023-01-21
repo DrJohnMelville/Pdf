@@ -9,7 +9,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public static class SeparationParser
+internal static class SeparationParser
 {
     public static ValueTask<IColorSpace> ParseSeparationAsync(in Memory<PdfObject> array, IHasPageAttributes page) =>
         ((PdfName)array.Span[1]).GetHashCode() switch

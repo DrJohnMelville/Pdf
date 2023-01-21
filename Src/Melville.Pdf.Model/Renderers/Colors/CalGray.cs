@@ -10,7 +10,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class CalGray : IColorSpace
+internal class CalGray : IColorSpace
 {
     private readonly DoubleColor whitePoint;
     private readonly IColorTransform xyzToDeviceTransform;

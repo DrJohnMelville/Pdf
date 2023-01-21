@@ -24,7 +24,7 @@ public class ColorspaceViewModelFactoryTest
     public async Task CreateValidProfile()
     {
         var multiModel = await ColorSpaceViewModelFactory.CreateAsync(
-            IccProfileLibrary.GetIccProfileData(IccProfileLibrary.CmykProfileName));
+            CmykIccProfile.GetCmykProfileStream());
         Assert.Equal(2, multiModel.Spaces.Count);
         VerifyCmyk(multiModel.Spaces[0]);
 

@@ -14,7 +14,7 @@ using Melville.Pdf.Model.Renderers.Colors.Profiles;
 namespace Melville.Pdf.Model.Renderers.Colors;
 
 [StaticSingleton]
-public partial class NoPageContext : IHasPageAttributes
+internal partial class NoPageContext : IHasPageAttributes
 {
     public PdfDictionary LowLevel => PdfDictionary.Empty;
     public ValueTask<Stream> GetContentBytes() => new(new MemoryStream(Array.Empty<byte>()));
@@ -22,7 +22,7 @@ public partial class NoPageContext : IHasPageAttributes
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new((IHasPageAttributes?)null);
 }
 
-public readonly struct ColorSpaceFactory
+internal readonly struct ColorSpaceFactory
 {
     private readonly IHasPageAttributes page;
     public ColorSpaceFactory(IHasPageAttributes page)
@@ -45,10 +45,8 @@ public readonly struct ColorSpaceFactory
         await (await page.GetResourceAsync(ResourceTypeName.ColorSpace, name).CA() is PdfArray array
             ?  ExcludeIllegalDefault(array): space()).CA();
 
-    private async ValueTask<IColorSpace> ExcludeIllegalDefault(PdfArray array)
-    {
-        return (await FromArray(array).CA()).AsValidDefaultColorSpace();
-    }
+    private async ValueTask<IColorSpace> ExcludeIllegalDefault(PdfArray array) => 
+        (await FromArray(array).CA()).AsValidDefaultColorSpace();
 
     public ValueTask<IColorSpace> FromNameOrArray(PdfObject datum) => datum switch
     {
@@ -60,7 +58,7 @@ public readonly struct ColorSpaceFactory
     private static IColorSpace? cmykColorSpacel;
 
     public static async ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => cmykColorSpacel ??= 
-        new IccColorspaceWithBlackDefault( (await IccProfileLibrary.ReadCmyk().CA()).DeviceToSrgb());
+        new IccColorspaceWithBlackDefault( (await CmykIccProfile.ReadCmykProfile().CA()).DeviceToSrgb());
 
     private async ValueTask<IColorSpace> LookupInResourceDictionary(PdfName colorSpaceName)
     {
@@ -81,7 +79,7 @@ public readonly struct ColorSpaceFactory
         {
             KnownNameKeys.CalGray => CalGray.Parse(ColorSpaceParameterAs<PdfDictionary>(array)),
             KnownNameKeys.Lab => LabColorSpace.ParseAsync(ColorSpaceParameterAs<PdfDictionary>(array)),
-            KnownNameKeys.ICCBased => IccProfileColorSpace.ParseAsync(ColorSpaceParameterAs<PdfStream>(array)),
+            KnownNameKeys.ICCBased => IccProfileColorSpaceParser.ParseAsync(ColorSpaceParameterAs<PdfStream>(array)),
             KnownNameKeys.Indexed => IndexedColorSpace.ParseAsync(memory, page),
             KnownNameKeys.Separation => SeparationParser.ParseSeparationAsync(memory, page),
             KnownNameKeys.DeviceN => SeparationParser.ParseDeviceNAsync(memory, page),

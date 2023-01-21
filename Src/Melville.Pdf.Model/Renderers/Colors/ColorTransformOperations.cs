@@ -5,7 +5,7 @@ using Melville.Icc.Model.Tags;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public static class ColorTransformOperations
+internal static class ColorTransformOperations
 {
     public static DeviceColor ToDeviceColor(this IColorTransform xform, in ReadOnlySpan<float> input)
     {

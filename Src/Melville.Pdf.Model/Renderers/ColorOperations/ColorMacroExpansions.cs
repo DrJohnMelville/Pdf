@@ -12,7 +12,7 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.Model.Renderers.ColorOperations;
 
-public partial class ColorMacroExpansions : IColorOperations
+internal partial class ColorMacroExpansions : IColorOperations
 {
     [FromConstructor] private readonly IGraphicsState target;
     [FromConstructor] private readonly IHasPageAttributes page;

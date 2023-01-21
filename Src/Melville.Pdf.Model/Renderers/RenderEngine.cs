@@ -26,7 +26,7 @@ using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public partial class RenderEngine: IContentStreamOperations, IFontTarget
+internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
     private readonly SinglePageRenderContext pageRenderContext;

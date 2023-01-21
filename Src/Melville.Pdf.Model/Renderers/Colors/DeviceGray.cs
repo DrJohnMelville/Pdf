@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class DeviceGray : IColorSpace
+internal class DeviceGray : IColorSpace
 {
     public static IColorSpace Instance = new DeviceGray();
     public static IColorSpace InvertedInstance = new InvertedDeviceGray();
@@ -25,7 +25,7 @@ public class DeviceGray : IColorSpace
 
 }
 
-public class InvertedDeviceGray: DeviceGray
+internal class InvertedDeviceGray: DeviceGray
 {
     public override DeviceColor SetColor(in ReadOnlySpan<double> newColor) => 
         base.SetColor(stackalloc double[]{1.0 - newColor[0]});

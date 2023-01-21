@@ -1,13 +1,13 @@
 ﻿using System;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class DeviceRgb : IColorSpace
+[StaticSingleton]
+internal partial class DeviceRgb : IColorSpace
 {
-    public static IColorSpace Instance = new DeviceRgb();
-
     public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {
         if (newColor.Length != 3)

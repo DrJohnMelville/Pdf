@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public static class DoubleColorOperations
+internal static class DoubleColorOperations
 {
     public static async ValueTask<DoubleColor> AsDoubleColor(this PdfArray src)=> new (
         (await src.GetAsync<PdfNumber>(0).CA()).DoubleValue,

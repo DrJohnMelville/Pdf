@@ -11,7 +11,7 @@ public static class ColorSpaceViewModelFactory
     {
         var models = new List<ColorSpaceViewModel>(2);
         await TryAddIccProfile(iccData, models);
-        AddColorSpace(models, DeviceRgb.Instance, "Device RGB");
+        AddColorSpace(models, StaticColorSpaces.DeviceRgb(), "Device RGB");
         return new MultiColorSpaceViewModel(models);
     }
 
@@ -32,7 +32,7 @@ public static class ColorSpaceViewModelFactory
     {
         try
         {
-            return await IccProfileColorSpace.ParseAsync(iccData);
+            return await IccProfileColorSpaceParser.ParseAsync(iccData);
         }
         catch (Exception)
         {

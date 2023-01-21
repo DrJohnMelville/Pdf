@@ -52,6 +52,8 @@ public readonly record struct CommonShaderValues(
 
     private static uint ComputeBackgroundUint(double[] backGroundArray, IColorSpace colorSpace)
     {
-        return (backGroundArray.Length == colorSpace.ExpectedComponents?colorSpace.SetColor(backGroundArray):DeviceColor.Invisible).AsArgbUint32();
+        return (backGroundArray.Length == colorSpace.ExpectedComponents?
+            colorSpace.SetColor(backGroundArray).AsPreMultiplied():DeviceColor.Invisible)
+            .AsArgbUint32();
     }
 }

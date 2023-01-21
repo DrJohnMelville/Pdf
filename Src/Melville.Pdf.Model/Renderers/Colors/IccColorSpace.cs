@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class IccColorSpace : IColorSpace
+internal class IccColorSpace : IColorSpace
 {
     private readonly IColorTransform transform;
 
@@ -45,7 +45,7 @@ public class IccColorSpace : IColorSpace
       Enumerable.Repeat(new ClosedInterval(0, 1), ExpectedComponents).ToArray();
 }
 
-public class IccColorspaceWithBlackDefault : IccColorSpace
+internal class IccColorspaceWithBlackDefault : IccColorSpace
 {
     public IccColorspaceWithBlackDefault(IColorTransform transform) : base(transform)
     {

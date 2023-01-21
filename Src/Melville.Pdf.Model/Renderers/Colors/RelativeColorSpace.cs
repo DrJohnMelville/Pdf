@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
-public class RelativeColorSpace : IColorSpace
+internal class RelativeColorSpace : IColorSpace
 {
     private IColorSpace source;
     private IPdfFunction function;
