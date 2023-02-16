@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -20,13 +21,11 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static readonly byte[] TimesNewRoman =
         { 84, 105, 109, 101, 115, 78, 101, 119, 82, 111, 109, 97, 110 };
 
-    private static readonly byte[] CourierNew =
-        { 67, 111, 117, 114, 105, 101, 114, 78, 101, 119 };
+    private static ReadOnlySpan<byte> CourierNew => "CourierNew"u8;
+    private static ReadOnlySpan<byte> Arial => "Arial"u8;
+    private static ReadOnlySpan<byte> SegoeUISymbol => "Segoe UI Symbol"u8;
 
-    private static readonly byte[] Arial = { 65, 114, 105, 97, 108 };
-    private static readonly byte[] SegoeUISymbol =
-        { 83, 101, 103, 111, 101, 32, 85, 73, 32, 83, 121, 109, 98, 111, 108 };
-
+    /// <inheritdoc />
     public DefaultFontReference FontFromName(
         PdfName font, FontFlags fontFlags)
     {
@@ -53,14 +52,14 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     }
 
     private  DefaultFontReference SystemFont(
-        byte[] name, bool bold, bool italic)
+        ReadOnlySpan<byte> name, bool bold, bool italic)
     {
         var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
         return fontReference?.AsDefaultFontReference()
                ?? throw new IOException("Could not find required font file.");
     }
     private  DefaultFontReference? TrySystemFont(
-        byte[] name, bool bold, bool italic)
+        ReadOnlySpan<byte> name, bool bold, bool italic)
     {
         var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
         if (fontReference is null) return null;
@@ -69,15 +68,28 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
 
 
     private static FontLibrary? systemFontLibrary;
-    private static FontLibrary SystemFontLibrary() => 
-        systemFontLibrary ?? SetFontDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
 
-    public static FontLibrary SetFontDirectory(string fontFolder)
+    private static FontLibrary SystemFontLibrary()
+    {
+        if (systemFontLibrary is null)
+        {
+            SetFontDirectory(Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
+        }
+
+        return systemFontLibrary;
+    }
+
+    /// <summary>
+    /// Sets the folder from which Melville.Pdf will look for system font files.
+    /// </summary>
+    /// <param name="fontFolder">The folder to look in for font files.</param>
+    [MemberNotNull(nameof(systemFontLibrary))]
+    public static void SetFontDirectory(string fontFolder)
     {
         GlobalFreeTypeMutex.WaitFor();
         try
         {
-            return systemFontLibrary =
+            systemFontLibrary =
                 new FontLibraryBuilder().BuildFrom(fontFolder);
         }
         finally

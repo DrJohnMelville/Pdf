@@ -4,6 +4,11 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
+/// <summary>
+/// Given a FontFlags value select a built in font that most closely  replaces the font.
+/// This is used when a PDF file is missing a font or the font cannot be read and the
+/// reader has to substitute a builtin font.
+/// </summary>
 public static class SubstituteDefaultFont
 {
     private static readonly PdfName[] names =
@@ -26,6 +31,11 @@ public static class SubstituteDefaultFont
         KnownNames.Symbol,
     };
     
+    /// <summary>
+    /// Get a default font PdfName that most closely resembles the font flags given
+    /// </summary>
+    /// <param name="flags">Fontflags for the type to immitate</param>
+    /// <returns>A PdfName corresponding to a built in font.</returns>
     public static PdfName MapBuiltInFont(this FontFlags flags) => 
         names[FamilyOffset(flags) + BoldOffset(flags) + ItalicOffset(flags)];
 

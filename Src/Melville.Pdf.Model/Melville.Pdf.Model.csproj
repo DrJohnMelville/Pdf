@@ -42,8 +42,4 @@
       <Compile Remove="Renderers\Colors\DeviceCmyk.cs" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Renderers\FontRenderings\CharacterAndGlyphEncoding\" />
-    </ItemGroup>
-
 </Project>

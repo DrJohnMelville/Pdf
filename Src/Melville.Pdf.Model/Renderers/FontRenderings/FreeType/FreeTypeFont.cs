@@ -10,7 +10,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public partial class FreeTypeFont : IRealizedFont, IDisposable
+internal partial class FreeTypeFont : IRealizedFont, IDisposable
 {
     [FromConstructor] public Face Face { get; } // Lowlevel reader uses this property dynamically 
     [FromConstructor] private readonly IReadCharacter characterSource;

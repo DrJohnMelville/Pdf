@@ -10,6 +10,7 @@ namespace Melville.Pdf.FontLibrary;
 [StaticSingleton]
 public partial class SelfContainedDefaultFonts: IDefaultFontMapper
 {
+    /// <inheritdoc />
     public DefaultFontReference  FontFromName(
         PdfName font, FontFlags fontFlags)
     {

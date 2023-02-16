@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 
-public sealed partial class DictionaryFontWidthComputer : IFontWidthComputer
+internal sealed partial class DictionaryFontWidthComputer : IFontWidthComputer
 {
     [FromConstructor] private readonly IReadOnlyDictionary<uint, double> widths;
     [FromConstructor] private readonly double specifiedDefaultWidth;

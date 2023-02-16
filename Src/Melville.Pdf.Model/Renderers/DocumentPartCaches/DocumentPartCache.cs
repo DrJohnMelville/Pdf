@@ -7,12 +7,12 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.Model.Renderers.DocumentPartCaches;
 
-public interface IDocumentPartCache: IDisposable
+internal interface IDocumentPartCache: IDisposable
 {
     ValueTask<T> Get<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull ;
 }
 
-public class DocumentPartCache: IDocumentPartCache
+internal class DocumentPartCache: IDocumentPartCache
 {
     private readonly Dictionary<object, object> store = new();
 

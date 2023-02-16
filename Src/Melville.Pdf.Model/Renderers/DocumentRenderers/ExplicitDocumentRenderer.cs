@@ -6,7 +6,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 
-public class ExplicitDocumentRenderer : DocumentRenderer
+internal class ExplicitDocumentRenderer : DocumentRenderer
 {
     private readonly HasRenderableContentStream content;
     public ExplicitDocumentRenderer(

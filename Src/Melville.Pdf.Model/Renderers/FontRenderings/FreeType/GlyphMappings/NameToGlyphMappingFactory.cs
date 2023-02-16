@@ -9,7 +9,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
-public readonly partial struct NameToGlyphMappingFactory
+internal readonly partial struct NameToGlyphMappingFactory
 {
     [FromConstructor] private readonly Face face;
 

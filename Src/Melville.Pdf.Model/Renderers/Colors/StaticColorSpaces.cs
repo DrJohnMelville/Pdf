@@ -8,7 +8,5 @@ public static class StaticColorSpaces
     /// <summary>
     /// A colorspace with Red, Green, and Blue channels
     /// </summary>
-    /// <returns></returns>
-    public static IColorSpace DeviceRgb() => 
-        Melville.Pdf.Model.Renderers.Colors.DeviceRgb.Instance;
+    public static IColorSpace DeviceRgb() => Colors.DeviceRgb.Instance;
 }

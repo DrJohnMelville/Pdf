@@ -10,11 +10,12 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 public static class FontFaceOperations
 {
-    public static CharMap? CharMapByInts(this Face face, int platformId, int encodingId) =>
+    internal static CharMap? CharMapByInts(this Face face, int platformId, int encodingId) =>
         face.CharMapByInts((PlatformId)platformId, encodingId);
-    public static CharMap? CharMapByInts(this Face face, PlatformId platformId, int encodingId) =>
+    internal static CharMap? CharMapByInts(this Face face, PlatformId platformId, int encodingId) =>
         face.CharMaps?.FirstOrDefault(i => i.PlatformId == platformId && i.EncodingId == encodingId);
 
+    // Extract aall the character mappings from a CharMap -- used in the low level UI
     public static IEnumerable<(uint Char, uint Glyph)> AllMappings(this CharMap cMap)
     {
         if (TrySetCharMap(cMap)) yield break;

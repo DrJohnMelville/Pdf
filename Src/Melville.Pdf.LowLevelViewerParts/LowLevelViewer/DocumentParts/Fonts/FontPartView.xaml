@@ -5,14 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts"
              xmlns:easyGrids="clr-namespace:Melville.WpfControls.EasyGrids;assembly=Melville.WpfControls"
-             xmlns:freeType="clr-namespace:Melville.Pdf.Model.Renderers.FontRenderings.FreeType;assembly=Melville.Pdf.Model"
-             xmlns:viewFrames="clr-namespace:Melville.MVVM.Wpf.ViewFrames;assembly=Melville.MVVM.Wpf"
              xmlns:fontRenderings="clr-namespace:Melville.Pdf.Model.Renderers.FontRenderings;assembly=Melville.Pdf.Model"
              xmlns:sharpFont="clr-namespace:Melville.SharpFont;assembly=Melville.SharpFont"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type freeType:FreeTypeFont }">
+        <DataTemplate x:Key="FTF"  DataType="{x:Type fontRenderings:IRealizedFont}">
             <TabControl>
                 <TabItem Header="Information">
                     <easyGrids:EasyGrid easyGrids:GridOperations.ColsAndRows="auto  * / auto auto auto auto auto auto">
@@ -89,5 +87,5 @@
             </TabControl>
         </DataTemplate>
     </UserControl.Resources>
-    <ContentPresenter Content="{Binding Font}"/>
+    <ContentPresenter Content="{Binding Font}" ContentTemplate="{StaticResource FTF}"/>
 </UserControl>

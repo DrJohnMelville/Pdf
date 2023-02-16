@@ -13,7 +13,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public class PatternRenderer: DocumentRenderer
+internal class PatternRenderer: DocumentRenderer
 {
     private readonly TileBrushRequest request;
     private readonly GraphicsState priorState;
@@ -29,7 +29,8 @@ public class PatternRenderer: DocumentRenderer
     protected override ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber) => 
         new(request.TilePattern);
 
-    public override void InitializeRenderTarget(IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
+    public override void InitializeRenderTarget(
+        IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
         in Matrix3x2 transform)
     {
         innerRenderer.CloneStateFrom(priorState);

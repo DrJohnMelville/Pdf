@@ -3,7 +3,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 
-public class FontFamily
+internal sealed class FontFamily
 {
     public FontFamily(string familyName)
     {

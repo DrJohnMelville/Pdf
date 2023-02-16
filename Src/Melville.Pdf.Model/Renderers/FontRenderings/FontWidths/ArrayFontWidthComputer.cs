@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FontWidths;
 
-public sealed  partial class ArrayFontWidthComputer : IFontWidthComputer
+internal sealed  partial class ArrayFontWidthComputer : IFontWidthComputer
 {
     [FromConstructor]private readonly uint firstChar;
     [FromConstructor]private readonly double[] widths;

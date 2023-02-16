@@ -15,14 +15,32 @@ using Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
 namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 
+/// <summary>
+/// This class represents the state of the renderer, which may be refused between pages. 
+/// </summary>
 public abstract class DocumentRenderer: IDisposable
 {
+    /// <summary>
+    /// Total pages available to render
+    /// </summary>
     public int TotalPages { get; }
+
+    /// <summary>
+    /// Maps font names to fonts.
+    /// </summary>
     public IDefaultFontMapper FontMapper { get; }
-    public IDocumentPartCache Cache { get; }
+
+    /// <summary>
+    /// Cache for partially done work that may be valuable later on.  (Es
+    /// </summary>
+    internal IDocumentPartCache Cache { get; }
+
+    /// <summary>
+    /// Records the visibility of various optional content group.
+    /// </summary>
     public IOptionalContentState OptionalContentState { get; }
 
-    public  DocumentRenderer(int totalPages, 
+    internal DocumentRenderer(int totalPages, 
         IDefaultFontMapper fontMapper, IDocumentPartCache cache, IOptionalContentState optionalContentState)
     {
         this.FontMapper = fontMapper;
@@ -31,9 +49,21 @@ public abstract class DocumentRenderer: IDisposable
         TotalPages = totalPages;
     }
 
+    /// <summary>
+    /// Create a DocumentRenderer that will render a tile pattern from this document.
+    /// </summary>
+    /// <param name="request">The tile brush to render.</param>
+    /// <param name="priorState">The graphics state at the time of the tile brush request.</param>
+    /// <returns>The DocumentReader that can render the TilePatternRequest.</returns>
     public DocumentRenderer PatternRenderer(in TileBrushRequest request, GraphicsState priorState) => 
         new PatternRenderer(FontMapper, Cache, request, priorState, OptionalContentState);
 
+    /// <summary>
+    /// Render a given page to a target.
+    /// </summary>
+    /// <param name="oneBasedPageNumber">The page to render</param>
+    /// <param name="target">A factory method that creates a render target given a visible rectangle and matrix.</param>
+    /// <returns></returns>
     public async ValueTask RenderPageTo(int oneBasedPageNumber, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
         var pageStruct = await GetPageContent(oneBasedPageNumber).CA();

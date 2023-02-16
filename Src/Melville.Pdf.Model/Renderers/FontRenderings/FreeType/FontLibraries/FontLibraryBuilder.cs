@@ -7,7 +7,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
-public readonly struct FontLibraryBuilder
+internal readonly struct FontLibraryBuilder
 {
     private readonly Library sharpFontLibrary;
     private readonly Dictionary<string, FontFamily> fonts = new( );
@@ -28,7 +28,7 @@ public readonly struct FontLibraryBuilder
         foreach (var fontFile in Directory.EnumerateFiles(fontFolder)) RegisterFont(fontFile);
     }
 
-    public void RegisterFont(string fileName)
+    private void RegisterFont(string fileName)
     {
         int totalFaces = 1;
         for (int i= 0; i < totalFaces; i++)

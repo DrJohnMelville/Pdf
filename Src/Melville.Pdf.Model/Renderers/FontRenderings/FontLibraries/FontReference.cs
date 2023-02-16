@@ -6,7 +6,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 
-public record FontReference(string FileName, int Index)
+internal record FontReference(string FileName, int Index)
 {
     private FileStream FontAsStream() => 
         File.Open(FileName, FileMode.Open, FileAccess.Read, FileShare.Read);

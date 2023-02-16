@@ -6,7 +6,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 
-public class PageTreeDocumentRenderer : DocumentRenderer
+internal class PageTreeDocumentRenderer : DocumentRenderer
 {
     private readonly PageTree tree;
 
