@@ -19,6 +19,10 @@ public sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
     {
     }
 
+    public int GlyphCount => 0;
+    public string FamilyName => "Null Font";
+    public string Description => "Sentinel class that does not render anything";
+
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => this;
     public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => this;
 

@@ -14,6 +14,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 public interface IFontTarget
 {
+#warning -- see if I can get rid of this by making the type 3 font render itself.
     ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
     IDrawTarget CreateDrawTarget();
 }
@@ -44,6 +45,10 @@ public partial class RealizedType3Font : IRealizedFont
             characters[glyph].CreateReader(), fontMatrix, rawFont);
     }
     public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
+
+    public int GlyphCount => characters.Length;
+    public string FamilyName => "Type 3 Font";
+    public string Description => "";
 
     private class Type3Writer: IFontWriteOperation
     {

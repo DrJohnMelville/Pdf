@@ -2,6 +2,7 @@
 using System.IO;
 using System.Numerics;
 using System.Windows.Media;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers;
@@ -12,8 +13,9 @@ using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.FontCaching;
 
-internal class WpfCachedFont : IRealizedFont
+internal partial class WpfCachedFont : IRealizedFont
 {
+    [DelegateTo()]
     private readonly IRealizedFont inner;
     private readonly Dictionary<uint, CachedGlyph> cache = new();
 

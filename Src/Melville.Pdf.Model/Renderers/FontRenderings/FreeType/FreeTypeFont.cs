@@ -18,6 +18,15 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
     [FromConstructor] private readonly IFontWidthComputer fontWidthComputer;
     public void Dispose() => Face.Dispose();
 
+    public int GlyphCount => Face.GlyphCount;
+    public string FamilyName => Face.FamilyName;
+
+    public string Description => $"""
+        Style: {Face.StyleName}
+        StyleFlags: {Face.StyleFlags}
+        FontFlags: {Face.FaceFlags}
+        """;
+
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
     {
         var (character, consumed) = characterSource.GetNextChar(input);

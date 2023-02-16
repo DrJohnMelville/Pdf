@@ -63,6 +63,10 @@ public class S9_4_2_TextPositioningOperators
         public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => BeginFontWrite(target);
 
         public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
+
+        public int GlyphCount => 0;
+        public string FamilyName => "";
+        public string Description => "";
     }
 
     private void SetupMockRealizedFont()

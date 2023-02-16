@@ -20,17 +20,14 @@
                              </Style>
                         </easyGrids:EasyGrid.Resources>
                         <TextBlock>Family Name:</TextBlock>
-                        <TextBlock Text="{Binding Face.FamilyName}"/>
-                        <TextBlock>Style Name:</TextBlock>
-                        <TextBlock Text="{Binding Face.StyleName}"/>
-                        <TextBlock>Face Flags:</TextBlock>
-                        <TextBlock Text="{Binding Face.FaceFlags}"/>
-                        <TextBlock>Style Flags:</TextBlock>
-                        <TextBlock Text="{Binding Face.StyleFlags}"/>
+                        <TextBlock Text="{Binding FamilyName}"/>
+                        <TextBlock>Font Description:</TextBlock>
+                        <TextBlock Text="{Binding Description}"/>
+                        
                         <TextBlock>Glyph Count:</TextBlock>
-                        <TextBlock Text="{Binding Face.GlyphCount}"/>
+                        <TextBlock Text="{Binding GlyphCount}"/>
                         <TextBlock>Glyphs:</TextBlock>
-                        <local:FreeTypeGlyphPreview Face="{Binding Face}" HorizontalAlignment="Left"/>
+                        <local:FreeTypeGlyphPreview Face="{Binding}" HorizontalAlignment="Left"/>
                     </easyGrids:EasyGrid>
                 </TabItem>
                 <TabItem Header="CharMaps">
