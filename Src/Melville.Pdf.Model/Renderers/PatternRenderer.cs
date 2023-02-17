@@ -31,7 +31,7 @@ internal class PatternRenderer: DocumentRenderer
 
     public override void InitializeRenderTarget(
         IRenderTarget innerRenderer, in PdfRect rect, double width, double height,
-        in Matrix3x2 transform)
+        in Matrix3x2 PageRotationTransform)
     {
         innerRenderer.CloneStateFrom(priorState);
         var bounds = request.BoundingBox;

@@ -95,14 +95,31 @@ public abstract class DocumentRenderer: IDisposable
             new OptionalContentCounter(OptionalContentState);
     }
 
+
+    /// <summary>
+    /// This method is usually called inside the callback passed to REnderPageTo. In this
+    /// method the client indicates the desired size and orientation of the rendered output.
+    /// </summary>
+    /// <param name="innerRenderer">The rendertarget that will eventually be returned to RenderPageTo</param>
+    /// <param name="rect">The background rectangle for the page.</param>
+    /// <param name="width">The width, in pixels of the rendered output</param>
+    /// <param name="height">The height, in pixels of the rendered output.</param>
+    /// <param name="PageRotationTransform">A matrix that adjusts the output for the page's default rotation</param>
     public virtual void InitializeRenderTarget(IRenderTarget innerRenderer,
-        in PdfRect rect, double width, double height, in Matrix3x2 transform)
+        in PdfRect rect, double width, double height, in Matrix3x2 PageRotationTransform)
     {
         innerRenderer.GraphicsState.CurrentState().SetPageSize(width, height);
-        innerRenderer.SetBackgroundRect(rect, width, height, transform);
-        innerRenderer.MapUserSpaceToBitmapSpace(rect, width, height, transform);
+        innerRenderer.SetBackgroundRect(rect, width, height, PageRotationTransform);
+        innerRenderer.MapUserSpaceToBitmapSpace(rect, width, height, PageRotationTransform);
     }
 
+    /// <summary>
+    /// This method takes a requested size and computes the actual final size of th rendered page.  Parameters less than
+    /// 0 are considered don't care values and appropriate defaults are used.
+    /// </summary>
+    /// <param name="pageSize">The rectangle representing the printed page in PDF units</param>
+    /// <param name="requestedSize">The requested size in pixels</param>
+    /// <returns></returns>
     public virtual (int width, int height) ScalePageToRequestedSize(in PdfRect pageSize, Vector2 requestedSize)=>
         (requestedSize) switch
         {
@@ -119,5 +136,11 @@ public abstract class DocumentRenderer: IDisposable
 
     public virtual void Dispose() => Cache.Dispose();
     
+    /// <summary>
+    /// Uncolored tile pattern renderers are required to ignore all color setting operators.  This
+    /// virtual method gives the Document renderer a mechanism to opt out of color functionality.
+    /// </summary>
+    /// <param name="inner">A suggested IColorOperations object that will actually execute the color operations</param>
+    /// <returns>The IColorOperations object to use -- typicially either the inner parameter or NullColorOperations.Instance</returns>
     public virtual IColorOperations AdjustColorOperationsModel(IColorOperations inner) => inner;
 }

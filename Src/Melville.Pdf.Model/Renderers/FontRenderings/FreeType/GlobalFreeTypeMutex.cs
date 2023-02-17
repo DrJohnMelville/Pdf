@@ -4,7 +4,7 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public static class GlobalFreeTypeMutex
+internal static class GlobalFreeTypeMutex
 {
     private static readonly SemaphoreSlim freeTypeMutex = new(1);
     public static  void WaitFor() => freeTypeMutex.Wait();

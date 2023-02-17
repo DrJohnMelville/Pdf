@@ -29,7 +29,7 @@ public readonly partial struct DefaultFontReference
 public interface IDefaultFontMapper
 {
     /// <summary>
-    /// Get a Defaullt Font reference for a given PDF Font name.
+    /// Get a Default Font reference for a given PDF Font name.
     /// </summary>
     /// <param name="font">The PDFName of the font</param>
     /// <param name="flags">The fontflags from the font structure</param>

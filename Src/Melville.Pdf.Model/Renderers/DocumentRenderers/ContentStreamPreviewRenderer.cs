@@ -28,6 +28,7 @@ public class ContentStreamPreviewRenderer : DocumentRenderer
         this.content = content;
     }
 
+    /// <inheritdoc />
     protected override ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber) => 
         ValueTask.FromResult<HasRenderableContentStream>(new ExplicitHRCS(content));
 

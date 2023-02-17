@@ -8,7 +8,7 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-public readonly partial struct CMapStreamParser
+internal readonly partial struct CMapStreamParser
 {
     private readonly List<uint> dictionary = new();
     [FromConstructor] private readonly PipeReader pipe;

@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-public class CompositeGlyphNameMapper : INameToGlyphMapping
+internal class CompositeGlyphNameMapper : INameToGlyphMapping
 {
     private INameToGlyphMapping?[] mappings;
 

@@ -9,7 +9,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-public readonly partial struct SingleByteEncodingParser
+internal readonly partial struct SingleByteEncodingParser
 {
     [FromConstructor] private readonly INameToGlyphMapping nameMapper;
     [FromConstructor] private readonly uint[] output;

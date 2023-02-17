@@ -17,4 +17,22 @@ public static class FaceCharacterConverter
 
     private static IEnumerable<FaceCharacterMap> ExtractCharMap(CharMap map) => 
         map.AllMappings().Select(i => new FaceCharacterMap(i.Char, i.Glyph));
+
+    public static IEnumerable<(uint Char, uint Glyph)> AllMappings(this CharMap cMap)
+    {
+        try
+        {
+            cMap.Face.SetCharmap(cMap);
+        }
+        catch (Exception )
+        {
+            yield break;
+        }
+        uint character = cMap.Face.GetFirstChar(out var glyph);
+        do
+        {
+            yield return (character, glyph);
+            character = cMap.Face.GetNextChar(character, out glyph);
+        } while (character != 0);
+    }
 }

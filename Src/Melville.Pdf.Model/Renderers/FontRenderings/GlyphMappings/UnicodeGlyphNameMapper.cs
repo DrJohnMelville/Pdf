@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-public class UnicodeGlyphNameMapper : FontRenderings.GlyphMappings.DictionaryGlyphNameMapper
+internal class UnicodeGlyphNameMapper : FontRenderings.GlyphMappings.DictionaryGlyphNameMapper
 {
     public UnicodeGlyphNameMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
     {
@@ -13,7 +13,7 @@ public class UnicodeGlyphNameMapper : FontRenderings.GlyphMappings.DictionaryGly
         GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
 }
 
-public class UnicodeViaMacMapper : UnicodeGlyphNameMapper
+internal class UnicodeViaMacMapper : UnicodeGlyphNameMapper
 {
     public UnicodeViaMacMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
     {

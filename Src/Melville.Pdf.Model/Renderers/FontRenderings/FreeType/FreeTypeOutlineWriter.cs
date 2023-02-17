@@ -4,7 +4,7 @@ using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
-public struct FreeTypeOutlineWriter
+internal struct FreeTypeOutlineWriter
 {
     private readonly IDrawTarget target;
     private const double scale = 16.0; 

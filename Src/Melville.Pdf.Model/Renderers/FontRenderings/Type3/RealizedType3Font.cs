@@ -14,7 +14,6 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 public interface IFontTarget
 {
-#warning -- see if I can get rid of this by making the type 3 font render itself.
     ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
     IDrawTarget CreateDrawTarget();
 }
