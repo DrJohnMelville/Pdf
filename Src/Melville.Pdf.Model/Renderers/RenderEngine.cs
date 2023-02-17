@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -58,7 +59,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
          await GraphicsState.LoadGraphicStateDictionary(
             await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName).CA() as 
-                PdfDictionary ?? throw new PdfParseException($"Cannot find GraphicsState {dictionaryName}")).CA();
+                PdfDictionary ?? PdfDictionary.Empty).CA();
     #endregion
     
     #region Drawing Operations
@@ -125,31 +126,27 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
             (float)state.PageWidth, (float)state.PageHeight)*inv);
     }
     
-    private async ValueTask RunTargetGroup(PdfStream formXObject)
+    private async ValueTask RunTargetGroup(PdfStream xObjectAsStream)
     {
         SaveGraphicsState();
+        var formXObject = new PdfFormXObject(xObjectAsStream, page);
         await TryApplyFormXObjectMatrix(formXObject).CA();
         
         await TryClipToFormXObjectBoundingBox(formXObject).CA();
 
-        await Render(new PdfFormXObject(formXObject, page)).CA();
+        await Render(formXObject).CA();
         RestoreGraphicsState();
     }
 
-    private async Task TryApplyFormXObjectMatrix(PdfStream formXObject)
+    private async Task TryApplyFormXObjectMatrix(PdfFormXObject formXObject)
     {
-        if (await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.Matrix, PdfTokenValues.Null).CA() 
-                is PdfArray arr &&
-            await arr.AsDoublesAsync().CA() is { } matrix)
-            ModifyTransformMatrix(CreateMatrix(matrix));
+        ModifyTransformMatrix(await formXObject.Matrix().CA());
     }
 
-    private async Task TryClipToFormXObjectBoundingBox(PdfStream formXObject)
+    private async Task TryClipToFormXObjectBoundingBox(PdfFormXObject formXObject)
     {
-        if (await formXObject.GetOrDefaultAsync<PdfObject>(KnownNames.BBox, PdfTokenValues.Null).CA() 
-            is PdfArray{Count:4} arr2)
+        if ((await formXObject.Bbox().CA()) is {} clipRect )
         {
-            var clipRect = await PdfRect.CreateAsync(arr2).CA();
             Rectangle(clipRect.Left, clipRect.Bottom, clipRect.Width, clipRect.Height);
             ClipToPath();
             EndPathWithNoOp();
@@ -168,17 +165,6 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     public async ValueTask RunContentStream() =>
         await new ContentStreamParser(this).Parse(
             PipeReader.Create(await page.GetContentBytes().CA())).CA();
-
-
-    private static Matrix3x2 CreateMatrix(double[] matrix) =>
-        new(
-            (float)matrix[0],
-            (float)matrix[1],
-            (float)matrix[2],
-            (float)matrix[3],
-            (float)matrix[4],
-            (float)matrix[5]
-        );
 
     #endregion
     
