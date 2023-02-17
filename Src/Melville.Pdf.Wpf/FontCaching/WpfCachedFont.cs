@@ -29,13 +29,14 @@ internal partial class WpfCachedFont : IRealizedFont
         inner.GetNextGlyph(input);
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new CachedOperation(this,target);
-    public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => BeginFontWrite(target);
 
-    private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyph(uint glyph, Transform transform)
+    private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyph(
+        uint glyph, Transform transform, IFontWriteOperation operation)
     {
-        if (cache.TryGetValue(glyph, out var quick)) return (quick,quick.CreateInstance(transform));
-        var slow = await new FontCachingTarget().RenderGlyph(inner, glyph);
-        
+        if (cache.TryGetValue(glyph, out var quick)) 
+            return (quick,quick.CreateInstance(transform));
+        var glyphTarget = new FontCachingTarget();
+        var slow = await glyphTarget.RenderGlyph(operation.CreatePeerWriteOperation(glyphTarget), glyph);
         cache.Add(glyph, slow);
         return (slow,slow.Original(transform));
     }
@@ -59,7 +60,8 @@ internal partial class WpfCachedFont : IRealizedFont
         public async ValueTask<double> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)
         {
-            var (cachedCharacter, geometry) = await parent.GetGlyph(glyph, textMatrix.WpfTransform()).CA();
+            var (cachedCharacter, geometry) = 
+                await parent.GetGlyph(glyph, textMatrix.WpfTransform(), innerWriter).CA();
             geometry.Freeze();
             drawTarget.AddGeometry(geometry);
             return (cachedCharacter.Width);
@@ -74,6 +76,9 @@ internal partial class WpfCachedFont : IRealizedFont
 
         public IDrawTarget CreateDrawTarget() => 
             drawTarget = RequiredDrawTargetToTargetWpf(fontTarget.CreateDrawTarget());
+
+        public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) =>
+            new CachedOperation(parent, target);
 
         private static WpfDrawTarget RequiredDrawTargetToTargetWpf(IDrawTarget target) =>
             (WpfDrawTarget)target;

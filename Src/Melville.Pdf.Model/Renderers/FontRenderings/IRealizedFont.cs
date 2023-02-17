@@ -25,6 +25,13 @@ public interface IFontWriteOperation: IDisposable
     /// <param name="fill">If true, the outline will be filled with the fill brush.</param>
     /// <param name="clip">If true, the string will be added to the current clipping region.</param>
     void RenderCurrentString(bool stroke, bool fill, bool clip);
+
+    /// <summary>
+    /// Create an IFontWriteOperation with a different target;
+    /// </summary>
+    /// <param name="target">The target that the new font write operation should write to.</param>
+    /// <returns>A writeroperation for the same font with a new target.</returns>
+    IFontWriteOperation CreatePeerWriteOperation(IFontTarget target);
 }
 
 /// <summary>
@@ -51,10 +58,9 @@ public interface IRealizedFont
     /// <param name="target">A drawing target for the font write operation.</param>
     /// <returns>An IFontWriteOperation that will render this font to the given target..</returns>
     IFontWriteOperation BeginFontWrite(IFontTarget target);
-#warning -- get rid of this, by introducing a subrender method to IFontWriteOperation.
-    IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target);
+
     /// <summary>
-    /// The n umber of glyphs in the font.
+    /// The number of glyphs in the font.
     /// </summary>
     int GlyphCount { get; }
     /// <summary>

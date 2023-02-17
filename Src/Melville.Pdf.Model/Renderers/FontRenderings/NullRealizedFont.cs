@@ -24,7 +24,7 @@ public sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
     public string Description => "Sentinel class that does not render anything";
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => this;
-    public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) => this;
+    public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) => this;
 
     public void Dispose() { }
 }

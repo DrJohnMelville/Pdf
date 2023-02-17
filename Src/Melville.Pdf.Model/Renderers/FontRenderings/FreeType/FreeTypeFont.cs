@@ -36,9 +36,6 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new MutexHoldingWriteOperation(this, target.CreateDrawTarget());
 
-    public IFontWriteOperation BeginFontWriteWithoutTakingMutex(IFontTarget target) =>
-        new FreeTypeWriteOperation(this, target.CreateDrawTarget());
-    
 
     private double RenderGlyph(FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
@@ -102,5 +99,8 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
         {
             return (parent.Face.Glyph.Outline.Flags & OutlineFlags.EvenOddFill) != 0;
         }
+
+        public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) =>
+            new FreeTypeWriteOperation(parent, target.CreateDrawTarget());
     }
 }
