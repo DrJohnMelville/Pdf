@@ -5,12 +5,11 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
-using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-public readonly record struct CommonShaderValues(
+internal readonly record struct CommonShaderValues(
     Matrix3x2 PixelsToPattern, IColorSpace ColorSpace, RectInterval BBox, uint BackgroundColor)
 {
     

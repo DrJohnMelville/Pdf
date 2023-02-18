@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-public abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
+internal abstract class ParametricFunctionalShader : PixelQueryFunctionalShader
 {
     private const uint NotComputedYet = 0xDEADBEEF;
     private readonly ClosedInterval domain;

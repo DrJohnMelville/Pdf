@@ -3,7 +3,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-public abstract class PixelQueryFunctionalShader: IShaderWriter
+internal abstract class PixelQueryFunctionalShader: IShaderWriter
 {
     private readonly Matrix3x2 pixelsToPattern;
     protected IColorSpace ColorSpace { get; }

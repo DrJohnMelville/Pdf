@@ -4,9 +4,9 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;
 
-namespace Melville.Pdf.Model.Renderers;
+namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
-public partial class Type3FontPseudoPage : IHasPageAttributes
+internal partial class Type3FontPseudoPage : IHasPageAttributes
 {
     [FromConstructor] private readonly IHasPageAttributes parent;
     [FromConstructor] private readonly PdfDictionary fontDecl;

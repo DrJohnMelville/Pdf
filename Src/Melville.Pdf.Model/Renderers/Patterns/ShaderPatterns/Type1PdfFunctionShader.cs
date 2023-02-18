@@ -11,7 +11,7 @@ using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-public readonly struct Type1PdfFunctionShaderFactory
+internal readonly struct Type1PdfFunctionShaderFactory
 {
     private readonly PdfDictionary shadingDictionary;
 
@@ -45,7 +45,7 @@ public readonly struct Type1PdfFunctionShaderFactory
     }
 }
 
-public class Type1PdfFunctionShader : PixelQueryFunctionalShader
+internal class Type1PdfFunctionShader : PixelQueryFunctionalShader
 {
     private readonly Matrix3x2 patternToDomain;
     private readonly RectInterval domainInterval;

@@ -8,6 +8,14 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
+/// <summary>
+/// Parses a tile brush dictionary to a request for a tile brush.
+/// </summary>
+/// <param name="TilePattern">The pattern to paint.</param>
+/// <param name="PatternTransform">Transform for the pattern.</param>
+/// <param name="BoundingBox">The bounding box for the content cell.</param>
+/// <param name="RepeatSize">The size of the grid that tiles.</param>
+/// <param name="TilePatternType">Colored or uncolored tile pattern.</param>
 public record struct 
     TileBrushRequest(
         PdfTilePattern TilePattern,
