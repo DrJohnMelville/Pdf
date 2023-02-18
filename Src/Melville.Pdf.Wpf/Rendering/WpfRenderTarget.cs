@@ -75,6 +75,6 @@ internal class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsStat
             : BitmapScalingMode.NearestNeighbor;
 
 
-    public IRealizedFont WrapRealizedFont(IRealizedFont font) => 
-        font is RealizedType3Font ? font: new WpfCachedFont(font);
+    public override IRealizedFont WrapRealizedFont(IRealizedFont font) => 
+        font.IsCachableFont ? new WpfCachedFont(font) : font;
 }

@@ -184,8 +184,8 @@ RenderingTest.cs_Skia-Rotate0|1768461071
 RenderingTest.cs_Skia-Rotate90|94766907
 RenderingTest.cs_Skia-Rotate180|2269924571
 RenderingTest.cs_Skia-Rotate270|2733246247
-RenderingTest.cs_wpf-WriteSpacedText|1808216060
-RenderingTest.cs_Skia-WriteSpacedText|3467273511
+RenderingTest.cs_wpf-WriteSpacedText|2003959363
+RenderingTest.cs_Skia-WriteSpacedText|3959091492
 RenderingTest.cs_wpf-Type4Encoded|1114358541
 RenderingTest.cs_Skia-Type4Encoded|375525976
 RenderingTest.cs_wpf-CcittType4Encoded|1114358541

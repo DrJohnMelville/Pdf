@@ -4,12 +4,12 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-public interface IMapCharacterToGlyph
+internal interface IMapCharacterToGlyph
 {
     uint GetGlyph(uint character);
 }
 
-public partial class CharacterToGlyphArray: IMapCharacterToGlyph
+internal partial class CharacterToGlyphArray: IMapCharacterToGlyph
 {
     [FromConstructor]private readonly IReadOnlyList<uint> mappings;
 
@@ -20,7 +20,7 @@ public partial class CharacterToGlyphArray: IMapCharacterToGlyph
     }
 }
 
-public sealed class IdentityCharacterToGlyph : IMapCharacterToGlyph
+internal sealed class IdentityCharacterToGlyph : IMapCharacterToGlyph
 {
     public static IMapCharacterToGlyph Instance = new IdentityCharacterToGlyph();
     private IdentityCharacterToGlyph() { }

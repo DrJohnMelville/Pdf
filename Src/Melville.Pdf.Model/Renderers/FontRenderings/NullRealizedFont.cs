@@ -25,6 +25,7 @@ public sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => this;
     public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) => this;
+    public bool IsCachableFont => false;
 
     public void Dispose() { }
 }

@@ -57,7 +57,9 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
         
         public override void Dispose()  => GlobalFreeTypeMutex.Release();
     }
-    
+
+    public bool IsCachableFont => true;
+
     private class FreeTypeWriteOperation: IFontWriteOperation
     {
         private readonly FreeTypeFont parent;

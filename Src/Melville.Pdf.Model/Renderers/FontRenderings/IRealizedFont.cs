@@ -71,6 +71,12 @@ public interface IRealizedFont
     /// A descriptive string of information the font wants to expose to the low level UI
     /// </summary>
     string Description { get; }
+
+    /// <summary>
+    /// Returns true if the font rendering is invariant of the context in which is is rendered.
+    /// Type 3 fonts can pick up different resources on different pages, so they cannot be cached.
+    /// </summary>
+    bool IsCachableFont { get; }
 }
 
 internal static class FontWriteOperationsImpl

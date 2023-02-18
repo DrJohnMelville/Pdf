@@ -67,6 +67,7 @@ public class S9_4_2_TextPositioningOperators
         public int GlyphCount => 0;
         public string FamilyName => "";
         public string Description => "";
+        public bool IsCachableFont => true;
     }
 
     private void SetupMockRealizedFont()

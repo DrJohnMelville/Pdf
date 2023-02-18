@@ -31,7 +31,7 @@ public interface IRenderTarget: IDisposable
     void SetBackgroundRect(in PdfRect rect, double width, double height, in Matrix3x2 transform);
     void MapUserSpaceToBitmapSpace(in PdfRect rect, double xPixels, double yPixels, in Matrix3x2 adjustOutput);
     void CloneStateFrom(GraphicsState priorState);
-    IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
+    IRealizedFont WrapRealizedFont(IRealizedFont font);
 }
 
 public abstract class RenderTargetBase<T, TState>: IRenderTarget
@@ -79,4 +79,6 @@ public abstract class RenderTargetBase<T, TState>: IRenderTarget
 
     public abstract void SetBackgroundRect(
         in PdfRect rect, double width, double height, in Matrix3x2 transform);
+
+    public virtual IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
 }
