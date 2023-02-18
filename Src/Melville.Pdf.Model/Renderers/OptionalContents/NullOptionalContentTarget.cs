@@ -6,7 +6,7 @@ using Melville.Pdf.Model.Documents;
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
 
 [StaticSingleton]
-public sealed partial class NullOptionalContentCounter : IOptionalContentCounter
+internal sealed partial class NullOptionalContentCounter : IOptionalContentCounter
 {
     public ValueTask<bool> CanSkipXObjectDoOperation(PdfDictionary? visibilityGroup) => new(false);
 

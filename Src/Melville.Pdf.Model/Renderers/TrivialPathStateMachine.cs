@@ -11,7 +11,7 @@ internal enum TrivialPathDetectorState
 
 // Pdf standard 2.0 section 8.5.3.2 gives very detailed rules for the stroking trivial paths
 // this class implements them as a state machine
-public abstract partial class TrivialPathStateMachine
+internal abstract partial class TrivialPathStateMachine
 {
     [FromConstructor] private readonly IGraphicsState graphicsState;
     private TrivialPathDetectorState state = TrivialPathDetectorState.Start;

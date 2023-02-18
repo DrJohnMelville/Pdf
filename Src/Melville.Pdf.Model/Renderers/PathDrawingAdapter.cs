@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers;
 
-public sealed partial class PathDrawingAdapter : TrivialPathStateMachine,  IPathDrawingOperations
+internal sealed partial class PathDrawingAdapter : TrivialPathStateMachine,  IPathDrawingOperations
 {
     [FromConstructor] private IDrawTarget? target;
     public bool IsInvalid => target is null;

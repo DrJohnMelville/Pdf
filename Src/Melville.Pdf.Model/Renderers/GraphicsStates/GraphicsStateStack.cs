@@ -5,17 +5,12 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public partial class StackTransitionEventArgs<T>: EventArgs
-{
-    [FromConstructor] public T Context { get; } 
-}
-
-public partial class TransformPushedEventArgs : EventArgs
-{
-    [FromConstructor] public Matrix3x2 NewMatrix { get; }
-    [FromConstructor] public Matrix3x2 CumulativeMatrix { get; }
-}
-
+/// <summary>
+/// This represents a stack of graphics states.  Pushed states copy the top state and
+/// then can be popped off.
+/// </summary>
+/// <typeparam name="T">A GraphicsState descendant representing graphics state
+/// for a specific renderer.</typeparam>
 public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
     where T: GraphicsState, new()
 { 
@@ -23,18 +18,38 @@ public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
 
     [DelegateTo]
     private IGraphicsState TopState() => StronglyTypedCurrentState();
+    /// <summary>
+    /// The topmost current graphics state.
+    /// </summary>
     public T StronglyTypedCurrentState() => states.Peek();
 
+    /// <summary>
+    /// Occurs just after a new context gets pushed.
+    /// </summary>
     public event EventHandler<StackTransitionEventArgs<T>>? ContextPushed;
+
+    /// <summary>
+    /// Occurs just before an old context gets popped off the stack.
+    /// </summary>
     public event EventHandler<StackTransitionEventArgs<T>>? BeforeContextPopped;
+
+    /// <summary>
+    /// Occurs when a new matrix is popped.
+    /// </summary>
     public event EventHandler<TransformPushedEventArgs>? TransformPushed; 
 
+    /// <summary>
+    /// Construct a new GraphicsStateStack
+    /// </summary>
     public GraphicsStateStack()
     {
         states = new ();
         states.Push(new T());
     }
 
+    /// <summary>
+    /// Push a fresh graphics state on top of the stack.
+    /// </summary>
     public void SaveGraphicsState()
     {
         var newTop = new T();
@@ -43,6 +58,9 @@ public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
         ContextPushed?.Invoke(this, new StackTransitionEventArgs<T>(newTop));
     }
 
+    /// <summary>
+    /// Top the top graphics state from the top of the stack.
+    /// </summary>
     public void RestoreGraphicsState()
     {
         BeforeContextPopped?.Invoke(this, new StackTransitionEventArgs<T>(StronglyTypedCurrentState()));
@@ -50,6 +68,8 @@ public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
         states.Pop();
     }
 
+
+    /// <inheritdoc />
     public void ModifyTransformMatrix(in Matrix3x2 newTransform)
     {
         TopState().ModifyTransformMatrix(newTransform);
@@ -57,6 +77,7 @@ public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
             StronglyTypedCurrentState().TransformMatrix));
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         while (states.Count > 0) RestoreGraphicsState();
