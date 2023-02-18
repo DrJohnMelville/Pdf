@@ -7,7 +7,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
 [StaticSingleton]
-public sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
+internal sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
 {
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => (0, 0, 1);
 

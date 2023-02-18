@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
-public readonly struct DisposeList: IDisposable
+internal readonly struct DisposeList: IDisposable
 {
     private readonly List<IDisposable> itemsToDispose = new();
 

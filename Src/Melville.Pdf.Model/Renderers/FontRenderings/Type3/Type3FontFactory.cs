@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
-public readonly struct Type3FontFactory
+internal readonly struct Type3FontFactory
 {
     private readonly PdfDictionary font;
 

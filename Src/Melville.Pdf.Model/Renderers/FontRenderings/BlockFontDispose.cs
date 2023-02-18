@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
-public sealed partial class BlockFontDispose : IRealizedFont
+internal sealed partial class BlockFontDispose : IRealizedFont
 {
     [DelegateTo]
     private readonly IRealizedFont typeface;
