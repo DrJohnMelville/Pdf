@@ -63,7 +63,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="AnWTFilterInt">
 	/// 
 	/// </seealso>
-	public class AnWTFilterIntLift5x3:AnWTFilterInt
+	internal class AnWTFilterIntLift5x3:AnWTFilterInt
 	{
 		/// <summary> Returns the negative support of the low-pass analysis filter. That is
 		/// the number of taps of the filter in the negative direction.

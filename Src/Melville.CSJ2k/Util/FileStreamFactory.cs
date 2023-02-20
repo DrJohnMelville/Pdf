@@ -6,7 +6,7 @@ namespace Melville.CSJ2K.Util
     using System;
     using System.IO;
 
-    public class FileStreamFactory
+    internal class FileStreamFactory
     {
         #region FIELDS
 

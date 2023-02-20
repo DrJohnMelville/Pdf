@@ -48,7 +48,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// one piece per layer) and some other information.
 	/// 
 	/// </summary>
-	public class CBlkInfo
+	internal class CBlkInfo
 	{
 		
 		/// <summary>Upper-left x-coordinate of the code-block (relative to the tile) </summary>

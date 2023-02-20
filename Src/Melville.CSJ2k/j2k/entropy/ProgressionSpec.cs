@@ -57,7 +57,7 @@ namespace Melville.CSJ2K.j2k.entropy
 	/// markers).</p>
 	/// 
 	/// </summary>
-	public class ProgressionSpec:ModuleSpec
+	internal class ProgressionSpec:ModuleSpec
 	{
 		
 		/// <summary> Creates a new ProgressionSpec object for the specified number of tiles

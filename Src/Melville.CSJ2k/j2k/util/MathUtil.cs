@@ -48,7 +48,7 @@ namespace Melville.CSJ2K.j2k.util
 	/// operations. All methods are static.
 	/// 
 	/// </summary>
-	public class MathUtil
+	internal class MathUtil
 	{
 		
 		/// <summary> Method that calculates the floor of the log, base 2, of 'x'. The

@@ -63,7 +63,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	// nLPS tables. See the JPEG book, chapter 13. The decoded decision can be
 	// calculated as (q>>>31).
 	
-	public class MQDecoder
+	internal class MQDecoder
 	{
 		/// <summary> Returns the number of contexts in the arithmetic coder.
 		/// 

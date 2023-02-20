@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public abstract class LookUpTable8:LookUpTable
+	internal abstract class LookUpTable8:LookUpTable
 	{
 		
 		/// <summary>Maximum output value of the LUT </summary>

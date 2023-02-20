@@ -63,7 +63,7 @@ namespace Melville.CSJ2K.j2k
 	/// </ul></p>
 	/// 
 	/// </summary>
-	public class ModuleSpec
+	internal class ModuleSpec
 	{
 		virtual public ModuleSpec Copy
 		{

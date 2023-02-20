@@ -66,7 +66,7 @@ namespace Melville.CSJ2K.j2k.image
     /// <seealso cref="ImgData">
     /// 
     /// </seealso>
-    public interface BlkImgDataSrc : ImgData
+    internal interface BlkImgDataSrc : ImgData
     {
 
         /// <summary> Returns the position of the fixed point in the specified component, or

@@ -54,7 +54,7 @@ namespace Melville.CSJ2K.j2k.image
 	/// <seealso cref="DataBlk">
 	/// 
 	/// </seealso>
-	public class DataBlkInt:DataBlk
+	internal class DataBlkInt:DataBlk
 	{
 		/// <summary> Returns the identifier of this data type, <tt>TYPE_INT</tt>, as defined
 		/// in <tt>DataBlk</tt>.

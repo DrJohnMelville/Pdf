@@ -64,7 +64,7 @@ namespace Melville.CSJ2K.j2k.image.input
 	/// <seealso cref="jj2000.j2k.image.ImgData">
 	/// 
 	/// </seealso>
-	public class ImgReaderPPM:ImgReader
+	internal class ImgReaderPPM:ImgReader
 	{
 		
 		/// <summary>DC offset value used when reading image </summary>
@@ -107,7 +107,7 @@ namespace Melville.CSJ2K.j2k.image.input
 		/// <param name="IOException">If an error occurs while opening the file.
 		/// 
 		/// </param>
-		public ImgReaderPPM(System.String fname):this(SupportClass.RandomAccessFileSupport.CreateRandomAccessFile(fname))
+		internal ImgReaderPPM(System.String fname):this(SupportClass.RandomAccessFileSupport.CreateRandomAccessFile(fname))
 		{
 		}
 		

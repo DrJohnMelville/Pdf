@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// <seealso cref="InputStream">
 	/// 
 	/// </seealso>
-	public class ByteInputBuffer
+	internal class ByteInputBuffer
 	{
 		
 		/// <summary>The byte array containing the data </summary>

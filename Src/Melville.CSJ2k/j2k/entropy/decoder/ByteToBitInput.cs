@@ -52,7 +52,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// arithmetic coding bypass' mode of the JPEG 2000 entropy coder.
 	/// 
 	/// </summary>
-	public class ByteToBitInput
+	internal class ByteToBitInput
 	{
 		
 		/// <summary>The byte based input </summary>

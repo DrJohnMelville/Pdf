@@ -74,7 +74,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// <seealso cref="PktDecoder">
 	/// 
 	/// </seealso>
-	public class FileBitstreamReaderAgent:BitstreamReaderAgent
+	internal class FileBitstreamReaderAgent:BitstreamReaderAgent
 	{
 		/// <summary>Gets the reference to the CBlkInfo array </summary>
 		virtual public CBlkInfo[][][][][] CBlkInfo

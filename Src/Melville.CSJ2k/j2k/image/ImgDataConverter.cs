@@ -58,7 +58,7 @@ namespace Melville.CSJ2K.j2k.image
     /// need to be reimplemented by subclasses.
     /// 
     /// </summary>
-    public class ImgDataConverter : ImgDataAdapter, BlkImgDataSrc
+    internal class ImgDataConverter : ImgDataAdapter, BlkImgDataSrc
     {
 
         /// <summary>The block used to request data from the source in the case that a

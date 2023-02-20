@@ -45,7 +45,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// <summary> This class is used to store the coordinates of precincts.
 	/// 
 	/// </summary>
-	public class PrecCoordInfo:CoordInfo
+	internal class PrecCoordInfo:CoordInfo
 	{
 		
 		/// <summary>Horizontal upper left coordinate in the reference grid </summary>

@@ -28,7 +28,7 @@ namespace Melville.CSJ2K.Color
     /// </version>
     /// <author> 	Bruce A. Kern
     /// </author>
-    public abstract class ColorSpaceMapper : ImgDataAdapter, BlkImgDataSrc
+    internal abstract class ColorSpaceMapper : ImgDataAdapter, BlkImgDataSrc
     {
         private void InitBlock()
         {

@@ -54,7 +54,7 @@ namespace Melville.CSJ2K.j2k.image
 	/// <seealso cref="DataBlk">
 	/// 
 	/// </seealso>
-	public class DataBlkFloat:DataBlk
+	internal class DataBlkFloat:DataBlk
 	{
 		/// <summary> Returns the identifier of this data type, <tt>TYPE_FLOAT</tt>, as
 		/// defined in <tt>DataBlk</tt>.

@@ -71,7 +71,7 @@ namespace Melville.CSJ2K.j2k.io
 	/// <seealso cref="BEBufferedRandomAccessFile">
 	/// 
 	/// </seealso>
-	public abstract class BufferedRandomAccessFile : RandomAccessIO, EndianType
+	internal abstract class BufferedRandomAccessFile : RandomAccessIO, EndianType
 	{
 		/// <summary> Returns the current offset in the file
 		/// 

@@ -67,7 +67,7 @@ namespace Melville.CSJ2K.j2k.image
     /// <seealso cref="ImgReader">
     /// 
     /// </seealso>
-    public class ImgDataJoiner : BlkImgDataSrc
+    internal class ImgDataJoiner : BlkImgDataSrc
     {
         /// <summary> Returns the overall width of the current tile in pixels. This is the
         /// tile's width without accounting for any component subsampling.

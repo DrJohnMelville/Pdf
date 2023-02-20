@@ -70,7 +70,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// methods.</p>
 	/// 
 	/// </summary>
-	public class LayersInfo
+	internal class LayersInfo
 	{
 		/// <summary> Returns the overall target bitrate for the entire bit stream.
 		/// 

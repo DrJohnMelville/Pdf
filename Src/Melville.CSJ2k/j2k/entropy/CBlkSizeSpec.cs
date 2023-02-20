@@ -54,7 +54,7 @@ namespace Melville.CSJ2K.j2k.entropy
 	/// <P>It stores the size a of code-block. 
 	/// 
 	/// </summary>
-	public class CBlkSizeSpec:ModuleSpec
+	internal class CBlkSizeSpec:ModuleSpec
 	{
 		/// <summary> Returns the maximum code-block's width
 		/// 

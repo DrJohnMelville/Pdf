@@ -21,7 +21,7 @@ namespace Melville.CSJ2K.Color.Boxes
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public sealed class ColorSpecificationBox:JP2Box
+	internal sealed class ColorSpecificationBox:JP2Box
 	{
         
 		public ColorSpace.MethodEnum Method

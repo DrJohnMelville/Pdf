@@ -102,7 +102,7 @@ namespace Melville.CSJ2K.j2k.image.input
 	/// <seealso cref="BEBufferedRandomAccessFile">
 	/// 
 	/// </seealso>
-	public class ImgReaderPGX:ImgReader, EndianType
+	internal class ImgReaderPGX:ImgReader, EndianType
 	{
 		
 		/// <summary>The offset of the raw pixel data in the PGX file </summary>

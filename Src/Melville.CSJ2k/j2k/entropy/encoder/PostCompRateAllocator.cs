@@ -70,7 +70,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// <seealso cref="jj2000.j2k.codestream.writer.CodestreamWriter">
 	/// 
 	/// </seealso>
-	public abstract class PostCompRateAllocator:ImgDataAdapter
+	internal abstract class PostCompRateAllocator:ImgDataAdapter
 	{
 		/// <summary> Keep a reference to the header encoder.
 		/// 

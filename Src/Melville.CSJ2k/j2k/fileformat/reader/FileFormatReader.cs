@@ -58,7 +58,7 @@ namespace Melville.CSJ2K.j2k.fileformat.reader
 	/// <seealso cref="jj2000.j2k.fileformat.writer.FileFormatWriter">
 	/// 
 	/// </seealso>
-	public class FileFormatReader
+	internal class FileFormatReader
 	{
 		/// <summary> This method creates and returns an array of positions to contiguous
 		/// codestreams in the file

@@ -59,7 +59,7 @@ namespace Melville.CSJ2K.j2k.entropy
 	/// no precinct partition is used.
 	/// 
 	/// </summary>
-	public class PrecinctSizeSpec:ModuleSpec
+	internal class PrecinctSizeSpec:ModuleSpec
 	{
 		
 		/// <summary>Name of the option </summary>

@@ -59,7 +59,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// method.
 	/// 
 	/// </summary>
-	public class PktDecoder
+	internal class PktDecoder
 	{
 		
 		/// <summary>Reference to the codestream reader agent </summary>

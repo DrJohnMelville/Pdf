@@ -55,7 +55,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="CBlkWTData">
 	/// 
 	/// </seealso>
-	public class CBlkWTDataFloat:CBlkWTData
+	internal class CBlkWTDataFloat:CBlkWTData
 	{
 		/// <summary> Returns the identifier of this data type, <tt>TYPE_FLOAT</tt>, as
 		/// defined in <tt>DataBlk</tt>.

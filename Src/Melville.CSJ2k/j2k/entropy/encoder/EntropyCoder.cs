@@ -77,7 +77,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// <seealso cref="CBlkQuantDataSrcEnc">
 	/// 
 	/// </seealso>
-	public abstract class EntropyCoder:ImgDataAdapter, CodedCBlkDataSrcEnc
+	internal abstract class EntropyCoder:ImgDataAdapter, CodedCBlkDataSrcEnc
 	{
 		/// <summary> Returns the horizontal offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.

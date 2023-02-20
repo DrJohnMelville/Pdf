@@ -69,7 +69,7 @@ namespace Melville.CSJ2K.j2k.roi
 	/// bit corresponds to the most significant bit-plane and so on.</p>
 	/// 
 	/// </summary>
-	public class ROIDeScaler:MultiResImgDataAdapter, CBlkQuantDataSrcDec
+	internal class ROIDeScaler:MultiResImgDataAdapter, CBlkQuantDataSrcDec
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.

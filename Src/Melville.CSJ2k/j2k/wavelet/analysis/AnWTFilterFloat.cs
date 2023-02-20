@@ -65,7 +65,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="AnWTFilter">
 	/// 
 	/// </seealso>
-	public abstract class AnWTFilterFloat:AnWTFilter
+	internal abstract class AnWTFilterFloat:AnWTFilter
 	{
 		/// <summary> Returns the type of data on which this filter works, as defined
 		/// in the DataBlk interface, which is always TYPE_FLOAT for this

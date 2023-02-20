@@ -19,7 +19,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class LookUpTableFPGamma:LookUpTableFP
+	internal class LookUpTableFPGamma:LookUpTableFP
 	{
 		
 		internal double dfE = - 1;

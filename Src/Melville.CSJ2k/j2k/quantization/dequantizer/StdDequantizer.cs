@@ -83,7 +83,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// intervals.</p>
 	/// 
 	/// </summary>
-	public class StdDequantizer:Dequantizer
+	internal class StdDequantizer:Dequantizer
 	{
 		
 		/// <summary>The quantizer type spec </summary>

@@ -52,7 +52,7 @@ namespace Melville.CSJ2K.j2k.util
 	/// badly formatted string.
 	/// 
 	/// </summary>
-	public class StringFormatException:System.ArgumentException
+	internal class StringFormatException:System.ArgumentException
 	{
 		
 		/// <summary> Creates the exception with an empty messgage.

@@ -71,7 +71,7 @@ namespace Melville.CSJ2K.j2k.image
     /// <seealso cref="BlkImgDataSrc">
     /// 
     /// </seealso>
-    public class Tiler : ImgDataAdapter, BlkImgDataSrc
+    internal class Tiler : ImgDataAdapter, BlkImgDataSrc
     {
         /// <summary> Returns the overall width of the current tile in pixels. This is the
         /// tile's width without accounting for any component subsampling.

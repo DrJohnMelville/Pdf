@@ -50,7 +50,7 @@ namespace Melville.CSJ2K.j2k.util
 	/// <summary> This class contains a colleaction of utility static methods for arrays.
 	/// 
 	/// </summary>
-	public class ArrayUtil
+	internal class ArrayUtil
 	{
 		
 		/// <summary>The maximum array size to do element by element copying, larger

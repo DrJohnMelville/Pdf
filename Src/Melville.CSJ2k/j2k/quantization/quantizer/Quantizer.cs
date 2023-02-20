@@ -92,7 +92,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 	/// <seealso cref="Subband">
 	/// 
 	/// </seealso>
-	public abstract class Quantizer:ImgDataAdapter, CBlkQuantDataSrcEnc
+	internal abstract class Quantizer:ImgDataAdapter, CBlkQuantDataSrcEnc
 	{
 		/// <summary> Returns the horizontal offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.

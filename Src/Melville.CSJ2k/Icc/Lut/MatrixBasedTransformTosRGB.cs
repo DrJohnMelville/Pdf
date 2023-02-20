@@ -27,7 +27,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class MatrixBasedTransformTosRGB
+	internal class MatrixBasedTransformTosRGB
 	{
 		
 		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"

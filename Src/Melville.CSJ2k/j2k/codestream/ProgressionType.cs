@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// directly.</p>
 	/// 
 	/// </summary>
-	public struct ProgressionType
+	internal struct ProgressionType
     {
 		/// <summary>The codestream is Layer/Resolution/Component/Position progressive : 0
 		/// 

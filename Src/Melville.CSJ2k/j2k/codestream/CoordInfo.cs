@@ -56,7 +56,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// <seealso cref="CBlkCoordInfo">
 	/// 
 	/// </seealso>
-	public abstract class CoordInfo
+	internal abstract class CoordInfo
 	{
 		
 		/// <summary>Horizontal upper left coordinate in the subband </summary>

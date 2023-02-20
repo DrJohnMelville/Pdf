@@ -51,7 +51,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// syntax, for the filters that are defined in the standard.</p>
 	/// 
 	/// </summary>
-	public struct FilterTypes_Fields{
+	internal struct FilterTypes_Fields{
 		/// <summary>W7x9 filter: 0x00 </summary>
 		public const int W9X7 = 0;
 		/// <summary>W5x3 filter: 0x01 </summary>
@@ -59,7 +59,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <summary>User-defined filter: -1 </summary>
 		public const int CUSTOM = - 1;
 	}
-	public interface FilterTypes
+	internal interface FilterTypes
 	{
 		//UPGRADE_NOTE: Members of interface 'FilterTypes' were extracted into structure 'FilterTypes_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		

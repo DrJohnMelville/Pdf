@@ -18,7 +18,7 @@ using Melville.CSJ2K.j2k.util;
 	/// This interface should be implemented by any class whose instances are intended 
 	/// to be executed by a thread.
 	/// </summary>
-	public interface IThreadRunnable
+	internal interface IThreadRunnable
 	{
 		/// <summary>
 		/// This method has to be implemented in order that starting of the thread causes the object's 
@@ -172,7 +172,7 @@ internal class SupportClass
 	/// <summary>
 	/// Provides support functions to create read-write random acces files and write functions
 	/// </summary>
-	public class RandomAccessFileSupport
+	internal class RandomAccessFileSupport
 	{
 		/// <summary>
 		/// Creates a new random acces stream with read-write or read rights
@@ -335,7 +335,7 @@ internal class SupportClass
 	/// <summary>
 	/// The class performs token processing in strings
 	/// </summary>
-	public class Tokenizer: System.Collections.IEnumerator
+	internal class Tokenizer: System.Collections.IEnumerator
 	{
 		/// Position over the string
 		private long currentPos = 0;
@@ -640,7 +640,7 @@ internal class SupportClass
 	/// The StreamTokenizerSupport class takes an input stream and parses it into "tokens".
 	/// The stream tokenizer can recognize identifiers, numbers, quoted strings, and various comment styles. 
 	/// </summary>
-	public class StreamTokenizerSupport
+	internal class StreamTokenizerSupport
 	{
 
 		/// <summary>
@@ -1411,7 +1411,7 @@ internal class SupportClass
 	/// <summary>
 	/// This class provides functionality to reads and unread characters into a buffer.
 	/// </summary>
-	public class BackReader : System.IO.StreamReader
+	internal class BackReader : System.IO.StreamReader
 	{
 		private char[] buffer;
 		private int position = 1;
@@ -1577,7 +1577,7 @@ internal class SupportClass
 	/// <summary>
 	/// Provides functionality to read and unread from a Stream.
 	/// </summary>
-	public class BackInputStream : System.IO.BinaryReader
+	internal class BackInputStream : System.IO.BinaryReader
 	{
 		private byte[] buffer;
 		private int position = 1;
@@ -1705,7 +1705,7 @@ internal class SupportClass
 	/// <summary>
 	/// SupportClass for the Stack class.
 	/// </summary>
-	public class StackSupport
+	internal class StackSupport
 	{
 		/// <summary>
 		/// Removes the element at the top of the stack and returns it.

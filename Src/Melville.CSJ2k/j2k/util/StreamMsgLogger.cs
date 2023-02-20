@@ -45,7 +45,7 @@ namespace Melville.CSJ2K.j2k.util
     /// or ERROR, otherwise they are printed to the 'out' stream. Simple strings
     /// are always printed the 'out' stream.</p>
     /// </summary>
-    public abstract class StreamMsgLogger : IMsgLogger
+    internal abstract class StreamMsgLogger : IMsgLogger
     {
         /// <summary>The 'out' stream </summary>
         private StreamWriter out_Renamed;

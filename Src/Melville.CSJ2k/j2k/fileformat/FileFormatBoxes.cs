@@ -57,7 +57,7 @@ namespace Melville.CSJ2K.j2k.fileformat
 	/// <seealso cref="jj2000.j2k.fileformat.reader.FileFormatReader">
 	/// 
 	/// </seealso>
-	public struct FileFormatBoxes {
+	internal struct FileFormatBoxes {
 		/// <summary>* Main boxes ***</summary>
 
         public const int READER_REQUIREMENTS_BOX = 0x72726571;

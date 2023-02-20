@@ -1,6 +1,6 @@
 ﻿namespace Melville.CSJ2K.Util
 {
-	public interface IFileInfoCreator
+	internal interface IFileInfoCreator
 	{
 		#region METHODS
 

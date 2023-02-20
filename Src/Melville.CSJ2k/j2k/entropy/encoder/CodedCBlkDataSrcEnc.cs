@@ -67,7 +67,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// <seealso cref="EntropyCoder">
 	/// 
 	/// </seealso>
-	public interface CodedCBlkDataSrcEnc:ForwWTDataProps
+	internal interface CodedCBlkDataSrcEnc:ForwWTDataProps
 	{
 		
 		/// <summary> Returns the next coded code-block in the current tile for the specified

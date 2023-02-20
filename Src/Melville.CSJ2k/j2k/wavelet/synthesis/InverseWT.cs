@@ -70,7 +70,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
     /// implemented here rely on them.</p>
     /// 
     /// </summary>
-    public abstract class InverseWT : InvWTAdapter, BlkImgDataSrc
+    internal abstract class InverseWT : InvWTAdapter, BlkImgDataSrc
     {
 
         /// <summary> Initializes this object with the given source of wavelet

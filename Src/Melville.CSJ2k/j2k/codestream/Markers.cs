@@ -48,7 +48,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// also defines some other constants such as bit-masks and bit-shifts.
 	/// 
 	/// </summary>
-	public struct Markers
+	internal struct Markers
     {
         /// <summary>Start of codestream (SOC): 0xFF4F </summary>
         public const short SOC = unchecked((short)0xff4f);

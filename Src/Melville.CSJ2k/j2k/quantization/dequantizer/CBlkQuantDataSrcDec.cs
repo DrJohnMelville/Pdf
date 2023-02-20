@@ -77,7 +77,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// <seealso cref="EntropyDecoder">
 	/// 
 	/// </seealso>
-	public interface CBlkQuantDataSrcDec:InvWTData
+	internal interface CBlkQuantDataSrcDec:InvWTData
 	{
 		
 		/// <summary> Returns the specified code-block in the current tile for the specified

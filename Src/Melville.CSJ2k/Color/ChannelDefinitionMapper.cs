@@ -22,7 +22,7 @@ namespace Melville.CSJ2K.Color
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ChannelDefinitionMapper:ColorSpaceMapper
+	internal class ChannelDefinitionMapper:ColorSpaceMapper
 	{
 		/// <summary> Factory method for creating instances of this class.</summary>
 		/// <param name="src">-- source of image data

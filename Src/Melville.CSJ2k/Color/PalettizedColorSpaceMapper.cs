@@ -24,7 +24,7 @@ namespace Melville.CSJ2K.Color
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class PalettizedColorSpaceMapper:ColorSpaceMapper
+	internal class PalettizedColorSpaceMapper:ColorSpaceMapper
 	{
 		/// <summary> Returns the number of components in the image.
 		/// 

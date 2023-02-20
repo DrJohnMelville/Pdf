@@ -78,7 +78,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// have a different number of fractional bits.</p>
 	/// 
 	/// </summary>
-	public abstract class Dequantizer:MultiResImgDataAdapter, CBlkWTDataSrcDec
+	internal abstract class Dequantizer:MultiResImgDataAdapter, CBlkWTDataSrcDec
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.

@@ -66,7 +66,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// <seealso cref="HeaderEncoder">
 	/// 
 	/// </seealso>
-	public abstract class CodestreamWriter
+	internal abstract class CodestreamWriter
 	{
 		/// <summary> Returns the number of bytes remaining available in the codestream. This
 		/// is the maximum allowed number of bytes minus the number of bytes that

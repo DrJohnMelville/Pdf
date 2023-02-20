@@ -65,7 +65,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="SynWTFilter">
 	/// 
 	/// </seealso>
-	public abstract class SynWTFilterFloat:SynWTFilter
+	internal abstract class SynWTFilterFloat:SynWTFilter
 	{
 		/// <summary> Returns the type of data on which this filter works, as defined
 		/// in the DataBlk interface, which is always TYPE_FLOAT for this

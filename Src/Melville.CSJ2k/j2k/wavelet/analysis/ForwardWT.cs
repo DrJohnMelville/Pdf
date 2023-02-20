@@ -64,7 +64,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// that type of transfer.</p>
 	/// 
 	/// </summary>
-	public abstract class ForwardWT:ImgDataAdapter, ForwWT, CBlkWTDataSrc
+	internal abstract class ForwardWT:ImgDataAdapter, ForwWT, CBlkWTDataSrc
 	{
 		/// <summary> Returns the parameters that are used in this class and implementing
 		/// classes. It returns a 2D String array. Each of the 1D arrays is for a

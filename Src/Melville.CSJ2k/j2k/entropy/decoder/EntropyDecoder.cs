@@ -72,7 +72,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// <seealso cref="MultiResImgDataAdapter">
 	/// 
 	/// </seealso>
-	public abstract class EntropyDecoder:MultiResImgDataAdapter, CBlkQuantDataSrcDec
+	internal abstract class EntropyDecoder:MultiResImgDataAdapter, CBlkQuantDataSrcDec
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.

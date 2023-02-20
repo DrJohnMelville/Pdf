@@ -66,7 +66,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// <seealso cref="jj2000.j2k.wavelet.synthesis.SubbandSyn">
 	/// 
 	/// </seealso>
-	public abstract class Subband
+	internal abstract class Subband
 	{
 		/// <summary> Returns the parent of this subband. The parent of a subband is the
 		/// subband from which this one was obtained by decomposition. The root

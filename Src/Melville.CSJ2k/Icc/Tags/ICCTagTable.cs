@@ -32,7 +32,7 @@ namespace Melville.CSJ2K.Icc.Tags
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCTagTable:System.Collections.Generic.Dictionary<System.Int32, ICCTag>
+	internal class ICCTagTable:System.Collections.Generic.Dictionary<System.Int32, ICCTag>
 	{
 		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private static readonly System.String eol = System.Environment.NewLine;

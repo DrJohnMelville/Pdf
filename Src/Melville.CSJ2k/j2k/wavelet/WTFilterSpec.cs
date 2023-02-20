@@ -68,7 +68,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// 
 	/// </seealso>
 	
-	public abstract class WTFilterSpec
+	internal abstract class WTFilterSpec
 	{
 		/// <summary> Returns the data type used by the filters in this object, as defined in 
 		/// the 'DataBlk' interface.

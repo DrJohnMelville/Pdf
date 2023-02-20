@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Types
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCDateTime
+	internal class ICCDateTime
 	{
 		//UPGRADE_NOTE: Final was removed from the declaration of 'size '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		//UPGRADE_NOTE: The initialization of  'size' was moved to static method 'icc.types.ICCDateTime'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"

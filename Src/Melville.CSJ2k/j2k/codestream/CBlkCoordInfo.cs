@@ -48,7 +48,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// <summary> This class is used to store the coordinates of code-blocks.
 	/// 
 	/// </summary>
-	public class CBlkCoordInfo:CoordInfo
+	internal class CBlkCoordInfo:CoordInfo
 	{
 		
 		/// <summary>The code-block horizontal and vertical indexes </summary>

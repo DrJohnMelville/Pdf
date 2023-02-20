@@ -59,7 +59,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// <seealso cref="CodestreamWriter">
 	/// 
 	/// </seealso>
-	public class FileCodestreamWriter:CodestreamWriter
+	internal class FileCodestreamWriter:CodestreamWriter
 	{
 		/// <summary> Returns the number of bytes remaining available in the bit stream. This
 		/// is the maximum allowed number of bytes minus the number of bytes that

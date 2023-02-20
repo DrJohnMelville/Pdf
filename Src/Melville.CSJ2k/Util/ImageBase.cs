@@ -7,7 +7,7 @@ namespace Melville.CSJ2K.Util
     using System.Reflection;
 
 
-    public abstract class ImageBase<TBase> 
+    internal abstract class ImageBase<TBase> 
     {
         #region FIELDS
 

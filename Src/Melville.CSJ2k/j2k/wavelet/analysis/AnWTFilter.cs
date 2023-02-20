@@ -89,7 +89,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="AnWTFilterFloat">
 	/// 
 	/// </seealso>
-	public abstract class AnWTFilter : WaveletFilter
+	internal abstract class AnWTFilter : WaveletFilter
 	{
 		/// <summary> Returns the type of filter used according to the FilterTypes interface.
 		/// 

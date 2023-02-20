@@ -29,7 +29,7 @@ namespace Melville.CSJ2K.Color
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class SYccColorSpaceMapper:ColorSpaceMapper
+	internal class SYccColorSpaceMapper:ColorSpaceMapper
 	{
 		/// <summary>Matrix component for ycc transform. </summary>
 		/* sYCC colorspace matrix */

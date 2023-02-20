@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="ForwardWT">
 	/// 
 	/// </seealso>
-	public class ForwWTFull:ForwardWT
+	internal class ForwWTFull:ForwardWT
 	{
 		/// <summary> Returns the horizontal offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.

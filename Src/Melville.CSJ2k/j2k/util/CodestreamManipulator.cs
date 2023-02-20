@@ -51,7 +51,7 @@ namespace Melville.CSJ2K.j2k.util
 	/// manipulation on it. Currently the manipulations supported are: Tile-parts
 	/// 
 	/// </summary>
-	public class CodestreamManipulator
+	internal class CodestreamManipulator
 	{
 		private void  InitBlock()
 		{

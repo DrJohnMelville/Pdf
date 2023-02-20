@@ -55,7 +55,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// evisageable for different transforms.</p>
 	/// 
 	/// </summary>
-	public interface ForwWT:WaveletTransform, ForwWTDataProps
+	internal interface ForwWT:WaveletTransform, ForwWTDataProps
 	{
 		
 		/// <summary> Returns the horizontal analysis wavelet filters used in each level, for

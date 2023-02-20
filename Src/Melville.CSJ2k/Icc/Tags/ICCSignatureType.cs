@@ -3,7 +3,7 @@ using Melville.CSJ2K.Icc;
 
 namespace Melville.CSJ2K.Icc.Tags
 {
-    public class ICCSignatureType : ICCTag
+    internal class ICCSignatureType : ICCTag
     {
         new public int type;
         public int reserved;

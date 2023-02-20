@@ -69,7 +69,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// <seealso cref="ArbROIMaskGenerator">
 	/// 
 	/// </seealso>
-	public class ArbROIMaskGenerator:ROIMaskGenerator
+	internal class ArbROIMaskGenerator:ROIMaskGenerator
 	{
 		
 		/// <summary>The source of quantized wavelet transform coefficients </summary>

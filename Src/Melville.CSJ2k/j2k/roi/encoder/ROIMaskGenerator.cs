@@ -66,7 +66,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// <seealso cref="ArbROIMaskGenerator">
 	/// 
 	/// </seealso>
-	public abstract class ROIMaskGenerator
+	internal abstract class ROIMaskGenerator
 	{
 		/// <summary> This function returns the ROIs in the image
 		/// 

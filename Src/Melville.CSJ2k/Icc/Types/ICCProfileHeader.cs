@@ -27,7 +27,7 @@ namespace Melville.CSJ2K.Icc.Types
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class ICCProfileHeader
+	internal class ICCProfileHeader
 	{
 		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private static readonly System.String eol = System.Environment.NewLine;
@@ -89,7 +89,7 @@ namespace Melville.CSJ2K.Icc.Types
 		public int dwCMMTypeSignature;
 		/// <summary>Header field </summary>
 		// The preferred CMM for this profile
-		public int dwProfileClass;
+		internal int dwProfileClass;
 		/// <summary>Header field </summary>
 		// Profile/Device class signature
 		public int dwColorSpaceType;

@@ -24,7 +24,7 @@ namespace Melville.CSJ2K.Color.Boxes
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public sealed class ChannelDefinitionBox:JP2Box
+	internal sealed class ChannelDefinitionBox:JP2Box
 	{
 		public int NDefs
 		{

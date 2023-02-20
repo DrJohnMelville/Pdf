@@ -20,7 +20,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class MonochromeTransformException:System.Exception
+	internal class MonochromeTransformException:System.Exception
 	{
 		
 		/// <summary> Contruct with message</summary>

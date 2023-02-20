@@ -47,7 +47,7 @@ namespace Melville.CSJ2K.j2k.image
 	/// <summary> This class represents 2-D coordinates.
 	/// 
 	/// </summary>
-	public class Coord
+	internal class Coord
 	{
 		/// <summary>The horizontal coordinate </summary>
 		public int x;

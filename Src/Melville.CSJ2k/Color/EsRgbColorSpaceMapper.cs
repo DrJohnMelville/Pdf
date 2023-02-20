@@ -29,7 +29,7 @@ namespace Melville.CSJ2K.Color
 	/// </version>
 	/// <author> 	Jason S. Clary
 	/// </author>
-	public class EsRgbColorSpaceMapper : ColorSpaceMapper
+	internal class EsRgbColorSpaceMapper : ColorSpaceMapper
 	{
 		
 		/// <summary> Factory method for creating instances of this class.</summary>

@@ -27,7 +27,7 @@ namespace Melville.CSJ2K.Icc
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCProfiler:ColorSpaceMapper
+	internal class ICCProfiler:ColorSpaceMapper
 	{
 		
 		/// <summary>The prefix for ICC Profiler options </summary>

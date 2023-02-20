@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.io
 	/// identifier directly.
 	/// 
 	/// </summary>
-	public struct EndianType_Fields{
+	internal struct EndianType_Fields{
 		/// <summary>Identifier for big-endian byte ordering (i.e. most significant 
 		/// byte first) 
 		/// </summary>
@@ -72,7 +72,7 @@ namespace Melville.CSJ2K.j2k.io
 		/// </summary>
 		public const int LITTLE_ENDIAN = 1;
 	}
-	public interface EndianType
+	internal interface EndianType
 	{
 		//UPGRADE_NOTE: Members of interface 'EndianType' were extracted into structure 'EndianType_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		

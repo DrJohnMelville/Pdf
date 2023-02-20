@@ -53,7 +53,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class SynWTFilterSpec:ModuleSpec
+	internal class SynWTFilterSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs a new 'SynWTFilterSpec' for the specified number of

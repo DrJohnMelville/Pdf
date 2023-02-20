@@ -21,7 +21,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class LookUpTable32Gamma:LookUpTable32
+	internal class LookUpTable32Gamma:LookUpTable32
 	{
 		
 		

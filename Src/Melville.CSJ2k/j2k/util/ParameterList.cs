@@ -67,7 +67,7 @@ namespace Melville.CSJ2K.j2k.util
 	/// 
 	/// </seealso>
 	//UPGRADE_ISSUE: Class hierarchy differences between 'java.util.Properties' and 'System.Collections.Specialized.NameValueCollection' may cause compilation errors. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1186'"
-	public class ParameterList:System.Collections.Generic.Dictionary<string, string>
+	internal class ParameterList:System.Collections.Generic.Dictionary<string, string>
 	{
         // COVNERSION PROBLEM?
         private ParameterList defaults;

@@ -68,7 +68,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// <seealso cref="jj2000.j2k.codestream.reader.BitstreamReaderAgent">
 	/// 
 	/// </seealso>
-	public interface CodedCBlkDataSrcDec:InvWTData
+	internal interface CodedCBlkDataSrcDec:InvWTData
 	{
 		
 		/// <summary> Returns the specified coded code-block, for the specified component, in

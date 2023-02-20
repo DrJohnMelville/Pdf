@@ -56,7 +56,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// required for the packet heads.
 	/// 
 	/// </summary>
-	public class BitOutputBuffer
+	internal class BitOutputBuffer
 	{
 		/// <summary> Returns the current length of the buffer, in bytes.
 		/// 

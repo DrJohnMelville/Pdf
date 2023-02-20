@@ -49,7 +49,7 @@ namespace Melville.CSJ2K.j2k
 	/// copyright, contact address, etc.
 	/// 
 	/// </summary>
-	public class JJ2KInfo
+	internal class JJ2KInfo
 	{
 		
 		/// <summary>The version number (such as 2.0, 2.1.1, etc.) </summary>

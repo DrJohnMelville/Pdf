@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class LookUpTable16LinearSRGBtoSRGB:LookUpTable16
+	internal class LookUpTable16LinearSRGBtoSRGB:LookUpTable16
 	{
 		
 		/// <summary> Factory method for creating the lut.</summary>

@@ -14,7 +14,7 @@ internal class JpxToPdfAdapter: ICodecDefinition
 
     public ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
     {
-        var independentImage = J2kImage.FromStream(input);
+        var independentImage = J2kReader.FromStream(input);
         return new(independentImage.NumberOfComponents == 1 ?
             new JPeg200GrayStream(independentImage):
             new JPeg200RgbStream(independentImage));

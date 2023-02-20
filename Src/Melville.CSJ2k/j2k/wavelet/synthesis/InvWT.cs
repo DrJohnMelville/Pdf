@@ -55,7 +55,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// envisageable for different transforms.</p>
 	/// 
 	/// </summary>
-	public interface InvWT:WaveletTransform
+	internal interface InvWT:WaveletTransform
 	{
 		/// <summary> Sets the image reconstruction resolution level. A value of 0 means
 		/// reconstruction of an image with the lowest resolution (dimension)

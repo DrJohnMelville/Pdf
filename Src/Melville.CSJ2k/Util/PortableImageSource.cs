@@ -8,7 +8,7 @@ namespace Melville.CSJ2K.Util
     using Melville.CSJ2K.j2k;
     using Melville.CSJ2K.j2k.image;
 
-    public class PortableImageSource : BlkImgDataSrc
+    internal class PortableImageSource : BlkImgDataSrc
     {
         #region FIELDS
 

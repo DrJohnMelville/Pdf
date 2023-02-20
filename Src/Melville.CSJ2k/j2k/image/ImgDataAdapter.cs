@@ -63,7 +63,7 @@ namespace Melville.CSJ2K.j2k.image
 	/// <seealso cref="ImgData">
 	/// 
 	/// </seealso>
-	public abstract class ImgDataAdapter : ImgData
+	internal abstract class ImgDataAdapter : ImgData
 	{
 		/// <summary> Returns the overall width of the current tile in pixels. This is the
 		/// tile's width without accounting for any component subsampling. This is

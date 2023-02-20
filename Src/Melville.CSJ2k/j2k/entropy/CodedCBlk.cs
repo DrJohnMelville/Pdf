@@ -56,7 +56,7 @@ namespace Melville.CSJ2K.j2k.entropy
 	/// <seealso cref="jj2000.j2k.entropy.decoder.DecLyrdCBlk">
 	/// 
 	/// </seealso>
-	public class CodedCBlk
+	internal class CodedCBlk
 	{
 		
 		/// <summary>The horizontal index of the code-block, within the subband. </summary>

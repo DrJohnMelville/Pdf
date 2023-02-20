@@ -79,7 +79,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// <seealso cref="jj2000.j2k.codestream.writer.CodestreamWriter">
 	/// 
 	/// </seealso>
-	public class EBCOTRateAllocator:PostCompRateAllocator
+	internal class EBCOTRateAllocator:PostCompRateAllocator
 	{
 		
 		/// <summary>Whether to collect timing information or not: false. Used as a compile

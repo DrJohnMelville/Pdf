@@ -20,7 +20,7 @@ namespace Melville.CSJ2K.Icc
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCMonochromeInputProfile:ICCProfile
+	internal class ICCMonochromeInputProfile:ICCProfile
 	{
 		
 		/// <summary> Return the ICCProfile embedded in the input image</summary>

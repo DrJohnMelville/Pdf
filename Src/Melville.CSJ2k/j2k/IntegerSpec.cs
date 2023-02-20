@@ -53,7 +53,7 @@ namespace Melville.CSJ2K.j2k
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class IntegerSpec:ModuleSpec
+	internal class IntegerSpec:ModuleSpec
 	{
 		/// <summary> Gets the maximum value of all tile-components.
 		/// 

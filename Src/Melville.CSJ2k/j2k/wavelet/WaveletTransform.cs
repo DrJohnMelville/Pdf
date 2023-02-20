@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// components).</p>
 	/// 
 	/// </summary>
-	public struct WaveletTransform_Fields{
+	internal struct WaveletTransform_Fields{
 		/// <summary> ID for line based implementations of wavelet transforms.
 		/// 
 		/// </summary>
@@ -72,7 +72,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// </summary>
 		public readonly static int WT_IMPL_FULL = 2;
 	}
-	public interface WaveletTransform:ImgData
+	internal interface WaveletTransform:ImgData
 	{
 		//UPGRADE_NOTE: Members of interface 'WaveletTransform' were extracted into structure 'WaveletTransform_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		

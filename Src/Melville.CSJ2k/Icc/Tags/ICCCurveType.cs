@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Tags
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCCurveType:ICCTag
+	internal class ICCCurveType:ICCTag
 	{
 		
 		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"

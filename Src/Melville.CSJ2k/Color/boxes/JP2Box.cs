@@ -24,7 +24,7 @@ namespace Melville.CSJ2K.Color.Boxes
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public abstract class JP2Box
+	internal abstract class JP2Box
 	{
 		/// <summary>Platform dependant line terminator </summary>
 		//UPGRADE_NOTE: Final was removed from the declaration of 'eol '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"

@@ -65,7 +65,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="MultiResImgData">
 	/// 
 	/// </seealso>
-	public abstract class MultiResImgDataAdapter : MultiResImgData
+	internal abstract class MultiResImgDataAdapter : MultiResImgData
 	{
 		/// <summary>Returns the nominal tiles width </summary>
 		virtual public int NomTileWidth

@@ -56,7 +56,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// references to the masks of the children subbands of the subband
 	/// corresponding to this mask.  
 	/// </summary>
-	public abstract class SubbandROIMask
+	internal abstract class SubbandROIMask
 	{
 		
 		/// <summary>The subband masks of the child LL </summary>

@@ -87,7 +87,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// <seealso cref="EBCOTRateAllocator">
 	/// 
 	/// </seealso>
-	public class HeaderEncoder
+	internal class HeaderEncoder
 	{
 		/// <summary> Returns the parameters that are used in this class and implementing
 		/// classes. It returns a 2D String array. Each of the 1D arrays is for a

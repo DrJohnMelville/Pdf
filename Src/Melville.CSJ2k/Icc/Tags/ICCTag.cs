@@ -32,7 +32,7 @@ namespace Melville.CSJ2K.Icc.Tags
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public abstract class ICCTag
+	internal abstract class ICCTag
 	{
 		
 		// Tag Signature Strings

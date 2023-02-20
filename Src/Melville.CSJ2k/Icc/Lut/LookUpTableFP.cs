@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public abstract class LookUpTableFP:LookUpTable
+	internal abstract class LookUpTableFP:LookUpTable
 	{
 		
 		/// <summary>The lut values. </summary>

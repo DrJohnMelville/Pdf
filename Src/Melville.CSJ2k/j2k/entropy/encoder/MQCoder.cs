@@ -140,7 +140,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// Implemented but performance not tested yet.</p>
 	/// 
 	/// </summary>
-	public class MQCoder
+	internal class MQCoder
 	{
 		/// <summary> Set the length calculation type to the specified type.
 		/// 

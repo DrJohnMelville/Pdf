@@ -20,7 +20,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class MatrixBasedTransformException:System.Exception
+	internal class MatrixBasedTransformException:System.Exception
 	{
 		
 		/// <summary> Contruct with message</summary>

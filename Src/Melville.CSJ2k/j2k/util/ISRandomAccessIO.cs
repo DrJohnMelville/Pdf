@@ -76,7 +76,7 @@ namespace Melville.CSJ2K.j2k.util
 	/// preclude the use in unsigned applets.</p>
 	/// 
 	/// </summary>
-	public class ISRandomAccessIO : RandomAccessIO
+	internal class ISRandomAccessIO : RandomAccessIO
 	{
 		/// <summary> Returns the current position in the stream, which is the position from
 		/// where the next byte of data would be read. The first byte in the stream

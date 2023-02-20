@@ -46,7 +46,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// code-blocks in each subband. 
 	/// 
 	/// </summary>
-	public class PrecInfo
+	internal class PrecInfo
 	{
 		
 		/// <summary>Precinct horizontal upper-left coordinate in the reference grid </summary>

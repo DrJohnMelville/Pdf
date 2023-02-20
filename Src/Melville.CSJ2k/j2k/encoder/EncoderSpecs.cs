@@ -64,7 +64,7 @@ namespace Melville.CSJ2K.j2k.encoder
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class EncoderSpecs
+	internal class EncoderSpecs
 	{
 		
 		/// <summary>ROI maxshift value specifications </summary>

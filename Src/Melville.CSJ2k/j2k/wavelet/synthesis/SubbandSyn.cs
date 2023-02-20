@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// (i.e.it's null), for obvious reasons.</p>
 	/// 
 	/// </summary>
-	public class SubbandSyn:Subband
+	internal class SubbandSyn:Subband
 	{
 		/// <summary> Returns the parent of this subband. The parent of a subband is the
 		/// subband from which this one was obtained by decomposition. The root

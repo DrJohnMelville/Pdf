@@ -113,7 +113,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// <seealso cref="FileBitstreamReaderAgent">
 	/// 
 	/// </seealso>
-	public class HeaderDecoder
+	internal class HeaderDecoder
 	{
 		/// <summary> Return the maximum height among all components 
 		/// 

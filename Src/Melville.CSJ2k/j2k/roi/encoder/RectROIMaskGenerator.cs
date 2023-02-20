@@ -74,7 +74,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// <seealso cref="ArbROIMaskGenerator">
 	/// 
 	/// </seealso>
-	public class RectROIMaskGenerator:ROIMaskGenerator
+	internal class RectROIMaskGenerator:ROIMaskGenerator
 	{
 		
 		/// <summary>The upper left xs of the ROIs</summary>

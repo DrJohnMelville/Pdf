@@ -19,7 +19,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	//UPGRADE_NOTE: The access modifier for this class or class field has been changed in order to prevent compilation errors due to the visibility level. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1296'"
-	abstract public class LookUpTable32:LookUpTable
+	abstract internal class LookUpTable32:LookUpTable
 	{
 		
 		/// <summary>Maximum output value of the LUT </summary>

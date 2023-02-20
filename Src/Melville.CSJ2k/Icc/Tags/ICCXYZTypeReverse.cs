@@ -23,7 +23,7 @@ namespace Melville.CSJ2K.Icc.Tags
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCXYZTypeReverse:ICCXYZType
+	internal class ICCXYZTypeReverse:ICCXYZType
 	{
 		
 		/// <summary>x component </summary>

@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.quantization
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class QuantTypeSpec:ModuleSpec
+	internal class QuantTypeSpec:ModuleSpec
 	{
 		/// <summary> Check the reversibility of the whole image.
 		/// 

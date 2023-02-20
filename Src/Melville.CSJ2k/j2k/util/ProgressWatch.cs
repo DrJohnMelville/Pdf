@@ -42,7 +42,7 @@ using System;
 namespace Melville.CSJ2K.j2k.util
 {
 	
-	public interface ProgressWatch
+	internal interface ProgressWatch
 	{
 		/// <summary> Initialize the progress watching process 
 		/// 

@@ -68,7 +68,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="InvWT">
 	/// 
 	/// </seealso>
-	public abstract class InvWTAdapter : InvWT
+	internal abstract class InvWTAdapter : InvWT
 	{
 		/// <summary> Sets the image reconstruction resolution level. A value of 0 means
 		/// reconstruction of an image with the lowest resolution (dimension)

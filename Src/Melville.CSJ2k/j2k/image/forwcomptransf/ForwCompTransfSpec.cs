@@ -56,7 +56,7 @@ namespace Melville.CSJ2K.j2k.image.forwcomptransf
 	/// <seealso cref="CompTransfSpec">
 	/// 
 	/// </seealso>
-	public class ForwCompTransfSpec:CompTransfSpec, FilterTypes
+	internal class ForwCompTransfSpec:CompTransfSpec, FilterTypes
 	{
 		/// <summary> Constructs a new 'ForwCompTransfSpec' for the specified number of
 		/// components and tiles, the wavelet filters type and the parameter of the

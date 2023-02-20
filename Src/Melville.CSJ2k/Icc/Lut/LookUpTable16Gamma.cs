@@ -20,7 +20,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class LookUpTable16Gamma:LookUpTable16
+	internal class LookUpTable16Gamma:LookUpTable16
 	{
 		
 		/* Construct the lut 

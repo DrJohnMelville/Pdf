@@ -38,14 +38,14 @@ using Melville.CSJ2K.j2k.util;
 
 namespace Melville.CSJ2K.j2k.util;
 
-public static class FacilityManager
+internal static class FacilityManager
 {
     private static readonly MsgLogger logger = new MsgLogger();
 
     public static IMsgLogger getMsgLogger() => logger;
 }
 
-public class MsgLogger : IMsgLogger
+internal class MsgLogger : IMsgLogger
 {
     public void printmsg(int sev, string msg)
     {

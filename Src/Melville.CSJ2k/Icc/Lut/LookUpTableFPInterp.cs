@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A.Kern
 	/// </author>
-	public class LookUpTableFPInterp:LookUpTableFP
+	internal class LookUpTableFPInterp:LookUpTableFP
 	{
 		
 		/// <summary> Create an abbreviated string representation of a 16 bit lut.</summary>

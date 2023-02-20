@@ -51,7 +51,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// necessary for forward wavelet data (i.e. data that is produced by a forward
 	/// wavelet transform).  
 	/// </summary>
-	public interface ForwWTDataProps:ImgData
+	internal interface ForwWTDataProps:ImgData
 	{
 		/// <summary> Returns the horizontal offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.

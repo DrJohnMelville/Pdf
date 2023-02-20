@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// <seealso cref="jj2000.j2k.wavelet.synthesis.SynWTFilter">
 	/// 
 	/// </seealso>
-	public struct WaveletFilter_Fields{
+	internal struct WaveletFilter_Fields{
 		/// <summary>The ID for integer lifting spteps implementations </summary>
 		public readonly static int WT_FILTER_INT_LIFT = 0;
 		/// <summary>The ID for floating-point lifting spteps implementations </summary>
@@ -70,7 +70,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 		/// <summary>The ID for floatring-poitn convolution implementations </summary>
 		public readonly static int WT_FILTER_FLOAT_CONVOL = 2;
 	}
-	public interface WaveletFilter
+	internal interface WaveletFilter
 	{
 		//UPGRADE_NOTE: Members of interface 'WaveletFilter' were extracted into structure 'WaveletFilter_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		/// <summary> Returns the negative support of the low-pass analysis filter. That is

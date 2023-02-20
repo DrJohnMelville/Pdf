@@ -51,7 +51,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// <seealso cref="CBlkInfo">
 	/// 
 	/// </seealso>
-	public class PktInfo
+	internal class PktInfo
 	{
 		
 		/// <summary>Index of the packet </summary>

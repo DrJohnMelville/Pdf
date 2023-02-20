@@ -16,7 +16,7 @@ namespace Melville.CSJ2K.Icc
 	
 	/// <summary> This profile is constructed by parsing an ICCProfile and
 	/// is the profile actually applied to the image.
-	public abstract class RestrictedICCProfile
+	internal abstract class RestrictedICCProfile
 	{
 		/// <summary>Returns the appropriate input type enum. </summary>
 		public abstract int Type{get;}

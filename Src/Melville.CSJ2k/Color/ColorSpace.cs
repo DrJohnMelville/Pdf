@@ -34,7 +34,7 @@ namespace Melville.CSJ2K.Color
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ColorSpace
+	internal class ColorSpace
 	{
 		/// <summary> Retrieve the ICC profile from the images as
 		/// a byte array.
@@ -130,7 +130,7 @@ namespace Melville.CSJ2K.Color
 			return ident + tgt.ToString();
 		}
 		
-		/// <summary> public constructor which takes in the image, parameterlist and the
+		/// <summary> internal constructor which takes in the image, parameterlist and the
 		/// image header decoder as args.
 		/// </summary>
 		/// <param name="in">input RandomAccess image file.
@@ -370,7 +370,7 @@ namespace Melville.CSJ2K.Color
 		/// </version>
 		/// <author> 	Bruce A Kern
 		/// </author>
-		public class Enumeration
+		internal class Enumeration
 		{
 			//UPGRADE_NOTE: Final was removed from the declaration of 'value '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 			public System.String value_Renamed;
@@ -390,7 +390,7 @@ namespace Melville.CSJ2K.Color
 		/// </version>
 		/// <author> 	Bruce A Kern
 		/// </author>
-		public class MethodEnum:Enumeration
+		internal class MethodEnum:Enumeration
 		{
 			public MethodEnum(System.String value_Renamed):base(value_Renamed)
 			{
@@ -402,7 +402,7 @@ namespace Melville.CSJ2K.Color
 		/// </version>
 		/// <author> 	Bruce A Kern
 		/// </author>
-		public class CSEnum:Enumeration
+		internal class CSEnum:Enumeration
 		{
 			public CSEnum(System.String value_Renamed):base(value_Renamed)
 			{

@@ -47,7 +47,7 @@ namespace Melville.CSJ2K.Icc
     /// <author> 	Bruce A. Kern
     /// </author>
 
-    public abstract class ICCProfile
+    internal abstract class ICCProfile
     {
         private int ProfileSize
         {

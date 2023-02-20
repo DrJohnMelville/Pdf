@@ -54,7 +54,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class AnWTFilterSpec:ModuleSpec
+	internal class AnWTFilterSpec:ModuleSpec
 	{
 		
 		/// <summary>The reversible default filter </summary>

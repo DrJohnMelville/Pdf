@@ -49,7 +49,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// inverse wavlet trasnform).
 	/// 
 	/// </summary>
-	public interface InvWTData:MultiResImgData
+	internal interface InvWTData:MultiResImgData
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.

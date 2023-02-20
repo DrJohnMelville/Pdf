@@ -61,7 +61,7 @@ namespace Melville.CSJ2K.j2k.io
 	/// <seealso cref="BufferedRandomAccessFile">
 	/// 
 	/// </seealso>
-	public class BEBufferedRandomAccessFile:BufferedRandomAccessFile, RandomAccessIO, EndianType
+	internal class BEBufferedRandomAccessFile:BufferedRandomAccessFile, RandomAccessIO, EndianType
 	{
 		/// <summary> Constructor. Always needs a size for the buffer.
 		/// 

@@ -23,7 +23,7 @@ namespace Melville.CSJ2K.Color
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class Resampler:ColorSpaceMapper
+	internal class Resampler:ColorSpaceMapper
 	{
 		//UPGRADE_NOTE: Final was removed from the declaration of 'minCompSubsX '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
 		private int minCompSubsX;

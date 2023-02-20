@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// <seealso cref="StdDequantizer">
 	/// 
 	/// </seealso>
-	public class StdDequantizerParams:DequantizerParams
+	internal class StdDequantizerParams:DequantizerParams
 	{
 		/// <summary> Returns the type of the dequantizer for which the parameters are. The
 		/// types are defined in the Dequantizer class.

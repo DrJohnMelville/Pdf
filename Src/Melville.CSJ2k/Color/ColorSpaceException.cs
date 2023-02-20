@@ -21,7 +21,7 @@ namespace Melville.CSJ2K.Color
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class ColorSpaceException:System.Exception
+	internal class ColorSpaceException:System.Exception
 	{
 		
 		/// <summary> Contruct with message</summary>

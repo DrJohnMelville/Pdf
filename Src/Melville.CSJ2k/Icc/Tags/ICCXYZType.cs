@@ -23,7 +23,7 @@ namespace Melville.CSJ2K.Icc.Tags
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCXYZType:ICCTag
+	internal class ICCXYZType:ICCTag
 	{
 		
 		/// <summary>x component </summary>

@@ -89,7 +89,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 	/// <seealso cref="Quantizer">
 	/// 
 	/// </seealso>
-	public class StdQuantizer:Quantizer
+	internal class StdQuantizer:Quantizer
 	{
 		/// <summary> Returns the quantization type spec object associated to the quantizer.
 		/// 

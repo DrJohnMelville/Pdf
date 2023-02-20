@@ -54,7 +54,7 @@ namespace Melville.CSJ2K.j2k.quantization
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class GuardBitsSpec:ModuleSpec
+	internal class GuardBitsSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs an empty 'GuardBitsSpec' with specified number of tile and

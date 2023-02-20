@@ -61,7 +61,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// <seealso cref="reset">
 	/// 
 	/// </seealso>
-	public class ByteOutputBuffer
+	internal class ByteOutputBuffer
 	{
 		
 		/// <summary>The buffer where the data is stored </summary>

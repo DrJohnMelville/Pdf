@@ -29,7 +29,7 @@ namespace Melville.CSJ2K.Color
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class EnumeratedColorSpaceMapper:ColorSpaceMapper
+	internal class EnumeratedColorSpaceMapper:ColorSpaceMapper
 	{
 		/// <summary> Factory method for creating instances of this class.</summary>
 		/// <param name="src">-- source of image data

@@ -51,8 +51,8 @@ public class AllowedDependencyAnalyzerTest
     }
 
     private static DiagnosticResult MatchToDiagnosticResult(Match match, int i, string errorMsg) =>
-        new DiagnosticResult(DependencyDiagnostics.RuleViolated).WithLocation(1,
-                (match.Index - (4*i))+1)
+        new DiagnosticResult(DependencyDiagnostics.RuleViolated)
+            .WithLocation(1, (match.Index - (4*i))+1)
             .WithArguments(errorMsg);
 
     private static string ConstructFileText(string contentOfRelying, string contentOfReliedUpon, string commonContent)

@@ -78,7 +78,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// <seealso cref="jj2000.j2k.codestream.reader.TagTreeDecoder">
 	/// 
 	/// </seealso>
-	public class TagTreeEncoder
+	internal class TagTreeEncoder
 	{
 		/// <summary> Returns the number of leafs along the horizontal direction.
 		/// 

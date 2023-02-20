@@ -21,7 +21,7 @@ namespace Melville.CSJ2K.Icc
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class ICCProfileNotFoundException:ICCProfileException
+	internal class ICCProfileNotFoundException:ICCProfileException
 	{
 		
 		/// <summary> Contruct with message</summary>

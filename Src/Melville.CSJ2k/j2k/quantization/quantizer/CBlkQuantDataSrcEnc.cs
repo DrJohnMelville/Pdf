@@ -82,7 +82,7 @@ namespace Melville.CSJ2K.j2k.quantization.quantizer
 	/// <seealso cref="EntropyCoder">
 	/// 
 	/// </seealso>
-	public interface CBlkQuantDataSrcEnc:ForwWTDataProps
+	internal interface CBlkQuantDataSrcEnc:ForwWTDataProps
 	{
 		
 		/// <summary> Returns the next code-block in the current tile for the specified

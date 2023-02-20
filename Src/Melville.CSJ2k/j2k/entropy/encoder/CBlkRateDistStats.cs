@@ -86,7 +86,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// <seealso cref="CodedCBlk">
 	/// 
 	/// </seealso>
-	public class CBlkRateDistStats:CodedCBlk
+	internal class CBlkRateDistStats:CodedCBlk
 	{
 		
 		/// <summary>The subband to which the code-block belongs </summary>

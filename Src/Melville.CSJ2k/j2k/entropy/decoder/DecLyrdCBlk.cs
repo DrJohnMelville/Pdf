@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// <seealso cref="CodedCBlk">
 	/// 
 	/// </seealso>
-	public class DecLyrdCBlk:CodedCBlk
+	internal class DecLyrdCBlk:CodedCBlk
 	{
 		
 		/// <summary>The horizontal coordinate of the upper-left corner of the code-block </summary>

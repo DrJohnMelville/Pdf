@@ -55,7 +55,7 @@ namespace Melville.CSJ2K.j2k.util
     /// called. The 'printmsg()' method should never be called before a previous
     /// simple string has been terminated.</p>
     /// </summary>
-    public struct MsgLogger_Fields
+    internal struct MsgLogger_Fields
     {
         /// <summary>Severity of message. LOG messages are just for bookkeeping and do not
         /// need to be displayed in the majority of cases 
@@ -79,7 +79,7 @@ namespace Melville.CSJ2K.j2k.util
         public const int ERROR = 3;
     }
 
-    public interface IMsgLogger
+    internal interface IMsgLogger
     {
         /// <summary> Prints the message 'msg' to the output device, appending a newline,
         /// with severity 'sev'. Some implementations where the appended newline is

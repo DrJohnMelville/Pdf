@@ -50,7 +50,7 @@ namespace Melville.CSJ2K.j2k.roi
 	/// 
 	/// </summary>
 	
-	public class MaxShiftSpec:ModuleSpec
+	internal class MaxShiftSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs a 'ModuleSpec' object, initializing all the components and 

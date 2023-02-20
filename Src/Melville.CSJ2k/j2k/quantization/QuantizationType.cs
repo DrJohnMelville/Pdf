@@ -60,11 +60,11 @@ namespace Melville.CSJ2K.j2k.quantization
 	/// access the identifier directly.
 	/// 
 	/// </summary>
-	public struct QuantizationType_Fields{
+	internal struct QuantizationType_Fields{
 		/// <summary>The ID of the scalar deadzone dequantizer </summary>
 		public readonly static int Q_TYPE_SCALAR_DZ = 0;
 	}
-	public interface QuantizationType
+	internal interface QuantizationType
 	{
 		//UPGRADE_NOTE: Members of interface 'QuantizationType' were extracted into structure 'QuantizationType_Fields'. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1045'"
 		

@@ -56,7 +56,7 @@ namespace Melville.CSJ2K.j2k.fileformat.writer
 	/// <seealso cref="jj2000.j2k.fileformat.reader.FileFormatReader">
 	/// 
 	/// </seealso>
-	public class FileFormatWriter
+	internal class FileFormatWriter
 	{
 		
 		/// <summary>The file from which to read the codestream and write file</summary>

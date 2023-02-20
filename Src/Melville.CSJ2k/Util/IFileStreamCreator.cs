@@ -5,7 +5,7 @@ namespace Melville.CSJ2K.Util
 {
     using System.IO;
 
-    public interface IFileStreamCreator
+    internal interface IFileStreamCreator
     {
         Stream Create(string path, string mode);
     }

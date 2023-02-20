@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="SynWTFilterInt">
 	/// 
 	/// </seealso>
-	public class SynWTFilterIntLift5x3:SynWTFilterInt
+	internal class SynWTFilterIntLift5x3:SynWTFilterInt
 	{
 		/// <summary> Returns the negative support of the low-pass analysis filter. That is
 		/// the number of taps of the filter in the negative direction.

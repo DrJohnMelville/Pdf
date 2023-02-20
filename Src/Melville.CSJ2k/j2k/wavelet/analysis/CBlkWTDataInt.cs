@@ -55,7 +55,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="CBlkWTData">
 	/// 
 	/// </seealso>
-	public class CBlkWTDataInt:CBlkWTData
+	internal class CBlkWTDataInt:CBlkWTData
 	{
 		/// <summary> Returns the data type of this object, always DataBlk.TYPE_INT.
 		/// 

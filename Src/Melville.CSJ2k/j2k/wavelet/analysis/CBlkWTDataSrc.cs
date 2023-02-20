@@ -69,7 +69,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="jj2000.j2k.quantization.quantizer.Quantizer">
 	/// 
 	/// </seealso>
-	public interface CBlkWTDataSrc:ForwWTDataProps
+	internal interface CBlkWTDataSrc:ForwWTDataProps
 	{
 		
 		/// <summary> Returns the position of the fixed point in the specified component, or

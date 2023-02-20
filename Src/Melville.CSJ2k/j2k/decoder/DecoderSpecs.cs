@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.decoder
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class DecoderSpecs
+	internal class DecoderSpecs
 	{
 		/// <summary> Returns a copy of the current object.
 		/// 

@@ -72,7 +72,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 	/// alone.</p>
 	/// 
 	/// </summary>
-	public abstract class BitstreamReaderAgent : CodedCBlkDataSrcDec
+	internal abstract class BitstreamReaderAgent : CodedCBlkDataSrcDec
 	{
 		/// <summary> Returns the horizontal code-block partition origin. Allowable values
 		/// are 0 and 1, nothing else.

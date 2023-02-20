@@ -22,7 +22,7 @@ namespace Melville.CSJ2K.Color.Boxes
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public sealed class PaletteBox:JP2Box
+	internal sealed class PaletteBox:JP2Box
 	{
 		/// <summary>Return the number of palette entries. </summary>
 		public int NumEntries

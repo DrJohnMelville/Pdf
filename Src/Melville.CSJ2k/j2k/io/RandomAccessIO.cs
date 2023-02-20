@@ -56,7 +56,7 @@ namespace Melville.CSJ2K.j2k.io
 	/// <seealso cref="BinaryDataOutput">
 	/// 
 	/// </seealso>
-	public interface RandomAccessIO:BinaryDataInput, BinaryDataOutput
+	internal interface RandomAccessIO:BinaryDataInput, BinaryDataOutput
 	{
 		/// <summary> Returns the current position in the stream, which is the position from
 		/// where the next byte of data would be read. The first byte in the stream

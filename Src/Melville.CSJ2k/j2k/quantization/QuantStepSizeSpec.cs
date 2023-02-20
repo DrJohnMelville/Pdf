@@ -53,7 +53,7 @@ namespace Melville.CSJ2K.j2k.quantization
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class QuantStepSizeSpec:ModuleSpec
+	internal class QuantStepSizeSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs an empty 'QuantStepSizeSpec' with specified number of

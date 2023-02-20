@@ -59,7 +59,7 @@ namespace Melville.CSJ2K.j2k.io
 	/// <seealso cref="EndianType">
 	/// 
 	/// </seealso>
-	public interface BinaryDataInput
+	internal interface BinaryDataInput
 	{
 		/// <summary> Returns the endianess (i.e., byte ordering) of the implementing
 		/// class. Note that an implementing class may implement only one type of

@@ -78,7 +78,7 @@ namespace Melville.CSJ2K.j2k.image
 	/// <seealso cref="DataBlkFloat">
 	/// 
 	/// </seealso>
-	public abstract class DataBlk
+	internal abstract class DataBlk
 	{
 		/// <summary> Returns the data type of the <tt>DataBlk</tt> object, as defined in
 		/// this class.

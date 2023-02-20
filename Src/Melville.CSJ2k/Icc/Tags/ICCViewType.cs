@@ -4,7 +4,7 @@ using Melville.CSJ2K.Icc.Types;
 
 namespace Melville.CSJ2K.Icc.Tags
 {
-    public class ICCViewType : ICCTag
+    internal class ICCViewType : ICCTag
     {
         new public int type;
         public int reserved;

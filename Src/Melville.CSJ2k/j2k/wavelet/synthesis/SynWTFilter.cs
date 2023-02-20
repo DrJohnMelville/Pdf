@@ -89,7 +89,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="SynWTFilterFloat">
 	/// 
 	/// </seealso>
-	public abstract class SynWTFilter : WaveletFilter
+	internal abstract class SynWTFilter : WaveletFilter
 	{
 		public abstract int AnHighPosSupport{get;}
 		public abstract int AnLowNegSupport{get;}

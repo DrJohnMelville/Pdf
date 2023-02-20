@@ -55,7 +55,7 @@ namespace Melville.CSJ2K.j2k.image
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class CompTransfSpec:ModuleSpec
+	internal class CompTransfSpec:ModuleSpec
 	{
 		/// <summary> Check if component transformation is used in any of the tiles. This
 		/// method must not be used by the encoder.

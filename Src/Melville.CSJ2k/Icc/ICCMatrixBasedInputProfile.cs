@@ -21,7 +21,7 @@ namespace Melville.CSJ2K.Icc
 	/// <author> 	Bruce A. Kern
 	/// </author>
 	
-	public class ICCMatrixBasedInputProfile:ICCProfile
+	internal class ICCMatrixBasedInputProfile:ICCProfile
 	{
 		
 		/// <summary> Factory method to create ICCMatrixBasedInputProfile based on a

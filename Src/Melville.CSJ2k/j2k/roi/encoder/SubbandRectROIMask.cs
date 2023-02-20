@@ -58,7 +58,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// rectangular ROIS
 	/// 
 	/// </summary>
-	public class SubbandRectROIMask:SubbandROIMask
+	internal class SubbandRectROIMask:SubbandROIMask
 	{
 		
 		/// <summary>The upper left x coordinates of the applicable ROIs </summary>

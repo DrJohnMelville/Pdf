@@ -19,7 +19,7 @@ namespace Melville.CSJ2K.Icc
 	/// </version>
 	/// <author> 	Bruce A Kern
 	/// </author>
-	public class MatrixBasedRestrictedProfile:RestrictedICCProfile
+	internal class MatrixBasedRestrictedProfile:RestrictedICCProfile
 	{
 		/// <summary> Get the type of RestrictedICCProfile for this object</summary>
 		/// <returns> kThreeCompInput

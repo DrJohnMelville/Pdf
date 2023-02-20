@@ -65,7 +65,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="InverseWT">
 	/// 
 	/// </seealso>
-	public interface CBlkWTDataSrcDec:InvWTData
+	internal interface CBlkWTDataSrcDec:InvWTData
 	{
 		
 		/// <summary> Returns the number of bits, referred to as the "range bits",

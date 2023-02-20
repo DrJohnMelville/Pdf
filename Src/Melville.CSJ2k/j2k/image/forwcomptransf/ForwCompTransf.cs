@@ -61,7 +61,7 @@ namespace Melville.CSJ2K.j2k.image.forwcomptransf
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class ForwCompTransf:ImgDataAdapter, BlkImgDataSrc
+	internal class ForwCompTransf:ImgDataAdapter, BlkImgDataSrc
 	{
 		/// <summary> Returns the parameters that are used in this class and implementing
 		/// classes. It returns a 2D String array. Each of the 1D arrays is for a

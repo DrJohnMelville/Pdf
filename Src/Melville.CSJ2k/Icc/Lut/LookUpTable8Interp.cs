@@ -19,7 +19,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A.Kern
 	/// </author>
-	public class LookUpTable8Interp:LookUpTable8
+	internal class LookUpTable8Interp:LookUpTable8
 	{
 		
 		/// <summary> Construct the lut from the curve data</summary>

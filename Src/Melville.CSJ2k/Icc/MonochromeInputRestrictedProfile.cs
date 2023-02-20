@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc
 	/// </version>
 	/// <author> 	Bruce A Kern
 	/// </author>
-	public class MonochromeInputRestrictedProfile:RestrictedICCProfile
+	internal class MonochromeInputRestrictedProfile:RestrictedICCProfile
 	{
 		/// <summary> Get the type of RestrictedICCProfile for this object</summary>
 		/// <returns> kMonochromeInput

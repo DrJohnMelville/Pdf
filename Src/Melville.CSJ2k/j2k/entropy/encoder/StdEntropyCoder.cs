@@ -108,7 +108,7 @@ namespace Melville.CSJ2K.j2k.entropy.encoder
 	/// <seealso cref="CBlkRateDistStats">
 	/// 
 	/// </seealso>
-	public class StdEntropyCoder:EntropyCoder
+	internal class StdEntropyCoder:EntropyCoder
 	{
 #if DO_TIMING		
 		/// <summary>The cumulative wall time for the entropy coding engine, for each

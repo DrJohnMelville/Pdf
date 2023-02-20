@@ -64,7 +64,7 @@ namespace Melville.CSJ2K.j2k.wavelet
 	/// <P>At the moment tiles are not supported by this class.
 	/// 
 	/// </summary>
-	public class WTDecompSpec
+	internal class WTDecompSpec
 	{
 		/// <summary> Returns the main default decomposition type.
 		/// 

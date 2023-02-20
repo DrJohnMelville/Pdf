@@ -60,7 +60,7 @@ namespace Melville.CSJ2K.j2k.entropy
 	/// <seealso cref="ProgressionType">
 	/// 
 	/// </seealso>
-	public class Progression
+	internal class Progression
 	{
 		
 		/// <summary>Progression type as defined in ProgressionType interface </summary>

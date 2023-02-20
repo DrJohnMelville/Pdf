@@ -53,7 +53,7 @@ namespace Melville.CSJ2K.j2k
 	/// <seealso cref="ModuleSpec">
 	/// 
 	/// </seealso>
-	public class StringSpec:ModuleSpec
+	internal class StringSpec:ModuleSpec
 	{
 		
 		/// <summary> Constructs an empty 'StringSpec' with specified number of

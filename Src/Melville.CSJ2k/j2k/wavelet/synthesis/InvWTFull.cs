@@ -78,7 +78,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="DataBlk">
 	/// 
 	/// </seealso>
-	public class InvWTFull:InverseWT
+	internal class InvWTFull:InverseWT
 	{
 		
 		/// <summary>The total number of code-blocks to decode </summary>

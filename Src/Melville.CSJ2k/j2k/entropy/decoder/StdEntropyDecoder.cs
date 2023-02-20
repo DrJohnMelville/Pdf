@@ -77,7 +77,7 @@ namespace Melville.CSJ2K.j2k.entropy.decoder
 	/// should be negligeable.</p>
 	/// 
 	/// </summary>
-	public class StdEntropyDecoder:EntropyDecoder
+	internal class StdEntropyDecoder:EntropyDecoder
 	{
 		
 		/// <summary>Whether to collect timing information or not: false. Used as a compile 

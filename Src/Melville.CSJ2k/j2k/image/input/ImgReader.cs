@@ -67,7 +67,7 @@ namespace Melville.CSJ2K.j2k.image.input
 	/// be.</p>
 	/// 
 	/// </summary>
-	public abstract class ImgReader : BlkImgDataSrc
+	internal abstract class ImgReader : BlkImgDataSrc
 	{
 		/// <summary> Returns the width of the current tile in pixels, assuming there is
 		/// no-tiling. Since no-tiling is assumed this is the same as the width of

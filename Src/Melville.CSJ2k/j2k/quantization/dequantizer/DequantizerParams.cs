@@ -53,7 +53,7 @@ namespace Melville.CSJ2K.j2k.quantization.dequantizer
 	/// stream header, that concern dequantization.
 	/// 
 	/// </summary>
-	public abstract class DequantizerParams
+	internal abstract class DequantizerParams
 	{
 		/// <summary> Returns the type of the dequantizer for which the parameters are. The
 		/// types are defined in the Dequantizer class.

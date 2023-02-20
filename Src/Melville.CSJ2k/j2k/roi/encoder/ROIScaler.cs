@@ -75,7 +75,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// <seealso cref="CBlkWTData">
 	/// 
 	/// </seealso>
-	public class ROIScaler:ImgDataAdapter, CBlkQuantDataSrcEnc
+	internal class ROIScaler:ImgDataAdapter, CBlkQuantDataSrcEnc
 	{
 		/// <summary> Returns the horizontal offset of the code-block partition. Allowable
 		/// values are 0 and 1, nothing else.

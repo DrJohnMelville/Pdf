@@ -20,7 +20,7 @@ namespace Melville.CSJ2K.Icc.Lut
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public abstract class LookUpTable
+	internal abstract class LookUpTable
 	{
 		
 		/// <summary>End of line string.             </summary>

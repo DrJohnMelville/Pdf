@@ -52,7 +52,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// in these headers.
 	/// 
 	/// </summary>
-	public class HeaderInfo : FilterTypes
+	internal class HeaderInfo : FilterTypes
 	{
 		/// <summary>Returns a new instance of SIZ </summary>
 		virtual public SIZ NewSIZ
@@ -156,7 +156,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'SIZ' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the SIZ marker segment </summary>
-		public class SIZ
+		internal class SIZ
 		{
 			public SIZ(HeaderInfo enclosingInstance)
 			{
@@ -382,7 +382,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'SOT' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the SOt marker segments </summary>
-		public class SOT
+		internal class SOT
 		{
 			public SOT(HeaderInfo enclosingInstance)
 			{
@@ -422,7 +422,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'COD' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the COD marker segments </summary>
-		public class COD
+		internal class COD
 		{
 			public COD(HeaderInfo enclosingInstance)
 			{
@@ -575,7 +575,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'COC' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the COC marker segments </summary>
-		public class COC
+		internal class COC
 		{
 			public COC(HeaderInfo enclosingInstance)
 			{
@@ -672,7 +672,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'RGN' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the RGN marker segments </summary>
-		public class RGN
+		internal class RGN
 		{
 			public RGN(HeaderInfo enclosingInstance)
 			{
@@ -716,7 +716,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'QCD' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the QCD marker segments </summary>
-		public class QCD
+		internal class QCD
 		{
 			public QCD(HeaderInfo enclosingInstance)
 			{
@@ -833,7 +833,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'QCC' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the QCC marker segments </summary>
-		public class QCC
+		internal class QCC
 		{
 			public QCC(HeaderInfo enclosingInstance)
 			{
@@ -952,7 +952,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'POC' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the POC marker segments </summary>
-		public class POC
+		internal class POC
 		{
 			public POC(HeaderInfo enclosingInstance)
 			{
@@ -1017,7 +1017,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'CRG' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the CRG marker segment </summary>
-		public class CRG
+		internal class CRG
 		{
 			public CRG(HeaderInfo enclosingInstance)
 			{
@@ -1054,7 +1054,7 @@ namespace Melville.CSJ2K.j2k.codestream
 		
 		//UPGRADE_NOTE: Field 'EnclosingInstance' was added to class 'COM' to access its enclosing instance. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1019'"
 		/// <summary>Internal class holding information found in the COM marker segments </summary>
-		public class COM
+		internal class COM
 		{
 			public COM(HeaderInfo enclosingInstance)
 			{

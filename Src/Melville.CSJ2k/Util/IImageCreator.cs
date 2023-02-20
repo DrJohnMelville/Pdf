@@ -5,7 +5,7 @@ namespace Melville.CSJ2K.Util
 {
     using Melville.CSJ2K.j2k.image;
 
-    public interface IImageCreator : IDefaultable
+    internal interface IImageCreator : IDefaultable
     {
 
         BlkImgDataSrc ToPortableImageSource(object imageObject);

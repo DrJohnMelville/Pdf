@@ -82,7 +82,7 @@ namespace Melville.CSJ2K.j2k.wavelet.analysis
 	/// <seealso cref="CBlkWTDataFloat">
 	/// 
 	/// </seealso>
-	public abstract class CBlkWTData
+	internal abstract class CBlkWTData
 	{
 		/// <summary> Returns the data type of the <tt>CBlkWTData</tt> object, as defined in
 		/// the DataBlk class.

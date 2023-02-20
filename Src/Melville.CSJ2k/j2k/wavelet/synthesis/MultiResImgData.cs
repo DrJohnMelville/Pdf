@@ -84,7 +84,7 @@ namespace Melville.CSJ2K.j2k.wavelet.synthesis
 	/// <seealso cref="jj2000.j2k.quantization.dequantizer.CBlkQuantDataSrcDec">
 	/// 
 	/// </seealso>
-	public interface MultiResImgData
+	internal interface MultiResImgData
 	{
 		/// <summary>Returns the nominal tiles width </summary>
 		int NomTileWidth

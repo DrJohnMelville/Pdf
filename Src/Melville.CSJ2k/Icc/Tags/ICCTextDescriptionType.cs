@@ -18,7 +18,7 @@ namespace Melville.CSJ2K.Icc.Tags
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCTextDescriptionType:ICCTag
+	internal class ICCTextDescriptionType:ICCTag
 	{
 		
 		/// <summary>Tag fields </summary>

@@ -57,7 +57,7 @@ namespace Melville.CSJ2K.j2k
 	/// ThreadGroup. <i>This feature is not implemented yet</i>
 	/// 
 	/// </summary>
-	public class JJ2KExceptionHandler
+	internal class JJ2KExceptionHandler
 	{
 		
 		/// <summary> Handles the exception. If no special action is registered for

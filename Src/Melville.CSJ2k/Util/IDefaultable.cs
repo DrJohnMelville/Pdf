@@ -6,7 +6,7 @@ namespace Melville.CSJ2K.Util
     /// <summary>
     /// Interface for default classification of manager types.
     /// </summary>
-    public interface IDefaultable
+    internal interface IDefaultable
     {
         /// <summary>
         /// Gets whether or not this type is classified as a default manager.

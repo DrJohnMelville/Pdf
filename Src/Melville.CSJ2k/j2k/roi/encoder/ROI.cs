@@ -58,7 +58,7 @@ namespace Melville.CSJ2K.j2k.roi.encoder
 	/// </summary>
 	/// <seealso cref="ROIMaskGenerator">
 	/// </seealso>
-	public class ROI
+	internal class ROI
 	{
 		
 		/// <summary>ImgReaderPGM object with the arbrtrary ROI </summary>

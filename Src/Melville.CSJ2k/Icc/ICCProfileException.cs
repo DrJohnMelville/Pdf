@@ -20,7 +20,7 @@ namespace Melville.CSJ2K.Icc
 	/// </version>
 	/// <author> 	Bruce A. Kern
 	/// </author>
-	public class ICCProfileException:System.Exception
+	internal class ICCProfileException:System.Exception
 	{
 		
 		/// <summary>  Contruct with message</summary>

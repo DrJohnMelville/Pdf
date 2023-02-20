@@ -50,7 +50,7 @@ namespace Melville.CSJ2K.j2k.entropy
 	/// coder.
 	/// 
 	/// </summary>
-	public struct StdEntropyCoderOptions{
+	internal struct StdEntropyCoderOptions{
 		/// <summary>The flag bit to indicate that selective arithmetic coding bypass
 		/// should be used.  In this mode, the significance propagation and
 		/// magnitude refinement passes bypass the arithmetic encoder in the fourth

@@ -62,7 +62,7 @@ namespace Melville.CSJ2K.j2k.codestream.writer
 	/// obtained with the getLastBodyBuf() and getLastBodyLen() methods.</p>
 	/// 
 	/// </summary>
-	public class PktEncoder
+	internal class PktEncoder
 	{
 		/// <summary> Returns the buffer of the body of the last encoded packet. The length
 		/// of the body can be retrieved with the getLastBodyLen() method. The

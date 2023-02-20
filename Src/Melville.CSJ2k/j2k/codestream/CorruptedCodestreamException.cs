@@ -51,7 +51,7 @@ namespace Melville.CSJ2K.j2k.codestream
 	/// which is illegal.
 	/// 
 	/// </summary>
-	public class CorruptedCodestreamException:System.IO.IOException
+	internal class CorruptedCodestreamException:System.IO.IOException
 	{
 		
 		/// <summary> Constructs a new <tt>CorruptedCodestreamException</tt> exception with
