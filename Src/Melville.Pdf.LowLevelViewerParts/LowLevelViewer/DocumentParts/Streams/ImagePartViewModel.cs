@@ -37,6 +37,6 @@ public class ImagePartViewModel: StreamPartViewModel
     {
         await base.AddFormats(fmts);
         fmts.Add(new StreamDisplayFormat("Image", async p=>new ImageDisplayViewModel(
-            await (await p.WrapForRenderingAsync(null!, new DeviceColor(255,255,255, 255))).ToWpfBitmap())));
+            await (await p.WrapForRenderingAsync(new DeviceColor(255,255,255, 255))).ToWpfBitmap())));
     }
 }

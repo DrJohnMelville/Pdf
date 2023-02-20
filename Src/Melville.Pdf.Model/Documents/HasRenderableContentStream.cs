@@ -15,8 +15,8 @@ namespace Melville.Pdf.Model.Documents;
 public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPageAttributes
 {
     public virtual ValueTask<Stream> GetContentBytes() => new(new MemoryStream());
-    
-    public async ValueTask<IHasPageAttributes?> GetParentAsync() =>
+
+    async ValueTask<IHasPageAttributes?> IHasPageAttributes.GetParentAsync() =>
         LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&
         await parentTask.CA() is PdfDictionary dict
             ? new HasRenderableContentStream(dict)

@@ -93,7 +93,7 @@ public class S7_7_3PageTree
         var doc = FifteenPageDocumentTree();
         var p0 = await (await doc.PagesAsync()).GetPageAsync(0);
         Assert.Equal(KnownNames.Page, await p0.LowLevel.GetAsync<PdfName>(KnownNames.Type));
-        var p1 = await p0.GetParentAsync();
+        var p1 = await ((IHasPageAttributes) p0).GetParentAsync();
         Assert.Equal(KnownNames.Pages, 
             await ((HasRenderableContentStream)p1!).LowLevel.GetAsync<PdfName>(KnownNames.Type));
         Assert.True(p1 != null);

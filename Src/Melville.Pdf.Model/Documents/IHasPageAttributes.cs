@@ -9,8 +9,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 
 namespace Melville.Pdf.Model.Documents;
 
-#warning -- should eventually be able to make this internal
-public interface IHasPageAttributes
+internal interface IHasPageAttributes
 {
     PdfDictionary LowLevel { get; }
     ValueTask<Stream> GetContentBytes();

@@ -30,7 +30,11 @@ public static class PdfBitmapOperations
     public static int TotalPixels(this IPdfBitmap bitmap) => bitmap.Width * bitmap.Height;
 
 
-    public static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
+    public static ValueTask<IPdfBitmap> WrapForRenderingAsync(
+        this PdfStream stream, DeviceColor fillColor) =>
+        WrapForRenderingAsync(stream, NoPageContext.Instance, fillColor);
+
+    internal static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
         this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor)
     {
         var streamAttrs = new BitmapRenderParameters(

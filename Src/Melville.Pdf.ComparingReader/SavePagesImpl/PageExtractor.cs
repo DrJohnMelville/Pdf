@@ -38,9 +38,9 @@ public readonly partial struct PageExtractor
 
     private async ValueTask<PdfIndirectObject> FindRefToPage()
     {
-        var treeLeaf = (await page.GetParentAsync()) ??
+        var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.Parent)) ??
                         throw new InvalidDataException("Page does not have a parent");
-        var kids = (PdfArray)await treeLeaf.LowLevel[KnownNames.Kids];
+        var kids = (PdfArray)await treeLeaf[KnownNames.Kids];
         foreach (var value in kids.RawItems)
         {
             if (value is PdfIndirectObject pio && (await pio.DirectValueAsync()) == page.LowLevel)
