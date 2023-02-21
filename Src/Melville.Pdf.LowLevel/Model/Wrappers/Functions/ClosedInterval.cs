@@ -18,6 +18,11 @@ public record struct ClosedInterval(double MinValue, double MaxValue)
     /// </summary>
     public double Size => MaxValue - MinValue;
     
+    /// <summary>
+    /// Clip the value to the range of MinValue ... MaxValue.  This method behaves oddly is MinValue > maxvalue.
+    /// </summary>
+    /// <param name="val"></param>
+    /// <returns></returns>
     public double Clip(double val) =>
         val > MaxValue ? MaxValue :
         val < MinValue ? MinValue : val;

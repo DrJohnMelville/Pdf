@@ -1,5 +1,8 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Secifices how joints in a polyline are rendered in PDF.
+/// </summary>
 public enum LineJoinStyle
 {
     /// <summary>

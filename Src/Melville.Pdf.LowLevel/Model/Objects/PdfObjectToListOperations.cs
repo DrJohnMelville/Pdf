@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// This class defines helper methods for parsing items where an array of one element can be
+/// replaces with just the single element.
+/// </summary>
 public static class PdfObjectToListOperations
 {
     /// <summary>

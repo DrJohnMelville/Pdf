@@ -61,6 +61,12 @@ public readonly struct StitchingFunctionBuilder
     private double CurrentMaxInterval() => 
         functions.Select(i=>i.ExclusiveMaximum).DefaultIfEmpty(minimum).Last();
 
+    /// <summary>
+    /// Add a subfunction to the stitiched function.
+    /// </summary>
+    /// <param name="function">PdfObject that defines the function for this interval.</param>
+    /// <param name="exclusiveMaximum">The maximum value of this interval</param>
+    /// <exception cref="ArgumentException">If the exclusiveMaximum is less than the currently declared maximum.</exception>
     public void AddFunction(PdfDictionary function, double exclusiveMaximum) =>
         AddFunction(function, exclusiveMaximum, (minimum, exclusiveMaximum));
 

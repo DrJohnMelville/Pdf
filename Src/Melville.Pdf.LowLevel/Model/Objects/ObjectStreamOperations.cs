@@ -68,7 +68,7 @@ internal static class ObjectStreamOperations
         ret[^1].NextOffset = int.MaxValue;
     }
 }
-public struct ObjectLocation
+internal struct ObjectLocation
 {
     public int ObjectNumber;
     public int Offset;

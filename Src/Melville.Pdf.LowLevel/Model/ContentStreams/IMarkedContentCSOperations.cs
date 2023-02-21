@@ -3,6 +3,9 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Content Stream Operators for marked content
+/// </summary>
 public interface IMarkedContentCSOperations
 {
     /// <summary>

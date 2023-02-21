@@ -197,9 +197,18 @@ public readonly struct SampledFunctionBuilder
         bitStreamWriter.Write(encodedValue);
     }
     
+    /// <summary>
+    /// Build the resulting function.
+    /// </summary>
+    /// <returns>The resulting function, as a PDF stream</returns>
     public ValueTask<PdfStream> CreateSampledFunction() =>
         CreateSampledFunction(new DictionaryBuilder());
 
+    /// <summary>
+    /// Build the resulting function.
+    /// </summary>
+    /// <param name="members">The DictionaryBuilder which should be used to build the function</param>
+    /// <returns>The resulting function, as a PDF stream</returns>
     public async ValueTask<PdfStream> CreateSampledFunction(DictionaryBuilder members) =>
         DictionaryEntries(members).AsStream(await SamplesStream().CA());
 }

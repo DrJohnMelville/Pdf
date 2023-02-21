@@ -4,8 +4,15 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
+/// <summary>
+/// This is an abstract base class for PDF object who'se value is an array of bytes, this
+/// includes strings, names, and various tokens.
+/// </summary>
 public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObject>
 {
+    /// <summary>
+    /// The bytes that represent the value of the obbject
+    /// </summary>
     public byte[] Bytes { get; }
 
     private protected PdfByteArrayObject(byte[] bytes)

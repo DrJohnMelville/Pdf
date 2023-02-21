@@ -7,6 +7,9 @@ using Melville.Parsing.StreamFilters;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// This helped method interprets a text stream by reading it's byte order mark.
+/// </summary>
 public static class StreamAsTextStream
 {
     /// <summary>

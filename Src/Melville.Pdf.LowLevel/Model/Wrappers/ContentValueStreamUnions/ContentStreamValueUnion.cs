@@ -2,6 +2,11 @@
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
+/// <summary>
+/// This union type represents a single value on the content stream paerser stack.
+///
+/// We do not use polymorphism because we do not want to allocate a new value for each item on the stack.
+/// </summary>
 public readonly struct ContentStreamValueUnion
 {
     /// <summary>

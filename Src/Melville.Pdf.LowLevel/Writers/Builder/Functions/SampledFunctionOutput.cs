@@ -3,6 +3,11 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
+/// <summary>
+/// Delegate type representing evaluation of a PDF function with a single output
+/// </summary>
+/// <param name="input">Inputs to the function</param>
+/// <returns>The result of evaluating a PDF function on the given inputs</returns>
 public delegate double SimpleFunctionResult(ReadOnlySpan<double> input);
 
 internal readonly struct SampledFunctionOutput

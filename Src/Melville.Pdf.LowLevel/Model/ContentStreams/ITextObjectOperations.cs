@@ -4,6 +4,9 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Content stream operators that change the text state.
+/// </summary>
 public interface ITextObjectOperations
 {
     /// <summary>
@@ -40,6 +43,8 @@ public interface ITextObjectOperations
     /// <summary>
     /// Content stream operator "
     /// </summary>
+    /// <param name="wordSpace">the space before an 0x20 character</param>
+    /// <param name="charSpace">the space between characters</param>
     /// <param name="decodedString"></param>
     ValueTask MoveToNextLineAndShowString(
         double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString);
@@ -51,6 +56,9 @@ public interface ITextObjectOperations
 
 }
 
+/// <summary>
+/// Content stream operations to begin or end text blocks.
+/// </summary>
 public interface ITextBlockOperations
 {
     /// <summary>

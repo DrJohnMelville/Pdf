@@ -13,12 +13,11 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-public readonly struct XrefStreamParserFactory
+internal readonly struct XrefStreamParserFactory
 {
     private static readonly PdfArray DefaultIndex = new PdfArray(0, int.MaxValue);
     private readonly PdfStream xrefStream;
     private readonly IIndirectObjectRegistry registry;
-
     public XrefStreamParserFactory(PdfStream xrefStream, IIndirectObjectRegistry registry)
     {
         this.xrefStream = xrefStream;
@@ -38,7 +37,7 @@ public readonly struct XrefStreamParserFactory
     }
 }
 
-public readonly struct XrefStreamParser
+internal readonly struct XrefStreamParser
 {
     private readonly int col0Size;
     private readonly int col1Size;

@@ -8,8 +8,17 @@ namespace Melville.Pdf.LowLevel.Model.Conventions;
 /// </summary>
 public enum CharacterClass
 {
+    /// <summary>
+    /// Neither a white space nor a delimiter
+    /// </summary>
     Regular = 0,
+    /// <summary>
+    /// Whitespace character -- one of \x00, \x09, \x0A, \x0C, \x0D, \x20
+    /// </summary>
     White = 1,
+    /// <summary>
+    /// One of (, ), &lt;, &gt;, [, ], {. }, /, or %
+    /// </summary>
     Delimiter = 2
 }
 

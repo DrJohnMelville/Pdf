@@ -4,6 +4,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// Root of the PdfObject hierarchy.  This is the root of all the types that can appear in a pdf file.
+/// </summary>
 public abstract class PdfObject
 {
     /// <summary>

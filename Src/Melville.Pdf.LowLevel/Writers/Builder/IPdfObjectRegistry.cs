@@ -6,14 +6,26 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
+/// <summary>
+/// Create LowLevelDocumentBuilders for new or modified documents.
+/// </summary>
 public static class LowLevelDocumentBuilderFactory
 {
+    /// <summary>
+    /// Create an ILowLevelDocumentCreator that can be used to build a new PDF document.
+    /// </summary>
     public static ILowLevelDocumentCreator New() => new LowLevelDocumentBuilder();
 
+    /// <summary>
+    /// Create an ILowLevelDocumentCreator that can be used to append a modification trailer to an existing document.
+    /// </summary>
     public static ILowLevelDocumentModifier Modify(this PdfLoadedLowLevelDocument doc) =>
         new LowLevelDocumentModifier(doc);
 }
 
+/// <summary>
+/// Uszed to create new Pdf Documents
+/// </summary>
 public interface ILowLevelDocumentCreator : IPdfObjectRegistry
 {
     /// <summary>
@@ -34,6 +46,9 @@ public interface ILowLevelDocumentCreator : IPdfObjectRegistry
 
 }
 
+/// <summary>
+/// Methods to create or modify a PdfDocument
+/// </summary>
 public interface IPdfObjectRegistry
 {
     /// <summary>

@@ -7,6 +7,9 @@ using Melville.Pdf.LowLevel.Model.Document;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
+/// <summary>
+/// Writes a low level document to a stream using XRefStreams to locate objects.
+/// </summary>
 public class XrefStreamLowLevelDocumentWriter: LowLevelDocumentWriter
 {
     /// <inheritdoc />

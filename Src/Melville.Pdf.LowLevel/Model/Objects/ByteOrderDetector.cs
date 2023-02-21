@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public static class ByteOrderDetector {
+internal static class ByteOrderDetector {
     public static (Encoding encoding, int BomLength) DetectByteOrder(in ReadOnlySpan<byte> bytes)
     {
         if (UnicodeEncoder.BigEndian.HasUtf16BOM(bytes)) return (UnicodeEncoder.BigEndian.Encoder, 2);

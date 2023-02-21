@@ -5,6 +5,9 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers;
 
+/// <summary>
+/// Adds various filters to a DictionaryBuilder that will eventually build a Stream.
+/// </summary>
 public static class StreamBuilderOperations
 {
     /// <summary>

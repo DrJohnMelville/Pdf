@@ -27,6 +27,9 @@ public interface IGlyphNameMap
     bool TryMap(byte[] input, out char character);
 }
 
+/// <summary>
+/// This class maps adobe glyph list names to their unicode equivilents.
+/// </summary>
 public partial class GlyphNameToUnicodeMap : IGlyphNameMap
 {
     private readonly Dictionary<int, char> map;

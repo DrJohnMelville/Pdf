@@ -5,6 +5,9 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Content stream operators that change the graphics state.
+/// </summary>
 public interface IStateChangingOperations
 {
     #region Non Text EXclusive operators

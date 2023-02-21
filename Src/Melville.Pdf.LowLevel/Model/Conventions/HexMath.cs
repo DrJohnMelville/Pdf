@@ -3,31 +3,6 @@
 namespace Melville.Pdf.LowLevel.Model.Conventions;
 
 /// <summary>
-/// This enum represents a nibble or 4 bit value in the HexMath routines.
-/// </summary>
-public enum Nibble 
-{
-    N0 = 0,
-    N1,
-    N2,
-    N3,
-    N4,
-    N5,
-    N6,
-    N7,
-    N8,
-    N9,
-    N10,
-    N11,
-    N12,
-    N13,
-    N14,
-    N15,
-    OutOfSpace,
-    Terminator = 255
-}
-
-/// <summary>
 /// This is a small utility class arround hexadecimal conversions
 /// </summary>
 public static class HexMath

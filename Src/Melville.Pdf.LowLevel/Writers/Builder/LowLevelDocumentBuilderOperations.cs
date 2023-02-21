@@ -3,6 +3,9 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
+/// <summary>
+/// Add a root element to a Pdf Document Registry.
+/// </summary>
 public static class LowLevelDocumentBuilderOperations
 {
     /// <summary>

@@ -34,6 +34,8 @@ public partial class ContentStreamWriter : IContentStreamOperations
     }
 
     #region Graphic State Operations
+
+    /// <inheritdoc />
     [MacroItem("w","LineWidth")]
     [MacroItem("M","MiterLimit")]
     [MacroItem("i","FlatnessTolerance")]
@@ -119,8 +121,6 @@ public partial class ContentStreamWriter : IContentStreamOperations
             /// <inheritdoc />
             public void ~1~() => destPipe.WriteOperator(ContentStreamOperatorNames.~0~);
             """)]
-
-    /// <inheritdoc />
     public void MoveTo(double x, double y) => 
         destPipe.WriteOperator(ContentStreamOperatorNames.m, x, y);
 

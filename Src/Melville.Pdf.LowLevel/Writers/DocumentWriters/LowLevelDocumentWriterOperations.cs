@@ -5,6 +5,9 @@ using Melville.Pdf.LowLevel.Model.Document;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
+/// <summary>
+/// Write a LowLevelPdfDocument to a stream using one of two object locating methods.
+/// </summary>
 public static class LowLevelDocumentWriterOperations
 {
     /// <summary>

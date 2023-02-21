@@ -48,7 +48,7 @@ internal interface IEncryptionTransform
 }
 
 [StaticSingleton]
-public partial class EncryptEcb : IEncryptionTransform
+internal partial class EncryptEcb : IEncryptionTransform
 {
     public int Transform(Aes aes, Span<byte> source, Span<byte> iv, Span<byte> destination) =>
         aes.EncryptEcb(source, destination, PaddingMode.None);

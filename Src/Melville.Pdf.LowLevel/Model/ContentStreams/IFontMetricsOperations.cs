@@ -1,5 +1,8 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Operators used by type 3 fonts to declare their font metrics.
+/// </summary>
 public interface IFontMetricsOperations
 {
     /// <summary>

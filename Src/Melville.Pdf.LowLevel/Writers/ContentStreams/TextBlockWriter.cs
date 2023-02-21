@@ -9,6 +9,9 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
+/// <summary>
+/// Convenience methods for generating text writing operations.
+/// </summary>
 public readonly partial struct TextBlockWriter : IDisposable, ITextObjectOperations
 {
     private readonly ContentStreamWriter parent;

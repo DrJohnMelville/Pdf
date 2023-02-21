@@ -3,6 +3,11 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// These are PDF objests who's identity is their value, including Null and some
+/// sentinel pseudo values that are used in the parser.  True and false are also
+/// token values, but they descend through the child class PdfBoolean
+/// </summary>
 public class PdfTokenValues: PdfObject
 {
     internal byte[] TokenValue { get; }

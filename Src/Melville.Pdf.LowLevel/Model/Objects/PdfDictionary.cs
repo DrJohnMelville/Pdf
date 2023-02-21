@@ -25,6 +25,10 @@ public abstract class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, Va
     /// </summary>
     public IReadOnlyDictionary<PdfName, PdfObject> RawItems { get; }
 
+    /// <summary>
+    /// Create a PdfDictioary
+    /// </summary>
+    /// <param name="rawItems">The items in the dictionary</param>
     protected PdfDictionary(Memory<KeyValuePair<PdfName, PdfObject>> rawItems)
     {
         RawItems = rawItems.Length > 19 ? CreateDictionary(rawItems):

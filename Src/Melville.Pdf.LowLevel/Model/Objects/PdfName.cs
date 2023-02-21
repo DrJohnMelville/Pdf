@@ -7,6 +7,9 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// Represents a /PdfName construct in PDF
+/// </summary>
 public class PdfName: PdfByteArrayObject, IEquatable<PdfName>
 {
 

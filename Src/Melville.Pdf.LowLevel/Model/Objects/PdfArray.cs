@@ -22,8 +22,15 @@ public sealed class PdfArray :
     public static PdfArray Empty = new(Array.Empty<PdfObject>());
 
     private readonly PdfObject[] rawItems;
+    /// <summary>
+    /// Items in the array as raw PDF objects, without references being resolved.
+    /// </summary>
     public IReadOnlyList<PdfObject> RawItems => rawItems;
 
+    /// <summary>
+    /// Create a PDFArray
+    /// </summary>
+    /// <param name="rawItems">the items in the array</param>
     public PdfArray(params PdfObject[] rawItems)
     {
         this.rawItems = rawItems;
@@ -93,5 +100,6 @@ public sealed class PdfArray :
         public PdfObject Current { get; private set; } = PdfTokenValues.Null;
     }
 
+    /// <inheritdoc />
     public override string ToString() => "["+string.Join(" ", RawItems) +"]";
 }

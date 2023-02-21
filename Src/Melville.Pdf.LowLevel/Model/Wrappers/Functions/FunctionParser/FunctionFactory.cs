@@ -8,6 +8,9 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
+/// <summary>
+/// Parses a PdfObject into the corresponding PdfFunction object.
+/// </summary>
 public static class FunctionFactory
 {
     /// <summary>

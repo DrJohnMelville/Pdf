@@ -46,7 +46,7 @@ public static class PdfFunctionHelpers
     /// Call a PdfFunction with a single argument and allocate a new array on the heap to receive the result.
     /// </summary>
     /// <param name="func">The function to call.</param>
-    /// <param name="input">Input to the function.</param>
+    /// <param name="i">Input to the function.</param>
     /// <returns>A heap allocated array containing the result of the function.</returns>
     public static double[] Compute(this IPdfFunction func, double i) => 
         func.Compute(InputSpan(i, stackalloc double[func.Domain.Length]));
@@ -68,7 +68,7 @@ public static class PdfFunctionHelpers
     /// <summary>
     /// Call a PDF function with a single double input and return a single double result.
     /// </summary>
-    /// <param name="function">The functions </param>
+    /// <param name="func">The functions </param>
     /// <param name="input">A double input to the function.</param>    
     /// <param name="desired">An ordinal value for the desired output of the function to return.  Must be less than the length of Ranges.</param>
     /// <returns>The desired value from the result of evaluating the function on the input.</returns>

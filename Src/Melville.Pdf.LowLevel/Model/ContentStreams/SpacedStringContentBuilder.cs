@@ -5,6 +5,9 @@ using Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Convenience struct that helps build a spaced string span
+/// </summary>
 public readonly struct SpacedStringContentBuilder
 {
     private readonly List<ContentStreamValueUnion> items = new();
@@ -24,6 +27,9 @@ public readonly struct SpacedStringContentBuilder
     /// <returns>A span containing the spaced string items.</returns>
     public Span<ContentStreamValueUnion> GetAllValues() => CollectionsMarshal.AsSpan(items);
 
+    /// <summary>
+    /// Create a SpacedStringContentBuilder
+    /// </summary>
     public SpacedStringContentBuilder() 
     {
     }

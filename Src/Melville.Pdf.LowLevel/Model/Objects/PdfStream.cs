@@ -18,9 +18,13 @@ internal interface IStreamDataSource
     StreamFormat SourceFormat { get; }
 }
     
+/// <summary>
+/// A PdfStream is a PDF object which contains a dictionary of attributes and
+/// a binary stream of data.
+/// </summary>
 public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
 {
-    private IStreamDataSource source;
+    private readonly IStreamDataSource source;
         
     internal PdfStream(IStreamDataSource source, Memory<KeyValuePair<PdfName, PdfObject>> rawItems) :
         base(rawItems)

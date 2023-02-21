@@ -1,5 +1,8 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Specifies how the ends of a line segment are drawn in PDF
+/// </summary>
 public enum LineCap
 {
     /// <summary>

@@ -63,12 +63,18 @@ public class ConstantPasswordSource : IPasswordSource
     private readonly string?[] passwords;
     private int next;
 
+    /// <summary>
+    /// Create a Constant Password Source
+    /// </summary>
+    /// <param name="type">The type of passwords to return</param>
+    /// <param name="passwords">The sequence of passwords to return</param>
     public ConstantPasswordSource(PasswordType type, params string?[] passwords)
     {
         this.type = type;
         this.passwords = passwords;
     }
 
+    /// <inheritdoc />
     public ValueTask<(string?, PasswordType)> GetPasswordAsync() => new((TryGetNextPassword(), type));
     private string? TryGetNextPassword() => HasNextPassword() ? NextPassword() : null;
     private string? NextPassword() => passwords[next++];

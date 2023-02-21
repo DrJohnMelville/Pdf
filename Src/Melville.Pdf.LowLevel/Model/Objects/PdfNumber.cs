@@ -3,6 +3,9 @@ using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// Represents a number in pdf
+/// </summary>
 public abstract class PdfNumber: PdfObject, IComparable<PdfNumber>
 {
     /// <summary>
@@ -31,6 +34,9 @@ public abstract class PdfNumber: PdfObject, IComparable<PdfNumber>
 
 }
 
+/// <summary>
+/// A PdfNumber with value stored as a long
+/// </summary>
 public sealed class PdfInteger : PdfNumber, IComparable<PdfInteger>
 {
     /// <inheritdoc />
@@ -61,6 +67,10 @@ public sealed class PdfInteger : PdfNumber, IComparable<PdfInteger>
     public static implicit operator PdfInteger(int value) => new PdfInteger(value);
 
 }
+
+/// <summary>
+/// A PdfNumber with value stored as a double.
+/// </summary>
 public sealed class PdfDouble : PdfNumber, IComparable<PdfDouble>
 {
     /// <inheritdoc />

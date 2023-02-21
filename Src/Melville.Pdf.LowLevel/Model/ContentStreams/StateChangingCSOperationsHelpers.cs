@@ -3,6 +3,9 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Xonvenience methods for generating files with certian drawing properites.
+/// </summary>
 public static class StateChangingCSOperationsHelpers
 {
 

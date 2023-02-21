@@ -17,6 +17,9 @@ public class PdfIndirectObject: PdfObject
     /// The generation number, as defined in the PDF spec.
     /// </summary>
     public int GenerationNumber { get; }
+    /// <summary>
+    /// The value of the indirect object, if known.
+    /// </summary>
     protected PdfObject value;
 
     internal PdfIndirectObject(int objectNumber, int generationNumber, PdfObject value)

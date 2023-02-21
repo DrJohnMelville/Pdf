@@ -9,6 +9,9 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 [Flags]
 public enum PdfPermission
 {
+    /// <summary>
+    /// Allow users unrestricted access to the document.
+    /// </summary>
     None = 0,
     /// <summary>
     /// Change the encrytion settings

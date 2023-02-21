@@ -16,7 +16,13 @@ namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 public class LowLevelDocumentWriter
 {
     private readonly CountingPipeWriter target;
+    /// <summary>
+    /// The pipewriter to which the document is being written.
+    /// </summary>
     protected PipeWriter Target => target;
+    /// <summary>
+    /// The document being written.
+    /// </summary>
     protected readonly PdfLowLevelDocument document;
     private readonly string? userPassword;
 

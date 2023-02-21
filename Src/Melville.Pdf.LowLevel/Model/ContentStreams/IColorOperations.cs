@@ -5,8 +5,10 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
-//PDF spec 2.0 clause 8.6.8 dictates color operators which are turned off at certian times
-// all the operators in this interface get turned off at the right times.
+/// <summary>
+/// PDF spec 2.0 clause 8.6.8 dictates color operators which are turned off at certian times
+/// all the operators in this interface get turned off at the right times.
+/// </summary>
 public interface IColorOperations
 {
     /// <summary>

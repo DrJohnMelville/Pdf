@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         
@@ -8,6 +8,7 @@
         <PackageDescription>Reads and writes PDF files as a graph of PDF objects.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <TieredPGO>true</TieredPGO>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

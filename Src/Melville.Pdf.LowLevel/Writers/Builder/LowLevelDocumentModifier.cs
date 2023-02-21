@@ -128,7 +128,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
     }
 }
 
-public readonly partial struct XrefLine
+internal readonly partial struct XrefLine
 {
     [FromConstructor] public int ObjectNumber { get; }
     [FromConstructor] public long Offset { get; }

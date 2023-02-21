@@ -1,5 +1,8 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Specifies the two operators that handle compatibility regions.
+/// </summary>
 public interface ICompatibilityOperations
 {
     /// <summary>

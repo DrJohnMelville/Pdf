@@ -14,6 +14,9 @@ public readonly struct PostscriptFunctionBuilder
     private readonly List<ClosedInterval> domains = new ();
     private readonly List<ClosedInterval> ranges = new ();
 
+    /// <summary>
+    /// Create a PostscriptFunctionBuilder
+    /// </summary>
     public PostscriptFunctionBuilder()
     {
     }

@@ -80,5 +80,7 @@ public readonly struct PdfTime
         if (DateTime.Month != 1) return DateTimeMember.Month;
         return DateTimeMember.Year;
     }
+
+    /// <inheritdoc />
     public override string ToString() => $"{DateTime} {HourOffset}:{MinuteOffset}";
 }

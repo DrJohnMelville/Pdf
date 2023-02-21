@@ -24,7 +24,7 @@ internal readonly struct SampledFunctionInput
         Encode.MapTo(Domain, sample);
 }
 
-public static class DoubleCompare
+internal static class DoubleCompare
 {
     public static bool WithinOne(double a, double b) => Math.Abs(a - b) < 0.99;
 }

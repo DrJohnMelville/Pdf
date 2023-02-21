@@ -5,6 +5,10 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// This class specifies extension medhods for the IColorOperations interface.  This class
+/// is largely convenience methods for the PDF generators.
+/// </summary>
 public static class ColorOperationsHelpers
 {
     // the next two methods are no-ops than hint the intellisense to the specific

@@ -1,5 +1,8 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.Wrappers.ContentValueStreamUnions;
 
+/// <summary>
+/// This enum defines which field in the ContentStreamValueUnion has real data in it.
+/// </summary>
 public enum ContentStreamValueType
 {
     /// <summary>

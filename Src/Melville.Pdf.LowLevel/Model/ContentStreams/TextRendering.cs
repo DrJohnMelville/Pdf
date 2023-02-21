@@ -1,5 +1,8 @@
 ﻿namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Specifies how a PDF path should be rendered.
+/// </summary>
 public enum TextRendering
 {
     /// <summary>

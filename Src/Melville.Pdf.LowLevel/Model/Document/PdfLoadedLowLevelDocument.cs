@@ -24,5 +24,6 @@ public sealed class PdfLoadedLowLevelDocument: PdfLowLevelDocument, IDisposable{
         XRefPosition = xRefPosition;
     }
 
+    /// <inheritdoc />
     public void Dispose() => fileOwner.Dispose();
 }

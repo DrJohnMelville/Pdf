@@ -2,7 +2,7 @@
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
-public static class PdfDocEncodingConversion
+internal static class PdfDocEncodingConversion
 {
     public static string PdfDocEncodedString(this byte[] source) =>
         ((ReadOnlySpan<byte>) source).PdfDocEncodedString();

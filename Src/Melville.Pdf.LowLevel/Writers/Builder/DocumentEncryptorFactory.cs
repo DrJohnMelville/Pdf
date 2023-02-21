@@ -5,6 +5,9 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
+/// <summary>
+/// Create the ILowLevelDocumentEncryptor for various encryption algorithms.
+/// </summary>
 public static class DocumentEncryptorFactory
 {
     /// <summary>

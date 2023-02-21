@@ -2,6 +2,9 @@
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
+/// <summary>
+/// Extension method that adds encryption to an IPdfObjectRegistry.
+/// </summary>
 public static class BuildEncryptedDocument
 {
     /// <summary>

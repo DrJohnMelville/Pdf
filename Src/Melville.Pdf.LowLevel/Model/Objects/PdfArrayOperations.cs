@@ -4,6 +4,9 @@ using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// Operations to get values out of a PdfArray
+/// </summary>
 public static class PdfArrayOperations
 {
     /// <summary>

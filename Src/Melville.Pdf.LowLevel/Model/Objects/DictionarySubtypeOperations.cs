@@ -3,6 +3,9 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// Operations to get the subtype of a dictonary supportin the shortcuts specified in Pdf SPec 7.3.7
+/// </summary>
 public static class DictionarySubtypeOperations
 {
     /// <summary>

@@ -4,6 +4,9 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// Operations to get values out of a PDF dictionary
+/// </summary>
 public static class PdfDictionaryOperations
 {
     /// <summary>
@@ -45,7 +48,6 @@ public static class PdfDictionaryOperations
     /// <summary>
     /// Get the long value from a key, or a default if the item does not exist or is the wrong type
     /// </summary>
-    /// <typeparam name="T">The desired subtype of PdfObject</typeparam>
     /// <param name="dict">The dictionary</param>
     /// <param name="name">The key for the desired item</param>
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
@@ -58,7 +60,6 @@ public static class PdfDictionaryOperations
     /// <summary>
     /// Get the boolean value from a key, or a default if the item does not exist or is the wrong type
     /// </summary>
-    /// <typeparam name="T">The desired subtype of PdfObject</typeparam>
     /// <param name="dict">The dictionary</param>
     /// <param name="name">The key for the desired item</param>
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
@@ -71,7 +72,6 @@ public static class PdfDictionaryOperations
     /// <summary>
     /// Get the double value from a key, or a default if the item does not exist or is the wrong type
     /// </summary>
-    /// <typeparam name="T">The desired subtype of PdfObject</typeparam>
     /// <param name="dict">The dictionary</param>
     /// <param name="name">The key for the desired item</param>
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>

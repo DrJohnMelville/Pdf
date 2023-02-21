@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using ArchitectureAnalyzer;
@@ -28,14 +29,6 @@ public class InternalRuleAnalyzerTest
 
     [Theory]
     [InlineData("public class A {}", "A")]
-    [InlineData("""
-        /// <summary>
-        /// 
-        /// </summary>
-        public class A {
-            public A(){}
-        }
-        """, "A")]
     public Task OneError(string code, string error) => RunTest(code, error);
 
     [Theory]
@@ -69,20 +62,22 @@ public class InternalRuleAnalyzerTest
         }
         """;
 
-    [Fact]
-    private Task IndexerTest()
+    [Theory]
+    [InlineData("public int this[int x]=> 1;", 6, 25, "this[]")]
+    [InlineData("public B() {}", 6, 12, ".ctor")]
+    private Task SpecialMemberTest(string member, int row, int col, string name)
     {
         var test = new CSharpAnalyzerTest<DocumentVisibleMembersAnalyzer, XUnitVerifier>
         {
             TestState =
             {
-                Sources = { """
+                Sources = { $$"""
                             /// <summary>
                             /// 
                             /// </summary>
                             public class B 
                             {
-                                public int this[int x]=> 1;
+                                {{member}}
                             }
                             """
                 }
@@ -90,8 +85,8 @@ public class InternalRuleAnalyzerTest
         };
             test.ExpectedDiagnostics.Add(
                 new DiagnosticResult(DocumentVisibleMembersDiagnostics.RuleViolated)
-                    .WithArguments($"this[] is visible outside the assembly and does not have an Xml comment")
-                    .WithLocation(6, 25));
+                    .WithArguments($"{name} is visible outside the assembly and does not have an Xml comment")
+                    .WithLocation(row, col));
 
         return test.RunAsync();
 

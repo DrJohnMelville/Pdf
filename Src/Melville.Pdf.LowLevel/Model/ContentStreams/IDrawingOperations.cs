@@ -3,6 +3,10 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
+/// <summary>
+/// Content stream operators that define geometry or set clipping regions.
+/// notably, this inteface does not paint paths.
+/// </summary>
 public interface IPathDrawingOperations
 {
     /// <summary>
@@ -48,8 +52,7 @@ public interface IPathDrawingOperations
     void Rectangle(double x, double y, double width, double height);
     
     /// <summary>
-    /// Content stream operator S
-    /// </summary>
+    /// Content stream operator S </summary>
     void StrokePath();
     
     /// <summary>
@@ -104,6 +107,10 @@ public interface IPathDrawingOperations
     
 }
 
+/// <summary>
+/// An enhance IPathDrawingOperations that adds the ability to draw form XObjects
+/// shaders, images, and inline images.
+/// </summary>
 public interface IDrawingOperations: IPathDrawingOperations
 {
     /// <summary>

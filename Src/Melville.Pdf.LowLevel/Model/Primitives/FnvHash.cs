@@ -10,6 +10,11 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 /// </summary>
 public static class FnvHash
 {
+    /// <summary>
+    /// Compute the FnvHash of a span, forcing each character to lower case.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public static uint HashLowerCase(in ReadOnlySpan<byte> input)
     {
         var computer = new FnvComputer();
@@ -82,6 +87,9 @@ public ref struct FnvComputer
     private const uint prime = 0x01000193;
     private uint hashValue = offsetBasis;
 
+    /// <summary>
+    /// Create a FnvComputer
+    /// </summary>
     public FnvComputer() {}
 
     /// <summary>
