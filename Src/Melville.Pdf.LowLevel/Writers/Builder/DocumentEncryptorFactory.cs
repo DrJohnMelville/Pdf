@@ -28,7 +28,7 @@ public static class DocumentEncryptorFactory
     /// <param name="ownerPassword">Password for unlimited access to document.</param>
     /// <param name="restrictedPermissions">Privileges that should be DENIED to uses with a user password.</param>
     /// <returns>An ILowLevelDocumentEncryptor which can be used to make an LowLevelDocumentWriter write an encrypted document.</returns>
-    public static ILowLevelDocumentEncryptor v1R2Rc440(
+    public static ILowLevelDocumentEncryptor V1R2Rc440(
         string userPassword, string ownerPassword, PdfPermission restrictedPermissions) =>
         R2Encryptor(userPassword, ownerPassword, restrictedPermissions, 1, 40);
 

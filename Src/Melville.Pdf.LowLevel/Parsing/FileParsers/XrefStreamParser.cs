@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal readonly struct XrefStreamParserFactory
 {
-    private static readonly PdfArray DefaultIndex = new PdfArray(0, int.MaxValue);
+    private static readonly PdfArray DefaultIndex = new(0, int.MaxValue);
     private readonly PdfStream xrefStream;
     private readonly IIndirectObjectRegistry registry;
     public XrefStreamParserFactory(PdfStream xrefStream, IIndirectObjectRegistry registry)

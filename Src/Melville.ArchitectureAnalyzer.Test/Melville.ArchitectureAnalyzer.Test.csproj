@@ -14,11 +14,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj" />
-      <ProjectReference Include="..\Melville.InternalOrDocumentedAnalyzer\Melville.InternalOrDocumentedAnalyzer.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="InternalRuleTest\" />
     </ItemGroup>
 
 </Project>

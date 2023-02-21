@@ -53,7 +53,7 @@ public abstract class PdfFunction : IPdfFunction
         return false;
     }
 
-    private ReadOnlySpan<double> Clip(in ReadOnlySpan<double> input, in Span<double> output,
+    private static ReadOnlySpan<double> Clip(in ReadOnlySpan<double> input, in Span<double> output,
         ClosedInterval[] intervals)
     {
         for (int i = 0; i < intervals.Length; i++)

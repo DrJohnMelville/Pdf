@@ -147,8 +147,7 @@ public readonly struct SampledFunctionBuilder
 
     private bool DecodeArrayIsTrivial()
     {
-        var capturedBitsPerSample = bitsPerSample;
-        return outputs.All(i => i.DecodeTrivial(capturedBitsPerSample));
+        return outputs.All(i => i.DecodeTrivial());
     }
 
     private async ValueTask<MultiBufferStream> SamplesStream()

@@ -35,7 +35,7 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         CreateAndTestDocument(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
     [Fact]
     public Task Rc4Length40() => 
-        CreateAndTestDocument(DocumentEncryptorFactory.v1R2Rc440("User", "Owner", PdfPermission.None));
+        CreateAndTestDocument(DocumentEncryptorFactory.V1R2Rc440("User", "Owner", PdfPermission.None));
 
     private async Task CreateAndTestDocument(ILowLevelDocumentEncryptor encryptionDeclaration)
     {

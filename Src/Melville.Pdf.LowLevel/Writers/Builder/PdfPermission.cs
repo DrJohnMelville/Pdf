@@ -14,10 +14,6 @@ public enum PdfPermission
     /// </summary>
     None = 0,
     /// <summary>
-    /// Change the encrytion settings
-    /// </summary>
-    ChangeEncryption = 1 << 2,
-    /// <summary>
     /// Print the document to a system printer.
     /// </summary>
     PrintDocument = 1 << 2,

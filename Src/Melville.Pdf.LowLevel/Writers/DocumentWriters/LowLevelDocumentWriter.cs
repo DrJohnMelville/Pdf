@@ -93,7 +93,7 @@ public class LowLevelDocumentWriter
         return positions;
     }
 
-    private async Task DeclareContainedObjects(PdfIndirectObject item, XRefTable positions)
+    private static async Task DeclareContainedObjects(PdfIndirectObject item, XRefTable positions)
     {
         if (await item.DirectValueAsync().CA() is IHasInternalIndirectObjects hiid)
         {
@@ -107,7 +107,7 @@ public class LowLevelDocumentWriter
         }
     }
 
-    private void EnsureOuterGenerationNumberIsZero(PdfIndirectObject itemTarget)
+    private static void EnsureOuterGenerationNumberIsZero(PdfIndirectObject itemTarget)
     {
         if (itemTarget.GenerationNumber != 0)
             throw new InvalidOperationException("Object streams must hae a generation number of 0.");

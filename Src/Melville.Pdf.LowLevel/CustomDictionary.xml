@@ -1,0 +1,36 @@
+﻿<Dictionary>
+	<!-- This is a code analysis dictionary used for Visual Studio code analysis.
+       See http://msdn.microsoft.com/en-us/library/bb514188.aspx -->
+	<Words>
+		<Unrecognized>
+			<!-- SpellingAlternates is a comma-separated list of alternate spellings
+           to offer as suggestions -->
+			<!--	<Word SpellingAlternates="literally, precisely">verbatim</Word>-->
+		</Unrecognized>
+		<Recognized>
+			<!-- The Spelling attribute tells the spell checker how to treat the word:
+           Add = Add to dictionary
+           Ignore = Ignore word
+           None/other value/attribute omitted = Not handled, pass through as a
+           normal word -->
+			<Word Spelling="Add">nonstroking</Word>
+			<Word Spelling="Add">boolean</Word>
+			<Word>Appender</Word>
+		</Recognized>
+		<Deprecated>
+			<!-- The preferred alternate is offered as the suggested replacement -->
+			<!--<Term PreferredAlternate="yadda">blah</Term>-->
+		</Deprecated>
+		<Compound>
+			<!-- The compound alternate is offered as the suggested replacement with
+           spaces inserted after each capital letter. -->
+			<!--<Term CompoundAlternate="BigBox">bigbox</Term>-->
+		</Compound>
+	</Words>
+	<Acronyms>
+		<!-- These are treated as ignored words if the option is enabled -->
+		<CasingExceptions>
+			<!--<Acronym>SQLite</Acronym>-->
+		</CasingExceptions>
+	</Acronyms>
+</Dictionary>

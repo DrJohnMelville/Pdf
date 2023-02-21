@@ -23,7 +23,7 @@ internal readonly struct SampledFunctionOutput
         Definition = definition;
     }
 
-    public bool DecodeTrivial(int bitsPerSample) =>
+    public bool DecodeTrivial() =>
         DoubleCompare.WithinOne(Range.MinValue, Decode.MinValue) &&
         DoubleCompare.WithinOne(Range.MaxValue, Decode.MaxValue);
 }

@@ -47,7 +47,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
 {
     private readonly PdfObjectRegistry builder;
     [DelegateTo()]
-    private IPdfObjectRegistry innerBuilder => builder;
+    private IPdfObjectRegistry InnerBuilder => builder;
     private readonly long priorXref;
 
     public LowLevelDocumentModifier(int nextObjectNum, long priorXref)
@@ -70,9 +70,6 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
             builder.Add(value, reference.ObjectNumber, reference.GenerationNumber);
     }
 
-    private bool IsSameObject(PdfIndirectObject a, PdfIndirectObject b) =>
-        a.ObjectNumber == b.ObjectNumber && a.GenerationNumber == b.GenerationNumber;
-
 
     public ValueTask WriteModificationTrailer(PipeWriter cpw, long startPosition) =>
         WriteModificationTrailer(new CountingPipeWriter(cpw, startPosition));
@@ -94,7 +91,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref).CA();
     }
 
-    private void WriteRevisedXrefTable(CountingPipeWriter target, IEnumerable<XrefLine> lines)
+    private static void WriteRevisedXrefTable(CountingPipeWriter target, IEnumerable<XrefLine> lines)
     {
         foreach (var segment in XRefSegments(lines))
         {
@@ -110,7 +107,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
     private static int FirstObjectNumber(IList<XrefLine> segment) => 
         segment.Count > 0?segment[0].ObjectNumber:0;
 
-    private IEnumerable<IList<XrefLine>> XRefSegments(IEnumerable<XrefLine> lines)
+    private static IEnumerable<IList<XrefLine>> XRefSegments(IEnumerable<XrefLine> lines)
     {
         var ret = new List<XrefLine>();
         int last = int.MinValue;

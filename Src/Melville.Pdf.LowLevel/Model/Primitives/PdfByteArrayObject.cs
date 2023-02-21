@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObject>
 {
     /// <summary>
-    /// The bytes that represent the value of the obbject
+    /// The bytes that represent the value of the ob
     /// </summary>
     public byte[] Bytes { get; }
 
@@ -22,7 +22,7 @@ public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObje
 
     /// <inheritdoc />
     public bool Equals(PdfByteArrayObject? other) =>
-        (!ReferenceEquals(null, other)) &&
+        other is not null &&
         (ReferenceEquals(this, other) || Bytes.AsSpan().SequenceEqual(other.Bytes));
 
     /// <inheritdoc />
@@ -36,12 +36,12 @@ public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObje
     private static string RoundTripableRepresentation(byte[]? inputBytes)
     {
         var sb = new StringBuilder();
-        sb.Append("<");
+        sb.Append('<');
         foreach (var item in inputBytes ?? Array.Empty<byte>())
         {
             sb.Append(item.ToString("X2"));
         }
-        sb.Append(">");
+        sb.Append('>');
         return sb.ToString();
     }
 }

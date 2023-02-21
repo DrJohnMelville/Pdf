@@ -23,7 +23,7 @@ public static class CrossReferenceStreamParser
         var context = await owner.RentReader(offset).CA();
         xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context).CA();
 
-        if (!(xRefStreamAsPdfObject is PdfStream crossRefPdfStream))
+        if (xRefStreamAsPdfObject is not PdfStream crossRefPdfStream)
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
         await ReadXrefStreamData(owner, crossRefPdfStream).CA();
         await owner.InitializeDecryption(crossRefPdfStream).CA();

@@ -14,8 +14,8 @@ public unsafe struct DeferedClosingTask : IDisposable
     private readonly ContentStreamPipeWriter writer;
     private fixed byte closingOperator[4];
     private readonly int closingOperatorLength;
-    private Span<byte> ClosingOperatorSpan(byte* basePtr) =>
-        new Span<byte>(basePtr, Math.Min(4, closingOperatorLength));
+    private Span<byte> ClosingOperatorSpan(byte* basePtr) => 
+        new(basePtr, Math.Min(4, closingOperatorLength));
 
     internal DeferedClosingTask(ContentStreamPipeWriter writer, in ReadOnlySpan<byte> closingOperator)
     {

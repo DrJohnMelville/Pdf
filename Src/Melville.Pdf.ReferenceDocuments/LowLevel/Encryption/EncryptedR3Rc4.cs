@@ -13,7 +13,7 @@ public class EncryptedR3Rc4: EncryptedFileWriter
 public class EncryptedR2Rc4: EncryptedFileWriter
 {
     public EncryptedR2Rc4() : base("Document encrypted with Version 1 Revision 2 Rc4 standard security handler.",
-        DocumentEncryptorFactory.v1R2Rc440("User", "Owner", PdfPermission.None))
+        DocumentEncryptorFactory.V1R2Rc440("User", "Owner", PdfPermission.None))
     {
     }
 }    
