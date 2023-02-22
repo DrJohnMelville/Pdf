@@ -5,7 +5,7 @@ namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
 /// <summary>
 /// Content stream operators that define geometry or set clipping regions.
-/// notably, this inteface does not paint paths.
+/// notably, this interface does not paint paths.
 /// </summary>
 public interface IPathDrawingOperations
 {

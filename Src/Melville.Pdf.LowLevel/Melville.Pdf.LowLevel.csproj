@@ -30,16 +30,11 @@
       <ProjectReference Include="..\Melville.JpegLibrary\Melville.JpegLibrary.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
       <ProjectReference Include="..\Pdf.KnownNamesGenerator\Pdf.KnownNamesGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
-      <None Remove="CustomDictionary.xml" />
       <None Remove="Model\Conventions\KnownNames.dsl" />
       <AdditionalFiles Include="Model\Conventions\KnownNames.dsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\glyphlist.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\stdEncodings.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\Symbol.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\MacExpert.cedsl" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <CodeAnalysisDictionary Include="CustomDictionary.xml" />
     </ItemGroup>
 </Project>

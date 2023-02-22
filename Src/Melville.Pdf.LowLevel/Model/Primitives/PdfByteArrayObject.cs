@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
@@ -32,7 +33,7 @@ public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObje
     /// <inheritdoc />
     public override int GetHashCode() => FnvHash.FnvHashAsInt(Bytes);
 
-    private string DebugViewAableValue => RoundTripableRepresentation(Bytes);
+    private string DebugViewAableValue => $"{RoundTripableRepresentation(Bytes)} {Bytes.ExtendedAsciiString()}";
     private static string RoundTripableRepresentation(byte[]? inputBytes)
     {
         var sb = new StringBuilder();

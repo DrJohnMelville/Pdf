@@ -29,7 +29,7 @@ namespace Pdf.KnownNamesGenerator.KnownNames
     }
     public  class GenerateKnownNames
     {
-        private string data;
+        private readonly string data;
 
         public GenerateKnownNames(string data)
         {
@@ -71,7 +71,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     CSharpName: i.Groups[2].Value,
                     i.Groups[1].Value)).ToArray();
 
-        private string TryString(string value, string fallBack) =>
+        private static string TryString(string value, string fallBack) =>
             String.IsNullOrWhiteSpace(value) ? fallBack : value;
         
 
@@ -93,6 +93,9 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
 
         private static void RenderPdfNameDeclarations(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
         {
+            sb.AppendLine("      /// <summary>");
+            sb.AppendLine("      /// Precomputed FNV hashes for the known names.");
+            sb.AppendLine("      /// </summary>");
             sb.AppendLine("      public static partial class KnownNames {");
             foreach (var (value, name, _) in UniquePdfNames(allNames))
             {
@@ -106,7 +109,12 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.AppendLine("      public static partial class KnownNameKeys {");
             foreach (var (value, name, _) in UniquePdfNames(allNames))
             {
-                sb.AppendLine($"        public const int {name} = {Fnv.FromString(value)};");
+                var fnvValue = Fnv.FromString(value);
+                sb.AppendLine("        /// <summary>");
+                sb.AppendLine($"        /// PdfName ({value}) has FNV Hash of {fnvValue}");
+                sb.AppendLine("        /// </summary>");
+                sb.AppendLine($"        public const int {name} = {fnvValue};");
+                sb.AppendLine();
             }
 
             sb.AppendLine("          }");
@@ -116,12 +124,20 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 .GroupBy(i => i.CSharpName).Select(i => i.First())
                 .OrderBy(i=>i.CSharpName);
 
+        /// <summary>
+        /// 
+        /// </summary>
         private static void RenderPdfNameCreation(StringBuilder sb, string name, string value)
         {
-            sb.Append($"        public static readonly PdfName ");
+            sb.AppendLine("        /// <summary>");
+            sb.AppendLine($"        /// PdfName with value: ({value})");
+            sb.AppendLine("        /// </summary>");
+            sb.Append("        public static readonly PdfName ");
             sb.Append(name);
-            sb.Append($" = NameDirectory.ForceAdd(new PdfName(");
-            ByteStreamWriter.WriteByteDecl(sb, value);
+            sb.Append(" = NameDirectory.ForceAdd(\"");
+            sb.Append(value);
+            sb.AppendLine("\"u8);");
+            sb.AppendLine();
         }
 
         private static void RenderPdfNameGroup(StringBuilder sb, 
@@ -130,13 +146,28 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             if (items.Key != "Pdf")
             {
                 sb.AppendLine(
-                    @$"      public readonly struct {items.Key}Name 
-      {{
-         private readonly PdfName name;
-         public {items.Key}Name(PdfName name){{ this.name = name;}}
-         public static implicit operator PdfName({items.Key}Name wrapper) => wrapper.name; ");
+                    $$"""
+                              /// <summary>
+                              /// This struct allows the builder APIs to request a {{items.Key}} to suggest 
+                              /// proper PdfNames for the parameter.
+                              /// </summary>
+                              public readonly struct {{items.Key}}Name 
+                              {
+                                 private readonly PdfName name;
+                                 /// <summary>
+                                 /// Implicitly convert a PdfName to a {{items.Key}}
+                                 /// </summary>    
+                                 public {{items.Key}}Name(PdfName name){ this.name = name;}
+                                 /// <summary>
+                                 /// Implicitly convert a {{items.Key}} to a PdfName
+                                 /// </summary>    
+                                 public static implicit operator PdfName({{items.Key}}Name wrapper) => wrapper.name; 
+                        """);
                 foreach (var (value, name, type) in items)
                 {
+                    sb.AppendLine("        /// <summary>");
+                    sb.AppendLine($"        /// {type} value for {name}");
+                    sb.AppendLine("        /// </summary>");
                     sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name});");
                 }
 

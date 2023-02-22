@@ -14,10 +14,11 @@ public static class NameDirectory
     /// <summary>
     /// Add a PdfName that is known to not be in the dictionary
     /// </summary>
-    /// <param name="item">A PdfName to add</param>
+    /// <param name="bytes">A bybte span with the name to be added</param>
     /// <returns>The item parameter</returns>
-    public static PdfName ForceAdd(PdfName item) 
+    public static PdfName ForceAdd(in ReadOnlySpan<byte> bytes)
     {
+        var item = new PdfName(bytes.ToArray());
         allKnownNames.ForceAdd(item.Bytes, item);
         return item;
     }
