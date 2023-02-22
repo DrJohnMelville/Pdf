@@ -17,5 +17,5 @@ internal partial class DictionaryGlyphNameMapper: INameToGlyphMapping
         return mappings.TryGetValue(HashForString(name), out var glyph) ? glyph : 0;
     }
 
-    protected virtual uint HashForString(byte[] name) => FnvHash.FnvHashAsUint(name);
+    protected virtual uint HashForString(byte[] name) => FnvHash.FnvHashAsUInt(name);
 }

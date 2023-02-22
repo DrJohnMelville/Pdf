@@ -72,7 +72,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     i.Groups[1].Value)).ToArray();
 
         private static string TryString(string value, string fallBack) =>
-            String.IsNullOrWhiteSpace(value) ? fallBack : value;
+            string.IsNullOrWhiteSpace(value) ? fallBack : value;
         
 
         private void GenerateNameConstants(StringBuilder sb)
@@ -106,6 +106,9 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         }
         private static void RenderPdfNameKeyDeclarations(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
         {
+            sb.AppendLine("      /// <summary>");
+            sb.AppendLine($"      /// Precomputed keys for the known names");
+            sb.AppendLine("      /// </summary>");
             sb.AppendLine("      public static partial class KnownNameKeys {");
             foreach (var (value, name, _) in UniquePdfNames(allNames))
             {
@@ -124,9 +127,6 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                 .GroupBy(i => i.CSharpName).Select(i => i.First())
                 .OrderBy(i=>i.CSharpName);
 
-        /// <summary>
-        /// 
-        /// </summary>
         private static void RenderPdfNameCreation(StringBuilder sb, string name, string value)
         {
             sb.AppendLine("        /// <summary>");

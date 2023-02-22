@@ -174,7 +174,7 @@ internal readonly struct PostscriptTokenizer
                     if (!reader.TryPeek(out byte ret)) return false;
                     if (!IsChar(ret))
                     {
-                        result = PostScriptOperationsDict.GetOperation(hash.HashAsUint());
+                        result = PostScriptOperationsDict.GetOperation(hash.HashAsUInt());
                         return true;
                     }
                     hash.SingleHashStep(ret);

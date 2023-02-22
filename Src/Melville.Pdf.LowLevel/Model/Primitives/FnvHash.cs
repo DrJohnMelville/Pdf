@@ -6,7 +6,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 
 // stolen from https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
 /// <summary>
-/// This byte array hashing function is used in many parts of the rendeerer.  Most importantly PDF name lookup.
+/// This byte array hashing function is used in many parts of the renderer.  Most importantly PDF name lookup.
 /// </summary>
 public static class FnvHash
 {
@@ -22,7 +22,7 @@ public static class FnvHash
         {
             computer.SingleLowerCaseHashStep(item);
         }
-        return computer.HashAsUint();
+        return computer.HashAsUInt();
     }
 
     /// <summary>
@@ -38,8 +38,8 @@ public static class FnvHash
     /// </summary>
     /// <param name="bytes">The input data.</param>
     /// <returns>The hash of the input</returns>
-    public static uint FnvHashAsUint(ReadOnlySpan<byte> bytes) => 
-        HashFromBytes(bytes).HashAsUint();
+    public static uint FnvHashAsUInt(ReadOnlySpan<byte> bytes) => 
+        HashFromBytes(bytes).HashAsUInt();
 
 
     /// <summary>
@@ -54,7 +54,7 @@ public static class FnvHash
     /// </summary>
     /// <param name="chars">The input data.</param>
     /// <returns>The hash of the input</returns>
-    public static uint FnvHashAsUint(ReadOnlySpan<char> chars) => HashFromChars(chars).HashAsUint();
+    public static uint FnvHashAsUInt(ReadOnlySpan<char> chars) => HashFromChars(chars).HashAsUInt();
 
     private static FnvComputer HashFromBytes(in ReadOnlySpan<byte> bytes)
     {
@@ -120,10 +120,10 @@ public ref struct FnvComputer
     }
 
     /// <summary>
-    /// The current hash value as a uint.
+    /// The current hash value as a UInt.
     /// </summary>
     /// <returns>The current hash value.</returns>
-    public uint HashAsUint() => hashValue;
+    public uint HashAsUInt() => hashValue;
     
     /// <summary>
     /// The current hash value as an int.

@@ -17,14 +17,14 @@ internal abstract class HashDictionary<T> where T : class
 
     public void ForceAdd(in ReadOnlySpan<byte> key, T item)
     {
-        uint hash = FnvHash.FnvHashAsUint(key);
+        uint hash = FnvHash.FnvHashAsUInt(key);
         store.Add(hash, item);
     }
         
     public T GetOrCreate(in ReadOnlySpan<byte> key) => GetOrCreate(key, null);
     internal T GetOrCreate(in ReadOnlySpan<byte> key, byte[]? keyAsArray)
     {
-        var hash = FnvHash.FnvHashAsUint(key);
+        var hash = FnvHash.FnvHashAsUInt(key);
         if (!store.TryGetValue(hash, out var found))
         {
             var ret = Create(key, keyAsArray);
