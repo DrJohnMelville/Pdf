@@ -17,24 +17,9 @@ public class S7_3_5_NamesDefined
     [InlineData("Fo\u1234o")]
     public void NameCanRenderInUtf8(string name)
     {
-        Assert.Equal("/" + name, new PdfName(name).ToString());
+        Assert.Equal("/" + name, NameDirectory.Get(name).ToString());
     }
-
-    [Theory]
-    [InlineData("Foo", "Foo", true)]
-    [InlineData("Foo", "Bar", false)]
-    [InlineData("Foo", "Foot", false)]
-    public void EqualityTest(string a, string b, bool matches)
-    {
-        var nameA = new PdfName(a);
-        var nameB = new PdfName(b);
-        Assert.Equal(matches, nameA.Equals(nameB));
-        Assert.Equal(matches, (object)nameA.Equals(nameB));
-        Assert.Equal(matches, nameA.GetHashCode() == nameB.GetHashCode());
-
-    }
-
-
+    
     private static async Task<PdfName> TryParseStringToName(string source)
     {
         return (PdfName)await Encoding.UTF8.GetBytes(source).ParseObjectAsync();

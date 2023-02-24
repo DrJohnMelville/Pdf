@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives;
+namespace Melville.Pdf.LowLevel.Model.ShortStrings;
 
 // stolen from https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
 /// <summary>

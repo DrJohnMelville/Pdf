@@ -3,18 +3,39 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+internal readonly struct PdfNameFactory : IShortStringTarget<PdfName>
+{
+    public PdfName Create(ShortString<NinePackedBytes> data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public PdfName Create(ShortString<EighteenPackedBytes> data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public PdfName Create(ShortString<ArbitraryBytes> data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static PdfName Create(in ReadOnlySpan<byte> data) =>
+        new PdfName(data.ToArray());
+}
+
 /// <summary>
 /// Represents a /PdfName construct in PDF
 /// </summary>
-public class PdfName: PdfByteArrayObject, IEquatable<PdfName>
+public class PdfName: PdfByteArrayObject
 {
 
     internal PdfName(byte[] name): base(name){}
-    internal PdfName(string s):this(Encoding.UTF8.GetBytes(s)){}
 
     /// <inheritdoc />
     public override string ToString() => "/"+Encoding.UTF8.GetString(Bytes);
@@ -25,7 +46,4 @@ public class PdfName: PdfByteArrayObject, IEquatable<PdfName>
     /// </summary>
     /// <param name="s"></param>
     public static implicit operator PdfName(string s) => NameDirectory.Get(s);
-
-    /// <inheritdoc />
-    public bool Equals(PdfName? other) => Equals((PdfByteArrayObject?)other);
 }

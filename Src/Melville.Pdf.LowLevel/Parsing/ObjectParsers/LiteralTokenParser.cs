@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.Runtime.InteropServices.ComTypes;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -18,7 +20,7 @@ internal class LiteralTokenParser : PdfAtomParser
         ref SequenceReader<byte> reader, bool final, IParsingReader source, out PdfObject obj)
     {
         obj = literal;
-        if (!reader.TryCheckToken(literal.TokenValue, final, out var correct)) return false;
+        if (!literal.TokenValue.CheckReaderFor(ref reader, final, out var correct)) return false;
         if (!correct) throw new PdfParseException("Unexpected PDF token.");
         return true;
     }

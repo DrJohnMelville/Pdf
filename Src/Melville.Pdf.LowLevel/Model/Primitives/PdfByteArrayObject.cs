@@ -2,6 +2,7 @@
 using System.Text;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.ShortStrings;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -9,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 /// This is an abstract base class for PDF object who'se value is an array of bytes, this
 /// includes strings, names, and various tokens.
 /// </summary>
-public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObject>
+public abstract class PdfByteArrayObject: PdfObject
 {
     /// <summary>
     /// The bytes that represent the value of the ob
@@ -20,15 +21,6 @@ public abstract class PdfByteArrayObject: PdfObject, IEquatable<PdfByteArrayObje
     {
         Bytes = bytes;
     }
-
-    /// <inheritdoc />
-    public bool Equals(PdfByteArrayObject? other) =>
-        other is not null &&
-        (ReferenceEquals(this, other) || Bytes.AsSpan().SequenceEqual(other.Bytes));
-
-    /// <inheritdoc />
-    public override bool Equals(object? obj) => 
-        ReferenceEquals(this, obj) || obj is PdfByteArrayObject other && Equals(other);
 
     /// <inheritdoc />
     public override int GetHashCode() => FnvHash.FnvHashAsInt(Bytes);

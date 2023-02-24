@@ -26,6 +26,8 @@ internal static class TokenChecker
         return (reader.TryCheckToken(template, source.IsCompleted, out result), reader.Position);
     }
 
+    #warning  -- get rid of this method
+    [Obsolete("A lot of these should become shortstrings")]
     public static bool TryCheckToken(this ref SequenceReader<byte> input, byte[] template, bool final,
         out bool result)
     {

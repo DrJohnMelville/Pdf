@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.ShortStrings;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -76,7 +77,7 @@ internal abstract class HashDictionary<T> where T : class
 
 internal class NameDictionay : HashDictionary<PdfName>
 {
-    protected override PdfName Create(byte[] key) => new(key);
+    protected override PdfName Create(byte[] key) => PdfNameFactory.Create(key);
     protected override bool Matches(in ReadOnlySpan<byte> key, PdfName item) => 
         key.SequenceEqual(item.Bytes);
 }

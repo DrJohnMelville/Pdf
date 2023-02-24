@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
@@ -18,7 +19,7 @@ public static class NameDirectory
     /// <returns>The item parameter</returns>
     public static PdfName ForceAdd(in ReadOnlySpan<byte> bytes)
     {
-        var item = new PdfName(bytes.ToArray());
+        var item = PdfNameFactory.Create(bytes);
         allKnownNames.ForceAdd(item.Bytes, item);
         return item;
     }
@@ -43,9 +44,9 @@ public static class NameDirectory
     /// <returns></returns>
     public static PdfName Get(string nameText)
     {
-        Span<byte> span = stackalloc byte[nameText.Length];
-        ExtendedAsciiEncoding.EncodeToSpan(nameText, span);
-        return Get(span);
+        Span<byte> span = stackalloc byte[Encoding.UTF8.GetMaxByteCount(nameText.Length)];
+        var length = Encoding.UTF8.GetBytes(nameText, span);
+        return Get(span[..length]);
     }
         
 }
