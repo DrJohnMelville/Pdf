@@ -30,13 +30,7 @@ namespace Melville.Pdf.LowLevel.Model.ShortStrings
             first.Fill(target[..9]);
             second.Fill(target[9..]);
         }
-
-        public void Fill(in Span<char> target)
-        {
-            first.Fill(target[..9]);
-            second.Fill(target[9..]);
-        }
-
+        
         public void AddToHash(ref FnvComputer hash)
         {
             first.AddToHash(ref hash);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
@@ -10,35 +11,26 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 
 internal readonly struct PdfNameFactory : IShortStringTarget<PdfName>
 {
-    public PdfName Create(ShortString<NinePackedBytes> data)
-    {
-        throw new NotImplementedException();
-    }
+    public PdfName Create(ShortString<NinePackedBytes> data) =>
+        new PdfName<NinePackedBytes>(data);
 
-    public PdfName Create(ShortString<EighteenPackedBytes> data)
-    {
-        throw new NotImplementedException();
-    }
+    public PdfName Create(ShortString<EighteenPackedBytes> data) =>
+        new PdfName<EighteenPackedBytes>(data);
 
     public PdfName Create(ShortString<ArbitraryBytes> data)
-    {
-        throw new NotImplementedException();
-    }
+    => new PdfName<ArbitraryBytes>(data);
 
     public static PdfName Create(in ReadOnlySpan<byte> data) =>
-        new PdfName(data.ToArray());
+        data.WrapWith(new PdfNameFactory());
 }
 
 /// <summary>
 /// Represents a /PdfName construct in PDF
 /// </summary>
-public class PdfName: PdfByteArrayObject
+public abstract class PdfName: PdfObject
 {
-
-    internal PdfName(byte[] name): base(name){}
-
     /// <inheritdoc />
-    public override string ToString() => "/"+Encoding.UTF8.GetString(Bytes);
+    //public override string ToString() => "/"+Encoding.UTF8.GetString(Bytes);
     internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     /// <summary>
@@ -46,4 +38,18 @@ public class PdfName: PdfByteArrayObject
     /// </summary>
     /// <param name="s"></param>
     public static implicit operator PdfName(string s) => NameDirectory.Get(s);
+    public abstract bool Matches(in ReadOnlySpan<byte> key);
+    public abstract int Length();
+    public abstract void Fill(Span<byte> target);
+}
+
+internal partial class PdfName<T>: PdfName where T: IPackedBytes
+{
+    [FromConstructor]private readonly ShortString<T> data;
+
+    public override string ToString() => "/" + data.ValueAsString();
+    public override int GetHashCode() => data.ComputeHashCode();
+    public override bool Matches(in ReadOnlySpan<byte> key) => data.SameAs(key);
+    public override int Length() => data.Length();
+    public override void Fill(Span<byte> target) => data.Fill(target);
 }

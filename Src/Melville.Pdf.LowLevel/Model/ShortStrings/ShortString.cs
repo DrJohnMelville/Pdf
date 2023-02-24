@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace Melville.Pdf.LowLevel.Model.ShortStrings;
 
@@ -35,13 +36,11 @@ internal readonly struct ShortString<T> : IShortString where T : IPackedBytes
     public bool SameAs(in ReadOnlySpan<byte> other) =>
         data.SameAs(other);
 
-    public string ValueAsString() =>
-        string.Create(data.Length(), data,
-            WriteCharsToString);
-
-    private static void WriteCharsToString(Span<char> target, T src)
+    public string ValueAsString()
     {
-        src.Fill(target);
+        Span<byte> chars = stackalloc byte[data.Length()];
+        data.Fill(chars);
+        return Encoding.UTF8.GetString(chars);
     }
 
     public bool CheckReaderFor(ref SequenceReader<byte> input, bool final, out bool result)

@@ -45,7 +45,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
             KnownNameKeys.TimesBoldOblique => SystemFont(TimesNewRoman,  true, true),
             KnownNameKeys.Symbol => SystemFont(SegoeUISymbol,  false, false), 
             KnownNameKeys.ZapfDingbats => SystemFont(SegoeUISymbol,  false, false),
-            _ => TrySystemFont(font.Bytes, 
+            _ => TrySystemFont(font, 
                         fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic))??
                  FontFromName(fontFlags.MapBuiltInFont(), fontFlags)
         };
@@ -59,8 +59,10 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
                ?? throw new IOException("Could not find required font file.");
     }
     private  DefaultFontReference? TrySystemFont(
-        ReadOnlySpan<byte> name, bool bold, bool italic)
+        PdfName pdfName, bool bold, bool italic)
     {
+        Span<byte> name = stackalloc byte[pdfName.Length()];
+        pdfName.Fill(name);
         var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
         if (fontReference is null) return null;
         return fontReference.AsDefaultFontReference();

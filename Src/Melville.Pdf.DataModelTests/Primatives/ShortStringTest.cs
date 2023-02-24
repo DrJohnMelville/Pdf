@@ -26,16 +26,16 @@ public class ShortStringTest
     [InlineData("1234567890123456789")]
     public void TestShortString(string data)
     {
-        var dataAsArray = data.AsExtendedAsciiBytes();
+        var dataAsArray = System.Text.Encoding.UTF8.GetBytes(data);
         var sut = new ReadOnlySpan<byte>(dataAsArray).WrapWith(new TestTarget());
 
-        Assert.Equal(data.Length, sut.Length());
+        Assert.Equal(dataAsArray.Length, sut.Length());
 
         Assert.True(sut.SameAs(dataAsArray));
 
         Assert.Equal(data, sut.ValueAsString());
 
-        Assert.Equal(FnvHash.FnvHashAsInt(data), sut.ComputeHashCode());
+        Assert.Equal(FnvHash.FnvHashAsInt(dataAsArray), sut.ComputeHashCode());
     }
 
     [Theory]

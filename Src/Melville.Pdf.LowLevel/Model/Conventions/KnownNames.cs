@@ -19,9 +19,9 @@ public static class NameDirectory
     /// <returns>The item parameter</returns>
     public static PdfName ForceAdd(in ReadOnlySpan<byte> bytes)
     {
-        var item = PdfNameFactory.Create(bytes);
-        allKnownNames.ForceAdd(item.Bytes, item);
-        return item;
+        // var item = PdfNameFactory.Create(bytes);
+        // allKnownNames.ForceAdd(item);
+        return allKnownNames.GetOrCreate(bytes);
     }
     
     /// <summary>

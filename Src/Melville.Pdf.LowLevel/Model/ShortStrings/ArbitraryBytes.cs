@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Model.ShortStrings
         public bool SameAs(in ReadOnlySpan<byte> other) =>
             other.SequenceEqual(data);
 
-        public void Fill(in Span<byte> target) => data.AsSpan().CopyTo(data);
+        public void Fill(in Span<byte> target) => data.AsSpan().CopyTo(target);
 
         public void Fill(in Span<char> target)
         {

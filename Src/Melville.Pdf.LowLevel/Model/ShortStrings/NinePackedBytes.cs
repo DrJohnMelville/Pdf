@@ -10,7 +10,6 @@ internal interface IPackedBytes
     int Length();
     bool SameAs(in ReadOnlySpan<byte> other);
     void Fill(in Span<byte> target);
-    void Fill(in Span<char> target);
     void AddToHash(ref FnvComputer hash);
 }
 
@@ -64,15 +63,6 @@ internal readonly partial struct NinePackedBytes : IPackedBytes
             target[i] = PopFirstByte(ref localBits);
         }
     }
-    public void Fill(in Span<char> target)
-    {
-        ulong localBits = bits;
-        for (int i = 0; i < target.Length; i++)
-        {
-            target[i] = (char)PopFirstByte(ref localBits);
-        }
-    }
-
     private static byte PopFirstByte(ref ulong data)
     {
         var ret = (byte) (data & 0x7F);

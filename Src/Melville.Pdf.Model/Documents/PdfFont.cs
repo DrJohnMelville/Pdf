@@ -53,7 +53,8 @@ internal readonly partial struct PdfFont
     
     private PdfName RemoveMultMasterSuffix(PdfName baseFontName)
     {
-        var source = baseFontName.Bytes.AsSpan();
+        Span<byte> source = stackalloc byte[baseFontName.Length()];
+        baseFontName.Fill(source);
         var firstUnderscore = source.IndexOf((byte)'_');
         return firstUnderscore < 0 ? baseFontName : NameDirectory.Get(source[..firstUnderscore]);
     }

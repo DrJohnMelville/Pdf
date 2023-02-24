@@ -18,7 +18,7 @@ public interface IGlyphNameMap
     /// <param name="input">A PdfName representing the glyph to find</param>
     /// <param name="character">If the function returns true, this parameter receives the named character index</param>
     /// <returns>True if the glyph name is recognized, false otherwise</returns>
-    bool TryMap(PdfName input, out char character) => this.TryMap(input.Bytes, out character);
+    bool TryMap(PdfName input, out char character);
     /// <summary>
     /// Try to find a character index for a given glyph name.  Often characters are unicode
     /// </summary>
@@ -42,4 +42,7 @@ public partial class GlyphNameToUnicodeMap : IGlyphNameMap
     /// <inheritdoc />
     public bool TryMap(byte[] input, out char character) => 
         map.TryGetValue(FnvHash.FnvHashAsInt(input),out character);
+    /// <inheritdoc />
+    public bool TryMap(PdfName input, out char character) => 
+        map.TryGetValue(input.GetHashCode(),out character);
 }

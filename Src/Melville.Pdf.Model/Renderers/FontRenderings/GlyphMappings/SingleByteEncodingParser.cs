@@ -70,7 +70,7 @@ internal readonly partial struct SingleByteEncodingParser
                     currentChar = (byte)num.IntValue;
                     break;
                 case PdfName name:
-                    var glyph = nameMapper.GetGlyphFor(name.Bytes);
+                    var glyph = nameMapper.GetGlyphFor(name);
                     if (glyph > 0) output[currentChar++] = glyph;
                     break;
             }

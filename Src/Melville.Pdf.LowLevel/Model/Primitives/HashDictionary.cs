@@ -14,18 +14,17 @@ internal abstract class HashDictionary<T> where T : class
     // have no allocations and pay nothing other than a single is operation.  If there is more
     // than one item in a bucket we degrade to a linked list.  This also lets us handle
     // synonyms.  We give up type safety to do this.
-    private readonly Dictionary<uint, object> store = new();
+    private readonly Dictionary<int, object> store = new();
 
-    public void ForceAdd(in ReadOnlySpan<byte> key, T item)
+    public void ForceAdd(T item)
     {
-        uint hash = FnvHash.FnvHashAsUInt(key);
-        store.Add(hash, item);
+        store.Add(item.GetHashCode(), item);
     }
         
     public T GetOrCreate(in ReadOnlySpan<byte> key) => GetOrCreate(key, null);
     internal T GetOrCreate(in ReadOnlySpan<byte> key, byte[]? keyAsArray)
     {
-        var hash = FnvHash.FnvHashAsUInt(key);
+        var hash = FnvHash.FnvHashAsInt(key);
         if (!store.TryGetValue(hash, out var found))
         {
             var ret = Create(key, keyAsArray);
@@ -79,5 +78,5 @@ internal class NameDictionay : HashDictionary<PdfName>
 {
     protected override PdfName Create(byte[] key) => PdfNameFactory.Create(key);
     protected override bool Matches(in ReadOnlySpan<byte> key, PdfName item) => 
-        key.SequenceEqual(item.Bytes);
+        item.Matches(key);
 }
