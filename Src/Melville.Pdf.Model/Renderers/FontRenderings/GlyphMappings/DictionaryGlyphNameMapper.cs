@@ -11,6 +11,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 internal interface INameToGlyphMapping
 {
+#warning get rid of this
     uint GetGlyphFor(byte[] name);
     uint GetGlyphFor(PdfName name);
 }
@@ -25,7 +26,6 @@ internal partial class DictionaryGlyphNameMapper: INameToGlyphMapping
 
     public uint GetGlyphFor(PdfName name)
     {
-//        var hash2 = HashForString(name.ToString().AsExtendedAsciiBytes()[1..]);
         return mappings.TryGetValue(HashForString(name), out var glyph) ? glyph : 0;
     }
 

@@ -21,6 +21,9 @@ public class GenerateContentStreamOperations
         foreach (var (op, name) in operators)
         {
             sb.AppendLine($""""
+                      /// <summary>
+                      /// Conters Stream Operator {name} = {op}
+                      /// </summary>
                       public static ReadOnlySpan<byte> {name} => """
                       {op}
                       """u8.ToArray();

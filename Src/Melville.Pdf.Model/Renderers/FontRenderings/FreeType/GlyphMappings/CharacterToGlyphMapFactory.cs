@@ -89,7 +89,7 @@ internal readonly partial struct CharacterToGlyphMapFactory
         }
     }
 
-    private async Task<byte[][]?> BuiltInFontCharMappings()
+    private async Task<PdfName[]?> BuiltInFontCharMappings()
     {
         if (font.SubType() != KnownNames.Type1) return null;
         return (await font.BaseFontNameAsync().CA()).GetHashCode() switch

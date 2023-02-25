@@ -13,7 +13,7 @@ internal readonly partial struct SingleByteEncodingParser
 {
     [FromConstructor] private readonly INameToGlyphMapping nameMapper;
     [FromConstructor] private readonly uint[] output;
-    [FromConstructor] private readonly byte[][]? overrideEncoding;
+    [FromConstructor] private readonly PdfName[]? overrideEncoding;
 
 #if DEBUG
     partial void OnConstructed()
@@ -40,7 +40,7 @@ internal readonly partial struct SingleByteEncodingParser
         }
     }
     
-    private byte[][] CharactersFromName(PdfName name) => 
+    private PdfName[] CharactersFromName(PdfName name) => 
         name.GetHashCode() switch
     {
         KnownNameKeys.MacRomanEncoding => CharacterEncodings.MacRoman,
@@ -51,7 +51,7 @@ internal readonly partial struct SingleByteEncodingParser
         _ => CharacterEncodings.Standard
     };
 
-    private void WriteCharacterSet(byte[][] characters)
+    private void WriteCharacterSet(PdfName[] characters)
     {
         for (int i = 0; i < output.Length; i++)
         {

@@ -9,6 +9,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <TieredPGO>true</TieredPGO>
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<!--	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
     </PropertyGroup>
 
     <ItemGroup>
