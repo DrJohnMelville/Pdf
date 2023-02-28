@@ -17,7 +17,7 @@ public static class AllowedDependencyVerifierFactory
         new RuleParser(CombineArchitectureDefinitionFiles(files)).Parse();
 
     private static string CombineArchitectureDefinitionFiles(ImmutableArray<AdditionalText> files) =>
-        string.Join(Environment.NewLine,
+        string.Join("\r\n",
             files.Where(IsArchitectureDefinitionFile)
                 .SelectMany(i => i.GetText()?.Lines));
 

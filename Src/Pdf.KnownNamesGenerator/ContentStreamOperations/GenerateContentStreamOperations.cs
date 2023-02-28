@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Xml.Linq;
 
 namespace Pdf.KnownNamesGenerator.ContentStreamOperations;
 
@@ -16,25 +17,41 @@ public class GenerateContentStreamOperations
         sb.AppendLine("using System;");
         sb.AppendLine("namespace Melville.Pdf.LowLevel.Model.ContentStreams;");
         sb.AppendLine();
+        sb.AppendLine("""
+            /// <summary>
+            /// Content stream operators as readonly spans
+            /// </summary>
+            """);
         sb.AppendLine("public static class ContentStreamOperatorNames");
         sb.AppendLine("{");
         foreach (var (op, name) in operators)
         {
             sb.AppendLine($""""
                       /// <summary>
-                      /// Conters Stream Operator {name} = {op}
+                      /// Content Stream Operator {name} = {op}
                       /// </summary>
                       public static ReadOnlySpan<byte> {name} => """
                       {op}
                       """u8.ToArray();
                   """");
+            sb.AppendLine();
         }
         sb.AppendLine("}");
-            
+
+        sb.AppendLine("""
+            /// <summary>
+            /// An enumeration that represents the various content stream operators.
+            /// </summary>
+            """);
         sb.AppendLine("public enum ContentStreamOperatorValue");
         sb.AppendLine("{");
         foreach (var (op, name) in operators)
         {
+            sb.AppendLine($"""
+                /// <summary>
+                /// Content Stream Operator {name} = {op}
+                /// </summary>
+            """);
             sb.Append($"    {name} = 0x");
             foreach (var character in op)
             {

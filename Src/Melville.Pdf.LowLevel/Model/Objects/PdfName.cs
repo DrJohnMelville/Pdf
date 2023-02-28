@@ -38,9 +38,20 @@ public abstract class PdfName: PdfObject
     /// </summary>
     /// <param name="s"></param>
     public static implicit operator PdfName(string s) => NameDirectory.Get(s);
+    /// <summary>
+    /// Check if this PdfName matches the given span.  (Minus the leading forward slash.)
+    /// </summary>
+    /// <param name="key">The name to compare to this PdfName</param>
+    /// <returns>True if this PdfName matches the given span, false otherwise.</returns>
     public abstract bool Matches(in ReadOnlySpan<byte> key);
+    /// <summary>
+    /// Length of the current name, in bytes
+    /// </summary>
     public abstract int Length();
-    public abstract void Fill(Span<byte> target);
+    /// <summary>
+    /// Fill the given span with the current name
+    /// </summary>
+   public abstract void Fill(Span<byte> target);
 }
 
 internal partial class PdfName<T>: PdfName where T: IPackedBytes

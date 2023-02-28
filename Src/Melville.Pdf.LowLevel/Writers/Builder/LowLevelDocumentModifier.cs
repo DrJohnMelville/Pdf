@@ -46,7 +46,7 @@ public interface ILowLevelDocumentModifier : IPdfObjectRegistry
 internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
 {
     private readonly PdfObjectRegistry builder;
-    [DelegateTo()]
+    [DelegateTo(Visibility = Visibility.Public)]
     private IPdfObjectRegistry InnerBuilder => builder;
     private readonly long priorXref;
 

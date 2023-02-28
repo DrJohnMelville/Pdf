@@ -12,7 +12,7 @@ internal partial class ParsingFileOwner
 {
     public partial class RentedStream : Stream
     {
-        [DelegateTo()]
+        [DelegateTo(Exclude = "LifetimeService")]
         private readonly Stream baseStream;
 
         private readonly long basePosition;

@@ -4,7 +4,7 @@ namespace Melville.Parsing.Streams;
 
 public partial class OneCharAtAtimeStream : Stream
 {
-    [DelegateTo] private Stream source;
+    [DelegateTo(Exclude = "LifetimeService")] private Stream source;
     public OneCharAtAtimeStream(byte[] source): this(new MemoryStream(source)){ { }
     }
     public OneCharAtAtimeStream(Stream source)
