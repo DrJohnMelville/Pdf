@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.ContentStreams;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -11,7 +12,7 @@ namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 /// </summary>
 /// <typeparam name="T">A GraphicsState descendant representing graphics state
 /// for a specific renderer.</typeparam>
-public sealed partial class GraphicsStateStack<T> : IGraphicsState, IDisposable
+public sealed partial class GraphicsStateStack<T> : IGraphicsState, IStateChangingOperations, IDisposable
     where T: GraphicsState, new()
 { 
     private readonly Stack<T> states;

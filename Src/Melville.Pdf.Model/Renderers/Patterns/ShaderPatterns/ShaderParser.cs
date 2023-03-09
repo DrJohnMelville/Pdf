@@ -8,6 +8,9 @@ using Melville.Pdf.LowLevel.Writers;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
+/// <summary>
+/// Parses a PdfDictionary representing a shader into an IShaderWriter
+/// </summary>
 public static class ShaderParser
 {
     /// <summary>

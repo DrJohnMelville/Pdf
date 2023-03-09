@@ -24,6 +24,11 @@ public record struct
         Vector2 RepeatSize,
         int TilePatternType)
 {
+    /// <summary>
+    /// Parse a PdfDictionary into a TileBrushRequest
+    /// </summary>
+    /// <param name="dict">The dictionary defining the tile brush</param>
+    /// <returns>A structure with many properties of the tile brush.</returns>
     public static async ValueTask<TileBrushRequest> Parse(PdfDictionary dict)
     {
         var pdfPattern = new PdfTilePattern(dict);

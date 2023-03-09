@@ -11,6 +11,9 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
+/// <summary>
+/// This class creates PDF pages
+/// </summary>
 public class PageCreator: ContentStreamCreator
 {
     private readonly List<PdfStream> streamSegments = new();

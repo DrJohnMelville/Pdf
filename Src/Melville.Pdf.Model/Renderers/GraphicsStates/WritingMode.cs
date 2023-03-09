@@ -6,6 +6,12 @@
 /// </summary>
 public enum WritingMode
 {
+    /// <summary>
+    /// Wrting proceeds left to right.
+    /// </summary>
     LeftToRight = 0,
+    /// <summary>
+    /// Not supported as of 3/1/2023 but writing proceeds top to bottom.
+    /// </summary>
     TopToBottom = 1
 }

@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -20,23 +21,20 @@ internal static class TokenChecker
     }
 
     private static (bool Success, SequencePosition Position) VerifyTag(
-        ReadResult source, byte[] template, out bool result)
+        ReadResult source, in ReadOnlySpan<byte> template, out bool result)
     {
         var reader = new SequenceReader<byte>(source.Buffer);
         return (reader.TryCheckToken(template, source.IsCompleted, out result), reader.Position);
     }
 
-    #warning  -- get rid of this method
-    [Obsolete("A lot of these should become shortstrings")]
-    public static bool TryCheckToken(this ref SequenceReader<byte> input, byte[] template, bool final,
+    public static bool TryCheckToken(this ref SequenceReader<byte> input, in ReadOnlySpan<byte> template, bool final,
         out bool result)
     {
         result = false;
-        foreach (var expected in template)
-        {
-            if (!input.TryRead(out var actual)) return final;
-            if (expected != actual) return true;
-        }
+        Span<byte> buffer = stackalloc byte[template.Length];
+        if (!input.TryCopyTo(buffer)) return false;
+        if (!buffer.SequenceEqual(template)) return true;
+        input.Advance(template.Length);
         result = true;
         return true;
     }

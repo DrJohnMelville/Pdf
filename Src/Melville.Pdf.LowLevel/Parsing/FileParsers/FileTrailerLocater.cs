@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -26,7 +27,7 @@ internal static class FileTrailerLocater
             while (SearchForS(await reader.ReadAsync().CA(), reader, end, out var foundPos))
             {
                 if (!foundPos) continue;
-                if (await TokenChecker.CheckToken(context.Reader, startXRef).CA())
+                if (await TokenChecker.CheckToken(context.Reader, StartXRef).CA())
                 {
                     await NextTokenFinder.SkipToNextToken(reader).CA();
                     do { } while (reader.ShouldContinue(GetLong(await reader.ReadAsync().CA(), out xrefPosition)));
@@ -73,8 +74,8 @@ internal static class FileTrailerLocater
         source.AdvanceTo(readResult.Buffer.End);
         return true;
     }
-    private static readonly byte[] startXRef = 
-        {116, 97, 114, 116, 120, 114, 101, 102}; // tartxref
+
+    private static readonly byte[] StartXRef = "tartxref"u8.ToArray(); 
 
     private static (bool Success, SequencePosition Position) VerifyTag(
         ReadResult source, byte[] tag, out bool validPos)

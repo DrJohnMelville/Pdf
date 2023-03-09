@@ -90,7 +90,7 @@ public readonly struct PdfReader
     /// <summary>
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
-    /// <param name="input">A PdfLowLevelDocument representing the PDF data to display.</param>
+    /// <param name="doc">A PdfLowLevelDocument representing the PDF data to display.</param>
     /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
     public ValueTask<DocumentRenderer> ReadFrom(PdfLowLevelDocument doc) =>
         ReadFrom(new PdfDocument(doc));
@@ -99,7 +99,7 @@ public readonly struct PdfReader
     /// <summary>
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
-    /// <param name="input">A PdfDocument representing the PDF data to display.</param>
+    /// <param name="doc">A PdfDocument representing the PDF data to display.</param>
     /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
     public ValueTask<DocumentRenderer> ReadFrom(PdfDocument doc) =>
         DocumentRendererFactory.CreateRendererAsync(doc, fontFactory);

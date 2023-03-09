@@ -16,7 +16,11 @@ namespace Melville.Pdf.LowLevel.Writers.PageExtraction;
 /// </summary>
 public readonly partial struct DeepCopy
 {
+    /// <summary>
+    /// An IPdfObjectRegistry that is the target of the copy operation
+    /// </summary>
     [FromConstructor] private readonly IPdfObjectRegistry creator;
+    
     private readonly Dictionary<(int, int), PdfObject> buffer = new();
 
     /// <summary>

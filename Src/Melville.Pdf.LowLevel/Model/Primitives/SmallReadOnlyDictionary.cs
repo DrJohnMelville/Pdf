@@ -16,6 +16,9 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDictionary<TKey, TValue>
      where TKey: class
 {
+    /// <summary>
+    /// The values that will be contained in the dictionary.
+    /// </summary>
     [FromConstructor] private readonly Memory<KeyValuePair<TKey, TValue>> data;
 
     /// <inheritdoc />

@@ -5,6 +5,9 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.Model.Creators;
 
+/// <summary>
+/// Creates objects which will eventually be stored in a content stream
+/// </summary>
 public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
 {
     private readonly IObjectStreamCreationStrategy objStreamStrategy;

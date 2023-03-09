@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
@@ -9,8 +9,10 @@
         you probably want to include one of the Melville.PDF.[Output Technology] packages rather than
         this one.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-
-    </PropertyGroup>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<DocumentationFile>true</DocumentationFile>
+	</PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
@@ -18,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Generators.INPC" Version="0.6.12" />
+      <PackageReference Include="Melville.Generators.INPC" Version="0.6.14" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
 

@@ -22,7 +22,7 @@ internal partial class SinglePageRenderContext
         Renderer.AdjustColorOperationsModel(new ColorMacroExpansions(Target.GraphicsState, page, Renderer)));
 }
 
-public readonly struct PendingItemsStack<T>
+internal readonly struct PendingItemsStack<T>
 {
     private readonly Stack<T> pedingObject = new();
 

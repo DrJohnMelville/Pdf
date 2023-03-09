@@ -16,6 +16,9 @@ namespace Melville.Pdf.Model.Documents;
 /// </summary>
 public readonly struct PdfDocument: IDisposable
 {
+    /// <summary>
+    /// The Low Level representation of this document
+    /// </summary>
     public PdfLowLevelDocument LowLevel { get; }
 
     /// <summary>

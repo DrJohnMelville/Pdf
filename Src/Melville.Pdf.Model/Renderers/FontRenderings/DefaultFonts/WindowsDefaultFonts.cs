@@ -15,6 +15,9 @@ using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
+/// <summary>
+/// This is a class tries to construct named font by checking the windows font directory.
+/// </summary>
 [StaticSingleton]
 public partial class WindowsDefaultFonts : IDefaultFontMapper
 {

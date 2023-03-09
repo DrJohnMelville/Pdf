@@ -55,7 +55,7 @@ public abstract class ItemWithResourceDictionaryCreator
     public void AddMetadata(PdfName name, PdfObject item) =>
         MetaData.WithItem(name, item);
 
-    protected void TryAddResources(IPdfObjectRegistry creator)
+    private protected void TryAddResources(IPdfObjectRegistry creator)
     {
         if (Resources.Count == 0) return;
         var res = new DictionaryBuilder();
@@ -90,6 +90,13 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="obj">The object to add</param>
     public void AddResourceObject(ResourceTypeName resourceType, PdfName name, PdfObject obj) =>
         AddResourceObject(resourceType, name, _ => obj);
+
+    /// <summary>
+    /// Add an object to the resource dictionary
+    /// </summary>
+    /// <param name="resourceType">Type of object</param>
+    /// <param name="name">Key for the object</param>
+    /// <param name="obj">A delegate that will create the object from a IPdfObjectRegistry</param>
     public void AddResourceObject(
         ResourceTypeName resourceType, PdfName name, Func<IPdfObjectRegistry,PdfObject> obj) =>
         Resources[(resourceType, name)] = obj;
@@ -101,6 +108,10 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="rect">The boc data.</param>
     public void AddBox(BoxName name, in PdfRect rect) => MetaData.WithItem(name, rect.ToPdfArray);
 
+    /// <summary>
+    /// Add a rotate declaration to the page dictionary
+    /// </summary>
+    /// <param name="rotation">The desired rotation value.</param>
     public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.Rotate, rotation);
 
     /// <summary>

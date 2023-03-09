@@ -2,6 +2,9 @@
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
 
+/// <summary>
+/// Static class that holds a few extension methods on the GraphicsState object
+/// </summary>
 public static class GraphicsStateHelpers
 {
     /// <summary>
@@ -42,4 +45,17 @@ public static class GraphicsStateHelpers
                 0, tFs,
                 0, tRise) * s.TextMatrix;
     }
+
+    /// <summary>
+    /// Compute a transform that will revert the current matrix bac; to the current matrix.
+    /// </summary>
+    /// <param name="gs"></param>
+    /// <returns></returns>
+    public static Matrix3x2 RevertToPixelsMatrix(this GraphicsState gs)
+    {
+        Matrix3x2.Invert(gs.InitialTransformMatrix, out var invInitial);
+        Matrix3x2.Invert(gs.TransformMatrix * invInitial, out var ret);
+        return ret;
+    }
+
 }

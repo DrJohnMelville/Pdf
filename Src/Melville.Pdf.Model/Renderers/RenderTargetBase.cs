@@ -51,7 +51,9 @@ public abstract class RenderTargetBase<T, TState>: IRenderTarget
     }
     
     #region Draw Shapes
-
+    /// <summary>
+    /// Create an IDrawTarget that will draw to the RenderTarget
+    /// </summary>
     public abstract IDrawTarget CreateDrawTarget();
     #endregion
 

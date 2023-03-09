@@ -12,15 +12,27 @@ using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
 
+/// <summary>
+/// Reads font files from a stream into an IRealizedFont
+/// </summary>
 public readonly struct FontReader
 {
     private readonly IDefaultFontMapper defaultMapper;
 
+    /// <summary>
+    /// Create a FontReader
+    /// </summary>
+    /// <param name="defaultMapper">IDefaultFontMapper to map the builting fonts to real fonts</param>
     public FontReader(IDefaultFontMapper defaultMapper)
     {
         this.defaultMapper = defaultMapper;
     }
     
+    /// <summary>
+    /// Gets an IRealizedFont from a Pdf font dictionary
+    /// </summary>
+    /// <param name="fontDict">A PdfDictionary representing the font</param>
+    /// <returns>An IRealizedFont that can render characters in the font.</returns>
     public  ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict) => 
          PdfFontToRealizedFont(new PdfFont(fontDict));
 

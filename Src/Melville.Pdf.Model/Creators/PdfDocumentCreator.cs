@@ -13,10 +13,20 @@ namespace Melville.Pdf.Model.Creators;
 /// </summary>
 public class PdfDocumentCreator
 {
+    /// <summary>
+    /// The LowLevelDocumentCreator that will receive the created document
+    /// </summary>
     public ILowLevelDocumentCreator LowLevelCreator { get; } = LowLevelDocumentBuilderFactory.New();
     private readonly DictionaryBuilder rootItems = new();
+    /// <summary>
+    /// The pages that will be included in the new document.
+    /// </summary>
     public PageTreeNodeCreator Pages { get; }
 
+    /// <summary>
+    /// Create a PdfDocumentCreator
+    /// </summary>
+    /// <param name="maxPageTreeNodeSize">Maximum pages or subnodes in a page tree node</param>
     public PdfDocumentCreator(int maxPageTreeNodeSize = 100)
     {
         Pages = new PageTreeNodeCreator(maxPageTreeNodeSize);

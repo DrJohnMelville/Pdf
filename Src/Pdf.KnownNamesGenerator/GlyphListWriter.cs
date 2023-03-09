@@ -42,6 +42,10 @@ public class GlyphListWriter
         output.AppendLine();
         output.AppendLine("public partial class GlyphNameToUnicodeMap");
         output.AppendLine("{");
+        output.AppendLine("/// <summary>");
+        output.AppendLine("/// This class converts FNV hashes of names in the Adobe Glyph list to ");
+        output.AppendLine("/// the corresponding unicode code point.");
+        output.AppendLine("/// </summary>");
         output.AppendLine("    public static readonly IGlyphNameMap AdobeGlyphList = new GlyphNameToUnicodeMap(new Dictionary <int, char>()");
         output.AppendLine("    {");
         

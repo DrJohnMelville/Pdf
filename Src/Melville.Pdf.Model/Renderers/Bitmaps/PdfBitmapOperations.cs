@@ -15,6 +15,9 @@ internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttribut
 {
 }
 
+/// <summary>
+/// Create a PdfBitmap from a bitmap PdfStream and a few related operations
+/// </summary>
 public static class PdfBitmapOperations
 {
     /// <summary>
@@ -29,7 +32,12 @@ public static class PdfBitmapOperations
     /// <param name="bitmap">Bitmap to inquire about</param>
     public static int TotalPixels(this IPdfBitmap bitmap) => bitmap.Width * bitmap.Height;
 
-
+    /// <summary>
+    /// Create a IPdfBitmap from a stream
+    /// </summary>
+    /// <param name="stream">The stream containing the bitmap.</param>
+    /// <param name="fillColor">The background color for the bitmap.</param>
+    /// <returns></returns>
     public static ValueTask<IPdfBitmap> WrapForRenderingAsync(
         this PdfStream stream, DeviceColor fillColor) =>
         WrapForRenderingAsync(stream, NoPageContext.Instance, fillColor);

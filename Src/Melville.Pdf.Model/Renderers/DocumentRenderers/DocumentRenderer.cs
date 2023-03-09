@@ -132,8 +132,14 @@ public abstract class DocumentRenderer: IDisposable
     private static int Scale(double freeDimension, float setValue, double setDimension) => 
         (int)(freeDimension * (setValue / setDimension));
 
+    /// <summary>
+    /// Gets the nth page of a document
+    /// </summary>
+    /// <param name="oneBasedPageNumber">The page number, starting at 1, for the desired page</param>
+    /// <returns>A HasRenderableContentStream implementation representing the page.</returns>
     protected abstract ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber);
 
+    /// <inheritdoc />
     public virtual void Dispose() => Cache.Dispose();
     
     /// <summary>

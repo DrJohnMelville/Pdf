@@ -14,6 +14,9 @@ namespace Melville.Pdf.Model.Documents;
 /// <param name="LowLevel">The low level Dictionary representing this item.</param>
 public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPageAttributes
 {
+    /// <summary>
+    /// Get a stream representing the content stream for this item.
+    /// </summary>
     public virtual ValueTask<Stream> GetContentBytes() => new(new MemoryStream());
 
     async ValueTask<IHasPageAttributes?> IHasPageAttributes.GetParentAsync() =>
@@ -22,6 +25,10 @@ public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPag
             ? new HasRenderableContentStream(dict)
             : null;
     
+    /// <summary>
+    /// Get a value indicating how the page should be initially rotated
+    /// </summary>
+    /// <returns>The desired rotation, in degrees</returns>
     public ValueTask<long> GetDefaultRotationAsync() => 
         LowLevel.GetOrDefaultAsync(KnownNames.Rotate, 0);
 }

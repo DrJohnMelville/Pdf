@@ -1,0 +1,2257 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Melville.Pdf.Model</name>
+    </assembly>
+    <members>
+        <member name="T:Melville.Pdf.Model.Creators.ContentStreamCreator">
+            <summary>
+            Creates objects which will eventually be stored in a content stream
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+            <summary>
+            Create the intended object after the resource dictionary is build
+            </summary>
+            <param name="creator">PdfObjectRegistry to create new indirect objects.</param>
+            <returns>Reference to the created object.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
+            <summary>
+            Add a content stream to the build object.
+            </summary>
+            <param name="builder">The DictionarBuilder from which to create the content stream.</param>
+            <param name="data">The data comprising the content stream.</param>
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.ContentStreamWritingImpl">
+            <summary>
+            This class implement convenience methods to write content streams.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamWritingImpl.AddToContentStreamAsync(Melville.Pdf.Model.Creators.PageCreator,System.Action{Melville.Pdf.LowLevel.Writers.ContentStreams.ContentStreamWriter})">
+            <summary>
+            Write a content stream to a page creator by calling methods on a
+            ContentStreamWriter
+            </summary>
+            <param name="pc">The PageCreator to add a content stream to.</param>
+            <param name="creator">An action that will call methods of the provided
+             ContentStreamWriter to define the desired content stream.</param>
+            <returns>A ValueTask to signal completion of the operation.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamWritingImpl.AddToContentStreamAsync(Melville.Pdf.Model.Creators.PageCreator,System.Func{Melville.Pdf.LowLevel.Writers.ContentStreams.ContentStreamWriter,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Write a content stream to a page creator by calling methods on a
+            ContentStreamWriter
+            </summary>
+            <param name="pc">The PageCreator to add a content stream to.</param>
+            <param name="creator">An action that will call methods of the provided
+             ContentStreamWriter to define the desired content stream.</param>
+            <returns>A ValueTask to signal completion of the operation.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamWritingImpl.AddToContentStreamAsync(Melville.Pdf.Model.Creators.ContentStreamCreator,Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,System.Func{Melville.Pdf.LowLevel.Writers.ContentStreams.ContentStreamWriter,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Write a content stream to a page creator by calling methods on a
+            ContentStreamWriter
+            </summary>
+            <param name="pc">The PageCreator to add a content stream to.</param>
+            <param name="dict">The DictionaryBuilder that will be used to create the content stream</param>
+            <param name="creator">An action that will call methods of the provided
+             ContentStreamWriter to define the desired content stream.</param>
+            <returns>A ValueTask to signal completion of the operation.</returns>
+        </member>
+        <member name="F:Melville.Pdf.Model.Creators.EncodeInObjectStream.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Creators.EncodeInObjectStream
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Creators.NoObjectStream.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Creators.NoObjectStream
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator">
+            <summary>
+            Parent of PageCreator and TilePatternCreator, this class generates items that can have
+            a resource dictionary.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.MetaData">
+            <summary>
+            Dictionary Builder that will eventually build the target item.  This allows items
+            to be added to the page or pattern dictionary.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.Resources">
+            <summary>
+            A dictionary of resource items, indexed by a resource type/name key.  The delegate
+            creates the given content from an IPdfObjectRegistry.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.#ctor(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder)">
+            <summary>
+            Create the ItemsWithResourceDictionaryCreator
+            </summary>
+            <param name="metaData"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+            <summary>
+            Construct the item that is crated by this creator
+            </summary>
+            <param name="creator">IPdfObjectRegistry that shold be used to create new top level objects</param>
+            <param name="parent">The parent of this item.</param>
+            <returns>A reference to the object created and the number of pages created by the method call.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddMetadata(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+            <summary>
+            Add an item to the top level item dictionary
+            </summary>
+            <param name="name">The key of the item to add.</param>
+            <param name="item">The item to add</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddResourceObject(Melville.Pdf.LowLevel.Model.Conventions.ResourceTypeName,Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+            <summary>
+            Add an object to the resource dictionary
+            </summary>
+            <param name="resourceType">Type of object</param>
+            <param name="name">Key for the object</param>
+            <param name="obj">The object to add</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddResourceObject(Melville.Pdf.LowLevel.Model.Conventions.ResourceTypeName,Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Func{Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfObject})">
+            <summary>
+            Add an object to the resource dictionary
+            </summary>
+            <param name="resourceType">Type of object</param>
+            <param name="name">Key for the object</param>
+            <param name="obj">A delegate that will create the object from a IPdfObjectRegistry</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddBox(Melville.Pdf.LowLevel.Model.Conventions.BoxName,Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@)">
+            <summary>
+            Add a box to the item metadata.  Pages and Pagetrees can have box objects.
+            </summary>
+            <param name="name">The type of box to add</param>
+            <param name="rect">The boc data.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddRotate(System.Int32)">
+            <summary>
+            Add a rotate declaration to the page dictionary
+            </summary>
+            <param name="rotation">The desired rotation value.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(System.String,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Conventions.FontEncodingName)">
+            <summary>
+            Add a standard font reference to the resource divtionary
+            </summary>
+            <param name="assignedName">The name assigned to the font.</param>
+            <param name="baseFont">The base font for the font</param>
+            <param name="encoding">The desired encoding</param>
+            <returns>The PDFName of the font</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Conventions.FontEncodingName)">
+            <summary>
+            Add a standard font reference to the resource divtionary
+            </summary>
+            <param name="assignedName">The name assigned to the font.</param>
+            <param name="baseFont">The base font for the font</param>
+            <param name="encoding">The desired encoding</param>
+            <returns>The PDFName of the font</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+            <summary>
+            Add a standard font reference to the resource divtionary
+            </summary>
+            <param name="assignedName">The name assigned to the font.</param>
+            <param name="baseFont">The base font for the font</param>
+            <param name="encoding">The desired encoding</param>
+            <returns>The PDFName of the font</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.PageCreator">
+            <summary>
+            This class creates PDF pages
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.InitializePromiseObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+            <summary>
+            Create an indirect object that will eventually become the Page dictionary.  This is used
+            wehn the page definition needs to refer back to the page object.  A client can get the
+            promised indirect object that will later be filled in with the page value.
+            </summary>
+            <param name="builder">The IPdfObjectRegistry from which to create the promise object</param>
+            <returns>the promise object</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.AddLastModifiedTime(Melville.Pdf.LowLevel.Model.Objects.StringEncodings.PdfTime)">
+            <summary>
+            Add a last modified time to the page object.
+            </summary>
+            <param name="dateAndTime">The last modified time to add</param>
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.PageTreeNodeCreator">
+            <summary>
+            This creates the nodes of the page tree.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageTreeNodeCreator.#ctor(System.Int32)">
+            <summary>
+            Construct a new PageTreeNodeCreator
+            </summary>
+            <param name="maxNodeSize">The maximum number of nodes or pages in a page tree node</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageTreeNodeCreator.CreatePage">
+            <summary>
+            Create a PageCreator that utilizes root level objects
+            </summary>
+            <returns>A PageCreator that can be used to define the page.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageTreeNodeCreator.CreatePageInObjectStream">
+            <summary>
+            A page creator that writes all of its objects to an object stream.
+            </summary>
+            <returns>The page creator used to define the page.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageTreeNodeCreator.CreateSubnode">
+            <summary>
+            Create a subnode of this PageTreeNode
+            </summary>
+            <returns>The child PageTreeNodeCreator</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PageTreeNodeCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+            <inheritdoc />
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.PdfDocumentCreator">
+            <summary>
+            Used to create a PdfLowLevelDocument by calling methods on a collection of creator classes.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Creators.PdfDocumentCreator.LowLevelCreator">
+            <summary>
+            The LowLevelDocumentCreator that will receive the created document
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Creators.PdfDocumentCreator.Pages">
+            <summary>
+            The pages that will be included in the new document.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.#ctor(System.Int32)">
+            <summary>
+            Create a PdfDocumentCreator
+            </summary>
+            <param name="maxPageTreeNodeSize">Maximum pages or subnodes in a page tree node</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.CreateDocument(System.Byte,System.Byte)">
+            <summary>
+            Construct the PdfLowLevelDocument
+            </summary>
+            <param name="major">The major version number</param>
+            <param name="minor">The minor version number</param>
+            <returns>The LowLevelPdfDocument created.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.SetVersionInCatalog(System.Byte,System.Byte)">
+            <summary>
+            Set a version number in the catalog, which may be different from the version number in the header.
+            </summary>
+            <param name="major">Major version number</param>
+            <param name="minor">Minor version number</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.SetVersionInCatalog(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+            <summary>
+            Set a version number in the catalog, which may be different from the version number in the header.
+            </summary>
+            <param name="version">Version number as a PdfName</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.AddToRootDictionary(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+            <summary>
+            Add an item to the document's root dictionaru
+            </summary>
+            <param name="name">Key for the added item</param>
+            <param name="obj">The object to be added.</param>
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.PatternPaintType">
+            <summary>
+            Pdf offers two type to TilePatterns this distinguished between them
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Creators.PatternPaintType.Colored">
+            <summary>
+            Specifies a colored tile pattern
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Creators.PatternPaintType.Uncolored">
+            <summary>
+            Specifies an uncolored tile pattern
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.PatternTileType">
+            <summary>
+            Pdf offers 3 types of tile pattern tiling modes.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Creators.PatternTileType.Constant">
+            <summary>
+            Allow small distortions of less that 1 device pixel to align tiles to device pixels
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Creators.PatternTileType.NoDistortion">
+            <summary>
+            Space consistently in PDF space with no distortion
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Creators.PatternTileType.FastConstant">
+            <summary>
+            Allow more than one device pixel distortion to ensure faster tiling
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Creators.TilePatternCreator">
+            <summary>
+            This is a builder class used to make tile pattern dictionaries
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.#ctor(Melville.Pdf.Model.Creators.PatternPaintType,Melville.Pdf.Model.Creators.PatternTileType,System.Double,System.Double,Melville.Pdf.LowLevel.Model.Wrappers.PdfRect)">
+            <summary>
+            Create a TilePatternCreator
+            </summary>
+            <param name="paint">Determines if this is a colored or uncolored tile pattern</param>
+            <param name="tile">Sets the tiling type for this tile pattern</param>
+            <param name="xStep">Horizontal spacing between pattern cells, in pattern units.</param>
+            <param name="yStep">Vertical spacing between pattern cells, in pattern units.</param>
+            <param name="bBox">Bounding box of the pattern cell in pattern units</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.AddMatrix(System.Numerics.Matrix3x2)">
+            <summary>
+            Add a matrix to the pattern dictionay
+            </summary>
+            <param name="matrix"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+            <inheritdoc />
+        </member>
+        <member name="T:Melville.Pdf.Model.Documents.FontFlags">
+            <summary>
+            This flags enum matches the FontFlags definition in the PDF Spec.  Due to a bug in the spec
+            some combinations like Symbolic | NonSumbolic are not meaningful.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.None">
+            <summary>
+            None of the other flags are set.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.FixedPitch">
+            <summary>
+            All characters are the same width
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.Serif">
+            <summary>
+            Font uses serifs on the ends of major lines
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.Symbolic">
+            <summary>
+            Font does not display natural language symbols
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.Script">
+            <summary>
+            Font has the appearance of cursive script
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.NonSymbolic">
+            <summary>
+            Font displays roman characters at their typical code points
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.Italic">
+            <summary>
+            Characters are skewed leading to an Italic font
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.AllCap">
+            <summary>
+            Font displays lower case letters as capital letters.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.SmallCap">
+            <summary>
+            All letters are shown with upper case shapes but lower case size.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Documents.FontFlags.ForceBold">
+            <summary>
+            Font is a bold font.
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Documents.HasRenderableContentStream">
+            <summary>
+            This is a base class for costume types PdfPage and PdfTilePattern, both of which
+            have a content stream.  It is implemented as a record, and PdfPageTree actually depends
+            on the equality members
+            </summary>
+            <param name="LowLevel">The low level Dictionary representing this item.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            This is a base class for costume types PdfPage and PdfTilePattern, both of which
+            have a content stream.  It is implemented as a record, and PdfPageTree actually depends
+            on the equality members
+            </summary>
+            <param name="LowLevel">The low level Dictionary representing this item.</param>
+        </member>
+        <member name="P:Melville.Pdf.Model.Documents.HasRenderableContentStream.LowLevel">
+            <summary>The low level Dictionary representing this item.</summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.GetContentBytes">
+            <summary>
+            Get a stream representing the content stream for this item.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.GetDefaultRotationAsync">
+            <summary>
+            Get a value indicating how the page should be initially rotated
+            </summary>
+            <returns>The desired rotation, in degrees</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Documents.PageTree">
+            <summary>
+            This is a costume type that represents the PageTree structure in a PdfDocument.
+            Helper methods expose the PageTree as a sequence of pages.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Documents.PageTree.LowLevel">
+            <summary>
+            Low level PdfDictionary representing this PageTree
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PageTree.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Create a PageTree from a low level PdfDictionary
+            </summary>
+            <param name="lowLevel">The low level dictionary defining the root of the page tree.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PageTree.CountAsync">
+            <summary>
+            Gets the number of pages in the tree
+            </summary>
+            <returns>The number of pages in the tree.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PageTree.GetAsyncEnumerator(System.Threading.CancellationToken)">
+            <summary>
+            Enumerates the pages in the tree.
+            </summary>
+            <param name="cancellationToken">A cancellation token to stop the async enumeration</param>
+            <returns>Enumerates the pages in the tree, in the proper page order.</returns>
+            <exception cref="T:Melville.Pdf.LowLevel.Model.Primitives.PdfParseException">Thew dictionary in LowLevel is not a valid PageTree.</exception>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PageTree.GetPageAsync(System.Int64)">
+            <summary>
+            Get a page by number.
+            </summary>
+            <param name="pageNumberOneBased">1 based number of the page to retrieve.</param>
+            <returns></returns>
+            <exception cref="T:Melville.Pdf.LowLevel.Model.Primitives.PdfParseException">Thew dictionary in LowLevel is not a valid PageTree.</exception>
+            <exception cref="T:System.IndexOutOfRangeException">No page exists with the given number</exception>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PageTree.KidsAsync">
+            <summary>
+            The Kids entry in the PageTree dictionary.  This is a lower level construct regarding the representation
+            of a large array of pages in PDF as a tree.
+            </summary>
+            <returns>The Kids array.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Documents.PdfArrayConcatStream">
+            <summary>
+            This class handles the case where a PDFArray defines a sequence of contentStreams.  We can avoid the extra array
+            allocation by enumerating the PdfArray directly and then extracting the content stream from each element as we need
+            it.
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Documents.PdfDocument">
+            <summary>
+            This is a costume class that represents a PDF document.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Documents.PdfDocument.LowLevel">
+            <summary>
+            The Low Level representation of this document
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfDocument.ReadAsync(System.IO.Stream,Melville.Pdf.LowLevel.Parsing.ParserContext.IPasswordSource)">
+            <summary>
+            Convenience method to read a PdfDocument from a stream.
+            </summary>
+            <param name="source">A readable and seekable stream containing a PDF document</param>
+            <param name="passwords">A password source to allow the low level parser to query the user for a password.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfDocument.#ctor(Melville.Pdf.LowLevel.Model.Document.PdfLowLevelDocument)">
+            <summary>
+            Create a PdfDocument from a PdfLowLevelDocument
+            </summary>
+            <param name="lowLevel"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfDocument.VersionAsync">
+            <summary>
+            Gets the effective PDF version for this document, prefering the document caalog if it differs from the
+            file header.
+            </summary>
+            <returns>A PDF name representing the header.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfDocument.PagesAsync">
+            <summary>
+            Gets the PageTree representing the pages in the document
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfDocument.OptionalContentProperties">
+            <summary>
+            Optional content declaration for the document
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfDocument.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:Melville.Pdf.Model.Documents.PdfPage">
+            <summary>
+            This record is the primary abstraction for a page in a pdf document.
+            </summary>
+            <param name="LowLevel"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfPage.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            This record is the primary abstraction for a page in a pdf document.
+            </summary>
+            <param name="LowLevel"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfPage.LastModifiedAsync">
+            <summary>
+            Get the last modified time for a page from the page's dictionary
+            </summary>
+            <returns>The last modified time if it exists, null otherwise.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfPage.GetContentBytes">
+            <summary>
+            Gets a C# stream that represents the content stream for this page
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.OptionalContent.AllOptionalContentVisible.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.OptionalContent.AllOptionalContentVisible
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.OptionalContent.IOptionalContentDisplayGroup">
+            <summary>
+            This interface abstracts nodes in the optional content display tree in the UP.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.IOptionalContentDisplayGroup.Name">
+            <summary>
+            Name of the optional content to be controlled.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.IOptionalContentDisplayGroup.Visible">
+            <summary>
+            Records if this content is currently visible.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.IOptionalContentDisplayGroup.ShowCheck">
+            <summary>
+            Records if a checkbox should be shown in the UI to change the visibility
+            of this content.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.IOptionalContentDisplayGroup.Children">
+            <summary>
+            A list of children of this content.
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.OptionalContent.IOptionalContentState">
+            <summary>
+            Controls the display of optional content within a PDF page.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.OptionalContent.IOptionalContentState.IsGroupVisible(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Given a content state group, determines if the group should be displayed
+            </summary>
+            <param name="dictionary">The content state group dictionary inquired about</param>
+            <returns>True if the item should be displayed, false otherwise.</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.IOptionalContentState.Configurations">
+            <summary>
+            A list of optional content group configurations supported by the document.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.OptionalContent.IOptionalContentState.ConstructUiModel(Melville.Pdf.LowLevel.Model.Objects.PdfArray)">
+            <summary>
+            Construct a tree of OptionalContentDisplayGroup objects, suitable for display in a user interface.
+            </summary>
+            <param name="order">The order array from an optional content group.</param>
+            <returns></returns>
+        </member>
+        <member name="E:Melville.Pdf.Model.OptionalContent.IOptionalContentState.SelectedContentChanged">
+            <summary>
+            Indicates when the selected visible content has changed.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.IOptionalContentState.SelectedConfiguration">
+            <summary>
+            The currently selected visibility configuration.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.OptionalContent.IOptionalContentState.AllVisible">
+            <summary>
+            Make all optional content visible.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration">
+            <summary>
+            Represents a PDF? Optional Content Configuration. spec 2.0 sec 8.11.4.3
+            </summary>
+            <param name="Name">Name of the group, suitable for display to the user</param>
+            <param name="Creator">Application or feature that created the group</param>
+            <param name="BaseState">Default visibility state of groups in this configuration</param>
+            <param name="On">Groups to be turned on at initialization.</param>
+            <param name="Off">Groups to be turned off at initialization.</param>
+            <param name="Order">Specifies the order in which groups are presented in the user interface.</param>
+            <param name="RadioButtons">Defines mutually exclusive visibility between content groups.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.#ctor(System.String,System.String,System.Nullable{System.Boolean},Melville.Pdf.LowLevel.Model.Objects.PdfDictionary[],Melville.Pdf.LowLevel.Model.Objects.PdfDictionary[],Melville.Pdf.LowLevel.Model.Objects.PdfArray,System.Collections.Generic.IReadOnlyList{Melville.Pdf.Model.OptionalContent.OptionalContentExclusionGroup})">
+            <summary>
+            Represents a PDF? Optional Content Configuration. spec 2.0 sec 8.11.4.3
+            </summary>
+            <param name="Name">Name of the group, suitable for display to the user</param>
+            <param name="Creator">Application or feature that created the group</param>
+            <param name="BaseState">Default visibility state of groups in this configuration</param>
+            <param name="On">Groups to be turned on at initialization.</param>
+            <param name="Off">Groups to be turned off at initialization.</param>
+            <param name="Order">Specifies the order in which groups are presented in the user interface.</param>
+            <param name="RadioButtons">Defines mutually exclusive visibility between content groups.</param>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.Name">
+            <summary>Name of the group, suitable for display to the user</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.Creator">
+            <summary>Application or feature that created the group</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.BaseState">
+            <summary>Default visibility state of groups in this configuration</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.On">
+            <summary>Groups to be turned on at initialization.</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.Off">
+            <summary>Groups to be turned off at initialization.</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.Order">
+            <summary>Specifies the order in which groups are presented in the user interface.</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.RadioButtons">
+            <summary>Defines mutually exclusive visibility between content groups.</summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.OptionalContent.OptionalContentExclusionGroup">
+            <summary>
+            Defines a set of OptionGroup items that cannot be simultaneously displayed
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.PdfReader">
+            <summary>
+            Factory class that constructs a DocumentRenderer from a variety of legal source types
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.#ctor(Melville.Pdf.LowLevel.Parsing.ParserContext.IPasswordSource,Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
+            <summary>
+            Construct a PdfReader.
+            </summary>
+            <param name="passwordSource">IPasswordSource to query when attempting to open a password protected
+            PDF file.  If this parameter is null, attempts to open a password protected PDF throw an exception</param>
+            <param name="fontFactory">IDefaultFontMapper instance that maps font names to font declarations for
+            fonts not embedded in the PDF file.  If null, defaults to WindowsDefaultFonts that looks for
+            fonts in the %windir%/Fonts directory.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.#ctor(Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
+            <summary>
+            Construct a PDF reader that will throw when attempting to open a password protected PDF.
+            </summary>
+            <param name="mapper">IDefaultFontMapper instance that maps font names to font declarations for
+            fonts not embedded in the PDF file.  If null, defaults to WindowsDefaultFonts that looks for
+            fonts in the %windir%/Fonts directory.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.ReadFrom(System.Object)">
+             <summary>
+             Read a pdf file from a variety of object types.
+            
+             This typeless method supports the PdfViewer control, which can accept multiple types via its Source property.
+             In code, call the type-specific overloads when possible.
+             </summary>
+             <param name="input">A filename, byte array, stream, PdfLowLevelDocument, PdfDocument, or DocumentRenderer to read from</param>
+             <returns>A DocumentRenderer that can render pages from the given source.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.ReadFromFile(System.String)">
+            <summary>
+            Read a pdf file into a DocumentRenderer
+            </summary>
+            <param name="input">File name of the PDF file.</param>
+            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.ReadFrom(System.Byte[])">
+            <summary>
+            Read a pdf file into a DocumentRenderer
+            </summary>
+            <param name="input">A byte array containing the PDF data.</param>
+            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.ReadFrom(System.IO.Stream)">
+            <summary>
+            Read a pdf file into a DocumentRenderer
+            </summary>
+            <param name="input">A stream containing the PDF data.  The stream must support reading and seeking.</param>
+            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.ReadFrom(Melville.Pdf.LowLevel.Model.Document.PdfLowLevelDocument)">
+            <summary>
+            Read a pdf file into a DocumentRenderer
+            </summary>
+            <param name="doc">A PdfLowLevelDocument representing the PDF data to display.</param>
+            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.ReadFrom(Melville.Pdf.Model.Documents.PdfDocument)">
+            <summary>
+            Read a pdf file into a DocumentRenderer
+            </summary>
+            <param name="doc">A PdfDocument representing the PDF data to display.</param>
+            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Bitmaps.BitmaoInterpolationRuleComputer">
+            <summary>
+            Determine if an IPdfBitmap should be drawn with Interpolation
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.BitmaoInterpolationRuleComputer.ShouldInterpolate(Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap,System.Numerics.Matrix3x2@)">
+            <summary>
+            Apply all the PDF rules to determine if an image should be interpolated when painting
+            </summary>
+            <param name="bitmap">The bitmap to be painted.</param>
+            <param name="currentTransform">The current view transform.</param>
+            <returns></returns>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.Bitmaps.FastBitmapWriterRGB8.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.Bitmaps.FastBitmapWriterRGB8
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap">
+            <summary>
+            Represents a PDF sampled image
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap.Width">
+            <summary>
+            Width of the image in pixels
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap.Height">
+            <summary>
+            Height of the image in pixels
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap.DeclaredWithInterpolation">
+            <summary>
+            Indicates that the image is declared that it should use interpolation upon expanding the image.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap.RenderPbgra(System.Byte*)">
+            <summary>
+            Fill the bitmap pointed to by buffer.
+            This is implemented as an unsafe pointer operation so that I can quickly fill native buffers,
+            deep in the graphics stack.
+            </summary>
+            <param name="buffer">A byte pointer which must point to the beginning of a buffer that
+            is Width * Height *4 bytes long</param>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Bitmaps.PdfBitmapOperations">
+            <summary>
+            Create a PdfBitmap from a bitmap PdfStream and a few related operations
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.PdfBitmapOperations.ReqiredBufferSize(Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap)">
+            <summary>
+            Buffer size needed to render the bitmap.
+            </summary>
+            <param name="bitmap">Bitmap to inquire about</param>
+            <returns>Buffer size, in bytes, needed to render the bitmap.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.PdfBitmapOperations.TotalPixels(Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap)">
+            <summary>
+            Number of pxels in the bitmap/
+            </summary>
+            <param name="bitmap">Bitmap to inquire about</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.PdfBitmapOperations.WrapForRenderingAsync(Melville.Pdf.LowLevel.Model.Objects.PdfStream,Melville.Pdf.Model.Renderers.Colors.DeviceColor)">
+            <summary>
+            Create a IPdfBitmap from a stream
+            </summary>
+            <param name="stream">The stream containing the bitmap.</param>
+            <param name="fillColor">The background color for the bitmap.</param>
+            <returns></returns>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.ColorOperations.NullColorOperations.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.ColorOperations.NullColorOperations
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.Colors.NoPageContext.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.Colors.NoPageContext
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.ColorSpaceCache.DefaultColor">
+            <summary>
+            The default color for this colorspace.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.ColorSpaceCache.SetColorFromBytes(System.ReadOnlySpan{System.Byte}@)">
+            <summary>
+            Set a color value using bytes as the input
+            </summary>
+            <param name="newColor">Bytes representing the color.</param>
+            <returns>The represented color.</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.ColorSpaceCache.ExpectedComponents">
+            <summary>
+            Number of components needed for this color.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.ColorSpaceCache.ColorComponentRanges(System.Int32)">
+            <summary>
+            Gives the range of each color component, for a given bits per component
+            </summary>
+            <param name="bitsPerComponent">Bits per component of the input</param>
+            <returns>Array of the range for each color components</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.ColorSpaceCache.AsValidDefaultColorSpace">
+            <summary>
+            If a indexed color space is set to a default of device color space, the underlying
+            colorspace is the default. 
+            </summary>
+            <returns>The colorspace that should be used as the default colorspace.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Colors.DeviceColor">
+            <summary>
+            Melville.PDF's primary objective is to render to the screen.  Screen colors are represented
+            by four bytes representing Red, Green, Blue, and Alpha in a SRGB colorspace.
+            </summary>
+            <param name="RedByte">A byte representing the red component</param>
+            <param name="GreenByte">A byte representing the green component</param>
+            <param name="BlueByte">A byte representing the blue component</param>
+            <param name="Alpha">A byte representing transparency 0 = fully transparent, 255 = fully opaque</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.DeviceColor.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Melville.PDF's primary objective is to render to the screen.  Screen colors are represented
+            by four bytes representing Red, Green, Blue, and Alpha in a SRGB colorspace.
+            </summary>
+            <param name="RedByte">A byte representing the red component</param>
+            <param name="GreenByte">A byte representing the green component</param>
+            <param name="BlueByte">A byte representing the blue component</param>
+            <param name="Alpha">A byte representing transparency 0 = fully transparent, 255 = fully opaque</param>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.DeviceColor.RedByte">
+            <summary>A byte representing the red component</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.DeviceColor.GreenByte">
+            <summary>A byte representing the green component</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.DeviceColor.BlueByte">
+            <summary>A byte representing the blue component</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.DeviceColor.Alpha">
+            <summary>A byte representing transparency 0 = fully transparent, 255 = fully opaque</summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.DeviceColor.FromDoubles(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Create a device color using doubles in the range of 0-1 to represent the four components
+            </summary>
+            <param name="red">The red component (0-1)</param>
+            <param name="green">The green component (0-1)</param>
+            <param name="blue">The blue component (0-1)</param>
+            <param name="alpha">The tranparency. 0 = Transparent - 1 = Opaque</param>
+            <returns>A DeviceColor Corresponding to the given components</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.DeviceColor.Invisible">
+            <summary>
+            A device color that is fully transparent
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.DeviceColor.Black">
+            <summary>
+            A device color that is opaque black
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.DeviceColor.AsPreMultiplied">
+            <summary>
+            Premultiply the color components by the alpha value
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.DeviceColor.AsArgbUint32">
+            <summary>
+            Pack the bytes into a uint packed 4 byte value.
+            </summary>
+            <returns>A 4 byte ARGB packed value.</returns>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.Colors.DeviceRgb.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.Colors.DeviceRgb
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Colors.IccProfileColorSpaceParser">
+            <summary>
+            Parse a ICCProfile from a PdfStream
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IccProfileColorSpaceParser.ParseAsync(Melville.Pdf.LowLevel.Model.Objects.PdfStream)">
+            <summary>
+            Parse a ICC profile from a PDF stream
+            </summary>
+            <param name="stream">The source to read the ICC profile from.</param>
+            <returns>The ICC colorspace read from the stream.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IccProfileColorSpaceParser.ParseAsync(System.IO.Stream)">
+            <summary>
+            Parse an ICC colorspace from a C@ Stream
+            </summary>
+            <param name="source">C# stream to read the profile from.</param>
+            <returns>Colorspace using the ICC profile.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Colors.IColorSpace">
+            <summary>
+            Represented a PDF Colorspace
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IColorSpace.SetColor(System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Convert a color in the colorspace to the device color.
+            </summary>
+            <param name="newColor">Color in the colorspace.</param>
+            <returns>DEviceColor corresponding to the color in the colorspace.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IColorSpace.DefaultColor">
+            <summary>
+            The default color for this colorspace.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IColorSpace.SetColorFromBytes(System.ReadOnlySpan{System.Byte}@)">
+            <summary>
+            Set a color value using bytes as the input
+            </summary>
+            <param name="newColor">Bytes representing the color.</param>
+            <returns>The represented color.</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Colors.IColorSpace.ExpectedComponents">
+            <summary>
+            Number of components needed for this color.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IColorSpace.ColorComponentRanges(System.Int32)">
+            <summary>
+            Gives the range of each color component, for a given bits per component
+            </summary>
+            <param name="bitsPerComponent">Bits per component of the input</param>
+            <returns>Array of the range for each color components</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IColorSpace.AsValidDefaultColorSpace">
+            <summary>
+            If a indexed color space is set to a default of device color space, the underlying
+            colorspace is the default. 
+            </summary>
+            <returns>The colorspace that should be used as the default colorspace.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Colors.Profiles.CmykIccProfile">
+            <summary>
+            Holds the static Cmyk to PCS profile
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.Profiles.CmykIccProfile.ReadCmykProfile">
+            <summary>
+            Get the cmyk ICC profile
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.Profiles.CmykIccProfile.GetCmykProfileStream">
+            <summary>
+            Load the CMYK ICC profile as a stream
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.IO.InvalidDataException"></exception>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Colors.StaticColorSpaces">
+            <summary>
+            Factory class for some of the device color spaces.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.StaticColorSpaces.DeviceRgb">
+            <summary>
+            A colorspace with Red, Green, and Blue channels
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.DocumentRenderers.ContentStreamPreviewRenderer">
+            <summary>
+            This is a document Renderer that will draw a loose content stream with no resources
+            to an IRenderTarget.  It exists so the low level viewer can preview glyphs from
+            Type 3 fonts.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.ContentStreamPreviewRenderer.#ctor(Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper,System.IO.Stream)">
+            <summary>
+            Create a ContentStreamPreviewRenderer
+            </summary>
+            <param name="fontMapper">Font library to map built in fonts.</param>
+            <param name="content">the stream to be rendered.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.ContentStreamPreviewRenderer.GetPageContent(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer">
+            <summary>
+            This class represents the state of the renderer, which may be refused between pages. 
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.TotalPages">
+            <summary>
+            Total pages available to render
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.FontMapper">
+            <summary>
+            Maps font names to fonts.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.Cache">
+            <summary>
+            Cache for partially done work that may be valuable later on.  (Es
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.OptionalContentState">
+            <summary>
+            Records the visibility of various optional content group.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.PatternRenderer(Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest@,Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <summary>
+            Create a DocumentRenderer that will render a tile pattern from this document.
+            </summary>
+            <param name="request">The tile brush to render.</param>
+            <param name="priorState">The graphics state at the time of the tile brush request.</param>
+            <returns>The DocumentReader that can render the TilePatternRequest.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.RenderPageTo(System.Int32,System.Func{Melville.Pdf.LowLevel.Model.Wrappers.PdfRect,System.Numerics.Matrix3x2,Melville.Pdf.Model.Renderers.IRenderTarget})">
+            <summary>
+            Render a given page to a target.
+            </summary>
+            <param name="oneBasedPageNumber">The page to render</param>
+            <param name="target">A factory method that creates a render target given a visible rectangle and matrix.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.InitializeRenderTarget(Melville.Pdf.Model.Renderers.IRenderTarget,Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@,System.Double,System.Double,System.Numerics.Matrix3x2@)">
+            <summary>
+            This method is usually called inside the callback passed to REnderPageTo. In this
+            method the client indicates the desired size and orientation of the rendered output.
+            </summary>
+            <param name="innerRenderer">The rendertarget that will eventually be returned to RenderPageTo</param>
+            <param name="rect">The background rectangle for the page.</param>
+            <param name="width">The width, in pixels of the rendered output</param>
+            <param name="height">The height, in pixels of the rendered output.</param>
+            <param name="PageRotationTransform">A matrix that adjusts the output for the page's default rotation</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.ScalePageToRequestedSize(Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@,System.Numerics.Vector2)">
+            <summary>
+            This method takes a requested size and computes the actual final size of th rendered page.  Parameters less than
+            0 are considered don't care values and appropriate defaults are used.
+            </summary>
+            <param name="pageSize">The rectangle representing the printed page in PDF units</param>
+            <param name="requestedSize">The requested size in pixels</param>
+            <returns></returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.GetPageContent(System.Int32)">
+            <summary>
+            Gets the nth page of a document
+            </summary>
+            <param name="oneBasedPageNumber">The page number, starting at 1, for the desired page</param>
+            <returns>A HasRenderableContentStream implementation representing the page.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer.AdjustColorOperationsModel(Melville.Pdf.LowLevel.Model.ContentStreams.IColorOperations)">
+            <summary>
+            Uncolored tile pattern renderers are required to ignore all color setting operators.  This
+            virtual method gives the Document renderer a mechanism to opt out of color functionality.
+            </summary>
+            <param name="inner">A suggested IColorOperations object that will actually execute the color operations</param>
+            <returns>The IColorOperations object to use -- typicially either the inner parameter or NullColorOperations.Instance</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRendererFactory">
+            <summary>
+            This class builds a document renderer from a PdfDocument.  It is largely responsible for
+            creating all of the document renderer's state and finding the page tree in the document/
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRendererFactory.CreateRenderer(Melville.Pdf.Model.Documents.HasRenderableContentStream,Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
+            <summary>
+            Create a document render fpr a given page with the given font mapper.  This method exists
+            for certain programs (like the low level viewer) with significant insight into the pdf
+            document structure and end up with a PdfPage object that they want to render.  The
+            vast majority of users should use the CreateRendererAsync method on this class to create
+            a single renderer for the entire PdfDocument and then render the desired pages from that.
+            This will ensure that reused elements are cached correctly, and optional content blocks
+            are evaluated correctly
+            </summary>
+            <param name="page">A PDF object (Page or tile pattern) to render.</param>
+            <param name="fontFactory">A font mapper to realize font definitions used in the content
+            stream</param>
+            <returns>A document renderer that can render the given item</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRendererFactory.CreateRendererAsync(Melville.Pdf.Model.Documents.PdfDocument,Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
+            <summary>
+            Given a PdfDocument and a font mapper, create the DocumentRenderer that can render
+            pages from that document.
+            </summary>
+            <param name="document">The PdfDocument to render</param>
+            <param name="fontFactory">IDefaultFontMapper to render fonts found within the document.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.GetNextGlyph(System.ReadOnlySpan{System.Byte}@)">
+            <summary>
+            gather the next glyph from an input span.  This could be one or more bytes depending on the font.
+            </summary>
+            <param name="input">The input to read from.</param>
+            <returns>The character index, glyph index, and number of bytes consumed.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.CharacterWidth(System.UInt32,System.Double)">
+            <summary>
+            The width, in text units, of a given character.  This is used to adjust the text matrix in a write operation.
+            </summary>
+            <param name="character">The character to be rendered.</param>
+            <param name="defaultWidth">The measured width of the character.</param>
+            <returns>The effective width of the character, usually taken from the PDF font definition.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.BeginFontWrite(Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget)">
+            <summary>
+            Begin writing a string to a target.
+            </summary>
+            <param name="target">A drawing target for the font write operation.</param>
+            <returns>An IFontWriteOperation that will render this font to the given target..</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.GlyphCount">
+            <summary>
+            The number of glyphs in the font.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.FamilyName">
+            <summary>
+            Family name of the font -- if there is one.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.Description">
+            <summary>
+            A descriptive string of information the font wants to expose to the low level UI
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.IsCachableFont">
+            <summary>
+            Returns true if the font rendering is invariant of the context in which is is rendered.
+            Type 3 fonts can pick up different resources on different pages, so they cannot be cached.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.SingleByteCharacters.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.SingleByteCharacters
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.TwoByteCharacters.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.TwoByteCharacters
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.DefaultFontReference">
+            <summary>
+            References a specific font, by index within a font file.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.DefaultFontReference.Source">
+            <summary>
+            The stream from which the font can be read.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.DefaultFontReference.Index">
+            <summary>
+            The index of the font within the stream.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.DefaultFontReference.#ctor(System.IO.Stream,System.Int32)">
+            <summary>
+            Auto generated constructor for DefaultFontReference
+            </summary>
+            <param name="source">The stream from which the font can be read.</param> 
+            <param name="index">The index of the font within the stream.</param> 
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper">
+            <summary>
+            A strategy implementation for mapping PDF default font names to actual fonts.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper.FontFromName(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.Model.Documents.FontFlags)">
+            <summary>
+            Get a Default Font reference for a given PDF Font name.
+            </summary>
+            <param name="font">The PDFName of the font</param>
+            <param name="flags">The fontflags from the font structure</param>
+            <returns>A DefaultFontReference from which the font can be built.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.SubstituteDefaultFont">
+            <summary>
+            Given a FontFlags value select a built in font that most closely  replaces the font.
+            This is used when a PDF file is missing a font or the font cannot be read and the
+            reader has to substitute a builtin font.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.SubstituteDefaultFont.MapBuiltInFont(Melville.Pdf.Model.Documents.FontFlags)">
+            <summary>
+            Get a default font PdfName that most closely resembles the font flags given
+            </summary>
+            <param name="flags">Fontflags for the type to immitate</param>
+            <returns>A PdfName corresponding to a built in font.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts">
+            <summary>
+            This is a class tries to construct named font by checking the windows font directory.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts.FontFromName(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.Model.Documents.FontFlags)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts.SetFontDirectory(System.String)">
+            <summary>
+            Sets the folder from which Melville.Pdf will look for system font files.
+            </summary>
+            <param name="fontFolder">The folder to look in for font files.</param>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.FontReader">
+            <summary>
+            Reads font files from a stream into an IRealizedFont
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.FontReader.#ctor(Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
+            <summary>
+            Create a FontReader
+            </summary>
+            <param name="defaultMapper">IDefaultFontMapper to map the builting fonts to real fonts</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.FontReader.DictionaryToRealizedFont(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Gets an IRealizedFont from a Pdf font dictionary
+            </summary>
+            <param name="fontDict">A PdfDictionary representing the font</param>
+            <returns>An IRealizedFont that can render characters in the font.</returns>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.FontWidths.NullFontWidthComputer.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.FontWidths.NullFontWidthComputer
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation">
+            <summary>
+            This interface manages a single font writing operation.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.AddGlyphToCurrentString(System.UInt32,System.Numerics.Matrix3x2)">
+            <summary>
+            Add a glyph outline to the current string.
+            </summary>
+            <param name="glyph">Index of the glyph to render.</param>
+            <param name="textMatrix">The current text matrix</param>
+            <returns>The width of the rendered glyph</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.RenderCurrentString(System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Render the glyph outlines previously added to this object.
+            </summary>
+            <param name="stroke">If true, the outline will be stroked with the stroke brush.</param>
+            <param name="fill">If true, the outline will be filled with the fill brush.</param>
+            <param name="clip">If true, the string will be added to the current clipping region.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.CreatePeerWriteOperation(Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget)">
+            <summary>
+            Create an IFontWriteOperation with a different target;
+            </summary>
+            <param name="target">The target that the new font write operation should write to.</param>
+            <returns>A writeroperation for the same font with a new target.</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont">
+            <summary>
+            This object represents a font that can map strings to glyphs and render glyphs to a target object
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.GetNextGlyph(System.ReadOnlySpan{System.Byte}@)">
+            <summary>
+            gather the next glyph from an input span.  This could be one or more bytes depending on the font.
+            </summary>
+            <param name="input">The input to read from.</param>
+            <returns>The character index, glyph index, and number of bytes consumed.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.CharacterWidth(System.UInt32,System.Double)">
+            <summary>
+            The width, in text units, of a given character.  This is used to adjust the text matrix in a write operation.
+            </summary>
+            <param name="character">The character to be rendered.</param>
+            <param name="defaultWidth">The measured width of the character.</param>
+            <returns>The effective width of the character, usually taken from the PDF font definition.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.BeginFontWrite(Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget)">
+            <summary>
+            Begin writing a string to a target.
+            </summary>
+            <param name="target">A drawing target for the font write operation.</param>
+            <returns>An IFontWriteOperation that will render this font to the given target..</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.GlyphCount">
+            <summary>
+            The number of glyphs in the font.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.FamilyName">
+            <summary>
+            Family name of the font -- if there is one.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.Description">
+            <summary>
+            A descriptive string of information the font wants to expose to the low level UI
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.IsCachableFont">
+            <summary>
+            Returns true if the font rendering is invariant of the context in which is is rendered.
+            Type 3 fonts can pick up different resources on different pages, so they cannot be cached.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.NullRealizedFont.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.NullRealizedFont
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget">
+            <summary>
+            This is the target of font writing operation.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget.RenderType3Character(System.IO.Stream,System.Numerics.Matrix3x2,Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Render the type 3 font character represented by the given matrix and font dictionary
+            </summary>
+            <param name="s">A content stream representing the character.</param>
+            <param name="fontMatrix">The font matrix</param>
+            <param name="fontDictionary">The dictionary defining the font -- which may contain resources.</param>
+            <returns>A valuetask containing the width of the rendered character.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget.CreateDrawTarget">
+            <summary>
+            Create a IDrawTarget that the stroked character can be drawn to.
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.IGraphicsState">
+            <summary>
+            This is an interface of all the methods for the state stack which is used a lot for method forwarding.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.IGraphicsState.CurrentState">
+            <summary>
+            Get the current Graphics State object
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1">
+            <summary>
+            This is a base class for thie renderer specific graphics state.  The generic type
+            is the native brush types in the target renderer.
+            </summary>
+            <typeparam name="T">Type that the render target uses to represent a brush.</typeparam>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.#ctor">
+            <summary>
+            Create a graphics state.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.StrokeColorChanged">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.NonstrokeColorChanged">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.CreateSolidBrush(Melville.Pdf.Model.Renderers.Colors.DeviceColor)">
+            <summary>
+            Create a solid color brush from a device color.
+            </summary>
+            <param name="color">The color for the brush</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.SetStrokePattern(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.SetNonstrokePattern(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.CreatePatternBrush(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+            <summary>
+            Create a pattern brush specific to the target renderer.
+            </summary>
+            <param name="pattern">The pattern to put in the brush.</param>
+            <param name="parentRenderer">DocumentRenderer with resources to render the pattern.</param>
+            <returns>Valuetask governing completion of the task.</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.StrokeBrush">
+            <summary>
+            Brush used to draw outlines on figures and glyphs
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.NonstrokeBrush">
+            <summary>
+            Brush used to fill figures and glyphs
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.CopyFrom(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <inheritdoc />
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState">
+            <summary>
+            This represents the current state of the Pdf Graphics Context
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SaveGraphicsState">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.RestoreGraphicsState">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.ModifyTransformMatrix(System.Numerics.Matrix3x2@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.ResetTransformMatrix">
+            <summary>
+            Sets the transform matrix to the identity matrix.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.ApplyCurrentTransform(System.Numerics.Vector2@)">
+            <summary>
+            Transform a point using the current transform matrix.
+            </summary>
+            <param name="point">The point to transform, in local coordinates.</param>
+            <returns>The input point, expressed in device coordinates.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineWidth(System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineCap(Melville.Pdf.LowLevel.Model.ContentStreams.LineCap)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineJoinStyle(Melville.Pdf.LowLevel.Model.ContentStreams.LineJoinStyle)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetMiterLimit(System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineDashPattern(System.Double,System.ReadOnlySpan{System.Double}@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineDashPattern(Melville.Pdf.LowLevel.Model.Objects.PdfArray)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetFlatnessTolerance(System.Double)">
+             <summary>
+             Content stream operator i.
+            
+             As of 3/1/2023 both renderers (WPF and Skia) ignore this parameter.  I preserve this
+             value because it is  part of the PDF standard and it may be useful to a renderer some day.
+             </summary>
+             <param name="flatness"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.LoadGraphicStateDictionary(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Load Graphics State from a Graphic State Dictionary
+            </summary>
+            <param name="dictionary"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.WritingMode">
+            <summary>
+            The current writing mode, although as of 3/1/2023 only left to right is supported.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetCharSpace(System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetWordSpace(System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetHorizontalTextScaling(System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextLeading(System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextRender(Melville.Pdf.LowLevel.Model.ContentStreams.TextRendering)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextRise(System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextMatrix(System.Numerics.Matrix3x2@)">
+            <summary>
+            Set the text matrix
+            </summary>
+            <param name="value">The new text matrix.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextLineMatrix(System.Numerics.Matrix3x2@)">
+            <summary>
+            Set the text line matrix
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetBothTextMatrices(System.Numerics.Matrix3x2@)">
+            <summary>
+            Set both the text and text line matrices.
+            </summary>
+            <param name="value">The new value for each matrices.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.StrokeColorChanged">
+            <summary>
+            Called when the stroke color changes, and allows the child to update the native brush.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.NonstrokeColorChanged">
+            <summary>
+            Called when the nonstroke color changes, and allows the child to update the native brush.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetRenderIntent(Melville.Pdf.LowLevel.Model.Conventions.RenderIntentName)">
+            <summary>
+            Set the rendering intent
+            </summary>
+            <param name="intent">The new rendering intent.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetStrokeColorSpace(Melville.Pdf.Model.Renderers.Colors.IColorSpace)">
+            <summary>
+            Set the stroke color space.
+            </summary>
+            <param name="colorSpace">The new colorspace</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetNonstrokeColorSpace(Melville.Pdf.Model.Renderers.Colors.IColorSpace)">
+            <summary>
+            Sets the nonstroking colorspace.
+            </summary>
+            <param name="colorSpace">The new colorspace.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.CurrentState">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetStrokeColor(System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Set the stroking color.
+            </summary>
+            <param name="color">A span of doubles representing the color in
+            the current colorspace</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetNonstrokingColor(System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Set the stroking color.
+            </summary>
+            <param name="color">A span of doubles representing the color in
+            the current colorspace</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTypeface(Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont)">
+            <summary>
+            Set the current font.
+            </summary>
+            <param name="realizedFont">The font to use.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetPageSize(System.Double,System.Double)">
+            <summary>
+            Set the size of the printed page, in Pdf units
+            </summary>
+            <param name="width">The desired width.</param>
+            <param name="height">The desired height.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.TryRegisterDispose``1(``0)">
+            <summary>
+            Adds an item to the list of items to be disposed of when the graphic state is disposed.
+            </summary>
+            <param name="item">The item to be disposed</param>
+            <typeparam name="T">The type of the argument passed</typeparam>
+            <returns>The parameter passed in</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetStrokePattern(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+            <summary>
+            Set a pattern brush to the current stroke brush
+            </summary>
+            <param name="pattern">The pattern dictionary for the new brush.</param>
+            <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
+            <returns>A valuetask noting the completion of the action.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetNonstrokePattern(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+            <summary>
+            Set a pattern brush to the current nonstroking brush
+            </summary>
+            <param name="pattern">The pattern dictionary for the new brush.</param>
+            <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
+            <returns>A valuetask noting the completion of the action.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.StoreInitialTransform">
+            <summary>
+            Designate the current transform matrix as the initial matrix for the page.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.TransformMatrix">
+            <summary>
+            Transforms local coordinates to device coordinates
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.InitialTransformMatrix">
+            <summary>
+            Transforms the visible box to device coordinates
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.TextMatrix">
+            <summary>
+            Transform 0,0 to the location of the next character to be drawn
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.TextLineMatrix">
+            <summary>
+            Transform for the beginning of the current text line.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.LineWidth">
+            <summary>
+            Width of stroked lines, in local coordinates.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.MiterLimit">
+            <summary>
+            Controls how long to point of a miter line joint can be.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.LineJoinStyle">
+            <summary>
+            Controls how the joint between two line segmets is drawn
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.LineCap">
+            <summary>
+            Controls how the ends of of paths are drawn
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.DashPhase">
+            <summary>
+            The initial phase of a dashed line.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.FlatnessTolerance">
+            <summary>
+            Not currently used, but could control the flatness precision in bezier curve rendering
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.DashArray">
+            <summary>
+            dash or dot pattern for dotted lines
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.RenderIntent">
+            <summary>
+            The desired rendering intent for various color transformations
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.StrokeColorSpace">
+            <summary>
+            Color space for stroking brushes.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.NonstrokeColorSpace">
+            <summary>
+            Color space for nonstroking brushes.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.StrokeColor">
+            <summary>
+            Color for stroking brushes.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.NonstrokeColor">
+            <summary>
+            Color for nonstroking brushes
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.CharacterSpacing">
+            <summary>
+            Space to add between characters
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.WordSpacing">
+            <summary>
+            Additional space to add to a ' ' (space or 0x20) character
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.TextLeading">
+            <summary>
+            The space between two lines of text in local coordinate units.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.TextRise">
+            <summary>
+            The vertical offset of the next character above the text baseline.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.HorizontalTextScale">
+            <summary>
+            Factor by which text should be stretched or compressed horizontally.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.TextRender">
+            <summary>
+            Describes whether text should be stroked, filled, and or added to the current clipping region.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.Typeface">
+            <summary>
+            The font to write characters with.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.FontSize">
+            <summary>
+            The font size to write characters.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.PageWidth">
+            <summary>
+            Width of the page in device pixels
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.PageHeight">
+            <summary>
+            Height of the page in device pixels
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.CopyFrom(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <summary>
+            Duplicate a GraphicsState by shallow copying all of its values.
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateHelpers">
+            <summary>
+            Static class that holds a few extension methods on the GraphicsState object
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateHelpers.IsDashedStroke(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <summary>
+            Is the current line style  dashed.
+            </summary>
+            <param name="gs">The graphic state being queried.</param>
+            <returns>True if the current line style is likely to be dashed,
+            false if it is definitely solid.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateHelpers.EffectiveLineWidth(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <summary>
+            In PDF zero line widths are one pixel wide.  This converts a raw width to the actual width.
+            </summary>
+            <param name="state">The graphic state being queried.</param>
+            <returns>The width of the line to be drawn at the current time.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateHelpers.GlyphTransformMatrix(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <summary>
+            The matrix that will transform the next text glyph to be rendered, accomodating
+            all the current graphhic parameters.
+            </summary>
+            <param name="s">The graphic state being queried.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateHelpers.RevertToPixelsMatrix(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <summary>
+            Compute a transform that will revert the current matrix bac; to the current matrix.
+            </summary>
+            <param name="gs"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1">
+            <summary>
+            This represents a stack of graphics states.  Pushed states copy the top state and
+            then can be popped off.
+            </summary>
+            <typeparam name="T">A GraphicsState descendant representing graphics state
+            for a specific renderer.</typeparam>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.StronglyTypedCurrentState">
+            <summary>
+            The topmost current graphics state.
+            </summary>
+        </member>
+        <member name="E:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.ContextPushed">
+            <summary>
+            Occurs just after a new context gets pushed.
+            </summary>
+        </member>
+        <member name="E:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.BeforeContextPopped">
+            <summary>
+            Occurs just before an old context gets popped off the stack.
+            </summary>
+        </member>
+        <member name="E:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.TransformPushed">
+            <summary>
+            Occurs when a new matrix is popped.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.#ctor">
+            <summary>
+            Construct a new GraphicsStateStack
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SaveGraphicsState">
+            <summary>
+            Push a fresh graphics state on top of the stack.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.RestoreGraphicsState">
+            <summary>
+            Top the top graphics state from the top of the stack.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.ModifyTransformMatrix(System.Numerics.Matrix3x2@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.CurrentState">
+            <summary>
+            Get the current Graphics State object
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.StackTransitionEventArgs`1">
+            <summary>
+            This is a class that holds message parameters when a context state is pushed or popped
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.StackTransitionEventArgs`1.Context">
+            <summary>
+            The context that was pushed or popped.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.StackTransitionEventArgs`1.#ctor(`0)">
+            <summary>
+            Auto generated constructor for StackTransitionEventArgs
+            </summary>
+            <param name="context">The context that was pushed or popped.</param> 
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.TransformPushedEventArgs">
+            <summary>
+            This class holds events when the transform is pushed.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.TransformPushedEventArgs.NewMatrix">
+            <summary>
+            The new matrix that was pushed.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.GraphicsStates.TransformPushedEventArgs.CumulativeMatrix">
+            <summary>
+            The new cumulative view matrix.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.TransformPushedEventArgs.#ctor(System.Numerics.Matrix3x2,System.Numerics.Matrix3x2)">
+            <summary>
+            Auto generated constructor for TransformPushedEventArgs
+            </summary>
+            <param name="newMatrix">The new matrix that was pushed.</param> 
+            <param name="cumulativeMatrix">The new cumulative view matrix.</param> 
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.WritingMode">
+            <summary>
+            Determines whether writing flows from left to right or top to bottom.
+            As of 2/18/2023 only left to write writing mode is actually implemented
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.GraphicsStates.WritingMode.LeftToRight">
+            <summary>
+            Wrting proceeds left to right.
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.GraphicsStates.WritingMode.TopToBottom">
+            <summary>
+            Not supported as of 3/1/2023 but writing proceeds top to bottom.
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.IDrawTarget">
+            <summary>
+            Target of a PDF drawing operation
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.SetDrawingTransform(System.Numerics.Matrix3x2@)">
+            <summary>
+            Set tje drawing transform.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.MoveTo(System.Double,System.Double)">
+            <summary>
+            Move the current point to a position.
+            </summary>
+            <param name="x">Horizontal coordinate to move to.</param>
+            <param name="y">Vertical coordinate to move to.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.LineTo(System.Double,System.Double)">
+            <summary>
+            Draw a line from the current point to a given point.
+            </summary>
+            <param name="x">Horizontal coordinate to draw to.</param>
+            <param name="y">Vertical coordinate to draw to.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.ConicCurveTo(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Draw a parabolic bezier curve
+            </summary>
+            <param name="controlX">Horizontal component of the control point</param>
+            <param name="controlY">Vertical component of the control point</param>
+            <param name="finalX">Horizontal component of the final point</param>
+            <param name="finalY">Vertical component of the final point</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.CurveTo(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Draw a cubic bezier curve.
+            </summary>
+            <param name="control1X">Horizontal component of the first control point</param>
+            <param name="control1Y">Vertical component of the first control point</param>
+            <param name="control2X">Horizontal component of the second control point</param>
+            <param name="control2Y">Vertical component of the second control point</param>
+            <param name="finalX">Horizontal component of the final point</param>
+            <param name="finalY">Vertical component of the final point</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.ClosePath">
+            <summary>
+            Draw a line from the current point to the beginning of this polycurve, and close it.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.PaintPath(System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Paint the current path.
+            </summary>
+            <param name="stroke">Draw the outline with the current stroking brush.</param>
+            <param name="fill">Fill the shape with the current nonstroking brush.</param>
+            <param name="evenOddFillRule">True to use the even odd rule, false to use the winding rule.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IDrawTarget.ClipToPath(System.Boolean)">
+            <summary>
+             Add the current path to the current clipping region.
+            </summary>
+            <param name="evenOddRule">True to use the even odd rule, false to use the winding rule.</param>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.IRenderTarget">
+            <summary>
+            The target of a PDF rendering operation that must be implemented too paint PDFs in different technologies.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.IRenderTarget.GraphicsState">
+            <summary>
+            The current graphics state.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.RenderBitmap(Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap)">
+            <summary>
+            Draw a bitmap.
+            </summary>
+            <param name="bitmap">The IPdfBitmap to paint</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.CreateDrawTarget">
+            <summary>
+            Create a draw target that can draw shapes.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.SetBackgroundRect(Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@,System.Double,System.Double,System.Numerics.Matrix3x2@)">
+            <summary>
+            Setup the page and background size for the render target.
+            </summary>
+            <param name="rect"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="transform"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.MapUserSpaceToBitmapSpace(Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@,System.Double,System.Double,System.Numerics.Matrix3x2@)">
+            <summary>
+            Setup the initial transform from a page clipping rectangle to device space.
+            </summary>
+            <param name="rect">The clipping rectangle in PDF coordinates</param>
+            <param name="xPixels">The desired output width, in device coordinates</param>
+            <param name="yPixels">The desired output height, in device coordinates</param>
+            <param name="adjustOutput">A transform matrix that will adjust the output.  In practice
+            this is used to implement default page rotation</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.CloneStateFrom(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <summary>
+            Close this target's graphics state from a prior state.  This is used for XForms, type 3 fonts and
+            other items that inherit a graphics state from their context.
+            </summary>
+            <param name="priorState">The previous state to duiplicate.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.WrapRealizedFont(Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont)">
+            <summary>
+            Allows the renderer to adjust or replace every IRealizedFont used in the document.  The WPF Renderer
+            uses this methods to wrap fonts in a renderer-specific glyph caching mechanism.
+            </summary>
+            <param name="font">An IRealizedFont, parsed out of a font file or stream</param>
+            <returns>The IRealizedFont that should be used to draw characters in this font.</returns>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.OptionalContents.NullOptionalContentCounter.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.OptionalContents.NullOptionalContentCounter
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.OptionalContents.OptionalContentDrawTarget.SetDrawingTransform(System.Numerics.Matrix3x2@)">
+            <summary>
+            Set tje drawing transform.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.OptionalContents.OptionalContentDrawTarget.MoveTo(System.Double,System.Double)">
+            <summary>
+            Move the current point to a position.
+            </summary>
+            <param name="x">Horizontal coordinate to move to.</param>
+            <param name="y">Vertical coordinate to move to.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.OptionalContents.OptionalContentDrawTarget.LineTo(System.Double,System.Double)">
+            <summary>
+            Draw a line from the current point to a given point.
+            </summary>
+            <param name="x">Horizontal coordinate to draw to.</param>
+            <param name="y">Vertical coordinate to draw to.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.OptionalContents.OptionalContentDrawTarget.ConicCurveTo(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Draw a parabolic bezier curve
+            </summary>
+            <param name="controlX">Horizontal component of the control point</param>
+            <param name="controlY">Vertical component of the control point</param>
+            <param name="finalX">Horizontal component of the final point</param>
+            <param name="finalY">Vertical component of the final point</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.OptionalContents.OptionalContentDrawTarget.CurveTo(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Draw a cubic bezier curve.
+            </summary>
+            <param name="control1X">Horizontal component of the first control point</param>
+            <param name="control1Y">Vertical component of the first control point</param>
+            <param name="control2X">Horizontal component of the second control point</param>
+            <param name="control2Y">Vertical component of the second control point</param>
+            <param name="finalX">Horizontal component of the final point</param>
+            <param name="finalY">Vertical component of the final point</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.OptionalContents.OptionalContentDrawTarget.ClosePath">
+            <summary>
+            Draw a line from the current point to the beginning of this polycurve, and close it.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.OptionalContents.OptionalContentDrawTarget.ClipToPath(System.Boolean)">
+            <summary>
+            Add the current path to the current clipping region.
+            </summary>
+            <param name="evenOddRule">True to use the even odd rule, false to use the winding rule.</param>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns.IShaderWriter">
+             <summary>
+            Unsafe and async do not play well together.  The idea is to have an async factory that
+             discovers all the data needed to write the shader.  This creates an IShaderWriter which can
+            synchronously to write the bitmap using a pointer.  We use pointers to accomodate the Writeablebitmap
+             in WPF.
+             </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns.IShaderWriter.RenderBits(System.UInt32*,System.Int32,System.Int32)">
+            <summary>
+            Write the pattern to a device bitmap
+            </summary>
+            <param name="bits">The bits of the bitmap -- must be height * width long.</param>
+            <param name="width">Width </param>
+            <param name="height"></param>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns.ShaderParser">
+            <summary>
+            Parses a PdfDictionary representing a shader into an IShaderWriter
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns.ShaderParser.ParseShader(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Parse a shader dictionary into an IShaderWriter
+            </summary>
+            <param name="patternDictionary">The PdfDictioanry representing the pattern.</param>
+            <returns>An IShaderWriter to write the shader data</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern">
+            <summary>
+            This is a costume type that represents wraps a dictionary as a tile pattern.
+            </summary>
+            <param name="LowLevel">The PdfDictionary that represents the pattern.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            This is a costume type that represents wraps a dictionary as a tile pattern.
+            </summary>
+            <param name="LowLevel">The PdfDictionary that represents the pattern.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.GetContentBytes">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.XStep">
+            <summary>
+            The horizontal size of the pattern cell
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.YStep">
+            <summary>
+            The vertical size of the pattern cell
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.BBox">
+            <summary>
+            Bounding box for the pattern cell.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.Matrix">
+            <summary>
+            Patternn matrix transform.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.PaintType">
+            <summary>
+            The paint type for the tile pattern.
+            </summary>
+            <returns>1 is for a Colored Tile Pattern, and 2 for an Uncolored Tile Pattern</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest">
+            <summary>
+            Parses a tile brush dictionary to a request for a tile brush.
+            </summary>
+            <param name="TilePattern">The pattern to paint.</param>
+            <param name="PatternTransform">Transform for the pattern.</param>
+            <param name="BoundingBox">The bounding box for the content cell.</param>
+            <param name="RepeatSize">The size of the grid that tiles.</param>
+            <param name="TilePatternType">Colored or uncolored tile pattern.</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.#ctor(Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern,System.Numerics.Matrix3x2,Melville.Pdf.LowLevel.Model.Wrappers.PdfRect,System.Numerics.Vector2,System.Int32)">
+            <summary>
+            Parses a tile brush dictionary to a request for a tile brush.
+            </summary>
+            <param name="TilePattern">The pattern to paint.</param>
+            <param name="PatternTransform">Transform for the pattern.</param>
+            <param name="BoundingBox">The bounding box for the content cell.</param>
+            <param name="RepeatSize">The size of the grid that tiles.</param>
+            <param name="TilePatternType">Colored or uncolored tile pattern.</param>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.TilePattern">
+            <summary>The pattern to paint.</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.PatternTransform">
+            <summary>Transform for the pattern.</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.BoundingBox">
+            <summary>The bounding box for the content cell.</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.RepeatSize">
+            <summary>The size of the grid that tiles.</summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.TilePatternType">
+            <summary>Colored or uncolored tile pattern.</summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.Parse(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Parse a PdfDictionary into a TileBrushRequest
+            </summary>
+            <param name="dict">The dictionary defining the tile brush</param>
+            <returns>A structure with many properties of the tile brush.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CurrentState">
+            <summary>
+            Get the current Graphics State object
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.RenderTargetBase`2">
+            <summary>
+            This is a base class to help target implementations implement IRenderTarget.
+            </summary>
+            <typeparam name="T">The object which the renderer will write the page data to.</typeparam>
+            <typeparam name="TState"></typeparam>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.RenderTargetBase`2.Target">
+            <summary>
+            The object that the renderer will write the PDF data to.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.RenderTargetBase`2.State">
+            <summary>
+            The current graphics state.
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.RenderTargetBase`2.GraphicsState">
+            <summary>
+            The current graphics state.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.#ctor(`0)">
+            <summary>
+            Create a RenderTargetBase
+            </summary>
+            <param name="target">The tar</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.MapUserSpaceToBitmapSpace(Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@,System.Double,System.Double,System.Numerics.Matrix3x2@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.CreateDrawTarget">
+            <summary>
+            Create an IDrawTarget that will draw to the RenderTarget
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.CloneStateFrom(Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.RenderBitmap(Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.SetBackgroundRect(Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@,System.Double,System.Double,System.Numerics.Matrix3x2@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.WrapRealizedFont(Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

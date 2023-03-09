@@ -24,6 +24,11 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         this.maxNodeSize = maxNodeSize;
         metaData.WithItem(KnownNames.Type, KnownNames.Pages);
     }
+
+    /// <summary>
+    /// Construct a new PageTreeNodeCreator
+    /// </summary>
+    /// <param name="maxNodeSize">The maximum number of nodes or pages in a page tree node</param>
     public PageTreeNodeCreator(int maxNodeSize):this(new() ,new List<ItemWithResourceDictionaryCreator>(), maxNodeSize)
     {
     }

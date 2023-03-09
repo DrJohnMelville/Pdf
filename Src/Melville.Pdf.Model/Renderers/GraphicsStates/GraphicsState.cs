@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -13,6 +14,7 @@ using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
+
 
 /// <summary>
 /// This is an interface of all the methods for the state stack which is used a lot for method forwarding.
@@ -31,11 +33,17 @@ public interface IGraphicsState : IStateChangingOperations
 /// is the native brush types in the target renderer.
 /// </summary>
 /// <typeparam name="T">Type that the render target uses to represent a brush.</typeparam>
-[MacroItem("T", "StrokeBrush", "default!")]
-[MacroItem("T", "NonstrokeBrush", "default!")]
-[MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
+[MacroItem("T", "StrokeBrush", "Brush used to draw outlines on figures and glyphs")]
+[MacroItem("T", "NonstrokeBrush", "Brush used to fill figures and glyphs")]
+[MacroCode("""
+        /// <summary>
+        /// ~2~
+        /// </summary>
+        public ~0~ ~1~ {get; private set;} = default!;
+        """)]
 [MacroCode("    ~1~ = ((GraphicsState<T>)other).~1~;",
     Prefix = """
+       /// <inheritdoc />
        public override void CopyFrom(GraphicsState other)
        {
            base.CopyFrom(other);
@@ -81,54 +89,78 @@ public abstract partial class GraphicsState<T> : GraphicsState
     protected abstract ValueTask<T> CreatePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer);
 }
 
+/// <summary>
+/// This represents the current state of the Pdf Graphics Context
+/// </summary>
 public abstract partial class GraphicsState: IGraphicsState, IDisposable
 {
-    [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity")]
-    [MacroItem("Matrix3x2", "InitialTransformMatrix", "Matrix3x2.Identity")]
-    [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity")]
-    [MacroItem("Matrix3x2", "TextLineMatrix", "Matrix3x2.Identity")]
-    [MacroItem("double", "LineWidth", "1.0")]
-    [MacroItem("double", "MiterLimit", "10.0")]
-    [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter")]
-    [MacroItem("LineCap", "LineCap", "LineCap.Butt")]
-    [MacroItem("double", "DashPhase", "0.0")]
-    [MacroItem("double", "FlatnessTolerance", "1.0")]
-    [MacroItem("double[]", "DashArray", "Array.Empty<double>()")]
-    [MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric")]
-    [MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance")]
-    [MacroItem("IColorSpace", "NonstrokeColorSpace", "DeviceGray.Instance")]
-    [MacroItem("DeviceColor", "StrokeColor", "DeviceColor.Black")]
-    [MacroItem("DeviceColor", "NonstrokeColor", "DeviceColor.Black")]
+    /// <inheritdoc />
+    [MacroItem("Matrix3x2", "TransformMatrix", "Matrix3x2.Identity", "Transforms local coordinates to device coordinates")]
+    [MacroItem("Matrix3x2", "InitialTransformMatrix", "Matrix3x2.Identity", "Transforms the visible box to device coordinates")]
+    [MacroItem("Matrix3x2", "TextMatrix", "Matrix3x2.Identity", "Transform 0,0 to the location of the next character to be drawn")]
+    [MacroItem("Matrix3x2", "TextLineMatrix", "Matrix3x2.Identity", "Transform for the beginning of the current text line.")]
+    [MacroItem("double", "LineWidth", "1.0", "Width of stroked lines, in local coordinates.")]
+    [MacroItem("double", "MiterLimit", "10.0", "Controls how long to point of a miter line joint can be.")]
+    [MacroItem("LineJoinStyle", "LineJoinStyle", "LineJoinStyle.Miter", "Controls how the joint between two line segmets is drawn")]
+    [MacroItem("LineCap", "LineCap", "LineCap.Butt", "Controls how the ends of of paths are drawn")]
+    [MacroItem("double", "DashPhase", "0.0", "The initial phase of a dashed line.")]
+    [MacroItem("double", "FlatnessTolerance", "1.0", "Not currently used, but could control the flatness precision in bezier curve rendering")]
+    [MacroItem("double[]", "DashArray", "Array.Empty<double>()", "dash or dot pattern for dotted lines")]
+    [MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric", "The desired rendering intent for various color transformations")]
+    [MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance", "Color space for stroking brushes.")]
+    [MacroItem("IColorSpace", "NonstrokeColorSpace", "DeviceGray.Instance", "Color space for nonstroking brushes.")]
+    [MacroItem("DeviceColor", "StrokeColor", "DeviceColor.Black", "Color for stroking brushes.")]
+    [MacroItem("DeviceColor", "NonstrokeColor", "DeviceColor.Black", "Color for nonstroking brushes")]
 
     // Text Properties
-    [MacroItem("double", "CharacterSpacing", "0.0")]
-    [MacroItem("double", "WordSpacing", "0.0")]
-    [MacroItem("double", "TextLeading", "0.0")]
-    [MacroItem("double", "TextRise", "0.0")]
-    [MacroItem("double", "HorizontalTextScale", "1.0")]
-    [MacroItem("TextRendering", "TextRender", "TextRendering.Fill")]
-    [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance")]
-    [MacroItem("double", "FontSize", "0.0")]
+    [MacroItem("double", "CharacterSpacing", "0.0", "Space to add between characters")]
+    [MacroItem("double", "WordSpacing", "0.0", "Additional space to add to a ' ' (space or 0x20) character")]
+    [MacroItem("double", "TextLeading", "0.0", "The space between two lines of text in local coordinate units.")]
+    [MacroItem("double", "TextRise", "0.0", "The vertical offset of the next character above the text baseline.")]
+    [MacroItem("double", "HorizontalTextScale", "1.0", "Factor by which text should be stretched or compressed horizontally.")]
+    [MacroItem("TextRendering", "TextRender", "TextRendering.Fill", "Describes whether text should be stroked, filled, and or added to the current clipping region.")]
+    [MacroItem("IRealizedFont", "Typeface", "NullRealizedFont.Instance", "The font to write characters with.")]
+    [MacroItem("double", "FontSize", "0.0", "The font size to write characters.")]
 
     //PageSizes
-    [MacroItem("double", "PageWidth", "1")]
-    [MacroItem("double", "PageHeight", "1")]
+    [MacroItem("double", "PageWidth", "1", "Width of the page in device pixels")]
+    [MacroItem("double", "PageHeight", "1", "Height of the page in device pixels")]
 
     // code
-    [MacroCode("public ~0~ ~1~ {get; private set;} = ~2~;")]
+    [MacroCode("""
+          /// <summary>
+          /// ~3~
+          /// </summary>
+          public ~0~ ~1~ {get; private set;} = ~2~;
+
+          """)]
     [MacroCode("    ~1~ = other.~1~;", Prefix = """
+         /// <summary>
+         /// Duplicate a GraphicsState by shallow copying all of its values.
+         /// </summary>
          public virtual void CopyFrom(GraphicsState other)
          {
          """, Postfix = "}")]
     public void SaveGraphicsState() => throw new NotSupportedException("Needs to be intercepted");
+
+    /// <inheritdoc />
     public void RestoreGraphicsState()=> throw new NotSupportedException("Needs to be intercepted");
 
+    /// <inheritdoc />
     public void ModifyTransformMatrix(in Matrix3x2 newTransform) => 
         TransformMatrix = newTransform * TransformMatrix;
 
+    /// <summary>
+    /// Sets the transform matrix to the identity matrix.
+    /// </summary>
     public void ResetTransformMatrix() => 
         TransformMatrix = Matrix3x2.Identity;
 
+    /// <summary>
+    /// Transform a point using the current transform matrix.
+    /// </summary>
+    /// <param name="point">The point to transform, in local coordinates.</param>
+    /// <returns>The input point, expressed in device coordinates.</returns>
     public Vector2 ApplyCurrentTransform(in Vector2 point) => Vector2.Transform(point, TransformMatrix);
 
     #region Drawing
@@ -159,8 +191,13 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
         DashArray = await pattern.AsDoublesAsync().CA();
     }
     
-    // as of 11/18/2021 this parameter is ignored by both the Pdf and Skia renderers, but
-    // we will preserve the property.
+    /// <summary>
+    /// Content stream operator i.
+    ///
+    /// As of 3/1/2023 both renderers (WPF and Skia) ignore this parameter.  I preserve this
+    /// value because it is  part of the PDF standard and it may be useful to a renderer some day.
+    /// </summary>
+    /// <param name="flatness"></param>
     public void SetFlatnessTolerance(double flatness) => FlatnessTolerance = flatness;
     
 
@@ -210,6 +247,9 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
 
     #region Text State
 
+    /// <summary>
+    /// The current writing mode, although as of 3/1/2023 only left to right is supported.
+    /// </summary>
     public WritingMode WritingMode => WritingMode.LeftToRight;
 
     /// <inheritdoc />
@@ -349,7 +389,15 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     #region Disposal
 
     private readonly DisposeList pendingDispose = new();
+
+    /// <inheritdoc />
     public void Dispose() => pendingDispose.Dispose();
+    /// <summary>
+    /// Adds an item to the list of items to be disposed of when the graphic state is disposed.
+    /// </summary>
+    /// <param name="item">The item to be disposed</param>
+    /// <typeparam name="T">The type of the argument passed</typeparam>
+    /// <returns>The parameter passed in</returns>
     protected T TryRegisterDispose<T>(T item) => pendingDispose.TryRegister(item);
 
     #endregion
@@ -375,20 +423,5 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     public void StoreInitialTransform()
     {
         InitialTransformMatrix = TransformMatrix;
-    }
-}
-
-public static class GraphicsStateOperations
-{
-    /// <summary>
-    /// Compute a transform that will revert the current matrix bac; to the current matrix.
-    /// </summary>
-    /// <param name="gs"></param>
-    /// <returns></returns>
-    public static Matrix3x2 RevertToPixelsMatrix(this GraphicsState gs)
-    {
-        Matrix3x2.Invert(gs.InitialTransformMatrix, out var invInitial);
-        Matrix3x2.Invert(gs.TransformMatrix * invInitial, out var ret);
-        return ret;
     }
 }

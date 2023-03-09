@@ -63,10 +63,8 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
         };
     }
 
-    private static string DictionaryTitle(PdfName type)
-    {
-        return (type == KnownNames.Type?"Dictionary":type.ToString());
-    }
+    private static string DictionaryTitle(PdfName type) => 
+        (type == KnownNames.Type?"Dictionary":type.ToString())??"Dictionary";
 
     private async Task<DocumentPart[]> ParseDictionaryChildren(PdfDictionary item)
     {
@@ -95,7 +93,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public ValueTask<DocumentPart> Visit(PdfIndirectObject item) =>
         new(new ReferencePartViewModel(ConsumePrefix(), item.ObjectNumber, item.GenerationNumber));
 
-    public ValueTask<DocumentPart> Visit(PdfName item) => Terminal(item.ToString());
+    public ValueTask<DocumentPart> Visit(PdfName item) => Terminal(item.ToString() ?? "<Null>");
 
     public ValueTask<DocumentPart> Visit(PdfInteger item) => Terminal(item.IntValue.ToString());
 
