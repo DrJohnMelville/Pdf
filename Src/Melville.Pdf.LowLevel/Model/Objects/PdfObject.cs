@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Visitors;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 

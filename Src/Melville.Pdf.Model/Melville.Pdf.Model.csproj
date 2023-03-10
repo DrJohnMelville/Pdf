@@ -10,7 +10,6 @@
         this one.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 		<DocumentationFile>true</DocumentationFile>
 	</PropertyGroup>
 
@@ -20,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Generators.INPC" Version="0.6.14" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
 

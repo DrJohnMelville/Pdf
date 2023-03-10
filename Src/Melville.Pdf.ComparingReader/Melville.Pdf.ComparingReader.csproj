@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.6.14" />
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.6.15" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,11 +23,4 @@
       <ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
       <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Melville.WpfControls, Version=0.5.16.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\..\..\.nuget\packages\melville.wpfcontrols\0.5.16\lib\net5.0-windows7.0\Melville.WpfControls.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
 </Project>

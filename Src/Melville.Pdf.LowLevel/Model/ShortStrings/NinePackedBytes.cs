@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Buffers;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.ShortStrings;
 

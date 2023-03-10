@@ -1853,6 +1853,74 @@
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.Dispose">
             <inheritdoc />
         </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetLineWidth(System.Double)">
+            <summary>
+            Content stream operator lineWidth w
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetLineCap(Melville.Pdf.LowLevel.Model.ContentStreams.LineCap)">
+            <summary>
+            Content stream operator linecap J
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetLineJoinStyle(Melville.Pdf.LowLevel.Model.ContentStreams.LineJoinStyle)">
+            <summary>
+            Content stream operator lineJoinStyle j
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetMiterLimit(System.Double)">
+            <summary>
+            Content stream operator miterLimit M
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetLineDashPattern(System.Double,System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator dashArray dashphase d
+            Note the parameters are flipped from the PDF representation to accomodate a params extension method.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetFlatnessTolerance(System.Double)">
+            <summary>
+            Content stream operator tolerance i
+            </summary>
+            <param name="flatness"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetCharSpace(System.Double)">
+            <summary>
+            Content stream operator charSpace Tc
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetWordSpace(System.Double)">
+            <summary>
+            Content stream operator wordSpace Tw
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetHorizontalTextScaling(System.Double)">
+            <summary>
+            Content stream operator scale Tz
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetTextLeading(System.Double)">
+            <summary>
+            Content stream operator leading TL
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
+            <summary>
+            Content stream operator font fontSize Tf
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetTextRender(Melville.Pdf.LowLevel.Model.ContentStreams.TextRendering)">
+            <summary>
+            Context stream textRendering Tr
+            </summary>
+            <param name="rendering"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetTextRise(System.Double)">
+            <summary>
+            Content stream operator rise Ts
+            </summary>
+        </member>
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.CurrentState">
             <summary>
             Get the current Graphics State object
@@ -2197,9 +2265,236 @@
             <param name="dict">The dictionary defining the tile brush</param>
             <returns>A structure with many properties of the tile brush.</returns>
         </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokingColorSpace(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+            <summary>
+            Content stream operator CS
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorSpace(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+            <summary>
+            Content stream operator cs
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeColor(System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator SC
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColor(System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator sc
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeColorExtended(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator SCN
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorExtended(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator scn
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeGray(System.Double)">
+            <summary>
+            Content stream operator G
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeRGB(System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator RG
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeCMYK(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator K
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingGray(System.Double)">
+            <summary>
+            Content stream operator g
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingRGB(System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator rg
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingCMYK(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator k
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetRenderIntent(Melville.Pdf.LowLevel.Model.Conventions.RenderIntentName)">
+            <summary>
+            Content stream operator renderingIntent ri
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SaveGraphicsState">
+            <summary>
+            Content Stream Operator q
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.RestoreGraphicsState">
+            <summary>
+            Content Stream Operator Q
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetLineWidth(System.Double)">
+            <summary>
+            Content stream operator lineWidth w
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetLineCap(Melville.Pdf.LowLevel.Model.ContentStreams.LineCap)">
+            <summary>
+            Content stream operator linecap J
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetLineJoinStyle(Melville.Pdf.LowLevel.Model.ContentStreams.LineJoinStyle)">
+            <summary>
+            Content stream operator lineJoinStyle j
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetMiterLimit(System.Double)">
+            <summary>
+            Content stream operator miterLimit M
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetLineDashPattern(System.Double,System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator dashArray dashphase d
+            Note the parameters are flipped from the PDF representation to accomodate a params extension method.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetFlatnessTolerance(System.Double)">
+            <summary>
+            Content stream operator tolerance i
+            </summary>
+            <param name="flatness"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetCharSpace(System.Double)">
+            <summary>
+            Content stream operator charSpace Tc
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetWordSpace(System.Double)">
+            <summary>
+            Content stream operator wordSpace Tw
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetHorizontalTextScaling(System.Double)">
+            <summary>
+            Content stream operator scale Tz
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetTextLeading(System.Double)">
+            <summary>
+            Content stream operator leading TL
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetTextRender(Melville.Pdf.LowLevel.Model.ContentStreams.TextRendering)">
+            <summary>
+            Context stream textRendering Tr
+            </summary>
+            <param name="rendering"></param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetTextRise(System.Double)">
+            <summary>
+            Content stream operator rise Ts
+            </summary>
+        </member>
         <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CurrentState">
             <summary>
             Get the current Graphics State object
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.MoveTo(System.Double,System.Double)">
+            <summary>
+            Content stream operator x y m
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.LineTo(System.Double,System.Double)">
+            <summary>
+            Content stream operator x y l
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CurveTo(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator control1X control1Y control2X control2Y finalX finalY c
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CurveToWithoutInitialControl(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator control2X control2Y finalX finalY v
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CurveToWithoutFinalControl(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator control2X control2Y finalX finalY y
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.ClosePath">
+            <summary>
+            Content stream operator h
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.Rectangle(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator x y width height re
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.StrokePath">
+            <summary>
+            Content stream operator S </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CloseAndStrokePath">
+            <summary>
+            Content stream operator s
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.FillPath">
+            <summary>
+            Content stream operator f
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.FillPathEvenOdd">
+            <summary>
+            Content stream operator f*
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.FillAndStrokePath">
+            <summary>
+            Content stream operator B
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.FillAndStrokePathEvenOdd">
+            <summary>
+            Content stream operator B*
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CloseFillAndStrokePath">
+            <summary>
+            Content stream operator b
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.CloseFillAndStrokePathEvenOdd">
+            <summary>
+            Content stream operator b*
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.EndPathWithNoOp">
+            <summary>
+            Content stream operator n
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.ClipToPath">
+            <summary>
+            Content stream operator W
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.ClipToPathEvenOdd">
+            <summary>
+            Content stream operator W*
             </summary>
         </member>
         <member name="T:Melville.Pdf.Model.Renderers.RenderTargetBase`2">

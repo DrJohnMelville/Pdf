@@ -17,4 +17,9 @@
 		<InternalsVisibleTo Include="Performance.Playground"/>
 		<InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
 	</ItemGroup>
+
+	<ItemGroup>
+		<Analyzer Include="..\..\..\Melville\src\Melville.Generators.INPC\bin\Release\netstandard2.0\Melville.Generators.INPC.dll"/>
+	</ItemGroup>
+
 </Project>
