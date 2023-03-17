@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.FileOrganization;
 
-public readonly struct FileFlags
+internal readonly struct FileFlags
 {
     private readonly byte data;
 

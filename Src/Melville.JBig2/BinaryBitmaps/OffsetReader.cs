@@ -1,6 +1,6 @@
 ﻿namespace Melville.JBig2.BinaryBitmaps;
 
-public ref struct OffsetReader
+internal ref struct OffsetReader
 {
     private readonly int readOffset;
     private int buffer;

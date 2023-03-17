@@ -34,6 +34,9 @@ public class JBigSorter
         this.desiredPage = desiredPage;
     }
 
+    /// <summary>
+    /// Parse the source buffer and write out thee sorted segments to their respective buffers
+    /// </summary>
     public void Sort()
     {
         var fileFlags = new FileFlags(sourceBuffer[8]);
@@ -83,7 +86,7 @@ public class JBigSorter
         return segmentRecord.Header.SegmentType != SegmentType.EndOfFile;
     }
 
-    public void WriteSegment()
+    private void WriteSegment()
     {
         var header = segments.Dequeue();
         if (WantPage(header.Header.Page) && ! SegmentIsUnusedInPdf(header.Header))

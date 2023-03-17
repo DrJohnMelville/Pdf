@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public partial struct BitmapPointer
+internal partial struct BitmapPointer
 {
     private static readonly byte[] zeroArray = { 0 };
     public static BitmapPointer EmptyRow => new(zeroArray.AsMemory(), int.MaxValue, 0);

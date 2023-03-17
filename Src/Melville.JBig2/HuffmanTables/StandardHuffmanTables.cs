@@ -289,7 +289,7 @@ public static readonly HuffmanLine[] B13 = {
     };
 }
 
-public static class DirectBitstreamReaders
+internal static class DirectBitstreamReaders
 {
     public static readonly HuffmanLine[] ZeroBit = { new(0, 0, 0, 0, 0) };
     public static readonly HuffmanLine[] OneBit = { new(0, 0, 1, 0, 1) };

@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Melville.JBig2.HuffmanTables;
 
-public ref struct PrefixCode
+internal ref struct PrefixCode
 {
     private short currentCode = 0;
     public short CodeLength { get; set; } = 0;
@@ -27,7 +27,7 @@ public ref struct PrefixCode
     }
 }
 
-public ref struct BitAssignment
+internal ref struct BitAssignment
 {
     public static void AssignPrefixes(in ReadOnlySpan<int> prefixLengths, in Span<int> prefixes) => 
         new BitAssignment(prefixLengths, prefixes).AssignPrefixesForAllLengths();

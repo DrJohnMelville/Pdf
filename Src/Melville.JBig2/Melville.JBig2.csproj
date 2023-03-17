@@ -7,6 +7,7 @@
         <Title>Melville.JBig2</Title>
         <PackageDescription>Read JBig formatted image files.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

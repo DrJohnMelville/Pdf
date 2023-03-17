@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public ref partial struct BitRowWriter
+internal ref partial struct BitRowWriter
 {
 
     [FromConstructor] private readonly byte[] array;

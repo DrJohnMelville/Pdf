@@ -5,7 +5,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.JBig2.HuffmanTables;
 
-public readonly struct HuffmanCode
+internal readonly struct HuffmanCode
 {
     public int PrefixLength { get; }
     private readonly int prefixData;
@@ -22,7 +22,7 @@ public readonly struct HuffmanCode
     public bool IsEqualTo(in HuffmanCode other) => PrefixLength == other.PrefixLength && prefixData == other.prefixData;
 }
 
-public readonly struct HuffmanLine
+internal readonly struct HuffmanLine
 {
     public int PrefixLengh => code.PrefixLength;
     private readonly HuffmanCode code;

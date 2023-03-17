@@ -5,7 +5,7 @@ using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.JBig2.SegmentParsers.TextRegions;
 
-public ref struct RunCodeInterpreter
+internal ref struct RunCodeInterpreter
 {
     public SequenceReader<byte> source;
     private BitReader reader;

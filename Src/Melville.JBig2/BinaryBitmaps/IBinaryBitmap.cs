@@ -50,7 +50,15 @@ internal interface IBinaryBitmap: IJBigBitmap
     BitmapPointer PointerFor(int row, int col);
 }
 
+/// <summary>
+/// Implements extension methods on IBinryBitmap
+/// </summary>
 public static class IBinaryBitmapOperations
 {
+    /// <summary>
+    /// Size of the buffer needed to hold a binarybitmap
+    /// </summary>
+    /// <param name="bitmap">The binarybitmap inquired about</param>
+    /// <returns>Length, in bytes of the needed bitmap.</returns>
     public static int BufferLength(this IJBigBitmap bitmap) => bitmap.Stride * bitmap.Height;
 }

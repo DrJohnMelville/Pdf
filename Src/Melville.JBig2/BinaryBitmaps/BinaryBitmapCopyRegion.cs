@@ -2,7 +2,7 @@
 
 namespace Melville.JBig2.BinaryBitmaps;
 
-public readonly struct BinaryBitmapCopyDimension
+internal readonly struct BinaryBitmapCopyDimension
 {
     public int SrcBegin { get; }
     public int SrcExclusiveEnd { get; }
@@ -30,7 +30,7 @@ public readonly struct BinaryBitmapCopyDimension
     public readonly bool IsTrivial() => Length <= 0;
 }
 
-public readonly struct BinaryBitmapCopyRegion
+internal readonly struct BinaryBitmapCopyRegion
 {
     public readonly BinaryBitmapCopyDimension Vertical;
     public readonly BinaryBitmapCopyDimension Horizontal;
