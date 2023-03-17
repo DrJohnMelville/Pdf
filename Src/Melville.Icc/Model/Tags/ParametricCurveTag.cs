@@ -18,28 +18,60 @@ public interface ICurveTag
     public float Evaluate(float input);
 }
 
+/// <summary>
+/// A null object pattern for ICurveTag -- a curve that always returns its input
+/// </summary>
 [StaticSingleton]
 public partial class NullCurve : ICurveTag
 {
+    /// <inheritdoc />
     public float Evaluate(float input) => input;
 }
 
-public partial class ParametricCurveTag: ICurveTag
+/// <summary>
+/// Evaluates one of a number of paarametric curves from table 65 in the spec
+/// </summary>
+public partial class ParametricCurveTag : ICurveTag
 {
+    /// <summary>
+    /// Curve parameter G
+    /// </summary>
     public float G { get; }
+
+    /// <summary>
+    /// Curve parameter A
+    /// </summary>
     public float A { get; }
+
+    /// <summary>
+    /// Curve parameter B
+    /// </summary>
     public float B { get; }
+
+    /// <summary>
+    /// Curve parameter C
+    /// </summary>
     public float C { get; }
+
+    /// <summary>
+    /// Curve parameter D
+    /// </summary>
     public float D { get; }
+
+    /// <summary>
+    /// Curve parameter E
+    /// </summary>
     public float E { get; }
+
+    /// <summary>
+    /// Curve parameter F
+    /// </summary>
     public float F { get; }
 
     /// <inheritdoc />
     public float Evaluate(float input)
     {
-        return input >= D ? 
-            (float)(Math.Pow(A * input + B, G) + C) : 
-            E * input + F;
+        return input >= D ? (float)(Math.Pow(A * input + B, G) + C) : E * input + F;
     }
 
     internal ParametricCurveTag(float g, float a, float b, float c, float d, float e, float f)
@@ -73,20 +105,20 @@ public partial class ParametricCurveTag: ICurveTag
     };
 
     private static (float, float, float, float, float MinValue, float, float) ReadType0Function(
-        ref SequenceReader<byte> reader) => (reader.Reads15Fixed16(), 1f,0f, 0f, float.MinValue, 0f, 0f);
+        ref SequenceReader<byte> reader) => (reader.Reads15Fixed16(), 1f, 0f, 0f, float.MinValue, 0f, 0f);
 
-    private static (float G, float A, float B, float C, float D, float E, float F) 
+    private static (float G, float A, float B, float C, float D, float E, float F)
         ReadType1Function(ref SequenceReader<byte> reader)
     {
         var g = reader.Reads15Fixed16();
         var a = reader.Reads15Fixed16();
         var b = reader.Reads15Fixed16();
-        return (g, a,b, 0f, -b/a, 0f, 0f);
+        return (g, a, b, 0f, -b / a, 0f, 0f);
     }
 
-    private static (float G, float A, float B, float C, float D, float E, float F) 
-        ReadType2Function(ref SequenceReader<byte> reader) => 
-        ReadType1Function(ref reader) with {C = reader.Reads15Fixed16()};
+    private static (float G, float A, float B, float C, float D, float E, float F)
+        ReadType2Function(ref SequenceReader<byte> reader) =>
+        ReadType1Function(ref reader) with { C = reader.Reads15Fixed16() };
 
     private (float G, float A, float B, float C, float D, float E, float F) ReadType3Function(
         ref SequenceReader<byte> reader)
@@ -101,7 +133,7 @@ public partial class ParametricCurveTag: ICurveTag
     }
 
     private (float G, float A, float B, float C, float D, float E, float F) ReadType4Function(
-        ref SequenceReader<byte> reader) => 
+        ref SequenceReader<byte> reader) =>
         (reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16(),
-        reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16());
+            reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16());
 }

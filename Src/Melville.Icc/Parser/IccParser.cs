@@ -13,6 +13,10 @@ namespace Melville.Icc.Parser;
 public readonly struct IccParser
 {
     private readonly IByteSource source;
+    /// <summary>
+    /// Create a new parser from a byteSource
+    /// </summary>
+    /// <param name="source"></param>
     public IccParser(PipeReader source)
     {
         this.source = new ByteSource(source); 

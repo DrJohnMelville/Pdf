@@ -13,11 +13,17 @@ namespace Melville.Icc.Model.Tags;
 /// <param name="Value">String value as Unicode UTF-16BE</param>
 public record struct SingleUincodeString(ushort Language, ushort Country, string Value);
 
+/// <summary>
+/// An ICC block which contains a unicode string which may be localized to multiple language/country pairs.
+/// </summary>
 public class MultiLocalizedUnicodeTag
 {
+    /// <summary>
+    /// The versions of the striung in multiple language/couontry pairs
+    /// </summary>
     public IReadOnlyList<SingleUincodeString> Encodings { get; }
 
-    public MultiLocalizedUnicodeTag(ref SequenceReader<byte> reader)
+    internal MultiLocalizedUnicodeTag(ref SequenceReader<byte> reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
         reader.Skip32BitPad();
@@ -42,7 +48,7 @@ public class MultiLocalizedUnicodeTag
         Encodings = array;
     }
 
-    public static MultiLocalizedUnicodeTag ReadFromMiddleOfStream(ref SequenceReader<byte> reader)
+    internal static MultiLocalizedUnicodeTag ReadFromMiddleOfStream(ref SequenceReader<byte> reader)
     {
         ResetCurrentPointToBeginningOfReader(ref reader);
         CheckForMultiUnicodeHeader(ref reader);

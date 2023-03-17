@@ -2,6 +2,9 @@
 
 namespace Melville.Icc.ColorTransforms;
 
+/// <summary>
+/// Creates a color transform that will convert a given device ICC profile to SRGB
+/// </summary>
 public static class ColorTransformFactory
 {
     /// <summary>
@@ -18,9 +21,14 @@ public static class ColorTransformFactory
             var x => throw new InvalidDataException("Unsupported profile connection space: " + x)
         };
 
+    /// <summary>
+    /// Creates a converter that converts the given profile's device space to SRGB
+    /// </summary>
+    /// <param name="profile">ICC profile representing the device space.</param>
+    /// <exception cref="InvalidOperationException">Profile does not contain a supported device to PCS transformation</exception>
     public static IColorTransform DeviceToSrgb(this IccProfile profile)
     {
         return profile.DeviceToPcsTransform(RenderIntent.Perceptual)?.Concat(PcsToSrgb(profile)) ??
-               throw new InvalidCastException("Cannot find ICC profile");
+               throw new InvalidOperationException("Cannot find ICC profile");
     }
 }

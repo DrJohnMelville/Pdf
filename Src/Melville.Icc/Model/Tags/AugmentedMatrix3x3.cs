@@ -8,6 +8,9 @@ namespace Melville.Icc.Model.Tags;
 /// </summary>
 public readonly struct AugmentedMatrix3x3
 {
+    /// <summary>
+    /// Describes an IdentityMatrix, which does not change an
+    /// </summary>
     public static readonly AugmentedMatrix3x3 Identity = new(Matrix3x3.Identity, 0,0,0);
     /// <summary>
     /// The 3x3 Matrix used in the transform
@@ -26,6 +29,13 @@ public readonly struct AugmentedMatrix3x3
     /// </summary>
     public float TranslateZ { get; }
 
+    /// <summary>
+    /// Create a new augmented matrix
+    /// </summary>
+    /// <param name="kernel">A kernel matrix reprepsenting scale, rotate, and skew</param>
+    /// <param name="translateX">X translation parameter</param>
+    /// <param name="translateY">Y translation parameter</param>
+    /// <param name="translateZ">Z translation parameter</param>
     public AugmentedMatrix3x3(Matrix3x3 kernel, float translateX, float translateY, float translateZ)
     {
         Kernel = kernel;
@@ -34,6 +44,10 @@ public readonly struct AugmentedMatrix3x3
         TranslateZ = translateZ;
     }
     
+    /// <summary>
+    /// Read an augmentedMatrix from a sequence reader.
+    /// </summary>
+    /// <param name="reader"></param>
     public AugmentedMatrix3x3(ref SequenceReader<byte> reader):
         this (new Matrix3x3(ref reader),
             reader.Reads15Fixed16(), reader.Reads15Fixed16(), reader.Reads15Fixed16()){}

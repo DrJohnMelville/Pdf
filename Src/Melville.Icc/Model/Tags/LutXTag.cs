@@ -12,6 +12,9 @@ namespace Melville.Icc.Model.Tags;
 /// </summary>
 public class LutXTag: IColorTransform 
 {
+    /// <summary>
+    /// The transformation matrix
+    /// </summary>
     public Matrix3x3 Matrix { get; }
 
     /// <inheritdoc />
@@ -40,11 +43,15 @@ public class LutXTag: IColorTransform
     public IReadOnlyList<float> InputTables => inputTables;
 
     private readonly float[] clut;
-    // Look up table
+    /// <summary>
+    /// Look up table for the transformation
+    /// </summary>
     public IReadOnlyList<float> Clut => clut;
 
     private readonly float[] outputTables;
-    // Output table entries
+    /// <summary>
+    /// Output transformation tables
+    /// </summary>
     public IReadOnlyList<float> OutputTables => outputTables;
 
     private IColorTransform clutTransform;

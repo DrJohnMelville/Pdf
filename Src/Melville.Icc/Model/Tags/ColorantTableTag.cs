@@ -12,6 +12,9 @@ namespace Melville.Icc.Model.Tags;
 /// <param name="Y">Y component of the colorant value in XYZ notation</param>
 /// <param name="Z">Z component of the colorant value in XYZ notation</param>
 public record struct ColorantTableEntry(string Name, ushort X, ushort Y, ushort Z);
+/// <summary>
+/// A tag representing a table of colorants for the described device.
+/// </summary>
 public class ColorantTableTag 
 {
     /// <summary>

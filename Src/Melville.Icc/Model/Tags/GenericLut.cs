@@ -13,16 +13,31 @@ namespace Melville.Icc.Model.Tags;
 public abstract class GenericLut: IColorTransform 
 {
     private readonly ICurveTag[] inputCurves;
+    /// <summary>
+    /// Input curves for the composite transforms
+    /// </summary>
     public IReadOnlyList<ICurveTag> InputCurves => inputCurves;
 
     private readonly ICurveTag[] matrixCurves;
+    /// <summary>
+    /// Transformation curves just before/after the matrix transform.
+    /// </summary>
     public IReadOnlyList<ICurveTag> MatrixCurves => matrixCurves;
 
+    /// <summary>
+    /// Augmented transform matrix
+    /// </summary>
     public AugmentedMatrix3x3 Matrix { get; }
 
     private readonly ICurveTag[] outputCurves;
+    /// <summary>
+    /// Transform immediately prior to the output from the transform
+    /// </summary>
     public IReadOnlyList<ICurveTag> OutputCurves => outputCurves;
 
+    /// <summary>
+    /// Lookup table transformation
+    /// </summary>
     public IColorTransform LookupTable { get; }
 
     private protected GenericLut(ICurveTag[] inputCurves, ICurveTag[] matrixCurves, AugmentedMatrix3x3 matrix, ICurveTag[] outputCurves, IColorTransform lookupTable)
@@ -113,7 +128,7 @@ public abstract class GenericLut: IColorTransform
     /// <inheritdoc />
     public abstract void Transform(in ReadOnlySpan<float> input, in Span<float> output);
 
-    protected void CurveTransform(
+    private protected void CurveTransform(
         IReadOnlyList<ICurveTag> curves, in ReadOnlySpan<float> input, in Span<float> output)
     {
         Debug.Assert(curves.Count == input.Length);

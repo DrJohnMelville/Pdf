@@ -9,14 +9,49 @@ namespace Melville.Icc.Model.Tags;
 /// </summary>
 public enum CurveMeasurement : uint
 {
+    /// <summary>
+    /// Measurment  StatusA
+    /// </summary>
     StatusA = 0x53746141,
+
+    /// <summary>
+    /// Measurment  StatusE
+    /// </summary>
     StatusE = 0x53746145,
+
+    /// <summary>
+    /// Measurment  StatusI
+    /// </summary>
     StatusI = 0x53746149,
+
+    /// <summary>
+    /// Measurment  StatusT
+    /// </summary>
     StatusT = 0x53746154,
+
+    /// <summary>
+    /// Measurment  StatusM
+    /// </summary>
     StatusM = 0x53745154,
+
+    /// <summary>
+    /// Measurment  Din
+    /// </summary>
     Din = 0x434e2020,
+
+    /// <summary>
+    /// Measurment  DinPolarized
+    /// </summary>
     DinPolarized = 0x434e2050,
+
+    /// <summary>
+    /// Measurment  DinNarrow
+    /// </summary>
     DinNarrow = 0x434e4e20,
+
+    /// <summary>
+    /// Measurment  DinNarrowPolarized
+    /// </summary>
     DinNarrowPolarized = 0x434e4e50
 }
 
@@ -45,9 +80,16 @@ public record struct ResponseCurve(
     CurveMeasurement Unit,
     IReadOnlyList<ResponseCurveChannel> Channels);
 
-public class ResponseCurveSet16Tag 
+/// <summary>
+/// Represents a set of 16 bit response curves.
+/// </summary>
+public class ResponseCurveSet16Tag
 {
+    /// <summary>
+    /// The response curves that make up this set.
+    /// </summary>
     public IReadOnlyList<ResponseCurve> Curves { get; }
+
     internal ResponseCurveSet16Tag(ref SequenceReader<byte> reader)
     {
         reader.VerifyInCorrectPositionForTagRelativeOffsets();
@@ -58,6 +100,7 @@ public class ResponseCurveSet16Tag
         {
             curves[i] = ParseResponseCurve(reader.ReaderAt(reader.ReadBigEndianUint32()), channels);
         }
+
         Curves = curves;
     }
 

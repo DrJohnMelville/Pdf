@@ -3,6 +3,9 @@ using Melville.Icc.ColorTransforms;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// Represents the LutBtoA segment in the ICC file
+/// </summary>
 public class LutBToATag : GenericLut
 {
     internal LutBToATag(ICurveTag[] inputCurves, IColorTransform lookupTable, ICurveTag[] matrixCurves, 

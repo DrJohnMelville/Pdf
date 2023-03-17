@@ -4,6 +4,9 @@ using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// ICC tag that describes the chromicity of a device.
+/// </summary>
 public class ChromacityTag 
 {
     /// <summary>

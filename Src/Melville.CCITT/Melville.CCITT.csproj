@@ -7,6 +7,7 @@
         <Title>Melville.CCITT</Title>
         <PackageDescription>Read CCITT type 3 and 4 encoded files.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

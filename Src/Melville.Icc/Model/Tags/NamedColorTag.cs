@@ -17,7 +17,13 @@ public record struct NamedColorElememt(string Name, XyzNumber PcsValue, ushort[]
 /// </summary>
 public class NamedColorTag 
 {
+    /// <summary>
+    /// Low 16 bits are for ICC use reamaining bits for verdor specific flags.
+    /// </summary>
     public uint VendorSpecificFlag { get; }
+    /// <summary>
+    /// Named colors in the profile.
+    /// </summary>
     public IReadOnlyList<NamedColorElememt> Colors { get; }
 
     internal NamedColorTag(ref SequenceReader<byte> reader)

@@ -118,9 +118,9 @@ public record struct Matrix3x3(
             a.M31 * b.M12       + a.M32 * b. M22 +     a.M33 * b.M32,
             a.M31 * b.M13       + a.M32 * b. M23 +     a.M33 * b.M33
         );
-    
-    
 
+
+    /// <inheritdoc />
     [Pure]
     public override string ToString() =>
         $"{M11,8:F3} {M12,8:F3} {M13,8:F3}\r\n" +

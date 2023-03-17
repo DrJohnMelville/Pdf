@@ -5,6 +5,9 @@
 /// </summary>
 public enum Colorant
 {
+    /// <summary>
+    /// Unknown Colorant
+    /// </summary>
     Unknown = 0,
     /// <summary>
     /// ITU-R BT.709-2 

@@ -3,6 +3,9 @@ using Melville.Icc.ColorTransforms;
 
 namespace Melville.Icc.Model.Tags;
 
+/// <summary>
+/// This class represents the ICC LutAtoB element
+/// </summary>
 public class LutAToBTag : GenericLut
 {
     internal LutAToBTag(ref SequenceReader<byte> reader): base(ref reader, false)

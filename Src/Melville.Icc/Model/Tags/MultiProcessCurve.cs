@@ -15,6 +15,9 @@ public class MultiProcessCurve
     public IReadOnlyList<float> BreakPoints { get; }
 
     private readonly IReadOnlyList<ICurveSegment> segments;
+    /// <summary>
+    /// Segments of the transformation curve.
+    /// </summary>
     public IReadOnlyList<ICurveTag> Segments => segments;
 
     internal MultiProcessCurve(IReadOnlyList<float> breakPoints, IReadOnlyList<ICurveSegment> segments)
@@ -53,6 +56,11 @@ public class MultiProcessCurve
         }
     }
 
+    /// <summary>
+    /// Evaluate a curve transormation
+    /// </summary>
+    /// <param name="input">the input to the transformation</param>
+    /// <returns></returns>
     public float Evaluate(float input)
     {
         int index = 0;

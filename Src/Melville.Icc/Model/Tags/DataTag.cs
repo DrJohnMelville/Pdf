@@ -45,6 +45,9 @@ public class DataTag{
          }
      }
 
+     /// <summary>
+     /// Display the data as an ascii formatted string.
+     /// </summary>
      public String AsString() => String.Create(data.Length-1, data, CopyBytesToCharSpan );
      private void CopyBytesToCharSpan(Span<char> span, byte[] bytes)
      {

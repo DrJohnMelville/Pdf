@@ -10,6 +10,9 @@ namespace Melville.Icc.Model.Tags;
 /// </summary>
 public class ColorantOrderTag 
 {
+    /// <summary>
+    /// A list of bytes representing the colorant order in a device color space.
+    /// </summary>
     public IReadOnlyList<byte> Colors { get; }
 
     internal ColorantOrderTag(ref SequenceReader<byte> data)

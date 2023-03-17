@@ -8,6 +8,7 @@
         <PackageDescription>Read International Color Consortium color profiles and convert colors between ICC 
             profiles.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
