@@ -2,8 +2,17 @@
 
 namespace Melville.Parsing.CountingReaders;
 
+/// <summary>
+/// Implements an extension method to advance an IByteSource  to a new forward position
+/// </summary>
 public static class AdvanceToLocalPositionImpl
 {
+    /// <summary>
+    /// Advance the byte source to the position indicated.
+    /// </summary>
+    /// <param name="pipe">The byte source to advance</param>
+    /// <param name="targetPosition">The desired position</param>
+    /// <exception cref="InvalidOperationException"></exception>
     public static ValueTask AdvanceToLocalPositionAsync(
         this IByteSource pipe, long targetPosition) =>
         (targetPosition - pipe.Position) switch

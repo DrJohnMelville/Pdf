@@ -38,6 +38,15 @@ public readonly struct CcittParameters
     /// </summary>
     internal byte BlackByte { get; }
 
+    /// <summary>
+    /// Create a new CCITT parameter
+    /// </summary>
+    /// <param name="k">K -- or the number of 2d compressed rows in a row</param>
+    /// <param name="encodedByteAlign">Byte align the rows in the encoded stream</param>
+    /// <param name="columns">Columns in the bitmap</param>
+    /// <param name="rows">Rows in the bitmap</param>
+    /// <param name="endOfBlock">Ends with an explicit end of block code</param>
+    /// <param name="blackIs1">1s in the output bitmap represent black pixels</param>
     public CcittParameters(int k, bool encodedByteAlign, int columns, int rows, bool endOfBlock, bool blackIs1)
     {
         K = k;
