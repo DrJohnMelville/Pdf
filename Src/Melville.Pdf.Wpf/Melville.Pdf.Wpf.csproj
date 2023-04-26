@@ -8,6 +8,7 @@
         <Title>Melville.Pdf.Wpf</Title>
         <PackageDescription>Render PDF files to a WPF Drawing Group.  Also includes a PDF viewer WPF control.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

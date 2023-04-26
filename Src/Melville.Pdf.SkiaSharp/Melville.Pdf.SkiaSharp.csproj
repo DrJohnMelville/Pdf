@@ -8,6 +8,7 @@
         <Title>Melville.Pdf.SkiaSharp</Title>
         <PackageDescription>Render PDF pages to a SkiaSharp surface or graphics file.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
