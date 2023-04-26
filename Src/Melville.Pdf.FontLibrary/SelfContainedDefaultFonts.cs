@@ -7,6 +7,9 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
 namespace Melville.Pdf.FontLibrary;
 
+/// <summary>
+/// Map default fonts to a set of fonts contained as resources in this assembly
+/// </summary>
 [StaticSingleton]
 public partial class SelfContainedDefaultFonts: IDefaultFontMapper
 {

@@ -8,6 +8,7 @@
         <PackageDescription>This library contains default font definitions that allow Melville.Pdf to be configured to
         render PDF files without referencing the system font folder.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
