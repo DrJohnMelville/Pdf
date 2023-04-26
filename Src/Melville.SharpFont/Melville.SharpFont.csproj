@@ -7,6 +7,7 @@
 	<PackageDescription>Unofficial fork of Robmaister.SharpFont.  This version removes a dpendency on the current directory
 	by introducing a parameter to the library constructors which is where to find the freetype binaries.</PackageDescription>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

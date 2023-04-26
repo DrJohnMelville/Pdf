@@ -82,11 +82,12 @@ namespace Melville.SharpFont
 			Reference = libraryRef;
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Library"/> class.
-		/// </summary>
-		/// <param name="memory">A custom FreeType memory manager.</param>
-		public Library(Memory memory, string? explicitFolder)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Library"/> class.
+        /// </summary>
+        /// <param name="memory">A custom FreeType memory manager.</param>
+        /// <param name="explicitFolder">Folder path in which to find the FreeTypeBinary, or null for the default.</param>
+        public Library(Memory memory, string? explicitFolder)
 			: this(false)
 		{
 			ArchitectureDllImport.LoadArchitectureDependencyDirectory(explicitFolder);
@@ -646,7 +647,7 @@ namespace Melville.SharpFont
 
 		/// <summary>
 		/// Add the set of default drivers to a given library object. This is only useful when you create a library
-		/// object with <see cref="Library(Memory)"/> (usually to plug a custom memory manager).
+		/// object with a Memory object. (usually to plug a custom memory manager).
 		/// </summary>
 		public void AddDefaultModules()
 		{

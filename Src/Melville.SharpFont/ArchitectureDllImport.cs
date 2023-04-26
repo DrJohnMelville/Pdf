@@ -5,8 +5,15 @@ using System.Runtime.InteropServices;
 
 namespace Melville.SharpFont
 {
+    /// <summary>
+    /// Load the Freetype bibary for the selected architecture.
+    /// </summary>
 	public static class ArchitectureDllImport
 	{
+        /// <summary>
+        /// Specify the folder for the FreeType binaries.
+        /// </summary>
+        /// <param name="explicitFolder">Full folder for the current architecture, or null to pick x87 or x64 binaries</param>
         public static void LoadArchitectureDependencyDirectory(string? explicitFolder)
         {
             var finalDllFolder = explicitFolder ?? InferredDllLocation();
