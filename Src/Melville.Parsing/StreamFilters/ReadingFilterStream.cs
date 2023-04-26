@@ -5,12 +5,21 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.StreamFilters;
 
+/// <summary>
+///  Wraps a stream and decodes/encodes with a given filter upon reading.
+/// </summary>
 public class ReadingFilterStream : DefaultBaseStream
 {
     private readonly IStreamFilterDefinition filter;
-    private PipeReader source;
+    private readonly PipeReader source;
     private bool doneReading = false;
 
+    /// <summary>
+    /// Wrap a stream with a given filter.
+    /// </summary>
+    /// <param name="source">The source stream</param>
+    /// <param name="filter">The filter to encode / decode the stream.</param>
+    /// <returns>A stream that will read the encoded or decoded data</returns>
     public static Stream Wrap(Stream source, IStreamFilterDefinition filter)
     {
         var ret = new ReadingFilterStream(source, filter);
@@ -29,11 +38,18 @@ public class ReadingFilterStream : DefaultBaseStream
         this.filter = filter;
         this.source = PipeReader.Create(sourceStream);
     }
+
+    /// <inheritdoc />
     public override void Close() => source.Complete();
+
+    /// <inheritdoc />
     protected override void Dispose(bool disposing) => source.Complete();
+
+    /// <inheritdoc />
     public override ValueTask DisposeAsync() => source.CompleteAsync();
 
-        
+
+    /// <inheritdoc />
     public override async ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {

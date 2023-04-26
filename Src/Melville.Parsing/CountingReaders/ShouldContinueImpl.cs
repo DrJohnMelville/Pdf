@@ -1,6 +1,9 @@
 ﻿
 namespace Melville.Parsing.CountingReaders;
 
+/// <summary>
+/// Static class implementing extension methods on ShouldContinue.
+/// </summary>
 public static class ShouldContinueImpl
 {
     /// <summary>

@@ -31,7 +31,7 @@ public static class TestParser
         AsParsingSource(str.AsExtendedAsciiBytes(), indirectObjectResolver);
     internal static ParsingFileOwner AsParsingSource(this byte[] bytes, 
         IIndirectObjectResolver? indirectObjectResolver =null) => 
-        new(new OneCharAtAtimeStream(bytes), NullPasswordSource.Instance, 
+        new(new OneCharAtATimeStream(bytes), NullPasswordSource.Instance, 
             indirectObjectResolver?? new IndirectObjectResolver());
         
     public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) =>

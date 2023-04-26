@@ -6,11 +6,13 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.StreamFilters;
 
-// Many of the filters, like ASCII85Decode and RLE can produce more than one
-// byte of output at a certian point in the input.  This wrapper class guarentees that the reads
-// to a class will be at least a minimum size, this means that the inner streams do not need to
-// worry about dividing the output accross multiple reads, because you will eventually get a buffer
-// big enough to hold the entire unit.
+/// <summary>
+/// Many of the filters, like ASCII85Decode and RLE can produce more than one
+/// byte of output at a certian point in the input.  This wrapper class guarentees that the reads
+/// to a class will be at least a minimum size, this means that the inner streams do not need to
+/// worry about dividing the output across multiple reads, because you will eventually get a buffer
+/// big enough to hold the entire unit.
+/// </summary>
 public class MinimumReadSizeFilter : DefaultBaseStream
 {
     private readonly Stream source;
@@ -20,12 +22,18 @@ public class MinimumReadSizeFilter : DefaultBaseStream
     private int priorDataLength;
     private int UnusedPriorDataLength() => priorDataLength - priorDataStart;
 
+    /// <summary>
+    /// Create a minimumReadSizeStream
+    /// </summary>
+    /// <param name="source">Source to read data from</param>
+    /// <param name="minReadSize">Smallest legal read buffer size.</param>
     public MinimumReadSizeFilter(Stream source, int minReadSize): base(true, false, false)
     {
         this.source = source;
         this.minReadSize = minReadSize;
     }
 
+    /// <inheritdoc />
     public override ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
@@ -77,12 +85,14 @@ public class MinimumReadSizeFilter : DefaultBaseStream
     private ValueTask<int> ReadIntoBuffer(Memory<byte> buffer, CancellationToken cancellationToken) => 
         source.ReadAsync(buffer, cancellationToken);
 
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         source.Dispose();
         base.Dispose(disposing);
     }
 
+    /// <inheritdoc />
     public async override ValueTask DisposeAsync()
     {
         await source.DisposeAsync().CA();

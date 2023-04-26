@@ -56,7 +56,7 @@ public abstract class StreamTestBase
     [Fact]
     public async Task DecodeWhenGettingOneCharAtATime()
     {
-        var src = new OneCharAtAtimeStream(dest.AsExtendedAsciiBytes());
+        var src = new OneCharAtATimeStream(dest.AsExtendedAsciiBytes());
 
         var strSourceMock = MockStreamSource(src);
 

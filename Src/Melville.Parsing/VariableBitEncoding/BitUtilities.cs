@@ -1,6 +1,6 @@
 ﻿namespace Melville.Parsing.VariableBitEncoding;
 
-public static class BitUtilities
+internal static class BitUtilities
 {
     public static byte Mask(int bits) => (byte) ((1 << bits) - 1);
 

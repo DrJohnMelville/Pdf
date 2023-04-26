@@ -9,7 +9,8 @@
         <AnalysisLevel>latest</AnalysisLevel>
         <RepositoryUrl>https://github.com/DrJohnMelville/Pdf</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	</PropertyGroup>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    </PropertyGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Melville.Pdf.DataModelTests"/>

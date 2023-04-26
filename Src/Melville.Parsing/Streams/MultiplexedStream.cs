@@ -4,18 +4,28 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
 
+/// <summary>
+/// This is a stream that has multiple simultaneous readers.
+/// </summary>
 public sealed class MultiplexedStream: IDisposable
 {
     private Stream source;
+    /// <summary>
+    /// The length of the underlying stream.
+    /// </summary>
     public long Length => source.Length;
     private SemaphoreSlim mutex = new SemaphoreSlim(1);
 
+    /// <summary>
+    /// Create a MultiplexedStream from a stream </summary>
+    /// <param name="source">The underlysing stream, which must be seekable and readable.</param>
     public MultiplexedStream(Stream source)
     {
         this.source = source;
         VerifyLegalStream();
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         mutex.Dispose();
@@ -28,6 +38,12 @@ public sealed class MultiplexedStream: IDisposable
         if (!source.CanSeek) throw new ArgumentException("Stream must be seekable.");
     }
 
+    /// <summary>
+    /// Read bytes into a span.
+    /// </summary>
+    /// <param name="position">The position to read from</param>
+    /// <param name="buffer">A span to hold the read data.</param>
+    /// <returns>The number of bytes read</returns>
     public int Read(long position, in Span<byte> buffer)
     {
         mutex.Wait();
@@ -42,6 +58,13 @@ public sealed class MultiplexedStream: IDisposable
         }
     }
 
+    /// <summary>
+    /// Asynchronously read from the stream to a memory
+    /// </summary>
+    /// <param name="position">Position to start reading from.</param>
+    /// <param name="buffer">A memory to hold the read data</param>
+    /// <param name="cancellationToken">A cancellation token</param>
+    /// <returns></returns>
     public async ValueTask<int> ReadAsync(
         long position, Memory<byte> buffer, CancellationToken cancellationToken)
     {
@@ -62,10 +85,15 @@ public sealed class MultiplexedStream: IDisposable
         if (source.Position != position) source.Seek(position, SeekOrigin.Begin);
     }
 
+    /// <summary>
+    /// Create a multiplexed reader that begins at a given position
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public Stream ReadFrom(long position) => new MultiplexedReader(this, position);
 }
 
-public sealed class MultiplexedReader : DefaultBaseStream
+internal sealed class MultiplexedReader : DefaultBaseStream
 {
     private readonly MultiplexedStream source;
 
