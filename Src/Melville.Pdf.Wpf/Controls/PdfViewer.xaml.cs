@@ -9,6 +9,9 @@ namespace Melville.Pdf.Wpf.Controls;
 [GenerateDP(typeof(IPasswordSource), "PasswordSource", Nullable = true)]
 public partial class PdfViewer : UserControl
 {
+    /// <summary>
+    /// Default Constructor
+    /// </summary>
     public PdfViewer()
     {
         InitializeComponent();

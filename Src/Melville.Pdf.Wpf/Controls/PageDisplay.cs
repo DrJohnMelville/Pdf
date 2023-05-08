@@ -14,10 +14,12 @@ namespace Melville.Pdf.Wpf.Controls;
 /// <param name="Height"></param>
 public record PageSize(double Width, double Height);
 
+/// <summary>
+/// This class allow the user to see and change the current page.
+/// </summary>
 [GenerateDP(typeof(PageSize), "PageSize", Attached = true)]
 public partial class PageDisplay : FrameworkElement
 {
-    
     [GenerateDP]
     private void OnPageDataChanged(DrawingVisual? old, DrawingVisual? newObj)
     {
@@ -26,11 +28,14 @@ public partial class PageDisplay : FrameworkElement
         InvalidateArrange();
     }
 
+    /// <inheritdoc />
     protected override Visual GetVisualChild(int index) => 
         PageData is { } pd ? pd : throw new ArgumentOutOfRangeException(nameof(index));
 
+    /// <inheritdoc />
     protected override int VisualChildrenCount => PageData is null ? 0 : 1;
-    
+
+    /// <inheritdoc />
     protected override Size ArrangeOverride(Size finalSize)
     {
         if (PageData is { } item)

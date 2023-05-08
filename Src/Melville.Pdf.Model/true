@@ -670,6 +670,28 @@
             Defines a set of OptionGroup items that cannot be simultaneously displayed
             </summary>
         </member>
+        <member name="E:Melville.Pdf.Model.OptionalContent.OptionalContentState.PropertyChanged">
+            <summary>
+            This is the PropertyChanged Event from INotifyPropertyChanged.  It gets called when a property changes.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.OptionalContent.OptionalContentState.Melville#INPC#IExternalNotifyPropertyChanged#OnPropertyChanged(System.String)">
+             <summary>
+             Call this method to sent a property change notification for the given property name
+             </summary>
+            <param name="propertyName">The name of the parameter that has changed.</param>
+        </member>
+        <member name="E:Melville.Pdf.Model.OptionalContent.OptionalGroup.PropertyChanged">
+            <summary>
+            This is the PropertyChanged Event from INotifyPropertyChanged.  It gets called when a property changes.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.OptionalContent.OptionalGroup.Melville#INPC#IExternalNotifyPropertyChanged#OnPropertyChanged(System.String)">
+             <summary>
+             Call this method to sent a property change notification for the given property name
+             </summary>
+            <param name="propertyName">The name of the parameter that has changed.</param>
+        </member>
         <member name="T:Melville.Pdf.Model.PdfReader">
             <summary>
             Factory class that constructs a DocumentRenderer from a variety of legal source types
