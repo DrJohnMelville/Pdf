@@ -11,6 +11,11 @@ namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 /// </summary>
 public readonly partial struct JpegStreamFactory
 {
+    /// ColorTransform Value from the DctDecode
+    /// parameter in the stream dictionary in PDF.  If this is 0 there is no color
+    /// transformation, if 1 then 3 element images are converted from
+    /// YCbCr -> RGB and 4 element values are transformed from YCrCbK -> CMYK.  This
+    /// parameter can be overridden, either way, by an App14 block in the JPEG file.
     [FromConstructor] private readonly long colorTransformFromPdf;
     
     /// <summary>
