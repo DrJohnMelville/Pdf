@@ -1,5 +1,11 @@
 ﻿# Releases
 
+## 5/9/2923 0.3
+- I made a whole bunch of stuff internal.  It is hoped that this will prevent breaking changes later on because 
+no one will depend on the internal bits.  There may be some breaking changes, but I am taking them now when I hope
+they will not hurt too much.  If I broke your use case, let me know.
+- Every externally visible class and member has an xml doc comment.
+
 ## 12/17/2022 0.2
 - Pdf 2.0 Compliance improvements throughout the parser.
 - 256 bit AES encryption and decryption.

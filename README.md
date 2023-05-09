@@ -100,13 +100,6 @@ I have tried to keep the
 code quality high, but you will have to judge that.  I hope to continue this
 project.  Here are things I am likely to take this up next.
 
-- Quality
-    - Right now just about everything in the library is public.  After re-reading Microsoft's
-      [Framework Design Guidelines](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/) I
-      decided that Melville.Pdf isn't a framework, it's a library.  You use it to render PDF's, and I doubt
-      many of my users will care much about the internal details of PDF or the library.  Shifting most of my
-      mechanisms to internal classes may prevent breaking changes later on in the life of the library.  I will
-      allow myself until version 1 to make as much as makes sense into internal classes.
 - Text and image extraction.  I need this for another project at work.
 - Filling and extracting text from Adobe and XFA forms -- another feature I could use at work.
 - Document outline and page thumbnails
