@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Melville.FileSystem" Version="0.6.15" />
-        <PackageReference Include="Melville.Hacks" Version="0.6.15" />
+        <PackageReference Include="Melville.FileSystem" Version="0.6.17" />
+        <PackageReference Include="Melville.Hacks" Version="0.6.17" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
         <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />

@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 internal partial class LowLevelDocumentBuilder : ILowLevelDocumentCreator
 {
 
-    [DelegateTo(Visibility = Visibility.Public)] 
+    [DelegateTo(Visibility = SourceLocationVisibility.Public)] 
     private IPdfObjectRegistry delegatedItems => registry;
     
     private PdfObjectRegistry registry;

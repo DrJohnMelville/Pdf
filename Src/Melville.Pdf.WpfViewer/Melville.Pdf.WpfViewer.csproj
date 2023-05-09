@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.6.15" />
-      <PackageReference Include="Melville.WpfControls" Version="0.6.6" />
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.6.17" />
+      <PackageReference Include="Melville.WpfControls" Version="0.6.17" />
     </ItemGroup>
 
     <ItemGroup>
