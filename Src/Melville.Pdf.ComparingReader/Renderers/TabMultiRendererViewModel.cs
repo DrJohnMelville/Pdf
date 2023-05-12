@@ -10,8 +10,6 @@ namespace Melville.Pdf.ComparingReader.Renderers;
 
 public partial class TabMultiRendererViewModel : MultiRenderer
 {
-    private readonly IList<IRenderer> renderers;
-
     public CellConfiguration[] Configurations { get; } =
     {
         new(1,1, "Single"),
@@ -26,8 +24,10 @@ public partial class TabMultiRendererViewModel : MultiRenderer
     [MemberNotNull(nameof(panes))]
     private void OnCurrentConfigurationChanged(CellConfiguration config)
     {
+        var renderList = Renderers.ToList();
         Columns = config.Columns;
-        panes = Panes = Enumerable.Range(0, config.Cells).Select(i => new RenderTab(renderers, i)).ToArray();
+        panes = Panes = Enumerable.Range(0, config.Cells)
+            .Select(i => new RenderTab(renderList, i)).ToArray();
     }
     [AutoNotify] private IReadOnlyList<RenderTab> panes;
     [AutoNotify] private int columns = 2;
@@ -39,23 +39,25 @@ public partial class TabMultiRendererViewModel : MultiRenderer
         IPasswordSource passwordSource) : base(
         (IReadOnlyList<IRenderer>)renderers, pageSelector, passwordSource)
     {
-        this.renderers = renderers;
         PageSelector = pageSelector;
         currentConfiguration = Configurations[3];
         OnCurrentConfigurationChanged(CurrentConfiguration);
+        ListenForRenderGroupChange();
     }
+
+    private void ListenForRenderGroupChange()
+    {
+        foreach (var candidateRenderer in CandidateRenderers)
+        {
+            candidateRenderer.WhenMemberChanges(nameof(candidateRenderer.IsActive),
+                ChangeRenderers);
+        }
+    }
+
+    private void ChangeRenderers() => 
+        OnCurrentConfigurationChanged(CurrentConfiguration);
+
+
 }
 
 public record CellConfiguration(int Cells, int Columns, string Name);
-
-public partial class RenderTab
-{
-    public IList<IRenderer> Renderers { get; }
-    [AutoNotify] private int selected;
-
-    public RenderTab(IList<IRenderer> renderers, int pos)
-    {
-        Renderers = renderers;
-        selected = pos;
-    }
-}

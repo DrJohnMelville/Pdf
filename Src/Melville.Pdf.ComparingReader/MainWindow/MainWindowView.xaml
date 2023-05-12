@@ -10,6 +10,7 @@
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:mainWindow="clr-namespace:Melville.Pdf.ComparingReader.MainWindow"
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
+             xmlns:renderers="clr-namespace:Melville.Pdf.ComparingReader.Renderers"
              mc:Ignorable="d"
              RenderOptions.BitmapScalingMode="HighQuality"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -34,6 +35,16 @@
                 <system:String>Owner Password</system:String>
             </ComboBox>
             <TextBox Text="{Binding PasswordBox.Password}"></TextBox>
+            <TextBlock>Active Renderers</TextBlock>
+            <ItemsControl ItemsSource="{Binding Renderer.CandidateRenderers}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type renderers:RendererViewModel}">
+                        <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Content="{Binding Renderer.DisplayName}"
+                                     Margin="20 0 0 0"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </StackPanel>
         <viewFrames:ViewFrame Grid.Column="1" Grid.RowSpan="2" Content="{Binding Renderer.RenderTarget}"/> 
         <GridSplitter HorizontalAlignment="Right" Grid.RowSpan="2" VerticalAlignment="Stretch" Width="5"/>

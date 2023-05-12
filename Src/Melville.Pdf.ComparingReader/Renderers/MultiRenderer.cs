@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using Melville.INPC;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
@@ -23,17 +25,35 @@ public interface IMultiRenderer
     Stream GetCurrentTargetReader();
 }
 
+public partial class RendererViewModel
+{
+    [AutoNotify] private bool isActive = true;
+    [FromConstructor] public IRenderer Renderer { get; }
+}
+
 public abstract partial class MultiRenderer : IMultiRenderer
 {
-    [FromConstructor] public IReadOnlyList<IRenderer> Renderers { get; }
-    [FromConstructor]private readonly IPageSelector pageSelector;
-    [FromConstructor] private readonly IPasswordSource passwordSource;
+    public IReadOnlyList<RendererViewModel> CandidateRenderers { get; }
+    protected IEnumerable<IRenderer> Renderers => CandidateRenderers
+        .Where(i => i.IsActive)
+        .Select(i=>i.Renderer);
+    private readonly IPageSelector pageSelector;
+    private readonly IPasswordSource passwordSource;
     private MultiBufferStream? currentTarget;
 
-    partial void OnConstructed() => 
+    protected MultiRenderer(IReadOnlyList<IRenderer> renderers, IPageSelector pageSelector, IPasswordSource passwordSource)
+    {
+        CandidateRenderers = renderers.Select(i => new RendererViewModel(i)).ToList();
+        this.pageSelector = pageSelector;
+        this.passwordSource = passwordSource;
+        ListenForPageChange();
+    }
+
+
+    private void ListenForPageChange() => 
         (pageSelector as INotifyPropertyChanged)?
         .WhenMemberChanges(nameof(pageSelector.Page), NewPage);
-
+    
     private void NewPage()
     {
         foreach (var renderer in Renderers)
