@@ -697,15 +697,31 @@
             Factory class that constructs a DocumentRenderer from a variety of legal source types
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.PdfReader.#ctor(Melville.Pdf.LowLevel.Parsing.ParserContext.IPasswordSource,Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
+        <member name="F:Melville.Pdf.Model.PdfReader.passwordSource">
             <summary>
-            Construct a PdfReader.
+            IPasswordSource to query when attempting to open a password protected
+            PDF file.  If this parameter is null, attempts to open a password protected PDF throw an exception
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.PdfReader.fontFactory">
+            <summary>
+            IDefaultFontMapper instance that maps font names to font declarations for
+            fonts not embedded in the PDF file.  If null, defaults to WindowsDefaultFonts that looks for
+            fonts in the %windir%/Fonts directory.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.#ctor">
+            <summary>
+            Construct a PdfReader that will read unencrypted files with the default
+            font mappings.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.#ctor(Melville.Pdf.LowLevel.Parsing.ParserContext.IPasswordSource)">
+            <summary>
+            Construct a PDF reader that will read encrypted files with default font mapping.
             </summary>
             <param name="passwordSource">IPasswordSource to query when attempting to open a password protected
             PDF file.  If this parameter is null, attempts to open a password protected PDF throw an exception</param>
-            <param name="fontFactory">IDefaultFontMapper instance that maps font names to font declarations for
-            fonts not embedded in the PDF file.  If null, defaults to WindowsDefaultFonts that looks for
-            fonts in the %windir%/Fonts directory.</param>
         </member>
         <member name="M:Melville.Pdf.Model.PdfReader.#ctor(Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
             <summary>
@@ -759,6 +775,16 @@
             </summary>
             <param name="doc">A PdfDocument representing the PDF data to display.</param>
             <returns>A DocumentRenderer that can render pages from the given source.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.PdfReader.#ctor(Melville.Pdf.LowLevel.Parsing.ParserContext.IPasswordSource,Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
+            <summary>
+            Auto generated constructor for PdfReader
+            </summary>
+            <param name="passwordSource">IPasswordSource to query when attempting to open a password protected
+            PDF file.  If this parameter is null, attempts to open a password protected PDF throw an exception</param> 
+            <param name="fontFactory">IDefaultFontMapper instance that maps font names to font declarations for
+            fonts not embedded in the PDF file.  If null, defaults to WindowsDefaultFonts that looks for
+            fonts in the %windir%/Fonts directory.</param> 
         </member>
         <member name="T:Melville.Pdf.Model.Renderers.Bitmaps.BitmaoInterpolationRuleComputer">
             <summary>

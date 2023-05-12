@@ -15,24 +15,36 @@ namespace Melville.Pdf.Model;
 /// <summary>
 /// Factory class that constructs a DocumentRenderer from a variety of legal source types
 /// </summary>
-public readonly struct PdfReader
+public readonly partial struct PdfReader
 {
+    /// <summary>
+    /// IPasswordSource to query when attempting to open a password protected
+    /// PDF file.  If this parameter is null, attempts to open a password protected PDF throw an exception
+    /// </summary>
+    [FromConstructor]
     private readonly IPasswordSource? passwordSource;
+    /// <summary>
+    /// IDefaultFontMapper instance that maps font names to font declarations for
+    /// fonts not embedded in the PDF file.  If null, defaults to WindowsDefaultFonts that looks for
+    /// fonts in the %windir%/Fonts directory.
+    /// </summary>
+    [FromConstructor]
     private readonly IDefaultFontMapper fontFactory;
 
     /// <summary>
-    /// Construct a PdfReader.
+    /// Construct a PdfReader that will read unencrypted files with the default
+    /// font mappings.
+    /// </summary>
+    public PdfReader() : this(WindowsDefaultFonts.Instance) { }
+
+    /// <summary>
+    /// Construct a PDF reader that will read encrypted files with default font mapping.
     /// </summary>
     /// <param name="passwordSource">IPasswordSource to query when attempting to open a password protected
     /// PDF file.  If this parameter is null, attempts to open a password protected PDF throw an exception</param>
-    /// <param name="fontFactory">IDefaultFontMapper instance that maps font names to font declarations for
-    /// fonts not embedded in the PDF file.  If null, defaults to WindowsDefaultFonts that looks for
-    /// fonts in the %windir%/Fonts directory.</param>
-    public PdfReader(IPasswordSource? passwordSource = null, IDefaultFontMapper? fontFactory = null)
-    {
-        this.passwordSource = passwordSource;
-        this.fontFactory = fontFactory ?? WindowsDefaultFonts.Instance;
-    }
+    public PdfReader(IPasswordSource? passwordSource): 
+        this(passwordSource, WindowsDefaultFonts.Instance) {}
+
     /// <summary>
     /// Construct a PDF reader that will throw when attempting to open a password protected PDF.
     /// </summary>
@@ -85,7 +97,7 @@ public readonly struct PdfReader
     public async ValueTask<DocumentRenderer> ReadFrom(Stream input) =>
         await ReadFrom(await LowLevelReader().ReadFromAsync(input).CA()).CA();
 
-    private PdfLowLevelReader LowLevelReader() => new PdfLowLevelReader(passwordSource);
+    private PdfLowLevelReader LowLevelReader() => new(passwordSource);
 
     /// <summary>
     /// Read a pdf file into a DocumentRenderer
