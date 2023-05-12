@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Melville.Icc.Model.Tags;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.Renderers;
@@ -31,8 +32,12 @@ public partial class TabMultiRendererViewModel : MultiRenderer
     [AutoNotify] private IReadOnlyList<RenderTab> panes;
     [AutoNotify] private int columns = 2;
     public IPageSelector PageSelector { get; }
-    public TabMultiRendererViewModel(IList<IRenderer> renderers, IPageSelector pageSelector) : base(
-        (IReadOnlyList<IRenderer>)renderers, pageSelector)
+
+    public TabMultiRendererViewModel(
+        IList<IRenderer> renderers, 
+        IPageSelector pageSelector, 
+        IPasswordSource passwordSource) : base(
+        (IReadOnlyList<IRenderer>)renderers, pageSelector, passwordSource)
     {
         this.renderers = renderers;
         PageSelector = pageSelector;

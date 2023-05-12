@@ -21,10 +21,11 @@ public class WindowsImageRenderer : IImageRenderer
         this.pageSel = pageSel;
     }
 
-    public async ValueTask SetSource(Stream pdfBits, string password, PasswordType passwordType)
+    public async ValueTask SetSource(Stream pdfBits, IPasswordSource passwordSource)
     {
         document = null;
-        document = await PdfDocument.LoadFromStreamAsync(pdfBits.AsRandomAccessStream(), password);
+        document = await PdfDocument.LoadFromStreamAsync(pdfBits.AsRandomAccessStream(), 
+            (await passwordSource.GetPasswordAsync()).Item1);
         TrySetPageCount((int)document.PageCount);
     }
 

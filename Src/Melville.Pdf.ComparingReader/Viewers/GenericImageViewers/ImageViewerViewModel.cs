@@ -17,18 +17,18 @@ namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 
 public interface IImageRenderer
 {
-    ValueTask SetSource(Stream pdfBits, string password, PasswordType passwordType);
+    ValueTask SetSource(Stream pdfBits, IPasswordSource source);
     ValueTask<ImageSource> LoadPage(int page);
 }
 
 public abstract class MelvillePdfRenderer : IImageRenderer
 {
     private DocumentRenderer? source;
-    public async ValueTask SetSource(Stream pdfBits, string password, PasswordType passwordType)
+    public async ValueTask SetSource(Stream pdfBits, IPasswordSource passwordSource)
     {
         source = null;
         // if the reader throws I want the source to be null
-        source = await new PdfReader(new ConstantPasswordSource(passwordType, password), FontSource())
+        source = await new PdfReader(passwordSource, FontSource())
             .ReadFrom(pdfBits);
     }
 
@@ -59,31 +59,28 @@ public partial class ImageViewerViewModel : IRenderer
     public object RenderTarget => this;
     [AutoNotify] private ImageSource? image;
     [AutoNotify] private string? exception;
-    private readonly IPasswordSource passwords;
     private readonly IImageRenderer renderer;
     private readonly IPageSelector pageSelector;
     private bool fileParseSucceeded = false;
 
-    public ImageViewerViewModel(IPasswordSource passwords, IImageRenderer renderer, string displayName, IPageSelector pageSelector)
+    public ImageViewerViewModel(IImageRenderer renderer, string displayName, IPageSelector pageSelector)
     {
-        this.passwords = passwords;
         this.renderer = renderer;
         DisplayName = displayName;
         this.pageSelector = pageSelector;
     }
     
-    public async void SetTarget(Stream pdfBits)
+    public async void SetTarget(Stream pdfBits, IPasswordSource passwordSource)
     {
-        fileParseSucceeded = await LoadStream(pdfBits);
+        fileParseSucceeded = await LoadStream(pdfBits, passwordSource);
         SetPage(pageSelector.Page);
     }
 
-    private async ValueTask<bool> LoadStream(Stream pdfBits)
+    private async ValueTask<bool> LoadStream(Stream pdfBits, IPasswordSource passwordSource)
     {
         try
         {
-            var (password, passwordType) = await passwords.GetPasswordAsync();
-            await renderer.SetSource(pdfBits, password ?? "", passwordType);
+            await renderer.SetSource(pdfBits, passwordSource);
             return true;
         }
         catch (Exception e)

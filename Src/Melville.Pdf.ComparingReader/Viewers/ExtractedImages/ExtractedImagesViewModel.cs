@@ -10,6 +10,7 @@ using Melville.INPC;
 using Melville.Lists;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ImageExtractor;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Wpf.Rendering;
@@ -22,10 +23,11 @@ internal partial class ExtractedImagesViewModel: IRenderer
     public object RenderTarget => this;
     private DocumentRenderer? renderer;
     [AutoNotify] private IList<ImageSource> images  = Array.Empty<ImageSource>();
+    [FromConstructor] private readonly IPasswordSource passwordSource;
 
-    public async void SetTarget(Stream pdfBits)
+    public async void SetTarget(Stream pdfBits, IPasswordSource passwordSource)
     {
-        renderer = await new PdfReader().ReadFrom(pdfBits);
+        renderer = await new PdfReader(passwordSource).ReadFrom(pdfBits);
         SetPage(1);
     }
 

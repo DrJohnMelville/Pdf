@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Melville.Pdf.ComparingReader.Renderers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 
 namespace Melville.Pdf.ComparingReader.Viewers.LowLevel;
@@ -17,7 +18,8 @@ public class LowLevelRenderer : IRenderer
 
     public object RenderTarget => model;
 
-    public void SetTarget(Stream pdfBits) => model.InnerModel.SetStream(pdfBits);
+    public void SetTarget(Stream pdfBits, IPasswordSource source) => 
+        model.InnerModel.SetStream(pdfBits);
 
     public void SetPage(int page) { model.InnerModel.JumpTOPage(page-1); }
 }

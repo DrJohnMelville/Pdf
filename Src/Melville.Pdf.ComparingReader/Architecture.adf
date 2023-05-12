@@ -9,6 +9,7 @@ Melville.Pdf.ComparingReader.CompositionRoot.* +=> *
 * => Melville.Lists.*
 * => Melville.MVVM.*
 
+
 #Renderers plug into the Main Window and Viewers plug into renderers.
 Group MainWindow
     Melville.Pdf.ComparingReader.MainWindow.*
@@ -35,6 +36,8 @@ REPL => Melville.Pdf.LowLevel.*
 REPL => Melville.Pdf.Model.*
 REPL=>LowLevel
 REPL=>SavePages
+
+Renderers => Melville.Pdf.LowLevel.*
 
 SavePages => Melville.Pdf.Model.*
 SavePages => Melville.Pdf.LowLevel.*

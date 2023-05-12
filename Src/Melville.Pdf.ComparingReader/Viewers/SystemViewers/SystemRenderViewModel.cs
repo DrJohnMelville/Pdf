@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.ComparingReader.Viewers.SystemViewers;
 
@@ -16,7 +17,8 @@ public partial class SystemRenderViewModel: IRenderer
     [AutoNotify] private string message = "";
     private Stream? savedTarget;
 
-    public void SetTarget(Stream pdfBits) => savedTarget = pdfBits;
+    public void SetTarget(Stream pdfBits, IPasswordSource source) => 
+        savedTarget = pdfBits;
     public void SetPage(int page) { /* Do Nothing -- has no current page concept*/ }
 
     public async Task OpenFile()

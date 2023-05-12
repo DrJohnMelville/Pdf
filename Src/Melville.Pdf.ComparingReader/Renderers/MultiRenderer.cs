@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.IO;
 using Melville.INPC;
 using Melville.Parsing.Streams;
+using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
+using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Wpf.Controls;
 
 namespace Melville.Pdf.ComparingReader.Renderers;
@@ -10,7 +12,7 @@ public interface IRenderer
 {
     string DisplayName { get; }
     object RenderTarget { get; }
-    void SetTarget(Stream pdfBits);
+    void SetTarget(Stream pdfBits, IPasswordSource passwordSource);
     void SetPage( int page);
 }
 
@@ -21,18 +23,16 @@ public interface IMultiRenderer
     Stream GetCurrentTargetReader();
 }
 
-public abstract class MultiRenderer : IMultiRenderer
+public abstract partial class MultiRenderer : IMultiRenderer
 {
-    private readonly IPageSelector pageSelector;
-    public IReadOnlyList<IRenderer> Renderers { get; }
+    [FromConstructor] public IReadOnlyList<IRenderer> Renderers { get; }
+    [FromConstructor]private readonly IPageSelector pageSelector;
+    [FromConstructor] private readonly IPasswordSource passwordSource;
     private MultiBufferStream? currentTarget;
 
-    protected MultiRenderer(IReadOnlyList<IRenderer> renderers, IPageSelector pageSelector)
-    {
-        this.pageSelector = pageSelector;
-        this.Renderers = renderers;
-        (pageSelector as INotifyPropertyChanged)?.WhenMemberChanges(nameof(pageSelector.Page), NewPage);
-    }
+    partial void OnConstructed() => 
+        (pageSelector as INotifyPropertyChanged)?
+        .WhenMemberChanges(nameof(pageSelector.Page), NewPage);
 
     private void NewPage()
     {
@@ -50,7 +50,8 @@ public abstract class MultiRenderer : IMultiRenderer
         pageSelector.SetPageSilent(showPage);
         foreach (var renderer in Renderers)
         {
-            renderer.SetTarget(pdfBits.CreateReader());
+            renderer.SetTarget(pdfBits.CreateReader(), 
+                new OneShotPasswordSource(passwordSource));
         }
     }
 
