@@ -6,6 +6,7 @@ Melville.Pdf.ComparingReader.CompositionRoot.* +=> *
 * => System.*
 * => Melville.Parsing.*
 * => Melville.FileSystem.*
+* => Melville.Lists.*
 * => Melville.MVVM.*
 
 #Renderers plug into the Main Window and Viewers plug into renderers.
@@ -21,6 +22,8 @@ Group LowLevel
     Melville.Pdf.ComparingReader.Viewers.LowLevel.*
     Melville.Pdf.LowLevel.*
     Melville.Pdf.LowLevelViewerParts.LowLevelViewer.*
+Group ExtractImages
+    Melville.Pdf.ComparingReader.Viewers.ExtractedImages.*
        
 MainWindow => Renderers
 MainWindow => REPL
@@ -60,3 +63,6 @@ Melville.Pdf.ComparingReader.* ^=> Melville.Pdf.Wpf.*
 #External Dependency for the SkiaSharp Viewer
 Melville.Pdf.ComparingReader.Viewers.SkiaViewer.* ^=> Melville.Pdf.SkiaSharp.* 
 Melville.Pdf.ComparingReader.Viewers.SkiaViewer.* ^=> Melville.Pdf.FontLibrary.* 
+
+#Dependency for the ExtractedU Images Viewer
+Melville.Pdf.ComparingReader.Viewers.ExtractedImages.* => Melville.Pdf.ImageExtractor.*

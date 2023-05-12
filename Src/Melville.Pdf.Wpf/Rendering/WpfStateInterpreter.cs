@@ -1,10 +1,8 @@
 ﻿using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 
@@ -64,26 +62,4 @@ internal static class WpfStateInterpreter
 
     public static Rect AsWpfRect(this in PdfRect src) => new(src.Left, src.Bottom, src.Right, src.Top);
 
-    #region Bitmap Translation
-
-    public static async ValueTask<BitmapSource> ToWpfBitmap(this IPdfBitmap bitmap)
-    {
-        var ret = new WriteableBitmap(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32, null);
-        ret.Lock();
-        try
-        {
-            await FillBitmap(bitmap, ret);
-        }
-        finally
-        {
-            ret.AddDirtyRect(new Int32Rect(0,0,bitmap.Width, bitmap.Height));
-            ret.Unlock();
-        }
-        return ret;
-   
-    }    private static unsafe ValueTask FillBitmap(IPdfBitmap bitmap, WriteableBitmap wb) => 
-        bitmap.RenderPbgra((byte*)wb.BackBuffer.ToPointer());
-
-    #endregion
-    
 }

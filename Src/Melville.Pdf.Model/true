@@ -2121,6 +2121,43 @@
             <param name="font">An IRealizedFont, parsed out of a font file or stream</param>
             <returns>The IRealizedFont that should be used to draw characters in this font.</returns>
         </member>
+        <member name="T:Melville.Pdf.Model.Renderers.NullDrawTarget">
+            <summary>
+            This is a DrawTarget that does not draw anything.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.SetDrawingTransform(System.Numerics.Matrix3x2@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.MoveTo(System.Double,System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.LineTo(System.Double,System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.ConicCurveTo(System.Double,System.Double,System.Double,System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.CurveTo(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.ClosePath">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.PaintPath(System.Boolean,System.Boolean,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.NullDrawTarget.ClipToPath(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.NullDrawTarget.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.NullDrawTarget
+            </summary>
+        </member>
         <member name="F:Melville.Pdf.Model.Renderers.OptionalContents.NullOptionalContentCounter.Instance">
             <summary>
             Static singleton for Melville.Pdf.Model.Renderers.OptionalContents.NullOptionalContentCounter
