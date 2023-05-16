@@ -1,69 +1,56 @@
-﻿namespace Melville.Pdf.Model.Renderers.Bitmaps;
+﻿using System;
+using System.Threading.Tasks;
 
-internal abstract class MaskedBitmapWriter : IComponentWriter
+namespace Melville.Pdf.Model.Renderers.Bitmaps;
+
+internal class MaskedBitmapWriter<TMaskType> : IComponentWriter where TMaskType: IMaskType, new()
 {
     private readonly IComponentWriter innerWriter;
     protected MaskBitmap Mask { get; }
     private readonly double widthDelta;
     private readonly double heightDelta;
+    private readonly int parentWidth;
+    private readonly int parentHeight;
     private double row;
     private double col;
+    private readonly TMaskType maskEvaluator = new();
 
 
-    protected MaskedBitmapWriter(IComponentWriter innerWriter, MaskBitmap mask,
+    public MaskedBitmapWriter(IComponentWriter innerWriter, MaskBitmap mask,
         int parentWidth, int parentHeight)
     {
         this.innerWriter = innerWriter;
         Mask = mask;
         widthDelta = (double)mask.Width / (parentWidth);
         heightDelta = (double)mask.Height / (parentHeight);
+        this.parentHeight = parentHeight;
+        this.parentWidth = parentWidth;
         col = 0;
-        row = mask.Height - heightDelta;
+        row = parentHeight -1;
     }
 
     public int ColorComponentCount => innerWriter.ColorComponentCount;
     
     public unsafe void WriteComponent(ref byte* target, int[] component, byte alpha)
     {
-        innerWriter.WriteComponent(ref target, component,AlphaForByte(alpha, row, col));
+        innerWriter.WriteComponent(ref target, component,AlphaForByte(alpha));
         FindNextPixel();
     }
 
-    protected abstract byte AlphaForByte(byte alpha, double atRow, double atCol);
+    private byte AlphaForByte(byte alpha) =>
+        maskEvaluator.AlphaForByte(alpha, Mask.PixelAt(
+            (int)(row*heightDelta), (int)(col*widthDelta)));
 
     private void FindNextPixel()
     {
-        col += widthDelta;
-        if (col < Mask.Width) return;
+        col++;
+        if (col < parentWidth) return;
         NextRow();
     }
 
     private void NextRow()
     {
-        row -= heightDelta;
+        row --;
         col = 0;
     }
-}
-
-internal class HardMaskedBitmapWriter: MaskedBitmapWriter
-{
-    public HardMaskedBitmapWriter(
-        IComponentWriter innerWriter, MaskBitmap mask, int parentWidth, int parentHeight) : 
-        base(innerWriter, mask, parentWidth, parentHeight)
-    {
-    }
-
-    protected override byte AlphaForByte(byte alpha, double atRow, double atCol) =>
-        (byte)(Mask.ShouldWrite((int)atRow, (int)atCol) ? alpha : 0);
-}
-internal class SoftMaskedBitmapWriter: MaskedBitmapWriter
-{
-    public SoftMaskedBitmapWriter(
-        IComponentWriter innerWriter, MaskBitmap mask, int parentWidth, int parentHeight) : 
-        base(innerWriter, mask, parentWidth, parentHeight)
-    {
-    }
-
-    protected override byte AlphaForByte(byte alpha, double atRow, double atCol) =>
-        Mask.RedAt((int)atRow, (int)atCol);
 }

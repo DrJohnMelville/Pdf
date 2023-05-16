@@ -28,7 +28,8 @@ internal partial class WpfCachedFont : IRealizedFont
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) =>
         inner.GetNextGlyph(input);
 
-    public IFontWriteOperation BeginFontWrite(IFontTarget target) => new CachedOperation(this,target);
+    public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
+        new CachedOperation(this,target);
 
     private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyph(
         uint glyph, Transform transform, IFontWriteOperation operation)
@@ -48,7 +49,7 @@ internal partial class WpfCachedFont : IRealizedFont
         private readonly WpfCachedFont parent;
         private readonly IFontTarget fontTarget;
         private readonly IFontWriteOperation innerWriter;
-        private WpfDrawTarget drawTarget = null!;
+        private IDrawTarget drawTarget = null!;
 
         public CachedOperation(WpfCachedFont parent, IFontTarget fontTarget)
         {
@@ -60,10 +61,13 @@ internal partial class WpfCachedFont : IRealizedFont
         public async ValueTask<double> AddGlyphToCurrentString(
             uint glyph, Matrix3x2 textMatrix)
         {
+            if (drawTarget is not WpfDrawTarget wpfDrawTarget)
+                  return await innerWriter.AddGlyphToCurrentString(glyph, textMatrix);
+
             var (cachedCharacter, geometry) = 
                 await parent.GetGlyph(glyph, textMatrix.WpfTransform(), innerWriter).CA();
             geometry.Freeze();
-            drawTarget.AddGeometry(geometry);
+            wpfDrawTarget.AddGeometry(geometry);
             return (cachedCharacter.Width);
         }
         
@@ -75,13 +79,10 @@ internal partial class WpfCachedFont : IRealizedFont
             fontTarget.RenderType3Character(s, fontMatrix, fontDictionary);
 
         public IDrawTarget CreateDrawTarget() => 
-            drawTarget = RequiredDrawTargetToTargetWpf(fontTarget.CreateDrawTarget());
+            drawTarget = fontTarget.CreateDrawTarget();
 
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) =>
             new CachedOperation(parent, target);
-
-        private static WpfDrawTarget RequiredDrawTargetToTargetWpf(IDrawTarget target) =>
-            (WpfDrawTarget)target;
 
         public void Dispose() => innerWriter.Dispose();
     }

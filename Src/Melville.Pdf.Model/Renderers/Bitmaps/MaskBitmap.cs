@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -20,11 +21,9 @@ internal readonly struct MaskBitmap
         Width = width;
         Height = height;
     }
-
-    public bool ShouldWrite(int row, int col) => 255 == AlphaAt(row, col);
-
-    private byte AlphaAt(int row, int col) => Mask[3 + PixelPosition(row,col)];
-    public byte RedAt(int row, int col) => Mask[PixelPosition(row, col)];
+    
+    public ReadOnlySpan<byte> PixelAt(int row, int col) =>
+        Mask.AsSpan(PixelPosition(row, col), 4);
 
     private int PixelPosition(int row, int col)
     {
@@ -37,16 +36,8 @@ internal readonly struct MaskBitmap
 
     public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
     {
-        var wrapped = await PdfBitmapOperations.WrapForRenderingAsync(stream, page, DeviceColor.Black).CA();
-        var buffer = new byte[wrapped.ReqiredBufferSize()];
-        await FillBuffer(buffer, wrapped).CA();
+        var wrapped = await stream.WrapForRenderingAsync(page, DeviceColor.Black).CA();
+        var buffer = await wrapped.AsByteArrayAsync().CA();
         return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);
-    }
-
-    private static unsafe ValueTask FillBuffer(byte[] buffer, IPdfBitmap wrapped)
-    {
-        var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-        byte *pointer = (byte*)handle.AddrOfPinnedObject();
-        return new(wrapped.RenderPbgra(pointer).AsTask().ContinueWith(_=>handle.Free()));
     }
 }

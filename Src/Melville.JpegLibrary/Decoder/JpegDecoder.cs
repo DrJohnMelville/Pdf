@@ -272,6 +272,9 @@ internal class JpegDecoder
                     break;
                 case JpegMarker.EndOfImage:
                     return;
+                case JpegMarker.App14:
+                    ProcessAdobeTag(ref reader);
+                    break;
                 default:
                     ProcessOtherMarker(ref reader);
                     break;
@@ -488,6 +491,9 @@ internal class JpegDecoder
                 break;
             case JpegMarker.EndOfImage:
                 return false;
+            case JpegMarker.App14:
+                ProcessAdobeTag(ref reader);
+                break;
             default:
                 ProcessOtherMarker(ref reader);
                 break;

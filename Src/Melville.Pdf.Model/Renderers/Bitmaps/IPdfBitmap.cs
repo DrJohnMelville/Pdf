@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.SharpFont.PostScript;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
@@ -28,4 +32,22 @@ public interface IPdfBitmap
     /// <param name="buffer">A byte pointer which must point to the beginning of a buffer that
     /// is Width * Height *4 bytes long</param>
     unsafe ValueTask RenderPbgra(byte* buffer);
+}
+
+internal static class RenderToArrayImpl
+{
+    public static unsafe ValueTask CopyToArrayAsync(this IPdfBitmap bitmap, byte[] target)
+    {
+        Debug.Assert(target.Length >= bitmap.ReqiredBufferSize());
+        var handle = GCHandle.Alloc(target, GCHandleType.Pinned);
+        byte* pointer = (byte*)handle.AddrOfPinnedObject();
+        return new(bitmap.RenderPbgra(pointer).AsTask().ContinueWith(_ => handle.Free()));
+    }
+
+    public static async ValueTask<byte[]> AsByteArrayAsync(this IPdfBitmap bitmap)
+    {
+        var ret = new byte[bitmap.ReqiredBufferSize()];
+        await CopyToArrayAsync(bitmap, ret).CA();
+        return ret;
+    }
 }
