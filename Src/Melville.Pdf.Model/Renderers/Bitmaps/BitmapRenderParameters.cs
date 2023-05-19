@@ -32,4 +32,7 @@ internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttribut
     public ValueTask<PdfObject> MaskAsync() => Stream.GetOrNullAsync(KnownNames.Mask);
     public ValueTask<PdfObject> SoftMaskAsync() => 
         Stream.GetOrNullAsync(KnownNames.SMask);
+
+    public ValueTask<bool> ShouldInterpolateAsync() =>
+        Stream.GetOrDefaultAsync(KnownNames.Interpolate, false);
 }

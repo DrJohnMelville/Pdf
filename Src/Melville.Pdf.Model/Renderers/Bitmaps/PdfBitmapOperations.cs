@@ -37,21 +37,14 @@ public static class PdfBitmapOperations
         WrapForRenderingAsync(stream, NoPageContext.Instance, fillColor);
 
     internal static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
-        this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor)
-    {
-        var streamAttrs = new BitmapRenderParameters(
+        this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor) =>
+        await GetByteWriterAsync(new BitmapRenderParameters(
             stream, page, fillColor,
             (int)await stream.GetOrDefaultAsync(KnownNames.Width, 1).CA(),
             (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1).CA()
-        );
+        )).CA();
 
-        return new PdfBitmapWrapper(
-            PipeReader.Create(await stream.StreamContentAsync().CA()),
-            streamAttrs.Width, streamAttrs.Height,
-            await stream.GetOrDefaultAsync(KnownNames.Interpolate, false).CA(),
-            await GetByteWriterAsync(streamAttrs).CA());
-    }
-    private static async ValueTask<IByteWriter> GetByteWriterAsync(BitmapRenderParameters attr) =>
+    private static async ValueTask<IPdfBitmap> GetByteWriterAsync(BitmapRenderParameters attr) =>
         await new ImageRenderingWrapper(
             await attr.DecodeAsync().CA(),
             await attr.IsImageMaskAsync().CA(),
@@ -59,6 +52,7 @@ public static class PdfBitmapOperations
             (int)await attr.BitsPerComponentAsync().CA(),
             await attr.MaskAsync().CA(),
             await attr.SoftMaskAsync().CA(),
+            await attr.ShouldInterpolateAsync().CA(),
             attr
-            ).Wrap().CA();
+            ).AsPdfBitmap().CA();
 }

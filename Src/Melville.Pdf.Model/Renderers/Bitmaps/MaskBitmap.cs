@@ -11,7 +11,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal readonly struct MaskBitmap
 {
-    private byte[] Mask { get; }
+    public byte[] Mask { get; }
     public int Width { get; }
     public int Height { get; }
 
@@ -23,7 +23,8 @@ internal readonly struct MaskBitmap
     }
     
     public ReadOnlySpan<byte> PixelAt(int row, int col) =>
-        Mask.AsSpan(PixelPosition(row, col), 4);
+        PixelAt(PixelPosition(row, col));
+    public ReadOnlySpan<byte> PixelAt(int index) => Mask.AsSpan(index, 4);
 
     private int PixelPosition(int row, int col)
     {
@@ -40,4 +41,7 @@ internal readonly struct MaskBitmap
         var buffer = await wrapped.AsByteArrayAsync().CA();
         return new MaskBitmap(buffer, wrapped.Width, wrapped.Height);
     }
+
+    public bool IsSameSizeAs(IPdfBitmap other) =>
+        Height == other.Height && Width == other.Width;
 }

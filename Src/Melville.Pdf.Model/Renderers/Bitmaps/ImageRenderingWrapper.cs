@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO.Pipelines;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -15,20 +16,26 @@ internal readonly partial struct ImageRenderingWrapper
     [FromConstructor] private readonly int bitsPerComponent;
     [FromConstructor] private readonly PdfObject mask;
     [FromConstructor] private readonly PdfObject softMask;
+    [FromConstructor] private readonly bool shouldInterpolate;
     [FromConstructor] private readonly BitmapRenderParameters attr;
- 
-    public async ValueTask<IByteWriter> Wrap()
+
+    public async ValueTask<IPdfBitmap> AsPdfBitmap() =>
+        await WrapWithSoftMaskAsync(
+        await WrapWithHardMaskAsync(
+        new PdfBitmapWrapper(
+            PipeReader.Create(await attr.Stream.StreamContentAsync().CA()),
+            attr.Width, attr.Height, shouldInterpolate, await Wrap().CA())).CA()).CA();
+
+    private async ValueTask<IByteWriter> Wrap()
     {
         if (isImageMask) return new StencilWriter(decode, attr.FillColor);
 
         if (CanUseFastWriter()) return FastBitmapWriterRGB8.Instance;
 
-        return CreateByteWriter(
-            await WrapWithSoftMaskAsync(
-            await WrapWithHardMaskAsync(CreateComponentWriter()).CA()).CA());
+        return CreateByteWriter(CreateComponentWriter());
     }
 
-    private IByteWriter CreateByteWriter(IComponentWriter writer) =>
+    private IByteWriter CreateByteWriter(ComponentWriter writer) =>
         bitsPerComponent == 16 ?
             new ByteWriter16(writer) :
             new NBitByteWriter(writer, bitsPerComponent);
@@ -37,36 +44,39 @@ internal readonly partial struct ImageRenderingWrapper
     private bool CanUseFastWriter() =>
         colorSpace == DeviceRgb.Instance &&
         bitsPerComponent == 8 &&
-        DecodeArrayParser.IsDefaultDecode(decode) &&
-        mask == PdfTokenValues.Null &&
-        softMask == PdfTokenValues.Null;
+        DecodeArrayParser.IsDefaultDecode(decode);
 
-    private IComponentWriter CreateComponentWriter() =>
+    private ComponentWriter CreateComponentWriter() =>
         new ComponentWriter(
             new ClosedInterval(0, (1 << bitsPerComponent) - 1),
             DecodeArrayParser.SpecifiedOrDefaultDecodeIntervals(
                 colorSpace, decode, bitsPerComponent), colorSpace);
 
-    private async ValueTask<IComponentWriter> WrapWithHardMaskAsync(
-        IComponentWriter writer) => mask switch
+    private async ValueTask<IPdfBitmap> WrapWithHardMaskAsync(
+        IPdfBitmap writer) => mask switch
         {
-            PdfArray maskArr => new ColorMaskComponentWriter(writer,
-                await maskArr.AsIntsAsync().CA()),
+            PdfArray maskArr => 
+                 new MaskAdjuster<ColorMaskBitmapFilter>(writer,
+                     new ColorMaskBitmapFilter(
+                     await maskArr.AsIntsAsync().CA(), bitsPerComponent, colorSpace)),                
             PdfStream str => await CreateMaskWriter<HardMask>(writer, str).CA(),
             _ => writer
         };
 
-    private ValueTask<IComponentWriter> WrapWithSoftMaskAsync(
-        IComponentWriter writer) => softMask is PdfStream str ?
+    private ValueTask<IPdfBitmap> WrapWithSoftMaskAsync(
+        IPdfBitmap writer) => softMask is PdfStream str ?
             CreateMaskWriter<SoftMask>(writer, str) :
             ValueTask.FromResult(writer);
 
-    private async ValueTask<IComponentWriter> CreateMaskWriter<T>(
-        IComponentWriter componentWriter, PdfStream str)
+    private async ValueTask<IPdfBitmap> CreateMaskWriter<T>(
+        IPdfBitmap target, PdfStream str)
         where T : IMaskType, new()
     {
         var maskBitmap = await MaskBitmap.Create(str, attr.Page).CA();
-        return new MaskedBitmapWriter<T>(componentWriter,
-            maskBitmap, attr.Width, attr.Height);
+        return
+            maskBitmap.IsSameSizeAs(target) ?
+                new SameSizeMaskAdjuster<T>(target, maskBitmap, new T()):
+            new MaskAdjuster<MaskedFilter<T>>(target, 
+            new MaskedFilter<T>(maskBitmap, new T(), attr.Height, attr.Width));
     }
 }

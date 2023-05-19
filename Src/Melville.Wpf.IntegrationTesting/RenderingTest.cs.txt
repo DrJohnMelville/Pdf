@@ -225,9 +225,9 @@ RenderingTest.cs_wpf-HideOptionalImageOff|1295938836
 RenderingTest.cs_Skia-HideOptionalImageOn|2323272246
 RenderingTest.cs_Skia-HideOptionalImageOff|3150822017
 RenderingTest.cs_wpf-ExplicitType1FontWidth|2672681536
-RenderingTest.cs_wpf-UnalignedSMask|3694711585
+RenderingTest.cs_wpf-UnalignedSMask|2055540357
 RenderingTest.cs_Skia-ExplicitType1FontWidth|2652951281
-RenderingTest.cs_Skia-UnalignedSMask|3827426993
+RenderingTest.cs_Skia-UnalignedSMask|300208861
 RenderingTest.cs_wpf-DeviceCMYK2|642931830
 RenderingTest.cs_Skia-DeviceCMYK2|2084362961
 RenderingTest.cs_wpf-InterpolatedIndexedImage|993833348

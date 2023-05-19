@@ -7,7 +7,7 @@ internal class NBitByteWriter : ByteWriter
 {
     private int bits;
 
-    public NBitByteWriter(IComponentWriter writer, int bits) : 
+    public NBitByteWriter(ComponentWriter writer, int bits) : 
         base(MaxValueForBits(bits), writer)
     {
         this.bits = bits;

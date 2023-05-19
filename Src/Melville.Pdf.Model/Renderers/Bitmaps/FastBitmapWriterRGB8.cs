@@ -10,7 +10,6 @@ internal partial class FastBitmapWriterRGB8: IByteWriter
 {
     public unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {
-        
         while (input.Remaining >= 3 && output < nextPos)
         {
             input.TryRead(out output[2]);

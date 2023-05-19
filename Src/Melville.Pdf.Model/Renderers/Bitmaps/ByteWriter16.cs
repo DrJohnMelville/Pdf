@@ -5,8 +5,8 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal class ByteWriter16 : ByteWriter
 {
-    public ByteWriter16(IComponentWriter writer) :
-        base(UInt16.MaxValue, writer)
+    public ByteWriter16(ComponentWriter writer) :
+        base(ushort.MaxValue, writer)
     {
     }
 

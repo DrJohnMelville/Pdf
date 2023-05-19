@@ -6,13 +6,7 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-internal interface IComponentWriter
-{
-    public int ColorComponentCount { get; }
-    unsafe void WriteComponent(ref byte* target, int[] component, byte alpha);
-}
-
-internal class ComponentWriter : IComponentWriter
+internal class ComponentWriter 
 {
     private readonly ClosedInterval sourceInterval;
     private readonly ClosedInterval[] outputIntervals;

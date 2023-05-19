@@ -833,6 +833,21 @@
             <param name="buffer">A byte pointer which must point to the beginning of a buffer that
             is Width * Height *4 bytes long</param>
         </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.MaskAdjuster.Width">
+            <summary>
+            Width of the image in pixels
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.MaskAdjuster.Height">
+            <summary>
+            Height of the image in pixels
+            </summary>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.MaskAdjuster.DeclaredWithInterpolation">
+            <summary>
+            Indicates that the image is declared that it should use interpolation upon expanding the image.
+            </summary>
+        </member>
         <member name="T:Melville.Pdf.Model.Renderers.Bitmaps.PdfBitmapOperations">
             <summary>
             Create a PdfBitmap from a bitmap PdfStream and a few related operations

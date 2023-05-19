@@ -14,11 +14,11 @@ internal interface IByteWriter
 internal abstract class ByteWriter: IByteWriter
 {
     protected int MaxValue { get; }
-    private readonly IComponentWriter componentWriter;
+    private readonly ComponentWriter componentWriter;
     private readonly int[] components;
     private int currentComponent;
 
-    protected ByteWriter(int maxValue, IComponentWriter componentWriter)
+    protected ByteWriter(int maxValue, ComponentWriter componentWriter)
     {
         MaxValue = maxValue;
         this.componentWriter = componentWriter;
