@@ -15,9 +15,10 @@ internal abstract partial class MaskAdjuster : IPdfBitmap
             innerBitmap.RenderPbgra(buffer).AsTask()
                 .ContinueWith(ApplyFilter, (IntPtr)buffer));
     }
-    private unsafe void ApplyFilter(Task _, object targetPtr)
+    private unsafe void ApplyFilter(Task _, object? targetPtr)
     {
-        byte* target = (byte*)(IntPtr)targetPtr;
+        // in this case I know targetPtr is not null but the 
+        byte* target = (byte*)(IntPtr)targetPtr!;
         AdjustTarget(target);
     }
 
@@ -45,53 +46,4 @@ internal abstract partial class MaskAdjuster : IPdfBitmap
     }
 
     private void Premultiply(ref byte b, byte alpha) => b = (byte)((b * alpha) >> 8);
-}
-
-internal readonly partial struct SameSizeMaskAdjuster<TMaskType>: MaskAdjuster 
-    where TMaskType : IMaskType
-{
-    [FromConstructor] private readonly MaskBitmap mask;
-    [FromConstructor] private readonly TMaskType maskType;
-#if DEBUG
-    partial void OnConstructed()
-    {
-        Debug.Assert(mask.Height == Height);
-        Debug.Assert(mask.Width == Width);
-    }
-#endif
-
-    protected override unsafe void AdjustTarget(byte* target)
-    {
-        var totalPixels = Width * Height * 4;
-        fixed (byte* maskBytes = mask.Mask)
-        {
-            byte* end = maskBytes + totalPixels;
-            for (byte* i = maskBytes; i < end; i+=4)
-            {
-                ApplyAlphaToTarget(
-                    maskType.AlphaForByte(target[3], new ReadOnlySpan<byte>(i,4)),
-                    ref target);
-            }
-
-        }
-    }
-}
-
-internal partial class MaskAdjuster<TBitmapFilter> : MaskAdjuster 
-    where TBitmapFilter : IBitmapFilter
-{
-    [FromConstructor] private readonly TBitmapFilter filter;
-
-
-    protected override unsafe void AdjustTarget(byte* target)
-    {
-        for (int row = 0; row < Height; row++)
-        {
-            for (int col = 0; col < Width; col++)
-            {
-                ApplyAlphaToTarget(filter.AlphaForByte(target, row, col), ref target);
-            }
-        }
-    }
-
 }

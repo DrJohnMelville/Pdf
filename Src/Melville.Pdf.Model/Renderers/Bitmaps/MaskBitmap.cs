@@ -23,10 +23,10 @@ internal readonly struct MaskBitmap
     }
     
     public ReadOnlySpan<byte> PixelAt(int row, int col) =>
-        PixelAt(PixelPosition(row, col));
+        PixelAt(PixelOffset(row, col));
     public ReadOnlySpan<byte> PixelAt(int index) => Mask.AsSpan(index, 4);
 
-    private int PixelPosition(int row, int col)
+    public int PixelOffset(int row, int col)
     {
         Debug.Assert(row >= 0);
         Debug.Assert(row < Height);

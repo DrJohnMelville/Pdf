@@ -112,10 +112,10 @@ RenderingTest.cs_wpf-InvertedStencilMask|2196666708
 RenderingTest.cs_wpf-StencilMask|186705838
 RenderingTest.cs_Skia-InvertedStencilMask|3736333545
 RenderingTest.cs_Skia-StencilMask|277934425
-RenderingTest.cs_wpf-ExplicitColorMask|1252495693
-RenderingTest.cs_Skia-ExplicitColorMask|501063983
-RenderingTest.cs_wpf-ColorMask|2163872188
-RenderingTest.cs_Skia-ColorMask|445554086
+RenderingTest.cs_wpf-ExplicitColorMask|2543052203
+RenderingTest.cs_Skia-ExplicitColorMask|4094061638
+RenderingTest.cs_wpf-ColorMask|1340277886
+RenderingTest.cs_Skia-ColorMask|3150133688
 RenderingTest.cs_wpf-JpegImage|2888655440
 RenderingTest.cs_wpf-SimpleForm|2442653303
 RenderingTest.cs_Skia-JpegImage|1967379794
@@ -225,9 +225,9 @@ RenderingTest.cs_wpf-HideOptionalImageOff|1295938836
 RenderingTest.cs_Skia-HideOptionalImageOn|2323272246
 RenderingTest.cs_Skia-HideOptionalImageOff|3150822017
 RenderingTest.cs_wpf-ExplicitType1FontWidth|2672681536
-RenderingTest.cs_wpf-UnalignedSMask|2055540357
+RenderingTest.cs_wpf-UnalignedSMask|225033026
 RenderingTest.cs_Skia-ExplicitType1FontWidth|2652951281
-RenderingTest.cs_Skia-UnalignedSMask|300208861
+RenderingTest.cs_Skia-UnalignedSMask|970976911
 RenderingTest.cs_wpf-DeviceCMYK2|642931830
 RenderingTest.cs_Skia-DeviceCMYK2|2084362961
 RenderingTest.cs_wpf-InterpolatedIndexedImage|993833348

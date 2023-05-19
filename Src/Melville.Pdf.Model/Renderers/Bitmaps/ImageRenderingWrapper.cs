@@ -24,9 +24,9 @@ internal readonly partial struct ImageRenderingWrapper
         await WrapWithHardMaskAsync(
         new PdfBitmapWrapper(
             PipeReader.Create(await attr.Stream.StreamContentAsync().CA()),
-            attr.Width, attr.Height, shouldInterpolate, await Wrap().CA())).CA()).CA();
+            attr.Width, attr.Height, shouldInterpolate, Wrap())).CA()).CA();
 
-    private async ValueTask<IByteWriter> Wrap()
+    private IByteWriter Wrap()
     {
         if (isImageMask) return new StencilWriter(decode, attr.FillColor);
 
@@ -47,8 +47,7 @@ internal readonly partial struct ImageRenderingWrapper
         DecodeArrayParser.IsDefaultDecode(decode);
 
     private ComponentWriter CreateComponentWriter() =>
-        new ComponentWriter(
-            new ClosedInterval(0, (1 << bitsPerComponent) - 1),
+        new(new ClosedInterval(0, (1 << bitsPerComponent) - 1),
             DecodeArrayParser.SpecifiedOrDefaultDecodeIntervals(
                 colorSpace, decode, bitsPerComponent), colorSpace);
 
@@ -56,8 +55,8 @@ internal readonly partial struct ImageRenderingWrapper
         IPdfBitmap writer) => mask switch
         {
             PdfArray maskArr => 
-                 new MaskAdjuster<ColorMaskBitmapFilter>(writer,
-                     new ColorMaskBitmapFilter(
+                 new SelfMaskAdjuster<ColorRangeMaskType>(writer,
+                     new ColorRangeMaskType(
                      await maskArr.AsIntsAsync().CA(), bitsPerComponent, colorSpace)),                
             PdfStream str => await CreateMaskWriter<HardMask>(writer, str).CA(),
             _ => writer
@@ -74,9 +73,8 @@ internal readonly partial struct ImageRenderingWrapper
     {
         var maskBitmap = await MaskBitmap.Create(str, attr.Page).CA();
         return
-            maskBitmap.IsSameSizeAs(target) ?
-                new SameSizeMaskAdjuster<T>(target, maskBitmap, new T()):
-            new MaskAdjuster<MaskedFilter<T>>(target, 
-            new MaskedFilter<T>(maskBitmap, new T(), attr.Height, attr.Width));
+            maskBitmap.IsSameSizeAs(target)
+                ? new SameSizeMaskAdjuster<T>(target, maskBitmap, new T())
+                : new ArbitrarySizeMaskAdjuster<T>(target, maskBitmap, new T());
     }
 }

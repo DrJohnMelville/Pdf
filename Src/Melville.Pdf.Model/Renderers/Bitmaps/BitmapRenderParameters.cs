@@ -23,7 +23,7 @@ internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttribut
     public async ValueTask<IColorSpace> ColorSpaceAsync() =>
         Stream.ContainsKey(KnownNames.ColorSpace)?
         await new ColorSpaceFactory(Page)
-            .FromNameOrArray(await Stream[KnownNames.ColorSpace].CA()) :
+            .FromNameOrArray(await Stream[KnownNames.ColorSpace].CA()).CA() :
         DeviceRgb.Instance;
 
     public ValueTask<long> BitsPerComponentAsync() =>

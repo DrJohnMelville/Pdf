@@ -5,19 +5,16 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal interface IMaskType
 {
-    byte AlphaForByte(byte alpha, in ReadOnlySpan<byte> maskPixel);
+    unsafe byte AlphaForByte(byte alpha, in byte* maskPixel);
 }
 
 internal readonly struct HardMask : IMaskType
 {
-    public byte AlphaForByte(byte alpha, in ReadOnlySpan<byte> maskPixel) =>
+    public unsafe byte AlphaForByte(byte alpha, in byte* maskPixel) =>
         maskPixel[3] == 255 ? alpha : (byte)0;
 }
 
 internal readonly struct SoftMask : IMaskType
 {
-    public byte AlphaForByte(byte alpha, in ReadOnlySpan<byte> maskPixel)
-    {
-        return maskPixel[0];
-    }
+    public unsafe byte AlphaForByte(byte alpha, in byte* maskPixel) => *maskPixel;
 }
