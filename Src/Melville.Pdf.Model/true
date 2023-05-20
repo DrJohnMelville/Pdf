@@ -833,6 +833,11 @@
             <param name="buffer">A byte pointer which must point to the beginning of a buffer that
             is Width * Height *4 bytes long</param>
         </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Bitmaps.RenderToArrayImpl">
+            <summary>
+            This contains methods to render the bitmap to a C# array of bytes
+            </summary>
+        </member>
         <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.MaskAdjuster.Width">
             <summary>
             Width of the image in pixels

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Numerics;
+using Melville.Pdf.ImageExtractor.ImageCollapsing;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 
 namespace Melville.Pdf.ImageExtractor;
@@ -16,7 +17,7 @@ public static class ImageExtractorFacade
     /// <param name="page">the one based page number to take images from</param>
     /// <returns>A list of images that appear on the page</returns>
     public static async ValueTask<IList<IExtractedBitmap>> 
-        ImagesFrom(this DocumentRenderer dr, int page)
+        ImagesFromAsync(this DocumentRenderer dr, int page)
     {
         var ret = new List<IExtractedBitmap>();
         await dr.RenderPageTo(page, (rect, matrix) =>
@@ -27,5 +28,12 @@ public static class ImageExtractorFacade
             return target;
         });
         return ret;
+    }
+
+    public static IList<IExtractedBitmap> CollapseAdjacentImages(
+        this IList<IExtractedBitmap> source)
+    {
+        new ImageCollapser(source).Process();
+        return source;
     }
 }

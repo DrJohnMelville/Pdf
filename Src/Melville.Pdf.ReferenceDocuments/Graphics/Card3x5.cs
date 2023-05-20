@@ -51,5 +51,4 @@ public abstract class Card3x5: CreatePdfParser
     }
 
     protected virtual ValueTask DoPaintingAsync(ContentStreamWriter csw) => ValueTask.CompletedTask;
-
 }

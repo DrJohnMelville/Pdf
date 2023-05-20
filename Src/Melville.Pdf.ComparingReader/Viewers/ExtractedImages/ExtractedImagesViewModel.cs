@@ -22,8 +22,12 @@ internal partial class ExtractedImagesViewModel: IRenderer
     public string DisplayName => "Extracted Images";
     public object RenderTarget => this;
     private DocumentRenderer? renderer;
+    private int lastPage;
     [AutoNotify] private IList<ImageSource> images  = Array.Empty<ImageSource>();
     [FromConstructor] private readonly IPasswordSource passwordSource;
+    [AutoNotify] private bool collapseImages;
+
+    private void OnCollapseImagesChanged() => SetPage(lastPage);
 
     public async void SetTarget(Stream pdfBits, IPasswordSource passwordSource)
     {
@@ -33,11 +37,22 @@ internal partial class ExtractedImagesViewModel: IRenderer
 
     public async void SetPage(int page)
     {
+        lastPage = page;
         if (renderer == null) return;
         var images = new List<ImageSource>();
-        foreach (var image in await renderer.ImagesFrom(page))
+        try
         {
-            images.Add(await image.ToWpfBitmap());
+
+            var filteredImages = (await renderer.ImagesFromAsync(page));
+            if (CollapseImages)
+                filteredImages = filteredImages.CollapseAdjacentImages();
+            foreach (var image in filteredImages)
+            {
+                images.Add(await image.ToWpfBitmap());
+            }
+        }
+        catch (Exception )
+        {
         }
         Images = images;
     }

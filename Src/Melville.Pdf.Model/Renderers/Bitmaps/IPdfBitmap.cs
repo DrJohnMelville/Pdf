@@ -34,7 +34,10 @@ public interface IPdfBitmap
     unsafe ValueTask RenderPbgra(byte* buffer);
 }
 
-internal static class RenderToArrayImpl
+/// <summary>
+/// This contains methods to render the bitmap to a C# array of bytes
+/// </summary>
+public static class RenderToArrayImpl
 {
     public static unsafe ValueTask CopyToArrayAsync(this IPdfBitmap bitmap, byte[] target)
     {

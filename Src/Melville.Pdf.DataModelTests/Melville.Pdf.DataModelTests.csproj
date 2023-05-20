@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.ImageExtractor\Melville.Pdf.ImageExtractor.csproj" />
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
       <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
       <ProjectReference Include="..\Melville.Pdf.ReferenceDocumentGenerator\Melville.Pdf.ReferenceDocumentGenerator.csproj" />
@@ -33,6 +34,10 @@
     <ItemGroup>
       <None Remove="ICC\sample.icc" />
       <EmbeddedResource Include="ICC\sample.icc" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ImageExtractors\" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,56 @@
+﻿using System.Collections.Generic;
+using System.Numerics;
+using System.Threading.Tasks;
+using Melville.Pdf.ImageExtractor;
+using Melville.Pdf.Model;
+using Melville.Pdf.Model.Creators;
+using Melville.Pdf.ReferenceDocuments.Graphics.Images;
+using Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
+using Melville.Pdf.ReferenceDocuments.Infrastructure;
+using Xunit;
+
+namespace Melville.Pdf.DataModelTests.ImageExtractors
+{
+    public class ImageExtractionTest
+    {
+        private static async Task<IList<IExtractedBitmap>> ImagesFromAsync(CreatePdfParser docGenerator)
+        {
+            var document = await new PdfReader().ReadFrom(await
+                docGenerator.AsMultiBufAsync());
+
+            var images = await document.ImagesFromAsync(1);
+            return images;
+        }
+
+        [Fact]
+        public async Task ReadImageFromFile()
+        {
+            var images = await ImagesFromAsync(new ExplicitColorMask());
+            Assert.Single(images);
+            var image = images[0];
+            Assert.Equal(1, image.Page);
+            Assert.Equal(256, image.Height);
+            Assert.Equal(256, image.Width);
+            Assert.Equal(new Vector2(20, 176), image.PositionBottomLeft);
+            Assert.Equal(new Vector2(270, 176), image.PositionBottomRight);
+            Assert.Equal(new Vector2(20, 26), image.PositionTopLeft);
+            Assert.Equal(new Vector2(270, 26), image.PositionTopRight);
+        }
+        [Fact]
+        public async Task ReadImageFromFile2()
+        {
+            var images = await ImagesFromAsync(new JBigSampleBitStream1());
+            Assert.Single(images);
+            var image = images[0];
+            Assert.Equal(1, image.Page);
+            Assert.Equal(56, image.Height);
+            Assert.Equal(64, image.Width);
+            Assert.Equal(new Vector2(20, 176), image.PositionBottomLeft);
+            Assert.Equal(new Vector2(270, 176), image.PositionBottomRight);
+            Assert.Equal(new Vector2(20, 26), image.PositionTopLeft);
+            Assert.Equal(new Vector2(270, 26), image.PositionTopRight);
+        }
+
+
+    }
+}

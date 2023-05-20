@@ -37,7 +37,7 @@ public class RoundTripEncryptedFiles
     
     private async Task TestEncryptedFile(CreatePdfParser gen, int V, int R, int keyLengthInBits)
     {
-        var target = await gen.AsMultiBuf();
+        var target = await gen.AsMultiBufAsync();
         await VerifyUserPasswordWorks(V, R, keyLengthInBits, gen.HelpText, target);
         await ParseTarget(target, PasswordType.Owner, "Owner");
     }

@@ -19,13 +19,13 @@ public abstract class CreatePdfParser : IPdfGenerator
 
 public static class CreatePdfParserOperations
 {
-    public static async ValueTask<MultiBufferStream> AsMultiBuf(this CreatePdfParser source)
+    public static async ValueTask<MultiBufferStream> AsMultiBufAsync(this CreatePdfParser source)
     {
         var target = new MultiBufferStream();
         await source.WritePdfAsync(target);
         return target;
     }
 
-    public static async ValueTask<string> AsString(this CreatePdfParser source) =>
-        await new StreamReader((await source.AsMultiBuf()).CreateReader()).ReadToEndAsync();
+    public static async ValueTask<string> AsStringAsync(this CreatePdfParser source) =>
+        await new StreamReader((await source.AsMultiBufAsync()).CreateReader()).ReadToEndAsync();
 }
