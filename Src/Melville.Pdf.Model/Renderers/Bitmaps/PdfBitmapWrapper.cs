@@ -49,14 +49,6 @@ internal unsafe readonly partial struct BitmapWriter
     [FromConstructor]private readonly int height;
     [FromConstructor]private readonly IByteWriter writer;
 
-    // public BitmapWriter(byte* buffer, PipeReader reader, int width, IByteWriter writer)
-    // {
-    //     this.buffer = buffer;
-    //     this.reader = reader;
-    //     this.width = width;
-    //     this.writer = writer;
-    // }
-    //
     public ValueTask<ReadResult> ReadAsync() => reader.ReadAsync();
 
     public bool LoadLPixels(ReadResult readResult, ref int row, ref int col)

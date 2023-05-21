@@ -16,11 +16,11 @@ public partial class VerticalBitmapStrip : BitmapStrip
 
     protected override async ValueTask RenderPbgra(PointerHolder buffer)
     {
-        long offset = componentBitmaps.Sum(i=>i.ReqiredBufferSize());
+        long offset = 0;
         foreach (var singleBitmap in componentBitmaps)
         {
-            offset -= singleBitmap.ReqiredBufferSize();
             await buffer.WriteToStream(offset, singleBitmap);
+            offset += singleBitmap.ReqiredBufferSize();
         }
     }
 }

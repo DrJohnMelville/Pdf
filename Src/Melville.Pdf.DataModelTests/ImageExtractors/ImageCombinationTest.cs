@@ -41,11 +41,11 @@ public class ImageCombinationTest
         Assert.Single(source);
         var final = source.First();
         return final.VerifyUniform(2, 5,
+            1, 2,
+            3, 4,
             50, 51,
             52, 53,
-            54, 55,
-            1, 2,
-            3, 4
+            54, 55
             ).AsTask();
 
     }
@@ -63,12 +63,12 @@ public class ImageCombinationTest
         var final = source.First();
         Assert.Equal(3, ((VerticalBitmapStrip)final).Count);
         return final.VerifyUniform(2, 6,
-            70, 71,
+            1, 2,
+            3, 4,
             50, 51,
             52, 53,
             54, 55,
-            1, 2,
-            3, 4
+            70, 71
             ).AsTask();
     }
     [Fact]
@@ -85,12 +85,12 @@ public class ImageCombinationTest
         var final = source.First();
         Assert.Equal(3, ((VerticalBitmapStrip)final).Count);
         return final.VerifyUniform(2, 6,
-            70, 71,
+            1, 2,
+            3, 4,
             50, 51,
             52, 53,
             54, 55,
-            1, 2,
-            3, 4
+            70, 71
         ).AsTask();
     }
     [Fact]

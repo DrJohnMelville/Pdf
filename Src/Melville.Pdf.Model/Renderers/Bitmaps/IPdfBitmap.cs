@@ -39,6 +39,12 @@ public interface IPdfBitmap
 /// </summary>
 public static class RenderToArrayImpl
 {
+    /// <summary>
+    /// Copies a bitmap to an appropriately sized C# array by pinning the array and rendering
+    /// tp the resulting pointer.
+    /// </summary>
+    /// <param name="bitmap">Bitmap to render</param>
+    /// <param name="target">array to fill with the bitmap bits</param>
     public static unsafe ValueTask CopyToArrayAsync(this IPdfBitmap bitmap, byte[] target)
     {
         Debug.Assert(target.Length >= bitmap.ReqiredBufferSize());
@@ -47,6 +53,11 @@ public static class RenderToArrayImpl
         return new(bitmap.RenderPbgra(pointer).AsTask().ContinueWith(_ => handle.Free()));
     }
 
+    /// <summary>
+    /// Render the bitmap to a C# array
+    /// </summary>
+    /// <param name="bitmap">The bitmap to render.</param>
+    /// <returns>A byte array containing the bitmap as pargb quadruples</returns>
     public static async ValueTask<byte[]> AsByteArrayAsync(this IPdfBitmap bitmap)
     {
         var ret = new byte[bitmap.ReqiredBufferSize()];
