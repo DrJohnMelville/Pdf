@@ -1,13 +1,36 @@
 ﻿using System.Buffers;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
+using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+using Melville.Pdf.Model;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
+using Melville.Pdf.SkiaSharp;
+using SkiaSharp;
 using Xunit;
 
 namespace Performance.Playground.Rendering;
 #pragma warning disable xUnit1013
+
+public class ImageExtraction
+{
+    [Benchmark()]
+    public async Task ExtractImages()
+    {
+        int index = 1;
+        var doc = await new PdfReader().ReadFromFile(@"C:\Users\jmelv\Documents\PhotoDoc website Backup\backup_2019-05-31-1240_Digital_Forensic_Photography_262d8efaca37-uploads\uploads\2014\04\AAFS-slides.pdf");
+        await foreach (var image in doc.CollapsedImagesFromAsync())
+        {
+            var skBitmap = await image.ToSkBitmapAsync();
+            await using var output = File.Create(@"C:\Users\jmelv\Documents\Scratch\Output" + $"\\{index++}.jpg");
+            skBitmap.Encode(SKEncodedImageFormat.Jpeg, 90).SaveTo(output);
+        }
+
+    }
+}
 
 public class BitmapWriting
 {

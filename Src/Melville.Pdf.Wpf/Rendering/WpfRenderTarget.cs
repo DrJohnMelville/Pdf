@@ -64,6 +64,7 @@ internal class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsStat
     private DrawingGroup ApplyBitmapScaling(IPdfBitmap bitmap, BitmapSource bitmapSource)
     {
         var ret = new DrawingGroup();
+        ret.Transform = new MatrixTransform(1, 0, 0, -1, 0, 1);
         RenderOptions.SetBitmapScalingMode(ret, SelectScalingMode(bitmap));
         ret.Children.Add(new ImageDrawing(bitmapSource, unitRectangle));
         return ret;

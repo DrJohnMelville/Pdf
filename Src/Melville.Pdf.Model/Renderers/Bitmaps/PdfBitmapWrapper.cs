@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
@@ -25,13 +26,13 @@ internal class PdfBitmapWrapper : IPdfBitmap
 
     public unsafe ValueTask RenderPbgra(byte* buffer)
     {
-        var x = new BitmapWriter(buffer, source, Width, byteWriter);
+        var x = new BitmapWriter(buffer, source, Width, Height, byteWriter);
         return InnerRender(x);
     }
 
     private async ValueTask InnerRender(BitmapWriter c)
     {
-        int row = Height - 1;
+        int row = 0;
         int column = 0;
         while (c.LoadLPixels(await c.ReadAsync().CA(), ref row, ref column))
         {
@@ -40,21 +41,22 @@ internal class PdfBitmapWrapper : IPdfBitmap
     }
 }
 
-internal unsafe readonly struct BitmapWriter
+internal unsafe readonly partial struct BitmapWriter
 {
-    private readonly byte* buffer;
-    private readonly PipeReader reader;
-    private readonly int width;
-    private readonly IByteWriter writer;
+    [FromConstructor]private readonly byte* buffer;
+    [FromConstructor]private readonly PipeReader reader;
+    [FromConstructor]private readonly int width;
+    [FromConstructor]private readonly int height;
+    [FromConstructor]private readonly IByteWriter writer;
 
-    public BitmapWriter(byte* buffer, PipeReader reader, int width, IByteWriter writer)
-    {
-        this.buffer = buffer;
-        this.reader = reader;
-        this.width = width;
-        this.writer = writer;
-    }
-
+    // public BitmapWriter(byte* buffer, PipeReader reader, int width, IByteWriter writer)
+    // {
+    //     this.buffer = buffer;
+    //     this.reader = reader;
+    //     this.width = width;
+    //     this.writer = writer;
+    // }
+    //
     public ValueTask<ReadResult> ReadAsync() => reader.ReadAsync();
 
     public bool LoadLPixels(ReadResult readResult, ref int row, ref int col)
@@ -65,7 +67,7 @@ internal unsafe readonly struct BitmapWriter
         LoadBytes(ref row, ref col, ref seq);
 
         reader.AdvanceTo(seq.Position, readResult.Buffer.End);
-        return row >= 0;
+        return row < height;
     }
 
     private void LoadBytes(ref int row, ref int col, ref SequenceReader<byte> seq)
@@ -77,8 +79,8 @@ internal unsafe readonly struct BitmapWriter
             writer.WriteBytes(ref seq, ref localPointer, oneOffEnd);
             if (oneOffEnd == localPointer)
             {
-                row--;
-                if (row < 0) return;
+                row++;
+                if (row >= height) return;
                 col = 0;
             }
             else

@@ -11,9 +11,7 @@ using Performance.Playground.Rendering;
 if (true)
 {
     Console.WriteLine("Begin");
-    var pr = new PageRendering();
-    await pr.CreateStream();
-    await pr.RenderSkia();
+    await new ImageExtraction().ExtractImages();
     Console.WriteLine("done");
 }
 else

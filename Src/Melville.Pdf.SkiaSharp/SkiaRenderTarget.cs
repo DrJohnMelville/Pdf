@@ -30,11 +30,13 @@ internal partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsS
 
     public override async ValueTask RenderBitmap(IPdfBitmap bitmap)
     {
-        using var skBitmap = ScreenFormatBitmap(bitmap);
-        await FillBitmapAsync(bitmap, skBitmap).CA();
+        using var skBitmap = await bitmap.ToSkBitmapAsync().CA();
         SetBitmapScaleQuality(bitmap);
+        var oldMatrix = Target.TotalMatrix;
+        Target.SetMatrix(oldMatrix.PreConcat(new SKMatrix(1, 0, 0, 0, -1, 1, 0,0,1)));
         Target.DrawBitmap(skBitmap,
             new SKRect(0, 0, bitmap.Width, bitmap.Height), new SKRect(0,0,1,1), fillPaint);
+        Target.SetMatrix(oldMatrix);
     }
 
     private readonly SKPaint fillPaint = new();
@@ -44,15 +46,8 @@ internal partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsS
             ? SKFilterQuality.High
             : SKFilterQuality.None;
     }
-
-    private static SKBitmap ScreenFormatBitmap(IPdfBitmap bitmap) =>
-        new(new SKImageInfo(bitmap.Width, bitmap.Height, SKColorType.Bgra8888,
-            SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
-
-    private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap) => 
-        bitmap.RenderPbgra((byte*)skBitmap.GetPixels().ToPointer());
-
     public override void Dispose()
+
     {
         fillPaint.Dispose();
         base.Dispose();
