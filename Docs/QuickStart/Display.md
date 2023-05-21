@@ -118,3 +118,34 @@ Once you have an IDefaultFontMapper just pass it in to the PdfReader constructor
 The WPF PdfViewer control does not have a convenience method to use custom font mapping.  If you are using WPF then you
 are on windows and the default windows mapper is highly likely to serve you well.  If needed you could use your own
 PdfReader to read the file into a DocumentRenderer and then bind the Source property on the PdfViewer.
+
+
+## 4. Extract all images from a file.
+The ImageExtractor functions as a rendering target.  Rather than painting the page, it stores the images.
+
+````
+public async Task ExtractImages()
+{
+    int index = 1;
+    var doc = await new PdfReader().ReadFromFile(<FileName>);
+    await foreach (var image in doc.CollapsedImagesFromAsync())
+    {
+        var skBitmap = await image.ToSkBitmapAsync();
+        await using var output = File.Create(@"<BasePath>" + $"\\{index++}.jpg");
+        skBitmap.Encode(SKEncodedImageFormat.Jpeg, 90).SaveTo(output);
+    }
+}
+````
+
+Notice that this sample depends on BOTH the Melville.Pdf.SkiaSharp and 
+Melville.Pdf.ImageExtractor assemblies.  Melville.PDF does not have a native PNG or
+JPEG encodeder.  Melville.Pdf.ImageExtractor extracts images to an IExtractedBitmap
+that extends IPdfBitmap, and contains the decoded pixel data.  The sample converts this
+to a Skia SkBitmap using a method from Melville.Pdf.SkiaSharp and then uses Skia to encode
+the image file.  Similar capabilities exist is Melville.Pdf to convert to WPF BitmapImpageSource
+objects.
+
+Te CollapseImagesFromAsync method will try to find immediately adjacent images and merge
+them.  Many PDFs separate images into bands.  This method stitches those back together.
+The ImagesFromAsync method does not stitch images together.  Each method takes an optional
+additional parameter to extract the images appearing on a specific page.
