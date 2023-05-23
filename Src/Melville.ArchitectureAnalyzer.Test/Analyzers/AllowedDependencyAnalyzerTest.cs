@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Melville.ArchitectureAnalyzer.Test.Analyzers;
 
-public class AllowedDependencyAnalyzerTest
+public partial class AllowedDependencyAnalyzerTest
 {
     private static Task RunSimpleTest(string contentOfRelying, string contentOfReliedUpon,
         string? commonContent = null, int howManyErrors = 1) =>
@@ -41,13 +41,15 @@ public class AllowedDependencyAnalyzerTest
         return test.RunAsync();
     }
 
-    private static readonly Regex DiagnosticLocator = new(@"\[\|(.+?)\|\]");
+    [GeneratedRegex(@"\[\|(.+?)\|\]")]
+    private static partial Regex DiagnosticLocator();
+
     private static (string Source, List<DiagnosticResult>) ParseSource(string constructFileText, string errorMsg)
     {
-        var matches = DiagnosticLocator.Matches(constructFileText);
+        var matches = DiagnosticLocator().Matches(constructFileText);
         var diags = matches.Select((match, i) => MatchToDiagnosticResult(match, i, errorMsg)).ToList();
             
-        return (DiagnosticLocator.Replace(constructFileText, "$1"), diags);
+        return (DiagnosticLocator().Replace(constructFileText, "$1"), diags);
     }
 
     private static DiagnosticResult MatchToDiagnosticResult(Match match, int i, string errorMsg) =>

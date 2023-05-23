@@ -838,6 +838,21 @@
             This contains methods to render the bitmap to a C# array of bytes
             </summary>
         </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.RenderToArrayImpl.CopyToArrayAsync(Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap,System.Byte[])">
+            <summary>
+            Copies a bitmap to an appropriately sized C# array by pinning the array and rendering
+            tp the resulting pointer.
+            </summary>
+            <param name="bitmap">Bitmap to render</param>
+            <param name="target">array to fill with the bitmap bits</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.RenderToArrayImpl.AsByteArrayAsync(Melville.Pdf.Model.Renderers.Bitmaps.IPdfBitmap)">
+            <summary>
+            Render the bitmap to a C# array
+            </summary>
+            <param name="bitmap">The bitmap to render.</param>
+            <returns>A byte array containing the bitmap as pargb quadruples</returns>
+        </member>
         <member name="P:Melville.Pdf.Model.Renderers.Bitmaps.MaskAdjuster.Width">
             <summary>
             Width of the image in pixels

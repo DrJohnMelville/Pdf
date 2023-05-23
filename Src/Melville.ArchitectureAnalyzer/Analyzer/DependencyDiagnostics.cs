@@ -15,7 +15,7 @@ public static class DependencyDiagnostics
     public static readonly DiagnosticDescriptor ParseError = new DiagnosticDescriptor(
         "Arch002", "Syntax error in architecture definition file",
         "{0}", "Architecture", DiagnosticSeverity.Error, true,
-        "The syntac of the Architecture.Adf file is invalid.",
+        "The syntax of the Architecture.Adf file is invalid.",
         "https://github.com/DrJohnMelville/Pdf/blob/main/Docs/Architecture/Achitecture.md",
         WellKnownDiagnosticTags.Build);
 
