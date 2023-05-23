@@ -7,12 +7,12 @@ namespace Melville.Pdf.LowLevel.Filters.JpxDecodeFilters;
 
 internal class JpxToPdfAdapter: ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters)
+    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfObject? parameters)
     {
         throw new System.NotSupportedException();
     }
 
-    public ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters)
+    public ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters)
     {
         var independentImage = J2kReader.FromStream(input);
         return new(independentImage.NumberOfComponents == 1 ?

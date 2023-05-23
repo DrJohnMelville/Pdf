@@ -20,7 +20,7 @@ public abstract class TextAttributeTest : Card3x5
     {
         using (var tr = csw.StartTextBlock())
         {
-            await csw.SetStrokeRGB(1.0, 0.0, 0.0);
+            await csw.SetStrokeRGBAsync(1.0, 0.0, 0.0);
             await csw.SetFont(fontName, 70);
             tr.SetTextMatrix(1, 0, 0, 1, 30, 25);
             await tr.ShowString("Is Text");
@@ -42,7 +42,7 @@ public abstract class ClippingTextAttributeTest : TextAttributeTest
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
         await base.DoPaintingAsync(csw);
-        await csw.SetNonstrokingRGB(0, 1, 0);
+        await csw.SetNonstrokingRgbAsync(0, 1, 0);
         csw.Rectangle(10, 130, 300, 20);
         csw.FillPath();
     }

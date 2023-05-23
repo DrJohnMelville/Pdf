@@ -25,7 +25,7 @@ public abstract class FontDefinitionTest : Card3x5
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
         using var tr = csw.StartTextBlock();
-        await csw.SetStrokeRGB(1.0, 0.0, 0.0);
+        await csw.SetStrokeRGBAsync(1.0, 0.0, 0.0);
         await WriteString(csw, tr, Font1, 25);
         await BetweenFontWrites(csw);
         await WriteString(csw, tr, Font2, 125);

@@ -53,7 +53,7 @@ public partial class ColorOperationsParserTest: ParserTest
             this.expectedName = expectedName;
         }
 
-        public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+        public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
         {
             Assert.Equal(expectedName, patternName);
             Assert.Equal(new double[]{1,2,3}, colors.ToArray());
@@ -79,7 +79,7 @@ public partial class ColorOperationsParserTest: ParserTest
             this.expectedName = expectedName;
         }
 
-        public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+        public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
         {
             Assert.Equal(expectedName, patternName);
             Assert.Equal(new double[]{1,2,3}, colors.ToArray());
@@ -95,17 +95,17 @@ public partial class ColorOperationsParserTest: ParserTest
         new NonStrokeColorExtendedMock(NameDirectory.Get("P1")));
     
     [Fact]
-    public Task SetStrokeGray() => TestInput("12 G", i => i.SetStrokeGray(12));
+    public Task SetStrokeGray() => TestInput("12 G", i => i.SetStrokeGrayAsync(12));
     [Fact]
-    public Task SetStrokeRGB() => TestInput("4 5 6 RG", i => i.SetStrokeRGB(4,5, 6));
+    public Task SetStrokeRGB() => TestInput("4 5 6 RG", i => i.SetStrokeRGBAsync(4,5, 6));
     [Fact]
-    public Task SetStrokeCMYK() => TestInput("4 5 6 7 K", i => i.SetStrokeCMYK(4,5, 6, 7));
+    public Task SetStrokeCMYK() => TestInput("4 5 6 7 K", i => i.SetStrokeCMYKAsync(4,5, 6, 7));
     [Fact]
-    public Task SetNonstrokingGray() => TestInput("12 g", i => i.SetNonstrokingGray(12));
+    public Task SetNonstrokingGray() => TestInput("12 g", i => i.SetNonstrokingGrayAsync(12));
     [Fact]
-    public Task SetNonstrokingRGB() => TestInput("4 5 6 rg", i => i.SetNonstrokingRGB(4,5, 6));
+    public Task SetNonstrokingRGB() => TestInput("4 5 6 rg", i => i.SetNonstrokingRgbAsync(4,5, 6));
     [Fact]
-    public Task SetNonstrokingCMYK() => TestInput("4 5 6 7 k", i => i.SetNonstrokingCMYK(4,5, 6, 7));
+    public Task SetNonstrokingCMYK() => TestInput("4 5 6 7 k", i => i.SetNonstrokingCMYKAsync(4,5, 6, 7));
     [Fact]
     public Task StrokingColorSpace() => 
         TestInput("/DeviceGray CS", i => i.SetStrokingColorSpace(ColorSpaceName.DeviceGray));

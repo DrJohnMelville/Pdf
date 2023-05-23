@@ -47,7 +47,7 @@ public static class ColorOperationsHelpers
     /// <param name="colors">The color desired, in the current colorspace</param>
     /// <returns>A valuetask representing completion of this task</returns>
     public static ValueTask SetStrokeColorExtended(this IColorOperations target, params double[] colors) =>
-        target.SetStrokeColorExtended(null, new ReadOnlySpan<double>(colors));
+        target.SetStrokeColorExtendedAsync(null, new ReadOnlySpan<double>(colors));
     /// <summary>
     /// Sets the stroking color in the receiver with a name and color values.
     /// </summary>
@@ -57,7 +57,7 @@ public static class ColorOperationsHelpers
     /// <returns>A ValueTask representing completion of this operation</returns>
     public static ValueTask SetStrokeColorExtended(
         this IColorOperations target, PdfName? name, params double[] colors) =>
-        target.SetStrokeColorExtended(name, new ReadOnlySpan<double>(colors));
+        target.SetStrokeColorExtendedAsync(name, new ReadOnlySpan<double>(colors));
 
     /// <summary>
     /// Sets the nonstroking color in the receiver.
@@ -73,7 +73,7 @@ public static class ColorOperationsHelpers
     /// <param name="colors">The color desired, in the current colorspace</param>
     /// <returns>A valuetask representing completion of this task</returns>
     public static ValueTask SetNonstrokingColorExtended(this IColorOperations target, params double[] colors) =>
-        target.SetNonstrokingColorExtended(null, new ReadOnlySpan<double>(colors));
+        target.SetNonstrokingColorExtendedAsync(null, new ReadOnlySpan<double>(colors));
     /// <summary>
     /// Sets the stroking color in the receiver with a name and color values.
     /// </summary>
@@ -83,5 +83,5 @@ public static class ColorOperationsHelpers
     /// <returns>A ValueTask representing completion of this operation</returns>
     public static ValueTask SetNonstrokingColorExtended(
         this IColorOperations target, PdfName? name, params double[] colors) =>
-        target.SetNonstrokingColorExtended(name, new ReadOnlySpan<double>(colors));
+        target.SetNonstrokingColorExtendedAsync(name, new ReadOnlySpan<double>(colors));
 }

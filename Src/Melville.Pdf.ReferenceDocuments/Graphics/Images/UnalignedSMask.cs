@@ -26,7 +26,7 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
 
         protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
         {
-            await csw.SetStrokeRGB(0,0, 1);
+            await csw.SetStrokeRGBAsync(0,0, 1);
             csw.SetLineWidth(100);
             csw.MoveTo(0,0);
             csw.LineTo(300,200);

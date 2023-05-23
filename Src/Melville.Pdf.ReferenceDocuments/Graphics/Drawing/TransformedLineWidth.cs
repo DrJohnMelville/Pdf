@@ -13,7 +13,7 @@ public class TransformedLineWidth : Card3x5
     protected override void DoPainting(ContentStreamWriter csw)
     {
         csw.SetLineWidth(10);
-        csw.SetNonstrokingRGB(1,0,0);
+        csw.SetNonstrokingRgbAsync(1,0,0);
 
         csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(25,25));
         csw.ModifyTransformMatrix(Matrix3x2.CreateScale(4,1));

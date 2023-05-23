@@ -34,42 +34,42 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator SCN
     /// </summary>
-    ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
+    ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator scn
     /// </summary>
-    ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors);
+    ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator G
     /// </summary>
-    ValueTask SetStrokeGray(double grayLevel);
+    ValueTask SetStrokeGrayAsync(double grayLevel);
 
     /// <summary>
     /// Content stream operator RG
     /// </summary>
-    ValueTask SetStrokeRGB(double red, double green, double blue);
+    ValueTask SetStrokeRGBAsync(double red, double green, double blue);
 
     /// <summary>
     /// Content stream operator K
     /// </summary>
-    ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black);
+    ValueTask SetStrokeCMYKAsync(double cyan, double magenta, double yellow, double black);
     
     /// <summary>
     /// Content stream operator g
     /// </summary>
-    ValueTask SetNonstrokingGray(double grayLevel);
+    ValueTask SetNonstrokingGrayAsync(double grayLevel);
 
     /// <summary>
     /// Content stream operator rg
     /// </summary>
-    ValueTask SetNonstrokingRGB(double red, double green, double blue);
+    ValueTask SetNonstrokingRgbAsync(double red, double green, double blue);
 
     /// <summary>
     /// Content stream operator k
     /// </summary>
-    ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black);
+    ValueTask SetNonstrokingCMYKAsync(double cyan, double magenta, double yellow, double black);
     
     /// <summary>
     /// Content stream operator renderingIntent ri

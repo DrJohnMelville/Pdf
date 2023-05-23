@@ -16,13 +16,13 @@ public class DeviceCMYK2: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokeCMYK(.25, .199, .203, 0);
+        await csw.SetStrokeCMYKAsync(.25, .199, .203, 0);
         DrawLine(csw);
-        await csw.SetStrokeCMYK(0, 0, 1, 1);
+        await csw.SetStrokeCMYKAsync(0, 0, 1, 1);
         DrawLine(csw);
-        await csw.SetStrokeCMYK(0, .4, .4, 1);
+        await csw.SetStrokeCMYKAsync(0, .4, .4, 1);
         DrawLine(csw);
-        await csw.SetStrokeCMYK(1,1,1,1);
+        await csw.SetStrokeCMYKAsync(1,1,1,1);
         DrawLine(csw);
     }
 }

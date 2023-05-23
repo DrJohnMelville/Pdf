@@ -12,10 +12,10 @@ internal partial class StaticSingleFilter: IApplySingleFilter
     public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter) =>
         await 
             StaticCodecFactory.CodecFor((PdfName)await filter.DirectValueAsync().CA())
-                .EncodeOnReadStream(source, parameter).CA();
+                .EncodeOnReadStreamAsync(source, parameter).CA();
 
     public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter) =>
         await 
             StaticCodecFactory.CodecFor((PdfName)await filter.DirectValueAsync().CA())
-                .DecodeOnReadStream(source, parameter).CA();
+                .DecodeOnReadStreamAsync(source, parameter).CA();
 }

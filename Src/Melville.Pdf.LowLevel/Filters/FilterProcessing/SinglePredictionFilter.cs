@@ -13,13 +13,13 @@ internal partial class SinglePredictionFilter : IApplySingleFilter
     public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
     {
         var sourceWithPredictionApplied = 
-            await PredictorCodec.Instance.EncodeOnReadStream(source, parameter).CA();
+            await PredictorCodec.Instance.EncodeOnReadStreamAsync(source, parameter).CA();
         return await StaticSingleFilter.Instance.Encode(sourceWithPredictionApplied, filter, parameter).CA();
     }
 
     public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)
     {
         var decodedSource = await StaticSingleFilter.Instance.Decode(source, filter, parameter).CA();
-        return await PredictorCodec.Instance.DecodeOnReadStream(decodedSource, parameter).CA();
+        return await PredictorCodec.Instance.DecodeOnReadStreamAsync(decodedSource, parameter).CA();
     }
 }

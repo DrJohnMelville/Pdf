@@ -11,7 +11,7 @@ public class StencilMask : DisplayImageTest
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        await csw.SetNonstrokingRGB(.75, 0.3, 0.19);
+        await csw.SetNonstrokingRgbAsync(.75, 0.3, 0.19);
         await base.DoPaintingAsync(csw);
     }
 

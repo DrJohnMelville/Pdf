@@ -11,7 +11,7 @@ public class InvertedStencilMask : DisplayImageTest
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        await csw.SetNonstrokingRGB(.15, 0.73, 0.49);
+        await csw.SetNonstrokingRgbAsync(.15, 0.73, 0.49);
         await base.DoPaintingAsync(csw);
     }
 

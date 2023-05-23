@@ -120,10 +120,10 @@ internal class ContentStreamContext
                 target.FillPathEvenOdd();
                 break;
             case ContentStreamOperatorValue.G:
-                await target.SetStrokeGray(arguments.DoubleAt(0)).CA();
+                await target.SetStrokeGrayAsync(arguments.DoubleAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.g:
-                await target.SetNonstrokingGray(arguments.DoubleAt(0)).CA();
+                await target.SetNonstrokingGrayAsync(arguments.DoubleAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.gs:
                 await target.LoadGraphicStateDictionary(arguments.NamaAt(0)).CA();
@@ -143,11 +143,11 @@ internal class ContentStreamContext
                 target.SetLineJoinStyle((LineJoinStyle)(double)arguments.LongAt(0));
                 break;
             case ContentStreamOperatorValue.K:
-                await target.SetStrokeCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.SetStrokeCMYKAsync(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3)).CA();
                 break;
             case ContentStreamOperatorValue.k:
-                await target.SetNonstrokingCMYK(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.SetNonstrokingCMYKAsync(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2), arguments.DoubleAt(3)).CA();
                 break;
             case ContentStreamOperatorValue.l:
@@ -176,10 +176,10 @@ internal class ContentStreamContext
                     arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.RG:
-                await target.SetStrokeRGB(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2)).CA();
+                await target.SetStrokeRGBAsync(arguments.DoubleAt(0), arguments.DoubleAt(1), arguments.DoubleAt(2)).CA();
                 break;
             case ContentStreamOperatorValue.rg:
-                await target.SetNonstrokingRGB(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.SetNonstrokingRgbAsync(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.DoubleAt(2)).CA();
                 break;
             case ContentStreamOperatorValue.ri:
@@ -328,13 +328,13 @@ internal class ContentStreamContext
     private ValueTask SetNonstrokingColorExtended()
     {
         var (name, numericArguments) = CollectExtendedColorArgs();
-        return target.SetNonstrokingColorExtended(name, numericArguments);
+        return target.SetNonstrokingColorExtendedAsync(name, numericArguments);
     }
 
     private ValueTask SetStrokingColorExtended()
     {
         var (name, numericArguments) = CollectExtendedColorArgs();
-        return target.SetStrokeColorExtended(name, numericArguments);
+        return target.SetStrokeColorExtendedAsync(name, numericArguments);
     }
 
     private void SetStrokingColor()

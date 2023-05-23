@@ -33,7 +33,7 @@ public readonly struct PdfLowLevelReader
     /// byte array.</exception>
     public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(object argument) => argument switch
     {
-        string s => ReadFromFile(s),
+        string s => ReadFromFileAsync(s),
         byte[] s => ReadFromAsync(s),
         Stream s => ReadFromAsync(s),
         _ => throw new ArgumentException("Must be string, byte array, or stream.", nameof(argument))
@@ -44,7 +44,7 @@ public readonly struct PdfLowLevelReader
     /// </summary>
     /// <param name="path">Path name for the file to read from.</param>
     /// <returns> The PdfLowLevelDocument read;</returns>
-    public ValueTask<PdfLoadedLowLevelDocument> ReadFromFile(string path) =>
+    public ValueTask<PdfLoadedLowLevelDocument> ReadFromFileAsync(string path) =>
         ReadFromAsync(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read));
 
     /// <summary>

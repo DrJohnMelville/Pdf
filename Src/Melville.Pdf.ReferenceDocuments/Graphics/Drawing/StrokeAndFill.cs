@@ -12,7 +12,7 @@ public class StrokeAndFill: Card3x5
     protected override void DoPainting(ContentStreamWriter csw)
     {
         csw.SetLineWidth(10);
-        csw.SetNonstrokingRGB(1,0,0);
+        csw.SetNonstrokingRgbAsync(1,0,0);
         csw.Rectangle(20, 20, 50, 50);
         csw.StrokePath();
         csw.Rectangle(20, 120, 50, 50);

@@ -41,14 +41,14 @@ public class BlockColorOperatorsTest: IDisposable
     [Fact] public void BlockCS() => sut.SetStrokingColorSpace(KnownNames.DeviceRGB);
     [Fact] public void BlockSC() => sut.SetStrokeColor(1, 2, 3);
     [Fact] public void BlockSCN() => sut.SetStrokeColorExtended(KnownNames.DeviceRGB, 1, 23);
-    [Fact] public void BlockG() => sut.SetStrokeGray(1);
-    [Fact] public void BlockRG() => sut.SetStrokeRGB(1,2,3);
-    [Fact] public void BlockK() => sut.SetStrokeCMYK(1,2,3, 4);
+    [Fact] public void BlockG() => sut.SetStrokeGrayAsync(1);
+    [Fact] public void BlockRG() => sut.SetStrokeRGBAsync(1,2,3);
+    [Fact] public void BlockK() => sut.SetStrokeCMYKAsync(1,2,3, 4);
     [Fact] public void BlockNonstrokinhCS() => sut.SetStrokingColorSpace(KnownNames.DeviceRGB);
     [Fact] public void BlockNonstrokinhSC() => sut.SetNonstrokingColor(1, 2, 3);
     [Fact] public void BlockNonstrokinhSCN() => sut.SetNonstrokingColorExtended(KnownNames.DeviceRGB, 1, 23);
-    [Fact] public void BlockNonstrokinhG() => sut.SetNonstrokingGray(1);
-    [Fact] public void BlockNonstrokinhRG() => sut.SetNonstrokingRGB(1,2,3);
-    [Fact] public void BlockNonstrokinhK() => sut.SetNonstrokingCMYK(1,2,3, 4);
+    [Fact] public void BlockNonstrokinhG() => sut.SetNonstrokingGrayAsync(1);
+    [Fact] public void BlockNonstrokinhRG() => sut.SetNonstrokingRgbAsync(1,2,3);
+    [Fact] public void BlockNonstrokinhK() => sut.SetNonstrokingCMYKAsync(1,2,3, 4);
     [Fact] public void BlockRenderIntent() => sut.SetRenderIntent(RenderIntentName.Perceptual);
 }

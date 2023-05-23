@@ -9,8 +9,8 @@ namespace Melville.Pdf.LowLevel.Filters;
 
 internal interface ICodecDefinition
 {
-    public ValueTask<Stream>  EncodeOnReadStream(Stream data, PdfObject? parameters);
-    ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters);
+    public ValueTask<Stream>  EncodeOnReadStreamAsync(Stream data, PdfObject? parameters);
+    ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters);
 }
 
 internal class CodecDefinition: ICodecDefinition
@@ -26,9 +26,9 @@ internal class CodecDefinition: ICodecDefinition
         this.decoder = decoder;
     }
 
-    public async ValueTask<Stream> EncodeOnReadStream(Stream data, PdfObject? parameters) =>
+    public async ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfObject? parameters) =>
         ReadingFilterStream.Wrap(data, await encoder(parameters).CA());
 
-    public async ValueTask<Stream> DecodeOnReadStream(Stream input, PdfObject parameters) =>
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters) =>
         ReadingFilterStream.Wrap(input, await decoder(parameters).CA());
 }

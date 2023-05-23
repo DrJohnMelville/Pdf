@@ -79,7 +79,7 @@ public readonly partial struct PdfReader
     /// <param name="input">File name of the PDF file.</param>
     /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
     public async ValueTask<DocumentRenderer> ReadFromFile(string input) =>
-        await ReadFrom(await LowLevelReader().ReadFromFile(input).CA()).CA();
+        await ReadFrom(await LowLevelReader().ReadFromFileAsync(input).CA()).CA();
     
     /// <summary>
     /// Read a pdf file into a DocumentRenderer

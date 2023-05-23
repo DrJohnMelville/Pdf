@@ -181,7 +181,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.SC, components);
 
     /// <inheritdoc />
-    public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);
@@ -194,7 +194,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.sc, components);
 
     /// <inheritdoc />
-    public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);
@@ -203,42 +203,42 @@ public partial class ContentStreamWriter : IContentStreamOperations
     }
 
     /// <inheritdoc />
-    public ValueTask SetStrokeGray(double grayLevel)
+    public ValueTask SetStrokeGrayAsync(double grayLevel)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.G, grayLevel);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetStrokeRGB(double red, double green, double blue)
+    public ValueTask SetStrokeRGBAsync(double red, double green, double blue)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.RG, red, green, blue);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black)
+    public ValueTask SetStrokeCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.K, cyan, magenta, yellow, black);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetNonstrokingGray(double grayLevel)
+    public ValueTask SetNonstrokingGrayAsync(double grayLevel)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.g, grayLevel);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetNonstrokingRGB(double red, double green, double blue)
+    public ValueTask SetNonstrokingRgbAsync(double red, double green, double blue)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.rg, red, green, blue);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black)
+    public ValueTask SetNonstrokingCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.k, cyan, magenta, yellow, black);
         return ValueTask.CompletedTask;

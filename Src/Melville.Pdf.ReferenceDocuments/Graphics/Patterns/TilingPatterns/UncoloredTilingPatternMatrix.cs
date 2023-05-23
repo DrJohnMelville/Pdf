@@ -12,7 +12,7 @@ public class UncoloredTilingPatternMatrix : UncoloredTilingPattern
     
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        await csw.SetNonstrokingRGB(1.0, 1.0, 0.0);
+        await csw.SetNonstrokingRgbAsync(1.0, 1.0, 0.0);
         csw.Rectangle(25, 175, 175, -150);
         csw.FillPath();
 

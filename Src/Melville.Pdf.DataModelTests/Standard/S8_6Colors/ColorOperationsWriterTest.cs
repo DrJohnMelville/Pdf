@@ -97,42 +97,42 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetStrokingGray()
     {
-        await sut.SetStrokeGray(12);
+        await sut.SetStrokeGrayAsync(12);
         Assert.Equal("12 G\n", await WrittenText());
     }    
     
     [Fact]
     public async Task SetStrokingRGB()
     {
-        await sut.SetStrokeRGB(1,2,3);
+        await sut.SetStrokeRGBAsync(1,2,3);
         Assert.Equal("1 2 3 RG\n", await WrittenText());
     }
  
     [Fact]
     public async Task SetStrokingCMYK()
     {
-        await sut.SetStrokeCMYK(1,2,3,4);
+        await sut.SetStrokeCMYKAsync(1,2,3,4);
         Assert.Equal("1 2 3 4 K\n", await WrittenText());
     }
 
     [Fact]
     public async Task SetNonStrokingGray()
     {
-        await sut.SetNonstrokingGray(12);
+        await sut.SetNonstrokingGrayAsync(12);
         Assert.Equal("12 g\n", await WrittenText());
     }    
     
     [Fact]
     public async Task SetNonStrokingRGB()
     {
-        await sut.SetNonstrokingRGB(1,2,3);
+        await sut.SetNonstrokingRgbAsync(1,2,3);
         Assert.Equal("1 2 3 rg\n", await WrittenText());
     }
  
     [Fact]
     public async Task SetNonStrokingCMYK()
     {
-        await sut.SetNonstrokingCMYK(1,2,3,4);
+        await sut.SetNonstrokingCMYKAsync(1,2,3,4);
         Assert.Equal("1 2 3 4 k\n", await WrittenText());
     }
 }

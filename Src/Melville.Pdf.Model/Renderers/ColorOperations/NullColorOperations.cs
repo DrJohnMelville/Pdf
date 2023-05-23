@@ -14,24 +14,24 @@ internal partial class NullColorOperations : IColorOperations
 
     public ValueTask SetNonstrokingColorSpace(PdfName colorSpace) => ValueTask.CompletedTask;
 
-    public ValueTask SetStrokeColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors) => 
+    public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors) => 
         ValueTask.CompletedTask;
 
-    public ValueTask SetNonstrokingColorExtended(PdfName? patternName, in ReadOnlySpan<double> colors) => 
+    public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors) => 
         ValueTask.CompletedTask;
 
-    public ValueTask SetStrokeGray(double grayLevel) => ValueTask.CompletedTask;
+    public ValueTask SetStrokeGrayAsync(double grayLevel) => ValueTask.CompletedTask;
 
-    public ValueTask SetStrokeRGB(double red, double green, double blue) => ValueTask.CompletedTask;
+    public ValueTask SetStrokeRGBAsync(double red, double green, double blue) => ValueTask.CompletedTask;
 
-    public ValueTask SetStrokeCMYK(double cyan, double magenta, double yellow, double black) => 
+    public ValueTask SetStrokeCMYKAsync(double cyan, double magenta, double yellow, double black) => 
         ValueTask.CompletedTask;
 
-    public ValueTask SetNonstrokingGray(double grayLevel) => ValueTask.CompletedTask;
+    public ValueTask SetNonstrokingGrayAsync(double grayLevel) => ValueTask.CompletedTask;
 
-    public ValueTask SetNonstrokingRGB(double red, double green, double blue) => ValueTask.CompletedTask;
+    public ValueTask SetNonstrokingRgbAsync(double red, double green, double blue) => ValueTask.CompletedTask;
 
-    public ValueTask SetNonstrokingCMYK(double cyan, double magenta, double yellow, double black) => 
+    public ValueTask SetNonstrokingCMYKAsync(double cyan, double magenta, double yellow, double black) => 
         ValueTask.CompletedTask;
 
     public void SetStrokeColor(in ReadOnlySpan<double> components) {}

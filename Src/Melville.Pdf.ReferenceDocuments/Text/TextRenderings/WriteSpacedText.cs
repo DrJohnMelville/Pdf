@@ -21,10 +21,10 @@ public class WriteSpacedText : Card3x5
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
         using var tr = csw.StartTextBlock();
-        await csw.SetNonstrokingRGB(1.0, 0.0, 0.0);
+        await csw.SetNonstrokingRgbAsync(1.0, 0.0, 0.0);
         await WriteString(csw, tr, Font1, 25);
         csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 100));
-        await csw.SetNonstrokingRGB(1.0, 0.0, 1.0);
+        await csw.SetNonstrokingRgbAsync(1.0, 0.0, 1.0);
         await WriteString(csw, tr, Font1, 25);
     }
 

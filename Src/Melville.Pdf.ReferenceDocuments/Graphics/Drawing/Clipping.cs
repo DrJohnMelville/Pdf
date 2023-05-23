@@ -19,11 +19,11 @@ public class Clipping : Card3x5
         Line(csw, 80);
         Line(csw, 190);
         csw.StrokePath();
-        csw.SetNonstrokingRGB(0,0,1);
+        csw.SetNonstrokingRgbAsync(0,0,1);
         Rectangle(csw, 30);
         Rectangle(csw, 100);
         Rectangle(csw, 170);
-        csw.SetNonstrokingRGB(1,0,0);
+        csw.SetNonstrokingRgbAsync(1,0,0);
         AddClip(csw);
         Rectangle(csw, 30);
         csw.SaveGraphicsState();

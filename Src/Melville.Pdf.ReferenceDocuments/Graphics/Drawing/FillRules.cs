@@ -13,7 +13,7 @@ public class FillRules : Card3x5
     protected override void DoPainting(ContentStreamWriter csw)
     {
         csw.SetLineWidth(5);
-        csw.SetNonstrokingRGB(1,1,0);
+        csw.SetNonstrokingRgbAsync(1,1,0);
         csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(75,100));
         MakeStar(csw);
         csw.CloseFillAndStrokePath();
