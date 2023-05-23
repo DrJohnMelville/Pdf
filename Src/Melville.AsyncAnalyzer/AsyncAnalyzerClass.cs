@@ -13,6 +13,7 @@ public class AsyncAnalyzerClass: DiagnosticAnalyzer
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.EnableConcurrentExecution();
         context.RegisterSymbolAction(VerifyMethodNames, SymbolKind.Method);
     }
 
