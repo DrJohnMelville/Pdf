@@ -16,10 +16,10 @@ namespace Melville.Pdf.ImageExtractor.ImageCollapsing
         public override Vector2 PositionTopRight => LastChild.PositionTopRight;
 
 
-        protected override async ValueTask RenderPbgra(PointerHolder buffer) => 
-            RenderPbgra(buffer, await RenderSubImages());
+        protected override async ValueTask RenderPbgraAsync(PointerHolder buffer) => 
+            RenderPbgra(buffer, await RenderSubImagesAsync());
 
-        private async Task<RenderedImage[]> RenderSubImages()
+        private async Task<RenderedImage[]> RenderSubImagesAsync()
         {
             var renderings = new RenderedImage[componentBitmaps.Count];
             for (int i = 0; i < componentBitmaps.Count; i++)

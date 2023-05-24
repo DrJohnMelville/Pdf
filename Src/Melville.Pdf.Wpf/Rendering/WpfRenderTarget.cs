@@ -57,7 +57,7 @@ internal class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsStat
     private static readonly Rect unitRectangle = new Rect(0, 0, 1, 1);
     public override async ValueTask RenderBitmapAsync(IPdfBitmap bitmap)
     {
-        var dg = ApplyBitmapScaling(bitmap, await bitmap.ToWpfBitmap().CA());
+        var dg = ApplyBitmapScaling(bitmap, await bitmap.ToWpfBitmapAsync().CA());
         Target.DrawDrawing(dg);
     }
 

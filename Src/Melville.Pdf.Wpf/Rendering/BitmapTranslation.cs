@@ -15,13 +15,13 @@ namespace Melville.Pdf.Wpf.Rendering
         /// </summary>
         /// <param name="bitmap">The bitmap to render</param>
         /// <returns>A bitmap source representing the rendered bitmap.</returns>
-        public static async ValueTask<BitmapSource> ToWpfBitmap(this IPdfBitmap bitmap)
+        public static async ValueTask<BitmapSource> ToWpfBitmapAsync(this IPdfBitmap bitmap)
         {
             var ret = new WriteableBitmap(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32, null);
             ret.Lock();
             try
             {
-                await FillBitmap(bitmap, ret);
+                await FillBitmapAsync(bitmap, ret);
             }
             finally
             {
@@ -31,7 +31,7 @@ namespace Melville.Pdf.Wpf.Rendering
             return ret;
    
         }
-        private static unsafe ValueTask FillBitmap(IPdfBitmap bitmap, WriteableBitmap wb) =>
+        private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, WriteableBitmap wb) =>
             bitmap.RenderPbgraAsync((byte*)wb.BackBuffer.ToPointer());
     }
 }

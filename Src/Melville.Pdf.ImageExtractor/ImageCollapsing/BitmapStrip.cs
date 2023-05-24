@@ -51,15 +51,15 @@ namespace Melville.Pdf.ImageExtractor.ImageCollapsing
         };
 
         public unsafe ValueTask RenderPbgraAsync(byte* buffer) =>
-            RenderPbgra(new PointerHolder(buffer));
+            RenderPbgraAsync(new PointerHolder(buffer));
 
-        protected abstract ValueTask RenderPbgra(PointerHolder buffer);
+        protected abstract ValueTask RenderPbgraAsync(PointerHolder buffer);
 
         protected readonly unsafe partial struct PointerHolder
         {
             [FromConstructor] private readonly byte* root;
 
-            public ValueTask WriteToStream(long offset, IPdfBitmap item) =>
+            public ValueTask WriteToStreamAsync(long offset, IPdfBitmap item) =>
                 item.RenderPbgraAsync(root + offset);
 
             public byte* BasePointer() => root;

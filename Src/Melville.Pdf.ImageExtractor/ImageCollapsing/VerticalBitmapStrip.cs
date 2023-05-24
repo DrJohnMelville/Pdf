@@ -14,12 +14,12 @@ public partial class VerticalBitmapStrip : BitmapStrip
     public override Vector2 PositionTopLeft => FirstChild.PositionTopLeft;
     public override Vector2 PositionTopRight => FirstChild.PositionTopRight;
 
-    protected override async ValueTask RenderPbgra(PointerHolder buffer)
+    protected override async ValueTask RenderPbgraAsync(PointerHolder buffer)
     {
         long offset = 0;
         foreach (var singleBitmap in componentBitmaps)
         {
-            await buffer.WriteToStream(offset, singleBitmap);
+            await buffer.WriteToStreamAsync(offset, singleBitmap);
             offset += singleBitmap.ReqiredBufferSize();
         }
     }

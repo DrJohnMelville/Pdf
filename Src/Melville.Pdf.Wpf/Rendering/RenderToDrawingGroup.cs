@@ -36,9 +36,9 @@ public readonly struct RenderToDrawingGroup
     /// Render a PDF page to a PNG image.
     /// </summary>
     /// <param name="stream">Writeable stream to receive the PNG bits.</param>
-    public async ValueTask RenderToPngStream(Stream stream) =>
+    public async ValueTask RenderToPngStreamAsync(Stream stream) =>
         await WriteToBufferStream(
-                DrawingGroupToBitmap(await Render())).CreateReader()
+                DrawingGroupToBitmap(await RenderAsync())).CreateReader()
             .CopyToAsync(stream);
 
     private static RenderTargetBitmap DrawingGroupToBitmap(DrawingGroup doc)
@@ -63,9 +63,9 @@ public readonly struct RenderToDrawingGroup
     /// Render the current document and page to a DrawingImage
     /// </summary>
     /// <returns>The rendered page.</returns>
-    public async ValueTask<DrawingImage> RenderToDrawingImage()
+    public async ValueTask<DrawingImage> RenderToDrawingImageAsync()
     {
-        var image = new DrawingImage(await Render());
+        var image = new DrawingImage(await RenderAsync());
         image.Freeze();
         return image;
     }
@@ -74,22 +74,22 @@ public readonly struct RenderToDrawingGroup
     /// Render the current document and page to a DrawingGroup
     /// </summary>
     /// <returns>The rendered page.</returns>
-    public async ValueTask<DrawingGroup> Render()
+    public async ValueTask<DrawingGroup> RenderAsync()
     {
         var dg = new DrawingGroup();
-        await RenderTo(dg);
+        await RenderToAsync(dg);
         dg.Freeze();
         return dg;
     }
 
-    private async ValueTask RenderTo(DrawingGroup dg)
+    private async ValueTask RenderToAsync(DrawingGroup dg)
     {
         using var dc = dg.Open();
-        await RenderTo(dc, dg);
+        await RenderToAsync(dc, dg);
     }
     
 
-    private  ValueTask RenderTo(DrawingContext dc, DependencyObject sizeTarget)
+    private  ValueTask RenderToAsync(DrawingContext dc, DependencyObject sizeTarget)
     {
         AwaitConfig.ResumeOnCalledThread(true);
         var d2 = doc;
@@ -106,11 +106,11 @@ public readonly struct RenderToDrawingGroup
     /// Render the current document and page to a DrawingVisual
     /// </summary>
     /// <returns>The rendered page.</returns>
-    public async ValueTask<DrawingVisual> RenderToDrawingVisual()
+    public async ValueTask<DrawingVisual> RenderToDrawingVisualAsync()
     {
         var ret = new DrawingVisual();
         using var dc = ret.RenderOpen();
-        await RenderTo(dc, ret);
+        await RenderToAsync(dc, ret);
         return ret;
     }
 }

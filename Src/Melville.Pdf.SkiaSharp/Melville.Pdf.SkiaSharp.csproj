@@ -13,7 +13,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
-    </ItemGroup>
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+                        PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
+
+	</ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="SkiaSharp" Version="2.88.3" />

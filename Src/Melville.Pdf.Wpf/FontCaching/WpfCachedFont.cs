@@ -31,13 +31,13 @@ internal partial class WpfCachedFont : IRealizedFont
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new CachedOperation(this,target);
 
-    private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyph(
+    private async ValueTask<(CachedGlyph, PathGeometry)> GetGlyphAsync(
         uint glyph, Transform transform, IFontWriteOperation operation)
     {
         if (cache.TryGetValue(glyph, out var quick)) 
             return (quick,quick.CreateInstance(transform));
         var glyphTarget = new FontCachingTarget();
-        var slow = await glyphTarget.RenderGlyph(operation.CreatePeerWriteOperation(glyphTarget), glyph);
+        var slow = await glyphTarget.RenderGlyphAsync(operation.CreatePeerWriteOperation(glyphTarget), glyph);
         cache.Add(glyph, slow);
         return (slow,slow.Original(transform));
     }
@@ -65,7 +65,7 @@ internal partial class WpfCachedFont : IRealizedFont
                   return await innerWriter.AddGlyphToCurrentStringAsync(glyph, textMatrix);
 
             var (cachedCharacter, geometry) = 
-                await parent.GetGlyph(glyph, textMatrix.WpfTransform(), innerWriter).CA();
+                await parent.GetGlyphAsync(glyph, textMatrix.WpfTransform(), innerWriter).CA();
             geometry.Freeze();
             wpfDrawTarget.AddGeometry(geometry);
             return (cachedCharacter.Width);

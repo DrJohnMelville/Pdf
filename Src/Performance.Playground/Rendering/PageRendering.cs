@@ -44,7 +44,7 @@ public class PageRendering
     {
             AwaitConfig.ResumeOnCalledThread(true);
             using var dr = await LoadDocument();
-            return await new RenderToDrawingGroup(dr, 1).RenderToDrawingImage();
+            return await new RenderToDrawingGroup(dr, 1).RenderToDrawingImageAsync();
     }
 
     private async Task<DocumentRenderer> LoadDocument() =>

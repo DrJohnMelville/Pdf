@@ -20,7 +20,7 @@ internal partial class PdfViewerModel
         this.document = document;
         
         InitalizePageFlipper();
-        RenderPage(1);
+        RenderPageAsync(1);
         ConfigureOptionalContentDisplay(this.document.OptionalContentState);
     }
 
@@ -28,11 +28,11 @@ internal partial class PdfViewerModel
     {
         ocs.SelectedContentChanged += RedrawPage;
         if (ocs is INotifyPropertyChanged notifing)
-            notifing.WhenMemberChanges(nameof(ocs.SelectedConfiguration), NewConfig);
-        NewConfig();
+            notifing.WhenMemberChanges(nameof(ocs.SelectedConfiguration), NewConfigAsync);
+        NewConfigAsync();
     }
     
-    private async void NewConfig()
+    private async void NewConfigAsync()
     {
         OptionalContentDisplay = await document.OptionalContentState.ConstructUiModelAsync(
             document.OptionalContentState.SelectedConfiguration?.Order);
@@ -45,22 +45,22 @@ internal partial class PdfViewerModel
          inpc.PropertyChanged += TryChangePage;
     }
 
-    private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPage(PageSelector.Page);
+    private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPageAsync(PageSelector.Page);
 
     #region Rendering
     private int lastPageNumber = -1;
-    private async void RenderPage(int oneBasedPageNumber)
+    private async void RenderPageAsync(int oneBasedPageNumber)
     {
         if (oneBasedPageNumber == lastPageNumber) return;
         lastPageNumber = oneBasedPageNumber;
-        var image = await new RenderToDrawingGroup(document, oneBasedPageNumber).RenderToDrawingVisual();
+        var image = await new RenderToDrawingGroup(document, oneBasedPageNumber).RenderToDrawingVisualAsync();
         PageImage = image;
     }
     private void RedrawPage(object? sender, EventArgs e)
     {
         var savedRenderIndex = lastPageNumber;
         lastPageNumber = -1;
-        RenderPage(savedRenderIndex);
+        RenderPageAsync(savedRenderIndex);
     }
 
     #endregion

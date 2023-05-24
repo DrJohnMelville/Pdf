@@ -57,7 +57,7 @@ public class CcittParsing
         {
             AwaitConfig.ResumeOnCalledThread(true);
             using var dr = await LoadDocument();
-            await new RenderToDrawingGroup(dr, 9).RenderToDrawingImage();
+            await new RenderToDrawingGroup(dr, 9).RenderToDrawingImageAsync();
         });
     }
 

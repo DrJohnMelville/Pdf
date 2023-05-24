@@ -37,7 +37,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
     private ValueTask AsWpfPage(DocumentRenderer documentRenderer, Stream target)
     {
         var rtdg = new RenderToDrawingGroup(documentRenderer, 0);
-        return rtdg.RenderToPngStream(target);
+        return rtdg.RenderToPngStreamAsync(target);
     }
 
     [Theory]
