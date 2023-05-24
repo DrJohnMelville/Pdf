@@ -56,10 +56,10 @@ internal class FiltersGenerator : CreatePdfParser
         builder.Pages.CreatePage().AddToContentStreamAsync(
             new DictionaryBuilder().WithFilter(encoding).WithFilterParam(parameters),
             i => {
-                i.SetFont(NameDirectory.Get("F1"), 24);
+                i.SetFontAsync(NameDirectory.Get("F1"), 24);
                 using var block = i.StartTextBlock();
                 block.MovePositionBy(100, 700);
-                block.ShowString(Text);
+                block.ShowStringAsync(Text);
                 return ValueTask.CompletedTask;
             });
 

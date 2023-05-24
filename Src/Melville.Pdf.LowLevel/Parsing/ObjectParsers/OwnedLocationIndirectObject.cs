@@ -21,7 +21,7 @@ internal abstract class OwnedLocationIndirectObject: PdfIndirectObject
     {
         if (owner is { } localOwner)
         {
-            await ComputeValue(localOwner).CA();
+            await ComputeValueAsync(localOwner).CA();
         }
         return await base.DirectValueAsync().CA();
     }
@@ -40,5 +40,5 @@ internal abstract class OwnedLocationIndirectObject: PdfIndirectObject
         owner = null;
     }
 
-    protected abstract ValueTask ComputeValue(ParsingFileOwner owner);
+    protected abstract ValueTask ComputeValueAsync(ParsingFileOwner owner);
 }

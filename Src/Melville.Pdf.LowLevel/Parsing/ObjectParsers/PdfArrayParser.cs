@@ -15,12 +15,12 @@ internal class PdfArrayParser : IPdfObjectParser
         var reader = await source.Reader.ReadAsync().CA();
         //This has to succeed because the prior parser looked at the prefix to get here.
         source.Reader.AdvanceTo(reader.Buffer.GetPosition(1));
-        return new PdfArray(await RecursiveReadArray(source, 0).CA());
+        return new PdfArray(await RecursiveReadArrayAsync(source, 0).CA());
     }
 
     private const int RecursiveLimit = 500;
 
-    private static async ValueTask<PdfObject[]> RecursiveReadArray(
+    private static async ValueTask<PdfObject[]> RecursiveReadArrayAsync(
         IParsingReader reader, int currentLocation)
     {
         // reading the array recursively allows us to use the stack, rather than the heap, to store intermediate values
@@ -32,20 +32,20 @@ internal class PdfArrayParser : IPdfObjectParser
         var element = await reader.RootObjectParser.ParseAsync(reader).CA();
         
         if (element == PdfTokenValues.ArrayTerminator) return new PdfObject[currentLocation];
-        var ret = await ReadRestOfArray(reader, currentLocation).CA();
+        var ret = await ReadRestOfArrayAsync(reader, currentLocation).CA();
         
         ret[currentLocation] = element;
         return ret;
     }
 
-    private static ValueTask<PdfObject[]> ReadRestOfArray(IParsingReader reader, int currentLocation) =>
+    private static ValueTask<PdfObject[]> ReadRestOfArrayAsync(IParsingReader reader, int currentLocation) =>
         IsBigArray(currentLocation) ? 
-            ReadEndOfBigArrayUsingHeap(reader) 
-            : RecursiveReadArray(reader, currentLocation + 1);
+            ReadEndOfBigArrayUsingHeapAsync(reader) 
+            : RecursiveReadArrayAsync(reader, currentLocation + 1);
 
     private static bool IsBigArray(int currentLocation) => currentLocation >= RecursiveLimit;
 
-    private static async ValueTask<PdfObject[]> ReadEndOfBigArrayUsingHeap(IParsingReader reader)
+    private static async ValueTask<PdfObject[]> ReadEndOfBigArrayUsingHeapAsync(IParsingReader reader)
     {
         var items = new List<PdfObject>();
         while (true)

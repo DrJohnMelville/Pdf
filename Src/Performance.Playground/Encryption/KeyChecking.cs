@@ -28,7 +28,7 @@ namespace Performance.Playground.Encryption
         private async ValueTask<ISecurityHandler> Initialize()
         {
             var tDict = (PdfDictionary)await V2R3128RC4CipherWithBlankUserPasswordFromExampleFile.ParseObjectAsync();
-            return await  SecurityHandlerFactory.CreateSecurityHandler(
+            return await  SecurityHandlerFactory.CreateSecurityHandlerAsync(
                 tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
 
         }

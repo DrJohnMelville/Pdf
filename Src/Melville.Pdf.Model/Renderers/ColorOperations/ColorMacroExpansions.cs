@@ -26,11 +26,11 @@ internal partial class ColorMacroExpansions : IColorOperations
 
     public void SetRenderIntent(RenderIntentName intent) => target.CurrentState().SetRenderIntent(intent);
 
-    public async ValueTask SetStrokingColorSpace(PdfName colorSpace) =>
+    public async ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace) =>
         target.CurrentState().SetStrokeColorSpace(
             await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
     
-    public async ValueTask SetNonstrokingColorSpace(PdfName colorSpace) =>
+    public async ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace) =>
         target.CurrentState().SetNonstrokeColorSpace(
             await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
     
@@ -68,37 +68,37 @@ internal partial class ColorMacroExpansions : IColorOperations
 
         public async ValueTask SetStrokeGrayAsync(double grayLevel)
     {
-        await SetStrokingColorSpace(KnownNames.DeviceGray).CA();
+        await SetStrokingColorSpaceAsync(KnownNames.DeviceGray).CA();
         SetStrokeColor(stackalloc double[] { grayLevel });
     }
 
     public async ValueTask SetStrokeRGBAsync(double red, double green, double blue)
     {
-        await SetStrokingColorSpace(KnownNames.DeviceRGB).CA();
+        await SetStrokingColorSpaceAsync(KnownNames.DeviceRGB).CA();
         SetStrokeColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetStrokeCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
-        await SetStrokingColorSpace(KnownNames.DeviceCMYK).CA();
+        await SetStrokingColorSpaceAsync(KnownNames.DeviceCMYK).CA();
         SetStrokeColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
 
     public async ValueTask SetNonstrokingGrayAsync(double grayLevel)
     {
-        await SetNonstrokingColorSpace(KnownNames.DeviceGray).CA();
+        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceGray).CA();
         SetNonstrokingColor(stackalloc double[] { grayLevel });
     }
 
     public async ValueTask SetNonstrokingRgbAsync(double red, double green, double blue)
     {
-        await SetNonstrokingColorSpace(KnownNames.DeviceRGB).CA();
+        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceRGB).CA();
         SetNonstrokingColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetNonstrokingCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
-        await SetNonstrokingColorSpace(KnownNames.DeviceCMYK).CA();
+        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceCMYK).CA();
         SetNonstrokingColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
 }

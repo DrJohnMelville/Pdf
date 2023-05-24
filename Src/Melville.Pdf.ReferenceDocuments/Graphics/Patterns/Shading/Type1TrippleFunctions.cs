@@ -26,7 +26,7 @@ public class Type1TrippleFunctions : Type1FunctionalShaderBase
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddOutput(defn, new ClosedInterval(0, 1));
-        var ret = await fbuilder.CreateSampledFunction();
+        var ret = await fbuilder.CreateSampledFunctionAsync();
         return ret;
     }
 }

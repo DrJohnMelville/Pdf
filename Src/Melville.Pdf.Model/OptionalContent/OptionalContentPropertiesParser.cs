@@ -45,7 +45,7 @@ internal readonly struct OptionalContentPropertiesParser
 
     private static async Task<OptionalGroup> ParseOptionalGroup(PdfDictionary ocg)
     {
-        var intent = await (await ocg.GetOrNullAsync(KnownNames.Intent).CA()).ObjectAsResolvedList<PdfName>().CA();
+        var intent = await (await ocg.GetOrNullAsync(KnownNames.Intent).CA()).ObjectAsResolvedListAsync<PdfName>().CA();
         return new OptionalGroup(
             (await ocg.GetOrDefaultAsync(KnownNames.Name, PdfString.Empty).CA()).AsTextString())
         {

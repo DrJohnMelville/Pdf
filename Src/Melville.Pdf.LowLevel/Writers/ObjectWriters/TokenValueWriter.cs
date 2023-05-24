@@ -6,7 +6,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class TokenValueWriter
 {
-    public static ValueTask<FlushResult> Write(PipeWriter target, PdfTokenValues item)
+    public static ValueTask<FlushResult> WriteAsync(PipeWriter target, PdfTokenValues item)
     {
         target.WriteBytes(item.TokenValue);
         return target.FlushAsync();

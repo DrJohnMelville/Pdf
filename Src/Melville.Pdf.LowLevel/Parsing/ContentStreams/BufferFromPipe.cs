@@ -18,17 +18,17 @@ internal readonly struct BufferFromPipe
     private readonly SequencePosition startAt;
     public ReadOnlySequence<byte> Buffer => result.Buffer;
 
-    public static async ValueTask<BufferFromPipe> Create(PipeReader reader)
+    public static async ValueTask<BufferFromPipe> CreateAsync(PipeReader reader)
     {
         var readResult = await reader.ReadAsync().CA();
         return new BufferFromPipe(reader, readResult, readResult.Buffer.Start);
     }
 
-    public ValueTask<BufferFromPipe> Refresh() => Create(reader);
-    public ValueTask<BufferFromPipe> InvalidateAndRefresh()
+    public ValueTask<BufferFromPipe> RefreshAsync() => CreateAsync(reader);
+    public ValueTask<BufferFromPipe> InvalidateAndRefreshAsync()
     {
         NeedMoreBytes();
-        return Refresh();
+        return RefreshAsync();
     }
 
 

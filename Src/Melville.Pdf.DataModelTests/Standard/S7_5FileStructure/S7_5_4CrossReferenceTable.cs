@@ -31,7 +31,7 @@ public class S7_5_4CrossReferenceTable
 0000000409 00000 n
 
 ";
-        await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
+        await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReaderAsync(0)).ParseAsync();
             
         resolver.Verify(CheckLocation(1,0), Times.Exactly(4));
     }
@@ -52,7 +52,7 @@ public class S7_5_4CrossReferenceTable
 0000000409 00000 n
 
 "; 
-        await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReader(0)).Parse();
+        await new CrossReferenceTableParser(await sampleTale.AsParsingSource(resolver.Object).RentReaderAsync(0)).ParseAsync();
 
         resolver.Verify(CheckLocation(0,65535), Times.Exactly(4));
         resolver.VerifyNoOtherCalls();
@@ -63,8 +63,8 @@ public class S7_5_4CrossReferenceTable
         var sampleTale = @"0 0
 trailer
 ";
-        var parsingReader = await sampleTale.AsParsingSource(resolver.Object).RentReader(0);
-        await new CrossReferenceTableParser(parsingReader).Parse();
+        var parsingReader = await sampleTale.AsParsingSource(resolver.Object).RentReaderAsync(0);
+        await new CrossReferenceTableParser(parsingReader).ParseAsync();
         Assert.Equal(5, parsingReader.Reader.GlobalPosition);
                         
         resolver.VerifyNoOtherCalls();
@@ -76,7 +76,7 @@ trailer
         var resolver = new Mock<IIndirectObjectResolver>();
         var file = await MinimalPdfParser.MinimalPdf(1,5).AsStringAsync();
         var ps = (file).AsParsingSource(resolver.Object);
-        await RandomAccessFileParser.Parse(ps);
+        await RandomAccessFileParser.ParseAsync(ps);
         resolver.Verify(CheckLocation(0,0), Times.Exactly(4));
         resolver.Verify(i=>i.FindIndirect(4,0));
         resolver.Verify(i=>i.GetObjects());

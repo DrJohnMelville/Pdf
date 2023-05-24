@@ -33,7 +33,7 @@ public class S9_4_2_TextPositioningOperators
     {
         rf = new RealizedFontMock(fw.Object);
         targetMock.SetupGet(i => i.GraphicsState).Returns(()=>state.StronglyTypedCurrentState());
-        state.CurrentState().SetFont(KnownNames.Courier, 1.0);
+        state.CurrentState().SetFontAsync(KnownNames.Courier, 1.0);
         SetupMockRealizedFont();
 
         sut = new RenderEngine(pageMock.Object, new( targetMock.Object,
@@ -131,7 +131,7 @@ public class S9_4_2_TextPositioningOperators
     [InlineData("ee", 20)]
     public async Task DrawString(string input, float xPos)
     {
-        await sut.ShowString(input.AsExtendedAsciiBytes());
+        await sut.ShowStringAsync(input.AsExtendedAsciiBytes());
         Assert.Equal(Matrix3x2.Identity, sut.CurrentState().TextLineMatrix);
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, xPos, 0), sut.CurrentState().TextMatrix);
     }
@@ -142,7 +142,7 @@ public class S9_4_2_TextPositioningOperators
         sut.SetCharSpace(20);
         sut.SetWordSpace(30);
         sut.SetHorizontalTextScaling(50);
-        await sut.ShowString(" ".AsExtendedAsciiBytes());
+        await sut.ShowStringAsync(" ".AsExtendedAsciiBytes());
         Assert.Equal(new Matrix3x2(1,0,0,1,30, 0), sut.CurrentState().TextMatrix);
         
     }
@@ -151,7 +151,7 @@ public class S9_4_2_TextPositioningOperators
     public void MoveToNextTextLineAndShowString()
     {
         sut.SetTextLeading(20);
-        sut.MoveToNextLineAndShowString(new ReadOnlyMemory<byte>(new byte[] { 65 }));
+        sut.MoveToNextLineAndShowStringAsync(new ReadOnlyMemory<byte>(new byte[] { 65 }));
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, 10, -20), sut.CurrentState().TextMatrix);
     }
     
@@ -159,7 +159,7 @@ public class S9_4_2_TextPositioningOperators
     public void MoveToNextTextLineAndShowStringWithSpacing()
     {
         sut.SetTextLeading(20);
-        sut.MoveToNextLineAndShowString(4,5,new ReadOnlyMemory<byte>(new byte[] { 65 }));
+        sut.MoveToNextLineAndShowStringAsync(4,5,new ReadOnlyMemory<byte>(new byte[] { 65 }));
         Assert.Equal(4.0, sut.CurrentState().WordSpacing);
         Assert.Equal(5.0, sut.CurrentState().CharacterSpacing);
         
@@ -174,8 +174,8 @@ public class S9_4_2_TextPositioningOperators
     public async Task ShowSpacedStream(double horizontalScale, float xPosition, int fontSize)
     {
         sut.SetHorizontalTextScaling(horizontalScale);
-        await state.StronglyTypedCurrentState().SetFont(KnownNames.Helvetica, fontSize); 
-        await sut.ShowSpacedString(
+        await state.StronglyTypedCurrentState().SetFontAsync(KnownNames.Helvetica, fontSize); 
+        await sut.ShowSpacedStringAsync(
             new []
             {
                 new ContentStreamValueUnion("e".AsExtendedAsciiBytes()),

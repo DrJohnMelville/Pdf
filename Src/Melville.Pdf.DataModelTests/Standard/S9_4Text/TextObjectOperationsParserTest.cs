@@ -33,19 +33,19 @@ public partial class TextObjectOperationsParserTest : ParserTest
     {
         [DelegateTo()] private IContentStreamOperations op = null!;
 
-        public ValueTask ShowString(ReadOnlyMemory<byte> input)
+        public ValueTask ShowStringAsync(ReadOnlyMemory<byte> input)
         {
             AssertResult(input, "ABC");
             return new ValueTask();
         }
 
-        public ValueTask MoveToNextLineAndShowString(ReadOnlyMemory<byte> input)
+        public ValueTask MoveToNextLineAndShowStringAsync(ReadOnlyMemory<byte> input)
         {
             AssertResult(input, "def");
             return new ValueTask();
         }
 
-        public ValueTask MoveToNextLineAndShowString(
+        public ValueTask MoveToNextLineAndShowStringAsync(
             double wordSpace, double charSpace,ReadOnlyMemory<byte> input)
         {
             Assert.Equal(7, wordSpace);
@@ -54,7 +54,7 @@ public partial class TextObjectOperationsParserTest : ParserTest
             return new ValueTask();
         }
 
-        public ValueTask ShowSpacedString(in Span<ContentStreamValueUnion> values)
+        public ValueTask ShowSpacedStringAsync(in Span<ContentStreamValueUnion> values)
         {
             //[(a)2(b)3(c)(s)4 5]TJ
             Assert.Equal("a", ExtendedAsciiEncoding.ExtendedAsciiString(values[0].Bytes.Span));

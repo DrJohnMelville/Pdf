@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class StringWriter
 {
-    public static ValueTask<FlushResult> Write(
+    public static ValueTask<FlushResult> WriteAsync(
         PipeWriter writer, PdfString value, IObjectCryptContext encryptor)
     {
         var encrypted = encryptor.StringCipher().Encrypt().CryptSpan(value.Bytes);

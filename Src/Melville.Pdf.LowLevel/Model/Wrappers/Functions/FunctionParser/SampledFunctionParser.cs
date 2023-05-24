@@ -11,13 +11,13 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 internal static class SampledFunctionParser
 {
-    public static async Task<SampledFunctionBase> Parse( PdfStream source)
+    public static async Task<SampledFunctionBase> ParseAsync( PdfStream source)
     {
-        var domain = await source.ReadIntervals(KnownNames.Domain).CA();
-        var range = await source.ReadIntervals(KnownNames.Range).CA();
+        var domain = await source.ReadIntervalsAsync(KnownNames.Domain).CA();
+        var range = await source.ReadIntervalsAsync(KnownNames.Range).CA();
         var size = await (await source.GetAsync<PdfArray>(KnownNames.Size).CA()).AsIntsAsync().CA();
         var encode = source.ContainsKey(KnownNames.Encode)
-            ? await source.ReadIntervals(KnownNames.Encode).CA()
+            ? await source.ReadIntervalsAsync(KnownNames.Encode).CA()
             : CreateEncodeFromSize(size);
         VerifyEqualLength(domain, encode);
         var order =
@@ -26,7 +26,7 @@ internal static class SampledFunctionParser
                 ? num.IntValue
                 : 1;
 
-        var samples = await ReadSamples(source, InputPermutations(size), range).CA();
+        var samples = await ReadSamplesAsync(source, InputPermutations(size), range).CA();
         return order == 3
             ? new CubicSampledFunction(domain, range, size, encode, samples)
             : new LinearSampledFunction(domain, range, size, encode, samples);
@@ -43,11 +43,11 @@ internal static class SampledFunctionParser
     private static ClosedInterval[] CreateEncodeFromSize(int[] size) => 
         size.Select(i => new ClosedInterval(0, i - 1)).ToArray();
 
-    private static async Task<double[]> ReadSamples(
+    private static async Task<double[]> ReadSamplesAsync(
         PdfStream source, int inputPermutations, ClosedInterval[] range)
     {
         var decode = source.ContainsKey(KnownNames.Decode)?
-            await source.ReadIntervals(KnownNames.Decode).CA(): range;
+            await source.ReadIntervalsAsync(KnownNames.Decode).CA(): range;
         var bitsPerSample = 
             (int)(await source.GetAsync<PdfNumber>(KnownNames.BitsPerSample).CA()).IntValue;
         var encodedRange = new ClosedInterval(0, (1 << bitsPerSample) - 1);

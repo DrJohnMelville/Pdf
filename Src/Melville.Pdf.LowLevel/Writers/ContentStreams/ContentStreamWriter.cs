@@ -79,14 +79,14 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.ri, intent);
 
     /// <inheritdoc />
-    public ValueTask LoadGraphicStateDictionary(PdfName dictionaryName)
+    public ValueTask LoadGraphicStateDictionaryAsync(PdfName dictionaryName)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.gs, dictionaryName);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetFont(PdfName font, double size)
+    public ValueTask SetFontAsync(PdfName font, double size)
     {
         destPipe.WriteName(font);
         destPipe.WriteOperator(ContentStreamOperatorNames.Tf, size);
@@ -151,7 +151,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.re, x, y, width, height);
 
     /// <inheritdoc />
-    public ValueTask PaintShader(PdfName name)
+    public ValueTask PaintShaderAsync(PdfName name)
     {
         destPipe.WriteName(name);
         destPipe.WriteOperator(ContentStreamOperatorNames.sh);
@@ -163,14 +163,14 @@ public partial class ContentStreamWriter : IContentStreamOperations
     #region Color Operations
 
     /// <inheritdoc />
-    public ValueTask SetStrokingColorSpace(PdfName colorSpace)
+    public ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.CS, colorSpace);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetNonstrokingColorSpace(PdfName colorSpace)
+    public ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.cs, colorSpace);
         return ValueTask.CompletedTask;
@@ -254,15 +254,15 @@ public partial class ContentStreamWriter : IContentStreamOperations
     /// <inheritdoc />
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
-        await destPipe.WriteInlineImageDict(inlineImage).CA();
-        await using (var str = await DiskRepresentation(inlineImage).CA())
+        await destPipe.WriteInlineImageDictAsync(inlineImage).CA();
+        await using (var str = await DiskRepresentationAsync(inlineImage).CA())
         {
-            await destPipe.WriteStreamContent(str).CA();
+            await destPipe.WriteStreamContentAsync(str).CA();
         }
         destPipe.WriteBytes(inlineImageTerminator);
     }
 
-    private static ValueTask<Stream> DiskRepresentation(PdfStream inlineImage) => 
+    private static ValueTask<Stream> DiskRepresentationAsync(PdfStream inlineImage) => 
         inlineImage.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance);
 
     private static readonly byte[] inlineImageTerminator = { (byte)'E', (byte)'I' };  
@@ -294,21 +294,21 @@ public partial class ContentStreamWriter : IContentStreamOperations
         destPipe.WriteOperator(ContentStreamOperatorNames.TStar);
 
     /// <inheritdoc />
-    ValueTask ITextObjectOperations.ShowString(ReadOnlyMemory<byte> decodedString)
+    ValueTask ITextObjectOperations.ShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.Tj, decodedString.Span);
         return new();
     }
 
     /// <inheritdoc />
-    ValueTask ITextObjectOperations.MoveToNextLineAndShowString(ReadOnlyMemory<byte> decodedString)
+    ValueTask ITextObjectOperations.MoveToNextLineAndShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
         destPipe.WriteOperator(ContentStreamOperatorNames.SingleQuote, decodedString.Span);
         return new();
     }
 
     /// <inheritdoc />
-    ValueTask ITextObjectOperations.MoveToNextLineAndShowString(
+    ValueTask ITextObjectOperations.MoveToNextLineAndShowStringAsync(
         double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString)
     {
         destPipe.WriteDoubleAndSpace(wordSpace);
@@ -318,7 +318,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     }
 
     /// <inheritdoc />
-    ValueTask ITextObjectOperations.ShowSpacedString(in Span<ContentStreamValueUnion> values)
+    ValueTask ITextObjectOperations.ShowSpacedStringAsync(in Span<ContentStreamValueUnion> values)
     {
         destPipe.WriteChar('[');
         foreach (var value in values)
@@ -356,7 +356,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     public async ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dict)
     {
         destPipe.WriteName(tag);
-        await destPipe.WriteDictionary(dict).CA();
+        await destPipe.WriteDictionaryAsync(dict).CA();
         destPipe.WriteOperator(ContentStreamOperatorNames.DP);
     }
 
@@ -377,7 +377,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     /// <param name="tag">The name for the marked range</param>
     /// <param name="dictName">The name that refers to a dictionary that describes the range</param>
     /// <returns>A disposable struct that will close the marked range when disposed.</returns>
-    public async ValueTask<DeferedClosingTask> BeginMarkedRange(PdfName tag, PdfName dictName)
+    public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
     {
         await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictName).CA();
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
@@ -389,7 +389,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     /// <param name="tag">The name for the marked range</param>
     /// <param name="dictionary">The dictionary that describes the range</param>
     /// <returns>A disposable struct that will close the marked range when disposed.</returns>
-    public async ValueTask<DeferedClosingTask> BeginMarkedRange(PdfName tag, PdfDictionary dictionary)
+    public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
     {
         await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictionary).CA();
         return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
@@ -410,7 +410,7 @@ public partial class ContentStreamWriter : IContentStreamOperations
     async ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
     {
         destPipe.WriteName(tag);
-        await destPipe.WriteDictionary(dictionary).CA();
+        await destPipe.WriteDictionaryAsync(dictionary).CA();
         destPipe.WriteOperator(ContentStreamOperatorNames.BDC);
     }
 

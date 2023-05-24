@@ -32,13 +32,13 @@ public interface ITextObjectOperations
     /// <summary>
     /// Content stream operator Tj
     /// </summary>
-    ValueTask ShowString(ReadOnlyMemory<byte> decodedString);
+    ValueTask ShowStringAsync(ReadOnlyMemory<byte> decodedString);
 
     /// <summary>
     /// Content stream operator '
     /// </summary>
     /// <param name="decodedString"></param>
-    ValueTask MoveToNextLineAndShowString(ReadOnlyMemory<byte> decodedString);
+    ValueTask MoveToNextLineAndShowStringAsync(ReadOnlyMemory<byte> decodedString);
 
     /// <summary>
     /// Content stream operator "
@@ -46,13 +46,13 @@ public interface ITextObjectOperations
     /// <param name="wordSpace">the space before an 0x20 character</param>
     /// <param name="charSpace">the space between characters</param>
     /// <param name="decodedString"></param>
-    ValueTask MoveToNextLineAndShowString(
+    ValueTask MoveToNextLineAndShowStringAsync(
         double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString);
 
     /// <summary>
     /// Context stream operator TJ
     /// </summary>
-    ValueTask ShowSpacedString(in Span<ContentStreamValueUnion> values);
+    ValueTask ShowSpacedStringAsync(in Span<ContentStreamValueUnion> values);
 
 }
 

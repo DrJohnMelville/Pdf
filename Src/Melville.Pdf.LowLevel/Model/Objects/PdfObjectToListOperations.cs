@@ -38,7 +38,7 @@ public static class PdfObjectToListOperations
     /// <typeparam name="T">Desired PdfObject child type</typeparam>
     /// <param name="source">A PdfObject or PdfArray</param>
     /// <returns>A C# array of PdfObjects that implements the semantics above.</returns>
-    public static ValueTask<T[]> ObjectAsResolvedList<T>(this PdfObject source) where T : PdfObject => source switch
+    public static ValueTask<T[]> ObjectAsResolvedListAsync<T>(this PdfObject source) where T : PdfObject => source switch
     {
         T item => new(new T[] { item }),
         PdfArray arr => arr.AsAsync<T>(),

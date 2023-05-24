@@ -13,9 +13,9 @@ internal class RawLocationIndirectObject : OwnedLocationIndirectObject
         this.location = location;
     }
 
-    protected override async ValueTask ComputeValue(ParsingFileOwner owner)
+    protected override async ValueTask ComputeValueAsync(ParsingFileOwner owner)
     {
-        var rentedReader = await owner.RentReader(location, ObjectNumber, GenerationNumber).CA();
+        var rentedReader = await owner.RentReaderAsync(location, ObjectNumber, GenerationNumber).CA();
         SetFinalValue(await rentedReader.RootObjectParser.ParseAsync(rentedReader).CA());
     }
 }

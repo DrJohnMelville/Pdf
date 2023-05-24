@@ -20,7 +20,7 @@ internal static class DictionaryWriter
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
         IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
         WriteAsync(writer, innerWriter, items, StandardPrefix, StandardSuffix);
-    public static ValueTask<FlushResult> WriteInlineImageDict(
+    public static ValueTask<FlushResult> WriteInlineImageDictAsync(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
         IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
         WriteAsync(writer, innerWriter, items, InlineImagePrefix, InlineImageSuffix);

@@ -10,9 +10,9 @@ namespace Melville.Pdf.Model.Renderers.ColorOperations;
 [StaticSingleton()]
 internal partial class NullColorOperations : IColorOperations
 {
-    public ValueTask SetStrokingColorSpace(PdfName colorSpace) => ValueTask.CompletedTask;
+    public ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace) => ValueTask.CompletedTask;
 
-    public ValueTask SetNonstrokingColorSpace(PdfName colorSpace) => ValueTask.CompletedTask;
+    public ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace) => ValueTask.CompletedTask;
 
     public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors) => 
         ValueTask.CompletedTask;

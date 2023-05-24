@@ -19,14 +19,14 @@ internal class ObjectStreamBuilder
     private bool IsLegalWrite(PdfIndirectObject pdfIndirectObject, PdfObject direcetValue) => 
         pdfIndirectObject.GenerationNumber == 0 && direcetValue is not PdfStream;
 
-    public async ValueTask<PdfObject> CreateStream(DictionaryBuilder builder)
+    public async ValueTask<PdfObject> CreateStreamAsync(DictionaryBuilder builder)
     {
         var writer = new ObjectStreamWriter();
         foreach (var member in members)
         {
             await  writer.TryAddRefAsync(member).CA();
         }
-        return await writer.Build(builder, members.Count).CA();
+        return await writer.BuildAsync(builder, members.Count).CA();
     }
 
     public bool HasValues() => members.Count > 0;

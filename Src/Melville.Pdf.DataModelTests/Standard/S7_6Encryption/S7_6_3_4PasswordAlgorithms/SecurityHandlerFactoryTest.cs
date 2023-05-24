@@ -24,7 +24,7 @@ public class SecurityHandlerFactoryTest
            /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF>] >>")]
     public async Task CreateSecurityHandler(string trailer)
     { 
-        await  TrailerToDocumentCryptContext.CreateDecryptorFactory(
+        await  TrailerToDocumentCryptContext.CreateDecryptorFactoryAsync(
             (PdfDictionary)await trailer.ParseObjectAsync(), password);
         // test is for absence of an exception
     }
@@ -49,6 +49,6 @@ public class SecurityHandlerFactoryTest
     {
         var dict = (PdfDictionary)await trailer.ParseObjectAsync();
         await Assert.ThrowsAsync<PdfSecurityException>(
-            ()=> TrailerToDocumentCryptContext.CreateDecryptorFactory(dict, password).AsTask());
+            ()=> TrailerToDocumentCryptContext.CreateDecryptorFactoryAsync(dict, password).AsTask());
     }
 }

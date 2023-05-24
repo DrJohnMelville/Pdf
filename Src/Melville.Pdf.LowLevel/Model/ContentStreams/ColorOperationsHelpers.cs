@@ -20,18 +20,18 @@ public static class ColorOperationsHelpers
     /// <param name="target">Receiver for the extension method</param>
     /// <param name="colorSpace">The desired colorspace.</param>
     /// <returns>A completed valuetask</returns>
-    public static ValueTask SetStrokingColorSpace(
+    public static ValueTask SetStrokingColorSpaceAsync(
         this IColorOperations target, ColorSpaceName colorSpace) =>
-        target.SetStrokingColorSpace(colorSpace);
+        target.SetStrokingColorSpaceAsync(colorSpace);
     /// <summary>
     /// Set the Nonstroking color space in the receiver
     /// </summary>
     /// <param name="target">Receiver for the extension method</param>
     /// <param name="colorSpace">The desired colorspace.</param>
     /// <returns>A completed valuetask</returns>
-    public static ValueTask SetNonstrokingColorSpace(
+    public static ValueTask SetNonstrokingColorSpaceAsync(
         this IColorOperations target, ColorSpaceName colorSpace) =>
-        target.SetNonstrokingColorSpace(colorSpace);
+        target.SetNonstrokingColorSpaceAsync(colorSpace);
 
     /// <summary>
     /// Sets the stroking color in the receiver.
@@ -46,7 +46,7 @@ public static class ColorOperationsHelpers
     /// <param name="target">Receiver whose color is to be set</param>
     /// <param name="colors">The color desired, in the current colorspace</param>
     /// <returns>A valuetask representing completion of this task</returns>
-    public static ValueTask SetStrokeColorExtended(this IColorOperations target, params double[] colors) =>
+    public static ValueTask SetStrokeColorExtendedAsync(this IColorOperations target, params double[] colors) =>
         target.SetStrokeColorExtendedAsync(null, new ReadOnlySpan<double>(colors));
     /// <summary>
     /// Sets the stroking color in the receiver with a name and color values.
@@ -55,7 +55,7 @@ public static class ColorOperationsHelpers
     /// <param name="name">A PDF name, typically of a pattern, to set as the present color</param> 
     /// <param name="colors">The numeric color values, if any</param>
     /// <returns>A ValueTask representing completion of this operation</returns>
-    public static ValueTask SetStrokeColorExtended(
+    public static ValueTask SetStrokeColorExtendedAsync(
         this IColorOperations target, PdfName? name, params double[] colors) =>
         target.SetStrokeColorExtendedAsync(name, new ReadOnlySpan<double>(colors));
 
@@ -72,7 +72,7 @@ public static class ColorOperationsHelpers
     /// <param name="target">Receiver who'se color is to be set</param>
     /// <param name="colors">The color desired, in the current colorspace</param>
     /// <returns>A valuetask representing completion of this task</returns>
-    public static ValueTask SetNonstrokingColorExtended(this IColorOperations target, params double[] colors) =>
+    public static ValueTask SetNonstrokingColorExtendedAsync(this IColorOperations target, params double[] colors) =>
         target.SetNonstrokingColorExtendedAsync(null, new ReadOnlySpan<double>(colors));
     /// <summary>
     /// Sets the stroking color in the receiver with a name and color values.
@@ -81,7 +81,7 @@ public static class ColorOperationsHelpers
     /// <param name="name">A PDF name, typically of a pattern, to set as the present color</param> 
     /// <param name="colors">The numeric color values, if any</param>
     /// <returns>A ValueTask representing completion of this operation</returns>
-    public static ValueTask SetNonstrokingColorExtended(
+    public static ValueTask SetNonstrokingColorExtendedAsync(
         this IColorOperations target, PdfName? name, params double[] colors) =>
         target.SetNonstrokingColorExtendedAsync(name, new ReadOnlySpan<double>(colors));
 }

@@ -26,7 +26,7 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
         fbuilder.AddOutput((x, y) => x, new ClosedInterval(0, 1));
         fbuilder.AddOutput((x, y) => y, new ClosedInterval(0, 1));
         fbuilder.AddOutput((x, y) => 1 - x, new ClosedInterval(0, 1));
-        var ret = await fbuilder.CreateSampledFunction();
+        var ret = await fbuilder.CreateSampledFunctionAsync();
         return new PdfStream[]{ret};
     }
 

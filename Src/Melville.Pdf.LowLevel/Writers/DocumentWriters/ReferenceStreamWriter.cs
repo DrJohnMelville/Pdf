@@ -32,16 +32,16 @@ internal readonly struct ReferenceStreamWriter
         columnWidths = objectOffsets.ColumnByteWidths();
     }
 
-    public async  ValueTask<FlushResult> Write() =>
+    public async  ValueTask<FlushResult> WriteAsync() =>
         await 
             UnencryptedPdfObjectWriter().VisitTopLevelObject(
-            new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStream().CA())).CA();
+            new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStreamAsync().CA())).CA();
 
     private PdfObjectWriter UnencryptedPdfObjectWriter() => new(target);
 
     private int XrefStreamObjectNumber() => objectOffsets.Entries.Length-1;
 
-    private async ValueTask<PdfStream> CreateReferenceStream()
+    private async ValueTask<PdfStream> CreateReferenceStreamAsync()
     {
         var data = new MultiBufferStream(2048);
         await GenerateXrefStreamAsync(data).CA();

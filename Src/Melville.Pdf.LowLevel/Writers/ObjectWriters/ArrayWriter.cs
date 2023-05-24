@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class ArrayWriter
 {
-    public static async ValueTask<FlushResult> Write(
+    public static async ValueTask<FlushResult> WriteAsync(
         PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 
         IReadOnlyList<PdfObject> items)
     {

@@ -30,9 +30,9 @@ public class WriteSpacedText : Card3x5
 
     private async Task WriteString(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
     {
-        await csw.SetFont(font, 70);
+        await csw.SetFontAsync(font, 70);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);
-        await tr.ShowSpacedString("A", 500, "B A", -500, "B");
+        await tr.ShowSpacedStringAsync("A", 500, "B A", -500, "B");
         tr.MoveToNextTextLine();
     }
 }

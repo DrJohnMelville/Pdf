@@ -9,7 +9,7 @@ public class ShaderOperatorWriterTest : WriterTest
     [Fact]
     public async Task SetColorSpace()
     {
-        await sut.PaintShader("JdmColor");
+        await sut.PaintShaderAsync("JdmColor");
         Assert.Equal("/JdmColor sh\n", await WrittenText());
     }
 }

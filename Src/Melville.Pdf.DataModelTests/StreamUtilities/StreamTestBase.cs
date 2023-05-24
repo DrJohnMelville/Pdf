@@ -99,7 +99,7 @@ public abstract class StreamTestBase
     private static Mock<IStreamDataSource> MockStreamSource(Stream readFrom)
     {
         var strSourceMock = new Mock<IStreamDataSource>();
-        strSourceMock.Setup(i => i.OpenRawStream(It.IsAny<long>())).ReturnsAsync(readFrom);
+        strSourceMock.Setup(i => i.OpenRawStreamAsync(It.IsAny<long>())).ReturnsAsync(readFrom);
         strSourceMock.SetupGet(i => i.SourceFormat).Returns(StreamFormat.DiskRepresentation);
         strSourceMock.Setup(i => i.WrapStreamWithDecryptor(It.IsAny<Stream>())).Returns((Stream s) => s);
         return strSourceMock;

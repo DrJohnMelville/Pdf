@@ -73,12 +73,12 @@ public class S7_9_2StringDataTypes
     public async Task TextStreamTest(string text)
     {
         var utf8 = new DictionaryBuilder().AsStream(PdfString.CreateUtf8(text).Bytes);
-        Assert.Equal(text, await (await utf8.TextStreamReader()).ReadToEndAsync());
+        Assert.Equal(text, await (await utf8.TextStreamReaderAsync()).ReadToEndAsync());
         var utf = new DictionaryBuilder().AsStream(PdfString.CreateUtf16(text).Bytes);
-        Assert.Equal(text, await (await utf.TextStreamReader()).ReadToEndAsync());
+        Assert.Equal(text, await (await utf.TextStreamReaderAsync()).ReadToEndAsync());
 
         var pdfEnc = new DictionaryBuilder().AsStream(PdfString.CreatePdfEncoding(text).Bytes);
-        Assert.Equal(text, await (await pdfEnc.TextStreamReader()).ReadToEndAsync());
+        Assert.Equal(text, await (await pdfEnc.TextStreamReaderAsync()).ReadToEndAsync());
             
     }
 }

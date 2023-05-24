@@ -35,7 +35,7 @@ internal class ContentStreamContext
 
     public void HandleString(in Memory<byte> str) => arguments.Add(str);
 
-    public async ValueTask HandleOpCode(ContentStreamOperatorValue opCode)
+    public async ValueTask HandleOpCodeAsync(ContentStreamOperatorValue opCode)
     {
         switch (opCode)
         {
@@ -52,7 +52,7 @@ internal class ContentStreamContext
                 target.FillAndStrokePathEvenOdd();
                 break;
             case ContentStreamOperatorValue.BDC:
-                await BeginMarkedRange().CA();
+                await BeginMarkedRangeAsync().CA();
                 break;
             case ContentStreamOperatorValue.BI:
                 break;
@@ -77,10 +77,10 @@ internal class ContentStreamContext
                     arguments.FloatAt(4), arguments.FloatAt(5)));
                 break;
             case ContentStreamOperatorValue.CS:
-                await target.SetStrokingColorSpace(arguments.NamaAt(0)).CA();
+                await target.SetStrokingColorSpaceAsync(arguments.NamaAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.cs:
-                await target.SetNonstrokingColorSpace(arguments.NamaAt(0)).CA();
+                await target.SetNonstrokingColorSpaceAsync(arguments.NamaAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.d:
                 SetLineDashPattern();
@@ -97,7 +97,7 @@ internal class ContentStreamContext
                 await target.DoAsync(arguments.NamaAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.DP:
-                await MarkedContentPoint().CA();
+                await MarkedContentPointAsync().CA();
                 break;
             case ContentStreamOperatorValue.EI:
                 break;
@@ -126,7 +126,7 @@ internal class ContentStreamContext
                 await target.SetNonstrokingGrayAsync(arguments.DoubleAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.gs:
-                await target.LoadGraphicStateDictionary(arguments.NamaAt(0)).CA();
+                await target.LoadGraphicStateDictionaryAsync(arguments.NamaAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.h:
                 target.ClosePath();
@@ -198,13 +198,13 @@ internal class ContentStreamContext
                 SetStrokingColor();
                 break;
             case ContentStreamOperatorValue.SCN:
-                await SetStrokingColorExtended().CA();
+                await SetStrokingColorExtendedAsync().CA();
                 break;
             case ContentStreamOperatorValue.scn:
-                await SetNonstrokingColorExtended().CA();
+                await SetNonstrokingColorExtendedAsync().CA();
                 break;
             case ContentStreamOperatorValue.sh:
-                await target.PaintShader(arguments.NamaAt(0)).CA();
+                await target.PaintShaderAsync(arguments.NamaAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.TStar:
                 target.MoveToNextTextLine();
@@ -219,13 +219,13 @@ internal class ContentStreamContext
                 target.MovePositionByWithLeading(arguments.DoubleAt(0), arguments.DoubleAt(1));
                 break;
             case ContentStreamOperatorValue.Tf:
-                await target.SetFont(arguments.NamaAt(0), arguments.DoubleAt(1)).CA();
+                await target.SetFontAsync(arguments.NamaAt(0), arguments.DoubleAt(1)).CA();
                 break;
             case ContentStreamOperatorValue.Tj:
-                await target.ShowString(arguments.BytesAt(0)).CA();
+                await target.ShowStringAsync(arguments.BytesAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.TJ:
-                await target.ShowSpacedString(arguments.NativeSpan()).CA();
+                await target.ShowSpacedStringAsync(arguments.NativeSpan()).CA();
                 break;
             case ContentStreamOperatorValue.TL:
                 target.SetTextLeading(arguments.DoubleAt(0));
@@ -264,10 +264,10 @@ internal class ContentStreamContext
                     arguments.DoubleAt(2), arguments.DoubleAt(3));
                 break;
             case ContentStreamOperatorValue.SingleQuote:
-                await target.MoveToNextLineAndShowString(arguments.BytesAt(0)).CA();
+                await target.MoveToNextLineAndShowStringAsync(arguments.BytesAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.DoubleQuote:
-                await target.MoveToNextLineAndShowString(arguments.DoubleAt(0), arguments.DoubleAt(1),
+                await target.MoveToNextLineAndShowStringAsync(arguments.DoubleAt(0), arguments.DoubleAt(1),
                     arguments.BytesAt(2)).CA();
                 break;
             default:
@@ -284,7 +284,7 @@ internal class ContentStreamContext
         target.SetLineDashPattern(span[^1], span[..^1]);
     }
 
-    private ValueTask MarkedContentPoint() =>
+    private ValueTask MarkedContentPointAsync() =>
         arguments.ObjectAt<PdfObject>(1) switch
         {
             PdfName name => target.MarkedContentPointAsync(arguments.NamaAt(0), name),
@@ -292,7 +292,7 @@ internal class ContentStreamContext
             _ => throw new PdfParseException("Invalid MarkedContentPoint parameter.")
         };
 
-    private ValueTask BeginMarkedRange() =>
+    private ValueTask BeginMarkedRangeAsync() =>
         arguments.ObjectAt<PdfObject>(1) switch
         {
             PdfName name => target.BeginMarkedRangeAsync(arguments.NamaAt(0), name),
@@ -325,13 +325,13 @@ internal class ContentStreamContext
         return (name, span);
     }
 
-    private ValueTask SetNonstrokingColorExtended()
+    private ValueTask SetNonstrokingColorExtendedAsync()
     {
         var (name, numericArguments) = CollectExtendedColorArgs();
         return target.SetNonstrokingColorExtendedAsync(name, numericArguments);
     }
 
-    private ValueTask SetStrokingColorExtended()
+    private ValueTask SetStrokingColorExtendedAsync()
     {
         var (name, numericArguments) = CollectExtendedColorArgs();
         return target.SetStrokeColorExtendedAsync(name, numericArguments);
@@ -358,5 +358,5 @@ internal class ContentStreamContext
         // otherwise just ignore the unknown operator
     }
 
-    public ValueTask HandleInlineImage(PdfStream inlineImage) => target.DoAsync(inlineImage);
+    public ValueTask HandleInlineImageAsync(PdfStream inlineImage) => target.DoAsync(inlineImage);
 }

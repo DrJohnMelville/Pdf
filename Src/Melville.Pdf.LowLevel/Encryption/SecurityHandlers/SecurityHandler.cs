@@ -18,18 +18,18 @@ internal interface ISecurityHandler
 
 internal static class SecurityHandlerOperations
 {
-    public static async ValueTask<IDocumentCryptContext> InteractiveGetCryptContext(
+    public static async ValueTask<IDocumentCryptContext> InteractiveGetCryptContextAsync(
         this ISecurityHandler handler, IPasswordSource source)
     {
-        return handler.CreateCryptContext(await GetRootKey(handler, source).CA());
+        return handler.CreateCryptContext(await GetRootKeyAsync(handler, source).CA());
     }
 
-    private static ValueTask<byte[]> GetRootKey(ISecurityHandler handler, IPasswordSource source) =>
+    private static ValueTask<byte[]> GetRootKeyAsync(ISecurityHandler handler, IPasswordSource source) =>
         handler.TryComputeRootKey("", PasswordType.User) is { } rootKey
             ? new(rootKey)
-            : InteractiveGetRootKey(handler, source);
+            : InteractiveGetRootKeyAsync(handler, source);
         
-    private static async ValueTask<byte[]> InteractiveGetRootKey(
+    private static async ValueTask<byte[]> InteractiveGetRootKeyAsync(
         ISecurityHandler handler, IPasswordSource source)
     {
         while (true)

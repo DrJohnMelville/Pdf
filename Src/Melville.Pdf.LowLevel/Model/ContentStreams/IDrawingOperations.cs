@@ -120,7 +120,7 @@ public interface IDrawingOperations: IPathDrawingOperations
     /// <summary>
     /// Content stream operator name sh
     /// </summary>
-    ValueTask PaintShader(PdfName name);
+    ValueTask PaintShaderAsync(PdfName name);
     /// <summary>
     /// Context stream operators BI, ID, and EI
     /// </summary>

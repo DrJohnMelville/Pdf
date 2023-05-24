@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 
 internal interface IStreamDataSource
 {
-    ValueTask<Stream> OpenRawStream(long streamLength);
+    ValueTask<Stream> OpenRawStreamAsync(long streamLength);
     Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName);
     Stream WrapStreamWithDecryptor(Stream encryptedStream);
     StreamFormat SourceFormat { get; }
@@ -35,7 +35,7 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 
     private async ValueTask<Stream> SourceStreamAsync() => 
-        await source.OpenRawStream(await DeclaredLengthAsync().CA()).CA();
+        await source.OpenRawStreamAsync(await DeclaredLengthAsync().CA()).CA();
 
     /// <summary>
     /// The length of the stream as declared in the stream dictionary.
@@ -53,31 +53,31 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     internal async ValueTask<Stream> StreamContentAsync(StreamFormat desiredFormat, IObjectCryptContext? encryptor)
     {
         var processor =
-            await CreateFilterProcessor(encryptor ?? ErrorObjectEncryptor.Instance).CA();
+            await CreateFilterProcessorAsync(encryptor ?? ErrorObjectEncryptor.Instance).CA();
         
-        return await processor.StreamInDesiredEncoding(await SourceStreamAsync().CA(),
+        return await processor.StreamInDesiredEncodingAsync(await SourceStreamAsync().CA(),
             source.SourceFormat, desiredFormat).CA();
     }
 
-    private async Task<FilterProcessorBase> CreateFilterProcessor(IObjectCryptContext innerEncryptor) =>
-        await DefaultEncryptionSelector.TryAddDefaultEncryption(this, source, innerEncryptor,
+    private async Task<FilterProcessorBase> CreateFilterProcessorAsync(IObjectCryptContext innerEncryptor) =>
+        await DefaultEncryptionSelector.TryAddDefaultEncryptionAsync(this, source, innerEncryptor,
                 new FilterProcessor(
-                    await FilterList().CA(),
-                    await FilterParamList().CA(),
+                    await FilterListAsync().CA(),
+                    await FilterParamListAsync().CA(),
                     CreateDecoder(innerEncryptor))).CA();
 
     private  IApplySingleFilter CreateDecoder(IObjectCryptContext innerEncryptor) =>
             new CryptSingleFilter(source, innerEncryptor,
                 SinglePredictionFilter.Instance);
 
-    private async ValueTask<IReadOnlyList<PdfObject>> FilterList() => 
+    private async ValueTask<IReadOnlyList<PdfObject>> FilterListAsync() => 
         (await this.GetOrNullAsync(KnownNames.Filter).CA()).ObjectAsUnresolvedList();
-    private async ValueTask<IReadOnlyList<PdfObject>> FilterParamList() => 
+    private async ValueTask<IReadOnlyList<PdfObject>> FilterParamListAsync() => 
         (await this.GetOrNullAsync(KnownNames.DecodeParms).CA()).ObjectAsUnresolvedList();
 
-    internal async ValueTask<bool> HasFilterOfType(PdfName filterType)
+    internal async ValueTask<bool> HasFilterOfTypeAsync(PdfName filterType)
     {
-        foreach (var item in await FilterList().CA())
+        foreach (var item in await FilterListAsync().CA())
         {
             if (await item.DirectValueAsync().CA() == filterType) return true;
         }

@@ -31,15 +31,15 @@ public interface ILowLevelDocumentModifier : IPdfObjectRegistry
     /// </summary>
     /// <param name="stream">The stream to be appended to.</param>
     /// <returns>The valuetask that monitors the completion.</returns>
-    ValueTask WriteModificationTrailer(Stream stream) =>
-        WriteModificationTrailer(PipeWriter.Create(stream), stream.Position);
+    ValueTask WriteModificationTrailerAsync(Stream stream) =>
+        WriteModificationTrailerAsync(PipeWriter.Create(stream), stream.Position);
     /// <summary>
     /// Writes out a modification trailer to a PipeWriter.
     /// </summary>
     /// <param name="cpw">The pipe writer to write to</param>
     /// <param name="startPosition">The index at which the trailer starts.</param>
     /// <returns>ValueTask controlling the completion of the operation.</returns>
-    ValueTask WriteModificationTrailer(PipeWriter cpw, long startPosition);
+    ValueTask WriteModificationTrailerAsync(PipeWriter cpw, long startPosition);
 
 }
 
@@ -71,9 +71,9 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
     }
 
 
-    public ValueTask WriteModificationTrailer(PipeWriter cpw, long startPosition) =>
-        WriteModificationTrailer(new CountingPipeWriter(cpw, startPosition));
-    private async ValueTask WriteModificationTrailer(CountingPipeWriter target)
+    public ValueTask WriteModificationTrailerAsync(PipeWriter cpw, long startPosition) =>
+        WriteModificationTrailerAsync(new CountingPipeWriter(cpw, startPosition));
+    private async ValueTask WriteModificationTrailerAsync(CountingPipeWriter target)
     {
         var lines = new List<XrefLine>();
         var writer = new PdfObjectWriter(target);
@@ -88,7 +88,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         WriteRevisedXrefTable(target, lines);
         await target.FlushAsync().CA();
         builder.AddToTrailerDictionary(KnownNames.Prev, priorXref);
-        await TrailerWriter.WriteTrailerWithDictionary(target, builder.CreateTrailerDictionary(), startXref).CA();
+        await TrailerWriter.WriteTrailerWithDictionaryAsync(target, builder.CreateTrailerDictionary(), startXref).CA();
     }
 
     private static void WriteRevisedXrefTable(CountingPipeWriter target, IEnumerable<XrefLine> lines)

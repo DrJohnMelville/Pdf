@@ -119,14 +119,14 @@ internal readonly struct ContentStreamPipeWriter
         WriteOperator(operation);
     }
 
-    public ValueTask WriteDictionary(PdfDictionary dict) => 
+    public ValueTask WriteDictionaryAsync(PdfDictionary dict) => 
         new PdfObjectWriter(destPipe).Visit(dict).AsValueTask();
 
-    public ValueTask WriteInlineImageDict(PdfDictionary dict) =>
-        DictionaryWriter.WriteInlineImageDict(destPipe, new PdfObjectWriter(destPipe),
+    public ValueTask WriteInlineImageDictAsync(PdfDictionary dict) =>
+        DictionaryWriter.WriteInlineImageDictAsync(destPipe, new PdfObjectWriter(destPipe),
             dict.RawItems).AsValueTask();
 
-    public Task WriteStreamContent(Stream str) => str.CopyToAsync(destPipe);
+    public Task WriteStreamContentAsync(Stream str) => str.CopyToAsync(destPipe);
 
     public void WriteLiteral(string contentStream)
     {

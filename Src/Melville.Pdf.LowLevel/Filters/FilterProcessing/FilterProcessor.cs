@@ -9,20 +9,20 @@ namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 internal abstract class FilterProcessorBase
 {
-    public async ValueTask<Stream> StreamInDesiredEncoding(Stream src, StreamFormat sourceFormat,
+    public async ValueTask<Stream> StreamInDesiredEncodingAsync(Stream src, StreamFormat sourceFormat,
         StreamFormat desiredEncoding)
     {
         return sourceFormat.CompareTo(desiredEncoding) switch
         {
-            < 0 => await Decode(src, sourceFormat, desiredEncoding).CA(),
+            < 0 => await DecodeAsync(src, sourceFormat, desiredEncoding).CA(),
             0 => src,
-            _ => await Encode(src, sourceFormat, desiredEncoding).CA()
+            _ => await EncodeAsync(src, sourceFormat, desiredEncoding).CA()
         };
     }
 
-    protected abstract ValueTask<Stream> Encode(
+    protected abstract ValueTask<Stream> EncodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat);
-    protected abstract ValueTask<Stream> Decode(
+    protected abstract ValueTask<Stream> DecodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat);
 
 }
@@ -43,7 +43,7 @@ internal class FilterProcessor: FilterProcessorBase
         this.singleFilter = singleFilter;
     }
 
-    protected override async ValueTask<Stream> Encode(
+    protected override async ValueTask<Stream> EncodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
     {
         var inclusiveUpperBound = Math.Min(filters.Count-1, (int)sourceFormat);
@@ -51,13 +51,13 @@ internal class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = inclusiveUpperBound; i > exclusiveLowerBound; i--)
         {
-            ret = await singleFilter.Encode(ret, filters[i], TryGetParameter(i)).CA();
+            ret = await singleFilter.EncodeAsync(ret, filters[i], TryGetParameter(i)).CA();
         }
 
         return ret;
     }
 
-    protected override async ValueTask<Stream> Decode(
+    protected override async ValueTask<Stream> DecodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
     {
         var firstFilter = Math.Max(0, (int)sourceFormat+1);
@@ -65,7 +65,7 @@ internal class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = firstFilter; i < oneMoreThanLastFilter; i++)
         {
-            ret = await singleFilter.Decode(ret, filters[i], TryGetParameter(i)).CA();
+            ret = await singleFilter.DecodeAsync(ret, filters[i], TryGetParameter(i)).CA();
         }
 
         return ret;

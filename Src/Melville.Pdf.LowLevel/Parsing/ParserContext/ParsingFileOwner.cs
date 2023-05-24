@@ -34,14 +34,14 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
 
     private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
-    public ValueTask<IParsingReader> RentReader(long offset, int objectNumber=-1, int generation = -1)
+    public ValueTask<IParsingReader> RentReaderAsync(long offset, int objectNumber=-1, int generation = -1)
     {
         var reader = ParsingReaderForStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(offset)), offset);
         return new ValueTask<IParsingReader>(TryWrapWithDecryptor(objectNumber, generation, reader));
             
     }
 
-    public ValueTask<Stream> RentStream(long position, long length)
+    public ValueTask<Stream> RentStreamAsync(long position, long length)
     {
         var ret = new RentedStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(position)), length);
         return new ValueTask<Stream>(ret);
@@ -60,11 +60,11 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
 
     private static readonly StreamPipeReaderOptions pipeOptions = new(leaveOpen: true);
     
-    public async ValueTask InitializeDecryption(PdfDictionary trailerDictionary)
+    public async ValueTask InitializeDecryptionAsync(PdfDictionary trailerDictionary)
     {
         if (AlreadyInitializedDecryption()) return;
         documentCryptContext = await 
-            TrailerToDocumentCryptContext.CreateDecryptorFactory(trailerDictionary, passwordSource).CA();
+            TrailerToDocumentCryptContext.CreateDecryptorFactoryAsync(trailerDictionary, passwordSource).CA();
     }
 
     private bool AlreadyInitializedDecryption()

@@ -26,10 +26,10 @@ public abstract class EncryptedFileWriter : CreatePdfParser
         var font = page.AddStandardFont("F1", BuiltInFontName.TimesRoman, FontEncodingName.WinAnsiEncoding);
         await page.AddToContentStreamAsync(i =>
         {
-            i.SetFont(font, 12);
+            i.SetFontAsync(font, 12);
             using var block = i.StartTextBlock();
             block.MovePositionBy(100, 700);
-            block.ShowString(HelpText);
+            block.ShowStringAsync(HelpText);
         });
     }
 

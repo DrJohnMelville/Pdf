@@ -29,16 +29,16 @@ public readonly partial struct TextBlockWriter : IDisposable, ITextObjectOperati
     /// </summary>
     /// <param name="decodedString">String to write</param>
     /// <returns>Valuetask signaling completion</returns>
-    public ValueTask ShowString(string decodedString) =>
-        Inner().ShowString(decodedString.AsExtendedAsciiBytes());
+    public ValueTask ShowStringAsync(string decodedString) =>
+        Inner().ShowStringAsync(decodedString.AsExtendedAsciiBytes());
 
     /// <summary>
     /// Convenience method to write a string after moving to the next line.
     /// </summary>
     /// <param name="decodedString">String to write</param>
     /// <returns>Valuetask signaling completion</returns>
-    public ValueTask MoveToNextLineAndShowString(string decodedString) =>
-        Inner().MoveToNextLineAndShowString(decodedString.AsExtendedAsciiBytes());
+    public ValueTask MoveToNextLineAndShowStringAsync(string decodedString) =>
+        Inner().MoveToNextLineAndShowStringAsync(decodedString.AsExtendedAsciiBytes());
 
     /// <summary>
     /// Convenience method to write a string after moving to the next line with
@@ -48,22 +48,22 @@ public readonly partial struct TextBlockWriter : IDisposable, ITextObjectOperati
     /// <param name="charSpace">Spacing between characters.</param>
     /// <param name="decodedString">String to write</param>
     /// <returns>Valuetask signaling completion</returns>
-    public ValueTask MoveToNextLineAndShowString(double wordSpace, double charSpace, string decodedString) =>
-        Inner().MoveToNextLineAndShowString(
+    public ValueTask MoveToNextLineAndShowStringAsync(double wordSpace, double charSpace, string decodedString) =>
+        Inner().MoveToNextLineAndShowStringAsync(
             wordSpace, charSpace, decodedString.AsExtendedAsciiBytes());
 
     /// <summary>
     /// Convenience method to convert.
     /// </summary>
     /// <param name="values">An array of numbers and strings to write as a spaced string.</param>
-    public async ValueTask ShowSpacedString(params object[] values)
+    public async ValueTask ShowSpacedStringAsync(params object[] values)
     {
         ContentStreamValueUnion[] items = ArrayPool<ContentStreamValueUnion>.Shared.Rent(values.Length);
         for (int i = 0; i < values.Length; i++)
         {
             items[i] = ValueFromObject(values[i]);
         }
-        await Inner().ShowSpacedString(items.AsSpan(0, values.Length)).CA(); 
+        await Inner().ShowSpacedStringAsync(items.AsSpan(0, values.Length)).CA(); 
         ArrayPool<ContentStreamValueUnion>.Shared.Return(items);
     }
 

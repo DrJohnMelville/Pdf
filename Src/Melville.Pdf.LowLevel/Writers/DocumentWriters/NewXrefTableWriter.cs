@@ -9,7 +9,7 @@ internal static class NewXrefTableWriter
     /// This method writes out an xref table with the offsets indicated.
     /// this method mutates the refs parameter.
     /// </summary>
-    public static ValueTask<FlushResult> WriteXrefsForNewFile(PipeWriter target, in XRefTable refs)
+    public static ValueTask<FlushResult> WriteXrefsForNewFileAsync(PipeWriter target, in XRefTable refs)
     {
         XrefTableElementWriter.WriteXrefTitleLine(target);
         refs.AssembleFreeList();

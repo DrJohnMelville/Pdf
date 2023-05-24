@@ -61,7 +61,10 @@ public abstract class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, Va
     /// <param name="key">The key for the desired value</param>
     /// <returns>The value corresponding to the key</returns>
     /// <exception cref="KeyNotFoundException">If the key is not present in the dictionary</exception>
+#pragma warning disable Arch004
     public ValueTask<PdfObject> this[PdfName key] => RawItems[key].DirectValueAsync();
+    // cannot be named async because it is a special name
+#pragma warning restore Arch004
 
 
     /// <inheritdoc />

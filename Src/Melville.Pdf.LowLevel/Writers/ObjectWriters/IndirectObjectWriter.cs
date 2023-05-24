@@ -14,7 +14,7 @@ internal static class IndirectObjectWriter
     private static ReadOnlySpan<byte> ReferenceLabel => " R"u8;
     private static ReadOnlySpan<byte> EndObjLabel => " endobj\n"u8;
 
-    public static ValueTask<FlushResult> WriteObjectReference(PipeWriter target, PdfIndirectObject item)
+    public static ValueTask<FlushResult> WriteObjectReferenceAsync(PipeWriter target, PdfIndirectObject item)
     {
         target.Advance(WriteObjectHeader(target.GetSpan(25), item, ReferenceLabel));
         return  target.FlushAsync();
@@ -27,7 +27,7 @@ internal static class IndirectObjectWriter
         return position + suffix.Length;
     }
 
-    public static async ValueTask<FlushResult> WriteObjectDefinition(
+    public static async ValueTask<FlushResult> WriteObjectDefinitionAsync(
         PipeWriter target, PdfIndirectObject item,  ILowLevelVisitor<ValueTask<FlushResult>> innerWriter)
     {
         target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 

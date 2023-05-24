@@ -24,7 +24,7 @@ internal readonly struct XrefStreamParserFactory
         this.registry = registry;
     }
 
-    public async ValueTask<XrefStreamParser> Create()
+    public async ValueTask<XrefStreamParser> CreateAsync()
     {
         var w = await xrefStream.GetAsync<PdfArray>(KnownNames.W).CA();
         return new XrefStreamParser(
@@ -64,17 +64,17 @@ internal readonly struct XrefStreamParser
             throw new PdfParseException("Index of an xrefstream must have even number of elements");
     }
 
-    public async ValueTask Parse(PipeReader source)
+    public async ValueTask ParseAsync(PipeReader source)
     {
         for (int i = 0; i < index.Count; i+=2)
         {
             var baseNum = await index.IntAtAsync(i).CA();
             var length = await index.IntAtAsync(i+1).CA();
-            await ParseSection(source, baseNum, length).CA();
+            await ParseSectionAsync(source, baseNum, length).CA();
         }
     }
 
-    private async ValueTask ParseSection(PipeReader source, int baseNum, int length)
+    private async ValueTask ParseSectionAsync(PipeReader source, int baseNum, int length)
     {
         for (int i = 0; i < length; i++)
         {

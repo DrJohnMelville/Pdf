@@ -17,7 +17,7 @@ public class Type1FunctionalGray : Type1FunctionalShaderBase
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddOutput((x, y) => x*y, new ClosedInterval(0, 1));
-        var ret = await fbuilder.CreateSampledFunction();
+        var ret = await fbuilder.CreateSampledFunctionAsync();
         return new PdfStream[] { ret };
     }
 

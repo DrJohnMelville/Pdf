@@ -33,7 +33,7 @@ public class ComputeUserPasswordTest
             .WithItem(KnownNames.ID, id)
             .WithItem(KnownNames.Encrypt, encDict)
             .AsDictionary();
-        var handler = await SecurityHandlerFactory.CreateSecurityHandler(trailer, encDict);
+        var handler = await SecurityHandlerFactory.CreateSecurityHandlerAsync(trailer, encDict);
         Assert.NotNull(handler.TryComputeRootKey("User", PasswordType.User));
             
     }
@@ -51,11 +51,11 @@ public class ComputeUserPasswordTest
         bool succeed,string trailer, string passwords, PasswordType passwordType)
     {
         var tDict = (PdfDictionary)await trailer.ParseObjectAsync();
-        var handler = await  SecurityHandlerFactory.CreateSecurityHandler(
+        var handler = await  SecurityHandlerFactory.CreateSecurityHandlerAsync(
             tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
         try
         {
-            await handler.InteractiveGetCryptContext(
+            await handler.InteractiveGetCryptContextAsync(
                 new ConstantPasswordSource(passwordType, passwords.Split('|')));
             Assert.True(succeed);
         }

@@ -19,12 +19,12 @@ public static class ContentStreamPrettyPrinter
     /// </summary>
     /// <param name="content">The content stream to format.</param>
     /// <returns>A pretty printed version of content.</returns>
-    public static async ValueTask<string> PrettyPrint(string content)
+    public static async ValueTask<string> PrettyPrintAsync(string content)
     {
         MemoryStream dest = new();
         var pipeWriter = PipeWriter.Create(dest);
         var parser = new ContentStreamParser(new IndentingContentStreamWriter(pipeWriter));
-        await parser.Parse(PipeReader.Create(new ReadOnlySequence<byte>(content.AsExtendedAsciiBytes()))).CA();
+        await parser.ParseAsync(PipeReader.Create(new ReadOnlySequence<byte>(content.AsExtendedAsciiBytes()))).CA();
         await pipeWriter.FlushAsync().CA();
         return new ReadOnlySpan<byte>(dest.GetBuffer(), 0, (int)dest.Length).ExtendedAsciiString();
     }

@@ -23,7 +23,7 @@ public class GraphicsStateDictionary:Card3x5
         csw.MoveTo(0,0);
         csw.LineTo(300, 300);
         csw.StrokePath();
-        await csw.LoadGraphicStateDictionary(dictionaryName);
+        await csw.LoadGraphicStateDictionaryAsync(dictionaryName);
         csw.MoveTo(0,300);
         csw.LineTo(300,0);
         csw.StrokePath();

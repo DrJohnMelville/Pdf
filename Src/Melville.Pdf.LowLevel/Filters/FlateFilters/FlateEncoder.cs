@@ -15,11 +15,11 @@ internal class FlateCodecDefinition: ICodecDefinition
 
     public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters)
     {
-        await Skip2BytePrefix(input);
+        await Skip2BytePrefixAsync(input);
         return new DeflateStream(input, CompressionMode.Decompress);
     }
 
-    private static async Task Skip2BytePrefix(Stream input)
+    private static async Task Skip2BytePrefixAsync(Stream input)
     {
         var buffer = ArrayPool<byte>.Shared.Rent(2);
         int totalRead = 0, localRead;

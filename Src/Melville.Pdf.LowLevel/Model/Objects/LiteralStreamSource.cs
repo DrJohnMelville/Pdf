@@ -24,7 +24,7 @@ internal class LiteralStreamSource : IStreamDataSource
         SourceFormat = sourceFormat;
     }
 
-    public ValueTask<Stream> OpenRawStream(long streamLength)
+    public ValueTask<Stream> OpenRawStreamAsync(long streamLength)
     {
         return new ValueTask<Stream>(source.CreateReader());
     }

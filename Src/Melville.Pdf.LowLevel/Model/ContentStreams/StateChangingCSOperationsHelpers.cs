@@ -19,7 +19,7 @@ public static class StateChangingCSOperationsHelpers
     /// <param name="size">Desired font size</param>
     public static void SetFont(
         this IStateChangingOperations target, BuiltInFontName fontName, double size) =>
-        target.SetFont(fontName, size);
+        target.SetFontAsync(fontName, size);
     
     /// <summary>
     /// Sets the line dash pattern in the receiver.

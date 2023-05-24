@@ -27,9 +27,9 @@ public class ObjectStreamPage: CreatePdfParser
             await page.AddToContentStreamAsync(i=>
             {
                 using var block = i.StartTextBlock();
-                i.SetFont(fontName, 24);
+                i.SetFontAsync(fontName, 24);
                 block.MovePositionBy(100,700);
-                block.ShowString("Uses Object String");
+                block.ShowStringAsync("Uses Object String");
             });
         }
         return creator.CreateDocument();

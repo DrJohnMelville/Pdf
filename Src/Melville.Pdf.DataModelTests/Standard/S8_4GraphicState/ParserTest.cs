@@ -19,7 +19,7 @@ public abstract class ParserTest
         string s, IContentStreamOperations? target = null)
     {
         var sut = new ContentStreamParser(target ?? Target.Object);
-        return sut.Parse(PipeReaderFromString(s));
+        return sut.ParseAsync(PipeReaderFromString(s));
     }
 
     private static PipeReader PipeReaderFromString(string s) =>

@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 internal static class FunctionParsingMethods
 {
     public static async ValueTask<ClosedInterval[]> 
-        ReadIntervals(this PdfDictionary source, PdfName name)
+        ReadIntervalsAsync(this PdfDictionary source, PdfName name)
     {
         var array = await source.GetAsync<PdfArray>(name).CA();
         var length = array.Count / 2;
@@ -23,12 +23,12 @@ internal static class FunctionParsingMethods
 
         return ret;
     }
-    public static async ValueTask<ClosedInterval[]> ReadOptionalRanges(
+    public static async ValueTask<ClosedInterval[]> ReadOptionalRangesAsync(
         this PdfDictionary source, int numberOfOutputs) =>
         source.ContainsKey(KnownNames.Range)
-            ? await source.ReadIntervals(KnownNames.Range).CA()
+            ? await source.ReadIntervalsAsync(KnownNames.Range).CA()
             : Enumerable.Repeat(ClosedInterval.NoRestriction, numberOfOutputs).ToArray();
-    public static async ValueTask<double[]> ReadArrayWithDefault(
+    public static async ValueTask<double[]> ReadArrayWithDefaultAsync(
         this PdfDictionary source, PdfName name, int defaultValue) =>
         source.ContainsKey(name)
             ? await (await source.GetAsync<PdfArray>(name).CA()).AsDoublesAsync().CA()

@@ -43,7 +43,7 @@ public class DefaultGray: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpace(KnownNames.DeviceGray);
+        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceGray);
         DrawLine(csw);
         csw.SetStrokeColor(.25);
         DrawLine(csw);

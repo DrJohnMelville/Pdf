@@ -31,7 +31,7 @@ public class XrefPartViewModel : StreamPartViewModel
     private async ValueTask<object> ParseXref(PdfStream arg)
     {
         var factory = new XrefParseLogger();
-        await CrossReferenceStreamParser.ReadXrefStreamData(factory, Source).CA();
+        await CrossReferenceStreamParser.ReadXrefStreamDataAsync(factory, Source).CA();
         return factory.CreateViewModel();
     }
 }

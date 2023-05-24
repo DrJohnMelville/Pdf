@@ -16,13 +16,13 @@ internal static class StreamWriter
 {
     private static ReadOnlySpan<byte> StreamToken => " stream\r\n"u8;
     private static ReadOnlySpan<byte> EndStreamToken => "\r\nendstream"u8;
-    public static async ValueTask<FlushResult> Write(
+    public static async ValueTask<FlushResult> WriteAsync(
         PipeWriter target, PdfObjectWriter innerWriter, PdfStream item,
         IObjectCryptContext encryptor)
     {
         Stream diskrep;
         await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).CA();
-        diskrep = await EnsureStreamHasKnownLength(rawStream).CA();
+        diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
             
         await DictionaryWriter.WriteAsync(target, innerWriter, 
             MergeDictionaryItems(item.RawItems, (KnownNames.Length, new PdfInteger(diskrep.Length)))).CA();
@@ -46,7 +46,7 @@ internal static class StreamWriter
         }
     }
 
-    private static async Task<Stream> EnsureStreamHasKnownLength(Stream rawStream)
+    private static async Task<Stream> EnsureStreamHasKnownLengthAsync(Stream rawStream)
     {
         Stream diskrep;
         if (rawStream.Length < 1)

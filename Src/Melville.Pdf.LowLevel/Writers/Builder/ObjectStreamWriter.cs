@@ -31,7 +31,7 @@ internal readonly struct ObjectStreamWriter
     {
         var direcetValue = await obj.DirectValueAsync().CA();
         WriteObjectPosition(obj);
-        await WriteObject(direcetValue).CA();
+        await WriteObjectAsync(direcetValue).CA();
     }
 
     private void WriteObjectPosition(PdfIndirectObject item)
@@ -42,13 +42,13 @@ internal readonly struct ObjectStreamWriter
         referenceStreamWriter.WriteSpace();
     }
 
-    private async ValueTask WriteObject(PdfObject directValue)
+    private async ValueTask WriteObjectAsync(PdfObject directValue)
     {
         await directValue.Visit(objectWriter).CA();
         objectStreamWriter.WriteLineFeed();
     }
 
-    public async ValueTask<PdfStream> Build(DictionaryBuilder builder, int count)
+    public async ValueTask<PdfStream> BuildAsync(DictionaryBuilder builder, int count)
     {
         await referenceStreamWriter.FlushAsync().CA();
         await objectStreamWriter.FlushAsync().CA();

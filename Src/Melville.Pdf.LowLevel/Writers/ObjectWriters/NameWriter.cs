@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class NameWriter
 {
-    public static ValueTask<FlushResult> Write(PipeWriter target, PdfName name)
+    public static ValueTask<FlushResult> WriteAsync(PipeWriter target, PdfName name)
     {
         WriteWithoutlush(target, name);
         return target.FlushAsync();

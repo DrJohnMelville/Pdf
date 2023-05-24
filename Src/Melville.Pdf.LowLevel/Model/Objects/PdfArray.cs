@@ -64,7 +64,10 @@ public sealed class PdfArray :
     /// </summary>
     /// <param name="index">The index of the array to retrieve.</param>
     /// <returns>A ValueTask&lt;PdfObject&gt; that contains the returned object.</returns>
+#pragma warning disable Arch004
     public ValueTask<PdfObject> this[int index] => rawItems[index].DirectValueAsync();
+    // cannot be named async because it is a special name.
+#pragma warning restore Arch004
 
     internal override T Visit<T>(ILowLevelVisitor<T> visitor) => visitor.Visit(this);
 

@@ -26,29 +26,32 @@ internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
         this.encryptor = encryptor;
     }
 
+    // this is an unusual situation where the methods have to not be named async to
+    //implement the interface which is defined over a valueType
+#pragma warning disable Arch004
     public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
-        TokenValueWriter.Write(target, item);
+        TokenValueWriter.WriteAsync(target, item);
     public override ValueTask<FlushResult> Visit(PdfString item) => 
-        StringWriter.Write(target, item, CreateEncryptor());
+        StringWriter.WriteAsync(target, item, CreateEncryptor());
     public override ValueTask<FlushResult> Visit(PdfInteger item) =>
-        IntegerWriter.WriteAndFlush(target, item.IntValue);
+        IntegerWriter.WriteAndFlushAsync(target, item.IntValue);
     public override ValueTask<FlushResult> Visit(PdfDouble item) =>
-        DoubleWriter.Write(target, item.DoubleValue);
+        DoubleWriter.WriteAsync(target, item.DoubleValue);
 
     public override ValueTask<FlushResult> VisitTopLevelObject(PdfIndirectObject item)
-    {
+    { 
         if (!item.HasValue())
             throw new InvalidOperationException("Promised indirect objects must be assigned befor writing the file");
         currentIndirectObject = encryptor.BlockEncryption(item)?null: item;
-        return IndirectObjectWriter.WriteObjectDefinition(target, item, this);
+        return IndirectObjectWriter.WriteObjectDefinitionAsync(target, item, this);
     }
 
     public override ValueTask<FlushResult> Visit(PdfIndirectObject item) =>
-        IndirectObjectWriter.WriteObjectReference(target, item);
+        IndirectObjectWriter.WriteObjectReferenceAsync(target, item);
     public override ValueTask<FlushResult> Visit(PdfName item) =>
-        NameWriter.Write(target, item);
+        NameWriter.WriteAsync(target, item);
     public override ValueTask<FlushResult> Visit(PdfArray item) => 
-        ArrayWriter.Write(target, this, item.RawItems);
+        ArrayWriter.WriteAsync(target, this, item.RawItems);
     public override ValueTask<FlushResult> Visit(PdfDictionary item)
     {
         if (encryptor.BlockEncryption(item))
@@ -59,8 +62,9 @@ internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
     }
 
     public override ValueTask<FlushResult> Visit(PdfStream item) =>
-        StreamWriter.Write(target, this, item, CreateEncryptor());
-        
+        StreamWriter.WriteAsync(target, this, item, CreateEncryptor());
+#pragma warning restore Arch004
+
     private IObjectCryptContext CreateEncryptor() =>
         currentIndirectObject == null ? NullSecurityHandler.Instance : 
             encryptor.ContextForObject(currentIndirectObject.ObjectNumber, currentIndirectObject.GenerationNumber);

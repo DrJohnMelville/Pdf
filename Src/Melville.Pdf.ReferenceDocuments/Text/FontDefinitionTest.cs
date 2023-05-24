@@ -38,8 +38,8 @@ public abstract class FontDefinitionTest : Card3x5
 
     private async Task WriteString(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
     {
-        await csw.SetFont(font, FontSize);
+        await csw.SetFontAsync(font, FontSize);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);
-        await tr.ShowString(TextToRender);
+        await tr.ShowStringAsync(TextToRender);
     }
 }

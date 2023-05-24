@@ -49,7 +49,7 @@ public class DefaultCmyk: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpace(KnownNames.DeviceCMYK);
+        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceCMYK);
         DrawLine(csw);
         csw.SetStrokeColor(1, 0, 0, .25);
         DrawLine(csw);

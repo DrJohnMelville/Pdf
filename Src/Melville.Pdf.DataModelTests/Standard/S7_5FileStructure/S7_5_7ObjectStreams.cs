@@ -57,7 +57,7 @@ public class S7_5_7ObjectStreams
         var res = new IndirectObjectResolver();
         var pfo = new ParsingFileOwner(new MemoryStream(), NullPasswordSource.Instance, res);
 
-        await ObjectStreamIndirectObject.LoadObjectStream(pfo, os);
+        await ObjectStreamIndirectObject.LoadObjectStreamAsync(pfo, os);
 
     }
 
@@ -141,7 +141,7 @@ public class S7_5_7ObjectStreams
         var builder = new ObjectStreamBuilder();
         builder.TryAddRef(new PdfIndirectObject(1,0,PdfString.CreateAscii("One")));
         builder.TryAddRef(new PdfIndirectObject(2,0,PdfString.CreateAscii("Two")));
-        var str = (PdfStream)await builder.CreateStream(new DictionaryBuilder());
+        var str = (PdfStream)await builder.CreateStreamAsync(new DictionaryBuilder());
 
         var output = await str.GetIncludedObjectNumbersAsync();
         Assert.Equal(1, output[0].ObjectNumber);

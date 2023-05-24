@@ -32,7 +32,7 @@ public class LabColorSpace: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpace(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(50,50,50);
         DrawLine(csw);

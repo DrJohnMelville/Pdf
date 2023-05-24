@@ -22,7 +22,7 @@ internal class PdfCompositeObjectParserBase : IPdfObjectParser
 {
     public async Task<PdfObject> ParseAsync(IParsingReader source)
     {
-        await NextTokenFinder.SkipToNextToken(source.Reader).CA();
+        await NextTokenFinder.SkipToNextTokenAsync(source.Reader).CA();
         IPdfObjectParser parser;
         do
         {

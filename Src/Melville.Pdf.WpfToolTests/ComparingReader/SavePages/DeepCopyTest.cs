@@ -43,7 +43,7 @@ public class DeepCopyTest
 
     private async Task PassthroughCopy(PdfObject item)
     {
-        var copy = await sut.Clone(item);
+        var copy = await sut.CloneAsync(item);
         Assert.Same(item, copy);
     }
 
@@ -53,7 +53,7 @@ public class DeepCopyTest
         var datum = new PdfArray(1, 
             new PdfArray(2),
             new PdfIndirectObject(1,1,PdfBoolean.False));
-        var clone = await sut.Clone(datum);
+        var clone = await sut.CloneAsync(datum);
         await DeepAssertSame(datum, clone);
     }
     [Fact]
@@ -65,7 +65,7 @@ public class DeepCopyTest
                 .WithItem(KnownNames.All, KnownNames.W)
                 .AsDictionary())
             .AsDictionary();
-        var clone = await sut.Clone(datum);
+        var clone = await sut.CloneAsync(datum);
         await DeepAssertSame(datum, clone);
     }
     [Fact]
@@ -77,7 +77,7 @@ public class DeepCopyTest
                 .WithItem(KnownNames.All, KnownNames.W)
                 .AsDictionary())
             .AsStream("Hello World", StreamFormat.DiskRepresentation);
-        var clone = await sut.Clone(datum);
+        var clone = await sut.CloneAsync(datum);
         await DeepAssertSame(datum, clone);
     }
 

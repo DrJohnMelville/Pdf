@@ -22,28 +22,28 @@ internal class CryptSingleFilter: IApplySingleFilter
             
     }
 
-    public async ValueTask<Stream> Encode(Stream source, PdfObject filter, PdfObject parameter)
+    public async ValueTask<Stream> EncodeAsync(Stream source, PdfObject filter, PdfObject parameter)
     {
         return (filter == KnownNames.Crypt) ? 
-            (await ComputeCipher(parameter).CA()).Encrypt().CryptStream(source) : 
-            await innerFilter.Encode(source, filter, parameter).CA();
+            (await ComputeCipherAsync(parameter).CA()).Encrypt().CryptStream(source) : 
+            await innerFilter.EncodeAsync(source, filter, parameter).CA();
     }
 
-    private async ValueTask<ICipher> ComputeCipher(PdfObject parameter)
+    private async ValueTask<ICipher> ComputeCipherAsync(PdfObject parameter)
     {
-        var encryptionAlg = await EncryptionAlg(parameter).CA();
+        var encryptionAlg = await EncryptionAlgAsync(parameter).CA();
         var ret = encryptor.NamedCipher(encryptionAlg);
         return ret;
     }
 
-    public async ValueTask<Stream> Decode(Stream source, PdfObject filter, PdfObject parameter)
+    public async ValueTask<Stream> DecodeAsync(Stream source, PdfObject filter, PdfObject parameter)
     {
         return (filter == KnownNames.Crypt) ? 
-            streamDataSource.WrapStreamWithDecryptor(source, await EncryptionAlg(parameter).CA()) : 
-            await innerFilter.Decode(source, filter, parameter).CA();
+            streamDataSource.WrapStreamWithDecryptor(source, await EncryptionAlgAsync(parameter).CA()) : 
+            await innerFilter.DecodeAsync(source, filter, parameter).CA();
     }
 
-    public async ValueTask<PdfName> EncryptionAlg(PdfObject parameter) =>
+    public async ValueTask<PdfName> EncryptionAlgAsync(PdfObject parameter) =>
         (await parameter.DirectValueAsync().CA()) is PdfDictionary dict
             ? await dict.GetOrDefaultAsync(KnownNames.Name, KnownNames.Identity).CA()
             : KnownNames.Identity;

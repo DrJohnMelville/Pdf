@@ -63,7 +63,7 @@ public class HideOptionalImageOff: DisplayImageTest
     }
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        using (await csw.BeginMarkedRange(KnownNames.OC, NameDirectory.Get("OCLayer")))
+        using (await csw.BeginMarkedRangeAsync(KnownNames.OC, NameDirectory.Get("OCLayer")))
         {
             csw.MoveTo(0,0);
             csw.LineTo(300,300);

@@ -19,17 +19,17 @@ internal static class ObjectStreamOperations
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(this PdfStream stream)
     {
         await using var decoded = await stream.StreamContentAsync().CA();
-        return await GetIncludedObjectNumbers(stream, 
+        return await GetIncludedObjectNumbersAsync(stream, 
             new ByteSourceWithGlobalPosition(PipeReader.Create(decoded), 0)).CA();
     }
 
-    public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbers(
+    public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
         PdfStream stream, IByteSourceWithGlobalPosition reader) =>
-        await reader.GetIncludedObjectNumbers(
+        await reader.GetIncludedObjectNumbersAsync(
             (await stream.GetAsync<PdfNumber>(KnownNames.N).CA()).IntValue,
             (await stream.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue).CA();
 
-    private static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbers(
+    private static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbersAsync(
         this IByteSourceWithGlobalPosition reader, long count, long first)
     {
         var source = await reader.ReadAsync().CA();

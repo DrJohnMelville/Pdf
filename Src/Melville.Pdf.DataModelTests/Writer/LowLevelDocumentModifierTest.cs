@@ -43,7 +43,7 @@ public class LowLevelDocumentModifierTest
         var doc = await LoadedDocument(originalDoc);
         var sut = new LowLevelDocumentModifier(doc);
         modifications(doc, sut);
-        await sut.WriteModificationTrailer(target.Writer, offset);
+        await sut.WriteModificationTrailerAsync(target.Writer, offset);
         Assert.Equal(expected, target.Result());
     }
 

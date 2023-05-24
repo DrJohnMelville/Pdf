@@ -42,7 +42,7 @@ public class CalRgb: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpace(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(0.25,0,0);
         DrawLine(csw);

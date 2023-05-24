@@ -11,20 +11,20 @@ namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
 internal static class InlineImageParser
 {
-    public static async ValueTask<bool> ParseInlineImage(BufferFromPipe bfp, ContentStreamContext target)
+    public static async ValueTask<bool> ParseInlineImageAsync(BufferFromPipe bfp, ContentStreamContext target)
     {
         var dict = new DictionaryBuilder(await PdfParserParts.InlineImageDictionaryParser
             .ParseDictionaryItemsAsync(bfp.CreateParsingReader()).CA());
         SetTypeAsImage(dict);
         var endSearchStrategy = EndSearchStrategyFactory.Create(dict);
-        bfp = await bfp.Refresh().CA();
+        bfp = await bfp.RefreshAsync().CA();
         SequencePosition endPos;
         while (!(endSearchStrategy.SearchForEndSequence(bfp, out endPos)))
         {
-            bfp = await bfp.InvalidateAndRefresh().CA();
+            bfp = await bfp.InvalidateAndRefreshAsync().CA();
         }
 
-        await target.HandleInlineImage(dict.AsStream(GrabStreamContent(bfp, endPos))).CA();
+        await target.HandleInlineImageAsync(dict.AsStream(GrabStreamContent(bfp, endPos))).CA();
         return true;
     }
 

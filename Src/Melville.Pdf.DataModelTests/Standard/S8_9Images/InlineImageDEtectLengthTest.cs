@@ -12,7 +12,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 public class InlineImageDEtectLengthTest
 {
     private ValueTask<BufferFromPipe> CreateSearchItem(string input) =>
-        BufferFromPipe.Create(PipeReader.Create(new MemoryStream(input.AsExtendedAsciiBytes())));
+        BufferFromPipe.CreateAsync(PipeReader.Create(new MemoryStream(input.AsExtendedAsciiBytes())));
 
         private async Task<long> RunSearch(string item, EndSearchStrategy strategy)
     {
@@ -20,7 +20,7 @@ public class InlineImageDEtectLengthTest
         SequencePosition endPos;
         while (!strategy.SearchForEndSequence(src, out endPos))
         {
-            src = await src.InvalidateAndRefresh();
+            src = await src.InvalidateAndRefreshAsync();
         }
 
         var length = src.Buffer.Slice(src.Buffer.Start, endPos).Length;

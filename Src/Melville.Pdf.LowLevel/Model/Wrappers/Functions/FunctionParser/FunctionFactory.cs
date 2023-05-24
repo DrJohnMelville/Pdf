@@ -23,7 +23,7 @@ public static class FunctionFactory
         source switch
         {
             PdfDictionary dict => CreateFunctionAsync(dict),
-            PdfArray arr => FunctionFromArray(arr),
+            PdfArray arr => FunctionFromArrayAsync(arr),
             _=> throw new PdfParseException("Cannot parse function definition")
         };
     
@@ -36,10 +36,10 @@ public static class FunctionFactory
     public static async ValueTask<IPdfFunction> CreateFunctionAsync(this PdfDictionary source) =>
         (await source.GetAsync<PdfNumber>(KnownNames.FunctionType).CA()).IntValue switch
         {
-            0 => await SampledFunctionParser.Parse(AsStream(source)).CA(),
-            2 => await ExponentialFunctionParser.Parse(source).CA(),
-            3 => await StitchedFunctionParser.Parse(source).CA(),
-            4 => await PostscriptFunctionParser.Parse(AsStream(source)).CA(),
+            0 => await SampledFunctionParser.ParseAsync(AsStream(source)).CA(),
+            2 => await ExponentialFunctionParser.ParseAsync(source).CA(),
+            3 => await StitchedFunctionParser.ParseAsync(source).CA(),
+            4 => await PostscriptFunctionParser.ParseAsync(AsStream(source)).CA(),
             var type => throw new PdfParseException("Unknown function type: "+ type)
         };
 
@@ -47,23 +47,23 @@ public static class FunctionFactory
         pdfDictionary as PdfStream ??
         throw new PdfParseException("Type 0 or 4 functions must be a stream.");
     
-    private static ValueTask<IPdfFunction> FunctionFromArray(PdfArray arr) => arr.Count switch
+    private static ValueTask<IPdfFunction> FunctionFromArrayAsync(PdfArray arr) => arr.Count switch
         {
             0 => throw new PdfParseException("Array function must have at least one member"),
-            1 => ParseSingleFuncFromArray(arr, 0),
-            _ => CreateCompositeFunction(arr)
+            1 => ParseSingleFuncFromArrayAsync(arr, 0),
+            _ => CreateCompositeFunctionAsync(arr)
         };
 
-    private static async ValueTask<IPdfFunction> CreateCompositeFunction(PdfArray arr)
+    private static async ValueTask<IPdfFunction> CreateCompositeFunctionAsync(PdfArray arr)
     {
         IPdfFunction[] funcs = new IPdfFunction[arr.Count];
         for (int i = 0; i < funcs.Length; i++)
         {
-            funcs[i] = await ParseSingleFuncFromArray(arr, i).CA();
+            funcs[i] = await ParseSingleFuncFromArrayAsync(arr, i).CA();
         }
 
         return new CompositeFunction(funcs);
     }
-    private static async ValueTask<IPdfFunction> ParseSingleFuncFromArray(PdfArray arr, int item) => 
+    private static async ValueTask<IPdfFunction> ParseSingleFuncFromArrayAsync(PdfArray arr, int item) => 
         await CreateFunctionAsync(await arr[item].CA()).CA();
 }

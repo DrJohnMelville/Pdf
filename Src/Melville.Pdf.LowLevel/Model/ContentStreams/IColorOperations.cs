@@ -14,12 +14,12 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator CS
     /// </summary>
-    ValueTask SetStrokingColorSpace(PdfName colorSpace);
+    ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace);
 
     /// <summary>
     /// Content stream operator cs
     /// </summary>
-    ValueTask SetNonstrokingColorSpace(PdfName colorSpace);
+    ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace);
 
     /// <summary>
     /// Content stream operator SC

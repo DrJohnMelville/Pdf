@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Rename;
-using Document = Microsoft.CodeAnalysis.Document;
 
 namespace Melville.AsyncAnalyzer;
 
@@ -106,7 +105,7 @@ public static class RenameHelper
 
         var newSolution = await Renamer.RenameSymbolAsync(
             annotatedSolution, symbol, 
-            new SymbolRenameOptions(false, true, true, false), newName, cancellationToken).ConfigureAwait(false);
+            new SymbolRenameOptions(false, false, false, false), newName, cancellationToken).ConfigureAwait(false);
         return newSolution;
     }
 }

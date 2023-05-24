@@ -29,7 +29,7 @@ public class ReplViewModelTest
     [InlineData("BT 10 Ts ET", "BT\n    10 Ts\nET\n")]
     public async Task PrintIndentedContentStream(string source, string dest)
     {
-        Assert.Equal(dest, await ContentStreamPrettyPrinter.PrettyPrint(source));
+        Assert.Equal(dest, await ContentStreamPrettyPrinter.PrettyPrintAsync(source));
         
     }
 }

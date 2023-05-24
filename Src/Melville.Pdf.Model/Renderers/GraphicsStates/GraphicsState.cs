@@ -261,7 +261,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// <inheritdoc />
     public void SetTextLeading(double value) => TextLeading = value;
     /// <inheritdoc />
-    public ValueTask SetFont(PdfName font, double size)
+    public ValueTask SetFontAsync(PdfName font, double size)
     {
         FontSize = size;
         return ValueTask.CompletedTask;

@@ -28,21 +28,21 @@ public readonly partial struct DeepCopy
     /// </summary>
     /// <param name="itemValue">The item to clone</param>
     /// <returns>The clones item</returns>
-    public async ValueTask<PdfObject> Clone(PdfObject itemValue) => itemValue switch
+    public async ValueTask<PdfObject> CloneAsync(PdfObject itemValue) => itemValue switch
     {
-        PdfIndirectObject pio => await CloneIndirectObject(pio).CA(),
-        PdfArray pa => await DeepCloneArray(pa).CA(),
-        PdfStream ps => await CopyPdfStream(ps).CA(),
-        PdfDictionary pd => (await CopyPdfDictionary(pd).CA()).AsDictionary(),
+        PdfIndirectObject pio => await CloneIndirectObjectAsync(pio).CA(),
+        PdfArray pa => await DeepCloneArrayAsync(pa).CA(),
+        PdfStream ps => await CopyPdfStreamAsync(ps).CA(),
+        PdfDictionary pd => (await CopyPdfDictionaryAsync(pd).CA()).AsDictionary(),
         _ => itemValue
     };
 
-    private async ValueTask<PdfObject> CloneIndirectObject(PdfIndirectObject pio)
+    private async ValueTask<PdfObject> CloneIndirectObjectAsync(PdfIndirectObject pio)
     {
         if (buffer.TryGetValue((pio.GenerationNumber, pio.ObjectNumber), out var item)) return item;
         var newPio = creator.AddPromisedObject();
         ReserveIndirectMapping(pio, newPio);
-        ((PromisedIndirectObject)newPio).SetValue(await Clone(await pio.DirectValueAsync().CA()).CA());
+        ((PromisedIndirectObject)newPio).SetValue(await CloneAsync(await pio.DirectValueAsync().CA()).CA());
         return newPio;
     }
 
@@ -56,26 +56,26 @@ public readonly partial struct DeepCopy
         buffer.Add((pio.GenerationNumber, pio.ObjectNumber), promise);
     }
     
-    private async Task<PdfStream> CopyPdfStream(PdfStream ps) =>
-        (await CopyPdfDictionary(ps).CA()).AsStream(
+    private async Task<PdfStream> CopyPdfStreamAsync(PdfStream ps) =>
+        (await CopyPdfDictionaryAsync(ps).CA()).AsStream(
             await ps.StreamContentAsync(StreamFormat.DiskRepresentation).CA(), StreamFormat.DiskRepresentation);
 
-    private async ValueTask<DictionaryBuilder> CopyPdfDictionary(PdfDictionary dict)
+    private async ValueTask<DictionaryBuilder> CopyPdfDictionaryAsync(PdfDictionary dict)
     {
         var ret = new DictionaryBuilder();
         foreach (var item in dict.RawItems)
         {
-            ret.WithItem(item.Key, await Clone(item.Value).CA());
+            ret.WithItem(item.Key, await CloneAsync(item.Value).CA());
         }
         return ret;
     }
 
-    private async ValueTask<PdfObject> DeepCloneArray(PdfArray pa)
+    private async ValueTask<PdfObject> DeepCloneArrayAsync(PdfArray pa)
     {
         var target = new PdfObject[pa.Count];
         for (int i = 0; i < pa.Count; i++)
         {
-            target[i] = await Clone(pa.RawItems[i]).CA();
+            target[i] = await CloneAsync(pa.RawItems[i]).CA();
         }
         return new PdfArray(target);
     }

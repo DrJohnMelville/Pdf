@@ -32,26 +32,26 @@ public readonly struct ContentStreamParser
     /// </summary>
     /// <param name="source">The content stream to parse.</param>
     /// <returns>A valuetask representing this operation.</returns>
-    public async ValueTask Parse(PipeReader source)
+    public async ValueTask ParseAsync(PipeReader source)
     {
         bool done;
         do
         {
-            var bfp = await BufferFromPipe.Create(source).CA();
-            done = (! await ParseReadResult(bfp).CA()) && bfp.Done;
+            var bfp = await BufferFromPipe.CreateAsync(source).CA();
+            done = (! await ParseReadResultAsync(bfp).CA()) && bfp.Done;
             
         }while (!done);
     }
 
-    private async ValueTask<bool> ParseReadResult(BufferFromPipe bfp)
+    private async ValueTask<bool> ParseReadResultAsync(BufferFromPipe bfp)
     {
-        if (await ParseReader(bfp).CA()) return true;
+        if (await ParseReaderAsync(bfp).CA()) return true;
         bfp.NeedMoreBytes();
         return false;
     }
 
     
-    private ValueTask<bool> ParseReader(in BufferFromPipe bfp)
+    private ValueTask<bool> ParseReaderAsync(in BufferFromPipe bfp)
     {
         var reader = bfp.CreateReader();
         if (!SkipWhiteSpaceAndBrackets(ref reader)) return ValueTask.FromResult(false);
@@ -62,13 +62,13 @@ public readonly struct ContentStreamParser
                 ValueTask.FromResult(ParseNumber(bfp.WithStartingPosition(reader.Position))),
             '/' => ValueTask.FromResult(ParseName(bfp.WithStartingPosition(reader.Position))),
             '(' => ValueTask.FromResult(ParseSyntaxString(bfp.WithStartingPosition(reader.Position))),
-            '<' => HandleInitialOpenWakka(bfp.WithStartingPosition(reader.Position)),
-            '%' => SkipComment(bfp.WithStartingPosition(reader.Position)),
-            _ => ParseOperator(bfp.WithStartingPosition(reader.Position))
+            '<' => HandleInitialOpenWakkaAsync(bfp.WithStartingPosition(reader.Position)),
+            '%' => SkipCommentAsync(bfp.WithStartingPosition(reader.Position)),
+            _ => ParseOperatorAsync(bfp.WithStartingPosition(reader.Position))
         };
     }
 
-    private ValueTask<bool> SkipComment(BufferFromPipe bfp)
+    private ValueTask<bool> SkipCommentAsync(BufferFromPipe bfp)
     {
         var reader = bfp.CreateReader();
         return new (bfp.ConsumeIfSucceeded(reader.TryAdvanceToAny(endOfLineMarkers, true), ref reader));
@@ -83,16 +83,16 @@ public readonly struct ContentStreamParser
             ref reader);
     }
 
-    private ValueTask<bool> HandleInitialOpenWakka(in BufferFromPipe bpc)
+    private ValueTask<bool> HandleInitialOpenWakkaAsync(in BufferFromPipe bpc)
     {
         var reader = bpc.CreateReader();
         if (!reader.TryPeek(1, out var b2)) return ValueTask.FromResult(false);
         return b2 == (byte)'<'?
-            TryParseDictionary(bpc): 
-            ParseHexString(bpc);
+            TryParseDictionaryAsync(bpc): 
+            ParseHexStringAsync(bpc);
     }
 
-    private ValueTask<bool> ParseHexString(BufferFromPipe bpc)
+    private ValueTask<bool> ParseHexStringAsync(BufferFromPipe bpc)
     {
         var reader = bpc.CreateReader();
         return ValueTask.FromResult(bpc.ConsumeIfSucceeded(
@@ -137,7 +137,7 @@ public readonly struct ContentStreamParser
         return true;
     }
 
-    private ValueTask<bool> ParseOperator(BufferFromPipe bfp)
+    private ValueTask<bool> ParseOperatorAsync(BufferFromPipe bfp)
     {
         var reader = bfp.CreateReader();
         uint opCode = 0;
@@ -146,11 +146,11 @@ public readonly struct ContentStreamParser
             switch (reader.TryPeek(out var character), CharClassifier.Classify(character), bfp.Done, opCode)
             {
                 case (true, _, _, (int)ContentStreamOperatorValue.BI):
-                    return InlineImageParser.ParseInlineImage(bfp, target);
+                    return InlineImageParser.ParseInlineImageAsync(bfp, target);
                 case (false,_, true, not 0):
                 case (true, not CharacterClass.Regular, _, _):    
                     bfp.Consume(reader.Position);
-                    return RunOpcode(opCode);
+                    return RunOpcodeAsync(opCode);
                 case (false, _, _, _):
                     bfp.NeedMoreBytes();
                     return ValueTask.FromResult(false);
@@ -161,15 +161,15 @@ public readonly struct ContentStreamParser
         }
     }
     
-    private async ValueTask<bool> RunOpcode(uint opCode)
+    private async ValueTask<bool> RunOpcodeAsync(uint opCode)
     {
-        await HandleOpCode(opCode).CA();
+        await HandleOpCodeAsync(opCode).CA();
         return true;
     }
 
-    private ValueTask HandleOpCode(uint opCode) => target.HandleOpCode((ContentStreamOperatorValue)opCode);
+    private ValueTask HandleOpCodeAsync(uint opCode) => target.HandleOpCodeAsync((ContentStreamOperatorValue)opCode);
     
-    private async ValueTask<bool> TryParseDictionary(BufferFromPipe bfp)
+    private async ValueTask<bool> TryParseDictionaryAsync(BufferFromPipe bfp)
     {
         var dict = await PdfParserParts.EmbeddedDictionaryParser.ParseAsync(bfp.CreateParsingReader()).CA();
         target.HandleDictionary(dict);

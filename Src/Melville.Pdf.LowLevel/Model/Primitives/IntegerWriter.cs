@@ -6,7 +6,7 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 
 internal static class IntegerWriter
 {
-    public static ValueTask<FlushResult> WriteAndFlush(PipeWriter target, long item)
+    public static ValueTask<FlushResult> WriteAndFlushAsync(PipeWriter target, long item)
     {
         var buffer = target.GetSpan(12);
         target.Advance(Write(buffer, item));

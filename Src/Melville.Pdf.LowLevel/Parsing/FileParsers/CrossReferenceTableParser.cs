@@ -20,7 +20,7 @@ internal class CrossReferenceTableParser
         this.source = source;
     }
 
-    public async Task Parse()
+    public async Task ParseAsync()
     {
         while (!ParseNextLine(await source.Reader.ReadAsync().CA()))
         {

@@ -16,7 +16,7 @@ internal readonly partial struct EncryptionParameters
     [FromConstructor]public int KeyLengthInBits {get;}
     public int KeyLengthInBytes => KeyLengthInBits / 8;
     
-    public static async ValueTask<EncryptionParameters> Create(PdfDictionary trailer) =>
+    public static async ValueTask<EncryptionParameters> CreateAsync(PdfDictionary trailer) =>
         (await trailer.GetOrNullAsync(KnownNames.ID).CA() is not PdfArray id ||
          await id[0].CA() is not PdfString firstId ||
          await trailer.GetOrNullAsync(KnownNames.Encrypt).CA() is not PdfDictionary dict ||

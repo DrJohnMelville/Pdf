@@ -150,7 +150,7 @@ public readonly struct SampledFunctionBuilder
         return outputs.All(i => i.DecodeTrivial());
     }
 
-    private async ValueTask<MultiBufferStream> SamplesStream()
+    private async ValueTask<MultiBufferStream> SamplesStreamAsync()
     {
         var ret = new MultiBufferStream();
         var bitWriter = new BitStreamWriter(ret, bitsPerSample);
@@ -200,14 +200,14 @@ public readonly struct SampledFunctionBuilder
     /// Build the resulting function.
     /// </summary>
     /// <returns>The resulting function, as a PDF stream</returns>
-    public ValueTask<PdfStream> CreateSampledFunction() =>
-        CreateSampledFunction(new DictionaryBuilder());
+    public ValueTask<PdfStream> CreateSampledFunctionAsync() =>
+        CreateSampledFunctionAsync(new DictionaryBuilder());
 
     /// <summary>
     /// Build the resulting function.
     /// </summary>
     /// <param name="members">The DictionaryBuilder which should be used to build the function</param>
     /// <returns>The resulting function, as a PDF stream</returns>
-    public async ValueTask<PdfStream> CreateSampledFunction(DictionaryBuilder members) =>
-        DictionaryEntries(members).AsStream(await SamplesStream().CA());
+    public async ValueTask<PdfStream> CreateSampledFunctionAsync(DictionaryBuilder members) =>
+        DictionaryEntries(members).AsStream(await SamplesStreamAsync().CA());
 }

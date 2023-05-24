@@ -34,10 +34,10 @@ internal class PdfDictionaryParser : IPdfObjectParser
         //This has to succeed because the prior parser looked at the prefix to get here.
         source.Reader.AdvanceTo(reader.Buffer.GetPosition(2));
 
-        return await ParseItemRecursive(source, 0).CA();
+        return await ParseItemRecursiveAsync(source, 0).CA();
     }
 
-    private async ValueTask<KeyValuePair<PdfName, PdfObject>[]> ParseItemRecursive(IParsingReader source, int position)
+    private async ValueTask<KeyValuePair<PdfName, PdfObject>[]> ParseItemRecursiveAsync(IParsingReader source, int position)
     {
         var key = await nameParser.ParseAsync(source).CA();
         if (key == PdfTokenValues.DictionaryTerminator)
@@ -48,9 +48,9 @@ internal class PdfDictionaryParser : IPdfObjectParser
         var item = await valueParser.ParseAsync(source).CA();
 
         if (ShouldSkipNullValuedItem(item)) 
-            return await ParseItemRecursive(source, position).CA();
+            return await ParseItemRecursiveAsync(source, position).CA();
 
-        return AddItemToFinalArray(await ParseItemRecursive(source, position + 1).CA(), position, item, key);
+        return AddItemToFinalArray(await ParseItemRecursiveAsync(source, position + 1).CA(), position, item, key);
     }
 
     private static KeyValuePair<PdfName, PdfObject>[] AddItemToFinalArray(

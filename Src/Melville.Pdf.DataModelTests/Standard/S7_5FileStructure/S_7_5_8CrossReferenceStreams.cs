@@ -46,7 +46,7 @@ public class S_7_5_8CrossReferenceStreams
         
         var target = new Mock<IIndirectObjectRegistry>();
 
-        await CrossReferenceStreamParser.ReadXrefStreamData(target.Object, xs);
+        await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
         
         target.Verify(i=>i.RegisterDeletedBlock(10, 2, 1));
         target.VerifyNoOtherCalls();
@@ -68,7 +68,7 @@ public class S_7_5_8CrossReferenceStreams
         
         var target = new Mock<IIndirectObjectRegistry>();
 
-        await CrossReferenceStreamParser.ReadXrefStreamData(target.Object, xs);
+        await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
         
         target.Verify(i=>i.RegisterIndirectBlock(10, 2, 1));
         target.VerifyNoOtherCalls();
@@ -82,7 +82,7 @@ public class S_7_5_8CrossReferenceStreams
         
         var target = new Mock<IIndirectObjectRegistry>();
 
-        await CrossReferenceStreamParser.ReadXrefStreamData(target.Object, xs);
+        await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
         
         target.Verify(i=>i.RegisterObjectStreamBlock(10, 1, 2));
         target.VerifyNoOtherCalls();
@@ -96,7 +96,7 @@ public class S_7_5_8CrossReferenceStreams
         
         var target = new Mock<IIndirectObjectRegistry>();
 
-        await CrossReferenceStreamParser.ReadXrefStreamData(target.Object, xs);
+        await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
         
         target.Verify(i=>i.RegisterIndirectBlock(10, 2, 1));
         target.Verify(i=>i.RegisterIndirectBlock(11, 21, 110));
@@ -112,7 +112,7 @@ public class S_7_5_8CrossReferenceStreams
         
         var target = new Mock<IIndirectObjectRegistry>();
 
-        await CrossReferenceStreamParser.ReadXrefStreamData(target.Object, xs);
+        await CrossReferenceStreamParser.ReadXrefStreamDataAsync(target.Object, xs);
         
         target.Verify(i=>i.RegisterIndirectBlock(10, 2, 1));
         target.Verify(i=>i.RegisterIndirectBlock(11, 21, 110));

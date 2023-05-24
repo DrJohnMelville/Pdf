@@ -84,7 +84,7 @@ public interface IStateChangingOperations
     /// <summary>
     /// Content stream operator font fontSize Tf
     /// </summary>
-    ValueTask SetFont(PdfName font, double size);
+    ValueTask SetFontAsync(PdfName font, double size);
 
     /// <summary>
     /// Context stream textRendering Tr

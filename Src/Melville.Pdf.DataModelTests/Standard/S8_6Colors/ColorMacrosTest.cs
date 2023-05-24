@@ -36,9 +36,9 @@ public class ColorMacrosTest
     [Fact]
     public async Task SetToDeviceGray()
     {
-        await sut.SetStrokingColorSpace(ColorSpaceName.DeviceRGB);
+        await sut.SetStrokingColorSpaceAsync(ColorSpaceName.DeviceRGB);
         sut.SetStrokeColor(0.75, 1, 1);
-        await sut.SetStrokingColorSpace(ColorSpaceName.DeviceGray);
+        await sut.SetStrokingColorSpaceAsync(ColorSpaceName.DeviceGray);
         Assert.Equal(DeviceColor.FromDoubles(0,0,0), state.StronglyTypedCurrentState().StrokeColor);
         Assert.Equal(DeviceGray.Instance, state.StronglyTypedCurrentState().StrokeColorSpace);
         
@@ -50,7 +50,7 @@ public class ColorMacrosTest
     public async Task SetToDeviceRgb()
     {
         sut.SetStrokeColor(0.75);
-        await sut.SetStrokingColorSpace(ColorSpaceName.DeviceRGB);
+        await sut.SetStrokingColorSpaceAsync(ColorSpaceName.DeviceRGB);
         Assert.Equal(DeviceColor.FromDoubles(0,0,0), state.StronglyTypedCurrentState().StrokeColor);
         Assert.Equal(DeviceRgb.Instance, state.StronglyTypedCurrentState().StrokeColorSpace);
         
@@ -61,7 +61,7 @@ public class ColorMacrosTest
     public async Task SetNonStrokeColor()
     {
         sut.SetNonstrokingColor(0.75);
-        await sut.SetNonstrokingColorSpace(ColorSpaceName.DeviceRGB);
+        await sut.SetNonstrokingColorSpaceAsync(ColorSpaceName.DeviceRGB);
         Assert.Equal(DeviceColor.FromDoubles(0,0,0), state.StronglyTypedCurrentState().NonstrokeColor);
         Assert.Equal(DeviceRgb.Instance, state.StronglyTypedCurrentState().NonstrokeColorSpace);
         
@@ -71,15 +71,15 @@ public class ColorMacrosTest
     [Fact]
     public async Task SetStrokeColorExtended()
     {
-        await sut.SetStrokingColorSpace(ColorSpaceName.DeviceRGB);
-        await sut.SetStrokeColorExtended(null, 0.5, 0.6, 0.7);
+        await sut.SetStrokingColorSpaceAsync(ColorSpaceName.DeviceRGB);
+        await sut.SetStrokeColorExtendedAsync(null, 0.5, 0.6, 0.7);
         Assert.Equal(DeviceColor.FromDoubles(0.5,0.6,0.7), state.StronglyTypedCurrentState().StrokeColor);
     }
     [Fact]
     public async Task SetNonStrokeColorExtended()
     {
-        await sut.SetNonstrokingColorSpace(ColorSpaceName.DeviceRGB);
-        await sut.SetNonstrokingColorExtended(null, 0.5, 0.6, 0.7);
+        await sut.SetNonstrokingColorSpaceAsync(ColorSpaceName.DeviceRGB);
+        await sut.SetNonstrokingColorExtendedAsync(null, 0.5, 0.6, 0.7);
         Assert.Equal(DeviceColor.FromDoubles(0.5,0.6,0.7), state.StronglyTypedCurrentState().NonstrokeColor);
     }
 

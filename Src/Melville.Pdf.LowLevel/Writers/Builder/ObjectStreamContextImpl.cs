@@ -23,7 +23,7 @@ internal partial class PdfObjectRegistry
             parent.objectStreamBuilder = null;
             if (capturedBuilder.HasValues())
             {
-                parent.AddDelayedObject(() => capturedBuilder.CreateStream(dictionaryBuilder));
+                parent.AddDelayedObject(() => capturedBuilder.CreateStreamAsync(dictionaryBuilder));
             }
         }
     }

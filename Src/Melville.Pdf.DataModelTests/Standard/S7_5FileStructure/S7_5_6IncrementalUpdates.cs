@@ -26,7 +26,7 @@ public class S7_5_6IncrementalUpdates
         var ld = await pdfLowLevelReader.ReadFromAsync(stream);
         var modifier = ld.Modify();
         await modify(ld, modifier);
-        await modifier.WriteModificationTrailer(stream);
+        await modifier.WriteModificationTrailerAsync(stream);
             
         return await pdfLowLevelReader.ReadFromAsync(stream);
     }

@@ -28,7 +28,7 @@ public readonly partial struct PageExtractor
         {
             if (item.Key.GetHashCode() is KnownNameKeys.Contents or KnownNameKeys.Parent) continue;
             targetPage.AddMetadata(item.Key,
-                await copier.Clone(item.Value));
+                await copier.CloneAsync(item.Value));
         }
 
         targetPage.AddToContentStream(new DictionaryBuilder(), contentData);

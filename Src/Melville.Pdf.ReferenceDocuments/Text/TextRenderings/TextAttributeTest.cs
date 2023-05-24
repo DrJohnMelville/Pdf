@@ -21,12 +21,12 @@ public abstract class TextAttributeTest : Card3x5
         using (var tr = csw.StartTextBlock())
         {
             await csw.SetStrokeRGBAsync(1.0, 0.0, 0.0);
-            await csw.SetFont(fontName, 70);
+            await csw.SetFontAsync(fontName, 70);
             tr.SetTextMatrix(1, 0, 0, 1, 30, 25);
-            await tr.ShowString("Is Text");
+            await tr.ShowStringAsync("Is Text");
             SetTestedParameter(csw);
             tr.SetTextMatrix(1, 0, 0, 1, 30, 125);
-            await tr.ShowString("Is Text");
+            await tr.ShowStringAsync("Is Text");
         }
     }
 

@@ -22,7 +22,7 @@ public static class TestParser
 
     internal static async Task<PdfObject> ParseObjectAsync(this ParsingFileOwner source, long position = 0)
     {
-        var reader = await source.RentReader(position);
+        var reader = await source.RentReaderAsync(position);
         return await PdfParserParts.Composite.ParseAsync(reader);
     }
 
@@ -35,7 +35,7 @@ public static class TestParser
             indirectObjectResolver?? new IndirectObjectResolver());
         
     public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) =>
-        RandomAccessFileParser.Parse(str.AsParsingSource(), sizeHint);
+        RandomAccessFileParser.ParseAsync(str.AsParsingSource(), sizeHint);
     
     public static ValueTask<PdfLoadedLowLevelDocument> ParseWithPassword(
         this string str, string password, PasswordType type) =>

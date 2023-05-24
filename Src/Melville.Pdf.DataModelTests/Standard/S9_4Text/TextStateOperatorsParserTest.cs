@@ -43,6 +43,6 @@ public class TextStateOperatorsParserTest : ParserTest
 
     [Fact]
     public Task SetFontTest() =>
-        TestInput("/Helvetica 12 Tf", i => i.SetFont(BuiltInFontName.Helvetica, 12));
+        TestInput("/Helvetica 12 Tf", i => i.SetFontAsync(BuiltInFontName.Helvetica, 12));
 
 }

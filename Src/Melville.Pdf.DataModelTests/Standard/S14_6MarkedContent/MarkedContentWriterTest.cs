@@ -50,7 +50,7 @@ public class MarkedContentWriterTest: WriterTest
     [Fact]
     public async Task NamedMarkRangeWithDictName()
     {
-        using (await sut.BeginMarkedRange("M2", KnownNames.All))
+        using (await sut.BeginMarkedRangeAsync("M2", KnownNames.All))
         {
             sut.MarkedContentPoint("M1");
         }
@@ -60,7 +60,7 @@ public class MarkedContentWriterTest: WriterTest
     [Fact]
     public async Task NamedMarkRangeWithInlineDict()
     {
-        using (await sut.BeginMarkedRange("M2", new DictionaryBuilder()
+        using (await sut.BeginMarkedRangeAsync("M2", new DictionaryBuilder()
                    .WithItem(KnownNames.Type, KnownNames.Type)
                    .AsDictionary()))
         {

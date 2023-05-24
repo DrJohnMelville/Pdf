@@ -35,10 +35,10 @@ public abstract class DisplayCharSet : Card3x5
         {
             tr.SetTextMatrix(1, 0, 0, 1, 30, 224);
             csw.SetTextLeading(12);
-            await csw.SetFont(fontName, 12);
+            await csw.SetFontAsync(fontName, 12);
             for (int i = 0; i < 16; i++)
             {
-                await tr.MoveToNextLineAndShowString(Enumerable.Range(0, 16).Select(j => (byte)(16 * i + j)).ToArray());
+                await tr.MoveToNextLineAndShowStringAsync(Enumerable.Range(0, 16).Select(j => (byte)(16 * i + j)).ToArray());
             }
         }
     }

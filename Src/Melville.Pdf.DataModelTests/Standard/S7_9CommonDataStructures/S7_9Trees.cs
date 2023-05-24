@@ -98,7 +98,7 @@ public class S7_9Trees
     public async Task IndexerTest(int key, int value)
     {
         var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
-        Assert.Equal(value, ((PdfInteger)await tree.Search(key)).IntValue);
+        Assert.Equal(value, ((PdfInteger)await tree.SearchAsync(key)).IntValue);
     }
 
     [Theory]
@@ -110,7 +110,7 @@ public class S7_9Trees
     public Task SearchFails(double key)
     {
         var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
-        return Assert.ThrowsAsync<PdfParseException>(()=> tree.Search(key).AsTask());
+        return Assert.ThrowsAsync<PdfParseException>(()=> tree.SearchAsync(key).AsTask());
     }
 
     [Fact]

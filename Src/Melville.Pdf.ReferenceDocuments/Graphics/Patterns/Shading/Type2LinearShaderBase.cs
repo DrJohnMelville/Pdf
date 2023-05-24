@@ -25,7 +25,7 @@ public abstract class Type2LinearShaderBase : PatternDisplayClass
         fbuilder.AddOutput(x => x, new ClosedInterval(0, 1));
         fbuilder.AddOutput(x => x*0, new ClosedInterval(0, 1));
         fbuilder.AddOutput(x => 1 - x, new ClosedInterval(0, 1));
-        return await fbuilder.CreateSampledFunction();
+        return await fbuilder.CreateSampledFunctionAsync();
     }
 
     protected override PdfObject CreatePattern(IPdfObjectRegistry arg) =>

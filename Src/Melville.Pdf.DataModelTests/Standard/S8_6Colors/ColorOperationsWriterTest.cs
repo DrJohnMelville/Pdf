@@ -10,13 +10,13 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetColorSpace()
     {
-        await sut.SetStrokingColorSpace("JdmColor");
+        await sut.SetStrokingColorSpaceAsync("JdmColor");
         Assert.Equal("/JdmColor CS\n", await WrittenText());
     }
     [Fact]
     public async Task SetNonStrokingColorSpace()
     {
-        await sut.SetNonstrokingColorSpace("JdmColor");
+        await sut.SetNonstrokingColorSpaceAsync("JdmColor");
         Assert.Equal("/JdmColor cs\n", await WrittenText());
     }
 
@@ -35,25 +35,25 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetStrokeColor1Extended()
     {
-        await sut.SetStrokeColorExtended(1);
+        await sut.SetStrokeColorExtendedAsync(1);
         Assert.Equal("1 SCN\n", await WrittenText());
     }
     [Fact]
     public async Task SetStrokeColor4Extended()
     {
-        await sut.SetStrokeColorExtended(1, 2, 3, 4);
+        await sut.SetStrokeColorExtendedAsync(1, 2, 3, 4);
         Assert.Equal("1 2 3 4 SCN\n", await WrittenText());
     }
     [Fact]
     public async Task SetStrokeColor1ExtendedPattern()
     {
-        await sut.SetStrokeColorExtended("pat", 1);
+        await sut.SetStrokeColorExtendedAsync("pat", 1);
         Assert.Equal("1 /pat SCN\n", await WrittenText());
     }
     [Fact]
     public async Task SetStrokeColor4ExtendedPattern()
     {
-        await sut.SetStrokeColorExtended("pat", 1, 2, 3, 4);
+        await sut.SetStrokeColorExtendedAsync("pat", 1, 2, 3, 4);
         Assert.Equal("1 2 3 4 /pat SCN\n", await WrittenText());
     }
 
@@ -72,25 +72,25 @@ public class ColorOperationsWriterTest: WriterTest
     [Fact]
     public async Task SetNonstrokingColor1Extended()
     {
-        await sut.SetNonstrokingColorExtended(1);
+        await sut.SetNonstrokingColorExtendedAsync(1);
         Assert.Equal("1 scn\n", await WrittenText());
     }
     [Fact]
     public async Task SetNonstrokingColor4Extended()
     {
-        await sut.SetNonstrokingColorExtended(1, 2, 3, 4);
+        await sut.SetNonstrokingColorExtendedAsync(1, 2, 3, 4);
         Assert.Equal("1 2 3 4 scn\n", await WrittenText());
     }
     [Fact]
     public async Task SetNonstrokingColor1ExtendedPattern()
     {
-        await sut.SetNonstrokingColorExtended("pat", 1);
+        await sut.SetNonstrokingColorExtendedAsync("pat", 1);
         Assert.Equal("1 /pat scn\n", await WrittenText());
     }
     [Fact]
     public async Task SetNonstrokingColor4ExtendedPattern()
     {
-        await sut.SetNonstrokingColorExtended("pat", 1, 2, 3, 4);
+        await sut.SetNonstrokingColorExtendedAsync("pat", 1, 2, 3, 4);
         Assert.Equal("1 2 3 4 /pat scn\n", await WrittenText());
     }
 

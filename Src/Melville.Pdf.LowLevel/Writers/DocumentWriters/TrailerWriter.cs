@@ -13,15 +13,15 @@ internal static class TrailerWriter
     private static ReadOnlySpan<byte> TrailerTag => "trailer\n"u8;
     private static ReadOnlySpan<byte> StartXrefTag => "\nstartxref\n"u8;
     private static ReadOnlySpan<byte>  EofTag => "\n%%EOF"u8;
-    public static async Task WriteTrailerWithDictionary(
+    public static async Task WriteTrailerWithDictionaryAsync(
         PipeWriter target, PdfDictionary dictionary, long xRefStart)
     {
         target.WriteBytes(TrailerTag);
         await dictionary.Visit(new PdfObjectWriter(target)).CA();
-        await WriteTerminalStartXrefAndEof(target, xRefStart).CA();
+        await WriteTerminalStartXrefAndEofAsync(target, xRefStart).CA();
     }
 
-    public static ValueTask<FlushResult> WriteTerminalStartXrefAndEof(PipeWriter target, long xRefStart)
+    public static ValueTask<FlushResult> WriteTerminalStartXrefAndEofAsync(PipeWriter target, long xRefStart)
     {
         target.WriteBytes(StartXrefTag);
         IntegerWriter.Write(target, xRefStart);

@@ -48,8 +48,8 @@ public class LowLevelDocumentWriter
     public async Task WriteAsync()
     {
             
-        var objectOffsets = await WriteHeaderAndObjects().CA();
-        await WriteReferencesAndTrailer(objectOffsets, target.BytesWritten).CA();
+        var objectOffsets = await WriteHeaderAndObjectsAsync().CA();
+        await WriteReferencesAndTrailerAsync(objectOffsets, target.BytesWritten).CA();
     }
 
     /// <summary>
@@ -66,34 +66,34 @@ public class LowLevelDocumentWriter
     /// <param name="objectOffsets">The table of object locations</param>
     /// <param name="xRefStart">Location within the stream of the current position</param>
     /// <returns></returns>
-    private protected virtual async Task WriteReferencesAndTrailer(XRefTable objectOffsets, long xRefStart)
+    private protected virtual async Task WriteReferencesAndTrailerAsync(XRefTable objectOffsets, long xRefStart)
     {
-        await NewXrefTableWriter.WriteXrefsForNewFile(Target, objectOffsets).CA();
-        await TrailerWriter.WriteTrailerWithDictionary(Target, document.TrailerDictionary, xRefStart).CA();
+        await NewXrefTableWriter.WriteXrefsForNewFileAsync(Target, objectOffsets).CA();
+        await TrailerWriter.WriteTrailerWithDictionaryAsync(Target, document.TrailerDictionary, xRefStart).CA();
     }
 
-    private async Task<XRefTable> WriteHeaderAndObjects()
+    private async Task<XRefTable> WriteHeaderAndObjectsAsync()
     {
         HeaderWriter.WriteHeader(Target, document.MajorVersion, document.MinorVersion);
-        return await WriteObjectList(document).CA();
+        return await WriteObjectListAsync(document).CA();
     }
 
-    private async Task<XRefTable> WriteObjectList(PdfLowLevelDocument document)
+    private async Task<XRefTable> WriteObjectListAsync(PdfLowLevelDocument document)
     {
         var positions= CreateIndexArray(document);
         var objectWriter = new PdfObjectWriter(Target,
-            await TrailerToDocumentCryptContext.CreateCryptContext(
+            await TrailerToDocumentCryptContext.CreateCryptContextAsync(
                 document.TrailerDictionary, userPassword).CA());
         foreach (var item in document.Objects.Values)
         {
             positions.DeclareIndirectObject(item.ObjectNumber, target.BytesWritten);
-            await DeclareContainedObjects(item, positions).CA();
+            await DeclareContainedObjectsAsync(item, positions).CA();
             await objectWriter.VisitTopLevelObject(item).CA();
         }
         return positions;
     }
 
-    private static async Task DeclareContainedObjects(PdfIndirectObject item, XRefTable positions)
+    private static async Task DeclareContainedObjectsAsync(PdfIndirectObject item, XRefTable positions)
     {
         if (await item.DirectValueAsync().CA() is IHasInternalIndirectObjects hiid)
         {

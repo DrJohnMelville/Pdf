@@ -33,11 +33,11 @@ internal sealed class FlateEncodeWrapper: DefaultBaseStream
         adler = new ReadAdlerStream(source);
         reverser = new Pipe();
         deflator = new DeflateStream(reverser.Writer.AsStream(), CompressionLevel.Optimal);
-        InitiateCopyProcess();
+        InitiateCopyProcessAsync();
         compressedSource = reverser.Reader.AsStream();
     }
 
-    private async void InitiateCopyProcess()
+    private async void InitiateCopyProcessAsync()
     {
         await adler.CopyToAsync(deflator).CA();
         await deflator.DisposeAsync().CA();
@@ -59,21 +59,21 @@ internal sealed class FlateEncodeWrapper: DefaultBaseStream
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken()) =>
         state switch
         {
-            State.WritePrefix => await TryWritePrefix(buffer, cancellationToken).CA(),
-            State.CopyBytes => await CopyBytes(buffer, cancellationToken).CA(),
-            State.WriteTrailer => await WriteTrailer(buffer).CA(),
+            State.WritePrefix => await TryWritePrefixAsync(buffer, cancellationToken).CA(),
+            State.CopyBytes => await CopyBytesAsync(buffer, cancellationToken).CA(),
+            State.WriteTrailer => await WriteTrailerAsync(buffer).CA(),
             State.Done => 0,
             _ => throw new ArgumentOutOfRangeException()
         };
 
-    private ValueTask<int> WriteTrailer(Memory<byte> buffer)
+    private ValueTask<int> WriteTrailerAsync(Memory<byte> buffer)
     {
         adler.Computer.CopyHashToBigEndianSpan(buffer.Span);
         state = State.Done;
         return new ValueTask<int>(4);
     }
 
-    private async ValueTask<int> CopyBytes(Memory<byte> buffer, CancellationToken cancellationToken)
+    private async ValueTask<int> CopyBytesAsync(Memory<byte> buffer, CancellationToken cancellationToken)
     {
         var ret = await compressedSource.ReadAsync(buffer).CA();
         if (ret == 0)
@@ -85,7 +85,7 @@ internal sealed class FlateEncodeWrapper: DefaultBaseStream
         return ret;
     }
 
-    private async ValueTask<int> TryWritePrefix(Memory<byte> destination, CancellationToken cancellationToken)
+    private async ValueTask<int> TryWritePrefixAsync(Memory<byte> destination, CancellationToken cancellationToken)
     {
         CopyPrefixToMemory(destination);
         state = State.CopyBytes;

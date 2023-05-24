@@ -22,21 +22,21 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
         this.referredOrdinal = referredOrdinal;
     }
 
-    protected override async ValueTask ComputeValue(ParsingFileOwner owner)
+    protected override async ValueTask ComputeValueAsync(ParsingFileOwner owner)
     {
         var referredObject = await owner.IndirectResolver
             .FindIndirect((int)referredOrdinal, 0).DirectValueAsync().CA();
         if (referredObject is PdfStream stream)
-            await LoadObjectStream(owner, stream).CA();
+            await LoadObjectStreamAsync(owner, stream).CA();
     }
 
-    public static async ValueTask LoadObjectStream(ParsingFileOwner owner, PdfStream source)
+    public static async ValueTask LoadObjectStreamAsync(ParsingFileOwner owner, PdfStream source)
     {
-        await TryLoadExtendedBaseStream(owner, source).CA();
+        await TryLoadExtendedBaseStreamAsync(owner, source).CA();
 
         await using var data = await source.StreamContentAsync().CA();
         var reader = new SubsetParsingReader( owner.ParsingReaderForStream(data, 0));
-        var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbers(
+        var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbersAsync(
             source, reader.Reader).CA();
         var first = (await source.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue;
         foreach (var location in objectLocations)
@@ -48,11 +48,11 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
         }
     }
 
-    private static async ValueTask TryLoadExtendedBaseStream(ParsingFileOwner owner, PdfStream source)
+    private static async ValueTask TryLoadExtendedBaseStreamAsync(ParsingFileOwner owner, PdfStream source)
     {
         var refstr = await source.GetOrNullAsync<PdfStream>(KnownNames.Extends).CA();
         if (refstr is { } referredStream)
-            await LoadObjectStream(owner, referredStream).CA();
+            await LoadObjectStreamAsync(owner, referredStream).CA();
     }
 
     private static void AcceptObject(IIndirectObjectResolver resolver,

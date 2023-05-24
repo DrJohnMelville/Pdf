@@ -21,7 +21,7 @@ public class CalGrayGamma: ColorBars
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        await csw.SetStrokingColorSpace(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
         csw.SetLineWidth(15);
         DrawLine(csw);
         csw.SetStrokeColor(0.25);

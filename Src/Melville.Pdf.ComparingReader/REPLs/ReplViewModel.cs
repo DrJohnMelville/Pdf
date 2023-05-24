@@ -57,7 +57,7 @@ public partial class ReplViewModel
     {
         var modifier = doc.Modify();
         modifier.ReplaceReferenceObject(contentStream, newStream);
-        await modifier.WriteModificationTrailer(target);
+        await modifier.WriteModificationTrailerAsync(target);
     }
 
     private async Task<MultiBufferStream> CopyOriginalFile()
@@ -76,7 +76,7 @@ public partial class ReplViewModel
 
     public async ValueTask PrettyPrint()
     {
-        ContentStreamText = await ContentStreamPrettyPrinter.PrettyPrint(ContentStreamText);
+        ContentStreamText = await ContentStreamPrettyPrinter.PrettyPrintAsync(ContentStreamText);
     }
 
     public async ValueTask SavePage([FromServices]IOpenSaveFile osf)

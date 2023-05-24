@@ -1601,7 +1601,7 @@
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextLeading(System.Double)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetFontAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
             <inheritdoc />
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextRender(Melville.Pdf.LowLevel.Model.ContentStreams.TextRendering)">
@@ -1988,7 +1988,7 @@
             Content stream operator leading TL
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetFontAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
             <summary>
             Content stream operator font fontSize Tf
             </summary>
@@ -2385,12 +2385,12 @@
             <param name="dict">The dictionary defining the tile brush</param>
             <returns>A structure with many properties of the tile brush.</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokingColorSpace(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
             <summary>
             Content stream operator CS
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorSpace(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
             <summary>
             Content stream operator cs
             </summary>

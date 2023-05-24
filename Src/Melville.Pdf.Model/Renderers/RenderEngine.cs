@@ -56,7 +56,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
 
 
-    public async ValueTask LoadGraphicStateDictionary(PdfName dictionaryName) =>
+    public async ValueTask LoadGraphicStateDictionaryAsync(PdfName dictionaryName) =>
          await GraphicsState.LoadGraphicStateDictionary(
             await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName).CA() as 
                 PdfDictionary ?? PdfDictionary.Empty).CA();
@@ -105,7 +105,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         }
     }
 
-    public async ValueTask PaintShader(PdfName name)
+    public async ValueTask PaintShaderAsync(PdfName name)
     {
         var shader = await page.GetResourceAsync(ResourceTypeName.Shading, name).CA();
         if (shader is not PdfDictionary shaderDict) return;
@@ -163,7 +163,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     }
 
     public async ValueTask RunContentStream() =>
-        await new ContentStreamParser(this).Parse(
+        await new ContentStreamParser(this).ParseAsync(
             PipeReader.Create(await page.GetContentBytes().CA())).CA();
 
     #endregion
@@ -194,7 +194,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     public void MoveToNextTextLine() => 
         MovePositionBy(0, - GraphicsState.TextLeading);
 
-    public async ValueTask SetFont(PdfName font, double size)
+    public async ValueTask SetFontAsync(PdfName font, double size)
     {
         var fontResource = await page.GetResourceAsync(ResourceTypeName.Font, font).CA();
         var genericRealizedFont = fontResource is PdfDictionary fontDic ?
@@ -202,7 +202,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
             await SystemFontFromName(font).CA();
         
         GraphicsState.SetTypeface(await RendererSpecificFont(genericRealizedFont).CA());
-        await GraphicsState.SetFont(font,size).CA();
+        await GraphicsState.SetFontAsync(font,size).CA();
     }
 
     private ValueTask<IRealizedFont> SystemFontFromName(PdfName font) =>
@@ -224,7 +224,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
      
     private FontReader FontReader() => new(pageRenderContext.Renderer.FontMapper);
 
-    public async ValueTask ShowString(ReadOnlyMemory<byte> decodedString)
+    public async ValueTask ShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
         var font = GraphicsState.Typeface;
         using var writer = font.BeginFontWrite(this);
@@ -277,20 +277,20 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
     private Matrix3x2 IncrementAlongActiveVector(double width) =>
             Matrix3x2.CreateTranslation((float)width, 0.0f);
 
-    public ValueTask MoveToNextLineAndShowString(ReadOnlyMemory<byte> decodedString)
+    public ValueTask MoveToNextLineAndShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
         MoveToNextTextLine();
-        return ShowString(decodedString);
+        return ShowStringAsync(decodedString);
     }
 
-    public ValueTask MoveToNextLineAndShowString(double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString)
+    public ValueTask MoveToNextLineAndShowStringAsync(double wordSpace, double charSpace, ReadOnlyMemory<byte> decodedString)
     {
         SetWordSpace(wordSpace);
         SetCharSpace(charSpace);
-        return MoveToNextLineAndShowString(decodedString);
+        return MoveToNextLineAndShowStringAsync(decodedString);
     }
 
-    public ValueTask ShowSpacedString(in Span<ContentStreamValueUnion> values)
+    public ValueTask ShowSpacedStringAsync(in Span<ContentStreamValueUnion> values)
     {
         var ary = ArrayPool<ContentStreamValueUnion>.Shared.Rent(values.Length);
         values.CopyTo(ary);
@@ -309,7 +309,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
                     UpdateTextPosition(-delta);
                     break;
                 case ContentStreamValueType.Memory:
-                    await ShowString(value.Bytes).CA();
+                    await ShowStringAsync(value.Bytes).CA();
                     break;
                 default:
                     throw new PdfParseException("Invalid ShowSpacedString argument");
