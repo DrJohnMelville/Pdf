@@ -23,15 +23,15 @@ internal class PdfFormXObject: IHasPageAttributes
 
     public PdfDictionary LowLevel => lowLevel;
 
-    public ValueTask<Stream> GetContentBytes() => lowLevel.StreamContentAsync();
+    public ValueTask<Stream> GetContentBytesAsync() => lowLevel.StreamContentAsync();
 
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);
 
-    public async ValueTask<Matrix3x2> Matrix() =>
+    public async ValueTask<Matrix3x2> MatrixAsync() =>
         await (await lowLevel.GetOrDefaultAsync(KnownNames.Matrix, (PdfArray?)null).CA())
         .AsMatrix3x2OrIdentityAsync().CA();
 
-    public async ValueTask<PdfRect?> Bbox() =>
+    public async ValueTask<PdfRect?> BboxAsync() =>
         (await lowLevel.GetOrDefaultAsync(KnownNames.BBox, PdfArray.Empty).CA())
         is { Count: 4 } arr
             ? await PdfRect.CreateAsync(arr).CA()

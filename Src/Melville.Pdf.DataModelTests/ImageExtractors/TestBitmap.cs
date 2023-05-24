@@ -33,7 +33,7 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors
         public int Width { get; }
         public int Height { get; }
         public bool DeclaredWithInterpolation { get; }
-        public unsafe ValueTask RenderPbgra(byte* buffer)
+        public unsafe ValueTask RenderPbgraAsync(byte* buffer)
         {
             int length = Width * Height;
             for (int i = 0; i < length; i++)

@@ -152,7 +152,7 @@ public class S7_7_3_3PageAttributes
     public async Task LiteratContentStream()
     {
         var doc = await RoundTripPageWith(i => i.AddToContentStream(new DictionaryBuilder(), "xxyyy"));
-        var stream = await doc.GetContentBytes();
+        var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xxyyy", dat);
     }
@@ -164,7 +164,7 @@ public class S7_7_3_3PageAttributes
             i.AddToContentStream(new DictionaryBuilder(), "xx");
             i.AddToContentStream(new DictionaryBuilder(), "yyy");
         });
-        var stream = await doc.GetContentBytes();
+        var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xxyyy", dat);
     }

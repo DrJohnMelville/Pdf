@@ -64,14 +64,14 @@ public abstract class DocumentRenderer: IDisposable
     /// <param name="oneBasedPageNumber">The page to render</param>
     /// <param name="target">A factory method that creates a render target given a visible rectangle and matrix.</param>
     /// <returns></returns>
-    public async ValueTask RenderPageTo(int oneBasedPageNumber, Func<PdfRect, Matrix3x2, IRenderTarget> target)
+    public async ValueTask RenderPageToAsync(int oneBasedPageNumber, Func<PdfRect, Matrix3x2, IRenderTarget> target)
     {
-        var pageStruct = await GetPageContent(oneBasedPageNumber).CA();
+        var pageStruct = await GetPageContentAsync(oneBasedPageNumber).CA();
         var cropRect = await GetCropDimensionsAsync(pageStruct).CA();
         var rotation = CreateRotateMatrix( cropRect, await pageStruct.GetDefaultRotationAsync().CA());
         
         using var renderTarget = target(cropRect.Transform(rotation),rotation);
-        await CreateRenderEngine(pageStruct, renderTarget).RunContentStream().CA();
+        await CreateRenderEngine(pageStruct, renderTarget).RunContentStreamAsync().CA();
     }
 
     private Matrix3x2 CreateRotateMatrix(PdfRect cropRect, long rotateBy)
@@ -137,7 +137,7 @@ public abstract class DocumentRenderer: IDisposable
     /// </summary>
     /// <param name="oneBasedPageNumber">The page number, starting at 1, for the desired page</param>
     /// <returns>A HasRenderableContentStream implementation representing the page.</returns>
-    protected abstract ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber);
+    protected abstract ValueTask<HasRenderableContentStream> GetPageContentAsync(int oneBasedPageNumber);
 
     /// <inheritdoc />
     public virtual void Dispose() => Cache.Dispose();

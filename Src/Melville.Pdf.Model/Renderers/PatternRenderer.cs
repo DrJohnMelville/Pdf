@@ -26,7 +26,7 @@ internal class PatternRenderer: DocumentRenderer
         this.priorState = priorState;
     }
 
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber) => 
+    protected override ValueTask<HasRenderableContentStream> GetPageContentAsync(int oneBasedPageNumber) => 
         new(request.TilePattern);
 
     public override void InitializeRenderTarget(

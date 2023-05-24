@@ -69,7 +69,7 @@ public abstract class RenderTargetBase<T, TState>: IRenderTarget
     public virtual void Dispose() => State.Dispose();
 
     /// <inheritdoc />
-    public abstract ValueTask RenderBitmap(IPdfBitmap bitmap);
+    public abstract ValueTask RenderBitmapAsync(IPdfBitmap bitmap);
 
     /// <inheritdoc />
     public abstract void SetBackgroundRect(

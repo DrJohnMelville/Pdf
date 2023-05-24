@@ -45,10 +45,10 @@ public static class DocumentRendererFactory
         var pageCount = (int)await pages.CountAsync().CA();
         
         return new OwnedPageTreeDocumentRenderer(pageCount, fontFactory, new DocumentPartCache(), pages,
-            await ParseOptionalContentVisibility(document).CA(), document);
+            await ParseOptionalContentVisibilityAsync(document).CA(), document);
     }
 
-    private static async Task<IOptionalContentState> ParseOptionalContentVisibility(PdfDocument document) =>
+    private static async Task<IOptionalContentState> ParseOptionalContentVisibilityAsync(PdfDocument document) =>
         await OptionalContentPropertiesParser.ParseAsync(
-            await document.OptionalContentProperties().CA()).CA();
+            await document.OptionalContentPropertiesAsync().CA()).CA();
 }

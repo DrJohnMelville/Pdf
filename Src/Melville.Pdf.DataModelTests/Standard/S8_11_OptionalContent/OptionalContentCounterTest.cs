@@ -22,7 +22,7 @@ public class OptionalContentCounterTest
 
     public OptionalContentCounterTest()
     {
-        state.Setup(i => i.IsGroupVisible(It.IsAny<PdfDictionary>())).
+        state.Setup(i => i.IsGroupVisibleAsync(It.IsAny<PdfDictionary>())).
             Returns((PdfDictionary d) => new(d == On));
         attrs.SetupGet(i => i.LowLevel).Returns(
             new DictionaryBuilder()
@@ -43,33 +43,33 @@ public class OptionalContentCounterTest
     [Fact]
     public async Task EncounterInvisibleGroupMakesInvisible()
     {
-        await sut.EnterGroup(KnownNames.OC, Off);
+        await sut.EnterGroupAsync(KnownNames.OC, Off);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task OCPrefixRequired()
     {
-        await sut.EnterGroup(KnownNames.AC, Off);
+        await sut.EnterGroupAsync(KnownNames.AC, Off);
         Assert.False(sut.IsHidden);
     }
     [Fact]
     public async Task EncounterInvisibleGroupNameMakesInvisible()
     {
-        await sut.EnterGroup(KnownNames.OC, KnownNames.OFF, attrs.Object);
+        await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task EncounterVisibleGroupNameLeavesVisible()
     {
-        await sut.EnterGroup(KnownNames.OC, KnownNames.OFF, attrs.Object);
+        await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task PopOutOfInvisibleGroup()
     {
-        await sut.EnterGroup(KnownNames.OC, Off);
+        await sut.EnterGroupAsync(KnownNames.OC, Off);
         Assert.True(sut.IsHidden);
-        await sut.EnterGroup(KnownNames.OC, On);
+        await sut.EnterGroupAsync(KnownNames.OC, On);
         Assert.True(sut.IsHidden);
         sut.PopContentGroup();
         Assert.True(sut.IsHidden);
@@ -80,7 +80,7 @@ public class OptionalContentCounterTest
     [Fact]
     public async Task EncounterVisibleGroupStaysVisible()
     {
-        await sut.EnterGroup(KnownNames.OC, On);
+        await sut.EnterGroupAsync(KnownNames.OC, On);
         Assert.False(sut.IsHidden);
     }
 }

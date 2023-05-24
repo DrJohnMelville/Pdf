@@ -21,7 +21,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 public class TestGraphicsState : GraphicsState<DeviceColor>
 {
     protected override DeviceColor CreateSolidBrush(DeviceColor color) => color;
-    protected override ValueTask<DeviceColor> CreatePatternBrush(PdfDictionary pattern,
+    protected override ValueTask<DeviceColor> CreatePatternBrushAsync(PdfDictionary pattern,
         DocumentRenderer parentRenderer) => 
         throw new System.NotSupportedException();
 }
@@ -102,7 +102,7 @@ public class GraphicStateDictionary
         await new RenderEngine(page, new(target.Object, 
                 DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
                 NullOptionalContentCounter.Instance))
-            .RunContentStream();
+            .RunContentStreamAsync();
         return gs;
     }
 

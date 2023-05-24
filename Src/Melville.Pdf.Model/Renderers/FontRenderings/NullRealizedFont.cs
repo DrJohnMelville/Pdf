@@ -11,7 +11,7 @@ internal sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFo
 {
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => (0, 0, 1);
 
-    public ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix) => new(0.0);
+    public ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph, Matrix3x2 textMatrix) => new(0.0);
 
     public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
 

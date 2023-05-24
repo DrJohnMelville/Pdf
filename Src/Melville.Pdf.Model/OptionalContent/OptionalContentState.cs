@@ -48,14 +48,14 @@ internal partial class OptionalContentState : IOptionalContentState
         SelectedContentChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public async ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary)
+    public async ValueTask<bool> IsGroupVisibleAsync(PdfDictionary? dictionary)
     {
         if (dictionary == null) return true;
         if (await dictionary.GetOrDefaultAsync(
                 KnownNames.Type, KnownNames.DamagedRowsBeforeError).CA()== KnownNames.OCMD)
             return await
                 new OptionalContentMemberDictionaryInterpreter(dictionary, this)
-                    .Parse().CA();
+                    .ParseAsync().CA();
         return groupStates.TryGetValue(dictionary, out var result) ? result.Visible : true;
     }
 
@@ -66,6 +66,6 @@ internal partial class OptionalContentState : IOptionalContentState
     }
 
 
-    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModel(PdfArray? order) => 
-        new UiModelParser(groupStates).Parse(order);
+    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfArray? order) => 
+        new UiModelParser(groupStates).ParseAsync(order);
 }

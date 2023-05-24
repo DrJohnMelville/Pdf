@@ -24,13 +24,13 @@ internal class PdfBitmapWrapper : IPdfBitmap
         this.byteWriter = byteWriter;
     }
 
-    public unsafe ValueTask RenderPbgra(byte* buffer)
+    public unsafe ValueTask RenderPbgraAsync(byte* buffer)
     {
         var x = new BitmapWriter(buffer, source, Width, Height, byteWriter);
-        return InnerRender(x);
+        return InnerRenderAsync(x);
     }
 
-    private async ValueTask InnerRender(BitmapWriter c)
+    private async ValueTask InnerRenderAsync(BitmapWriter c)
     {
         int row = 0;
         int column = 0;

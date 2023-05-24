@@ -10,9 +10,9 @@ using Melville.Pdf.Model.OptionalContent;
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
 internal interface IOptionalContentCounter 
 {
-    ValueTask<bool> CanSkipXObjectDoOperation(PdfDictionary? visibilityGroup);
-    ValueTask EnterGroup(PdfName oc, PdfName off, IHasPageAttributes attributeSource);
-    ValueTask EnterGroup(PdfName oc, PdfDictionary? off);
+    ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfDictionary? visibilityGroup);
+    ValueTask EnterGroupAsync(PdfName oc, PdfName off, IHasPageAttributes attributeSource);
+    ValueTask EnterGroupAsync(PdfName oc, PdfDictionary? off);
     void PopContentGroup();
     public IDrawTarget WrapDrawTarget(IDrawTarget inner);
 }
@@ -24,16 +24,16 @@ internal partial class OptionalContentCounter: IOptionalContentCounter
 
     public bool IsHidden => groupsBelowDeepestVisibleGroup > 0;
 
-    public async ValueTask<bool> CanSkipXObjectDoOperation(PdfDictionary? visibilityGroup) =>
-        IsHidden || !await contentState.IsGroupVisible(visibilityGroup).CA();
+    public async ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfDictionary? visibilityGroup) =>
+        IsHidden || !await contentState.IsGroupVisibleAsync(visibilityGroup).CA();
 
-    public async ValueTask EnterGroup(PdfName oc, PdfName off, IHasPageAttributes attributeSource) =>
-        await EnterGroup(oc, 
+    public async ValueTask EnterGroupAsync(PdfName oc, PdfName off, IHasPageAttributes attributeSource) =>
+        await EnterGroupAsync(oc, 
             (await attributeSource.GetResourceAsync(ResourceTypeName.Properties, off).CA()) as PdfDictionary).CA();
 
-    public async ValueTask EnterGroup(PdfName oc, PdfDictionary? off)
+    public async ValueTask EnterGroupAsync(PdfName oc, PdfDictionary? off)
     {
-        if (IsHidden || (oc==KnownNames.OC && !(await contentState.IsGroupVisible(off).CA()))) 
+        if (IsHidden || (oc==KnownNames.OC && !(await contentState.IsGroupVisibleAsync(off).CA()))) 
             groupsBelowDeepestVisibleGroup++;
     } 
     public void PopContentGroup()

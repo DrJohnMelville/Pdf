@@ -36,7 +36,7 @@ internal class LabColorSpace : IColorSpace
 
     public static async ValueTask<IColorSpace> ParseAsync(PdfDictionary parameters)
     {
-        var wp = await ReadWhitePoint(parameters).CA();
+        var wp = await ReadWhitePointAsync(parameters).CA();
         var array = await parameters.GetOrNullAsync(KnownNames.Range).CA() is PdfArray arr
             ? await arr.AsDoublesAsync().CA()
             : Array.Empty<double>();
@@ -47,7 +47,7 @@ internal class LabColorSpace : IColorSpace
             );
     }
 
-    private static async Task<DoubleColor> ReadWhitePoint(PdfDictionary parameters)
+    private static async Task<DoubleColor> ReadWhitePointAsync(PdfDictionary parameters)
     {
         var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
         return new DoubleColor(

@@ -14,11 +14,11 @@ namespace Melville.Pdf.ImageExtractor
         {
         }
 
-        public override ValueTask SetStrokePattern(
+        public override ValueTask SetStrokePatternAsync(
             PdfDictionary pattern, DocumentRenderer parentRenderer) =>
             ValueTask.CompletedTask;
 
-        public override ValueTask SetNonstrokePattern(
+        public override ValueTask SetNonstrokePatternAsync(
             PdfDictionary pattern, DocumentRenderer parentRenderer) => 
             ValueTask.CompletedTask;
     }

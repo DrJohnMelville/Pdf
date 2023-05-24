@@ -22,7 +22,7 @@ internal readonly partial struct SingleByteEncodingParser
     }
 #endif
 
-    public async ValueTask WriteEncodingToArray(PdfObject encoding)
+    public async ValueTask WriteEncodingToArrayAsync(PdfObject encoding)
     {
         switch (encoding)
         {
@@ -30,9 +30,9 @@ internal readonly partial struct SingleByteEncodingParser
                 WriteCharacterSet(overrideEncoding ?? CharactersFromName(name));
                 break;
             case PdfDictionary dict:
-                await WriteEncodingToArray(await dict.GetOrNullAsync(KnownNames.BaseEncoding).CA()).CA();
+                await WriteEncodingToArrayAsync(await dict.GetOrNullAsync(KnownNames.BaseEncoding).CA()).CA();
                 if ((await dict.GetOrNullAsync<PdfArray>(KnownNames.Differences).CA()) is {} differences )
-                    await WriteDifferences(differences).CA();
+                    await WriteDifferencesAsync(differences).CA();
                 break; 
             default:
                 WriteCharacterSet(overrideEncoding?? CharacterEncodings.Standard);
@@ -59,7 +59,7 @@ internal readonly partial struct SingleByteEncodingParser
         }
     }
     
-    private async ValueTask WriteDifferences(PdfArray differences)
+    private async ValueTask WriteDifferencesAsync(PdfArray differences)
     {
         byte currentChar = 0;
         await foreach (var item in differences.CA())

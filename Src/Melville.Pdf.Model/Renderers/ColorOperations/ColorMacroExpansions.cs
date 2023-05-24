@@ -28,39 +28,39 @@ internal partial class ColorMacroExpansions : IColorOperations
 
     public async ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace) =>
         target.CurrentState().SetStrokeColorSpace(
-            await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
+            await new ColorSpaceFactory(page).ParseColorSpaceAsync(colorSpace).CA());
     
     public async ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace) =>
         target.CurrentState().SetNonstrokeColorSpace(
-            await new ColorSpaceFactory(page).ParseColorSpace(colorSpace).CA());
+            await new ColorSpaceFactory(page).ParseColorSpaceAsync(colorSpace).CA());
     
     public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         if (colors.Length > 0) SetStrokeColor(colors);
-        return SetStrokingPattern(patternName);
+        return SetStrokingPatternAsync(patternName);
     }
 
-    private async ValueTask SetStrokingPattern(PdfName? patternName)
+    private async ValueTask SetStrokingPatternAsync(PdfName? patternName)
     {
-        if ((await GetPatternDict(patternName).CA()) is { } patternDict)
+        if ((await GetPatternDictAsync(patternName).CA()) is { } patternDict)
             await target.CurrentState()
-                .SetStrokePattern(patternDict, renderer).CA();
+                .SetStrokePatternAsync(patternDict, renderer).CA();
     }
 
     public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         if (colors.Length > 0) SetNonstrokingColor(colors);
-        return SetNonstrokingPattern(patternName);
+        return SetNonstrokingPatternAsync(patternName);
     }
 
-    private async ValueTask SetNonstrokingPattern(PdfName? patternName)
+    private async ValueTask SetNonstrokingPatternAsync(PdfName? patternName)
     {
-        if ((await GetPatternDict(patternName).CA()) is { } patternDict)
+        if ((await GetPatternDictAsync(patternName).CA()) is { } patternDict)
             await target.CurrentState()
-                .SetNonstrokePattern(patternDict, renderer).CA();
+                .SetNonstrokePatternAsync(patternDict, renderer).CA();
     }
 
-    private async ValueTask<PdfDictionary?> GetPatternDict(PdfName? patternName) =>
+    private async ValueTask<PdfDictionary?> GetPatternDictAsync(PdfName? patternName) =>
         patternName != null && (await page.GetResourceAsync(ResourceTypeName.Pattern, patternName).CA()) is
         PdfDictionary patternDict
             ? patternDict

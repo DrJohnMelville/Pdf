@@ -19,7 +19,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
     protected override ISkiaBrushCreator CreateSolidBrush(DeviceColor color) => 
         new SolidColorBrushCreator(color);
 
-    protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrush(PdfDictionary pattern,
+    protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrushAsync(PdfDictionary pattern,
         DocumentRenderer parentRenderer)
     {
         return await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
@@ -32,7 +32,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
 
     private async Task<ISkiaBrushCreator> CreateTilePatternBrush(PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
-        var request = await TileBrushRequest.Parse(pattern).CA();
+        var request = await TileBrushRequest.ParseAsync(pattern).CA();
         var tileItem = await RenderWithSkia.ToSurfaceAsync(
             parentRenderer.PatternRenderer(request, this), 0).CA();
         return new SurfacePatternHolder(tileItem, request.PatternTransform);
@@ -40,7 +40,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
 
     private async Task<ISkiaBrushCreator> CreateShaderBrush(PdfDictionary pattern)
     {
-        var shader = await ShaderParser.ParseShader(pattern).CA();
+        var shader = await ShaderParser.ParseShaderAsync(pattern).CA();
         var bitmap = new SKBitmap(new SKImageInfo((int)PageWidth, (int)PageHeight,
             SKColorType.Bgra8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
         unsafe

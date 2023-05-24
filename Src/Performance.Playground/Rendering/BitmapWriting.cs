@@ -21,7 +21,7 @@ public class ImageExtraction
     public async Task ExtractImages()
     {
         int index = 1;
-        var doc = await new PdfReader().ReadFromFile(@"C:\Users\jmelv\Documents\PhotoDoc website Backup\backup_2019-05-31-1240_Digital_Forensic_Photography_262d8efaca37-uploads\uploads\2014\04\AAFS-slides.pdf");
+        var doc = await new PdfReader().ReadFromFileAsync(@"C:\Users\jmelv\Documents\PhotoDoc website Backup\backup_2019-05-31-1240_Digital_Forensic_Photography_262d8efaca37-uploads\uploads\2014\04\AAFS-slides.pdf");
         await foreach (var image in doc.CollapsedImagesFromAsync())
         {
             var skBitmap = await image.ToSkBitmapAsync();

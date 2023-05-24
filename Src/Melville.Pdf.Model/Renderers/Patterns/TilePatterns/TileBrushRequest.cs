@@ -29,14 +29,14 @@ public record struct
     /// </summary>
     /// <param name="dict">The dictionary defining the tile brush</param>
     /// <returns>A structure with many properties of the tile brush.</returns>
-    public static async ValueTask<TileBrushRequest> Parse(PdfDictionary dict)
+    public static async ValueTask<TileBrushRequest> ParseAsync(PdfDictionary dict)
     {
         var pdfPattern = new PdfTilePattern(dict);
-        var patternTransform = await pdfPattern.Matrix().CA();
-        var boundingBox = (await pdfPattern.BBox().CA());
+        var patternTransform = await pdfPattern.MatrixAsync().CA();
+        var boundingBox = (await pdfPattern.BBoxAsync().CA());
         var repeatSize = new Vector2(
-            (float)await pdfPattern.XStep().CA(), (float)await pdfPattern.YStep().CA());
-        var patternType = await pdfPattern.PaintType().CA();
+            (float)await pdfPattern.XStepAsync().CA(), (float)await pdfPattern.YStepAsync().CA());
+        var patternType = await pdfPattern.PaintTypeAsync().CA();
         return new(pdfPattern, patternTransform, boundingBox, repeatSize, patternType);
     }
 }

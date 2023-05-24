@@ -29,12 +29,12 @@ public class ContentStreamPreviewRenderer : DocumentRenderer
     }
 
     /// <inheritdoc />
-    protected override ValueTask<HasRenderableContentStream> GetPageContent(int oneBasedPageNumber) => 
+    protected override ValueTask<HasRenderableContentStream> GetPageContentAsync(int oneBasedPageNumber) => 
         ValueTask.FromResult<HasRenderableContentStream>(new ExplicitHRCS(content));
 
     private record ExplicitHRCS(Stream Content) : 
         HasRenderableContentStream(PdfDictionary.Empty)
     {
-        public override ValueTask<Stream> GetContentBytes() => ValueTask.FromResult(Content);
+        public override ValueTask<Stream> GetContentBytesAsync() => ValueTask.FromResult(Content);
     }
 }

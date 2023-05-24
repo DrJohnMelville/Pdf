@@ -22,7 +22,7 @@ public interface IRenderTarget: IDisposable
     /// Draw a bitmap.
     /// </summary>
     /// <param name="bitmap">The IPdfBitmap to paint</param>
-    ValueTask RenderBitmap(IPdfBitmap bitmap);
+    ValueTask RenderBitmapAsync(IPdfBitmap bitmap);
 
     /// <summary>
     /// Create a draw target that can draw shapes.

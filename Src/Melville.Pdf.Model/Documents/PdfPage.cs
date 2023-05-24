@@ -28,7 +28,7 @@ public record class PdfPage(PdfDictionary LowLevel) : HasRenderableContentStream
     /// <summary>
     /// Gets a C# stream that represents the content stream for this page
     /// </summary>
-    public override async ValueTask<Stream> GetContentBytes() =>
+    public override async ValueTask<Stream> GetContentBytesAsync() =>
         await LowLevel.GetOrNullAsync(KnownNames.Contents).CA() switch
         {
             PdfStream strm => await strm.StreamContentAsync().CA(),

@@ -24,7 +24,7 @@ public interface IFontTarget
     /// <param name="fontMatrix">The font matrix</param>
     /// <param name="fontDictionary">The dictionary defining the font -- which may contain resources.</param>
     /// <returns>A valuetask containing the width of the rendered character.</returns>
-    ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
+    ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
     /// <summary>
     /// Create a IDrawTarget that the stroked character can be drawn to.
     /// </summary>
@@ -49,10 +49,10 @@ internal partial class RealizedType3Font : IRealizedFont
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new Type3Writer(this, target);
     
-    private ValueTask<double> AddGlyphToCurrentString(uint glyph,
+    private ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph,
         Matrix3x2 charMatrix, IFontTarget target)
     {
-        return target.RenderType3Character(
+        return target.RenderType3CharacterAsync(
             characters[glyph].CreateReader(), fontMatrix, rawFont);
     }
     public double CharacterWidth(uint character, double defaultWidth) => defaultWidth;
@@ -73,8 +73,8 @@ internal partial class RealizedType3Font : IRealizedFont
             this.target = target;
         }
 
-        public ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix) => 
-            parent.AddGlyphToCurrentString(glyph, textMatrix, target);
+        public ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph, Matrix3x2 textMatrix) => 
+            parent.AddGlyphToCurrentStringAsync(glyph, textMatrix, target);
         
         public void RenderCurrentString(bool stroke, bool fill, bool clip) { }
 

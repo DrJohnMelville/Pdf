@@ -29,7 +29,7 @@ public abstract class MelvillePdfRenderer : IImageRenderer
         source = null;
         // if the reader throws I want the source to be null
         source = await new PdfReader(passwordSource, FontSource())
-            .ReadFrom(pdfBits);
+            .ReadFromAsync(pdfBits);
     }
 
     protected abstract IDefaultFontMapper FontSource();

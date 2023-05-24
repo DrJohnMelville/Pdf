@@ -77,7 +77,7 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
         {
         }
 
-        public ValueTask<double> AddGlyphToCurrentString(
+        public ValueTask<double> AddGlyphToCurrentStringAsync(
             uint glyph, Matrix3x2 textMatrix)
         {
             target.SetDrawingTransform(textMatrix);

@@ -34,7 +34,7 @@ internal partial class PdfViewerModel
     
     private async void NewConfig()
     {
-        OptionalContentDisplay = await document.OptionalContentState.ConstructUiModel(
+        OptionalContentDisplay = await document.OptionalContentState.ConstructUiModelAsync(
             document.OptionalContentState.SelectedConfiguration?.Order);
     }
 

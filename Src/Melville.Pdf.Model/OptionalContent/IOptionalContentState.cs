@@ -15,7 +15,7 @@ public interface IOptionalContentState
     /// </summary>
     /// <param name="dictionary">The content state group dictionary inquired about</param>
     /// <returns>True if the item should be displayed, false otherwise.</returns>
-    ValueTask<bool> IsGroupVisible(PdfDictionary? dictionary);
+    ValueTask<bool> IsGroupVisibleAsync(PdfDictionary? dictionary);
 
     /// <summary>
     /// A list of optional content group configurations supported by the document.
@@ -27,7 +27,7 @@ public interface IOptionalContentState
     /// </summary>
     /// <param name="order">The order array from an optional content group.</param>
     /// <returns></returns>
-    ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModel(PdfArray? order);
+    ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfArray? order);
 
     /// <summary>
     /// Indicates when the selected visible content has changed.

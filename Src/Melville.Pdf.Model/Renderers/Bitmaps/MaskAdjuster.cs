@@ -9,10 +9,10 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 internal abstract partial class MaskAdjuster : IPdfBitmap
 {
     [FromConstructor][DelegateTo] private readonly IPdfBitmap innerBitmap;
-    public unsafe ValueTask RenderPbgra(byte* buffer)
+    public unsafe ValueTask RenderPbgraAsync(byte* buffer)
     {
         return new ValueTask(
-            innerBitmap.RenderPbgra(buffer).AsTask()
+            innerBitmap.RenderPbgraAsync(buffer).AsTask()
                 .ContinueWith(ApplyFilter, (IntPtr)buffer));
     }
     private unsafe void ApplyFilter(Task _, object? targetPtr)

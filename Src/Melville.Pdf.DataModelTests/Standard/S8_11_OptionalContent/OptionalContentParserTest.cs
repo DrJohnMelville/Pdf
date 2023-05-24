@@ -29,8 +29,8 @@ public class OptionalContentParserTest
                 .AsDictionary()
             );
         
-        Assert.False(await sut.IsGroupVisible(ocg1));
-        Assert.False(await sut.IsGroupVisible(ocg2));
+        Assert.False(await sut.IsGroupVisibleAsync(ocg1));
+        Assert.False(await sut.IsGroupVisibleAsync(ocg2));
     }
     [Fact]
     public async Task AllOffVisibility()
@@ -45,8 +45,8 @@ public class OptionalContentParserTest
                 .AsDictionary()
             );
         
-        Assert.False(await sut.IsGroupVisible(ocg1));
-        Assert.False(await sut.IsGroupVisible(ocg2));
+        Assert.False(await sut.IsGroupVisibleAsync(ocg1));
+        Assert.False(await sut.IsGroupVisibleAsync(ocg2));
     }
     [Fact]
     public async Task TurnOneOn()
@@ -61,8 +61,8 @@ public class OptionalContentParserTest
                 .AsDictionary()
             );
         
-        Assert.True(await sut.IsGroupVisible(ocg1));
-        Assert.False(await sut.IsGroupVisible(ocg2));
+        Assert.True(await sut.IsGroupVisibleAsync(ocg1));
+        Assert.False(await sut.IsGroupVisibleAsync(ocg2));
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class OptionalContentParserTest
                 .AsDictionary()
         );
 
-        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        var display = await sut.ConstructUiModelAsync(sut.Configurations[0].Order);
         Assert.Equal("O2", display[0].Name);
         Assert.Equal("O1", display[1].Name);
         
@@ -95,8 +95,8 @@ public class OptionalContentParserTest
                 .AsDictionary()
         );
 
-        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
-        var disp =await sut.ConstructUiModel(sut.SelectedConfiguration!.Order);
+        var display = await sut.ConstructUiModelAsync(sut.Configurations[0].Order);
+        var disp =await sut.ConstructUiModelAsync(sut.SelectedConfiguration!.Order);
         disp[0].Visible = true;
         Assert.False(disp[1].Visible);
         disp[1].Visible = true;
@@ -120,7 +120,7 @@ public class OptionalContentParserTest
                 .AsDictionary()
         );
 
-        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        var display = await sut.ConstructUiModelAsync(sut.Configurations[0].Order);
         Assert.Equal("Title", display[0].Name);
         Assert.False(display[0].ShowCheck);
         
@@ -141,7 +141,7 @@ public class OptionalContentParserTest
                 .AsDictionary()
         );
 
-        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        var display = await sut.ConstructUiModelAsync(sut.Configurations[0].Order);
         Assert.Equal("O3", display[0].Name);
         Assert.True(display[0].ShowCheck);
         
@@ -179,7 +179,7 @@ public class OptionalContentParserTest
     public async Task MemerContentPTest(bool v1, bool v2, bool v3, PdfName pOp, bool result)
     {
         var sut = await CreateVisContext(v1, v2, v3);
-        Assert.Equal(result, await sut.IsGroupVisible(new DictionaryBuilder()
+        Assert.Equal(result, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.OCGs, new PdfArray(ocg1,ocg2,ocg3))
             .WithItem(KnownNames.Type, KnownNames.OCMD)
             .WithItem(KnownNames.P, pOp)
@@ -195,7 +195,7 @@ public class OptionalContentParserTest
                     .WithItem(KnownNames.Order, new PdfArray(ocg1, ocg2, ocg3))
                     .AsDictionary())
                 .AsDictionary());
-        var display = await sut.ConstructUiModel(sut.Configurations[0].Order);
+        var display = await sut.ConstructUiModelAsync(sut.Configurations[0].Order);
         display[0].Visible = v1;
         display[1].Visible = v2;
         display[2].Visible = v3;
@@ -210,7 +210,7 @@ public class OptionalContentParserTest
     public async Task AndVETest(bool a, bool b)
     {
         var sut = await CreateVisContext(a, b, true);
-        Assert.Equal(a & b, await sut.IsGroupVisible(new DictionaryBuilder()
+        Assert.Equal(a & b, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.OCMD)
             .WithItem(KnownNames.VE, new PdfArray(KnownNames.And, ocg1, ocg2))
             .AsDictionary()));
@@ -225,7 +225,7 @@ public class OptionalContentParserTest
     public async Task OrVETest(bool a, bool b)
     {
         var sut = await CreateVisContext(a, b, true);
-        Assert.Equal(a | b, await sut.IsGroupVisible(new DictionaryBuilder()
+        Assert.Equal(a | b, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.OCMD)
             .WithItem(KnownNames.VE, new PdfArray(KnownNames.Or, ocg1, ocg2))
             .AsDictionary()));
@@ -239,7 +239,7 @@ public class OptionalContentParserTest
     public async Task NotVETest(bool a, bool b)
     {
         var sut = await CreateVisContext(a, b, true);
-        Assert.Equal(!a, await sut.IsGroupVisible(new DictionaryBuilder()
+        Assert.Equal(!a, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.OCMD)
             .WithItem(KnownNames.VE, new PdfArray(KnownNames.Not, ocg1, ocg2))
             .AsDictionary()));
@@ -253,7 +253,7 @@ public class OptionalContentParserTest
     public async Task ImplicationVETest(bool a, bool b)
     {
         var sut = await CreateVisContext(a, b, true);
-        Assert.Equal((!a) | b, await sut.IsGroupVisible(new DictionaryBuilder()
+        Assert.Equal((!a) | b, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.OCMD)
             .WithItem(KnownNames.VE, 
                 new PdfArray(KnownNames.Or, ocg2, new PdfArray(KnownNames.Not, ocg1)))

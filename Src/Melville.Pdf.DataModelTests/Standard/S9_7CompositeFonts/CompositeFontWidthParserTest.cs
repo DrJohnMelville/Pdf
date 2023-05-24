@@ -25,7 +25,7 @@ public class CompositeFontWidthParserTest
                     4, new PdfArray(
                         500, 750, 250)))
                 .AsDictionary()
-            )).Parse();
+            )).ParseAsync();
         Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
         Assert.Equal(750*1f/1000, sut.GetWidth(0x05, 0),3);
         Assert.Equal(250*1f/1000, sut.GetWidth(0x06, 0), 3);
@@ -42,7 +42,7 @@ public class CompositeFontWidthParserTest
                     4, new PdfArray(500),
                     6,7,1233))
                 .AsDictionary()
-            )).Parse();
+            )).ParseAsync();
         Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
         Assert.Equal(1000*1f/1000, sut.GetWidth(0x05, 0),3);
         Assert.Equal(1233*1f/1000, sut.GetWidth(0x06, 0), 3);
@@ -60,7 +60,7 @@ public class CompositeFontWidthParserTest
                     6, 7, 1233))
                 .WithItem(KnownNames.DW, 34)
                 .AsDictionary()
-            )).Parse();
+            )).ParseAsync();
         Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
         Assert.Equal(34*1f/1000, sut.GetWidth(0x05, 0),3);
         Assert.Equal(1233*1f/1000, sut.GetWidth(0x06, 0), 3);
@@ -76,7 +76,7 @@ public class CompositeFontWidthParserTest
                 .WithItem(KnownNames.W, new PdfArray(
                     4, 6,500))
                 .AsDictionary()
-            )).Parse();
+            )).ParseAsync();
         Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0));
         Assert.Equal(500*1f/1000, sut.GetWidth(0x05, 0));
         Assert.Equal(500*1f/1000, sut.GetWidth(0x06, 0));

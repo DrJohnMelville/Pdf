@@ -31,13 +31,13 @@ public static class IccProfileColorSpaceParser
         }
         catch (Exception)
         {
-            return await await ParseAlternateColorSpace(stream).CA();
+            return await await ParseAlternateColorSpaceAsync(stream).CA();
         }
     }
 
-    private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpace(PdfStream stream) =>
+    private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpaceAsync(PdfStream stream) =>
         new ColorSpaceFactory(NoPageContext.Instance)
-            .FromNameOrArray(await stream.GetOrDefaultAsync(KnownNames.Alternate,
+            .FromNameOrArrayAsync(await stream.GetOrDefaultAsync(KnownNames.Alternate,
                 DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.N, 0).CA())).CA()).CA();
 
     private static PdfName DefaultColorSpace(long n) =>

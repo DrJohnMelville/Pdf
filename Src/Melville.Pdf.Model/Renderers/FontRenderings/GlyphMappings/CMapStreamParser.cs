@@ -13,12 +13,12 @@ internal readonly partial struct CMapStreamParser
     private readonly List<uint> dictionary = new();
     [FromConstructor] private readonly PipeReader pipe;
     
-    public async ValueTask<IMapCharacterToGlyph> Parse()
+    public async ValueTask<IMapCharacterToGlyph> ParseAsync()
     {
-        return new FontRenderings.GlyphMappings.CharacterToGlyphArray(await ReadList().CA());
+        return new FontRenderings.GlyphMappings.CharacterToGlyphArray(await ReadListAsync().CA());
     }
 
-    private async ValueTask<IReadOnlyList<uint>> ReadList()
+    private async ValueTask<IReadOnlyList<uint>> ReadListAsync()
     {
         while (await pipe.ReadAsync().CA() is { } result &&
                (result.Buffer.Length > 1 || !result.IsCompleted))

@@ -17,7 +17,7 @@ public class CmykIntegrationTests
     [InlineData(0.1, 0.2, 0.3, 0.4, 56.172641, 5.169547, 13.35622)]
     public async Task ICCToLabProfile(float c, float m, float y, float k, float l, float a, float b)
     {
-        var xform = (await CmykIccProfile.ReadCmykProfile()).DeviceToPcsTransform(RenderIntent.Perceptual);
+        var xform = (await CmykIccProfile.ReadCmykProfileAsync()).DeviceToPcsTransform(RenderIntent.Perceptual);
         var result = new float[3];
         xform!.Transform(stackalloc float[]{c,m,y,k}, result.AsSpan());
         Assert.Equal(l, result[0], 0, MidpointRounding.AwayFromZero);

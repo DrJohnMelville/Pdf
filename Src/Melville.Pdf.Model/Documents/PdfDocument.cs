@@ -61,7 +61,7 @@ public readonly struct PdfDocument: IDisposable
     /// <summary>
     /// Optional content declaration for the document
     /// </summary>
-    public async ValueTask<PdfDictionary?> OptionalContentProperties() =>
+    public async ValueTask<PdfDictionary?> OptionalContentPropertiesAsync() =>
         await (await CatalogAsync().CA()).GetOrNullAsync<PdfDictionary>(KnownNames.OCProperties).CA();
 
     /// <inheritdoc />

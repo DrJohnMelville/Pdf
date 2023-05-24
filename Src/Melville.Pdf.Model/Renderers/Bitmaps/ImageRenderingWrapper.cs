@@ -19,7 +19,7 @@ internal readonly partial struct ImageRenderingWrapper
     [FromConstructor] private readonly bool shouldInterpolate;
     [FromConstructor] private readonly BitmapRenderParameters attr;
 
-    public async ValueTask<IPdfBitmap> AsPdfBitmap() =>
+    public async ValueTask<IPdfBitmap> AsPdfBitmapAsync() =>
         await WrapWithSoftMaskAsync(
         await WrapWithHardMaskAsync(
         new PdfBitmapWrapper(
@@ -58,20 +58,20 @@ internal readonly partial struct ImageRenderingWrapper
                  new SelfMaskAdjuster<ColorRangeMaskType>(writer,
                      new ColorRangeMaskType(
                      await maskArr.AsIntsAsync().CA(), bitsPerComponent, colorSpace)),                
-            PdfStream str => await CreateMaskWriter<HardMask>(writer, str).CA(),
+            PdfStream str => await CreateMaskWriterAsync<HardMask>(writer, str).CA(),
             _ => writer
         };
 
     private ValueTask<IPdfBitmap> WrapWithSoftMaskAsync(
         IPdfBitmap writer) => softMask is PdfStream str ?
-            CreateMaskWriter<SoftMask>(writer, str) :
+            CreateMaskWriterAsync<SoftMask>(writer, str) :
             ValueTask.FromResult(writer);
 
-    private async ValueTask<IPdfBitmap> CreateMaskWriter<T>(
+    private async ValueTask<IPdfBitmap> CreateMaskWriterAsync<T>(
         IPdfBitmap target, PdfStream str)
         where T : IMaskType, new()
     {
-        var maskBitmap = await MaskBitmap.Create(str, attr.Page).CA();
+        var maskBitmap = await MaskBitmap.CreateAsync(str, attr.Page).CA();
         return
             maskBitmap.IsSameSizeAs(target)
                 ? new SameSizeMaskAdjuster<T>(target, maskBitmap, new T())

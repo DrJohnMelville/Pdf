@@ -32,6 +32,6 @@ namespace Melville.Pdf.Wpf.Rendering
    
         }
         private static unsafe ValueTask FillBitmap(IPdfBitmap bitmap, WriteableBitmap wb) =>
-            bitmap.RenderPbgra((byte*)wb.BackBuffer.ToPointer());
+            bitmap.RenderPbgraAsync((byte*)wb.BackBuffer.ToPointer());
     }
 }

@@ -58,11 +58,11 @@ internal partial class WpfCachedFont : IRealizedFont
             innerWriter = parent.inner.BeginFontWrite(this);
         }
         
-        public async ValueTask<double> AddGlyphToCurrentString(
+        public async ValueTask<double> AddGlyphToCurrentStringAsync(
             uint glyph, Matrix3x2 textMatrix)
         {
             if (drawTarget is not WpfDrawTarget wpfDrawTarget)
-                  return await innerWriter.AddGlyphToCurrentString(glyph, textMatrix);
+                  return await innerWriter.AddGlyphToCurrentStringAsync(glyph, textMatrix);
 
             var (cachedCharacter, geometry) = 
                 await parent.GetGlyph(glyph, textMatrix.WpfTransform(), innerWriter).CA();
@@ -74,9 +74,9 @@ internal partial class WpfCachedFont : IRealizedFont
         public void RenderCurrentString(bool stroke, bool fill, bool clip) => 
             innerWriter.RenderCurrentString(stroke, fill, clip);
 
-        public ValueTask<double> RenderType3Character(
+        public ValueTask<double> RenderType3CharacterAsync(
             Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary) => 
-            fontTarget.RenderType3Character(s, fontMatrix, fontDictionary);
+            fontTarget.RenderType3CharacterAsync(s, fontMatrix, fontDictionary);
 
         public IDrawTarget CreateDrawTarget() => 
             drawTarget = fontTarget.CreateDrawTarget();

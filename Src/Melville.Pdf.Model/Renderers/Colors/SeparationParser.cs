@@ -16,24 +16,24 @@ internal static class SeparationParser
         {
             KnownNameKeys.All => new(DeviceGray.InvertedInstance),
             KnownNameKeys.None => new(new InvisibleColorSpace(1)),
-            _=>AlternateColorspace(array, page)
+            _=>AlternateColorspaceAsync(array, page)
         };
 
-    private static async ValueTask<IColorSpace> AlternateColorspace(Memory<PdfObject> array, IHasPageAttributes page) =>
+    private static async ValueTask<IColorSpace> AlternateColorspaceAsync(Memory<PdfObject> array, IHasPageAttributes page) =>
         new ColorSpaceCache(
         new RelativeColorSpace(
-            await new ColorSpaceFactory(page).FromNameOrArray(array.Span[2]).CA(),
+            await new ColorSpaceFactory(page).FromNameOrArrayAsync(array.Span[2]).CA(),
             await ((PdfDictionary)array.Span[3]).CreateFunctionAsync().CA()), 10);
 
     public static async ValueTask<IColorSpace> ParseDeviceNAsync(Memory<PdfObject> array, IHasPageAttributes page)
     {
         var nameArray = (PdfArray)array.Span[1];
-        return (await AllNones(nameArray).CA())
+        return (await AllNonesAsync(nameArray).CA())
             ? new InvisibleColorSpace(nameArray.Count)
-            : await AlternateColorspace(array, page).CA();
+            : await AlternateColorspaceAsync(array, page).CA();
     }
 
-    private static async ValueTask<bool> AllNones(PdfArray array)
+    private static async ValueTask<bool> AllNonesAsync(PdfArray array)
     {
         foreach (var itemTask in array)
         {

@@ -43,10 +43,10 @@ internal readonly struct Type3FontFactory
             }
         }
 
-        return new RealizedType3Font(characters, (byte)firstChar, await ReadTransformMatrix().CA(), font);
+        return new RealizedType3Font(characters, (byte)firstChar, await ReadTransformMatrixAsync().CA(), font);
     }
 
-    private async Task<Matrix3x2> ReadTransformMatrix()
+    private async Task<Matrix3x2> ReadTransformMatrixAsync()
     {
         var digits = await (await font.GetAsync<PdfArray>(KnownNames.FontMatrix).CA()).AsDoublesAsync().CA();
         return new Matrix3x2(

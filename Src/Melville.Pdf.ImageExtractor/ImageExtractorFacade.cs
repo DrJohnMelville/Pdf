@@ -21,7 +21,7 @@ public static class ImageExtractorFacade
         ImagesFromAsync(this DocumentRenderer dr, int page)
     {
         var ret = new List<IExtractedBitmap>();
-        await dr.RenderPageTo(page, (rect, matrix) =>
+        await dr.RenderPageToAsync(page, (rect, matrix) =>
         {
             var (width, height) = dr.ScalePageToRequestedSize(rect, new Vector2(-1, -1));
             var target = new ImageExtractorTarget(ret, page);

@@ -50,7 +50,7 @@ namespace Melville.Pdf.ImageExtractor.ImageCollapsing
             _=> new T().AddNext(prior).AddNext(next)
         };
 
-        public unsafe ValueTask RenderPbgra(byte* buffer) =>
+        public unsafe ValueTask RenderPbgraAsync(byte* buffer) =>
             RenderPbgra(new PointerHolder(buffer));
 
         protected abstract ValueTask RenderPbgra(PointerHolder buffer);
@@ -60,7 +60,7 @@ namespace Melville.Pdf.ImageExtractor.ImageCollapsing
             [FromConstructor] private readonly byte* root;
 
             public ValueTask WriteToStream(long offset, IPdfBitmap item) =>
-                item.RenderPbgra(root + offset);
+                item.RenderPbgraAsync(root + offset);
 
             public byte* BasePointer() => root;
         }

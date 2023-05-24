@@ -59,16 +59,16 @@ internal readonly partial struct PdfFont
         return firstUnderscore < 0 ? baseFontName : NameDirectory.Get(source[..firstUnderscore]);
     }
 
-    public async ValueTask<PdfFont> Type0SubFont() =>
+    public async ValueTask<PdfFont> Type0SubFontAsync() =>
         new PdfFont(
             await (await LowLevel.GetAsync<PdfArray>(KnownNames.DescendantFonts).CA())
                 .GetAsync<PdfDictionary>(0).CA()
         );
 
-    public ValueTask<PdfDictionary?> CidSystemInfo() =>
+    public ValueTask<PdfDictionary?> CidSystemInfoAsync() =>
         LowLevel.GetOrDefaultAsync(KnownNames.CIDSystemInfo, (PdfDictionary?)null);
 
-    public ValueTask<PdfStream?> CidToGidMapStream() => 
+    public ValueTask<PdfStream?> CidToGidMapStreamAsync() => 
         LowLevel.GetOrDefaultAsync(KnownNames.CIDToGIDMap, (PdfStream?)null);
 
     public ValueTask<double> DefaultWidthAsync() =>

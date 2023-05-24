@@ -73,6 +73,6 @@ public static class RenderTestHelpers
         MultiBufferStream src = new();
         await generator.WritePdfAsync(src);
         return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
-            .ReadFrom(src.CreateReader());
+            .ReadFromAsync(src.CreateReader());
     }
 }

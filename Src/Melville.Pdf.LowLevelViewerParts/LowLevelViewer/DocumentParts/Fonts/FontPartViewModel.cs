@@ -28,7 +28,7 @@ public partial class FontPartViewModel: DocumentPart
     {
         try
         {
-            Font = await new FontReader(WindowsDefaultFonts.Instance).DictionaryToRealizedFont(fontDic);
+            Font = await new FontReader(WindowsDefaultFonts.Instance).DictionaryToRealizedFontAsync(fontDic);
         }
         catch (Exception)
         {

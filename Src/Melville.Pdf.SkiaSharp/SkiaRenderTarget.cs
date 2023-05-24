@@ -28,7 +28,7 @@ internal partial class SkiaRenderTarget:RenderTargetBase<SKCanvas, SkiaGraphicsS
         new SkiaDrawTarget(Target, State);
 
 
-    public override async ValueTask RenderBitmap(IPdfBitmap bitmap)
+    public override async ValueTask RenderBitmapAsync(IPdfBitmap bitmap)
     {
         using var skBitmap = await bitmap.ToSkBitmapAsync().CA();
         SetBitmapScaleQuality(bitmap);

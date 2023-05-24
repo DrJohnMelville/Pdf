@@ -31,7 +31,7 @@ public interface IPdfBitmap
     /// </summary>
     /// <param name="buffer">A byte pointer which must point to the beginning of a buffer that
     /// is Width * Height *4 bytes long</param>
-    unsafe ValueTask RenderPbgra(byte* buffer);
+    unsafe ValueTask RenderPbgraAsync(byte* buffer);
 }
 
 /// <summary>
@@ -50,7 +50,7 @@ public static class RenderToArrayImpl
         Debug.Assert(target.Length >= bitmap.ReqiredBufferSize());
         var handle = GCHandle.Alloc(target, GCHandleType.Pinned);
         byte* pointer = (byte*)handle.AddrOfPinnedObject();
-        return new(bitmap.RenderPbgra(pointer).AsTask().ContinueWith(_ => handle.Free()));
+        return new(bitmap.RenderPbgraAsync(pointer).AsTask().ContinueWith(_ => handle.Free()));
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ internal partial class Type3FontPseudoPage : IHasPageAttributes
     [FromConstructor] private readonly Stream characterDecl;
 
     public PdfDictionary LowLevel => fontDecl;
-    public ValueTask<Stream> GetContentBytes() => new(characterDecl);
+    public ValueTask<Stream> GetContentBytesAsync() => new(characterDecl);
 
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);
 }

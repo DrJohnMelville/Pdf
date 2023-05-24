@@ -54,5 +54,5 @@ public static class PdfBitmapOperations
             await attr.SoftMaskAsync().CA(),
             await attr.ShouldInterpolateAsync().CA(),
             attr
-            ).AsPdfBitmap().CA();
+            ).AsPdfBitmapAsync().CA();
 }

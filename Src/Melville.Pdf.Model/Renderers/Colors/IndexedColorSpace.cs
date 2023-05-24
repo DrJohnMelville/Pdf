@@ -23,17 +23,17 @@ internal partial class IndexedColorSpace: IColorSpace
 
     public static async ValueTask<IColorSpace> ParseAsync(Memory<PdfObject> array, IHasPageAttributes page)
     {
-        var subColorSpace = await new ColorSpaceFactory(page).FromNameOrArray(array.Span[1]).CA();
+        var subColorSpace = await new ColorSpaceFactory(page).FromNameOrArrayAsync(array.Span[1]).CA();
         int length = (int) (1 + ((PdfNumber)array.Span[2]).IntValue);
-        return new IndexedColorSpace(await GetValues(array.Span[3], subColorSpace, length).CA(), subColorSpace);
+        return new IndexedColorSpace(await GetValuesAsync(array.Span[3], subColorSpace, length).CA(), subColorSpace);
     }
 
-    private static ValueTask<DeviceColor[]> GetValues(
+    private static ValueTask<DeviceColor[]> GetValuesAsync(
         PdfObject stringOrStream, IColorSpace baseColorSpace, int length) =>
         stringOrStream switch
         {
             PdfString s => new(GetValues(s.Bytes, baseColorSpace, length)),
-            PdfStream s => GetValuesFromStream(s, baseColorSpace, length),
+            PdfStream s => GetValuesFromStreamAsync(s, baseColorSpace, length),
             _ => throw new PdfParseException("Invalid indexed color space definition")
         };
 
@@ -49,7 +49,7 @@ internal partial class IndexedColorSpace: IColorSpace
         return ret;
     }
 
-    private static async ValueTask<DeviceColor[]> GetValuesFromStream(
+    private static async ValueTask<DeviceColor[]> GetValuesFromStreamAsync(
         PdfStream pdfStream, IColorSpace baseColorSpace, int length)
     {
         var stream = await pdfStream.StreamContentAsync().CA();

@@ -17,7 +17,7 @@ internal class ShaderBitmap : IPdfBitmap
     }
 
     public bool DeclaredWithInterpolation => true;
-    public unsafe ValueTask RenderPbgra(byte* buffer)
+    public unsafe ValueTask RenderPbgraAsync(byte* buffer)
     {
         source.RenderBits((uint*)buffer, Width, Height);
         return ValueTask.CompletedTask;

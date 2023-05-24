@@ -44,7 +44,7 @@ public partial class FreeTypeGlyphPreview : UserControl
         {
             var target = new WpfRenderTarget(dc);
             using var writer = Face.BeginFontWrite(new FakeFontDrawTarget(target));
-            writer.AddGlyphToCurrentString((uint)GlyphSelector.Page, Matrix3x2.Identity);
+            writer.AddGlyphToCurrentStringAsync((uint)GlyphSelector.Page, Matrix3x2.Identity);
             writer.RenderCurrentString(false, true, false);
         }
 
@@ -56,12 +56,12 @@ internal  partial class FakeFontDrawTarget : IFontTarget
 {
     [FromConstructor] private readonly IRenderTarget target;
 
-    public async ValueTask<double> RenderType3Character(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
+    public async ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
         var render = new ContentStreamPreviewRenderer(WindowsDefaultFonts.Instance, s);
         target.GraphicsState.SetLineWidth(2);
         target.GraphicsState.CurrentState().SetStrokeColor(stackalloc double[]{0.0});
-        await render.RenderPageTo(1, (i, j) => target);
+        await render.RenderPageToAsync(1, (i, j) => target);
         return 0.0;
     }
 

@@ -77,7 +77,9 @@ public sealed class PdfArray :
     /// </summary>
     /// <param name="cancellationToken">Cancellation token for the await foreach operation</param>
     /// <returns>An async enumerator object that</returns>
+#pragma warning disable Arch003
     public IAsyncEnumerator<PdfObject> GetAsyncEnumerator(CancellationToken cancellationToken = new()) =>
+#pragma warning restore Arch003
         new Enumerator(rawItems);
     
     private class Enumerator : IAsyncEnumerator<PdfObject>

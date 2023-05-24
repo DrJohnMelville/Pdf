@@ -48,7 +48,7 @@ namespace Melville.Pdf.SkiaSharp
             DocumentRenderer doc, int oneBasedPageNumber, int width = -1, int height = -1)
         {
             SKSurface surface = null!;
-            await doc.RenderPageTo(oneBasedPageNumber, (rect, pageRotationMatrix) =>
+            await doc.RenderPageToAsync(oneBasedPageNumber, (rect, pageRotationMatrix) =>
             {
                 (width, height) = doc.ScalePageToRequestedSize(rect, new Vector2(width, height));
                 surface = SKSurface.Create(new SKImageInfo(width, height));

@@ -9,7 +9,7 @@ namespace Melville.Pdf.Model.Renderers.DocumentPartCaches;
 
 internal interface IDocumentPartCache: IDisposable
 {
-    ValueTask<T> Get<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull ;
+    ValueTask<T> GetAsync<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull ;
 }
 
 internal class DocumentPartCache: IDocumentPartCache
@@ -17,14 +17,14 @@ internal class DocumentPartCache: IDocumentPartCache
     private readonly Dictionary<object, object> store = new();
 
     private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
-    public async ValueTask<T> Get<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull
+    public async ValueTask<T> GetAsync<TSource, T>(TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull
     {
         await semaphore.WaitAsync().CA();
         try
         {
             return store.TryGetValue(source, out var value) && value is T valAsT
                 ? valAsT
-                : await FindAndStoreValue(source, creator).CA();
+                : await FindAndStoreValueAsync(source, creator).CA();
         }
         finally
         {
@@ -32,7 +32,7 @@ internal class DocumentPartCache: IDocumentPartCache
         }
     }
 
-    private async ValueTask<T> FindAndStoreValue<T, TSource>(
+    private async ValueTask<T> FindAndStoreValueAsync<T, TSource>(
         TSource source, Func<TSource, ValueTask<T>> creator) where TSource:notnull
     {
         var value = await creator(source).CA();

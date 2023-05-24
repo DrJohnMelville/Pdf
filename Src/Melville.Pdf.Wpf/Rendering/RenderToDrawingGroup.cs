@@ -93,7 +93,7 @@ public readonly struct RenderToDrawingGroup
     {
         AwaitConfig.ResumeOnCalledThread(true);
         var d2 = doc;
-        return doc.RenderPageTo(oneBasedPageNumber, (rect, preTransform) =>
+        return doc.RenderPageToAsync(oneBasedPageNumber, (rect, preTransform) =>
         {
             var innerRenderer = new WpfRenderTarget(dc);
             d2.InitializeRenderTarget(innerRenderer, rect, rect.Width, rect.Height, preTransform);

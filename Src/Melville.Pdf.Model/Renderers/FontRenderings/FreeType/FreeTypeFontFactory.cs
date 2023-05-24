@@ -16,20 +16,20 @@ internal readonly partial struct FreeTypeFontFactory
 {
     [FromConstructor] private readonly PdfFont fontDefinitionDictionary;
 
-    public async ValueTask<IRealizedFont> FromStream(PdfStream pdfStream)
+    public async ValueTask<IRealizedFont> FromStreamAsync(PdfStream pdfStream)
     {
         await using var source = await pdfStream.StreamContentAsync().CA();
-        return await FromCSharpStream(source).CA();
+        return await FromCSharpStreamAsync(source).CA();
     }
     
-    public async ValueTask<IRealizedFont> FromCSharpStream(Stream source, int index = 0)
+    public async ValueTask<IRealizedFont> FromCSharpStreamAsync(Stream source, int index = 0)
     {
         var fontAsBytes = await UncompressToBufferAsync(source).CA();
         await GlobalFreeTypeMutex.WaitForAsync().CA();
         try
         {
             var face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(fontAsBytes, index);
-            return await FontFromFace(face).CA();
+            return await FontFromFaceAsync(face).CA();
         }
         finally
         {
@@ -45,14 +45,14 @@ internal readonly partial struct FreeTypeFontFactory
         await output.FillBufferAsync(0, output.Length, decodedSource.CreateReader()).CA();
         return output;
     }
-    private async ValueTask<IRealizedFont> FontFromFace(Face face)
+    private async ValueTask<IRealizedFont> FontFromFaceAsync(Face face)
     {
         face.SetCharSize(0, 64, 0, 0);
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return
             new FreeTypeFont(face,
                 new FontRenderings.GlyphMappings.ReadCharacterFactory(fontDefinitionDictionary, encoding).Create(), 
-                await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary, encoding).Parse().CA(), 
-                await new FontWidthParser(fontDefinitionDictionary).Parse().CA());
+                await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary, encoding).ParseAsync().CA(), 
+                await new FontWidthParser(fontDefinitionDictionary).ParseAsync().CA());
     }
 }

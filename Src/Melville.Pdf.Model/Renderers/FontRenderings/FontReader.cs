@@ -33,38 +33,38 @@ public readonly struct FontReader
     /// </summary>
     /// <param name="fontDict">A PdfDictionary representing the font</param>
     /// <returns>An IRealizedFont that can render characters in the font.</returns>
-    public  ValueTask<IRealizedFont> DictionaryToRealizedFont(PdfDictionary fontDict) => 
-         PdfFontToRealizedFont(new PdfFont(fontDict));
+    public  ValueTask<IRealizedFont> DictionaryToRealizedFontAsync(PdfDictionary fontDict) => 
+         PdfFontToRealizedFontAsync(new PdfFont(fontDict));
 
-    private ValueTask<IRealizedFont> PdfFontToRealizedFont(PdfFont font)
+    private ValueTask<IRealizedFont> PdfFontToRealizedFontAsync(PdfFont font)
     {
         var fontTypeKey = font.SubType().GetHashCode();
         return fontTypeKey switch
         {
             KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel).ParseAsync(),
-            KnownNameKeys.Type0 => CreateType0Font(font, new FreeTypeFontFactory(font)),
-            _ => CreateRealizedFont(font, new FreeTypeFontFactory(font))
+            KnownNameKeys.Type0 => CreateType0FontAsync(font, new FreeTypeFontFactory(font)),
+            _ => CreateRealizedFontAsync(font, new FreeTypeFontFactory(font))
         };
     }
 
 
-    private async ValueTask<IRealizedFont> CreateType0Font(PdfFont font, FreeTypeFontFactory factory)
+    private async ValueTask<IRealizedFont> CreateType0FontAsync(PdfFont font, FreeTypeFontFactory factory)
     {
         Debug.Assert(KnownNames.Type0 == font.SubType());
-        var cidFont = await font.Type0SubFont().CA();
-        return await CreateRealizedFont(cidFont, factory).CA();
+        var cidFont = await font.Type0SubFontAsync().CA();
+        return await CreateRealizedFontAsync(cidFont, factory).CA();
     }
       
-    private async ValueTask<IRealizedFont> CreateRealizedFont(PdfFont fontStreamSource, FreeTypeFontFactory factory) =>
+    private async ValueTask<IRealizedFont> CreateRealizedFontAsync(PdfFont fontStreamSource, FreeTypeFontFactory factory) =>
         // notice that when parsing a type 0 font the font reference in the factory may be different
         // from the FontStreamSource paramenter.
         await (
                 await fontStreamSource.EmbeddedStreamAsync().CA() is { } fontAsStream ?
-                    factory.FromStream(fontAsStream) :
-                    SystemFontByName(fontStreamSource, factory)
+                    factory.FromStreamAsync(fontAsStream) :
+                    SystemFontByNameAsync(fontStreamSource, factory)
               ).CA();
 
-    private async ValueTask<IRealizedFont> SystemFontByName(PdfFont font, FreeTypeFontFactory factory) =>
+    private async ValueTask<IRealizedFont> SystemFontByNameAsync(PdfFont font, FreeTypeFontFactory factory) =>
         await defaultMapper
             .FontFromName(await font.OsFontNameAsync().CA(), await font.FontFlagsAsync().CA())
             .ToFontAsync(factory).CA();
@@ -73,5 +73,5 @@ public readonly struct FontReader
 internal static class MapDefaultFontReferenceToFont
 {
     public static ValueTask<IRealizedFont> ToFontAsync(this DefaultFontReference reference, FreeTypeFontFactory factory) =>
-        factory.FromCSharpStream(reference.Source, reference.Index);
+        factory.FromCSharpStreamAsync(reference.Source, reference.Index);
 }

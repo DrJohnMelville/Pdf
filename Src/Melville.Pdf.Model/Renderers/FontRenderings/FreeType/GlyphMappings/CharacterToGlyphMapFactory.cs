@@ -23,21 +23,21 @@ internal readonly partial struct CharacterToGlyphMapFactory
     [FromConstructor] private readonly PdfFont font;
     [FromConstructor] private readonly PdfEncoding encoding;
 
-    public ValueTask<IMapCharacterToGlyph> Parse() =>
+    public ValueTask<IMapCharacterToGlyph> ParseAsync() =>
         (font.SubType()).GetHashCode() switch
         {
-            KnownNameKeys.Type0 => Type0CharMapping(),
-            KnownNameKeys.MMType1 => SingleByteNamedMapping(),
-            KnownNameKeys.Type1 => SingleByteNamedMapping(),
-            KnownNameKeys.TrueType =>  ParseTrueTypeMapping(),
+            KnownNameKeys.Type0 => Type0CharMappingAsync(),
+            KnownNameKeys.MMType1 => SingleByteNamedMappingAsync(),
+            KnownNameKeys.Type1 => SingleByteNamedMappingAsync(),
+            KnownNameKeys.TrueType =>  ParseTrueTypeMappingAsync(),
             _ => throw new PdfParseException("Unknown Font Type"),
 
         };
 
     // this is a variance from the spec.  If a symbolic true type font lacks a valid CMAP for mapping
     // we fall back and attempt to map the font as a roman font.
-    private async ValueTask<IMapCharacterToGlyph> ParseTrueTypeMapping() => 
-        TryMapAsSymbolicFont(await font.FontFlagsAsync().CA()) ?? await SingleByteNamedMapping().CA();
+    private async ValueTask<IMapCharacterToGlyph> ParseTrueTypeMappingAsync() => 
+        TryMapAsSymbolicFont(await font.FontFlagsAsync().CA()) ?? await SingleByteNamedMappingAsync().CA();
 
     private IMapCharacterToGlyph? TryMapAsSymbolicFont(FontFlags fontFlags) => 
         fontFlags.HasFlag(FontFlags.Symbolic) ? TrueTypeSymbolicMapping(): null;
@@ -58,12 +58,12 @@ internal readonly partial struct CharacterToGlyphMapFactory
     private CharMap? ValidCharMap(CharMap? input) => 
         input?.AllMappings().Any()??false?input:null;
 
-    private async ValueTask<IMapCharacterToGlyph> SingleByteNamedMapping()
+    private async ValueTask<IMapCharacterToGlyph> SingleByteNamedMappingAsync()
     {
         var array = new uint[256];
         var nameToGlyphMapper = new NameToGlyphMappingFactory(face).Create();
-        await new FontRenderings.GlyphMappings.SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappings().CA())
-            .WriteEncodingToArray(encoding.LowLevel).CA();
+        await new FontRenderings.GlyphMappings.SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappingsAsync().CA())
+            .WriteEncodingToArrayAsync(encoding.LowLevel).CA();
         WriteBackupMappings(array);
         return new FontRenderings.GlyphMappings.CharacterToGlyphArray(array);
     }
@@ -89,7 +89,7 @@ internal readonly partial struct CharacterToGlyphMapFactory
         }
     }
 
-    private async Task<PdfName[]?> BuiltInFontCharMappings()
+    private async Task<PdfName[]?> BuiltInFontCharMappingsAsync()
     {
         if (font.SubType() != KnownNames.Type1) return null;
         return (await font.BaseFontNameAsync().CA()).GetHashCode() switch
@@ -100,12 +100,12 @@ internal readonly partial struct CharacterToGlyphMapFactory
         };
     }
     
-    private async ValueTask<IMapCharacterToGlyph> Type0CharMapping()
+    private async ValueTask<IMapCharacterToGlyph> Type0CharMappingAsync()
     {
-        var subFont = await font.Type0SubFont().CA();
-        return  (await subFont.CidToGidMapStream().CA() is {} mapStream)?
+        var subFont = await font.Type0SubFontAsync().CA();
+        return  (await subFont.CidToGidMapStreamAsync().CA() is {} mapStream)?
             await new CMapStreamParser(
-                PipeReader.Create(await mapStream.StreamContentAsync().CA())).Parse().CA():
+                PipeReader.Create(await mapStream.StreamContentAsync().CA())).ParseAsync().CA():
              IdentityCharacterToGlyph.Instance;
     }
 }

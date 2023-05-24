@@ -17,7 +17,7 @@ public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPag
     /// <summary>
     /// Get a stream representing the content stream for this item.
     /// </summary>
-    public virtual ValueTask<Stream> GetContentBytes() => new(new MemoryStream());
+    public virtual ValueTask<Stream> GetContentBytesAsync() => new(new MemoryStream());
 
     async ValueTask<IHasPageAttributes?> IHasPageAttributes.GetParentAsync() =>
         LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&

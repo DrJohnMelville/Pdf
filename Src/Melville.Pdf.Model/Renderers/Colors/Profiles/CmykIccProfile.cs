@@ -18,10 +18,10 @@ public static class CmykIccProfile
     /// <summary>
     /// Get the cmyk ICC profile
     /// </summary>
-    public static async ValueTask<IccProfile> ReadCmykProfile() => cmyk ??=
-        await LoadProfile().CA();
+    public static async ValueTask<IccProfile> ReadCmykProfileAsync() => cmyk ??=
+        await LoadProfileAsync().CA();
     
-    private static ValueTask<IccProfile> LoadProfile() =>
+    private static ValueTask<IccProfile> LoadProfileAsync() =>
         new IccParser(PipeReader.Create(
             GetCmykProfileStream())).ParseAsync();
 

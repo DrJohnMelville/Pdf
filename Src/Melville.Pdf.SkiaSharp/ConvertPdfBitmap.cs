@@ -26,7 +26,7 @@ namespace Melville.Pdf.SkiaSharp
                 SKAlphaType.Premul, SKColorSpace.CreateSrgb()));
 
         private static unsafe ValueTask FillBitmapAsync(IPdfBitmap bitmap, SKBitmap skBitmap) =>
-            bitmap.RenderPbgra((byte*)skBitmap.GetPixels().ToPointer());
+            bitmap.RenderPbgraAsync((byte*)skBitmap.GetPixels().ToPointer());
 
 
     }

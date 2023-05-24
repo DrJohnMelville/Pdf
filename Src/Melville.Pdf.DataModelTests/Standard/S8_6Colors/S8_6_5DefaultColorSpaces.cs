@@ -35,7 +35,7 @@ public class S8_6_5DefaultColorSpaces
     public async Task MapRgbToDeviceGray()
     {
         SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.DeviceGray));
-        var ret = await sut.ParseColorSpace(KnownNames.DeviceRGB);
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
         Assert.IsType<DeviceGray>(ret);
 
     }
@@ -45,7 +45,7 @@ public class S8_6_5DefaultColorSpaces
     {
         SetDefault(KnownNames.DefaultRGB, 
             new PdfArray(KnownNames.Indexed, KnownNames.DeviceGray, 1, PdfString.CreateAscii("AA")));
-        var ret = await sut.ParseColorSpace(KnownNames.DeviceRGB);
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
         Assert.IsType<DeviceGray>(ret);
 
     }
@@ -53,7 +53,7 @@ public class S8_6_5DefaultColorSpaces
     public async Task PatternMapsToBaseColorSpace()
     {
         SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.Pattern, KnownNames.DeviceGray));
-        var ret = await sut.ParseColorSpace(KnownNames.DeviceRGB);
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
         Assert.IsType<DeviceGray>(ret);
     }
 }

@@ -11,7 +11,7 @@ namespace Melville.Pdf.Wpf.FontCaching;
 
 internal class FontCachingTarget : WpfPathCreator, IFontTarget
 {
-    public ValueTask<double> RenderType3Character(
+    public ValueTask<double> RenderType3CharacterAsync(
         Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary) => 
         throw new NotSupportedException("This should only be used to cache FreeType fonts");
     public IDrawTarget CreateDrawTarget() => this;
@@ -19,7 +19,7 @@ internal class FontCachingTarget : WpfPathCreator, IFontTarget
 
     public async ValueTask<CachedGlyph> RenderGlyph(IFontWriteOperation innerender, uint glyph)
     {
-        var width= await innerender.AddGlyphToCurrentString(glyph, Matrix3x2.Identity);
+        var width= await innerender.AddGlyphToCurrentStringAsync(glyph, Matrix3x2.Identity);
         var finalGeometry = Geometry??new PathGeometry();
         return new CachedGlyph(finalGeometry, Fill(), width);
     }

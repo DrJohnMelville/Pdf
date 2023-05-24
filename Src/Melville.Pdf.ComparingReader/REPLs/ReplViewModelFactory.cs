@@ -68,7 +68,7 @@ public readonly struct ReplViewModelFactory
     {
         var page = await (await doc.PagesAsync()).GetPageAsync(pageSel.Page - 1);
         var content = (PdfIndirectObject)page.LowLevel.RawItems[KnownNames.Contents];
-        var replContent = await ReadContentString(await page.GetContentBytes());
+        var replContent = await ReadContentString(await page.GetContentBytesAsync());
         return new(replContent, renderer, buffer, content, pageSel);
     }
 }

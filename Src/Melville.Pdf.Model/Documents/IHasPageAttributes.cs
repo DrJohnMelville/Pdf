@@ -12,14 +12,14 @@ namespace Melville.Pdf.Model.Documents;
 internal interface IHasPageAttributes
 {
     PdfDictionary LowLevel { get; }
-    ValueTask<Stream> GetContentBytes();
+    ValueTask<Stream> GetContentBytesAsync();
     ValueTask<IHasPageAttributes?> GetParentAsync();
 
 }
 
 internal static class PdfPageAttributesOperations
 {
-    private static async IAsyncEnumerable<PdfObject> InheritedPageProperties(IHasPageAttributes item, PdfName name)
+    private static async IAsyncEnumerable<PdfObject> InheritedPagePropertiesAsync(IHasPageAttributes item, PdfName name)
     {
         var dict = item;
         while (dict != null)
@@ -31,7 +31,7 @@ internal static class PdfPageAttributesOperations
     }
 
     private static IAsyncEnumerable<PdfObject> InheritedResourceItem(IHasPageAttributes item, PdfName name) =>
-        InheritedPageProperties(item, KnownNames.Resources)
+        InheritedPagePropertiesAsync(item, KnownNames.Resources)
             .OfType<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
             .Where(i => i != PdfTokenValues.Null);
@@ -45,9 +45,9 @@ internal static class PdfPageAttributesOperations
     
     public static ValueTask<PdfObject?> GetResourceAsync(
         this IHasPageAttributes item, ResourceTypeName resourceType, PdfName name) =>
-        TwoLevelResourceDictionaryAccess(item, resourceType, name);
+        TwoLevelResourceDictionaryAccessAsync(item, resourceType, name);
 
-    private static ValueTask<PdfObject?> TwoLevelResourceDictionaryAccess(
+    private static ValueTask<PdfObject?> TwoLevelResourceDictionaryAccessAsync(
         IHasPageAttributes item, PdfName subDictionaryName, PdfName name) =>
         InheritedResourceItem(item, subDictionaryName)
             .OfType<PdfDictionary>()
@@ -57,7 +57,7 @@ internal static class PdfPageAttributesOperations
             .FirstOrDefaultAsync();
 
     private static ValueTask<PdfRect?> GetSingleBoxAsync(IHasPageAttributes item, PdfName name) =>
-        InheritedPageProperties(item, name)
+        InheritedPagePropertiesAsync(item, name)
             .OfType<PdfArray>()
             .SelectAwait(PdfRect.CreateAsync)
             .Select(i => new PdfRect?(i))

@@ -35,7 +35,7 @@ internal readonly struct MaskBitmap
         return 4 * (col + (row * Width));
     }
 
-    public static async ValueTask<MaskBitmap> Create(PdfStream stream, IHasPageAttributes page)
+    public static async ValueTask<MaskBitmap> CreateAsync(PdfStream stream, IHasPageAttributes page)
     {
         var wrapped = await stream.WrapForRenderingAsync(page, DeviceColor.Black).CA();
         var buffer = await wrapped.AsByteArrayAsync().CA();

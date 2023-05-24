@@ -16,7 +16,7 @@ public interface IFontWriteOperation: IDisposable
     /// <param name="glyph">Index of the glyph to render.</param>
     /// <param name="textMatrix">The current text matrix</param>
     /// <returns>The width of the rendered glyph</returns>
-    ValueTask<double> AddGlyphToCurrentString(uint glyph, Matrix3x2 textMatrix);
+    ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph, Matrix3x2 textMatrix);
     /// <summary>
     /// Render the glyph outlines previously added to this object.
     /// </summary>

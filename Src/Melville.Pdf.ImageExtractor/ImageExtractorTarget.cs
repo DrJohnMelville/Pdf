@@ -10,7 +10,7 @@ namespace Melville.Pdf.ImageExtractor;
 internal partial class ImageExtractorTarget: RenderTargetBase<IList<IExtractedBitmap>, UncoloredGraphicsState>
 {
     [FromConstructor] private readonly int page;
-    public override ValueTask RenderBitmap(IPdfBitmap bitmap)
+    public override ValueTask RenderBitmapAsync(IPdfBitmap bitmap)
     {
         Target.Add(new WrapNonExtractedBitmap(bitmap, 
             this.GraphicsState.CurrentState().TransformMatrix, page));

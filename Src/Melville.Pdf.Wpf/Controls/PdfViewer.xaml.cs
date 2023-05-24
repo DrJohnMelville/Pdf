@@ -21,7 +21,7 @@ public partial class PdfViewer : UserControl
     private async void OnSourceChanged(object? newSource)
     {
         if (newSource is null) return;
-        var dr = await new PdfReader(PasswordSource).ReadFrom(newSource);
+        var dr = await new PdfReader(PasswordSource).ReadFromAsync(newSource);
         await Dispatcher.BeginInvoke(()=> DataContext = new PdfViewerModel(dr), DispatcherPriority.Normal);
     }
 }

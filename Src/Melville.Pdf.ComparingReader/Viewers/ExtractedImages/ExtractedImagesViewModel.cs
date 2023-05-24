@@ -31,7 +31,7 @@ internal partial class ExtractedImagesViewModel: IRenderer
 
     public async void SetTarget(Stream pdfBits, IPasswordSource passwordSource)
     {
-        renderer = await new PdfReader(passwordSource).ReadFrom(pdfBits);
+        renderer = await new PdfReader(passwordSource).ReadFromAsync(pdfBits);
         SetPage(1);
     }
 
