@@ -15,5 +15,12 @@
       <PackageReference Include="Melville.Generators.INPC" Version="0.6.17" />
       <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
       <PackageReference Include="Melville.Hacks" Version="0.6.17" />
+
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+                        PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
+
     </ItemGroup>
 </Project>

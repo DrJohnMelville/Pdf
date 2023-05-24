@@ -21,10 +21,10 @@ internal class JbigToPdfAdapter: ICodecDefinition
         if (parameters is PdfDictionary dict &&
             (await dict.GetOrDefaultAsync<PdfStream?>(KnownNames.JBIG2Globals, null).CA()) is { } globals)
         {
-            await reader.ProcessSequentialSegments(await globals.StreamContentAsync().CA(), 1).CA();
+            await reader.ProcessSequentialSegmentsAsync(await globals.StreamContentAsync().CA(), 1).CA();
         }
 
-        await reader.ProcessSequentialSegments(input, 1).CA();
+        await reader.ProcessSequentialSegmentsAsync(input, 1).CA();
         var page = reader.GetPage(1);
         var (ary, _) = page.ColumnLocation(0);
 

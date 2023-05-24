@@ -27,7 +27,7 @@ public static class PipeReaderExtensions
     /// <param name="parsingFunc">A delegate that parses the data into the target type</param>
     /// <param name="defaultValue">A default value to return if there is no more data.</param>
     /// <returns>The result of the parsing operation.</returns>
-    public static async ValueTask<T> ReadFrom<T>(this PipeReader pipe, PipeParsingFunc<T> parsingFunc,T defaultValue)
+    public static async ValueTask<T> ReadFromAsync<T>(this PipeReader pipe, PipeParsingFunc<T> parsingFunc,T defaultValue)
     {
         while (true)
         {

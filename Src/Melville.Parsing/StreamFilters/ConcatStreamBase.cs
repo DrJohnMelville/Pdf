@@ -25,32 +25,32 @@ namespace Melville.Parsing.StreamFilters
         public override async ValueTask<int> ReadAsync(
             Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
-            await TryLoadFirstSource().CA();
+            await TryLoadFirstSourceAsync().CA();
             var bytesWritten = 0;
             while (!AtEndOfStream() && bytesWritten < buffer.Length)
             {
                 var localWritten = await current.ReadAsync(buffer[bytesWritten..], cancellationToken).CA();
                 bytesWritten += localWritten;
-                await PrepareForNextRead(localWritten).CA();
+                await PrepareForNextReadAsync(localWritten).CA();
             }
 
             return bytesWritten;
         }
 
-        private async ValueTask TryLoadFirstSource()
+        private async ValueTask TryLoadFirstSourceAsync()
         {
             // we use this as a sentinel to mean we have not gotten the first source yet
-            current = (current == this) ? await GetNextStream().CA(): current;
+            current = (current == this) ? await GetNextStreamAsync().CA(): current;
         }
     
         [MemberNotNullWhen(false, nameof(current))]
         private bool AtEndOfStream() => current is null;
 
-        private async ValueTask PrepareForNextRead(int localWritten)
+        private async ValueTask PrepareForNextReadAsync(int localWritten)
         {
             if (PriorReadSucceeded(localWritten)) return;
             if (current != null) await current.DisposeAsync().CA();
-            current = await GetNextStream().CA();;
+            current = await GetNextStreamAsync().CA();;
         }
 
         private static bool PriorReadSucceeded(int localWritten) => localWritten > 0;
@@ -66,6 +66,6 @@ namespace Melville.Parsing.StreamFilters
         /// Get the next stream in the sequence.
         /// </summary>
         /// <returns>The next stream in the sequence, or null if the sequence is over.</returns>
-        protected abstract ValueTask<Stream?> GetNextStream();
+        protected abstract ValueTask<Stream?> GetNextStreamAsync();
     }
 }

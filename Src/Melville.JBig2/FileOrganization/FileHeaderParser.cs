@@ -12,18 +12,18 @@ namespace Melville.JBig2.FileOrganization;
 
 internal static class FileHeaderParser
 {
-    public static ValueTask<SegmentHeaderReader> ReadFileHeader(
+    public static ValueTask<SegmentHeaderReader> ReadFileHeaderAsync(
         Stream input, IReadOnlyDictionary<uint, Segment> priorSegments) => 
-        ReadFileHeader((PipeReader)PipeReader.Create(input), priorSegments);
+        ReadFileHeaderAsync((PipeReader)PipeReader.Create(input), priorSegments);
 
-    public static async ValueTask<SegmentHeaderReader> ReadFileHeader(
+    public static async ValueTask<SegmentHeaderReader> ReadFileHeaderAsync(
         PipeReader input, IReadOnlyDictionary<uint, Segment> priorSegments)
     {
         var result = await input.ReadAtLeastAsync(13).CA();
-        return await ReadFileHeader(result.Buffer, input, priorSegments).CA();
+        return await ReadFileHeaderAsync(result.Buffer, input, priorSegments).CA();
     }
 
-    private static ValueTask<SegmentHeaderReader> ReadFileHeader(
+    private static ValueTask<SegmentHeaderReader> ReadFileHeaderAsync(
         ReadOnlySequence<byte> inputSequence, PipeReader input, 
         IReadOnlyDictionary<uint, Segment> priorSegments)
     {
@@ -35,15 +35,15 @@ internal static class FileHeaderParser
         return flags.SequentialFileOrganization
             ? new ValueTask<SegmentHeaderReader>(
                 new SequentialSegmentHeaderReader(input, pages, priorSegments)): 
-            CreateRandomAccessReader(input, pages, priorSegments);
+            CreateRandomAccessReaderAsync(input, pages, priorSegments);
     }
 
-    private static async ValueTask<SegmentHeaderReader> CreateRandomAccessReader(
+    private static async ValueTask<SegmentHeaderReader> CreateRandomAccessReaderAsync(
         PipeReader input, uint pages, IReadOnlyDictionary<uint, Segment> priorSegments) => 
         new RandomAccessSegmentHeaderReader(input, pages, priorSegments,
-            await ReadSegmentHeaders(input).CA());
+            await ReadSegmentHeadersAsync(input).CA());
 
-    private static async Task<Queue<SegmentHeader>> ReadSegmentHeaders(PipeReader input)
+    private static async Task<Queue<SegmentHeader>> ReadSegmentHeadersAsync(PipeReader input)
     {
         var ret = new Queue<SegmentHeader>();
         while(true)
@@ -68,9 +68,9 @@ internal abstract class SegmentHeaderReader
         Pipe = pipe;
     }
 
-    public async ValueTask<SegmentReader> NextSegmentReader() =>
-        new(Pipe, await NextSegmentHeader().CA(), priorSegments);
-    protected abstract ValueTask<SegmentHeader> NextSegmentHeader();
+    public async ValueTask<SegmentReader> NextSegmentReaderAsync() =>
+        new(Pipe, await NextSegmentHeaderAsync().CA(), priorSegments);
+    protected abstract ValueTask<SegmentHeader> NextSegmentHeaderAsync();
 }
 
 internal class SequentialSegmentHeaderReader : SegmentHeaderReader
@@ -79,7 +79,7 @@ internal class SequentialSegmentHeaderReader : SegmentHeaderReader
     {
     }
 
-    protected override ValueTask<SegmentHeader> NextSegmentHeader() => SegmentHeaderParser.ParseAsync(Pipe);
+    protected override ValueTask<SegmentHeader> NextSegmentHeaderAsync() => SegmentHeaderParser.ParseAsync(Pipe);
 }
 
 internal class RandomAccessSegmentHeaderReader : SegmentHeaderReader
@@ -91,5 +91,5 @@ internal class RandomAccessSegmentHeaderReader : SegmentHeaderReader
         this.headers = headers;
     }
 
-    protected override ValueTask<SegmentHeader> NextSegmentHeader() => new(headers.Dequeue());
+    protected override ValueTask<SegmentHeader> NextSegmentHeaderAsync() => new(headers.Dequeue());
 }

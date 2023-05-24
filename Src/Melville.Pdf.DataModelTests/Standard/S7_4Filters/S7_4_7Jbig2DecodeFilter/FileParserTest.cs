@@ -18,7 +18,7 @@ public class FileParserTest
 
     private async ValueTask<SegmentHeaderReader> ParseFile(params string[] data)
     {
-        return await FileHeaderParser.ReadFileHeader(new MemoryStream(BitStreamCreator.BitsFromHex(data)),
+        return await FileHeaderParser.ReadFileHeaderAsync(new MemoryStream(BitStreamCreator.BitsFromHex(data)),
             new Dictionary<uint, Segment>());
     } 
 
@@ -52,7 +52,7 @@ public class FileParserTest
 
     private static async Task VerifySegment(SegmentHeaderReader headerReader, SegmentType type)
     {
-        var reader = await headerReader.NextSegmentReader();
+        var reader = await headerReader.NextSegmentReaderAsync();
         Assert.Equal(type, reader.Header.SegmentType);
         await reader.SkipOverAsync();
     }

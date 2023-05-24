@@ -37,31 +37,31 @@ public class MinimumReadSizeFilter : DefaultBaseStream
     public override ValueTask<int> ReadAsync(
         Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        if (HasPriorData()) return ReadFromPriorData(buffer, cancellationToken);
-        if (buffer.Length < minReadSize) return ReadWithTemporaryBuffer(buffer, cancellationToken);
-        return ReadIntoBuffer(buffer, cancellationToken);
+        if (HasPriorData()) return ReadFromPriorDataAsync(buffer, cancellationToken);
+        if (buffer.Length < minReadSize) return ReadWithTemporaryBufferAsync(buffer, cancellationToken);
+        return ReadIntoBufferAsync(buffer, cancellationToken);
     }
 
     [MemberNotNullWhen(true)]
     private bool HasPriorData() => priorData != null;
 
-    private async ValueTask<int> ReadWithTemporaryBuffer(
+    private async ValueTask<int> ReadWithTemporaryBufferAsync(
         Memory<byte> buffer, CancellationToken cancellationToken)
     {
         Debug.Assert(!HasPriorData());
         priorData = ArrayPool<byte>.Shared.Rent(minReadSize + 1);
         priorDataStart = 0;
-        priorDataLength = await ReadIntoBuffer(this.priorData.AsMemory(), cancellationToken).CA();
-        return await ReadFromPriorData(buffer, cancellationToken).CA();
+        priorDataLength = await ReadIntoBufferAsync(this.priorData.AsMemory(), cancellationToken).CA();
+        return await ReadFromPriorDataAsync(buffer, cancellationToken).CA();
     }
 
-    private async ValueTask<int> ReadFromPriorData(Memory<byte> buffer, CancellationToken cancellationToken)
+    private async ValueTask<int> ReadFromPriorDataAsync(Memory<byte> buffer, CancellationToken cancellationToken)
     {
         Debug.Assert(HasPriorData());
         var bytesToCopy = Math.Min(buffer.Length, UnusedPriorDataLength());
         CopyFromTempBuffer(buffer, bytesToCopy);
         if (ResidueToSmallForAnotherRead(buffer, bytesToCopy)) return bytesToCopy;
-        return bytesToCopy + await ReadIntoBuffer(buffer.Slice(bytesToCopy), cancellationToken).CA();
+        return bytesToCopy + await ReadIntoBufferAsync(buffer.Slice(bytesToCopy), cancellationToken).CA();
     }
 
     private bool ResidueToSmallForAnotherRead(Memory<byte> buffer, int bytesUsed) => 
@@ -82,7 +82,7 @@ public class MinimumReadSizeFilter : DefaultBaseStream
         priorData = null;
     }
 
-    private ValueTask<int> ReadIntoBuffer(Memory<byte> buffer, CancellationToken cancellationToken) => 
+    private ValueTask<int> ReadIntoBufferAsync(Memory<byte> buffer, CancellationToken cancellationToken) => 
         source.ReadAsync(buffer, cancellationToken);
 
     /// <inheritdoc />

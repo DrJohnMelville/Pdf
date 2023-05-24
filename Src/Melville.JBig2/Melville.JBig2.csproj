@@ -17,6 +17,11 @@
     <ItemGroup>
       <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+                        PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>

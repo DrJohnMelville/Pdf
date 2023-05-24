@@ -12,5 +12,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
-    </ItemGroup>
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+                        PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
+
+	</ItemGroup>
 </Project>

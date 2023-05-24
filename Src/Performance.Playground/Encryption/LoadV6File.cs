@@ -12,7 +12,7 @@ public class LoadV6File
     public async Task TestParser()
     {
         await new StreamReader(
-                await new JpegStreamFactory().FromStream(
+                await new JpegStreamFactory().FromStreamAsync(
                     File.Open(@"C:\Users\jmelv\Documents\Scratch\questionable Jpeg.jpg", FileMode.Open)))
             .ReadToEndAsync();
     }

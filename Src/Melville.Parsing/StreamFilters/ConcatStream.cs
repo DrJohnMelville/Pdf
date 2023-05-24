@@ -25,5 +25,5 @@ public class ConcatStream : ConcatStreamBase
     }
 
     /// <inheritdoc />
-    protected override ValueTask<Stream?> GetNextStream() => new(items.MoveNext() ? items.Current : null);
+    protected override ValueTask<Stream?> GetNextStreamAsync() => new(items.MoveNext() ? items.Current : null);
 }

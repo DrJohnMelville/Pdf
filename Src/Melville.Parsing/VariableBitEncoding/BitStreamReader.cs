@@ -29,7 +29,7 @@ public readonly struct BitStreamReader
     /// Read a number from the stream.
     /// </summary>
     /// <returns>A number derived from the number of bits passed into the constructor.</returns>
-    public async ValueTask<uint> NextNum()
+    public async ValueTask<uint> NextNumAsync()
     {
         while (true)
         {

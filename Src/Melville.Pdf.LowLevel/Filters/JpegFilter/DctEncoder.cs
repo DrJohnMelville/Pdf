@@ -17,6 +17,6 @@ internal class DctCodec : ICodecDefinition
 
     public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters) => 
         await new JpegStreamFactory( await new DctDecodeParameters(parameters).ColorTransformAsync().CA())
-            .FromStream(input).CA();
+            .FromStreamAsync(input).CA();
 
 }

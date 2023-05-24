@@ -46,8 +46,8 @@ public abstract class JbigPageReader
     /// <param name="pipe">The source data</param>
     public async ValueTask ProcessFileBitsAsync(PipeReader pipe)
     {
-        var segmentHeadReader = await FileHeaderParser.ReadFileHeader(pipe, storedSegments).CA();
-        await ReadSegments(segmentHeadReader);
+        var segmentHeadReader = await FileHeaderParser.ReadFileHeaderAsync(pipe, storedSegments).CA();
+        await ReadSegmentsAsync(segmentHeadReader);
     }
 
     /// <summary>
@@ -55,12 +55,12 @@ public abstract class JbigPageReader
     /// </summary>
     /// <param name="stream">The stream to read from</param>
     /// <param name="pages">The page to read</param>
-    public  ValueTask ProcessSequentialSegments(Stream stream, uint pages) => 
-        ReadSegments(new SequentialSegmentHeaderReader(PipeReader.Create(stream), pages, storedSegments));
+    public  ValueTask ProcessSequentialSegmentsAsync(Stream stream, uint pages) => 
+        ReadSegmentsAsync(new SequentialSegmentHeaderReader(PipeReader.Create(stream), pages, storedSegments));
 
-    private async ValueTask ReadSegments(SegmentHeaderReader segmentHeadReader)
+    private async ValueTask ReadSegmentsAsync(SegmentHeaderReader segmentHeadReader)
     {
-        while ((await segmentHeadReader.NextSegmentReader().CA() is { } reader) &&
+        while ((await segmentHeadReader.NextSegmentReaderAsync().CA() is { } reader) &&
                reader.Header.SegmentType != SegmentType.EndOfFile)
         {
             if (WantPage(reader.Header.Page))

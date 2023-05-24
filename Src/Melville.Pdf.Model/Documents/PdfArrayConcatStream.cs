@@ -22,7 +22,7 @@ internal class PdfArrayConcatStream : ConcatStreamBase
         this.source = source.GetEnumerator();
     }
 
-    protected override async ValueTask<Stream?> GetNextStream()
+    protected override async ValueTask<Stream?> GetNextStreamAsync()
     {
         if (!source.MoveNext()) return null;
         var stream = (await source.Current) as PdfStream ??

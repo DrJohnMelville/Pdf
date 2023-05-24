@@ -38,10 +38,10 @@ internal readonly struct SegmentReader
         {
             SegmentType.EndOfFile => new(Segment.EndOfFile),
             SegmentType.EndOfPage => new(Segment.EndOfPage),
-            _ => ReadDataFrom()
+            _ => ReadDataFromAsync()
         };
 
-    private  async ValueTask<Segment> ReadDataFrom()
+    private  async ValueTask<Segment> ReadDataFromAsync()
     {
         var sequence = await ReadSpanAsync().CA();
         var ret = ReadFrom(sequence);

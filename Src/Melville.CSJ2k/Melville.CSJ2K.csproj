@@ -12,6 +12,12 @@
 	</PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Properties" />
+	    <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+	                      PrivateAssets="all">
+		    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		    <OutputItemType>Analyzer</OutputItemType>
+	    </ProjectReference>
+
+		<Folder Include="Properties" />
     </ItemGroup>
 </Project>

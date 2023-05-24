@@ -19,10 +19,10 @@ public static class AdvanceToLocalPositionImpl
         {
             < 0 => throw new InvalidOperationException("Cannot rewind a pipe reader"),
             0 => new ValueTask(),
-            var delta => TryAdvanceFast(pipe, delta)
+            var delta => TryAdvanceFastAsync(pipe, delta)
         };
     
-    private static ValueTask TryAdvanceFast(IByteSource pipe, long delta)
+    private static ValueTask TryAdvanceFastAsync(IByteSource pipe, long delta)
     {
         if (!pipe.TryRead(out var rr) || rr.Buffer.Length < delta) 
             return SlowAdvanceToPositionAsync(pipe, delta);

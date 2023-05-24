@@ -13,7 +13,7 @@ internal static class TagParser
         var reader = new SequenceReader<byte>(input);
         return Parse(ref reader);
     }
-
+    
     public static object Parse(ref SequenceReader<byte> reader)
     {
         return reader.ReadBigEndianUint32() switch

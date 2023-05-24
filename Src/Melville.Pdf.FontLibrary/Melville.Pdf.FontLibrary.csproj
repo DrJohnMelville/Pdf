@@ -11,6 +11,14 @@
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+		                  PrivateAssets="all">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
+	</ItemGroup>
+
     <ItemGroup>
       <None Remove="Symbola.ttf" />
       <EmbeddedResource Include="Symbola.ttf" />

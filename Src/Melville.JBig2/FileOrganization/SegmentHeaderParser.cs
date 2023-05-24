@@ -12,7 +12,7 @@ internal static class SegmentHeaderParser
     
     private static SegmentHeader endOfFile = 
         new(uint.MinValue, SegmentType.EndOfFile, 0, 0, Array.Empty<uint>());
-    public static ValueTask<SegmentHeader> ParseAsync(PipeReader pipe) => pipe.ReadFrom(TryParse, endOfFile);
+    public static ValueTask<SegmentHeader> ParseAsync(PipeReader pipe) => pipe.ReadFromAsync(TryParse, endOfFile);
 
     public static bool TryParse(ref SequenceReader<byte> source, out SegmentHeader header)
     {

@@ -58,7 +58,7 @@ internal static class SampledFunctionParser
         {
             for (int j = 0; j < range.Length; j++)
             {
-                var encoded = await reader.NextNum().CA();
+                var encoded = await reader.NextNumAsync().CA();
                 var unencoded = encodedRange.MapTo(decode[j], encoded);
                 ret[pos++] = unencoded;
             }
