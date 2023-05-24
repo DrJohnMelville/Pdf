@@ -2405,6 +2405,46 @@
             Content stream operator sc
             </summary>
         </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeColorExtendedAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator SCN
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorExtendedAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator scn
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeGrayAsync(System.Double)">
+            <summary>
+            Content stream operator G
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeRGBAsync(System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator RG
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeCMYKAsync(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator K
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingGrayAsync(System.Double)">
+            <summary>
+            Content stream operator g
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingRgbAsync(System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator rg
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingCMYKAsync(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Content stream operator k
+            </summary>
+        </member>
         <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetRenderIntent(Melville.Pdf.LowLevel.Model.Conventions.RenderIntentName)">
             <summary>
             Content stream operator renderingIntent ri
