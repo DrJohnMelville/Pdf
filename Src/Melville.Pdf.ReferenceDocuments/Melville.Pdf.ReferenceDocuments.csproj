@@ -10,6 +10,12 @@
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
       <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
+
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+                        PrivateAssets="all">
+	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	      <OutputItemType>Analyzer</OutputItemType>
+      </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>

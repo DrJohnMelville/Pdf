@@ -13,7 +13,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
+	    <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+	                      PrivateAssets="all">
+		    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		    <OutputItemType>Analyzer</OutputItemType>
+	    </ProjectReference>
+	    <ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
       <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
     </ItemGroup>
 
