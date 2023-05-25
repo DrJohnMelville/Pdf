@@ -26,7 +26,7 @@ namespace Performance.Playground.Rendering;
 public class JbigParsing
 {
     [Benchmark]
-    public async Task ParseJBig()
+    public async Task ParseJBigAsync()
     {
         var fact = new JbigAllPageReader();
         await fact.ProcessFileBitsAsync(JBigSampleStreams.Get("042_24")!);
@@ -44,10 +44,10 @@ public class JbigParsing
 public class CcittParsing
 {
     [Benchmark]
-    public async Task RenderSkia()
+    public async Task RenderSkiaAsync()
     {
         AwaitConfig.ResumeOnCalledThread(false);
-        using var dr = await LoadDocument();
+        using var dr = await LoadDocumentAsync();
         await RenderWithSkia.ToSurfaceAsync(dr, 9); 
     }
     [Benchmark]
@@ -56,12 +56,12 @@ public class CcittParsing
         AsyncPump.Run(async () =>
         {
             AwaitConfig.ResumeOnCalledThread(true);
-            using var dr = await LoadDocument();
+            using var dr = await LoadDocumentAsync();
             await new RenderToDrawingGroup(dr, 9).RenderToDrawingImageAsync();
         });
     }
 
-    private static async Task<DocumentRenderer> LoadDocument()
+    private static async Task<DocumentRenderer> LoadDocumentAsync()
     {
         var file = File.Open(@"C:\Users\jmelv\Documents\Scratch\PDF torture test\CHAM_4_Book_Set.pdf", FileMode.Open);
         var dr = await DocumentRendererFactory.CreateRendererAsync(

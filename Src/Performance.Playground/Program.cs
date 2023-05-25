@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable Arch004 // Async method does not have name ending with Async
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
@@ -11,7 +12,7 @@ using Performance.Playground.Rendering;
 if (true)
 {
     Console.WriteLine("Begin");
-    await new ImageExtraction().ExtractImages();
+    await new ImageExtraction().ExtractImagesAsync();
     Console.WriteLine("done");
 }
 else
@@ -21,7 +22,7 @@ else
 
 public static class Timer
     {
-        public static async Task DoTime(Func<Task> item)
+        public static async Task DoTimeAsync(Func<Task> item)
         {
             var sw = new Stopwatch(); 
             sw.Start();
@@ -29,7 +30,7 @@ public static class Timer
             sw.Stop();
             Console.WriteLine($"Done in {sw.ElapsedMilliseconds} ms.");
         }
-        public static Task DoTime(Action item)
+        public static Task DoTimeAsync(Action item)
         {
             Console.WriteLine("Begin Test");
             var sw = new Stopwatch();
@@ -40,3 +41,5 @@ public static class Timer
             return Task.CompletedTask;
         }
     }
+
+#pragma warning restore Arch004 // Async method does not have name ending with Async

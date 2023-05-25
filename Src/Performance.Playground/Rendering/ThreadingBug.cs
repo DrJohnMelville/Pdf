@@ -13,7 +13,7 @@ namespace Performance.Playground.Rendering;
 
 public class ThreadingBug
 {
-    public async Task ReadMulti()
+    public async Task ReadMultiAsync()
     {
             using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(

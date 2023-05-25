@@ -9,7 +9,7 @@ namespace Performance.Playground.Encryption;
 
 public class LoadV6File
 {
-    public async Task TestParser()
+    public async Task TestParserAsync()
     {
         await new StreamReader(
                 await new JpegStreamFactory().FromStreamAsync(

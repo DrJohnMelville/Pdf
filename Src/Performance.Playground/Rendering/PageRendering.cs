@@ -27,27 +27,27 @@ public class PageRendering
 {
     MultiBufferStream data = new MultiBufferStream();
     [GlobalSetup]
-    public async Task CreateStream()
+    public async Task CreateStreamAsync()
     {
         await new EmbeddedTrueType().WritePdfAsync(data);
     }
     
     [Benchmark]
-    public async Task RenderSkia()
+    public async Task RenderSkiaAsync()
     { 
         AwaitConfig.ResumeOnCalledThread(false);
-        using var dr = await LoadDocument();
+        using var dr = await LoadDocumentAsync();
         await RenderWithSkia.ToSurfaceAsync(dr, 1, 2000); 
     }
     [Benchmark]
-    public async Task<DrawingImage> RenderWpf()
+    public async Task<DrawingImage> RenderWpfAsync()
     {
             AwaitConfig.ResumeOnCalledThread(true);
-            using var dr = await LoadDocument();
+            using var dr = await LoadDocumentAsync();
             return await new RenderToDrawingGroup(dr, 1).RenderToDrawingImageAsync();
     }
 
-    private async Task<DocumentRenderer> LoadDocument() =>
+    private async Task<DocumentRenderer> LoadDocumentAsync() =>
         await DocumentRendererFactory.CreateRendererAsync(
             await PdfDocument.ReadAsync(data.CreateReader()), WindowsDefaultFonts.Instance);
 }

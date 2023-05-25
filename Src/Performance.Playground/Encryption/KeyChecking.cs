@@ -22,10 +22,10 @@ namespace Performance.Playground.Encryption
 
         public KeyChecking()
         {
-           handler = Initialize().GetAwaiter().GetResult();
+           handler = InitializeAsync().GetAwaiter().GetResult();
         }
 
-        private async ValueTask<ISecurityHandler> Initialize()
+        private async ValueTask<ISecurityHandler> InitializeAsync()
         {
             var tDict = (PdfDictionary)await V2R3128RC4CipherWithBlankUserPasswordFromExampleFile.ParseObjectAsync();
             return await  SecurityHandlerFactory.CreateSecurityHandlerAsync(

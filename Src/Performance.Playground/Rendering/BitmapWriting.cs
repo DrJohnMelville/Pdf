@@ -18,7 +18,7 @@ namespace Performance.Playground.Rendering;
 public class ImageExtraction
 {
     [Benchmark()]
-    public async Task ExtractImages()
+    public async Task ExtractImagesAsync()
     {
         int index = 1;
         var doc = await new PdfReader().ReadFromFileAsync(@"C:\Users\jmelv\Documents\PhotoDoc website Backup\backup_2019-05-31-1240_Digital_Forensic_Photography_262d8efaca37-uploads\uploads\2014\04\AAFS-slides.pdf");
