@@ -5,7 +5,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
 public interface IRootParser
 {
-    ValueTask Parse(string argument);
+    ValueTask ParseAsync(string argument);
     ITarget Target { get; set; }
 }
 public class RootArgumentParser: IRootParser
@@ -18,6 +18,6 @@ public class RootArgumentParser: IRootParser
     {
         this.nextParser = this.defaultParser = defaultParser;
     }
-    public async ValueTask Parse(string argument) => 
+    public async ValueTask ParseAsync(string argument) => 
         nextParser = (await nextParser.ParseArgumentAsync(argument, this)) ?? defaultParser;
 }
