@@ -32,13 +32,13 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
     private async void LoadFormats()
     {
         var fmts = new List<StreamDisplayFormat>();
-        await AddFormats(fmts);
+        await AddFormatsAsync(fmts);
 
         Formats = fmts;
         SelectedFormat = fmts.First();
     }
 
-    protected virtual async ValueTask AddFormats(List<StreamDisplayFormat> fmts)
+    protected virtual async ValueTask AddFormatsAsync(List<StreamDisplayFormat> fmts)
     {
         fmts.Add(new StreamDisplayFormat("Disk Representation",
             p => LoadBytesAsync(p, StreamFormat.DiskRepresentation)));

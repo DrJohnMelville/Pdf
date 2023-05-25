@@ -34,20 +34,20 @@ public class ItemLoader : DocumentPart
         objectNumber < minObjectNumber || objectNumber > maxObjectNumber;
 
 
-    public override async ValueTask TryFillTree(IWaitingService waiting)
+    public override async ValueTask TryFillTreeAsync(IWaitingService waiting)
     {
         if (Children != fakeContent) return;
-        Children = await GetItems(waiting);
+        Children = await GetItemsAsync(waiting);
     }
 
-    private async ValueTask<DocumentPart[]> GetItems(IWaitingService waiting)
+    private async ValueTask<DocumentPart[]> GetItemsAsync(IWaitingService waiting)
     {
         var ret = new DocumentPart[references.Length];
-        await FillMemoryWithParts(waiting, ret);
+        await FillMemoryWithPartsAsync(waiting, ret);
         return ret;
     }
 
-    public async ValueTask FillMemoryWithParts(
+    public async ValueTask FillMemoryWithPartsAsync(
         IWaitingService waiting, Memory<DocumentPart> ret)
     {
         var generator = new ViewModelVisitor();

@@ -28,14 +28,14 @@ public partial class LowLevelViewModel
 
     public async void SetStream(Stream source)
     {
-        ParsedDoc = await TryParse(source);
+        ParsedDoc = await TryParseAsync(source);
     }
 
-    private async Task<ParsedLowLevelDocument> TryParse(Stream source)
+    private async Task<ParsedLowLevelDocument> TryParseAsync(Stream source)
     {
         try
         {
-            return await (await CreateParser()).ParseAsync(source, waiter ?? new FakeWaitingService());
+            return await (await CreateParserAsync()).ParseAsync(source, waiter ?? new FakeWaitingService());
         }
         catch (Exception e)
         {
@@ -45,18 +45,18 @@ public partial class LowLevelViewModel
         }
     }
 
-    private async Task<PartParser> CreateParser()
+    private async Task<PartParser> CreateParserAsync()
     {
         var (password, passwordType) = await passwordSource.GetPasswordAsync();
         return new PartParser(new ConstantPasswordSource(passwordType, password));
     }
 
-    public ValueTask JumpToReference(ReferencePartViewModel target, IWaitingService waiting)
+    public ValueTask JumpToReferenceAsync(ReferencePartViewModel target, IWaitingService waiting)
     {
-        return JumpToReference2(target.RefersTo, waiting);
+        return JumpToReference2Async(target.RefersTo, waiting);
     }
 
-    private async ValueTask JumpToReference2(CrossReference reference, IWaitingService waiting)
+    private async ValueTask JumpToReference2Async(CrossReference reference, IWaitingService waiting) 
     {
         if (Root is null) return;
         if (Selected is not null &&
@@ -68,9 +68,9 @@ public partial class LowLevelViewModel
     public async void JumpTOPage(int page)
     {
         if (ParsedDoc is null) return;
-        var reference = await ParsedDoc.Pages.PageForNumber(page);
+        var reference = await ParsedDoc.Pages.PageForNumberAsync(page);
         if (reference.Object == 0) return;
-        await JumpToReference2(reference, new FakeWaitingService());
+        await JumpToReference2Async(reference, new FakeWaitingService());
     }
 
     private readonly Stack<DocumentPart> targetHistory = new();

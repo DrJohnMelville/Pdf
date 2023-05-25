@@ -16,11 +16,11 @@ public readonly struct ParsePdfObjectsToView
     
     private const int maxSegmentLength = 1000;
 
-    public async Task<DocumentPart[]> ParseItemElements()
+    public async Task<DocumentPart[]> ParseItemElementsAsync()
     {
         return TooLongForPreloadedList()?
             CreateLazyLoadList()
-            : await CreatePreloadedList();
+            : await CreatePreloadedListAsync();
     }
     
     private bool TooLongForPreloadedList() => sourceList.Length > maxSegmentLength;
@@ -48,11 +48,11 @@ public readonly struct ParsePdfObjectsToView
     private int ComputeDecimatedLength() => 
         (sourceList.Length + maxSegmentLength - 1) / maxSegmentLength;
 
-    private async Task<DocumentPart[]> CreatePreloadedList()
+    private async Task<DocumentPart[]> CreatePreloadedListAsync()
     {
         var items = new DocumentPart[sourceList.Length + 2];
         var creator = new ItemLoader(sourceList);
-        await creator.FillMemoryWithParts(waiting, items.AsMemory(1..^1));
+        await creator.FillMemoryWithPartsAsync(waiting, items.AsMemory(1..^1));
         return items;
     }
 }

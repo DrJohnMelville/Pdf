@@ -22,9 +22,9 @@
         </TabControl>
         <Menu HorizontalAlignment="Right" VerticalAlignment="Top">
             <MenuItem Header="Operations">
-                <MenuItem Header="Color Picker" Click="{eventBindings:EventBinding ShowAsIccColorPicker}"></MenuItem>
+                <MenuItem Header="Color Picker" Click="{eventBindings:EventBinding ShowAsIccColorPickerAsync}"></MenuItem>
                 <MenuItem Header="Repl" Click="{eventBindings:EventBinding ShowPdfRepl}"></MenuItem>
-                <MenuItem Header="Save to File" Click="{eventBindings:EventBinding SaveStreamToFile}"></MenuItem>
+                <MenuItem Header="Save to File" Click="{eventBindings:EventBinding SaveStreamToFileAsync}"></MenuItem>
             </MenuItem>
         </Menu>
     </Grid>

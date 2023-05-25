@@ -24,7 +24,7 @@ public readonly struct DocumentPartSearcher
                 ret = item;
             }
             item.Expanded = false;
-            if (await SearchChildren(item) is { } found)
+            if (await SearchChildrenAsync(item) is { } found)
             {
                 if (!item.Expanded) item.Expanded = true;
                 return found;
@@ -39,10 +39,10 @@ public readonly struct DocumentPartSearcher
         return ret;
     }
 
-    private async ValueTask<DocumentPart?> SearchChildren(DocumentPart item)
+    private async ValueTask<DocumentPart?> SearchChildrenAsync(DocumentPart item)
     {
         if (item.CanSkipSearch(target.Object)) return null;
-        await item.TryFillTree(waiting);
+        await item.TryFillTreeAsync(waiting);
         return await FindAsync(item.Children);
     }
 }

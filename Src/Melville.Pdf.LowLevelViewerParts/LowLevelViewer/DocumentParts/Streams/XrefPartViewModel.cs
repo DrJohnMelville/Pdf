@@ -22,13 +22,13 @@ public class XrefPartViewModel : StreamPartViewModel
     {
     }
 
-    protected override async ValueTask AddFormats(List<StreamDisplayFormat> fmts)
+    protected override async ValueTask AddFormatsAsync(List<StreamDisplayFormat> fmts)
     {
-        await base.AddFormats(fmts);
-        fmts.Add(new StreamDisplayFormat("Xref", ParseXref));
+        await base.AddFormatsAsync(fmts);
+        fmts.Add(new StreamDisplayFormat("Xref", ParseXrefAsync));
     }
 
-    private async ValueTask<object> ParseXref(PdfStream arg)
+    private async ValueTask<object> ParseXrefAsync(PdfStream arg)
     {
         var factory = new XrefParseLogger();
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(factory, Source).CA();

@@ -33,14 +33,14 @@ public partial class DocumentPart
         //This is used -- it gets called by the UI
     public async void OnExpand( IWaitingService waiting)
     {
-        await TryFillTree(waiting);
+        await TryFillTreeAsync(waiting);
     }
     public void OnSelected(TreeViewItem item)
     {
         item.BringIntoView();
     }
     
-    public virtual ValueTask TryFillTree(IWaitingService waiting) =>
+    public virtual ValueTask TryFillTreeAsync(IWaitingService waiting) =>
         ValueTask.CompletedTask;
 
 }

@@ -16,7 +16,7 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
 {
     private string prefix = "";
 
-    public ValueTask<DocumentPart> GeneratePart(string newPrefix, PdfObject item)
+    public ValueTask<DocumentPart> GeneratePartAsync(string newPrefix, PdfObject item)
     {
         prefix = newPrefix;
         return item.InvokeVisitor(this);
@@ -29,29 +29,30 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
         return ret;
     }
 
-    private ValueTask<DocumentPart> Terminal(string text) => 
+    private ValueTask<DocumentPart> TerminalAsync(string text) => 
         new ValueTask<DocumentPart>(new DocumentPart(ConsumePrefix() + text));
 
+#pragma warning disable Arch004 // Async method does not have name ending with Async
     public async ValueTask<DocumentPart> Visit(PdfArray item)
     {
         var title = prefix + "Array";
         var children = new DocumentPart[item.Count];
         for (int i = 0; i < children.Length; i++)
         {
-            children[i] = await GeneratePart($"[{i}]: ", item.RawItems[i]);
+            children[i] = await GeneratePartAsync($"[{i}]: ", item.RawItems[i]);
         }
 
         return new DocumentPart(title, children);
     }
 
-    public ValueTask<DocumentPart> Visit(PdfBoolean item) => Terminal(item.ToString());
+    public ValueTask<DocumentPart> Visit(PdfBoolean item) => TerminalAsync(item.ToString());
 
     public async ValueTask<DocumentPart> Visit(PdfDictionary item)
     {
         //Notice there is an ordering dependency in these two declarationsn.  The second
         //line changes prefix;
         var savedPrefix = ConsumePrefix() ;
-        var children = await ParseDictionaryChildren(item);
+        var children = await ParseDictionaryChildrenAsync(item);
 
         var type = await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.Type);
 
@@ -66,22 +67,22 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     private static string DictionaryTitle(PdfName type) => 
         (type == KnownNames.Type?"Dictionary":type.ToString())??"Dictionary";
 
-    private async Task<DocumentPart[]> ParseDictionaryChildren(PdfDictionary item)
+    private async Task<DocumentPart[]> ParseDictionaryChildrenAsync(PdfDictionary item)
     {
         var children = new DocumentPart[item.Count];
         var next = 0;
         foreach (var child in item.RawItems)
         {
-            children[next++] = await GenerateDictionaryItem(child);
+            children[next++] = await GenerateDictionaryItemAsync(child);
         }
 
         return children;
     }
 
-    private ValueTask<DocumentPart> GenerateDictionaryItem(KeyValuePair<PdfName, PdfObject> item) => 
-        GeneratePart($"{item.Key}: ", item.Value);
+    private ValueTask<DocumentPart> GenerateDictionaryItemAsync(KeyValuePair<PdfName, PdfObject> item) => 
+        GeneratePartAsync($"{item.Key}: ", item.Value);
 
-    public ValueTask<DocumentPart> Visit(PdfTokenValues item) => Terminal(item.ToString());
+    public ValueTask<DocumentPart> Visit(PdfTokenValues item) => TerminalAsync(item.ToString());
 
     public async ValueTask<DocumentPart> VisitTopLevelObject(PdfIndirectObject item)
     {
@@ -93,12 +94,12 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public ValueTask<DocumentPart> Visit(PdfIndirectObject item) =>
         new(new ReferencePartViewModel(ConsumePrefix(), item.ObjectNumber, item.GenerationNumber));
 
-    public ValueTask<DocumentPart> Visit(PdfName item) => Terminal(item.ToString() ?? "<Null>");
+    public ValueTask<DocumentPart> Visit(PdfName item) => TerminalAsync(item.ToString() ?? "<Null>");
 
-    public ValueTask<DocumentPart> Visit(PdfInteger item) => Terminal(item.IntValue.ToString());
+    public ValueTask<DocumentPart> Visit(PdfInteger item) => TerminalAsync(item.IntValue.ToString());
 
     public ValueTask<DocumentPart> Visit(PdfDouble item) => 
-        Terminal(item.DoubleValue.ToString(CultureInfo.CurrentUICulture));
+        TerminalAsync(item.DoubleValue.ToString(CultureInfo.CurrentUICulture));
 
     public ValueTask<DocumentPart> Visit(PdfString item) => 
         new(new StringDocumentPart(item, ConsumePrefix()));
@@ -106,11 +107,12 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     public async ValueTask<DocumentPart> Visit(PdfStream item)
     {
         var title = ConsumePrefix();
-        var children = await ParseDictionaryChildren(item);
+        var children = await ParseDictionaryChildrenAsync(item);
         if (item.SubTypeOrNull() == KnownNames.Image)
             return new ImagePartViewModel(title + "Image Stream", children, item);
         if ((await item.GetOrDefaultAsync(KnownNames.Type, KnownNames.None).CA()) == KnownNames.XRef)
             return new XrefPartViewModel(title + "XRef Stream", children, item);
         return new StreamPartViewModel(title + "Stream", children, item);
     }
+#pragma warning restore Arch004 // Async method does not have name ending with Async
 }

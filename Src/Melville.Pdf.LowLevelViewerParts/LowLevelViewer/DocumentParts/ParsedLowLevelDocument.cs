@@ -21,13 +21,13 @@ public class ParsedLowLevelDocument
 
 public interface IPageLookup
 {
-    ValueTask<CrossReference> PageForNumber(int page);
+    ValueTask<CrossReference> PageForNumberAsync(int page);
 }
 
 [StaticSingleton]
 public partial class NoPageLookup : IPageLookup
 {
-    public ValueTask<CrossReference> PageForNumber(int page) => new(new CrossReference(0, 0));
+    public ValueTask<CrossReference> PageForNumberAsync(int page) => new(new CrossReference(0, 0));
 }
 
 public class PageLookup : IPageLookup
@@ -39,10 +39,10 @@ public class PageLookup : IPageLookup
         this.treeRoot = treeRoot;
     }
 
-    public ValueTask<CrossReference> PageForNumber(int page) => 
-        InnerPageForNumber(treeRoot, page);
+    public ValueTask<CrossReference> PageForNumberAsync(int page) => 
+        InnerPageForNumberAsync(treeRoot, page);
 
-    private async ValueTask<CrossReference> InnerPageForNumber(PageTree node, int page)
+    private async ValueTask<CrossReference> InnerPageForNumberAsync(PageTree node, int page)
     {
         var kids = await node.KidsAsync();
         for (int i = 0; i < kids.Count; i++)
@@ -63,7 +63,7 @@ public class PageLookup : IPageLookup
             } else if (kidType == KnownNames.Pages)
             {
                 var nodeCount = (int)(await kid.GetAsync<PdfNumber>(KnownNames.Count)).IntValue;
-                if (page < nodeCount) return await InnerPageForNumber(new PageTree(kid), page);
+                if (page < nodeCount) return await InnerPageForNumberAsync(new PageTree(kid), page);
                 page -= nodeCount;
             }
         }

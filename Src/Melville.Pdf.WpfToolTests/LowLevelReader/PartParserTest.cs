@@ -121,10 +121,10 @@ public class PartParserTest
         builder.Pages.CreatePage();
         builder.CreateDocument();
         var doc = await CreateParsedFileAsync(builder.LowLevelCreator);
-        Assert.Equal(new CrossReference(3,0), await doc.Pages.PageForNumber(0));
-        Assert.Equal(new CrossReference(4,0), await doc.Pages.PageForNumber(1));
-        Assert.Equal(new CrossReference(5,0), await doc.Pages.PageForNumber(2));
-        Assert.Equal(new CrossReference(6,0), await doc.Pages.PageForNumber(3));
+        Assert.Equal(new CrossReference(3,0), await doc.Pages.PageForNumberAsync(0));
+        Assert.Equal(new CrossReference(4,0), await doc.Pages.PageForNumberAsync(1));
+        Assert.Equal(new CrossReference(5,0), await doc.Pages.PageForNumberAsync(2));
+        Assert.Equal(new CrossReference(6,0), await doc.Pages.PageForNumberAsync(3));
         
     }
 }

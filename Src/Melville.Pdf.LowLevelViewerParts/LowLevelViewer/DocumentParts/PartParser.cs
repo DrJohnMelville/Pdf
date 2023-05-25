@@ -33,19 +33,19 @@ public class PartParser: IPartParser
     public async Task<ParsedLowLevelDocument> ParseAsync(Stream source, IWaitingService waiting)
     {
         PdfLowLevelDocument lowlevel = await new PdfLowLevelReader(passwordSource).ReadFromAsync(source);
-        return await GenerateUIList(waiting, lowlevel);
+        return await GenerateUIListAsync(waiting, lowlevel);
     }
 
-    private async Task<ParsedLowLevelDocument> GenerateUIList(IWaitingService waiting, PdfLowLevelDocument lowlevel)
+    private async Task<ParsedLowLevelDocument> GenerateUIListAsync(IWaitingService waiting, PdfLowLevelDocument lowlevel)
     {
         var sourceList = OrderedListOfObjects(lowlevel);
-        var items = await new ParsePdfObjectsToView(waiting, sourceList).ParseItemElements();
-        await AddPrefixAndSuffix(items, lowlevel);
+        var items = await new ParsePdfObjectsToView(waiting, sourceList).ParseItemElementsAsync();
+        await AddPrefixAndSuffixAsync(items, lowlevel);
         return new ParsedLowLevelDocument(items, 
-            await CreatePageLookup(lowlevel));
+            await CreatePageLookupAsync(lowlevel));
     }
 
-    private static async Task<IPageLookup> CreatePageLookup(PdfLowLevelDocument lowlevel)
+    private static async Task<IPageLookup> CreatePageLookupAsync(PdfLowLevelDocument lowlevel)
     {
         try
         {
@@ -57,14 +57,14 @@ public class PartParser: IPartParser
         }
     }
 
-    private async ValueTask AddPrefixAndSuffix(DocumentPart[] items, PdfLowLevelDocument lowlevel)
+    private async ValueTask AddPrefixAndSuffixAsync(DocumentPart[] items, PdfLowLevelDocument lowlevel)
     {
         items[0] = GenerateHeaderElement(lowlevel);
-        items[^1] = await GenerateSuffixElement(lowlevel);
+        items[^1] = await GenerateSuffixElementAsync(lowlevel);
     }
 
-    private static ValueTask<DocumentPart> GenerateSuffixElement(PdfLowLevelDocument lowlevel) => 
-        new ViewModelVisitor().GeneratePart("Trailer: ", lowlevel.TrailerDictionary);
+    private static ValueTask<DocumentPart> GenerateSuffixElementAsync(PdfLowLevelDocument lowlevel) => 
+        new ViewModelVisitor().GeneratePartAsync("Trailer: ", lowlevel.TrailerDictionary);
 
     private static PdfIndirectObject[] OrderedListOfObjects(PdfLowLevelDocument lowlevel) => 
         lowlevel.Objects.Values.OrderBy(i => i.ObjectNumber).ToArray();

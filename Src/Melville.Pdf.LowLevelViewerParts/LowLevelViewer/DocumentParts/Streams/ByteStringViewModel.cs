@@ -19,9 +19,9 @@ public class ByteStringViewModel
     public string HexDump =>
         string.Join("\r\n", Bytes.BinaryFormat().Select((hexDump, index) => $"{index:X7}0  {hexDump}"));
 
-    public string AsAsciiString => ExtendedAsciiEncoding.ExtendedAsciiString(Bytes);
+    public string AsAsciiString => Bytes.ExtendedAsciiString();
 
-    public async Task SaveStreamToFile([FromServices] IOpenSaveFile fileDlg)
+    public async Task SaveStreamToFileAsync([FromServices] IOpenSaveFile fileDlg)
     {
         var target = fileDlg.GetSaveFile(null, "", "All Files (*.*)|*.*", "Write stream to file");
         if (target == null) return;
@@ -29,7 +29,7 @@ public class ByteStringViewModel
         await targetStream.WriteAsync(Bytes.AsMemory());
     }
 
-    public async Task ShowAsIccColorPicker([FromServices] IMvvmDialog dlg) =>
+    public async Task ShowAsIccColorPickerAsync([FromServices] IMvvmDialog dlg) =>
         dlg.ShowPopupWindow(
             await ColorSpaceViewModelFactory.CreateAsync(new MemoryStream(Bytes)),
             800, 400, "Color Picker");

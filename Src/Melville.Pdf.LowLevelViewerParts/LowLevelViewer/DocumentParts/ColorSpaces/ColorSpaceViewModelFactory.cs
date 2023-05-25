@@ -10,14 +10,14 @@ public static class ColorSpaceViewModelFactory
     public static async ValueTask<MultiColorSpaceViewModel> CreateAsync(Stream iccData)
     {
         var models = new List<ColorSpaceViewModel>(2);
-        await TryAddIccProfile(iccData, models);
+        await TryAddIccProfileAsync(iccData, models);
         AddColorSpace(models, StaticColorSpaces.DeviceRgb(), "Device RGB");
         return new MultiColorSpaceViewModel(models);
     }
 
-    private static async Task TryAddIccProfile(Stream iccData, List<ColorSpaceViewModel> models)
+    private static async Task TryAddIccProfileAsync(Stream iccData, List<ColorSpaceViewModel> models)
     {
-        if (await TryReadIccProfile(iccData) is {} colorSpace)
+        if (await TryReadIccProfileAsync(iccData) is {} colorSpace)
             AddColorSpace(models, colorSpace, "ICC Profile");
     }
 
@@ -28,7 +28,7 @@ public static class ColorSpaceViewModelFactory
     private static ImmutableList<ColorAxisViewModel> ParseInputAxes(IColorSpace colorSpace) => 
         colorSpace.ColorComponentRanges(8).Select(i=>new ColorAxisViewModel(i)).ToImmutableList();
 
-    private static async Task<IColorSpace?> TryReadIccProfile(Stream iccData)
+    private static async Task<IColorSpace?> TryReadIccProfileAsync(Stream iccData)
     {
         try
         {
