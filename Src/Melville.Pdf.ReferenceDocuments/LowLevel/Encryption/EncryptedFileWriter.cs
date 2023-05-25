@@ -14,12 +14,12 @@ public abstract class EncryptedFileWriter : CreatePdfParser
     public override async ValueTask WritePdfAsync(Stream target)
     { 
         var builder = new PdfDocumentCreator();
-        await BuildDocument(builder);
+        await BuildDocumentAsync(builder);
         var doc = builder.CreateDocument();
-        await WriteFile(target, doc);
+        await WriteFileAsync(target, doc);
     }
 
-    protected virtual async ValueTask BuildDocument(PdfDocumentCreator builder)
+    protected virtual async ValueTask BuildDocumentAsync(PdfDocumentCreator builder)
     {
         BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, encryptor);
         var page = builder.Pages.CreatePage();
@@ -33,7 +33,7 @@ public abstract class EncryptedFileWriter : CreatePdfParser
         });
     }
 
-    protected virtual Task WriteFile(Stream target, PdfLowLevelDocument doc)
+    protected virtual Task WriteFileAsync(Stream target, PdfLowLevelDocument doc)
     {
         return doc.WriteToAsync(target, "User");
     }

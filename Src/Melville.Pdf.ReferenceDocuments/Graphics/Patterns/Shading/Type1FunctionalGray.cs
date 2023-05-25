@@ -11,7 +11,7 @@ public class Type1FunctionalGray : Type1FunctionalShaderBase
         
     }
 
-    protected override async Task<PdfStream[]> BuildFunction()
+    protected override async Task<PdfStream[]> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));

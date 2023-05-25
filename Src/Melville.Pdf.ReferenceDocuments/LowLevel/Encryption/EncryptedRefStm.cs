@@ -11,12 +11,12 @@ public class EncryptedRefStm: EncryptedFileWriter
     {
     }
 
-    protected override Task WriteFile(Stream target, PdfLowLevelDocument doc) => 
+    protected override Task WriteFileAsync(Stream target, PdfLowLevelDocument doc) => 
         doc.WriteToWithXrefStreamAsync(target, "User");
 
-    protected override async ValueTask BuildDocument(PdfDocumentCreator builder)
+    protected override async ValueTask BuildDocumentAsync(PdfDocumentCreator builder)
     {
-        await base.BuildDocument(builder);
+        await base.BuildDocumentAsync(builder);
         using (var b1 = builder.LowLevelCreator.ObjectStreamContext())
         {
             builder.LowLevelCreator.Add(PdfString.CreateAscii("String in Stream Context."));

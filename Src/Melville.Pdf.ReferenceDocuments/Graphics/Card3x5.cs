@@ -28,10 +28,10 @@ public abstract class Card3x5: CreatePdfParser
         var page = docCreator.Pages.CreatePage();
         page.AddBox(BoxName.CropBox, new PdfRect(0, 0, 5 * 72, 3 * 72));
         await SetPagePropertiesAsync(page);
-        await page.AddToContentStreamAsync(CreateContentStream);
+        await page.AddToContentStreamAsync(CreateContentStreamAsync);
     }
 
-    private ValueTask CreateContentStream(ContentStreamWriter csw)
+    private ValueTask CreateContentStreamAsync(ContentStreamWriter csw)
     {
         DoPainting(csw);
         return DoPaintingAsync(csw);

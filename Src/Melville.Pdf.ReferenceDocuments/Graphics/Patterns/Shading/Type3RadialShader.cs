@@ -14,11 +14,11 @@ public abstract class Type3RadialShaderBase : PatternDisplayClass
     private PdfDictionary? function = null;
     protected override async ValueTask SetPagePropertiesAsync(PageCreator page)
     {
-        function = await BuildFunction();
+        function = await BuildFunctionAsync();
         await base.SetPagePropertiesAsync(page);
     }
 
-    protected virtual async Task<PdfDictionary> BuildFunction()
+    protected virtual async Task<PdfDictionary> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));

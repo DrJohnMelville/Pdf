@@ -9,9 +9,9 @@ internal class FiltersGenerator : CreatePdfParser
     }
 
     public override async ValueTask WritePdfAsync(Stream target) =>
-        await (await Filters()).WriteToWithXrefStreamAsync(target);
+        await (await FiltersAsync()).WriteToWithXrefStreamAsync(target);
 
-    public async ValueTask<PdfLowLevelDocument> Filters()
+    public async ValueTask<PdfLowLevelDocument> FiltersAsync()
     {
         var builder = new PdfDocumentCreator();
         builder.Pages.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.StandardEncoding);
@@ -22,36 +22,36 @@ internal class FiltersGenerator : CreatePdfParser
             KnownNames.Identity, KnownNames.Identity, KnownNames.Identity,
             new V4CfDictionary(KnownNames.V2, 128 / 8)));
 
-        await CreatePage(builder, "Rc4 Crypt Filter", FilterName.Crypt,
+        await CreatePageAsync(builder, "Rc4 Crypt Filter", FilterName.Crypt,
             new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
                 .WithItem(KnownNames.Name, KnownNames.StdCF)
                 .AsDictionary());
-        await CreatePage(builder, "Identity Crypt Filter", FilterName.Crypt,
+        await CreatePageAsync(builder, "Identity Crypt Filter", FilterName.Crypt,
             new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
                 .WithItem(KnownNames.Name, KnownNames.Identity)
                 .AsDictionary());
-        await CreatePage(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
+        await CreatePageAsync(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
             FilterName.RunLengthDecode);
-        await CreatePage(builder, "LZW -- LateChange" + RandomString(9270), FilterName.LZWDecode,
+        await CreatePageAsync(builder, "LZW -- LateChange" + RandomString(9270), FilterName.LZWDecode,
             new DictionaryBuilder().WithItem(KnownNames.EarlyChange, 0).AsDictionary());
-        await CreatePage(builder, "LZW -- " + RandomString(9270), FilterName.LZWDecode);
-        await CreatePage(builder, "Ascii Hex", FilterName.ASCIIHexDecode);
-        await CreatePage(builder, "Ascii 85", FilterName.ASCII85Decode);
-        await CreatePage(builder, "Flate Decode", FilterName.FlateDecode);
-        await PredictionPage(builder, "Flate Decode With Tiff Predictor 2", 2);
-        await PredictionPage(builder, "Flate Decode With Png Predictor 10", 10);
-        await PredictionPage(builder, "Flate Decode With Png Predictor 11", 11);
-        await PredictionPage(builder, "Flate Decode With Png Predictor 12", 12);
-        await PredictionPage(builder, "Flate Decode With Png Predictor 13", 13);
-        await PredictionPage(builder, "Flate Decode With Png Predictor 14", 14);
-        await PredictionPage(builder, "Flate Decode With Png Predictor 15", 15);
+        await CreatePageAsync(builder, "LZW -- " + RandomString(9270), FilterName.LZWDecode);
+        await CreatePageAsync(builder, "Ascii Hex", FilterName.ASCIIHexDecode);
+        await CreatePageAsync(builder, "Ascii 85", FilterName.ASCII85Decode);
+        await CreatePageAsync(builder, "Flate Decode", FilterName.FlateDecode);
+        await PredictionPageAsync(builder, "Flate Decode With Tiff Predictor 2", 2);
+        await PredictionPageAsync(builder, "Flate Decode With Png Predictor 10", 10);
+        await PredictionPageAsync(builder, "Flate Decode With Png Predictor 11", 11);
+        await PredictionPageAsync(builder, "Flate Decode With Png Predictor 12", 12);
+        await PredictionPageAsync(builder, "Flate Decode With Png Predictor 13", 13);
+        await PredictionPageAsync(builder, "Flate Decode With Png Predictor 14", 14);
+        await PredictionPageAsync(builder, "Flate Decode With Png Predictor 15", 15);
 
         return builder.CreateDocument();
     }
 
-    private static ValueTask CreatePage(PdfDocumentCreator builder, string Text, FilterName encoding,
+    private static ValueTask CreatePageAsync(PdfDocumentCreator builder, string Text, FilterName encoding,
         PdfObject? parameters = null) =>
         builder.Pages.CreatePage().AddToContentStreamAsync(
             new DictionaryBuilder().WithFilter(encoding).WithFilterParam(parameters),
@@ -63,8 +63,8 @@ internal class FiltersGenerator : CreatePdfParser
                 return ValueTask.CompletedTask;
             });
 
-    private static ValueTask PredictionPage(PdfDocumentCreator builder, string text, int Predictor) =>
-        CreatePage(builder, text, FilterName.FlateDecode,
+    private static ValueTask PredictionPageAsync(PdfDocumentCreator builder, string text, int Predictor) =>
+        CreatePageAsync(builder, text, FilterName.FlateDecode,
             new DictionaryBuilder()
                 .WithItem(KnownNames.Colors, 2)
                 .WithItem(KnownNames.Columns, 5)

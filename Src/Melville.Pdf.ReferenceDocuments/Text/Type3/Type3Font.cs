@@ -16,10 +16,10 @@ public class Type3FontInvisible3 : Type3FontBase
     {
     }
 
-    protected override ValueTask BetweenFontWrites(ContentStreamWriter csw)
+    protected override ValueTask BetweenFontWritesAsync(ContentStreamWriter csw)
     {
         csw.SetTextRender(TextRendering.Invisible);
-        return base.BetweenFontWrites(csw);
+        return base.BetweenFontWritesAsync(csw);
     }
 }
     public class Type3FontInvisible7 : Type3FontBase
@@ -28,9 +28,9 @@ public class Type3FontInvisible3 : Type3FontBase
     {
     }
 
-    protected override ValueTask BetweenFontWrites(ContentStreamWriter csw)
+    protected override ValueTask BetweenFontWritesAsync(ContentStreamWriter csw)
     {
         csw.SetTextRender(TextRendering.Clip);
-        return base.BetweenFontWrites(csw);
+        return base.BetweenFontWritesAsync(csw);
     }
 }

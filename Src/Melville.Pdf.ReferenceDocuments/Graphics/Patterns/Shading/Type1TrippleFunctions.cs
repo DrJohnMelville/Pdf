@@ -9,18 +9,18 @@ public class Type1TrippleFunctions : Type1FunctionalShaderBase
     {
     }
 
-    protected override async Task<PdfStream[]> BuildFunction()
+    protected override async Task<PdfStream[]> BuildFunctionAsync()
     {
         var ret = new[]
         {
-            await SingleMethod((x, y) => x),
-            await SingleMethod((x, y) => y),
-            await SingleMethod((x, y) => (x + y) / 2.0)
+            await SingleMethodAsync((x, y) => x),
+            await SingleMethodAsync((x, y) => y),
+            await SingleMethodAsync((x, y) => (x + y) / 2.0)
         };
         return ret;
     }
 
-    private static async Task<PdfStream> SingleMethod(Func<double, double, double> defn)
+    private static async Task<PdfStream> SingleMethodAsync(Func<double, double, double> defn)
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));

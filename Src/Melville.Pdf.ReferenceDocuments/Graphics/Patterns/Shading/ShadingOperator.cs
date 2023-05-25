@@ -14,7 +14,7 @@ public class ShadingOperator: Card3x5{
 
     protected override async ValueTask SetPagePropertiesAsync(PageCreator page)
     {
-        var func = await BuildFunction();
+        var func = await BuildFunctionAsync();
         page.AddResourceObject(ResourceTypeName.Shading, NameDirectory.Get("Sh1") ,
             ll=> new DictionaryBuilder()
                 .WithItem(KnownNames.Function, ll.Add(func))
@@ -26,7 +26,7 @@ public class ShadingOperator: Card3x5{
         await base.SetPagePropertiesAsync(page);
     }
 
-    private async Task<PdfDictionary> BuildFunction()
+    private async Task<PdfDictionary> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));

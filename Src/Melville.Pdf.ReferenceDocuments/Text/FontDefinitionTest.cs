@@ -26,17 +26,17 @@ public abstract class FontDefinitionTest : Card3x5
     {
         using var tr = csw.StartTextBlock();
         await csw.SetStrokeRGBAsync(1.0, 0.0, 0.0);
-        await WriteString(csw, tr, Font1, 25);
-        await BetweenFontWrites(csw);
-        await WriteString(csw, tr, Font2, 125);
+        await WriteStringAsync(csw, tr, Font1, 25);
+        await BetweenFontWritesAsync(csw);
+        await WriteStringAsync(csw, tr, Font2, 125);
     }
 
-    protected virtual ValueTask BetweenFontWrites(ContentStreamWriter csw)
+    protected virtual ValueTask BetweenFontWritesAsync(ContentStreamWriter csw)
     {
         return ValueTask.CompletedTask;
     }
 
-    private async Task WriteString(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
+    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
     {
         await csw.SetFontAsync(font, FontSize);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);

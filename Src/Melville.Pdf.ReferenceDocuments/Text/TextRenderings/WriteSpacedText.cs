@@ -22,13 +22,13 @@ public class WriteSpacedText : Card3x5
     {
         using var tr = csw.StartTextBlock();
         await csw.SetNonstrokingRgbAsync(1.0, 0.0, 0.0);
-        await WriteString(csw, tr, Font1, 25);
+        await WriteStringAsync(csw, tr, Font1, 25);
         csw.ModifyTransformMatrix(Matrix3x2.CreateTranslation(0, 100));
         await csw.SetNonstrokingRgbAsync(1.0, 0.0, 1.0);
-        await WriteString(csw, tr, Font1, 25);
+        await WriteStringAsync(csw, tr, Font1, 25);
     }
 
-    private async Task WriteString(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
+    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
     {
         await csw.SetFontAsync(font, 70);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);
