@@ -16,7 +16,7 @@ public class FileParserTest
     private const string endofStripeData = "000000FF";
     private const string endOfFileHead = "00000006 33 00 01 00000000";
 
-    private async ValueTask<SegmentHeaderReader> ParseFile(params string[] data)
+    private async ValueTask<SegmentHeaderReader> ParseFileAsync(params string[] data)
     {
         return await FileHeaderParser.ReadFileHeaderAsync(new MemoryStream(BitStreamCreator.BitsFromHex(data)),
             new Dictionary<uint, Segment>());
@@ -25,32 +25,32 @@ public class FileParserTest
     [Theory]
     [InlineData("01 00000003", 3u)]
     [InlineData("03", 0u)]
-    public async Task ParseSequentialFileHeader(string typeAndPages, uint pages)
+    public async Task ParseSequentialFileHeaderAsync(string typeAndPages, uint pages)
     {
-        var reader = await ParseFile(magicNumber, typeAndPages,
+        var reader = await ParseFileAsync(magicNumber, typeAndPages,
             endOfStripeHead, endofStripeData, endOfPageHead, endOfFileHead);
-        await VerifySimpleFile<SequentialSegmentHeaderReader>(pages, reader);
+        await VerifySimpleFileAsync<SequentialSegmentHeaderReader>(pages, reader);
     }
     [Theory]
     [InlineData("00 00000003", 3u)]
     [InlineData("02", 0u)]
-    public async Task ParseRandomAccessFileHeader(string typeAndPages, uint pages)
+    public async Task ParseRandomAccessFileHeaderAsync(string typeAndPages, uint pages)
     {
-        var reader = await ParseFile(magicNumber, typeAndPages,
+        var reader = await ParseFileAsync(magicNumber, typeAndPages,
             endOfStripeHead, endOfPageHead, endOfFileHead, endofStripeData);
-        await VerifySimpleFile<RandomAccessSegmentHeaderReader>(pages, reader);
+        await VerifySimpleFileAsync<RandomAccessSegmentHeaderReader>(pages, reader);
     }
 
-    private static async ValueTask VerifySimpleFile<T>(uint pages, SegmentHeaderReader headerReader)
+    private static async ValueTask VerifySimpleFileAsync<T>(uint pages, SegmentHeaderReader headerReader)
     {
         Assert.IsType<T>(headerReader);
         Assert.Equal(pages, headerReader.Pages);
-        await VerifySegment(headerReader, SegmentType.EndOfStripe);
-        await VerifySegment(headerReader, SegmentType.EndOfPage);
-        await VerifySegment(headerReader, SegmentType.EndOfFile);
+        await VerifySegmentAsync(headerReader, SegmentType.EndOfStripe);
+        await VerifySegmentAsync(headerReader, SegmentType.EndOfPage);
+        await VerifySegmentAsync(headerReader, SegmentType.EndOfFile);
     }
 
-    private static async Task VerifySegment(SegmentHeaderReader headerReader, SegmentType type)
+    private static async Task VerifySegmentAsync(SegmentHeaderReader headerReader, SegmentType type)
     {
         var reader = await headerReader.NextSegmentReaderAsync();
         Assert.Equal(type, reader.Header.SegmentType);

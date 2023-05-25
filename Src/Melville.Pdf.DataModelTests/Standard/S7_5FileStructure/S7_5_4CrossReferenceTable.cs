@@ -20,7 +20,7 @@ public class S7_5_4CrossReferenceTable
     private readonly Mock<IIndirectObjectResolver> resolver = new();
         
     [Fact]
-    public async Task ParseSimpleTable()
+    public async Task ParseSimpleTableAsync()
     {
         var sampleTale = @"0 6
 0000000003 65535 f
@@ -40,7 +40,7 @@ public class S7_5_4CrossReferenceTable
         i=>i.AddLocationHint(It.IsAny<RawLocationIndirectObject>());
 
     [Fact]
-    public async Task ParseCompoundTable()
+    public async Task ParseCompoundTableAsync()
     {
         var sampleTale = @"0 4
 0000000003 65535 f
@@ -58,7 +58,7 @@ public class S7_5_4CrossReferenceTable
         resolver.VerifyNoOtherCalls();
     }
     [Fact]
-    public async Task ParseZeroTable()
+    public async Task ParseZeroTableAsync()
     {
         var sampleTale = @"0 0
 trailer
@@ -71,7 +71,7 @@ trailer
     }
 
     [Fact]
-    public async Task LodFileTableWhenLoadingFiles()
+    public async Task LodFileTableWhenLoadingFilesAsync()
     {
         var resolver = new Mock<IIndirectObjectResolver>();
         var file = await MinimalPdfParser.MinimalPdf(1,5).AsStringAsync();

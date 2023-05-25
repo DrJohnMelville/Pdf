@@ -16,7 +16,7 @@ public class CompositeFontWidthParserTest
     private readonly Mock<IRealizedFont> rf = new(MockBehavior.Strict);
 
     [Fact]
-    public async Task ParseType1Item()
+    public async Task ParseType1ItemAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.Font)
@@ -33,7 +33,7 @@ public class CompositeFontWidthParserTest
         
     }
     [Fact]
-    public async Task CanFollowType1Decl()
+    public async Task CanFollowType1DeclAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.Font)
@@ -50,7 +50,7 @@ public class CompositeFontWidthParserTest
         
     }
     [Fact]
-    public async Task CanFollowType2Decl()
+    public async Task CanFollowType2DeclAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.Font)
@@ -68,7 +68,7 @@ public class CompositeFontWidthParserTest
         
     }
     [Fact]
-    public async Task ParseType2Item()
+    public async Task ParseType2ItemAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.Font)

@@ -7,9 +7,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S9_6SimpleFonts;
 public class ParseGlyphDefinitionOperators : ParserTest
 {
     [Fact]
-    public Task SetColoredGlyphMetrics() => TestInput(
+    public Task SetColoredGlyphMetricsAsync() => TestInputAsync(
         "1 2 d0", i => i.SetColoredGlyphMetrics(1, 2));
     [Fact]
-    public Task SetUncoloredGlyphMetrics() => TestInput(
+    public Task SetUncoloredGlyphMetricsAsync() => TestInputAsync(
         "1 2 3 4 5 6 d1", i => i.SetUncoloredGlyphMetrics(1, 2, 3, 4, 5, 6));
 }

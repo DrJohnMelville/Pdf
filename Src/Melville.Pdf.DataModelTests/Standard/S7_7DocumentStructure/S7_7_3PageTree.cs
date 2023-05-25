@@ -14,7 +14,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 public class S7_7_3PageTree
 {
     [Fact]
-    public async Task CreateThreePages()
+    public async Task CreateThreePagesAsync()
     {
         var doc = CreateThreePageSimpleDocument();
 
@@ -38,7 +38,7 @@ public class S7_7_3PageTree
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
-    public async Task GetSimplePageFromIndex(int position)
+    public async Task GetSimplePageFromIndexAsync(int position)
     {
         var doc = CreateThreePageSimpleDocument();
         var pagesTree = await doc.PagesAsync();
@@ -59,7 +59,7 @@ public class S7_7_3PageTree
         return doc;
     }
     [Fact]
-    public async Task CreateComplexThreePages()
+    public async Task CreateComplexThreePagesAsync()
     {
         var doc = CreateFourPageComplexDocument();
 
@@ -71,15 +71,15 @@ public class S7_7_3PageTree
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public async Task GetComplexPageFromIndex(int position)
+    public async Task GetComplexPageFromIndexAsync(int position)
     {
         var doc = CreateFourPageComplexDocument();
         var pagesTree = await doc.PagesAsync();
-        await TestEnumeratorAndAccessor(position, pagesTree);
+        await TestEnumeratorAndAccessorAsync(position, pagesTree);
         
     }
 
-    private static async Task TestEnumeratorAndAccessor(int position, PageTree pagesTree)
+    private static async Task TestEnumeratorAndAccessorAsync(int position, PageTree pagesTree)
     {
         var btIndex = await pagesTree.ElementAtAsync(position);
         var byPageNumber = await pagesTree.GetPageAsync(position+1);
@@ -88,7 +88,7 @@ public class S7_7_3PageTree
     }
 
     [Fact]
-    public async Task DefaultTreeSizeTest()
+    public async Task DefaultTreeSizeTestAsync()
     {
         var doc = FifteenPageDocumentTree();
         var p0 = await (await doc.PagesAsync()).GetPageAsync(0);
@@ -122,12 +122,12 @@ public class S7_7_3PageTree
     }
 
     [Fact]
-    public async Task TestMultiLevelTreeaccess()
+    public async Task TestMultiLevelTreeaccessAsync()
     {
         var doc = FifteenPageDocumentTree();
         for (int i = 0; i < 15; i++)
         {
-            await TestEnumeratorAndAccessor(i, await doc.PagesAsync());
+            await TestEnumeratorAndAccessorAsync(i, await doc.PagesAsync());
         }
     }
 }

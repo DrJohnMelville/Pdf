@@ -125,7 +125,7 @@ public class MultiBufferStreamTest
         
 
     [Fact]
-    public async Task ReadAsyncFromByteArray()
+    public async Task ReadAsyncFromByteArrayAsync()
     {
         var sut = CreateStream("ABCDE");
         var ret = new byte[5];
@@ -133,7 +133,7 @@ public class MultiBufferStreamTest
         Assert.Equal("ABCDE", ExtendedAsciiEncoding.ExtendedAsciiString(ret));
     }
     [Fact]
-    public async Task ReadAsyncFromMemory()
+    public async Task ReadAsyncFromMemoryAsync()
     {
         var sut = CreateStream("ABCDE");
         var ret = new byte[5];

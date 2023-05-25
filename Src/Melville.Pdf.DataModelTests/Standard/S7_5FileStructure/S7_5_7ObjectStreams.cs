@@ -27,7 +27,7 @@ public class S7_5_7ObjectStreams
     [InlineData("1 0 2 6 11111\n22222")]
     [InlineData("1 0 2 5 1111122222")]
     [InlineData("1 0 2 7 11111\n222222")]
-    public async Task RawLoadObjectStream(string streamText)
+    public async Task RawLoadObjectStreamAsync(string streamText)
     {
         var os = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.ObjStm)
@@ -41,12 +41,12 @@ public class S7_5_7ObjectStreams
         res.AddLocationHint(new ObjectStreamIndirectObject(2, 0, pfo, 10));
         res.AddLocationHint(new PdfIndirectObject(10, 0, os));
 
-        await AssertIndirect(res, 1, "11111");
-        await AssertIndirect(res, 2, "22222");
+        await AssertIndirectAsync(res, 1, "11111");
+        await AssertIndirectAsync(res, 2, "22222");
     }
 
     [Fact]
-    public async Task EmptyObjectStream()
+    public async Task EmptyObjectStreamAsync()
     {
         var os = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.ObjStm)
@@ -61,7 +61,7 @@ public class S7_5_7ObjectStreams
 
     }
 
-    private static async Task AssertIndirect(IndirectObjectResolver res, int objectNumber, string expected)
+    private static async Task AssertIndirectAsync(IndirectObjectResolver res, int objectNumber, string expected)
     {
         var o1 = await res.FindIndirect(objectNumber, 0).DirectValueAsync();
         Assert.Equal(expected, o1.ToString());
@@ -72,21 +72,21 @@ public class S7_5_7ObjectStreams
     [InlineData("/N 2")]
     [InlineData("/First 8")]
     [InlineData("1 0 2 6 (One)\n(Two)")]
-    public async Task RenderObjectStream(string expected)
+    public async Task RenderObjectStreamAsync(string expected)
     {
-        Assert.Contains(expected, await DocWithObjectStream());
+        Assert.Contains(expected, await DocWithObjectStreamAsync());
     }
 
     [Fact]
-    public async Task MaxObjectInObjStream()
+    public async Task MaxObjectInObjStreamAsync()
     {
-        Assert.Contains("/Length 21", await DocWithObjectStreamWithHighObjectNumber());
+        Assert.Contains("/Length 21", await DocWithObjectStreamWithHighObjectNumberAsync());
     }
 
     [Fact]
-    public async Task RoundTrip()
+    public async Task RoundTripAsync()
     {
-        var doc = await (await DocWithObjectStream()).ParseDocumentAsync();
+        var doc = await (await DocWithObjectStreamAsync()).ParseDocumentAsync();
         Assert.Equal("One", (await doc.Objects[(1,0)].DirectValueAsync()).ToString());
             
     }
@@ -103,7 +103,7 @@ public class S7_5_7ObjectStreams
         Assert.False(new ObjectStreamBuilder().TryAddRef(new PdfIndirectObject(12,1, KnownNames.All)));
     }
         
-    private static async Task<string> DocWithObjectStream()
+    private static async Task<string> DocWithObjectStreamAsync()
     {
         var builder = LowLevelDocumentBuilderFactory.New();
         using (builder.ObjectStreamContext(new DictionaryBuilder()))
@@ -111,10 +111,10 @@ public class S7_5_7ObjectStreams
             builder.Add(PdfString.CreateAscii("One"));
             builder.Add(PdfString.CreateAscii("Two"));
         }
-        var fileAsString = await DocCreatorToString(builder);
+        var fileAsString = await DocCreatorToStringAsync(builder);
         return fileAsString;
     }
-    private static async Task<string> DocWithObjectStreamWithHighObjectNumber()
+    private static async Task<string> DocWithObjectStreamWithHighObjectNumberAsync()
     {
         var builder = LowLevelDocumentBuilderFactory.New();
         using (builder.ObjectStreamContext(new DictionaryBuilder()))
@@ -122,11 +122,11 @@ public class S7_5_7ObjectStreams
             builder.Add(PdfString.CreateAscii("One"));
             builder.Add(new PdfIndirectObject(20, 0, PdfString.CreateAscii("Two")));
         }
-        var fileAsString = await DocCreatorToString(builder);
+        var fileAsString = await DocCreatorToStringAsync(builder);
         return fileAsString;
     }
 
-    private static async Task<string> DocCreatorToString(ILowLevelDocumentCreator builder)
+    private static async Task<string> DocCreatorToStringAsync(ILowLevelDocumentCreator builder)
     {
         var ms = new MultiBufferStream();
         var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), builder.CreateDocument());
@@ -136,7 +136,7 @@ public class S7_5_7ObjectStreams
     }
 
     [Fact]
-    public async Task ExtractIncludedObjectReferences()
+    public async Task ExtractIncludedObjectReferencesAsync()
     {
         var builder = new ObjectStreamBuilder();
         builder.TryAddRef(new PdfIndirectObject(1,0,PdfString.CreateAscii("One")));
@@ -149,7 +149,7 @@ public class S7_5_7ObjectStreams
     }
 
     [Fact]
-    public async Task DoNotEncryptStringsInContentStreams()
+    public async Task DoNotEncryptStringsInContentStreamsAsync()
     {
         var ms = new MemoryStream();
         await new EncryptedRefStm().WritePdfAsync(ms);

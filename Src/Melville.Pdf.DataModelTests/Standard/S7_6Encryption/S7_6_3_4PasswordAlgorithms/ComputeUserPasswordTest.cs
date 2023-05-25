@@ -21,7 +21,7 @@ public class ComputeUserPasswordTest
     [Theory]
     [InlineData(2, 128)]
     [InlineData(2, 40)]
-    public async Task R3Rc4Ciphers(int V, int keyLengthInBits)
+    public async Task R3Rc4CiphersAsync(int V, int keyLengthInBits)
     {
         var de = new ComputeEncryptionDictionary("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
             ComputeOwnerPasswordV3.Instance, new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3());
@@ -47,7 +47,7 @@ public class ComputeUserPasswordTest
     [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"User", PasswordType.Owner)]
     [InlineData(true, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.Owner)]
     [InlineData(false, V4RC4128CiperWithUserAndOwnerPasswords,"Owner", PasswordType.User)]
-    public async Task VerifyUserPasswordStream(
+    public async Task VerifyUserPasswordStreamAsync(
         bool succeed,string trailer, string passwords, PasswordType passwordType)
     {
         var tDict = (PdfDictionary)await trailer.ParseObjectAsync();

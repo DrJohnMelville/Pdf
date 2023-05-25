@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
 public class S7_10_2SampledFunctions
 {
-    private static async Task<PdfStream> ComplexSampledFunction()
+    private static async Task<PdfStream> ComplexSampledFunctionAsync()
     {
         var builder = new SampledFunctionBuilder(8, SampledFunctionOrder.Cubic);
         builder.AddInput(12, (1, 10), (1, 10));
@@ -28,7 +28,7 @@ public class S7_10_2SampledFunctions
     [InlineData(1, 3)]
     [InlineData(0, 10)]
     [InlineData(0.5, 6.5)]
-    public async Task SampledFunctionDecode(double input, double output)
+    public async Task SampledFunctionDecodeAsync(double input, double output)
     {
         var funcDict = new DictionaryBuilder()
             .WithItem(KnownNames.BitsPerSample, 8)
@@ -44,17 +44,17 @@ public class S7_10_2SampledFunctions
     }
 
     [Fact]
-    public async Task CreateFullySpecifiedFunction()
+    public async Task CreateFullySpecifiedFunctionAsync()
     {
-        var str = await ComplexSampledFunction();
+        var str = await ComplexSampledFunctionAsync();
         Assert.Equal(0, (await str.GetAsync<PdfNumber>(KnownNames.FunctionType)).IntValue);
-        await str.VerifyPdfDoubleArray(KnownNames.Domain, 1, 10);
-        await str.VerifyPdfDoubleArray(KnownNames.Range, 5, 50);
-        await str.VerifyPdfDoubleArray(KnownNames.Size, 12);
-        await str.VerifyNumber(KnownNames.BitsPerSample, 8);
-        await str.VerifyNumber(KnownNames.Order, 3);
-        await str.VerifyPdfDoubleArray(KnownNames.Encode, 1, 10);
-        await str.VerifyPdfDoubleArray(KnownNames.Decode, 0, 255);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 1, 10);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Range, 5, 50);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Size, 12);
+        await str.VerifyNumberAsync(KnownNames.BitsPerSample, 8);
+        await str.VerifyNumberAsync(KnownNames.Order, 3);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Encode, 1, 10);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Decode, 0, 255);
         await StreamTest.VerifyStreamContentAsync(
             "00050A0F14191E23282D3237", await str.StreamContentAsync(StreamFormat.ImplicitEncryption));
     }
@@ -68,9 +68,9 @@ public class S7_10_2SampledFunctions
     [InlineData(2.5, 12.5)]
     [InlineData(10.1, 50)]
     [InlineData(10000, 50)]
-    public async Task EvaluateFullySpecifiedFunction(double input, double output)
+    public async Task EvaluateFullySpecifiedFunctionAsync(double input, double output)
     {
-        var str = await ComplexSampledFunction();
+        var str = await ComplexSampledFunctionAsync();
         var func = await str.CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(input));
     }
@@ -79,7 +79,7 @@ public class S7_10_2SampledFunctions
     [InlineData(1,2)]
     [InlineData(1.24,3.14)]
     [InlineData(9,9)]
-    public async Task TwoDimensionalTwoOutputFunction(double inputA, double inputB)
+    public async Task TwoDimensionalTwoOutputFunctionAsync(double inputA, double inputB)
     {
         var builder = new SampledFunctionBuilder(8);
         builder.AddInput(10,(0,9));
@@ -97,7 +97,7 @@ public class S7_10_2SampledFunctions
     [InlineData(1,2)]
     [InlineData(1.24,3.14)]
     [InlineData(9,9)]
-    public async Task TwoDimensionalTwoOutputFunctionWithMultiByteSamples(double inputA, double inputB)
+    public async Task TwoDimensionalTwoOutputFunctionWithMultiByteSamplesAsync(double inputA, double inputB)
     {
         var builder = new SampledFunctionBuilder(24);
         builder.AddInput(10,(0,9));
@@ -116,7 +116,7 @@ public class S7_10_2SampledFunctions
     [InlineData(2, 4)]
     [InlineData(5.25, 27.75)]
     [InlineData(9, 81)]
-    public async Task CubicInterpolation(double inputA, double output)
+    public async Task CubicInterpolationAsync(double inputA, double output)
     {
         var builder = new SampledFunctionBuilder(8);
         builder.AddInput(11,(0,10));
@@ -130,7 +130,7 @@ public class S7_10_2SampledFunctions
 
 
     [Fact]
-    public async Task DoNotStateUnneededOptionalArguments()
+    public async Task DoNotStateUnneededOptionalArgumentsAsync()
     {
         var builder = new SampledFunctionBuilder(8);
         builder.AddInput(12,(1,10));

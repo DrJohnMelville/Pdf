@@ -14,7 +14,7 @@ public sealed class S7_3_2_BooleansDefined
     [InlineData("false /", false)]
     [InlineData("true", true)]
     [InlineData("false", false)]
-    public async Task ParseBoolSucceed(string text, bool value)
+    public async Task ParseBoolSucceedAsync(string text, bool value)
     {
         var item = (PdfBoolean) await text.ParseObjectAsync();
         Assert.Equal(value, item.Value);
@@ -25,7 +25,7 @@ public sealed class S7_3_2_BooleansDefined
     [InlineData("tRue")]
     [InlineData("tunk")]
     [InlineData("fAlse")]
-    public Task LiteralNamesMustBeSpelledCorrectly(string s)
+    public Task LiteralNamesMustBeSpelledCorrectlyAsync(string s)
     {
         return Assert.ThrowsAsync<PdfParseException>(s.ParseObjectAsync);
     }

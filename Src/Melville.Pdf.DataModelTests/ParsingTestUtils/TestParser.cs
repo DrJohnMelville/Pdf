@@ -37,7 +37,7 @@ public static class TestParser
     public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) =>
         RandomAccessFileParser.ParseAsync(str.AsParsingSource(), sizeHint);
     
-    public static ValueTask<PdfLoadedLowLevelDocument> ParseWithPassword(
+    public static ValueTask<PdfLoadedLowLevelDocument> ParseWithPasswordAsync(
         this string str, string password, PasswordType type) =>
         new PdfLowLevelReader(new ConstantPasswordSource(type, password)).ReadFromAsync(str.AsExtendedAsciiBytes());
 }

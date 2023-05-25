@@ -17,7 +17,7 @@ namespace Melville.Pdf.DataModelTests.Writer;
 public class SimpleTypeWriterTest
 {
     [Fact]
-    public async Task WriteTokens()
+    public async Task WriteTokensAsync()
     {
         Assert.Equal("true",await PdfBoolean.True.WriteToStringAsync());
         Assert.Equal("false",await PdfBoolean.False.WriteToStringAsync());
@@ -39,7 +39,7 @@ public class SimpleTypeWriterTest
     [InlineData(@"this is a \Test", @"(this is a \\Test)")]
     [InlineData(@"this is a (Test", @"(this is a \(Test)")]
     [InlineData(@"this is a )Test", @"(this is a \)Test)")]
-    public async Task WriteStrings(string source, string dest)
+    public async Task WriteStringsAsync(string source, string dest)
     {
         Assert.Equal(dest, await PdfString.CreateAscii(source).WriteToStringAsync());
         Assert.Equal(source, (await dest.ParseObjectAsync()).ToString());
@@ -49,7 +49,7 @@ public class SimpleTypeWriterTest
     [InlineData("Hello", "/Hello")]
     [InlineData("Hel#lo", "/Hel#23lo")]
     [InlineData("Hel lo", "/Hel#20lo")]
-    public async Task WriteName(string source, string dest)
+    public async Task WriteNameAsync(string source, string dest)
     {
         Assert.Equal(dest, await NameDirectory.Get(source).WriteToStringAsync());
     }
@@ -57,7 +57,7 @@ public class SimpleTypeWriterTest
     [InlineData(0, "0")]
     [InlineData(1234, "1234")]
     [InlineData(-1234, "-1234")]
-    public async Task WriteIntegers(int source, string dest)
+    public async Task WriteIntegersAsync(int source, string dest)
     {
         Assert.Equal(dest, await new PdfInteger(source).WriteToStringAsync());
     }
@@ -66,20 +66,20 @@ public class SimpleTypeWriterTest
     [InlineData(1234, "1234")]
     [InlineData(-1234, "-1234")]
     [InlineData(-1234.54, "-1234.54")]
-    public async Task WriteDoubles(double source, string dest)
+    public async Task WriteDoublesAsync(double source, string dest)
     {
         Assert.Equal(dest, await ((PdfDouble)source).WriteToStringAsync());
     }
 
     [Fact]
-    public async Task WriteIndirectObjectReference()
+    public async Task WriteIndirectObjectReferenceAsync()
     {
         var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
         Assert.Equal("34 555 R", await reference.WriteToStringAsync());
 
     }
     [Fact]
-    public async Task WriteArray()
+    public async Task WriteArrayAsync()
     {
         var array = new PdfArray(new[]
         {
@@ -88,7 +88,7 @@ public class SimpleTypeWriterTest
         Assert.Equal("[true false null]", await array.WriteToStringAsync());
     }
     [Fact]
-    public async Task WriteDictionary()
+    public async Task WriteDictionaryAsync()
     {
         var array =
             new DictionaryBuilder()
@@ -99,7 +99,7 @@ public class SimpleTypeWriterTest
     }
 
     [Fact]
-    public async Task WriteStream()
+    public async Task WriteStreamAsync()
     {
         var array = new DictionaryBuilder()
             .WithItem(KnownNames.Length, 5).AsStream("Hello");

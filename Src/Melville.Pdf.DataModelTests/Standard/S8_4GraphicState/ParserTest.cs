@@ -15,7 +15,7 @@ public abstract class ParserTest
 {
     protected Mock<IContentStreamOperations> Target { get; } = new();
 
-    protected ValueTask ParseString(
+    protected ValueTask ParseStringAsync(
         string s, IContentStreamOperations? target = null)
     {
         var sut = new ContentStreamParser(target ?? Target.Object);
@@ -25,10 +25,10 @@ public abstract class ParserTest
     private static PipeReader PipeReaderFromString(string s) =>
         PipeReader.Create(new MemoryStream(s.AsExtendedAsciiBytes()));
 
-    protected async Task TestInput(
+    protected async Task TestInputAsync(
         string input, params Expression<Action<IContentStreamOperations>>[] actions)
     {
-        await ParseString(input);
+        await ParseStringAsync(input);
         foreach (var action in actions)
         {
             Target.Verify(action);
@@ -36,10 +36,10 @@ public abstract class ParserTest
         Target.VerifyNoOtherCalls();
     }
 
-    protected async Task TestInput(
+    protected async Task TestInputAsync(
         string input, MockBase mock)
     {
-        await ParseString(input, (IContentStreamOperations)mock);
+        await ParseStringAsync(input, (IContentStreamOperations)mock);
         mock.Verify();
     }
 

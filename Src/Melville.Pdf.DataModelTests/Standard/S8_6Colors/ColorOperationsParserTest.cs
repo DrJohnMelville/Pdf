@@ -25,7 +25,7 @@ public partial class ColorOperationsParserTest: ParserTest
     }
 
     [Fact]
-    public Task SetColor() => TestInput("1 2 3 SC", new StrokeColorMock());
+    public Task SetColorAsync() => TestInputAsync("1 2 3 SC", new StrokeColorMock());
     
     private partial class NonStrokeColorMock : MockBase, IContentStreamOperations
     {
@@ -40,7 +40,7 @@ public partial class ColorOperationsParserTest: ParserTest
     }
 
     [Fact]
-    public Task SetNonstrokinColor() => TestInput("1 2 3 sc", new NonStrokeColorMock());
+    public Task SetNonstrokinColorAsync() => TestInputAsync("1 2 3 sc", new NonStrokeColorMock());
 
     private partial class StrokeColorExtendedMock : MockBase, IContentStreamOperations
     {
@@ -62,10 +62,10 @@ public partial class ColorOperationsParserTest: ParserTest
         }
     }
     [Fact]
-    public Task SetStrokingExtended1() => TestInput("1 2 3 SCN", 
+    public Task SetStrokingExtended1Async() => TestInputAsync("1 2 3 SCN", 
         new StrokeColorExtendedMock(null));
     [Fact]
-    public Task SetStrokingExtended2() => TestInput("1 2 3 /P1 SCN", 
+    public Task SetStrokingExtended2Async() => TestInputAsync("1 2 3 /P1 SCN", 
         new StrokeColorExtendedMock(NameDirectory.Get("P1")));
 
     private partial class NonStrokeColorExtendedMock : MockBase, IContentStreamOperations
@@ -88,29 +88,29 @@ public partial class ColorOperationsParserTest: ParserTest
         }
     }
     [Fact]
-    public Task SetNonStrokingExtended1() => TestInput("1 2 3 scn", 
+    public Task SetNonStrokingExtended1Async() => TestInputAsync("1 2 3 scn", 
         new NonStrokeColorExtendedMock(null));
     [Fact]
-    public Task SetNonStrokingExtended2() => TestInput("1 2 3 /P1 scn", 
+    public Task SetNonStrokingExtended2Async() => TestInputAsync("1 2 3 /P1 scn", 
         new NonStrokeColorExtendedMock(NameDirectory.Get("P1")));
     
     [Fact]
-    public Task SetStrokeGray() => TestInput("12 G", i => i.SetStrokeGrayAsync(12));
+    public Task SetStrokeGrayAsync() => TestInputAsync("12 G", i => i.SetStrokeGrayAsync(12));
     [Fact]
-    public Task SetStrokeRGB() => TestInput("4 5 6 RG", i => i.SetStrokeRGBAsync(4,5, 6));
+    public Task SetStrokeRGBAsync() => TestInputAsync("4 5 6 RG", i => i.SetStrokeRGBAsync(4,5, 6));
     [Fact]
-    public Task SetStrokeCMYK() => TestInput("4 5 6 7 K", i => i.SetStrokeCMYKAsync(4,5, 6, 7));
+    public Task SetStrokeCMYKAsync() => TestInputAsync("4 5 6 7 K", i => i.SetStrokeCMYKAsync(4,5, 6, 7));
     [Fact]
-    public Task SetNonstrokingGray() => TestInput("12 g", i => i.SetNonstrokingGrayAsync(12));
+    public Task SetNonstrokingGrayAsync() => TestInputAsync("12 g", i => i.SetNonstrokingGrayAsync(12));
     [Fact]
-    public Task SetNonstrokingRGB() => TestInput("4 5 6 rg", i => i.SetNonstrokingRgbAsync(4,5, 6));
+    public Task SetNonstrokingRGBAsync() => TestInputAsync("4 5 6 rg", i => i.SetNonstrokingRgbAsync(4,5, 6));
     [Fact]
-    public Task SetNonstrokingCMYK() => TestInput("4 5 6 7 k", i => i.SetNonstrokingCMYKAsync(4,5, 6, 7));
+    public Task SetNonstrokingCMYKAsync() => TestInputAsync("4 5 6 7 k", i => i.SetNonstrokingCMYKAsync(4,5, 6, 7));
     [Fact]
-    public Task StrokingColorSpace() => 
-        TestInput("/DeviceGray CS", i => i.SetStrokingColorSpaceAsync(ColorSpaceName.DeviceGray));
+    public Task StrokingColorSpaceAsync() => 
+        TestInputAsync("/DeviceGray CS", i => i.SetStrokingColorSpaceAsync(ColorSpaceName.DeviceGray));
     [Fact]
-    public Task NonstrokingColorSpace() => 
-        TestInput("/DeviceGray cs", i => i.SetNonstrokingColorSpaceAsync(ColorSpaceName.DeviceGray));
+    public Task NonstrokingColorSpaceAsync() => 
+        TestInputAsync("/DeviceGray cs", i => i.SetNonstrokingColorSpaceAsync(ColorSpaceName.DeviceGray));
 
 }

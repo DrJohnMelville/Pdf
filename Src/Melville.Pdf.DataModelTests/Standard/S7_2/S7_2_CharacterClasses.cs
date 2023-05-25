@@ -35,7 +35,7 @@ public class S7_2_CharacterClasses
     [InlineData("[    true%t\nfalse ]1")]
     [InlineData("[    true%\r\nfalse   ]1")]
     [InlineData("[    true%this is a / % comment true\r\r\r\r\nfalse ]1")]
-    public async Task Comment(string twoBoolString)
+    public async Task CommentAsync(string twoBoolString)
     {
         var arr = (PdfArray) await twoBoolString.ParseObjectAsync();
         Assert.Equal(2, arr.RawItems.Count);

@@ -8,7 +8,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 public class S_7_3_10_IndirectObjectsDefined
 {
     [Fact]
-    public async Task ParseReference()
+    public async Task ParseReferenceAsync()
     {
 
         var src = "24 543 R".AsParsingSource();
@@ -31,7 +31,7 @@ public class S_7_3_10_IndirectObjectsDefined
     [InlineData("[1 2 3 4]  ")]
     [InlineData("<1234>  ")]
     [InlineData("<</Foo (bar)>>  ")]
-    public async Task DirectObjectValueDefinition(string targetAsPdf)
+    public async Task DirectObjectValueDefinitionAsync(string targetAsPdf)
     {
         var obj = await targetAsPdf.ParseObjectAsync();
             

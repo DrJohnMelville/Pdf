@@ -17,7 +17,7 @@ public class S7_3_3_NumbersDefined
     [InlineData("+17", 17)]
     [InlineData("-98", -98)]
     [InlineData("0", 0)]
-    public Task SpecExample1Items(string input, int value) => ParseNumberSucceed(input, value, value);
+    public Task SpecExample1ItemsAsync(string input, int value) => ParseNumberSucceedAsync(input, value, value);
 
     [Theory]
     // from standard section 7.3.3 example 2
@@ -26,13 +26,13 @@ public class S7_3_3_NumbersDefined
     [InlineData("+123.6", 123.6)]
     [InlineData("4.", 4)]
     [InlineData("-.002", -0.002)]
-    public Task SpecExample2Items(string input, double value) => ParseNumberSucceed(input, (int)value, value);
+    public Task SpecExample2ItemsAsync(string input, double value) => ParseNumberSucceedAsync(input, (int)value, value);
     
     
     [Theory]
     [InlineData("%comment\r\n34/", 34, 34)]
     // from standard sec
-    public async Task ParseNumberSucceed(string source, int intValue, double doubleValue)
+    public async Task ParseNumberSucceedAsync(string source, int intValue, double doubleValue)
     {
         var num = (PdfNumber)await source.ParseObjectAsync(); 
         Assert.Equal(intValue, num!.IntValue);

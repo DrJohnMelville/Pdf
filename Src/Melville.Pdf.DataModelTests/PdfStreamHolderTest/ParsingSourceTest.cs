@@ -40,7 +40,7 @@ public class ParsingSourceTest
     }
     
     [Fact]
-    public async Task ReadFiveBytes()
+    public async Task ReadFiveBytesAsync()
     {
         var sut = (await owner.RentReaderAsync(0)).Reader;
         var result = await sut.ReadAsync();
@@ -50,7 +50,7 @@ public class ParsingSourceTest
         Assert.Equal(5, sut.GlobalPosition);
     }
     [Fact]
-    public async Task ReadThenJump()
+    public async Task ReadThenJumpAsync()
     {
         {
             var sut = await owner.RentReaderAsync(0);

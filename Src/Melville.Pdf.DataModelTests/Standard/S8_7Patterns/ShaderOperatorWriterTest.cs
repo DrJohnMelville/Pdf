@@ -7,9 +7,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_7Patterns;
 public class ShaderOperatorWriterTest : WriterTest
 {
     [Fact]
-    public async Task SetColorSpace()
+    public async Task SetColorSpaceAsync()
     {
         await sut.PaintShaderAsync("JdmColor");
-        Assert.Equal("/JdmColor sh\n", await WrittenText());
+        Assert.Equal("/JdmColor sh\n", await WrittenTextAsync());
     }
 }

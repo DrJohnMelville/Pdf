@@ -32,7 +32,7 @@ public class RngStub : IRandomNumberSource
 public class V6Creator
 {
     [Fact]
-    public async Task ComputeV6EncryptDictionary()
+    public async Task ComputeV6EncryptDictionaryAsync()
     {
         var rng = new RngStub(
             "72F8431B6E1D37EA7EFB2BE8C0B4B6CCB16CCC7962DA71400258CAA2F7E4C6C0".BitsFromHex(),

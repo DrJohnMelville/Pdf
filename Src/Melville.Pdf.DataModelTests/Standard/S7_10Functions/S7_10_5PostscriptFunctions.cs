@@ -22,7 +22,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 public class S7_10_5PostscriptFunctions
 {
     [Fact]
-    public async Task CreatePostScriptFunction()
+    public async Task CreatePostScriptFunctionAsync()
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0,10));
@@ -30,9 +30,9 @@ public class S7_10_5PostscriptFunctions
         var dict = builder.Create("2 mul", 
             new DictionaryBuilder().WithItem(KnownNames.Decode, KnownNames.FlateDecode));
         Assert.Equal(KnownNames.FlateDecode, await dict.GetAsync<PdfName>(KnownNames.Decode));
-        await dict.VerifyNumber(KnownNames.FunctionType, 4);
-        await dict.VerifyPdfDoubleArray(KnownNames.Domain, 0, 10);
-        await dict.VerifyPdfDoubleArray(KnownNames.Range, 0, 20);
+        await dict.VerifyNumberAsync(KnownNames.FunctionType, 4);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 10);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Range, 0, 20);
         Assert.Equal("2 mul", await (await dict.StreamContentAsync()).ReadAsStringAsync());
             
     }
@@ -146,10 +146,10 @@ public class S7_10_5PostscriptFunctions
     [InlineData("10, -1", "10,12", "{ {12} {20} ifelse}")]
     [InlineData("10, 0", "10,20", "{ {12} {20} ifelse}")]
     [InlineData("3,4", "5", "{ dup mul exch dup mul add sqrt}")]
-    public Task PostScriptTest(string inputs, string outputs, string code) => 
-        InnerPostScriptTest(GetDoubles(inputs), GetDoubles(outputs), code);
+    public Task PostScriptTestAsync(string inputs, string outputs, string code) => 
+        InnerPostScriptTestAsync(GetDoubles(inputs), GetDoubles(outputs), code);
 
-    private async Task InnerPostScriptTest(double[] inputs, double[] outputs, string code)
+    private async Task InnerPostScriptTestAsync(double[] inputs, double[] outputs, string code)
     {
         var func = await CreateFunction(code, inputs.Length, outputs.Length).CreateFunctionAsync();
         Assert.Equal(outputs, func.Compute(inputs).Select(i=>Math.Round(i,3)));
@@ -184,6 +184,6 @@ public class S7_10_5PostscriptFunctions
     [InlineData("{12 {1}  ifelse}")]
     [InlineData("{12 {1}  add}")]
     [InlineData("{12")]
-    public Task PostscriptCompilerError(string code) => 
+    public Task PostscriptCompilerErrorAsync(string code) => 
         Assert.ThrowsAsync<PdfParseException>(() => CreateFunction(code, 1, 1).CreateFunctionAsync().AsTask());
 }

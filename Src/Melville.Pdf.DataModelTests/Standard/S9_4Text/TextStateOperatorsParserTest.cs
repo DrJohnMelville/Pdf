@@ -28,8 +28,8 @@ public class TextStateOperatorsParserTest : ParserTest
 
     [Theory]
     [MemberData(nameof(SimpleTextStateOperators))]
-    public Task EmptyOperator(string code, Expression<Action<IContentStreamOperations>> op) =>
-        TestInput($"55 {code}\n", op);
+    public Task EmptyOperatorAsync(string code, Expression<Action<IContentStreamOperations>> op) =>
+        TestInputAsync($"55 {code}\n", op);
 
     [Theory]
     [InlineData(TextRendering.Fill)]
@@ -38,11 +38,11 @@ public class TextStateOperatorsParserTest : ParserTest
     [InlineData(TextRendering.Invisible)]
     [InlineData(TextRendering.StrokeAndClip)]
     [InlineData(TextRendering.FillAndClip)]
-    public Task TextRender(TextRendering rendering) => 
-        TestInput($"{(int)rendering} Tr", i => i.SetTextRender(rendering));
+    public Task TextRenderAsync(TextRendering rendering) => 
+        TestInputAsync($"{(int)rendering} Tr", i => i.SetTextRender(rendering));
 
     [Fact]
-    public Task SetFontTest() =>
-        TestInput("/Helvetica 12 Tf", i => i.SetFontAsync(BuiltInFontName.Helvetica, 12));
+    public Task SetFontTestAsync() =>
+        TestInputAsync("/Helvetica 12 Tf", i => i.SetFontAsync(BuiltInFontName.Helvetica, 12));
 
 }

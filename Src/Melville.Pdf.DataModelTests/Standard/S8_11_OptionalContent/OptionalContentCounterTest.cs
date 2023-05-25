@@ -41,31 +41,31 @@ public class OptionalContentCounterTest
     }
 
     [Fact]
-    public async Task EncounterInvisibleGroupMakesInvisible()
+    public async Task EncounterInvisibleGroupMakesInvisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, Off);
         Assert.True(sut.IsHidden);
     }
     [Fact]
-    public async Task OCPrefixRequired()
+    public async Task OCPrefixRequiredAsync()
     {
         await sut.EnterGroupAsync(KnownNames.AC, Off);
         Assert.False(sut.IsHidden);
     }
     [Fact]
-    public async Task EncounterInvisibleGroupNameMakesInvisible()
+    public async Task EncounterInvisibleGroupNameMakesInvisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
-    public async Task EncounterVisibleGroupNameLeavesVisible()
+    public async Task EncounterVisibleGroupNameLeavesVisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
-    public async Task PopOutOfInvisibleGroup()
+    public async Task PopOutOfInvisibleGroupAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, Off);
         Assert.True(sut.IsHidden);
@@ -78,7 +78,7 @@ public class OptionalContentCounterTest
     }
 
     [Fact]
-    public async Task EncounterVisibleGroupStaysVisible()
+    public async Task EncounterVisibleGroupStaysVisibleAsync()
     {
         await sut.EnterGroupAsync(KnownNames.OC, On);
         Assert.False(sut.IsHidden);

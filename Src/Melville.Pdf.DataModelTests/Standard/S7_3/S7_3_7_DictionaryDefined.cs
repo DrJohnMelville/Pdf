@@ -17,7 +17,7 @@ public class S7_3_7_DictionaryDefined
     [Theory]
     [InlineData("  << /Height 213 /Width 456  >>  ")]
     [InlineData("<</Height 213/Width 456>>")]
-    public async Task ParseSimpleDictionary(string input)
+    public async Task ParseSimpleDictionaryAsync(string input)
     {
         var dict = (PdfDictionary)(await input.ParseObjectAsync());
         Assert.Equal(2, dict.RawItems.Count);
@@ -28,7 +28,7 @@ public class S7_3_7_DictionaryDefined
     [InlineData("  << >>  ", 0)]
     [InlineData("<</Height 213 /Width 456 /ASPECT null >>", 2)] // PDF Spec  nulls make the entry be ignored
     [InlineData(" << /DICT << /InnerDict 121.22 >>>>", 1)] // dictionary can contain dictionaries
-    public async Task SpecialCases(string input, int size)
+    public async Task SpecialCasesAsync(string input, int size)
     {
         var dict = (PdfDictionary)(await input.ParseObjectAsync());
         Assert.Equal(size, dict.RawItems.Count);
@@ -36,6 +36,6 @@ public class S7_3_7_DictionaryDefined
     [Theory]
     [InlineData("  <<  213 /Height /Width 456  >>  ")]
     [InlineData("<</Height 213/Width>>")]
-    public Task Exceptions(string input) => 
+    public Task ExceptionsAsync(string input) => 
         Assert.ThrowsAsync<PdfParseException>(input.ParseObjectAsync);
 }

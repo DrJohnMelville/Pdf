@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 public class S7_5_5FileTrailer
 {
     [Fact]
-    public async Task ReadSingleTrailer()
+    public async Task ReadSingleTrailerAsync()
     {
         var doc = await (await MinimalPdfParser.MinimalPdf(1, 7).AsStringAsync()).ParseDocumentAsync(2);
         Assert.NotNull(doc.TrailerDictionary);
@@ -30,7 +30,7 @@ public class S7_5_5FileTrailer
     [InlineData("%PDF-1.5\r\nHas no t%railer")]
     [InlineData("%PDF-1.5\r\nHas the word trailer but not a valid dictonary")]
     [InlineData("%PDF-1.5\r\nHas the word trailer")]
-    public Task MalformedPDFFiles(string text)
+    public Task MalformedPDFFilesAsync(string text)
     {
         return Assert.ThrowsAsync<PdfParseException>(() => text.ParseDocumentAsync().AsTask());
     }

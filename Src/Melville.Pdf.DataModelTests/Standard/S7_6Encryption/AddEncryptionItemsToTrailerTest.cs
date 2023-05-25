@@ -36,7 +36,7 @@ public class AddEncryptionItemsToTrailerTest
     }
 
     [Fact]
-    public async Task EcryptionWithV3Dictionary()
+    public async Task EcryptionWithV3DictionaryAsync()
     {
         Assert.True(trailer.ContainsKey(KnownNames.Encrypt));
         var dict = await trailer.GetAsync<PdfDictionary>(KnownNames.Encrypt);

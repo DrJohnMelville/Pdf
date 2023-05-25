@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 public class S7_4_1_TwoStreamDecoder
 {
     [Fact]
-    public async Task Example3FromStandard()
+    public async Task Example3FromStandardAsync()
     {
         var stream = new DictionaryBuilder()
             .WithItem(KnownNames.Length, 562)

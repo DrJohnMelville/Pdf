@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors
 {
     public static class VerifyUniformBitmap
     {
-        public static async ValueTask VerifyUniform(
+        public static async ValueTask VerifyUniformAsync(
             this IPdfBitmap bmp, int width, int height, params byte[] data)
         {
             Assert.Equal(width, bmp.Width);

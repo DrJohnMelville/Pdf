@@ -20,7 +20,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 public class S_7_5_8CrossReferenceStreams
 {
     [Fact]
-    public async Task GenerateAndParseFileWithReferenceStream()
+    public async Task GenerateAndParseFileWithReferenceStreamAsync()
     {
         var document = MinimalPdfParser.MinimalPdf();
         var ms = new MultiBufferStream();
@@ -38,7 +38,7 @@ public class S_7_5_8CrossReferenceStreams
     }
 
     [Fact]
-    public async Task ParseSingleDeletedItem()
+    public async Task ParseSingleDeletedItemAsync()
     {
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 1))
@@ -60,7 +60,7 @@ public class S_7_5_8CrossReferenceStreams
     }
 
     [Fact]
-    public async Task ParseSingleIndirectItem()
+    public async Task ParseSingleIndirectItemAsync()
     {
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 1))
@@ -74,7 +74,7 @@ public class S_7_5_8CrossReferenceStreams
         target.VerifyNoOtherCalls();
     }
     [Fact]
-    public async Task ParseSingleStreamItem()
+    public async Task ParseSingleStreamItemAsync()
     {
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 1))
@@ -88,7 +88,7 @@ public class S_7_5_8CrossReferenceStreams
         target.VerifyNoOtherCalls();
     }
     [Fact]
-    public async Task ParseTrippleIndirectItem()
+    public async Task ParseTrippleIndirectItemAsync()
     {
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 3))
@@ -104,7 +104,7 @@ public class S_7_5_8CrossReferenceStreams
         target.VerifyNoOtherCalls();
     }
     [Fact]
-    public async Task IndirectWithMultipleSections()
+    public async Task IndirectWithMultipleSectionsAsync()
     {
         var xs = XrefBase()
             .WithItem(KnownNames.Index, new PdfArray(10, 2,  255,1))

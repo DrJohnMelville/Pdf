@@ -32,7 +32,7 @@ public sealed class MinimumReadFitlerTest
     private readonly Stream sut = new MinimumReadSizeFilter(new SizeReportingStream(), 10);
 
     [Fact]
-    public async Task BigEnoughReadSucceeds()
+    public async Task BigEnoughReadSucceedsAsync()
     {
         var buf = new byte[11];
         await sut.ReadAsync(buf, 0, 11);
@@ -43,7 +43,7 @@ public sealed class MinimumReadFitlerTest
     }
 
     [Fact]
-    public async Task ReadBiggerThanIThought()
+    public async Task ReadBiggerThanIThoughtAsync()
     {
         var buf = new byte[1];
         for (var i = 0; i < 10; i++)

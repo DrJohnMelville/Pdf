@@ -6,7 +6,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
 public static class PdfDictionaryTestVerifiers
 {
-    public static async Task VerifyPdfDoubleArray(this PdfDictionary str, PdfName name, params double[] values)
+    public static async Task VerifyPdfDoubleArrayAsync(this PdfDictionary str, PdfName name, params double[] values)
     {
         var domain = await str.GetAsync<PdfArray>(name);
         Assert.Equal(domain.Count, values.Length);
@@ -15,12 +15,12 @@ public static class PdfDictionaryTestVerifiers
             Assert.Equal(values[i], (await domain.GetAsync<PdfNumber>(i)).DoubleValue);
         }
     }
-    public static async Task VerifyNumber(this PdfDictionary str, PdfName name, int value)
+    public static async Task VerifyNumberAsync(this PdfDictionary str, PdfName name, int value)
     {
         var number = await str.GetAsync<PdfNumber>(name);
         Assert.Equal(value, number.IntValue);
     }
-    public static async Task VerifyNumber(this PdfDictionary str, PdfName name, double value)
+    public static async Task VerifyNumberAsync(this PdfDictionary str, PdfName name, double value)
     {
         var number = await str.GetAsync<PdfNumber>(name);
         Assert.Equal(value, number.DoubleValue);

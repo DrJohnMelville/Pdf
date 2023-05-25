@@ -21,15 +21,15 @@ public class TilePatternCreatorTest
     [InlineData("/BBox[10 20 30 40]")]
     [InlineData("/Matrix[15 25 35 45 55 65]")]
     [InlineData("1 2 3 4 re")]
-    public async Task CreateTilePattern(string partialString)
+    public async Task CreateTilePatternAsync(string partialString)
     {
         var builder = new TilePatternCreator(PatternPaintType.Colored, PatternTileType.Constant,
             17, 21, new PdfRect(10, 20, 30, 40));
         builder.AddMatrix(new Matrix3x2(15,25,35,45,55,65));
-        await TestTilePattern(partialString, builder);
+        await TestTilePatternAsync(partialString, builder);
     }
 
-    private static async Task TestTilePattern(string partialString, TilePatternCreator builder)
+    private static async Task TestTilePatternAsync(string partialString, TilePatternCreator builder)
     {
         await builder.AddToContentStreamAsync(new DictionaryBuilder(), csw =>
         {
@@ -43,20 +43,20 @@ public class TilePatternCreatorTest
     [Theory]
     [InlineData(PatternPaintType.Colored, "/PaintType 1")]
     [InlineData(PatternPaintType.Uncolored,"/PaintType 2")]
-    public async Task TilePatternPaintType(PatternPaintType paint, string partialString)
+    public async Task TilePatternPaintTypeAsync(PatternPaintType paint, string partialString)
     {
         var builder = new TilePatternCreator(paint, PatternTileType.Constant, 1, 1, 
             new PdfRect(10, 20, 30, 40));
-        await TestTilePattern(partialString, builder);
+        await TestTilePatternAsync(partialString, builder);
     }
     [Theory]
     [InlineData(PatternTileType.Constant, "/TilingType 1")]
     [InlineData(PatternTileType.NoDistortion, "/TilingType 2")]
     [InlineData(PatternTileType.FastConstant, "/TilingType 3")]
-    public async Task TilePatternTileType(PatternTileType tile, string partialString)
+    public async Task TilePatternTileTypeAsync(PatternTileType tile, string partialString)
     {
         var builder = new TilePatternCreator(PatternPaintType.Colored, tile, 1,1,
             new PdfRect(10, 20, 30, 40));
-        await TestTilePattern(partialString, builder);
+        await TestTilePatternAsync(partialString, builder);
     }
 }

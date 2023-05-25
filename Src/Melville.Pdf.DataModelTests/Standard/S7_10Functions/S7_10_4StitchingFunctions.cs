@@ -22,17 +22,17 @@ public class S7_10_4StitchingFunctions
     }
 
     [Fact]
-    public async Task SimpleStitch()
+    public async Task SimpleStitchAsync()
     {
         var builder = new StitchingFunctionBuilder(0);
 
         builder.AddFunction(LinearMapping(0, 1), 0.5);
         builder.AddFunction(LinearMapping(2,3), 1.0, (2,3));
         var stitched = builder.Create();
-        await stitched.VerifyNumber(KnownNames.FunctionType, 3);
-        await stitched.VerifyPdfDoubleArray(KnownNames.Domain, 0, 1.0);
-        await stitched.VerifyPdfDoubleArray(KnownNames.Bounds, 0.5);
-        await stitched.VerifyPdfDoubleArray(KnownNames.Encode, 0, 0.5, 2, 3);
+        await stitched.VerifyNumberAsync(KnownNames.FunctionType, 3);
+        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 1.0);
+        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.Bounds, 0.5);
+        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.Encode, 0, 0.5, 2, 3);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class S7_10_4StitchingFunctions
     [InlineData(0.75, 0.5)]
     [InlineData(0.9, 0.2)]
     [InlineData(1, 0)]
-    public async Task TriangleFunction(double input, double output)
+    public async Task TriangleFunctionAsync(double input, double output)
     {
         var innerFunc = LinearMapping(0, 1);
         var builder = new StitchingFunctionBuilder(0);

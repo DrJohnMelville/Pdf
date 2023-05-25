@@ -21,7 +21,7 @@ public class NameWriterTest
     [InlineData("/Lime#20Green","Lime Green")]
     [InlineData("/Paired#28#29parentheses","Paired()parentheses")]
     [InlineData("/The_Key_of_F#23_Minor","The_Key_of_F#_Minor")]
-    public async Task WriteName(string printedAs, string nameText)
+    public async Task WriteNameAsync(string printedAs, string nameText)
     {
         var correctResult = printedAs.AsExtendedAsciiBytes();
         var dest = new MemoryStream();

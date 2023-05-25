@@ -13,31 +13,31 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_7_DictionaryOperations
 {
-    private async Task<PdfDictionary> CreateDict(string definition) =>
+    private async Task<PdfDictionary> CreateDictAsync(string definition) =>
         (PdfDictionary) (await definition.ParseObjectAsync());
 
 
-    private Task<PdfDictionary> IndirectTestDict => 
-        CreateDict("<</Height true /AC false>>");
+    private Task<PdfDictionary> IndirectTestDictAsync => 
+        CreateDictAsync("<</Height true /AC false>>");
 
     [Fact]
-    public async Task CountIsAccurate()
+    public async Task CountIsAccurateAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
         Assert.Equal(2, d.Count);
     }
     [Fact]
-    public async Task ContainsKeyWorks()
+    public async Task ContainsKeyWorksAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
 
         Assert.True(d.ContainsKey(KnownNames.Height));
         Assert.False(d.ContainsKey(KnownNames.FormType));
     }
     [Fact]
-    public async Task EnumerateHandlesIndirectReferences()
+    public async Task EnumerateHandlesIndirectReferencesAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
 
         Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False}, 
             ((IEnumerable)d).OfType<KeyValuePair<PdfName,ValueTask<PdfObject>>>()
@@ -47,36 +47,36 @@ public class S7_3_7_DictionaryOperations
             
     }
     [Fact]
-    public async Task EnumerateKeys()
+    public async Task EnumerateKeysAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
         Assert.Equal(new []{KnownNames.Height, KnownNames.AC},d.Keys);
             
     }
     [Fact]
-    public async Task IndexerHandlesIndirection()
+    public async Task IndexerHandlesIndirectionAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
         Assert.Equal(PdfBoolean.True, await d[KnownNames.Height]);
     }
     [Fact]
-    public async Task TryGetValueSucceed()
+    public async Task TryGetValueSucceedAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
         AAssert.True(d.TryGetValue(KnownNames.Height, out var returned));
         Assert.Equal(PdfBoolean.True, await returned);
     }
     [Fact]
-    public async Task TryGetValueFails()
+    public async Task TryGetValueFailsAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
         AAssert.False(d.TryGetValue(KnownNames.Activation, out var returned));
         Assert.Equal(default(ValueTask<PdfObject>), returned);
     }
     [Fact]
-    public async Task EnumerateValuesHandlesIndirectReferences()
+    public async Task EnumerateValuesHandlesIndirectReferencesAsync()
     {
-        var d = await IndirectTestDict;
+        var d = await IndirectTestDictAsync;
 
         Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False}, 
             d.Values.Select(i=>i.Result));
@@ -85,9 +85,9 @@ public class S7_3_7_DictionaryOperations
     [Theory]
     [InlineData("<</Subtype /Font>>")]
     [InlineData("<</S /Font>>")]
-    public async Task SisSubtypeEquivilence(string text)
+    public async Task SisSubtypeEquivilenceAsync(string text)
     {
-        var item = await CreateDict(text);
+        var item = await CreateDictAsync(text);
         Assert.Equal(KnownNames.Font, item.SubTypeOrNull());
         Assert.True(item.TryGetSubType(out var st));
         Assert.Equal(KnownNames.Font, st);

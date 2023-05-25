@@ -10,7 +10,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;
 
 public class ImageMaskingTest
 {
-    private static async Task<byte[]> MaskedBitmap(
+    private static async Task<byte[]> MaskedBitmapAsync(
         int maskWidth, int maskHeight, byte[] maskBytes,
         int imageWidth, int imageHeight, byte[] imageBytes)
     {
@@ -38,9 +38,9 @@ public class ImageMaskingTest
 
 
     [Fact]
-    public async Task SoftMaskEqualDimensions()
+    public async Task SoftMaskEqualDimensionsAsync()
     {
-        var result = await MaskedBitmap(3, 3, new byte[]
+        var result = await MaskedBitmapAsync(3, 3, new byte[]
         {
             0, 255, 0,
             255, 0, 255,
@@ -60,9 +60,9 @@ public class ImageMaskingTest
         }, result);
     }
     [Fact]
-    public async Task SoftMaskBigImage()
+    public async Task SoftMaskBigImageAsync()
     {
-        var result = await MaskedBitmap(3, 3, new byte[]
+        var result = await MaskedBitmapAsync(3, 3, new byte[]
         {
             0, 255, 0,
             255, 0, 255,
@@ -88,9 +88,9 @@ public class ImageMaskingTest
         }, result);
     }
     [Fact]
-    public async Task SoftMaskBigMask()
+    public async Task SoftMaskBigMaskAsync()
     {
-        var result = await MaskedBitmap(6,6, new byte[]
+        var result = await MaskedBitmapAsync(6,6, new byte[]
         {
             0, 0, 255, 255, 0, 0,
             0, 0, 255, 255, 0, 0,

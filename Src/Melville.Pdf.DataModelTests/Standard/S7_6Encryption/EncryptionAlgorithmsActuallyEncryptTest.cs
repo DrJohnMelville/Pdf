@@ -19,7 +19,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 public class EncryptionAlgorithmsActuallyEncryptTest
 {
         
-    private async Task<string> Write(PdfLowLevelDocument doc)
+    private async Task<string> WriteAsync(PdfLowLevelDocument doc)
     {
         var target = new MultiBufferStream();
         var writer = new LowLevelDocumentWriter(PipeWriter.Create(target), doc, "User");
@@ -28,16 +28,16 @@ public class EncryptionAlgorithmsActuallyEncryptTest
     }
 
     [Fact]
-    public Task AesLength128() => 
-        CreateAndTestDocument(DocumentEncryptorFactory.V4("User", "Owner", PdfPermission.None, EncryptorName.AESV2, 8));
+    public Task AesLength128Async() => 
+        CreateAndTestDocumentAsync(DocumentEncryptorFactory.V4("User", "Owner", PdfPermission.None, EncryptorName.AESV2, 8));
     [Fact]
-    public Task Rc4Length128() => 
-        CreateAndTestDocument(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
+    public Task Rc4Length128Async() => 
+        CreateAndTestDocumentAsync(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
     [Fact]
-    public Task Rc4Length40() => 
-        CreateAndTestDocument(DocumentEncryptorFactory.V1R2Rc440("User", "Owner", PdfPermission.None));
+    public Task Rc4Length40Async() => 
+        CreateAndTestDocumentAsync(DocumentEncryptorFactory.V1R2Rc440("User", "Owner", PdfPermission.None));
 
-    private async Task CreateAndTestDocument(ILowLevelDocumentEncryptor encryptionDeclaration)
+    private async Task CreateAndTestDocumentAsync(ILowLevelDocumentEncryptor encryptionDeclaration)
     {
         var docBuilder = new LowLevelDocumentBuilder();
         docBuilder.AddToTrailerDictionary(KnownNames.ID, new PdfArray(
@@ -49,11 +49,11 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         docBuilder.Add(PdfString.CreateAscii("Encrypted String"));
         docBuilder.Add(new DictionaryBuilder().AsStream("This is an encrypted stream"));
         var doc = creator.CreateDocument();
-        var str = await Write(doc);
+        var str = await WriteAsync(doc);
         Assert.DoesNotContain("Encrypted String", str);
         Assert.DoesNotContain("encrypted stream", str);
 
-        var doc2 = await str.ParseWithPassword("User", PasswordType.User);
+        var doc2 = await str.ParseWithPasswordAsync("User", PasswordType.User);
         var outstr = await doc2.Objects[(2, 0)].DirectValueAsync();
         Assert.Equal("Encrypted String", outstr.ToString());
         var stream = (PdfStream)await doc2.Objects[(3,0)].DirectValueAsync();

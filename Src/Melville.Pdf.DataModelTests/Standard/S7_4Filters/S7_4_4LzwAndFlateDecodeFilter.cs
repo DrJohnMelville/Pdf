@@ -28,7 +28,7 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
     [InlineData(10000, 1)]
     [InlineData(10000, 0)]
     [InlineData(10000, 2)]
-    public async Task EncodeRandomStream(int length, int EarlySwitch)
+    public async Task EncodeRandomStreamAsync(int length, int EarlySwitch)
     {
         var buffer = new byte[length];
         var rnd = new Random(10);
@@ -59,7 +59,7 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
     }
 
     [Fact]
-    public async Task LzwDecodeBug()
+    public async Task LzwDecodeBugAsync()
     {
         var str = new DictionaryBuilder()
             .WithFilter(FilterName.ASCIIHexDecode, FilterName.LZWDecode)

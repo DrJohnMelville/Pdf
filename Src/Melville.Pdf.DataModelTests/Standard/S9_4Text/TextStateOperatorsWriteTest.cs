@@ -28,24 +28,24 @@ public class TextStateOperatorsWriteTest: WriterTest
 
     [Theory]
     [MemberData(nameof(SimpleTextStateOperators))]
-    public async Task WriteTextStateOperators(string code, Action<IContentStreamOperations> op)
+    public async Task WriteTextStateOperatorsAsync(string code, Action<IContentStreamOperations> op)
     {
         op(sut);
-        Assert.Equal($"55 {code}\n", await WrittenText());
+        Assert.Equal($"55 {code}\n", await WrittenTextAsync());
     }
 
     [Fact]
-    public async Task SetFont()
+    public async Task SetFontAsync()
     {
         await sut.SetFontAsync(BuiltInFontName.Helvetica, 12);
-        Assert.Equal("/Helvetica 12 Tf\n", await WrittenText());
+        Assert.Equal("/Helvetica 12 Tf\n", await WrittenTextAsync());
         
     }
     [Fact]
-    public async Task SetFontString()
+    public async Task SetFontStringAsync()
     {
         await sut.SetFontAsync("Jdm", 12);
-        Assert.Equal("/Jdm 12 Tf\n", await WrittenText());
+        Assert.Equal("/Jdm 12 Tf\n", await WrittenTextAsync());
         
     }
 
@@ -56,10 +56,10 @@ public class TextStateOperatorsWriteTest: WriterTest
     [InlineData(TextRendering.Invisible)]
     [InlineData(TextRendering.StrokeAndClip)]
     [InlineData(TextRendering.FillAndClip)]
-    public async Task TextRender(TextRendering rendering)
+    public async Task TextRenderAsync(TextRendering rendering)
     {
         sut.SetTextRender(rendering);
-        Assert.Equal($"{(int)rendering} Tr\n", await WrittenText());
+        Assert.Equal($"{(int)rendering} Tr\n", await WrittenTextAsync());
         
     }
 

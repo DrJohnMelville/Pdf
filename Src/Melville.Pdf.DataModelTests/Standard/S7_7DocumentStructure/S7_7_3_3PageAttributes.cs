@@ -16,7 +16,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 
 public class S7_7_3_3PageAttributes
 {
-    private async ValueTask<PdfPage> RoundTripPageWith(
+    private async ValueTask<PdfPage> RoundTripPageWithAsync(
         Action<PageCreator> create, Action<PageTreeNodeCreator>? parent = null)
     {
         var docCreator = new PdfDocumentCreator();
@@ -27,18 +27,18 @@ public class S7_7_3_3PageAttributes
         return (PdfPage) await (await doc.PagesAsync()).GetPageAsync(0);
     }
     [Fact]
-    public async Task LastModifiedTime()
+    public async Task LastModifiedTimeAsync()
     {
         var dateAndTime = new DateTime(1975,07,28,1,2,3);
-        var outputPage = await RoundTripPageWith(i => i.AddLastModifiedTime(dateAndTime));
+        var outputPage = await RoundTripPageWithAsync(i => i.AddLastModifiedTime(dateAndTime));
         Assert.Equal(dateAndTime, (await outputPage.LastModifiedAsync())!.Value.DateTime);
         
     }
 
     [Fact]
-    public async Task LoadProcSets()
+    public async Task LoadProcSetsAsync()
     {
-        var doc = await RoundTripPageWith(i => { });
+        var doc = await RoundTripPageWithAsync(i => { });
         var procSets = await doc.GetProcSetsAsync();
         Assert.NotNull(procSets);
         Assert.Equal(5, procSets!.Count);
@@ -50,10 +50,10 @@ public class S7_7_3_3PageAttributes
     }
 
     [Fact]
-    public async Task WithXObjectDictionary()
+    public async Task WithXObjectDictionaryAsync()
     {
         var name = NameDirectory.Get("N1");
-        var doc = await RoundTripPageWith(i =>
+        var doc = await RoundTripPageWithAsync(i =>
         {
             PdfObject obj = 10;
             i.AddResourceObject(ResourceTypeName.XObject, name, obj);
@@ -61,10 +61,10 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceAsync(ResourceTypeName.XObject, name)))?.IntValue);
     }
     [Fact]
-    public async Task WithInheritedXObjectDictionary()
+    public async Task WithInheritedXObjectDictionaryAsync()
     {
         var name = NameDirectory.Get("N1");
-        var doc = await RoundTripPageWith(j => { }, 
+        var doc = await RoundTripPageWithAsync(j => { }, 
             i =>
             {
                 PdfObject obj = 10;
@@ -74,14 +74,14 @@ public class S7_7_3_3PageAttributes
     }
 
     [Fact]
-    public async Task DirectBoxes()
+    public async Task DirectBoxesAsync()
     {
         var media = new PdfRect(1, 2, 3, 4);
         var crop = new PdfRect(5,6,7,8);
         var bleed = new PdfRect(9,10,11,12);
         var trim = new PdfRect(2,4,6,8);
         var art = new PdfRect(1,3,5,7);
-        var doc = await RoundTripPageWith(i =>
+        var doc = await RoundTripPageWithAsync(i =>
         {
             i.AddBox(BoxName.MediaBox, media);
             i.AddBox(BoxName.CropBox, crop);
@@ -96,14 +96,14 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(art, await doc.GetBoxAsync(BoxName.ArtBox));
     }
     [Fact]
-    public async Task IndirectBoxes()
+    public async Task IndirectBoxesAsync()
     {
         var media = new PdfRect(1, 2, 3, 4);
         var crop = new PdfRect(5,6,7,8);
         var bleed = new PdfRect(9,10,11,12);
         var trim = new PdfRect(2,4,6,8);
         var art = new PdfRect(1,3,5,7);
-        var doc = await RoundTripPageWith(i => { }, i =>
+        var doc = await RoundTripPageWithAsync(i => { }, i =>
             {
                 i.AddBox(BoxName.MediaBox, media);
                 i.AddBox(BoxName.CropBox, crop);
@@ -118,10 +118,10 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(art, await doc.GetBoxAsync(BoxName.ArtBox));
     }
     [Fact]
-    public async Task BoxDefaults()
+    public async Task BoxDefaultsAsync()
     {
         var media = new PdfRect(1, 2, 3, 4);
-        var doc = await RoundTripPageWith(i =>
+        var doc = await RoundTripPageWithAsync(i =>
         {
             i.AddBox(BoxName.MediaBox, media);
         });
@@ -134,10 +134,10 @@ public class S7_7_3_3PageAttributes
     }
 
     [Fact]
-    public async Task AddBuiltinFont()
+    public async Task AddBuiltinFontAsync()
     {
         PdfName fontName = KnownNames.Type;
-        var page = await RoundTripPageWith(i =>
+        var page = await RoundTripPageWithAsync(i =>
             fontName = i.AddStandardFont("F1", BuiltInFontName.CourierBoldOblique, FontEncodingName.WinAnsiEncoding));
         var res = await page.LowLevel.GetAsync<PdfDictionary>(KnownNames.Resources);
         var fonts = await res.GetAsync<PdfDictionary>(KnownNames.Font);
@@ -149,17 +149,17 @@ public class S7_7_3_3PageAttributes
     }
 
     [Fact] 
-    public async Task LiteratContentStream()
+    public async Task LiteratContentStreamAsync()
     {
-        var doc = await RoundTripPageWith(i => i.AddToContentStream(new DictionaryBuilder(), "xxyyy"));
+        var doc = await RoundTripPageWithAsync(i => i.AddToContentStream(new DictionaryBuilder(), "xxyyy"));
         var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xxyyy", dat);
     }
     [Fact] 
-    public async Task TwoContentStreams()
+    public async Task TwoContentStreamsAsync()
     {
-        var doc = await RoundTripPageWith(i =>
+        var doc = await RoundTripPageWithAsync(i =>
         {
             i.AddToContentStream(new DictionaryBuilder(), "xx");
             i.AddToContentStream(new DictionaryBuilder(), "yyy");

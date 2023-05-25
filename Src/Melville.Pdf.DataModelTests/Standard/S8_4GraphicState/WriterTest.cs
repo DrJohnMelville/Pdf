@@ -17,7 +17,7 @@ public abstract class WriterTest
         destPipe = PipeWriter.Create(destStream);
         sut = new ContentStreamWriter(destPipe);
     }
-    protected async Task<string> WrittenText()
+    protected async Task<string> WrittenTextAsync()
     {
         await destPipe.FlushAsync();
         return await destStream.CreateReader().ReadAsStringAsync();

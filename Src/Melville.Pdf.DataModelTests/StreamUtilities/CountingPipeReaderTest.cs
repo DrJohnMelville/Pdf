@@ -24,7 +24,7 @@ public class CountingPipeReaderTest
         Assert.Equal(0, sut.Position);
     }
     [Fact]
-    public async Task OrdinaryReadIncrements()
+    public async Task OrdinaryReadIncrementsAsync()
     {
         var res = await sut.ReadAsync(); 
         Assert.Equal(0, sut.Position);
@@ -36,7 +36,7 @@ public class CountingPipeReaderTest
         Assert.Equal(4, sut.Position);
     }
     [Fact]
-    public async Task SyncOrdinaryReadIncrements()
+    public async Task SyncOrdinaryReadIncrementsAsync()
     {
         sut.AdvanceTo((await sut.ReadAsync()).Buffer.Start);
         Assert.True(sut.TryRead(out var res));

@@ -23,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors
         }
 
         [Fact]
-        public async Task ReadImageFromFile()
+        public async Task ReadImageFromFileAsync()
         {
             var images = await ImagesFromAsync(new ExplicitColorMask());
             Assert.Single(images);
@@ -37,7 +37,7 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors
             Assert.Equal(new Vector2(270, 26), image.PositionTopRight);
         }
         [Fact]
-        public async Task ReadImageFromFile2()
+        public async Task ReadImageFromFile2Async()
         {
             var images = await ImagesFromAsync(new JBigSampleBitStream1());
             Assert.Single(images);

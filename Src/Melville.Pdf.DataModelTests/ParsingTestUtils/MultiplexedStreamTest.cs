@@ -46,7 +46,7 @@ public class MultiplexedStreamTest
         VerifyRead(reader2, 4,5,6,7,8,9);
     }
     [Fact]
-    public async Task AsyncInterleavedRead()
+    public async Task AsyncInterleavedReadAsync()
     {
         var reader = sut.ReadFrom(0);
         var reader2 = sut.ReadFrom(0);

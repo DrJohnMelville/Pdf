@@ -31,7 +31,7 @@ public class S7_3_4_StringsDefined
     [InlineData("<202>/", "  ")] // last byte is implicit 0 because it is missing
     [InlineData("<01234567ABCDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
     [InlineData("<01 23  4 \r\n567   ABC \tDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
-    public async Task ParseHexString(string input, string output)
+    public async Task ParseHexStringAsync(string input, string output)
     {
         var str = (PdfString) await input.ParseObjectAsync();
         Assert.Equal(output, str!.ToString());
@@ -69,7 +69,7 @@ public class S7_3_4_StringsDefined
     [InlineData("(a\\21b))", "a\x0011b")]
     [InlineData("(a\\121b))", "a\x0051b")]
     [InlineData("(a\\1212b))", "a\x00512b")]
-    public async Task ParseLiteralString(string source, string result)
+    public async Task ParseLiteralStringAsync(string source, string result)
     {
         var parsedString = (PdfString) await source.ParseObjectAsync();
         Assert.Equal(result, parsedString.ToString());

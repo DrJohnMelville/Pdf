@@ -20,7 +20,7 @@ public class S7_5_2FileHeader
     [InlineData( 1, 5)]
     [InlineData( 1, 6)]
     [InlineData( 1, 7)]
-    public async Task RecognizeFileVersion(int major, int minor)
+    public async Task RecognizeFileVersionAsync(int major, int minor)
     {
         var doc = await (await MinimalPdfParser.MinimalPdf((byte)major, (byte)minor)
             .AsStringAsync()).ParseDocumentAsync();
@@ -30,7 +30,7 @@ public class S7_5_2FileHeader
     }
 
     [Fact]
-    public async Task ParseWithLeadingWhiteSpace()
+    public async Task ParseWithLeadingWhiteSpaceAsync()
     {
         var docString = "   \r\n" + (await MinimalPdfParser.MinimalPdf()
             .AsStringAsync());

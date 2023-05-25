@@ -11,18 +11,18 @@ public class CompatibilitySectionParserTest: ParserTest
     [InlineData("123 (hello) JDM")]
     [InlineData("BX EX 123 (hello) JDM")]
     [InlineData("BX EX JDM BX EX")]
-    public Task FailParseWithoutCompatibility(string illeal) =>
+    public Task FailParseWithoutCompatibilityAsync(string illeal) =>
         Assert.ThrowsAsync<PdfParseException>(
-            () => TestInput(illeal, i => i.EndPathWithNoOp()));
+            () => TestInputAsync(illeal, i => i.EndPathWithNoOp()));
 
     [Fact]
-    public Task IgnoreUnknownOperatorInCompatibilitySection() =>
-            TestInput("BX\n123 (hello) JDM\nEX", 
+    public Task IgnoreUnknownOperatorInCompatibilitySectionAsync() =>
+            TestInputAsync("BX\n123 (hello) JDM\nEX", 
                 i => i.BeginCompatibilitySection(),
                 i=>i.EndCompatibilitySection());
     [Fact]
-    public Task IgnoreUnknownOperatorInCompatibilitySection2() =>
-            TestInput("BX BX EX\n123 (hello) JDM\nEX", 
+    public Task IgnoreUnknownOperatorInCompatibilitySection2Async() =>
+            TestInputAsync("BX BX EX\n123 (hello) JDM\nEX", 
                 i => i.BeginCompatibilitySection(),
                 i => i.BeginCompatibilitySection(),
                 i=>i.EndCompatibilitySection(),

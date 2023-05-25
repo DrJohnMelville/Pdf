@@ -15,7 +15,7 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors;
 public class ImageCombinationTest
 {
     [Fact]
-    public ValueTask TestBitmapFunction()
+    public ValueTask TestBitmapFunctionAsync()
     {
         var bitmap = new TestBitmap(2, 3, 7, 8, 9, 10, 20);
         Assert.Equal(2, bitmap.Width);
@@ -26,11 +26,11 @@ public class ImageCombinationTest
         Assert.Equal(new Vector2(9, 8), bitmap.PositionTopRight);
         Assert.Equal(new Vector2(9, 10), bitmap.PositionBottomRight);
         Assert.Equal(new Vector2(7, 10), bitmap.PositionBottomLeft);
-        return bitmap.VerifyUniform(2, 3, 20, 21, 22, 23, 24, 25, 26);
+        return bitmap.VerifyUniformAsync(2, 3, 20, 21, 22, 23, 24, 25, 26);
     }
 
     [Fact]
-    public Task StitchVertical()
+    public Task StitchVerticalAsync()
     {
         var source = new List<IExtractedBitmap>()
         {
@@ -40,7 +40,7 @@ public class ImageCombinationTest
         source.CollapseAdjacentImages();
         Assert.Single(source);
         var final = source.First();
-        return final.VerifyUniform(2, 5,
+        return final.VerifyUniformAsync(2, 5,
             1, 2,
             3, 4,
             50, 51,
@@ -50,7 +50,7 @@ public class ImageCombinationTest
 
     }
     [Fact]
-    public Task StitchVertical3()
+    public Task StitchVertical3Async()
     {
         var source = new List<IExtractedBitmap>()
         {
@@ -62,7 +62,7 @@ public class ImageCombinationTest
         Assert.Single(source);
         var final = source.First();
         Assert.Equal(3, ((VerticalBitmapStrip)final).Count);
-        return final.VerifyUniform(2, 6,
+        return final.VerifyUniformAsync(2, 6,
             1, 2,
             3, 4,
             50, 51,
@@ -72,7 +72,7 @@ public class ImageCombinationTest
             ).AsTask();
     }
     [Fact]
-    public Task StitchVerticalInvertedOrder()
+    public Task StitchVerticalInvertedOrderAsync()
     {
         var source = new List<IExtractedBitmap>()
         {
@@ -84,7 +84,7 @@ public class ImageCombinationTest
         Assert.Single(source);
         var final = source.First();
         Assert.Equal(3, ((VerticalBitmapStrip)final).Count);
-        return final.VerifyUniform(2, 6,
+        return final.VerifyUniformAsync(2, 6,
             1, 2,
             3, 4,
             50, 51,
@@ -117,7 +117,7 @@ public class ImageCombinationTest
     }
 
     [Fact]
-    public Task StitchHorizontal()
+    public Task StitchHorizontalAsync()
     {
         var source = new List<IExtractedBitmap>()
         {
@@ -127,7 +127,7 @@ public class ImageCombinationTest
         source.CollapseAdjacentImages();
         Assert.Single(source);
         var final = source.First();
-        return final.VerifyUniform(5,2,
+        return final.VerifyUniformAsync(5,2,
             1, 2, 51, 52, 53,
             3, 4, 54, 55, 56
         ).AsTask();

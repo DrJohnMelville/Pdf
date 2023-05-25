@@ -19,14 +19,14 @@ public class S7_3_6_ArraysDefined
     [InlineData("[true false null]", 3)]
     [InlineData("[[true false] null]", 2)]
     [InlineData("[/WIDTH /HGH /X1 /HEIGHT]", 4)]
-    public async Task ParseArray(string src, int length)
+    public async Task ParseArrayAsync(string src, int length)
     {
         var obj = (PdfArray) await src.ParseObjectAsync();
         Assert.Equal(length, obj.RawItems.Count);
     }
 
     [Fact]
-    public async Task ReadBigArray()
+    public async Task ReadBigArrayAsync()
     {
         var expected = Enumerable.Range(0, 2000).ToArray();
         var source = $"[{string.Join(" ", expected)}]";

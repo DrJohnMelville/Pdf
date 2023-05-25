@@ -46,10 +46,10 @@ public partial class S7_4_3Ascii85DecodeFilter
     [InlineData("\xFF\xFF\xFF\xFF", "s8W-!")]
     [InlineData("dddd\0\0\0\0dddd", "A7T4]zA7T4]")]
     [InlineData("", "")]
-    public async Task EncodeString(string plain, string encoded)
+    public async Task EncodeStringAsync(string plain, string encoded)
     {
-        await SpecialCases(plain, encoded);
-        await SpecialCases(plain, encoded+"~>this garbage does not matter");
+        await SpecialCasesAsync(plain, encoded);
+        await SpecialCasesAsync(plain, encoded+"~>this garbage does not matter");
     }
         
     [Theory]
@@ -61,6 +61,6 @@ public partial class S7_4_3Ascii85DecodeFilter
     [InlineData("dddd", " A 7 \t\r\n T 4 ]    ~>")]
     [InlineData("ddd", "A7T3  ~>")]
     [InlineData("ddd", "A7T3~> jsdhlk oky wqo' gdwqj 'ggb3eg2kph rgkj ohe3fgho' ihk tb3")]
-    public Task SpecialCases(string decoded, string encoded) =>
-        StreamTest.TestContent(encoded, decoded, KnownNames.ASCII85Decode, PdfTokenValues.Null);
+    public Task SpecialCasesAsync(string decoded, string encoded) =>
+        StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCII85Decode, PdfTokenValues.Null);
 }

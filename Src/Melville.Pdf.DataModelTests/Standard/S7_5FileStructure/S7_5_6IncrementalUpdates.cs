@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_6IncrementalUpdates
 {
-    private async Task<PdfLoadedLowLevelDocument> CompositeDocument(Action<IPdfObjectRegistry> create,
+    private async Task<PdfLoadedLowLevelDocument> CompositeDocumentAsync(Action<IPdfObjectRegistry> create,
         Func<PdfLoadedLowLevelDocument, ILowLevelDocumentModifier, Task> modify)
     {
         var creator = new LowLevelDocumentBuilder();
@@ -32,9 +32,9 @@ public class S7_5_6IncrementalUpdates
     }
         
     [Fact]
-    public async Task ParseModification()
+    public async Task ParseModificationAsync()
     {
-        var ld2 = await CompositeDocument(creator =>
+        var ld2 = await CompositeDocumentAsync(creator =>
         {
             var e1 = creator.Add(PdfBoolean.True);
             creator.AddToTrailerDictionary(KnownNames.Root, e1);

@@ -40,8 +40,8 @@ public partial class ParseInlineImage : ParserTest
     }
 
     [Fact]
-    public Task ParseInlineImageDictionary()=>
-        TestInput($"BI/Width 12/Height 24\nID\nxxEI",
+    public Task ParseInlineImageDictionaryAsync()=>
+        TestInputAsync($"BI/Width 12/Height 24\nID\nxxEI",
             new DoImpl(async i =>
             {
                 Assert.Equal(4, i.Count);
@@ -59,8 +59,8 @@ public partial class ParseInlineImage : ParserTest
     [InlineData("StreamEI\rData!", "StreamEI\rData!")]
     [InlineData("StreamEI\nData!", "StreamEI\nData!")]
     [InlineData("StreamEI\tData!", "StreamEI\tData!")]
-    public Task ParseSimpleInlineImage(string onDisk, string parsed) =>
-        TestInput($"BI/Width 12/Height 24\nID\n{onDisk}EI",
+    public Task ParseSimpleInlineImageAsync(string onDisk, string parsed) =>
+        TestInputAsync($"BI/Width 12/Height 24\nID\n{onDisk}EI",
             new DoImpl(async i => Assert.Equal(parsed,
                 await (await i.StreamContentAsync()).ReadAsStringAsync())));
 
@@ -76,8 +76,8 @@ public partial class ParseInlineImage : ParserTest
     [InlineData("DeviceRGB", "/RGB")]
     [InlineData("DeviceCMYK", "/CMYK")]
     [InlineData("Indexed", "/I")]
-    public Task ParseImageSynonyms(string preferredTerm, string synonym) =>
-        TestInput($"BI/Filter {synonym}\nID\nStreamDataEI",
+    public Task ParseImageSynonymsAsync(string preferredTerm, string synonym) =>
+        TestInputAsync($"BI/Filter {synonym}\nID\nStreamDataEI",
             new DoImpl(async i =>
             {
                 Assert.Equal(NameDirectory.Get(preferredTerm), 
@@ -95,8 +95,8 @@ public partial class ParseInlineImage : ParserTest
     [InlineData("ImageMask", "IM")]
     [InlineData("Interpolate", "I")]
     [InlineData("Width", "W")]
-    public Task ParseImageEntrySynonyms(string preferredTerm, string synonym) =>
-        TestInput($"BI/{synonym} 1234\nID\nStreamDataEI",
+    public Task ParseImageEntrySynonymsAsync(string preferredTerm, string synonym) =>
+        TestInputAsync($"BI/{synonym} 1234\nID\nStreamDataEI",
             new DoImpl(async i =>
             {
                 Assert.Equal(1234,

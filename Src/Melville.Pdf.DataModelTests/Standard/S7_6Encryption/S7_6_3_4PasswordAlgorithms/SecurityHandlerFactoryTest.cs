@@ -22,7 +22,7 @@ public class SecurityHandlerFactoryTest
             /O <E600ECC20288AD8B0D64A929C6A83EE2517679AA0218BECEEA8B7986726A8CDB>
             /U <38ACA54678D67C003A8193381B0FA1CC101112131415161718191A1B1C1D1E1F>>> 
            /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF>] >>")]
-    public async Task CreateSecurityHandler(string trailer)
+    public async Task CreateSecurityHandlerAsync(string trailer)
     { 
         await  TrailerToDocumentCryptContext.CreateDecryptorFactoryAsync(
             (PdfDictionary)await trailer.ParseObjectAsync(), password);
@@ -45,7 +45,7 @@ public class SecurityHandlerFactoryTest
             /O <E600ECC20288AD8B0D64A929C6A83EE2517679AA0218BECEEA8B7986726A8CDB>
             /U <38ACA54678D67C003A8193381B0FA1CC101112131415161718191A1B1C1D1E1F>>> 
            /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF>] >>")]
-    public async Task FailToCreateSecurityHandler(string trailer)
+    public async Task FailToCreateSecurityHandlerAsync(string trailer)
     {
         var dict = (PdfDictionary)await trailer.ParseObjectAsync();
         await Assert.ThrowsAsync<PdfSecurityException>(

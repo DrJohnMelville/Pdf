@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 
 public class S7_6_5CryptFilters
 {
-    private async Task VerifyStringAndStreamEncoding(bool hideStream, bool hideString,
+    private async Task VerifyStringAndStreamEncodingAsync(bool hideStream, bool hideString,
         ILowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream = null)
     {
         creator.Add(PdfString.CreateAscii("plaintext string"));
@@ -54,39 +54,39 @@ public class S7_6_5CryptFilters
     [InlineData(true, false)]
     [InlineData(false, true)]
     [InlineData(false, false)]
-    public async Task CanUseDefaultStringsIn(bool hideStream, bool hideString)
+    public async Task CanUseDefaultStringsInAsync(bool hideStream, bool hideString)
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
             Encoder(hideStream), Encoder(hideString), Encoder(hideStream), new V4CfDictionary(KnownNames.V2, 16)));
-        await VerifyStringAndStreamEncoding(hideStream, hideString, creator);
+        await VerifyStringAndStreamEncodingAsync(hideStream, hideString, creator);
     }
 
     [Fact]
-    public Task UseIdentityCryptFilterToGEtOutOfStreamEncryption()
+    public Task UseIdentityCryptFilterToGEtOutOfStreamEncryptionAsync()
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
             KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF, new V4CfDictionary(KnownNames.V2, 16)));
-        return VerifyStringAndStreamEncoding(false, true, creator, KnownNames.Identity);
+        return VerifyStringAndStreamEncodingAsync(false, true, creator, KnownNames.Identity);
     }
 
     [Fact]
-    public Task UseCryptFilterToOptIntoEncryption()
+    public Task UseCryptFilterToOptIntoEncryptionAsync()
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
             KnownNames.Identity, KnownNames.StdCF, KnownNames.StmF, new V4CfDictionary(KnownNames.V2, 16)));
-        return VerifyStringAndStreamEncoding(true, true, creator, KnownNames.StdCF);
+        return VerifyStringAndStreamEncodingAsync(true, true, creator, KnownNames.StdCF);
     }
 
     [Fact]
-    public  Task StreamsWithoutCryptFilterGetDefaultEncryption()
+    public  Task StreamsWithoutCryptFilterGetDefaultEncryptionAsync()
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
             Encoder(true), Encoder(true),Encoder(true), new V4CfDictionary(KnownNames.None, 16)));
-        return VerifyStringAndStreamEncoding(false, false, creator);
+        return VerifyStringAndStreamEncodingAsync(false, false, creator);
             
     }
         

@@ -14,20 +14,20 @@ namespace Melville.Pdf.DataModelTests.Standard.S9_4Text;
 public partial class TextObjectOperationsParserTest : ParserTest
 {
     [Fact]
-    public Task BeginTextObject() => TestInput("BT", i => i.BeginTextObject());
+    public Task BeginTextObjectAsync() => TestInputAsync("BT", i => i.BeginTextObject());
     [Fact]
-    public Task EndTextObject() => TestInput("ET", i => i.EndTextObject());
+    public Task EndTextObjectAsync() => TestInputAsync("ET", i => i.EndTextObject());
     [Fact]
-    public Task MovePositionBy() => TestInput("5 6 Td", i => i.MovePositionBy(5,6));
+    public Task MovePositionByAsync() => TestInputAsync("5 6 Td", i => i.MovePositionBy(5,6));
     [Fact]
-    public Task MovePositionByWithLeading() => 
-        TestInput("5 6 TD", i => i.MovePositionByWithLeading(5,6));
+    public Task MovePositionByWithLeadingAsync() => 
+        TestInputAsync("5 6 TD", i => i.MovePositionByWithLeading(5,6));
     [Fact]
-    public Task SetMatrix() => 
-        TestInput("6 5 4 3 2 1 Tm", i => i.SetTextMatrix(6,5,4,3,2,1));
+    public Task SetMatrixAsync() => 
+        TestInputAsync("6 5 4 3 2 1 Tm", i => i.SetTextMatrix(6,5,4,3,2,1));
     [Fact]
-    public Task MoveToNextLine() => 
-        TestInput("T*", i => i.MoveToNextTextLine());
+    public Task MoveToNextLineAsync() => 
+        TestInputAsync("T*", i => i.MoveToNextTextLine());
 
     private partial class TjMock : MockBase, IContentStreamOperations
     {
@@ -77,14 +77,14 @@ public partial class TextObjectOperationsParserTest : ParserTest
         }
     }
     [Fact]
-    public Task ParseShowSyntaxString() => TestInput("(ABC) Tj", new TjMock());
+    public Task ParseShowSyntaxStringAsync() => TestInputAsync("(ABC) Tj", new TjMock());
     [Fact]
-    public Task ParseShowHexString() => TestInput("<4142 43> Tj", new TjMock());
+    public Task ParseShowHexStringAsync() => TestInputAsync("<4142 43> Tj", new TjMock());
     [Fact]
-    public Task MoveToNextLineAndShow() => TestInput("(def)'", new TjMock());
+    public Task MoveToNextLineAndShowAsync() => TestInputAsync("(def)'", new TjMock());
     [Fact]
-    public Task MoveToNextLineAndShow2() => TestInput("7 8(IJK)\"", new TjMock());
+    public Task MoveToNextLineAndShow2Async() => TestInputAsync("7 8(IJK)\"", new TjMock());
     [Fact]
-    public Task ShowSpacedString() => TestInput("[(a)2(b)3(c)(s)4 5]TJ", new TjMock());
+    public Task ShowSpacedStringAsync() => TestInputAsync("[(a)2(b)3(c)(s)4 5]TJ", new TjMock());
     
 }

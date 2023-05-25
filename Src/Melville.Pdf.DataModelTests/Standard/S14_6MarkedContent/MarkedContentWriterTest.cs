@@ -12,53 +12,53 @@ namespace Melville.Pdf.DataModelTests.Standard.S14_6MarkedContent;
 public class MarkedContentWriterTest: WriterTest
 {
     [Fact]
-    public async Task MarkedContentPointTest()
+    public async Task MarkedContentPointTestAsync()
     {
         sut.MarkedContentPoint("M1");
-        Assert.Equal("/M1 MP\n", await WrittenText() );
+        Assert.Equal("/M1 MP\n", await WrittenTextAsync() );
         
     }
 
     [Fact]
-    public async Task MarkedPointWithPropertyName()
+    public async Task MarkedPointWithPropertyNameAsync()
     {
         await sut.MarkedContentPointAsync("M1", "M2");
-        Assert.Equal("/M1 /M2 DP\n", await WrittenText());
+        Assert.Equal("/M1 /M2 DP\n", await WrittenTextAsync());
         
     }
 
     [Fact]
-    public async Task MarkedPointWithInlineDictionary()
+    public async Task MarkedPointWithInlineDictionaryAsync()
     {
         await sut.MarkedContentPointAsync("M1", new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Catalog)
             .AsDictionary());
-        Assert.Equal("/M1 <</Type/Catalog>>DP\n", await WrittenText());
+        Assert.Equal("/M1 <</Type/Catalog>>DP\n", await WrittenTextAsync());
         
     }
 
     [Fact]
-    public async Task NamedMarkRange()
+    public async Task NamedMarkRangeAsync()
     {
         using (sut.BeginMarkedRange("M2"))
         {
             sut.MarkedContentPoint("M1");
         }
-        Assert.Equal("/M2 BMC\n/M1 MP\nEMC\n", await WrittenText());
+        Assert.Equal("/M2 BMC\n/M1 MP\nEMC\n", await WrittenTextAsync());
     }
  
     [Fact]
-    public async Task NamedMarkRangeWithDictName()
+    public async Task NamedMarkRangeWithDictNameAsync()
     {
         using (await sut.BeginMarkedRangeAsync("M2", KnownNames.All))
         {
             sut.MarkedContentPoint("M1");
         }
-        Assert.Equal("/M2 /All BDC\n/M1 MP\nEMC\n", await WrittenText());
+        Assert.Equal("/M2 /All BDC\n/M1 MP\nEMC\n", await WrittenTextAsync());
     }
     
     [Fact]
-    public async Task NamedMarkRangeWithInlineDict()
+    public async Task NamedMarkRangeWithInlineDictAsync()
     {
         using (await sut.BeginMarkedRangeAsync("M2", new DictionaryBuilder()
                    .WithItem(KnownNames.Type, KnownNames.Type)
@@ -66,7 +66,7 @@ public class MarkedContentWriterTest: WriterTest
         {
             sut.MarkedContentPoint("M1");
         }
-        Assert.Equal("/M2 <</Type/Type>>BDC\n/M1 MP\nEMC\n", await WrittenText());
+        Assert.Equal("/M2 <</Type/Type>>BDC\n/M1 MP\nEMC\n", await WrittenTextAsync());
     }
     
     

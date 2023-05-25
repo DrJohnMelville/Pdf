@@ -12,20 +12,20 @@ namespace Melville.Pdf.DataModelTests.Standard.S14_6MarkedContent;
 public partial class MarkedContentParser : ParserTest
 {
     [Fact]
-    public Task MarkedContentPoint() =>
-        TestInput("/M1 MP", i => i.MarkedContentPoint(NameDirectory.Get("M1")));
+    public Task MarkedContentPointAsync() =>
+        TestInputAsync("/M1 MP", i => i.MarkedContentPoint(NameDirectory.Get("M1")));
     [Fact]
-    public Task MarkedContentPointWithNamedParam() =>
-        TestInput("/M1 /M2 DP", i => i.MarkedContentPointAsync("M1", "M2"));
+    public Task MarkedContentPointWithNamedParamAsync() =>
+        TestInputAsync("/M1 /M2 DP", i => i.MarkedContentPointAsync("M1", "M2"));
     [Fact]
-    public Task BeginMarkedRangeWithTag() =>
-        TestInput("/M1 BMC", i => i.BeginMarkedRange("M1"));
+    public Task BeginMarkedRangeWithTagAsync() =>
+        TestInputAsync("/M1 BMC", i => i.BeginMarkedRange("M1"));
     [Fact]
-    public Task BeginMarkedRangeWithTagAndDictName() =>
-        TestInput("/M1 /M2 BDC", i => i.BeginMarkedRangeAsync("M1", "M2"));
+    public Task BeginMarkedRangeWithTagAndDictNameAsync() =>
+        TestInputAsync("/M1 /M2 BDC", i => i.BeginMarkedRangeAsync("M1", "M2"));
     [Fact]
-    public Task EndMarkedRange() =>
-        TestInput("EMC", i => i.EndMarkedRange());
+    public Task EndMarkedRangeAsync() =>
+        TestInputAsync("EMC", i => i.EndMarkedRange());
 
     private partial class MarkedContentPointMock: MockBase, IContentStreamOperations 
     {
@@ -57,12 +57,12 @@ public partial class MarkedContentParser : ParserTest
     [Theory]
     [InlineData("<</Type/Catalog>>")]
     [InlineData("<</Type<</Type/Catalog>>>>")]
-    public Task MarkedContentPointWithInlineDict(string dictStr) => 
-        TestInput($"/M1{dictStr}DP", new MarkedContentPointMock(dictStr));
+    public Task MarkedContentPointWithInlineDictAsync(string dictStr) => 
+        TestInputAsync($"/M1{dictStr}DP", new MarkedContentPointMock(dictStr));
     [Theory]
     [InlineData("<</Type/Catalog>>")]
     [InlineData("<</Type<</Type/Catalog>>>>")]
-    public Task MarkedContentRangeWithInlineDict(string dictStr) => 
-        TestInput($"/M1{dictStr}BDC", new MarkedContentPointMock(dictStr));
+    public Task MarkedContentRangeWithInlineDictAsync(string dictStr) => 
+        TestInputAsync($"/M1{dictStr}BDC", new MarkedContentPointMock(dictStr));
 
 }

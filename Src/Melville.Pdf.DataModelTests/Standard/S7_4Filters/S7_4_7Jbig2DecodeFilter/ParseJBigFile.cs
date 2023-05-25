@@ -14,7 +14,7 @@ public class ParseJBigFile
     [InlineData(1, Page1And2)]
     [InlineData(2, Page1And2)]
     [InlineData(3, Page3)]
-    public async Task ReadOnePage(uint page, string result)
+    public async Task ReadOnePageAsync(uint page, string result)
     {
         var fact = new JbigExplicitPageReader();
         fact.RequestPage(page);
@@ -23,7 +23,7 @@ public class ParseJBigFile
     }
 
     [Fact]
-    public async Task ReadAllPages()
+    public async Task ReadAllPagesAsync()
     {
         var fact = new JbigAllPageReader();
         await fact.ProcessFileBitsAsync(PipeData());

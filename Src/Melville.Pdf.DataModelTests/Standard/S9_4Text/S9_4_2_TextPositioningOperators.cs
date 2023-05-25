@@ -129,7 +129,7 @@ public class S9_4_2_TextPositioningOperators
     [Theory]
     [InlineData("e", 10)]
     [InlineData("ee", 20)]
-    public async Task DrawString(string input, float xPos)
+    public async Task DrawStringAsync(string input, float xPos)
     {
         await sut.ShowStringAsync(input.AsExtendedAsciiBytes());
         Assert.Equal(Matrix3x2.Identity, sut.CurrentState().TextLineMatrix);
@@ -137,7 +137,7 @@ public class S9_4_2_TextPositioningOperators
     }
 
     [Fact]
-    public async Task DrawHorizontalCompressedStream()
+    public async Task DrawHorizontalCompressedStreamAsync()
     {
         sut.SetCharSpace(20);
         sut.SetWordSpace(30);
@@ -171,7 +171,7 @@ public class S9_4_2_TextPositioningOperators
     [InlineData(100,18, 2)]
     [InlineData(50,4.5, 1)]
     [InlineData(1000,90, 1)]
-    public async Task ShowSpacedStream(double horizontalScale, float xPosition, int fontSize)
+    public async Task ShowSpacedStreamAsync(double horizontalScale, float xPosition, int fontSize)
     {
         sut.SetHorizontalTextScaling(horizontalScale);
         await state.StronglyTypedCurrentState().SetFontAsync(KnownNames.Helvetica, fontSize); 

@@ -46,15 +46,15 @@ public abstract class StreamTestBase
                 StreamFormat.DiskRepresentation);
 
     [Fact]
-    public Task EncodingTest() => VerifyEncoding(StreamWithPlainTextBacking());
+    public Task EncodingTestAsync() => VerifyEncodingAsync(StreamWithPlainTextBacking());
 
     [Fact]
-    public async Task DecodeTest()
+    public async Task DecodeTestAsync()
     {
-        await VerifyDecodedStream(await StreamWithEncodedBacking().StreamContentAsync());
+        await VerifyDecodedStreamAsync(await StreamWithEncodedBacking().StreamContentAsync());
     }
     [Fact]
-    public async Task DecodeWhenGettingOneCharAtATime()
+    public async Task DecodeWhenGettingOneCharAtATimeAsync()
     {
         var src = new OneCharAtATimeStream(dest.AsExtendedAsciiBytes());
 
@@ -62,11 +62,11 @@ public abstract class StreamTestBase
 
         var pdfStream = StreamBuilder().AsStream(strSourceMock.Object);
         var innerStream = await pdfStream.StreamContentAsync();
-        await VerifyDecodedStream(innerStream);
+        await VerifyDecodedStreamAsync(innerStream);
     }
 
 
-    private async Task VerifyEncoding(PdfStream stream) => 
+    private async Task VerifyEncodingAsync(PdfStream stream) => 
         Assert.Equal(SimulateStreamOutput(), await stream.WriteToStringAsync());
         
     private string SimulateStreamOutput() => 
@@ -78,15 +78,15 @@ public abstract class StreamTestBase
             : "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}")) + ">>";
 
     [Fact]
-    public async Task VerifyDisposalAsync()
+    public async Task VerifyDisposal1Async()
     {
-        var (streamMock, innerStream) = await DisposeStreamRig();
+        var (streamMock, innerStream) = await DisposeStreamRigAsync();
         streamMock.Verify(i => i.DisposeAsync(), Times.Never);
         await innerStream.DisposeAsync();
         streamMock.Verify(i => i.DisposeAsync(), Times.Once);
     }
 
-    private async Task<(Mock<Stream> streamMock, Stream innerStream)> DisposeStreamRig()
+    private async Task<(Mock<Stream> streamMock, Stream innerStream)> DisposeStreamRigAsync()
     {
         var streamMock = new Mock<Stream>();
         var strSourceMock = MockStreamSource(streamMock.Object);
@@ -106,31 +106,31 @@ public abstract class StreamTestBase
     }
 
     [Fact]
-    public async Task VerifyDisposal()
+    public async Task VerifyDisposalAsync()
     {
-        var (streamMock, innerStream) = await DisposeStreamRig();
+        var (streamMock, innerStream) = await DisposeStreamRigAsync();
 
         streamMock.Verify(i => i.Close(), Times.Never);
         innerStream.Dispose();
         streamMock.Verify(i => i.Close(), Times.Once);
     }
 
-    private ValueTask<PdfStream> StreamWithEncodedBackEnd() =>
-         ToStreamWithEncodedBackEnd(StreamWithPlainTextBacking());
+    private ValueTask<PdfStream> StreamWithEncodedBackEndAsync() =>
+         ToStreamWithEncodedBackEndAsync(StreamWithPlainTextBacking());
 
-    private async ValueTask<PdfStream> ToStreamWithEncodedBackEnd(PdfStream str) =>
+    private async ValueTask<PdfStream> ToStreamWithEncodedBackEndAsync(PdfStream str) =>
         new DictionaryBuilder(str.RawItems).AsStream(
             await str.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance),
             StreamFormat.DiskRepresentation);
 
 
     [Fact]
-    public async Task RoundTripStream()
+    public async Task RoundTripStreamAsync()
     {
-        await VerifyDecodedStream(await (await StreamWithEncodedBackEnd()).StreamContentAsync());
+        await VerifyDecodedStreamAsync(await (await StreamWithEncodedBackEndAsync()).StreamContentAsync());
     }
 
-    private async Task VerifyDecodedStream(Stream streamToRead)
+    private async Task VerifyDecodedStreamAsync(Stream streamToRead)
     {
         var buf = new byte[source.Length+200];
         var read = await buf.FillBufferAsync(0, buf.Length, streamToRead);

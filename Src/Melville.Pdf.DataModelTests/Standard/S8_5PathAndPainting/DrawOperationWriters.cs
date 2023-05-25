@@ -10,52 +10,52 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 public class DrawOperationWriters : WriterTest
 {
     [Fact]
-    public async Task MoveTo()
+    public async Task MoveToAsync()
     {
         sut.MoveTo(21, 34);
-        Assert.Equal("21 34 m\n", await WrittenText());
+        Assert.Equal("21 34 m\n", await WrittenTextAsync());
     }
 
     [Fact]
-    public async Task LineTo()
+    public async Task LineToAsync()
     {
         sut.LineTo(21, 34);
-        Assert.Equal("21 34 l\n", await WrittenText());
+        Assert.Equal("21 34 l\n", await WrittenTextAsync());
     }
 
     [Fact]
-    public async Task CurveTo()
+    public async Task CurveToAsync()
     {
         sut.CurveTo(1, 2, 3, 4, 5, 6);
-        Assert.Equal("1 2 3 4 5 6 c\n", await WrittenText());
+        Assert.Equal("1 2 3 4 5 6 c\n", await WrittenTextAsync());
     }
 
     [Fact]
-    public async Task CurveToWithoutInitialControl()
+    public async Task CurveToWithoutInitialControlAsync()
     {
         sut.CurveToWithoutInitialControl(1, 2, 5, 6);
-        Assert.Equal("1 2 5 6 v\n", await WrittenText());
+        Assert.Equal("1 2 5 6 v\n", await WrittenTextAsync());
     }
 
     [Fact]
-    public async Task CurveToWithoutFinalControl()
+    public async Task CurveToWithoutFinalControlAsync()
     {
         sut.CurveToWithoutFinalControl(1, 2, 5, 6);
-        Assert.Equal("1 2 5 6 y\n", await WrittenText());
+        Assert.Equal("1 2 5 6 y\n", await WrittenTextAsync());
     }
 
     [Fact]
-    public async Task ClosePath()
+    public async Task ClosePathAsync()
     {
         sut.ClosePath();
-        Assert.Equal("h\n", await WrittenText());
+        Assert.Equal("h\n", await WrittenTextAsync());
     }
 
     [Fact]
-    public async Task Rectangle()
+    public async Task RectangleAsync()
     {
         sut.Rectangle(1, 2, 3, 4);
-        Assert.Equal("1 2 3 4 re\n", await WrittenText());
+        Assert.Equal("1 2 3 4 re\n", await WrittenTextAsync());
     }
 
     public static object[] PaintingOperator(
@@ -80,18 +80,18 @@ public class DrawOperationWriters : WriterTest
 
     [Theory]
     [MemberData(nameof(PaintinOperators))]
-    public async Task EmptyOperator(string code, Action<IContentStreamOperations> op)
+    public async Task EmptyOperatorAsync(string code, Action<IContentStreamOperations> op)
     {
         op(sut);
-        Assert.Equal(code+"\n", await WrittenText());
+        Assert.Equal(code+"\n", await WrittenTextAsync());
         
     }
 
     [Fact]
-    public async Task name()
+    public async Task nameAsync()
     {
         await sut.DoAsync("N1");
-        Assert.Equal("/N1 Do\n", await WrittenText());
+        Assert.Equal("/N1 Do\n", await WrittenTextAsync());
         
     }
 }

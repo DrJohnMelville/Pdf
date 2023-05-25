@@ -70,7 +70,7 @@ public class S7_9_2StringDataTypes
     [InlineData("a")]
     [InlineData("akh")]
     [InlineData("a\u2014b")]
-    public async Task TextStreamTest(string text)
+    public async Task TextStreamTestAsync(string text)
     {
         var utf8 = new DictionaryBuilder().AsStream(PdfString.CreateUtf8(text).Bytes);
         Assert.Equal(text, await (await utf8.TextStreamReaderAsync()).ReadToEndAsync());

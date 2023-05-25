@@ -12,24 +12,24 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 public class DrawOperationParsers: ParserTest
 {
     [Fact]
-    public Task ParseMoveTo() => TestInput(
+    public Task ParseMoveToAsync() => TestInputAsync(
         "99 23 m", i => i.MoveTo(99,23));
     [Fact]
-    public Task ParseLineTo() => TestInput(
+    public Task ParseLineToAsync() => TestInputAsync(
         "99 23 l", i => i.LineTo(99,23));
     [Fact]
-    public Task ParseCurveTo() => TestInput(
+    public Task ParseCurveToAsync() => TestInputAsync(
         "1 2 3 4 5 6 c", i => i.CurveTo(1,2,3,4,5,6));
     [Fact]
-    public Task ParseCurveToWithoutInitialControl() => TestInput(
+    public Task ParseCurveToWithoutInitialControlAsync() => TestInputAsync(
         "3 4 5 6 v", i => i.CurveToWithoutInitialControl(3,4,5,6));
     [Fact]
-    public Task ParseCurveToWithoutFinalControl() => TestInput(
+    public Task ParseCurveToWithoutFinalControlAsync() => TestInputAsync(
         "3 4 5 6 y", i => i.CurveToWithoutFinalControl(3,4,5,6));
     [Fact]
-    public Task ParseClosePath() => TestInput("h", i => i.ClosePath());
+    public Task ParseClosePathAsync() => TestInputAsync("h", i => i.ClosePath());
     [Fact]
-    public Task ParseRectangle() => TestInput("1 2 3 4 re", i => i.Rectangle(1,2,3,4));
+    public Task ParseRectangleAsync() => TestInputAsync("1 2 3 4 re", i => i.Rectangle(1,2,3,4));
     
     public static object[] PaintingOperator(
         string code, Expression<Action<IContentStreamOperations>> op) =>
@@ -53,14 +53,14 @@ public class DrawOperationParsers: ParserTest
         };
     [Theory]
     [MemberData(nameof(PaintinOperators))]
-    public Task EmptyOperator(string code, Expression<Action<IContentStreamOperations>> op) =>
-        TestInput(code+"\n", op);
+    public Task EmptyOperatorAsync(string code, Expression<Action<IContentStreamOperations>> op) =>
+        TestInputAsync(code+"\n", op);
 
     [Fact]
-    public Task DoOperationTest()
+    public Task DoOperationTestAsync()
     {
         var name = NameDirectory.Get("BBB");
-        return TestInput("/BBB Do", i=>i.DoAsync(name));
+        return TestInputAsync("/BBB Do", i=>i.DoAsync(name));
         
     }
 }

@@ -20,7 +20,7 @@ public class S7_3_5_NamesDefined
         Assert.Equal("/" + name, NameDirectory.Get(name).ToString());
     }
     
-    private static async Task<PdfName> TryParseStringToName(string source)
+    private static async Task<PdfName> TryParseStringToNameAsync(string source)
     {
         return (PdfName)await Encoding.UTF8.GetBytes(source).ParseObjectAsync();
     }
@@ -39,18 +39,18 @@ public class S7_3_5_NamesDefined
     [InlineData("/The_Key_of_F#23_Minor","The_Key_of_F#_Minor")]
     [InlineData("/A#42","AB")]
     
-    public async Task ParseNameSucceed(string source, string result)
+    public async Task ParseNameSucceedAsync(string source, string result)
     {
-        var name = await TryParseStringToName(source);
+        var name = await TryParseStringToNameAsync(source);
         Assert.Equal("/" + result, name!.ToString());
 
     }
 
     [Fact]
-    public async Task KnowNamesParseToConstants()
+    public async Task KnowNamesParseToConstantsAsync()
     {
-        var n1 = await TryParseStringToName("/Width");
-        var n2 = await TryParseStringToName("/Width");
+        var n1 = await TryParseStringToNameAsync("/Width");
+        var n2 = await TryParseStringToNameAsync("/Width");
         Assert.True(ReferenceEquals(KnownNames.Width, n1));
         Assert.True(ReferenceEquals(n1, n2));
     }

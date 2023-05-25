@@ -25,7 +25,7 @@ public class S7_9Trees
     }
 
     [Fact]
-    public async Task CreateTrivialNumberTree()
+    public async Task CreateTrivialNumberTreeAsync()
     {
         var result = CreateNumberTree(5);
         var array = await result.GetAsync<PdfArray>(KnownNames.Nums);
@@ -37,7 +37,7 @@ public class S7_9Trees
     }
 
     [Fact]
-    public async Task TwoLevelTree()
+    public async Task TwoLevelTreeAsync()
     {
         var result = CreateNumberTree(50);
         var array = await result.GetAsync<PdfArray>(KnownNames.Kids);
@@ -55,7 +55,7 @@ public class S7_9Trees
         Assert.Contains("6 0 obj <</Kids[1 0 R 2 0 R 3 0 R 4 0 R 5 0 R]>> endobj", docAsString);
     }
     [Fact]
-    public async Task ThreeLevelTree()
+    public async Task ThreeLevelTreeAsync()
     {
         var result = CreateNumberTree(500);
         var array = await result.GetAsync<PdfArray>(KnownNames.Kids);
@@ -74,7 +74,7 @@ public class S7_9Trees
     }
 
     [Fact]
-    public async Task CreateTrivialNameTree()
+    public async Task CreateTrivialNameTreeAsync()
     {
         var result = builder.CreateTree(10,
             (PdfString.CreateAscii("A"), PdfString.CreateAscii("Alpha")),
@@ -95,7 +95,7 @@ public class S7_9Trees
     [InlineData(1,10)]
     [InlineData(213,2130)]
     [InlineData(500,5000)]
-    public async Task IndexerTest(int key, int value)
+    public async Task IndexerTestAsync(int key, int value)
     {
         var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
         Assert.Equal(value, ((PdfInteger)await tree.SearchAsync(key)).IntValue);
@@ -107,14 +107,14 @@ public class S7_9Trees
     [InlineData(101.5)]
     [InlineData(501)]
     [InlineData(1000)]
-    public Task SearchFails(double key)
+    public Task SearchFailsAsync(double key)
     {
         var tree = new PdfTree<PdfNumber>(CreateNumberTree(500));
         return Assert.ThrowsAsync<PdfParseException>(()=> tree.SearchAsync(key).AsTask());
     }
 
     [Fact]
-    public async Task IteratorTest()
+    public async Task IteratorTestAsync()
     {
         Assert.Equal(Enumerable.Range(1,500).Select(i=>10*i).ToList(), await 
             new PdfTree<PdfNumber>(CreateNumberTree(500))

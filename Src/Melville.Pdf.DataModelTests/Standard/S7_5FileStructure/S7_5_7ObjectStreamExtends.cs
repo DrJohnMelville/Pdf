@@ -28,7 +28,7 @@ public readonly struct MultiBufferWriter
 public class S7_5_7ObjectStreamExtends
 {
     [Fact]
-    public async Task NonextndedStreamTest()
+    public async Task NonextndedStreamTestAsync()
     {
         var mbs = CreateFile("""
         1 0 obj
@@ -49,7 +49,7 @@ public class S7_5_7ObjectStreamExtends
         Assert.Equal("String", (await reader.Objects[(3,0)].DirectValueAsync()).ToString());
     }
     [Fact]
-    public async Task ExtendedStreamTest()
+    public async Task ExtendedStreamTestAsync()
     {
         var mbs = CreateFile("""
         1 0 obj
@@ -78,7 +78,7 @@ public class S7_5_7ObjectStreamExtends
         Assert.Equal("String", (await reader.Objects[(3,0)].DirectValueAsync()).ToString());
     }
     [Fact]
-    public async Task OverridePriorTest()
+    public async Task OverridePriorTestAsync()
     {
         var mbs = CreateFile("""
         1 0 obj

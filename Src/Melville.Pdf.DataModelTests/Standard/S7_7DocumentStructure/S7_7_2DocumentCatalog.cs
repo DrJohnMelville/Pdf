@@ -13,7 +13,7 @@ public class S7_7_2DocumentCatalog
     [InlineData(1,2,"/1.2")]
     [InlineData(1,9,"/1.9")]
     [InlineData(2,0,"/2.0")]
-    public async Task DefaultVersions(byte major, byte minor, string result)
+    public async Task DefaultVersionsAsync(byte major, byte minor, string result)
     {
         var creator = new PdfDocumentCreator();
         var doc = new PdfDocument(creator.CreateDocument(major, minor));
@@ -21,7 +21,7 @@ public class S7_7_2DocumentCatalog
     }
 
     [Fact]
-    public async Task ExplicitVersion()
+    public async Task ExplicitVersionAsync()
     {
         var creator = new PdfDocumentCreator();
         creator.SetVersionInCatalog(3,4);
