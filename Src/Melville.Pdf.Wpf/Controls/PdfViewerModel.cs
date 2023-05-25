@@ -20,7 +20,7 @@ internal partial class PdfViewerModel
         this.document = document;
         
         InitalizePageFlipper();
-        RenderPageAsync(1);
+        RenderPage(1);
         ConfigureOptionalContentDisplay(this.document.OptionalContentState);
     }
 
@@ -28,11 +28,11 @@ internal partial class PdfViewerModel
     {
         ocs.SelectedContentChanged += RedrawPage;
         if (ocs is INotifyPropertyChanged notifing)
-            notifing.WhenMemberChanges(nameof(ocs.SelectedConfiguration), NewConfigAsync);
-        NewConfigAsync();
+            notifing.WhenMemberChanges(nameof(ocs.SelectedConfiguration), NewConfig);
+        NewConfig();
     }
     
-    private async void NewConfigAsync()
+    private async void NewConfig()
     {
         OptionalContentDisplay = await document.OptionalContentState.ConstructUiModelAsync(
             document.OptionalContentState.SelectedConfiguration?.Order);
@@ -45,11 +45,11 @@ internal partial class PdfViewerModel
          inpc.PropertyChanged += TryChangePage;
     }
 
-    private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPageAsync(PageSelector.Page);
+    private void TryChangePage(object? sender, PropertyChangedEventArgs e) => RenderPage(PageSelector.Page);
 
     #region Rendering
     private int lastPageNumber = -1;
-    private async void RenderPageAsync(int oneBasedPageNumber)
+    private async void RenderPage(int oneBasedPageNumber)
     {
         if (oneBasedPageNumber == lastPageNumber) return;
         lastPageNumber = oneBasedPageNumber;
@@ -60,7 +60,7 @@ internal partial class PdfViewerModel
     {
         var savedRenderIndex = lastPageNumber;
         lastPageNumber = -1;
-        RenderPageAsync(savedRenderIndex);
+        RenderPage(savedRenderIndex);
     }
 
     #endregion

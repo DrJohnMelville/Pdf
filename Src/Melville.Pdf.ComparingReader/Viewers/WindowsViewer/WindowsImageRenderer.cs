@@ -21,7 +21,7 @@ public class WindowsImageRenderer : IImageRenderer
         this.pageSel = pageSel;
     }
 
-    public async ValueTask SetSource(Stream pdfBits, IPasswordSource passwordSource)
+    public async ValueTask SetSourceAsync(Stream pdfBits, IPasswordSource passwordSource)
     {
         document = null;
         document = await PdfDocument.LoadFromStreamAsync(pdfBits.AsRandomAccessStream(), 
@@ -29,7 +29,7 @@ public class WindowsImageRenderer : IImageRenderer
         TrySetPageCount((int)document.PageCount);
     }
 
-    public async ValueTask<ImageSource> LoadPage(int page)
+    public async ValueTask<ImageSource> LoadPageAsync(int page)
     {
         if (document == null) return new BitmapImage();
         

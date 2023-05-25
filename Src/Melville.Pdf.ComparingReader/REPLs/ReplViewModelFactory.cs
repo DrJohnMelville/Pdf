@@ -25,7 +25,7 @@ public readonly struct ReplViewModelFactory
         this.pageSel = pageSel;
     }
 
-    public async ValueTask<ReplViewModel> Create(CrossReference? crossReference)
+    public async ValueTask<ReplViewModel> CreateAsync(CrossReference? crossReference)
     {
         var srcReader = renderer.GetCurrentTargetReader();
         var buffer = new byte[srcReader.Length];
@@ -36,19 +36,19 @@ public readonly struct ReplViewModelFactory
                 (crossReference.Value.Object, crossReference.Value.Generation), out var indir) &&
             await indir.DirectValueAsync() is PdfStream stream)
         {
-            var text = await ReadContentString(stream);
+            var text = await ReadContentStringAsync(stream);
             return new ReplViewModel(text, renderer, buffer, indir, pageSel);
         }
-        return await CreateFromCurrentPage(doc, buffer);
+        return await CreateFromCurrentPageAsync(doc, buffer);
     }
 
-    private static async Task<string> ReadContentString(PdfStream stream)
+    private static async Task<string> ReadContentStringAsync(PdfStream stream)
     {
         await using var source = await stream.StreamContentAsync();
-        return await ReadContentString(source);
+        return await ReadContentStringAsync(source);
     }
 
-    private static async Task<string> ReadContentString(Stream source)
+    private static async Task<string> ReadContentStringAsync(Stream source)
     {
         var sb = new StringBuilder();
         var strBuffer = ArrayPool<byte>.Shared.Rent(4096);
@@ -64,11 +64,11 @@ public readonly struct ReplViewModelFactory
         return text;
     }
 
-    private async Task<ReplViewModel> CreateFromCurrentPage(PdfDocument doc, byte[] buffer)
+    private async Task<ReplViewModel> CreateFromCurrentPageAsync(PdfDocument doc, byte[] buffer)
     {
         var page = await (await doc.PagesAsync()).GetPageAsync(pageSel.Page - 1);
         var content = (PdfIndirectObject)page.LowLevel.RawItems[KnownNames.Contents];
-        var replContent = await ReadContentString(await page.GetContentBytesAsync());
+        var replContent = await ReadContentStringAsync(await page.GetContentBytesAsync());
         return new(replContent, renderer, buffer, content, pageSel);
     }
 }

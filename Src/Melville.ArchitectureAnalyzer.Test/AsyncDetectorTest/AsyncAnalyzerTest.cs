@@ -27,6 +27,7 @@ public class AsyncCodeFixTest
 {
     [Theory]
     [InlineData("public void XAsync() {}")]
+    [InlineData("public async void XAsync() {}")]
     [InlineData("public int XAsync() => 1;")]
     public Task RemoveAsync(string code) => RunFixTest(
         code.Replace("XAsync", "{|#0:XAsync|}"), 
@@ -89,6 +90,8 @@ public class AsyncAnalyzerTest
 
     [Fact]
     public Task AllowedNonAsyncMethod() => RunTest("public int X() => 1;");
+    [Fact]
+    public Task AllowedAsyncVoidMethod() => RunTest("public async void X() {}");
 
     [Fact]
     public Task DisallowedNonAsyncMethod() =>

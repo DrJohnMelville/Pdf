@@ -43,19 +43,27 @@ internal readonly partial struct SymbolVerifier
         }
     }
 
-    private bool IsAsyncMethod()
+    private bool IsAsyncMethod() => IsAsyncReturnTypeName(TypePrefix(symbol.ReturnType.ToString()))
+    ;
+
+    private bool IsAsyncReturnTypeName(ReadOnlySpan<char> returnTypeName) =>
+        returnTypeName is
+            "System.Collections.Generic.IAsyncEnumerable" or
+            "System.Threading.Tasks.ValueTask" or
+            "System.Threading.Tasks.Task";
+
+    private static ReadOnlySpan<char> TypePrefix(string typeName)
     {
-        return symbol.IsAsync || 
-               IsTaskOrValueTaskReturnType();
+        var wakkaIndex = typeName.IndexOf('<');
+        var keyLen = wakkaIndex < 0 ? typeName.Length : wakkaIndex;
+        var readOnlySpan = typeName.AsSpan(0, keyLen);
+        return readOnlySpan;
     }
 
-    private static readonly Regex TaskSelector = new Regex(
-        @"^System.Threading.Tasks.(?:Value)?Task(?!\w)");
-
-    private bool IsTaskOrValueTaskReturnType()
-    {
-        return TaskSelector.IsMatch(symbol.ReturnType.ToString());
-    }
+    // private bool IsAsyncMethod() => TaskSelector.IsMatch(symbol.ReturnType.ToString());
+    //
+    // private static readonly Regex TaskSelector = new(
+    //     @"^(?:(?:System.Threading.Tasks.(?:Value)?Task)(?:System.Collections.Generic.IAsyncEnumerable))(?!\w)");
 
     private bool HasAsyncName() => symbol.Name.EndsWith("Async");
 

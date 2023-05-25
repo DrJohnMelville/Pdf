@@ -53,7 +53,7 @@ public partial struct AsyncCodeFixer
 
         var newName = token.ValueText.Substring(0, token.ValueText.Length - 5);
 
-        RegisterFix(diagnostic, token, newName);
+        RegisterFix(diagnostic, token, newName, "Remove Async suffix from name.");
     }
 
     public void AddAsyncSuffix(Diagnostic diagnostic)
@@ -63,20 +63,18 @@ public partial struct AsyncCodeFixer
 
         var newName = token.ValueText + "Async";
 
-        RegisterFix(diagnostic, token, newName);
+        RegisterFix(diagnostic, token, newName, "Add Async suffix to name.");
     }
 
-    private void RegisterFix(Diagnostic diagnostic, SyntaxToken token, string newName)
+    private void RegisterFix(Diagnostic diagnostic, SyntaxToken token, string newName, string fixName)
     {
         var localContext = context;
         var localRoot = root;
-        context.RegisterCodeFix(CodeAction.Create(FixName,
+        context.RegisterCodeFix(CodeAction.Create(fixName,
             cancellationToken => RenameHelper.RenameSymbolAsync(
                 localContext.Document, localRoot, token, newName, cancellationToken),
             nameof(AsyncCodeFixProvider)), diagnostic);
     }
-
-    private static string FixName => "Add Async suffix to name.";
 }
 
 public static class RenameHelper

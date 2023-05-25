@@ -39,20 +39,20 @@ public partial class ReplViewModel
     private async void OnContentStreamTextChanged(string newValue)
     {
         if (buffer.Length == 0) return; // heppens in testing
-        var target = await CopyOriginalFile();
+        var target = await CopyOriginalFileAsync();
         var doc = await new PdfLowLevelReader().ReadFromAsync(buffer);
-        await WriteStreamModificationBlock(doc, await CreateReplacementStream(newValue), target);                                                                       
+        await WriteStreamModificationBlockAsync(doc, await CreateReplacementStreamAsync(newValue), target);                                                                       
         renderer.SetTarget(target, page.Page);
     }
 
-    private async Task<PdfStream> CreateReplacementStream(string newValue)
+    private async Task<PdfStream> CreateReplacementStreamAsync(string newValue)
     {
         var source = await contentStream.DirectValueAsync();
         var newStream = StreamWithContent(source, newValue);
         return newStream;
     }
 
-    private async Task WriteStreamModificationBlock(PdfLoadedLowLevelDocument doc, PdfStream newStream,
+    private async Task WriteStreamModificationBlockAsync(PdfLoadedLowLevelDocument doc, PdfStream newStream,
         MultiBufferStream target)
     {
         var modifier = doc.Modify();
@@ -60,7 +60,7 @@ public partial class ReplViewModel
         await modifier.WriteModificationTrailerAsync(target);
     }
 
-    private async Task<MultiBufferStream> CopyOriginalFile()
+    private async Task<MultiBufferStream> CopyOriginalFileAsync()
     {
         var target = new MultiBufferStream();
         await target.WriteAsync(buffer.AsMemory());
@@ -74,12 +74,12 @@ public partial class ReplViewModel
         return builder.AsStream(newValue);
     }
 
-    public async ValueTask PrettyPrint()
+    public async ValueTask PrettyPrintAsync()
     {
         ContentStreamText = await ContentStreamPrettyPrinter.PrettyPrintAsync(ContentStreamText);
     }
 
-    public async ValueTask SavePage([FromServices]IOpenSaveFile osf)
+    public async ValueTask SavePageAsync([FromServices]IOpenSaveFile osf)
     {
         var outputFile = osf.GetSaveFile(null, "pdf", "PDF Files (*.pdf)|*.pdf", "Select file to save page to");
         if (outputFile is null) return;

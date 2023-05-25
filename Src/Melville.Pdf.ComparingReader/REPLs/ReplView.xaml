@@ -11,8 +11,8 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid easyGrids:GridOperations.ColsAndRows="*,* /auto, *">
         <WrapPanel>
-            <Button Content="Pretty Print Content Stream" Click="{eventBindings:EventBinding PrettyPrint}"/>
-            <Button Content="Save Page To File" Click="{eventBindings:EventBinding SavePage}"/>
+            <Button Content="Pretty Print Content Stream" Click="{eventBindings:EventBinding PrettyPrintAsync}"/>
+            <Button Content="Save Page To File" Click="{eventBindings:EventBinding SavePageAsync}"/>
         </WrapPanel>
         <streams:TextBoxWithFind Grid.Row="1" Text = "{Binding ContentStreamText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"

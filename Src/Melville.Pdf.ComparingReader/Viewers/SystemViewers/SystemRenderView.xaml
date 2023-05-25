@@ -10,7 +10,7 @@
     <UniformGrid Columns = "1">
         <TextBlock Text="{ Binding Message}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Button Content="Open in System PDF Viewer" HorizontalAlignment="Center" VerticalAlignment="Center"
-                Click="{eventBindings:EventBinding OpenFile}"/>
+                Click="{eventBindings:EventBinding OpenFileAsync}"/>
         
     </UniformGrid>
 </UserControl>

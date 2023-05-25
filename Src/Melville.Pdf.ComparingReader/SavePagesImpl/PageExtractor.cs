@@ -22,7 +22,7 @@ public readonly partial struct PageExtractor
     {
         var copier = new DeepCopy(documentCreator.LowLevelCreator);
         var targetPage = documentCreator.Pages.CreatePage();
-        copier.ReserveIndirectMapping(await FindRefToPage(),
+        copier.ReserveIndirectMapping(await FindRefToPageAsync(),
             targetPage.InitializePromiseObject(documentCreator.LowLevelCreator));
         foreach (var item in page.LowLevel.RawItems)
         {
@@ -36,7 +36,7 @@ public readonly partial struct PageExtractor
         await new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(output), doc).WriteAsync();
     }
 
-    private async ValueTask<PdfIndirectObject> FindRefToPage()
+    private async ValueTask<PdfIndirectObject> FindRefToPageAsync()
     {
         var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.Parent)) ??
                         throw new InvalidDataException("Page does not have a parent");

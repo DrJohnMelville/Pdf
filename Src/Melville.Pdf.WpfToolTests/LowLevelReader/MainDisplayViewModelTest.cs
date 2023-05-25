@@ -43,7 +43,7 @@ public class MainDisplayViewModelTest
     {
         dlg.Setup(i => i.GetLoadFile(null, "pdf", It.IsAny<string>(), "File to open"))
             .Returns(file.Object);
-        await sut.OpenFile(dlg.Object, closer.Object, runner.Object);
+        await sut.OpenFileAsync(dlg.Object, closer.Object, runner.Object);
         closer.VerifyNoOtherCalls();
         Assert.Single(runner.Invocations);
     }
@@ -52,7 +52,7 @@ public class MainDisplayViewModelTest
     {
         dlg.Setup(i => i.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open"))
             .Returns((IFile?)null);
-        await sut.OpenFile(dlg.Object, closer.Object, runner.Object);
+        await sut.OpenFileAsync(dlg.Object, closer.Object, runner.Object);
         closer.Verify(i=>i.Close());
         parser.VerifyNoOtherCalls();
         runner.VerifyNoOtherCalls();

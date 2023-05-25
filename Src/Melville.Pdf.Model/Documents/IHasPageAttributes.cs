@@ -30,7 +30,7 @@ internal static class PdfPageAttributesOperations
         }
     }
 
-    private static IAsyncEnumerable<PdfObject> InheritedResourceItem(IHasPageAttributes item, PdfName name) =>
+    private static IAsyncEnumerable<PdfObject> InheritedResourceItemAsync(IHasPageAttributes item, PdfName name) =>
         InheritedPagePropertiesAsync(item, KnownNames.Resources)
             .OfType<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
@@ -39,7 +39,7 @@ internal static class PdfPageAttributesOperations
     public static async ValueTask<PdfArray?> GetProcSetsAsync<T>(this T item)
         where T : IHasPageAttributes
     {
-        return await InheritedResourceItem(item, KnownNames.ProcSet).OfType<PdfArray>()
+        return await InheritedResourceItemAsync(item, KnownNames.ProcSet).OfType<PdfArray>()
             .FirstOrDefaultAsync().CA();
     }
     
@@ -49,7 +49,7 @@ internal static class PdfPageAttributesOperations
 
     private static ValueTask<PdfObject?> TwoLevelResourceDictionaryAccessAsync(
         IHasPageAttributes item, PdfName subDictionaryName, PdfName name) =>
-        InheritedResourceItem(item, subDictionaryName)
+        InheritedResourceItemAsync(item, subDictionaryName)
             .OfType<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
             .Where(i => i != PdfTokenValues.Null)

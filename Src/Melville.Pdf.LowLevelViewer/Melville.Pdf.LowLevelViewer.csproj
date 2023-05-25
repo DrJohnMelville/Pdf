@@ -1,32 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TieredPGO>true</TieredPGO>      
-        <TargetFramework>net7.0-windows</TargetFramework>
-        <UseWPF>true</UseWPF>
-        <RootNamespace>Melville.Pdf.LowLevelViewer</RootNamespace>
-        <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-    </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TieredPGO>true</TieredPGO>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<RootNamespace>Melville.Pdf.LowLevelViewer</RootNamespace>
+		<IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
+	</PropertyGroup>
 
-    <ItemGroup>
-      <ApplicationDefinition Remove="App.xaml" />
-        <AdditionalFiles Include="Architecture.adf" />
-        <ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj">
-            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-            <OutputItemType>Analyzer</OutputItemType>
-        </ProjectReference>
-        <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
-        <ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<ApplicationDefinition Remove="App.xaml" />
+		<AdditionalFiles Include="Architecture.adf" />
+		<ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
+		                  PrivateAssets="all">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
 
-    <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.6.17" />
-      <PackageReference Include="Melville.WpfControls" Version="0.6.17" />
-    </ItemGroup>
+		<ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="ImageViewers\" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Melville.WpfAppFramework" Version="0.6.17" />
+		<PackageReference Include="Melville.WpfControls" Version="0.6.17" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="ImageViewers\" />
+	</ItemGroup>
 
 </Project>

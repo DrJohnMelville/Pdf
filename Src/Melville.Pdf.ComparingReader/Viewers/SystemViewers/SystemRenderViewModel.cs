@@ -21,10 +21,10 @@ public partial class SystemRenderViewModel: IRenderer
         savedTarget = pdfBits;
     public void SetPage(int page) { /* Do Nothing -- has no current page concept*/ }
 
-    public async Task OpenFile()
+    public async Task OpenFileAsync()
     {
         Message = "Saving";
-        var name = await WriteToUniqueFile();
+        var name = await WriteToUniqueFileAsync();
         if (name is null)
         {
             Message = "No file to Write";
@@ -33,10 +33,10 @@ public partial class SystemRenderViewModel: IRenderer
         Message = "Opening";
         var process = LaunchViewer(name);
         Message = "Waiting for exit";
-        await DeleteFileWhenDone(process, name);
+        await DeleteFileWhenDoneAsync(process, name);
     }
 
-    private async Task<string?> WriteToUniqueFile()
+    private async Task<string?> WriteToUniqueFileAsync()
     {
         if (savedTarget == null) return null;
         var name = UniquePdfName();
@@ -61,7 +61,7 @@ public partial class SystemRenderViewModel: IRenderer
         return process;
     }
 
-    private async ValueTask DeleteFileWhenDone(Process process, string name)
+    private async ValueTask DeleteFileWhenDoneAsync(Process process, string name)
     {
         await process.WaitForExitAsync();
         await Task.Delay(500);

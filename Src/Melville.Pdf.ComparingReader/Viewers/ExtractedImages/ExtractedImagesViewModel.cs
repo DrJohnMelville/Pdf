@@ -48,7 +48,7 @@ internal partial class ExtractedImagesViewModel: IRenderer
                 filteredImages = filteredImages.CollapseAdjacentImages();
             foreach (var image in filteredImages)
             {
-                images.Add(await image.ToWpfBitmap());
+                images.Add(await image.ToWpfBitmapAsync());
             }
         }
         catch (Exception )

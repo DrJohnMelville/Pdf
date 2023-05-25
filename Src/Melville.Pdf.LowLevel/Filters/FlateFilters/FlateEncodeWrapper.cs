@@ -33,11 +33,11 @@ internal sealed class FlateEncodeWrapper: DefaultBaseStream
         adler = new ReadAdlerStream(source);
         reverser = new Pipe();
         deflator = new DeflateStream(reverser.Writer.AsStream(), CompressionLevel.Optimal);
-        InitiateCopyProcessAsync();
+        InitiateCopyProcess();
         compressedSource = reverser.Reader.AsStream();
     }
 
-    private async void InitiateCopyProcessAsync()
+    private async void InitiateCopyProcess()
     {
         await adler.CopyToAsync(deflator).CA();
         await deflator.DisposeAsync().CA();

@@ -15,7 +15,7 @@ public class ReferenceDocumentLeaf: ReferenceDocumentNode
         this.document = document;
     }
 
-    public async ValueTask<MultiBufferStream> GetDocument()
+    public async ValueTask<MultiBufferStream> GetDocumentAsync()
     {
         var stream = new MultiBufferStream();
         await document.WritePdfAsync(stream);

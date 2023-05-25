@@ -13,7 +13,7 @@ namespace Melville.Pdf.ComparingReader.Viewers.SkiaViewer;
 
 public class SkiaRenderer: MelvillePdfRenderer
 {
-    protected override async ValueTask<ImageSource> Render(DocumentRenderer source, int page)
+    protected override async ValueTask<ImageSource> RenderAsync(DocumentRenderer source, int page)
     {
         var buffer = new MultiBufferStream();
         await RenderWithSkia.ToPngStreamAsync(source, page, buffer, -1, 4096);

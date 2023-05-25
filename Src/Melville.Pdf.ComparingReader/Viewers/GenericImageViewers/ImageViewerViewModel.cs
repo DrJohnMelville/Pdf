@@ -7,8 +7,6 @@ using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model;
-using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Wpf.Controls;
@@ -17,14 +15,14 @@ namespace Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 
 public interface IImageRenderer
 {
-    ValueTask SetSource(Stream pdfBits, IPasswordSource source);
-    ValueTask<ImageSource> LoadPage(int page);
+    ValueTask SetSourceAsync(Stream pdfBits, IPasswordSource source);
+    ValueTask<ImageSource> LoadPageAsync(int page);
 }
 
 public abstract class MelvillePdfRenderer : IImageRenderer
 {
     private DocumentRenderer? source;
-    public async ValueTask SetSource(Stream pdfBits, IPasswordSource passwordSource)
+    public async ValueTask SetSourceAsync(Stream pdfBits, IPasswordSource passwordSource)
     {
         source = null;
         // if the reader throws I want the source to be null
@@ -34,23 +32,23 @@ public abstract class MelvillePdfRenderer : IImageRenderer
 
     protected abstract IDefaultFontMapper FontSource();
 
-    public async ValueTask<ImageSource> LoadPage(int page)
+    public async ValueTask<ImageSource> LoadPageAsync(int page)
     {
-        var ret = await TryRenderPage(page);
+        var ret = await TryRenderPageAsync(page);
         ret.Freeze();
         return ret;
     }
 
-    private ValueTask<ImageSource> TryRenderPage(int page) =>
+    private ValueTask<ImageSource> TryRenderPageAsync(int page) =>
         IsValidPageRender(page)
-            ?  Render(source, page)
+            ?  RenderAsync(source, page)
             : new(new DrawingImage());
 
     [MemberNotNullWhen(true, nameof(source))]
     private bool IsValidPageRender(int page) => 
         source != null && page >= 1 && page <= source.TotalPages;
 
-    protected abstract ValueTask<ImageSource> Render(DocumentRenderer source, int page);
+    protected abstract ValueTask<ImageSource> RenderAsync(DocumentRenderer source, int page);
 }
 
 public partial class ImageViewerViewModel : IRenderer
@@ -72,15 +70,15 @@ public partial class ImageViewerViewModel : IRenderer
     
     public async void SetTarget(Stream pdfBits, IPasswordSource passwordSource)
     {
-        fileParseSucceeded = await LoadStream(pdfBits, passwordSource);
+        fileParseSucceeded = await LoadStreamAsync(pdfBits, passwordSource);
         SetPage(pageSelector.Page);
     }
 
-    private async ValueTask<bool> LoadStream(Stream pdfBits, IPasswordSource passwordSource)
+    private async ValueTask<bool> LoadStreamAsync(Stream pdfBits, IPasswordSource passwordSource)
     {
         try
         {
-            await renderer.SetSource(pdfBits, passwordSource);
+            await renderer.SetSourceAsync(pdfBits, passwordSource);
             return true;
         }
         catch (Exception e)
@@ -95,7 +93,7 @@ public partial class ImageViewerViewModel : IRenderer
         if  (!fileParseSucceeded) return;
         try
         {
-            Image = await renderer.LoadPage(page);
+            Image = await renderer.LoadPageAsync(page);
             Exception = null;
         }
         catch (Exception e)

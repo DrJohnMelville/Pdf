@@ -40,31 +40,33 @@ public partial class MainWindowViewModel
     public async void ShowInitial([FromServices]ICommandLineSelection commandLine)
     {
         if (commandLine.CommandLineTag() is {} tag) 
-            SelectedNode = SearchRecusive(Nodes, tag);
+            SelectedNode = SearchRecursive(Nodes, tag);
         if (commandLine.CmdLineFile() is { } file)
-            await LoadFile(file);
+            await LoadFileAsync(file);
     }
 
+#pragma warning disable Arch004
     private async void OnSelectedNodeChanged(ReferenceDocumentNode? newValue)
+#pragma warning restore Arch004
     {
         if (newValue is ReferenceDocumentLeaf leaf)
         {
-            Renderer.SetTarget(await leaf.GetDocument());
+            Renderer.SetTarget(await leaf.GetDocumentAsync());
         }
     }
 
-    private ReferenceDocumentLeaf? SearchRecusive(IList<ReferenceDocumentNode> nodes, string? commandLineTag)
+    private ReferenceDocumentLeaf? SearchRecursive(IList<ReferenceDocumentNode> nodes, string? commandLineTag)
     {
         if (commandLineTag == null) return null;
-        return nodes.Select(i => SearchRecusive(i, commandLineTag)).FirstOrDefault(i => i != null);
+        return nodes.Select(i => SearchRecursive(i, commandLineTag)).FirstOrDefault(i => i != null);
     }
 
-    private ReferenceDocumentLeaf? SearchRecusive(ReferenceDocumentNode node, string commandLineTag)
+    private ReferenceDocumentLeaf? SearchRecursive(ReferenceDocumentNode node, string commandLineTag)
     {
         return node switch
         {
             ReferenceDocumentLeaf leaf => leaf.ShortName.Equals(commandLineTag) ? leaf : null,
-            ReferenceDocumentFolder tree => SearchRecusive(tree.Children, commandLineTag),
+            ReferenceDocumentFolder tree => SearchRecursive(tree.Children, commandLineTag),
             _=> throw new InvalidProgramException("Unknown Tree member")
         };
     }
@@ -72,17 +74,17 @@ public partial class MainWindowViewModel
     public async void ShowPdfRepl([FromServices] ReplViewModelFactory modelFactory,
         [FromServices] Func<object, IRootNavigationWindow> windowFactory, IReplStreamPicker? picker = null)
     {
-        windowFactory(await modelFactory.Create(picker?.GetReference())).Show();
+        windowFactory(await modelFactory.CreateAsync(picker?.GetReference())).Show();
     }
 
-    public async Task LoadFile([FromServices] IOpenSaveFile fileSource)
+    public async Task LoadFileAsync([FromServices] IOpenSaveFile fileSource)
     {
         var file = fileSource.GetLoadFile(null, "PDF", "Portable Document Format(*.pdf)|*.pdf", "Load File");
         if (file is null) return;
-        await LoadFile(file);
+        await LoadFileAsync(file);
     }
 
-    private async Task LoadFile(IFile file)
+    private async Task LoadFileAsync(IFile file)
     {
         var src = new MultiBufferStream();
         await using (var fileStr = await file.OpenRead())

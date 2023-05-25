@@ -15,7 +15,7 @@ public interface ICloseApp
 {
     public void Close();
 }
-[OnDisplayed(nameof(OpenFile))]
+[OnDisplayed(nameof(OpenFileAsync))]
 public partial class MainDisplayViewModel
 {
     [AutoNotify] private object? model;
@@ -25,7 +25,7 @@ public partial class MainDisplayViewModel
         Model = model;
     }
 
-    public async Task OpenFile([FromServices]IOpenSaveFile dlg, 
+    public async Task OpenFileAsync([FromServices]IOpenSaveFile dlg, 
         [FromServices] ICloseApp closeApp, IVisualTreeRunner runner)
     {
         var file = 
