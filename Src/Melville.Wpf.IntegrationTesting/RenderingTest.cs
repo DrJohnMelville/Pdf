@@ -28,13 +28,13 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
     [WpfTheory]                                                         
     [MemberData(nameof(GeneratorTests))]
-    public async Task WpfRenderingTest(string shortName, IPdfGenerator generator) =>
-        hashes.AssertDatabase(await ComputeWpfHash(generator), "wpf" + shortName);
+    public async Task WpfRenderingTestAsync(string shortName, IPdfGenerator generator) =>
+        hashes.AssertDatabase(await ComputeWpfHashAsync(generator), "wpf" + shortName);
     
-    private Task<string> ComputeWpfHash(IPdfGenerator generator) =>
-        ComputeGenericHash(generator, AsWpfPage);
+    private Task<string> ComputeWpfHashAsync(IPdfGenerator generator) =>
+        ComputeGenericHashAsync(generator, AsWpfPageAsync);
 
-    private ValueTask AsWpfPage(DocumentRenderer documentRenderer, Stream target)
+    private ValueTask AsWpfPageAsync(DocumentRenderer documentRenderer, Stream target)
     {
         var rtdg = new RenderToDrawingGroup(documentRenderer, 0);
         return rtdg.RenderToPngStreamAsync(target);
@@ -42,19 +42,19 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
     [Theory]
     [MemberData(nameof(GeneratorTests))]
-    public async Task SkiaRenderingTest(string shortName, IPdfGenerator generator) => 
-        hashes.AssertDatabase(await ComputeSkiaHash(generator), "Skia"+shortName);
+    public async Task SkiaRenderingTestAsync(string shortName, IPdfGenerator generator) => 
+        hashes.AssertDatabase(await ComputeSkiaHashAsync(generator), "Skia"+shortName);
 
-    private static Task<string> ComputeSkiaHash(IPdfGenerator generator) =>
-        ComputeGenericHash(generator, (documentRenderer, target) => 
+    private static Task<string> ComputeSkiaHashAsync(IPdfGenerator generator) =>
+        ComputeGenericHashAsync(generator, (documentRenderer, target) => 
             RenderWithSkia.ToPngStreamAsync(documentRenderer, 0, target, -1, 1024));
 
-    private static async Task<string> ComputeGenericHash(IPdfGenerator generator,
+    private static async Task<string> ComputeGenericHashAsync(IPdfGenerator generator,
         Func<DocumentRenderer, Stream, ValueTask> renderTo)
     {
         try
         {
-            var doc = await RenderTestHelpers.ReadDocument(generator);
+            var doc = await RenderTestHelpers.ReadDocumentAsync(generator);
             var target = new WriteToAdlerStream();
             await renderTo(doc, target);
             return target.Computer.GetHash().ToString();
@@ -68,7 +68,7 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
 
 public static class RenderTestHelpers
 {
-    public static async ValueTask<DocumentRenderer> ReadDocument(IPdfGenerator generator)
+    public static async ValueTask<DocumentRenderer> ReadDocumentAsync(IPdfGenerator generator)
     {
         MultiBufferStream src = new();
         await generator.WritePdfAsync(src);
