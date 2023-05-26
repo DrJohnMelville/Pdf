@@ -7,7 +7,9 @@ namespace Melville.Pdf.FuzzTest;
 
 public static class Program
 {
+#pragma warning disable Arch004 // Async method does not have name ending with Async
     public static async Task Main(string[] cmdLineArgs)
+#pragma warning restore Arch004 // Async method does not have name ending with Async
     {
         if (cmdLineArgs.Length < 1)
         {
@@ -17,7 +19,7 @@ public static class Program
         var pdfs = GatherPdfs(cmdLineArgs[0]);
         foreach (var pdf in pdfs)
         {
-            await ParseFile.Do(pdf);
+            await ParseFile.DoAsync(pdf);
         }
         Console.WriteLine();
         Console.WriteLine("Done");

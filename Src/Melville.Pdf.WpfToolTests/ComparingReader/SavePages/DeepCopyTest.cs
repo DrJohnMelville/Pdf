@@ -34,30 +34,30 @@ public class DeepCopyTest
         sut = new DeepCopy(creator.Object);
     }
 
-    [Fact] public Task CopyInt() => PassthroughCopy(1);
-    [Fact] public Task CopyReal() => PassthroughCopy(1.5);
-    [Fact] public Task CopyString() => PassthroughCopy(PdfString.CreateAscii("Hello World"));
-    [Fact] public Task CopyName() => PassthroughCopy(KnownNames.Length);
-    [Fact] public Task CopyBool() => PassthroughCopy(PdfBoolean.True);
-    [Fact] public Task CopyNull() => PassthroughCopy(PdfTokenValues.Null);
+    [Fact] public Task CopyIntAsync() => PassthroughCopyAsync(1);
+    [Fact] public Task CopyRealAsync() => PassthroughCopyAsync(1.5);
+    [Fact] public Task CopyStringAsync() => PassthroughCopyAsync(PdfString.CreateAscii("Hello World"));
+    [Fact] public Task CopyNameAsync() => PassthroughCopyAsync(KnownNames.Length);
+    [Fact] public Task CopyBoolAsync() => PassthroughCopyAsync(PdfBoolean.True);
+    [Fact] public Task CopyNullAsync() => PassthroughCopyAsync(PdfTokenValues.Null);
 
-    private async Task PassthroughCopy(PdfObject item)
+    private async Task PassthroughCopyAsync(PdfObject item)
     {
         var copy = await sut.CloneAsync(item);
         Assert.Same(item, copy);
     }
 
     [Fact]
-    public async Task CopyArray()
+    public async Task CopyArrayAsync()
     {
         var datum = new PdfArray(1, 
             new PdfArray(2),
             new PdfIndirectObject(1,1,PdfBoolean.False));
         var clone = await sut.CloneAsync(datum);
-        await DeepAssertSame(datum, clone);
+        await DeepAssertSameAsync(datum, clone);
     }
     [Fact]
-    public async Task CopyDictionary()
+    public async Task CopyDictionaryAsync()
     {
         var datum = new DictionaryBuilder()
             .WithItem(KnownNames.A85, 23)
@@ -66,10 +66,10 @@ public class DeepCopyTest
                 .AsDictionary())
             .AsDictionary();
         var clone = await sut.CloneAsync(datum);
-        await DeepAssertSame(datum, clone);
+        await DeepAssertSameAsync(datum, clone);
     }
     [Fact]
-    public async Task Stream()
+    public async Task StreamAsync()
     {
         var datum = new DictionaryBuilder()
             .WithItem(KnownNames.A85, 23)
@@ -78,30 +78,30 @@ public class DeepCopyTest
                 .AsDictionary())
             .AsStream("Hello World", StreamFormat.DiskRepresentation);
         var clone = await sut.CloneAsync(datum);
-        await DeepAssertSame(datum, clone);
+        await DeepAssertSameAsync(datum, clone);
     }
 
-    private async ValueTask DeepAssertSame(PdfObject a, PdfObject b)
+    private async ValueTask DeepAssertSameAsync(PdfObject a, PdfObject b)
     {
         switch (a)
         {
-            case PdfIndirectObject: await AssertSameIndirectobject(a, b); break;
-            case PdfStream ps: await AssertSameStream(ps, (PdfStream)b); break;
-            case PdfDictionary pa: await AssertSameDictionary(pa, (PdfDictionary)b); break;
-            case PdfArray pa: await AssertSameArray(pa, (PdfArray)b); break;
+            case PdfIndirectObject: await AssertSameIndirectobjectAsync(a, b); break;
+            case PdfStream ps: await AssertSameStreamAsync(ps, (PdfStream)b); break;
+            case PdfDictionary pa: await AssertSameDictionaryAsync(pa, (PdfDictionary)b); break;
+            case PdfArray pa: await AssertSameArrayAsync(pa, (PdfArray)b); break;
             default: Assert.Same(a,b); break;
         }
     }
 
-    private async Task AssertSameStream(PdfStream a, PdfStream b)
+    private async Task AssertSameStreamAsync(PdfStream a, PdfStream b)
     {
-        await AssertSameDictionary(a, b);
-        var aVal = await AsArray(await a.StreamContentAsync());
-        var bVal = await AsArray(await b.StreamContentAsync());
+        await AssertSameDictionaryAsync(a, b);
+        var aVal = await AsArrayAsync(await a.StreamContentAsync());
+        var bVal = await AsArrayAsync(await b.StreamContentAsync());
         Assert.Equal(aVal, bVal);
     }
 
-    private async ValueTask<byte[]> AsArray(Stream str)
+    private async ValueTask<byte[]> AsArrayAsync(Stream str)
     {
         var ret = new MemoryStream();
         await str.CopyToAsync(ret);
@@ -109,30 +109,30 @@ public class DeepCopyTest
 
     }
 
-    private async Task AssertSameIndirectobject(PdfObject a, PdfObject b)
+    private async Task AssertSameIndirectobjectAsync(PdfObject a, PdfObject b)
     {
         Assert.NotSame(a, b);
         Assert.IsType<PromisedIndirectObject>(b);
         Assert.IsType<PdfIndirectObject>(a);
-        await DeepAssertSame(await a.DirectValueAsync(), await b.DirectValueAsync());
+        await DeepAssertSameAsync(await a.DirectValueAsync(), await b.DirectValueAsync());
     }
 
-    private async Task AssertSameDictionary(PdfDictionary a, PdfDictionary b)
+    private async Task AssertSameDictionaryAsync(PdfDictionary a, PdfDictionary b)
     {
         Assert.Equal(a.Count, b.Count);
         foreach (var (ai,bi) in a.RawItems.Zip(b.RawItems, (i,j)=>(i,j)))
         {
-            await DeepAssertSame(ai.Key, bi.Key);
-            await DeepAssertSame(ai.Value, bi.Value);
+            await DeepAssertSameAsync(ai.Key, bi.Key);
+            await DeepAssertSameAsync(ai.Value, bi.Value);
         }
     }
 
-    private async ValueTask AssertSameArray(PdfArray a, PdfArray b)
+    private async ValueTask AssertSameArrayAsync(PdfArray a, PdfArray b)
     {
         Assert.Equal(a.Count,b.Count);
         for (int i = 0; i < a.Count; i++)
         {
-            await DeepAssertSame(a.RawItems[i], b.RawItems[i]);
+            await DeepAssertSameAsync(a.RawItems[i], b.RawItems[i]);
         }
     }
 }

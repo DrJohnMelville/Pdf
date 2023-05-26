@@ -15,7 +15,7 @@ namespace Melville.Pdf.WpfToolTests.ComparingReader.REPLs;
 public class ReplViewModelTest
 {
     [Fact]
-    public async Task ReplViewModelCanPrettyPrint()
+    public async Task ReplViewModelCanPrettyPrintAsync()
     {
         var sut = new ReplViewModel("q Q", Mock.Of<IMultiRenderer>(), Array.Empty<byte>(),
             new PdfIndirectObject(1,0, new DictionaryBuilder().AsStream("q Q")), Mock.Of<IPageSelector>());
@@ -27,7 +27,7 @@ public class ReplViewModelTest
     [InlineData("q 10 Ts Q", "q\n    10 Ts\nQ\n")]
     [InlineData("q q 10 Ts Q Q", "q\n    q\n        10 Ts\n    Q\nQ\n")]
     [InlineData("BT 10 Ts ET", "BT\n    10 Ts\nET\n")]
-    public async Task PrintIndentedContentStream(string source, string dest)
+    public async Task PrintIndentedContentStreamAsync(string source, string dest)
     {
         Assert.Equal(dest, await ContentStreamPrettyPrinter.PrettyPrintAsync(source));
         

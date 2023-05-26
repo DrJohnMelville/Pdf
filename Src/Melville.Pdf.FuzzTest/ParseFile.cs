@@ -30,15 +30,15 @@ public static class NotParallel
 
 public static class ParseFile
 {
-    public static async ValueTask Do(string fileName)
+    public static async ValueTask DoAsync(string fileName)
     {
         ClearLine();
         Console.WriteLine($"{fileName}");
         await using var stream = File.OpenRead(fileName);
-        await Do(stream, fileName); 
+        await DoAsync(stream, fileName); 
     }
 
-    private static async ValueTask Do(FileStream source, string path)
+    private static async ValueTask DoAsync(FileStream source, string path)
     {
         try
         {
@@ -48,7 +48,7 @@ public static class ParseFile
             object mutex = new();
             await Parallel.ForEachAsync(Enumerable.Range(1, doc.TotalPages), async (i,_) =>
             {
-                await RenderPage(doc, i);
+                await RenderPageAsync(doc, i);
                 lock (mutex)
                 {
                     if (++completed % 10 == 0)
@@ -68,7 +68,7 @@ public static class ParseFile
 
 
 
-    private static async Task RenderPage(DocumentRenderer doc, int page)
+    private static async Task RenderPageAsync(DocumentRenderer doc, int page)
     {
         try
         {

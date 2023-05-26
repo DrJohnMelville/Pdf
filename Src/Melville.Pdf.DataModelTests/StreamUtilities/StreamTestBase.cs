@@ -79,7 +79,7 @@ public abstract class StreamTestBase
 
     [Fact]
     public async Task VerifyDisposal1Async()
-    {
+    { 
         var (streamMock, innerStream) = await DisposeStreamRigAsync();
         streamMock.Verify(i => i.DisposeAsync(), Times.Never);
         await innerStream.DisposeAsync();

@@ -1,20 +1,17 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.FileSystem;
-using Melville.MVVM.WaitingServices;
 using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewer.MainDisplay;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
-using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.TestHelpers.InpcTesting;
 using Moq;
 using Xunit;
 using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
 
-namespace Melville.Pdf.WpfToolTests.LowLevelViewer;
+namespace Melville.Pdf.WpfToolTests.LowLevelReader;
 
 public class MainDisplayViewModelTest
 {
@@ -39,7 +36,7 @@ public class MainDisplayViewModelTest
     public void SelectedTest() => ((LowLevelViewModel)sut.Model!).AssertProperty(i=>i.Selected, new DocumentPart("s"));
 
     [Fact]
-    public async Task ShowFileDisplaySucceed()
+    public async Task ShowFileDisplaySucceedAsync()
     {
         dlg.Setup(i => i.GetLoadFile(null, "pdf", It.IsAny<string>(), "File to open"))
             .Returns(file.Object);
@@ -48,7 +45,7 @@ public class MainDisplayViewModelTest
         Assert.Single(runner.Invocations);
     }
     [Fact]
-    public async Task ShowFileDisplayFail()
+    public async Task ShowFileDisplayFailAsync()
     {
         dlg.Setup(i => i.GetLoadFile(null, "pdf", "Portable Document Format (*.pdf)|*.pdf", "File to open"))
             .Returns((IFile?)null);

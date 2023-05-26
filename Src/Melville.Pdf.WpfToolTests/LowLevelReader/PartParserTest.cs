@@ -7,18 +7,17 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 using Melville.Pdf.Model.Creators;
+using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Moq;
 using Xunit;
 using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
 
-namespace Melville.Pdf.WpfToolTests.LowLevelViewer;
+namespace Melville.Pdf.WpfToolTests.LowLevelReader;
 
 public class PartParserTest
 {
@@ -29,7 +28,7 @@ public class PartParserTest
     [InlineData(1,7)]
     [InlineData(1,3)]
     [InlineData(2,0)]
-    public async Task ParseHeader(byte major, byte minor)
+    public async Task ParseHeaderAsync(byte major, byte minor)
     {
         var model =  await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf(major, minor).AsFileAsync(),waitingService.Object);
@@ -37,7 +36,7 @@ public class PartParserTest
     }
 
     [Fact]
-    public async Task ParseFinalDictionary()
+    public async Task ParseFinalDictionaryAsync()
     {
         var model = await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf().AsFileAsync(),
@@ -50,7 +49,7 @@ public class PartParserTest
     }
 
     [Fact]
-    public async Task ReportWaitingTime()
+    public async Task ReportWaitingTimeAsync()
     {
         var model = await sut.ParseAsync(
             await MinimalPdfParser.MinimalPdf().AsFileAsync(),
@@ -61,9 +60,9 @@ public class PartParserTest
     }
 
     [Fact]
-    public async Task ParseArray()
+    public async Task ParseArrayAsync()
     {
-        var model = await BuildSingleElementFile(_=>
+        var model = await BuildSingleElementFileAsync(_=>
             new PdfArray(PdfBoolean.True, PdfBoolean.False, KnownNames.Max));
         var array = model[1];
         Assert.Equal("1 0: Array", array.Title);
@@ -72,9 +71,9 @@ public class PartParserTest
         Assert.Equal("[2]: /Max", array.Children[2].Title);
     }
     [Fact]
-    public async Task ParseSteam()
+    public async Task ParseSteamAsync()
     {
-        var model = await BuildSingleElementFile(i=>
+        var model = await BuildSingleElementFileAsync(i=>
             new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.C1).AsStream("The Stream Data"));
         var stream = (StreamPartViewModel)model[1];
         Assert.Equal("1 0: Stream", stream.Title);
@@ -86,13 +85,13 @@ public class PartParserTest
         Assert.Equal("The Stream Data", str.AsAsciiString);
     }
 
-    private async Task TestSingleElement(PdfObject item, string renderAs)
+    private async Task TestSingleElementAsync(PdfObject item, string renderAs)
     {
-        var model = await BuildSingleElementFile(_=>item);
+        var model = await BuildSingleElementFileAsync(_=>item);
         Assert.Equal("1 0: "+renderAs, model[1].Title);
     }
 
-    private async Task<DocumentPart[]> BuildSingleElementFile(
+    private async Task<DocumentPart[]> BuildSingleElementFileAsync(
         Func<IPdfObjectRegistry,PdfObject> item)
     {
         var builder = new LowLevelDocumentBuilder();
@@ -103,16 +102,16 @@ public class PartParserTest
     private async Task<ParsedLowLevelDocument> CreateParsedFileAsync(ILowLevelDocumentCreator builder) => 
         (await sut.ParseAsync(await builder.AsFileAsync(), waitingService.Object));
 
-    [Fact] public Task RenderDoubleValue()=>TestSingleElement(3.14, "3.14");
-    [Fact] public Task RenderIntegerValue()=>TestSingleElement(314, "314");
-    [Fact] public Task RenderTrueValue()=>TestSingleElement(PdfBoolean.True, "true");
-    [Fact] public Task RenderFalseValue()=>TestSingleElement(PdfBoolean.False, "false");
-    [Fact] public Task RenderNullValue()=>TestSingleElement(PdfTokenValues.Null, "null");
-    [Fact] public Task RenderStringValue()=>TestSingleElement(PdfString.CreateAscii("Foo"), "(Foo)");
-    [Fact] public Task RenderSpecialtringValue()=>TestSingleElement(PdfString.CreateAscii("o\no"), "(o\no)");
+    [Fact] public Task RenderDoubleValueAsync()=>TestSingleElementAsync(3.14, "3.14");
+    [Fact] public Task RenderIntegerValueAsync()=>TestSingleElementAsync(314, "314");
+    [Fact] public Task RenderTrueValueAsync()=>TestSingleElementAsync(PdfBoolean.True, "true");
+    [Fact] public Task RenderFalseValueAsync()=>TestSingleElementAsync(PdfBoolean.False, "false");
+    [Fact] public Task RenderNullValueAsync()=>TestSingleElementAsync(PdfTokenValues.Null, "null");
+    [Fact] public Task RenderStringValueAsync()=>TestSingleElementAsync(PdfString.CreateAscii("Foo"), "(Foo)");
+    [Fact] public Task RenderSpecialtringValueAsync()=>TestSingleElementAsync(PdfString.CreateAscii("o\no"), "(o\no)");
 
     [Fact]
-    public async Task ParseFourPages()
+    public async Task ParseFourPagesAsync()
     {
         var builder = new PdfDocumentCreator();
         builder.Pages.CreatePage();

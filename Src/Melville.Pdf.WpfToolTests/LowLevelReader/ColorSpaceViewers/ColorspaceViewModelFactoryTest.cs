@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -9,19 +8,19 @@ using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
 using Xunit;
 
-namespace Melville.Pdf.WpfToolTests.LowLevelViewer.ColorSpaceViewers;
+namespace Melville.Pdf.WpfToolTests.LowLevelReader.ColorSpaceViewers;
 
 public class ColorspaceViewModelFactoryTest
 {
     [Fact]
-    public async Task CanCreateInvalidProfile()
+    public async Task CanCreateInvalidProfileAsync()
     {
         await ColorSpaceViewModelFactory.CreateAsync(new MemoryStream("Invalid Icc".AsExtendedAsciiBytes()));
         // assertion is that it does not throw
     }
 
     [Fact]
-    public async Task CreateValidProfile()
+    public async Task CreateValidProfileAsync()
     {
         var multiModel = await ColorSpaceViewModelFactory.CreateAsync(
             CmykIccProfile.GetCmykProfileStream());
@@ -44,7 +43,7 @@ public class ColorspaceViewModelFactoryTest
     }
 
     [Fact]
-    public async Task MaxMinColor()
+    public async Task MaxMinColorAsync()
     {
         var model = await ColorSpaceViewModelFactory.CreateAsync(new MemoryStream());
         CheckMaxMin(model.Spaces[0]);

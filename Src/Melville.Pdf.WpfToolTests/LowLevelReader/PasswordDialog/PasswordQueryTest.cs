@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevelViewerParts.PasswordDialogs.PasswordDialogs;
 using Moq;
 using Xunit;
 
-namespace Melville.Pdf.WpfToolTests.LowLevelViewer.PasswordDialog;
+namespace Melville.Pdf.WpfToolTests.LowLevelReader.PasswordDialog;
 
 public class PasswordQueryTest
 {
@@ -27,7 +27,7 @@ public class PasswordQueryTest
     }
 
     [Fact]
-    public async Task Cancel()
+    public async Task CancelAsync()
     {
         dlgMock.Setup(i => i.ShowModalDialog(
             It.IsAny<PasswordDialogViewModel>(),
@@ -37,7 +37,7 @@ public class PasswordQueryTest
         Assert.Equal((null, PasswordType.User), await sut.GetPasswordAsync());
     }
     [Fact]
-    public async Task OkUserPassword()
+    public async Task OkUserPasswordAsync()
     {
         dlgMock.Setup(i => i.ShowModalDialog(
             It.IsAny<PasswordDialogViewModel>(),
@@ -52,7 +52,7 @@ public class PasswordQueryTest
         Assert.Equal(("User", PasswordType.User), await sut.GetPasswordAsync());
     }
     [Fact]
-    public async Task OkOwnerPassword()
+    public async Task OkOwnerPasswordAsync()
     {
         dlgMock.Setup(i => i.ShowModalDialog(
             It.IsAny<PasswordDialogViewModel>(),
