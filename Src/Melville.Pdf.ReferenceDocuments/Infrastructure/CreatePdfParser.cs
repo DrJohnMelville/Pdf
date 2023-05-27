@@ -1,4 +1,6 @@
 ﻿using Melville.Parsing.Streams;
+using Melville.Pdf.Model;
+using Melville.Pdf.Model.Renderers.DocumentRenderers;
 
 namespace Melville.Pdf.ReferenceDocuments.Infrastructure;
 
@@ -28,4 +30,8 @@ public static class CreatePdfParserOperations
 
     public static async ValueTask<string> AsStringAsync(this CreatePdfParser source) =>
         await new StreamReader((await source.AsMultiBufAsync()).CreateReader()).ReadToEndAsync();
+
+    public static async ValueTask<DocumentRenderer> AsDocumentRendererAsync(
+        this CreatePdfParser source) =>
+        await new PdfReader().ReadFromAsync(await source.AsMultiBufAsync());
 }

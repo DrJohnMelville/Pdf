@@ -24,8 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
-		                  PrivateAssets="all">
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 			<OutputItemType>Analyzer</OutputItemType>
 		</ProjectReference>
@@ -34,6 +33,7 @@
 		<ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.ReferenceDocumentGenerator\Melville.Pdf.ReferenceDocumentGenerator.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.TextExtractor\Melville.Pdf.TextExtractor.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,6 +43,7 @@
 
 	<ItemGroup>
 		<Folder Include="ImageExtractors\" />
+		<Folder Include="Standard\S9_10 TextExtraction\" />
 	</ItemGroup>
 
 </Project>

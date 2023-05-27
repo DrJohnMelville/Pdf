@@ -1,8 +1,8 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
-using Melville.Pdf.Model.Renderers.GraphicsStates;
 
-namespace Melville.Pdf.ImageExtractor
+namespace Melville.Pdf.Model.Renderers.GraphicsStates
 {
     public class UncoloredGraphicsState : GraphicsState
     {
@@ -19,7 +19,7 @@ namespace Melville.Pdf.ImageExtractor
             ValueTask.CompletedTask;
 
         public override ValueTask SetNonstrokePatternAsync(
-            PdfDictionary pattern, DocumentRenderer parentRenderer) => 
+            PdfDictionary pattern, DocumentRenderer parentRenderer) =>
             ValueTask.CompletedTask;
     }
 }

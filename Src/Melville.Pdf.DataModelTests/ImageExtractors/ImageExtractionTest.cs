@@ -15,8 +15,7 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors
     {
         private static async Task<IList<IExtractedBitmap>> ImagesFromAsync(CreatePdfParser docGenerator)
         {
-            var document = await new PdfReader().ReadFromAsync(await
-                docGenerator.AsMultiBufAsync());
+            var document = await docGenerator.AsDocumentRendererAsync();
 
             var images = await document.ImagesFromAsync(1);
             return images;
