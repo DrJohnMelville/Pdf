@@ -7,9 +7,7 @@ namespace Melville.Pdf.FuzzTest;
 
 public static class Program
 {
-#pragma warning disable Arch004 // Async method does not have name ending with Async
     public static async Task Main(string[] cmdLineArgs)
-#pragma warning restore Arch004 // Async method does not have name ending with Async
     {
         if (cmdLineArgs.Length < 1)
         {

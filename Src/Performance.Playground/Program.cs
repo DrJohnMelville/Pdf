@@ -1,5 +1,4 @@
-﻿#pragma warning disable Arch004 // Async method does not have name ending with Async
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;

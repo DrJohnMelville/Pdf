@@ -6,9 +6,7 @@ namespace Melville.Pdf.ReferenceDocumentGenerator;
 
 class Program
 {
-#pragma warning disable Arch004 // Async method does not have name ending with Async
     static async Task Main(string[] args)
-#pragma warning restore Arch004 // Async method does not have name ending with Async
     {
         Console.WriteLine("Melville.Pdf.ReferenceDocumentGenerator: Generate PDF documents exercising the PDF standard.");
         Console.WriteLine("-H for help");

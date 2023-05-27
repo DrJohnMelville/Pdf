@@ -45,9 +45,7 @@ public partial class MainWindowViewModel
             await LoadFileAsync(file);
     }
 
-#pragma warning disable Arch004
     private async void OnSelectedNodeChanged(ReferenceDocumentNode? newValue)
-#pragma warning restore Arch004
     {
         if (newValue is ReferenceDocumentLeaf leaf)
         {

@@ -32,7 +32,6 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
     private ValueTask<DocumentPart> TerminalAsync(string text) => 
         new ValueTask<DocumentPart>(new DocumentPart(ConsumePrefix() + text));
 
-#pragma warning disable Arch004 // Async method does not have name ending with Async
     public async ValueTask<DocumentPart> Visit(PdfArray item)
     {
         var title = prefix + "Array";
@@ -114,5 +113,4 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
             return new XrefPartViewModel(title + "XRef Stream", children, item);
         return new StreamPartViewModel(title + "Stream", children, item);
     }
-#pragma warning restore Arch004 // Async method does not have name ending with Async
 }

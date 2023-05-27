@@ -18,9 +18,7 @@ public partial class PdfViewer : UserControl
     }
 
     [GenerateDP]
-#pragma warning disable Arch004
     private async void OnSourceChanged(object? newSource)
-#pragma warning restore Arch004
     {
         if (newSource is null) return;
         var dr = await new PdfReader(PasswordSource).ReadFromAsync(newSource);

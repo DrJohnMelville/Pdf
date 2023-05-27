@@ -42,9 +42,7 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
     /// <param name="cancellationToken">A cancellation token to stop the async enumeration</param>
     /// <returns>Enumerates the pages in the tree, in the proper page order.</returns>
     /// <exception cref="PdfParseException">Thew dictionary in LowLevel is not a valid PageTree.</exception>
-#pragma warning disable Arch004
     public async IAsyncEnumerator<PdfPage> GetAsyncEnumerator(CancellationToken cancellationToken = new())
-#pragma warning restore Arch004
     {
         var kids = await KidsAsync().CA();
         await foreach (var kid in kids.CA())

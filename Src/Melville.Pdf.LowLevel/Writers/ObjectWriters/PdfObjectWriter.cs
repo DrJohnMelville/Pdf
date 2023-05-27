@@ -28,7 +28,6 @@ internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
 
     // this is an unusual situation where the methods have to not be named async to
     //implement the interface which is defined over a valueType
-#pragma warning disable Arch004
     public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
         TokenValueWriter.WriteAsync(target, item);
     public override ValueTask<FlushResult> Visit(PdfString item) => 
@@ -63,7 +62,6 @@ internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
 
     public override ValueTask<FlushResult> Visit(PdfStream item) =>
         StreamWriter.WriteAsync(target, this, item, CreateEncryptor());
-#pragma warning restore Arch004
 
     private IObjectCryptContext CreateEncryptor() =>
         currentIndirectObject == null ? NullSecurityHandler.Instance : 

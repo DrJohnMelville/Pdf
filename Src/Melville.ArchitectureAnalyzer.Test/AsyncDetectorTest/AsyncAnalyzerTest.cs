@@ -1,76 +1,13 @@
-﻿using System.Threading.Tasks;
-using ArchitectureAnalyzer.Analyzer;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Melville.AsyncAnalyzer;
-using Microsoft;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Xunit;
 
 namespace Melville.ArchitectureAnalyzer.Test.AsyncDetectorTest;
-
-public static class WrapAsyncTestCase
-{
-    public static string Wrap(string code) => $$"""
-                        using System.Threading.Tasks;
-                        namespace Melville.NS;
-
-                        public class Class 
-                        {
-                            {{code}}
-                        }
-                        """;
-}
-
-public class AsyncCodeFixTest
-{
-    [Theory]
-    [InlineData("public void XAsync() {}")]
-    [InlineData("public async void XAsync() {}")]
-    [InlineData("public int XAsync() => 1;")]
-    public Task RemoveAsync(string code) => RunFixTest(
-        code.Replace("XAsync", "{|#0:XAsync|}"), 
-        code.Replace("XAsync", "X"), AsyncDiagnostics.UnneededAsync, "XAsync");
-
-    [Theory]
-    [InlineData("public async Task X() {}")]
-    [InlineData("public async ValueTask X() {}")]
-    [InlineData("public async Task<int> X() => 1;")]
-    [InlineData("public async ValueTask<int> X() => 1;")]
-    [InlineData("public Task X() => Task.CompletedTask;")]
-    [InlineData("public ValueTask X() => ValueTask.CompletedTask;")]
-    [InlineData("public Task<int> X() => Task.FromResult(1);")]
-    [InlineData("public ValueTask<int> X() => ValueTask.FromResult(1);")]
-    public Task AddAsync(string code) => RunFixTest(
-        code.Replace("X", "{|#0:X|}"), 
-        code.Replace("X", "XAsync"), AsyncDiagnostics.AsyncNeeded, "X");
-
-    private Task RunFixTest(string code, string fixedCode, DiagnosticDescriptor expectedDiagnostic,
-        string offendingSymbol)
-    {
-        var fixTest =
-            new CSharpCodeFixTest<AsyncAnalyzerClass, AsyncCodeFixProvider, XUnitVerifier>()
-            {
-                TestState =
-                {
-                    Sources = { WrapAsyncTestCase.Wrap(code) },
-                    ReferenceAssemblies = ReferenceAssemblies.Net.Net60
-                },
-                FixedState= 
-                {
-                    Sources = { WrapAsyncTestCase.Wrap(fixedCode) },
-                    ReferenceAssemblies = ReferenceAssemblies.Net.Net60
-                },
-            };
-
-        fixTest.TestState.ExpectedDiagnostics.Add(
-            new DiagnosticResult(expectedDiagnostic)
-                .WithLocation(0).WithArguments(offendingSymbol));
-
-        return fixTest.RunAsync();
-    }
-}
 
 public class AsyncAnalyzerTest
 {
@@ -88,17 +25,39 @@ public class AsyncAnalyzerTest
         return tester.RunAsync();
     }
 
-    [Fact]
-    public Task AllowedNonAsyncMethod() => RunTest("public int X() => 1;");
-    [Fact]
-    public Task AllowedAsyncVoidMethod() => RunTest("public async void X() {}");
 
-    [Fact]
-    public Task DisallowedNonAsyncMethod() =>
-        RunTest("public int {|#0:XAsync|}() => 1;", 
-            new DiagnosticResult(AsyncDiagnostics.UnneededAsync)
-                .WithLocation(0)
-                .WithArguments("XAsync"));
+    [Theory]
+    [InlineData("public int X() => 1;")]
+    [InlineData("public static Task Main() => null;")]
+    [InlineData("public async void X() {}")]
+    [InlineData("public Task<int> this[int index] => Task.FromResult(index);")]
+    [InlineData("""
+        public interface Int
+        {
+        #pragma warning disable Arch004
+                    public Task Method();
+        #pragma warning restore Arch004
+        }
+
+        public class Inner : Int
+        {
+            public Task Method() => null;
+        }
+        """)]
+    [InlineData("""
+        public class Int
+        {
+        #pragma warning disable Arch004
+                    public virtual Task Method() => null!;
+        #pragma warning restore Arch004
+        }
+
+        public class Inner : Int
+        {
+            public override Task Method() => null;
+        }
+        """)]
+    public Task ProperlyLacksAsyncSuffix(string code) => RunTest(code);
 
     [Theory]
     [InlineData("public async Task MethodAsync(){}")]
@@ -109,7 +68,15 @@ public class AsyncAnalyzerTest
     [InlineData("public Task<int> MethodAsync() => Task.FromResult(1);")]
     [InlineData("public ValueTask MethodAsync() => ValueTask.CompletedTask;")]
     [InlineData("public ValueTask<int> MethodAsync() => new(1);")]
-    public Task HasProperAsyncName(string code) => RunTest(code);
+    public Task ProperlyHasAsyncSuffix(string code) => RunTest(code);
+
+    [Theory]
+    [InlineData("public int {|#0:XAsync|}() => 1;")]
+    [InlineData("public int {|#0:XAsync|} => 1;")]
+    public Task ImproperlyHasAsyncSuffix(string code) =>
+        RunTest(code, new DiagnosticResult(AsyncDiagnostics.UnneededAsync)
+                .WithLocation(0)
+                .WithArguments("XAsync"));
 
     [Theory]
     [InlineData("public async Task {|#0:Method|}(){}")]
@@ -120,7 +87,7 @@ public class AsyncAnalyzerTest
     [InlineData("public Task<int> {|#0:Method|}() => Task.FromResult(1);")]
     [InlineData("public ValueTask {|#0:Method|}() => ValueTask.CompletedTask;")]
     [InlineData("public ValueTask<int> {|#0:Method|}() => new(1);")]
-    public Task LacksAsyncName(string code) => RunTest(code,
+    public Task ImproperlyLacksAsyncSuffix(string code) => RunTest(code,
         new DiagnosticResult(AsyncDiagnostics.AsyncNeeded)
             .WithLocation(0)
             .WithArguments("Method")

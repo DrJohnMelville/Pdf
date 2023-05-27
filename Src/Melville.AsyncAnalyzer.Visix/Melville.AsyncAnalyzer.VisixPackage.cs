@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Task = System.Threading.Tasks.Task;
 
-namespace Melville.AsyncAnalyzer.Visix
+namespace Melville.AsyncAnalyzers.Visix
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -24,7 +24,7 @@ namespace Melville.AsyncAnalyzer.Visix
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(Melville.AsyncAnalyzer.Visix.VisixPackage.PackageGuidString)]
+    [Guid(VisixPackage.PackageGuidString)]
     public sealed class VisixPackage : AsyncPackage
     {
          /// <summary>
