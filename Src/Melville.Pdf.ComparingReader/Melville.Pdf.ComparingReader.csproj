@@ -17,8 +17,7 @@
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
             <OutputItemType>Analyzer</OutputItemType>
         </ProjectReference>
-        <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
-                          PrivateAssets="all">
+        <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 	        <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	        <OutputItemType>Analyzer</OutputItemType>
         </ProjectReference>
@@ -27,6 +26,7 @@
       <ProjectReference Include="..\Melville.Pdf.ReferenceDocuments\Melville.Pdf.ReferenceDocuments.csproj" />
       <ProjectReference Include="..\Melville.Pdf.SkiaSharp\Melville.Pdf.SkiaSharp.csproj" />
       <ProjectReference Include="..\Melville.Pdf.LowLevelViewerParts\Melville.Pdf.LowLevelViewerParts.csproj" />
+      <ProjectReference Include="..\Melville.Pdf.TextExtractor\Melville.Pdf.TextExtractor.csproj" />
       <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
     </ItemGroup>
 </Project>

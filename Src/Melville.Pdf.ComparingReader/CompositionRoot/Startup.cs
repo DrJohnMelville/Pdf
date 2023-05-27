@@ -9,6 +9,7 @@ using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.Viewers.ExtractedImages;
+using Melville.Pdf.ComparingReader.Viewers.ExtractedTexts;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.ComparingReader.Viewers.LowLevel;
 using Melville.Pdf.ComparingReader.Viewers.SkiaViewer;
@@ -63,6 +64,7 @@ namespace Melville.Pdf.ComparingReader.CompositionRoot
             service.Bind<IRenderer>().To<LowLevelRenderer>();
             service.Bind<IRenderer>().To<SystemRenderViewModel>();
             service.Bind<IRenderer>().To<ExtractedImagesViewModel>();
+            service.Bind<IRenderer>().To<ExtractedTextRenderer>();
             service.Bind<IMultiRenderer>().To<TabMultiRendererViewModel>().AsSingleton();
         }
 

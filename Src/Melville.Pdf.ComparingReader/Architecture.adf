@@ -25,6 +25,8 @@ Group LowLevel
     Melville.Pdf.LowLevelViewerParts.LowLevelViewer.*
 Group ExtractImages
     Melville.Pdf.ComparingReader.Viewers.ExtractedImages.*
+Group ExtractTexts
+    Melville.Pdf.ComparingReader.Viewers.ExtractedTexts.*
        
 MainWindow => Renderers
 MainWindow => REPL
