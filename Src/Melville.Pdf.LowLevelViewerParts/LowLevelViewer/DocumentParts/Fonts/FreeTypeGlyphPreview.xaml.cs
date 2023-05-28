@@ -44,8 +44,8 @@ public partial class FreeTypeGlyphPreview : UserControl
         {
             var target = new WpfRenderTarget(dc);
             using var writer = Face.BeginFontWrite(new FakeFontDrawTarget(target));
-            writer.AddGlyphToCurrentStringAsync((uint)GlyphSelector.Page, Matrix3x2.Identity);
-            writer.RenderCurrentString(false, true, false);
+            writer.AddGlyphToCurrentStringAsync(1, (uint)GlyphSelector.Page, Matrix3x2.Identity);
+            writer.RenderCurrentString(false, true, false, Matrix3x2.Identity);
         }
 
         GlyphImage = new DrawingImage(dg);

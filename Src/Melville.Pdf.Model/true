@@ -1368,15 +1368,16 @@
             This interface manages a single font writing operation.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.AddGlyphToCurrentStringAsync(System.UInt32,System.Numerics.Matrix3x2)">
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.AddGlyphToCurrentStringAsync(System.UInt32,System.UInt32,System.Numerics.Matrix3x2)">
             <summary>
             Add a glyph outline to the current string.
             </summary>
+            <param name="character"></param>
             <param name="glyph">Index of the glyph to render.</param>
             <param name="textMatrix">The current text matrix</param>
             <returns>The width of the rendered glyph</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.RenderCurrentString(System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.RenderCurrentString(System.Boolean,System.Boolean,System.Boolean,System.Numerics.Matrix3x2@)">
             <summary>
             Render the glyph outlines previously added to this object.
             </summary>
@@ -2047,6 +2048,25 @@
             </summary>
             <param name="newMatrix">The new matrix that was pushed.</param> 
             <param name="cumulativeMatrix">The new cumulative view matrix.</param> 
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState">
+            <summary>
+            This is a GraphicsState onject for renderers that do not have a concept of color.
+            It does not keep copies of the current brush.
+            
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.StrokeColorChanged">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.NonstrokeColorChanged">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.SetStrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+            <inheritdoc />
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.SetNonstrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+            <inheritdoc />
         </member>
         <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.WritingMode">
             <summary>

@@ -17,9 +17,10 @@ internal class FontCachingTarget : WpfPathCreator, IFontTarget
     public IDrawTarget CreateDrawTarget() => this;
    public FillRule Fill() => Geometry?.FillRule ?? FillRule.Nonzero;
 
-    public async ValueTask<CachedGlyph> RenderGlyphAsync(IFontWriteOperation innerender, uint glyph)
+    public async ValueTask<CachedGlyph> RenderGlyphAsync(
+        IFontWriteOperation innerender, uint character, uint glyph)
     {
-        var width= await innerender.AddGlyphToCurrentStringAsync(glyph, Matrix3x2.Identity);
+        var width= await innerender.AddGlyphToCurrentStringAsync(character, glyph, Matrix3x2.Identity);
         var finalGeometry = Geometry??new PathGeometry();
         return new CachedGlyph(finalGeometry, Fill(), width);
     }

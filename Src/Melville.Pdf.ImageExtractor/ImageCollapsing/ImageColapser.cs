@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.Pdf.ImageExtractor.ImageCollapsing;
 
-public readonly partial struct ImageCollapser
+internal readonly partial struct ImageColapser
 {
     [FromConstructor] private readonly IList<IExtractedBitmap> extractedBitmaps;
 

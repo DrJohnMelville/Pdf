@@ -52,7 +52,7 @@ public static class ImageExtractorFacade
     public static IList<IExtractedBitmap> CollapseAdjacentImages(
         this IList<IExtractedBitmap> source)
     {
-        new ImageCollapser(source).Process();
+        new ImageColapser(source).Process();
         return source;
     }
 

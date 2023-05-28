@@ -232,10 +232,11 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         while (remainingI.Length > 0)
         {
             var (character, glyph) = GetNextCharacterAndGlyph(font, ref remainingI);
-            var measuredGlyphWidth = await writer.AddGlyphToCurrentStringAsync(glyph, CharacterPositionMatrix()).CA();
+            var measuredGlyphWidth = await writer.AddGlyphToCurrentStringAsync(
+                character, glyph, CharacterPositionMatrix()).CA();
             AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
         }
-        writer.RenderCurrentString(GraphicsState.TextRender);
+        writer.RenderCurrentString(GraphicsState.TextRender, CharacterPositionMatrix());
     }
 
     private static (uint character, uint glyph) GetNextCharacterAndGlyph(

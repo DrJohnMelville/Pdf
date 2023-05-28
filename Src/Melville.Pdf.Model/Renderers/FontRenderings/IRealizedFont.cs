@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -51,33 +52,34 @@ public interface IRealizedFont
 
 internal static class FontWriteOperationsImpl
 {
-    public static void RenderCurrentString(this IFontWriteOperation op, TextRendering rendering)
+    public static void RenderCurrentString
+        (this IFontWriteOperation op, TextRendering rendering, in Matrix3x2 finalTextMatrix)
     {
         switch (rendering)
         {
             case TextRendering.Fill:
-                op.RenderCurrentString(false, true, false);
+                op.RenderCurrentString(false, true, false, finalTextMatrix);
                 break;
             case TextRendering.Stroke:
-                op.RenderCurrentString(true, false, false);
+                op.RenderCurrentString(true, false, false, finalTextMatrix);
                 break;
             case TextRendering.FillAndStroke:
-                op.RenderCurrentString(true, true, false);
+                op.RenderCurrentString(true, true, false, finalTextMatrix);
                 break;
             case TextRendering.Invisible:
-                op.RenderCurrentString(false, false, false);
+                op.RenderCurrentString(false, false, false, finalTextMatrix);
                 break;
             case TextRendering.FillAndClip:
-                op.RenderCurrentString(false, true, true);
+                op.RenderCurrentString(false, true, true, finalTextMatrix);
                 break;
             case TextRendering.StrokeAndClip:
-                op.RenderCurrentString(true, false, true);
+                op.RenderCurrentString(true, false, true, finalTextMatrix);
                 break;
             case TextRendering.FillStrokeAndClip:
-                op.RenderCurrentString(true, true, true);
+                op.RenderCurrentString(true, true, true, finalTextMatrix);
                 break;
             case TextRendering.Clip:
-                op.RenderCurrentString(false, false, true);
+                op.RenderCurrentString(false, false, true, finalTextMatrix);
                 break;
         }
     }

@@ -10,15 +10,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
-    <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
-                      PrivateAssets="all">
+    <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 	    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	    <OutputItemType>Analyzer</OutputItemType>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ImageCollapsing\" />
   </ItemGroup>
 
 </Project>

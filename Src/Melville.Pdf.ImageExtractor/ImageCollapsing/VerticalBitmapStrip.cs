@@ -5,7 +5,7 @@ using Melville.Pdf.Model.Renderers.Bitmaps;
 
 namespace Melville.Pdf.ImageExtractor.ImageCollapsing;
 
-public partial class VerticalBitmapStrip : BitmapStrip
+internal partial class VerticalBitmapStrip : BitmapStrip
 {
     public override int Width => FirstChild.Width;
     public override int Height => componentBitmaps.Sum(i => i.Height);

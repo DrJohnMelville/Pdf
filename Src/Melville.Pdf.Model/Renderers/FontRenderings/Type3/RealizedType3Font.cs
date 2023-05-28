@@ -73,10 +73,11 @@ internal partial class RealizedType3Font : IRealizedFont
             this.target = target;
         }
 
-        public ValueTask<double> AddGlyphToCurrentStringAsync(uint glyph, Matrix3x2 textMatrix) => 
+        public ValueTask<double> AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix) => 
             parent.AddGlyphToCurrentStringAsync(glyph, textMatrix, target);
         
-        public void RenderCurrentString(bool stroke, bool fill, bool clip) { }
+        public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix)
+        { }
 
         public void Dispose() { }
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) => new Type3Writer(parent, target);

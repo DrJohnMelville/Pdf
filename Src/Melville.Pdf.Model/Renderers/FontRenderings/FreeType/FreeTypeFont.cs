@@ -78,13 +78,13 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
         }
 
         public ValueTask<double> AddGlyphToCurrentStringAsync(
-            uint glyph, Matrix3x2 textMatrix)
+            uint character, uint glyph, Matrix3x2 textMatrix)
         {
             target.SetDrawingTransform(textMatrix);
             return new (parent.RenderGlyph(nativeTarget, glyph));
         }
         
-        public void RenderCurrentString(bool stroke, bool fill, bool clip)
+        public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix)
         {
             if (stroke || fill)
             {

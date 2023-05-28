@@ -22,9 +22,18 @@ public class ConcatenatingTextTarget: IExtractedTextTarget
 {
     private readonly StringBuilder target = new StringBuilder();
 
-    public void RenderText(string text, int page, Vector2 start, Vector2 end, double size, IRealizedFont font)
+    public void BeginWrite(IRealizedFont font)
     {
-        target.Append(text);
+        if (target.Length > 0) target.AppendLine();
+    }
+
+    public void EndWrite(Matrix3x2 textMatrix)
+    {
+    }
+
+    public void WriteCharacter(char character, Matrix3x2 textMatrix)
+    {
+        target.Append(character);
     }
 
     public string AllText() => target.ToString();

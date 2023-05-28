@@ -13,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S9_10_TextExtraction
         {
             var ren = await new EmbeddedTrueType().AsDocumentRendererAsync();
             var text = await ren.PageTextAsync(1);
-            Assert.Equal("Is Text\r\nIsText\r\n", text);
+            Assert.Equal("Is Text\r\nIs Text", text);
         }
     }
 }
