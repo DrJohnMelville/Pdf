@@ -1384,6 +1384,7 @@
             <param name="stroke">If true, the outline will be stroked with the stroke brush.</param>
             <param name="fill">If true, the outline will be filled with the fill brush.</param>
             <param name="clip">If true, the string will be added to the current clipping region.</param>
+            <param name="finalTextMatrix">Value of the text matrix at the end of the write operation</param>
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation.CreatePeerWriteOperation(Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget)">
             <summary>

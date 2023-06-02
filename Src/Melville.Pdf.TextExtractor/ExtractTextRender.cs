@@ -8,15 +8,8 @@ using Melville.Pdf.Model.Renderers.GraphicsStates;
 
 namespace Melville.Pdf.TextExtractor;
 
-public interface IExtractedTextTarget
-{
-    void BeginWrite(IRealizedFont font);
-    void EndWrite(Matrix3x2 textMatrix);
-    void WriteCharacter(char character, Matrix3x2 textMatrix);
-}
-
 [FromConstructor]
-public partial class ExtractTextRender :
+internal partial class ExtractTextRender :
     RenderTargetBase<IExtractedTextTarget, UncoloredGraphicsState>
 {
 

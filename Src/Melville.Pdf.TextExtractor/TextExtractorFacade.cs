@@ -1,13 +1,19 @@
-﻿using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System.Security.Cryptography.X509Certificates;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
-using Melville.Pdf.Model.Renderers.FontRenderings;
 
 namespace Melville.Pdf.TextExtractor;
 
+/// <summary>
+/// This class allows text to be extracted from a PDF page or file
+/// </summary>
 public static class TextExtractorFacade
 {
+    /// <summary>
+    /// Gets the text that shows up on a given page of a given Pdf file
+    /// </summary>
+    /// <param name="renderer">DocumentRenderer for the file to be read</param>
+    /// <param name="oneBasedPageNumber">One based page number of the desired page.</param>
+    /// <returns></returns>
     public static async ValueTask<string> PageTextAsync(
         this DocumentRenderer renderer, int oneBasedPageNumber)
     {
@@ -16,25 +22,4 @@ public static class TextExtractorFacade
             (_,__)=>new ExtractTextRender(target));
         return target.AllText();
     }
-}
-
-public class ConcatenatingTextTarget: IExtractedTextTarget
-{
-    private readonly StringBuilder target = new StringBuilder();
-
-    public void BeginWrite(IRealizedFont font)
-    {
-        if (target.Length > 0) target.AppendLine();
-    }
-
-    public void EndWrite(Matrix3x2 textMatrix)
-    {
-    }
-
-    public void WriteCharacter(char character, Matrix3x2 textMatrix)
-    {
-        target.Append(character);
-    }
-
-    public string AllText() => target.ToString();
 }

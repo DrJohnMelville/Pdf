@@ -34,6 +34,7 @@
 		<ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.ReferenceDocumentGenerator\Melville.Pdf.ReferenceDocumentGenerator.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.TextExtractor\Melville.Pdf.TextExtractor.csproj" />
+		<ProjectReference Include="..\Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

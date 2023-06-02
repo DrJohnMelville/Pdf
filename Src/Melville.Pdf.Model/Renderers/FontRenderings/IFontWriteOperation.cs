@@ -18,12 +18,14 @@ public interface IFontWriteOperation: IDisposable
     /// <param name="textMatrix">The current text matrix</param>
     /// <returns>The width of the rendered glyph</returns>
     ValueTask<double> AddGlyphToCurrentStringAsync(uint character, uint glyph, Matrix3x2 textMatrix);
+
     /// <summary>
     /// Render the glyph outlines previously added to this object.
     /// </summary>
     /// <param name="stroke">If true, the outline will be stroked with the stroke brush.</param>
     /// <param name="fill">If true, the outline will be filled with the fill brush.</param>
     /// <param name="clip">If true, the string will be added to the current clipping region.</param>
+    /// <param name="finalTextMatrix">Value of the text matrix at the end of the write operation</param>
     void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 finalTextMatrix);
 
     /// <summary>

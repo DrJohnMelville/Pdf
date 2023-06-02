@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	  <Title>Melville.Pdf.LowLevel</Title>
+	  <PackageDescription>Reads and writes PDF files as a graph of PDF objects.</PackageDescription>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <TieredPGO>true</TieredPGO>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
+		<ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Melville.INPC" Version="0.6.17" />
+	</ItemGroup>
+
+</Project>
