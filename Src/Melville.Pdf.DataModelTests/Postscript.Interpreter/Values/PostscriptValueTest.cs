@@ -100,9 +100,7 @@ public class PostscriptValueTest
     public void ArrayTest()
     {
         var value = PostscriptValueFactory.CreateArray(
-            PostscriptValueFactory.Create(true),
-            PostscriptValueFactory.Create(false),
-            PostscriptValueFactory.Create(10)
+            true, false, 10
         );
         Assert.Equal("[true, false, 10]", value.Get<string>());
 
@@ -143,16 +141,10 @@ public class PostscriptValueTest
 
     private static PostscriptValue CreateDictionary(bool longDict)
     {
-        var parameters = new[]
-        {
-            PostscriptValueFactory.CreateString("A", StringKind.LiteralName),
-            PostscriptValueFactory.Create(1),
-            PostscriptValueFactory.CreateString("B", StringKind.LiteralName),
-            PostscriptValueFactory.Create(2),
-            PostscriptValueFactory.CreateString("Charlie", StringKind.LiteralName),
-            PostscriptValueFactory.Create(3)
-        };
+        var parameters = new PostscriptValue[] { "/A", 1, "/B", 2, "/Charlie", 3 };
 
-        return PostscriptValueFactory.CreateDictionary(parameters);
+        return longDict?
+            PostscriptValueFactory.CreateLongDictionary(parameters):
+            PostscriptValueFactory.CreateDictionary(parameters);
     }
 }

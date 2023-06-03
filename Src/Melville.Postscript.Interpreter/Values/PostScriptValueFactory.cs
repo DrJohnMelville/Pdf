@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
@@ -44,12 +46,24 @@ namespace Melville.Postscript.Interpreter.Values
         /// </summary>
         /// <param name="data">Contents of the string</param>
         /// <param name="kind">kind of name to create</param>
-        public static PostscriptValue CreateString(string data, StringKind kind)
+        public static PostscriptValue CreateString(string data, StringKind kind) =>
+            CreateString(data.AsSpan(), kind);
+
+        /// <summary>
+        /// Create a string, name, or literal name
+        /// </summary>
+        /// <param name="data">Contents of the string</param>
+        /// <param name="kind">kind of name to create</param>
+        public static PostscriptValue CreateString(
+            ReadOnlySpan<char> data, StringKind kind)
         {
             Span<byte> buffer = stackalloc byte[Encoding.ASCII.GetByteCount(data)];
-            Encoding.ASCII.GetBytes(data.AsSpan(), buffer);
+            Encoding.ASCII.GetBytes(data, buffer);
             return CreateString(buffer, kind);
+
         }
+
+
         /// <summary>
         /// Create a string, name, or literal name
         /// </summary>
@@ -62,7 +76,7 @@ namespace Melville.Postscript.Interpreter.Values
             for (int i = data.Length -1; i >= 0; i--)
             {
                 var character = data[i];
-                if (character < 127) return CreateLongString(data, kind);
+                if (character > 127) return CreateLongString(data, kind);
                 SevenBitStringEncoding.AddOneCharacter(ref value, character);
             }
 
@@ -84,8 +98,28 @@ namespace Melville.Postscript.Interpreter.Values
             new(WrapInDictionary(values), 0);
 
         private static IPostscriptValueStrategy<string> WrapInDictionary(PostscriptValue[] values) =>
-            values.Length == 0 ? PostscriptShortDictionary.Empty:
-                ReportAllocation(new PostscriptShortDictionary(values.ToList()));
+            values.Length switch
+            {
+                0 => PostscriptShortDictionary.Empty,
+                < 40 => ReportAllocation(new PostscriptShortDictionary(values.ToList())),
+                _ => ConstructLongDictionary(values)
+            };
+        
+        public static PostscriptValue CreateLongDictionary(PostscriptValue[] parameters) =>
+            new(ConstructLongDictionary(parameters), 0);
+
+        private static PostscriptLongDictionary ConstructLongDictionary(PostscriptValue[] parameters) => 
+            new PostscriptLongDictionary(ArrayToDictionary(parameters));
+
+        private static Dictionary<PostscriptValue, PostscriptValue> ArrayToDictionary(PostscriptValue[] parameters)
+        {
+            var dict = new Dictionary<PostscriptValue, PostscriptValue>();
+            for (var i = 1; i < parameters.Length; i += 2)
+            {
+                dict[parameters[i - 1]] = parameters[i];
+            }
+            return dict;
+        }
 
         private static T ReportAllocation<T>(T item)
         {
@@ -94,6 +128,5 @@ namespace Melville.Postscript.Interpreter.Values
             // all the places where we allocate memory.
             return item;
         }
-
     }
 }

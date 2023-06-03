@@ -89,6 +89,6 @@ internal sealed partial class PostscriptLongString: PostscriptString
     {
         var hc = new HashCode();
         hc.AddBytes(value.Span);
-        return hc.GetHashCode();
+        return hc.ToHashCode();
     }
 }

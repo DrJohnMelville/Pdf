@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Melville.INPC;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -67,6 +68,7 @@ public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
         return false;
     }
 
+    /// <inheritdoc />
     public bool Equals(PostscriptValue other)
     {
         if (ShallowEqual(other) || DeepEqual(other)) return true;
@@ -78,14 +80,42 @@ public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
         valueStrategy == other.valueStrategy &&
          memento == other.memento;
 
+
     private bool DeepEqual(PostscriptValue other)
     {
         return valueStrategy is IPostscriptValueComparison psc &&
                psc.Equals(memento, other.valueStrategy, other.memento);
     }
 
+    /// <inheritdoc />
     public override int GetHashCode() => HashCode.Combine(valueStrategy, memento);
 
     /// <inheritdoc />
     public override string ToString() => valueStrategy.GetValue(memento);
+
+    [MacroItem("int")]
+    [MacroItem("double")]
+    [MacroItem("bool")]
+    [MacroCode("""
+        /// <summary>
+        /// Create a PostscriptValue from a ~0~
+        /// </summary>
+        /// <param name="i">The value to wrap in a PostscriptValue</param>
+        public static implicit operator PostscriptValue(~0~ i) => 
+            PostscriptValueFactory.Create(i);
+        """)]
+    private const int macroHolder = 0;
+
+    /// <summary>
+    /// Create a PostscriptValue from a string
+    /// </summary>
+    /// <param name="s">The value to wrap in a PostscriptValue</param>
+    public static implicit operator PostscriptValue(string s) => s.AsSpan() switch
+    {
+        ['/', .. var rest] =>
+            PostscriptValueFactory.CreateString(rest, StringKind.LiteralName),
+        ['(', .. var rest, ')'] =>
+            PostscriptValueFactory.CreateString(rest, StringKind.String),
+        _=> PostscriptValueFactory.CreateString(s, StringKind.Name)
+    };
 }
