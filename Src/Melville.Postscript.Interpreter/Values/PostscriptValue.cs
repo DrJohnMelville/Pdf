@@ -5,15 +5,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-// public interface IPostscriptStringStrategy
-// {
-//     int StringLength(Int128 memento);
-//     void FillString(Int128 memento, Span<byte> target);
-// }
-
 /// <summary>
 /// This structure represents a single postscript value, most of which can be contained
-/// internally, but some of which cannot.  The managedValue object allows for extensions like
+/// internally, but some of which cannot.  The valueStrategy object allows for extensions like
 /// dictionaries, files, and arrays.
 /// </summary>
 public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>

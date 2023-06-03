@@ -4,11 +4,6 @@ using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-internal interface IPostscriptComposite
-{
-    PostscriptValue Get(in PostscriptValue indexOrKey);
-}
-
 internal partial class PostscriptArray : 
     IPostscriptValueStrategy<string>,
     IPostscriptValueStrategy<IPostscriptComposite>,
@@ -34,5 +29,11 @@ internal partial class PostscriptArray :
     IPostscriptComposite
         IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
 
-    public PostscriptValue Get(in PostscriptValue indexOrKey) => values.Span[indexOrKey.Get<int>()];
+    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result)
+    {
+        result = (indexOrKey.TryGet(out int index) && 
+                 index < values.Length
+    }
+
+    //    public PostscriptValue Get(in PostscriptValue indexOrKey) => values.Span[indexOrKey.Get<int>()];
 }
