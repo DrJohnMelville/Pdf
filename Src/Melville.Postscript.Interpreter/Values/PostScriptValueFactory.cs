@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Melville.Postscript.Interpreter.Values
@@ -36,12 +39,22 @@ namespace Melville.Postscript.Interpreter.Values
         /// </summary>
         public static PostscriptValue CreateMark() => new (PostscriptMark.Instance,0);
 
+        /// <summary>
+        /// Create a string, name, or literal name
+        /// </summary>
+        /// <param name="data">Contents of the string</param>
+        /// <param name="kind">kind of name to create</param>
         public static PostscriptValue CreateString(string data, StringKind kind)
         {
             Span<byte> buffer = stackalloc byte[Encoding.ASCII.GetByteCount(data)];
             Encoding.ASCII.GetBytes(data.AsSpan(), buffer);
             return CreateString(buffer, kind);
         }
+        /// <summary>
+        /// Create a string, name, or literal name
+        /// </summary>
+        /// <param name="data">Contents of the string</param>
+        /// <param name="kind">kind of name to create</param>
         public static PostscriptValue CreateString(in ReadOnlySpan<byte> data, StringKind kind)
         {
             if (data.Length > 18) return CreateLongString(data, kind);
@@ -57,7 +70,30 @@ namespace Melville.Postscript.Interpreter.Values
         }
 
         private static PostscriptValue CreateLongString(ReadOnlySpan<byte> data, StringKind kind) => 
-            new(new PostscriptLongString(kind, data.ToArray()), 0);
+            new(
+                ReportAllocation(new PostscriptLongString(kind, data.ToArray())), 0);
+
+        public static PostscriptValue CreateArray(params PostscriptValue[] values) =>
+            new(WrapInPostScriptArray(values), 0);
+
+        private static PostscriptArray WrapInPostScriptArray(PostscriptValue[] values) =>
+            values.Length < 1 ? PostscriptArray.Empty : 
+                ReportAllocation(new PostscriptArray(values));
+
+        public static PostscriptValue CreateDictionary(params PostscriptValue[] values) => 
+            new(WrapInDictionary(values), 0);
+
+        private static IPostscriptValueStrategy<string> WrapInDictionary(PostscriptValue[] values) =>
+            values.Length == 0 ? PostscriptShortDictionary.Empty:
+                ReportAllocation(new PostscriptShortDictionary(values.ToList()));
+
+        private static T ReportAllocation<T>(T item)
+        {
+            //right now this is a marker method.  Eventually to implement save and restore we have to
+            // track all of the virtual memory allocations.  right now this method just holds onto 
+            // all the places where we allocate memory.
+            return item;
+        }
 
     }
 }

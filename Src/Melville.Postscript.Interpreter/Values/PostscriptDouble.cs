@@ -6,16 +6,23 @@ namespace Melville.Postscript.Interpreter.Values
     [StaticSingleton]
     internal partial class PostscriptDouble :
         IPostscriptValueStrategy<string>,
+        IPostscriptValueStrategy<int>,
         IPostscriptValueStrategy<long>,
         IPostscriptValueStrategy<double>
     {
         string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => 
             DoubleFromMemento(memento).ToString();
 
-        long IPostscriptValueStrategy<long>.GetValue(in Int128 memento) => 
-            RoundToLong(DoubleFromMemento(memento));
+        int IPostscriptValueStrategy<int>.GetValue(in Int128 memento) => 
+            (int)OffsetForTruncationRounding(memento);
+        long IPostscriptValueStrategy<long>.GetValue(in Int128 memento) =>
+            (long)OffsetForTruncationRounding(memento);
 
-        private long RoundToLong(double value) => (long)(value + (value < 0?-0.5:0.5));
+        private double OffsetForTruncationRounding(Int128 memento)
+        {
+            var value = DoubleFromMemento(memento);
+            return value + (value < 0?-0.5:0.5);
+        }
 
         double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) => 
             DoubleFromMemento(memento);

@@ -15,7 +15,7 @@ namespace Melville.Postscript.Interpreter.Values;
 /// internally, but some of which cannot.  The managedValue object allows for extensions like
 /// dictionaries, files, and arrays.
 /// </summary>
-public readonly partial struct PostscriptValue
+public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
 {
     /// <summary>
     /// The strategy that can retrieve the value for this item.
@@ -66,6 +66,25 @@ public readonly partial struct PostscriptValue
         }
         return false;
     }
+
+    public bool Equals(PostscriptValue other)
+    {
+        if (ShallowEqual(other) || DeepEqual(other)) return true;
+        return false;
+    }
+
+
+    private bool ShallowEqual(PostscriptValue other) =>
+        valueStrategy == other.valueStrategy &&
+         memento == other.memento;
+
+    private bool DeepEqual(PostscriptValue other)
+    {
+        return valueStrategy is IPostscriptValueComparison psc &&
+               psc.Equals(memento, other.valueStrategy, other.memento);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(valueStrategy, memento);
 
     /// <inheritdoc />
     public override string ToString() => valueStrategy.GetValue(memento);

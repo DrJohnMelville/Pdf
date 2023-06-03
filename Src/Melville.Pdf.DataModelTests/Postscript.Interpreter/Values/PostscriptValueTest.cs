@@ -1,4 +1,7 @@
-﻿using Melville.Postscript.Interpreter.Values;
+﻿using System;
+using System.Runtime.InteropServices;
+using Melville.Pdf.DataModelTests.Writer.Lzw;
+using Melville.Postscript.Interpreter.Values;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Values;
@@ -72,22 +75,84 @@ public class PostscriptValueTest
     [InlineData("")]
     [InlineData("123456789012345678")]
     [InlineData("1234567890123456789")]
-    public void StringTest(string stringValue) => DoStringTest(stringValue, StringKind.String);
+    public void StringTest(string stringValue) => DoStringTest(stringValue, StringKind.String,
+        s => $"({s})");
 
     [Theory]
     [InlineData("123456789012345678")]
     [InlineData("1234567890123456789")]
-    public void NameTest(string stringValue) => DoStringTest(stringValue, StringKind.Name);
+    public void NameTest(string stringValue) => DoStringTest(stringValue, StringKind.Name, s=>s);
     [Theory]
     [InlineData("123456789012345678")]
     [InlineData("1234567890123456789")]
     public void LiteralNameTest(string stringValue) => 
-        DoStringTest(stringValue, StringKind.LiteralName);
+        DoStringTest(stringValue, StringKind.LiteralName, s=>"/"+s);
 
-    private static void DoStringTest(string stringValue, StringKind kind)
+    private static void DoStringTest(string stringValue, StringKind kind, 
+        Func<string, string>  stringType)
     {
         var value = PostscriptValueFactory.CreateString(stringValue, kind);
-        Assert.Equal(stringValue, value.Get<string>());
+        Assert.Equal(stringType(stringValue), value.Get<string>());
         Assert.Equal(kind, value.Get<StringKind>());
+    }
+
+    [Fact]
+    public void ArrayTest()
+    {
+        var value = PostscriptValueFactory.CreateArray(
+            PostscriptValueFactory.Create(true),
+            PostscriptValueFactory.Create(false),
+            PostscriptValueFactory.Create(10)
+        );
+        Assert.Equal("[true, false, 10]", value.Get<string>());
+
+        Assert.Equal(10, value.Get<IPostscriptComposite>().Get(
+            PostscriptValueFactory.Create(2)).Get<long>());
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void DictionaryToStringTest(bool longDict)
+    {
+        var value = CreateDictionary(longDict);
+        Assert.Equal("""
+            <<
+                /A: 1
+                /B: 2
+                /Charlie: 3
+            >>
+            """, value.ToString());
+    }
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void DictionaryAccessTest(bool longDict)
+    {
+        var value = CreateDictionary(longDict);
+        Assert.Equal(1, value.Get<IPostscriptComposite>()
+            .Get(PostscriptValueFactory.CreateString("A", StringKind.LiteralName))
+            .Get<int>());
+        Assert.Equal(2, value.Get<IPostscriptComposite>()
+            .Get(PostscriptValueFactory.CreateString("B", StringKind.LiteralName))
+            .Get<int>());
+        Assert.Equal(3, value.Get<IPostscriptComposite>()
+            .Get(PostscriptValueFactory.CreateString("Charlie", StringKind.LiteralName))
+            .Get<int>());
+    }
+
+    private static PostscriptValue CreateDictionary(bool longDict)
+    {
+        var parameters = new[]
+        {
+            PostscriptValueFactory.CreateString("A", StringKind.LiteralName),
+            PostscriptValueFactory.Create(1),
+            PostscriptValueFactory.CreateString("B", StringKind.LiteralName),
+            PostscriptValueFactory.Create(2),
+            PostscriptValueFactory.CreateString("Charlie", StringKind.LiteralName),
+            PostscriptValueFactory.Create(3)
+        };
+
+        return PostscriptValueFactory.CreateDictionary(parameters);
     }
 }
