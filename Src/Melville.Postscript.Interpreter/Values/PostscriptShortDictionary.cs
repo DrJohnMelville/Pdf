@@ -40,12 +40,17 @@ internal partial class PostscriptShortDictionary:
     IPostscriptComposite
         IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
 
-    public PostscriptValue Get(in PostscriptValue indexOrKey)
+    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result)
     {
-        for (int i = 0; i < items.Count; i+=2)
+        for (int i = 0; i < items.Count; i += 2)
         {
-            if (items[i].Equals(indexOrKey)) return items[i+1];
+            if (items[i].Equals(indexOrKey))
+            {
+                result = items[i + 1];
+                return true;
+            }
         }
-        throw new KeyNotFoundException("Does not contain key: " + indexOrKey);
+        result = default;
+        return false;
     }
 }

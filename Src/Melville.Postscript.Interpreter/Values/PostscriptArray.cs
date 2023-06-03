@@ -31,8 +31,13 @@ internal partial class PostscriptArray :
 
     public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result)
     {
-        result = (indexOrKey.TryGet(out int index) && 
-                 index < values.Length
+        if (indexOrKey.TryGet(out int index) && index < values.Length)
+        {
+            result = values.Span[index];
+            return true;
+        }
+        result = default; 
+        return false;
     }
 
     //    public PostscriptValue Get(in PostscriptValue indexOrKey) => values.Span[indexOrKey.Get<int>()];

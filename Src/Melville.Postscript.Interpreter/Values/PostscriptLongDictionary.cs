@@ -28,8 +28,6 @@ internal partial class PostscriptLongDictionary :
     IPostscriptComposite
         IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
 
-    public PostscriptValue Get(in PostscriptValue indexOrKey)
-    {
-        return items[indexOrKey];
-    }
+    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
+        items.TryGetValue(indexOrKey, out result);
 }
