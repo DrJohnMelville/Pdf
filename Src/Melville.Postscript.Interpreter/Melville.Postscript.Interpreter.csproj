@@ -11,6 +11,11 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<AdditionalFiles Include="Architecture.adf" />
+		<ProjectReference Include="..\Melville.ArchitectureAnalyzer\Melville.ArchitectureAnalyzer.csproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<OutputItemType>Analyzer</OutputItemType>
+		</ProjectReference>
 		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 			<OutputItemType>Analyzer</OutputItemType>
@@ -20,6 +25,10 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Melville.INPC" Version="0.6.17" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="InterpreterState\" />
 	</ItemGroup>
 
 </Project>

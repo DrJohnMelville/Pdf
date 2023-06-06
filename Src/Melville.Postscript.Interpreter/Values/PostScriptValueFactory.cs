@@ -102,7 +102,7 @@ namespace Melville.Postscript.Interpreter.Values
                 _ => ConstructLongDictionary(values)
             };
         
-        public static PostscriptValue CreateLongDictionary(PostscriptValue[] parameters) =>
+        public static PostscriptValue CreateLongDictionary(params PostscriptValue[] parameters) =>
             new(ConstructLongDictionary(parameters), 0);
 
         private static PostscriptLongDictionary ConstructLongDictionary(PostscriptValue[] parameters) => 

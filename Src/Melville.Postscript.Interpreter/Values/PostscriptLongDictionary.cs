@@ -12,6 +12,10 @@ internal partial class PostscriptLongDictionary :
 {
     [FromConstructor] private readonly Dictionary<PostscriptValue, PostscriptValue> items;
 
+    public PostscriptLongDictionary() : this(new Dictionary<PostscriptValue, PostscriptValue>())
+    {
+    }
+
     string IPostscriptValueStrategy<string>.GetValue(in Int128 memento)
     {
         var ret = new StringBuilder();

@@ -1,0 +1,15 @@
+﻿Group Values
+    Melville.Postscript.Interpreter.Values.*
+
+Group InterpreterState
+    Melville.Postscript.Interpreter.InterpreterState.*
+
+Group Tokenizer
+    Melville.Postscript.Interpreter.Tokenizers.*
+
+InterpreterState => Values
+
+Tokenizer => Values
+
+#External dependencies everyone can use
+* =>  System.*

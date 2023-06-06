@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Melville.INPC;
 
@@ -39,6 +40,4 @@ internal partial class PostscriptArray :
         result = default; 
         return false;
     }
-
-    //    public PostscriptValue Get(in PostscriptValue indexOrKey) => values.Span[indexOrKey.Get<int>()];
 }
