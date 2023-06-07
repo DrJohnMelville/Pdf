@@ -1,121 +1,100 @@
 ﻿using System;
-using System.Buffers;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json.Serialization;
-using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Melville.Postscript.Interpreter.Tokenizers;
-
-internal ref partial struct NumberTokenizer
+namespace Melville.Postscript.Interpreter.Tokenizers
 {
-    [FromConstructor] private readonly int radix;
-    private int sign = 1;
-    private long number;
-    private long denominator = 1;
-
-    public bool TryParse(ref SequenceReader<byte> source, out PostscriptValue result)
+    internal static class NumberTokenizer
     {
-        if (!TryParseSignedNumber(ref source, out var terminator))
-            return ReturnViaOut.FalseDefault(out result);
-        return terminator switch
+        public static bool TryDetectNumber(in ReadOnlySpan<byte> buffer, out PostscriptValue value) =>
+            TryGetSignedDigitSequence(buffer, out var sign, out long longValue, out int length) switch
+            {
+                0 => PostscriptValueFactory.Create(SignValue(sign) * longValue).AsTrueValue(out value),
+                (byte)'#' when (sign is 0 && longValue is >1 and <=36)  => 
+                    TryParseRadix((int)longValue, buffer[(length+1)..], out value),
+                (byte)'.' => ParseAfterDecimal(sign, longValue, buffer[(length+1)..], out value),
+                (byte)'e' or (byte)'E' =>
+                    ReadExponent(SignValue(sign)*longValue, buffer[(length+1)..], out value),
+                _ => default(PostscriptValue).AsFalseValue(out value)
+            };
+
+        private static long SignValue(byte sign) => sign is (byte)'-' ? -1L : 1L;
+
+        private static byte TryGetSignedDigitSequence(
+            in ReadOnlySpan<byte> buffer, out byte sign, out long value, out int charsConsumed)
         {
-            (int)'#' => ParseRadixNumber(ref source, out result),
-            (int)'.' => ParseDouble(ref source, out result),
-            (int)'e' or (int)'E' => ParseDoubleWithoutPeriod(ref source, out result),
-            _ => PostscriptValueFactory.Create(AsLongValue()).AsTrueValue(out result)
+            if (buffer[0] is ((byte)'-' or (byte)'+') and var signByte)
+            {
+                sign = signByte;
+                return TryGetSubDigitSequence(1, buffer, out value, out charsConsumed);
+            }
+
+            sign = 0;
+            return TryGetDigitSequence(10, buffer, out value, out charsConsumed);
+        }
+
+        private static byte TryGetSubDigitSequence(
+            int prefix, in ReadOnlySpan<byte> buffer, out long value, out int charsConsumed)
+        {
+            var ret = TryGetDigitSequence(10, buffer[prefix..], out value, out charsConsumed);
+            charsConsumed += prefix;
+            return ret;
+        }
+
+        private static byte TryGetDigitSequence(
+            int radix, in ReadOnlySpan<byte> buffer, out long value, out int charsConsumed)
+        {
+            value = 0;
+            charsConsumed = 0;
+            foreach (var digit in buffer)
+            {
+                var digitValue = ValueFromDigit(digit);
+                if (digitValue >= radix) return digit;
+                value = (value*radix) + digitValue;
+                charsConsumed++;
+            }
+            return 0;
+        }
+
+        private static long ValueFromDigit(byte digitChar) => digitChar switch
+        {
+            >= (int)'0' and <= (int)'9' => digitChar - '0',
+            >= (int)'A' and <= (int)'Z' => digitChar - 'A' + 10,
+            >= (int)'a' and <= (int)'z' => digitChar - 'a' + 10,
+            _ => int.MaxValue
         };
-    }
 
-    private bool TryParseSignedNumber(ref SequenceReader<byte> source, out byte terminator)
-    {
-        terminator = 0;
-        return TryParseSign(ref source, out sign) &&
-               TryParseWholeNumber(ref source, out terminator);
-    }
+        private static bool TryParseRadix(
+            int radix, ReadOnlySpan<byte> buffer, out PostscriptValue value) =>
+            TryGetDigitSequence(radix, buffer, out var number, out var _) is 0?
+                PostscriptValueFactory.Create(number).AsTrueValue(out value):
+                default(PostscriptValue).AsFalseValue(out value);
 
-
-    private bool TryParseWholeNumber(ref SequenceReader<byte> source, out byte terminator)
-    {
-        while (true)
+        private static bool ParseAfterDecimal(
+            byte sign, long longValue, ReadOnlySpan<byte> buffer, out PostscriptValue value)
         {
-            if (!source.TryPeek(out terminator)) return false;
-            var digitValue = ValueFromDigit(terminator);
-            if (digitValue >= radix) return true;
-            AddDigit(digitValue);
-            source.Advance(1);
+            return TryGetDigitSequence(10, buffer, out var digits, out var digitLength) switch
+            {
+                0 => PostscriptValueFactory.Create(
+                    AddFractionToLong(sign, longValue, Fraction(digits, digitLength)))
+                    .AsTrueValue(out value),
+                (byte)'e' or (byte)'E' =>
+                    ReadExponent(AddFractionToLong(sign, longValue, Fraction(digits, digitLength)),
+                        buffer[(digitLength+1)..], out value),
+                _ => default(PostscriptValue).AsFalseValue(out value)
+            };
         }
+
+        private static bool ReadExponent(
+            double mantissa, ReadOnlySpan<byte> buffer, out PostscriptValue value) =>
+            TryGetSignedDigitSequence(buffer, out var sign, out var digits, out var _) == 0
+                ? PostscriptValueFactory.Create(mantissa * Math.Pow(10, SignValue(sign) * digits))
+                    .AsTrueValue(out value)
+                : default(PostscriptValue).AsFalseValue(out value);
+
+        private static double AddFractionToLong(byte sign, long longValue, double fraction) => 
+            SignValue(sign)*(longValue+fraction);
+
+        private static double Fraction(long digits, int digitLength) => 
+            digits / Math.Pow(10, digitLength);
     }
-
-    private long ValueFromDigit(byte digitChar) => digitChar switch
-    {
-        >= (int)'0' and <= (int)'9' => digitChar - '0',
-        >= (int)'A' and <= (int)'Z' => digitChar - 'A' + 10,
-        >= (int)'a' and <= (int)'z' => digitChar - 'a' + 10,
-        _ => int.MaxValue
-    };
-
-
-    private void AddDigit(long digit)
-    {
-        number *= radix;
-        number += digit;
-        denominator *= radix;
-    }
-
-    private bool ParseRadixNumber(ref SequenceReader<byte> source, out PostscriptValue result)
-    {
-        source.Advance(1);
-        var subParser = new NumberTokenizer((int)number);
-        return subParser.TryParseWholeNumber(ref source, out var _) ? 
-            PostscriptValueFactory.Create(subParser.AsLongValue()).AsTrueValue(out result) : 
-            ReturnViaOut.FalseDefault(out result);
-    }
-
-    private bool ParseDouble(ref SequenceReader<byte> source, out PostscriptValue result)
-    {
-        source.Advance(1);
-        return ParseDoubleWithoutPeriod(ref source, out result);
-    }
-
-    private bool ParseDoubleWithoutPeriod(ref SequenceReader<byte> source, out PostscriptValue result)
-    {
-        var fractionTokenizer = new NumberTokenizer(10);
-        return (fractionTokenizer.TryParseWholeNumber(ref source, out var terminator) &&
-                ReadExponent(ref source, terminator, out var exponent))
-            ? fractionTokenizer.ProduceDouble(number, sign * exponent, out result)
-            : ReturnViaOut.FalseDefault(out result);
-    }
-
-    private bool ReadExponent(ref SequenceReader<byte> source, byte terminator, out double value)
-    {
-        if (terminator is not ((int)'E' or (int)'e')) return 1.0.AsTrueValue(out value);
-        source.Advance(1);
-        var exponentTokenizer = new NumberTokenizer(10);
-        var result = exponentTokenizer.TryParseSignedNumber(ref source, out var _);
-        return Math.Pow(10,exponentTokenizer.AsLongValue()).WrapTry(result, out value);
-    }
-
-    private bool TryParseSign(ref SequenceReader<byte> source, out int sign)
-    {
-        if (!source.TryPeek(out var signChar)) return 0.AsFalseValue(out sign);
-        switch (signChar)
-        {
-            case (int)'+':
-                source.Advance(1);
-                break;
-            case (int)'-':
-                source.Advance(1);
-                return (-1).AsTrueValue(out sign);
-        }
-        return 1.AsTrueValue(out sign);
-    }
-
-    private bool ProduceDouble(long wholeNumber, double factor, out PostscriptValue result) => 
-        PostscriptValueFactory.Create((wholeNumber + AsFractionalValue()) * factor)
-            .AsTrueValue(out result);
-
-    private long AsLongValue() => sign * number;
-    private double AsFractionalValue() => ((double)number) / denominator;
 }

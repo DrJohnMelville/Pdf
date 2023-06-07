@@ -88,9 +88,3 @@ internal partial class Tokenizer
         return seq;
     }
 }
-
-internal static class CharacterClassifier
-{
-    public static bool IsWhitespace(byte character) =>
-        character is 0 or 9 or 10 or 12 or 13 or 32;
-}
