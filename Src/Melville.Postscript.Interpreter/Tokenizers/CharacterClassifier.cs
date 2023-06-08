@@ -12,5 +12,13 @@ namespace Melville.Postscript.Interpreter.Tokenizers
         public static ReadOnlySpan<byte> DelimiterChars() => "\x0\x09\x0A\x0Cx\x0d ()<>[]{}/%"u8;
         public static ReadOnlySpan<byte> WhiteSpaceChars() => "\x0\x09\x0A\x0Cx\x0d "u8;
         public static ReadOnlySpan<byte> LineEndChars() => "\x0C\x0D"u8;
+
+        public static byte ValueFromDigit(byte digitChar) => digitChar switch
+        {
+            >= (byte)'0' and <= (byte)'9' => (byte)(digitChar - '0'),
+            >= (byte)'A' and <= (byte)'Z' => (byte)(digitChar - 'A' + 10),
+            >= (byte)'a' and <= (byte)'z' => (byte)(digitChar - 'a' + 10),
+            _ => byte.MaxValue
+        };
     }
 }

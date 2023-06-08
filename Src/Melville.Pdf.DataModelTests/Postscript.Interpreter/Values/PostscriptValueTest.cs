@@ -15,7 +15,7 @@ public class PostscriptValueTest
         Assert.True(value.IsNull);
         Assert.Equal("<Null>", value.ToString());
         Assert.False(value.TryGet<long>(out var _));
-        Assert.Throws<InvalidPostscriptTypeException>(()=>value.Get<long>());
+        Assert.Throws<PostscriptInvalidTypeException>(()=>value.Get<long>());
     }
 
     [Fact]

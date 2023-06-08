@@ -68,21 +68,22 @@ namespace Melville.Postscript.Interpreter.Values
         /// <param name="kind">kind of name to create</param>
         public static PostscriptValue CreateString(in ReadOnlySpan<byte> data, StringKind kind)
         {
-            if (data.Length > 18) return CreateLongString(data, kind);
+            if (data.Length > IByteStringSource.ShortStringLimit) 
+                return CreateLongString(data.ToArray(), kind);
 ;            Int128 value = 0;
             for (int i = data.Length -1; i >= 0; i--)
             {
                 var character = data[i];
-                if (character > 127) return CreateLongString(data, kind);
+                if (character is 0 or > 127) return CreateLongString(data.ToArray(), kind);
                 SevenBitStringEncoding.AddOneCharacter(ref value, character);
             }
 
             return new PostscriptValue(PostscriptShortString.InstanceForKind(kind), value);
         }
 
-        private static PostscriptValue CreateLongString(ReadOnlySpan<byte> data, StringKind kind) => 
+        public static PostscriptValue CreateLongString(byte[] data, StringKind kind) => 
             new(
-                ReportAllocation(new PostscriptLongString(kind, data.ToArray())), 0);
+                ReportAllocation(new PostscriptLongString(kind, data)), 0);
 
         public static PostscriptValue CreateArray(params PostscriptValue[] values) =>
             new(WrapInPostScriptArray(values), 0);

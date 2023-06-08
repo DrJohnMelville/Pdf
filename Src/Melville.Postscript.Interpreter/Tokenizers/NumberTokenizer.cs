@@ -47,21 +47,13 @@ namespace Melville.Postscript.Interpreter.Tokenizers
             charsConsumed = 0;
             foreach (var digit in buffer)
             {
-                var digitValue = ValueFromDigit(digit);
+                var digitValue = CharacterClassifier.ValueFromDigit(digit);
                 if (digitValue >= radix) return digit;
                 value = (value*radix) + digitValue;
                 charsConsumed++;
             }
             return 0;
         }
-
-        private static long ValueFromDigit(byte digitChar) => digitChar switch
-        {
-            >= (int)'0' and <= (int)'9' => digitChar - '0',
-            >= (int)'A' and <= (int)'Z' => digitChar - 'A' + 10,
-            >= (int)'a' and <= (int)'z' => digitChar - 'a' + 10,
-            _ => int.MaxValue
-        };
 
         private static bool TryParseRadix(
             int radix, ReadOnlySpan<byte> buffer, out PostscriptValue value) =>

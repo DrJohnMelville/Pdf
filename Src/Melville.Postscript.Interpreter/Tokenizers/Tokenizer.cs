@@ -46,19 +46,20 @@ internal partial class Tokenizer
     private bool TryFinalParse(ReadResult buffer, out PostscriptValue result)
     {
         if (buffer.IsCompleted && buffer.Buffer.Length != 0)
-            return TryParseWithAppendedSpace(buffer, out result);
+            return TryParseWithAppendedCarriageReturn(buffer, out result);
 
         result = default;
         return false;
 
     }
 
-    private bool TryParseWithAppendedSpace(ReadResult buffer, out PostscriptValue result)
+    private bool TryParseWithAppendedCarriageReturn(ReadResult buffer, out PostscriptValue result)
     {
         var scratch = ArrayPool<byte>.Shared.Rent((int)buffer.Buffer.Length + 1);
         try
         {
-            return TryParseInSeparateSequence(CreateAppendedSequence(buffer, scratch), buffer.Buffer, out result);
+            return TryParseInSeparateSequence(
+                CreateAppendedSequence(buffer, scratch), buffer.Buffer, out result);
         }
         finally
         {
@@ -83,7 +84,7 @@ internal partial class Tokenizer
     {
         var priorLength = (int)buffer.Buffer.Length;
         buffer.Buffer.CopyTo(scratch.AsSpan(0, priorLength));
-        scratch[buffer.Buffer.Length] = 32;
+        scratch[buffer.Buffer.Length] = (byte)'\r';
         var seq = new ReadOnlySequence<byte>(scratch, 0, priorLength+1);
         return seq;
     }

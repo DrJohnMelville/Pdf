@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.Postscript.Interpreter.Values;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Tokenizers;
@@ -15,6 +16,11 @@ public class TokenizerTest
     [InlineData("/App1 %This is a comment\r App2", "/App1", "App2")]
     [InlineData("/App1 %This is a comment\r\n App2", "/App1", "App2")]
     [InlineData("/App1 %This is a comment\r\r\r\r\nApp2", "/App1", "App2")]
+    [InlineData("[]", "[", "]")]
+    [InlineData("{}", "{", "}")]
+    [InlineData("{[", "{", "[")]
+    [InlineData("<<<<", "<<", "<<")]
+    [InlineData("<<>>", "<<", ">>")]
     public async Task Parse2NamesAsync(string source, string name1, string name2)
     {
         var sut = new Tokenizer(source);
@@ -28,6 +34,45 @@ public class TokenizerTest
         Assert.Equal(name, token1.Get<string>());
         Assert.False(token1.TryGet<double>(out _));
     }
+
+    [Theory]
+    [InlineData("<41425b>", "(AB[)")]
+    [InlineData("<41425B>", "(AB[)")]
+    [InlineData("<41425>", "(ABP)")]
+    [InlineData("<>", "()")]
+    [InlineData("<    \r\n    >", "()")]
+    public async Task TestStringParse(string source, string result)
+    {
+        var token = await new Tokenizer(source).NextTokenAsync();
+        Assert.Equal(result, token.Get<string>());
+    }
+
+    [Theory]
+    [InlineData("\0\0\0\0", "z")]
+    [InlineData("\0", "!!")]
+    [InlineData("\x1", "!<")]
+    [InlineData("\x1\x1", "!<E")]
+    [InlineData("\x1\x1\x1", "!<E3")]
+    [InlineData("\x1\x1\x1\x1", "!<E3%")]
+    [InlineData("\xA", "$3")]
+    [InlineData("\xA\xA", "$46")]
+    [InlineData("\xA\xA\xA", "$47+")]
+    [InlineData("\xA\xA\xA\xA", "$47+I")]
+    [InlineData("d", "A,")]
+    [InlineData("dd", "A7P")]
+    [InlineData("ddd", "A7T3")]
+    [InlineData("dddd", "A7T4]")]
+    [InlineData("\xFF\xFF\xFF\xFF", "s8W-!")]
+    [InlineData("dddd\0\0\0\0dddd", "A7T4]zA7T4]")]
+    [InlineData("", "")]
+    public Task Accii85StringAsync(string decoded, string encoded) =>
+        TestStringParse($"<~{encoded}~>", $"({decoded})");
+
+    [Fact]
+    public Task ExceptionForMismatchedCloseWakkaAsync() =>
+        Assert.ThrowsAsync<PostscriptParseException>(()=>
+            new Tokenizer(">").NextTokenAsync().AsTask()
+        );
 
     [Theory]
     [InlineData("1234", 1234)]
