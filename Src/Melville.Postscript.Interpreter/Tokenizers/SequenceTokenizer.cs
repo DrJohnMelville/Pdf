@@ -47,13 +47,13 @@ internal static class SequenceTokenizer
             (byte)'<' => PostscriptValueFactory.CreateString("<<"u8, StringKind.Name)
                 .AsTrueValue(out value),
             (byte)'~'=> DecodeAscii85String(ref reader, out value),
-            _ => new StringTokenizer<HexStringDecoder>().Parse(ref reader.WithRewind(), out value),
+            _ => new StringTokenizer<HexStringDecoder, byte>().Parse(ref reader.WithRewind(), out value),
         };
 
     }
 
     private static bool DecodeAscii85String(ref SequenceReader<byte> reader, out PostscriptValue value) => 
-        new StringTokenizer<Ascii85Decoder>().Parse(ref reader, out value) && reader.TryAdvance(1);
+        new StringTokenizer<Ascii85Decoder, byte>().Parse(ref reader, out value) && reader.TryAdvance(1);
 
     private static bool TryParseCloseWakka(
         ref SequenceReader<byte> reader, out PostscriptValue value)

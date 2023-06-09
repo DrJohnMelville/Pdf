@@ -41,7 +41,7 @@ public class TokenizerTest
     [InlineData("<41425>", "(ABP)")]
     [InlineData("<>", "()")]
     [InlineData("<    \r\n    >", "()")]
-    public async Task TestStringParse(string source, string result)
+    public async Task TestStringParseAsync(string source, string result)
     {
         var token = await new Tokenizer(source).NextTokenAsync();
         Assert.Equal(result, token.Get<string>());
@@ -66,7 +66,8 @@ public class TokenizerTest
     [InlineData("dddd\0\0\0\0dddd", "A7T4]zA7T4]")]
     [InlineData("", "")]
     public Task Accii85StringAsync(string decoded, string encoded) =>
-        TestStringParse($"<~{encoded}~>", $"({decoded})");
+        TestStringParseAsync($"<~{encoded}~>", 
+            PostscriptValueFactory.CreateString(decoded, StringKind.String).Get<string>());
 
     [Fact]
     public Task ExceptionForMismatchedCloseWakkaAsync() =>

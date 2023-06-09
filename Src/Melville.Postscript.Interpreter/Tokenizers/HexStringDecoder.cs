@@ -4,9 +4,10 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers
 {
-    internal readonly struct HexStringDecoder : IStringDecoder
+    internal readonly struct HexStringDecoder : IStringDecoder<byte>
     {
-        public int DecodeFrom(ref SequenceReader<byte> source, scoped Span<byte> destination)
+        public int DecodeFrom(
+            ref SequenceReader<byte> source, scoped Span<byte> destination, ref byte state)
         {
             if (!source.TryReadNextVisible(out var highChar)) return -1;
             if (highChar is (byte)'>') return 0;
