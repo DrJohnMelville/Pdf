@@ -21,7 +21,7 @@ public readonly struct Ascii85StringDecoder : IStringDecoder<byte>
         };
     }
 
-    private int FillZeroBytes(Span<byte> destination)
+    private int FillZeroBytes(in Span<byte> destination)
     {
         destination[..4].Clear();
         return 4;

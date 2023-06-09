@@ -42,6 +42,7 @@ public class TokenizerTest
     [InlineData("<41425>", "(ABP)")]
     [InlineData("<>", "()")]
     [InlineData("<    \r\n    >", "()")]
+    [InlineData("(He(ll)o)", "(He(ll)o)")]
     public async Task TestStringParseAsync(string source, string result)
     {
         var token = await new Tokenizer(source).NextTokenAsync();

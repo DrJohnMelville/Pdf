@@ -1,38 +1,22 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using Melville.Postscript.Interpreter.Values;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
+
 /// <summary>
-/// Represents string decoding strategies
+/// Reads a string from a SequenceReader using a StringDecoder to do the decoding
 /// </summary>
-public interface IStringDecoder<TState>
-{
-    /// <summary>
-    /// Decode a number of bytes from the source to the destination
-    /// </summary>
-    /// <param name="source">source of bytes to decode</param>
-    /// <param name="destination">span to write to</param>
-    /// <param name="state">A state variable that will be maintained over successive calls
-    /// in the same stream</param>
-    /// <returns>positive number of bytes written, 0 if stream is ended,
-    /// -1 if more bytes are needed.</returns>
-    public int DecodeFrom(
-        ref SequenceReader<byte> source, scoped Span<byte> destination, ref TState state);
-
-    /// <summary>
-    /// Gets the maximum number of characters that could be written in a single call
-    /// to DecodeFrom
-    /// </summary>
-    int MaxCharsPerBlock { get; }
-}
-
-internal readonly struct StringTokenizer<T, TState>
+/// <typeparam name="T">The type of string decoder to use</typeparam>
+/// <typeparam name="TState">The type of the string decoder's state.</typeparam>
+public readonly struct StringTokenizer<T, TState>
     where T : IStringDecoder<TState>, new() where TState : new()
 {
-    public bool Parse(ref SequenceReader<byte> reader, out PostscriptValue value)
+    
+    internal bool Parse(ref SequenceReader<byte> reader, out PostscriptValue value)
     {
         if (!TryCountChars(reader, out var length))
             return default(PostscriptValue).AsFalseValue(out value);
@@ -40,6 +24,23 @@ internal readonly struct StringTokenizer<T, TState>
             CreateLongString(ref reader, length, out value);
         else
             CreateShortString(ref reader, length, out value);
+        return true;
+    }
+
+    /// <summary>
+    /// Parse a string to a byte array
+    /// </summary>
+    /// <param name="reader">The reader to get bytes from</param>
+    /// <param name="value">Out variable that receives the output</param>
+    /// <returns>True if there are enough source characters to return a value,
+    /// false otherwise.</returns>
+    public bool Parse(
+        ref SequenceReader<byte> reader, [NotNullWhen(true)]out byte[]? value)
+    {
+        if (!TryCountChars(reader, out var length))
+            return ((byte[])null!).AsFalseValue(out value);
+        value = new byte[length];
+        FillBuffer(ref reader, value.AsSpan());
         return true;
     }
 

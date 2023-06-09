@@ -13,7 +13,7 @@ internal static class SequenceTokenizer
     public static bool TryGetPostscriptToken(
         this ref SequenceReader<byte> reader, out PostscriptValue value)
     {
-        if (!CommentSkipper.TryPeedNextNonComment(ref reader, out var firstChar))
+        if (!reader.TryPeekNextNonComment(out var firstChar))
             return default(PostscriptValue).AsFalseValue(out value);
         return firstChar switch
         {
@@ -23,8 +23,16 @@ internal static class SequenceTokenizer
                 TryCopyLiteralName(1, ref reader, out value),
             (byte)'<' => TryParseOpenWakka(ref reader.WithAdvance(), out value),
             (byte)'>' => TryParseCloseWakka(ref reader.WithAdvance(), out value),
-                _ => new NameTokenizer(StringKind.Name).TryParse(ref reader, out value)
+            (byte)'(' => new StringTokenizer<SyntaxStringDecoder, int>()
+                            .Parse(ref reader.WithAdvance(), out value),
+            _ => new NameTokenizer(StringKind.Name).TryParse(ref reader, out value)
         };
+    }
+
+    private static bool TryParseSyntaxString(ref SequenceReader<byte> reader, out PostscriptValue value)
+    {
+        reader.Advance(1);
+        return new StringTokenizer<SyntaxStringDecoder, int>().Parse(ref reader, out value);
     }
 
     private static bool TryCopyLiteralName(

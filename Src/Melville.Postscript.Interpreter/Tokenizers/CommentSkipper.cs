@@ -4,7 +4,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 
 internal static class CommentSkipper
 {
-    public static bool TryPeedNextNonComment(this ref SequenceReader<byte> reader, out byte firstChar)
+    public static bool TryPeekNextNonComment(this ref SequenceReader<byte> reader, out byte firstChar)
     {
         while (true)
         {

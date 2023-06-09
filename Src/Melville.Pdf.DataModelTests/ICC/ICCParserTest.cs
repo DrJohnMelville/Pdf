@@ -69,7 +69,7 @@ public class ICCParserTest
 
     private static async Task<T> ParseTagAsync<T>(string source) 
     {
-        var PdfString = (PdfString)await (source).ParseObjectAsync();
+        var PdfString = (PdfString)await (source+">").ParseObjectAsync();
         var reader = new ReadOnlySequence<byte>(PdfString.Bytes);
         return (T)TagParser.Parse(reader);
     }

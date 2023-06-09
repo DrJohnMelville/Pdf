@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
@@ -7,7 +8,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.StringParsing;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -79,7 +80,7 @@ public readonly struct ContentStreamParser
     {
         var reader = bfp.CreateReader();
         return bfp.ConsumeIfSucceeded(
-            HandleParsedString(SyntaxStringParser.TryParseToBytes(ref reader, bfp.Done)),
+            HandleParsedString(ReadString<SyntaxStringDecoder, int>(ref reader, bfp.Done)),
             ref reader);
     }
 
@@ -96,8 +97,16 @@ public readonly struct ContentStreamParser
     {
         var reader = bpc.CreateReader();
         return ValueTask.FromResult(bpc.ConsumeIfSucceeded(
-            HandleParsedString(HexStringParser.TryParseToBytes(ref reader, bpc.Done)),
+            HandleParsedString(ReadString<HexStringDecoder, byte>(ref reader, bpc.Done)),
             ref reader));
+    }
+
+    private static byte[]? ReadString<T, TState>(ref SequenceReader<byte> reader, bool final)
+        where T: IStringDecoder<TState>, new() where TState: new()
+    {
+        reader.Advance(1);
+        new StringTokenizer<T, TState>().Parse(ref reader, out byte[]? ret);
+        return ret;
     }
 
     private bool HandleParsedString(byte[]? str)

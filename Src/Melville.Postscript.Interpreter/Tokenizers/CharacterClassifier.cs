@@ -20,5 +20,8 @@ namespace Melville.Postscript.Interpreter.Tokenizers
             >= (byte)'a' and <= (byte)'z' => (byte)(digitChar - 'a' + 10),
             _ => byte.MaxValue
         };
+
+        public static bool IsLineEndChar(byte character) =>
+            character is (byte)'\r' or (byte)'\n';
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.StringParsing;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -9,8 +9,8 @@ internal static class PdfParserParts
 {
     public static readonly IPdfObjectParser ContentStreamComposite = new PdfCompositeObjectParserBase(); 
     public static readonly IPdfObjectParser Composite = new PdfCompositeObjectParser();
-    public static readonly IPdfObjectParser HexString = new HexStringParser();
-    public static readonly IPdfObjectParser SyntaxString = new SyntaxStringParser();
+    public static readonly IPdfObjectParser HexString = new StringDecoderParser<HexStringDecoder, byte>();
+    public static readonly IPdfObjectParser SyntaxString = new StringDecoderParser<SyntaxStringDecoder, int>();
     public static readonly PdfArrayParser PdfArray = new();
     public static readonly PdfDictionaryAndStreamParser dictionaryAndStream = new();
     public static readonly NumberParser Number = new();
