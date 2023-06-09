@@ -18,6 +18,7 @@ Melville.Pdf.LowLevel.Writers.ContentStreams.ContentStreamPrettyPrinter => Parse
 #Everyone can use various external resources
 * => System.*
 * => Melville.Parsing.*
+* => Melville.Postscript.*
 * => Melville.INPC.*
 
 #Various external libraries are cabined to small portions of the code
