@@ -37,6 +37,7 @@ public class TokenizerTest
 
     [Theory]
     [InlineData("<41425b>", "(AB[)")]
+    [InlineData("<414250>", "(ABP)")]
     [InlineData("<41425B>", "(AB[)")]
     [InlineData("<41425>", "(ABP)")]
     [InlineData("<>", "()")]

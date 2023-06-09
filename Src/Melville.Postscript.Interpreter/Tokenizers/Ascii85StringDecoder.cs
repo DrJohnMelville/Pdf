@@ -6,7 +6,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// <summary>
 /// This struct decodes the Ascii85 format.
 /// </summary>
-public readonly struct Ascii85Decoder : IStringDecoder<byte>
+public readonly struct Ascii85StringDecoder : IStringDecoder<byte>
 {
     /// <inheritdoc />
     public int DecodeFrom(

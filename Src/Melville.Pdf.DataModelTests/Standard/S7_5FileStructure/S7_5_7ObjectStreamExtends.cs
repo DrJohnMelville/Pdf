@@ -127,7 +127,7 @@ public class S7_5_7ObjectStreamExtends
         01 {xsPos:X4}  00
         02 0001 00
         02 0001 01
-        01 {secondRefPos:X4}  00
+        01 {secondRefPos:X4}  00>
         endstream
         startxref
         { trailerPos} 

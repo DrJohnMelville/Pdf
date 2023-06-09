@@ -53,7 +53,7 @@ internal static class SequenceTokenizer
     }
 
     private static bool DecodeAscii85String(ref SequenceReader<byte> reader, out PostscriptValue value) => 
-        new StringTokenizer<Ascii85Decoder, byte>().Parse(ref reader, out value) && reader.TryAdvance(1);
+        new StringTokenizer<Ascii85StringDecoder, byte>().Parse(ref reader, out value) && reader.TryAdvance(1);
 
     private static bool TryParseCloseWakka(
         ref SequenceReader<byte> reader, out PostscriptValue value)

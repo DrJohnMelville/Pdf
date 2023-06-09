@@ -8,7 +8,7 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 /// <summary>
 /// Represents string decoding strategies
 /// </summary>
-internal interface IStringDecoder<TState>
+public interface IStringDecoder<TState>
 {
     /// <summary>
     /// Decode a number of bytes from the source to the destination
