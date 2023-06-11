@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
-internal partial class Tokenizer
+internal partial class Tokenizer: IAsyncEnumerable<PostscriptValue>
 {
     [FromConstructor] private PipeReader source;
 
@@ -75,7 +77,7 @@ internal partial class Tokenizer
         if (!reader.TryGetPostscriptToken(out result)) return false;
         
         var offset = appendedSequence.Slice(appendedSequence.Start, reader.Position).Length;
-        source.AdvanceTo(originalSequence.Start, originalSequence.GetPosition(offset));
+        source.AdvanceTo(originalSequence.GetPosition(offset));
         return true;
     }
 
@@ -87,5 +89,14 @@ internal partial class Tokenizer
         scratch[buffer.Buffer.Length] = (byte)'\r';
         var seq = new ReadOnlySequence<byte>(scratch, 0, priorLength+1);
         return seq;
+    }
+
+    public async IAsyncEnumerator<PostscriptValue> GetAsyncEnumerator(
+        CancellationToken cancellationToken = new CancellationToken())
+    {
+        while ((await NextTokenAsync()) is  {IsNull:false} token)
+        {
+            yield return token;
+        }
     }
 }

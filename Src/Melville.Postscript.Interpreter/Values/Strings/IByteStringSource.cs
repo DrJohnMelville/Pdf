@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Melville.Postscript.Interpreter.Values
+namespace Melville.Postscript.Interpreter.Values.Strings
 {
     /// <summary>
     /// This represents a PostScriptValue that is a span on bytes -- that is names or strings

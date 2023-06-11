@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
-using Melville.Postscript.Interpreter.InterpreterState;
+﻿using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
 using Xunit;
 

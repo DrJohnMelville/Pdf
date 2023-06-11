@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -13,6 +14,8 @@ internal partial class PostscriptArray :
     public static readonly PostscriptArray Empty = new(Memory<PostscriptValue>.Empty);
 
     [FromConstructor] private readonly Memory<PostscriptValue> values;
+
+    public PostscriptArray(int length): this(new PostscriptValue[length].AsMemory()) {}
 
     public string GetValue(in Int128 memento)
     {
@@ -30,14 +33,11 @@ internal partial class PostscriptArray :
     IPostscriptComposite
         IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
 
-    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result)
-    {
-        if (indexOrKey.TryGet(out int index) && index < values.Length)
-        {
-            result = values.Span[index];
-            return true;
-        }
-        result = default; 
-        return false;
-    }
+    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
+        indexOrKey.TryGet(out int index) && index < values.Length
+            ? values.Span[index].AsTrueValue(out result)
+            : default(PostscriptValue).AsFalseValue(out result);
+
+    public void Add(in PostscriptValue indexOrKey, in PostscriptValue value) =>
+        values.Span[indexOrKey.Get<int>()] = value;
 }

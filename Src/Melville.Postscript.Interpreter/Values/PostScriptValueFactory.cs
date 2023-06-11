@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Melville.Postscript.Interpreter.InterpreterState;
+using Melville.Postscript.Interpreter.Values.Composites;
+using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.Postscript.Interpreter.Values.Numbers;
+using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values
 {
@@ -26,6 +31,9 @@ namespace Melville.Postscript.Interpreter.Values
         /// <param name="value">The double to encode</param>
         public static PostscriptValue Create(bool value) => 
             new(PostscriptBoolean.Instance, value ? 1 : 0);
+
+        public static PostscriptValue Create(IExternalFunction action) =>
+            new(action, 0);
 
 
         /// <summary>
@@ -78,7 +86,7 @@ namespace Melville.Postscript.Interpreter.Values
                 SevenBitStringEncoding.AddOneCharacter(ref value, character);
             }
 
-            return new PostscriptValue(PostscriptShortString.InstanceForKind(kind), value);
+            return new PostscriptValue(kind.ShortStringStraegy, value);
         }
 
         public static PostscriptValue CreateLongString(byte[] data, StringKind kind) => 

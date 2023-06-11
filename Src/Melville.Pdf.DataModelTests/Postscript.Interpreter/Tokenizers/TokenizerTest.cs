@@ -1,8 +1,10 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Tokenizers;
@@ -21,6 +23,7 @@ public class TokenizerTest
     [InlineData("{[", "{", "[")]
     [InlineData("<<<<", "<<", "<<")]
     [InlineData("<<>>", "<<", ">>")]
+    [InlineData("exch pop", "exch", "pop")]
     public async Task Parse2NamesAsync(string source, string name1, string name2)
     {
         var sut = new Tokenizer(source);
@@ -106,5 +109,12 @@ public class TokenizerTest
         var sut = new Tokenizer(source);
         var token = await sut.NextTokenAsync();
         Assert.Equal(result, token.Get<double>(), 4);
+    }
+
+    [Fact]
+    public async Task EnumerateTokensAsync()
+    {
+        var sut = new Tokenizer("123.4 true false (Hello World)");
+        Assert.Equal(4, await sut.CountAsync());
     }
 }

@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Strings;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;

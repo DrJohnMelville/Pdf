@@ -44,6 +44,7 @@
 
 	<ItemGroup>
 		<Folder Include="ImageExtractors\" />
+		<Folder Include="Postscript.Interpreter\FunctionLibrary\" />
 		<Folder Include="Postscript.Interpreter\Tokenizers\" />
 		<Folder Include="Standard\S9_10 TextExtraction\" />
 	</ItemGroup>

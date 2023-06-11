@@ -20,7 +20,7 @@ internal class PostscriptFunction: PdfFunction
 
     private static PostscriptStack StackWithInputs(ReadOnlySpan<double> input)
     {
-        var stack = new PostscriptStack();
+        var stack = new PostscriptStack(4);
         foreach (var inp in input)
         {
             stack.Push(inp);

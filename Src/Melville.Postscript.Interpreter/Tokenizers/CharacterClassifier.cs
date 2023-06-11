@@ -9,8 +9,8 @@ namespace Melville.Postscript.Interpreter.Tokenizers
 
         public static bool IsCommentBeginChar(byte b) => b is (byte)'%';
 
-        public static ReadOnlySpan<byte> DelimiterChars() => "\x0\x09\x0A\x0Cx\x0d ()<>[]{}/%"u8;
-        public static ReadOnlySpan<byte> WhiteSpaceChars() => "\x0\x09\x0A\x0Cx\x0d "u8;
+        public static ReadOnlySpan<byte> DelimiterChars() => "\x0\x09\x0A\x0C\x0d ()<>[]{}/%"u8;
+        public static ReadOnlySpan<byte> WhiteSpaceChars() => "\x0\x09\x0A\x0C\x0d "u8;
         public static ReadOnlySpan<byte> LineEndChars() => "\x0C\x0D"u8;
 
         public static byte ValueFromDigit(byte digitChar) => digitChar switch

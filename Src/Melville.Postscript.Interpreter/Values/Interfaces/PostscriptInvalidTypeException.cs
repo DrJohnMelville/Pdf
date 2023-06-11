@@ -1,7 +1,7 @@
 ﻿using System;
 using Melville.INPC;
 
-namespace Melville.Postscript.Interpreter.Values;
+namespace Melville.Postscript.Interpreter.Values.Interfaces;
 
 /// <summary>
 /// Base class for all the Postscript Exceptions

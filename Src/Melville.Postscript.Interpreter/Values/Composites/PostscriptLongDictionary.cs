@@ -34,4 +34,7 @@ internal partial class PostscriptLongDictionary :
 
     public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
         items.TryGetValue(indexOrKey, out result);
+
+    public void Add(in PostscriptValue indexOrKey, in PostscriptValue value) =>
+        items[indexOrKey] = value;
 }

@@ -28,7 +28,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="InterpreterState\" />
+	  <Folder Include="FunctionLibrary\" />
 	</ItemGroup>
 
 </Project>

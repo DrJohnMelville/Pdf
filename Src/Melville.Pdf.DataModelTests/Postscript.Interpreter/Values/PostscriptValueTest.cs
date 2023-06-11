@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Melville.Pdf.DataModelTests.Writer.Lzw;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Values;

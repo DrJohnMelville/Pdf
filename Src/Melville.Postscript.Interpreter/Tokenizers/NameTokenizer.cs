@@ -26,7 +26,7 @@ internal readonly partial struct NameTokenizer
     private bool TryCreateNumber(
         in ReadOnlySpan<byte> buffer, out PostscriptValue value)
     {
-        if (!(kind is StringKind.Name && buffer.Length > 0 &&
+        if (!(kind == StringKind.Name && buffer.Length > 0 &&
               NumberTokenizer.TryDetectNumber(buffer, out value)))
             value = PostscriptValueFactory.CreateString(buffer, kind);
         return true;

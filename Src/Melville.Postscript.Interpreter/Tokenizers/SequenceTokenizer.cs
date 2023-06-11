@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using Melville.Parsing.SequenceReaders;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
@@ -29,13 +30,7 @@ internal static class SequenceTokenizer
         };
     }
 
-    private static bool TryParseSyntaxString(ref SequenceReader<byte> reader, out PostscriptValue value)
-    {
-        reader.Advance(1);
-        return new StringTokenizer<SyntaxStringDecoder, int>().Parse(ref reader, out value);
-    }
-
-    private static bool TryCopyLiteralName(
+   private static bool TryCopyLiteralName(
         int length, ref SequenceReader<byte> reader, out PostscriptValue value)
     {
         Span<byte> name = stackalloc byte[length];

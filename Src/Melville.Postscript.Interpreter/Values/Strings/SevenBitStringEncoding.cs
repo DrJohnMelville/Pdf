@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Melville.Postscript.Interpreter.Values;
+namespace Melville.Postscript.Interpreter.Values.Strings;
 
 internal static class SevenBitStringEncoding
 {

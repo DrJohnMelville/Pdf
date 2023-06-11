@@ -6,6 +6,10 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
 internal class PostscriptStack : List<double>
 {
+    public PostscriptStack(int capacity) : base(capacity)
+    {
+    }
+
     public void Push(double item) => Add(item);
 
     public double Pop()

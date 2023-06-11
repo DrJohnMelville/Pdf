@@ -4,9 +4,9 @@ using System.IO;
 using System.Text;
 using Melville.INPC;
 
-namespace Melville.Postscript.Interpreter.Values;
+namespace Melville.Postscript.Interpreter.Values.Composites;
 
-internal partial class PostscriptShortDictionary:
+internal partial class PostscriptShortDictionary :
     IPostscriptValueStrategy<string>,
     IPostscriptValueStrategy<IPostscriptComposite>,
     IPostscriptComposite
@@ -14,6 +14,7 @@ internal partial class PostscriptShortDictionary:
     public static readonly PostscriptShortDictionary Empty = new(new List<PostscriptValue>());
 
     [FromConstructor] private readonly List<PostscriptValue> items;
+    public PostscriptShortDictionary():this(new List<PostscriptValue>()){}
 
 #if DEBUG
     partial void OnConstructed()
@@ -28,9 +29,9 @@ internal partial class PostscriptShortDictionary:
     {
         var ret = new StringBuilder();
         ret.AppendLine("<<");
-        for (int i = 0; i < items.Count; i+=2)
+        for (int i = 0; i < items.Count; i += 2)
         {
-            ret.AppendLine($"    {items[i].Get<string>()}: {items[i+1].Get<string>()}");
+            ret.AppendLine($"    {items[i].Get<string>()}: {items[i + 1].Get<string>()}");
         }
         ret.Append(">>");
 
@@ -52,5 +53,11 @@ internal partial class PostscriptShortDictionary:
         }
         result = default;
         return false;
+    }
+
+    public void Add(in PostscriptValue indexOrKey, in PostscriptValue value)
+    {
+        items.Add(indexOrKey);
+        items.Add(value);
     }
 }
