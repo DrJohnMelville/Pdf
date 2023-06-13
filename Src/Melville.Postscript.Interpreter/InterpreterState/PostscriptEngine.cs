@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -26,6 +26,9 @@ public class PostscriptEngine
     /// The current callstack
     /// </summary>
     public PostscriptStack<IAsyncEnumerator<PostscriptValue>> ExecutionStack { get; } = new(0);
+
+    private LehmerRandomNumberGenerator random = new();
+    public ref LehmerRandomNumberGenerator Random => ref random;
 
     /// <summary>
     /// Create a new PostScriptEngine

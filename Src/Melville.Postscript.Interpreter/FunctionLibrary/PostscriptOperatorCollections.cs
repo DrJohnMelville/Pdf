@@ -37,7 +37,7 @@ public static class PostscriptOperatorCollections
     /// <summary>
     /// Implement the stack operators in section 8.1
     /// </summary>
-    /// <param name="engine">The postscript to add definitions too.</param>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
     public static PostscriptEngine WithStackOperators(this PostscriptEngine engine) => engine
         .WithSystemFunction("pop", PostscriptOperators.Pop)
@@ -51,4 +51,35 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("mark", PostscriptOperators.PlaceMark)
         .WithSystemFunction("cleartomark", PostscriptOperators.ClearToMark)
         .WithSystemFunction("counttomark", PostscriptOperators.CountToMark);
+
+    /// <summary>
+    /// Implement the stack operators in section 8.1
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static PostscriptEngine WithMathOperators(this PostscriptEngine engine) => engine
+        .WithSystemFunction("add", PostscriptOperators.Add)
+        .WithSystemFunction("div", PostscriptOperators.RealDivide)
+        .WithSystemFunction("idiv", PostscriptOperators.IntegerDivide)
+        .WithSystemFunction("mod", PostscriptOperators.Modulo)
+        .WithSystemFunction("mul", PostscriptOperators.Multiply)
+        .WithSystemFunction("sub", PostscriptOperators.Subtract)
+        .WithSystemFunction("abs", PostscriptOperators.AbsoluteValue)
+        .WithSystemFunction("neg", PostscriptOperators.Negative)
+        .WithSystemFunction("ceiling", PostscriptOperators.Ceiling)
+        .WithSystemFunction("floor", PostscriptOperators.Floor)
+        .WithSystemFunction("round", PostscriptOperators.Round)
+        .WithSystemFunction("truncate", PostscriptOperators.Truncate)
+        .WithSystemFunction("sqrt", PostscriptOperators.SquareRoot)
+        .WithSystemFunction("atan", PostscriptOperators.ArcTangent)
+        .WithSystemFunction("sin", PostscriptOperators.Sine)
+        .WithSystemFunction("cos", PostscriptOperators.Cosine)
+        .WithSystemFunction("exp", PostscriptOperators.RaiseToPower)
+        .WithSystemFunction("log", PostscriptOperators.Log10)
+        .WithSystemFunction("ln", PostscriptOperators.NaturalLog)
+        .WithSystemFunction("srand", PostscriptOperators.SetRandomSeed)
+        .WithSystemFunction("rrand", PostscriptOperators.GetRandomSeed)
+        .WithSystemFunction("rand", PostscriptOperators.GetNextRandom)
+    ;
+
 }

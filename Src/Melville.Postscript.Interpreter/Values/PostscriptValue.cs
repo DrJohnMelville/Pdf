@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Interfaces;
+using Melville.Postscript.Interpreter.Values.Numbers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
@@ -31,6 +32,11 @@ public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
     /// True if this is a Postscript mark object, false otherwise.
     /// </summary>
     public bool IsMark => valueStrategy is PostscriptMark;
+
+    /// <summary>
+    /// True if this is a number represented as an integer, false otherwise.
+    /// </summary>
+    public bool IsInteger => valueStrategy is PostscriptInteger;
 
     /// <summary>
     /// Gets a pdf value of a given type.
