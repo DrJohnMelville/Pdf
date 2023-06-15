@@ -27,6 +27,14 @@ public class PostscriptEngine
     /// </summary>
     public PostscriptStack<IAsyncEnumerator<PostscriptValue>> ExecutionStack { get; } = new(0);
 
+    /// <summary>
+    /// The Postscript language defines regular arrays, and a more limited but efficient packed
+    /// array.  This interpreter does not honor that distinction, and all arrays are just arrays.
+    /// However the spec allows programs to set and read the current packing state, so we have to
+    /// preserve this value even though it is completely nonfunctional in this implementation.
+    /// </summary>
+    public bool PackingMode { get; set; }
+
     private LehmerRandomNumberGenerator random = new();
     internal ref LehmerRandomNumberGenerator Random => ref random;
 

@@ -1,4 +1,5 @@
-﻿using Melville.Postscript.Interpreter.Values;
+﻿using System;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
@@ -45,5 +46,16 @@ internal static class OperatorStackOperations
             return;
         }
         items.CopyTop(topItem.Get<int>());
+    }
+
+    public static void CreatePackedArray(this PostscriptStack<PostscriptValue> items)
+    {
+        int size = items.Pop().Get<int>();
+        var buffer = new PostscriptValue[size];
+        for (int i = size-1; i >= 0; i--)
+        {
+            buffer[i] = items.Pop();
+        }
+        items.Push(PostscriptValueFactory.CreateArray(buffer));
     }
 }

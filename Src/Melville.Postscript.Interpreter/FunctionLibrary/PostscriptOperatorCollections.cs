@@ -98,5 +98,9 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("putinterval"u8, PostscriptOperators.PutInterval)
         .WithSystemFunction("astore"u8, PostscriptOperators.AStore)
         .WithSystemFunction("aload"u8, PostscriptOperators.ALoad)
+        .WithSystemFunction("currentpacking"u8, PostscriptOperators.CurrentPacking)
+        .WithSystemFunction("setpacking"u8, PostscriptOperators.SetPacking)
+        .WithSystemFunction("packedarray"u8, PostscriptOperators.PackedArray)
+
     ;
 }

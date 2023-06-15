@@ -89,11 +89,18 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         engine.Push(new PostscriptValue(array, 0));
         """, "Unpack an array into the operand stack.")]
 
+// "Packed array" operators -- We implement packed arrays as normal arrays
+[MacroItem("CurrentPacking", "engine.Push(engine.PackingMode);","Read current packing mode")]
+[MacroItem("SetPacking", "engine.PackingMode = engine.PopAs<bool>();","Read current packing mode")]
+[MacroItem("PackedArray", "engine.OperandStack.CreatePackedArray();","Create an array from the stack")]
+
+
 public static partial class PostscriptOperators
 {
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
+        ;
     }
 #endif
 
