@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -35,6 +36,11 @@ internal partial class PostscriptLongDictionary :
     public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
         items.TryGetValue(indexOrKey, out result);
 
-    public void Add(in PostscriptValue indexOrKey, in PostscriptValue value) =>
+    public void Put(in PostscriptValue indexOrKey, in PostscriptValue value) =>
         items[indexOrKey] = value;
+
+    public int Length => items.Count;
+
+    public PostscriptValue CopyFrom(PostscriptValue pop) => 
+        throw new NotImplementedException("Dictionary Copying is not implemented yet");
 }

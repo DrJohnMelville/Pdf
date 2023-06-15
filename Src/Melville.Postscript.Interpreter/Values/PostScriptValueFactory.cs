@@ -93,6 +93,16 @@ namespace Melville.Postscript.Interpreter.Values
             new(
                 ReportAllocation(new PostscriptLongString(kind, data)), 0);
 
+        public static PostscriptValue CreateSizedArray(int size)
+        {
+            var values = new PostscriptValue[size];
+            for (int i = 0; i < values.Length; i++)
+            {
+                values[i] = CreateNull();
+            }
+            return CreateArray(values);
+        }
+
         public static PostscriptValue CreateArray(params PostscriptValue[] values) =>
             new(WrapInPostScriptArray(values), 0);
 

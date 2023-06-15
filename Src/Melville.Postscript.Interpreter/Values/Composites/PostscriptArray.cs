@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.Postscript.Interpreter.Values.Interfaces;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 
 internal partial class PostscriptArray : 
     IPostscriptValueStrategy<string>,
     IPostscriptValueStrategy<IPostscriptComposite>,
-    IPostscriptComposite
+    IPostscriptValueStrategy<IPostscriptArray>,
+    IPostscriptValueStrategy<PostscriptArray>,
+    IPostscriptArray
 {
     public static readonly PostscriptArray Empty = new(Memory<PostscriptValue>.Empty);
 
@@ -23,7 +28,7 @@ internal partial class PostscriptArray :
         sb.Append("[");
         foreach (var value in values.Span)
         {
-            if (sb.Length > 1) sb.Append(", ");
+            if (sb.Length > 1) sb.Append(" ");
             sb.Append(value.Get<string>());
         }
         sb.Append("]");
@@ -32,12 +37,57 @@ internal partial class PostscriptArray :
 
     IPostscriptComposite
         IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
+    IPostscriptArray
+        IPostscriptValueStrategy<IPostscriptArray>.GetValue(in Int128 memento) => this;
+    PostscriptArray
+        IPostscriptValueStrategy<PostscriptArray>.GetValue(in Int128 memento) => this;
 
     public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
         indexOrKey.TryGet(out int index) && index < values.Length
             ? values.Span[index].AsTrueValue(out result)
             : default(PostscriptValue).AsFalseValue(out result);
 
-    public void Add(in PostscriptValue indexOrKey, in PostscriptValue value) =>
+    public void Put(in PostscriptValue indexOrKey, in PostscriptValue value) =>
         values.Span[indexOrKey.Get<int>()] = value;
+
+    public int Length => values.Length;
+
+    public PostscriptValue IntervalFrom(int beginningPosition, int length) => 
+        new(new PostscriptArray(values.Slice(beginningPosition, length)), 0);
+
+    public void InsertAt(int index, IPostscriptArray source)
+    {
+        if (source is not PostscriptArray other)
+            throw new PostscriptException("Only arrays can be copied to arrays");
+
+        other.values.Span.CopyTo(this.values.Span[index..]);
+    }
+
+    public PostscriptValue PushAllFrom(PostscriptStack<PostscriptValue> stack)
+    {
+        while (stack.Count > 0)
+        {
+            values.Span[stack.Count - 1] = stack.Pop();
+        }
+
+        return new PostscriptValue(this, 0);
+    }
+
+    public void PushAllTo(PostscriptStack<PostscriptValue> stack)
+    {
+        foreach (var value in values.Span)
+        {
+            stack.Push(value);
+        }
+    }
+
+    public PostscriptValue CopyFrom(PostscriptValue source)
+    {
+        if (!source.TryGet(out PostscriptArray? sourceArray))
+            throw new PostscriptException("Cannot copy nonarray to an array");
+        InsertAt(0, sourceArray);
+        return new PostscriptValue(
+            Length == sourceArray.Length? 
+                this: new PostscriptArray(values[..sourceArray.Length]), 0);
+    }
 }

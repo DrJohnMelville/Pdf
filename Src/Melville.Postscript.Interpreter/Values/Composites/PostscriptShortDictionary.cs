@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
@@ -55,9 +56,15 @@ internal partial class PostscriptShortDictionary :
         return false;
     }
 
-    public void Add(in PostscriptValue indexOrKey, in PostscriptValue value)
+    public void Put(in PostscriptValue indexOrKey, in PostscriptValue value)
     {
         items.Add(indexOrKey);
         items.Add(value);
     }
+
+    public int Length => items.Count / 2;
+
+    public PostscriptValue CopyFrom(PostscriptValue pop) =>
+        throw new NotImplementedException("Dictionary Copying is not implemented yet");
+
 }

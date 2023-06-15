@@ -17,7 +17,7 @@ public abstract class CompositesTest
     public void AddAndRemove1()
     {
         var sut = CreateEmpty();
-        sut.Add(Name1, PostscriptValueFactory.CreateString("Hello", StringKind.String));
+        sut.Put(Name1, PostscriptValueFactory.CreateString("Hello", StringKind.String));
         Assert.True(sut.TryGet(Name1, out var result));
         Assert.Equal("(Hello)", result.Get<string>());
     }
@@ -26,8 +26,8 @@ public abstract class CompositesTest
     public void AddAndRemove2()
     {
         var sut = CreateEmpty();
-        sut.Add(Name1, PostscriptValueFactory.CreateString("Hello", StringKind.String));
-        sut.Add(Name2, PostscriptValueFactory.CreateString("World", StringKind.String));
+        sut.Put(Name1, PostscriptValueFactory.CreateString("Hello", StringKind.String));
+        sut.Put(Name2, PostscriptValueFactory.CreateString("World", StringKind.String));
         Assert.True(sut.TryGet(Name1, out var result));
         Assert.Equal("(Hello)", result.Get<string>());
         Assert.Equal("(World)", sut.Get(Name2).Get<string>());

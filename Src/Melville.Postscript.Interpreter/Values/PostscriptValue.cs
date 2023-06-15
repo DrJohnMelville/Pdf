@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.Postscript.Interpreter.Values.Numbers;
@@ -12,16 +13,17 @@ namespace Melville.Postscript.Interpreter.Values;
 /// internally, but some of which cannot.  The valueStrategy object allows for extensions like
 /// dictionaries, files, and arrays.
 /// </summary>
-public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
+public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
 {
     /// <summary>
     /// The strategy that can retrieve the value for this item.
     /// </summary>
-    [FromConstructor]private readonly IPostscriptValueStrategy<string> valueStrategy;
+    [FromConstructor] private readonly IPostscriptValueStrategy<string> valueStrategy;
+
     /// <summary>
     /// A 128 bit space that allows most values to be stored without a heap allocation.
     /// </summary>
-    [FromConstructor]private readonly Int128 memento;
+    [FromConstructor] private readonly Int128 memento;
 
     /// <summary>
     /// True if this is a Postscript null object, false otherwise.
@@ -58,7 +60,7 @@ public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
     /// <typeparam name="T">The desired type</typeparam>
     /// <param name="value">Receives the converted value, if available</param>
     /// <returns>True if the value can be converted to the given type, false otherwise</returns>
-    public bool TryGet<T>([NotNullWhen(true)]out T? value)
+    public bool TryGet<T>([NotNullWhen(true)] out T? value)
     {
         value = default;
         if (valueStrategy is IPostscriptValueStrategy<T> typedStrategy)
@@ -66,6 +68,7 @@ public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
             value = typedStrategy.GetValue(memento)!;
             return true;
         }
+
         return false;
     }
 
@@ -79,7 +82,7 @@ public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
 
     private bool ShallowEqual(PostscriptValue other) =>
         valueStrategy == other.valueStrategy &&
-         memento == other.memento;
+        memento == other.memento;
 
 
     private bool DeepEqual(PostscriptValue other)
@@ -105,18 +108,29 @@ public readonly partial struct PostscriptValue: IEquatable<PostscriptValue>
         public static implicit operator PostscriptValue(~0~ i) => 
             PostscriptValueFactory.Create(i);
         """)]
-    private const int macroHolder = 0;
+    partial void MacroHolder();
 
     /// <summary>
     /// Create a PostscriptValue from a string
     /// </summary>
     /// <param name="s">The value to wrap in a PostscriptValue</param>
-    public static implicit operator PostscriptValue(string s) => s.AsSpan() switch
+    public static implicit operator PostscriptValue(string s)
     {
-        ['/', .. var rest] =>
+        Span<byte> buffer = stackalloc byte[Encoding.ASCII.GetByteCount(s)];
+        Encoding.ASCII.GetBytes(s, buffer);
+        return (PostscriptValue)(ReadOnlySpan<byte>)buffer;
+    }
+
+    /// <summary>
+    /// Create a PostscriptValue from a string
+    /// </summary>
+    /// <param name="s">The value to wrap in a PostscriptValue</param>
+    public static implicit operator PostscriptValue(in ReadOnlySpan<byte> s) => s switch
+    {
+        [(byte)'/', .. var rest] =>
             PostscriptValueFactory.CreateString(rest, StringKind.LiteralName),
-        ['(', .. var rest, ')'] =>
+        [(byte)'(', .. var rest, (byte)')'] =>
             PostscriptValueFactory.CreateString(rest, StringKind.String),
-        _=> PostscriptValueFactory.CreateString(s, StringKind.Name)
+        _ => PostscriptValueFactory.CreateString(s, StringKind.Name)
     };
 }

@@ -28,7 +28,7 @@ public class PostscriptEngine
     public PostscriptStack<IAsyncEnumerator<PostscriptValue>> ExecutionStack { get; } = new(0);
 
     private LehmerRandomNumberGenerator random = new();
-    public ref LehmerRandomNumberGenerator Random => ref random;
+    internal ref LehmerRandomNumberGenerator Random => ref random;
 
     /// <summary>
     /// Create a new PostScriptEngine

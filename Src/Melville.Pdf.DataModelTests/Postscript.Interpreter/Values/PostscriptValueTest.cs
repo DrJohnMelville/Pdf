@@ -103,7 +103,7 @@ public class PostscriptValueTest
         var value = PostscriptValueFactory.CreateArray(
             true, false, 10
         );
-        Assert.Equal("[true, false, 10]", value.Get<string>());
+        Assert.Equal("[true false 10]", value.Get<string>());
 
         Assert.Equal(10, value.Get<IPostscriptComposite>().Get(
             PostscriptValueFactory.Create(2)).Get<long>());

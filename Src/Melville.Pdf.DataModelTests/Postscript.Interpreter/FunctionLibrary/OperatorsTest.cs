@@ -119,6 +119,31 @@ public class OperatorsTest
         """)]
     public Task WithMathOperatorsAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine().WithMathOperators());
+    
+    [Theory]
+    [InlineData("3 array", "01: [<Null> <Null> <Null>]")]
+    [InlineData("23[1    2 \r\n 3]", "01: [1 2 3]\r\n02: 23")]
+    [InlineData("[1 2 3] length", "01: 3")]
+    [InlineData("[1 2 3] 1 get ", "01: 2")]
+    [InlineData("[1 2 3] dup 2 /true put", "01: [1 2 /true]")]
+    [InlineData("[1 2 3] 1 2 getinterval", "01: [2 3]")]
+    [InlineData("[1 2 3] dup 1 [8 9] putinterval", "01: [1 8 9]")]
+    [InlineData("1 2 3 4 count array astore", "01: [1 2 3 4]")]
+    [InlineData("1 [2 3 4 5] aload ", """
+        01: [2 3 4 5]
+        02: 5
+        03: 4
+        04: 3
+        05: 2
+        06: 1
+        """)]
+    [InlineData("[1 2 3] 5 array dup 3 1 roll copy", """
+        01: [1 2 3]
+        02: [1 2 3 <Null> <Null>]
+        """)]
+    public Task WithArrayOperatorsAsync(string code, string result) =>
+        RunTestOnAsync(code, result, new PostscriptEngine()
+            .WithStackOperators().WithArrayOperators());
 
     private static async Task RunTestOnAsync(string code, string result, PostscriptEngine engine)
     {

@@ -2,10 +2,9 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.JavaScript;
-using Melville.INPC;
-using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
@@ -108,48 +107,12 @@ public partial class PostscriptStack<T> : List<T>
         return token;;
     }
 
-    private Span<T> CollectionAsSpan() => CollectionsMarshal.AsSpan(this);
+    internal Span<T> CollectionAsSpan() => CollectionsMarshal.AsSpan(this);
 
     private ReturnUponDispose<T> NewBuffer(int size, out Span<T> ret)
     {
         var array = ArrayPool<T>.Shared.Rent(size);
         ret = array.AsSpan(0, size);
         return new ReturnUponDispose<T>(array);
-    }
-}
-
-internal static class OperatorStackOperations
-{
-    public static void PushCount(this PostscriptStack<PostscriptValue> items) =>
-        items.Push(items.Count);
-
-    public static void ClearToMark(this PostscriptStack<PostscriptValue> items)
-    {
-        while (items.Count > 0)
-        {
-            if (items.Pop().IsMark) return;
-        }
-    }
-
-    public static void CountToMark(this PostscriptStack<PostscriptValue> items) =>
-        items.Push(ComputeCountToMark(items));
-    private static int ComputeCountToMark(PostscriptStack<PostscriptValue> items)
-    {
-        for (int i = 0; i < items.Count; i++)
-        {
-            if (items[^(i + 1)].IsMark) return i;
-        }
-
-        return items.Count;
-    }
-}
-
-internal readonly partial struct ReturnUponDispose<T> : IDisposable
-{
-    [FromConstructor] private readonly T[] array;
-
-    public void Dispose()
-    {
-        ArrayPool<T>.Shared.Return(array);
     }
 }

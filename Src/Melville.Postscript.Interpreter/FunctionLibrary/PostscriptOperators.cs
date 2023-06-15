@@ -26,13 +26,14 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 // Push constant tokens
 [MacroItem("PushTrue", "engine.Push(true);", "Push true on the stack.")]
 [MacroItem("PushFalse", "engine.Push(false);", "Push false on the stack.")]
-[MacroItem("PushNull", "engine.Push(PostscriptValueFactory.CreateNull());",
-    "Push null on the stack.")]
+[MacroItem("PushNull", "engine.Push(PostscriptValueFactory.CreateNull());", "Push null on the stack.")]
+[MacroItem("PushMark", "engine.Push(PostscriptValueFactory.CreateMark());", "Push null on the stack.")]
+
 // Stack operators
 [MacroItem("Pop", "engine.OperandStack.Pop();", "Discard the top element on the stack.")]
 [MacroItem("Exchange", "engine.OperandStack.Exchange();", "Switch the top two items on the stack.")]
 [MacroItem("Duplicate", "engine.OperandStack.Duplicate();", "Duplicate the top item on the stack.")]
-[MacroItem("CopyTop", "engine.OperandStack.CopyTop(engine.PopAs<int>());", "Copy the top item on the stack.")]
+[MacroItem("CopyTop", "engine.OperandStack.PolymorphicCopy();", "Copy the top item on the stack or copy a composite object.")]
 [MacroItem("IndexOperation", "engine.OperandStack.IndexOperation(engine.PopAs<int>());", "Retrieve the item n items down the stack.")]
 [MacroItem("Roll", "engine.OperandStack.Roll(engine.PopAs<int>(), engine.PopAs<int>());", "Roll the stack.")]
 [MacroItem("ClearStack", "engine.OperandStack.Clear();", "Clear the stack.")]
@@ -40,6 +41,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("PlaceMark", "engine.OperandStack.Push(PostscriptValueFactory.CreateMark());", "Place a mark on the stack")]
 [MacroItem("ClearToMark", "engine.OperandStack.ClearToMark();", "Clear down to and including a mark")]
 [MacroItem("CountToMark", "engine.OperandStack.CountToMark();", "Count items above the topmost mark mark")]
+
 // Math Operators
 [MacroItem("RealDivide", "engine.PopAs(out double a, out double b); engine.Push(a/b);", "Floating point division")]
 [MacroItem("IntegerDivide", "engine.PopAs(out long a, out long b); engine.Push(a/b);", "Integer division")]
@@ -53,6 +55,40 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("SetRandomSeed", "engine.Random.State = (uint)engine.PopAs<long>();", "Set random seed")]
 [MacroItem("GetRandomSeed", "engine.Push(engine.Random.State);", "get random seed")]
 [MacroItem("GetNextRandom", "engine.Push(engine.Random.Next());", "get next random number")]
+
+//Array Operators
+[MacroItem("EmptyArray", "engine.Push(PostscriptValueFactory.CreateSizedArray(engine.PopAs<int>()));", "Create an array of a given number of nulls")]
+[MacroItem("ArrayFromStack", "engine.OperandStack.MarkedSpanToArray();", "Create an array from the topmost marked region on the stack")]
+[MacroItem("CompositeLength", "engine.Push(engine.PopAs<IPostscriptComposite>().Length);", "Create an array from the topmost marked region on the stack")]
+[MacroItem("CompositeGet", """
+    var index = engine.OperandStack.Pop();
+    var comp = engine.PopAs<IPostscriptComposite>();
+    engine.Push(comp.Get(index));
+    """, "Retrieve a value from a composite.")]
+[MacroItem("CompositePut", """
+    var item = engine.OperandStack.Pop();
+    var index = engine.OperandStack.Pop();
+    var comp = engine.PopAs<IPostscriptComposite>();
+    comp.Put(index, item);
+    """, "Store a value in a composite.")]
+[MacroItem("GetInterval", """
+    engine.PopAs<int,int>(out var index, out var length);
+    engine.Push(engine.PopAs<IPostscriptArray>().IntervalFrom(index, length));
+    """, "Extract a subarray from an array.")]
+[MacroItem("PutInterval", """
+        var source = engine.PopAs<IPostscriptArray>();
+        engine.PopAs<PostscriptArray, int>(out var target, out var index);
+        target.InsertAt(index, source);
+    """, "Write an array into another array.")]
+[MacroItem("AStore", """
+        engine.Push(engine.PopAs<PostscriptArray>().PushAllFrom(engine.OperandStack));
+        """, "Store the operand stack into an array.")]
+[MacroItem("ALoad", """
+        var array = engine.PopAs<PostscriptArray>();
+        array.PushAllTo(engine.OperandStack);
+        engine.Push(new PostscriptValue(array, 0));
+        """, "Unpack an array into the operand stack.")]
+
 public static partial class PostscriptOperators
 {
 #if DEBUG

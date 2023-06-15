@@ -20,7 +20,41 @@ public interface IPostscriptComposite
     /// </summary>
     /// <param name="indexOrKey">The index or key to add under.</param>
     /// <param name="value">The value to add to the dictionary.</param>
-    void Add(in PostscriptValue indexOrKey, in PostscriptValue value);
+    void Put(in PostscriptValue indexOrKey, in PostscriptValue value);
+
+    /// <summary>
+    /// Number of items in the composite
+    /// </summary>
+    int Length { get; }
+
+    /// <summary>
+    /// Executes the postscript copy operation (which is odd) and returns the value to
+    /// be pushed back on the stack
+    /// </summary>
+    /// <param name="source">Value to copy from</param>
+    /// <returns>The value to be pushed on the stack as the result of the copy operation</returns>
+    PostscriptValue CopyFrom(PostscriptValue source);
+}
+
+/// <summary>
+/// This interface describes Postscript Arrays arrays and strings are both arrays
+/// </summary>
+public interface IPostscriptArray : IPostscriptComposite
+{
+    /// <summary>
+    /// /// Get a subsequence of the given object.
+    /// </summary>
+    /// <param name="beginningPosition">index of the first position</param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    public PostscriptValue IntervalFrom(int beginningPosition, int length);
+
+    /// <summary>
+    /// Overwrite 
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="values"></param>
+    public void InsertAt(int index, IPostscriptArray values);
 }
 
 /// <summary>
