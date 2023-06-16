@@ -88,6 +88,6 @@ public class PostscriptEngine
 
     private void ExecuteToken(in PostscriptValue current)
     {
-        current.Get<IExecutePostscript>().Execute(this, current);
+        current.Get<IExecutePostscript>().AcceptParsedToken(this, current);
     }
 }
