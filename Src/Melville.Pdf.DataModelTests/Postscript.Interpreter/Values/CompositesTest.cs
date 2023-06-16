@@ -19,7 +19,7 @@ public abstract class CompositesTest
         var sut = CreateEmpty();
         sut.Put(Name1, PostscriptValueFactory.CreateString("Hello", StringKind.String));
         Assert.True(sut.TryGet(Name1, out var result));
-        Assert.Equal("(Hello)", result.Get<string>());
+        Assert.Equal("(Hello)", result.ToString());
     }
 
     [Fact]
@@ -29,8 +29,8 @@ public abstract class CompositesTest
         sut.Put(Name1, PostscriptValueFactory.CreateString("Hello", StringKind.String));
         sut.Put(Name2, PostscriptValueFactory.CreateString("World", StringKind.String));
         Assert.True(sut.TryGet(Name1, out var result));
-        Assert.Equal("(Hello)", result.Get<string>());
-        Assert.Equal("(World)", sut.Get(Name2).Get<string>());
+        Assert.Equal("(Hello)", result.ToString());
+        Assert.Equal("(World)", sut.Get(Name2).ToString());
     }
 }
 

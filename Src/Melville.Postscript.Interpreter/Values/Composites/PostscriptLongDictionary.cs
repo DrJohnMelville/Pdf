@@ -23,7 +23,7 @@ internal partial class PostscriptLongDictionary :
         ret.AppendLine("<<");
         foreach (var pair in items)
         {
-            ret.AppendLine($"    {pair.Key.Get<string>()}: {pair.Value.Get<string>()}");
+            ret.AppendLine($"    {pair.Key.ToString()}: {pair.Value.ToString()}");
         }
         ret.Append(">>");
 

@@ -32,7 +32,7 @@ internal partial class PostscriptShortDictionary :
         ret.AppendLine("<<");
         for (int i = 0; i < items.Count; i += 2)
         {
-            ret.AppendLine($"    {items[i].Get<string>()}: {items[i + 1].Get<string>()}");
+            ret.AppendLine($"    {items[i].ToString()}: {items[i + 1].ToString()}");
         }
         ret.Append(">>");
 

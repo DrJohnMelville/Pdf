@@ -24,4 +24,11 @@ public interface IExecutePostscript
     /// <param name="value">The value to execute</param>
     void AcceptParsedToken(PostscriptEngine engine, in PostscriptValue value) =>
         Execute(engine, value);
+
+    /// <summary>
+    /// Wrap the display of the value based on its execution status
+    /// </summary>
+    /// <param name="text">The text that represents the unadorned value</param>
+    /// <returns>The text as it should be displayed</returns>
+    string WrapTextDisplay(string text);
 }

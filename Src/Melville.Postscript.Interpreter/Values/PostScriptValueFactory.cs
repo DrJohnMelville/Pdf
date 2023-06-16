@@ -16,35 +16,40 @@ namespace Melville.Postscript.Interpreter.Values
         /// Create a PostscriptValue representing a long.
         /// </summary>
         /// <param name="value">The long to encode</param>
-        public static PostscriptValue Create(long value) => new(PostscriptInteger.Instance, value);
+        public static PostscriptValue Create(long value) => 
+            new(PostscriptInteger.Instance, PostscriptBuiltInOperations.PushArgument, value);
 
         /// <summary>
         /// Create a PostscriptValue representing a double.
         /// </summary>
         /// <param name="value">The double to encode</param>
         public static PostscriptValue Create(double value) =>
-            new(PostscriptDouble.Instance, BitConverter.DoubleToInt64Bits(value));
+            new(PostscriptDouble.Instance, PostscriptBuiltInOperations.PushArgument, 
+                BitConverter.DoubleToInt64Bits(value));
 
         /// <summary>
         /// Create a PostscriptValue representing a boolean.
         /// </summary>
         /// <param name="value">The double to encode</param>
         public static PostscriptValue Create(bool value) => 
-            new(PostscriptBoolean.Instance, value ? 1 : 0);
+            new(PostscriptBoolean.Instance, PostscriptBuiltInOperations.PushArgument, 
+                value ? 1 : 0);
 
         public static PostscriptValue Create(IExternalFunction action) =>
-            new(action, 0);
+            new(action, action, 0);
 
 
         /// <summary>
         /// Create a PostScriptvalue with Null values.
         /// </summary>
-        public static PostscriptValue CreateNull() => new(PostscriptNull.Instance, 0);
+        public static PostscriptValue CreateNull() => new(
+            PostscriptNull.Instance, PostscriptBuiltInOperations.PushArgument, 0);
 
         /// <summary>
         /// Create a PostscriptValue for the Mark object.
         /// </summary>
-        public static PostscriptValue CreateMark() => new (PostscriptMark.Instance,0);
+        public static PostscriptValue CreateMark() => 
+            new (PostscriptMark.Instance,PostscriptBuiltInOperations.PushArgument, 0);
 
         /// <summary>
         /// Create a string, name, or literal name
@@ -86,12 +91,12 @@ namespace Melville.Postscript.Interpreter.Values
                 SevenBitStringEncoding.AddOneCharacter(ref value, character);
             }
 
-            return new PostscriptValue(kind.ShortStringStraegy, value);
+            return new PostscriptValue(kind.ShortStringStraegy, kind.DefaultAction, value);
         }
 
         public static PostscriptValue CreateLongString(byte[] data, StringKind kind) => 
             new(
-                ReportAllocation(new PostscriptLongString(kind, data)), 0);
+                ReportAllocation(new PostscriptLongString(kind, data)), kind.DefaultAction, 0);
 
         public static PostscriptValue CreateSizedArray(int size)
         {
@@ -104,14 +109,14 @@ namespace Melville.Postscript.Interpreter.Values
         }
 
         public static PostscriptValue CreateArray(params PostscriptValue[] values) =>
-            new(WrapInPostScriptArray(values), 0);
+            new(WrapInPostScriptArray(values), PostscriptBuiltInOperations.PushArgument, 0);
 
         private static PostscriptArray WrapInPostScriptArray(PostscriptValue[] values) =>
             values.Length < 1 ? PostscriptArray.Empty : 
                 ReportAllocation(new PostscriptArray(values));
 
         public static PostscriptValue CreateDictionary(params PostscriptValue[] values) => 
-            new(WrapInDictionary(values), 0);
+            new(WrapInDictionary(values), PostscriptBuiltInOperations.PushArgument, 0);
 
         private static IPostscriptValueStrategy<string> WrapInDictionary(PostscriptValue[] values) =>
             values.Length switch
@@ -122,7 +127,7 @@ namespace Melville.Postscript.Interpreter.Values
             };
         
         public static PostscriptValue CreateLongDictionary(params PostscriptValue[] parameters) =>
-            new(ConstructLongDictionary(parameters), 0);
+            new(ConstructLongDictionary(parameters), PostscriptBuiltInOperations.PushArgument, 0);
 
         private static PostscriptLongDictionary ConstructLongDictionary(PostscriptValue[] parameters) => 
             new PostscriptLongDictionary(ArrayToDictionary(parameters));

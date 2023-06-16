@@ -12,4 +12,6 @@ internal abstract class BuiltInFunction : IExternalFunction
 
     string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) =>
         "<Built in Function>";
+
+    public virtual string WrapTextDisplay(string text) => text;
 }

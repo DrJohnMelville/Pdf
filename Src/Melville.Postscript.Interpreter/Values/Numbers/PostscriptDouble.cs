@@ -9,8 +9,7 @@ namespace Melville.Postscript.Interpreter.Values
         IPostscriptValueStrategy<string>,
         IPostscriptValueStrategy<int>,
         IPostscriptValueStrategy<long>,
-        IPostscriptValueStrategy<double>,
-        IPostscriptValueStrategy<IExecutePostscript>
+        IPostscriptValueStrategy<double>
 
     {
         string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => 
@@ -32,9 +31,5 @@ namespace Melville.Postscript.Interpreter.Values
 
         private double DoubleFromMemento(Int128 memento) => 
             BitConverter.Int64BitsToDouble((long)memento);
-
-        IExecutePostscript IPostscriptValueStrategy<IExecutePostscript>.GetValue(in Int128 memento) =>
-            PostscriptBuiltInOperations.PushArgument;
-
     }
 }

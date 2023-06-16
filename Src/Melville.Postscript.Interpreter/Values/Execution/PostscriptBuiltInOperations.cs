@@ -9,7 +9,7 @@ namespace Melville.Postscript.Interpreter.Values.Execution;
 [MacroItem("PushArgument", "engine.OperandStack.Push(value);", "Push the argument onto the stack.")]
 [MacroItem("ExecuteFromDictionary", """
         var referencedValue = engine.DictionaryStack.Get(value);
-        referencedValue.Get<IExecutePostscript>().Execute(engine, value);
+        referencedValue.ExecutionStrategy.Execute(engine, value);
         """, "Lookup the name in the dictionary and executing the resulting object.")]
 [MacroCode("""
         /// <summary>

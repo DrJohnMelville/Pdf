@@ -4,6 +4,7 @@ using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -29,7 +30,7 @@ internal partial class PostscriptArray :
         foreach (var value in values.Span)
         {
             if (sb.Length > 1) sb.Append(" ");
-            sb.Append(value.Get<string>());
+            sb.Append(value.ToString());
         }
         sb.Append("]");
         return sb.ToString();
@@ -52,8 +53,8 @@ internal partial class PostscriptArray :
 
     public int Length => values.Length;
 
-    public PostscriptValue IntervalFrom(int beginningPosition, int length) => 
-        new(new PostscriptArray(values.Slice(beginningPosition, length)), 0);
+    public IPostscriptValueStrategy<string> IntervalFrom(int beginningPosition, int length) =>
+        new PostscriptArray(values.Slice(beginningPosition, length));
 
     public void InsertAt(int index, IPostscriptArray source)
     {
@@ -70,7 +71,7 @@ internal partial class PostscriptArray :
             values.Span[stack.Count - 1] = stack.Pop();
         }
 
-        return new PostscriptValue(this, 0);
+        return new PostscriptValue(this, PostscriptBuiltInOperations.PushArgument, 0);
     }
 
     public void PushAllTo(PostscriptStack<PostscriptValue> stack)
@@ -88,6 +89,7 @@ internal partial class PostscriptArray :
         InsertAt(0, sourceArray);
         return new PostscriptValue(
             Length == sourceArray.Length? 
-                this: new PostscriptArray(values[..sourceArray.Length]), 0);
+                this: new PostscriptArray(values[..sourceArray.Length]),
+            source.ExecutionStrategy, 0);
     }
 }

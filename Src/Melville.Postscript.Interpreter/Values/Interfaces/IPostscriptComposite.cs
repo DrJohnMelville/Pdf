@@ -47,7 +47,7 @@ public interface IPostscriptArray : IPostscriptComposite
     /// <param name="beginningPosition">index of the first position</param>
     /// <param name="length"></param>
     /// <returns></returns>
-    public PostscriptValue IntervalFrom(int beginningPosition, int length);
+    public IPostscriptValueStrategy<string> IntervalFrom(int beginningPosition, int length);
 
     /// <summary>
     /// Overwrite 

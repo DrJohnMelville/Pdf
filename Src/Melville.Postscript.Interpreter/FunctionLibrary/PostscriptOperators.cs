@@ -3,6 +3,7 @@ using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values; // used in generated files
 using Melville.Postscript.Interpreter.Values.Execution; // used in generated files
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
@@ -72,8 +73,11 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
     comp.Put(index, item);
     """, "Store a value in a composite.")]
 [MacroItem("GetInterval", """
-    engine.PopAs<int,int>(out var index, out var length);
-    engine.Push(engine.PopAs<IPostscriptArray>().IntervalFrom(index, length));
+        engine.PopAs<int, int>(out var index, out var length);
+        var token = engine.OperandStack.Pop();
+        var array = token.Get<IPostscriptArray>();
+        engine.Push(
+            new PostscriptValue(array.IntervalFrom(index, length), token.ExecutionStrategy, 0));
     """, "Extract a subarray from an array.")]
 [MacroItem("PutInterval", """
         var source = engine.PopAs<IPostscriptArray>();
@@ -84,9 +88,10 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         engine.Push(engine.PopAs<PostscriptArray>().PushAllFrom(engine.OperandStack));
         """, "Store the operand stack into an array.")]
 [MacroItem("ALoad", """
-        var array = engine.PopAs<PostscriptArray>();
+        var token = engine.OperandStack.Pop();
+        var array = token.Get<PostscriptArray>();
         array.PushAllTo(engine.OperandStack);
-        engine.Push(new PostscriptValue(array, 0));
+        engine.Push(token);
         """, "Unpack an array into the operand stack.")]
 
 // "Packed array" operators -- We implement packed arrays as normal arrays
@@ -100,7 +105,11 @@ public static partial class PostscriptOperators
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
-        ;
+        engine.PopAs<int, int>(out var index, out var length);
+        var token = engine.OperandStack.Pop();
+        var array = token.Get<IPostscriptArray>();
+        engine.Push(
+            new PostscriptValue(array.IntervalFrom(index, length), token.ExecutionStrategy, 0));
     }
 #endif
 

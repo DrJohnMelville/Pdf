@@ -11,11 +11,11 @@ internal abstract partial class PostscriptString :
     IPostscriptValueStrategy<StringKind>, 
     IByteStringSource,
     IPostscriptValueComparison,
-    IPostscriptValueStrategy<IExecutePostscript>
+    IPostscriptValueStrategy<IExecutionSelector>
 {
     [FromConstructor] private readonly StringKind stringKind;
     public string GetValue(in Int128 memento) => 
-        stringKind.ToDisplay(RenderStringValue(memento));
+        RenderStringValue(memento);
 
     private string RenderStringValue(Int128 memento) =>
         Encoding.ASCII.GetString(
@@ -23,8 +23,8 @@ internal abstract partial class PostscriptString :
 
     StringKind IPostscriptValueStrategy<StringKind>.GetValue(in Int128 memento) => stringKind;
         
-    IExecutePostscript IPostscriptValueStrategy<IExecutePostscript>.GetValue(
-        in Int128 memento) => stringKind.Action;
+    IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(
+        in Int128 memento) => stringKind.ExecutionSelector;
 
     public abstract ReadOnlySpan<byte> GetBytes(in Int128 memento, in Span<byte> scratch);
    

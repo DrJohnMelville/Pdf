@@ -39,7 +39,7 @@ public class ExecutionTest
         var engine = new PostscriptEngine();
         await engine.ExecuteAsync(tokens);
         Assert.Single(engine.OperandStack);
-        Assert.Equal("(Hello)", engine.OperandStack.Pop().Get<string>());
+        Assert.Equal("(Hello)", engine.OperandStack.Pop().ToString());
     }
 
     [Fact]
@@ -49,8 +49,8 @@ public class ExecutionTest
         var engine = new PostscriptEngine();
         await engine.ExecuteAsync(tokens);
         Assert.Equal(2, engine.OperandStack.Count);
-        Assert.Equal("/World", engine.OperandStack.Pop().Get<string>());
-        Assert.Equal("/Hello", engine.OperandStack.Pop().Get<string>());
+        Assert.Equal("/World", engine.OperandStack.Pop().ToString());
+        Assert.Equal("/Hello", engine.OperandStack.Pop().ToString());
     }
     [Fact]
     public async Task ExecuteNameAsync()

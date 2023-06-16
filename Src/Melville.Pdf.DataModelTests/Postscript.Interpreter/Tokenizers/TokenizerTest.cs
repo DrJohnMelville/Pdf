@@ -34,7 +34,7 @@ public class TokenizerTest
     private static async Task VerifyTokenAsync(Tokenizer sut, string name)
     {
         var token1 = await sut.NextTokenAsync();
-        Assert.Equal(name, token1.Get<string>());
+        Assert.Equal(name, token1.ToString());
         Assert.False(token1.TryGet<double>(out _));
     }
 
@@ -49,7 +49,7 @@ public class TokenizerTest
     public async Task TestStringParseAsync(string source, string result)
     {
         var token = await new Tokenizer(source).NextTokenAsync();
-        Assert.Equal(result, token.Get<string>());
+        Assert.Equal(result, token.ToString());
     }
 
     [Theory]
@@ -72,7 +72,7 @@ public class TokenizerTest
     [InlineData("", "")]
     public Task Accii85StringAsync(string decoded, string encoded) =>
         TestStringParseAsync($"<~{encoded}~>", 
-            PostscriptValueFactory.CreateString(decoded, StringKind.String).Get<string>());
+            PostscriptValueFactory.CreateString(decoded, StringKind.String).ToString());
 
     [Fact]
     public Task ExceptionForMismatchedCloseWakkaAsync() =>

@@ -68,7 +68,7 @@ public class PostscriptValueTest
     {
         var value = PostscriptValueFactory.Create(booleanValue);
         Assert.Equal(booleanValue, value.Get<bool>());
-        Assert.Equal(booleanValue.ToString().ToLower(), value.Get<string>());
+        Assert.Equal(booleanValue.ToString().ToLower(), value.ToString());
     }
 
     [Theory]
@@ -93,7 +93,7 @@ public class PostscriptValueTest
         Func<string, string>  stringType)
     {
         var value = PostscriptValueFactory.CreateString(stringValue, kind);
-        Assert.Equal(stringType(stringValue), value.Get<string>());
+        Assert.Equal(stringType(stringValue), value.ToString());
         Assert.Equal(kind, value.Get<StringKind>());
     }
 
@@ -103,7 +103,7 @@ public class PostscriptValueTest
         var value = PostscriptValueFactory.CreateArray(
             true, false, 10
         );
-        Assert.Equal("[true false 10]", value.Get<string>());
+        Assert.Equal("[true false 10]", value.ToString());
 
         Assert.Equal(10, value.Get<IPostscriptComposite>().Get(
             PostscriptValueFactory.Create(2)).Get<long>());

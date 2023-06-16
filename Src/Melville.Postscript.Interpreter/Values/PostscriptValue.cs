@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.Postscript.Interpreter.Values.Numbers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,6 +20,11 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// The strategy that can retrieve the value for this item.
     /// </summary>
     [FromConstructor] private readonly IPostscriptValueStrategy<string> valueStrategy;
+
+    /// <summary>
+    /// The strategy that defines how to execute this value
+    /// </summary>
+    [FromConstructor] public readonly IExecutePostscript ExecutionStrategy { get; }
 
     /// <summary>
     /// A 128 bit space that allows most values to be stored without a heap allocation.
@@ -95,7 +101,8 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     public override int GetHashCode() => HashCode.Combine(valueStrategy, memento);
 
     /// <inheritdoc />
-    public override string ToString() => valueStrategy.GetValue(memento);
+    public override string ToString() => 
+        ExecutionStrategy.WrapTextDisplay(valueStrategy.GetValue(memento));
 
     [MacroItem("int")]
     [MacroItem("double")]
