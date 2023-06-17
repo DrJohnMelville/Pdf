@@ -14,4 +14,6 @@ internal abstract class BuiltInFunction : IExternalFunction
         "<Built in Function>";
 
     public virtual string WrapTextDisplay(string text) => text;
+
+    public virtual bool IsExecutable => true;
 }

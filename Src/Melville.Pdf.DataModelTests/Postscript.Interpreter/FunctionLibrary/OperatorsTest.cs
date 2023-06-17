@@ -148,6 +148,28 @@ public class OperatorsTest
         RunTestOnAsync(code, result, new PostscriptEngine()
             .WithStackOperators().WithArrayOperators().WithSystemTokens());
 
+    [Theory]
+    [InlineData("10 exec", "01: 10")]
+    [InlineData("/add cvx", "01: add")]
+    [InlineData("/add cvx cvlit", "01: /add")]
+    [InlineData("5 2 /mul cvx exec", "01: 10")]
+    [InlineData("5 xcheck", "01: false")]
+    [InlineData("(string) xcheck", "01: false")]
+    [InlineData("1.2 xcheck", "01: false")]
+    [InlineData("true xcheck", "01: false")]
+    [InlineData("/Name xcheck", "01: false")]
+    [InlineData("/Name cvx xcheck", "01: true")]
+    [InlineData("{add} xcheck", "01: true")]
+    [InlineData("{add} xcheck", "01: true")]
+    [InlineData("{2 3 add} exec", "01: 5")]
+    [InlineData("2 { 3 add} exec", "01: 5")]
+//    [InlineData("(2 3 add) cvx exec", "01: 5")]
+    public Task ExecutionTest(string code, string result) =>
+        RunTestOnAsync(code, result, new PostscriptEngine()
+            .WithcConversionOperators().WithcControlOperators().WithMathOperators()
+            .WithSystemTokens().WithArrayOperators());
+
+
     private static async Task RunTestOnAsync(string code, string result, PostscriptEngine engine)
     {
         await engine.ExecuteAsync(new Tokenizer(code));

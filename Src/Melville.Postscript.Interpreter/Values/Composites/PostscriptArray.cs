@@ -15,7 +15,8 @@ internal partial class PostscriptArray :
     IPostscriptValueStrategy<IPostscriptComposite>,
     IPostscriptValueStrategy<IPostscriptArray>,
     IPostscriptValueStrategy<PostscriptArray>,
-    IPostscriptArray
+    IPostscriptArray,
+    IPostscriptValueStrategy<IExecutionSelector>
 {
     public static readonly PostscriptArray Empty = new(Memory<PostscriptValue>.Empty);
 
@@ -92,4 +93,11 @@ internal partial class PostscriptArray :
                 this: new PostscriptArray(values[..sourceArray.Length]),
             source.ExecutionStrategy, 0);
     }
+
+    IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(
+        in Int128 memento) => 
+        ArrayExecutionSelector.Instance;
+
+    public IAsyncEnumerator<PostscriptValue> GetAsyncEnumerator() => 
+        new AsyncMemoryEnumerator(values);
 }

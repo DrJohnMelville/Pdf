@@ -35,7 +35,7 @@ internal sealed partial class NameExecutionSelector : IExecutionSelector
     internal sealed partial class PushLiteralName : BuiltInFunction
     {
         public override void Execute(PostscriptEngine engine, in PostscriptValue value) => engine.Push(value);
-
+        public override bool IsExecutable => false;
         public override string WrapTextDisplay(string text) => "/" + base.WrapTextDisplay(text);
     }
 }
@@ -51,5 +51,6 @@ public sealed partial class StringExecutionSelector: IExecutionSelector
     {
         public override void Execute(PostscriptEngine engine, in PostscriptValue value) => engine.Push(value);
         public override string WrapTextDisplay(string text) => "(" + base.WrapTextDisplay(text)+")";
+        public override bool IsExecutable => false;
     }
 }

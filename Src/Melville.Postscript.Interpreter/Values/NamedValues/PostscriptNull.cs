@@ -27,4 +27,6 @@ public sealed partial class NullExecutionSelector : IExecutionSelector, IExecute
     }
 
     public string WrapTextDisplay(string text) => text;
+
+    public bool IsExecutable => true;
 }

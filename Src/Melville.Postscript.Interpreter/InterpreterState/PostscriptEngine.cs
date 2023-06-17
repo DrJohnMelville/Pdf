@@ -27,6 +27,8 @@ public class PostscriptEngine
     /// </summary>
     public PostscriptStack<IAsyncEnumerator<PostscriptValue>> ExecutionStack { get; } = new(0);
 
+    private int deferredExecutionCount = 0;
+
     /// <summary>
     /// The Postscript language defines regular arrays, and a more limited but efficient packed
     /// array.  This interpreter does not honor that distinction, and all arrays are just arrays.
@@ -75,7 +77,7 @@ public class PostscriptEngine
             var nextInstructionSource = ExecutionStack.Peek();
             if (await nextInstructionSource.MoveNextAsync())
             {
-                ExecuteToken(nextInstructionSource.Current);
+                AcceptToken(nextInstructionSource.Current);
             }
             else
             {
@@ -86,8 +88,32 @@ public class PostscriptEngine
         }
     }
 
-    private void ExecuteToken(in PostscriptValue current)
+    private static readonly PostscriptValue OpenProc =
+        PostscriptValueFactory.CreateString("{"u8, StringKind.Name);
+    private static readonly PostscriptValue CloseProc =
+        PostscriptValueFactory.CreateString("}"u8, StringKind.Name);
+    private void AcceptToken(in PostscriptValue current)
     {
-        current.ExecutionStrategy.AcceptParsedToken(this, current);
+        CheckForCloseProcToken(current);
+        PushOrExecuteToken(current);
+        CheckForOpenProcToken(current);
+    }
+
+    private void PushOrExecuteToken(PostscriptValue current)
+    {
+        if (deferredExecutionCount > 0)
+            OperandStack.Push(current);
+        else
+            current.ExecutionStrategy.AcceptParsedToken(this, current);
+    }
+
+    private void CheckForCloseProcToken(PostscriptValue current)
+    {
+        if (current.Equals(CloseProc)) deferredExecutionCount--;
+    }
+
+    private void CheckForOpenProcToken(PostscriptValue current)
+    {
+        if (current.Equals(OpenProc)) deferredExecutionCount++;
     }
 }

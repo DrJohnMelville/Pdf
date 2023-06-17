@@ -109,7 +109,8 @@ namespace Melville.Postscript.Interpreter.Values
         }
 
         public static PostscriptValue CreateArray(params PostscriptValue[] values) =>
-            new(WrapInPostScriptArray(values), PostscriptBuiltInOperations.PushArgument, 0);
+            new(WrapInPostScriptArray(values), 
+                PostscriptBuiltInOperations.PushArgument, 0);
 
         private static PostscriptArray WrapInPostScriptArray(PostscriptValue[] values) =>
             values.Length < 1 ? PostscriptArray.Empty : 

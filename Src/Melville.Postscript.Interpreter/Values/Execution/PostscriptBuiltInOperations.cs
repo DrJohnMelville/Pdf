@@ -6,25 +6,33 @@ namespace Melville.Postscript.Interpreter.Values.Execution;
 /// <summary>
 /// Executable operations that are built into the tokenizer.
 /// </summary>
-[MacroItem("PushArgument", "engine.OperandStack.Push(value);", "Push the argument onto the stack.")]
-[MacroItem("ExecuteFromDictionary", """
-        var referencedValue = engine.DictionaryStack.Get(value);
-        referencedValue.ExecutionStrategy.Execute(engine, value);
-        """, "Lookup the name in the dictionary and executing the resulting object.")]
-[MacroCode("""
-        /// <summary>
-        /// ~2~ 
-        /// </summary>
-                public static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
-        private sealed class ~0~BuiltInFuncImpl: BuiltInFunction
-        {
-            public override void Execute(PostscriptEngine engine, in PostscriptValue value)
-            {
-                ~1~
-            }
-        }
-
-        """)]
 public static partial class PostscriptBuiltInOperations
 {
+    /// <summary>
+    /// Push the argument onto the stack. 
+    /// </summary>
+    public static IExternalFunction PushArgument = new PushArgumentBuiltInFuncImpl();
+    private sealed class PushArgumentBuiltInFuncImpl : BuiltInFunction
+    {
+        public override void Execute(PostscriptEngine engine, in PostscriptValue value)
+        {
+            engine.OperandStack.Push(value);
+        }
+
+        public override bool IsExecutable => false;
+    }
+
+    /// <summary>
+    /// Lookup the name in the dictionary and executing the resulting object. 
+    /// </summary>
+    public static IExternalFunction ExecuteFromDictionary = new ExecuteFromDictionaryBuiltInFuncImpl();
+    private sealed class ExecuteFromDictionaryBuiltInFuncImpl : BuiltInFunction
+    {
+        public override void Execute(PostscriptEngine engine, in PostscriptValue value)
+        {
+            var referencedValue = engine.DictionaryStack.Get(value);
+            referencedValue.ExecutionStrategy.Execute(engine, value);
+        }
+    }
 }
+

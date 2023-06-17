@@ -140,4 +140,12 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
             PostscriptValueFactory.CreateString(rest, StringKind.String),
         _ => PostscriptValueFactory.CreateString(s, StringKind.Name)
     };
+
+    public PostscriptValue AsLiteral() =>
+        new(valueStrategy, ExecutionSelector.Literal, memento);
+    public PostscriptValue AsExecutable() =>
+        new(valueStrategy, ExecutionSelector.Executable, memento);
+
+    private IExecutionSelector ExecutionSelector =>
+        TryGet(out IExecutionSelector sel) ? sel : AlwaysLiteralSelector.Instance;
 }

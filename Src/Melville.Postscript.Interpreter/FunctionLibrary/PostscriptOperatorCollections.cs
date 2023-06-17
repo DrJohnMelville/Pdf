@@ -91,6 +91,8 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("array"u8, PostscriptOperators.EmptyArray)
         .WithSystemFunction("["u8, PostscriptOperators.PushMark)
         .WithSystemFunction("]"u8, PostscriptOperators.ArrayFromStack)
+        .WithSystemFunction("{"u8, PostscriptOperators.PushMark)
+        .WithSystemFunction("}"u8, PostscriptOperators.ProcFromStack)
         .WithSystemFunction("length"u8, PostscriptOperators.CompositeLength)
         .WithSystemFunction("get"u8, PostscriptOperators.CompositeGet)
         .WithSystemFunction("put"u8, PostscriptOperators.CompositePut)
@@ -100,7 +102,25 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("aload"u8, PostscriptOperators.ALoad)
         .WithSystemFunction("currentpacking"u8, PostscriptOperators.CurrentPacking)
         .WithSystemFunction("setpacking"u8, PostscriptOperators.SetPacking)
-        .WithSystemFunction("packedarray"u8, PostscriptOperators.PackedArray)
+        .WithSystemFunction("packedarray"u8, PostscriptOperators.PackedArray);
 
+    /// <summary>
+    /// Implement the type conversion operators in section 8.1
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static PostscriptEngine WithcConversionOperators(this PostscriptEngine engine) => engine
+        .WithSystemFunction("cvx"u8, PostscriptOperators.MakeExecutable)
+        .WithSystemFunction("cvlit"u8, PostscriptOperators.MakeLitreral)
+        .WithSystemFunction("xcheck"u8, PostscriptOperators.IsExecutable)
+    ;
+
+    /// <summary>
+    /// Implement the control operators in section 8.1
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static PostscriptEngine WithcControlOperators(this PostscriptEngine engine) => engine
+       .WithSystemFunction("exec"u8, PostscriptOperators.Execute)
     ;
 }

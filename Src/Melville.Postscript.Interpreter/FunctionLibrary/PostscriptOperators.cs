@@ -59,7 +59,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
 //Array Operators
 [MacroItem("EmptyArray", "engine.Push(PostscriptValueFactory.CreateSizedArray(engine.PopAs<int>()));", "Create an array of a given number of nulls")]
-[MacroItem("ArrayFromStack", "engine.OperandStack.MarkedSpanToArray();", "Create an array from the topmost marked region on the stack")]
+[MacroItem("ArrayFromStack", "engine.OperandStack.MarkedSpanToArray(false);", "Create an array from the topmost marked region on the stack")]
 [MacroItem("CompositeLength", "engine.Push(engine.PopAs<IPostscriptComposite>().Length);", "Create an array from the topmost marked region on the stack")]
 [MacroItem("CompositeGet", """
     var index = engine.OperandStack.Pop();
@@ -99,17 +99,26 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("SetPacking", "engine.PackingMode = engine.PopAs<bool>();","Read current packing mode")]
 [MacroItem("PackedArray", "engine.OperandStack.CreatePackedArray();","Create an array from the stack")]
 
-
+// Control Operators
+[MacroItem("Execute", """
+        var token = engine.OperandStack.Pop();
+        token.ExecutionStrategy.Execute(engine, token);
+    """, "Execute the top token on the stack")]
+[MacroItem("MakeExecutable", """
+        engine.Push(engine.OperandStack.Pop().AsExecutable());
+    """, "Make the top token executable")]
+[MacroItem("MakeLitreral", """
+        engine.Push(engine.OperandStack.Pop().AsLiteral());
+    """, "Make the top token executable")]
+[MacroItem("IsExecutable", """
+        engine.Push(engine.OperandStack.Pop().ExecutionStrategy.IsExecutable);
+        """, "Check if top token is executable")]
+[MacroItem("ProcFromStack", "engine.OperandStack.MarkedSpanToArray(true);", "Create an array from the topmost marked region on the stack")]
 public static partial class PostscriptOperators
 {
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
-        engine.PopAs<int, int>(out var index, out var length);
-        var token = engine.OperandStack.Pop();
-        var array = token.Get<IPostscriptArray>();
-        engine.Push(
-            new PostscriptValue(array.IntervalFrom(index, length), token.ExecutionStrategy, 0));
     }
 #endif
 

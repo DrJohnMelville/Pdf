@@ -29,12 +29,19 @@ internal static class OperatorStackOperations
         return items.Count;
     }
 
-    public static void MarkedSpanToArray(this PostscriptStack<PostscriptValue> items)
+    public static void MarkedSpanToArray(
+        this PostscriptStack<PostscriptValue> items, bool asExecutable)
     {
         var ops = items.CollectionAsSpan()[^ComputeCountToMark(items)..];
         var array = PostscriptValueFactory.CreateArray(ops.ToArray());
         items.ClearToMark();
-        items.Push(array);
+        items.Push(SetExecutableFlag(asExecutable, array));
+    }
+
+    private static PostscriptValue SetExecutableFlag(bool asExecutable, PostscriptValue array)
+    {
+        if (asExecutable) array = array.AsExecutable();
+        return array;
     }
 
     public static void PolymorphicCopy(this PostscriptStack<PostscriptValue> items)

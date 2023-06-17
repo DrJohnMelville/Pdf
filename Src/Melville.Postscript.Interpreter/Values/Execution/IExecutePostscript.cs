@@ -31,4 +31,10 @@ public interface IExecutePostscript
     /// <param name="text">The text that represents the unadorned value</param>
     /// <returns>The text as it should be displayed</returns>
     string WrapTextDisplay(string text);
+
+    /// <summary>
+    /// Determine if this strategy corresponds to an executable object.
+    /// This is the value returned from the xcheck operator.
+    /// </summary>
+    bool IsExecutable { get; }
 }
