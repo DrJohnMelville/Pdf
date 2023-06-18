@@ -3,7 +3,7 @@ using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-#warning -- eventually this needs to implement IPdfComposite, and need to promote short strings to long strings on dup
+#warning -- eventually this needs to implement IPdfComposite
 
 internal sealed partial class PostscriptLongString: PostscriptString
 {

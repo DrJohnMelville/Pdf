@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
@@ -25,7 +26,7 @@ public class PostscriptEngine
     /// <summary>
     /// The current callstack
     /// </summary>
-    public PostscriptStack<IAsyncEnumerator<PostscriptValue>> ExecutionStack { get; } = new(0);
+    public ExecutionStack ExecutionStack { get; } = new();
 
     private int deferredExecutionCount = 0;
 
@@ -66,30 +67,17 @@ public class PostscriptEngine
     internal ValueTask ExecuteAsync(Tokenizer tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
-        PushTokenizerOnExecuteStack(tokens);
+        ExecutionStack.Push(tokens.GetAsyncEnumerator(), "Executed Code"u8);
         return MainExecutionLoopAsync();
-    }
-
-    internal void PushTokenizerOnExecuteStack(Tokenizer tokens)
-    {
-        ExecutionStack.Push(tokens.GetAsyncEnumerator());
     }
 
     private async ValueTask MainExecutionLoopAsync()
     {
-        while (ExecutionStack.Count > 0)
+        while (true)
         {
-            var nextInstructionSource = ExecutionStack.Peek();
-            if (await nextInstructionSource.MoveNextAsync())
-            {
-                AcceptToken(nextInstructionSource.Current);
-            }
-            else
-            {
-#pragma warning disable CS4014
-                ExecutionStack.Pop();
-#pragma warning restore CS4014
-            }
+            var token = await ExecutionStack.NextInstructionAsync();
+            if (!token.HasValue) return;
+            AcceptToken(token.Value);
         }
     }
 

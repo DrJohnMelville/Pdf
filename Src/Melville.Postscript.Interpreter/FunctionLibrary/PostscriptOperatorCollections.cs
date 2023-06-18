@@ -121,8 +121,7 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("cvr"u8, PostscriptOperators.ConvertToDouble)
         .WithSystemFunction("cvn"u8, PostscriptOperators.ConvertToName)
         .WithSystemFunction("cvs"u8, PostscriptOperators.ConvertToString)
-        .WithSystemFunction("cvrs"u8, PostscriptOperators.ConvertToRadixString)
-    ;
+        .WithSystemFunction("cvrs"u8, PostscriptOperators.ConvertToRadixString);
 
     /// <summary>
     /// Implement the control operators in section 8.1
@@ -131,5 +130,13 @@ public static class PostscriptOperatorCollections
     /// <returns>The engine passed in the first parameter</returns>
     public static PostscriptEngine WithcControlOperators(this PostscriptEngine engine) => engine
        .WithSystemFunction("exec"u8, PostscriptOperators.Execute)
+       .WithSystemFunction("if"u8, PostscriptOperators.If)
+       .WithSystemFunction("ifelse"u8, PostscriptOperators.IfElse)
+       .WithSystemFunction("for"u8, PostscriptOperators.For)
+       .WithSystemFunction("repeat"u8, PostscriptOperators.Repeat)
+       .WithSystemFunction("exit"u8, PostscriptOperators.Exit)
+       .WithSystemFunction("loop"u8, PostscriptOperators.Loop)
+       .WithSystemFunction("stopped"u8, PostscriptOperators.StopRegion)
+       .WithSystemFunction("stop"u8, PostscriptOperators.Stop)
     ;
 }

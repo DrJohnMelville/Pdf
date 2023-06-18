@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
 // used in generated files
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Strings;
-using Microsoft.CodeAnalysis.CSharp.Syntax; // used in generated files
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualBasic.CompilerServices; // used in generated files
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
@@ -102,11 +104,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("SetPacking", "engine.PackingMode = engine.PopAs<bool>();","Read current packing mode")]
 [MacroItem("PackedArray", "engine.OperandStack.CreatePackedArray();","Create an array from the stack")]
 
-// Control Operators
-[MacroItem("Execute", """
-        var token = engine.OperandStack.Pop();
-        token.ExecutionStrategy.Execute(engine, token);
-    """, "Execute the top token on the stack")]
+// Conversion operators
 [MacroItem("MakeExecutable", """
         engine.Push(engine.OperandStack.Pop().AsExecutable());
     """, "Make the top token executable")]
@@ -140,17 +138,56 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         engine.Push(
             new RadixPrinter(number, radix, buffer.Get<Memory<byte>>()).CreateValue());
     """, "Convert number to string with a particular radix")]
+
+// Control Operators
+[MacroItem("Execute", """
+        var token = engine.OperandStack.Pop();
+        token.ExecutionStrategy.Execute(engine, token);
+    """, "Execute the top token on the stack")]
+[MacroItem("If", """
+        var proc = engine.OperandStack.Pop();
+        if (engine.PopAs<bool>()) proc.ExecutionStrategy.Execute(engine, proc);
+    """, "If operatiom")]
+[MacroItem("IfElse", """
+        var elseProc = engine.OperandStack.Pop();
+        var proc = engine.OperandStack.Pop();
+        if (engine.PopAs<bool>()) 
+            proc.ExecutionStrategy.Execute(engine, proc);
+        else
+            elseProc.ExecutionStrategy.Execute(engine, elseProc);
+    """, "If/Else operation")]
+[MacroItem("For", """
+        var proc = engine.OperandStack.Pop();
+        var limit = engine.PopAs<double>();
+        engine.PopAs<double, double>(out var initial, out var increment);
+        engine.ExecutionStack.PushLoop(
+            LoopSources.ForAsync(initial, increment, limit, proc), "For Loop"u8);
+    """, "For Loop")]
+[MacroItem("Repeat", """
+        var proc = engine.OperandStack.Pop();
+        var count = engine.PopAs<int>();
+        engine.ExecutionStack.PushLoop(
+            LoopSources.RepeatAsync(count, proc), "Repeat Loop"u8);
+    """, "Repeat")]
+[MacroItem("Loop", """
+        var proc = engine.OperandStack.Pop();
+        engine.ExecutionStack.PushLoop(LoopSources.LoopAsync(proc), "Loop Loop"u8);
+    """, "Loop")]
+[MacroItem("Exit", "engine.ExecutionStack.ExitLoop();", "exit out of an enclosing loop")]
+[MacroItem("StopRegion", """
+        engine.ExecutionStack.Push(
+            new StopContext(engine.OperandStack.Pop()), "Stop Context"u8);
+    """, "Run a proc in a stop context")]
+[MacroItem("Stop", """
+        engine.ExecutionStack.HandleStop();
+        """, "Jump out of a stop region")]
 public static partial class PostscriptOperators
 {
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
-        var buffer = engine.OperandStack.Pop();
-        var radix = engine.PopAs<int>();
-        var number = engine.OperandStack.Pop();
-        engine.Push(
-            new RadixPrinter(number, radix, buffer.Get<Memory<byte>>()).CreateValue());
-    }
+        engine.ExecutionStack.ExitLoop();
+    } 
 #endif
 
     [MacroCode("""

@@ -149,7 +149,6 @@ public class OperatorsTest
             .WithStackOperators().WithArrayOperators().WithSystemTokens());
 
     [Theory]
-    [InlineData("10 exec", "01: 10")]
     [InlineData("/add cvx", "01: add")]
     [InlineData("/add cvx cvlit", "01: /add")]
     [InlineData("5 2 /mul cvx exec", "01: 10")]
@@ -161,9 +160,6 @@ public class OperatorsTest
     [InlineData("/Name cvx xcheck", "01: true")]
     [InlineData("{add} xcheck", "01: true")]
     [InlineData("{add} xcheck", "01: true")]
-    [InlineData("{2 3 add} exec", "01: 5")]
-    [InlineData("2 { 3 add} exec", "01: 5")]
-    [InlineData("(2 3 add) cvx exec", "01: 5")]
     [InlineData("1 executeonly", "01: 1")]
     [InlineData("1 readonly", "01: 1")]
     [InlineData("1 noaccess", "01: 1")]
@@ -184,6 +180,29 @@ public class OperatorsTest
     [InlineData("(TESTING) dup 123.4 16 3 -1 roll cvrs", "01: (7B)\r\n02: (7BSTING)")]
     [InlineData("(TESTING) dup 0 16 3 -1 roll cvrs", "01: (0)\r\n02: (0ESTING)")]
     public Task ExecutionAndConversionAsync(string code, string result) =>
+        RunTestOnAsync(code, result, new PostscriptEngine()
+            .WithcConversionOperators().WithcControlOperators().WithMathOperators()
+            .WithSystemTokens().WithArrayOperators().WithStackOperators());
+
+    [Theory]
+    [InlineData("10 exec", "01: 10")]
+    [InlineData("{2 3 add} exec", "01: 5")]
+    [InlineData("2 { 3 add} exec", "01: 5")]
+    [InlineData("(2 3 add) cvx exec", "01: 5")]
+    [InlineData("true {1} if", "01: 1")]
+    [InlineData("false {1} if", "")]
+    [InlineData("true {1} {2} ifelse", "01: 1")]
+    [InlineData("false {1} {2} ifelse", "01: 2")]
+    [InlineData("0 1 1 4 {add} for", "01: 10")]
+    [InlineData("1 2 6 {} for", "01: 5\r\n02: 3\r\n03: 1")]
+    [InlineData("3 -.5 1 { } for", "01: 1\r\n02: 1.5\r\n03: 2\r\n04: 2.5\r\n05: 3")]
+    [InlineData("4 {1} repeat", "01: 1\r\n02: 1\r\n03: 1\r\n04: 1")]
+    [InlineData("4 {1 exit} repeat", "01: 1")]
+    [InlineData("4 true false false false { {exit} if} loop", "01: 4")]
+    [InlineData("1 {4 stop 5} stopped 6", "01: 6\r\n02: true\r\n03: 4\r\n04: 1")]
+    [InlineData("1 {4 5} stopped 6", "01: 6\r\n02: false\r\n03: 5\r\n04: 4\r\n05: 1")]
+    [InlineData("1 {countexecstack array dup execstack stop} stopped", "")]
+    public Task ControlOperatorsAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
             .WithSystemTokens().WithArrayOperators().WithStackOperators());
