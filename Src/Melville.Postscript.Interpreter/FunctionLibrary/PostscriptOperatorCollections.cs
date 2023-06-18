@@ -33,8 +33,7 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("true"u8, PostscriptOperators.PushTrue)
         .WithSystemFunction("false"u8, PostscriptOperators.PushFalse)
         .WithSystemFunction("null"u8, PostscriptOperators.PushNull);
-
-
+#warning need to look through all the stack operators to make sure we promote strings on copy
     /// <summary>
     /// Implement the stack operators in section 8.1
     /// </summary>
@@ -113,6 +112,16 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("cvx"u8, PostscriptOperators.MakeExecutable)
         .WithSystemFunction("cvlit"u8, PostscriptOperators.MakeLitreral)
         .WithSystemFunction("xcheck"u8, PostscriptOperators.IsExecutable)
+        .WithSystemFunction("executeonly"u8, PostscriptOperators.Nop)
+        .WithSystemFunction("readonly"u8, PostscriptOperators.Nop)
+        .WithSystemFunction("noaccess"u8, PostscriptOperators.Nop)
+        .WithSystemFunction("rcheck"u8, PostscriptOperators.FakeAccessCheck)
+        .WithSystemFunction("wcheck"u8, PostscriptOperators.FakeAccessCheck)
+        .WithSystemFunction("cvi"u8, PostscriptOperators.ConvertToInt)
+        .WithSystemFunction("cvr"u8, PostscriptOperators.ConvertToDouble)
+        .WithSystemFunction("cvn"u8, PostscriptOperators.ConvertToName)
+        .WithSystemFunction("cvs"u8, PostscriptOperators.ConvertToString)
+        .WithSystemFunction("cvrs"u8, PostscriptOperators.ConvertToRadixString)
     ;
 
     /// <summary>

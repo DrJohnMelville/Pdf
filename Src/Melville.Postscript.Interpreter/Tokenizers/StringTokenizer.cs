@@ -21,7 +21,7 @@ public readonly struct StringTokenizer<T, TState>
     {
         if (!TryCountChars(reader, out var length))
             return default(PostscriptValue).AsFalseValue(out value);
-        if (length > IByteStringSource.ShortStringLimit)
+        if (length > PostscriptString.ShortStringLimit)
             CreateLongString(ref reader, length, out value);
         else
             CreateShortString(ref reader, length, out value);

@@ -73,8 +73,6 @@ public partial class PostscriptStack<T> : List<T>
         Push(item2);
     }
 
-    internal void Duplicate() => Push(Peek());
-
     internal void CopyTop(int size)
     {
         using (EndBuffer(size, out var buffer))

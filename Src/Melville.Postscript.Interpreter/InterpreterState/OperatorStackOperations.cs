@@ -65,4 +65,16 @@ internal static class OperatorStackOperations
         }
         items.Push(PostscriptValueFactory.CreateArray(buffer));
     }
+
+    public static void Duplicate(this PostscriptStack<PostscriptValue> items)
+    {
+        TryPromoteString(ref items.CollectionAsSpan()[^1]);
+        items.Push(items.Peek());
+    }
+
+    private static void TryPromoteString(ref PostscriptValue value)
+    {
+        value = value.TryMakeLongString();
+    }
+
 }

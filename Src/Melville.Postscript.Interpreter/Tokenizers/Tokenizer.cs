@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.Streams;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
@@ -18,7 +19,10 @@ internal partial class Tokenizer: IAsyncEnumerable<PostscriptValue>
     public Tokenizer(Stream source) : this(PipeReader.Create(source))
     {
     }
-    public Tokenizer(string source) : this(new MemoryStream(Encoding.ASCII.GetBytes(source)))
+    public Tokenizer(string source) : this(Encoding.ASCII.GetBytes(source))
+    {
+    }
+    public Tokenizer(in Memory<byte> source) : this(new ReadMemoryAsStream(source))
     {
     }
 

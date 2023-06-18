@@ -81,7 +81,7 @@ namespace Melville.Postscript.Interpreter.Values
         /// <param name="kind">kind of name to create</param>
         public static PostscriptValue CreateString(in ReadOnlySpan<byte> data, StringKind kind)
         {
-            if (data.Length > IByteStringSource.ShortStringLimit) 
+            if (data.Length > PostscriptString.ShortStringLimit) 
                 return CreateLongString(data.ToArray(), kind);
 ;            Int128 value = 0;
             for (int i = data.Length -1; i >= 0; i--)
@@ -94,7 +94,7 @@ namespace Melville.Postscript.Interpreter.Values
             return new PostscriptValue(kind.ShortStringStraegy, kind.DefaultAction, value);
         }
 
-        public static PostscriptValue CreateLongString(byte[] data, StringKind kind) => 
+        public static PostscriptValue CreateLongString(Memory<byte> data, StringKind kind) => 
             new(
                 ReportAllocation(new PostscriptLongString(kind, data)), kind.DefaultAction, 0);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Execution;
@@ -148,4 +149,12 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
 
     private IExecutionSelector ExecutionSelector =>
         TryGet(out IExecutionSelector sel) ? sel : AlwaysLiteralSelector.Instance;
+
+    public PostscriptValue TryMakeLongString()
+    {
+        return valueStrategy == StringKind.String.ShortStringStraegy
+            ? PostscriptValueFactory.CreateLongString(
+                Get<Memory<byte>>(), StringKind.String)
+            : this;
+    }
 }

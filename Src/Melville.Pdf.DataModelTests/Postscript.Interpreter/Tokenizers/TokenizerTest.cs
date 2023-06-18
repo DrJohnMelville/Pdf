@@ -35,7 +35,7 @@ public class TokenizerTest
     {
         var token1 = await sut.NextTokenAsync();
         Assert.Equal(name, token1.ToString());
-        Assert.False(token1.TryGet<double>(out _));
+        Assert.False(token1.TryGet<bool>(out _));
     }
 
     [Theory]

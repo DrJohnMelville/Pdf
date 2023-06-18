@@ -15,7 +15,8 @@ public class ExecutionTest
     {
         var tokens = new Tokenizer("5 10 15");
         var engine = new PostscriptEngine();
-        await engine.ExecuteAsync(tokens);
+        await engine.
+            ExecuteAsync(tokens);
         Assert.Equal(3, engine.OperandStack.Count);
         Assert.Equal(15, engine.OperandStack.Pop().Get<int>());
         Assert.Equal(10, engine.OperandStack.Pop().Get<int>());

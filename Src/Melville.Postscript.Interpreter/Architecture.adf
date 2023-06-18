@@ -9,3 +9,4 @@ Library => Interpretation
 
 #External dependencies everyone can use
 * =>  System.*
+* => Melville.Parsing.*

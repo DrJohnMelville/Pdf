@@ -9,7 +9,7 @@ internal sealed partial class PostscriptLongString: PostscriptString
 {
     [FromConstructor]private readonly Memory<byte> value;
 
-    public override ReadOnlySpan<byte> GetBytes(in Int128 memento, in Span<byte> scratch) =>
+    protected override Span<byte> GetBytes(in Int128 memento, in Span<byte> scratch) =>
         value.Span;
 
     public override int GetHashCode()
@@ -18,4 +18,7 @@ internal sealed partial class PostscriptLongString: PostscriptString
         hc.AddBytes(value.Span);
         return hc.ToHashCode();
     }
+
+
+    protected override Memory<byte> ValueAsMemory(in Int128 memento) => value;
 }

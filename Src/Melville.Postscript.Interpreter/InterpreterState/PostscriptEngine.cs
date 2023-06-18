@@ -66,8 +66,13 @@ public class PostscriptEngine
     internal ValueTask ExecuteAsync(Tokenizer tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
-        ExecutionStack.Push(tokens.GetAsyncEnumerator());
+        PushTokenizerOnExecuteStack(tokens);
         return MainExecutionLoopAsync();
+    }
+
+    internal void PushTokenizerOnExecuteStack(Tokenizer tokens)
+    {
+        ExecutionStack.Push(tokens.GetAsyncEnumerator());
     }
 
     private async ValueTask MainExecutionLoopAsync()

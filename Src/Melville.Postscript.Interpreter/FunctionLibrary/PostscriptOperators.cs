@@ -1,8 +1,11 @@
 ﻿using System;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
-using Melville.Postscript.Interpreter.Values; // used in generated files
-using Melville.Postscript.Interpreter.Values.Execution; // used in generated files
+using Melville.Postscript.Interpreter.Values;
+// used in generated files
+using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.Postscript.Interpreter.Values.Strings;
+using Microsoft.CodeAnalysis.CSharp.Syntax; // used in generated files
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
@@ -114,11 +117,39 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         engine.Push(engine.OperandStack.Pop().ExecutionStrategy.IsExecutable);
         """, "Check if top token is executable")]
 [MacroItem("ProcFromStack", "engine.OperandStack.MarkedSpanToArray(true);", "Create an array from the topmost marked region on the stack")]
+[MacroItem("Nop", "// do nothing", "No Operation -- does nothing")]
+[MacroItem("FakeAccessCheck", "engine.OperandStack.Pop(); engine.Push(true);", "No Operation -- does nothing")]
+[MacroItem("ConvertToInt", "engine.Push(engine.PopAs<long>());", "Convert To int")]
+[MacroItem("ConvertToDouble", "engine.Push(engine.PopAs<double>());", "Convert To int")]
+[MacroItem("ConvertToName", """
+        var op = engine.OperandStack.Pop();
+        var text = op.Get<Memory<byte>>();
+        engine.Push(PostscriptValueFactory.CreateString(text.Span, 
+            op.ExecutionStrategy.IsExecutable ? 
+                StringKind.Name : StringKind.LiteralName));
+    """, "Convert To int")]
+[MacroItem("ConvertToString", """
+        engine.Push(
+            PostscriptValueFactory.CreateString(
+                engine.OperandStack.Pop().ToString(), StringKind.String));
+    """, "Convert To int")]
+[MacroItem("ConvertToRadixString", """
+        var buffer = engine.OperandStack.Pop();
+        var radix = engine.PopAs<int>();
+        var number = engine.OperandStack.Pop();
+        engine.Push(
+            new RadixPrinter(number, radix, buffer.Get<Memory<byte>>()).CreateValue());
+    """, "Convert number to string with a particular radix")]
 public static partial class PostscriptOperators
 {
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
+        var buffer = engine.OperandStack.Pop();
+        var radix = engine.PopAs<int>();
+        var number = engine.OperandStack.Pop();
+        engine.Push(
+            new RadixPrinter(number, radix, buffer.Get<Memory<byte>>()).CreateValue());
     }
 #endif
 

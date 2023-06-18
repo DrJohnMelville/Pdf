@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values;
@@ -9,9 +11,12 @@ namespace Melville.Postscript.Interpreter.Values;
 internal abstract partial class PostscriptString : 
     IPostscriptValueStrategy<string>, 
     IPostscriptValueStrategy<StringKind>, 
-    IByteStringSource,
     IPostscriptValueComparison,
-    IPostscriptValueStrategy<IExecutionSelector>
+    IPostscriptValueStrategy<IExecutionSelector>,
+    IPostscriptValueStrategy<Memory<byte>>,
+    IPostscriptValueStrategy<long>,
+    IPostscriptValueStrategy<double>,
+    IPostscriptValueStrategy<ForcedLongString>
 {
     [FromConstructor] private readonly StringKind stringKind;
     public string GetValue(in Int128 memento) => 
@@ -19,21 +24,51 @@ internal abstract partial class PostscriptString :
 
     private string RenderStringValue(Int128 memento) =>
         Encoding.ASCII.GetString(
-            GetBytes(in memento, stackalloc byte[IByteStringSource.ShortStringLimit]));
+            GetBytes(in memento, stackalloc byte[ShortStringLimit]));
 
     StringKind IPostscriptValueStrategy<StringKind>.GetValue(in Int128 memento) => stringKind;
         
     IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(
         in Int128 memento) => stringKind.ExecutionSelector;
 
-    public abstract ReadOnlySpan<byte> GetBytes(in Int128 memento, in Span<byte> scratch);
+    protected abstract Span<byte> GetBytes(in Int128 memento, in Span<byte> scratch);
    
     public virtual bool Equals(in Int128 memento, object otherStrategy, in Int128 otherMemento)
     {
         if (otherStrategy is not PostscriptString otherASPss) return false;
-        var myBits = GetBytes(in memento, stackalloc byte[IByteStringSource.ShortStringLimit]);
+        var myBits = GetBytes(in memento, stackalloc byte[ShortStringLimit]);
         var otherBits= otherASPss.GetBytes(in otherMemento, 
-            stackalloc byte[IByteStringSource.ShortStringLimit]);
+            stackalloc byte[ShortStringLimit]);
         return myBits.SequenceEqual(otherBits);
     }
+
+    Memory<byte> IPostscriptValueStrategy<Memory<byte>>.GetValue(in Int128 memento) =>
+        ValueAsMemory(memento);
+
+    protected virtual Memory<byte> ValueAsMemory(in Int128 memento) =>
+        GetBytes(in memento, stackalloc byte[ShortStringLimit])
+            .ToArray();
+
+    long IPostscriptValueStrategy<long>.GetValue(in Int128 memento) =>
+        ParseAsNumber(memento).Get<long>();
+
+    double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) =>
+        ParseAsNumber(memento).Get<double>();
+    
+    public PostscriptValue ParseAsNumber(in Int128 memento) =>
+        NumberTokenizer.TryDetectNumber(
+            GetBytes(in memento, stackalloc byte[ShortStringLimit]), 
+            out var result)
+            ? result
+            : throw new PostscriptException($"Could not convert {GetValue(memento)} into a number");
+
+    /// <summary>
+    /// The longest string which can be packed into an PostscriptValue.  Strings longer than this
+    /// will be stored on the heap and the heap buffer returned from GetBytes.
+    /// </summary>
+    public const int ShortStringLimit = 18;
+
+    ForcedLongString IPostscriptValueStrategy<ForcedLongString>.GetValue(in Int128 memento) =>
+        new(PostscriptValueFactory.CreateLongString(
+            ValueAsMemory(memento), StringKind.String));
 }

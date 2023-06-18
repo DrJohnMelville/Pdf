@@ -163,11 +163,30 @@ public class OperatorsTest
     [InlineData("{add} xcheck", "01: true")]
     [InlineData("{2 3 add} exec", "01: 5")]
     [InlineData("2 { 3 add} exec", "01: 5")]
-//    [InlineData("(2 3 add) cvx exec", "01: 5")]
-    public Task ExecutionTest(string code, string result) =>
+    [InlineData("(2 3 add) cvx exec", "01: 5")]
+    [InlineData("1 executeonly", "01: 1")]
+    [InlineData("1 readonly", "01: 1")]
+    [InlineData("1 noaccess", "01: 1")]
+    [InlineData("1 rcheck", "01: true")]
+    [InlineData("1 wcheck", "01: true")]
+    [InlineData("123.4 cvi", "01: 123")]
+    [InlineData("123 cvr", "01: 123")]
+    [InlineData("(123.4) cvi", "01: 123")]
+    [InlineData("(Hello) cvn", "01: /Hello")]
+    [InlineData("(Hello) cvx cvn", "01: Hello")]
+    [InlineData("/Hello cvs", "01: (/Hello)")]
+    [InlineData("/Hello cvs", "01: (/Hello)")]
+    [InlineData("(TESTING) dup 123 10 3 -1 roll cvrs", "01: (123)\r\n02: (123TING)")]
+    [InlineData("(TESTING) dup -123 10 3 -1 roll cvrs", "01: (-123)\r\n02: (-123ING)")]
+    [InlineData("(TESTING) dup 123.4 10 3 -1 roll cvrs", "01: (123.4)\r\n02: (123.4NG)")]
+    [InlineData("(TESTING) dup 123 16 3 -1 roll cvrs", "01: (7B)\r\n02: (7BSTING)")]
+    [InlineData("(TESTINGX) dup -123 16 3 -1 roll cvrs", "01: (FFFFFF85)\r\n02: (FFFFFF85)")]
+    [InlineData("(TESTING) dup 123.4 16 3 -1 roll cvrs", "01: (7B)\r\n02: (7BSTING)")]
+    [InlineData("(TESTING) dup 0 16 3 -1 roll cvrs", "01: (0)\r\n02: (0ESTING)")]
+    public Task ExecutionAndConversionAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
-            .WithSystemTokens().WithArrayOperators());
+            .WithSystemTokens().WithArrayOperators().WithStackOperators());
 
 
     private static async Task RunTestOnAsync(string code, string result, PostscriptEngine engine)
