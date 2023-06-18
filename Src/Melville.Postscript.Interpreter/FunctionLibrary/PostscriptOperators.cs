@@ -161,17 +161,17 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         var limit = engine.PopAs<double>();
         engine.PopAs<double, double>(out var initial, out var increment);
         engine.ExecutionStack.PushLoop(
-            LoopSources.ForAsync(initial, increment, limit, proc), "For Loop"u8);
+            LoopSources.For(initial, increment, limit, proc), "For Loop"u8);
     """, "For Loop")]
 [MacroItem("Repeat", """
         var proc = engine.OperandStack.Pop();
         var count = engine.PopAs<int>();
         engine.ExecutionStack.PushLoop(
-            LoopSources.RepeatAsync(count, proc), "Repeat Loop"u8);
+            LoopSources.Repeat(count, proc), "Repeat Loop"u8);
     """, "Repeat")]
 [MacroItem("Loop", """
         var proc = engine.OperandStack.Pop();
-        engine.ExecutionStack.PushLoop(LoopSources.LoopAsync(proc), "Loop Loop"u8);
+        engine.ExecutionStack.PushLoop(LoopSources.Loop(proc), "Loop Loop"u8);
     """, "Loop")]
 [MacroItem("Exit", "engine.ExecutionStack.ExitLoop();", "exit out of an enclosing loop")]
 [MacroItem("StopRegion", """

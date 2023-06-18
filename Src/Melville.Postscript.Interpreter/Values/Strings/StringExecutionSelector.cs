@@ -6,7 +6,7 @@ using Melville.Postscript.Interpreter.Values.Execution;
 namespace Melville.Postscript.Interpreter.Values;
 
 [StaticSingleton()]
-public sealed partial class StringExecutionSelector: IExecutionSelector
+internal sealed partial class StringExecutionSelector: IExecutionSelector
 {
     public IExecutePostscript Literal => PushLiteralString.Instance;
     public IExecutePostscript Executable => StringExecutor.Instance;

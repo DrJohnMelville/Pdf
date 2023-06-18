@@ -142,15 +142,23 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
         _ => PostscriptValueFactory.CreateString(s, StringKind.Name)
     };
 
+    /// <summary>
+    /// Returns this value as a literal -- as returned from cvlit
+    /// </summary>
+    /// <returns></returns>
     public PostscriptValue AsLiteral() =>
         new(valueStrategy, ExecutionSelector.Literal, memento);
+    /// <summary>
+    /// Returns this value as an executable value -- as returned by cvx
+    /// </summary>
+    /// <returns></returns>
     public PostscriptValue AsExecutable() =>
         new(valueStrategy, ExecutionSelector.Executable, memento);
 
     private IExecutionSelector ExecutionSelector =>
-        TryGet(out IExecutionSelector sel) ? sel : AlwaysLiteralSelector.Instance;
+        TryGet(out IExecutionSelector? sel) ? sel : AlwaysLiteralSelector.Instance;
 
-    public PostscriptValue TryMakeLongString()
+    internal PostscriptValue TryMakeLongString()
     {
         return valueStrategy == StringKind.String.ShortStringStraegy
             ? PostscriptValueFactory.CreateLongString(

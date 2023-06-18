@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Melville.Postscript.Interpreter.Values.Execution;
 
-public partial class LoopEnumerator : IAsyncEnumerator<PostscriptValue>
+internal partial class LoopEnumerator : IAsyncEnumerator<PostscriptValue>
 {
     [FromConstructor]
     [DelegateTo]

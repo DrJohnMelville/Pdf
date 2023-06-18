@@ -16,7 +16,7 @@ internal partial class PostscriptNull :
 }
 
 [StaticSingleton()]
-public sealed partial class NullExecutionSelector : IExecutionSelector, IExecutePostscript
+internal sealed partial class NullExecutionSelector : IExecutionSelector, IExecutePostscript
 {
     public IExecutePostscript Literal => PostscriptBuiltInOperations.PushArgument;
     public IExecutePostscript Executable => this;

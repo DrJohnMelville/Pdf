@@ -15,7 +15,7 @@ public partial class ReadMemoryAsStream : DefaultBaseStream
     /// <summary>
     /// Create a ReadMemoryAsStream
     /// </summary>
-    /// <param name="source"><The source of data for the stresam/param>
+    /// <param name="source">The source of data for the stream</param>
     public ReadMemoryAsStream(Memory<byte> source) : base(true, false, true)
     {
         this.source = source;

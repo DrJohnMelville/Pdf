@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace Melville.Postscript.Interpreter.Values;
 
 [StaticSingleton]
-public partial class StringExecutor : IExecutePostscript
+internal partial class StringExecutor : IExecutePostscript
 {
     public void Execute(PostscriptEngine engine, in PostscriptValue value)
     {

@@ -8,7 +8,8 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
 internal static class LoopSources
 {
-    public static async IAsyncEnumerator<PostscriptValue> ForAsync(
+#pragma warning disable CS1998 // Async methods are needed to create state machine
+    public static async IAsyncEnumerator<PostscriptValue> For(
         double initial, double increment, double limit, PostscriptValue proc)
     {
         var innerItem = WrapBody(proc);
@@ -25,7 +26,7 @@ internal static class LoopSources
 
     private static bool NotDone(double d, double increment, double limit) => increment > 0 ? d <= limit : d >= limit;
 
-    public static async IAsyncEnumerator<PostscriptValue> RepeatAsync(
+    public static async IAsyncEnumerator<PostscriptValue> Repeat(
         int count, PostscriptValue proc)
     {
         var innerItem = WrapBody(proc);
@@ -35,7 +36,7 @@ internal static class LoopSources
         }
     }
 
-    public static async IAsyncEnumerator<PostscriptValue> LoopAsync(
+    public static async IAsyncEnumerator<PostscriptValue> Loop(
         PostscriptValue proc)
     {
         var innerItem = WrapBody(proc);

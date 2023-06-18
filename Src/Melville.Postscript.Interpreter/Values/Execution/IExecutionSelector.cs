@@ -11,7 +11,7 @@ internal interface IExecutionSelector
 }
 
 [StaticSingleton()]
-public sealed partial class AlwaysLiteralSelector: IExecutionSelector
+internal sealed partial class AlwaysLiteralSelector: IExecutionSelector
 {
     public IExecutePostscript Literal => PostscriptBuiltInOperations.PushArgument;
     public IExecutePostscript Executable => PostscriptBuiltInOperations.PushArgument;
