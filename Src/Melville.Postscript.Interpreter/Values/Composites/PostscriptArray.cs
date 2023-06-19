@@ -105,4 +105,6 @@ internal partial class PostscriptArray :
 
     public IAsyncEnumerator<PostscriptValue> GetAsyncEnumerator() => 
         new AsyncMemoryEnumerator(values);
+
+    public ForAllCursor CreateForAllCursor() => new(values, 1);
 }

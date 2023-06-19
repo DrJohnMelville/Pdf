@@ -43,4 +43,9 @@ internal partial class PostscriptLongDictionary :
 
     public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target) => 
         throw new NotImplementedException("Dictionary Copying is not implemented yet");
+
+    public ForAllCursor CreateForAllCursor()
+    {
+        throw new NotImplementedException("Dictionary forall is not implemented yet");
+    }
 }

@@ -177,6 +177,7 @@ public class OperatorsTest
     [InlineData("(TESTINGX) dup -123 16 3 -1 roll cvrs", "01: (FFFFFF85)\r\n02: (FFFFFF85)")]
     [InlineData("(TESTING) dup 123.4 16 3 -1 roll cvrs", "01: (7B)\r\n02: (7BSTING)")]
     [InlineData("(TESTING) dup 0 16 3 -1 roll cvrs", "01: (0)\r\n02: (0ESTING)")]
+    [InlineData("0 [1 2 3] {add} forall", "01: 6")]
     public Task ExecutionAndConversionAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
@@ -184,6 +185,7 @@ public class OperatorsTest
 
     [Theory]
     [InlineData("10 exec", "01: 10")]
+    [InlineData("/start cvx start", "01: start")]
     [InlineData("{2 3 add} exec", "01: 5")]
     [InlineData("2 { 3 add} exec", "01: 5")]
     [InlineData("(2 3 add) cvx exec", "01: 5")]
@@ -202,6 +204,8 @@ public class OperatorsTest
     [InlineData("{countexecstack} exec", "01: 2")]
     [InlineData("{countexecstack array execstack stop} stopped",
         "01: true\r\n02: [Executed Code Stop Context [countexecstack array execstack stop]]")]
+
+    [InlineData("1 { 2 { 3 quit} exec 4 } exec 5", "01: 3\r\n02: 2\r\n03: 1")]
     public Task ControlOperatorsAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()

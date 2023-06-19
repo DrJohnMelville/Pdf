@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
@@ -44,6 +45,24 @@ internal static class LoopSources
         {
             yield return innerItem;
         }
+    }
+
+    public static async IAsyncEnumerator<PostscriptValue> ForAll(
+        IPostscriptComposite composite, PostscriptValue proc)
+    {
+        var values = composite.CreateForAllCursor();
+        var buffer = ArrayPool<PostscriptValue>.Shared.Rent(values.ItemsPer);
+        var innerProc = WrapBody(proc);
+        var position = 0;
+        while (values.TryGetItr(buffer.AsSpan(0, values.ItemsPer), ref position))
+        {
+            for (var i = 0; i < values.ItemsPer; i++)
+            {
+                yield return buffer[i].AsLiteral();
+            }
+            yield return innerProc;
+        }
+        ArrayPool<PostscriptValue>.Shared.Return(buffer);
     }
 }
 

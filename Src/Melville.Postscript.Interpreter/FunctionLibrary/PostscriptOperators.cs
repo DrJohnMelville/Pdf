@@ -173,6 +173,11 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         var proc = engine.OperandStack.Pop();
         engine.ExecutionStack.PushLoop(LoopSources.Loop(proc), "Loop Loop"u8);
     """, "Loop")]
+[MacroItem("ForAll", """
+        var proc = engine.OperandStack.Pop();
+        var compsite = engine.PopAs<IPostscriptComposite>();
+        engine.ExecutionStack.PushLoop(LoopSources.ForAll(compsite, proc), "ForAll Loop");
+    """, "ForAll Loop")]
 [MacroItem("Exit", "engine.ExecutionStack.ExitLoop();", "exit out of an enclosing loop")]
 [MacroItem("StopRegion", """
         engine.ExecutionStack.Push(
@@ -185,11 +190,16 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         int len = engine.ExecutionStack.CopyTo(array);
         engine.Push(array.InitialSubArray(len, PostscriptBuiltInOperations.PushArgument));
     """, "copy execution stack to an array")]
+[MacroItem("Quit", "engine.ExecutionStack.Clear();","Stop interpreting")]
+[MacroItem("Start", "//Do nothing -- it is a no-op", "Explicitly executing start is undefined.  We implement it as a  no-op for maximum compatibility")]
 public static partial class PostscriptOperators
 {
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
+        var proc = engine.OperandStack.Pop();
+        var compsite = engine.PopAs<IPostscriptComposite>();
+        engine.ExecutionStack.PushLoop(LoopSources.ForAll(compsite, proc), "ForAll Loop");
     } 
 #endif
 

@@ -136,9 +136,12 @@ public static class PostscriptOperatorCollections
        .WithSystemFunction("repeat"u8, PostscriptOperators.Repeat)
        .WithSystemFunction("exit"u8, PostscriptOperators.Exit)
        .WithSystemFunction("loop"u8, PostscriptOperators.Loop)
+       .WithSystemFunction("forall"u8, PostscriptOperators.ForAll)
        .WithSystemFunction("stopped"u8, PostscriptOperators.StopRegion)
        .WithSystemFunction("stop"u8, PostscriptOperators.Stop)
        .WithSystemFunction("countexecstack"u8, PostscriptOperators.CountExecutionStack)
        .WithSystemFunction("execstack"u8, PostscriptOperators.ExecStack)
+       .WithSystemFunction("quit"u8, PostscriptOperators.Quit)
+       .WithSystemFunction("start"u8, PostscriptOperators.Start)
     ;
 }

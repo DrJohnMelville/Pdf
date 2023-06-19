@@ -59,13 +59,14 @@ public readonly struct ExecutionStack
         //To do so we will pre-seek the first instruction so that the stack contains
         // the next instruction to be executed at each level, and we will then
         // aggressively remove contexts between pulling the next token and returning it.
-        while (!await instructions.Peek().MoveNextAsync())
-        {
-            Pop();
-            if (instructions.Count == 0) return default;
-        }
 
-        return instructions.Peek().Current;
+        while (true)
+        {
+            if (instructions.Count == 0) return default;
+            if (await instructions.Peek().MoveNextAsync())
+                return instructions.Peek().Current;
+            Pop();
+        }
     }
 
     internal void HandleStop()
@@ -103,5 +104,11 @@ public readonly struct ExecutionStack
     {
         descriptions.CollectionAsSpan().CopyTo(target.AsSpan());
         return descriptions.Count;
+    }
+
+    public void Clear()
+    {
+        instructions.Clear();
+        descriptions.Clear();
     }
 }
