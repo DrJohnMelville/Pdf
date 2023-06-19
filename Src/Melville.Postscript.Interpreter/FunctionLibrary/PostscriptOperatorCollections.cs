@@ -138,5 +138,7 @@ public static class PostscriptOperatorCollections
        .WithSystemFunction("loop"u8, PostscriptOperators.Loop)
        .WithSystemFunction("stopped"u8, PostscriptOperators.StopRegion)
        .WithSystemFunction("stop"u8, PostscriptOperators.Stop)
+       .WithSystemFunction("countexecstack"u8, PostscriptOperators.CountExecutionStack)
+       .WithSystemFunction("execstack"u8, PostscriptOperators.ExecStack)
     ;
 }

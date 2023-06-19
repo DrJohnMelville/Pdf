@@ -199,7 +199,9 @@ public class OperatorsTest
     [InlineData("4 true false false false { {exit} if} loop", "01: 4")]
     [InlineData("1 {4 stop 5} stopped 6", "01: 6\r\n02: true\r\n03: 4\r\n04: 1")]
     [InlineData("1 {4 5} stopped 6", "01: 6\r\n02: false\r\n03: 5\r\n04: 4\r\n05: 1")]
-    [InlineData("1 {countexecstack array dup execstack stop} stopped", "")]
+    [InlineData("{countexecstack} exec", "01: 2")]
+    [InlineData("{countexecstack array execstack stop} stopped",
+        "01: true\r\n02: [Executed Code Stop Context [countexecstack array execstack stop]]")]
     public Task ControlOperatorsAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()

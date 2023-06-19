@@ -46,7 +46,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("CountStack", "engine.OperandStack.PushCount();", "Count the items on the stack.")]
 [MacroItem("PlaceMark", "engine.OperandStack.Push(PostscriptValueFactory.CreateMark());", "Place a mark on the stack")]
 [MacroItem("ClearToMark", "engine.OperandStack.ClearToMark();", "Clear down to and including a mark")]
-[MacroItem("CountToMark", "engine.OperandStack.CountToMark();", "Count items above the topmost mark mark")]
+[MacroItem("CountToMark", "engine.Push(engine.OperandStack.CountToMark());", "Count items above the topmost mark mark")]
 
 // Math Operators
 [MacroItem("RealDivide", "engine.PopAs(out double a, out double b); engine.Push(a/b);", "Floating point division")]
@@ -178,15 +178,18 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         engine.ExecutionStack.Push(
             new StopContext(engine.OperandStack.Pop()), "Stop Context"u8);
     """, "Run a proc in a stop context")]
-[MacroItem("Stop", """
-        engine.ExecutionStack.HandleStop();
-        """, "Jump out of a stop region")]
+[MacroItem("Stop", "engine.ExecutionStack.HandleStop();", "Jump out of a stop region")]
+[MacroItem("CountExecutionStack", "engine.Push((long)engine.ExecutionStack.Count);", "Count exection stack")]
+[MacroItem("ExecStack", """
+        var array = engine.PopAs<PostscriptArray>();
+        int len = engine.ExecutionStack.CopyTo(array);
+        engine.Push(array.InitialSubArray(len, PostscriptBuiltInOperations.PushArgument));
+    """, "copy execution stack to an array")]
 public static partial class PostscriptOperators
 {
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
-        engine.ExecutionStack.ExitLoop();
     } 
 #endif
 

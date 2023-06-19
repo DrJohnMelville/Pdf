@@ -158,11 +158,9 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     private IExecutionSelector ExecutionSelector =>
         TryGet(out IExecutionSelector? sel) ? sel : AlwaysLiteralSelector.Instance;
 
-    internal PostscriptValue TryMakeLongString()
-    {
-        return valueStrategy == StringKind.String.ShortStringStraegy
+    internal PostscriptValue AsCopyableValue() =>
+        valueStrategy == StringKind.String.ShortStringStraegy
             ? PostscriptValueFactory.CreateLongString(
                 Get<Memory<byte>>(), StringKind.String)
             : this;
-    }
 }

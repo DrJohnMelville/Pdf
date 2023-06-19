@@ -37,6 +37,8 @@ internal partial class PostscriptArray :
         return sb.ToString();
     }
 
+    public Span<PostscriptValue> AsSpan() => values.Span;
+
     IPostscriptComposite
         IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
     IPostscriptArray
@@ -83,16 +85,19 @@ internal partial class PostscriptArray :
         }
     }
 
-    public PostscriptValue CopyFrom(PostscriptValue source)
+    public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target)
     {
         if (!source.TryGet(out PostscriptArray? sourceArray))
             throw new PostscriptException("Cannot copy nonarray to an array");
         InsertAt(0, sourceArray);
-        return new PostscriptValue(
-            Length == sourceArray.Length? 
-                this: new PostscriptArray(values[..sourceArray.Length]),
-            source.ExecutionStrategy, 0);
+        return InitialSubArray(sourceArray.Length, target.ExecutionStrategy);
     }
+
+    public PostscriptValue InitialSubArray(int desiredLength, IExecutePostscript executable) =>
+        new(
+            Length == desiredLength? 
+                this: new PostscriptArray(values[..desiredLength]),
+            executable, 0);
 
     IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(
         in Int128 memento) => 

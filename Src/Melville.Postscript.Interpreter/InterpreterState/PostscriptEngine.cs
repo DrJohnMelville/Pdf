@@ -18,7 +18,7 @@ public class PostscriptEngine
     /// <summary>
     /// This is the current operation stack for the engine;
     /// </summary>
-    public PostscriptStack<PostscriptValue> OperandStack { get; } = new(0);
+    public OperandStack OperandStack { get; } = new();
     /// <summary>
     /// The current dictionary stack from which names are resolved
     /// </summary>

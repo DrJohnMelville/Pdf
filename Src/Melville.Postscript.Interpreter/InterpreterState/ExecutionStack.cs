@@ -98,4 +98,10 @@ public readonly struct ExecutionStack
     internal void PushLoop(
         IAsyncEnumerator<PostscriptValue> inst, in PostscriptValue descr) =>
         Push(new LoopEnumerator(inst), descr);
+
+    internal int CopyTo(PostscriptArray target)
+    {
+        descriptions.CollectionAsSpan().CopyTo(target.AsSpan());
+        return descriptions.Count;
+    }
 }

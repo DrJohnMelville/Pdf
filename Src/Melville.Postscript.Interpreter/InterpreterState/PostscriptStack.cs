@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.JavaScript;
+using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
@@ -46,14 +47,20 @@ public partial class PostscriptStack<T> : List<T>
     public T Pop()
     {
         var ret = Peek();
-        CheckForIllegalPop();
         RemoveAt(Count - 1);
+        CheckForIllegalPop();
         return ret;
+    }
+
+    public void PopMultiple(int countToRemove)
+    {
+        RemoveRange(Count - countToRemove, countToRemove);
+        CheckForIllegalPop();
     }
 
     private void CheckForIllegalPop()
     {
-        if (Count <= minSize)
+        if (Count < minSize)
             throw new PostscriptParseException("A stack popped below its minimum size");
     }
 
@@ -75,6 +82,7 @@ public partial class PostscriptStack<T> : List<T>
 
     internal void CopyTop(int size)
     {
+        MakeCopyable(CollectionAsSpan()[^size..]);
         using (EndBuffer(size, out var buffer))
         {
             foreach (var item in buffer)
@@ -82,6 +90,13 @@ public partial class PostscriptStack<T> : List<T>
                 Push(item);
             }
         }
+    }
+
+
+    internal void Duplicate()
+    {
+        MakeCopyable(ref CollectionAsSpan()[^1]);
+        Push(Peek());
     }
 
     internal void IndexOperation(int index) => Push(this[^(1+index)]);
@@ -113,4 +128,62 @@ public partial class PostscriptStack<T> : List<T>
         ret = array.AsSpan(0, size);
         return new ReturnUponDispose<T>(array);
     }
+
+    /// <summary>
+    /// Make the referenced element copyable.
+    /// </summary>
+    /// <param name="value">The value that may need to be adjusted to make it copyable</param>
+    protected virtual void MakeCopyable(ref T value)
+    {
+    }
+    
+    /// <summary>
+    /// Make each element in the span a copyable element
+    /// </summary>
+    /// <param name="values">The span to make copyable</param>
+    protected void MakeCopyable(Span<T> values)
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            MakeCopyable(ref values[i]);
+        }
+    }
+
+    internal int CountAbove(Func<T, bool> predicate)
+    {
+        for (int i = 0; i < Count; i++)
+        { 
+            if (predicate(this[^(i + 1)])) return i;
+        }
+
+        return Count;
+    }
+
+    internal Span<T> SpanAbove(Func<T, bool> predicate)
+    {
+        var size = CountAbove(predicate);
+        return CollectionAsSpan()[^size..];
+    }
+
+    internal void ClearAbove(Func<T, bool> predicate)
+    {
+        while (Count > 0 && predicate(Peek())) Pop();
+    }
+
+    internal void ClearThrough(Func<T, bool> predicate)
+    {
+        while (Count > 0 && !predicate(Pop())) {}
+        {
+          // do nothing   
+        }
+    }
+
+    protected T[] PopTopToArray(int arrayLen)
+    {
+        var array = CollectionAsSpan()[^arrayLen..].ToArray();
+        MakeCopyable(array);
+        PopMultiple(arrayLen);
+        return array;
+    }
+
 }

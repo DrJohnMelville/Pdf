@@ -64,7 +64,7 @@ internal partial class PostscriptShortDictionary :
 
     public int Length => items.Count / 2;
 
-    public PostscriptValue CopyFrom(PostscriptValue pop) =>
+    public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target) =>
         throw new NotImplementedException("Dictionary Copying is not implemented yet");
 
 }

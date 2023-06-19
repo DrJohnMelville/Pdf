@@ -31,9 +31,10 @@ public interface IPostscriptComposite
     /// Executes the postscript copy operation (which is odd) and returns the value to
     /// be pushed back on the stack
     /// </summary>
-    /// <param name="source">Value to copy from</param>
+    /// <param name="source"></param>
+    /// <param name="target">Value to copy from</param>
     /// <returns>The value to be pushed on the stack as the result of the copy operation</returns>
-    PostscriptValue CopyFrom(PostscriptValue source);
+    PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target);
 }
 
 /// <summary>
