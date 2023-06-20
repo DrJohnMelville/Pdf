@@ -46,6 +46,14 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// True if this is a number represented as an integer, false otherwise.
     /// </summary>
     public bool IsInteger => valueStrategy is PostscriptInteger;
+    /// <summary>
+    /// True if this is a number represented as an double, false otherwise.
+    /// </summary>
+    public bool IsDouble=> valueStrategy is PostscriptDouble;
+    /// <summary>
+    /// True if this is a number represented as an double, false otherwise.
+    /// </summary>
+    public bool IsNumber=> IsInteger || IsDouble;
 
     /// <summary>
     /// Gets a pdf value of a given type.

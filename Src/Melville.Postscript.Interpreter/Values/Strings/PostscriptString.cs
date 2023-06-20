@@ -8,6 +8,15 @@ using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values;
 
+internal partial struct StringSpanSource
+{
+    [FromConstructor] private PostscriptString strategy;
+    [FromConstructor] private Int128 memento;
+
+    public Span<byte> GetSpan(Span<byte> scratch) =>
+        strategy.GetBytes(memento, scratch);
+}
+
 internal abstract partial class PostscriptString : 
     IPostscriptValueStrategy<string>, 
     IPostscriptValueStrategy<StringKind>, 
@@ -16,7 +25,8 @@ internal abstract partial class PostscriptString :
     IPostscriptValueStrategy<Memory<byte>>,
     IPostscriptValueStrategy<long>,
     IPostscriptValueStrategy<double>,
-    IPostscriptValueStrategy<ForcedLongString>
+    IPostscriptValueStrategy<ForcedLongString>,
+    IPostscriptValueStrategy<StringSpanSource>
 {
     [FromConstructor] private readonly StringKind stringKind;
     public string GetValue(in Int128 memento) => 
@@ -26,12 +36,16 @@ internal abstract partial class PostscriptString :
         Encoding.ASCII.GetString(
             GetBytes(in memento, stackalloc byte[ShortStringLimit]));
 
-    StringKind IPostscriptValueStrategy<StringKind>.GetValue(in Int128 memento) => stringKind;
+    StringKind IPostscriptValueStrategy<StringKind>.GetValue(in Int128 memento) => 
+        stringKind;
         
     IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(
         in Int128 memento) => stringKind.ExecutionSelector;
 
-    protected abstract Span<byte> GetBytes(in Int128 memento, in Span<byte> scratch);
+    StringSpanSource IPostscriptValueStrategy<StringSpanSource>.GetValue(
+        in Int128 memento) => new(this, memento);
+
+    internal abstract Span<byte> GetBytes(scoped in Int128 memento, scoped in Span<byte> scratch);
    
     public virtual bool Equals(in Int128 memento, object otherStrategy, in Int128 otherMemento)
     {

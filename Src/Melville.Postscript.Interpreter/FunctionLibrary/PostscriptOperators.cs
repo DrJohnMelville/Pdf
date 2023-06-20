@@ -192,14 +192,40 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
     """, "copy execution stack to an array")]
 [MacroItem("Quit", "engine.ExecutionStack.Clear();","Stop interpreting")]
 [MacroItem("Start", "//Do nothing -- it is a no-op", "Explicitly executing start is undefined.  We implement it as a  no-op for maximum compatibility")]
+
+// relational and bitwiseOperators
+[MacroItem("OpEqual", """
+        engine.Push(EqualOperatorImpl.IsEqual(engine));
+    """, "Implement the equals operation")]
+[MacroItem("OpNotEqual", """
+        engine.Push(!EqualOperatorImpl.IsEqual(engine));
+    """, "Implement the equals operation")]
+[MacroItem("Not", """
+        var op = engine.OperandStack.Pop();
+        engine.Push(op.TryGet(out long val)?PostscriptValueFactory.Create(~val):
+            PostscriptValueFactory.Create(!op.Get<bool>()));
+    """, "Implement the Not operation")]
+[MacroItem("GreaterThanOrEqual", """
+        engine.Push(EqualOperatorImpl.Compare(engine) >= 0);
+    """, "Implement the &gt;= operation")]
+[MacroItem("GreaterThan", """
+        engine.Push(EqualOperatorImpl.Compare(engine) > 0);
+    """, "Implement the &gt; operation")]
+[MacroItem("LessThanOrEqual", """
+        engine.Push(EqualOperatorImpl.Compare(engine) <= 0);
+    """, "Implement the &lt;= operation")]
+[MacroItem("LessThan", """
+        engine.Push(EqualOperatorImpl.Compare(engine) < 0);
+    """, "Implement the &lt; operation")]
+[MacroItem("BitShift", """
+        engine.PopAs(out long baseVal, out int shift);
+        engine.Push(shift >= 0 ? baseVal << shift: baseVal >> -shift);
+    """, "Implement the &lt; operation")]
 public static partial class PostscriptOperators
 {
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
-        var proc = engine.OperandStack.Pop();
-        var compsite = engine.PopAs<IPostscriptComposite>();
-        engine.ExecutionStack.PushLoop(LoopSources.ForAll(compsite, proc), "ForAll Loop");
     } 
 #endif
 
@@ -208,7 +234,7 @@ public static partial class PostscriptOperators
         /// ~2~ 
         /// </summary>
         public static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
-        private sealed class ~0~BuiltInFuncImpl: IntAndRealBinaryOperation
+        private sealed class ~0~BuiltInFuncImpl: IntOrBinaryOperation<double>
         {
             protected override PostscriptValue Op(long a, long b) => ~1~;
             protected override PostscriptValue Op(double a, double b) => ~1~;
@@ -226,7 +252,24 @@ public static partial class PostscriptOperators
         /// ~2~ 
         /// </summary>
         public static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
-        private sealed class ~0~BuiltInFuncImpl: IntAndRealUnaryOperation
+        private sealed class ~0~BuiltInFuncImpl: IntOrBinaryOperation<bool>
+        {
+            protected override PostscriptValue Op(long a, long b) => ~1~;
+            protected override PostscriptValue Op(bool a, bool b) => ~1~;
+        }
+
+        """)]
+    [MacroItem("And", "a & b", "Add two numbers or booleans.")]
+    [MacroItem("Or", "a | b", "Or two numbers or booleans.")]
+    [MacroItem("Xor", "a ^ b", "Xor two numbers or booleans.")]
+    static partial void BitOpsHolder();
+
+    [MacroCode("""
+        /// <summary>
+        /// ~2~ 
+        /// </summary>
+        public static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
+        private sealed class ~0~BuiltInFuncImpl: IntOrUnaryOperation<double>
         {
             protected override PostscriptValue Op(long a) => ~1~;
             protected override PostscriptValue Op(double a) => ~1~;
@@ -242,7 +285,7 @@ public static partial class PostscriptOperators
         /// ~2~ 
         /// </summary>
         public static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
-        private sealed class ~0~BuiltInFuncImpl: IntAndRealUnaryOperation
+        private sealed class ~0~BuiltInFuncImpl: IntOrUnaryOperation<double>
         {
             protected override PostscriptValue Op(long a) => a;
             protected override PostscriptValue Op(double a) => ~1~;

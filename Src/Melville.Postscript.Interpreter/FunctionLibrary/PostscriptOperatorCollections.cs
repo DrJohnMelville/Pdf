@@ -142,6 +142,25 @@ public static class PostscriptOperatorCollections
        .WithSystemFunction("countexecstack"u8, PostscriptOperators.CountExecutionStack)
        .WithSystemFunction("execstack"u8, PostscriptOperators.ExecStack)
        .WithSystemFunction("quit"u8, PostscriptOperators.Quit)
-       .WithSystemFunction("start"u8, PostscriptOperators.Start)
+       .WithSystemFunction("start"u8, PostscriptOperators.Start);
+
+    /// <summary>
+    /// Implement the Relational operators in section 8.1
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static PostscriptEngine WithcRelationalOperators(this PostscriptEngine engine) => engine
+        .WithSystemFunction("eq"u8, PostscriptOperators.OpEqual)
+        .WithSystemFunction("ne"u8, PostscriptOperators.OpNotEqual)
+        .WithSystemFunction("not"u8, PostscriptOperators.Not)
+        .WithSystemFunction("ge"u8, PostscriptOperators.GreaterThanOrEqual)
+        .WithSystemFunction("gt"u8, PostscriptOperators.GreaterThan)
+        .WithSystemFunction("le"u8, PostscriptOperators.LessThanOrEqual)
+        .WithSystemFunction("lt"u8, PostscriptOperators.LessThan)
+        .WithSystemFunction("and"u8, PostscriptOperators.And)
+        .WithSystemFunction("or"u8, PostscriptOperators.Or)
+        .WithSystemFunction("xor"u8, PostscriptOperators.Xor)
+        .WithSystemFunction("bitshift"u8, PostscriptOperators.BitShift)
     ;
+
 }

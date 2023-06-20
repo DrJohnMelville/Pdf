@@ -211,6 +211,65 @@ public class OperatorsTest
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
             .WithSystemTokens().WithArrayOperators().WithStackOperators());
 
+    [Theory]
+    [InlineData("1 1 ne", "01: false")]
+    [InlineData("1 2 ne", "01: true")]
+    [InlineData("1 1 eq", "01: true")]
+    [InlineData("1.0 1 eq", "01: true")]
+    [InlineData("1.1 1 eq", "01: false")]
+    [InlineData("1 2 eq", "01: false")]
+    [InlineData("1 2 eq", "01: false")]
+    [InlineData("/H1 /H1 eq", "01: true")]
+    [InlineData("/H1 /H2 eq", "01: false")]
+    [InlineData("(H1) dup pop /H1 eq", "01: true")]
+    [InlineData("/H1 /H1 cvx eq", "01: true")]
+    [InlineData("[1 2 3] dup eq", "01: true")]
+    [InlineData("[1 2 3] [1 2 3] eq", "01: false")]
+    [InlineData("true not", "01: false")]
+    [InlineData("false not", "01: true")]
+    [InlineData("0 not", "01: -1")]
+    [InlineData("2 not", "01: -3")]
+
+    [InlineData("2 1 ge", "01: true")]
+    [InlineData("1 1 ge", "01: true")]
+    [InlineData("0 1 ge", "01: false")]
+    [InlineData("2 1 gt", "01: true")]
+    [InlineData("1 1 gt", "01: false")]
+    [InlineData("0 1 gt", "01: false")]
+    [InlineData("2 1 le", "01: false")]
+    [InlineData("1 1 le", "01: true")]
+    [InlineData("0 1 le", "01: true")]
+    [InlineData("2 1 lt", "01: false")]
+    [InlineData("1 1 lt", "01: false")]
+    [InlineData("0 1 lt", "01: true")]
+    [InlineData("1.1 1 gt", "01: true")]
+    [InlineData("/B /A gt", "01: true")]
+
+    [InlineData("3 5 and", "01: 1")]
+    [InlineData("false false and", "01: false")]
+    [InlineData("false true and", "01: false")]
+    [InlineData("true false and", "01: false")]
+    [InlineData("true true and", "01: true")]
+    [InlineData("3 5 or", "01: 7")]
+    [InlineData("false false or", "01: false")]
+    [InlineData("false true or", "01: true")]
+    [InlineData("true false or", "01: true")]
+    [InlineData("true true or", "01: true")]
+    [InlineData("3 5 xor", "01: 6")]
+    [InlineData("false false xor", "01: false")]
+    [InlineData("false true xor", "01: true")]
+    [InlineData("true false xor", "01: true")]
+    [InlineData("true true xor", "01: false")]
+
+    [InlineData("4 2 bitshift", "01: 16")]
+    [InlineData("4 -2 bitshift", "01: 1")]
+    public Task RelationalAndBitwise(string code, string result) =>
+        RunTestOnAsync(code, result, new PostscriptEngine()
+            .WithcRelationalOperators()
+            .WithSystemTokens()
+            .WithStackOperators()
+            .WithArrayOperators()
+            .WithcConversionOperators());
 
     private static async Task RunTestOnAsync(string code, string result, PostscriptEngine engine)
     {

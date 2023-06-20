@@ -8,7 +8,8 @@ namespace Melville.Postscript.Interpreter.Values;
 [FromConstructor]
 internal sealed partial class PostscriptShortString : PostscriptString
 {
-    protected override Span<byte> GetBytes(in Int128 memento, in Span<byte> scratch)
+    internal override Span<byte> GetBytes(
+        scoped in Int128 memento, scoped in Span<byte> scratch)
     {
         Int128 remainingChars = memento;
         int i;

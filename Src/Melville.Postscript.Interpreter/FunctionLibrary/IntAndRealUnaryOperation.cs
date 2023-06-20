@@ -4,7 +4,7 @@ using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary
 {
-    internal abstract class IntAndRealUnaryOperation : BuiltInFunction
+    internal abstract class IntOrUnaryOperation<T> : BuiltInFunction
     {
         public override void Execute(PostscriptEngine engine, in PostscriptValue value)
         {
@@ -14,9 +14,9 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary
         private PostscriptValue ComputeOperation(PostscriptValue left) =>
             (left.IsInteger)
                 ? Op(left.Get<long>())
-                : Op(left.Get<double>());
+                : Op(left.Get<T>());
 
         protected abstract PostscriptValue Op(long a);
-        protected abstract PostscriptValue Op(double a);
+        protected abstract PostscriptValue Op(T a);
     }
 }
