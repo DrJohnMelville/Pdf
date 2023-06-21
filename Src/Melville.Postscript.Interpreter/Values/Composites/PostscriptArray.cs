@@ -4,6 +4,7 @@ using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,8 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Melville.Postscript.Interpreter.Values;
 
 internal partial class PostscriptArray : 
-    IPostscriptValueStrategy<string>,
-    IPostscriptValueStrategy<IPostscriptComposite>,
+    PostscriptComposite,
     IPostscriptValueStrategy<IPostscriptArray>,
     IPostscriptValueStrategy<PostscriptArray>,
     IPostscriptArray,
@@ -24,9 +24,8 @@ internal partial class PostscriptArray :
 
     public PostscriptArray(int length): this(new PostscriptValue[length].AsMemory()) {}
 
-    public string GetValue(in Int128 memento)
+    protected override void StringRep(StringBuilder sb)
     {
-        var sb = new StringBuilder();
         sb.Append("[");
         foreach (var value in values.Span)
         {
@@ -34,27 +33,26 @@ internal partial class PostscriptArray :
             sb.Append(value.ToString());
         }
         sb.Append("]");
-        return sb.ToString();
     }
 
     public Span<PostscriptValue> AsSpan() => values.Span;
 
-    IPostscriptComposite
-        IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
     IPostscriptArray
         IPostscriptValueStrategy<IPostscriptArray>.GetValue(in Int128 memento) => this;
     PostscriptArray
         IPostscriptValueStrategy<PostscriptArray>.GetValue(in Int128 memento) => this;
 
-    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
+    public override bool TryGet(
+        in PostscriptValue indexOrKey, out PostscriptValue result) =>
         indexOrKey.TryGet(out int index) && index < values.Length
             ? values.Span[index].AsTrueValue(out result)
             : default(PostscriptValue).AsFalseValue(out result);
 
-    public void Put(in PostscriptValue indexOrKey, in PostscriptValue value) =>
+    public override void Put(
+        in PostscriptValue indexOrKey, in PostscriptValue value) =>
         values.Span[indexOrKey.Get<int>()] = value;
 
-    public int Length => values.Length;
+    public override int Length => values.Length;
 
     public IPostscriptValueStrategy<string> IntervalFrom(int beginningPosition, int length) =>
         new PostscriptArray(values.Slice(beginningPosition, length));
@@ -85,7 +83,7 @@ internal partial class PostscriptArray :
         }
     }
 
-    public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target)
+    public override PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target)
     {
         if (!source.TryGet(out PostscriptArray? sourceArray))
             throw new PostscriptException("Cannot copy nonarray to an array");
@@ -106,5 +104,5 @@ internal partial class PostscriptArray :
     public IAsyncEnumerator<PostscriptValue> GetAsyncEnumerator() => 
         new AsyncMemoryEnumerator(values);
 
-    public ForAllCursor CreateForAllCursor() => new(values, 1);
+    public override ForAllCursor CreateForAllCursor() => new(values, 1);
 }

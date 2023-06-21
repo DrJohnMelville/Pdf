@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -46,9 +47,23 @@ public class PostscriptEngine
     /// </summary>
     public PostscriptEngine()
     {
+        CreateStandardDictionarystack();
+        CreateSecondaryStandardDictionaries();
+    }
+
+    private void CreateStandardDictionarystack()
+    {
         DictionaryStack.Add(new PostscriptLongDictionary());
         DictionaryStack.Add(new PostscriptLongDictionary());
         DictionaryStack.Add(new PostscriptLongDictionary());
+    }
+
+    private void CreateSecondaryStandardDictionaries()
+    {
+#warning consider actually implementing the postscript error handling routines.
+        UserDict.Put("errordict", new PostscriptShortDictionary(0).AsPostscriptValue());
+        UserDict.Put("$error", new PostscriptShortDictionary(0).AsPostscriptValue());
+        UserDict.Put("statusdict", new PostscriptShortDictionary(0).AsPostscriptValue());
     }
 
     /// <summary>

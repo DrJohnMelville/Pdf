@@ -54,7 +54,8 @@ public abstract class DictionaryTest: CompositesTest
 
 public class ShortDictionaryTest : DictionaryTest
 {
-    protected override IPostscriptComposite CreateEmpty() => new PostscriptShortDictionary();
+    protected override IPostscriptComposite CreateEmpty() => 
+        new PostscriptShortDictionary(5);
 }
 
 public class LongDictionaryTest : DictionaryTest

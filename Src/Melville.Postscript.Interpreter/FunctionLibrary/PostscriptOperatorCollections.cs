@@ -13,16 +13,30 @@ public static class PostscriptOperatorCollections
     /// <summary>
     /// Add an external function to the system dictionary for a Postscript Engine
     /// </summary>
-    /// <param name="engine">The engine to add </param>
-    /// <param name="name"></param>
-    /// <param name="func"></param>
-    /// <returns></returns>
+    /// <param name="engine">The engine to add to</param>
+    /// <param name="name">Name of the item</param>
+    /// <param name="func">The function to put</param>
+    /// <returns>The passed in engine</returns>
     public static PostscriptEngine WithSystemFunction(
         this PostscriptEngine engine, ReadOnlySpan<byte> name, IExternalFunction func)
     {
         engine.SystemDict.Put(name, PostscriptValueFactory.Create(func));
         return engine;
     }
+    /// <summary>
+    /// Add an external function to the system dictionary for a Postscript Engine
+    /// </summary>
+    /// <param name="engine">The engine to add to</param>
+    /// <param name="name">Name of the item</param>
+    /// <param name="func">The function to put</param>
+    /// <returns>The passed in engine</returns>
+    public static PostscriptEngine WithSystemConstant(
+        this PostscriptEngine engine, ReadOnlySpan<byte> name, in PostscriptValue value)
+    {
+        engine.SystemDict.Put(name, value);
+        return engine;
+    }
+    
 
     /// <summary>
     /// Define true, false, and null tokens
@@ -30,10 +44,10 @@ public static class PostscriptOperatorCollections
     /// <param name="engine">The postscript to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
     public static PostscriptEngine WithSystemTokens(this PostscriptEngine engine) => engine
-        .WithSystemFunction("true"u8, PostscriptOperators.PushTrue)
-        .WithSystemFunction("false"u8, PostscriptOperators.PushFalse)
-        .WithSystemFunction("null"u8, PostscriptOperators.PushNull);
-#warning need to look through all the stack operators to make sure we promote strings on copy
+    .WithSystemConstant("true"u8, true)
+    .WithSystemConstant("false"u8, false)
+    .WithSystemConstant("null"u8, PostscriptValueFactory.CreateNull());
+    
     /// <summary>
     /// Implement the stack operators in section 8.1
     /// </summary>
@@ -48,7 +62,7 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("roll"u8, PostscriptOperators.Roll)
         .WithSystemFunction("clear"u8, PostscriptOperators.ClearStack)
         .WithSystemFunction("count"u8, PostscriptOperators.CountStack)
-        .WithSystemFunction("mark"u8, PostscriptOperators.PlaceMark)
+        .WithSystemConstant("mark"u8, PostscriptValueFactory.CreateMark())
         .WithSystemFunction("cleartomark"u8, PostscriptOperators.ClearToMark)
         .WithSystemFunction("counttomark"u8, PostscriptOperators.CountToMark);
 
@@ -88,9 +102,9 @@ public static class PostscriptOperatorCollections
     /// <returns>The engine passed in the first parameter</returns>
     public static PostscriptEngine WithArrayOperators(this PostscriptEngine engine) => engine
         .WithSystemFunction("array"u8, PostscriptOperators.EmptyArray)
-        .WithSystemFunction("["u8, PostscriptOperators.PushMark)
+        .WithSystemConstant("["u8, PostscriptValueFactory.CreateMark())
         .WithSystemFunction("]"u8, PostscriptOperators.ArrayFromStack)
-        .WithSystemFunction("{"u8, PostscriptOperators.PushMark)
+        .WithSystemConstant("{"u8, PostscriptValueFactory.CreateMark())
         .WithSystemFunction("}"u8, PostscriptOperators.ProcFromStack)
         .WithSystemFunction("length"u8, PostscriptOperators.CompositeLength)
         .WithSystemFunction("get"u8, PostscriptOperators.CompositeGet)
@@ -149,7 +163,8 @@ public static class PostscriptOperatorCollections
     /// </summary>
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
-    public static PostscriptEngine WithcRelationalOperators(this PostscriptEngine engine) => engine
+    public static PostscriptEngine WithRelationalOperators(
+        this PostscriptEngine engine) => engine
         .WithSystemFunction("eq"u8, PostscriptOperators.OpEqual)
         .WithSystemFunction("ne"u8, PostscriptOperators.OpNotEqual)
         .WithSystemFunction("not"u8, PostscriptOperators.Not)
@@ -160,7 +175,33 @@ public static class PostscriptOperatorCollections
         .WithSystemFunction("and"u8, PostscriptOperators.And)
         .WithSystemFunction("or"u8, PostscriptOperators.Or)
         .WithSystemFunction("xor"u8, PostscriptOperators.Xor)
-        .WithSystemFunction("bitshift"u8, PostscriptOperators.BitShift)
-    ;
+        .WithSystemFunction("bitshift"u8, PostscriptOperators.BitShift);
 
+    /// <summary>
+    /// Implement the Relational operators in section 8.1
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static PostscriptEngine WithDictionaryOperators(
+        this PostscriptEngine engine) => engine
+        .WithSystemFunction("dict"u8, PostscriptOperators.CreateDictionary)
+        .WithSystemFunction("maxlength"u8, PostscriptOperators.DictCapacity)
+        .WithSystemConstant("<<"u8, PostscriptValueFactory.CreateMark())
+        .WithSystemFunction(">>"u8, PostscriptOperators.DictionaryFromStack)
+        .WithSystemFunction("def"u8, PostscriptOperators.DefineInTopDict)
+        .WithSystemFunction("load"u8, PostscriptOperators.LookupInDictStack)
+        .WithSystemFunction("begin"u8, PostscriptOperators.PushDictionaryStack)
+        .WithSystemFunction("end"u8, PostscriptOperators.PopDictionaryStack)
+        .WithSystemFunction("store"u8, PostscriptOperators.DictionaryStore)
+        .WithSystemFunction("known"u8, PostscriptOperators.DictionaryKnown)
+        .WithSystemFunction("undef"u8, PostscriptOperators.Undefine)
+        .WithSystemFunction("where"u8, PostscriptOperators.Where)
+        .WithSystemFunction("currentdict"u8, PostscriptOperators.CurrentDictionary)
+        .WithSystemConstant("userdict"u8, engine.UserDict.AsPostscriptValue())
+        .WithSystemConstant("globaldict"u8, engine.GlobalDict.AsPostscriptValue())
+        .WithSystemConstant("systemdict"u8, engine.SystemDict.AsPostscriptValue())
+        .WithSystemFunction("countdictstack"u8, PostscriptOperators.CountDictStack)
+        .WithSystemFunction("dictstack"u8, PostscriptOperators.DictStack)
+        .WithSystemFunction("cleardictstack"u8, PostscriptOperators.ClearDictStack)
+    ;
 }

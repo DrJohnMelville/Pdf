@@ -27,6 +27,15 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
         Push(asExecutable?postscriptValue.AsExecutable():postscriptValue);
     }
 
+    internal void MarkedSpanToDictionary()
+    {
+        int count = CountToMark();
+        var dict = PostscriptValueFactory.CreateDictionary(
+            CollectionAsSpan()[^count..]);
+        PopMultiple(count+1);
+        Push(dict);
+    }
+
 
     internal void CreatePackedArray() => 
         Push(

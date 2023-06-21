@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Composites;
 // used in generated files
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Strings;
@@ -29,12 +31,6 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         }
 
         """)]
-// Push constant tokens
-[MacroItem("PushTrue", "engine.Push(true);", "Push true on the stack.")]
-[MacroItem("PushFalse", "engine.Push(false);", "Push false on the stack.")]
-[MacroItem("PushNull", "engine.Push(PostscriptValueFactory.CreateNull());", "Push null on the stack.")]
-[MacroItem("PushMark", "engine.Push(PostscriptValueFactory.CreateMark());", "Push null on the stack.")]
-
 // Stack operators
 [MacroItem("Pop", "engine.OperandStack.Pop();", "Discard the top element on the stack.")]
 [MacroItem("Exchange", "engine.OperandStack.Exchange();", "Switch the top two items on the stack.")]
@@ -44,7 +40,6 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("Roll", "engine.OperandStack.Roll(engine.PopAs<int>(), engine.PopAs<int>());", "Roll the stack.")]
 [MacroItem("ClearStack", "engine.OperandStack.Clear();", "Clear the stack.")]
 [MacroItem("CountStack", "engine.OperandStack.PushCount();", "Count the items on the stack.")]
-[MacroItem("PlaceMark", "engine.OperandStack.Push(PostscriptValueFactory.CreateMark());", "Place a mark on the stack")]
 [MacroItem("ClearToMark", "engine.OperandStack.ClearToMark();", "Clear down to and including a mark")]
 [MacroItem("CountToMark", "engine.Push(engine.OperandStack.CountToMark());", "Count items above the topmost mark mark")]
 
@@ -221,6 +216,69 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         engine.PopAs(out long baseVal, out int shift);
         engine.Push(shift >= 0 ? baseVal << shift: baseVal >> -shift);
     """, "Implement the &lt; operation")]
+
+[MacroItem("CreateDictionary", 
+    "engine.Push(PostscriptValueFactory.CreateSizedDictionary(engine.PopAs<int>()));", 
+    "Create a dictionary with a give size")]
+[MacroItem("DictCapacity",
+    "engine.Push(engine.PopAs<PostscriptDictionary>().MaxLength);", 
+    "Retrieve the capacity of a dictionary")]
+[MacroItem("DictionaryFromStack",
+    "engine.OperandStack.MarkedSpanToDictionary();", 
+    "Create a dictionary from the marked stack")]
+[MacroItem("DefineInTopDict", """
+        var (key, valueToSet) = engine.PopTwo();
+        engine.DictionaryStack.Peek().Put(key, valueToSet);
+    """, 
+    "Define a key in the topmost dictionary on the dictionary stack")]
+[MacroItem("LookupInDictStack", """
+    engine.Push(engine.DictionaryStack.Get(engine.OperandStack.Pop()));
+    """, 
+    "Define a key in the topmost dictionary on the dictionary stack")]
+[MacroItem("PushDictionaryStack", """
+    engine.DictionaryStack.Push(engine.OperandStack.Pop());
+    """, 
+    "Push a dictionary onto the dictionary stack`")]
+[MacroItem("PopDictionaryStack", """
+    engine.DictionaryStack.Pop();
+    """, 
+    "Push a dictionary onto the dictionary stack`")]
+[MacroItem("DictionaryStore", """
+        var (key, val) = engine.PopTwo();
+        engine.DictionaryStack.Store(key, val);
+    """, 
+    "Push a dictionary onto the dictionary stack`")]
+[MacroItem("DictionaryKnown", """
+        var (dict, key) = engine.PopTwo();
+        engine.Push(dict.Get<PostscriptDictionary>().TryGet(key,out _));
+    """, 
+    "True if the dictionary contains the key, false otherwise`")]
+[MacroItem("Undefine", """
+        var (dict, key) = engine.PopTwo();
+        dict.Get<PostscriptDictionary>().Undefine(key);
+    """, 
+    "Remove key from the dictionary if it exists")]
+[MacroItem("Where", """
+    engine.DictionaryStack.PostscriptWhere(engine.OperandStack);   
+    """, 
+    "Find the dictionary that contains a given key.")]
+[MacroItem("CurrentDictionary", """
+    engine.Push(engine.DictionaryStack.CurrentDictAsValue);
+    """, 
+    "Push the currently selected dictionary")]
+[MacroItem("CountDictStack", """
+    engine.Push(engine.DictionaryStack.Count);
+    """, 
+    "Push the size of the dictionary stack")]
+[MacroItem("DictStack", """
+        engine.Push(
+            engine.DictionaryStack.WriteStackTo(engine.PopAs<PostscriptArray>()));
+     """, 
+    "Copy dictstack to the an array.")]
+[MacroItem("ClearDictStack", """
+     engine.DictionaryStack.ResetToBottom3();
+     """, 
+    "Copy dictstack to the an array.")]
 public static partial class PostscriptOperators
 {
 #if DEBUG

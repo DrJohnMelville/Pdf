@@ -31,7 +31,7 @@ public static partial class PostscriptBuiltInOperations
         public override void Execute(PostscriptEngine engine, in PostscriptValue value)
         {
             var referencedValue = engine.DictionaryStack.Get(value);
-            referencedValue.ExecutionStrategy.Execute(engine, value);
+            referencedValue.ExecutionStrategy.Execute(engine, referencedValue);
         }
     }
 }

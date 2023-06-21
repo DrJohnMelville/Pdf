@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using Melville.INPC;
-using Melville.Postscript.Interpreter.Values.Interfaces;
+using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-internal partial class PostscriptLongDictionary :
-    IPostscriptValueStrategy<string>,
-    IPostscriptValueStrategy<IPostscriptComposite>,
-    IPostscriptComposite
+internal partial class PostscriptLongDictionary :PostscriptDictionary
 {
     [FromConstructor] private readonly Dictionary<PostscriptValue, PostscriptValue> items;
 
@@ -17,35 +14,35 @@ internal partial class PostscriptLongDictionary :
     {
     }
 
-    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento)
+    protected override void RenderTo(StringBuilder sb)
     {
-        var ret = new StringBuilder();
-        ret.AppendLine("<<");
         foreach (var pair in items)
         {
-            ret.AppendLine($"    {pair.Key.ToString()}: {pair.Value.ToString()}");
+            sb.AppendLine($"    {pair.Key.ToString()}: {pair.Value.ToString()}");
         }
-        ret.Append(">>");
-
-        return ret.ToString();
     }
 
-    IPostscriptComposite
-        IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
-
-    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
+    public override bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
         items.TryGetValue(indexOrKey, out result);
 
-    public void Put(in PostscriptValue indexOrKey, in PostscriptValue value) =>
+    public override void Put(in PostscriptValue indexOrKey, in PostscriptValue value) =>
         items[indexOrKey] = value;
 
-    public int Length => items.Count;
+    public override int Length => items.Count;
+    public override int MaxLength => Length;
 
-    public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target) => 
-        throw new NotImplementedException("Dictionary Copying is not implemented yet");
+    public override void Undefine(PostscriptValue key) => items.Remove(key);
 
-    public ForAllCursor CreateForAllCursor()
+    public override ForAllCursor CreateForAllCursor()
     {
-        throw new NotImplementedException("Dictionary forall is not implemented yet");
+        var temp = new PostscriptValue[items.Count *2];
+        int pos = 0;
+        foreach (var pair in items)
+        {
+            temp[pos++] = pair.Key;
+            temp[pos++] = pair.Value;
+        }
+
+        return new(temp.AsMemory(), 2);
     }
 }

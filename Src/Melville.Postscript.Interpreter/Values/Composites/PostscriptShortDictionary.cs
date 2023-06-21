@@ -1,76 +1,110 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Interfaces;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
-internal partial class PostscriptShortDictionary :
-    IPostscriptValueStrategy<string>,
-    IPostscriptValueStrategy<IPostscriptComposite>,
-    IPostscriptComposite
+
+
+internal partial class PostscriptShortDictionary : PostscriptDictionary
 {
-    public static readonly PostscriptShortDictionary Empty = new(new List<PostscriptValue>());
+    private PostscriptValue[] items;
+    private int length;
 
-    [FromConstructor] private readonly List<PostscriptValue> items;
-    public PostscriptShortDictionary():this(new List<PostscriptValue>()){}
-
-#if DEBUG
-    partial void OnConstructed()
+    public PostscriptShortDictionary(int size)
     {
-        if (items.Count % 2 != 0) throw new InvalidDataException(
+        items = new PostscriptValue[size * 2];
+        length = 0;
+    }
+
+    public PostscriptShortDictionary(in ReadOnlySpan<PostscriptValue> keysAndValues): 
+        this(keysAndValues.Length / 2)
+    {
+        if (keysAndValues.Length % 2 != 0) throw new InvalidDataException(
             "A short dictionary must have an even number of elements");
-
+        keysAndValues.CopyTo(items.AsSpan());
+        length = keysAndValues.Length / 2;
     }
-#endif
 
-    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento)
+    protected override void RenderTo(StringBuilder sb)
     {
-        var ret = new StringBuilder();
-        ret.AppendLine("<<");
-        for (int i = 0; i < items.Count; i += 2)
+        for (int i = 0; i < length*2; i += 2)
         {
-            ret.AppendLine($"    {items[i].ToString()}: {items[i + 1].ToString()}");
+            sb.AppendLine($"    {items[i].ToString()}: {items[i + 1].ToString()}");
         }
-        ret.Append(">>");
-
-        return ret.ToString();
     }
 
-    IPostscriptComposite
-        IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento) => this;
-
-    public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result)
+    public override bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result)
     {
-        for (int i = 0; i < items.Count; i += 2)
+        var index = TryFindLocation(indexOrKey);
+        result = index >= 0 ? items[index + 1] : default;
+        return index >= 0;
+    }
+
+    private int TryFindLocation(scoped in PostscriptValue key)
+    {
+        // fast leg -- assumes no keys as values
+        var firstIndex = items.AsSpan(0, length*2).IndexOf(key);
+        if (firstIndex < 0) return -1;
+        if (firstIndex % 2 == 0) return firstIndex;
+        
+        // slow leg
+        for (int i = 0; i < length * 2; i += 2)
         {
-            if (items[i].Equals(indexOrKey))
+            if (items[i].Equals(key))
             {
-                result = items[i + 1];
-                return true;
+                return i;
             }
         }
-        result = default;
-        return false;
+        return -1;
     }
 
-    public void Put(in PostscriptValue indexOrKey, in PostscriptValue value)
+    private int NextWriteLocation(in PostscriptValue key)
     {
-        items.Add(indexOrKey);
-        items.Add(value);
+        var index = TryFindLocation(key);
+        if (index >= 0) return index;
+        TryExpandArray();
+        return 2*(length++);
     }
-
-    public int Length => items.Count / 2;
-
-    public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target) =>
-        throw new NotImplementedException("Dictionary Copying is not implemented yet");
-
-    public ForAllCursor CreateForAllCursor()
+    private void TryExpandArray()
     {
-        throw new NotImplementedException("Dictionary forall is not implemented yet");
+        if (length * 2 >= items.Length)
+        {
+            var newArray = new PostscriptValue[items.Length * 2];
+            items.AsSpan().CopyTo(newArray.AsSpan());
+            items = newArray;
+        }
     }
 
+    public override void Put(in PostscriptValue indexOrKey, in PostscriptValue value)
+    {
+        int pos = NextWriteLocation(indexOrKey);
+        items[pos] = indexOrKey;
+        items[pos+1] = value;
+    }
 
+    public override int Length => length;
+    public override int MaxLength => items.Length / 2;
+
+    public override void Undefine(PostscriptValue key)
+    {
+        var index = TryFindLocation(key);
+        if (index < 0) return;
+        var activeGroup = items.AsSpan(0, 2 * length);
+        length--;
+        if (activeGroup.Length - 2 > index )
+        {
+            activeGroup[(index + 2)..].CopyTo(activeGroup[index..]);
+        }
+    }
+
+    public override ForAllCursor CreateForAllCursor() =>
+        new(items.AsMemory(0, length * 2), 2);
 }

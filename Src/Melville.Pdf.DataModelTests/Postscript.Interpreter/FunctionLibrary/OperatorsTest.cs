@@ -218,7 +218,6 @@ public class OperatorsTest
     [InlineData("1.0 1 eq", "01: true")]
     [InlineData("1.1 1 eq", "01: false")]
     [InlineData("1 2 eq", "01: false")]
-    [InlineData("1 2 eq", "01: false")]
     [InlineData("/H1 /H1 eq", "01: true")]
     [InlineData("/H1 /H2 eq", "01: false")]
     [InlineData("(H1) dup pop /H1 eq", "01: true")]
@@ -263,12 +262,58 @@ public class OperatorsTest
 
     [InlineData("4 2 bitshift", "01: 16")]
     [InlineData("4 -2 bitshift", "01: 1")]
-    public Task RelationalAndBitwise(string code, string result) =>
+    public Task RelationalAndBitwiseAsync(string code, string result) =>
         RunTestOnAsync(code, result, new PostscriptEngine()
-            .WithcRelationalOperators()
+            .WithRelationalOperators()
             .WithSystemTokens()
             .WithStackOperators()
             .WithArrayOperators()
+            .WithcConversionOperators());
+
+    [Theory]
+    [InlineData("10 dict", "01: <<\r\n>>")]
+    [InlineData("10 dict length", "01: 0")]
+    [InlineData("10 dict maxlength", "01: 10")]
+    [InlineData("25 dict length", "01: 0")]
+    [InlineData("25 dict maxlength", "01: 0")]
+    [InlineData("2 dict dup begin 1 1 5 {cvs cvn /Hi def} for end length", "01: 5")]
+    [InlineData("<</A 1 /B 2>>", "01: <<\r\n    /A: 1\r\n    /B: 2\r\n>>")]
+    [InlineData("/A 1 def /A load /A load", "01: 1\r\n02: 1")]
+    [InlineData("/A 1 def 10 dict begin /A load /A 2 def /A load", "01: 2\r\n02: 1")]
+    [InlineData("/A 1 def 10 dict begin /A 2 def /A load end /A load ", "01: 1\r\n02: 2")]
+    [InlineData("5 dict begin /A 10 def A", "01: 10")]
+    [InlineData("/A 5 def 5 dict begin /A 10 store A /A 12 def A end A", "01: 10\r\n02: 12\r\n03: 10")]
+    [InlineData("5 dict dup /A 12 put /A get", "01: 12")]
+    [InlineData("5 dict dup /A 12 put /A known", "01: true")]
+    [InlineData("5 dict dup /A 12 put /B known", "01: false")]
+    [InlineData("5 dict dup /A 12 put dup /A undef /A known", "01: false")]
+    [InlineData("25 dict dup /A 12 put dup /A undef /A known", "01: false")]
+    [InlineData("/NotFound where", "01: false")]
+    [InlineData("5 dict begin /A 10 def /A where", "01: true\r\n02: <<\r\n    /A: 10\r\n>>")]
+    [InlineData("<</A 10 /B 20>> <</B 15 /C 30>> copy", "01: <<\r\n    /B: 20\r\n    /C: 30\r\n    /A: 10\r\n>>")]
+    [InlineData("25 dict dup /A 10 put dup /B 20 put <</B 15 /C 30>> copy", "01: <<\r\n    /B: 20\r\n    /C: 30\r\n    /A: 10\r\n>>")]
+    [InlineData("0 <</A 10 /B 20 /C 30>> {exch pop add} forall", "01: 60")]
+    [InlineData("5 dict begin /A 3 def currentdict", "01: <<\r\n    /A: 3\r\n>>")]
+    [InlineData("systemdict /A 1 put A", "01: 1")]
+    [InlineData("systemdict /A 1 put globaldict /A 2 put A", "01: 2")]
+    [InlineData("systemdict /A 1 put globaldict /A 2 put userdict /A 3 put A", "01: 3")]
+    [InlineData("errordict", "01: <<\r\n>>")]
+    [InlineData("$error", "01: <<\r\n>>")]
+    [InlineData("statusdict", "01: <<\r\n>>")]
+    [InlineData("countdictstack", "01: 3")]
+    [InlineData("10 dict begin countdictstack", "01: 4")]
+    [InlineData("10 dict begin countdictstack array dictstack [ exch { length } forall ]",
+        "01: [97 0 3 0]")]
+    [InlineData("10 dict begin 25 dict begin countdictstack cleardictstack countdictstack",
+        "01: 3\r\n02: 5")]
+    public Task DictionaryAsync(string code, string result) =>
+        RunTestOnAsync(code, result, new PostscriptEngine()
+            .WithSystemTokens()
+            .WithArrayOperators()
+            .WithcControlOperators()
+            .WithDictionaryOperators()
+            .WithStackOperators()
+            .WithMathOperators()
             .WithcConversionOperators());
 
     private static async Task RunTestOnAsync(string code, string result, PostscriptEngine engine)

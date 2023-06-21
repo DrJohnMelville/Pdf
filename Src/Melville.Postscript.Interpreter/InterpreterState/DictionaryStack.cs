@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
@@ -59,4 +61,69 @@ public partial class DictionaryStack :
     /// <param name="value">The value to store</param>
     public void Put(in PostscriptValue indexOrKey, in PostscriptValue value) =>
         Peek().Put(indexOrKey, value);
-}
+
+    /// <summary>
+    /// Overwrite the topmost instance of key with the given value.  If the key
+    /// does not exist in the dictionary stack, add to the topmost dictionary.
+    /// </summary>
+    /// <param name="key">The key to store under.</param>
+    /// <param name="value">rhe value to store</param>
+    public void Store(scoped in PostscriptValue key, scoped in PostscriptValue value)
+    {
+        for (int i = Count - 1; i >= 0; i--)
+        {
+            var dict = this[i];
+            if (TryReplaceValue(key, value, dict)) return;
+        }
+        Peek().Put(key, value);
+    }
+
+    private static bool TryReplaceValue(
+        scoped in PostscriptValue key, scoped in PostscriptValue value, 
+        IPostscriptComposite dict)
+    {
+        if (dict.TryGet(key, out _))
+        {
+            dict.Put(key, value);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void PostscriptWhere(OperandStack stack)
+    {
+        var key = stack.Pop();
+        for (int i = Count - 1; i >= 0; i--)
+        {
+            var dict = this[i];
+            if (dict.TryGet(key, out _))
+            {
+                stack.Push(dict.AsPostscriptValue());
+                stack.Push(true);
+                return;
+            }
+        }
+        stack.Push(false);
+    }
+
+    internal PostscriptValue CurrentDictAsValue => Peek().AsPostscriptValue();
+   
+    internal PostscriptValue WriteStackTo(PostscriptArray array)
+    {
+        var targetSpan = array.AsSpan();
+        var sourceSpan = this.CollectionAsSpan();
+        for (int i = 0; i < sourceSpan.Length; i++)
+        {
+            targetSpan[i] = sourceSpan[i].AsPostscriptValue();
+        }
+
+        return
+            array.InitialSubArray(sourceSpan.Length, PostscriptBuiltInOperations.PushArgument);
+    }
+
+    public void ResetToBottom3()
+    {
+        while (Count > 3) Pop();
+    }
+}   
