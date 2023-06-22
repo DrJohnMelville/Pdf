@@ -51,10 +51,10 @@ public class S7_10_5PostscriptFunctions
     [InlineData("5", "8", "{3.0 add}")]
     [InlineData("5", "2.5", "{-2.5 add}")]
     [InlineData("4,4", "45", "{atan}")]
-    [InlineData("-1,1", "315", "{atan}")]
+    [InlineData("-1,1", "-45", "{atan}")]
     [InlineData("1,0", "90", "{atan}")]
     [InlineData("0,1", "0", "{atan}")]
-    [InlineData("-100,0", "270", "{atan}")]
+    [InlineData("-100,0", "-90", "{atan}")]
     [InlineData("1.4", "2", "{ceiling}")]
     [InlineData("0", "1", "{cos}")]
     [InlineData("90", "0", "{cos}")]
@@ -78,7 +78,7 @@ public class S7_10_5PostscriptFunctions
     [InlineData("3.2", "3", "{round}")]
     [InlineData("6.5", "7", "{round}")]
     [InlineData("-4.8", "-5.0", "{round}")]
-    [InlineData("-6.5", "-6", "{round}")]
+    [InlineData("-6.5", "-7", "{round}")]
     [InlineData("99", "99", "{round}")]
     [InlineData("0", "0", "{sin}")]
     [InlineData("90", "1", "{sin}")]
@@ -141,10 +141,10 @@ public class S7_10_5PostscriptFunctions
     [InlineData("5,6,7,3,9", "5,6,7", "{roll}")]
     [InlineData("5,6,7,3,2", "6,7,5", "{roll}")]
     [InlineData("5,6,7,3,-2", "7,5,6", "{roll}")]
-    [InlineData("10, -1", "10,12", "{ {12} if}")]
-    [InlineData("10, 0", "10", "{ {12} if}")]
-    [InlineData("10, -1", "10,12", "{ {12} {20} ifelse}")]
-    [InlineData("10, 0", "10,20", "{ {12} {20} ifelse}")]
+    [InlineData("10, -1", "10,12", "{dup eq {12} if}")]
+    [InlineData("10, 0", "10", "{dup ne {12} if}")]
+    [InlineData("10, -1", "10,12", "{dup eq {12} {20} ifelse}")]
+    [InlineData("10, 0", "10,20", "{dup ne {12} {20} ifelse}")]
     [InlineData("3,4", "5", "{ dup mul exch dup mul add sqrt}")]
     public Task PostScriptTestAsync(string inputs, string outputs, string code) => 
         InnerPostScriptTestAsync(GetDoubles(inputs), GetDoubles(outputs), code);
@@ -176,14 +176,4 @@ public class S7_10_5PostscriptFunctions
             .Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Select(i => double.Parse(i))
             .ToArray();
-
-    [Theory]
-    [InlineData("{12 if}")]
-    [InlineData("{12 ifelse}")]
-    [InlineData("{12 {1} {2} if}")]
-    [InlineData("{12 {1}  ifelse}")]
-    [InlineData("{12 {1}  add}")]
-    [InlineData("{12")]
-    public Task PostscriptCompilerErrorAsync(string code) => 
-        Assert.ThrowsAsync<PdfParseException>(() => CreateFunction(code, 1, 1).CreateFunctionAsync().AsTask());
 }

@@ -1,36 +1,50 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Writers.ObjectWriters;
+using Melville.Postscript.Interpreter.FunctionLibrary;
+using Melville.Postscript.Interpreter.InterpreterState;
+using Melville.Postscript.Interpreter.Values;
 
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
 internal class PostscriptFunction: PdfFunction
 {
-    private IPostScriptOperation operation;
-    public PostscriptFunction(ClosedInterval[] domain, ClosedInterval[] range, IPostScriptOperation operation) : base(domain, range)
+    private readonly IEnumerable<PostscriptValue> operation;
+    public PostscriptFunction(
+        ClosedInterval[] domain, ClosedInterval[] range, 
+        IEnumerable<PostscriptValue> operation) : base(domain, range)
     {
         this.operation = operation;
     }
 
-    protected override void ComputeOverride(in ReadOnlySpan<double> input, in Span<double> result)
+    protected override void ComputeOverride(
+        in ReadOnlySpan<double> input, in Span<double> result)
     {
-        var stack = StackWithInputs(input);
-        operation.Do(stack);
-        CopyStackToOutputs(result, stack);
+        var engine = new PostscriptEngine().WithBaseLanguage();
+        PushInputs(input, engine);
+        engine.Execute(operation);
+        PopOutputs(result, engine);
     }
 
-    private static PostscriptStack StackWithInputs(ReadOnlySpan<double> input)
+    private static void PushInputs(ReadOnlySpan<double> input, PostscriptEngine engine)
     {
-        var stack = new PostscriptStack(4);
-        foreach (var inp in input)
+        foreach (var inputItem in input)
         {
-            stack.Push(inp);
+            engine.OperandStack.Push(inputItem);
         }
-
-        return stack;
     }
 
-    private static void CopyStackToOutputs(Span<double> result, PostscriptStack stack)
+    private static void PopOutputs(Span<double> result, PostscriptEngine engine)
     {
-        stack.AsSpan()[..result.Length].CopyTo(result);
+        for (int i = result.Length - 1; i >= 0; i--)
+            result[i] = ExtractValue(engine.OperandStack.Pop());
+    }
+
+    private static double ExtractValue(PostscriptValue value)
+    {
+        if (value.TryGet(out double doubleValue)) return doubleValue;
+        return value.Get<bool>() ? -1.0 : 0.0;
     }
 }

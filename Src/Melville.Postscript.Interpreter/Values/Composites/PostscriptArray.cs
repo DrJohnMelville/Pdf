@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Melville.INPC;
@@ -104,5 +105,7 @@ internal partial class PostscriptArray :
     public IEnumerator<PostscriptValue> GetEnumerator() => 
         new MemoryEnumerator(values);
 
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+   
     public override ForAllCursor CreateForAllCursor() => new(values, 1);
 }

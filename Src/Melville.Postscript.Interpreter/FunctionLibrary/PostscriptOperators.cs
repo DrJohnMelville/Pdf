@@ -314,6 +314,8 @@ public static partial class PostscriptOperators
         {
             protected override PostscriptValue Op(long a, long b) => ~1~;
             protected override PostscriptValue Op(bool a, bool b) => ~1~;
+            protected override bool IsIntegerType(in PostscriptValue value) =>
+                value.IsNumber;
         }
 
         """)]
@@ -352,7 +354,8 @@ public static partial class PostscriptOperators
         """)]
     [MacroItem("Ceiling", "Math.Ceiling(a)", "Smallest whole number bigger than item.")]
     [MacroItem("Floor", "Math.Floor(a)", "Largest whole number less than argument.")]
-    [MacroItem("Round", "Math.Round(a)", "Round argument to nearest whole integer")]
+    [MacroItem("Round", "Math.Round(a, MidpointRounding.AwayFromZero)", "Round argument to nearest whole integer")]
     [MacroItem("Truncate", "Math.Truncate(a)", "Truncate fractional part of a number")]
     static partial void DoubleOnlyOpsHolder();
+
 }

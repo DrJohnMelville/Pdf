@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -81,7 +82,9 @@ public class PostscriptEngine
     /// </summary>
     public IPostscriptComposite UserDict => DictionaryStack[2];
 
-    internal ValueTask ExecuteAsync(AsynchronousTokenizer tokens)
+    public ValueTask ExecuteAsync(Stream code) =>
+        ExecuteAsync(new AsynchronousTokenizer(code));
+    public ValueTask ExecuteAsync(AsynchronousTokenizer tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
         ExecutionStack.Push(new(tokens.GetAsyncEnumerator()), "Async Parser"u8);
@@ -95,11 +98,11 @@ public class PostscriptEngine
     }
 
 
-    internal void Execute(string code) => 
+    public void Execute(string code) => 
         Execute(Encoding.ASCII.GetBytes(code));
-    internal void Execute(in Memory<byte> code) => Execute(SynchronousTokenizer.Tokenize(code));
+    public void Execute(in Memory<byte> code) => Execute(SynchronousTokenizer.Tokenize(code));
 
-    internal void Execute(IEnumerable<PostscriptValue> tokens)
+    public void Execute(IEnumerable<PostscriptValue> tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
         ExecutionStack.Push(new(tokens.GetEnumerator()), "Synchronous source");

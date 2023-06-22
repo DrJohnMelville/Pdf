@@ -29,13 +29,14 @@ public class TokenizerTest
     public async Task Parse2NamesAsync(string source, string name1, string name2)
     {
         var sut = CreateTokenizer(source);
-        await VerifyTokenAsync(sut, name1);
-        await VerifyTokenAsync(sut, name2);
+        var list = await sut.ToListAsync();
+        Assert.Equal(2, list.Count);
+        await VerifyTokenAsync(list[0], name1);
+        await VerifyTokenAsync(list[1], name2);
     }
 
-    private static async Task VerifyTokenAsync(AsynchronousTokenizer sut, string name)
+    private static async Task VerifyTokenAsync(PostscriptValue token1, string name)
     {
-        var token1 = await sut.NextTokenAsync();
         Assert.Equal(name, token1.ToString());
         Assert.False(token1.TryGet<bool>(out _));
     }

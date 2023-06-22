@@ -14,11 +14,14 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary
         }
 
         private PostscriptValue ComputeOperation(PostscriptValue left, PostscriptValue right) =>
-            (left.IsInteger && right.IsInteger)
+            (IsIntegerType(left) && IsIntegerType(right))
                 ? Op(left.Get<long>(), right.Get<long>())
                 : Op(left.Get<T>(), right.Get<T>());
 
         protected abstract PostscriptValue Op(long a, long b);
         protected abstract PostscriptValue Op(T a, T b);
+
+        protected virtual bool IsIntegerType(in PostscriptValue value) =>
+            value.IsInteger;
     }
 }

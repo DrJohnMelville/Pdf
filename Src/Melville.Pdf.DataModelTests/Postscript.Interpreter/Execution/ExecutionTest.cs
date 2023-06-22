@@ -22,7 +22,7 @@ public class ExecutionTest
 
     private static PostscriptEngine ExcutedEngine(string code)
     {
-        var engine = new PostscriptEngine();
+        var engine = new PostscriptEngine().WithSystemTokens();
         engine.Execute(code);
         return engine;
     }

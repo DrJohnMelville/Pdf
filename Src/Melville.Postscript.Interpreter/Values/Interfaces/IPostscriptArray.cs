@@ -1,9 +1,11 @@
-﻿namespace Melville.Postscript.Interpreter.Values
+﻿using System.Collections.Generic;
+
+namespace Melville.Postscript.Interpreter.Values
 {
     /// <summary>
     /// This interface describes Postscript Arrays arrays and strings are both arrays
     /// </summary>
-    public interface IPostscriptArray : IPostscriptComposite
+    public interface IPostscriptArray : IPostscriptComposite, IEnumerable<PostscriptValue>
     {
         /// <summary>
         /// /// Get a subsequence of the given object.
