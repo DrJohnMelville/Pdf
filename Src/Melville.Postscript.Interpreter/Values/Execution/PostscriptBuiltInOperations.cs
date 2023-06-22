@@ -35,5 +35,14 @@ public static partial class PostscriptBuiltInOperations
             referencedValue.ExecutionStrategy.Execute(engine, referencedValue);
         }
     }
+
+    public static IExternalFunction Nop = new NopImplementation();
+    private sealed class NopImplementation: BuiltInFunction
+    {
+        public override void Execute(PostscriptEngine engine, in PostscriptValue value)
+        {
+            // do nothing, it is a NOP
+        }
+    }
 }
 
