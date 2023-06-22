@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
@@ -8,21 +9,34 @@ using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.Streams;
+using Melville.Parsing.VariableBitEncoding;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
-internal partial class Tokenizer: IAsyncEnumerable<PostscriptValue>
+public static class SynchronousTokenizer
+{
+    public static IEnumerable<PostscriptValue> Tokenize(Memory<byte> input)
+    {
+        var seq = input.AppendCR();
+        while (ReadFrom(ref seq, out var token))
+            yield return token;
+    }
+
+    private static bool ReadFrom(ref ReadOnlySequence<byte> seq, out PostscriptValue token)
+    {
+        var reader = new SequenceReader<byte>(seq);
+        var ret = reader.TryGetPostscriptToken(out token);
+        seq = seq.Slice(reader.Consumed);
+        return ret;
+    }
+}
+
+internal partial class AsynchronousTokenizer: IAsyncEnumerable<PostscriptValue>
 {
     [FromConstructor] private PipeReader source;
 
-    public Tokenizer(Stream source) : this(PipeReader.Create(source))
-    {
-    }
-    public Tokenizer(string source) : this(Encoding.ASCII.GetBytes(source))
-    {
-    }
-    public Tokenizer(in Memory<byte> source) : this(new ReadMemoryAsStream(source))
+    public AsynchronousTokenizer(Stream source) : this(PipeReader.Create(source))
     {
     }
 
@@ -59,19 +73,9 @@ internal partial class Tokenizer: IAsyncEnumerable<PostscriptValue>
 
     }
 
-    private bool TryParseWithAppendedCarriageReturn(ReadResult buffer, out PostscriptValue result)
-    {
-        var scratch = ArrayPool<byte>.Shared.Rent((int)buffer.Buffer.Length + 1);
-        try
-        {
-            return TryParseInSeparateSequence(
-                CreateAppendedSequence(buffer, scratch), buffer.Buffer, out result);
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(scratch);
-        }
-    }
+    private bool TryParseWithAppendedCarriageReturn(ReadResult buffer, out PostscriptValue result) =>
+        TryParseInSeparateSequence(
+            buffer.Buffer.AppendCR(), buffer.Buffer, out result);
 
     private bool TryParseInSeparateSequence(
         ReadOnlySequence<byte> appendedSequence, 
@@ -83,16 +87,6 @@ internal partial class Tokenizer: IAsyncEnumerable<PostscriptValue>
         var offset = appendedSequence.Slice(appendedSequence.Start, reader.Position).Length;
         source.AdvanceTo(originalSequence.GetPosition(offset));
         return true;
-    }
-
-    private static ReadOnlySequence<byte> CreateAppendedSequence(
-        ReadResult buffer, byte[] scratch)
-    {
-        var priorLength = (int)buffer.Buffer.Length;
-        buffer.Buffer.CopyTo(scratch.AsSpan(0, priorLength));
-        scratch[buffer.Buffer.Length] = (byte)'\r';
-        var seq = new ReadOnlySequence<byte>(scratch, 0, priorLength+1);
-        return seq;
     }
 
     public async IAsyncEnumerator<PostscriptValue> GetAsyncEnumerator(

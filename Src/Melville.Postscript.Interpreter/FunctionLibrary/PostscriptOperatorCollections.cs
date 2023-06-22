@@ -36,7 +36,17 @@ public static class PostscriptOperatorCollections
         engine.SystemDict.Put(name, value);
         return engine;
     }
-    
+
+    public static PostscriptEngine WithBaseLanguage(this PostscriptEngine engine) => engine
+        .WithSystemTokens()
+        .WithStackOperators()
+        .WithMathOperators()
+        .WithArrayOperators()
+        .WithcConversionOperators()
+        .WithcControlOperators()
+        .WithRelationalOperators()
+        .WithDictionaryOperators();
+
 
     /// <summary>
     /// Define true, false, and null tokens

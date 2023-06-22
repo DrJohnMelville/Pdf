@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.FunctionLibrary;
@@ -15,33 +16,41 @@ internal enum StopContextState
     Done
 };
 
-internal partial class StopContext : IAsyncEnumerator<PostscriptValue>
+internal partial class StopContext : IEnumerator<PostscriptValue>
 {
     [FromConstructor] private readonly PostscriptValue inner;
     private StopContextState state = StopContextState.EmitOperation;
     private bool stopped = false;
 
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
-
-    public ValueTask<bool> MoveNextAsync()
+    public bool MoveNext()
     {
         switch (state)
         {
             case StopContextState.EmitOperation:
                 Current = PostscriptValueFactory.Create(new ExecutionWrapper(inner));
                 state = StopContextState.EmitResult;
-                return ValueTask.FromResult(true);
+                return true;
             case StopContextState.EmitResult:
                 Current = PostscriptValueFactory.Create(stopped);
                 state = StopContextState.Done;
-                return ValueTask.FromResult(true);
+                return true;
             default:
-                return ValueTask.FromResult(false);
+                return false;
         }
     }
 
     public PostscriptValue Current { get; private set; }
 
     public void NotifyStopped() => stopped = true;
+
+    public void Reset()
+    {
+        state = StopContextState.EmitOperation;
+    }
+
+    object IEnumerator.Current => Current;
+    public void Dispose()
+    {
+    }
 }

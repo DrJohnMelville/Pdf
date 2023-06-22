@@ -101,8 +101,8 @@ internal partial class PostscriptArray :
         in Int128 memento) => 
         ArrayExecutionSelector.Instance;
 
-    public IAsyncEnumerator<PostscriptValue> GetAsyncEnumerator() => 
-        new AsyncMemoryEnumerator(values);
+    public IEnumerator<PostscriptValue> GetEnumerator() => 
+        new MemoryEnumerator(values);
 
     public override ForAllCursor CreateForAllCursor() => new(values, 1);
 }

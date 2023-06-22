@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
@@ -79,21 +81,34 @@ public class PostscriptEngine
     /// </summary>
     public IPostscriptComposite UserDict => DictionaryStack[2];
 
-    internal ValueTask ExecuteAsync(Tokenizer tokens)
+    internal ValueTask ExecuteAsync(AsynchronousTokenizer tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
-        ExecutionStack.Push(tokens.GetAsyncEnumerator(), "Executed Code"u8);
+        ExecutionStack.Push(new(tokens.GetAsyncEnumerator()), "Async Parser"u8);
         return MainExecutionLoopAsync();
     }
 
     private async ValueTask MainExecutionLoopAsync()
     {
-        while (true)
-        {
-            var token = await ExecutionStack.NextInstructionAsync();
-            if (!token.HasValue) return;
-            AcceptToken(token.Value);
-        }
+        while (await ExecutionStack.NextInstructionAsync() is {} token) 
+            AcceptToken(token);
+    }
+
+
+    internal void Execute(string code) => 
+        Execute(Encoding.ASCII.GetBytes(code));
+    internal void Execute(in Memory<byte> code) => Execute(SynchronousTokenizer.Tokenize(code));
+
+    internal void Execute(IEnumerable<PostscriptValue> tokens)
+    {
+        Debug.Assert(ExecutionStack.Count == 0);
+        ExecutionStack.Push(new(tokens.GetEnumerator()), "Synchronous source");
+        MainExecutionLoop();
+    }
+
+    private void MainExecutionLoop()
+    {
+        while (ExecutionStack.NextInstruction(out var token)) AcceptToken(token);
     }
 
     private static readonly PostscriptValue OpenProc =

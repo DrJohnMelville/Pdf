@@ -176,7 +176,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("Exit", "engine.ExecutionStack.ExitLoop();", "exit out of an enclosing loop")]
 [MacroItem("StopRegion", """
         engine.ExecutionStack.Push(
-            new StopContext(engine.OperandStack.Pop()), "Stop Context"u8);
+            new(new StopContext(engine.OperandStack.Pop())), "Stop Context"u8);
     """, "Run a proc in a stop context")]
 [MacroItem("Stop", "engine.ExecutionStack.HandleStop();", "Jump out of a stop region")]
 [MacroItem("CountExecutionStack", "engine.Push((long)engine.ExecutionStack.Count);", "Count exection stack")]

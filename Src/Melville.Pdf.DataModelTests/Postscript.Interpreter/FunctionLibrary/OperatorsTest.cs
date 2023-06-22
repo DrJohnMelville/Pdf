@@ -12,8 +12,8 @@ public class OperatorsTest
     [InlineData("true", "01: true")]
     [InlineData("false", "01: false")]
     [InlineData("null", "01: <Null>")]
-    public Task TestSystemTokensAsync(string code, string result) => 
-        RunTestOnAsync(code, result, new PostscriptEngine().WithSystemTokens());
+    public void TestSystemTokens(string code, string result) => 
+        RunTestOn(code, result, new PostscriptEngine().WithSystemTokens());
 
     [Theory]
     [InlineData("4 5 pop", "01: 4")]
@@ -75,8 +75,8 @@ public class OperatorsTest
         06: 1
         """)]
     [InlineData("1 mark 2 3 4 cleartomark", "01: 1")]
-    public Task WithStackOperatorsAsync(string code, string result) =>
-        RunTestOnAsync(code, result, new PostscriptEngine().WithStackOperators());
+    public void WithStackOperators(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine().WithStackOperators());
 
     [Theory]
     [InlineData("1 2 add", "01: 3")]
@@ -117,8 +117,8 @@ public class OperatorsTest
         02: 1927566503
         03: 11295414
         """)]
-    public Task WithMathOperatorsAsync(string code, string result) =>
-        RunTestOnAsync(code, result, new PostscriptEngine().WithMathOperators());
+    public void WithMathOperators(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine().WithMathOperators());
     
     [Theory]
     [InlineData("1 2 3 2 packedarray", "01: [2 3]\r\n02: 1")]
@@ -144,8 +144,8 @@ public class OperatorsTest
         01: [1 2 3]
         02: [1 2 3 <Null> <Null>]
         """)]
-    public Task WithArrayOperatorsAsync(string code, string result) =>
-        RunTestOnAsync(code, result, new PostscriptEngine()
+    public void WithArrayOperators(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine()
             .WithStackOperators().WithArrayOperators().WithSystemTokens());
 
     [Theory]
@@ -178,8 +178,8 @@ public class OperatorsTest
     [InlineData("(TESTING) dup 123.4 16 3 -1 roll cvrs", "01: (7B)\r\n02: (7BSTING)")]
     [InlineData("(TESTING) dup 0 16 3 -1 roll cvrs", "01: (0)\r\n02: (0ESTING)")]
     [InlineData("0 [1 2 3] {add} forall", "01: 6")]
-    public Task ExecutionAndConversionAsync(string code, string result) =>
-        RunTestOnAsync(code, result, new PostscriptEngine()
+    public void ExecutionAndConversion(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
             .WithSystemTokens().WithArrayOperators().WithStackOperators());
 
@@ -203,11 +203,11 @@ public class OperatorsTest
     [InlineData("1 {4 5} stopped 6", "01: 6\r\n02: false\r\n03: 5\r\n04: 4\r\n05: 1")]
     [InlineData("{countexecstack} exec", "01: 2")]
     [InlineData("{countexecstack array execstack stop} stopped",
-        "01: true\r\n02: [Executed Code Stop Context [countexecstack array execstack stop]]")]
+        "01: true\r\n02: [Synchronous source Stop Context [countexecstack array execstack stop]]")]
 
     [InlineData("1 { 2 { 3 quit} exec 4 } exec 5", "01: 3\r\n02: 2\r\n03: 1")]
-    public Task ControlOperatorsAsync(string code, string result) =>
-        RunTestOnAsync(code, result, new PostscriptEngine()
+    public void ControlOperators(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
             .WithSystemTokens().WithArrayOperators().WithStackOperators());
 
@@ -262,8 +262,8 @@ public class OperatorsTest
 
     [InlineData("4 2 bitshift", "01: 16")]
     [InlineData("4 -2 bitshift", "01: 1")]
-    public Task RelationalAndBitwiseAsync(string code, string result) =>
-        RunTestOnAsync(code, result, new PostscriptEngine()
+    public void RelationalAndBitwise(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine()
             .WithRelationalOperators()
             .WithSystemTokens()
             .WithStackOperators()
@@ -306,8 +306,8 @@ public class OperatorsTest
         "01: [97 0 3 0]")]
     [InlineData("10 dict begin 25 dict begin countdictstack cleardictstack countdictstack",
         "01: 3\r\n02: 5")]
-    public Task DictionaryAsync(string code, string result) =>
-        RunTestOnAsync(code, result, new PostscriptEngine()
+    public void Dictionary(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine()
             .WithSystemTokens()
             .WithArrayOperators()
             .WithcControlOperators()
@@ -316,9 +316,9 @@ public class OperatorsTest
             .WithMathOperators()
             .WithcConversionOperators());
 
-    private static async Task RunTestOnAsync(string code, string result, PostscriptEngine engine)
+    private static void RunTestOn(string code, string result, PostscriptEngine engine)
     {
-        await engine.ExecuteAsync(new Tokenizer(code));
+        engine.Execute(code);
         Assert.Equal(result, engine.OperandStack.ToString());
     }
 }

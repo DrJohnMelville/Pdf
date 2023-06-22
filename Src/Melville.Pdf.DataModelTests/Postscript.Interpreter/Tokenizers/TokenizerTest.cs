@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -26,12 +28,12 @@ public class TokenizerTest
     [InlineData("exch pop", "exch", "pop")]
     public async Task Parse2NamesAsync(string source, string name1, string name2)
     {
-        var sut = new Tokenizer(source);
+        var sut = CreateTokenizer(source);
         await VerifyTokenAsync(sut, name1);
         await VerifyTokenAsync(sut, name2);
     }
 
-    private static async Task VerifyTokenAsync(Tokenizer sut, string name)
+    private static async Task VerifyTokenAsync(AsynchronousTokenizer sut, string name)
     {
         var token1 = await sut.NextTokenAsync();
         Assert.Equal(name, token1.ToString());
@@ -48,7 +50,7 @@ public class TokenizerTest
     [InlineData("(He(ll)o)", "(He(ll)o)")]
     public async Task TestStringParseAsync(string source, string result)
     {
-        var token = await new Tokenizer(source).NextTokenAsync();
+        var token = await CreateTokenizer(source).NextTokenAsync();
         Assert.Equal(result, token.ToString());
     }
 
@@ -77,7 +79,7 @@ public class TokenizerTest
     [Fact]
     public Task ExceptionForMismatchedCloseWakkaAsync() =>
         Assert.ThrowsAsync<PostscriptParseException>(()=>
-            new Tokenizer(">").NextTokenAsync().AsTask()
+            CreateTokenizer(">").NextTokenAsync().AsTask()
         );
 
     [Theory]
@@ -89,7 +91,7 @@ public class TokenizerTest
     [InlineData("2#1001001", 0b1001001)]
     public async Task ParseIntsAsync(string source, int result)
     {
-        var sut = new Tokenizer(source);
+        var sut = CreateTokenizer(source);
         var token = await sut.NextTokenAsync();
         Assert.Equal(result, token.Get<int>());
     }
@@ -106,7 +108,7 @@ public class TokenizerTest
     [InlineData("12500E-2", 125)]
     public async Task ParseFloatAsync(string source, float result)
     {
-        var sut = new Tokenizer(source);
+        var sut = CreateTokenizer(source);
         var token = await sut.NextTokenAsync();
         Assert.Equal(result, token.Get<double>(), 4);
     }
@@ -114,7 +116,14 @@ public class TokenizerTest
     [Fact]
     public async Task EnumerateTokensAsync()
     {
-        var sut = new Tokenizer("123.4 true false (Hello World)");
+        var sut = CreateTokenizer("123.4 true false (Hello World)");
         Assert.Equal(4, await sut.CountAsync());
+    }
+
+    private static AsynchronousTokenizer CreateTokenizer(string code)
+    {
+        return new AsynchronousTokenizer(
+            new MemoryStream(
+                Encoding.ASCII.GetBytes(code)));
     }
 }
