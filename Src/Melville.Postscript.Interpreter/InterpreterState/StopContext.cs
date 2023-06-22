@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -16,7 +17,7 @@ internal enum StopContextState
     Done
 };
 
-internal partial class StopContext : IEnumerator<PostscriptValue>
+internal partial class StopContext : BuiltInFunction, IEnumerator<PostscriptValue>
 {
     [FromConstructor] private readonly PostscriptValue inner;
     private StopContextState state = StopContextState.EmitOperation;
@@ -32,12 +33,17 @@ internal partial class StopContext : IEnumerator<PostscriptValue>
                 state = StopContextState.EmitResult;
                 return true;
             case StopContextState.EmitResult:
-                Current = PostscriptValueFactory.Create(stopped);
+                Current = PostscriptValueFactory.Create(this);
                 state = StopContextState.Done;
                 return true;
             default:
                 return false;
         }
+    }
+
+    public override void Execute(PostscriptEngine engine, in PostscriptValue value)
+    {
+        engine.OperandStack.Push(stopped);
     }
 
     public PostscriptValue Current { get; private set; }

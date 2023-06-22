@@ -201,8 +201,8 @@ public class OperatorsTest
     [InlineData("4 true false false false { {exit} if} loop", "01: 4")]
     [InlineData("1 {4 stop 5} stopped 6", "01: 6\r\n02: true\r\n03: 4\r\n04: 1")]
     [InlineData("1 {4 5} stopped 6", "01: 6\r\n02: false\r\n03: 5\r\n04: 4\r\n05: 1")]
-    [InlineData("{countexecstack} exec", "01: 2")]
-    [InlineData("{countexecstack array execstack stop} stopped",
+    [InlineData("{countexecstack 1 pop} exec 1 pop", "01: 2")]
+    [InlineData("{countexecstack array execstack stop} stopped 1 pop",
         "01: true\r\n02: [Synchronous source Stop Context [countexecstack array execstack stop]]")]
 
     [InlineData("1 { 2 { 3 quit} exec 4 } exec 5", "01: 3\r\n02: 2\r\n03: 1")]
@@ -303,9 +303,10 @@ public class OperatorsTest
     [InlineData("countdictstack", "01: 3")]
     [InlineData("10 dict begin countdictstack", "01: 4")]
     [InlineData("10 dict begin countdictstack array dictstack [ exch { length } forall ]",
-        "01: [97 0 3 0]")]
+        "01: [108 0 3 0]")]
     [InlineData("10 dict begin 25 dict begin countdictstack cleardictstack countdictstack",
         "01: 3\r\n02: 5")]
+    [InlineData("/Meth {dup 100000 ge {exit} {1 add Meth} ifelse} def 1 Meth", "01: 100000")]
     public void Dictionary(string code, string result) =>
         RunTestOn(code, result, new PostscriptEngine()
             .WithSystemTokens()
@@ -314,6 +315,7 @@ public class OperatorsTest
             .WithDictionaryOperators()
             .WithStackOperators()
             .WithMathOperators()
+            .WithRelationalOperators()
             .WithcConversionOperators());
 
     private static void RunTestOn(string code, string result, PostscriptEngine engine)

@@ -104,7 +104,6 @@ public class PostscriptEngine
 
     public void Execute(IEnumerable<PostscriptValue> tokens)
     {
-        Debug.Assert(ExecutionStack.Count == 0);
         ExecutionStack.Push(new(tokens.GetEnumerator()), "Synchronous source");
         MainExecutionLoop();
     }

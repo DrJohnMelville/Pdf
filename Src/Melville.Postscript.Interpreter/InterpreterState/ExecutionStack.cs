@@ -5,6 +5,7 @@ using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
@@ -30,64 +31,47 @@ public readonly struct ExecutionStack
     /// </summary>
     public int Count => stackFrames.Count;
 
-    /// <summary>
-    /// Add a content to the execution stack
-    /// </summary>
-    /// <param name="instruction">The source of tokens to be executed.</param>
-    /// <param name="description">An object describing the context</param>
     internal void Push(
         HybridEnumerator<PostscriptValue> instruction, in PostscriptValue description)
     {
+        if (!instruction.MoveNext()) return;
+        if (Count > 1000)
+            throw new PostscriptException("Execution Stack Overflow");
         stackFrames.Push(instruction);
         descriptions.Push(description);
     }
 
-    /// <summary>
-    /// Remove a procedure frame from the stack;
-    /// </summary>
+    internal async ValueTask PushAsync(
+        HybridEnumerator<PostscriptValue> instruction, PostscriptValue description)
+    {
+        if (!await instruction.MoveNextAsync()) return;
+        if (Count > 1000)
+            throw new PostscriptException("Execution Stack Overflow");
+        stackFrames.Push(instruction);
+        descriptions.Push(description);
+    }
+
     internal void Pop()
     {
         stackFrames.Pop();
         descriptions.Pop();
     }
-    
-    /// <summary>
-    /// Get the next value to execute
-    /// </summary>
-    public async ValueTask<PostscriptValue?> NextInstructionAsync()
+    internal async ValueTask<PostscriptValue?> NextInstructionAsync()
     {
-#warning rewrite this to allow tail recursion.
-        //To do so we will pre-seek the first instruction so that the stack contains
-        // the next instruction to be executed at each level, and we will then
-        // aggressively remove contexts between pulling the next token and returning it.
-
-        while (true)
-        {
-            if (stackFrames.Count == 0) return default;
-            if (await stackFrames.Peek().MoveNextAsync())
-                return stackFrames.Peek().Current;
-            Pop();
-        }
+        if (Count == 0) return default;
+        var ret = stackFrames.Peek().Current;
+        if (!await stackFrames.Peek().MoveNextAsync()) Pop();
+        return ret;
     }
 
-    /// <summary>
-    /// Get the next value to execute
-    /// </summary>
-    public bool NextInstruction(out PostscriptValue value)
+    internal bool NextInstruction(out PostscriptValue value)
     {
-#warning rewrite this to allow tail recursion.
-        //To do so we will pre-seek the first instruction so that the stack contains
-        // the next instruction to be executed at each level, and we will then
-        // aggressively remove contexts between pulling the next token and returning it.
+        if (Count == 0) return default(PostscriptValue).AsFalseValue(out value);
 
-        while (true)
-        {
-            if (stackFrames.Count == 0) 
-                return ((PostscriptValue)default).AsFalseValue( out value);
-            if (stackFrames.Peek().MoveNext())
-                return stackFrames.Peek().Current.AsTrueValue(out value);
-            Pop();
-        }
+        value = stackFrames.Peek().Current;
+        if (! stackFrames.Peek().MoveNext()) Pop();
+
+        return true;
     }
 
     internal void HandleStop()
