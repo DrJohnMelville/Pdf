@@ -45,7 +45,8 @@ public static class PostscriptOperatorCollections
         .WithcConversionOperators()
         .WithcControlOperators()
         .WithRelationalOperators()
-        .WithDictionaryOperators();
+        .WithDictionaryOperators()
+        .WithStringOperators();
 
 
     /// <summary>
@@ -212,6 +213,19 @@ public static class PostscriptOperatorCollections
         .WithSystemConstant("systemdict"u8, engine.SystemDict.AsPostscriptValue())
         .WithSystemFunction("countdictstack"u8, PostscriptOperators.CountDictStack)
         .WithSystemFunction("dictstack"u8, PostscriptOperators.DictStack)
-        .WithSystemFunction("cleardictstack"u8, PostscriptOperators.ClearDictStack)
+        .WithSystemFunction("cleardictstack"u8, PostscriptOperators.ClearDictStack);
+
+    /// <summary>
+    /// Implement the uniquely string operators in section 8.1
+    /// Many string operators are actually composite or array operators that
+    /// just work for strings.
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static PostscriptEngine WithStringOperators(
+        this PostscriptEngine engine) => engine
+        .WithSystemFunction("anchorsearch"u8, PostscriptOperators.AnchorSearch)
+        .WithSystemFunction("search"u8, PostscriptOperators.Search)
     ;
+
 }

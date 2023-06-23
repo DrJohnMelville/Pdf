@@ -119,6 +119,23 @@ public class OperatorsTest
         """)]
     public void WithMathOperators(string code, string result) =>
         RunTestOn(code, result, new PostscriptEngine().WithMathOperators());
+
+    [Theory]
+    [InlineData("(Hello) length", "01: 5")]
+    [InlineData("(Hello) 1 get", "01: 101")]
+    [InlineData("(Hello) dup 1 102 put", "01: (Hfllo)")]
+    [InlineData("(Hello)  1 3 getinterval", "01: (ell)")]
+    [InlineData("(Hello) dup 1 (ome) putinterval", "01: (Homeo)")]
+    [InlineData("(Hello) dup (Oreo) exch copy", "01: (Oreo)\r\n02: (Oreoo)")]
+    [InlineData("(Abc) {} forall", "01: 99\r\n02: 98\r\n03: 65")]
+    [InlineData("(baabc) (ba) anchorsearch", "01: true\r\n02: (ba)\r\n03: (abc)")]
+    [InlineData("(baabc) (Aa) anchorsearch", "01: false\r\n02: (baabc)")]
+    [InlineData("(baabc) (ba) search", "01: true\r\n02: ()\r\n03: (ba)\r\n04: (abc)")]
+    [InlineData("(baabc) (Aa) search", "01: false\r\n02: (baabc)")]
+    [InlineData("(Hellobaabc) (ba) search", "01: true\r\n02: (Hello)\r\n03: (ba)\r\n04: (abc)")]
+    [InlineData("(Hellobaabc) (Aa) search", "01: false\r\n02: (Hellobaabc)")]
+    public void WithStringOperators(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine().WithBaseLanguage());
     
     [Theory]
     [InlineData("1 2 3 2 packedarray", "01: [2 3]\r\n02: 1")]

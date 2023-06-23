@@ -81,7 +81,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
     """, "Extract a subarray from an array.")]
 [MacroItem("PutInterval", """
         var source = engine.PopAs<IPostscriptArray>();
-        engine.PopAs<PostscriptArray, int>(out var target, out var index);
+        engine.PopAs<IPostscriptArray, int>(out var target, out var index);
         target.InsertAt(index, source);
     """, "Write an array into another array.")]
 [MacroItem("AStore", """
@@ -279,6 +279,20 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
      engine.DictionaryStack.ResetToBottom3();
      """, 
     "Copy dictstack to the an array.")]
+
+// string search operators
+[MacroItem("AnchorSearch", """
+        var seek = engine.OperandStack.Pop();
+        engine.OperandStack.Peek().Get<PostscriptLongString>().DoAnchorSearch(
+            engine.OperandStack, seek);
+     """,
+    "Search for a string at the beginning of a string.")]
+[MacroItem("Search", """
+        var seek = engine.OperandStack.Pop();
+        engine.OperandStack.Peek().Get<PostscriptLongString>().DoSearch(
+            engine.OperandStack, seek);
+     """,
+    "Search for a string at the beginning of a string.")]
 public static partial class PostscriptOperators
 {
 #if DEBUG
