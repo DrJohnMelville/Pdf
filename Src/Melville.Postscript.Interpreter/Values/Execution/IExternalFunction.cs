@@ -4,6 +4,6 @@
     /// This represents 
     /// </summary>
     public interface IExternalFunction :
-        IExecutePostscript, IPostscriptValueStrategy<IExecutePostscript>,
+        IExecutePostscript,
         IPostscriptValueStrategy<string>{}
 }

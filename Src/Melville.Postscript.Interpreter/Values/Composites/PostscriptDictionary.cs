@@ -7,8 +7,7 @@ using Melville.INPC;
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
 internal abstract class PostscriptDictionary:
-    PostscriptComposite,
-    IPostscriptValueStrategy<PostscriptDictionary>
+    PostscriptComposite
 {
 
     protected override void StringRep(StringBuilder ret)
@@ -19,10 +18,7 @@ internal abstract class PostscriptDictionary:
     }
 
     protected abstract void RenderTo(StringBuilder sb);
-
-    PostscriptDictionary IPostscriptValueStrategy<PostscriptDictionary>.GetValue(
-        in Int128 memento) => this;
-
+    
     public abstract int MaxLength { get; }
     
     public abstract void Undefine(PostscriptValue key);

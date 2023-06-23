@@ -14,8 +14,6 @@ namespace Melville.Postscript.Interpreter.Values;
 
 internal partial class PostscriptArray : 
     PostscriptComposite,
-    IPostscriptValueStrategy<IPostscriptArray>,
-    IPostscriptValueStrategy<PostscriptArray>,
     IPostscriptArray,
     IPostscriptValueStrategy<IExecutionSelector>
 {
@@ -37,11 +35,6 @@ internal partial class PostscriptArray :
     }
 
     public Span<PostscriptValue> AsSpan() => values.Span;
-
-    IPostscriptArray
-        IPostscriptValueStrategy<IPostscriptArray>.GetValue(in Int128 memento) => this;
-    PostscriptArray
-        IPostscriptValueStrategy<PostscriptArray>.GetValue(in Int128 memento) => this;
 
     public override bool TryGet(
         in PostscriptValue indexOrKey, out PostscriptValue result) =>

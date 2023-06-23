@@ -293,6 +293,10 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
             engine.OperandStack, seek);
      """,
     "Search for a string at the beginning of a string.")]
+[MacroItem("Token", """
+         engine.PopAs<ITokenSource>().GetToken(engine.OperandStack);
+     """,
+    "Search for a string at the beginning of a string.")]
 public static partial class PostscriptOperators
 {
 #if DEBUG

@@ -226,6 +226,7 @@ public static class PostscriptOperatorCollections
         this PostscriptEngine engine) => engine
         .WithSystemFunction("anchorsearch"u8, PostscriptOperators.AnchorSearch)
         .WithSystemFunction("search"u8, PostscriptOperators.Search)
+        .WithSystemFunction("token"u8, PostscriptOperators.Token)
     ;
 
 }

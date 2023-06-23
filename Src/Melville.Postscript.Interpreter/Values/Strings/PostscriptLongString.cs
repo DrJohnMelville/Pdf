@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using Melville.INPC;
@@ -7,10 +8,8 @@ using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-#warning -- eventually this needs to implement IPdfComposite
-
 internal sealed partial class 
-    PostscriptLongString: PostscriptString, IPostscriptArray
+    PostscriptLongString: PostscriptString, IPostscriptArray,ITokenSource
 {
     [FromConstructor]private readonly Memory<byte> value;
 
@@ -24,7 +23,6 @@ internal sealed partial class
         hc.AddBytes(value.Span);
         return hc.ToHashCode();
     }
-
 
     protected override Memory<byte> ValueAsMemory(in Int128 memento) => value;
 
@@ -122,4 +120,19 @@ internal sealed partial class
             stack.Push(false);
         }
     }
+
+    public void GetToken(OperandStack stack)
+    {
+        var reader = value.AppendCR();
+        if (SynchronousTokenizer.ReadFrom(ref reader, out var token))
+        {
+            stack.Push(PostscriptValueFactory.CreateLongString(
+                value[^((int)reader.Length-1)..], StringKind));
+            stack.Push(token);
+            stack.Push(true);
+        }
+        else
+            stack.Push(false);
+    }
+
 }

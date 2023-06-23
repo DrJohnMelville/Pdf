@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.Postscript.Interpreter.Values.Numbers;
@@ -63,6 +64,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <exception cref="PostscriptInvalidTypeException">
     /// If the current value cannot be converted to the requested type.</exception>
     public T Get<T>() =>
+        TryGet<T>(out var value) ? value:
         (valueStrategy as IPostscriptValueStrategy<T> ?? TypeError<T>()).GetValue(memento);
 
     private IPostscriptValueStrategy<T> TypeError<T>() =>
@@ -75,17 +77,14 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <typeparam name="T">The desired type</typeparam>
     /// <param name="value">Receives the converted value, if available</param>
     /// <returns>True if the value can be converted to the given type, false otherwise</returns>
-    public bool TryGet<T>([NotNullWhen(true)] out T? value)
-    {
-        value = default;
-        if (valueStrategy is IPostscriptValueStrategy<T> typedStrategy)
+    public bool TryGet<T>([NotNullWhen(true)] out T? value) =>
+        valueStrategy switch
         {
-            value = typedStrategy.GetValue(memento)!;
-            return true;
-        }
-
-        return false;
-    }
+            IPostscriptValueStrategy<T> ts =>
+                ts.GetValue(memento).AsTrueValue(out value),
+            T val => val.AsTrueValue(out value),
+            _ => default(T).AsFalseValue(out value),
+        };
 
     /// <inheritdoc />
     public bool Equals(PostscriptValue other)

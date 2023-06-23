@@ -14,7 +14,7 @@ internal static class SynchronousTokenizer
             yield return token;
     }
 
-    private static bool ReadFrom(ref ReadOnlySequence<byte> seq, out PostscriptValue token)
+    public static bool ReadFrom(ref ReadOnlySequence<byte> seq, out PostscriptValue token)
     {
         var reader = new SequenceReader<byte>(seq);
         var ret = reader.TryGetPostscriptToken(out token);

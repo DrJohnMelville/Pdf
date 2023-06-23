@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
@@ -9,13 +10,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-internal partial struct StringSpanSource
+internal interface ITokenSource
 {
-    [FromConstructor] private PostscriptString strategy;
-    [FromConstructor] private Int128 memento;
-
-    public Span<byte> GetSpan(Span<byte> scratch) =>
-        strategy.GetBytes(memento, scratch);
+    void GetToken(OperandStack stack);
 }
 
 internal abstract partial class PostscriptString : 
@@ -29,7 +26,8 @@ internal abstract partial class PostscriptString :
     IPostscriptValueStrategy<PostscriptLongString>,
     IPostscriptValueStrategy<StringSpanSource>,
     IPostscriptValueStrategy<IPostscriptComposite>,
-    IPostscriptValueStrategy<IPostscriptArray>
+    IPostscriptValueStrategy<IPostscriptArray>,
+    IPostscriptValueStrategy<ITokenSource>
 {
     [FromConstructor] protected  StringKind StringKind { get; }
     public string GetValue(in Int128 memento) => 
@@ -97,4 +95,7 @@ internal abstract partial class PostscriptString :
 
     IPostscriptArray IPostscriptValueStrategy<IPostscriptArray>.GetValue(
         in Int128 memento) => AsLongString(memento);
+
+    ITokenSource IPostscriptValueStrategy<ITokenSource>.GetValue(in Int128 memento) =>
+        AsLongString(memento);
 }
