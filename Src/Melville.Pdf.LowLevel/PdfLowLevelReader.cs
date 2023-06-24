@@ -8,7 +8,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 namespace Melville.Pdf.LowLevel;
 
 /// <summary>
-/// Reads a low level PDF document from a variety of different source objects.
+/// Reads a low level PDF document from a variety of different CodeSource objects.
 /// </summary>
 public readonly struct PdfLowLevelReader
 {
@@ -27,9 +27,9 @@ public readonly struct PdfLowLevelReader
     /// <summary>
     /// Weakly tyoed method to creat a low level document from a string, byte array, or streaml
     /// </summary>
-    /// <param name="argument">The source to read from</param>
+    /// <param name="argument">The CodeSource to read from</param>
     /// <returns> The PdfLowLevelDocument read;</returns>
-    /// <exception cref="ArgumentException">If the source object is not a string, stream, oy
+    /// <exception cref="ArgumentException">If the CodeSource object is not a string, stream, oy
     /// byte array.</exception>
     public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(object argument) => argument switch
     {

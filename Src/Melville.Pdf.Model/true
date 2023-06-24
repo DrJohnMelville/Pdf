@@ -497,7 +497,7 @@
             Convenience method to read a PdfDocument from a stream.
             </summary>
             <param name="source">A readable and seekable stream containing a PDF document</param>
-            <param name="passwords">A password source to allow the low level parser to query the user for a password.</param>
+            <param name="passwords">A password CodeSource to allow the low level parser to query the user for a password.</param>
             <returns></returns>
         </member>
         <member name="M:Melville.Pdf.Model.Documents.PdfDocument.#ctor(Melville.Pdf.LowLevel.Model.Document.PdfLowLevelDocument)">
@@ -694,7 +694,7 @@
         </member>
         <member name="T:Melville.Pdf.Model.PdfReader">
             <summary>
-            Factory class that constructs a DocumentRenderer from a variety of legal source types
+            Factory class that constructs a DocumentRenderer from a variety of legal CodeSource types
             </summary>
         </member>
         <member name="F:Melville.Pdf.Model.PdfReader.passwordSource">
@@ -739,42 +739,42 @@
              In code, call the type-specific overloads when possible.
              </summary>
              <param name="input">A filename, byte array, stream, PdfLowLevelDocument, PdfDocument, or DocumentRenderer to read from</param>
-             <returns>A DocumentRenderer that can render pages from the given source.</returns>
+             <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
         </member>
         <member name="M:Melville.Pdf.Model.PdfReader.ReadFromFileAsync(System.String)">
             <summary>
             Read a pdf file into a DocumentRenderer
             </summary>
             <param name="input">File name of the PDF file.</param>
-            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+            <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
         </member>
         <member name="M:Melville.Pdf.Model.PdfReader.ReadFromAsync(System.Byte[])">
             <summary>
             Read a pdf file into a DocumentRenderer
             </summary>
             <param name="input">A byte array containing the PDF data.</param>
-            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+            <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
         </member>
         <member name="M:Melville.Pdf.Model.PdfReader.ReadFromAsync(System.IO.Stream)">
             <summary>
             Read a pdf file into a DocumentRenderer
             </summary>
             <param name="input">A stream containing the PDF data.  The stream must support reading and seeking.</param>
-            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+            <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
         </member>
         <member name="M:Melville.Pdf.Model.PdfReader.ReadFromAsync(Melville.Pdf.LowLevel.Model.Document.PdfLowLevelDocument)">
             <summary>
             Read a pdf file into a DocumentRenderer
             </summary>
             <param name="doc">A PdfLowLevelDocument representing the PDF data to display.</param>
-            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+            <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
         </member>
         <member name="M:Melville.Pdf.Model.PdfReader.ReadFromAsync(Melville.Pdf.Model.Documents.PdfDocument)">
             <summary>
             Read a pdf file into a DocumentRenderer
             </summary>
             <param name="doc">A PdfDocument representing the PDF data to display.</param>
-            <returns>A DocumentRenderer that can render pages from the given source.</returns>
+            <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
         </member>
         <member name="M:Melville.Pdf.Model.PdfReader.#ctor(Melville.Pdf.LowLevel.Parsing.ParserContext.IPasswordSource,Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper)">
             <summary>
@@ -1013,7 +1013,7 @@
             <summary>
             Parse a ICC profile from a PDF stream
             </summary>
-            <param name="stream">The source to read the ICC profile from.</param>
+            <param name="stream">The CodeSource to read the ICC profile from.</param>
             <returns>The ICC colorspace read from the stream.</returns>
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.Colors.IccProfileColorSpaceParser.ParseAsync(System.IO.Stream)">

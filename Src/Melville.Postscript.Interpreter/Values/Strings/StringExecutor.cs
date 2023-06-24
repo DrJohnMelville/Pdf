@@ -15,8 +15,8 @@ internal partial class StringExecutor : IExecutePostscript
 {
     public void Execute(PostscriptEngine engine, in PostscriptValue value)
     {
-        var tokenizer = SynchronousTokenizer.Tokenize(value.Get<Memory<byte>>());
-        engine.ExecutionStack.Push(new(tokenizer.GetEnumerator()), value);
+        var tokenizer = new Tokenizer(value.Get<Memory<byte>>());
+        engine.ExecutionStack.Push(new(tokenizer.Tokens().GetEnumerator()), value);
 
     }
 

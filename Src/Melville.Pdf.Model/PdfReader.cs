@@ -13,7 +13,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 namespace Melville.Pdf.Model;
 
 /// <summary>
-/// Factory class that constructs a DocumentRenderer from a variety of legal source types
+/// Factory class that constructs a DocumentRenderer from a variety of legal CodeSource types
 /// </summary>
 public readonly partial struct PdfReader
 {
@@ -60,7 +60,7 @@ public readonly partial struct PdfReader
     /// In code, call the type-specific overloads when possible.
     /// </summary>
     /// <param name="input">A filename, byte array, stream, PdfLowLevelDocument, PdfDocument, or DocumentRenderer to read from</param>
-    /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
+    /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
     public ValueTask<DocumentRenderer> ReadFromAsync(object input) =>
         input switch
         {
@@ -77,7 +77,7 @@ public readonly partial struct PdfReader
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
     /// <param name="input">File name of the PDF file.</param>
-    /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
+    /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
     public async ValueTask<DocumentRenderer> ReadFromFileAsync(string input) =>
         await ReadFromAsync(await LowLevelReader().ReadFromFileAsync(input).CA()).CA();
     
@@ -85,7 +85,7 @@ public readonly partial struct PdfReader
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
     /// <param name="input">A byte array containing the PDF data.</param>
-    /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
+    /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
     public async ValueTask<DocumentRenderer> ReadFromAsync(byte[] input) =>
         await ReadFromAsync(await LowLevelReader().ReadFromAsync(input).CA()).CA();
     
@@ -93,7 +93,7 @@ public readonly partial struct PdfReader
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
     /// <param name="input">A stream containing the PDF data.  The stream must support reading and seeking.</param>
-    /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
+    /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
     public async ValueTask<DocumentRenderer> ReadFromAsync(Stream input) =>
         await ReadFromAsync(await LowLevelReader().ReadFromAsync(input).CA()).CA();
 
@@ -103,7 +103,7 @@ public readonly partial struct PdfReader
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
     /// <param name="doc">A PdfLowLevelDocument representing the PDF data to display.</param>
-    /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
+    /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
     public ValueTask<DocumentRenderer> ReadFromAsync(PdfLowLevelDocument doc) =>
         ReadFromAsync(new PdfDocument(doc));
     
@@ -112,7 +112,7 @@ public readonly partial struct PdfReader
     /// Read a pdf file into a DocumentRenderer
     /// </summary>
     /// <param name="doc">A PdfDocument representing the PDF data to display.</param>
-    /// <returns>A DocumentRenderer that can render pages from the given source.</returns>
+    /// <returns>A DocumentRenderer that can render pages from the given CodeSource.</returns>
     public ValueTask<DocumentRenderer> ReadFromAsync(PdfDocument doc) =>
         DocumentRendererFactory.CreateRendererAsync(doc, fontFactory);
 }

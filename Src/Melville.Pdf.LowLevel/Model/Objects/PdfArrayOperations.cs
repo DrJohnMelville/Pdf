@@ -32,7 +32,7 @@ public static class PdfArrayOperations
     /// <summary>
     /// Cast a PDfArray to an array of doubles.
     /// </summary>
-    /// <param name="array">The source array</param>
+    /// <param name="array">The CodeSource array</param>
     /// <returns>An equivilent array of doubles.</returns>
     public static async ValueTask<double[]> AsDoublesAsync(this PdfArray array)
     {
@@ -46,7 +46,7 @@ public static class PdfArrayOperations
     /// <summary>
     /// Cast a PDfArray to an array of ints.
     /// </summary>
-    /// <param name="array">The source array</param>
+    /// <param name="array">The CodeSource array</param>
     /// <returns>An equivilent array of ints.</returns>
     public static async ValueTask<int[]> AsIntsAsync(this PdfArray array)
     {
@@ -62,7 +62,7 @@ public static class PdfArrayOperations
     /// Convert a PdfArray to an array of subtype of PdfObject -- with all indirect references resolved.
     /// </summary>
     /// <typeparam name="T">Desired subtype of PdfObject</typeparam>
-    /// <param name="array">The source array</param>
+    /// <param name="array">The CodeSource array</param>
     /// <returns>An equivilent C# array of a PdfObject children.</returns>
     public static async ValueTask<T[]> AsAsync<T>(this PdfArray array) where T:PdfObject
     {

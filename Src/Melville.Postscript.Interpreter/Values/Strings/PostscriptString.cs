@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-internal interface ITokenSource
+internal interface IPostscriptTokenSource
 {
     void GetToken(OperandStack stack);
 }
@@ -27,7 +27,7 @@ internal abstract partial class PostscriptString :
     IPostscriptValueStrategy<StringSpanSource>,
     IPostscriptValueStrategy<IPostscriptComposite>,
     IPostscriptValueStrategy<IPostscriptArray>,
-    IPostscriptValueStrategy<ITokenSource>
+    IPostscriptValueStrategy<IPostscriptTokenSource>
 {
     [FromConstructor] protected  StringKind StringKind { get; }
     public string GetValue(in Int128 memento) => 
@@ -96,6 +96,6 @@ internal abstract partial class PostscriptString :
     IPostscriptArray IPostscriptValueStrategy<IPostscriptArray>.GetValue(
         in Int128 memento) => AsLongString(memento);
 
-    ITokenSource IPostscriptValueStrategy<ITokenSource>.GetValue(in Int128 memento) =>
+    IPostscriptTokenSource IPostscriptValueStrategy<IPostscriptTokenSource>.GetValue(in Int128 memento) =>
         AsLongString(memento);
 }

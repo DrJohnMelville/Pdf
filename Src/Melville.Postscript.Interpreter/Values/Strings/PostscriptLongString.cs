@@ -9,7 +9,7 @@ using Melville.Postscript.Interpreter.Tokenizers;
 namespace Melville.Postscript.Interpreter.Values;
 
 internal sealed partial class 
-    PostscriptLongString: PostscriptString, IPostscriptArray,ITokenSource
+    PostscriptLongString: PostscriptString, IPostscriptArray,IPostscriptTokenSource
 {
     [FromConstructor]private readonly Memory<byte> value;
 
@@ -123,11 +123,12 @@ internal sealed partial class
 
     public void GetToken(OperandStack stack)
     {
-        var reader = value.AppendCR();
-        if (SynchronousTokenizer.ReadFrom(ref reader, out var token))
+        var wrapper = new MemoryWrapper(value);
+        var tokenizer = new Tokenizer(wrapper);
+        if (tokenizer.NextToken() is  { IsNull: false } token)
         {
             stack.Push(PostscriptValueFactory.CreateLongString(
-                value[^((int)reader.Length-1)..], StringKind));
+                value[wrapper.BytesConsumed..], StringKind));
             stack.Push(token);
             stack.Push(true);
         }

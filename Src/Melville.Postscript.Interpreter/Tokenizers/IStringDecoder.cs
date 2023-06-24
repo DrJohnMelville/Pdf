@@ -9,9 +9,9 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 public interface IStringDecoder<TState>
 {
     /// <summary>
-    /// Decode a number of bytes from the source to the destination
+    /// Decode a number of bytes from the CodeSource to the destination
     /// </summary>
-    /// <param name="source">source of bytes to decode</param>
+    /// <param name="source">CodeSource of bytes to decode</param>
     /// <param name="destination">span to write to</param>
     /// <param name="state">A state variable that will be maintained over successive calls
     /// in the same stream</param>

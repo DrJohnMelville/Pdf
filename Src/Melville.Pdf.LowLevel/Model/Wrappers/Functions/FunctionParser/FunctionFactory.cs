@@ -17,7 +17,7 @@ public static class FunctionFactory
     /// Created a Pdf Function from a PdfDictionary or PdfArray
     /// </summary>
     /// <param name="source">A PdfDictionary or PdfArray that defines the function.</param>
-    /// <returns>The PdfFunction defined by the source.</returns>
+    /// <returns>The PdfFunction defined by the CodeSource.</returns>
     /// <exception cref="PdfParseException">Source does not define a PdfFunction.</exception>
     public static ValueTask<IPdfFunction> CreateFunctionAsync(this PdfObject source) =>
         source switch
@@ -31,8 +31,8 @@ public static class FunctionFactory
     /// Parse a PdfDictionary into a PdfFunction
     /// </summary>
     /// <param name="source">The PdfDictionary that defines the function</param>
-    /// <returns>The PdfFunction defined by source.</returns>
-    /// <exception cref="PdfParseException">The source does not define a PdfFunction</exception>
+    /// <returns>The PdfFunction defined by CodeSource.</returns>
+    /// <exception cref="PdfParseException">The CodeSource does not define a PdfFunction</exception>
     public static async ValueTask<IPdfFunction> CreateFunctionAsync(this PdfDictionary source) =>
         (await source.GetAsync<PdfNumber>(KnownNames.FunctionType).CA()).IntValue switch
         {

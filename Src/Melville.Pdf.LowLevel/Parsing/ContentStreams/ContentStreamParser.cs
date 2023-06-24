@@ -29,7 +29,7 @@ public readonly struct ContentStreamParser
     }
 
     /// <summary>
-    /// Render the content stream operations in the given source pipereader.
+    /// Render the content stream operations in the given CodeSource pipereader.
     /// </summary>
     /// <param name="source">The content stream to parse.</param>
     /// <returns>A valuetask representing this operation.</returns>

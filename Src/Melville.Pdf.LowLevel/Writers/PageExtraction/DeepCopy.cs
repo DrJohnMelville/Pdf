@@ -49,7 +49,7 @@ public readonly partial struct DeepCopy
     /// <summary>
     /// Reserve an object number and associate it with the given indirect object
     /// </summary>
-    /// <param name="pio">The source indirect object that maps to the reserved object</param>
+    /// <param name="pio">The CodeSource indirect object that maps to the reserved object</param>
     /// <param name="promise">The object mapping to the indirect object in the copy</param>
     public void ReserveIndirectMapping(PdfIndirectObject pio, PdfIndirectObject promise)
     {

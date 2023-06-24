@@ -25,7 +25,7 @@ public readonly struct PdfDocument: IDisposable
     /// Convenience method to read a PdfDocument from a stream.
     /// </summary>
     /// <param name="source">A readable and seekable stream containing a PDF document</param>
-    /// <param name="passwords">A password source to allow the low level parser to query the user for a password.</param>
+    /// <param name="passwords">A password CodeSource to allow the low level parser to query the user for a password.</param>
     /// <returns></returns>
     public static async ValueTask<PdfDocument> ReadAsync(Stream source, IPasswordSource? passwords = null) =>
         new(await new PdfLowLevelReader(passwords).ReadFromAsync(source).CA());

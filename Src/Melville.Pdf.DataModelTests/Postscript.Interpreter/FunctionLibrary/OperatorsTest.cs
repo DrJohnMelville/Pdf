@@ -226,7 +226,7 @@ public class OperatorsTest
     [InlineData("1 {4 5} stopped 6", "01: 6\r\n02: false\r\n03: 5\r\n04: 4\r\n05: 1")]
     [InlineData("{countexecstack 1 pop} exec 1 pop", "01: 2")]
     [InlineData("{countexecstack array execstack stop} stopped 1 pop",
-        "01: true\r\n02: [Synchronous source Stop Context [countexecstack array execstack stop]]")]
+        "01: true\r\n02: [Synchronous CodeSource Stop Context [countexecstack array execstack stop]]")]
 
     [InlineData("1 { 2 { 3 quit} exec 4 } exec 5", "01: 3\r\n02: 2\r\n03: 1")]
     public void ControlOperators(string code, string result) =>

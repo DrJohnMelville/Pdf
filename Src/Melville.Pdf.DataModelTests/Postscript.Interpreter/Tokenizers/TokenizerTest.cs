@@ -29,13 +29,25 @@ public class TokenizerTest
     public async Task Parse2NamesAsync(string source, string name1, string name2)
     {
         var sut = CreateTokenizer(source);
-        var list = await sut.ToListAsync();
+        var list = await sut.TokensAsync().ToListAsync();
         Assert.Equal(2, list.Count);
-        await VerifyTokenAsync(list[0], name1);
-        await VerifyTokenAsync(list[1], name2);
+        VerifyTokenAsync(list[0], name1);
+        VerifyTokenAsync(list[1], name2);
     }
 
-    private static async Task VerifyTokenAsync(PostscriptValue token1, string name)
+    [Fact]
+    public async Task ParseAsyncWithSyncTokenizer()
+    {
+        var sut = CreateSyncTokenizer("/App1 %This is a comment\r\r\r\r\nApp2");
+        var list = await sut.TokensAsync().ToListAsync();
+        Assert.Equal(2, list.Count);
+        VerifyTokenAsync(list[0], "/App1");
+        VerifyTokenAsync(list[1], "App2");
+
+}
+
+
+private static void VerifyTokenAsync(PostscriptValue token1, string name)
     {
         Assert.Equal(name, token1.ToString());
         Assert.False(token1.TryGet<bool>(out _));
@@ -118,13 +130,18 @@ public class TokenizerTest
     public async Task EnumerateTokensAsync()
     {
         var sut = CreateTokenizer("123.4 true false (Hello World)");
-        Assert.Equal(4, await sut.CountAsync());
+        Assert.Equal(4, await sut.TokensAsync().CountAsync());
     }
 
-    private static AsynchronousTokenizer CreateTokenizer(string code)
+    private static Tokenizer CreateTokenizer(string code)
     {
-        return new AsynchronousTokenizer(
+        return new Tokenizer(
             new MemoryStream(
                 Encoding.ASCII.GetBytes(code)));
+    }
+
+    private static Tokenizer CreateSyncTokenizer(string code)
+    {
+        return new Tokenizer(code);
     }
 }

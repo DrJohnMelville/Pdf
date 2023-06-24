@@ -45,7 +45,7 @@ internal abstract class HashDictionary<T> where T : class
             SingleLinkedList sll =>
                 DoComparison(key, sll.Datum, out ret) ||
                 SearchLinkedList(sll.Next, key, out ret),
-            _=> throw new InvalidProgramException("source should be one of the prior 3 cases")
+            _=> throw new InvalidProgramException("CodeSource should be one of the prior 3 cases")
         };
 
     private bool DoComparison(

@@ -38,7 +38,7 @@ public interface IPasswordSource
 }
 
 /// <summary>
-/// A password source that thrown an exception on trying to open encrypted files.
+/// A password CodeSource that thrown an exception on trying to open encrypted files.
 /// </summary>
 [StaticSingleton()]
 public partial class NullPasswordSource : IPasswordSource

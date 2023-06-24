@@ -122,7 +122,7 @@ public class BinaryBitmapTest
     [InlineData(3,6,4, "......BBBB......")]
     [InlineData(7,6,4, "......B.........")]
     [InlineData(6,7,4, ".......BB.......")]
-    // need some cases where 2 bits of source go into one bit of dest
+    // need some cases where 2 bits of CodeSource go into one bit of dest
     public void ShortCopy2(int srcCol, int destCol, int length, string result)
     {
         var source = "BBBBBBBB ........".AsBinaryBitmap(1, 16);

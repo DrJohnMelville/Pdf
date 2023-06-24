@@ -21,7 +21,7 @@ public static class IccProfileColorSpaceParser
     /// <summary>
     /// Parse a ICC profile from a PDF stream
     /// </summary>
-    /// <param name="stream">The source to read the ICC profile from.</param>
+    /// <param name="stream">The CodeSource to read the ICC profile from.</param>
     /// <returns>The ICC colorspace read from the stream.</returns>
     public static async ValueTask<IColorSpace> ParseAsync(PdfStream stream)
     {

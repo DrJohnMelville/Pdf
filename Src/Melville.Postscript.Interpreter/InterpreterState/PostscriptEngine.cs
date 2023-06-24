@@ -83,61 +83,66 @@ public class PostscriptEngine
     public IPostscriptComposite UserDict => DictionaryStack[2];
 
     public ValueTask ExecuteAsync(Stream code) =>
-        ExecuteAsync(new AsynchronousTokenizer(code));
-    public ValueTask ExecuteAsync(AsynchronousTokenizer tokens)
+        ExecuteAsync(new Tokenizer(code));
+    public ValueTask ExecuteAsync(Tokenizer tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
-        ExecutionStack.Push(new(tokens.GetAsyncEnumerator()), "Async Parser"u8);
+        ExecutionStack.Push(new(tokens.TokensAsync().GetAsyncEnumerator()), 
+            "Async Parser"u8);
         return MainExecutionLoopAsync();
     }
 
     private async ValueTask MainExecutionLoopAsync()
     {
-        while (await ExecutionStack.NextInstructionAsync() is {} token) 
-            AcceptToken(token);
+        while (await ExecutionStack.NextInstructionAsync() is {} token)
+        {
+            if (ShouldExecuteToken(token))
+                await token.ExecutionStrategy.AcceptParsedTokenAsync(this, token);
+            CheckForOpenProcToken(token);
+        }
     }
 
 
     public void Execute(string code) => 
         Execute(Encoding.ASCII.GetBytes(code));
-    public void Execute(in Memory<byte> code) => Execute(SynchronousTokenizer.Tokenize(code));
+    public void Execute(in Memory<byte> code) => Execute(
+        new Tokenizer(code).Tokens());
 
     public void Execute(IEnumerable<PostscriptValue> tokens)
     {
-        ExecutionStack.Push(new(tokens.GetEnumerator()), "Synchronous source");
+        ExecutionStack.Push(new(tokens.GetEnumerator()), "Synchronous CodeSource");
         MainExecutionLoop();
     }
 
     private void MainExecutionLoop()
     {
-        while (ExecutionStack.NextInstruction(out var token)) AcceptToken(token);
+        while (ExecutionStack.NextInstruction(out var token))
+        {
+            if (ShouldExecuteToken(token))
+                token.ExecutionStrategy.AcceptParsedToken(this, token);
+            CheckForOpenProcToken(token);
+        }
+    }
+
+    public bool ShouldExecuteToken(in PostscriptValue token)
+    {
+        CheckForCloseProcToken(token);
+        if (deferredExecutionCount <= 0 ) return true;
+        OperandStack.Push(token);
+        return false;
     }
 
     private static readonly PostscriptValue OpenProc =
         PostscriptValueFactory.CreateString("{"u8, StringKind.Name);
     private static readonly PostscriptValue CloseProc =
         PostscriptValueFactory.CreateString("}"u8, StringKind.Name);
-    private void AcceptToken(in PostscriptValue current)
-    {
-        CheckForCloseProcToken(current);
-        PushOrExecuteToken(current);
-        CheckForOpenProcToken(current);
-    }
 
-    private void PushOrExecuteToken(PostscriptValue current)
-    {
-        if (deferredExecutionCount > 0)
-            OperandStack.Push(current);
-        else
-            current.ExecutionStrategy.AcceptParsedToken(this, current);
-    }
-
-    private void CheckForCloseProcToken(PostscriptValue current)
+    private void CheckForCloseProcToken(in PostscriptValue current)
     {
         if (current.Equals(CloseProc)) deferredExecutionCount--;
     }
 
-    private void CheckForOpenProcToken(PostscriptValue current)
+    private void CheckForOpenProcToken(in PostscriptValue current)
     {
         if (current.Equals(OpenProc)) deferredExecutionCount++;
     }

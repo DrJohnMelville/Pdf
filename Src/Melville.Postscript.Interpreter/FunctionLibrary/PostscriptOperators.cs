@@ -80,9 +80,9 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
             new PostscriptValue(array.IntervalFrom(index, length), token.ExecutionStrategy, 0));
     """, "Extract a subarray from an array.")]
 [MacroItem("PutInterval", """
-        var source = engine.PopAs<IPostscriptArray>();
+        var CodeSource = engine.PopAs<IPostscriptArray>();
         engine.PopAs<IPostscriptArray, int>(out var target, out var index);
-        target.InsertAt(index, source);
+        target.InsertAt(index, CodeSource);
     """, "Write an array into another array.")]
 [MacroItem("AStore", """
         engine.Push(engine.PopAs<PostscriptArray>().PushAllFrom(engine.OperandStack));
@@ -294,7 +294,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
      """,
     "Search for a string at the beginning of a string.")]
 [MacroItem("Token", """
-         engine.PopAs<ITokenSource>().GetToken(engine.OperandStack);
+         engine.PopAs<IPostscriptTokenSource>().GetToken(engine.OperandStack);
      """,
     "Search for a string at the beginning of a string.")]
 public static partial class PostscriptOperators

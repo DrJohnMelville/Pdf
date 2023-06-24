@@ -26,7 +26,7 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
     /// <summary>
     /// Parse from a PdfArray of at exactly 4 doubles.
     /// </summary>
-    /// <param name="array">The source PDF array.</param>
+    /// <param name="array">The CodeSource PDF array.</param>
     /// <returns>A  PdfRectangle.</returns>
     public static async ValueTask<PdfRect> CreateAsync(PdfArray array)
     {

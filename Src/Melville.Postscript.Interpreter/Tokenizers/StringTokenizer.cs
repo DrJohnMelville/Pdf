@@ -33,7 +33,7 @@ public readonly struct StringTokenizer<T, TState>
     /// </summary>
     /// <param name="reader">The reader to get bytes from</param>
     /// <param name="value">Out variable that receives the output</param>
-    /// <returns>True if there are enough source characters to return a value,
+    /// <returns>True if there are enough CodeSource characters to return a value,
     /// false otherwise.</returns>
     public bool Parse(
         ref SequenceReader<byte> reader, [NotNullWhen(true)]out byte[]? value)

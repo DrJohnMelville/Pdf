@@ -14,7 +14,7 @@ namespace Melville.Pdf.Wpf.Rendering
         /// Render an IPdfBitmap into a BitmapSource
         /// </summary>
         /// <param name="bitmap">The bitmap to render</param>
-        /// <returns>A bitmap source representing the rendered bitmap.</returns>
+        /// <returns>A bitmap CodeSource representing the rendered bitmap.</returns>
         public static async ValueTask<BitmapSource> ToWpfBitmapAsync(this IPdfBitmap bitmap)
         {
             var ret = new WriteableBitmap(bitmap.Width, bitmap.Height, 96, 96, PixelFormats.Pbgra32, null);

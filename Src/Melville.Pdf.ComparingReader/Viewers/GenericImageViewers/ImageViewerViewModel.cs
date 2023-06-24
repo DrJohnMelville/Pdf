@@ -25,7 +25,7 @@ public abstract class MelvillePdfRenderer : IImageRenderer
     public async ValueTask SetSourceAsync(Stream pdfBits, IPasswordSource passwordSource)
     {
         source = null;
-        // if the reader throws I want the source to be null
+        // if the reader throws I want the CodeSource to be null
         source = await new PdfReader(passwordSource, FontSource())
             .ReadFromAsync(pdfBits);
     }
