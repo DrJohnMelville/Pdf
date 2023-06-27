@@ -16,16 +16,38 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
+/// <summary>
+/// This is a source of postscrupt tokens.  This could be a
+/// parser over a stream or an enumeration of pre-tokenized values.
+/// </summary>
 public interface ITokenSource
 {
-   ICodeSource CodeSource {get; }
-   ValueTask<PostscriptValue> NextTokenAsync();
-   PostscriptValue NextToken();
-   public IEnumerable<PostscriptValue> Tokens();
-   public IAsyncEnumerable<PostscriptValue> TokensAsync();
+    /// <summary>
+    /// The ICodeSource reading bytes from
+    /// </summary>
+    ICodeSource CodeSource { get; }
+
+    /// <summary>
+    /// Get the next token in an async method.
+    /// </summary>
+    /// <returns>The next token or null if at the end of the stream</returns>
+    ValueTask<PostscriptValue> NextTokenAsync();
+    /// <summary>
+    /// Get the next token in an async method.
+    /// </summary>
+    /// <returns>The next token or null if at the end of the stream</returns>
+    PostscriptValue NextToken();
+    /// <summary>
+    /// A synchronous enumeration of all the tokens in the source.
+    /// </summary>
+    public IEnumerable<PostscriptValue> Tokens();
+    /// <summary>
+    /// An async enumeration of sll the tokens in a sou0rce.
+    /// </summary>
+    public IAsyncEnumerable<PostscriptValue> TokensAsync();
 }
 
-public partial class Tokenizer:ITokenSource
+public partial class Tokenizer : ITokenSource
 {
     public ICodeSource CodeSource { get; }
 
@@ -34,7 +56,7 @@ public partial class Tokenizer:ITokenSource
         CodeSource = codeSource;
     }
 
-    public Tokenizer(Stream source):
+    public Tokenizer(Stream source) :
         this(new PipeWrapper(PipeReader.Create(source)))
     {
     }
@@ -43,7 +65,7 @@ public partial class Tokenizer:ITokenSource
     {
     }
 
-    public Tokenizer(Memory<byte> source):this(new MemoryWrapper(source))
+    public Tokenizer(Memory<byte> source) : this(new MemoryWrapper(source))
     {
     }
 
@@ -99,6 +121,7 @@ public partial class Tokenizer:ITokenSource
             CodeSource.AdvanceTo(reader.Position);
             return true;
         }
+
         return false;
     }
 
@@ -109,7 +132,6 @@ public partial class Tokenizer:ITokenSource
 
         result = default;
         return false;
-
     }
 
     private bool TryParseWithAppendedCarriageReturn(ReadResult buffer, out PostscriptValue result) =>
@@ -117,12 +139,12 @@ public partial class Tokenizer:ITokenSource
             buffer.Buffer.AppendCR(), buffer.Buffer, out result);
 
     private bool TryParseInSeparateSequence(
-        ReadOnlySequence<byte> appendedSequence, 
+        ReadOnlySequence<byte> appendedSequence,
         ReadOnlySequence<byte> originalSequence, out PostscriptValue result)
     {
         var reader = new SequenceReader<byte>(appendedSequence);
         if (!reader.TryGetPostscriptToken(out result)) return false;
-        
+
         var offset = appendedSequence.Slice(appendedSequence.Start, reader.Position).Length;
         CodeSource.AdvanceTo(originalSequence.GetPosition(offset));
         return true;
@@ -130,7 +152,7 @@ public partial class Tokenizer:ITokenSource
 
     public async IAsyncEnumerable<PostscriptValue> TokensAsync()
     {
-        while ((await NextTokenAsync()) is  {IsNull:false} token)
+        while ((await NextTokenAsync()) is { IsNull: false } token)
         {
             yield return token;
         }

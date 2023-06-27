@@ -82,6 +82,10 @@ public class PostscriptEngine
     /// </summary>
     public IPostscriptComposite UserDict => DictionaryStack[2];
 
+    public ValueTask ExecuteAsync(string code) =>
+        ExecuteAsync(Encoding.ASCII.GetBytes(code));
+    public ValueTask ExecuteAsync(in Memory<byte> code) => ExecuteAsync(
+        new Tokenizer(code));
     public ValueTask ExecuteAsync(Stream code) =>
         ExecuteAsync(new Tokenizer(code));
     public ValueTask ExecuteAsync(Tokenizer tokens)

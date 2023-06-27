@@ -91,7 +91,7 @@ public partial class DictionaryStack :
         return false;
     }
 
-    public void PostscriptWhere(OperandStack stack)
+    internal void PostscriptWhere(OperandStack stack)
     {
         var key = stack.Pop();
         for (int i = Count - 1; i >= 0; i--)
@@ -122,7 +122,7 @@ public partial class DictionaryStack :
             array.InitialSubArray(sourceSpan.Length, PostscriptBuiltInOperations.PushArgument);
     }
 
-    public void ResetToBottom3()
+    internal void ResetToBottom3()
     {
         while (Count > 3) Pop();
     }

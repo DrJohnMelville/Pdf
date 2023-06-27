@@ -1,72 +1,38 @@
-﻿using Melville.INPC;
-using System;
-using System.Buffers;
+﻿using System;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
+/// <summary>
+/// This class allows pipes and memory objects to be read with a single interface, using
+/// methods borrowed from PipeReader.  Some implementations of this interface support both
+/// synchronous and asynchronous reads.
+/// </summary>
 public interface ICodeSource
 {
+    /// <summary>
+    /// Retrieve data from the source, possibly reading from an external device
+    /// </summary>
+    /// <returns>A ReadwResult containing a sequence with data to inspect</returns>
     ValueTask<ReadResult> ReadAsync();
+
+    /// <summary>
+    /// Read data from the internal buffer, if possible
+    /// </summary>
+    /// <returns>A ReadResult containing a sequence of the remainind data</returns>
     internal ReadResult Read();
+
+    /// <summary>
+    /// Mark data up to the given point as consumed.
+    /// </summary>
+    /// <param name="consumed">The first byte than has not been consumed.</param>
     void AdvanceTo(SequencePosition consumed);
+
+    /// <summary>
+    /// Mark data than has been consumed and examined.
+    /// </summary>
+    /// <param name="consumed">The first byte  not yet consumed by the reader.</param>
+    /// <param name="examinned">The first byte not yet examined by the reader.</param>
     void AdvanceTo(SequencePosition consumed, SequencePosition examinned);
-}
-
-public partial class PipeWrapper : ICodeSource
-{
-    [FromConstructor] private readonly PipeReader reader;
-
-    public ValueTask<ReadResult> ReadAsync()
-    {
-        return reader.ReadAsync();
-    }
-
-    public ReadResult Read()
-    {
-        throw new NotSupportedException(
-            "A Pipewrapper must be read using the async method");
-    }
-
-    public void AdvanceTo(SequencePosition consumed) => reader.AdvanceTo(consumed);
-
-    public void AdvanceTo(SequencePosition consumed, SequencePosition examinned) =>
-        reader.AdvanceTo(consumed, examinned);
-}
-
-public partial class MemoryWrapper : ICodeSource
-{
-    [FromConstructor] private Memory<byte> buffer;
-    public int BytesConsumed { get; private set; } = 0;
-    private ReadOnlySequence<byte>? lastSequence;
-
-    public ValueTask<ReadResult> ReadAsync() => ValueTask.FromResult(Read());
-
-    public ReadResult Read()
-    {
-        var seq = BuildSequence();
-        return new ReadResult(seq, false, true);
-    }
-
-    private ReadOnlySequence<byte> BuildSequence()
-    {
-        var builder = new ReadOnlySequenceBuilder<byte>();
-        builder.Append(buffer);
-        lastSequence = builder.GetSequence();
-        return lastSequence.Value;
-    }
-
-    public void AdvanceTo(SequencePosition consumed)
-    {
-        if (lastSequence is not {} seq)
-            throw new InvalidOperationException("Advance without read");
-        var delta = (int)seq.Slice(seq.Start, consumed).Length;
-        BytesConsumed += delta;
-        buffer = buffer[delta..];
-        lastSequence = null;
-    }
-
-    public void AdvanceTo(SequencePosition consumed, SequencePosition examinned) =>
-        AdvanceTo(consumed);
 }
