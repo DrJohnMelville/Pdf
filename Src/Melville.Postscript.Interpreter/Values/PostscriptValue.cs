@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime;
 using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -78,6 +79,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <param name="value">Receives the converted value, if available</param>
     /// <returns>True if the value can be converted to the given type, false otherwise</returns>
     public bool TryGet<T>([NotNullWhen(true)] out T? value) =>
+        this is T thisAsT ? thisAsT.AsTrueValue(out value):
         valueStrategy switch
         {
             IPostscriptValueStrategy<T> ts =>

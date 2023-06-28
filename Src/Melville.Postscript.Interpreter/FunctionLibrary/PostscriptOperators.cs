@@ -4,8 +4,7 @@ using System.Linq;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
-using Melville.Postscript.Interpreter.Values.Composites;
-// used in generated files
+using Melville.Postscript.Interpreter.Values.Composites; // used in generated files
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Strings;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -116,9 +115,10 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("ConvertToDouble", "engine.Push(engine.PopAs<double>());", "Convert To int")]
 [MacroItem("ConvertToName", """
         var op = engine.OperandStack.Pop();
-        var text = op.Get<Memory<byte>>();
-        engine.Push(PostscriptValueFactory.CreateString(text.Span, 
-            op.ExecutionStrategy.IsExecutable ? 
+        var text = op.Get<StringSpanSource>();
+        var textSpan = text.GetSpan(stackalloc byte[PostscriptString.ShortStringLimit]);
+        engine.Push(PostscriptValueFactory.CreateString(textSpan,
+            op.ExecutionStrategy.IsExecutable ?
                 StringKind.Name : StringKind.LiteralName));
     """, "Convert To int")]
 [MacroItem("ConvertToString", """
@@ -127,9 +127,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
                 engine.OperandStack.Pop().ToString(), StringKind.String));
     """, "Convert To int")]
 [MacroItem("ConvertToRadixString", """
-        var buffer = engine.OperandStack.Pop();
-        var radix = engine.PopAs<int>();
-        var number = engine.OperandStack.Pop();
+        engine.PopAs(out PostscriptValue number, out int radix, out PostscriptValue buffer);
         engine.Push(
             new RadixPrinter(number, radix, buffer.Get<Memory<byte>>()).CreateValue());
     """, "Convert number to string with a particular radix")]
@@ -144,23 +142,19 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         if (engine.PopAs<bool>()) proc.ExecutionStrategy.Execute(engine, proc);
     """, "If operatiom")]
 [MacroItem("IfElse", """
-        var elseProc = engine.OperandStack.Pop();
-        var proc = engine.OperandStack.Pop();
-        if (engine.PopAs<bool>()) 
+        engine.PopAs(out bool cond, out PostscriptValue proc, out PostscriptValue elseProc);
+        if (cond) 
             proc.ExecutionStrategy.Execute(engine, proc);
         else
             elseProc.ExecutionStrategy.Execute(engine, elseProc);
     """, "If/Else operation")]
 [MacroItem("For", """
-        var proc = engine.OperandStack.Pop();
-        var limit = engine.PopAs<double>();
-        engine.PopAs<double, double>(out var initial, out var increment);
+        engine.PopAs(out double initial, out double increment, out double limit, out PostscriptValue proc);
         engine.ExecutionStack.PushLoop(
             LoopSources.For(initial, increment, limit, proc), "For Loop"u8);
     """, "For Loop")]
 [MacroItem("Repeat", """
-        var proc = engine.OperandStack.Pop();
-        var count = engine.PopAs<int>();
+        engine.PopAs(out int count, out PostscriptValue proc);
         engine.ExecutionStack.PushLoop(
             LoopSources.Repeat(count, proc), "Repeat Loop"u8);
     """, "Repeat")]
@@ -169,9 +163,8 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         engine.ExecutionStack.PushLoop(LoopSources.Loop(proc), "Loop Loop"u8);
     """, "Loop")]
 [MacroItem("ForAll", """
-        var proc = engine.OperandStack.Pop();
-        var compsite = engine.PopAs<IPostscriptComposite>();
-        engine.ExecutionStack.PushLoop(LoopSources.ForAll(compsite, proc), "ForAll Loop");
+        engine.PopAs(out IPostscriptComposite composite, out PostscriptValue proc);
+        engine.ExecutionStack.PushLoop(LoopSources.ForAll(composite, proc), "ForAll Loop");
     """, "ForAll Loop")]
 [MacroItem("Exit", "engine.ExecutionStack.ExitLoop();", "exit out of an enclosing loop")]
 [MacroItem("StopRegion", """
@@ -179,7 +172,8 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
             new(new StopContext(engine.OperandStack.Pop())), "Stop Context"u8);
     """, "Run a proc in a stop context")]
 [MacroItem("Stop", "engine.ExecutionStack.HandleStop();", "Jump out of a stop region")]
-[MacroItem("CountExecutionStack", "engine.Push((long)engine.ExecutionStack.Count);", "Count exection stack")]
+[MacroItem("CountExecutionStack", 
+    "engine.Push((long)engine.ExecutionStack.Count);", "Count exection stack")]
 [MacroItem("ExecStack", """
         var array = engine.PopAs<PostscriptArray>();
         int len = engine.ExecutionStack.CopyTo(array);
@@ -227,7 +221,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
     "engine.OperandStack.MarkedSpanToDictionary();", 
     "Create a dictionary from the marked stack")]
 [MacroItem("DefineInTopDict", """
-        var (key, valueToSet) = engine.PopTwo();
+        engine.PopAs(out PostscriptValue key, out PostscriptValue valueToSet);
         engine.DictionaryStack.Peek().Put(key, valueToSet);
     """, 
     "Define a key in the topmost dictionary on the dictionary stack")]
@@ -244,18 +238,18 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
     """, 
     "Push a dictionary onto the dictionary stack`")]
 [MacroItem("DictionaryStore", """
-        var (key, val) = engine.PopTwo();
+        engine.PopAs(out PostscriptValue key, out PostscriptValue val);
         engine.DictionaryStack.Store(key, val);
     """, 
     "Push a dictionary onto the dictionary stack`")]
 [MacroItem("DictionaryKnown", """
-        var (dict, key) = engine.PopTwo();
-        engine.Push(dict.Get<PostscriptDictionary>().TryGet(key,out _));
+        engine.PopAs(out PostscriptDictionary dict, out PostscriptValue key);
+        engine.Push(dict.TryGet(key,out _));
     """, 
     "True if the dictionary contains the key, false otherwise`")]
 [MacroItem("Undefine", """
-        var (dict, key) = engine.PopTwo();
-        dict.Get<PostscriptDictionary>().Undefine(key);
+        engine.PopAs(out PostscriptDictionary dict, out PostscriptValue key);
+        dict.Undefine(key);
     """, 
     "Remove key from the dictionary if it exists")]
 [MacroItem("Where", """
@@ -302,7 +296,13 @@ public static partial class PostscriptOperators
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
-    } 
+        var op = engine.OperandStack.Pop();
+        var text = op.Get<StringSpanSource>();
+        var textSpan = text.GetSpan(stackalloc byte[PostscriptString.ShortStringLimit]);
+        engine.Push(PostscriptValueFactory.CreateString(textSpan,
+            op.ExecutionStrategy.IsExecutable ?
+                StringKind.Name : StringKind.LiteralName));
+    }
 #endif
 
     [MacroCode("""

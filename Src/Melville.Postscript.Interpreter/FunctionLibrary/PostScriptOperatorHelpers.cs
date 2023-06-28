@@ -17,6 +17,18 @@ internal static class PostScriptOperatorHelpers
         a = engine.PopAs<T1>(); 
     }
 
+    public static void PopAs<T1, T2, T3>(this PostscriptEngine engine, out T1 a, out T2 b, out T3 c)
+    {
+        c = engine.PopAs<T3>();
+        engine.PopAs(out a, out b);
+    }
+    public static void PopAs<T1, T2, T3, T4>(
+        this PostscriptEngine engine, out T1 a, out T2 b, out T3 c, out T4 d)
+    {
+        engine.PopAs(out c, out d);
+        engine.PopAs(out a, out b);
+    }
+
     public static (PostscriptValue, PostscriptValue) PopTwo(this PostscriptEngine engine)
     {
         var b = engine.OperandStack.Pop();

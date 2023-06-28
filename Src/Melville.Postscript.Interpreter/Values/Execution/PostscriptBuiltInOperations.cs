@@ -35,18 +35,5 @@ public static partial class PostscriptBuiltInOperations
             referencedValue.ExecutionStrategy.Execute(engine, referencedValue);
         }
     }
-
-    /// <summary>
-    /// Do nothing.  This is used in some of the looping code to prevent the tail recursion code from
-    /// prematurely tearing down the loop context.
-    /// </summary>
-    public static IExternalFunction Nop = new NopImplementation();
-    private sealed class NopImplementation: BuiltInFunction
-    {
-        public override void Execute(PostscriptEngine engine, in PostscriptValue value)
-        {
-            // do nothing, it is a NOP
-        }
-    }
 }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
 
@@ -19,7 +18,7 @@ internal static class LoopSources
             yield return innerItem;
         }
 
-        yield return PostscriptValueFactory.Create(PostscriptBuiltInOperations.Nop);
+        yield return PostscriptValueFactory.Create(PostscriptOperators.Nop);
     }
 
     private static PostscriptValue WrapBody(in PostscriptValue proc) =>
@@ -36,7 +35,7 @@ internal static class LoopSources
         {
             yield return innerItem;
         }
-        yield return PostscriptValueFactory.Create(PostscriptBuiltInOperations.Nop);
+        yield return PostscriptValueFactory.Create(PostscriptOperators.Nop);
     }
 
     public static IEnumerator<PostscriptValue> Loop(
@@ -65,7 +64,7 @@ internal static class LoopSources
             yield return innerProc;
         }
         ArrayPool<PostscriptValue>.Shared.Return(buffer);
-        yield return PostscriptValueFactory.Create(PostscriptBuiltInOperations.Nop);
+        yield return PostscriptValueFactory.Create(PostscriptOperators.Nop);
     }
 }
 
