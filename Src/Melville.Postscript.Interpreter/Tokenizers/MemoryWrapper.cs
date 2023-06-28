@@ -51,6 +51,6 @@ public partial class MemoryWrapper : ICodeSource
     }
 
     /// <inheritdoc />
-    public void AdvanceTo(SequencePosition consumed, SequencePosition examinned) =>
+    public void AdvanceTo(SequencePosition consumed, SequencePosition examined) =>
         AdvanceTo(consumed);
 }

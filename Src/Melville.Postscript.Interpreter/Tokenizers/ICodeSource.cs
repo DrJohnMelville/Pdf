@@ -14,7 +14,7 @@ public interface ICodeSource
     /// <summary>
     /// Retrieve data from the source, possibly reading from an external device
     /// </summary>
-    /// <returns>A ReadwResult containing a sequence with data to inspect</returns>
+    /// <returns>A ReadResult containing a sequence with data to inspect</returns>
     ValueTask<ReadResult> ReadAsync();
 
     /// <summary>
@@ -33,6 +33,6 @@ public interface ICodeSource
     /// Mark data than has been consumed and examined.
     /// </summary>
     /// <param name="consumed">The first byte  not yet consumed by the reader.</param>
-    /// <param name="examinned">The first byte not yet examined by the reader.</param>
-    void AdvanceTo(SequencePosition consumed, SequencePosition examinned);
+    /// <param name="examined">The first byte not yet examined by the reader.</param>
+    void AdvanceTo(SequencePosition consumed, SequencePosition examined);
 }

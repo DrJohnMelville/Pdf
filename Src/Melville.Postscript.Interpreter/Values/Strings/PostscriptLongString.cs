@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -125,11 +126,12 @@ internal sealed partial class
     {
         var wrapper = new MemoryWrapper(value);
         var tokenizer = new Tokenizer(wrapper);
-        if (tokenizer.NextToken() is  { IsNull: false } token)
+        using var enumerator = tokenizer.Tokens().GetEnumerator();
+        if (enumerator.MoveNext()) 
         {
             stack.Push(PostscriptValueFactory.CreateLongString(
                 value[wrapper.BytesConsumed..], StringKind));
-            stack.Push(token);
+            stack.Push(enumerator.Current);
             stack.Push(true);
         }
         else

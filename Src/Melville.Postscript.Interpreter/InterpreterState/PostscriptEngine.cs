@@ -82,18 +82,35 @@ public class PostscriptEngine
     /// </summary>
     public IPostscriptComposite UserDict => DictionaryStack[2];
 
+    /// <summary>
+    /// Execute a postscript program.
+    /// </summary>
+    /// <param name="code">The program to execute</param>
     public ValueTask ExecuteAsync(string code) =>
         ExecuteAsync(Encoding.ASCII.GetBytes(code));
+    /// <summary>
+    /// Execute a postscript program.
+    /// </summary>
+    /// <param name="code">The program to execute</param>
     public ValueTask ExecuteAsync(in Memory<byte> code) => ExecuteAsync(
         new Tokenizer(code));
+    /// <summary>
+    /// Execute a postscript program.
+    /// </summary>
+    /// <param name="code">The program to execute</param>
     public ValueTask ExecuteAsync(Stream code) =>
         ExecuteAsync(new Tokenizer(code));
-    public ValueTask ExecuteAsync(Tokenizer tokens)
+
+    /// <summary>
+    /// Execute a postscript program.
+    /// </summary>
+    /// <param name="tokens">A tokenizer containing the program to execute.</param>
+    public async ValueTask ExecuteAsync(ITokenSource tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
-        ExecutionStack.Push(new(tokens.TokensAsync().GetAsyncEnumerator()), 
+        await ExecutionStack.PushAsync(new(tokens.TokensAsync().GetAsyncEnumerator()), 
             "Async Parser"u8);
-        return MainExecutionLoopAsync();
+        await MainExecutionLoopAsync();
     }
 
     private async ValueTask MainExecutionLoopAsync()
@@ -107,14 +124,26 @@ public class PostscriptEngine
     }
 
 
+    /// <summary>
+    /// Execute a postscript program.
+    /// </summary>
+    /// <param name="code">The program to execute</param>
     public void Execute(string code) => 
         Execute(Encoding.ASCII.GetBytes(code));
+    /// <summary>
+    /// Execute a postscript program.
+    /// </summary>
+    /// <param name="code">The program to execute</param>
     public void Execute(in Memory<byte> code) => Execute(
-        new Tokenizer(code).Tokens());
+        new Tokenizer(code));
 
-    public void Execute(IEnumerable<PostscriptValue> tokens)
+    /// <summary>
+    /// Execute a postscript program.
+    /// </summary>
+    /// <param name="tokens">A token source representing the program.</param>
+    public void Execute(ITokenSource tokens)
     {
-        ExecutionStack.Push(new(tokens.GetEnumerator()), "Synchronous CodeSource");
+        ExecutionStack.Push(new(tokens.Tokens().GetEnumerator()), "Synchronous CodeSource");
         MainExecutionLoop();
     }
 
@@ -128,7 +157,7 @@ public class PostscriptEngine
         }
     }
 
-    public bool ShouldExecuteToken(in PostscriptValue token)
+    private bool ShouldExecuteToken(in PostscriptValue token)
     {
         CheckForCloseProcToken(token);
         if (deferredExecutionCount <= 0 ) return true;

@@ -28,7 +28,7 @@ public static class PostscriptOperatorCollections
     /// </summary>
     /// <param name="engine">The engine to add to</param>
     /// <param name="name">Name of the item</param>
-    /// <param name="func">The function to put</param>
+    /// <param name="value">The constant value to associate with the name.</param>
     /// <returns>The passed in engine</returns>
     public static PostscriptEngine WithSystemConstant(
         this PostscriptEngine engine, ReadOnlySpan<byte> name, in PostscriptValue value)
@@ -37,6 +37,11 @@ public static class PostscriptOperatorCollections
         return engine;
     }
 
+    /// <summary>
+    /// Configure a postscript engine with the base postscript language.
+    /// </summary>
+    /// <param name="engine">The engine to configure.</param>
+    /// <returns>Thge engine passed in, once it has been configured/</returns>
     public static PostscriptEngine WithBaseLanguage(this PostscriptEngine engine) => engine
         .WithSystemTokens()
         .WithStackOperators()

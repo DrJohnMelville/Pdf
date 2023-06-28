@@ -36,6 +36,10 @@ public static partial class PostscriptBuiltInOperations
         }
     }
 
+    /// <summary>
+    /// Do nothing.  This is used in some of the looping code to prevent the tail recursion code from
+    /// prematurely tearing down the loop context.
+    /// </summary>
     public static IExternalFunction Nop = new NopImplementation();
     private sealed class NopImplementation: BuiltInFunction
     {

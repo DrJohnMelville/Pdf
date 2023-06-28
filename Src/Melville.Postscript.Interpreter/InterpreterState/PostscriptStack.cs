@@ -52,7 +52,7 @@ public partial class PostscriptStack<T> : List<T>
         return ret;
     }
 
-    public void PopMultiple(int countToRemove)
+    internal void PopMultiple(int countToRemove)
     {
         RemoveRange(Count - countToRemove, countToRemove);
         CheckForIllegalPop();
@@ -178,7 +178,7 @@ public partial class PostscriptStack<T> : List<T>
         }
     }
 
-    protected T[] PopTopToArray(int arrayLen)
+    internal T[] PopTopToArray(int arrayLen)
     {
         var array = CollectionAsSpan()[^arrayLen..].ToArray();
         MakeCopyable(array);

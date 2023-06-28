@@ -3,8 +3,14 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
+/// <summary>
+/// This is the current stack of the operands for the postscript parser.
+/// </summary>
 public sealed class OperandStack : PostscriptStack<PostscriptValue>
 {
+    /// <summary>
+    /// Create a new operand stack
+    /// </summary>
     public OperandStack() : base(0)
     {
     }

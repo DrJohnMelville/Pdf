@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
 
@@ -11,12 +12,12 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
 internal class PostscriptFunction: PdfFunction
 {
-    private readonly IEnumerable<PostscriptValue> operation;
+    private readonly PretokenizedSource operation;
     public PostscriptFunction(
         ClosedInterval[] domain, ClosedInterval[] range, 
         IEnumerable<PostscriptValue> operation) : base(domain, range)
     {
-        this.operation = operation;
+        this.operation = new PretokenizedSource(operation);
     }
 
     protected override void ComputeOverride(

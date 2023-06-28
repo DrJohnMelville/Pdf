@@ -32,6 +32,6 @@ public partial class PipeWrapper : ICodeSource
     public void AdvanceTo(SequencePosition consumed) => reader.AdvanceTo(consumed);
 
     /// <inheritdoc />
-    public void AdvanceTo(SequencePosition consumed, SequencePosition examinned) =>
-        reader.AdvanceTo(consumed, examinned);
+    public void AdvanceTo(SequencePosition consumed, SequencePosition examined) =>
+        reader.AdvanceTo(consumed, examined);
 }

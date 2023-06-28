@@ -23,7 +23,7 @@ internal readonly partial struct ForAllCursor
     /// <summary>
     /// Try to do another iteration of the ForAll operation.
     /// </summary>
-    /// <param name="engine">Postscript engine we are running on</param>
+    /// <param name="target">Postscript engine we are running on</param>
     /// <param name="index">A scratch value that starts at 0 and the object uses
     /// as iteration state.</param>
     /// <returns></returns>

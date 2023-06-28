@@ -9,7 +9,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 public class S7_3_8_StreamsDefined
 {
     private static long GetPosition(PdfStream obj) => 
-        (long)(obj.GetField("CodeSource")!.GetField("sourceFilePosition")!);
+        (long)(obj.GetField("source")!.GetField("sourceFilePosition")!);
 
     [Theory]
     [InlineData("<</LENGTH 6>> stream\r\n123456\r\nendstream", 22)]

@@ -17,38 +17,11 @@ using Melville.Postscript.Interpreter.Values;
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
 /// <summary>
-/// This is a source of postscrupt tokens.  This could be a
-/// parser over a stream or an enumeration of pre-tokenized values.
+/// Synchronously or asynchronously reads tokens from a code source.
 /// </summary>
-public interface ITokenSource
-{
-    /// <summary>
-    /// The ICodeSource reading bytes from
-    /// </summary>
-    ICodeSource CodeSource { get; }
-
-    /// <summary>
-    /// Get the next token in an async method.
-    /// </summary>
-    /// <returns>The next token or null if at the end of the stream</returns>
-    ValueTask<PostscriptValue> NextTokenAsync();
-    /// <summary>
-    /// Get the next token in an async method.
-    /// </summary>
-    /// <returns>The next token or null if at the end of the stream</returns>
-    PostscriptValue NextToken();
-    /// <summary>
-    /// A synchronous enumeration of all the tokens in the source.
-    /// </summary>
-    public IEnumerable<PostscriptValue> Tokens();
-    /// <summary>
-    /// An async enumeration of sll the tokens in a sou0rce.
-    /// </summary>
-    public IAsyncEnumerable<PostscriptValue> TokensAsync();
-}
-
 public partial class Tokenizer : ITokenSource
 {
+    /// <inheritdoc />
     public ICodeSource CodeSource { get; }
 
     internal Tokenizer(ICodeSource codeSource)
@@ -56,20 +29,32 @@ public partial class Tokenizer : ITokenSource
         CodeSource = codeSource;
     }
 
+    /// <summary>
+    /// Create a tokenizer from a stream.
+    /// </summary>
+    /// <param name="source">A stream containing the code to execute.</param>
     public Tokenizer(Stream source) :
         this(new PipeWrapper(PipeReader.Create(source)))
     {
     }
 
+    /// <summary>
+    /// Create a tokenizer from a string.
+    /// </summary>
+    /// <param name="source">The string containing the code to execute.</param>
     public Tokenizer(string source) : this(Encoding.ASCII.GetBytes(source))
     {
     }
 
+    /// <summary>
+    /// Create a tokenizer from a block of Memory.
+    /// </summary>
+    /// <param name="source">The code to execute.</param>
     public Tokenizer(Memory<byte> source) : this(new MemoryWrapper(source))
     {
     }
 
-    public async ValueTask<PostscriptValue> NextTokenAsync()
+    private async ValueTask<PostscriptValue> NextTokenAsync()
     {
         while (true)
         {
@@ -81,7 +66,7 @@ public partial class Tokenizer : ITokenSource
         }
     }
 
-    public PostscriptValue NextToken()
+    private PostscriptValue NextToken()
     {
         while (true)
         {
@@ -150,6 +135,7 @@ public partial class Tokenizer : ITokenSource
         return true;
     }
 
+    /// <inheritdoc/>
     public async IAsyncEnumerable<PostscriptValue> TokensAsync()
     {
         while ((await NextTokenAsync()) is { IsNull: false } token)
@@ -158,6 +144,7 @@ public partial class Tokenizer : ITokenSource
         }
     }
 
+    /// <inheritdoc/>
     public IEnumerable<PostscriptValue> Tokens()
     {
         while (NextToken() is { IsNull: false } token)

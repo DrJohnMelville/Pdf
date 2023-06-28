@@ -31,23 +31,23 @@ public class TokenizerTest
         var sut = CreateTokenizer(source);
         var list = await sut.TokensAsync().ToListAsync();
         Assert.Equal(2, list.Count);
-        VerifyTokenAsync(list[0], name1);
-        VerifyTokenAsync(list[1], name2);
+        VerifyToken(list[0], name1);
+        VerifyToken(list[1], name2);
     }
 
     [Fact]
-    public async Task ParseAsyncWithSyncTokenizer()
+    public async Task ParseAsyncWithSyncTokenizerAsync()
     {
         var sut = CreateSyncTokenizer("/App1 %This is a comment\r\r\r\r\nApp2");
         var list = await sut.TokensAsync().ToListAsync();
         Assert.Equal(2, list.Count);
-        VerifyTokenAsync(list[0], "/App1");
-        VerifyTokenAsync(list[1], "App2");
+        VerifyToken(list[0], "/App1");
+        VerifyToken(list[1], "App2");
 
 }
 
 
-private static void VerifyTokenAsync(PostscriptValue token1, string name)
+private static void VerifyToken(PostscriptValue token1, string name)
     {
         Assert.Equal(name, token1.ToString());
         Assert.False(token1.TryGet<bool>(out _));
@@ -63,7 +63,7 @@ private static void VerifyTokenAsync(PostscriptValue token1, string name)
     [InlineData("(He(ll)o)", "(He(ll)o)")]
     public async Task TestStringParseAsync(string source, string result)
     {
-        var token = await CreateTokenizer(source).NextTokenAsync();
+        var token = await CreateTokenizer(source).TokensAsync().FirstAsync();
         Assert.Equal(result, token.ToString());
     }
 
@@ -92,7 +92,7 @@ private static void VerifyTokenAsync(PostscriptValue token1, string name)
     [Fact]
     public Task ExceptionForMismatchedCloseWakkaAsync() =>
         Assert.ThrowsAsync<PostscriptParseException>(()=>
-            CreateTokenizer(">").NextTokenAsync().AsTask()
+            CreateTokenizer(">").TokensAsync().FirstAsync().AsTask()
         );
 
     [Theory]
@@ -105,7 +105,7 @@ private static void VerifyTokenAsync(PostscriptValue token1, string name)
     public async Task ParseIntsAsync(string source, int result)
     {
         var sut = CreateTokenizer(source);
-        var token = await sut.NextTokenAsync();
+        var token = await sut.TokensAsync().FirstAsync();
         Assert.Equal(result, token.Get<int>());
     }
 
@@ -122,7 +122,7 @@ private static void VerifyTokenAsync(PostscriptValue token1, string name)
     public async Task ParseFloatAsync(string source, float result)
     {
         var sut = CreateTokenizer(source);
-        var token = await sut.NextTokenAsync();
+        var token = await sut.TokensAsync().FirstAsync();
         Assert.Equal(result, token.Get<double>(), 4);
     }
 
