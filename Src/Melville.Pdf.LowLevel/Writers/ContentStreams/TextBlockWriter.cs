@@ -16,7 +16,8 @@ public readonly partial struct TextBlockWriter : IDisposable, ITextObjectOperati
 {
     private readonly ContentStreamWriter parent;
 
-    [DelegateTo] private ITextObjectOperations Inner() => parent;
+    [DelegateTo]
+    private ITextObjectOperations Inner() => parent;
 
     internal TextBlockWriter(ContentStreamWriter parent)
     {
@@ -58,21 +59,21 @@ public readonly partial struct TextBlockWriter : IDisposable, ITextObjectOperati
     /// <param name="values">An array of numbers and strings to write as a spaced string.</param>
     public async ValueTask ShowSpacedStringAsync(params object[] values)
     {
-        ContentStreamValueUnion[] items = ArrayPool<ContentStreamValueUnion>.Shared.Rent(values.Length);
-        for (int i = 0; i < values.Length; i++)
+        var builder = Inner().GetSpacedStringBuilder();
+        foreach (var value in values)
         {
-            items[i] = ValueFromObject(values[i]);
+            await WriteObjectAsync(value, builder).CA();
         }
-        await Inner().ShowSpacedStringAsync(items.AsSpan(0, values.Length)).CA(); 
-        ArrayPool<ContentStreamValueUnion>.Shared.Return(items);
+        await builder.DoneWritingAsync().CA();
     }
 
-    private ContentStreamValueUnion ValueFromObject(object value) => value switch
+    private static ValueTask WriteObjectAsync(
+        object value, ISpacedStringBuilder builder) => value switch
     {
-        string s => new ContentStreamValueUnion(s.AsExtendedAsciiBytes().AsMemory()),
-        IConvertible c => new ContentStreamValueUnion(c.ToDouble(null), c.ToInt64(null)),
-        byte[] d => new ContentStreamValueUnion(d.AsMemory()),
-        var x => ValueFromObject(x.ToString() ?? "")
+        string s => builder.SpacedStringComponentAsync(s.AsExtendedAsciiBytes().AsMemory()),
+        IConvertible c => builder.SpacedStringComponentAsync(c.ToDouble(null)),
+        byte[] arr => builder.SpacedStringComponentAsync(arr),
+        var unknownType => WriteObjectAsync(unknownType.ToString() ?? "", builder)
     };
 
     /// <summary>

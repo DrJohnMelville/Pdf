@@ -1,4 +1,5 @@
-﻿using Melville.INPC;
+﻿using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -27,12 +28,18 @@ public static partial class PostscriptBuiltInOperations
     /// Lookup the name in the dictionary and executing the resulting object. 
     /// </summary>
     public static IExternalFunction ExecuteFromDictionary = new ExecuteFromDictionaryBuiltInFuncImpl();
-    private sealed class ExecuteFromDictionaryBuiltInFuncImpl : BuiltInFunction
+    private sealed class ExecuteFromDictionaryBuiltInFuncImpl : BuiltInFunction, IExecutePostscript
     {
         public override void Execute(PostscriptEngine engine, in PostscriptValue value)
         {
             var referencedValue = engine.DictionaryStack.Get(value);
             referencedValue.ExecutionStrategy.Execute(engine, referencedValue);
+        }
+
+        public ValueTask ExecuteAsync(PostscriptEngine engine, in PostscriptValue value)
+        {
+            var referencedValue = engine.DictionaryStack.Get(value);
+            return referencedValue.ExecutionStrategy.ExecuteAsync(engine, referencedValue);
         }
     }
 }

@@ -9,7 +9,8 @@ internal partial class PostscriptDouble :
     IPostscriptValueStrategy<string>,
     IPostscriptValueStrategy<int>,
     IPostscriptValueStrategy<long>,
-    IPostscriptValueStrategy<double>
+    IPostscriptValueStrategy<double>,
+    IPostscriptValueStrategy<float>
 
 {
     string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => 
@@ -28,6 +29,8 @@ internal partial class PostscriptDouble :
 
     double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) => 
         DoubleFromMemento(memento);
+    float IPostscriptValueStrategy<float>.GetValue(in Int128 memento) => 
+        (float)DoubleFromMemento(memento);
 
     private double DoubleFromMemento(Int128 memento) => 
         BitConverter.Int64BitsToDouble((long)memento);

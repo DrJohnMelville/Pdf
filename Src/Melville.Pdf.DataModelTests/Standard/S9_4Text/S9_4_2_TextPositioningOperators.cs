@@ -174,13 +174,11 @@ public class S9_4_2_TextPositioningOperators
     public async Task ShowSpacedStreamAsync(double horizontalScale, float xPosition, int fontSize)
     {
         sut.SetHorizontalTextScaling(horizontalScale);
-        await state.StronglyTypedCurrentState().SetFontAsync(KnownNames.Helvetica, fontSize); 
-        await sut.ShowSpacedStringAsync(
-            new []
-            {
-                new ContentStreamValueUnion("e".AsExtendedAsciiBytes()),
-                new ContentStreamValueUnion(1000, 1000)
-            });
+        await state.StronglyTypedCurrentState().SetFontAsync(KnownNames.Helvetica, fontSize);
+        var builder = sut.GetSpacedStringBuilder();
+        await builder.SpacedStringComponentAsync("e".AsExtendedAsciiBytes());
+        await builder.SpacedStringComponentAsync(1000);
+        await builder.DoneWritingAsync();
         Assert.Equal(Matrix3x2.Identity,
             sut.CurrentState().TextLineMatrix);
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, xPosition, 0), sut.CurrentState().TextMatrix);

@@ -34,7 +34,16 @@ public partial class Tokenizer : ITokenSource
     /// </summary>
     /// <param name="source">A stream containing the code to execute.</param>
     public Tokenizer(Stream source) :
-        this(new PipeWrapper(PipeReader.Create(source)))
+        this(PipeReader.Create(source))
+    {
+    }
+
+    /// <summary>
+    /// Create a tokenizer from a stream.
+    /// </summary>
+    /// <param name="source">A stream containing the code to execute.</param>
+    public Tokenizer(PipeReader source) :
+        this(new PipeWrapper(source))
     {
     }
 

@@ -18,7 +18,11 @@ public abstract class ParserTest
     protected ValueTask ParseStringAsync(
         string s, IContentStreamOperations? target = null)
     {
+#if false
         var sut = new ContentStreamParser(target ?? Target.Object);
+#else
+        var sut = new ContentStreamParser2(target ?? Target.Object);
+#endif
         return sut.ParseAsync(PipeReaderFromString(s));
     }
 

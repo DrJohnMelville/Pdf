@@ -22,7 +22,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <summary>
     /// The strategy that can retrieve the value for this item.
     /// </summary>
-    [FromConstructor] private readonly IPostscriptValueStrategy<string> valueStrategy;
+    [FromConstructor] private readonly object valueStrategy;
 
     /// <summary>
     /// The strategy that defines how to execute this value
@@ -89,11 +89,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
         };
 
     /// <inheritdoc />
-    public bool Equals(PostscriptValue other)
-    {
-        if (ShallowEqual(other) || DeepEqual(other)) return true;
-        return false;
-    }
+    public bool Equals(PostscriptValue other) => ShallowEqual(other) || DeepEqual(other);
 
 
     private bool ShallowEqual(PostscriptValue other) =>
@@ -101,18 +97,18 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
         memento == other.memento;
 
 
-    private bool DeepEqual(PostscriptValue other)
-    {
-        return valueStrategy is IPostscriptValueComparison psc &&
-               psc.Equals(memento, other.valueStrategy, other.memento);
-    }
+    private bool DeepEqual(PostscriptValue other) =>
+        valueStrategy is IPostscriptValueComparison psc &&
+        psc.Equals(memento, other.valueStrategy, other.memento);
 
     /// <inheritdoc />
     public override int GetHashCode() => HashCode.Combine(valueStrategy, memento);
 
     /// <inheritdoc />
     public override string ToString() => 
-        ExecutionStrategy.WrapTextDisplay(valueStrategy.GetValue(memento));
+        ExecutionStrategy.WrapTextDisplay(
+            (valueStrategy as IPostscriptValueStrategy<string>)?.GetValue(memento) ??
+            valueStrategy.ToString() ?? "<No String Value>");
 
     [MacroItem("int")]
     [MacroItem("double")]

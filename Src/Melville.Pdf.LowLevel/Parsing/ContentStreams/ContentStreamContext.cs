@@ -225,7 +225,7 @@ internal class ContentStreamContext
                 await target.ShowStringAsync(arguments.BytesAt(0)).CA();
                 break;
             case ContentStreamOperatorValue.TJ:
-                await target.ShowSpacedStringAsync(arguments.NativeSpan()).CA();
+                await ShowSpacedStringAsync();
                 break;
             case ContentStreamOperatorValue.TL:
                 target.SetTextLeading(arguments.DoubleAt(0));
@@ -275,6 +275,20 @@ internal class ContentStreamContext
                 break;
         }
         arguments.Clear();
+    }
+
+    private async Task ShowSpacedStringAsync()
+    {
+        var builder = target.GetSpacedStringBuilder();
+        for (int i = 0; i < arguments.Count;i++)
+        {
+            if (arguments.TypeAt(i) == ContentStreamValueType.Number)
+                await builder.SpacedStringComponentAsync(arguments.FloatAt(i)).CA();
+            else
+                await builder.SpacedStringComponentAsync(arguments.BytesAt(i)).CA();
+        }
+
+        await builder.DoneWritingAsync().CA();
     }
 
     private void SetLineDashPattern()

@@ -20,7 +20,7 @@ namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 /// class writes the operations out to the destination pipe as a
 /// content stream.
 /// </summary>
-public partial class ContentStreamWriter : IContentStreamOperations
+public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStringBuilder
 {
     private readonly ContentStreamPipeWriter destPipe;
 
@@ -318,21 +318,26 @@ public partial class ContentStreamWriter : IContentStreamOperations
     }
 
     /// <inheritdoc />
-    ValueTask ITextObjectOperations.ShowSpacedStringAsync(in Span<ContentStreamValueUnion> values)
+    public ISpacedStringBuilder GetSpacedStringBuilder()
     {
         destPipe.WriteChar('[');
-        foreach (var value in values)
-        {
-            switch (value.Type)
-            {
-                case ContentStreamValueType.Number:
-                    destPipe.WriteDoubleAndSpace(value.Floating);
-                    break;
-                case ContentStreamValueType.Memory:
-                    destPipe.WriteString(value.Bytes.Span);
-                    break;
-            }
-        }
+        return this;
+    }
+
+    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(double value)
+    {
+        destPipe.WriteDoubleAndSpace(value);
+        return ValueTask.CompletedTask;
+    }
+
+    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(Memory<byte> value)
+    {
+        destPipe.WriteString(value.Span);
+        return ValueTask.CompletedTask;
+    }
+
+    ValueTask ISpacedStringBuilder.DoneWritingAsync()
+    {
         destPipe.WriteChar(']');
         destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
         return ValueTask.CompletedTask;

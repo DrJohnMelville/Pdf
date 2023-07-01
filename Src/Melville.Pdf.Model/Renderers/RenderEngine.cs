@@ -27,7 +27,7 @@ using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 namespace Melville.Pdf.Model.Renderers;
 
-internal partial class RenderEngine: IContentStreamOperations, IFontTarget
+internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpacedStringBuilder
 {
     private readonly IHasPageAttributes page;
     private readonly SinglePageRenderContext pageRenderContext;
@@ -291,33 +291,18 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
         return MoveToNextLineAndShowStringAsync(decodedString);
     }
 
-    public ValueTask ShowSpacedStringAsync(in Span<ContentStreamValueUnion> values)
+    public ISpacedStringBuilder GetSpacedStringBuilder() => this;
+    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(double value)
     {
-        var ary = ArrayPool<ContentStreamValueUnion>.Shared.Rent(values.Length);
-        values.CopyTo(ary);
-        return new ValueTask(ShowSpacedStringAsync(ary, values.Length).ContinueWith(_ =>
-            ArrayPool<ContentStreamValueUnion>.Shared.Return(ary)));
+        var delta = GraphicsState.FontSize * value/ 1000.0;
+        UpdateTextPosition(-delta);
+        return ValueTask.CompletedTask;
     }
 
-    private async Task ShowSpacedStringAsync(ContentStreamValueUnion[] values, int length)
-    {
-        foreach (var value in values.Take(length))
-        {
-            switch (value.Type)
-            {
-                case ContentStreamValueType.Number:
-                    var delta = GraphicsState.FontSize * value.Floating / 1000.0;
-                    UpdateTextPosition(-delta);
-                    break;
-                case ContentStreamValueType.Memory:
-                    await ShowStringAsync(value.Bytes).CA();
-                    break;
-                default:
-                    throw new PdfParseException("Invalid ShowSpacedString argument");
-            }
-        }
-    }
+    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(Memory<byte> value) => 
+        ShowStringAsync(value);
 
+    ValueTask ISpacedStringBuilder.DoneWritingAsync() => ValueTask.CompletedTask;
 
     #endregion
 

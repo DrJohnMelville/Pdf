@@ -11,7 +11,10 @@ using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values;
 
-internal static class PostscriptValueFactory
+/// <summary>
+/// Create Postscript Values
+/// </summary>
+public static class PostscriptValueFactory
 {
     /// <summary>
     /// Create a PostscriptValue representing a long.

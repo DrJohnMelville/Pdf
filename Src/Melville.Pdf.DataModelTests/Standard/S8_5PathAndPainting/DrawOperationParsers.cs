@@ -54,7 +54,7 @@ public class DrawOperationParsers: ParserTest
     [Theory]
     [MemberData(nameof(PaintinOperators))]
     public Task EmptyOperatorAsync(string code, Expression<Action<IContentStreamOperations>> op) =>
-        TestInputAsync(code+"\n", op);
+        TestInputAsync(code, op);
 
     [Fact]
     public Task DoOperationTestAsync()

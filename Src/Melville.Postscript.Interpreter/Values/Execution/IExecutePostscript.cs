@@ -44,13 +44,10 @@ public interface IExecutePostscript
     /// </summary>
     /// <param name="engine">The engine that to execute the value upon </param>
     /// <param name="value">The value to execute</param>
-    ValueTask AcceptParsedTokenAsync(PostscriptEngine engine, PostscriptValue value)
-    {
-        AcceptParsedToken(engine, value);
-        return ValueTask.CompletedTask;
-    }
+    ValueTask AcceptParsedTokenAsync(PostscriptEngine engine, PostscriptValue value) => 
+        ExecuteAsync(engine, value);
 
-        /// <summary>
+    /// <summary>
     /// Wrap the display of the value based on its execution status
     /// </summary>
     /// <param name="text">The text that represents the unadorned value</param>

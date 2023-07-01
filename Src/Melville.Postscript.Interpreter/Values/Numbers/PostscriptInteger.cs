@@ -11,7 +11,8 @@ internal partial class PostscriptInteger :
     IPostscriptValueStrategy<string>,
     IPostscriptValueStrategy<long>,
     IPostscriptValueStrategy<int>,
-    IPostscriptValueStrategy<double>
+    IPostscriptValueStrategy<double>,
+    IPostscriptValueStrategy<float>
 {
     string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => memento.ToString();
 
@@ -20,4 +21,5 @@ internal partial class PostscriptInteger :
     int IPostscriptValueStrategy<int>.GetValue(in Int128 memento) => (int)memento;
 
     double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) => (double)memento;
+    float IPostscriptValueStrategy<float>.GetValue(in Int128 memento) => (float)memento;
 }

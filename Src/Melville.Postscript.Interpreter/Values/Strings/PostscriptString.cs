@@ -15,7 +15,7 @@ internal interface IPostscriptTokenSource
     void GetToken(OperandStack stack);
 }
 
-internal abstract partial class PostscriptString : 
+public abstract partial class PostscriptString : 
     IPostscriptValueStrategy<string>, 
     IPostscriptValueStrategy<StringKind>, 
     IPostscriptValueComparison,
@@ -86,7 +86,7 @@ internal abstract partial class PostscriptString :
     PostscriptLongString IPostscriptValueStrategy<PostscriptLongString>.GetValue(in Int128 memento) =>
         AsLongString(memento);
         
-    protected PostscriptLongString AsLongString(in Int128 memento) =>
+    private protected PostscriptLongString AsLongString(in Int128 memento) =>
         this as PostscriptLongString ?? 
         new PostscriptLongString(StringKind, ValueAsMemory(memento));
 

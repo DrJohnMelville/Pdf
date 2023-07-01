@@ -15,8 +15,8 @@ public class TextObjectOperationsTest : WriterTest
         using (var block = sut.StartTextBlock())
         {
         }
-        Assert.Equal("BT\nET\n", await WrittenTextAsync() );
-        
+
+        Assert.Equal("BT\nET\n", await WrittenTextAsync());
     }
 
     [Fact]
@@ -26,9 +26,10 @@ public class TextObjectOperationsTest : WriterTest
         {
             block.MovePositionBy(3, 4);
         }
-        Assert.Equal("BT\n3 4 Td\nET\n", await WrittenTextAsync() );
-        
+
+        Assert.Equal("BT\n3 4 Td\nET\n", await WrittenTextAsync());
     }
+
     [Fact]
     public async Task MovePositionByWithLeadingAsync()
     {
@@ -36,17 +37,21 @@ public class TextObjectOperationsTest : WriterTest
         {
             block.MovePositionByWithLeading(3, 4);
         }
-        Assert.Equal("BT\n3 4 TD\nET\n", await WrittenTextAsync() );
+
+        Assert.Equal("BT\n3 4 TD\nET\n", await WrittenTextAsync());
     }
+
     [Fact]
     public async Task SetTextMatrixAsync()
     {
         using (var block = sut.StartTextBlock())
         {
-            block.SetTextMatrix(1,2,3,4,5,6);
+            block.SetTextMatrix(1, 2, 3, 4, 5, 6);
         }
-        Assert.Equal("BT\n1 2 3 4 5 6 Tm\nET\n", await WrittenTextAsync() );
+
+        Assert.Equal("BT\n1 2 3 4 5 6 Tm\nET\n", await WrittenTextAsync());
     }
+
     [Fact]
     public async Task ToNextLineAsync()
     {
@@ -54,8 +59,10 @@ public class TextObjectOperationsTest : WriterTest
         {
             block.MoveToNextTextLine();
         }
-        Assert.Equal("BT\nT*\nET\n", await WrittenTextAsync() );
+
+        Assert.Equal("BT\nT*\nET\n", await WrittenTextAsync());
     }
+
     [Fact]
     public async Task ShowStringAsync()
     {
@@ -63,8 +70,10 @@ public class TextObjectOperationsTest : WriterTest
         {
             await block.ShowStringAsync("ABC");
         }
-        Assert.Equal("BT\n(ABC)Tj\nET\n", await WrittenTextAsync() );
+
+        Assert.Equal("BT\n(ABC)Tj\nET\n", await WrittenTextAsync());
     }
+
     [Fact]
     public async Task NextLineAndShowStringAsync()
     {
@@ -72,8 +81,10 @@ public class TextObjectOperationsTest : WriterTest
         {
             await block.MoveToNextLineAndShowStringAsync("ABC");
         }
-        Assert.Equal("BT\n(ABC)'\nET\n", await WrittenTextAsync() );
+
+        Assert.Equal("BT\n(ABC)'\nET\n", await WrittenTextAsync());
     }
+
     [Fact]
     public async Task NextLineAndShowString2Async()
     {
@@ -81,7 +92,8 @@ public class TextObjectOperationsTest : WriterTest
         {
             await block.MoveToNextLineAndShowStringAsync(2, 3, "ABC");
         }
-        Assert.Equal("BT\n2 3(ABC)\"\nET\n", await WrittenTextAsync() );
+
+        Assert.Equal("BT\n2 3(ABC)\"\nET\n", await WrittenTextAsync());
     }
 
     [Fact]
@@ -91,26 +103,23 @@ public class TextObjectOperationsTest : WriterTest
         {
             await block.ShowSpacedStringAsync("A", 2, "B", 3, "C", "D", 4, 5);
         }
-        Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenTextAsync() );
-        
+
+        Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenTextAsync());
     }
+
     [Fact]
     public async Task ShowSpacedString2Async()
     {
-        using (var block = sut.StartTextBlock())
-        {
-            var builder = new SpacedStringContentBuilder();
-            builder.Add("A".AsExtendedAsciiBytes().AsMemory());
-            builder.Add(2);
-            builder.Add("B".AsExtendedAsciiBytes().AsMemory());
-            builder.Add(3);
-            builder.Add("C".AsExtendedAsciiBytes().AsMemory());
-            builder.Add("D".AsExtendedAsciiBytes().AsMemory());
-            builder.Add(4);
-            builder.Add(5);
-            await block.ShowSpacedStringAsync(builder.GetAllValues());
-        }
-        Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenTextAsync() );
-        
+        var builder = sut.GetSpacedStringBuilder();
+        await builder.SpacedStringComponentAsync("A".AsExtendedAsciiBytes().AsMemory());
+        await builder.SpacedStringComponentAsync(2);
+        await builder.SpacedStringComponentAsync("B".AsExtendedAsciiBytes().AsMemory());
+        await builder.SpacedStringComponentAsync(3);
+        await builder.SpacedStringComponentAsync("C".AsExtendedAsciiBytes().AsMemory());
+        await builder.SpacedStringComponentAsync("D".AsExtendedAsciiBytes().AsMemory());
+        await builder.SpacedStringComponentAsync(4);
+        await builder.SpacedStringComponentAsync(5);
+        await builder.DoneWritingAsync();
+        Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenTextAsync());
     }
 }
