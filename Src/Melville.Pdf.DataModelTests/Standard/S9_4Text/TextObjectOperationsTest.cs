@@ -110,16 +110,19 @@ public class TextObjectOperationsTest : WriterTest
     [Fact]
     public async Task ShowSpacedString2Async()
     {
-        var builder = sut.GetSpacedStringBuilder();
-        await builder.SpacedStringComponentAsync("A".AsExtendedAsciiBytes().AsMemory());
-        await builder.SpacedStringComponentAsync(2);
-        await builder.SpacedStringComponentAsync("B".AsExtendedAsciiBytes().AsMemory());
-        await builder.SpacedStringComponentAsync(3);
-        await builder.SpacedStringComponentAsync("C".AsExtendedAsciiBytes().AsMemory());
-        await builder.SpacedStringComponentAsync("D".AsExtendedAsciiBytes().AsMemory());
-        await builder.SpacedStringComponentAsync(4);
-        await builder.SpacedStringComponentAsync(5);
-        await builder.DoneWritingAsync();
+        using (var block = sut.StartTextBlock())
+        {
+            var builder = sut.GetSpacedStringBuilder();
+            await builder.SpacedStringComponentAsync("A".AsExtendedAsciiBytes().AsMemory());
+            await builder.SpacedStringComponentAsync(2);
+            await builder.SpacedStringComponentAsync("B".AsExtendedAsciiBytes().AsMemory());
+            await builder.SpacedStringComponentAsync(3);
+            await builder.SpacedStringComponentAsync("C".AsExtendedAsciiBytes().AsMemory());
+            await builder.SpacedStringComponentAsync("D".AsExtendedAsciiBytes().AsMemory());
+            await builder.SpacedStringComponentAsync(4);
+            await builder.SpacedStringComponentAsync(5);
+            await builder.DoneWritingAsync();
+        }
         Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenTextAsync());
     }
 }

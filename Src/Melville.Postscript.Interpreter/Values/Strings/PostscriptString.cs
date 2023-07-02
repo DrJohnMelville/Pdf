@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using Melville.INPC;
-using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
@@ -9,11 +8,6 @@ using Melville.Postscript.Interpreter.Values.Strings;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
-
-internal interface IPostscriptTokenSource
-{
-    void GetToken(OperandStack stack);
-}
 
 public abstract partial class PostscriptString : 
     IPostscriptValueStrategy<string>, 
@@ -27,7 +21,8 @@ public abstract partial class PostscriptString :
     IPostscriptValueStrategy<StringSpanSource>,
     IPostscriptValueStrategy<IPostscriptComposite>,
     IPostscriptValueStrategy<IPostscriptArray>,
-    IPostscriptValueStrategy<IPostscriptTokenSource>
+    IPostscriptValueStrategy<IPostscriptTokenSource>,
+    IPostscriptValueStrategy<RentedMemorySource>
 {
     [FromConstructor] protected  StringKind StringKind { get; }
     public string GetValue(in Int128 memento) => 
@@ -60,10 +55,6 @@ public abstract partial class PostscriptString :
     Memory<byte> IPostscriptValueStrategy<Memory<byte>>.GetValue(in Int128 memento) =>
         ValueAsMemory(memento);
 
-    protected virtual Memory<byte> ValueAsMemory(in Int128 memento) =>
-        GetBytes(in memento, stackalloc byte[ShortStringLimit])
-            .ToArray();
-
     long IPostscriptValueStrategy<long>.GetValue(in Int128 memento) =>
         ParseAsNumber(memento).Get<long>();
 
@@ -86,9 +77,6 @@ public abstract partial class PostscriptString :
     PostscriptLongString IPostscriptValueStrategy<PostscriptLongString>.GetValue(in Int128 memento) =>
         AsLongString(memento);
         
-    private protected PostscriptLongString AsLongString(in Int128 memento) =>
-        this as PostscriptLongString ?? 
-        new PostscriptLongString(StringKind, ValueAsMemory(memento));
 
     IPostscriptComposite IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento)
         => AsLongString(memento);
@@ -98,4 +86,11 @@ public abstract partial class PostscriptString :
 
     IPostscriptTokenSource IPostscriptValueStrategy<IPostscriptTokenSource>.GetValue(in Int128 memento) =>
         AsLongString(memento);
+
+    RentedMemorySource IPostscriptValueStrategy<RentedMemorySource>.GetValue(in Int128 memento) =>
+        InnerRentedMemorySource(memento);
+
+    private protected abstract PostscriptLongString AsLongString(in Int128 memento);
+    private protected abstract RentedMemorySource InnerRentedMemorySource(Int128 memento);
+    private protected abstract Memory<byte> ValueAsMemory(in Int128 memento);
 }

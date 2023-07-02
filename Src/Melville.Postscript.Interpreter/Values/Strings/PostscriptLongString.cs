@@ -25,8 +25,6 @@ internal sealed partial class
         return hc.ToHashCode();
     }
 
-    protected override Memory<byte> ValueAsMemory(in Int128 memento) => value;
-
     public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
         (indexOrKey.TryGet(out int index) && index >= 0 &&
          index < value.Length)
@@ -137,5 +135,10 @@ internal sealed partial class
         else
             stack.Push(false);
     }
+
+    private protected override PostscriptLongString AsLongString(in Int128 memento) => this;
+    private protected override RentedMemorySource InnerRentedMemorySource(Int128 memento) =>
+        new(value, null);
+    private protected override Memory<byte> ValueAsMemory(in Int128 memento) => value;
 
 }

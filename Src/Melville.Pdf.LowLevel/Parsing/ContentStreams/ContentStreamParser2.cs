@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Formats.Tar;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -172,6 +173,40 @@ internal readonly partial struct ContentStreamParser2
     [MacroItem("MoveToNextLine", """
         E(engine).MoveToNextTextLine();
         """, "T*")]
+    [MacroItem("SetCharSpace", """
+        E(engine).SetCharSpace(engine.PopAs<double>());
+        """, "Tc")]
+    [MacroItem("SetTextLeading", """
+        E(engine).SetTextLeading(engine.PopAs<double>());
+        """, "TL")]
+    [MacroItem("SetTextRise", """
+        E(engine).SetTextRise(engine.PopAs<double>());
+        """, "Ts")]
+    [MacroItem("SetWordSpace", """
+        E(engine).SetWordSpace(engine.PopAs<double>());
+        """, "Tw")]
+    [MacroItem("SetHorizontalTextScaling", """
+        E(engine).SetHorizontalTextScaling(engine.PopAs<double>());
+        """, "Tz")]
+    [MacroItem("SetTextRender", """
+        E(engine).SetTextRender((TextRendering)engine.PopAs<long>());
+        """, "Tr")]
+    [MacroItem("SetTextMatrix", """
+        Span<float> a = stackalloc float[6];
+        engine.PopSpan(a);
+        E(engine).SetTextMatrix(a[0], a[1], a[2], a[3], a[4], a[5]);
+        """, "Tm")]
+    [MacroItem("MarkedContentPoint", """
+        var name = TryPopName(engine);
+        E(engine).MarkedContentPoint(name);
+        """, "MP")]
+    [MacroItem("BeginMarkedRange", """
+        var name = TryPopName(engine);
+        E(engine).BeginMarkedRange(name);
+        """, "BMC")]
+    [MacroItem("EndMarkedRange", """
+        E(engine).EndMarkedRange();
+        """, "EMC")]
     private static IContentStreamOperations E(PostscriptEngine engine) =>
         engine.OperandStack[0].Get<IContentStreamOperations>();
 
@@ -238,16 +273,81 @@ internal readonly partial struct ContentStreamParser2
     [MacroItem("PaintShader", """
         return E(engine).PaintShaderAsync(PopName(engine));
         """, "sh")]
+    [MacroItem("ShowString", """
+        return ShowStringAsync(engine);
+        """, "Tj")]
+    [MacroItem("MoveToNextLineAndShowString", """
+        return MoveToNextLineAndShowStringAsync(engine);
+        """, @"\'")]
+    [MacroItem("MoveToNextLineAndShowString2", """
+        return MoveToNextLineAndShowString2Async(engine);
+        """, @"\""")]
+    [MacroItem("ShowSpacedString", """
+        return ShowSpacedStringAsync(engine);
+        """, @"TJ")]
+    [MacroItem("SetFont", """
+        var size = engine.PopAs<double>();
+        var name = PopName(engine);
+        return E(engine).SetFontAsync(name, size);
+        """, "Tf")]
+    [MacroItem("MarkedContentPoint2", """
+        var dictName = TryPopName(engine);
+        var name = TryPopName(engine);
+        return E(engine).MarkedContentPointAsync(name, dictName);
+        """, "DP")]
+    [MacroItem("BeginMarkedRange2", """
+        var dictName = TryPopName(engine);
+        var name = TryPopName(engine);
+        return E(engine).BeginMarkedRangeAsync(name, dictName);
+        """, "BDC")]
     partial void AsyncMacroHolder();
 #if DEBUG
     private static ValueTask ScratchAsync(PostscriptEngine engine)
     {
-        var name = TryPopName(engine);
-        Span<double> color = stackalloc double[engine.OperandStack.Count - 1];
-        engine.PopSpan(color);
-        return E(engine).SetStrokeColorExtendedAsync(name, color);
+        var size = engine.PopAs<double>();
+        var name = PopName(engine);
+
+        return E(engine).SetFontAsync(name, size);
     }
 #endif
+
+    private static async ValueTask ShowSpacedStringAsync(PostscriptEngine engine)
+    {
+        var builder = E(engine).GetSpacedStringBuilder();
+        for (int i = 1; i < engine.OperandStack.Count; i++)
+        {
+            var item = engine.OperandStack[i];
+            if (item.IsNumber)
+                await builder.SpacedStringComponentAsync(item.Get<double>()).CA();
+            else
+            {
+                using var text = item.Get<RentedMemorySource>();
+                await builder.SpacedStringComponentAsync(text.Memory).CA();
+            }
+        }
+        await builder.DoneWritingAsync().CA();
+        while (engine.OperandStack.Count > 1) engine.OperandStack.Pop();
+    }
+
+    private static async ValueTask ShowStringAsync(PostscriptEngine engine)
+    {
+        using var strSource = engine.PopAs<RentedMemorySource>();
+        await E(engine).ShowStringAsync(strSource.Memory).CA();
+    }
+
+    private static async ValueTask MoveToNextLineAndShowStringAsync(PostscriptEngine engine)
+    {
+        using var strSource = engine.PopAs<RentedMemorySource>();
+        await E(engine).MoveToNextLineAndShowStringAsync(strSource.Memory).CA();
+    }
+    private static async ValueTask MoveToNextLineAndShowString2Async(PostscriptEngine engine)
+    {
+        using var strSource = engine.PopAs<RentedMemorySource>();
+        engine.PopAs(out double wordSpace, out double charSpace);
+        await E(engine).MoveToNextLineAndShowStringAsync(
+            wordSpace, charSpace, strSource.Memory).CA();
+    }
+
     private static PdfName? TryPopName(PostscriptEngine engine)
     {
         if (!engine.OperandStack.Peek().TryGet<StringSpanSource>(out var source))
