@@ -8,11 +8,13 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -45,9 +47,10 @@ internal readonly partial struct ContentStreamParser2
 
     private static void CreateRequiredSynonyms(PostscriptEngine engine)
     {
-        engine.SystemDict.Put("F", PostscriptValueFactory.Create(FillPath));
-        engine.SystemDict.Put("[", PostscriptValueFactory.Create(PostscriptOperators.Nop));
-        engine.SystemDict.Put("]", PostscriptValueFactory.Create(PostscriptOperators.Nop));
+        engine.SystemDict.Put("F"u8, PostscriptValueFactory.Create(FillPath));
+        engine.SystemDict.Put("["u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
+        engine.SystemDict.Put("]"u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
+        engine.SystemDict.Put("<<"u8, PostscriptValueFactory.CreateMark());
     }
 
     [MacroCode("""
@@ -197,16 +200,17 @@ internal readonly partial struct ContentStreamParser2
         E(engine).SetTextMatrix(a[0], a[1], a[2], a[3], a[4], a[5]);
         """, "Tm")]
     [MacroItem("MarkedContentPoint", """
-        var name = TryPopName(engine);
-        E(engine).MarkedContentPoint(name);
+        E(engine).MarkedContentPoint(PopName(engine));
         """, "MP")]
     [MacroItem("BeginMarkedRange", """
-        var name = TryPopName(engine);
-        E(engine).BeginMarkedRange(name);
+        E(engine).BeginMarkedRange(PopName(engine));
         """, "BMC")]
     [MacroItem("EndMarkedRange", """
         E(engine).EndMarkedRange();
         """, "EMC")]
+    [MacroItem("CreateDictionary", """
+        CreatePdfDictionary(engine);
+        """, ">>")]
     private static IContentStreamOperations E(PostscriptEngine engine) =>
         engine.OperandStack[0].Get<IContentStreamOperations>();
 
@@ -291,25 +295,51 @@ internal readonly partial struct ContentStreamParser2
         return E(engine).SetFontAsync(name, size);
         """, "Tf")]
     [MacroItem("MarkedContentPoint2", """
-        var dictName = TryPopName(engine);
-        var name = TryPopName(engine);
-        return E(engine).MarkedContentPointAsync(name, dictName);
+        var dictValue = engine.OperandStack.Pop();
+        var name = PopName(engine);
+        return dictValue.IsLiteralName
+            ? E(engine).MarkedContentPointAsync(
+                name, NameFrom(dictValue.Get<StringSpanSource>()))
+            : E(engine).MarkedContentPointAsync(name, dictValue.Get<PdfDictionary>());
         """, "DP")]
     [MacroItem("BeginMarkedRange2", """
-        var dictName = TryPopName(engine);
-        var name = TryPopName(engine);
-        return E(engine).BeginMarkedRangeAsync(name, dictName);
+        var dictValue = engine.OperandStack.Pop();
+        var name = PopName(engine);
+        return dictValue.IsLiteralName
+            ? E(engine).BeginMarkedRangeAsync(
+                name, NameFrom(dictValue.Get<StringSpanSource>()))
+            : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfDictionary>());
         """, "BDC")]
     partial void AsyncMacroHolder();
 #if DEBUG
     private static ValueTask ScratchAsync(PostscriptEngine engine)
     {
-        var size = engine.PopAs<double>();
-        var name = PopName(engine);
 
-        return E(engine).SetFontAsync(name, size);
+        return ValueTask.CompletedTask;
     }
 #endif
+
+    private static void CreatePdfDictionary(PostscriptEngine engine)
+    {
+        var builder = new DictionaryBuilder();
+        while (engine.OperandStack.TryPop(out var item) && item is { IsMark: false })
+        {
+            var key = PopName(engine);
+            builder.WithItem(key, PostscriptObjectToPdfObject(item));
+        }
+        engine.OperandStack.Push(new PostscriptValue(builder.AsDictionary(), PostscriptBuiltInOperations.PushArgument,0));
+    }
+
+    private static PdfObject PostscriptObjectToPdfObject(PostscriptValue item) => item switch
+    {
+        { IsInteger: true } => new PdfInteger(item.Get<long>()),
+        { IsDouble: true } => new PdfDouble(item.Get<double>()),
+        { IsString: true } => new PdfString(item.Get<StringSpanSource>().GetSpan(
+            stackalloc byte[PostscriptString.ShortStringLimit]).ToArray()),
+        {IsLiteralName:true} => NameFrom(item.Get<StringSpanSource>()),
+        var x when x.TryGet(out PdfDictionary? innerDictionary) => innerDictionary,
+        _=> throw new PdfParseException("Cannot convert PostScriptToPdfObject")
+    };
 
     private static async ValueTask ShowSpacedStringAsync(PostscriptEngine engine)
     {
@@ -328,7 +358,6 @@ internal readonly partial struct ContentStreamParser2
         await builder.DoneWritingAsync().CA();
         while (engine.OperandStack.Count > 1) engine.OperandStack.Pop();
     }
-
     private static async ValueTask ShowStringAsync(PostscriptEngine engine)
     {
         using var strSource = engine.PopAs<RentedMemorySource>();
@@ -358,7 +387,10 @@ internal readonly partial struct ContentStreamParser2
             stackalloc byte[PostscriptString.ShortStringLimit]));
 
     }
-    private static PdfName PopName(PostscriptEngine engine) =>
-        NameDirectory.Get(engine.PopAs<StringSpanSource>().GetSpan(
+    private static PdfName PopName(PostscriptEngine engine) => 
+        NameFrom(engine.PopAs<StringSpanSource>());
+
+    private static PdfName NameFrom(in StringSpanSource sss) =>
+        NameDirectory.Get(sss.GetSpan(
             stackalloc byte[PostscriptString.ShortStringLimit]));
 }

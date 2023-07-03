@@ -58,6 +58,20 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     public bool IsNumber=> IsInteger || IsDouble;
 
     /// <summary>
+    /// Returns true if the contained item is a literal name
+    /// </summary>
+    public bool IsLiteralName => IsStringType(StringKind.LiteralName);
+
+    /// <summary>
+    /// Returns true if the contained item is a string
+    /// </summary>
+    public bool IsString => IsStringType(StringKind.String);
+
+    private bool IsStringType(StringKind stringType) =>
+        valueStrategy is PostscriptString pss &&
+        pss.StringKind == stringType;
+
+    /// <summary>
     /// Gets a pdf value of a given type.
     /// </summary>
     /// <typeparam name="T">The type of result expected from this value</typeparam>

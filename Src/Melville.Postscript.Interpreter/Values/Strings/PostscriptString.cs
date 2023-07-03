@@ -24,7 +24,10 @@ public abstract partial class PostscriptString :
     IPostscriptValueStrategy<IPostscriptTokenSource>,
     IPostscriptValueStrategy<RentedMemorySource>
 {
-    [FromConstructor] protected  StringKind StringKind { get; }
+    /// <summary>
+    /// Specifies whether this is a string, a name, or a literal name
+    /// </summary>
+    [FromConstructor] public StringKind StringKind { get; }
     public string GetValue(in Int128 memento) => 
         RenderStringValue(memento);
 

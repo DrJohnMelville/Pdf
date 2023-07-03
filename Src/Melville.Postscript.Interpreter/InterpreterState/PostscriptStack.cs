@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.JavaScript;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
@@ -51,6 +54,9 @@ public partial class PostscriptStack<T> : List<T>
         CheckForIllegalPop();
         return ret;
     }
+
+    public bool TryPop([NotNullWhen(true)] out T? ret) =>
+        Count > minSize ? Pop().AsTrueValue(out ret) : default(T).AsFalseValue(out ret);
 
     internal void PopMultiple(int countToRemove)
     {
