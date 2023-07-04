@@ -1,16 +1,17 @@
 ﻿using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Postscript.Interpreter.InterpreterState
 {
     internal readonly struct EngineStackState
     {
         private readonly StackMarker<PostscriptValue> values;
-        private readonly StackMarker<IPostscriptComposite> dictionaries;
+        private readonly StackMarker<IPostscriptDictionary> dictionaries;
         private readonly StackMarker<ExecutionContext> execution;
 
         public EngineStackState(
             PostscriptStack<PostscriptValue> values, 
-            PostscriptStack<IPostscriptComposite> dictionaries, 
+            PostscriptStack<IPostscriptDictionary> dictionaries, 
             PostscriptStack<ExecutionContext> execution)
         {
             this.values = new(values);

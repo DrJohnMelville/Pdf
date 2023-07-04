@@ -29,13 +29,15 @@ internal readonly partial struct ContentStreamParser2
     /// Render the content stream operations in the given CodeSource pipereader.
     /// </summary>
     /// <param name="source">The content stream to parse.</param>
-    public ValueTask ParseAsync(PipeReader source)
+    public async ValueTask ParseAsync(PipeReader source)
     {
         var engine = new PostscriptEngine();
         AddContentStreamOperatorsTo(engine);
         engine.Push(new PostscriptValue(
             target, PostscriptBuiltInOperations.PushArgument, 0));
-        return engine.ExecuteAsync(new Tokenizer(source));
+        await engine.ExecuteAsync(new Tokenizer(source)).CA();
+        if (engine.ErrorData.TryGetAs("newerror", out bool value) && value)
+            throw new PdfParseException("Error parsing content stream;");
     }
 
     private void AddContentStreamOperatorsTo(PostscriptEngine engine)
@@ -51,6 +53,7 @@ internal readonly partial struct ContentStreamParser2
         engine.SystemDict.Put("["u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
         engine.SystemDict.Put("]"u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
         engine.SystemDict.Put("<<"u8, PostscriptValueFactory.CreateMark());
+        engine.SystemDict.Put("$IgnoreCount"u8, PostscriptValueFactory.Create(0));
     }
 
     [MacroCode("""
@@ -211,6 +214,16 @@ internal readonly partial struct ContentStreamParser2
     [MacroItem("CreateDictionary", """
         CreatePdfDictionary(engine);
         """, ">>")]
+    [MacroItem("BeginCompat", """
+        E(engine).BeginCompatibilitySection();
+        if (IncrementIgnoreCount(engine, 1) != 1) return;
+        engine.ErrorDict.Put("undefined"u8, PostscriptValueFactory.Create(IgnoreError.Instance));
+        """, "BX")]
+    [MacroItem("EndCompat", """
+        E(engine).EndCompatibilitySection();
+        if (IncrementIgnoreCount(engine, -1) != 0) return;
+        engine.ErrorDict.Undefine("undefined"u8);
+        """, "EX")]
     private static IContentStreamOperations E(PostscriptEngine engine) =>
         engine.OperandStack[0].Get<IContentStreamOperations>();
 
@@ -314,11 +327,28 @@ internal readonly partial struct ContentStreamParser2
 #if DEBUG
     private static ValueTask ScratchAsync(PostscriptEngine engine)
     {
-
         return ValueTask.CompletedTask;
     }
 #endif
 
+    private static int IncrementIgnoreCount(PostscriptEngine engine, int increment)
+    {
+        var ret = engine.SystemDict.GetAs<long>("$IgnoreCount"u8);
+        ret += increment;
+        engine.SystemDict.Put("$IgnoreCount", ret);
+        return (int)ret;
+    }
+
+    [StaticSingleton]
+    private partial class IgnoreError : BuiltInFunction
+    {
+        public override void Execute(PostscriptEngine engine, in PostscriptValue value)
+        {
+            while (engine.OperandStack.Count > 1) engine.OperandStack.Pop();
+            engine.ErrorData.Put("newerror"u8, false);
+        }
+    }
+        
     private static void CreatePdfDictionary(PostscriptEngine engine)
     {
         var builder = new DictionaryBuilder();

@@ -71,19 +71,19 @@ public class PostscriptEngine
     /// <summary>
     /// Gets the errordict dictionary that is defined in the postscript standard.
     /// </summary>
-    public IPostscriptComposite ErrorDict =>
-        SystemDict.Get("errordict"u8).Get<IPostscriptComposite>();
+    public IPostscriptDictionary ErrorDict =>
+        SystemDict.Get("errordict"u8).Get<IPostscriptDictionary>();
 
     /// <summary>
     /// Gets the $error dictionary that is defined in the postscript standard.
     /// </summary>
-    public IPostscriptComposite ErrorData =>
-        SystemDict.Get("$error"u8).Get<IPostscriptComposite>();
+    public IPostscriptDictionary ErrorData =>
+        SystemDict.Get("$error"u8).Get<IPostscriptDictionary>();
 
     /// <summary>
     /// The system dictionary for executable names.
     /// </summary>
-    public IPostscriptComposite SystemDict => DictionaryStack[0];
+    public IPostscriptDictionary SystemDict => DictionaryStack[0];
     /// <summary>
     /// The global executable dictionary for executable names.
     /// </summary>

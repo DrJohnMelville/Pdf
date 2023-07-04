@@ -19,7 +19,7 @@ public abstract class ParserTest
         string s, IContentStreamOperations? target = null)
     {
         #warning -- eventually convert to contentStreamParser2 
-#if true
+#if fakse
         var sut = new ContentStreamParser(target ?? Target.Object);
 #else
         var sut = new ContentStreamParser2(target ?? Target.Object);

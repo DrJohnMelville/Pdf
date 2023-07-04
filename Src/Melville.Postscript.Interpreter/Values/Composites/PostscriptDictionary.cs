@@ -6,8 +6,12 @@ using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
+public interface IPostscriptDictionary : IPostscriptComposite
+{
+    public void Undefine(PostscriptValue key);
+}
 internal abstract class PostscriptDictionary:
-    PostscriptComposite
+    PostscriptComposite, IPostscriptDictionary
 {
 
     protected override void StringRep(StringBuilder ret)

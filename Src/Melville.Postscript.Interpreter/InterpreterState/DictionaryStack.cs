@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
@@ -11,7 +12,7 @@ namespace Melville.Postscript.Interpreter.InterpreterState;
 /// This is a stack of dictionaries, which represents the defined functions
 /// </summary>
 public partial class DictionaryStack : 
-    PostscriptStack<IPostscriptComposite>
+    PostscriptStack<IPostscriptDictionary>
 {
     /// <summary>
     /// Construct an empty DictionaryStack
@@ -24,7 +25,7 @@ public partial class DictionaryStack :
     /// Add a IPostscriptComposite
     /// </summary>
     /// <param name="value"></param>
-    public void Push(PostscriptValue value) => Push(value.Get<IPostscriptComposite>());
+    public void Push(PostscriptValue value) => Push(value.Get<IPostscriptDictionary>());
 
     /// <summary>
     /// Try to get an item from the composite dictionary

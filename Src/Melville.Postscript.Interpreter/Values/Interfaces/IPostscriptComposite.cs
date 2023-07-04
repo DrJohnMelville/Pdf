@@ -46,13 +46,29 @@ public interface IPostscriptComposite
     internal ForAllCursor CreateForAllCursor();
 }
 
-internal static class PostscriptCompositeOperations 
+/// <summary>
+/// Helpers for IPostscriptComposite
+/// </summary>
+public static class PostscriptCompositeOperations 
 {
+    /// <summary>
+    /// Wrap a postscriptcomposite as a postscript value
+    /// </summary>
+    /// <param name="dict">The composite to wrap</param>
+    /// <returns></returns>
     public static PostscriptValue AsPostscriptValue(this IPostscriptComposite dict)=>
         new PostscriptValue(
             (IPostscriptValueStrategy<string>)dict,
             PostscriptBuiltInOperations.PushArgument, 0);
 
+    /// <summary>
+    /// Try to get a a value  with a give key and cast to an expected type
+    /// </summary>
+    /// <typeparam name="T">The desired type of the output</typeparam>
+    /// <param name="comp">The composite to get the value from</param>
+    /// <param name="key">The key or index of the value</param>
+    /// <param name="value">Out variable that receives the given ouput</param>
+    /// <returns>True if the desired value exists and has the correct type, false otherwise</returns>
     public static bool TryGetAs<T>(
         this IPostscriptComposite comp, PostscriptValue key, [NotNullWhen(true)] out T? value)
     {
@@ -60,6 +76,14 @@ internal static class PostscriptCompositeOperations
         return comp.TryGet(key, out var postscriptValue) &&
                postscriptValue.TryGet(out value);
     }
+    /// <summary>
+    /// Get a value of a given type from a compsite, and throw if this cannot be done.
+    /// </summary>
+    /// <typeparam name="T">The expected type  of the output</typeparam>
+    /// <param name="comp">the composite to get the value from</param>
+    /// <param name="key">The index or key to search for</param>
+    /// <returns>The item corresponding to the key -- casted to the desired type</returns>
+    /// <exception cref="KeyNotFoundException"></exception>
     public static T GetAs<T>(this IPostscriptComposite comp, PostscriptValue key) =>
         comp.TryGetAs(key, out T? value) ? value : 
             throw new KeyNotFoundException($"Cannot find key {key}");
