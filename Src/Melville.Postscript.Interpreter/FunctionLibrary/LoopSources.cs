@@ -17,8 +17,6 @@ internal static class LoopSources
             yield return PostscriptValueFactory.Create(d);
             yield return innerItem;
         }
-
-        yield return PostscriptValueFactory.Create(PostscriptOperators.Nop);
     }
 
     private static PostscriptValue WrapBody(in PostscriptValue proc) =>
@@ -35,7 +33,6 @@ internal static class LoopSources
         {
             yield return innerItem;
         }
-        yield return PostscriptValueFactory.Create(PostscriptOperators.Nop);
     }
 
     public static IEnumerator<PostscriptValue> Loop(
@@ -64,7 +61,6 @@ internal static class LoopSources
             yield return innerProc;
         }
         ArrayPool<PostscriptValue>.Shared.Return(buffer);
-        yield return PostscriptValueFactory.Create(PostscriptOperators.Nop);
     }
 }
 

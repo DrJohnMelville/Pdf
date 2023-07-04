@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
@@ -61,4 +62,14 @@ public readonly partial struct HybridEnumerator<T>
         IEnumerator<T> e => e.MoveNext(),
         _ => throw new ArgumentOutOfRangeException()
     };
+
+    /// <summary>
+    /// If this value is true, then calling MoveNext will return false.
+    /// If this function returns false, then calling MoveNext might return
+    /// true or false.
+    /// </summary>
+    /// <returns>True if the next movenext is known to be false,
+    /// false if the next move will be true or is unknown.</returns>
+    public bool NextMoveNextWillBeFalse() => 
+        InnerEnumerator is IPropheticEnumerator pe && pe.NextMoveNextWillBeFalse();
 }

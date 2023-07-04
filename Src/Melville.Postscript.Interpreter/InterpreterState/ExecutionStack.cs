@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.FunctionLibrary;
@@ -38,57 +39,43 @@ public readonly struct ExecutionStack
     public int Count => InnerStack.Count;
 
     internal void Push(
-        HybridEnumerator<PostscriptValue> instruction, in PostscriptValue description)
-    {
-        if (Count > 0 && !instruction.MoveNext()) return;
+        HybridEnumerator<PostscriptValue> instruction, in PostscriptValue description) =>
         InnerStack.Push(new(instruction, description));
-    }
 
-    internal async ValueTask PushAsync(
-        HybridEnumerator<PostscriptValue> instruction, PostscriptValue description)
-    {
-        if (Count > 0 && !await instruction.MoveNextAsync()) return;
-        InnerStack.Push(new(instruction, description));
-    }
-
-    internal void Pop()
-    {
-        InnerStack.Pop();
-    }
     internal async ValueTask<PostscriptValue?> NextInstructionAsync()
     {
-        switch (Count)
+        while (Count > 0)
         {
-            case 0: return default;
-            case 1: 
-                var frame = InnerStack.Peek().Frame;
-                if (await frame.MoveNextAsync()) return frame.Current;
-                Pop();
-                return default;
-            default:
-                var frame2 = InnerStack.Peek().Frame;
-                var ret = frame2.Current;
-                if (!await frame2.MoveNextAsync()) Pop();
-                return ret;
+            var frame = InnerStack.Peek().Frame;
+            if (await frame.MoveNextAsync())
+            {
+                OptimizeTailCalls();
+                return frame.Current;
+            }
+            InnerStack.Pop();
+
         }
+        return default;
     }
 
     internal bool NextInstruction(out PostscriptValue value)
     {
-        switch (Count)
+        while (Count > 0)
         {
-            case 0: return default(PostscriptValue).AsFalseValue(out value);
-            case 1: 
-                var frame = InnerStack.Peek().Frame;
-                if (frame.MoveNext()) return frame.Current.AsTrueValue(out value);
-                Pop();
-                return default(PostscriptValue).AsFalseValue(out value);
-            default:
-                var frame2 = InnerStack.Peek().Frame;
-                var ret = frame2.Current;
-                if (!frame2.MoveNext()) Pop();
-                return ret.AsTrueValue(out value);
+            var frame = InnerStack.Peek().Frame;
+            if (frame.MoveNext())
+            {
+                OptimizeTailCalls();
+                return frame.Current.AsTrueValue(out value);
+            }
+            InnerStack.Pop();
         }
+        return default(PostscriptValue).AsFalseValue(out value);
+    }
+
+    private void OptimizeTailCalls()
+    {
+        while(Count > 0 && InnerStack.Peek().Frame.NextMoveNextWillBeFalse()) InnerStack.Pop();
     }
 
     internal void HandleStop()
@@ -101,7 +88,7 @@ public readonly struct ExecutionStack
                 sc.NotifyStopped();
                 return;
             }
-            Pop();
+            InnerStack.Pop();
         }
     }
 
@@ -109,12 +96,8 @@ public readonly struct ExecutionStack
     {
         while (Count>0)
         {
-            if (InnerStack.Peek().Frame.InnerEnumerator is LoopEnumerator)
-            {
-                Pop();
+            if (InnerStack.Pop().Frame.InnerEnumerator is LoopEnumerator)
                 return;
-            }
-            Pop();
         }
 
         throw new PostscriptNamedErrorException("exit command when not in loop.", "invalidexit");

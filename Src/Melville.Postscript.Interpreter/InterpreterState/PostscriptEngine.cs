@@ -127,7 +127,7 @@ public class PostscriptEngine
     {
         Debug.Assert(ExecutionStack.Count == 0);
         TokenSource = tokens;
-        await ExecutionStack.PushAsync(new(tokens.TokensAsync().GetAsyncEnumerator()), 
+        ExecutionStack.Push(new(tokens.TokensAsync().GetAsyncEnumerator()), 
             "Async Parser"u8);
         await MainExecutionLoopAsync();
     }
