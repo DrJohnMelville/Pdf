@@ -69,7 +69,8 @@ public abstract partial class PostscriptString :
             GetBytes(in memento, stackalloc byte[ShortStringLimit]), 
             out var result)
             ? result
-            : throw new PostscriptException($"Could not convert {GetValue(memento)} into a number");
+            : throw new PostscriptNamedErrorException(
+                $"Could not convert {GetValue(memento)} into a number", "typecheck");
 
     /// <summary>
     /// The longest string which can be packed into an PostscriptValue.  Strings longer than this

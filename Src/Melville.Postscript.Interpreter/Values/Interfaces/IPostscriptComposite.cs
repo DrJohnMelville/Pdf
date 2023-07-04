@@ -1,4 +1,6 @@
-﻿using Melville.Postscript.Interpreter.FunctionLibrary;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values.Execution;
 
@@ -50,4 +52,15 @@ internal static class PostscriptCompositeOperations
         new PostscriptValue(
             (IPostscriptValueStrategy<string>)dict,
             PostscriptBuiltInOperations.PushArgument, 0);
+
+    public static bool TryGetAs<T>(
+        this IPostscriptComposite comp, PostscriptValue key, [NotNullWhen(true)] out T? value)
+    {
+        value = default;
+        return comp.TryGet(key, out var postscriptValue) &&
+               postscriptValue.TryGet(out value);
+    }
+    public static T GetAs<T>(this IPostscriptComposite comp, PostscriptValue key) =>
+        comp.TryGetAs(key, out T? value) ? value : 
+            throw new KeyNotFoundException($"Cannot find key {key}");
 }

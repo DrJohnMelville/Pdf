@@ -18,25 +18,26 @@ public class PostscriptException : Exception
 
 }
 
-
 /// <summary>
-/// This is an exception that is thrown when a PostscriptValue is the wrong type for a given type
+/// This is an exception which cam be caught within the postscript main loop and
+/// fed into the postscript error handler.
 /// </summary>
-public class PostscriptInvalidTypeException : Exception
+public class PostscriptNamedErrorException: PostscriptException
 {
-    /// <summary>
-    /// Create a new PostscriptInvalidTypeException
-    /// </summary>
-    /// <param name="message">The message that describes the error.</param> 
-    public PostscriptInvalidTypeException(string? message) : base(message)
-    {
-    }
+    public string ErrorName { get; }
 
+    /// <summary>
+    /// Create a NamedErrorException
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="errorName"></param>
+    public PostscriptNamedErrorException(string? message, string errorName) : base(message)
+    {
+        ErrorName = errorName;
+    }
 }
 
-/// <summary>
-/// This is an exception that is thrown when the interpreter cannot lex or parse the program.
-/// </summary>
+[Obsolete("Want to use the PostscriptNamedErrorException")]
 public class PostscriptParseException : Exception
 {
     /// <summary>
@@ -46,6 +47,5 @@ public class PostscriptParseException : Exception
     public PostscriptParseException(string? message) : base(message)
     {
     }
-
 }
 

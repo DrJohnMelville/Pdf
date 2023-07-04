@@ -76,15 +76,16 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// </summary>
     /// <typeparam name="T">The type of result expected from this value</typeparam>
     /// <returns>The exoected value</returns>
-    /// <exception cref="PostscriptInvalidTypeException">
+    /// <exception cref="PostscriptNamedErrorException">
     /// If the current value cannot be converted to the requested type.</exception>
     public T Get<T>() =>
         TryGet<T>(out var value) ? value:
         (valueStrategy as IPostscriptValueStrategy<T> ?? TypeError<T>()).GetValue(memento);
 
     private IPostscriptValueStrategy<T> TypeError<T>() =>
-        throw new PostscriptInvalidTypeException(
-            $"{valueStrategy.GetType()} does not implement IPostScriptValueStrategy<{typeof(T)}>");
+        throw new PostscriptNamedErrorException(
+            $"{valueStrategy.GetType()} does not implement IPostScriptValueStrategy<{typeof(T)}>",
+            "typecheck");
 
     /// <summary>
     /// Try to extract a value of a given type from a PostscriptValue

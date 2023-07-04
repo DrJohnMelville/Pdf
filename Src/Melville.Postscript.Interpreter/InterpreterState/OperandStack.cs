@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
@@ -11,7 +12,7 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
     /// <summary>
     /// Create a new operand stack
     /// </summary>
-    public OperandStack() : base(0)
+    public OperandStack() : base(0,"")
     {
     }
 
@@ -23,7 +24,13 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
 
     private static bool IsMark(PostscriptValue i) => i.IsMark;
 
-    internal int CountToMark() => CountAbove(IsMark);
+    internal int CountToMark()
+    {
+        var ret = CountAbove(IsMark);
+        if (ret == Count)
+            throw new PostscriptNamedErrorException("Could not find mark", "unmatchedmark");
+        return ret;
+    }
 
     internal void MarkedSpanToArray(bool asExecutable)
     {

@@ -9,15 +9,21 @@ using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
+public readonly partial struct ExecutionContext
+{
+    [FromConstructor] public HybridEnumerator<PostscriptValue> Frame { get; }
+    [FromConstructor] public PostscriptValue Description { get; }
+
+    public override string ToString() => Description.ToString();
+}
+
 /// <summary>
 /// This represents the current stack of executing procedure contexts.
 /// </summary>
 public readonly struct ExecutionStack
 {
-    private readonly PostscriptStack<HybridEnumerator<PostscriptValue>> stackFrames = 
-        new(0);
 
-    private readonly PostscriptStack<PostscriptValue> descriptions = new(0);
+    public PostscriptStack<ExecutionContext> InnerStack { get; } = new(0,"exec");
 
     /// <summary>
     /// Create an empty stack
@@ -29,38 +35,32 @@ public readonly struct ExecutionStack
     /// <summary>
     /// Number of contexts presently on the stack.
     /// </summary>
-    public int Count => stackFrames.Count;
+    public int Count => InnerStack.Count;
 
     internal void Push(
         HybridEnumerator<PostscriptValue> instruction, in PostscriptValue description)
     {
         if (!instruction.MoveNext()) return;
-        if (Count > 1000)
-            throw new PostscriptException("Execution Stack Overflow");
-        stackFrames.Push(instruction);
-        descriptions.Push(description);
+        InnerStack.Push(new(instruction, description));
     }
 
     internal async ValueTask PushAsync(
         HybridEnumerator<PostscriptValue> instruction, PostscriptValue description)
     {
         if (!await instruction.MoveNextAsync()) return;
-        if (Count > 1000)
-            throw new PostscriptException("Execution Stack Overflow");
-        stackFrames.Push(instruction);
-        descriptions.Push(description);
+        InnerStack.Push(new(instruction, description));
     }
 
     internal void Pop()
     {
-        stackFrames.Pop();
-        descriptions.Pop();
+        InnerStack.Pop();
     }
     internal async ValueTask<PostscriptValue?> NextInstructionAsync()
     {
         if (Count == 0) return default;
-        var ret = stackFrames.Peek().Current;
-        if (!await stackFrames.Peek().MoveNextAsync()) Pop();
+        var frame = InnerStack.Peek().Frame;
+        var ret = frame.Current;
+        if (!await frame.MoveNextAsync()) Pop();
         return ret;
     }
 
@@ -68,9 +68,9 @@ public readonly struct ExecutionStack
     {
         if (Count == 0) return default(PostscriptValue).AsFalseValue(out value);
 
-        value = stackFrames.Peek().Current;
-        if (! stackFrames.Peek().MoveNext()) Pop();
-
+        var frame = InnerStack.Peek().Frame;
+        value = frame.Current;
+        if (! frame.MoveNext()) Pop();
         return true;
     }
 
@@ -79,7 +79,7 @@ public readonly struct ExecutionStack
         while (true)
         {
             if (Count == 0) return;
-            if (stackFrames.Peek().InnerEnumerator is StopContext sc)
+            if (InnerStack.Peek().Frame.InnerEnumerator is StopContext sc)
             {
                 sc.NotifyStopped();
                 return;
@@ -92,13 +92,15 @@ public readonly struct ExecutionStack
     {
         while (Count>0)
         {
-            if (stackFrames.Peek().InnerEnumerator is LoopEnumerator)
+            if (InnerStack.Peek().Frame.InnerEnumerator is LoopEnumerator)
             {
                 Pop();
                 return;
             }
             Pop();
         }
+
+        throw new PostscriptNamedErrorException("exit command when not in loop.", "invalidexit");
     }
 
     internal void PushLoop(
@@ -107,13 +109,27 @@ public readonly struct ExecutionStack
 
     internal int CopyTo(PostscriptArray target)
     {
-        descriptions.CollectionAsSpan().CopyTo(target.AsSpan());
-        return descriptions.Count;
+        var targetSpan = target.AsSpan();
+        for (int i = 0; i < target.Length; i++)
+        {
+            targetSpan[i] = InnerStack[i].Description;
+        }
+        return InnerStack.Count;
     }
 
     internal void Clear()
     {
-        stackFrames.Clear();
-        descriptions.Clear();
+        InnerStack.Clear();
+    }
+
+    public PostscriptValue[] StackTrace()
+    {
+        var ret = new PostscriptValue[InnerStack.Count];
+        var span = InnerStack.CollectionAsSpan();
+        for (int i = 0; i < span.Length; i++)
+        {
+            ret[i] = span[i].Description;
+        }
+        return ret;
     }
 }

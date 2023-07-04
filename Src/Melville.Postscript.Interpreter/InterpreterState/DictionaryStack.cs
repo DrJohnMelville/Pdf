@@ -16,7 +16,7 @@ public partial class DictionaryStack :
     /// <summary>
     /// Construct an empty DictionaryStack
     /// </summary>
-    public DictionaryStack() : base(3)
+    public DictionaryStack() : base(3,"dict")
     {
     }
 
@@ -125,5 +125,19 @@ public partial class DictionaryStack :
     internal void ResetToBottom3()
     {
         while (Count > 3) Pop();
+    }
+
+    /// <summary>
+    /// Dumps the dictionary stack for placement in the $error dictionary
+    /// </summary>
+    /// <returns></returns>
+    public PostscriptValue[] DumpTrace()
+    {
+        var ret = new PostscriptValue[Count];
+        for (int i = 0; i < Count; i++)
+        {
+            ret[i] = new PostscriptValue(this[i], PostscriptBuiltInOperations.PushArgument, 0);
+        }
+        return ret;
     }
 }   

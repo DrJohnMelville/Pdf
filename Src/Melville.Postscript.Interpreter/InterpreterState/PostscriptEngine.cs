@@ -56,18 +56,29 @@ public class PostscriptEngine
 
     private void CreateStandardDictionarystack()
     {
-        DictionaryStack.Add(new PostscriptLongDictionary());
-        DictionaryStack.Add(new PostscriptLongDictionary());
-        DictionaryStack.Add(new PostscriptLongDictionary());
+        DictionaryStack.Push(new PostscriptLongDictionary());
+        DictionaryStack.Push(new PostscriptLongDictionary());
+        DictionaryStack.Push(new PostscriptLongDictionary());
     }
 
     private void CreateSecondaryStandardDictionaries()
     {
-#warning consider actually implementing the postscript error handling routines.
-        UserDict.Put("errordict", new PostscriptShortDictionary(0).AsPostscriptValue());
-        UserDict.Put("$error", new PostscriptShortDictionary(0).AsPostscriptValue());
-        UserDict.Put("statusdict", new PostscriptShortDictionary(0).AsPostscriptValue());
+        SystemDict.Put("errordict", new PostscriptShortDictionary(0).AsPostscriptValue());
+        SystemDict.Put("$error", new PostscriptShortDictionary(0).AsPostscriptValue());
+        SystemDict.Put("statusdict", new PostscriptShortDictionary(0).AsPostscriptValue());
     }
+
+    /// <summary>
+    /// Gets the errordict dictionary that is defined in the postscript standard.
+    /// </summary>
+    public IPostscriptComposite ErrorDict =>
+        SystemDict.Get("errordict"u8).Get<IPostscriptComposite>();
+
+    /// <summary>
+    /// Gets the $error dictionary that is defined in the postscript standard.
+    /// </summary>
+    public IPostscriptComposite ErrorData =>
+        SystemDict.Get("$error"u8).Get<IPostscriptComposite>();
 
     /// <summary>
     /// The system dictionary for executable names.
@@ -117,9 +128,26 @@ public class PostscriptEngine
     {
         while (await ExecutionStack.NextInstructionAsync() is {} token)
         {
-            if (ShouldExecuteToken(token))
-                await token.ExecutionStrategy.AcceptParsedTokenAsync(this, token);
+            if (ShouldExecuteToken(token)) await ExecuteTokenAsync(token);
             CheckForOpenProcToken(token);
+        }
+    }
+
+    private async ValueTask ExecuteTokenAsync(PostscriptValue token)
+    {
+        var stateStack =
+            new EngineStackState(OperandStack, DictionaryStack, ExecutionStack.InnerStack);
+        try
+        {
+            await token.ExecutionStrategy.AcceptParsedTokenAsync(this, token);
+            stateStack.Commit();
+        }
+        catch (Exception e)
+        {
+            stateStack.Rollback();
+            var errorProc = new PostscriptErrorHandling(this, e, token).Handle();
+            if (errorProc.IsNull) throw;
+            await ExecuteTokenAsync(errorProc);
         }
     }
 
@@ -151,9 +179,26 @@ public class PostscriptEngine
     {
         while (ExecutionStack.NextInstruction(out var token))
         {
-            if (ShouldExecuteToken(token))
-                token.ExecutionStrategy.AcceptParsedToken(this, token);
+            if (ShouldExecuteToken(token)) ExecuteToken(token);
             CheckForOpenProcToken(token);
+        }
+    }
+
+    private void ExecuteToken(PostscriptValue token)
+    {
+        var stateStack =
+            new EngineStackState(OperandStack, DictionaryStack, ExecutionStack.InnerStack);
+        try
+        {
+            token.ExecutionStrategy.AcceptParsedToken(this, token);
+            stateStack.Commit();
+        }
+        catch (Exception e)
+        {
+            stateStack.Rollback();
+            var errorProc = new PostscriptErrorHandling(this, e, token).Handle();
+            if (errorProc.IsNull) throw;
+            ExecuteToken(errorProc);
         }
     }
 

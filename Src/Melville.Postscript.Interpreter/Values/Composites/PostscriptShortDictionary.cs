@@ -75,11 +75,14 @@ internal partial class PostscriptShortDictionary : PostscriptDictionary
     }
     private void TryExpandArray()
     {
+        if (length == 0)
+        {
+            items = new PostscriptValue[4];
+            return;
+        }
         if (length * 2 >= items.Length)
         {
-            var newArray = new PostscriptValue[items.Length * 2];
-            items.AsSpan().CopyTo(newArray.AsSpan());
-            items = newArray;
+            Array.Resize(ref items, items.Length*2);
         }
     }
 

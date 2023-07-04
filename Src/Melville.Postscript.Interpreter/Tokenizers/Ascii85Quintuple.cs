@@ -28,7 +28,8 @@ namespace Melville.Postscript.Interpreter.Tokenizers
 
         private void PadForMissingBytes(int sourceBytes)
         {
-            if (sourceBytes < 2) throw new PostscriptParseException("Invalid Ascii85 string");
+            if (sourceBytes < 2) 
+                throw new PostscriptNamedErrorException("Invalid Ascii85 string","syntaxerror");
             for (int i = sourceBytes; i < 5; i++) 
                 AddByte(Ascii85Constants.IncompleteGroupPadding);
         }

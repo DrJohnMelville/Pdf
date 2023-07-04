@@ -22,7 +22,7 @@ internal abstract class PostscriptComposite : IPostscriptComposite,
     private bool inStringGen = false;
     string IPostscriptValueStrategy<string>.GetValue(in Int128 memento)
     {
-        if (inStringGen) return "<Blocked Recursive String write.?";
+        if (inStringGen) return "<Blocked Recursive String write.>";
         inStringGen = true;
         var ret = StringRep();
         inStringGen = false;

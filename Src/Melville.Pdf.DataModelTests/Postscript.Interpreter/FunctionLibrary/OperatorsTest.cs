@@ -326,7 +326,7 @@ public class OperatorsTest
     [InlineData("countdictstack", "01: 3")]
     [InlineData("10 dict begin countdictstack", "01: 4")]
     [InlineData("10 dict begin countdictstack array dictstack [ exch { length } forall ]",
-        "01: [108 0 3 0]")]
+        "01: [111 0 0 0]")]
     [InlineData("10 dict begin 25 dict begin countdictstack cleardictstack countdictstack",
         "01: 3\r\n02: 5")]
     [InlineData("/Meth {dup 100000 ge {exit} {1 add Meth} ifelse} def 1 Meth", "01: 100000")]

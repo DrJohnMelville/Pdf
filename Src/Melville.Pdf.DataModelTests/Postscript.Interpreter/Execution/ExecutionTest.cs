@@ -40,7 +40,7 @@ public class ExecutionTest
     public void PushOneString()
     {
         var engine = ExcutedEngine("(Hello)");
-        Assert.Single(engine.OperandStack);
+        Assert.Equal(1, engine.OperandStack.Count);
         Assert.Equal("(Hello)", engine.OperandStack.Pop().ToString());
     }
 
@@ -56,7 +56,7 @@ public class ExecutionTest
     public void ExecuteName()
     {
         var engine = ExcutedEngine("true");
-        Assert.Single(engine.OperandStack);
+        Assert.Equal(1, engine.OperandStack.Count);
         Assert.True(engine.OperandStack.Pop().Get<bool>());
     }
 }
