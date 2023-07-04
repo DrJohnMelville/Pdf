@@ -32,6 +32,13 @@ public class PostscriptEngine
     /// </summary>
     public ExecutionStack ExecutionStack { get; } = new();
 
+    /// <summary>
+    /// The ITokenSource from which we are presently reading.  Postscript
+    /// operators are allowed to read directly out of the
+    /// source stream.
+    /// </summary>
+    public ITokenSource? TokenSource { get; private set; }
+
     private int deferredExecutionCount = 0;
 
     /// <summary>
@@ -119,6 +126,7 @@ public class PostscriptEngine
     public async ValueTask ExecuteAsync(ITokenSource tokens)
     {
         Debug.Assert(ExecutionStack.Count == 0);
+        TokenSource = tokens;
         await ExecutionStack.PushAsync(new(tokens.TokensAsync().GetAsyncEnumerator()), 
             "Async Parser"u8);
         await MainExecutionLoopAsync();
@@ -171,6 +179,7 @@ public class PostscriptEngine
     /// <param name="tokens">A token source representing the program.</param>
     public void Execute(ITokenSource tokens)
     {
+        TokenSource = tokens;
         ExecutionStack.Push(new(tokens.Tokens().GetEnumerator()), "Synchronous CodeSource");
         MainExecutionLoop();
     }

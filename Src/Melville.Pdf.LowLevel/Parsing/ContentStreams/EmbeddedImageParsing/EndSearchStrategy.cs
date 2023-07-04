@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Buffers;
+using System.Net.Http.Headers;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
@@ -10,14 +12,15 @@ internal class EndSearchStrategy
 
     public bool SearchForEndSequence(in BufferFromPipe bfp, out SequencePosition endPos)
     {
-        int position = 0;
         var seqReader = bfp.CreateReader();
-        if (!SkipBytes(ref seqReader))
-        {
-            endPos = seqReader.Position;
-            return false;
-        }
+        return SearchForEndSequence(seqReader, bfp.Done, out endPos);
+    }
 
+    public bool SearchForEndSequence(SequenceReader<byte> seqReader, bool sourceDone, out SequencePosition endPos)
+    {
+        int position = 0;
+        if (!SkipBytes(ref seqReader))
+            return seqReader.Position.AsFalseValue(out endPos);
         while (seqReader.TryRead(out var current))
         {
             switch ((char)current, position)
@@ -27,7 +30,7 @@ internal class EndSearchStrategy
                     break;
                 case ('I', 1):
                     endPos = seqReader.Position;
-                    if (VerifyEndPos(seqReader, bfp.Done)) return true;
+                    if (VerifyEndPos(seqReader, sourceDone)) return true;
                     goto default;
                 default:
                     position = 0;
@@ -35,8 +38,7 @@ internal class EndSearchStrategy
             }
         }
 
-        endPos = seqReader.Position;
-        return false;
+        return seqReader.Position.AsFalseValue(out endPos);
     }
 
     protected virtual bool SkipBytes(ref SequenceReader<byte> seqReader) => seqReader.TryRead(out _);

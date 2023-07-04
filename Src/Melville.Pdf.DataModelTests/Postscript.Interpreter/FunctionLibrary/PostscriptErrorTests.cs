@@ -107,7 +107,7 @@ public class PostscriptErrorTests
         var engine = new PostscriptEngine().WithBaseLanguage();
         engine.Execute("{1} loop");
         AssertErrorString(engine, "errorname"u8, "stackoverflow");
-        AssertErrorString(engine, "estack"u8, "[Loop Loop]");
+        AssertErrorString(engine, "estack"u8, "[Synchronous CodeSource Loop Loop]");
 
     }
 }

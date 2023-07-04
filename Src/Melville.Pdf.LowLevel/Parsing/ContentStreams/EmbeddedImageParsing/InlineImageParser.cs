@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
@@ -8,7 +9,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
-
+[Obsolete("use the new one ")]
 internal static class InlineImageParser
 {
     public static async ValueTask<bool> ParseInlineImageAsync(BufferFromPipe bfp, ContentStreamContext target)

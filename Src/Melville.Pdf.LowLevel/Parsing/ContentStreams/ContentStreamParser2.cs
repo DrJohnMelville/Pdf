@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
@@ -53,6 +54,7 @@ internal readonly partial struct ContentStreamParser2
         engine.SystemDict.Put("["u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
         engine.SystemDict.Put("]"u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
         engine.SystemDict.Put("<<"u8, PostscriptValueFactory.CreateMark());
+        engine.SystemDict.Put("BI"u8, PostscriptValueFactory.CreateMark());
         engine.SystemDict.Put("$IgnoreCount"u8, PostscriptValueFactory.Create(0));
     }
 
@@ -323,10 +325,14 @@ internal readonly partial struct ContentStreamParser2
                 name, NameFrom(dictValue.Get<StringSpanSource>()))
             : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfDictionary>());
         """, "BDC")]
+    [MacroItem("ParseMarkedImage", """
+        return new InlineImageParser2(engine, E(engine)).ParseAsync();
+        """, "ID")]
     partial void AsyncMacroHolder();
 #if DEBUG
     private static ValueTask ScratchAsync(PostscriptEngine engine)
     {
+        return new InlineImageParser2(engine,E(engine)).ParseAsync();
         return ValueTask.CompletedTask;
     }
 #endif
