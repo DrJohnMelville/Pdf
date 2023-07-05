@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -31,7 +32,8 @@ internal readonly partial struct InlineImageParser2
         var builder = DefaultImageDictionaryBuilder();
         while (engine.OperandStack.TryPop(out var last) && !last.IsMark)
         {
-            var name = NameDirectory.Get(engine.PopStringAsSpan(nameSpan));
+            var name = NameDirectory.Get(
+                ExpandNameSynonym(engine.PopStringAsSpan(nameSpan)));
             switch (last)
             {
                 case { IsDouble: true }:
@@ -42,13 +44,49 @@ internal readonly partial struct InlineImageParser2
                     break;
                 default:
                     builder.WithItem(name,
-                        NameDirectory.Get(last.Get<StringSpanSource>().GetSpan(valueSpan)));
+                        NameDirectory.Get(
+                            ExpandValueSynonym(
+                            last.Get<StringSpanSource>().GetSpan(valueSpan))));
                     break;
             }
         }
 
         return builder;
     }
+
+    private ReadOnlySpan<byte> ExpandNameSynonym(ReadOnlySpan<byte> name) => name switch
+    {
+        [(byte)'B', (byte)'P',(byte)'C']=> "BitsPerComponent"u8,
+        [(byte)'C', (byte)'S']=> "ColorSpace"u8,
+        [(byte)'D', (byte)'P']=> "DecodeParms"u8,
+        [(byte)'I', (byte)'M']=> "ImageMask"u8,
+        [(byte)'D']=> "Decode"u8,
+        [(byte)'F']=> "Filter"u8,
+        [(byte)'H']=> "Height"u8,
+        [(byte)'I']=> "Interpolate"u8,
+        [(byte)'L']=> "Length"u8,
+        [(byte)'W']=> "Width"u8,
+        _=> name
+
+    };
+    
+    private ReadOnlySpan<byte> ExpandValueSynonym(ReadOnlySpan<byte> name) => name switch
+    {
+        [(byte)'A', (byte)'H',(byte)'x']=> "ASCIIHexDecode"u8,
+        [(byte)'A', (byte)'8',(byte)'5']=> "ASCII85Decode"u8,
+        [(byte)'L', (byte)'Z',(byte)'W']=> "LZWDecode"u8,
+        [(byte)'C', (byte)'C',(byte)'F']=> "CCITTFaxDecode"u8,
+        [(byte)'D', (byte)'C', (byte)'T'] => "DCTDecode"u8,
+        [(byte)'R', (byte)'G', (byte)'B'] => "DeviceRGB"u8,
+        [(byte)'C', (byte)'M', (byte)'Y', (byte)'K'] => "DeviceCMYK"u8,
+        [(byte)'F', (byte)'l']=> "FlateDecode"u8,
+        [(byte)'R', (byte)'L']=> "RunLengthDecode"u8,
+        [(byte)'G']=> "DeviceGray"u8,
+        [(byte)'I']=> "Indexed"u8,
+        _=> name
+
+    };
+    
 
     private DictionaryBuilder DefaultImageDictionaryBuilder() =>
         new DictionaryBuilder()
@@ -65,9 +103,7 @@ internal readonly partial struct InlineImageParser2
             if (strategy.SearchForEndSequence(
                     new SequenceReader<byte>(result.Buffer), result.IsCompleted, out var endPos))
             {
-                var resultSequence = result.Buffer.Slice(result.Buffer.Start, endPos);
-                var ret = new byte[resultSequence.Length];
-                resultSequence.CopyTo(ret.AsSpan());
+                var ret = CopyDataToArray(result, endPos);
                 reader.AdvanceTo(endPos);
                 return ret;
             }
@@ -75,4 +111,9 @@ internal readonly partial struct InlineImageParser2
         }
     }
 
+    private static byte[] CopyDataToArray(ReadResult result, SequencePosition endPos) => 
+        TrimBeginningAndEnd(result.Buffer.Slice(result.Buffer.Start, endPos)).ToArray();
+
+    private static ReadOnlySequence<byte> TrimBeginningAndEnd(ReadOnlySequence<byte> streamData) => 
+        streamData.Slice(1, streamData.Length - 3);
 }

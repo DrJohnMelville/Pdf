@@ -27,6 +27,7 @@ internal static class PdfParserParts
     public static readonly PdfDictionaryParser EmbeddedDictionaryParser =
         new(ContentStreamComposite, ContentStreamComposite);
 
+#warning I think this should go away
     public static readonly PdfDictionaryParser InlineImageDictionaryParser =
         new(new ExpandSynonymsParser(new InlineImageNameParser(),
             new Dictionary<PdfObject, PdfObject>()

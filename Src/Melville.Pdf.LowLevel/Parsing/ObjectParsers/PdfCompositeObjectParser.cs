@@ -73,6 +73,7 @@ internal class PdfCompositeObjectParserBase : IPdfObjectParser
         };
 }
 
+#warning I think this should go away
 internal class InlineImageNameParser : PdfCompositeObjectParserBase
 {
     private static readonly LiteralTokenParser term = new(PdfTokenValues.InlineImageDictionaryTerminator);
@@ -85,6 +86,7 @@ internal class InlineImageNameParser : PdfCompositeObjectParserBase
         };
 }
 
+#warning I think this should go away
 internal class ExpandSynonymsParser : IPdfObjectParser
 {
     private readonly IPdfObjectParser inner;

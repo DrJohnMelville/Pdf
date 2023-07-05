@@ -332,7 +332,6 @@ internal readonly partial struct ContentStreamParser2
 #if DEBUG
     private static ValueTask ScratchAsync(PostscriptEngine engine)
     {
-        return new InlineImageParser2(engine,E(engine)).ParseAsync();
         return ValueTask.CompletedTask;
     }
 #endif
