@@ -10,12 +10,6 @@ internal class EndSearchStrategy
 {
     public static EndSearchStrategy Instance { get; } = new();
 
-    public bool SearchForEndSequence(in BufferFromPipe bfp, out SequencePosition endPos)
-    {
-        var seqReader = bfp.CreateReader();
-        return SearchForEndSequence(seqReader, bfp.Done, out endPos);
-    }
-
     public bool SearchForEndSequence(SequenceReader<byte> seqReader, bool sourceDone, out SequencePosition endPos)
     {
         int position = 0;

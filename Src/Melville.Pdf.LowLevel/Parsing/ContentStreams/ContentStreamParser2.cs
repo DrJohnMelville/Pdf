@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Formats.Tar;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -15,7 +14,6 @@ using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
