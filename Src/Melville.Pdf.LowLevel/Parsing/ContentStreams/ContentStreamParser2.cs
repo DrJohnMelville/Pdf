@@ -22,7 +22,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 /// <summary>
 /// Parses a content stream (expressed as a PipeReader) and "renders" it to an IContentStreamOperations.
 /// </summary>
-internal readonly partial struct ContentStreamParser2
+public readonly partial struct ContentStreamParser2
 {
     [FromConstructor] private readonly IContentStreamOperations target;
 

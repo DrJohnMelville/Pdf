@@ -23,7 +23,7 @@ public static class ContentStreamPrettyPrinter
     {
         MemoryStream dest = new();
         var pipeWriter = PipeWriter.Create(dest);
-        var parser = new ContentStreamParser(new IndentingContentStreamWriter(pipeWriter));
+        var parser = new ContentStreamParser2(new IndentingContentStreamWriter(pipeWriter));
         await parser.ParseAsync(PipeReader.Create(new ReadOnlySequence<byte>(content.AsExtendedAsciiBytes()))).CA();
         await pipeWriter.FlushAsync().CA();
         return new ReadOnlySpan<byte>(dest.GetBuffer(), 0, (int)dest.Length).ExtendedAsciiString();

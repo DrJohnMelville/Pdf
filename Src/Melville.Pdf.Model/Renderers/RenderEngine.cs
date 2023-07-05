@@ -163,7 +163,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     }
 
     public async ValueTask RunContentStreamAsync() =>
-        await new ContentStreamParser(this).ParseAsync(
+        await new ContentStreamParser2(this).ParseAsync(
             PipeReader.Create(await page.GetContentBytesAsync().CA())).CA();
 
     #endregion
