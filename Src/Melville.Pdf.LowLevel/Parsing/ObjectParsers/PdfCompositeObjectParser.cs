@@ -73,38 +73,6 @@ internal class PdfCompositeObjectParserBase : IPdfObjectParser
         };
 }
 
-#warning I think this should go away
-internal class InlineImageNameParser : PdfCompositeObjectParserBase
-{
-    private static readonly LiteralTokenParser term = new(PdfTokenValues.InlineImageDictionaryTerminator);
-    
-    protected override IPdfObjectParser? PickParserOverride(char firstByte, char secondByte) =>
-        (firstByte, secondByte) switch
-        {
-            ('I', 'D') => term, 
-            _ => base.PickParserOverride(firstByte, secondByte)
-        };
-}
-
-#warning I think this should go away
-internal class ExpandSynonymsParser : IPdfObjectParser
-{
-    private readonly IPdfObjectParser inner;
-    private IDictionary<PdfObject, PdfObject> expansions;
-
-    public ExpandSynonymsParser(IPdfObjectParser inner, IDictionary<PdfObject, PdfObject> expansions)
-    {
-        this.inner = inner;
-        this.expansions = expansions;
-    }
-
-    public async Task<PdfObject> ParseAsync(IParsingReader source)
-    {
-        var ret = await inner.ParseAsync(source).CA();
-        return expansions.TryGetValue(ret, out var expansion) ? expansion : ret;
-    }
-}
-
 internal class PdfCompositeObjectParser : PdfCompositeObjectParserBase
 {
     protected override IPdfObjectParser? PickParserOverride(char firstByte, char secondByte) =>

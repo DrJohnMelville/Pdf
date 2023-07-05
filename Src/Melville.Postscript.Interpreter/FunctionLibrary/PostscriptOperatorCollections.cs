@@ -26,6 +26,19 @@ public static class PostscriptOperatorCollections
     /// <summary>
     /// Add an external function to the system dictionary for a Postscript Engine
     /// </summary>
+    /// <param name="composite">The engine to add to</param>
+    /// <param name="name">Name of the item</param>
+    /// <param name="func">The function to put</param>
+    /// <returns>The passed in engine</returns>
+    public static IPostscriptComposite WithSystemFunction(
+        this IPostscriptComposite composite, ReadOnlySpan<byte> name, IExternalFunction func)
+    {
+        composite.Put(name, PostscriptValueFactory.Create(func));
+        return composite;
+    }
+    /// <summary>
+    /// Add an external function to the system dictionary for a Postscript Engine
+    /// </summary>
     /// <param name="engine">The engine to add to</param>
     /// <param name="name">Name of the item</param>
     /// <param name="value">The constant value to associate with the name.</param>
@@ -35,6 +48,19 @@ public static class PostscriptOperatorCollections
     {
         engine.SystemDict.Put(name, value);
         return engine;
+    }
+    /// <summary>
+    /// Add an external function to the system dictionary for a Postscript Engine
+    /// </summary>
+    /// <param name="composite">The engine to add to</param>
+    /// <param name="name">Name of the item</param>
+    /// <param name="value">The constant value to associate with the name.</param>
+    /// <returns>The passed in engine</returns>
+    public static IPostscriptComposite WithSystemConstant(
+        this IPostscriptComposite composite, ReadOnlySpan<byte> name, in PostscriptValue value)
+    {
+        composite.Put(name, value);
+        return composite;
     }
 
     /// <summary>

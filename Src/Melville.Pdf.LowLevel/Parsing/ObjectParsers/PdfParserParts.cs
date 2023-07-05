@@ -25,38 +25,4 @@ internal static class PdfParserParts
         new(ContentStreamComposite, Composite);
     public static readonly IndirectObjectParser Indirects = new(Number);
     public static readonly PdfDictionaryParser EmbeddedDictionaryParser =
-        new(ContentStreamComposite, ContentStreamComposite);
-
-#warning I think this should go away
-    public static readonly PdfDictionaryParser InlineImageDictionaryParser =
-        new(new ExpandSynonymsParser(new InlineImageNameParser(),
-            new Dictionary<PdfObject, PdfObject>()
-            {
-                {PdfTokenValues.InlineImageDictionaryTerminator, PdfTokenValues.DictionaryTerminator},
-                {InlineImageFieldName.BPC, KnownNames.BitsPerComponent},
-                {InlineImageFieldName.CS, KnownNames.ColorSpace},
-                {InlineImageFieldName.D, KnownNames.Decode},
-                {InlineImageFieldName.DP, KnownNames.DecodeParms},
-                {InlineImageFieldName.F, KnownNames.Filter},
-                {InlineImageFieldName.H, KnownNames.Height},
-                {InlineImageFieldName.IM, KnownNames.ImageMask},
-                {InlineImageFieldName.I, KnownNames.Interpolate},
-                {InlineImageFieldName.L, KnownNames.Length},
-                {InlineImageFieldName.W, KnownNames.Width}
-            }), 
-            new ExpandSynonymsParser(ContentStreamComposite,
-                new Dictionary<PdfObject, PdfObject>()
-                {
-                    {InlineImageFilterName.AHx, FilterName.ASCIIHexDecode},
-                    {InlineImageFilterName.A85, FilterName.ASCII85Decode},
-                    {InlineImageFilterName.LZW, FilterName.LZWDecode},
-                    {InlineImageFilterName.Fl, FilterName.FlateDecode},
-                    {InlineImageFilterName.RL, FilterName.RunLengthDecode},
-                    {InlineImageFilterName.CCF, FilterName.CCITTFaxDecode},
-                    {InlineImageFilterName.DCT, FilterName.DCTDecode},
-                    {InlineImageColorSpaceName.G, ColorSpaceName.DeviceGray},
-                    {InlineImageColorSpaceName.RGB, ColorSpaceName.DeviceRGB},
-                    {InlineImageColorSpaceName.CMYK, ColorSpaceName.DeviceCMYK},
-                    {InlineImageColorSpaceName.I, ColorSpaceName.Indexed},
-                }));
-}
+        new(ContentStreamComposite, ContentStreamComposite); }

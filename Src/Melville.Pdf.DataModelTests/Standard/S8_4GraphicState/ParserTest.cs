@@ -22,7 +22,7 @@ public abstract class ParserTest
 #if fakse
         var sut = new ContentStreamParser(target ?? Target.Object);
 #else
-        var sut = new ContentStreamParser2(target ?? Target.Object);
+        var sut = new ContentStreamParser(target ?? Target.Object);
 #endif
         return sut.ParseAsync(PipeReaderFromString(s));
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -20,8 +19,11 @@ namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 /// <summary>
 /// Parses a content stream (expressed as a PipeReader) and "renders" it to an IContentStreamOperations.
 /// </summary>
-public readonly partial struct ContentStreamParser2
+public readonly partial struct ContentStreamParser
 {
+    /// <summary>
+    /// The target that we are parsing the content stream to.
+    /// </summary>
     [FromConstructor] private readonly IContentStreamOperations target;
 
     /// <summary>
@@ -58,7 +60,7 @@ public readonly partial struct ContentStreamParser2
     }
 
     [MacroCode("""
-        public static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
+        private static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
         private sealed class ~0~BuiltInFuncImpl: BuiltInFunction
         {
             public override void Execute(PostscriptEngine engine, in PostscriptValue value)
@@ -233,7 +235,7 @@ public readonly partial struct ContentStreamParser2
         engine.OperandStack[0].Get<IContentStreamOperations>();
 
     [MacroCode("""
-        public static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
+        private static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
         private sealed class ~0~BuiltInFuncImpl: AsyncBuiltInFunction
         {
             public override ValueTask ExecuteAsync(PostscriptEngine engine, in PostscriptValue value)
@@ -330,7 +332,7 @@ public readonly partial struct ContentStreamParser2
         """, "BDC")]
     [MacroItem("ParseMarkedImage", """
         engine.DisablePdfArrayParsing();
-        return new InlineImageParser2(engine, E(engine)).ParseAsync();
+        return new InlineImageParser(engine, E(engine)).ParseAsync();
         """, "ID")]
     partial void AsyncMacroHolder();
 #if DEBUG
