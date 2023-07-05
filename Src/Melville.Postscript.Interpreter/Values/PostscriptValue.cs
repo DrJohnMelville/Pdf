@@ -52,6 +52,11 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// True if this is a number represented as an double, false otherwise.
     /// </summary>
     public bool IsDouble=> valueStrategy is PostscriptDouble;
+    
+    /// <summary>
+    /// True if this is a number represented as an boolean, false otherwise.
+    /// </summary>
+    public bool IsBoolean => valueStrategy is PostscriptBoolean;
     /// <summary>
     /// True if this is a number represented as an double, false otherwise.
     /// </summary>

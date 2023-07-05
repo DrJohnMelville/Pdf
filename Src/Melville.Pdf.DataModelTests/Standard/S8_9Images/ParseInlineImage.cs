@@ -104,4 +104,13 @@ public partial class ParseInlineImage : ParserTest
                         IntValue);
 
             }));
+
+    [Fact]
+    public Task WithArrayArgument() =>
+                  TestInputAsync(
+            "BI/D[/AHx/DCT]ID\nHelloEI",
+            new DoImpl(async i =>
+            {
+                Assert.True((await i.GetAsync<PdfArray>(KnownNames.Decode)) is PdfArray);
+            }));
 }

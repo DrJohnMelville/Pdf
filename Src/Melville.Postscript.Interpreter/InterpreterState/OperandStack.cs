@@ -24,7 +24,7 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
 
     private static bool IsMark(PostscriptValue i) => i.IsMark;
 
-    internal int CountToMark()
+    public int CountToMark()
     {
         var ret = CountAbove(IsMark);
         if (ret == Count)

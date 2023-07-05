@@ -50,11 +50,12 @@ public readonly partial struct ContentStreamParser2
 
     private static void CreateRequiredSynonyms(PostscriptEngine engine)
     {
+        engine.SystemDict.Put("true"u8, PostscriptValueFactory.Create(true));
+        engine.SystemDict.Put("false"u8, PostscriptValueFactory.Create(false));
         engine.SystemDict.Put("F"u8, PostscriptValueFactory.Create(FillPath));
         engine.SystemDict.Put("["u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
         engine.SystemDict.Put("]"u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
         engine.SystemDict.Put("<<"u8, PostscriptValueFactory.CreateMark());
-        engine.SystemDict.Put("BI"u8, PostscriptValueFactory.CreateMark());
         engine.SystemDict.Put("$IgnoreCount"u8, PostscriptValueFactory.Create(0));
     }
 
@@ -226,6 +227,10 @@ public readonly partial struct ContentStreamParser2
         if (IncrementIgnoreCount(engine, -1) != 0) return;
         engine.ErrorDict.Undefine("undefined"u8);
         """, "EX")]
+    [MacroItem("BeginInlineImage", """
+        engine.Push(PostscriptValueFactory.CreateMark());
+        engine.EnablePdfArrayParsing();
+        """, "BI")]
     private static IContentStreamOperations E(PostscriptEngine engine) =>
         engine.OperandStack[0].Get<IContentStreamOperations>();
 
@@ -326,6 +331,7 @@ public readonly partial struct ContentStreamParser2
             : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfDictionary>());
         """, "BDC")]
     [MacroItem("ParseMarkedImage", """
+        engine.DisablePdfArrayParsing();
         return new InlineImageParser2(engine, E(engine)).ParseAsync();
         """, "ID")]
     partial void AsyncMacroHolder();
