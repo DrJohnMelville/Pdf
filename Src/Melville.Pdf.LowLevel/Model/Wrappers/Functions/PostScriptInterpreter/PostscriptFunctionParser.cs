@@ -17,7 +17,7 @@ internal static class PostscriptFunctionParser
         var domain = await source.ReadIntervalsAsync(KnownNames.Domain).CA();
         var range = await source.ReadIntervalsAsync(KnownNames.Range).CA();
 
-        var interp = new PostscriptEngine().WithBaseLanguage();
+        var interp = SharedPostscriptParser.BasicPostscriptEngine();
         await interp.ExecuteAsync(await source.StreamContentAsync().CA()).CA();
 
         var ops = interp.OperandStack.Pop().Get<IPostscriptArray>();

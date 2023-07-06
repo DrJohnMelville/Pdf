@@ -55,15 +55,15 @@ public class PostscriptEngine
     /// <summary>
     /// Create a new PostScriptEngine
     /// </summary>
-    public PostscriptEngine()
+    public PostscriptEngine(IPostscriptDictionary builtInOperations)
     {
-        CreateStandardDictionarystack();
+        CreateStandardDictionarystack(builtInOperations);
         CreateSecondaryStandardDictionaries();
     }
 
-    private void CreateStandardDictionarystack()
+    private void CreateStandardDictionarystack(IPostscriptDictionary builtInOperations)
     {
-        DictionaryStack.Push(new PostscriptLongDictionary());
+        DictionaryStack.Push(new SharedContentDictionary(builtInOperations));
         DictionaryStack.Push(new PostscriptLongDictionary());
         DictionaryStack.Push(new PostscriptLongDictionary());
     }

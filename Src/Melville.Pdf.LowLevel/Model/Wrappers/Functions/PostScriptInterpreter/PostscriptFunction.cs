@@ -6,9 +6,18 @@ using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Composites;
 
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
+
+internal static class SharedPostscriptParser
+{
+    private static readonly IPostscriptDictionary operations =
+        PostscriptOperatorCollections.BaseLanguage();
+
+    public static PostscriptEngine BasicPostscriptEngine() => new(operations);
+}
 
 internal class PostscriptFunction: PdfFunction
 {
@@ -23,7 +32,7 @@ internal class PostscriptFunction: PdfFunction
     protected override void ComputeOverride(
         in ReadOnlySpan<double> input, in Span<double> result)
     {
-        var engine = new PostscriptEngine().WithBaseLanguage();
+        var engine = SharedPostscriptParser.BasicPostscriptEngine();
         PushInputs(input, engine);
         engine.Execute(operation);
         PopOutputs(result, engine);

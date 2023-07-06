@@ -106,7 +106,7 @@ public partial class ParseInlineImage : ParserTest
             }));
 
     [Fact]
-    public Task WithArrayArgument() =>
+    public Task WithArrayArgumentAsync() =>
                   TestInputAsync(
             "BI/D[/AHx/DCT]ID\nHelloEI",
             new DoImpl(async i =>

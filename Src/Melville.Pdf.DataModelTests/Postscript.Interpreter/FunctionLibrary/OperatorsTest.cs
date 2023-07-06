@@ -13,7 +13,8 @@ public class OperatorsTest
     [InlineData("false", "01: false")]
     [InlineData("null", "01: <Null>")]
     public void TestSystemTokens(string code, string result) => 
-        RunTestOn(code, result, new PostscriptEngine().WithSystemTokens());
+        RunTestOn(code, result, new PostscriptEngine(
+            PostscriptOperatorCollections.Empty().WithSystemTokens()));
 
     [Theory]
     [InlineData("4 5 pop", "01: 4")]
@@ -76,7 +77,8 @@ public class OperatorsTest
         """)]
     [InlineData("1 mark 2 3 4 cleartomark", "01: 1")]
     public void WithStackOperators(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine().WithStackOperators());
+        RunTestOn(code, result, new PostscriptEngine(
+            PostscriptOperatorCollections.Empty().WithStackOperators()));
 
     [Theory]
     [InlineData("1 2 add", "01: 3")]
@@ -118,7 +120,8 @@ public class OperatorsTest
         03: 11295414
         """)]
     public void WithMathOperators(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine().WithMathOperators());
+        RunTestOn(code, result, new PostscriptEngine(
+            PostscriptOperatorCollections.Empty().WithMathOperators()));
 
     [Theory]
     [InlineData("(Hello) length", "01: 5")]
@@ -138,7 +141,8 @@ public class OperatorsTest
     [InlineData("(123) token", "01: true\r\n02: 123\r\n03: ()")]
     [InlineData("((\\()) token", "01: false")]
     public void WithStringOperators(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine().WithBaseLanguage());
+        RunTestOn(code, result, new PostscriptEngine(
+            PostscriptOperatorCollections.Empty().WithBaseLanguage()));
     
     [Theory]
     [InlineData("1 2 3 2 packedarray", "01: [2 3]\r\n02: 1")]
@@ -165,8 +169,8 @@ public class OperatorsTest
         02: [1 2 3 <Null> <Null>]
         """)]
     public void WithArrayOperators(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine()
-            .WithStackOperators().WithArrayOperators().WithSystemTokens());
+        RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
+            .WithStackOperators().WithArrayOperators().WithSystemTokens()));
 
     [Theory]
     [InlineData("/add cvx", "01: add")]
@@ -199,9 +203,9 @@ public class OperatorsTest
     [InlineData("(TESTING) dup 0 16 3 -1 roll cvrs", "01: (0)\r\n02: (0ESTING)")]
     [InlineData("0 [1 2 3] {add} forall", "01: 6")]
     public void ExecutionAndConversion(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine()
+        RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
-            .WithSystemTokens().WithArrayOperators().WithStackOperators());
+            .WithSystemTokens().WithArrayOperators().WithStackOperators()));
 
     [Theory]
     [InlineData("10 exec", "01: 10")]
@@ -230,9 +234,9 @@ public class OperatorsTest
 
     [InlineData("1 { 2 { 3 quit} exec 4 } exec 5", "01: 3\r\n02: 2\r\n03: 1")]
     public void ControlOperators(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine()
+        RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
             .WithcConversionOperators().WithcControlOperators().WithMathOperators()
-            .WithSystemTokens().WithArrayOperators().WithStackOperators());
+            .WithSystemTokens().WithArrayOperators().WithStackOperators()));
 
     [Theory]
     [InlineData("1 1 ne", "01: false")]
@@ -286,12 +290,12 @@ public class OperatorsTest
     [InlineData("4 2 bitshift", "01: 16")]
     [InlineData("4 -2 bitshift", "01: 1")]
     public void RelationalAndBitwise(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine()
+        RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
             .WithRelationalOperators()
             .WithSystemTokens()
             .WithStackOperators()
             .WithArrayOperators()
-            .WithcConversionOperators());
+            .WithcConversionOperators()));
 
     [Theory]
     [InlineData("10 dict", "01: <<\r\n>>")]
@@ -331,7 +335,7 @@ public class OperatorsTest
         "01: 3\r\n02: 5")]
     [InlineData("/Meth {dup 100000 ge {exit} {1 add Meth} ifelse} def 1 Meth", "01: 100000")]
     public void Dictionary(string code, string result) =>
-        RunTestOn(code, result, new PostscriptEngine()
+        RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
             .WithSystemTokens()
             .WithArrayOperators()
             .WithcControlOperators()
@@ -339,7 +343,7 @@ public class OperatorsTest
             .WithStackOperators()
             .WithMathOperators()
             .WithRelationalOperators()
-            .WithcConversionOperators());
+            .WithcConversionOperators()));
 
     private static void RunTestOn(string code, string result, PostscriptEngine engine)
     {

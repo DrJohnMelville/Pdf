@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.IO.Pipelines;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -12,6 +14,7 @@ using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
@@ -32,8 +35,7 @@ public readonly partial struct ContentStreamParser
     /// <param name="source">The content stream to parse.</param>
     public async ValueTask ParseAsync(PipeReader source)
     {
-        var engine = new PostscriptEngine();
-        AddContentStreamOperatorsTo(engine);
+        var engine = new PostscriptEngine(contentStreamCommands);
         engine.Push(new PostscriptValue(
             target, PostscriptBuiltInOperations.PushArgument, 0));
         await engine.ExecuteAsync(new Tokenizer(source)).CA();
@@ -41,26 +43,33 @@ public readonly partial struct ContentStreamParser
             throw new PdfParseException("Error parsing content stream;");
     }
 
-    private void AddContentStreamOperatorsTo(PostscriptEngine engine)
+    private static readonly IPostscriptDictionary contentStreamCommands =
+        AddContentStreamOperatorsTo();
+
+
+    private static IPostscriptDictionary AddContentStreamOperatorsTo()
     {
-        ConfigureAsyncEngine(engine.SystemDict);
-        ConfigureEngine(engine.SystemDict);
-        CreateRequiredSynonyms(engine);
+        var ret = PostscriptValueFactory
+            .CreateSizedDictionary(80)
+            .Get<IPostscriptDictionary>();
+        ConfigureAsyncEngine(ret);
+        ConfigureEngine(ret);
+        CreateRequiredSynonyms(ret);
+        return ret;
     }
 
-    private static void CreateRequiredSynonyms(PostscriptEngine engine)
+    private static void CreateRequiredSynonyms(IPostscriptComposite dict)
     {
-        engine.SystemDict.Put("true"u8, PostscriptValueFactory.Create(true));
-        engine.SystemDict.Put("false"u8, PostscriptValueFactory.Create(false));
-        engine.SystemDict.Put("F"u8, PostscriptValueFactory.Create(FillPath));
-        engine.SystemDict.Put("["u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
-        engine.SystemDict.Put("]"u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
-        engine.SystemDict.Put("<<"u8, PostscriptValueFactory.CreateMark());
-        engine.SystemDict.Put("$IgnoreCount"u8, PostscriptValueFactory.Create(0));
+        dict.Put("true"u8, PostscriptValueFactory.Create(true));
+        dict.Put("false"u8, PostscriptValueFactory.Create(false));
+        dict.Put("F"u8, dict.Get("f"));
+        dict.Put("["u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
+        dict.Put("]"u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
+        dict.Put("<<"u8, PostscriptValueFactory.CreateMark());
+        dict.Put("$IgnoreCount"u8, PostscriptValueFactory.Create(0));
     }
 
     [MacroCode("""
-        private static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
         private sealed class ~0~BuiltInFuncImpl: BuiltInFunction
         {
             public override void Execute(PostscriptEngine engine, in PostscriptValue value)
@@ -70,8 +79,8 @@ public readonly partial struct ContentStreamParser
         }
 
         """)]
-    [MacroCode("    dict.Put(\"~2~\"u8, PostscriptValueFactory.Create(~0~));", 
-        Prefix = "private void ConfigureEngine(IPostscriptComposite dict) \r\n{",
+    [MacroCode("    dict.Put(\"~2~\"u8, PostscriptValueFactory.Create(new ~0~BuiltInFuncImpl()));", 
+        Prefix = "private static void ConfigureEngine(IPostscriptComposite dict) \r\n{",
         Postfix = "}")]
     [MacroItem("CloseFillAndStrokePath", "E(engine).CloseFillAndStrokePath();", "b")]
     [MacroItem("CloseFillAndStrokePathEvenOdd", "E(engine).CloseFillAndStrokePathEvenOdd();", "b*")]
@@ -235,8 +244,7 @@ public readonly partial struct ContentStreamParser
         engine.OperandStack[0].Get<IContentStreamOperations>();
 
     [MacroCode("""
-        private static IExternalFunction ~0~ = new ~0~BuiltInFuncImpl();
-        private sealed class ~0~BuiltInFuncImpl: AsyncBuiltInFunction
+        private  sealed class ~0~BuiltInFuncImpl: AsyncBuiltInFunction
         {
             public override ValueTask ExecuteAsync(PostscriptEngine engine, in PostscriptValue value)
             {
@@ -245,8 +253,8 @@ public readonly partial struct ContentStreamParser
         }
 
         """)]
-    [MacroCode("    dict.Put(\"~2~\"u8, PostscriptValueFactory.Create(~0~));",
-        Prefix = "private void ConfigureAsyncEngine(IPostscriptComposite dict) \r\n{",
+    [MacroCode("    dict.Put(\"~2~\"u8, PostscriptValueFactory.Create(new ~0~BuiltInFuncImpl()));",
+        Prefix = "private static void ConfigureAsyncEngine(IPostscriptComposite dict) \r\n{",
         Postfix = "}")]
     [MacroItem("Do", """
                 return E(engine).DoAsync(PopName(engine));

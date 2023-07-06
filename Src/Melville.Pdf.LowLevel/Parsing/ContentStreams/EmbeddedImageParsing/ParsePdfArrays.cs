@@ -10,26 +10,21 @@ using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
-public static partial class ParsePdfArrays
+internal static class ParsePdfArrays
 {
-    private static IPostscriptDictionary dict =
-        (IPostscriptDictionary)
+    private static readonly IPostscriptDictionary ArrayParsingOperators =
         PostscriptValueFactory.CreateSizedDictionary(2)
             .Get<IPostscriptDictionary>()
-            .WithSystemConstant("["u8, PostscriptValueFactory.CreateMark())
-            .WithSystemConstant("]"u8, PostscriptValueFactory.Create(CreatePdfArray.Instance));
+            .With("["u8, PostscriptValueFactory.CreateMark())
+            .With("]"u8, new CreatePdfArray());
 
-    public static void EnablePdfArrayParsing(this PostscriptEngine engine)
-    {
-        engine.DictionaryStack.Push(dict);
-    }
-    public static void DisablePdfArrayParsing(this PostscriptEngine engine)
-    {
+    public static void EnablePdfArrayParsing(this PostscriptEngine engine) => 
+        engine.DictionaryStack.Push(ArrayParsingOperators);
+
+    public static void DisablePdfArrayParsing(this PostscriptEngine engine) => 
         engine.DictionaryStack.Pop();
-    }
 
-    [StaticSingleton()]
-    private partial class CreatePdfArray : BuiltInFunction
+    private class CreatePdfArray : BuiltInFunction
     {
         public override void Execute(PostscriptEngine engine, in PostscriptValue value)
         {

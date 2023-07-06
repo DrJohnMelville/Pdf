@@ -10,6 +10,7 @@ public interface IPostscriptDictionary : IPostscriptComposite
 {
     public void Undefine(PostscriptValue key);
 }
+
 internal abstract class PostscriptDictionary:
     PostscriptComposite, IPostscriptDictionary
 {

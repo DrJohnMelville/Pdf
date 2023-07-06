@@ -28,7 +28,6 @@ internal readonly partial struct InlineImageParser
     private DictionaryBuilder PopDictionaryFromPostscriptStack()
     {
         Span<byte> nameSpan = stackalloc byte[PostscriptString.ShortStringLimit];
-        Span<byte> valueSpan = stackalloc byte[PostscriptString.ShortStringLimit];
         var builder = DefaultImageDictionaryBuilder();
         while (engine.OperandStack.TryPop(out var last) && !last.IsMark)
         {

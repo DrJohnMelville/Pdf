@@ -269,6 +269,9 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
             engine.DictionaryStack.WriteStackTo(engine.PopAs<PostscriptArray>()));
      """, 
     "Copy dictstack to the an array.")]
+[MacroItem("UserDict", "engine.Push(engine.UserDict.AsPostscriptValue());", "Push the UserDict.")]
+[MacroItem("GlobalDict", "engine.Push(engine.GlobalDict.AsPostscriptValue());", "Push the GlobalDict.")]
+[MacroItem("SystemDict", "engine.Push(engine.SystemDict.AsPostscriptValue());", "Push the SystemDict.")]
 [MacroItem("ClearDictStack", """
      engine.DictionaryStack.ResetToBottom3();
      """, 

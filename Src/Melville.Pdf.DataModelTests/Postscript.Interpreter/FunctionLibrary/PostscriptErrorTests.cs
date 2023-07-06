@@ -11,7 +11,7 @@ public class PostscriptErrorTests
     [Fact]
     public void UndefinedErrorTest()
     {
-        var engine = new PostscriptEngine();
+        var engine = new PostscriptEngine(PostscriptOperatorCollections.Empty());
         engine.Execute("1 JDM 1");
         AssertErrorString(engine, "newerror"u8, "true");
         AssertErrorString(engine, "errorname"u8, "undefined");
@@ -41,7 +41,7 @@ public class PostscriptErrorTests
     [Fact]
     public async Task UndefinedErrorTestAsync()
     {
-        var engine = new PostscriptEngine();
+        var engine = new PostscriptEngine(PostscriptOperatorCollections.Empty());
         await engine.ExecuteAsync("1 JDM 1");
         AssertErrorString(engine, "newerror"u8, "true");
         AssertErrorString(engine, "errorname"u8, "undefined");
@@ -86,7 +86,8 @@ public class PostscriptErrorTests
     [InlineData("1 1 >>", "unmatchedmark", "[1 1]")]
     public void ErrorDefinitions(string code, string errorName, string operandStack)
     {
-        var engine = new PostscriptEngine().WithBaseLanguage();
+        var engine = new PostscriptEngine(PostscriptOperatorCollections.Empty()
+           .WithBaseLanguage());
         engine.Execute(code);
         AssertErrorString(engine, "newerror"u8, "true");
         AssertErrorString(engine, "errorname"u8, errorName);
@@ -96,7 +97,7 @@ public class PostscriptErrorTests
     [Fact]
     public void InvalidExitPreservesExecutionStack()
     {
-        var engine = new PostscriptEngine().WithBaseLanguage();
+        var engine = new PostscriptEngine(PostscriptOperatorCollections.Empty().WithBaseLanguage());
         engine.Execute("/proc { exit 1} def proc 1");
         AssertErrorString(engine, "estack"u8, "[Synchronous CodeSource [exit 1]]");
 
@@ -104,7 +105,7 @@ public class PostscriptErrorTests
 
     [Fact] public void OperandStackOverflow()
     {
-        var engine = new PostscriptEngine().WithBaseLanguage();
+        var engine = new PostscriptEngine(PostscriptOperatorCollections.Empty().WithBaseLanguage());
         engine.Execute("{1} loop");
         AssertErrorString(engine, "errorname"u8, "stackoverflow");
         AssertErrorString(engine, "estack"u8, "[Synchronous CodeSource Loop Loop]");

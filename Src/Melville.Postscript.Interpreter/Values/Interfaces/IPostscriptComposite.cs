@@ -49,6 +49,7 @@ public interface IPostscriptComposite
 /// <summary>
 /// Helpers for IPostscriptComposite
 /// </summary>
+/// 
 public static class PostscriptCompositeOperations 
 {
     /// <summary>
