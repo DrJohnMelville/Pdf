@@ -66,7 +66,7 @@ internal static class SequenceTokenizer
         return secondChar is (byte)'>'
             ? PostscriptValueFactory.CreateString(">>"u8, StringKind.Name)
                 .AsTrueValue(out value)
-            : throw new PostscriptParseException(">> expected.");
+            : throw new PostscriptNamedErrorException(">> expected.", "syntaxerror");
     }
 
 

@@ -91,7 +91,7 @@ private static void VerifyToken(PostscriptValue token1, string name)
 
     [Fact]
     public Task ExceptionForMismatchedCloseWakkaAsync() =>
-        Assert.ThrowsAsync<PostscriptParseException>(()=>
+        Assert.ThrowsAsync<PostscriptNamedErrorException>(()=>
             CreateTokenizer(">").TokensAsync().FirstAsync().AsTask()
         );
 

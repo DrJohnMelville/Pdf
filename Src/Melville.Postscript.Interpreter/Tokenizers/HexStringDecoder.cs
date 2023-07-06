@@ -34,7 +34,7 @@ public readonly struct HexStringDecoder : IStringDecoder<byte>
     private static byte ConvertByte(byte hiByte)
     {
         var hiChar = CharacterClassifier.ValueFromDigit(hiByte);
-        if (hiChar > 15) throw new PostscriptParseException("Invalid char in hex string");
+        if (hiChar > 15) throw new PostscriptNamedErrorException("Invalid char in hex string", "syntaxerror");
         return hiChar;
     }
 
