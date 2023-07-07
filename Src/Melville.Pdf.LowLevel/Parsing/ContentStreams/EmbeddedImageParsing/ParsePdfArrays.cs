@@ -47,8 +47,7 @@ internal static class ParsePdfArrays
         { IsBoolean: true} => value.Get<bool>() ? PdfBoolean.True:PdfBoolean.False,
         var x when x.TryGet(out PdfObject? pdfObject) => pdfObject,
         _ => NameDirectory.Get(
-            ExpandValueSynonym(value.Get<StringSpanSource>().GetSpan(
-                stackalloc byte[PostscriptString.ShortStringLimit])))
+            ExpandValueSynonym(value.Get<StringSpanSource>().GetSpan()))
     };
     private static ReadOnlySpan<byte> ExpandValueSynonym(ReadOnlySpan<byte> name) => name switch
     {

@@ -383,8 +383,7 @@ public readonly partial struct ContentStreamParser
     {
         { IsInteger: true } => new PdfInteger(item.Get<long>()),
         { IsDouble: true } => new PdfDouble(item.Get<double>()),
-        { IsString: true } => new PdfString(item.Get<StringSpanSource>().GetSpan(
-            stackalloc byte[PostscriptString.ShortStringLimit]).ToArray()),
+        { IsString: true } => new PdfString(item.Get<StringSpanSource>().GetSpan().ToArray()),
         {IsLiteralName:true} => NameFrom(item.Get<StringSpanSource>()),
         var x when x.TryGet(out PdfDictionary? innerDictionary) => innerDictionary,
         _=> throw new PdfParseException("Cannot convert PostScriptToPdfObject")
@@ -432,14 +431,12 @@ public readonly partial struct ContentStreamParser
             return null;
 
         engine.OperandStack.Pop();
-        return NameDirectory.Get(source.GetSpan(
-            stackalloc byte[PostscriptString.ShortStringLimit]));
+        return NameDirectory.Get(source.GetSpan());
 
     }
     private static PdfName PopName(PostscriptEngine engine) => 
         NameFrom(engine.PopAs<StringSpanSource>());
 
     private static PdfName NameFrom(in StringSpanSource sss) =>
-        NameDirectory.Get(sss.GetSpan(
-            stackalloc byte[PostscriptString.ShortStringLimit]));
+        NameDirectory.Get(sss.GetSpan());
 }

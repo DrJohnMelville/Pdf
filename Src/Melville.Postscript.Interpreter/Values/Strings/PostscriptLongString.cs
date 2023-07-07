@@ -40,8 +40,7 @@ internal sealed partial class
 
     public PostscriptValue CopyFrom(PostscriptValue source, PostscriptValue target)
     {
-        var sourceSpan = source.Get<StringSpanSource>().GetSpan(
-            stackalloc byte[ShortStringLimit]);
+        var sourceSpan = source.Get<StringSpanSource>().GetSpan();
         sourceSpan.CopyTo(value.Span);
         return (sourceSpan.Length == value.Length)
             ? target
@@ -79,8 +78,7 @@ internal sealed partial class
 
     public void DoAnchorSearch(OperandStack stack, PostscriptValue seek)
     {
-        var seekSpan = seek.Get<StringSpanSource>().GetSpan(
-            stackalloc byte[ShortStringLimit]);
+        var seekSpan = seek.Get<StringSpanSource>().GetSpan();
         if (value.Length >= seekSpan.Length &&
             value.Span.Slice(0, seekSpan.Length).SequenceEqual(seekSpan))
         {
@@ -99,8 +97,7 @@ internal sealed partial class
 
     public void DoSearch(OperandStack stack, PostscriptValue seek)
     {
-        var seekSpan = seek.Get<StringSpanSource>().GetSpan(
-            stackalloc byte[ShortStringLimit]);
+        var seekSpan = seek.Get<StringSpanSource>().GetSpan();
         var index = value.Span.IndexOf(seekSpan);
         if (index >= 0)
         {
@@ -128,7 +125,7 @@ internal sealed partial class
         if (enumerator.MoveNext()) 
         {
             stack.Push(PostscriptValueFactory.CreateLongString(
-                value[wrapper.BytesConsumed..], StringKind));
+                value[((int)wrapper.Position)..], StringKind));
             stack.Push(enumerator.Current);
             stack.Push(true);
         }

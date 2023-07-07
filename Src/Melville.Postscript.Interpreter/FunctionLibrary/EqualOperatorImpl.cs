@@ -26,12 +26,8 @@ internal static class EqualOperatorImpl
         throw new PostscriptException("Values are not comparable");
     }
 
-    private static int Compare(StringSpanSource ss1, StringSpanSource ss2)
-    {
-        return Compare(
-            ss1.GetSpan(stackalloc byte[PostscriptString.ShortStringLimit]),
-            ss2.GetSpan(stackalloc byte[PostscriptString.ShortStringLimit]));
-    }
+    private static int Compare(StringSpanSource ss1, StringSpanSource ss2) =>
+        Compare(ss1.GetSpan(), ss2.GetSpan());
 
     private static int Compare(Span<byte> first, Span<byte> second) => 
         first.SequenceCompareTo(second);

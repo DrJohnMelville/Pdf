@@ -32,7 +32,7 @@ internal readonly partial struct InlineImageParser
         while (engine.OperandStack.TryPop(out var last) && !last.IsMark)
         {
             var name = NameDirectory.Get(
-                ExpandNameSynonym(engine.PopStringAsSpan(nameSpan)));
+                ExpandNameSynonym(engine.PopAs<StringSpanSource>().GetSpan()));
 
             builder.WithItem(name, last.ToPdfObject());
         }

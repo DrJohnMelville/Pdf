@@ -74,7 +74,7 @@ public abstract partial class PostscriptString :
 
     /// <summary>
     /// The longest string which can be packed into an PostscriptValue.  Strings longer than this
-    /// will be stored on the heap and the heap buffer returned from GetBytes.
+    /// will be stored on the heap
     /// </summary>
     public const int ShortStringLimit = 18;
 

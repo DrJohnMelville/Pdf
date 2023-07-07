@@ -99,12 +99,4 @@ public static class PostScriptOperatorHelpers
         var a = engine.OperandStack.Pop();
         return (a, b);
     }
-
-    /// <summary>
-    /// Pop a value and extract its characters into a span
-    /// </summary>
-    /// <param name="engine">The engine to pop from</param>
-    /// <param name="scratch">The span that may or may not be used to hold ths string</param>
-    public static Span<byte> PopStringAsSpan(this PostscriptEngine engine, Span<byte> scratch) => 
-        engine.PopAs<StringSpanSource>().GetSpan(scratch);
 }

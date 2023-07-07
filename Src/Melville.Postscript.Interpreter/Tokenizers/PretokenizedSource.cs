@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
@@ -17,7 +18,7 @@ public partial class PretokenizedSource : ITokenSource
     [FromConstructor] private IEnumerable<PostscriptValue> source;
 
     /// <inheritdoc/>
-    public ICodeSource CodeSource => EmptyCodeSource.Instance;
+    public IByteSourceWithGlobalPosition CodeSource => EmptyCodeSource.Instance;
 
     /// <inheritdoc/>
     public IEnumerable<PostscriptValue> Tokens() => source;

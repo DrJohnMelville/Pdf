@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 
 /// <summary>
-/// An ICodeSource that reads data from an IMemory source.
+/// An IByteSource that reads data from an IMemory source.
 /// </summary>
-public partial class MemoryWrapper : ICodeSource
+public partial class MemoryWrapper : IByteSourceWithGlobalPosition
 {
     /// <summary>
     /// The buffer to read from.
     /// </summary>
     [FromConstructor] private Memory<byte> buffer;
-    /// <summary>
-    /// The total number of bytes consumed.
-    /// </summary>
-    public int BytesConsumed { get; private set; } = 0;
     private ReadOnlySequence<byte>? lastSequence;
 
     /// <inheritdoc />
-    public ValueTask<ReadResult> ReadAsync() => ValueTask.FromResult(Read());
+    public ValueTask<ReadResult> ReadAsync(CancellationToken token) => 
+        ValueTask.FromResult(((IByteSource)this).Read());
 
     /// <inheritdoc />
-    public ReadResult Read()
+    public bool TryRead(out ReadResult result)
     {
         var seq = BuildSequence();
-        return new ReadResult(seq, false, true);
+        result = new ReadResult(seq, false, true);
+        return true;
     }
 
     private ReadOnlySequence<byte> BuildSequence()
@@ -45,7 +45,7 @@ public partial class MemoryWrapper : ICodeSource
         if (lastSequence is not {} seq)
             throw new InvalidOperationException("Advance without read");
         var delta = (int)seq.Slice(seq.Start, consumed).Length;
-        BytesConsumed += delta;
+        Position += delta;
         buffer = buffer[delta..];
         lastSequence = null;
     }
@@ -53,4 +53,16 @@ public partial class MemoryWrapper : ICodeSource
     /// <inheritdoc />
     public void AdvanceTo(SequencePosition consumed, SequencePosition examined) =>
         AdvanceTo(consumed);
+
+    /// <inheritdoc />
+    public long GlobalPosition => Position;
+
+    /// <inheritdoc />
+    public void MarkSequenceAsExamined()
+    {
+        // do nothing
+    }
+
+    /// <inheritdoc />
+    public long Position { get; private set; }
 }

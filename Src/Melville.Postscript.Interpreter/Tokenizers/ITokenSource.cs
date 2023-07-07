@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
@@ -11,9 +12,9 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 public interface ITokenSource
 {
     /// <summary>
-    /// The ICodeSource reading bytes from
+    /// The IByteSource reading bytes from
     /// </summary>
-    ICodeSource CodeSource { get; }
+    IByteSourceWithGlobalPosition CodeSource { get; }
 
     /// <summary>
     /// Get all the tokens as a syncronous enumerable.

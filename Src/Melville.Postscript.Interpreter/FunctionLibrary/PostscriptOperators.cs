@@ -116,7 +116,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("ConvertToName", """
         var op = engine.OperandStack.Pop();
         var text = op.Get<StringSpanSource>();
-        var textSpan = text.GetSpan(stackalloc byte[PostscriptString.ShortStringLimit]);
+        var textSpan = text.GetSpan();
         engine.Push(PostscriptValueFactory.CreateString(textSpan,
             op.ExecutionStrategy.IsExecutable ?
                 StringKind.Name : StringKind.LiteralName));
@@ -299,12 +299,6 @@ public static partial class PostscriptOperators
 #if DEBUG
     private static void XX(PostscriptEngine engine)
     {
-        var op = engine.OperandStack.Pop();
-        var text = op.Get<StringSpanSource>();
-        var textSpan = text.GetSpan(stackalloc byte[PostscriptString.ShortStringLimit]);
-        engine.Push(PostscriptValueFactory.CreateString(textSpan,
-            op.ExecutionStrategy.IsExecutable ?
-                StringKind.Name : StringKind.LiteralName));
     }
 #endif
 

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.Streams;
 
 namespace Melville.Parsing.CountingReaders;
 
@@ -27,11 +28,7 @@ public class ByteSource : IByteSource
         this.inner = inner;
     }
 
-    /// <summary>
-    /// Try to get a buffer if there are unexamined bytes remaining in the buffer.
-    /// </summary>
-    /// <param name="result">The read result that may contain read data</param>
-    /// <returns>True if there are bytes available, false otherwise.</returns>
+    /// <inheritdoc />
     public bool TryRead(out ReadResult result)
     {
         var succeeded = inner.TryRead(out result);
