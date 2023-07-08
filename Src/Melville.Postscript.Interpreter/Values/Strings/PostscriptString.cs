@@ -9,6 +9,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 
+/// <summary>
+/// Represents a string, literal name, or executable name of various leegths
+/// </summary>
 public abstract partial class PostscriptString : 
     IPostscriptValueStrategy<string>, 
     IPostscriptValueStrategy<StringKind>, 
@@ -28,7 +31,8 @@ public abstract partial class PostscriptString :
     /// Specifies whether this is a string, a name, or a literal name
     /// </summary>
     [FromConstructor] public StringKind StringKind { get; }
-    public string GetValue(in Int128 memento) => 
+
+    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => 
         RenderStringValue(memento);
 
     private string RenderStringValue(Int128 memento) =>
@@ -45,7 +49,8 @@ public abstract partial class PostscriptString :
         in Int128 memento) => new(this, memento);
 
     internal abstract Span<byte> GetBytes(scoped in Int128 memento, scoped in Span<byte> scratch);
-   
+
+    /// <inheritdoc />
     public virtual bool Equals(in Int128 memento, object otherStrategy, in Int128 otherMemento)
     {
         if (otherStrategy is not PostscriptString otherASPss) return false;
@@ -64,13 +69,19 @@ public abstract partial class PostscriptString :
     double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) =>
         ParseAsNumber(memento).Get<double>();
     
+    /// <summary>
+    /// Parse a string using the number pars   
+    /// </summary>
+    /// <param name="memento">The memento for the string object</param>
+    /// <returns>A postscript value of the numeric value of the string.</returns>
+    /// <exception cref="PostscriptNamedErrorException"></exception>
     public PostscriptValue ParseAsNumber(in Int128 memento) =>
         NumberTokenizer.TryDetectNumber(
             GetBytes(in memento, stackalloc byte[ShortStringLimit]), 
             out var result)
             ? result
             : throw new PostscriptNamedErrorException(
-                $"Could not convert {GetValue(memento)} into a number", "typecheck");
+                $"Could not convert string into a number", "typecheck");
 
     /// <summary>
     /// The longest string which can be packed into an PostscriptValue.  Strings longer than this

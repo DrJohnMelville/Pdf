@@ -11,9 +11,16 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 /// </summary>
 public static class PostscriptOperatorCollections
 {
+    /// <summary>
+    /// A dictionary containing all the base postscript languae elements.
+    /// </summary>
     public static IPostscriptDictionary BaseLanguage() =>
         Empty().WithBaseLanguage();
 
+    /// <summary>
+    /// An emptypostscript dictionary to   build postscript collections from.
+    /// </summary>
+    /// <returns></returns>
     public static IPostscriptDictionary Empty() =>
         new PostscriptLongDictionary();
 

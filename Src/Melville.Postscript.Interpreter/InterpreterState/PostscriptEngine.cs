@@ -144,7 +144,7 @@ public class PostscriptEngine
     private async ValueTask ExecuteTokenAsync(PostscriptValue token)
     {
         var stateStack =
-            new EngineStackState(OperandStack, DictionaryStack, ExecutionStack.InnerStack);
+            new EngineStackState(OperandStack, DictionaryStack, ExecutionStack);
         try
         {
             await token.ExecutionStrategy.AcceptParsedTokenAsync(this, token);
@@ -196,7 +196,7 @@ public class PostscriptEngine
     private void ExecuteToken(PostscriptValue token)
     {
         var stateStack =
-            new EngineStackState(OperandStack, DictionaryStack, ExecutionStack.InnerStack);
+            new EngineStackState(OperandStack, DictionaryStack, ExecutionStack);
         try
         {
             token.ExecutionStrategy.AcceptParsedToken(this, token);

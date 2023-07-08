@@ -20,6 +20,9 @@ namespace Melville.Postscript.Interpreter.Values
         /// </summary>
         [FromConstructor] private readonly byte[]? rentedArray;
 
+        /// <summary>
+        /// If we got our buffer f rom the arraypool then return it.
+        /// </summary>
         public void Dispose()
         {
             if (rentedArray is null) return;

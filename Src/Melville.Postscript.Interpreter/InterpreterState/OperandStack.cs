@@ -24,6 +24,11 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
 
     private static bool IsMark(PostscriptValue i) => i.IsMark;
 
+    /// <summary>
+    /// Count the nu m be r of items above the first mark object
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="PostscriptNamedErrorException"></exception>
     public int CountToMark()
     {
         var ret = CountAbove(IsMark);

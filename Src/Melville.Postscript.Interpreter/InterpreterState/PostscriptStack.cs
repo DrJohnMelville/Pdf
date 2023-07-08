@@ -20,6 +20,9 @@ public partial class PostscriptStack<T>
 {
     private readonly int minSize;
     private T[] buffer;
+    /// <summary>
+    /// Number of items currently pushed on the stack.
+    /// </summary>
     public int Count { get; private set; } = 0;
     private readonly string errorPrefix;
 
@@ -27,6 +30,7 @@ public partial class PostscriptStack<T>
     /// Create a PostscriptStack
     /// </summary>
     /// <param name="minSize">The minimum size of a stack.</param>
+    /// <param name="errorPrefix">The prefix to the stack over and underflow errors this stack throwss.</param>
     public PostscriptStack(int minSize, string errorPrefix)
     {
         this.minSize = minSize;
@@ -109,6 +113,10 @@ public partial class PostscriptStack<T>
         Count -= countToRemove;
     }
 
+    /// <summary>
+    /// Set the stack to a given height -- possiibly recalling prior values
+    /// </summary>
+    /// <param name="newCount">Number to set the count to</param>
     public void RollbackTo(int newCount)
     {
         switch (Count - newCount)
@@ -124,13 +132,21 @@ public partial class PostscriptStack<T>
                 return;
         }
     }
+    /// <summary>
+    /// Remove the popped values so they cannot be recalled with RollBackTo
+    /// </summary>
+    /// <param name="savedCount"></param>
     public void ClearAfterPop(int savedCount)
     {
         if (savedCount <= Count) return;
         buffer.AsSpan()[Count..savedCount].Clear();
     }
 
-    public T this[int index] => buffer[index];
+    /// <summary>
+    /// Retrieve a value from the stack at a given level.
+    /// </summary>
+    /// <param name="index">The value to retrience</param>
+    public ref T this[int index] => ref buffer[index];
 
     /// <inheritdoc />
     public override string ToString() =>

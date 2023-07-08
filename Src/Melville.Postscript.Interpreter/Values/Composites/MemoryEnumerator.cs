@@ -11,7 +11,6 @@ namespace Melville.Postscript.Interpreter.Values;
 /// we call MoveNext -- this one space worth of prophecy allows us to do tail
 /// call elimination on procedures.
 /// </summary>
-/// <typeparam name="T"></typeparam>
 internal interface IPropheticEnumerator
 {
     /// <summary>

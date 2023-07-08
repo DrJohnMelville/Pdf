@@ -6,8 +6,15 @@ using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 
+/// <summary>
+/// Adds one method that Arrays do not have.
+/// </summary>
 public interface IPostscriptDictionary : IPostscriptComposite
 {
+    /// <summary>
+    /// Remove item with a given key from the dictionaa
+    /// </summary>
+    /// <param name="key"></param>
     public void Undefine(PostscriptValue key);
 }
 

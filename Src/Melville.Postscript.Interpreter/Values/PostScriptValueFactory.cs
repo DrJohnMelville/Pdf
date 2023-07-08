@@ -39,6 +39,11 @@ public static class PostscriptValueFactory
         new(PostscriptBoolean.Instance, PostscriptBuiltInOperations.PushArgument,
             value ? 1 : 0);
 
+    /// <summary>
+    /// Wrap an IExtenalFunction in a postscript value.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
     public static PostscriptValue Create(IExternalFunction action) =>
         new(action, action, 0);
 
@@ -98,10 +103,20 @@ public static class PostscriptValueFactory
         return new PostscriptValue(kind.ShortStringStraegy, kind.DefaultAction, value);
     }
 
+    /// <summary>
+    /// Create a postscript long string which refers to the passed in Memory.
+    /// </summary>
+    /// <param name="data">Mempry&lt;byte&gt; that will be the backing store for the string</param>
+    /// <param name="kind">Type of string to create</param>
+    /// <returns>A postscript value referingt o the long  string.</returns>
     public static PostscriptValue CreateLongString(Memory<byte> data, StringKind kind) =>
         new(
             ReportAllocation(new PostscriptLongString(kind, data)), kind.DefaultAction, 0);
 
+    /// <summary>
+    /// Create a new PdfArray
+    /// </summary>
+    /// <param name="size">The length of the array</param>
     public static PostscriptValue CreateSizedArray(int size)
     {
         var values = new PostscriptValue[size];
@@ -113,6 +128,11 @@ public static class PostscriptValueFactory
         return CreateArray(values);
     }
 
+    /// <summary>
+    /// Create an array that takes and reuses an array of postscriptvalues
+    /// </summary>
+    /// <param name="values">The values to include in the postscript array.</param>
+    /// <returns>A postscriptArray that owns the array passed in</returns>
     public static PostscriptValue CreateArray(params PostscriptValue[] values) =>
         new(WrapInPostScriptArray(values),
             PostscriptBuiltInOperations.PushArgument, 0);
@@ -120,9 +140,17 @@ public static class PostscriptValueFactory
     private static PostscriptArray WrapInPostScriptArray(PostscriptValue[] values) =>
         values.Length < 1 ? PostscriptArray.Empty : ReportAllocation(new PostscriptArray(values));
 
+    /// <summary>
+    /// Create a dictionary 
+    /// </summary>
+    /// <param name="values">even numbered values are keys, odd numbered are values.</param>
     public static PostscriptValue CreateDictionary(params PostscriptValue[] values) =>
         CreateDictionary(values.AsSpan());
 
+    /// <summary>
+    /// Create a dictionary 
+    /// </summary>
+    /// <param name="values">even numbered values are keys, odd numbered are values.</param>
     public static PostscriptValue CreateDictionary(Span<PostscriptValue> values) =>
         new(WrapInDictionary(values), PostscriptBuiltInOperations.PushArgument, 0);
 
@@ -134,6 +162,11 @@ public static class PostscriptValueFactory
             _ => ReportAllocation(ConstructLongDictionary(values))
         };
 
+    /// <summary>
+    /// Force creation of a long dictionary.
+    /// </summary>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
     public static PostscriptValue CreateLongDictionary(params PostscriptValue[] parameters) =>
         new(ConstructLongDictionary(parameters), PostscriptBuiltInOperations.PushArgument, 0);
 
@@ -158,6 +191,11 @@ public static class PostscriptValueFactory
         return item;
     }
 
+    /// <summary>
+    /// Creata an empty dictionary with a given size.
+    /// </summary>
+    /// <param name="size">The size of the new dictionary</param>
+    /// <returns></returns>
     public static PostscriptValue CreateSizedDictionary(int size) => new(
         size <= 20
             ? new PostscriptShortDictionary(size)

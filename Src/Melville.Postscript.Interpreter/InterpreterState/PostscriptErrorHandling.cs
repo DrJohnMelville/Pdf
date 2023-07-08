@@ -6,7 +6,7 @@ using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
-public readonly partial struct PostscriptErrorHandling
+internal readonly partial struct PostscriptErrorHandling
 {
     [FromConstructor] private readonly PostscriptEngine engine;
     [FromConstructor] private readonly Exception exception;
