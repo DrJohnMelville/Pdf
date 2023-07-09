@@ -16,11 +16,11 @@ internal abstract class PostscriptComposite : IPostscriptComposite,
 
     public abstract ForAllCursor CreateForAllCursor();
 
-    PostscriptComposite IPostscriptValueStrategy<PostscriptComposite>.GetValue(in Int128 memento) =>
+    PostscriptComposite IPostscriptValueStrategy<PostscriptComposite>.GetValue(in MementoUnion memento) =>
         this;
 
     private bool inStringGen = false;
-    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento)
+    string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento)
     {
         if (inStringGen) return "<Blocked Recursive String write.>";
         inStringGen = true;

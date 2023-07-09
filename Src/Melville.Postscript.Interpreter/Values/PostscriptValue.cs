@@ -9,7 +9,6 @@ using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.Postscript.Interpreter.Values.Numbers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 namespace Melville.Postscript.Interpreter.Values;
 
 /// <summary>
@@ -32,7 +31,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <summary>
     /// A 128 bit space that allows most values to be stored without a heap allocation.
     /// </summary>
-    [FromConstructor] private readonly Int128 memento;
+    [FromConstructor] private readonly MementoUnion memento;
 
     /// <summary>
     /// True if this is a Postscript null object, false otherwise.

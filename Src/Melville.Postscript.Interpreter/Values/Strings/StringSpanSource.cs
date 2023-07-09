@@ -18,7 +18,7 @@ public unsafe partial struct StringSpanSource
     /// <summary>
     /// the memento which might hold the string data.
     /// </summary>
-    [FromConstructor] private readonly Int128 memento;
+    [FromConstructor] private readonly MementoUnion memento;
 
     /// <summary>
     /// This buffer holds the expanded characters from a shortstring

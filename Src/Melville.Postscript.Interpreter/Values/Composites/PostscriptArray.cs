@@ -66,7 +66,7 @@ internal partial class PostscriptArray :
             values.Span[stack.Count - 1] = stack.Pop();
         }
 
-        return new PostscriptValue(this, PostscriptBuiltInOperations.PushArgument, 0);
+        return new PostscriptValue(this, PostscriptBuiltInOperations.PushArgument, default);
     }
 
     public void PushAllTo(PostscriptStack<PostscriptValue> stack)
@@ -89,10 +89,9 @@ internal partial class PostscriptArray :
         new(
             Length == desiredLength? 
                 this: new PostscriptArray(values[..desiredLength]),
-            executable, 0);
+            executable, default);
 
-    IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(
-        in Int128 memento) => 
+    IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(in MementoUnion memento) => 
         ArrayExecutionSelector.Instance;
 
     public IEnumerator<PostscriptValue> GetEnumerator() => 

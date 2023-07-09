@@ -137,7 +137,7 @@ public partial class DictionaryStack :
         var ret = new PostscriptValue[Count];
         for (int i = 0; i < Count; i++)
         {
-            ret[i] = new PostscriptValue(this[i], PostscriptBuiltInOperations.PushArgument, 0);
+            ret[i] = new PostscriptValue(this[i], PostscriptBuiltInOperations.PushArgument, default);
         }
         return ret;
     }

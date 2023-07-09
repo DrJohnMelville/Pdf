@@ -15,7 +15,7 @@ internal sealed partial class
     [FromConstructor]private readonly Memory<byte> value;
 
     internal override Span<byte> GetBytes(
-        scoped in Int128 memento, scoped in Span<byte> scratch) =>
+        scoped in MementoUnion memento, scoped in Span<byte> scratch) =>
         value.Span;
 
     public override int GetHashCode()
@@ -133,9 +133,9 @@ internal sealed partial class
             stack.Push(false);
     }
 
-    private protected override PostscriptLongString AsLongString(in Int128 memento) => this;
-    private protected override RentedMemorySource InnerRentedMemorySource(Int128 memento) =>
+    private protected override PostscriptLongString AsLongString(in MementoUnion memento) => this;
+    private protected override RentedMemorySource InnerRentedMemorySource(MementoUnion memento) =>
         new(value, null);
-    private protected override Memory<byte> ValueAsMemory(in Int128 memento) => value;
+    private protected override Memory<byte> ValueAsMemory(in MementoUnion memento) => value;
 
 }

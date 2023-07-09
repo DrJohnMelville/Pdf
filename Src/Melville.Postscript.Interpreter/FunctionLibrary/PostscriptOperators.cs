@@ -76,7 +76,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
         var token = engine.OperandStack.Pop();
         var array = token.Get<IPostscriptArray>();
         engine.Push(
-            new PostscriptValue(array.IntervalFrom(index, length), token.ExecutionStrategy, 0));
+            new PostscriptValue(array.IntervalFrom(index, length), token.ExecutionStrategy, default));
     """, "Extract a subarray from an array.")]
 [MacroItem("PutInterval", """
         var CodeSource = engine.PopAs<IPostscriptArray>();

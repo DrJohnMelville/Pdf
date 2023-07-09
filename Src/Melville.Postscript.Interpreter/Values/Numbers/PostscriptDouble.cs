@@ -13,25 +13,25 @@ internal partial class PostscriptDouble :
     IPostscriptValueStrategy<float>
 
 {
-    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => 
+    string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) => 
         DoubleFromMemento(memento).ToString();
 
-    int IPostscriptValueStrategy<int>.GetValue(in Int128 memento) => 
+    int IPostscriptValueStrategy<int>.GetValue(in MementoUnion memento) => 
         (int)OffsetForTruncationRounding(memento);
-    long IPostscriptValueStrategy<long>.GetValue(in Int128 memento) =>
+    long IPostscriptValueStrategy<long>.GetValue(in MementoUnion memento) =>
         (long)OffsetForTruncationRounding(memento);
 
-    private double OffsetForTruncationRounding(Int128 memento)
+    private double OffsetForTruncationRounding(in MementoUnion memento)
     {
         var value = DoubleFromMemento(memento);
         return value + (value < 0?-0.5:0.5);
     }
 
-    double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) => 
+    double IPostscriptValueStrategy<double>.GetValue(in MementoUnion memento) => 
         DoubleFromMemento(memento);
-    float IPostscriptValueStrategy<float>.GetValue(in Int128 memento) => 
+    float IPostscriptValueStrategy<float>.GetValue(in MementoUnion memento) => 
         (float)DoubleFromMemento(memento);
 
-    private double DoubleFromMemento(Int128 memento) => 
-        BitConverter.Int64BitsToDouble((long)memento);
+    private unsafe double DoubleFromMemento(in MementoUnion memento) => 
+        memento.Doubles[0];
 }

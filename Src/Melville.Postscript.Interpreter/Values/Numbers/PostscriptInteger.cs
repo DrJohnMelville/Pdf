@@ -14,12 +14,14 @@ internal partial class PostscriptInteger :
     IPostscriptValueStrategy<double>,
     IPostscriptValueStrategy<float>
 {
-    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => memento.ToString();
+    string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) => LongValue(memento).ToString();
 
-    long IPostscriptValueStrategy<long>.GetValue(in Int128 memento) => (long)memento;
+    long IPostscriptValueStrategy<long>.GetValue(in MementoUnion memento) => (long)LongValue(memento);
 
-    int IPostscriptValueStrategy<int>.GetValue(in Int128 memento) => (int)memento;
+    private static unsafe long LongValue(MementoUnion memento) => memento.Int64s[0];
 
-    double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) => (double)memento;
-    float IPostscriptValueStrategy<float>.GetValue(in Int128 memento) => (float)memento;
+    int IPostscriptValueStrategy<int>.GetValue(in MementoUnion memento) => (int)LongValue(memento);
+
+    double IPostscriptValueStrategy<double>.GetValue(in MementoUnion memento) => (double)LongValue(memento);
+    float IPostscriptValueStrategy<float>.GetValue(in MementoUnion memento) => (float)LongValue(memento);
 }

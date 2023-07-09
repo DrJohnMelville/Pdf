@@ -36,7 +36,7 @@ internal static class ParsePdfArrays
             }
             engine.OperandStack.Pop();
             engine.OperandStack.Push(new PostscriptValue(new PdfArray(items), 
-                PostscriptBuiltInOperations.PushArgument, 0));
+                PostscriptBuiltInOperations.PushArgument, default));
         }
     }
 

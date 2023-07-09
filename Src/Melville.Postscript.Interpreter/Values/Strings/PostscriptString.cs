@@ -32,26 +32,26 @@ public abstract partial class PostscriptString :
     /// </summary>
     [FromConstructor] public StringKind StringKind { get; }
 
-    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) => 
+    string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) => 
         RenderStringValue(memento);
 
-    private string RenderStringValue(Int128 memento) =>
+    private string RenderStringValue(MementoUnion memento) =>
         Encoding.ASCII.GetString(
             GetBytes(in memento, stackalloc byte[ShortStringLimit]));
 
-    StringKind IPostscriptValueStrategy<StringKind>.GetValue(in Int128 memento) => 
+    StringKind IPostscriptValueStrategy<StringKind>.GetValue(in MementoUnion memento) => 
         StringKind;
         
     IExecutionSelector IPostscriptValueStrategy<IExecutionSelector>.GetValue(
-        in Int128 memento) => StringKind.ExecutionSelector;
+        in MementoUnion memento) => StringKind.ExecutionSelector;
 
     StringSpanSource IPostscriptValueStrategy<StringSpanSource>.GetValue(
-        in Int128 memento) => new(this, memento);
+        in MementoUnion memento) => new(this, memento);
 
-    internal abstract Span<byte> GetBytes(scoped in Int128 memento, scoped in Span<byte> scratch);
+    internal abstract Span<byte> GetBytes(scoped in MementoUnion memento, scoped in Span<byte> scratch);
 
     /// <inheritdoc />
-    public virtual bool Equals(in Int128 memento, object otherStrategy, in Int128 otherMemento)
+    public virtual bool Equals(in MementoUnion memento, object otherStrategy, in MementoUnion otherMemento)
     {
         if (otherStrategy is not PostscriptString otherASPss) return false;
         var myBits = GetBytes(in memento, stackalloc byte[ShortStringLimit]);
@@ -60,13 +60,13 @@ public abstract partial class PostscriptString :
         return myBits.SequenceEqual(otherBits);
     }
 
-    Memory<byte> IPostscriptValueStrategy<Memory<byte>>.GetValue(in Int128 memento) =>
+    Memory<byte> IPostscriptValueStrategy<Memory<byte>>.GetValue(in MementoUnion memento) =>
         ValueAsMemory(memento);
 
-    long IPostscriptValueStrategy<long>.GetValue(in Int128 memento) =>
+    long IPostscriptValueStrategy<long>.GetValue(in MementoUnion memento) =>
         ParseAsNumber(memento).Get<long>();
 
-    double IPostscriptValueStrategy<double>.GetValue(in Int128 memento) =>
+    double IPostscriptValueStrategy<double>.GetValue(in MementoUnion memento) =>
         ParseAsNumber(memento).Get<double>();
     
     /// <summary>
@@ -75,7 +75,7 @@ public abstract partial class PostscriptString :
     /// <param name="memento">The memento for the string object</param>
     /// <returns>A postscript value of the numeric value of the string.</returns>
     /// <exception cref="PostscriptNamedErrorException"></exception>
-    public PostscriptValue ParseAsNumber(in Int128 memento) =>
+    public PostscriptValue ParseAsNumber(in MementoUnion memento) =>
         NumberTokenizer.TryDetectNumber(
             GetBytes(in memento, stackalloc byte[ShortStringLimit]), 
             out var result)
@@ -89,23 +89,23 @@ public abstract partial class PostscriptString :
     /// </summary>
     public const int ShortStringLimit = 18;
 
-    PostscriptLongString IPostscriptValueStrategy<PostscriptLongString>.GetValue(in Int128 memento) =>
+    PostscriptLongString IPostscriptValueStrategy<PostscriptLongString>.GetValue(in MementoUnion memento) =>
         AsLongString(memento);
         
 
-    IPostscriptComposite IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in Int128 memento)
+    IPostscriptComposite IPostscriptValueStrategy<IPostscriptComposite>.GetValue(in MementoUnion memento)
         => AsLongString(memento);
 
     IPostscriptArray IPostscriptValueStrategy<IPostscriptArray>.GetValue(
-        in Int128 memento) => AsLongString(memento);
+        in MementoUnion memento) => AsLongString(memento);
 
-    IPostscriptTokenSource IPostscriptValueStrategy<IPostscriptTokenSource>.GetValue(in Int128 memento) =>
+    IPostscriptTokenSource IPostscriptValueStrategy<IPostscriptTokenSource>.GetValue(in MementoUnion memento) =>
         AsLongString(memento);
 
-    RentedMemorySource IPostscriptValueStrategy<RentedMemorySource>.GetValue(in Int128 memento) =>
+    RentedMemorySource IPostscriptValueStrategy<RentedMemorySource>.GetValue(in MementoUnion memento) =>
         InnerRentedMemorySource(memento);
 
-    private protected abstract PostscriptLongString AsLongString(in Int128 memento);
-    private protected abstract RentedMemorySource InnerRentedMemorySource(Int128 memento);
-    private protected abstract Memory<byte> ValueAsMemory(in Int128 memento);
+    private protected abstract PostscriptLongString AsLongString(in MementoUnion memento);
+    private protected abstract RentedMemorySource InnerRentedMemorySource(MementoUnion memento);
+    private protected abstract Memory<byte> ValueAsMemory(in MementoUnion memento);
 }

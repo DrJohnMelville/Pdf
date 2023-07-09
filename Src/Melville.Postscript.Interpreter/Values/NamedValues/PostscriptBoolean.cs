@@ -7,11 +7,11 @@ namespace Melville.Postscript.Interpreter.Values
     internal partial class PostscriptBoolean : 
         IPostscriptValueStrategy<string>, IPostscriptValueStrategy<bool>
     {
-        string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) =>
+        string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) =>
             Value(memento) ? "true" : "false";
 
-        bool IPostscriptValueStrategy<bool>.GetValue(in Int128 memento) => Value(memento);
+        bool IPostscriptValueStrategy<bool>.GetValue(in MementoUnion memento) => Value(memento);
 
-        private bool Value(in Int128 memento) => memento != 0;
+        private unsafe bool Value(in MementoUnion memento) => memento.Bools[0];
     }
 }

@@ -14,5 +14,5 @@ public interface IPostscriptValueStrategy<out T>
     /// Get the value of the PostscriptValue as the given type
     /// </summary>
     /// <param name="memento">the memento from the PostscriptValue</param>
-    T GetValue(in Int128 memento);
+    T GetValue(in MementoUnion memento);
 }

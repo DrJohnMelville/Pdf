@@ -13,7 +13,7 @@ public abstract class BuiltInFunction : IExternalFunction
     /// <inheritdoc />
     public abstract void Execute(PostscriptEngine engine, in PostscriptValue value);
 
-    string IPostscriptValueStrategy<string>.GetValue(in Int128 memento) =>
+    string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) =>
         "<Built in Function>";
 
     /// <inheritdoc />

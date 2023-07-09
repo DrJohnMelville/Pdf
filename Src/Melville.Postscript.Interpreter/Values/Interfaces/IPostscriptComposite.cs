@@ -60,7 +60,7 @@ public static class PostscriptCompositeOperations
     public static PostscriptValue AsPostscriptValue(this IPostscriptComposite dict)=>
         new PostscriptValue(
             (IPostscriptValueStrategy<string>)dict,
-            PostscriptBuiltInOperations.PushArgument, 0);
+            PostscriptBuiltInOperations.PushArgument, default);
 
     /// <summary>
     /// Try to get a a value  with a give key and cast to an expected type

@@ -37,7 +37,7 @@ public readonly partial struct ContentStreamParser
     {
         var engine = new PostscriptEngine(contentStreamCommands);
         engine.Push(new PostscriptValue(
-            target, PostscriptBuiltInOperations.PushArgument, 0));
+            target, PostscriptBuiltInOperations.PushArgument, default));
         await engine.ExecuteAsync(new Tokenizer(source)).CA();
         if (engine.ErrorData.TryGetAs("newerror", out bool value) && value)
             throw new PdfParseException("Error parsing content stream;");
@@ -376,7 +376,7 @@ public readonly partial struct ContentStreamParser
             var key = PopName(engine);
             builder.WithItem(key, PostscriptObjectToPdfObject(item));
         }
-        engine.OperandStack.Push(new PostscriptValue(builder.AsDictionary(), PostscriptBuiltInOperations.PushArgument,0));
+        engine.OperandStack.Push(new PostscriptValue(builder.AsDictionary(), PostscriptBuiltInOperations.PushArgument,default));
     }
 
     private static PdfObject PostscriptObjectToPdfObject(PostscriptValue item) => item switch

@@ -21,7 +21,7 @@ public static class PostscriptValueFactory
     /// </summary>
     /// <param name="value">The long to encode</param>
     public static PostscriptValue Create(long value) =>
-        new(PostscriptInteger.Instance, PostscriptBuiltInOperations.PushArgument, value);
+        new(PostscriptInteger.Instance, PostscriptBuiltInOperations.PushArgument, new MementoUnion(value, 0));
 
     /// <summary>
     /// Create a PostscriptValue representing a double.
@@ -29,7 +29,7 @@ public static class PostscriptValueFactory
     /// <param name="value">The double to encode</param>
     public static PostscriptValue Create(double value) =>
         new(PostscriptDouble.Instance, PostscriptBuiltInOperations.PushArgument,
-            BitConverter.DoubleToInt64Bits(value));
+            new MementoUnion(value, 0.0));
 
     /// <summary>
     /// Create a PostscriptValue representing a boolean.
@@ -37,7 +37,7 @@ public static class PostscriptValueFactory
     /// <param name="value">The double to encode</param>
     public static PostscriptValue Create(bool value) =>
         new(PostscriptBoolean.Instance, PostscriptBuiltInOperations.PushArgument,
-            value ? 1 : 0);
+            new MementoUnion(value));
 
     /// <summary>
     /// Wrap an IExtenalFunction in a postscript value.
@@ -45,20 +45,20 @@ public static class PostscriptValueFactory
     /// <param name="action"></param>
     /// <returns></returns>
     public static PostscriptValue Create(IExternalFunction action) =>
-        new(action, action, 0);
+        new(action, action, default);
 
 
     /// <summary>
     /// Create a PostScriptvalue with Null values.
     /// </summary>
     public static PostscriptValue CreateNull() => new(
-        PostscriptNull.Instance, PostscriptBuiltInOperations.PushArgument, 0);
+        PostscriptNull.Instance, PostscriptBuiltInOperations.PushArgument, default);
 
     /// <summary>
     /// Create a PostscriptValue for the Mark object.
     /// </summary>
     public static PostscriptValue CreateMark() =>
-        new(PostscriptMark.Instance, PostscriptBuiltInOperations.PushArgument, 0);
+        new(PostscriptMark.Instance, PostscriptBuiltInOperations.PushArgument, default);
 
     /// <summary>
     /// Create a string, name, or literal name
@@ -92,7 +92,7 @@ public static class PostscriptValueFactory
         if (data.Length > PostscriptString.ShortStringLimit)
             return CreateLongString(data.ToArray(), kind);
         ;
-        Int128 value = 0;
+        UInt128 value = 0;
         for (int i = data.Length - 1; i >= 0; i--)
         {
             var character = data[i];
@@ -100,7 +100,7 @@ public static class PostscriptValueFactory
             SevenBitStringEncoding.AddOneCharacter(ref value, character);
         }
 
-        return new PostscriptValue(kind.ShortStringStraegy, kind.DefaultAction, value);
+        return new PostscriptValue(kind.ShortStringStraegy, kind.DefaultAction, new MementoUnion(value));
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static class PostscriptValueFactory
     /// <returns>A postscript value referingt o the long  string.</returns>
     public static PostscriptValue CreateLongString(Memory<byte> data, StringKind kind) =>
         new(
-            ReportAllocation(new PostscriptLongString(kind, data)), kind.DefaultAction, 0);
+            ReportAllocation(new PostscriptLongString(kind, data)), kind.DefaultAction, default);
 
     /// <summary>
     /// Create a new PdfArray
@@ -135,7 +135,7 @@ public static class PostscriptValueFactory
     /// <returns>A postscriptArray that owns the array passed in</returns>
     public static PostscriptValue CreateArray(params PostscriptValue[] values) =>
         new(WrapInPostScriptArray(values),
-            PostscriptBuiltInOperations.PushArgument, 0);
+            PostscriptBuiltInOperations.PushArgument, default);
 
     private static PostscriptArray WrapInPostScriptArray(PostscriptValue[] values) =>
         values.Length < 1 ? PostscriptArray.Empty : ReportAllocation(new PostscriptArray(values));
@@ -152,7 +152,7 @@ public static class PostscriptValueFactory
     /// </summary>
     /// <param name="values">even numbered values are keys, odd numbered are values.</param>
     public static PostscriptValue CreateDictionary(Span<PostscriptValue> values) =>
-        new(WrapInDictionary(values), PostscriptBuiltInOperations.PushArgument, 0);
+        new(WrapInDictionary(values), PostscriptBuiltInOperations.PushArgument, default);
 
     private static IPostscriptValueStrategy<string> WrapInDictionary(
         Span<PostscriptValue> values) =>
@@ -168,7 +168,7 @@ public static class PostscriptValueFactory
     /// <param name="parameters"></param>
     /// <returns></returns>
     public static PostscriptValue CreateLongDictionary(params PostscriptValue[] parameters) =>
-        new(ConstructLongDictionary(parameters), PostscriptBuiltInOperations.PushArgument, 0);
+        new(ConstructLongDictionary(parameters), PostscriptBuiltInOperations.PushArgument, default);
 
     private static PostscriptLongDictionary ConstructLongDictionary(Span<PostscriptValue> parameters) =>
         new PostscriptLongDictionary(ArrayToDictionary(parameters));
@@ -200,5 +200,5 @@ public static class PostscriptValueFactory
         size <= 20
             ? new PostscriptShortDictionary(size)
             : new PostscriptLongDictionary(),
-        PostscriptBuiltInOperations.PushArgument, 0);
+        PostscriptBuiltInOperations.PushArgument, default);
 }

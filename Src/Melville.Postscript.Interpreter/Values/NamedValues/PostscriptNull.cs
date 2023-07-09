@@ -9,7 +9,7 @@ namespace Melville.Postscript.Interpreter.Values;
 internal partial class PostscriptNull : 
     IPostscriptValueStrategy<string>, IExecutionSelector, IExecutePostscript
 {
-    public string GetValue(in Int128 memento) => "<Null>";
+    public string GetValue(in MementoUnion memento) => "<Null>";
 
     public IExecutePostscript Literal => PostscriptBuiltInOperations.PushArgument;
     public IExecutePostscript Executable => this;

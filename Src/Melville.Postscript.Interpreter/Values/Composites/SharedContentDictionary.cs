@@ -56,7 +56,7 @@ internal sealed partial class SharedContentDictionary:
     public void Undefine(PostscriptValue key) =>
         localChanges.Undefine(key);
 
-    public string GetValue(in Int128 memento)
+    public string GetValue(in MementoUnion memento)
     {
         var ret = new StringBuilder();
         ret.AppendLine("<<");
