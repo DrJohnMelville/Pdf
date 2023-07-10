@@ -45,7 +45,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     [MacroItem("Ts","TextRise")]
     [MacroCode("""
              /// <inheritdoc />
-             public void Set~1~(double value) => destPipe.WriteOperator(ContentStreamOperatorNames.~0~, value);
+             public void Set~1~(double value) => destPipe.WriteOperator("~0~"u8, value);
              """)]
     public void ModifyTransformMatrix(in Matrix3x2 newTransform)
     {
@@ -55,32 +55,32 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         destPipe.WriteDoubleAndSpace(newTransform.M22);
         destPipe.WriteDoubleAndSpace(newTransform.M31);
         destPipe.WriteDoubleAndSpace(newTransform.M32);
-        destPipe.WriteOperator(ContentStreamOperatorNames.cm);
+        destPipe.WriteOperator("cm"u8);
     }
 
     /// <inheritdoc />
     public void SetLineCap(LineCap cap) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.J, (double)cap);
+        destPipe.WriteOperator("J"u8, (double)cap);
 
     /// <inheritdoc />
     public void SetLineJoinStyle(LineJoinStyle lineJoinStyle) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.j, (double)lineJoinStyle);
+        destPipe.WriteOperator("j"u8, (double)lineJoinStyle);
 
     /// <inheritdoc />
     public void SetLineDashPattern(double dashPhase, in ReadOnlySpan<double> dashArray)
     {
         destPipe.WriteDoubleArray(dashArray);
-        destPipe.WriteOperator(ContentStreamOperatorNames.d, dashPhase);
+        destPipe.WriteOperator("d"u8, dashPhase);
     }
 
     /// <inheritdoc />
     public void SetRenderIntent(RenderIntentName intent) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.ri, intent);
+        destPipe.WriteOperator("ri"u8, intent);
 
     /// <inheritdoc />
     public ValueTask LoadGraphicStateDictionaryAsync(PdfName dictionaryName)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.gs, dictionaryName);
+        destPipe.WriteOperator("gs"u8, dictionaryName);
         return ValueTask.CompletedTask;
     }
 
@@ -88,13 +88,13 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     public ValueTask SetFontAsync(PdfName font, double size)
     {
         destPipe.WriteName(font);
-        destPipe.WriteOperator(ContentStreamOperatorNames.Tf, size);
+        destPipe.WriteOperator("Tf"u8, size);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public void SetTextRender(TextRendering rendering) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.Tr, (double)rendering);
+        destPipe.WriteOperator("Tr"u8, (double)rendering);
     #endregion
 
     #region Drawing Operations
@@ -106,54 +106,54 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     [MacroItem("S", "StrokePath")]
     [MacroItem("s", "CloseAndStrokePath")]
     [MacroItem("f", "FillPath")]
-    [MacroItem("fStar", "FillPathEvenOdd")]
+    [MacroItem("f*", "FillPathEvenOdd")]
     [MacroItem("B", "FillAndStrokePath")]
-    [MacroItem("BStar", "FillAndStrokePathEvenOdd")]
+    [MacroItem("B*", "FillAndStrokePathEvenOdd")]
     [MacroItem("b", "CloseFillAndStrokePath")]
-    [MacroItem("bStar", "CloseFillAndStrokePathEvenOdd")]
+    [MacroItem("b*", "CloseFillAndStrokePathEvenOdd")]
     [MacroItem("n","EndPathWithNoOp")]
     [MacroItem("W","ClipToPath")]
-    [MacroItem("WStar","ClipToPathEvenOdd")]
+    [MacroItem("W*","ClipToPathEvenOdd")]
     [MacroItem("BT", "BeginTextObject")]
     [MacroItem("ET", "EndTextObject")]
     [MacroCode("""
             /// <inheritdoc />
-            public void ~1~() => destPipe.WriteOperator(ContentStreamOperatorNames.~0~);
+            public void ~1~() => destPipe.WriteOperator("~0~"u8);
             """)]
     public void MoveTo(double x, double y) => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.m, x, y);
+        destPipe.WriteOperator("m"u8, x, y);
 
     /// <inheritdoc />
-    public void LineTo(double x, double y) => destPipe.WriteOperator(ContentStreamOperatorNames.l, x,y);
+    public void LineTo(double x, double y) => destPipe.WriteOperator("l"u8, x,y);
 
     /// <inheritdoc />
     public void CurveTo(
         double control1X, double control1Y,
         double control2X, double control2Y,
-        double finalX, double finalY) => destPipe.WriteOperator(ContentStreamOperatorNames.c, 
+        double finalX, double finalY) => destPipe.WriteOperator("c"u8, 
         control1X, control1Y, control2X, control2Y, finalX, finalY);
 
     /// <inheritdoc />
     public void CurveToWithoutInitialControl(
         double control2X, double control2Y,
-        double finalX, double finalY)=> destPipe.WriteOperator(ContentStreamOperatorNames.v, 
+        double finalX, double finalY)=> destPipe.WriteOperator("v"u8, 
         control2X, control2Y, finalX, finalY);
 
     /// <inheritdoc />
     public void CurveToWithoutFinalControl(
         double control1X, double control1Y,
-        double finalX, double finalY)=> destPipe.WriteOperator(ContentStreamOperatorNames.y, 
+        double finalX, double finalY)=> destPipe.WriteOperator("y"u8, 
         control1X, control1Y, finalX, finalY);
 
     /// <inheritdoc />
     public void Rectangle(double x, double y, double width, double height) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.re, x, y, width, height);
+        destPipe.WriteOperator("re"u8, x, y, width, height);
 
     /// <inheritdoc />
     public ValueTask PaintShaderAsync(PdfName name)
     {
         destPipe.WriteName(name);
-        destPipe.WriteOperator(ContentStreamOperatorNames.sh);
+        destPipe.WriteOperator("sh"u8);
         return ValueTask.CompletedTask;
     }
 
@@ -164,89 +164,89 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     /// <inheritdoc />
     public ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.CS, colorSpace);
+        destPipe.WriteOperator("CS"u8, colorSpace);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.cs, colorSpace);
+        destPipe.WriteOperator("cs"u8, colorSpace);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public void SetStrokeColor(in ReadOnlySpan<double> components) => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.SC, components);
+        destPipe.WriteOperator("SC"u8, components);
 
     /// <inheritdoc />
     public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);
-        destPipe.WriteOperator(ContentStreamOperatorNames.SCN);
+        destPipe.WriteOperator("SCN"u8);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public void SetNonstrokingColor(in ReadOnlySpan<double> components) => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.sc, components);
+        destPipe.WriteOperator("sc"u8, components);
 
     /// <inheritdoc />
     public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
         if (patternName is not null) destPipe.WriteName(patternName);
-        destPipe.WriteOperator(ContentStreamOperatorNames.scn);
+        destPipe.WriteOperator("scn"u8);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask SetStrokeGrayAsync(double grayLevel)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.G, grayLevel);
+        destPipe.WriteOperator("G"u8, grayLevel);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask SetStrokeRGBAsync(double red, double green, double blue)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.RG, red, green, blue);
+        destPipe.WriteOperator("RG"u8, red, green, blue);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask SetStrokeCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.K, cyan, magenta, yellow, black);
+        destPipe.WriteOperator("K"u8, cyan, magenta, yellow, black);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask SetNonstrokingGrayAsync(double grayLevel)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.g, grayLevel);
+        destPipe.WriteOperator("g"u8, grayLevel);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask SetNonstrokingRgbAsync(double red, double green, double blue)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.rg, red, green, blue);
+        destPipe.WriteOperator("rg"u8, red, green, blue);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask SetNonstrokingCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.k, cyan, magenta, yellow, black);
+        destPipe.WriteOperator("k"u8, cyan, magenta, yellow, black);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
     public ValueTask DoAsync(PdfName name)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.Do, name);
+        destPipe.WriteOperator("Do"u8, name);
         return ValueTask.CompletedTask;
     }
 
@@ -277,32 +277,32 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
 
     /// <inheritdoc />
     void ITextObjectOperations.MovePositionBy(double x, double y) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.Td, x, y);
+        destPipe.WriteOperator("Td"u8, x, y);
 
     /// <inheritdoc />
     void ITextObjectOperations.MovePositionByWithLeading(double x, double y) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.TD, x, y);
+        destPipe.WriteOperator("TD"u8, x, y);
 
     /// <inheritdoc />
     void ITextObjectOperations.SetTextMatrix(
         double a, double b, double c, double d, double e, double f) =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.Tm, a, b, c, d, e, f);
+        destPipe.WriteOperator("Tm"u8, a, b, c, d, e, f);
 
     /// <inheritdoc />
     void ITextObjectOperations.MoveToNextTextLine() =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.TStar);
+        destPipe.WriteOperator("T*"u8);
 
     /// <inheritdoc />
     ValueTask ITextObjectOperations.ShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.Tj, decodedString.Span);
+        destPipe.WriteOperator("Tj"u8, decodedString.Span);
         return new();
     }
 
     /// <inheritdoc />
     ValueTask ITextObjectOperations.MoveToNextLineAndShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.SingleQuote, decodedString.Span);
+        destPipe.WriteOperator("\'"u8, decodedString.Span);
         return new();
     }
 
@@ -312,7 +312,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     {
         destPipe.WriteDoubleAndSpace(wordSpace);
         destPipe.WriteDouble(charSpace);
-        destPipe.WriteOperator(ContentStreamOperatorNames.DoubleQuote, decodedString.Span);
+        destPipe.WriteOperator("\""u8, decodedString.Span);
         return new();
     }
 
@@ -338,7 +338,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     ValueTask ISpacedStringBuilder.DoneWritingAsync()
     {
         destPipe.WriteChar(']');
-        destPipe.WriteOperator(ContentStreamOperatorNames.TJ);
+        destPipe.WriteOperator("TJ"u8);
         return ValueTask.CompletedTask;
     }
 
@@ -347,12 +347,12 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     #region Marked Content Operations
 
     /// <inheritdoc />
-    public void MarkedContentPoint(PdfName tag) => destPipe.WriteOperator(ContentStreamOperatorNames.MP, tag);
+    public void MarkedContentPoint(PdfName tag) => destPipe.WriteOperator("MP"u8, tag);
 
     /// <inheritdoc />
     public ValueTask MarkedContentPointAsync(PdfName tag, PdfName properties)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.DP, tag, properties);
+        destPipe.WriteOperator("DP"u8, tag, properties);
         return ValueTask.CompletedTask;
     }
 
@@ -361,7 +361,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     {
         destPipe.WriteName(tag);
         await destPipe.WriteDictionaryAsync(dict).CA();
-        destPipe.WriteOperator(ContentStreamOperatorNames.DP);
+        destPipe.WriteOperator("DP"u8);
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     public DeferedClosingTask BeginMarkedRange(PdfName tag)
     {
         ((IMarkedContentCSOperations)this).BeginMarkedRange(tag);
-        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
+        return new DeferedClosingTask(destPipe, "EMC"u8);
     }
 
     /// <summary>
@@ -384,7 +384,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
     {
         await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictName).CA();
-        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
+        return new DeferedClosingTask(destPipe, "EMC"u8);
     }
 
     /// <summary>
@@ -396,17 +396,17 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
     {
         await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictionary).CA();
-        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EMC);
+        return new DeferedClosingTask(destPipe, "EMC"u8);
     }
 
     /// <inheritdoc />
     void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag) => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.BMC, tag);
+        destPipe.WriteOperator("BMC"u8, tag);
 
     /// <inheritdoc />
     ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
     {
-        destPipe.WriteOperator(ContentStreamOperatorNames.BDC, tag, dictName);
+        destPipe.WriteOperator("BDC"u8, tag, dictName);
         return ValueTask.CompletedTask;
     }
 
@@ -415,12 +415,12 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     {
         destPipe.WriteName(tag);
         await destPipe.WriteDictionaryAsync(dictionary).CA();
-        destPipe.WriteOperator(ContentStreamOperatorNames.BDC);
+        destPipe.WriteOperator("BDC"u8);
     }
 
     /// <inheritdoc />
     void IMarkedContentCSOperations.EndMarkedRange() => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.EMC);
+        destPipe.WriteOperator("EMC"u8);
 
     #endregion
 
@@ -433,16 +433,16 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     public DeferedClosingTask BeginCompatibilitySection()
     {
         ((ICompatibilityOperations)this).BeginCompatibilitySection();
-        return new DeferedClosingTask(destPipe, ContentStreamOperatorNames.EX);
+        return new DeferedClosingTask(destPipe, "EX"u8);
     }
 
     /// <inheritdoc />
     void ICompatibilityOperations.BeginCompatibilitySection() =>
-        destPipe.WriteOperator(ContentStreamOperatorNames.BX);
+        destPipe.WriteOperator("BX"u8);
 
     /// <inheritdoc />
     void ICompatibilityOperations.EndCompatibilitySection() => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.EX);
+        destPipe.WriteOperator("EX"u8);
 
     #endregion
 
@@ -450,11 +450,11 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
 
     /// <inheritdoc />
     public void SetColoredGlyphMetrics(double wX, double wY) => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.d0, wX, wY);
+        destPipe.WriteOperator("d0"u8, wX, wY);
 
     /// <inheritdoc />
     public void SetUncoloredGlyphMetrics(double wX, double wY, double llX, double llY, double urX, double urY) => 
-        destPipe.WriteOperator(ContentStreamOperatorNames.d1, wX, wY, llX, llY, urX, urY);
+        destPipe.WriteOperator("d1"u8, wX, wY, llX, llY, urX, urY);
 
     #endregion
     /// <summary>

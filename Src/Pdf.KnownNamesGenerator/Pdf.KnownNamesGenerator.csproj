@@ -8,8 +8,4 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.5.0" PrivateAssets="all" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="PostScriptOps\" />
-    </ItemGroup>
 </Project>

@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Pdf.KnownNamesGenerator.CharacterEncodings;
-using Pdf.KnownNamesGenerator.ContentStreamOperations;
 using Pdf.KnownNamesGenerator.KnownNames;
 
 namespace Pdf.KnownNamesGenerator
@@ -12,7 +11,6 @@ namespace Pdf.KnownNamesGenerator
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            context.RegisterPostInitializationOutput(Generate);
             context.RegisterSourceOutput(
                 context.AdditionalTextsProvider.Where(i => i.Path.EndsWith("KnownNames.dsl")),
                 GenerateNames);
@@ -43,10 +41,5 @@ namespace Pdf.KnownNamesGenerator
                new GenerateKnownNames(text.GetText()?.ToString()??"").ClassText());
         }
         
-        private void Generate(IncrementalGeneratorPostInitializationContext context)
-        {
-            context.AddSource("ContentStreamOperations.Generated.cs",
-                GenerateContentStreamOperations.ClassText());
-        }
     }
 }
