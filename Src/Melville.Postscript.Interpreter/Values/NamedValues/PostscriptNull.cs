@@ -5,21 +5,29 @@ using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.Values;
 
+// A PostscriptValueStrategy representing a null object
 [StaticSingleton]
-internal partial class PostscriptNull : 
+public partial class PostscriptNull : 
     IPostscriptValueStrategy<string>, IExecutionSelector, IExecutePostscript
 {
-    public string GetValue(in MementoUnion memento) => "<Null>";
+    /// <inheritdoc />
+    public string GetValue(in MementoUnion memento) => "null";
 
+    /// <inheritdoc />
     public IExecutePostscript Literal => PostscriptBuiltInOperations.PushArgument;
+
+    /// <inheritdoc />
     public IExecutePostscript Executable => this;
 
+    /// <inheritdoc />
     public void Execute(PostscriptEngine engine, in PostscriptValue value)
     {
         // do nothing
     }
 
+    /// <inheritdoc />
     public string WrapTextDisplay(string text) => text;
 
+    /// <inheritdoc />
     public bool IsExecutable => true;
 }

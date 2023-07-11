@@ -11,7 +11,7 @@ public class OperatorsTest
     [Theory]
     [InlineData("true", "01: true")]
     [InlineData("false", "01: false")]
-    [InlineData("null", "01: <Null>")]
+    [InlineData("null", "01: null")]
     public void TestSystemTokens(string code, string result) => 
         RunTestOn(code, result, new PostscriptEngine(
             PostscriptOperatorCollections.Empty().WithSystemTokens()));
@@ -148,7 +148,7 @@ public class OperatorsTest
     [InlineData("1 2 3 2 packedarray", "01: [2 3]\r\n02: 1")]
     [InlineData("true setpacking currentpacking", "01: true")]
     [InlineData("currentpacking", "01: false")]
-    [InlineData("3 array", "01: [<Null> <Null> <Null>]")]
+    [InlineData("3 array", "01: [null null null]")]
     [InlineData("23[1    2 \r\n 3]", "01: [1 2 3]\r\n02: 23")]
     [InlineData("[1 2 3] length", "01: 3")]
     [InlineData("[1 2 3] 1 get ", "01: 2")]
@@ -166,7 +166,7 @@ public class OperatorsTest
         """)]
     [InlineData("[1 2 3] 5 array dup 3 1 roll copy", """
         01: [1 2 3]
-        02: [1 2 3 <Null> <Null>]
+        02: [1 2 3 null null]
         """)]
     public void WithArrayOperators(string code, string result) =>
         RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()

@@ -14,7 +14,7 @@ public class PostscriptValueTest
     {
         var value = PostscriptValueFactory.CreateNull();
         Assert.True(value.IsNull);
-        Assert.Equal("<Null>", value.ToString());
+        Assert.Equal("null", value.ToString());
         Assert.False(value.TryGet<long>(out var _));
         Assert.Throws<PostscriptNamedErrorException>(()=>value.Get<long>());
     }

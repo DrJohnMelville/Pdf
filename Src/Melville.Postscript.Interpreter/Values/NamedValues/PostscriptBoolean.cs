@@ -3,8 +3,11 @@ using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values
 {
+    /// <summary>
+    /// This is a Value strategy for boolean values
+    /// </summary>
     [StaticSingleton]
-    internal partial class PostscriptBoolean : 
+    public partial class PostscriptBoolean : 
         IPostscriptValueStrategy<string>, IPostscriptValueStrategy<bool>
     {
         string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) =>
