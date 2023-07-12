@@ -21,7 +21,8 @@ public static class PostscriptValueFactory
     /// </summary>
     /// <param name="value">The long to encode</param>
     public static PostscriptValue Create(long value) =>
-        new(PostscriptInteger.Instance, PostscriptBuiltInOperations.PushArgument, new MementoUnion(value, 0));
+        new(PostscriptInteger.Instance, PostscriptBuiltInOperations.PushArgument, 
+            MementoUnion.CreateFrom(value));
 
     /// <summary>
     /// Create a PostscriptValue representing a double.
@@ -29,7 +30,7 @@ public static class PostscriptValueFactory
     /// <param name="value">The double to encode</param>
     public static PostscriptValue Create(double value) =>
         new(PostscriptDouble.Instance, PostscriptBuiltInOperations.PushArgument,
-            new MementoUnion(value, 0.0));
+            MementoUnion.CreateFrom(value));
 
     /// <summary>
     /// Create a PostscriptValue representing a boolean.
@@ -37,7 +38,7 @@ public static class PostscriptValueFactory
     /// <param name="value">The double to encode</param>
     public static PostscriptValue Create(bool value) =>
         new(PostscriptBoolean.Instance, PostscriptBuiltInOperations.PushArgument,
-            new MementoUnion(value));
+            MementoUnion.CreateFrom(value));
 
     /// <summary>
     /// Wrap an IExtenalFunction in a postscript value.
@@ -89,18 +90,9 @@ public static class PostscriptValueFactory
     /// <param name="kind">kind of name to create</param>
     public static PostscriptValue CreateString(in ReadOnlySpan<byte> data, StringKind kind)
     {
-        if (data.Length > PostscriptString.ShortStringLimit)
-            return CreateLongString(data.ToArray(), kind);
-        ;
-        UInt128 value = 0;
-        for (int i = data.Length - 1; i >= 0; i--)
-        {
-            var character = data[i];
-            if (character is 0 or > 127) return CreateLongString(data.ToArray(), kind);
-            SevenBitStringEncoding.AddOneCharacter(ref value, character);
-        }
+        var (strategy, memento) = data.PostscriptEncode(kind);
 
-        return new PostscriptValue(kind.ShortStringStraegy, kind.DefaultAction, new MementoUnion(value));
+        return new PostscriptValue(strategy, kind.DefaultAction, memento);
     }
 
     /// <summary>

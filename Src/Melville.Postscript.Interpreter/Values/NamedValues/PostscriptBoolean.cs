@@ -15,6 +15,6 @@ namespace Melville.Postscript.Interpreter.Values
 
         bool IPostscriptValueStrategy<bool>.GetValue(in MementoUnion memento) => Value(memento);
 
-        private unsafe bool Value(in MementoUnion memento) => memento.Bools[0];
+        private bool Value(in MementoUnion memento) => memento.Bools[0];
     }
 }

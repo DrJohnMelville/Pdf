@@ -6,8 +6,11 @@ using Melville.Postscript.Interpreter.Values.Execution;
 namespace Melville.Postscript.Interpreter.Values.Numbers;
 
 
+/// <summary>
+/// PostscriptValueStrategy object representing long values
+/// </summary>
 [StaticSingleton()]
-internal partial class PostscriptInteger :
+public partial class PostscriptInteger :
     IPostscriptValueStrategy<string>,
     IPostscriptValueStrategy<long>,
     IPostscriptValueStrategy<int>,
@@ -18,7 +21,7 @@ internal partial class PostscriptInteger :
 
     long IPostscriptValueStrategy<long>.GetValue(in MementoUnion memento) => (long)LongValue(memento);
 
-    private static unsafe long LongValue(MementoUnion memento) => memento.Int64s[0];
+    private static long LongValue(MementoUnion memento) => memento.Int64s[0];
 
     int IPostscriptValueStrategy<int>.GetValue(in MementoUnion memento) => (int)LongValue(memento);
 

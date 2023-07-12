@@ -1076,7 +1076,7 @@ namespace Melville.SharpFont
 		/// </para><para>
 		/// Note that this also transforms the ‘face.glyph.advance’ field, but not the values in ‘face.glyph.metrics’.
 		/// </para></remarks>
-		public unsafe void SetTransform()
+		public void SetTransform()
 		{
 			if (disposed)
 				throw new ObjectDisposedException("face", "Cannot access a disposed object.");

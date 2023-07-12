@@ -4,8 +4,11 @@ using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.Values;
 
+/// <summary>
+/// PostscriptValueStrategy representing a double value
+/// </summary>
 [StaticSingleton]
-internal partial class PostscriptDouble :
+public partial class PostscriptDouble :
     IPostscriptValueStrategy<string>,
     IPostscriptValueStrategy<int>,
     IPostscriptValueStrategy<long>,
@@ -32,6 +35,6 @@ internal partial class PostscriptDouble :
     float IPostscriptValueStrategy<float>.GetValue(in MementoUnion memento) => 
         (float)DoubleFromMemento(memento);
 
-    private unsafe double DoubleFromMemento(in MementoUnion memento) => 
+    private double DoubleFromMemento(in MementoUnion memento) => 
         memento.Doubles[0];
 }
