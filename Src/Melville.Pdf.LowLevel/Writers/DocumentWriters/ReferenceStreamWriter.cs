@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
@@ -47,7 +48,9 @@ internal readonly struct ReferenceStreamWriter
         await GenerateXrefStreamAsync(data).CA();
 
         return new DictionaryBuilder()
-            .WithMultiItem(document.TrailerDictionary.RawItems.Where(i => i.Key != KnownNames.Size))
+            .WithMultiItem(document.TrailerDictionary.RawItems
+                .Where(i => i.Key != KnownNames.Size).Select(i=>
+                    new KeyValuePair<PdfName, PdfObject>(i.Key, i.Value)))
             .WithItem(KnownNames.Type, KnownNames.XRef)
             .WithItem(KnownNames.W, WidthsAsArray())
             .WithItem(KnownNames.Size, objectOffsets.Entries.Length)

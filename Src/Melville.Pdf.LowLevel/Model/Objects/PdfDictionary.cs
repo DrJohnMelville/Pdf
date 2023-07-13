@@ -67,12 +67,6 @@ public abstract class PdfDictionary : PdfObject, IReadOnlyDictionary<PdfName, Va
     /// <inheritdoc />
     public IEnumerable<PdfName> Keys => RawItems.Keys;
 
-    /// <summary>Gets an enumerable collection that contains the values in the read-only dictionary.  This method resolves
-    /// indirect PDF references.</summary>
-    /// <returns>An enumerable collection that contains the values in the read-only dictionary.</returns>
-    IEnumerable<ValueTask<PdfObject>> IReadOnlyDictionary<PdfName, ValueTask<PdfObject>>.Values =>
-        RawItems.Values.Select(i => i.DirectValueAsync());
-
     /// <summary>Returns an enumerator that iterates through the collection.  This method resolves the indirect references</summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     public IEnumerator<KeyValuePair<PdfName, ValueTask<PdfObject>>> GetEnumerator() =>

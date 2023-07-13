@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Visitors;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +8,6 @@ using System.Threading;
 using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
-
-
 
 /// <summary>
 /// Represnts an Array in the PDF specification.  Arrays in PDF are polymorphic and can

@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects2;
 /// <summary>
 /// this defines a Pdf Object that is not an indirect reference
 /// </summary>
-public readonly partial struct PdfDirectValue
+public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>
 {
     /// <summary>
     /// Strategy object that defines the type of the PdfObject
@@ -81,6 +81,10 @@ public readonly partial struct PdfDirectValue
         new(PostscriptInteger.Instance, MementoUnion.CreateFrom(value));
     public static implicit operator PdfDirectValue(double value) =>
         new(PostscriptDouble.Instance, MementoUnion.CreateFrom(value));
+    public static implicit operator PdfDirectValue(PdfValueArray array) =>
+        new(array, default);
+    public static implicit operator PdfDirectValue(PdfValueDictionary array) =>
+        new(array, default);
 
     public static implicit operator PdfDirectValue(string value)
     {
@@ -114,5 +118,15 @@ public readonly partial struct PdfDirectValue
     #endregion
 
     public static PdfDirectValue FromArray(params PdfIndirectValue[] values) => 
-        new(new PdfValueArray(values), default);
+        new PdfValueArray(values);
+
+    /// <inheritdoc />
+    public bool Equals(PdfDirectValue other) => 
+        Equals(valueStrategy, other.valueStrategy) && memento.Equals(other.memento);
+
+    public override bool Equals(object? obj) => 
+        obj is PdfDirectValue other && Equals(other);
+
+    public override int GetHashCode() => 
+        HashCode.Combine(valueStrategy, memento);
 }

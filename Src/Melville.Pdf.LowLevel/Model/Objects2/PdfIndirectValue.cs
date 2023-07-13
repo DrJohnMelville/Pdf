@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
@@ -31,7 +33,18 @@ public readonly partial struct PdfIndirectValue
     public ValueTask<PdfDirectValue> LoadValueAsync() =>
         valueStrategy is IIndirectValueSource source?
             source.Lookup(memento):
-        new(new PdfDirectValue(valueStrategy, memento));
+        new(CreateDirectValueUnsafe());
+
+    private PdfDirectValue CreateDirectValueUnsafe()
+    {
+        Debug.Assert(valueStrategy is not IIndirectValueSource);
+        return new PdfDirectValue(valueStrategy, memento);
+    }
+
+    public bool TryGetEmbeddedDirectValue(out PdfDirectValue value) =>
+        valueStrategy is IIndirectValueSource
+            ? ((PdfDirectValue)default).AsFalseValue(out value)
+            : CreateDirectValueUnsafe().AsTrueValue(out value);
 
     #endregion
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Melville.INPC;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives;
+namespace Melville.Pdf.LowLevel.Model.Objects2;
 
 /// <summary>
 /// This class is an optimization for the small dictionaries of PdfName,PdfObject that are so very prevelent
@@ -13,9 +13,8 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 /// </summary>
 /// <typeparam name="TKey">The type of the key to the dictionary</typeparam>
 /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-#warning -- get rid of this when purging object based model
-public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDictionary<TKey, TValue>
-     where TKey: class
+public readonly partial struct SmallReadOnlyValueDictionary<TKey,TValue>:IReadOnlyDictionary<TKey, TValue>
+    where TKey: IEquatable<TKey>
 {
     /// <summary>
     /// The values that will be contained in the dictionary.
@@ -37,7 +36,7 @@ public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDic
         for (int i = 0; i < data.Length; i++)
         {
             var tuple = GetItem(i);
-            if (ReferenceEquals(key, tuple.Key))
+            if (key.Equals(tuple.Key))
             {
                 value = tuple.Value!;
                 return true;

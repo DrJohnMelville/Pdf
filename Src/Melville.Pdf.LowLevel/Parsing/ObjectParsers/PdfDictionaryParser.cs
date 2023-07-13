@@ -54,7 +54,7 @@ internal class PdfDictionaryParser : IPdfObjectParser
         KeyValuePair<PdfName, PdfObject>[] ret, int position, PdfObject item, PdfObject key)
     {
         CheckValueIsNotTerminator(item);
-        ret[position] = KeyValuePair.Create(CheckIfKeyIsName(key), item);
+        ret[position] = new KeyValuePair<PdfName, PdfObject>(CheckIfKeyIsName(key), item);
         return ret;
     }
 

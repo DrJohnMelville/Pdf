@@ -5,20 +5,22 @@ using System.Linq;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
-namespace Melville.Pdf.LowLevel.Model.Primitives;
+namespace Melville.Pdf.LowLevel.Model.Objects2;
 
 /// <summary>
 /// This struct is a builder that creates Dictionary objects using a fluent API
 /// </summary>
-public readonly struct DictionaryBuilder
+public readonly struct ValueDictionaryBuilder
 {
-    private readonly List<KeyValuePair<PdfName, PdfObject>> attributes = new();
+    private readonly List<KeyValuePair<PdfDirectValue, PdfIndirectValue>> attributes = new();
 
     /// <summary>
     /// Creates the Dictionary Builder
     /// </summary>
-    public DictionaryBuilder()
+    public ValueDictionaryBuilder()
     {
     }
 
@@ -26,7 +28,7 @@ public readonly struct DictionaryBuilder
     /// Create a Dictionary Builder and copy an Enumerable object of Key value pairs.
     /// </summary>
     /// <param name="other">The items to copy into the new builder</param>
-    public DictionaryBuilder(Memory<KeyValuePair<PdfName,PdfObject>> other)
+    public ValueDictionaryBuilder(Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> other)
     {
         foreach (var pair in other.Span)
         {
@@ -37,7 +39,7 @@ public readonly struct DictionaryBuilder
     /// Create a Dictionary Builder and copy an Enumerable object of Key value pairs.
     /// </summary>
     /// <param name="other">The items to copy into the new builder</param>
-    public DictionaryBuilder(IEnumerable<KeyValuePair<PdfName,PdfObject>> other)
+    public ValueDictionaryBuilder(IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> other)
     {
         foreach (var pair in other)
         {
@@ -51,7 +53,7 @@ public readonly struct DictionaryBuilder
     /// <param name="name">Tje key associated with the item.</param>
     /// <param name="value">The value of the new item.</param>
     /// <returns>This builder.</returns>
-    public DictionaryBuilder WithItem(PdfName name, PdfObject? value) => 
+    public ValueDictionaryBuilder WithItem(PdfDirectValue name, PdfIndirectValue value) => 
         IsEmptyObject(value)?this: WithForcedItem(name, value);
 
     /// <summary>
@@ -59,11 +61,9 @@ public readonly struct DictionaryBuilder
     /// </summary>
     /// <param name="value">The object to test</param>
     /// <returns>True if the object can be omitted from the PDF file, false otherwise.</returns>
-    public static bool IsEmptyObject([NotNullWhen(false)]PdfObject? value) =>
-        value is null ||
-        value == PdfTokenValues.Null ||
-        value is PdfArray { Count: 0 } ||
-        value is PdfDictionary { Count: 0 } and not PdfStream;
+    public static bool IsEmptyObject(PdfIndirectValue value) =>
+        !(value.TryGetEmbeddedDirectValue(out var dval) &&
+        dval is not { IsNull: true }); 
 
     /// <summary>
     /// Add an item to this builder, potentially replacing and item with the same key.
@@ -71,18 +71,18 @@ public readonly struct DictionaryBuilder
     /// <param name="name">The key for the item.</param>
     /// <param name="value">The associated value.</param>
     /// <returns>This builder.</returns>
-    public DictionaryBuilder WithForcedItem(PdfName name, PdfObject value)
+    public ValueDictionaryBuilder WithForcedItem(PdfDirectValue name, PdfIndirectValue value)
     {
         TryDelete(name);
-        attributes.Add(new KeyValuePair<PdfName, PdfObject>(name, value));
+        attributes.Add(new KeyValuePair<PdfDirectValue, PdfIndirectValue>(name, value));
         return this;
     }
 
-    private void TryDelete(PdfName name)
+    private void TryDelete(PdfDirectValue name)
     {
         for (int i = 0; i < attributes.Count; i++)
         {
-            if (ReferenceEquals(name, attributes[i].Key))
+            if (name.Equals(attributes[i].Key))
             {
                 attributes.RemoveAt(i);
             }
@@ -94,37 +94,37 @@ public readonly struct DictionaryBuilder
     /// </summary>
     /// <param name="items">The items to be added to the builder.</param>
     /// <returns>This builder.</returns>
-    public DictionaryBuilder WithMultiItem(IEnumerable<KeyValuePair<PdfName, PdfObject>> items) => 
+    public ValueDictionaryBuilder WithMultiItem(IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> items) => 
         items.Aggregate(this, (agg, item) => agg.WithItem(item.Key, item.Value));
 
     /// <summary>
     /// Create a dictionary from this builder.
     /// </summary>
     /// <returns>The new dictionary.</returns>
-    public PdfDictionary AsDictionary() => new PdfDictionaryConcrete(attributes.ToArray());
-
-    /// <summary>
-    /// Create a stream from the builder
-    /// </summary>
-    /// <param name="stream">The data to include in the body of the stream.</param>
-    /// <param name="format">The format in which the data is provided.</param>
-    /// <returns>The created stream.</returns>
-    public PdfStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
-        new(new LiteralStreamSource(stream.Stream, format), AsArray());
-    internal PdfStream AsStream(IStreamDataSource source) =>
-        new(source, AsArray());
+    public PdfValueDictionary AsDictionary() => new PdfValueDictionary(attributes.ToArray());
     
-    private KeyValuePair<PdfName, PdfObject>[] AsArray() => attributes.ToArray();
+    // /// <summary>
+    // /// Create a stream from the builder
+    // /// </summary>
+    // /// <param name="stream">The data to include in the body of the stream.</param>
+    // /// <param name="format">The format in which the data is provided.</param>
+    // /// <returns>The created stream.</returns>
+    // public PdfStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
+    //     new(new LiteralStreamSource(stream.Stream, format), AsArray());
+    // internal PdfStream AsStream(IStreamDataSource source) =>
+    //     new(source, AsArray());
+    
+    private KeyValuePair<PdfDirectValue, PdfIndirectValue>[] AsArray() => attributes.ToArray();
 
     /// <summary>
     /// Copy items from a given dictionary to the current builder.
     /// </summary>
     /// <param name="sourceDict">The dictionary to copy from.</param>
-    public void CopyFrom(PdfDictionary sourceDict)
+    public void CopyFrom(PdfValueDictionary sourceDict)
     {
         foreach (var item in sourceDict.RawItems)
         {
-            attributes.Add(new (item.Key, item.Value));
+            attributes.Add(item);
         }
     }
 
@@ -134,11 +134,11 @@ public readonly struct DictionaryBuilder
     /// <param name="id">The key of the desired item.</param>
     /// <param name="output">If the item is found, it is put in this parameter.</param>
     /// <returns>True if the key is found, false otherwise.</returns>
-    public bool TryGetValue(PdfName id, [NotNullWhen(true)] out PdfObject? output)
+    public bool TryGetValue(PdfDirectValue id, [NotNullWhen(true)] out PdfIndirectValue? output)
     {
         foreach (var attribute in attributes)
         {
-            if (ReferenceEquals(attribute.Key, id))
+            if (attribute.Key.Equals(id))
             {
                 output = attribute.Value;
                 return true;

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
-public class S73NewObjects
+public class S7_3NewObjects
 {
     [Theory]
     [InlineData(true, "true")]
@@ -117,5 +117,24 @@ public class S73NewObjects
         Assert.Equal(1, (await asArray[0]).Get<int>());
         Assert.Equal(2.3, (await asArray.RawItems[1].LoadValueAsync()).Get<double>(),4);
         Assert.Equal(3, asArray.Count);
+    }
+
+    [Fact]
+    public void EmptyDictionaryExists()
+    {
+        Assert.Equal(0, PdfValueDictionary.Empty.Count);
+    }
+
+    [Fact]
+    public void LongDictionaryTest()
+    {
+        var builder = new ValueDictionaryBuilder();
+        for (int i = 0; i < 30; i++)
+        {
+            builder.WithItem($"/a{i}", i);
+        }
+        var dict = builder.AsDictionary();
+        Assert.True(dict.RawItems["/a15"u8].TryGetEmbeddedDirectValue(out var value));
+        Assert.Equal(15, value.Get<int>());
     }
 }
