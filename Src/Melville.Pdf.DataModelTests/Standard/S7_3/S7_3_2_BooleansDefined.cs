@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Formats.Tar;
+using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Xunit;
@@ -16,9 +18,8 @@ public sealed class S7_3_2_BooleansDefined
     [InlineData("false", false)]
     public async Task ParseBoolSucceedAsync(string text, bool value)
     {
-        var item = (PdfBoolean) await text.ParseObjectAsync();
-        Assert.Equal(value, item.Value);
-        Assert.True(ReferenceEquals(value?PdfBoolean.True:PdfBoolean.False,item));
+        var item = await text.ParseValueObjectAsync();
+        Assert.Equal(value, await item.LoadValueAsync<bool>());
     }
 
     [Theory]
@@ -27,6 +28,6 @@ public sealed class S7_3_2_BooleansDefined
     [InlineData("fAlse")]
     public Task LiteralNamesMustBeSpelledCorrectlyAsync(string s)
     {
-        return Assert.ThrowsAsync<PdfParseException>(s.ParseObjectAsync);
+        return Assert.ThrowsAsync<PdfParseException>(()=>s.ParseValueObjectAsync().AsTask());
     }
 }

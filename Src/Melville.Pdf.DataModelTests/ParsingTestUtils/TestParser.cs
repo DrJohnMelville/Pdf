@@ -1,13 +1,16 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
@@ -24,6 +27,18 @@ public static class TestParser
     {
         var reader = await source.RentReaderAsync(position);
         return await PdfParserParts.Composite.ParseAsync(reader);
+    }
+
+    public static ValueTask<PdfIndirectValue> ParseValueObjectAsync(this string s) =>
+        ParseValueObjectAsync(AsParsingSource(s));
+
+    public static ValueTask<PdfIndirectValue> ParseValueObjectAsync(this byte[] bytes) => 
+        ParseValueObjectAsync(AsParsingSource(bytes));
+
+    internal static async ValueTask<PdfIndirectValue> ParseValueObjectAsync(this ParsingFileOwner source, long position = 0)
+    {
+        var reader = await source.RentReaderAsync(position);
+        return await new RootObjectParser(reader).ParseAsync();
     }
 
     internal static ParsingFileOwner AsParsingSource(this string str, 

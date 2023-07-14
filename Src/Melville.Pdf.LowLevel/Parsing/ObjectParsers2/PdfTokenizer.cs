@@ -13,15 +13,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 
-public enum PdfTokenType
-{
-    DictionaryBegin,
-    DictionaryEnd,
-    ArrayBegin,
-    ArrayEnd,
-}
 
-public partial struct PdfTokenizer
+public readonly partial struct PdfTokenizer
 {
     [FromConstructor] private readonly IByteSource source;
 

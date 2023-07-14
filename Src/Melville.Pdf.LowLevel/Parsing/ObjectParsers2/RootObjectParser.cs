@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.InterpreterState;
@@ -21,6 +23,11 @@ internal readonly struct RootObjectParser
 
     public async ValueTask<PdfIndirectValue> ParseAsync()
     {
-        throw new NotFiniteNumberException();
+        Debug.Assert(stack.Count == 0);
+        do
+        {
+            stack.Push(await tokenizer.NextTokenAsync().CA());
+        } while (stack.Count > 1);
+        return stack.Pop();
     }
 }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
@@ -65,5 +66,10 @@ public readonly partial struct PdfIndirectValue
     };
 
     #endregion
+}
 
+public static class IndirectValueOperations
+{
+    public static async ValueTask<T> LoadValueAsync<T>(this PdfIndirectValue value) =>
+        (await value.LoadValueAsync().CA()).Get<T>();
 }
