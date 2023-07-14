@@ -16,8 +16,13 @@ namespace Melville.Postscript.Interpreter.Tokenizers;
 public readonly struct StringTokenizer<T, TState>
     where T : IStringDecoder<TState>, new() where TState : new()
 {
-    
-    internal bool Parse(ref SequenceReader<byte> reader, out PostscriptValue value)
+    /// <summary>
+    /// Parse a SequenceReaded containing a string to a PostScriptValue for that string
+    /// </summary>
+    /// <param name="reader">The reader to draw from</param>
+    /// <param name="value">Receives the finished value</param>
+    /// <returns>True if successful, false if not enough characters are found</returns>
+    public bool Parse(ref SequenceReader<byte> reader, out PostscriptValue value)
     {
         if (!TryCountChars(reader, out var length))
             return default(PostscriptValue).AsFalseValue(out value);

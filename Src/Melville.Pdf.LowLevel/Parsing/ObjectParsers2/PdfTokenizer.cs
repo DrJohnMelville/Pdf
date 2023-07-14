@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Reflection;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -9,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.Postscript.Interpreter.Values;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
@@ -45,9 +47,20 @@ public readonly partial struct PdfTokenizer
             return (default(PdfDirectValue)).AsFalseValue(out result);
         return (char)value switch
         {
+            '(' => ParseString<SyntaxStringDecoder, int>(ref reader, out result),
+            '<' => ParseString<HexStringDecoder, byte>(ref reader, out result),
             _ => TryParseUnprefixedItem(ref reader, out result)
         };
 
+    }
+
+    private bool ParseString<T, TState>(ref SequenceReader<byte> reader, out PdfDirectValue result)
+       where T: IStringDecoder<TState>, new() where TState: new()
+    {
+        reader.Advance(1);
+        return new StringTokenizer<T, TState>().Parse(ref reader, out PostscriptValue psStr)
+            ? ToDirectValue(psStr).AsTrueValue(out result)
+            : default(PdfDirectValue).AsFalseValue(out result);
     }
 
     private bool TryParseUnprefixedItem(ref SequenceReader<byte> reader, out PdfDirectValue result)
@@ -61,11 +74,11 @@ public readonly partial struct PdfTokenizer
 
     private PdfDirectValue RecognizeItem(ReadOnlySpan<byte> value) => value switch
     {
-        _ when NumberTokenizer.TryDetectNumber(value, out var psNum) => 
-            new PdfDirectValue(psNum.ValueStrategy, psNum.Memento),
+        _ when NumberTokenizer.TryDetectNumber(value, out var psNum) => ToDirectValue(psNum),
         _ when "true"u8.SequenceEqual(value) => true,
         _ when "false"u8.SequenceEqual(value) => false,
         _ => throw new PdfParseException($"Unrecognized Token: {value.ExtendedAsciiString()}")
     };
 
+    private static PdfDirectValue ToDirectValue(PostscriptValue psNum) => new(psNum.ValueStrategy, psNum.Memento);
 }

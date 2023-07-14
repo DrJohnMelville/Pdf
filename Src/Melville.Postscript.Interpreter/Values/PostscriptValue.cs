@@ -117,7 +117,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
 
 
     private bool DeepEqual(PostscriptValue other) =>
-        ValueStrategy is IPostscriptValueComparison psc &&
+        ValueStrategy is IPostscriptValueEqualityTest psc &&
         psc.Equals(Memento, other.ValueStrategy, other.Memento);
 
     /// <inheritdoc />

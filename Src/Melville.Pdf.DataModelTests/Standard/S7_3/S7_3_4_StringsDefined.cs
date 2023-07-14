@@ -1,7 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Postscript.Interpreter.Values;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
@@ -11,17 +14,8 @@ public class S7_3_4_StringsDefined
     [Fact]
     public void StringObjectDefinitions()
     {
-        var str = PdfString.CreateAscii("Foo Bar");
+        var str = PdfDirectValue.CreateString("Foo Bar"u8);
         Assert.Equal("Foo Bar", str.ToString());
-    }
-
-    [Theory]
-    [InlineData("Foo", "Foo", true)]
-    [InlineData("Foo", "Foos", false)]
-    public void StringIsEqualMethod(string a, string b, bool areEqual)
-    {
-        var str = PdfString.CreateAscii(a);
-        Assert.Equal(areEqual, b.Equals(str.ToString()));
     }
 
     [Theory]
@@ -33,8 +27,9 @@ public class S7_3_4_StringsDefined
     [InlineData("<01 23  4 \r\n567   ABC \tDEF>/", "\x01\x23\x45\x67\xAB\xCD\xEF")]
     public async Task ParseHexStringAsync(string input, string output)
     {
-        var str = (PdfString) await input.ParseObjectAsync();
-        Assert.Equal(output, str!.ToString());
+        var str = await (await input.ParseValueObjectAsync()).LoadValueAsync();
+        Assert.Equal(output, 
+            ExtendedAsciiEncoding.ExtendedAsciiString(str.Get<StringSpanSource>().GetSpan()));
     }
 
     [Theory]
@@ -71,16 +66,22 @@ public class S7_3_4_StringsDefined
     [InlineData("(a\\1212b))", "a\x00512b")]
     public async Task ParseLiteralStringAsync(string source, string result)
     {
-        var parsedString = (PdfString) await source.ParseObjectAsync();
+        var parsedString = await (await source.ParseValueObjectAsync()).LoadValueAsync();
         Assert.Equal(result, parsedString.ToString());
     }
 
     [Theory]
     [InlineData("","", 0)]
+    [InlineData("Hello","Hello", 0)]
     [InlineData("a","", 1)]
-    [InlineData("a","b", -1)]
+    [InlineData("aaab","aaaa", 1)]
+    [InlineData("a","aa", -1)]
+    [InlineData("azzzz","baaaa", -1)]
     public void CompareStrings(string a, string b, int result)
     {
-        Assert.Equal(result, PdfString.CreateAscii(a).CompareTo(PdfString.CreateAscii(b)));
+        Assert.Equal(result, PdfDirectValue.CreateString(a.AsExtendedAsciiBytes())
+            .CompareTo(PdfDirectValue.CreateString(b.AsExtendedAsciiBytes())));
+        Assert.Equal(result*-1, PdfDirectValue.CreateString(b.AsExtendedAsciiBytes())
+            .CompareTo(PdfDirectValue.CreateString(a.AsExtendedAsciiBytes())));
     }
 }

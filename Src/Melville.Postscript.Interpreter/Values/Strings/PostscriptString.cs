@@ -15,6 +15,7 @@ namespace Melville.Postscript.Interpreter.Values;
 public abstract partial class PostscriptString : 
     IPostscriptValueStrategy<string>, 
     IPostscriptValueStrategy<StringKind>, 
+    IPostscriptValueEqualityTest,
     IPostscriptValueComparison,
     IPostscriptValueStrategy<IExecutionSelector>,
     IPostscriptValueStrategy<Memory<byte>>,
@@ -46,7 +47,9 @@ public abstract partial class PostscriptString :
         in MementoUnion memento) => StringKind.ExecutionSelector;
 
     StringSpanSource IPostscriptValueStrategy<StringSpanSource>.GetValue(
-        in MementoUnion memento) => new(this, memento);
+        in MementoUnion memento) => ToStringSpanSource(memento);
+
+    private StringSpanSource ToStringSpanSource(MementoUnion memento) => new(this, memento);
 
     internal abstract Span<byte> GetBytes(scoped in MementoUnion memento, scoped in Span<byte> scratch);
 
@@ -54,9 +57,10 @@ public abstract partial class PostscriptString :
     public virtual bool Equals(in MementoUnion memento, object otherStrategy, in MementoUnion otherMemento)
     {
         if (otherStrategy is not PostscriptString otherASPss) return false;
-        var myBits = GetBytes(in memento, stackalloc byte[ShortStringLimit]);
-        var otherBits= otherASPss.GetBytes(in otherMemento, 
-            stackalloc byte[ShortStringLimit]);
+        var source1 = ToStringSpanSource(memento);
+        var myBits = source1.GetSpan();
+        var source2 = otherASPss.ToStringSpanSource(otherMemento);
+        var otherBits= source2.GetSpan();
         return myBits.SequenceEqual(otherBits);
     }
 
@@ -108,4 +112,14 @@ public abstract partial class PostscriptString :
     private protected abstract PostscriptLongString AsLongString(in MementoUnion memento);
     private protected abstract RentedMemorySource InnerRentedMemorySource(MementoUnion memento);
     private protected abstract Memory<byte> ValueAsMemory(in MementoUnion memento);
+
+    public int CompareTo(in MementoUnion memento, object otherStrategy, in MementoUnion otherMemento)
+    {
+        if (otherStrategy is not PostscriptString otherString)
+            throw new PostscriptNamedErrorException("Can only compare strings to strings", "typecheck");
+        var mySource = ToStringSpanSource(memento);
+        var otherSource = otherString.ToStringSpanSource(otherMemento);
+        return mySource.GetSpan().SequenceCompareTo(otherSource.GetSpan());
+
+    }
 }

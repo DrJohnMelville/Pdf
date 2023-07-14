@@ -13,7 +13,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects2;
 /// <summary>
 /// this defines a Pdf Object that is not an indirect reference
 /// </summary>
-public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>
+public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>, 
+    IComparable<PdfDirectValue>
 {
     /// <summary>
     /// Strategy object that defines the type of the PdfObject
@@ -121,6 +122,12 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>
     /// <inheritdoc />
     public bool Equals(PdfDirectValue other) => 
         Equals(valueStrategy, other.valueStrategy) && memento.Equals(other.memento);
+
+    public int CompareTo(PdfDirectValue other)
+    {
+        return Get<IPostscriptValueComparison>().CompareTo(
+            memento, other.NonNullValueStrategy(), other.memento);
+    }
 
     public override bool Equals(object? obj) => 
         obj is PdfDirectValue other && Equals(other);
