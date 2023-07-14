@@ -4,15 +4,21 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 
-public class PdfValueDictionary: IReadOnlyDictionary<PdfDirectValue, ValueTask<PdfDirectValue>>
+public class PdfValueDictionary: IReadOnlyDictionary<PdfDirectValue, ValueTask<PdfDirectValue>>,
+    ITemporaryConverter
 {
     public static readonly PdfValueDictionary Empty = new PdfValueStream(
+        new LiteralStreamSource(Array.Empty<byte>(), StreamFormat.DiskRepresentation),
         Array.Empty<KeyValuePair<PdfDirectValue, PdfIndirectValue>>());
 
     public IReadOnlyDictionary<PdfDirectValue, PdfIndirectValue> RawItems { get; }
@@ -53,11 +59,17 @@ public class PdfValueDictionary: IReadOnlyDictionary<PdfDirectValue, ValueTask<P
             i.Key, i.Value.LoadValueAsync())).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-}
-
-public class PdfValueStream : PdfValueDictionary
-{
-    public PdfValueStream(KeyValuePair<PdfDirectValue, PdfIndirectValue>[] values) : base(values)
+    public PdfObject TemporaryConvert()
     {
+        var builder = new DictionaryBuilder();
+        foreach (var item in RawItems)
+        {
+            builder.WithItem(item.Key.AsOldObject<PdfName>(), item.Value.AsOldObject());
+        }
+
+        return TemporaryConvert(builder);
     }
+
+    protected virtual PdfDictionary TemporaryConvert(DictionaryBuilder builder) =>
+        builder.AsDictionary();
 }

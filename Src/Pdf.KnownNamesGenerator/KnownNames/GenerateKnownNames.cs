@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -40,14 +41,14 @@ namespace Pdf.KnownNamesGenerator.KnownNames
         {
             return @"
 #nullable enable
+using System;
 using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 namespace Melville.Pdf.LowLevel.Model.Conventions
 {
 "+ AllDecls()+@"
-    }
-
 }";
         }
 
@@ -55,9 +56,6 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         {
             var sb = new StringBuilder();
             GenerateNameConstants(sb);
-            sb.Append(@"    public static partial class KnownNames
-            {
-                ");
             return sb.ToString();
         }
 
@@ -122,6 +120,24 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
 
             sb.AppendLine("          }");
         }
+
+        private static bool TryPackNum(string value, out string result)
+        {
+            if (value.Length > 18)
+            {
+                result = "";
+                return false;
+            }
+            var ret = new BigInteger();
+            foreach (var character in value)
+            {
+                ret <<= 7;
+                ret |= (character & 0x7F);
+            }
+            result =  ret.ToString();
+            return true;
+        }
+
         private static IOrderedEnumerable<(string Value, string CSharpName, string type)> UniquePdfNames(List<(string Value, string CSharpName, string type)> allNames) =>
             allNames
                 .GroupBy(i => i.CSharpName).Select(i => i.First())
@@ -130,14 +146,17 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         private static void RenderPdfNameCreation(StringBuilder sb, string name, string value)
         {
             sb.AppendLine("        /// <summary>");
+            sb.AppendLine($"        /// u8 span for ({value})");
+            sb.AppendLine("        /// </summary>");
+            sb.AppendLine($"        public static ReadOnlySpan<byte> {name}U8 => \"{value}\"u8;");
+            sb.AppendLine("        /// <summary>");
+            sb.AppendLine($"        /// PdfDirectValue for span for ({value})");
+            sb.AppendLine("        /// </summary>");
+            sb.AppendLine($"""        public static PdfDirectValue {name}TName => PdfDirectValue.CreateName({name}U8);""");
+            sb.AppendLine("        /// <summary>");
             sb.AppendLine($"        /// PdfName with value: ({value})");
             sb.AppendLine("        /// </summary>");
-            sb.Append("        public static readonly PdfName ");
-            sb.Append(name);
-            sb.Append(" = NameDirectory.ForceAdd(\"");
-            sb.Append(value);
-            sb.AppendLine("\"u8);");
-            sb.AppendLine();
+            sb.AppendLine($"""        public static readonly PdfName {name} = NameDirectory.ForceAdd({name}U8);""");
         }
 
         private static void RenderPdfNameGroup(StringBuilder sb, 

@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Postscript.Interpreter.Values;
@@ -120,10 +121,7 @@ public class S7_3NewObjects
     }
 
     [Fact]
-    public void EmptyDictionaryExists()
-    {
-        Assert.Equal(0, PdfValueDictionary.Empty.Count);
-    }
+    public void EmptyDictionaryExists() => Assert.Empty(PdfValueDictionary.Empty);
 
     [Fact]
     public void LongDictionaryTest()
@@ -136,5 +134,19 @@ public class S7_3NewObjects
         var dict = builder.AsDictionary();
         Assert.True(dict.RawItems["/a15"u8].TryGetEmbeddedDirectValue(out var value));
         Assert.Equal(15, value.Get<int>());
+    }
+
+    [Fact]
+    public async Task StreamTest()
+    {
+        var str = new ValueDictionaryBuilder()
+            .WithItem("/Length"u8, 11)
+            .AsStream("Hello World");
+
+        Assert.Equal(11, await str.DeclaredLengthAsync());
+
+        Assert.Equal("Hello World",
+            
+            await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync());
     }
 }

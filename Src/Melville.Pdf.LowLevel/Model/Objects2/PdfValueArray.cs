@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 
@@ -14,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects2;
 /// contain different types of objects at each position, including other arrays.
 /// </summary>
 public sealed class PdfValueArray :
-    IReadOnlyList<ValueTask<PdfDirectValue>>, IAsyncEnumerable<PdfDirectValue>
+    IReadOnlyList<ValueTask<PdfDirectValue>>, IAsyncEnumerable<PdfDirectValue>, ITemporaryConverter
 {
     /// <summary>
     /// A Pdf Array with no elements
@@ -94,4 +95,15 @@ public sealed class PdfValueArray :
 
     /// <inheritdoc />
     public override string ToString() => "["+string.Join(" ", RawItems) +"]";
+
+    public PdfObject TemporaryConvert()
+    {
+        var ret = new PdfObject[Count];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = RawItems[i].AsOldObject();
+        }
+
+        return new PdfArray(ret);
+    }
 }

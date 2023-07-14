@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows.Markup;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
-using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Numbers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 
@@ -129,4 +127,35 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>
 
     public override int GetHashCode() => 
         HashCode.Combine(valueStrategy, memento);
+}
+
+public interface ITemporaryConverter
+{
+    PdfObject TemporaryConvert();
+}
+
+public static class TemporaryObjectBridge
+{
+    public static PdfObject AsOldObject(in this PdfIndirectValue value)
+    {
+        if (value.TryGetEmbeddedDirectValue(out var dv))
+            return dv.AsOldObject();
+        else
+            throw new NotImplementedException("cannot convert indirect objects");
+    }
+
+    public static PdfObject AsOldObject(in this PdfDirectValue value) => value switch
+    {
+        { IsInteger: true } => new PdfInteger(value.Get<long>()),
+        { IsDouble: true } => new PdfDouble(value.Get<double>()),
+        { IsBool: true } => value.Get<bool>() ? PdfBoolean.True : PdfBoolean.False,
+        { IsNull: true } => PdfTokenValues.Null,
+        { IsString: true } => new PdfString(value.Get<StringSpanSource>().GetSpan().ToArray()),
+        { IsName: true } => NameDirectory.Get(value.Get<StringSpanSource>().GetSpan()),
+        _ when value.TryGet(out ITemporaryConverter cvt) => cvt.TemporaryConvert(),
+    };
+
+    public static T AsOldObject<T>(in this PdfDirectValue value) where T : PdfObject =>
+        (T)value.AsOldObject();
+
 }

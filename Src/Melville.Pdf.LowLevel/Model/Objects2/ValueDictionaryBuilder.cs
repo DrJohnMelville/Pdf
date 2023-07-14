@@ -101,18 +101,18 @@ public readonly struct ValueDictionaryBuilder
     /// Create a dictionary from this builder.
     /// </summary>
     /// <returns>The new dictionary.</returns>
-    public PdfValueDictionary AsDictionary() => new PdfValueDictionary(attributes.ToArray());
+    public PdfValueDictionary AsDictionary() => new PdfValueDictionary(AsArray());
     
-    // /// <summary>
-    // /// Create a stream from the builder
-    // /// </summary>
-    // /// <param name="stream">The data to include in the body of the stream.</param>
-    // /// <param name="format">The format in which the data is provided.</param>
-    // /// <returns>The created stream.</returns>
-    // public PdfStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
-    //     new(new LiteralStreamSource(stream.Stream, format), AsArray());
-    // internal PdfStream AsStream(IStreamDataSource source) =>
-    //     new(source, AsArray());
+    /// <summary>
+    /// Create a stream from the builder
+    /// </summary>
+    /// <param name="stream">The data to include in the body of the stream.</param>
+    /// <param name="format">The format in which the data is provided.</param>
+    /// <returns>The created stream.</returns>
+    public PdfValueStream AsStream(MultiBufferStreamSource stream, StreamFormat format = StreamFormat.PlainText) =>
+        new(new LiteralStreamSource(stream.Stream, format), AsArray());
+    internal PdfValueStream AsStream(IStreamDataSource source) =>
+        new(source, AsArray());
     
     private KeyValuePair<PdfDirectValue, PdfIndirectValue>[] AsArray() => attributes.ToArray();
 
