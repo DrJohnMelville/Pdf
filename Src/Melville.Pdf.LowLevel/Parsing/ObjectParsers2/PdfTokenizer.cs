@@ -61,6 +61,8 @@ public readonly partial struct PdfTokenizer
 
     private PdfDirectValue RecognizeItem(ReadOnlySpan<byte> value) => value switch
     {
+        _ when NumberTokenizer.TryDetectNumber(value, out var psNum) => 
+            new PdfDirectValue(psNum.ValueStrategy, psNum.Memento),
         _ when "true"u8.SequenceEqual(value) => true,
         _ when "false"u8.SequenceEqual(value) => false,
         _ => throw new PdfParseException($"Unrecognized Token: {value.ExtendedAsciiString()}")

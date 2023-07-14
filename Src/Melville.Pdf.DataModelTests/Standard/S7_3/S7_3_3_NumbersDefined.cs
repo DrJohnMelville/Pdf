@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -26,7 +27,9 @@ public class S7_3_3_NumbersDefined
     [InlineData("+123.6", 123.6)]
     [InlineData("4.", 4)]
     [InlineData("-.002", -0.002)]
-    public Task SpecExample2ItemsAsync(string input, double value) => ParseNumberSucceedAsync(input, (int)value, value);
+    public Task SpecExample2ItemsAsync(string input, double value) =>
+        ParseNumberSucceedAsync(input, (int)Math.Round(value, MidpointRounding.AwayFromZero),
+            value);
     
     
     [Theory]
@@ -34,8 +37,8 @@ public class S7_3_3_NumbersDefined
     // from standard sec
     public async Task ParseNumberSucceedAsync(string source, int intValue, double doubleValue)
     {
-        var num = (PdfNumber)await source.ParseObjectAsync(); 
-        Assert.Equal(intValue, num!.IntValue);
-        Assert.Equal(doubleValue, num.DoubleValue);
+        var num = await (await source.ParseValueObjectAsync()).LoadValueAsync(); 
+        Assert.Equal(intValue, num.Get<long>());
+        Assert.Equal(doubleValue, num.Get<double>());
     }
 }

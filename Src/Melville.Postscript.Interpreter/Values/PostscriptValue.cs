@@ -21,7 +21,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <summary>
     /// The strategy that can retrieve the value for this item.
     /// </summary>
-    [FromConstructor] private readonly object valueStrategy;
+    [FromConstructor] public object ValueStrategy { get; }
 
     /// <summary>
     /// The strategy that defines how to execute this value
@@ -31,31 +31,31 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <summary>
     /// A 128 bit space that allows most values to be stored without a heap allocation.
     /// </summary>
-    [FromConstructor] private readonly MementoUnion memento;
+    [FromConstructor] public MementoUnion Memento { get; }
 
     /// <summary>
     /// True if this is a Postscript null object, false otherwise.
     /// </summary>
-    public bool IsNull => valueStrategy is PostscriptNull;
+    public bool IsNull => ValueStrategy is PostscriptNull;
 
     /// <summary>
     /// True if this is a Postscript mark object, false otherwise.
     /// </summary>
-    public bool IsMark => valueStrategy is PostscriptMark;
+    public bool IsMark => ValueStrategy is PostscriptMark;
 
     /// <summary>
     /// True if this is a number represented as an integer, false otherwise.
     /// </summary>
-    public bool IsInteger => valueStrategy is PostscriptInteger;
+    public bool IsInteger => ValueStrategy is PostscriptInteger;
     /// <summary>
     /// True if this is a number represented as an double, false otherwise.
     /// </summary>
-    public bool IsDouble=> valueStrategy is PostscriptDouble;
+    public bool IsDouble=> ValueStrategy is PostscriptDouble;
     
     /// <summary>
     /// True if this is a number represented as an boolean, false otherwise.
     /// </summary>
-    public bool IsBoolean => valueStrategy is PostscriptBoolean;
+    public bool IsBoolean => ValueStrategy is PostscriptBoolean;
     /// <summary>
     /// True if this is a number represented as an double, false otherwise.
     /// </summary>
@@ -72,7 +72,7 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     public bool IsString => IsStringType(StringKind.String);
 
     private bool IsStringType(StringKind stringType) =>
-        valueStrategy is PostscriptString pss &&
+        ValueStrategy is PostscriptString pss &&
         pss.StringKind == stringType;
 
     /// <summary>
@@ -84,11 +84,11 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// If the current value cannot be converted to the requested type.</exception>
     public T Get<T>() =>
         TryGet<T>(out var value) ? value:
-        (valueStrategy as IPostscriptValueStrategy<T> ?? TypeError<T>()).GetValue(memento);
+        (ValueStrategy as IPostscriptValueStrategy<T> ?? TypeError<T>()).GetValue(Memento);
 
     private IPostscriptValueStrategy<T> TypeError<T>() =>
         throw new PostscriptNamedErrorException(
-            $"{valueStrategy.GetType()} does not implement IPostScriptValueStrategy<{typeof(T)}>",
+            $"{ValueStrategy.GetType()} does not implement IPostScriptValueStrategy<{typeof(T)}>",
             "typecheck");
 
     /// <summary>
@@ -99,10 +99,10 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// <returns>True if the value can be converted to the given type, false otherwise</returns>
     public bool TryGet<T>([NotNullWhen(true)] out T? value) =>
         this is T thisAsT ? thisAsT.AsTrueValue(out value):
-        valueStrategy switch
+        ValueStrategy switch
         {
             IPostscriptValueStrategy<T> ts =>
-                ts.GetValue(memento).AsTrueValue(out value),
+                ts.GetValue(Memento).AsTrueValue(out value),
             T val => val.AsTrueValue(out value),
             _ => default(T).AsFalseValue(out value),
         };
@@ -112,22 +112,22 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
 
 
     private bool ShallowEqual(PostscriptValue other) =>
-        valueStrategy == other.valueStrategy &&
-        memento == other.memento;
+        ValueStrategy == other.ValueStrategy &&
+        Memento == other.Memento;
 
 
     private bool DeepEqual(PostscriptValue other) =>
-        valueStrategy is IPostscriptValueComparison psc &&
-        psc.Equals(memento, other.valueStrategy, other.memento);
+        ValueStrategy is IPostscriptValueComparison psc &&
+        psc.Equals(Memento, other.ValueStrategy, other.Memento);
 
     /// <inheritdoc />
-    public override int GetHashCode() => HashCode.Combine(valueStrategy, memento);
+    public override int GetHashCode() => HashCode.Combine(ValueStrategy, Memento);
 
     /// <inheritdoc />
     public override string ToString() => 
         ExecutionStrategy.WrapTextDisplay(
-            (valueStrategy as IPostscriptValueStrategy<string>)?.GetValue(memento) ??
-            valueStrategy.ToString() ?? "<No String Value>");
+            (ValueStrategy as IPostscriptValueStrategy<string>)?.GetValue(Memento) ??
+            ValueStrategy.ToString() ?? "<No String Value>");
 
     [MacroItem("int")]
     [MacroItem("double")]
@@ -171,19 +171,19 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     /// </summary>
     /// <returns></returns>
     public PostscriptValue AsLiteral() =>
-        new(valueStrategy, ExecutionSelector.Literal, memento);
+        new(ValueStrategy, ExecutionSelector.Literal, Memento);
     /// <summary>
     /// Returns this value as an executable value -- as returned by cvx
     /// </summary>
     /// <returns></returns>
     public PostscriptValue AsExecutable() =>
-        new(valueStrategy, ExecutionSelector.Executable, memento);
+        new(ValueStrategy, ExecutionSelector.Executable, Memento);
 
     private IExecutionSelector ExecutionSelector =>
         TryGet(out IExecutionSelector? sel) ? sel : AlwaysLiteralSelector.Instance;
 
     internal PostscriptValue AsCopyableValue() =>
-        valueStrategy == StringKind.String.ShortStringStraegy
+        ValueStrategy == StringKind.String.ShortStringStraegy
             ? PostscriptValueFactory.CreateLongString(
                 Get<Memory<byte>>(), StringKind.String)
             : this;
