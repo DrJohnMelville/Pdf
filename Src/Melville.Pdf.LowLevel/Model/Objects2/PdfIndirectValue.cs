@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
@@ -24,6 +25,7 @@ public readonly partial struct PdfIndirectValue
     /// A memento that allows most PdfObjects to be represented without allocations
     /// </summary>
     [FromConstructor] private readonly MementoUnion memento;
+
     private object NonNullValueStrategy() => (valueStrategy ?? PostscriptNull.Instance);
 
     internal PdfIndirectValue(IIndirectValueSource src, long objNum, long generation) :
@@ -56,6 +58,7 @@ public readonly partial struct PdfIndirectValue
     public static implicit operator PdfIndirectValue(long value) => (PdfDirectValue)value;
     public static implicit operator PdfIndirectValue(double value) => (PdfDirectValue)value;
     public static implicit operator PdfIndirectValue(string value) => (PdfDirectValue)value;
+    public static implicit operator PdfIndirectValue(PdfValueArray value) => (PdfDirectValue)value;
     public static implicit operator PdfIndirectValue(in ReadOnlySpan<byte> value) => 
         (PdfDirectValue)value;
 
@@ -66,6 +69,12 @@ public readonly partial struct PdfIndirectValue
     };
 
     #endregion
+
+    /// <summary>
+    /// If this is a pdfParsing command
+    /// </summary>
+    public bool IsPdfParsingOperation => valueStrategy is PdfParsingCommand;
+
 }
 
 public static class IndirectValueOperations

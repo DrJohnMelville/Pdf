@@ -200,7 +200,10 @@ public partial class PostscriptStack<T>
         span.Reverse();
     }
 
-    internal Span<T> CollectionAsSpan() => buffer.AsSpan(0, Count);
+    /// <summary>
+    /// Get the current stack as a span
+    /// </summary>
+    public Span<T> CollectionAsSpan() => buffer.AsSpan(0, Count);
 
     /// <summary>
     /// Make the referenced element copyable.
@@ -232,7 +235,12 @@ public partial class PostscriptStack<T>
         return Count;
     }
 
-    internal Span<T> SpanAbove(Func<T, bool> predicate)
+    /// <summary>
+    /// Span of items above the top item meeting a predicate.
+    /// </summary>
+    /// <param name="predicate">The predicate to identify the marker</param>
+    /// <returns>Span of items above the marker item.</returns>
+    public Span<T> SpanAbove(Func<T, bool> predicate)
     {
         var size = CountAbove(predicate);
         return CollectionAsSpan()[^size..];
@@ -243,7 +251,11 @@ public partial class PostscriptStack<T>
         while (Count > 0 && predicate(Peek())) Pop();
     }
 
-    internal void ClearThrough(Func<T, bool> predicate)
+    /// <summary>
+    /// Clear the items above a given item.
+    /// </summary>
+    /// <param name="predicate">The predicate to identify the marker</param>
+    public void ClearThrough(Func<T, bool> predicate)
     {
         while (Count > 0 && !predicate(Pop())) {}
         {

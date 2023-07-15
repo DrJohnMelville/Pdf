@@ -9,7 +9,6 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2
     {
         public static bool Parse(ref SequenceReader<byte> reader, out PdfDirectValue result)
         {
-            reader.Advance(1);
             if (!reader.TryReadToAny(
                     out ReadOnlySpan<byte> text,CharacterClassifier.DelimiterChars(), false))
                 return default(PdfDirectValue).AsFalseValue(out result);

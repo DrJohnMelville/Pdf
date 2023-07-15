@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
@@ -21,7 +22,7 @@ public class S7_3_6_ArraysDefined
     [InlineData("[/WIDTH /HGH /X1 /HEIGHT]", 4)]
     public async Task ParseArrayAsync(string src, int length)
     {
-        var obj = (PdfArray) await src.ParseObjectAsync();
+        var obj = await (await src.ParseValueObjectAsync()).LoadValueAsync<PdfValueArray>();
         Assert.Equal(length, obj.RawItems.Count);
     }
 

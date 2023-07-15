@@ -26,8 +26,17 @@ internal readonly struct RootObjectParser
         Debug.Assert(stack.Count == 0);
         do
         {
-            stack.Push(await tokenizer.NextTokenAsync().CA());
-        } while (stack.Count > 1);
+            var token = await tokenizer.NextTokenAsync().CA();
+            ProcessToken(token);
+        } while (stack.Count != 1 || stack[0].IsPdfParsingOperation);
         return stack.Pop();
+    }
+
+    private void ProcessToken(PdfDirectValue token)
+    {
+        if (token.IsPdfParsingOperation)
+            token.TryExecutePdfParseOperation(stack);
+        else
+            stack.Push(token);
     }
 }
