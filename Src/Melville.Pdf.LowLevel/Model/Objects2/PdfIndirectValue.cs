@@ -9,10 +9,6 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 
-internal interface IIndirectValueSource: IPostscriptValueStrategy<string>
-{
-    ValueTask<PdfDirectValue> Lookup(in MementoUnion memento);
-}
 
 public readonly partial struct PdfIndirectValue
 {
@@ -48,6 +44,12 @@ public readonly partial struct PdfIndirectValue
         valueStrategy is IIndirectValueSource
             ? ((PdfDirectValue)default).AsFalseValue(out value)
             : CreateDirectValueUnsafe().AsTrueValue(out value);
+    public bool TryGetEmbeddedDirectValue<T>(out T value)
+    {
+        value = default;
+        return TryGetEmbeddedDirectValue(out PdfDirectValue dv) &&
+               dv.TryGet(out value);
+    }
 
     #endregion
 

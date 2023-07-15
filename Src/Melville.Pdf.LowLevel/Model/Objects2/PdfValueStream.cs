@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -15,7 +16,7 @@ public class PdfValueStream : PdfValueDictionary
     private readonly IStreamDataSource source;
 
     internal PdfValueStream(IStreamDataSource source, 
-        KeyValuePair<PdfDirectValue, PdfIndirectValue>[] values) : base(values)
+        Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> values) : base(values)
     {
         this.source = source;
     }
@@ -28,7 +29,7 @@ public class PdfValueStream : PdfValueDictionary
     /// </summary>
     /// <returns></returns>
     public ValueTask<long> DeclaredLengthAsync() => 
-        this.GetOrDefaultAsync(KnownNames.LengthTName, -1L);
+        this.GetOrDefaultAsync(KnownNames.LengthTName, 0L);
 
     /// <summary>
     /// Retrieves a C# stream that will read the stream contents in the desired format.

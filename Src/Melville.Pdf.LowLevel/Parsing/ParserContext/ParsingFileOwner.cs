@@ -7,8 +7,10 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.EncryptingParsingReader;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -19,6 +21,7 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
     public IIndirectObjectResolver IndirectResolver { get; }
+    public IndirectValueRegistry NewIndirectResolver { get; }
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private readonly IPasswordSource passwordSource;
 
@@ -28,6 +31,7 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
         this.source = new MultiplexedStream(source);
         this.passwordSource = passwordSource;
         IndirectResolver = indirectResolver;
+        NewIndirectResolver = new IndirectValueRegistry(this);
     }
     
     public void SetPreheaderOffset(long offset) => preHeaderOffset = offset;
@@ -78,13 +82,22 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     {
     }
 
-    public void RegisterNullObject(int number, ulong next, ulong generation) => 
-        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, (int)generation,PdfTokenValues.Null));
+    public void RegisterNullObject(int number, ulong next, ulong generation)
+    {
+        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, (int)generation, PdfTokenValues.Null));
+        NewIndirectResolver.RegisterDirectObject((ulong)number, generation, PdfDirectValue.CreateNull());
+    }
 
-    public void RegisterIndirectBlock(int number, ulong generation, ulong offset) =>
+    public void RegisterIndirectBlock(int number, ulong generation, ulong offset)
+    {
         IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation, this, (int)offset));
+        NewIndirectResolver.RegisterUnenclosedObject((ulong)number, generation, offset);
+    }
 
-    public void RegisterObjectStreamBlock(int number, ulong referredStreamOrdinal, ulong positionInStream) =>
-        IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this, 
+    public void RegisterObjectStreamBlock(int number, ulong referredStreamOrdinal, ulong positionInStream)
+    {
+        IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this,
             (int)referredStreamOrdinal));
+        NewIndirectResolver.RegisterObjectStreamObject((ulong) number, referredStreamOrdinal, positionInStream);
+    }
 }

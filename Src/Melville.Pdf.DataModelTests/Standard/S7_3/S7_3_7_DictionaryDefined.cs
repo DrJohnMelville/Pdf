@@ -22,6 +22,7 @@ public class S7_3_7_DictionaryDefined
         Assert.Equal(213, await dict.GetAsync<int>("/Height"u8));
         Assert.Equal(456, await dict.GetAsync<int>("/Width"u8));
     }
+
     [Theory]
     [InlineData("  << >>  ", 0)]
     [InlineData("<</Height 213 /Width 456 /ASPECT null >>", 2)] // PDF Spec  nulls make the entry be ignored
@@ -32,9 +33,21 @@ public class S7_3_7_DictionaryDefined
             .Get<PdfValueDictionary>();
         Assert.Equal(size, dict.RawItems.Count);
     }
+
     [Theory]
     [InlineData("  <<  213 /Height /Width 456  >>  ")]
     [InlineData("<</Height 213/Width>>")]
-    public Task ExceptionsAsync(string input) => 
-        Assert.ThrowsAsync<PdfParseException>(() =>input.ParseValueObjectAsync().AsTask());
+    public Task ExceptionsAsync(string input) =>
+        Assert.ThrowsAsync<PdfParseException>(() => input.ParseValueObjectAsync().AsTask());
+
+    [Fact]
+    public async Task ParseRootDictionary()
+    {
+        var item = await " 1 2 obj<</Height 213/Width 456>>endobj".ParseRootObjectAsync();
+        var dict = item.Get<PdfValueDictionary>();
+        Assert.Equal(213, await dict.GetAsync<int>("/Height"u8));
+        Assert.Equal(456, await dict.GetAsync<int>("/Width"u8));
+
+    }
+
 }

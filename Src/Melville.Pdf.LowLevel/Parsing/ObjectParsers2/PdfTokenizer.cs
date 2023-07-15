@@ -103,6 +103,11 @@ public readonly partial struct PdfTokenizer
         _ when "true"u8.SequenceEqual(value) => true,
         _ when "false"u8.SequenceEqual(value) => false,
         _ when "null"u8.SequenceEqual(value) => PdfDirectValue.CreateNull(),
+        _ when "obj"u8.SequenceEqual(value) => PdfParsingCommand.ObjOperator,
+        _ when "stream"u8.SequenceEqual(value) => PdfParsingCommand.StreamOperator,
+        _ when "endstream"u8.SequenceEqual(value) => PdfParsingCommand.EndStreamOperator,
+        _ when "endobj"u8.SequenceEqual(value) => PdfParsingCommand.EndObject,
+        _ when "R"u8.SequenceEqual(value) => PdfParsingCommand.CreateReference,
         _ => throw new PdfParseException($"Unrecognized Token: {value.ExtendedAsciiString()}")
     };
 
