@@ -49,6 +49,7 @@ public readonly partial struct PdfTokenizer
         {
             '(' => ParseString<SyntaxStringDecoder, int>(ref reader, out result),
             '<' => ParseString<HexStringDecoder, byte>(ref reader, out result),
+            '/' => PdfNameTokenizer.Parse(ref reader, out result),
             _ => TryParseUnprefixedItem(ref reader, out result)
         };
 

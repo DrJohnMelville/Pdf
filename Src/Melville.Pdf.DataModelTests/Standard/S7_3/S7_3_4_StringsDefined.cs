@@ -67,6 +67,7 @@ public class S7_3_4_StringsDefined
     public async Task ParseLiteralStringAsync(string source, string result)
     {
         var parsedString = await (await source.ParseValueObjectAsync()).LoadValueAsync();
+        Assert.True(parsedString.IsString);
         Assert.Equal(result, parsedString.ToString());
     }
 

@@ -6,6 +6,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
@@ -20,10 +21,9 @@ public class S7_3_5_NamesDefined
         Assert.Equal("/" + name, NameDirectory.Get(name).ToString());
     }
     
-    private static async Task<PdfName> TryParseStringToNameAsync(string source)
-    {
-        return (PdfName)await Encoding.UTF8.GetBytes(source).ParseObjectAsync();
-    }
+    private static async ValueTask<PdfDirectValue> TryParseStringToNameAsync(string source) =>
+        await (await Encoding.UTF8.GetBytes(source).ParseValueObjectAsync())
+            .LoadValueAsync();
 
     [Theory]
     [InlineData("/","")]
@@ -42,7 +42,8 @@ public class S7_3_5_NamesDefined
     public async Task ParseNameSucceedAsync(string source, string result)
     {
         var name = await TryParseStringToNameAsync(source);
-        Assert.Equal("/" + result, name!.ToString());
+        Assert.True(name.IsName);
+        Assert.Equal(result, name!.ToString());
 
     }
 
@@ -51,7 +52,6 @@ public class S7_3_5_NamesDefined
     {
         var n1 = await TryParseStringToNameAsync("/Width");
         var n2 = await TryParseStringToNameAsync("/Width");
-        Assert.True(ReferenceEquals(KnownNames.Width, n1));
-        Assert.True(ReferenceEquals(n1, n2));
+        Assert.True(n1.Equals(n2));
     }
 }
