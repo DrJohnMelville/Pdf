@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
@@ -85,9 +88,6 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
         new(array, default);
     public static implicit operator PdfDirectValue(PdfValueDictionary array) =>
         new(array, default);
-    public static implicit operator PdfDirectValue(PdfParsingCommand value) => 
-        new (value, default);
-
 
     public static implicit operator PdfDirectValue(string value)
     {
@@ -138,13 +138,6 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     public override int GetHashCode() => 
         HashCode.Combine(valueStrategy, memento);
-
-    #region PdfParsingOperators
-
-    public bool IsPdfParsingOperation => valueStrategy is PdfParsingCommand;
-    public void TryExecutePdfParseOperation(PostscriptStack<PdfIndirectValue> stack) =>
-        (valueStrategy as PdfParsingCommand)?.Execute(stack);
-    #endregion
 }
 
 public interface ITemporaryConverter

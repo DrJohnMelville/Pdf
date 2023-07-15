@@ -1,12 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Xunit;
 using PdfDictionary = Melville.Pdf.LowLevel.Model.Objects.PdfDictionary;
 
@@ -19,10 +16,11 @@ public class S7_3_7_DictionaryDefined
     [InlineData("<</Height 213/Width 456>>")]
     public async Task ParseSimpleDictionaryAsync(string input)
     {
-        var dict = (PdfDictionary)(await input.ParseObjectAsync());
+        var dict = (await (await input.ParseValueObjectAsync()).LoadValueAsync())
+            .Get<PdfValueDictionary>();
         Assert.Equal(2, dict.RawItems.Count);
-        Assert.Equal(213, ((PdfNumber)dict.RawItems[KnownNames.Height]).IntValue);
-        Assert.Equal(456, ((PdfNumber)dict.RawItems[KnownNames.Width]).IntValue);
+        Assert.Equal(213, await dict.GetAsync<int>("/Height"u8));
+        Assert.Equal(456, await dict.GetAsync<int>("/Width"u8));
     }
     [Theory]
     [InlineData("  << >>  ", 0)]
@@ -30,12 +28,13 @@ public class S7_3_7_DictionaryDefined
     [InlineData(" << /DICT << /InnerDict 121.22 >>>>", 1)] // dictionary can contain dictionaries
     public async Task SpecialCasesAsync(string input, int size)
     {
-        var dict = (PdfDictionary)(await input.ParseObjectAsync());
+        var dict = (await (await input.ParseValueObjectAsync()).LoadValueAsync())
+            .Get<PdfValueDictionary>();
         Assert.Equal(size, dict.RawItems.Count);
     }
     [Theory]
     [InlineData("  <<  213 /Height /Width 456  >>  ")]
     [InlineData("<</Height 213/Width>>")]
     public Task ExceptionsAsync(string input) => 
-        Assert.ThrowsAsync<PdfParseException>(input.ParseObjectAsync);
+        Assert.ThrowsAsync<PdfParseException>(() =>input.ParseValueObjectAsync().AsTask());
 }

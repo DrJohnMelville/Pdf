@@ -59,6 +59,7 @@ public readonly partial struct PdfIndirectValue
     public static implicit operator PdfIndirectValue(double value) => (PdfDirectValue)value;
     public static implicit operator PdfIndirectValue(string value) => (PdfDirectValue)value;
     public static implicit operator PdfIndirectValue(PdfValueArray value) => (PdfDirectValue)value;
+    public static implicit operator PdfIndirectValue(PdfValueDictionary value) => (PdfDirectValue)value;
     public static implicit operator PdfIndirectValue(in ReadOnlySpan<byte> value) => 
         (PdfDirectValue)value;
 
@@ -69,12 +70,6 @@ public readonly partial struct PdfIndirectValue
     };
 
     #endregion
-
-    /// <summary>
-    /// If this is a pdfParsing command
-    /// </summary>
-    public bool IsPdfParsingOperation => valueStrategy is PdfParsingCommand;
-
 }
 
 public static class IndirectValueOperations

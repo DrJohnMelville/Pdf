@@ -23,17 +23,20 @@ public class PdfValueDictionary: IReadOnlyDictionary<PdfDirectValue, ValueTask<P
 
     public IReadOnlyDictionary<PdfDirectValue, PdfIndirectValue> RawItems { get; }
 
-    public PdfValueDictionary(KeyValuePair<PdfDirectValue, PdfIndirectValue>[] values)
+    public PdfValueDictionary(Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> values)
     {
         RawItems = values.Length > 19?
             CreateDictionary(values):
             new SmallReadOnlyValueDictionary<PdfDirectValue, PdfIndirectValue>(values);
     }
     IReadOnlyDictionary<PdfDirectValue, PdfIndirectValue> CreateDictionary(
-        KeyValuePair<PdfDirectValue, PdfIndirectValue>[] values)
+        Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> values)
     {
         var ret = new Dictionary<PdfDirectValue, PdfIndirectValue>();
-        ret.AddRange(values);
+        foreach (var item in values.Span)
+        {
+            ret.Add(item.Key, item.Value);
+        }
         return ret;
     }
 

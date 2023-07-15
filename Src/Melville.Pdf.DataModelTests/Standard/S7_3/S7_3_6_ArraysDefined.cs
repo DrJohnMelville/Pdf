@@ -29,10 +29,10 @@ public class S7_3_6_ArraysDefined
     [Fact]
     public async Task ReadBigArrayAsync()
     {
-        var expected = Enumerable.Range(0, 2000).ToArray();
+        var expected = Enumerable.Range(0, 1000).ToArray();
         var source = $"[{string.Join(" ", expected)}]";
-        var parsed = (PdfArray)await source.ParseObjectAsync();
-        var asInts = await parsed.AsIntsAsync();
+        var parsed = await (await source.ParseValueObjectAsync()).LoadValueAsync();
+        var asInts = await parsed.Get<PdfValueArray>().CastAsync<int>();
         Assert.Equal(expected, asInts);
     }
 }

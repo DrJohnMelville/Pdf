@@ -4,6 +4,7 @@ Group Parser
      Melville.Pdf.LowLevel.Encryption.*
 Group Model
      Melville.Pdf.LowLevel.Model.*
+     Melville.Pdf.LowLevel.Model2.*
      Melville.Pdf.LowLevel.Visitors.*
      Melville.Pdf.LowLevel.Filters.*
 Group Writers

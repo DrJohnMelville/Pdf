@@ -106,4 +106,15 @@ public sealed class PdfValueArray :
 
         return new PdfArray(ret);
     }
+
+    public async ValueTask<T[]> CastAsync<T>()
+    {
+        var ret = new T[Count];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = (await RawItems[i].LoadValueAsync().CA()).Get<T>();
+        }
+
+        return ret;
+    }
 }

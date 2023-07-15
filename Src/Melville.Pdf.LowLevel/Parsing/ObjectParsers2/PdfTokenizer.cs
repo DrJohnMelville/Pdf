@@ -49,12 +49,34 @@ public readonly partial struct PdfTokenizer
         return (char)value switch
         {
             '(' => ParseString<SyntaxStringDecoder, int>(ref reader, out result),
-            '<' => ParseString<HexStringDecoder, byte>(ref reader, out result),
+            '<' => HandleOpenWakka(ref reader, out result),
+            '>' => HandleCloseWakka(ref reader, out result),
             '/' => PdfNameTokenizer.Parse(ref reader, out result),
             '[' => ((PdfDirectValue)PdfParsingCommand.PushMark).AsTrueValue(out result),
             ']' => ((PdfDirectValue)PdfParsingCommand.CreateArray).AsTrueValue(out result),
             _ => TryParseUnprefixedItem(ref reader, out result)
         };
+    }
+
+    private bool HandleOpenWakka(ref SequenceReader<byte> reader, out PdfDirectValue result)
+    {
+        if (!reader.TryPeek(out var character)) 
+            return default(PdfDirectValue).AsFalseValue(out result);
+        if (character != (byte)'<')
+            return ParseString<HexStringDecoder, byte>(ref reader, out result);
+
+        reader.Advance(1);
+        return ((PdfDirectValue)PdfParsingCommand.PushMark).AsTrueValue(out result);
+    }
+    private bool HandleCloseWakka(ref SequenceReader<byte> reader, out PdfDirectValue result)
+    {
+        if (!reader.TryRead(out var secondChar))
+            return default(PdfDirectValue).AsFalseValue(out result);
+        if (secondChar != (byte)'>')
+            throw new PdfParseException("Unexpected Character following >: " + (char)secondChar);
+
+        return ((PdfDirectValue)PdfParsingCommand.CreateDictionary).AsTrueValue(out result);
+
     }
 
     private bool ParseString<T, TState>(ref SequenceReader<byte> reader, out PdfDirectValue result)
