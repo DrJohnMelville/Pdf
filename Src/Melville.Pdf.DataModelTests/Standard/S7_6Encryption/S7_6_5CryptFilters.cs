@@ -31,7 +31,7 @@ public class S7_6_5CryptFilters
     }
 
     private PdfStream InsertedStream(
-        IPdfObjectRegistry creator, PdfName? cryptFilterTypeForStream)
+        IPdfObjectCreatorRegistry creator, PdfName? cryptFilterTypeForStream)
     {
         var builder = cryptFilterTypeForStream == null ?
             new DictionaryBuilder():

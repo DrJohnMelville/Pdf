@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -27,7 +28,7 @@ internal class PdfFileStreamSource: IStreamDataSource
         return await parsingFileOwner.RentStreamAsync(sourceFilePosition, streamLength).CA();
     }
 
-    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) => 
+    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectValue cryptFilterName) => 
         decryptor.NamedCipher(cryptFilterName).Decrypt().CryptStream(encryptedStream);
     public Stream WrapStreamWithDecryptor(Stream encryptedStream) => 
         decryptor.StreamCipher().Decrypt().CryptStream(encryptedStream);

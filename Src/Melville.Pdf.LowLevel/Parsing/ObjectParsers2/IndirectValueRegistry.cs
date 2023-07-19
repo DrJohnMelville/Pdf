@@ -5,8 +5,11 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
@@ -16,7 +19,7 @@ internal class IndirectValueRegistry : IIndirectValueSource
     private readonly UnenclosedDeferredPdfStrategy unenclosedObjectStrategy;
     private readonly ObjectStreamDeferredPdfStrategy objectStreamStrategy;
 
-    private readonly Dictionary<MementoUnion, PdfDirectValue> items = new();
+    private readonly Dictionary<(int, int), PdfDirectValue> items = new();
 
     public IndirectValueRegistry(ParsingFileOwner owner)
     {
@@ -24,15 +27,15 @@ internal class IndirectValueRegistry : IIndirectValueSource
         objectStreamStrategy = new(this);
     }
 
-    public PdfIndirectValue CreateReference(ulong item, ulong generation) =>
-        new(this, NumberAndGenerationToMemento(item, generation));
+    public PdfIndirectValue CreateReference(int item, int generation) =>
+        new(this, PairToMemento(item, generation));
 
     public string GetValue(in MementoUnion memento) =>
-        $"{memento.UInt64s[0]} {memento.UInt64s[1]} R";
+        $"{memento.Int32s[0]} {memento.Int32s[1]} R";
 
     public async ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
     {
-        var item = CollectionsMarshal.GetValueRefOrNullRef(items, memento);
+        var item = CollectionsMarshal.GetValueRefOrNullRef(items, MementoToPair(memento));
         if (Unsafe.IsNullRef(ref item)) return PdfDirectValue.CreateNull();
 
         if (item.TryGet(out DeferredPdfHolder deferred))
@@ -44,21 +47,32 @@ internal class IndirectValueRegistry : IIndirectValueSource
     }
 
 
-    public void RegisterDirectObject(ulong number, ulong generation, in PdfDirectValue value) =>
-        RegisterDirectObject(NumberAndGenerationToMemento(number, generation), value);
+    public void RegisterDirectObject(int number, int generation, in PdfDirectValue value) =>
+        items[(number,generation)] = value;
 
-    private static MementoUnion NumberAndGenerationToMemento(ulong number, ulong generation) => 
+    private static MementoUnion PairToMemento(int number, int generation) => 
         MementoUnion.CreateFrom(number, generation);
 
-    public void RegisterDirectObject(in MementoUnion memento, in PdfDirectValue value) =>
-        items[memento] = value;
+    private static (int number, int generation) MementoToPair(in MementoUnion memento)
+    {
+        var ints = memento.Int32s;
+        return (ints[0], ints[1]);
+    }
 
-    public void RegisterUnenclosedObject(ulong number, ulong generation, ulong offset) => 
+    public void RegisterDirectObject(in MementoUnion memento, in PdfDirectValue value) =>
+        items[MementoToPair(memento)] = value;
+
+    public void RegisterUnenclosedObject(int number, int generation, long offset) => 
         RegisterDirectObject(number, generation, unenclosedObjectStrategy.Create(offset));
 
-    public void RegisterObjectStreamObject(ulong number, ulong streamNumber, ulong streamPosition) =>
+    public void RegisterObjectStreamObject(int number, int streamNumber, int streamPosition) =>
         RegisterDirectObject(number, 0,
             objectStreamStrategy.Create(streamNumber, streamPosition));
+
+    public IReadOnlyDictionary<(int, int), PdfIndirectValue> GetObjects()
+    {
+        return new IndirectRegistryWrapper<(int, int)>(items);
+    }
 }
 
 internal interface IDeferredPdfObject: IPostscriptValueStrategy<DeferredPdfHolder>
@@ -86,7 +100,7 @@ internal partial class UnenclosedDeferredPdfStrategy : IDeferredPdfObject
         throw new NotImplementedException("Need to Read a root pdf value");
     }
 
-    public PdfDirectValue Create(ulong offset)
+    public PdfDirectValue Create(long offset)
     {
         return new(this, MementoUnion.CreateFrom(offset));
     }
@@ -101,7 +115,7 @@ internal partial class ObjectStreamDeferredPdfStrategy : IDeferredPdfObject
         throw new NotImplementedException("Need to Read ObjectStrea pdf values");
     }
 
-    public PdfDirectValue Create(ulong streamNum, ulong streamPosition)
+    public PdfDirectValue Create(int streamNum, int streamPosition)
     {
         return new(this, MementoUnion.CreateFrom(streamNum, streamPosition));
     }

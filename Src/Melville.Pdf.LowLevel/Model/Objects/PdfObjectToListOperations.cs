@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
@@ -20,15 +22,31 @@ public static class PdfObjectToListOperations
     /// </summary>
     /// <param name="item">The item to follow.</param>
     /// <returns>A list of PdfObjects with the semantics given above.</returns>
-    public static IReadOnlyList<PdfObject> ObjectAsUnresolvedList(this PdfObject? item)
-    {
-        return item switch
+    public static IReadOnlyList<PdfObject> ObjectAsUnresolvedList(this PdfObject? item) =>
+        item switch
         {
             PdfArray arr => arr.RawItems,
             {} x and (PdfBoolean or not PdfTokenValues)=> new []{x},
             _ => Array.Empty<PdfObject>(),
         };
-    }
+
+    /// <summary>
+    /// At a number of places in the Pdf Spec an array with a single element can be replaced by
+    /// just the single element.  This method resolves that ambiguity.
+    /// Arrays map to their elements.
+    /// PdfNull objects map to an empty list.
+    /// Everything else maps to a synthesized array that contains the element.
+    /// This method does not follow any references.
+    /// </summary>
+    /// <param name="item">The item to follow.</param>
+    /// <returns>A list of PdfObjects with the semantics given above.</returns>
+    public static IReadOnlyList<PdfIndirectValue> ObjectAsUnresolvedList(this PdfDirectValue item) =>
+        item switch
+        {
+            {IsNull:true} => Array.Empty<PdfIndirectValue>(),
+            _ when item.TryGet(out PdfValueArray valueArray) => valueArray.RawItems,
+            _ => new [] {(PdfIndirectValue)item}
+        };
 
     /// <summary>
     /// At a number of places in the PDF spec a single item array can be replaced by just the item. This method resolves this,

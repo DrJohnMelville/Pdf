@@ -12,4 +12,6 @@ internal static class HexStrings
         string.Join(" ", str.Select(i => i.ToString("X2")));
     public static string AsHex(in this ReadOnlySpan<byte> str) =>
         string.Join(" ", str.ToArray().Select(i => i.ToString("X2")));
+    public static string AsHex(in this Span<byte> str) =>
+        string.Join(" ", str.ToArray().Select(i => i.ToString("X2")));
 }

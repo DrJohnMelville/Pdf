@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -94,7 +95,7 @@ public static class DocumentEncryptorFactory
         string userPassword, string ownerPassword, PdfPermission restrictedPermissions,
         EncryptorName encryptor, int keyLengthInBytes) =>
         V4(userPassword, ownerPassword, restrictedPermissions, 
-            KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF, 
+            KnownNames.StdCFTName, KnownNames.StdCFTName, KnownNames.StmFTName, 
             new V4CfDictionary(encryptor, keyLengthInBytes));
 
     /// <summary>
@@ -110,7 +111,7 @@ public static class DocumentEncryptorFactory
     /// <returns>An ILowLevelDocumentEncryptor which can be used to make an LowLevelDocumentWriter write an encrypted document.</returns>
     public static ILowLevelDocumentEncryptor V4(
         string userPassword, string ownerPassword, PdfPermission restrictedPermissions,
-        PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc, in V4CfDictionary encryptors) =>
+        PdfDirectValue streamEnc, PdfDirectValue stringEnc, PdfDirectValue embededFileEnc, in V4CfDictionary encryptors) =>
         new V4Encryptor(userPassword, ownerPassword, 128, restrictedPermissions,
             streamEnc, stringEnc, embededFileEnc, encryptors);
 
@@ -123,7 +124,7 @@ public static class DocumentEncryptorFactory
     /// <returns>An ILowLevelDocumentEncryptor which can be used to make an LowLevelDocumentWriter write an encrypted document.</returns>
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions) => V6(
-        user, owner, restrictedPermissions, KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF);
+        user, owner, restrictedPermissions, KnownNames.StdCFTName, KnownNames.StdCFTName, KnownNames.StmFTName);
 
     /// <summary>
     /// Create a document encryptor using the V6 encryption algorithms.
@@ -138,8 +139,8 @@ public static class DocumentEncryptorFactory
     /// <returns>An ILowLevelDocumentEncryptor which can be used to make an LowLevelDocumentWriter write an encrypted document.</returns>
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions,
-        PdfName streamEnc, PdfName stringEnc, PdfName embededFileEnc, V4CfDictionary? dictionary = null) =>
+        PdfDirectValue streamEnc, PdfDirectValue stringEnc, PdfDirectValue embededFileEnc, V4CfDictionary? dictionary = null) =>
         new EncryptionV6.V6Encryptor(user, owner, restrictedPermissions,
             streamEnc, stringEnc, embededFileEnc,
-             dictionary ?? new V4CfDictionary(KnownNames.AESV3, 32, KnownNames.DocOpen));
+             dictionary ?? new V4CfDictionary(KnownNames.AESV3TName, 32, KnownNames.DocOpenTName));
 }

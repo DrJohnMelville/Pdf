@@ -6,6 +6,7 @@ using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
@@ -25,13 +26,13 @@ internal readonly partial struct InlineImageParser
         await target.DoAsync(builder.AsStream(await StreamDataAsync(strategy).CA())).CA();
     }
 
-    private DictionaryBuilder PopDictionaryFromPostscriptStack()
+    private ValueDictionaryBuilder PopDictionaryFromPostscriptStack()
     {
         Span<byte> nameSpan = stackalloc byte[PostscriptString.ShortStringLimit];
         var builder = DefaultImageDictionaryBuilder();
         while (engine.OperandStack.TryPop(out var last) && !last.IsMark)
         {
-            var name = NameDirectory.Get(
+            var name = PdfDirectValue.CreateName(
                 ExpandNameSynonym(engine.PopAs<StringSpanSource>().GetSpan()));
 
             builder.WithItem(name, last.ToPdfObject());
@@ -55,10 +56,10 @@ internal readonly partial struct InlineImageParser
 
     };
  
-    private DictionaryBuilder DefaultImageDictionaryBuilder() =>
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image);
+    private ValueDictionaryBuilder DefaultImageDictionaryBuilder() =>
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName);
 
     private async ValueTask<byte[]> StreamDataAsync(EndSearchStrategy strategy)
     {

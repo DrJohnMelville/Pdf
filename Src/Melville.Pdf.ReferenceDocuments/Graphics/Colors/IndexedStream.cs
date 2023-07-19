@@ -33,7 +33,7 @@ public class IndexedStream: ColorBars
                         0x80, 0x80, 0xA0,
                         0x80, 0x40, 0xA0
                     }
-                    ))
+                ))
             )
         );
     }

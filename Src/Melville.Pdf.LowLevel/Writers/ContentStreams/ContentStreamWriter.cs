@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -10,7 +9,7 @@ using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -78,14 +77,14 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         destPipe.WriteOperator("ri"u8, intent);
 
     /// <inheritdoc />
-    public ValueTask LoadGraphicStateDictionaryAsync(PdfName dictionaryName)
+    public ValueTask LoadGraphicStateDictionaryAsync(PdfDirectValue dictionaryName)
     {
         destPipe.WriteOperator("gs"u8, dictionaryName);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetFontAsync(PdfName font, double size)
+    public ValueTask SetFontAsync(PdfDirectValue font, double size)
     {
         destPipe.WriteName(font);
         destPipe.WriteOperator("Tf"u8, size);
@@ -150,7 +149,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         destPipe.WriteOperator("re"u8, x, y, width, height);
 
     /// <inheritdoc />
-    public ValueTask PaintShaderAsync(PdfName name)
+    public ValueTask PaintShaderAsync(PdfDirectValue name)
     {
         destPipe.WriteName(name);
         destPipe.WriteOperator("sh"u8);
@@ -162,14 +161,14 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     #region Color Operations
 
     /// <inheritdoc />
-    public ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace)
+    public ValueTask SetStrokingColorSpaceAsync(PdfDirectValue colorSpace)
     {
         destPipe.WriteOperator("CS"u8, colorSpace);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace)
+    public ValueTask SetNonstrokingColorSpaceAsync(PdfDirectValue colorSpace)
     {
         destPipe.WriteOperator("cs"u8, colorSpace);
         return ValueTask.CompletedTask;
@@ -180,10 +179,10 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         destPipe.WriteOperator("SC"u8, components);
 
     /// <inheritdoc />
-    public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetStrokeColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
-        if (patternName is not null) destPipe.WriteName(patternName);
+        if (patternName.HasValue) destPipe.WriteName(patternName.Value);
         destPipe.WriteOperator("SCN"u8);
         return ValueTask.CompletedTask;
     }
@@ -193,10 +192,10 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         destPipe.WriteOperator("sc"u8, components);
 
     /// <inheritdoc />
-    public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetNonstrokingColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors)
     {
         destPipe.WriteDoubleSpan(colors);
-        if (patternName is not null) destPipe.WriteName(patternName);
+        if (patternName.HasValue) destPipe.WriteName(patternName.Value);
         destPipe.WriteOperator("scn"u8);
         return ValueTask.CompletedTask;
     }
@@ -244,27 +243,27 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     }
 
     /// <inheritdoc />
-    public ValueTask DoAsync(PdfName name)
+    public ValueTask DoAsync(PdfDirectValue name)
     {
         destPipe.WriteOperator("Do"u8, name);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async ValueTask DoAsync(PdfStream inlineImage)
+    public async ValueTask DoAsync(PdfValueStream inlineImage)
     {
-        await destPipe.WriteInlineImageDictAsync(inlineImage).CA();
+        destPipe.WriteInlineImageDict(inlineImage);
         await using (var str = await DiskRepresentationAsync(inlineImage).CA())
         {
             await destPipe.WriteStreamContentAsync(str).CA();
         }
-        destPipe.WriteBytes(inlineImageTerminator);
+        destPipe.WriteBytes(InlineImageTerminator);
     }
 
-    private static ValueTask<Stream> DiskRepresentationAsync(PdfStream inlineImage) => 
+    private static ValueTask<Stream> DiskRepresentationAsync(PdfValueStream inlineImage) => 
         inlineImage.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance);
 
-    private static readonly byte[] inlineImageTerminator = { (byte)'E', (byte)'I' };  
+    private static ReadOnlySpan<byte> InlineImageTerminator => "EI"u8;
     #endregion
 
     #region Text Block
@@ -347,21 +346,22 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     #region Marked Content Operations
 
     /// <inheritdoc />
-    public void MarkedContentPoint(PdfName tag) => destPipe.WriteOperator("MP"u8, tag);
+    public void MarkedContentPoint(PdfDirectValue tag) => destPipe.WriteOperator("MP"u8, tag);
 
     /// <inheritdoc />
-    public ValueTask MarkedContentPointAsync(PdfName tag, PdfName properties)
+    public ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfDirectValue properties)
     {
         destPipe.WriteOperator("DP"u8, tag, properties);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dict)
+    public ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfValueDictionary dict)
     {
         destPipe.WriteName(tag);
-        await destPipe.WriteDictionaryAsync(dict).CA();
+        destPipe.WriteDictionary(dict);
         destPipe.WriteOperator("DP"u8);
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -369,7 +369,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     /// </summary>
     /// <param name="tag">The name for the marked range</param>
     /// <returns>A disposable struct that will close the marked range when disposed.</returns>
-    public DeferedClosingTask BeginMarkedRange(PdfName tag)
+    public DeferedClosingTask BeginMarkedRange(PdfDirectValue tag)
     {
         ((IMarkedContentCSOperations)this).BeginMarkedRange(tag);
         return new DeferedClosingTask(destPipe, "EMC"u8);
@@ -381,7 +381,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     /// <param name="tag">The name for the marked range</param>
     /// <param name="dictName">The name that refers to a dictionary that describes the range</param>
     /// <returns>A disposable struct that will close the marked range when disposed.</returns>
-    public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
+    public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfDirectValue tag, PdfDirectValue dictName)
     {
         await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictName).CA();
         return new DeferedClosingTask(destPipe, "EMC"u8);
@@ -393,29 +393,30 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
     /// <param name="tag">The name for the marked range</param>
     /// <param name="dictionary">The dictionary that describes the range</param>
     /// <returns>A disposable struct that will close the marked range when disposed.</returns>
-    public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
+    public async ValueTask<DeferedClosingTask> BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary)
     {
         await ((IMarkedContentCSOperations)this).BeginMarkedRangeAsync(tag, dictionary).CA();
         return new DeferedClosingTask(destPipe, "EMC"u8);
     }
 
     /// <inheritdoc />
-    void IMarkedContentCSOperations.BeginMarkedRange(PdfName tag) => 
+    void IMarkedContentCSOperations.BeginMarkedRange(PdfDirectValue tag) => 
         destPipe.WriteOperator("BMC"u8, tag);
 
     /// <inheritdoc />
-    ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
+    ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfDirectValue tag, PdfDirectValue dictName)
     {
         destPipe.WriteOperator("BDC"u8, tag, dictName);
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
-    async ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
+    ValueTask IMarkedContentCSOperations.BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary)
     {
         destPipe.WriteName(tag);
-        await destPipe.WriteDictionaryAsync(dictionary).CA();
+        destPipe.WriteDictionary(dictionary);
         destPipe.WriteOperator("BDC"u8);
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />

@@ -2,6 +2,7 @@
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
@@ -29,25 +30,24 @@ internal static class ParsePdfArrays
         public override void Execute(PostscriptEngine engine, in PostscriptValue value)
         {
             var count = engine.OperandStack.CountToMark();
-            var items = new PdfObject[count];
+            var items = new PdfIndirectValue[count];
             for (int i = count - 1; i >= 0; i--)
             {
                 items[i] = engine.OperandStack.Pop().ToPdfObject();
             }
             engine.OperandStack.Pop();
-            engine.OperandStack.Push(new PostscriptValue(new PdfArray(items), 
+            engine.OperandStack.Push(new PostscriptValue(new PdfValueArray(items), 
                 PostscriptBuiltInOperations.PushArgument, default));
         }
     }
 
-    public static PdfObject ToPdfObject(in this PostscriptValue value) => value switch
+    public static PdfDirectValue ToPdfObject(in this PostscriptValue value) => value switch
     {
-        { IsDouble: true } => new PdfDouble(value.Get<double>()),
-        { IsInteger: true } => new PdfInteger(value.Get<long>()),
-        { IsBoolean: true} => value.Get<bool>() ? PdfBoolean.True:PdfBoolean.False,
-        var x when x.TryGet(out PdfObject? pdfObject) => pdfObject,
-        _ => NameDirectory.Get(
-            ExpandValueSynonym(value.Get<StringSpanSource>().GetSpan()))
+        { IsDouble: true } => value.Get<double>(),
+        { IsInteger: true } => value.Get<long>(),
+        { IsBoolean: true} => value.Get<bool>(),
+        { IsLiteralName: true} => PdfDirectValue.CreateName(value.Get<StringSpanSource>().GetSpan()),
+        _ => throw new InvalidOperationException("Cannot Render this type.")
     };
     private static ReadOnlySpan<byte> ExpandValueSynonym(ReadOnlySpan<byte> name) => name switch
     {

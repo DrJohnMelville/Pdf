@@ -4,26 +4,25 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal static class PdfTrailerParser
 {
-    public static async ValueTask< PdfDictionary> ParseXrefAndTrailerAsync(ParsingFileOwner source, long xrefPosition)
-    {
-        return await XrefAndTrailerAsync(source, xrefPosition, null).CA();
-    }
-        
-    private static async Task<PdfDictionary> XrefAndTrailerAsync(
+    public static Task<PdfValueDictionary> ParseXrefAndTrailerAsync(ParsingFileOwner source, long xrefPosition) => 
+        XrefAndTrailerAsync(source, xrefPosition, null);
+
+    private static async Task<PdfValueDictionary> XrefAndTrailerAsync(
         ParsingFileOwner source, long xrefPosition, List<long>? priorPositions)
     {
-        PdfDictionary? trailerDictionary;
 
         var context = await source.RentReaderAsync(xrefPosition).CA();
-        trailerDictionary = await ReadSingleRefTrailerBlockAsync(context).CA();
+        var trailerDictionary = await ReadSingleRefTrailerBlockAsync(context).CA();
 
         if (trailerDictionary != null)
         {
@@ -34,10 +33,10 @@ internal static class PdfTrailerParser
             trailerDictionary = await CrossReferenceStreamParser.ReadAsync(source, xrefPosition).CA();
         }
 
-        if (trailerDictionary.TryGetValue(KnownNames.Prev, out var prev) && (await prev.CA()) is PdfNumber offset)
+        if ((await trailerDictionary.GetOrDefaultAsync(KnownNames.PrevTName, -1L).CA()) is var offset && offset >= 0)
         {
             AddToPriorPositions(xrefPosition, ref priorPositions);
-            await TryReadPriorTRailerAsync(source, priorPositions, offset.IntValue).CA();
+            await TryReadPriorTRailerAsync(source, priorPositions, offset).CA();
         }
         return  trailerDictionary;
     }
@@ -55,7 +54,7 @@ internal static class PdfTrailerParser
         priorPositions.Add(xrefPosition);
     }
 
-    private static async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync(IParsingReader context)
+    private static async Task<PdfValueDictionary?> ReadSingleRefTrailerBlockAsync(IParsingReader context)
     {
         if (!await TokenChecker.CheckTokenAsync(context.Reader, xrefTag).CA()) return null;
         await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
@@ -63,10 +62,10 @@ internal static class PdfTrailerParser
         await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
         if (!await TokenChecker.CheckTokenAsync(context.Reader, trailerTag).CA())
             throw new PdfParseException("Trailer does not follow xref");
-        var trailer = await context.RootObjectParser.ParseAsync(context).CA();
-        if (trailer is not PdfDictionary td)
+        var trailerIndirect = (await new RootObjectParser(context).ParseAsync().CA());
+        if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfValueDictionary trailer))
             throw new PdfParseException("Trailer dictionary is invalid");
-        return td;
+        return trailer;
     }
 
     private static readonly byte[] xrefTag = {120, 114, 101, 102}; // xref;

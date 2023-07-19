@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
@@ -29,7 +30,7 @@ internal class LiteralStreamSource : IStreamDataSource
         return new ValueTask<Stream>(source.CreateReader());
     }
 
-    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName) =>
+    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectValue cryptFilterName) =>
         encryptedStream;
     public Stream WrapStreamWithDecryptor(Stream encryptedStream) =>
         encryptedStream;

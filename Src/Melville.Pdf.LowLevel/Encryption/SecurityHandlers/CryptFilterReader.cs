@@ -7,21 +7,22 @@ using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
 internal readonly partial struct CryptFilterReader
 {
     [FromConstructor] private readonly IRootKeyComputer rootKeyComputer;
-    [FromConstructor] private readonly PdfDictionary encryptionDictionary;
-    [FromConstructor] private readonly PdfDictionary cfd;
-    private readonly Dictionary<PdfName, ISecurityHandler> finalDictionary = new()        
+    [FromConstructor] private readonly PdfValueDictionary encryptionDictionary;
+    [FromConstructor] private readonly PdfValueDictionary cfd;
+    private readonly Dictionary<PdfDirectValue, ISecurityHandler> finalDictionary = new()        
     {
-        { KnownNames.Identity, NullSecurityHandler.Instance }
+        { KnownNames.IdentityTName, NullSecurityHandler.Instance }
     };
 
     
-    public async ValueTask<Dictionary<PdfName, ISecurityHandler>> ParseCfDictionaryAsync()
+    public async ValueTask<Dictionary<PdfDirectValue, ISecurityHandler>> ParseCfDictionaryAsync()
     {
         await ReadAllFiltersAsync();
 
@@ -37,27 +38,27 @@ internal readonly partial struct CryptFilterReader
         }
     }
 
-    private async Task<ISecurityHandler> ReadSingleHandlerAsync(KeyValuePair<PdfName, ValueTask<PdfObject>> entry)
+    private async Task<ISecurityHandler> ReadSingleHandlerAsync(KeyValuePair<PdfDirectValue, ValueTask<PdfDirectValue>> entry)
     {
-        var cryptDictionary = (PdfDictionary)await entry.Value.CA();
-        var cfm = await cryptDictionary.GetAsync<PdfName>(KnownNames.CFM).CA();
+        var cryptDictionary = (await entry.Value).Get<PdfValueDictionary>();
+        var cfm = await cryptDictionary[KnownNames.CFMTName].CA();
         var handler = CreateSubSecurityHandler(cfm, encryptionDictionary);
         return handler;
     }
 
     private async Task SetDefaultFiltersAsync()
     {
-        await SetSingleDefaultFilterAsync(KnownNames.StmF).CA();
-        await SetSingleDefaultFilterAsync(KnownNames.StrF).CA();
+        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.IdentityTName).CA();
+        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.IdentityTName).CA();
     }
 
-    private async Task SetSingleDefaultFilterAsync(PdfName filterName) => 
+    private async Task SetSingleDefaultFilterAsync(PdfDirectValue filterName) => 
         finalDictionary.Add(filterName, finalDictionary[await FindDefaultFilterAsync(filterName).CA()]);
 
-    private ValueTask<PdfName> FindDefaultFilterAsync(PdfName name) => 
-        encryptionDictionary.GetOrDefaultAsync(name, KnownNames.Identity);
-
-    private ISecurityHandler CreateSubSecurityHandler(PdfName cfm, PdfObject dictionary) => 
+    private ValueTask<PdfDirectValue> FindDefaultFilterAsync(PdfDirectValue name) => 
+        encryptionDictionary.GetOrDefaultAsync(name, (PdfDirectValue)KnownNames.IdentityTName);
+    
+    private ISecurityHandler CreateSubSecurityHandler(PdfDirectValue cfm, PdfValueDictionary dictionary) => 
         cfm.GetHashCode() switch
     {
         KnownNameKeys.V2 => new SecurityHandler(
@@ -70,12 +71,12 @@ internal readonly partial struct CryptFilterReader
         _ => throw new PdfSecurityException("Unknown Security Handler Type: " + cfm)
     };
 
-    public static async ValueTask<ISecurityHandler> CreateAsync(IRootKeyComputer rootKeyComputer, PdfDictionary encryptionDictionary)
+    public static async ValueTask<ISecurityHandler> CreateAsync(IRootKeyComputer rootKeyComputer, PdfValueDictionary encryptionDictionary)
     {
-        var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CF).CA();
+        var cfd = await encryptionDictionary.GetAsync<PdfValueDictionary>(KnownNames.CFTName).CA();
         var finalDictionary =
             await new CryptFilterReader(rootKeyComputer, encryptionDictionary, cfd)
                 .ParseCfDictionaryAsync().CA();
-        return new SecurityHandlerV4(rootKeyComputer ,finalDictionary);
+        return new SecurityHandlerV4(rootKeyComputer,finalDictionary);
     }
 }

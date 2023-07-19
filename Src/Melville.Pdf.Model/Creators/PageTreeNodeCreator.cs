@@ -61,7 +61,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
 
     /// <inheritdoc />
     public override (PdfIndirectObject Reference, int PageCount)
-        ConstructItem(IPdfObjectRegistry creator, PdfIndirectObject? parent) =>
+        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent) =>
         TrySegmentedPageTree().InnnerConstructPageTree(creator, parent);
 
     private PageTreeNodeCreator TrySegmentedPageTree() =>
@@ -75,7 +75,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
         );
 
     private (PdfIndirectObject Reference, int PageCount)
-        InnnerConstructPageTree(IPdfObjectRegistry creator, PdfIndirectObject? parent)
+        InnnerConstructPageTree(IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent)
     {
         var ret = creator.AddPromisedObject();
         AddExtraFieldsFromTreeLevel(creator,parent);
@@ -93,7 +93,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
     }
     
     private void AddExtraFieldsFromTreeLevel(
-        IPdfObjectRegistry creator, PdfIndirectObject? parent)
+        IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent)
     {
         if (parent is not null)
         {

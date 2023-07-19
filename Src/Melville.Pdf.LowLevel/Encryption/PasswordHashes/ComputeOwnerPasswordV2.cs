@@ -15,11 +15,11 @@ internal class ComputeOwnerPasswordV2: IComputeOwnerPassword
         InnerUserKeyFromOwnerKey(ownerKey, parameters.OwnerPasswordHash, parameters.KeyLengthInBytes);
 
     private string InnerUserKeyFromOwnerKey(
-        string ownerKey, byte[] ownerPasswordHash, int keyLengthInBytes)
+        string ownerKey, Memory<byte> ownerPasswordHash, int keyLengthInBytes)
     {
         var hash = OwnerPasswordHash(ownerKey);
         var userPass = new byte[ownerPasswordHash.Length];
-        ownerPasswordHash.CopyTo(userPass, 0);
+        ownerPasswordHash.Span.CopyTo(userPass.AsSpan());
         SequentialRc4Encryptor.EncryptDownNTimes(
             hash[..keyLengthInBytes], userPass, SequentialEncryptionCount());
         return BytePadder.PasswordFromBytes(userPass);

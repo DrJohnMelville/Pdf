@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Document;
@@ -23,10 +24,10 @@ public partial class PdfLowLevelDocument
     /// <summary>
     /// Trailer dictionary, which contains pointers to various important objects like encryption information and the document root.
     /// </summary>
-    [FromConstructor]public PdfDictionary TrailerDictionary { get; }
+    [FromConstructor]public PdfValueDictionary TrailerDictionary { get; }
     /// <summary>
     /// A dictionary of the PDF objects (other than the trailer dictionary) that comprise the low level document.
     /// </summary>
-    [FromConstructor]public IReadOnlyDictionary<(int ObjectNumber,int GenerationNumber), PdfIndirectObject> 
+    [FromConstructor]public IReadOnlyDictionary<(int ObjectNumber,int GenerationNumber), PdfIndirectValue> 
         Objects { get; }
 }

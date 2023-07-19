@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Encryption.CryptContexts;
 
@@ -21,17 +22,17 @@ internal interface IDocumentCryptContext
     /// </summary>
     /// <param name="item">A PDF object</param>
     /// <returns></returns>
-    bool BlockEncryption(PdfObject item);
+    bool BlockEncryption(PdfValueDictionary item);
 }
 internal class DocumentCryptContext : IDocumentCryptContext
 {
     private readonly byte[] rootKey;
     private readonly IKeySpecializer keySpecializer;
     private readonly ICipherFactory cipherFactory;
-    private readonly PdfObject? blockEncryption;
+    private readonly PdfValueDictionary? blockEncryption;
 
     public DocumentCryptContext(byte[] rootKey, IKeySpecializer keySpecializer, 
-        ICipherFactory cipherFactory, PdfObject? blockEncryption)
+        ICipherFactory cipherFactory, PdfValueDictionary? blockEncryption)
     {
         this.rootKey = rootKey;
         this.keySpecializer = keySpecializer;
@@ -39,7 +40,7 @@ internal class DocumentCryptContext : IDocumentCryptContext
         this.blockEncryption = blockEncryption;
     }
 
-    public bool BlockEncryption(PdfObject item) => blockEncryption == item;
+    public bool BlockEncryption(PdfValueDictionary item) => blockEncryption == item;
 
     public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) =>
         new ObjectCryptContext(this, objectNumber, generationNumber);
@@ -61,7 +62,7 @@ internal class DocumentCryptContext : IDocumentCryptContext
             documentContext.cipherFactory.CipherFromKey(KeyForObject());
         public ICipher StreamCipher() => 
             documentContext.cipherFactory.CipherFromKey(KeyForObject());
-        public ICipher NamedCipher(PdfName name) => 
+        public ICipher NamedCipher(in PdfDirectValue name) => 
             documentContext.cipherFactory.CipherFromKey(documentContext.rootKey);
  
         private ReadOnlySpan<byte> KeyForObject() => 

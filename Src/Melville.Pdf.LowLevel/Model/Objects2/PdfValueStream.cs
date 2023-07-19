@@ -60,10 +60,10 @@ public class PdfValueStream : PdfValueDictionary
         new CryptSingleFilter(source, innerEncryptor,
             SinglePredictionFilter.Instance);
 
-    private async ValueTask<IReadOnlyList<PdfObject>> FilterListAsync() => 
-        (await this.GetOrNullAsync(KnownNames.FilterU8).CA()).AsOldObject().ObjectAsUnresolvedList();
-    private async ValueTask<IReadOnlyList<PdfObject>> FilterParamListAsync() => 
-        (await this.GetOrNullAsync(KnownNames.DecodeParmsU8).CA()).AsOldObject().ObjectAsUnresolvedList();
+    private async ValueTask<IReadOnlyList<PdfIndirectValue>> FilterListAsync() => 
+        (await this.GetOrNullAsync(KnownNames.FilterTName).CA()).ObjectAsUnresolvedList();
+    private async ValueTask<IReadOnlyList<PdfIndirectValue>> FilterParamListAsync() => 
+        (await this.GetOrNullAsync(KnownNames.DecodeParmsTName).CA()).ObjectAsUnresolvedList();
 
 
 

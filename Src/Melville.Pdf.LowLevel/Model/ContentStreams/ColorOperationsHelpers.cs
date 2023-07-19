@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -56,7 +57,7 @@ public static class ColorOperationsHelpers
     /// <param name="colors">The numeric color values, if any</param>
     /// <returns>A ValueTask representing completion of this operation</returns>
     public static ValueTask SetStrokeColorExtendedAsync(
-        this IColorOperations target, PdfName? name, params double[] colors) =>
+        this IColorOperations target, PdfDirectValue? name, params double[] colors) =>
         target.SetStrokeColorExtendedAsync(name, new ReadOnlySpan<double>(colors));
 
     /// <summary>
@@ -82,6 +83,6 @@ public static class ColorOperationsHelpers
     /// <param name="colors">The numeric color values, if any</param>
     /// <returns>A ValueTask representing completion of this operation</returns>
     public static ValueTask SetNonstrokingColorExtendedAsync(
-        this IColorOperations target, PdfName? name, params double[] colors) =>
+        this IColorOperations target, PdfDirectValue? name, params double[] colors) =>
         target.SetNonstrokingColorExtendedAsync(name, new ReadOnlySpan<double>(colors));
 }

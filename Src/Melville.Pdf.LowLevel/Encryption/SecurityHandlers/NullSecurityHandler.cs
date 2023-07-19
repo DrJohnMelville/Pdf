@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -14,14 +15,14 @@ namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 internal partial class NullSecurityHandler: 
     ISecurityHandler, IDocumentCryptContext, IObjectCryptContext, ICipher, ICipherOperations
 {
-    public bool BlockEncryption(PdfObject item) => false;
+    public bool BlockEncryption(PdfValueDictionary item) => false;
     public byte[]? TryComputeRootKey(string password, PasswordType type) => Array.Empty<byte>();
     public IDocumentCryptContext CreateCryptContext(byte[] rootKey) => this;
     public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) => this;
     public ICipher StringCipher() => this;
     public ICipher StreamCipher() => this;
-    public ICipher NamedCipher(PdfName name) =>
-        (name == KnownNames.Identity) ? this :
+    public ICipher NamedCipher(in PdfDirectValue name) =>
+        (name.Equals(KnownNames.IdentityTName)) ? this :
             throw new PdfParseException("Should not have a crypt filter in an unencrypted document.");
     public ICipherOperations Encrypt() => this;
     public ICipherOperations Decrypt() => this;

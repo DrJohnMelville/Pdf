@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -11,32 +12,32 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag MP
     /// </summary>
-    void MarkedContentPoint(PdfName tag);
+    void MarkedContentPoint(PdfDirectValue tag);
 
     /// <summary>
     /// Content stream operator tag properties MP
     /// </summary>
-    ValueTask MarkedContentPointAsync(PdfName tag, PdfName properties);
+    ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfDirectValue properties);
 
     /// <summary>
     /// Content stream operator tag dictionaru MP
     /// </summary>
-    ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dictionary);
+    ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfValueDictionary dictionary);
 
     /// <summary>
     /// Content stream operator tag BMC
     /// </summary>
-    void BeginMarkedRange(PdfName tag);
+    void BeginMarkedRange(PdfDirectValue tag);
 
     /// <summary>
     /// Content stream operator tag dictName BDC
     /// </summary>
-    ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName);
+    ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfDirectValue dictName);
 
     /// <summary>
     /// Content stream operator tag  inlineDicitionary BDC
     /// </summary>
-    ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary);
+    ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary);
 
     /// <summary>
     /// Content stream operator EMC

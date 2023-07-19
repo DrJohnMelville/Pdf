@@ -6,6 +6,7 @@ using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using StringWriter = Melville.Pdf.LowLevel.Writers.ObjectWriters.StringWriter;
 
@@ -28,12 +29,12 @@ internal readonly struct ContentStreamPipeWriter
 
     public void WriteBytes(ReadOnlySpan<byte> name) => destPipe.WriteBytes(name);
 
-    public void WriteOperator(in ReadOnlySpan<byte> op, PdfName name)
+    public void WriteOperator(in ReadOnlySpan<byte> op, PdfDirectValue name)
     {
         WriteName(name);
         WriteOperator(op);
     }
-    public void WriteOperator(in ReadOnlySpan<byte> op, params PdfName[] names)
+    public void WriteOperator(in ReadOnlySpan<byte> op, params PdfDirectValue[] names)
     {
         foreach (var name in names)
         {
@@ -81,7 +82,7 @@ internal readonly struct ContentStreamPipeWriter
 
     public void WriteDouble(double d) => destPipe.Advance(DoubleWriter.Write(d, destPipe.GetSpan(25)));
 
-    public void WriteName(PdfName name)
+    public void WriteName(PdfDirectValue name)
     {
         NameWriter.WriteWithoutlush(destPipe, name);
         WriteSpace();
@@ -112,19 +113,17 @@ internal readonly struct ContentStreamPipeWriter
         }
     }
 
-    public void WriteOperator(in ReadOnlySpan<byte> operation, PdfDictionary dictionary)
+    public void WriteOperator(in ReadOnlySpan<byte> operation, PdfValueDictionary dictionary)
     {
-        DictionaryWriter.WriteAsync(destPipe, new PdfObjectWriter(destPipe), dictionary.RawItems)
-            .CA().GetAwaiter().GetResult();
+        WriteDictionary(dictionary);
         WriteOperator(operation);
     }
 
-    public ValueTask WriteDictionaryAsync(PdfDictionary dict) => 
-        new PdfObjectWriter(destPipe).Visit(dict).AsValueTask();
+    public void WriteDictionary(PdfValueDictionary dict) => 
+        new PdfObjectWriter(destPipe).Write(dict);
 
-    public ValueTask WriteInlineImageDictAsync(PdfDictionary dict) =>
-        DictionaryWriter.WriteInlineImageDictAsync(destPipe, new PdfObjectWriter(destPipe),
-            dict.RawItems).AsValueTask();
+    public void WriteInlineImageDict(PdfValueDictionary dict) =>
+        DictionaryWriter.WriteInlineImageDict(new PdfObjectWriter(destPipe), dict.RawItems);
 
     public Task WriteStreamContentAsync(Stream str) => str.CopyToAsync(destPipe);
 

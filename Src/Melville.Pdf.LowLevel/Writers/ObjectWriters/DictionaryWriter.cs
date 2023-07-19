@@ -5,51 +5,55 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Visitors;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class DictionaryWriter
 {
-    private static readonly byte[] StandardPrefix = "<<"u8.ToArray();
-    private static readonly byte[] StandardSuffix = ">>"u8.ToArray();
-    private static readonly byte[] InlineImagePrefix = "BI"u8.ToArray();
-    private static readonly byte[] InlineImageSuffix = "\nID\n"u8.ToArray();
+    private static ReadOnlySpan<byte> StandardPrefix => "<<"u8();
+    private static ReadOnlySpan<byte> StandardSuffix => ">>"u8();
+    private static ReadOnlySpan<byte> InlineImagePrefix => "BI"u8();
+    private static ReadOnlySpan<byte> InlineImageSuffix => "\nID\n"u8();
+    private static ReadOnlySpan<byte> SingleSpace => " "u8();
 
-    public static ValueTask<FlushResult> WriteAsync(
-        PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
-        IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
-        WriteAsync(writer, innerWriter, items, StandardPrefix, StandardSuffix);
-    public static ValueTask<FlushResult> WriteInlineImageDictAsync(
-        PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter,
-        IEnumerable<KeyValuePair<PdfName, PdfObject>> items) =>
-        WriteAsync(writer, innerWriter, items, InlineImagePrefix, InlineImageSuffix);
+    public static void Write(
+        in PdfObjectWriter target,
+        IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> items) =>
+        WriteAsync(target, items, StandardPrefix, StandardSuffix);
 
-    private static async ValueTask<FlushResult> WriteAsync(
-        PipeWriter writer, ILowLevelVisitor<ValueTask<FlushResult>> innerWriter, 
-        IEnumerable<KeyValuePair<PdfName, PdfObject>> items, byte[] prefix, byte[] suffix)
-    {
-        writer.WriteBytes(prefix);
+    public static void WriteInlineImageDict(
+        in PdfObjectWriter target,
+        IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> items) =>
+        WriteAsync(target, items, InlineImagePrefix, InlineImageSuffix);
+
+
+    private static void WriteAsync(
+        in PdfObjectWriter writer,
+        IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> items,
+        in ReadOnlySpan<byte> prefix, in ReadOnlySpan<byte> suffix)    {
+        writer.Write(prefix);
         foreach (var item in items)
         {
-            await item.Key.Visit(innerWriter).CA();
-            AddWhitespaceIfNeeded(writer, item.Value); 
-            await item.Value.Visit(innerWriter).CA();
-            await writer.FlushAsync().CA();
+            writer.Write(item.Key);
+            AddWhitespaceIfNeeded(writer, item.Value);
+            writer.Write(item.Value);
         }
-        writer.WriteBytes(suffix);
-        return await writer.FlushAsync().CA();
+        writer.Write(suffix);
     }
 
-    private static void AddWhitespaceIfNeeded(PipeWriter writer, PdfObject item)
+    private static void AddWhitespaceIfNeeded(in PdfObjectWriter writer, PdfIndirectValue item)
     {
         if (NeedsLeadingSpace(item))
         {
-            writer.WriteSpace();
+            writer.Write(SingleSpace);
         }
     }
 
-    private static bool NeedsLeadingSpace(PdfObject itemValue) => 
-        itemValue is PdfNumber or PdfIndirectObject
-            or PdfTokenValues;
+    private static bool NeedsLeadingSpace(PdfIndirectValue itemValue) =>
+        !itemValue.TryGetEmbeddedDirectValue(out var dv) || NeedsLeadingSpace(dv);
+
+        private static bool NeedsLeadingSpace(PdfDirectValue itemValue) => itemValue is
+            { IsName: true } or { IsNull: true } or { IsBool: true };
 }

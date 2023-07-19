@@ -1,14 +1,15 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Filters.JpegFilter;
 
 internal readonly partial struct DctDecodeParameters
 {
-    private readonly PdfDictionary dict;
+    private readonly PdfValueDictionary dict;
 
-    public DctDecodeParameters(PdfObject dict) => this.dict = dict as PdfDictionary ?? PdfDictionary.Empty;
+    public DctDecodeParameters(PdfDirectValue dict) => this.dict = dict.TryGet(out PdfValueDictionary? temp) ? temp: PdfValueDictionary.Empty;
 
-    public ValueTask<long> ColorTransformAsync() => dict.GetOrDefaultAsync(KnownNames.ColorTransform, -1);
+    public ValueTask<long> ColorTransformAsync() => dict.GetOrDefaultAsync(KnownNames.ColorTransformTName, -1L);
 }

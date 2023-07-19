@@ -83,7 +83,7 @@ public class TilePatternCreator : ContentStreamCreator
 
     /// <inheritdoc />
     public override (PdfIndirectObject Reference, int PageCount) ConstructItem(
-        IPdfObjectRegistry creator, PdfIndirectObject? parent)
+        IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent)
     {
         if (parent != null)
             throw new InvalidOperationException("Patterns may not have a parent");
@@ -99,7 +99,7 @@ public class TilePatternCreator : ContentStreamCreator
     }
 
     /// <inheritdoc />
-    protected override PdfIndirectObject CreateFinalObject(IPdfObjectRegistry creator)
+    protected override PdfIndirectObject CreateFinalObject(IPdfObjectCreatorRegistry creator)
     {
         if (content is null) throw new InvalidOperationException("Tile Pattern must have content.");
         return creator.Add(MetaData.AsStream(content));

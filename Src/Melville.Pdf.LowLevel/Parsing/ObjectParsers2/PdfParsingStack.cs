@@ -91,13 +91,13 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
 
     public void CreateReference()
     {
-        var generation = (ulong)PopNumber();
-        var objNumber = (ulong)PopNumber();
+        var generation = PopNumber();
+        var objNumber = PopNumber();
         Push(Source.Owner.NewIndirectResolver.CreateReference(objNumber, generation));
     }
 
-    private long PopNumber() =>
-        Pop().TryGetEmbeddedDirectValue(out var dv) && dv.TryGet(out long num)
+    private int PopNumber() =>
+        Pop().TryGetEmbeddedDirectValue(out var dv) && dv.TryGet(out int num)
             ? num
             : throw new PdfParseException("Expected two direct numbers prior to R operator");
 

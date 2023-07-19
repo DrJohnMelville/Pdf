@@ -2,6 +2,7 @@
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
@@ -11,42 +12,42 @@ internal partial class V6Encryptor : ILowLevelDocumentEncryptor
     [FromConstructor] public string UserPassword { get; set; }
     [FromConstructor] private readonly string ownerPassword;
     [FromConstructor] private readonly PdfPermission permissionsRestricted;
-    [FromConstructor] private readonly PdfName? defStream;
-    [FromConstructor] private readonly PdfName? defString;
-    [FromConstructor] private readonly PdfName? defEmbeddedFile;
+    [FromConstructor] private readonly PdfDirectValue defStream;
+    [FromConstructor] private readonly PdfDirectValue defString;
+    [FromConstructor] private readonly PdfDirectValue defEmbeddedFile;
     [FromConstructor] private readonly V4CfDictionary dictionary;
     [FromConstructor] private readonly IRandomNumberSource random;
     private readonly V6Cryptography crypto = new();
 
     public V6Encryptor(
-        string userPassword, string ownerPassword, PdfPermission permissionsRestricted, PdfName? defStream,
-        PdfName? defString, PdfName? defEmbeddedFile, V4CfDictionary dictionary) :
+        string userPassword, string ownerPassword, PdfPermission permissionsRestricted, PdfDirectValue defStream,
+        PdfDirectValue defString, PdfDirectValue defEmbeddedFile, V4CfDictionary dictionary) :
         this(userPassword, ownerPassword, permissionsRestricted, defStream, defString, defEmbeddedFile,
             dictionary, RandomNumberSource.Instance)
     {
     }
 
-    public PdfDictionary CreateEncryptionDictionary(PdfArray id)
+    public PdfValueDictionary CreateEncryptionDictionary(PdfValueArray id)
     {
         Span<byte> encryptionKey = stackalloc byte[32];
         random.Fill(encryptionKey);
         var userKey = ComputeGenericKey(UserPassword, Span<byte>.Empty, encryptionKey);
         var ownerKey = ComputeGenericKey(ownerPassword, userKey.WholeKey, encryptionKey);
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Filter, KnownNames.Standard)
-            .WithItem(KnownNames.V, 5)
-            .WithItem(KnownNames.R, 6)
-            .WithItem(KnownNames.Length, 256)
-            .WithItem(KnownNames.U, userKey.HashAsPdfString())
-            .WithItem(KnownNames.UE, userKey.EncodedKeyAsPdfString())
-            .WithItem(KnownNames.O, ownerKey.HashAsPdfString())
-            .WithItem(KnownNames.OE, ownerKey.EncodedKeyAsPdfString())
-            .WithItem(KnownNames.P, (int)permissionsRestricted)
-            .WithItem(KnownNames.Perms, ComputePerms(encryptionKey))
-            .WithItem(KnownNames.CF, dictionary.Build())
-            .WithItem(KnownNames.StmF, defStream)
-            .WithItem(KnownNames.StrF, defString)
-            .WithItem(KnownNames.EFF, defEmbeddedFile)
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.FilterTName, KnownNames.StandardTName)
+            .WithItem(KnownNames.VTName, 5)
+            .WithItem(KnownNames.RTName, 6)
+            .WithItem(KnownNames.LengthTName, 256)
+            .WithItem(KnownNames.UTName, userKey.HashAsPdfString())
+            .WithItem(KnownNames.UETName, userKey.EncodedKeyAsPdfString())
+            .WithItem(KnownNames.OTName, ownerKey.HashAsPdfString())
+            .WithItem(KnownNames.OETName, ownerKey.EncodedKeyAsPdfString())
+            .WithItem(KnownNames.PTName, (int)permissionsRestricted)
+            .WithItem(KnownNames.PermsTName, ComputePerms(encryptionKey))
+            .WithItem(KnownNames.CFTName, dictionary.Build())
+            .WithItem(KnownNames.StmFTName, defStream)
+            .WithItem(KnownNames.StrFTName, defString)
+            .WithItem(KnownNames.EFFTName, defEmbeddedFile)
             .AsDictionary();
     }
     
@@ -68,7 +69,7 @@ internal partial class V6Encryptor : ILowLevelDocumentEncryptor
         crypto.Cbc.Encrypt(intermediateKey, stackalloc byte[16], encryptionKey, key.EncryptedFileKey);
     }
     
-    private PdfString ComputePerms(Span<byte> encryptionKey)
+    private PdfDirectValue ComputePerms(Span<byte> encryptionKey)
     {
         Span<byte> source = stackalloc byte[]
         {
@@ -84,6 +85,6 @@ internal partial class V6Encryptor : ILowLevelDocumentEncryptor
         random.Fill(source[^4..]);
         var perms = new byte[16];
         crypto.Ecb.Encrypt(encryptionKey, Span<byte>.Empty, source, perms);
-        return new PdfString(perms);
+        return PdfDirectValue.CreateString(perms);
     }
 }

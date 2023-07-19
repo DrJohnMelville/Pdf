@@ -1,79 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-internal partial class PdfObjectRegistry: IPdfObjectRegistry
+internal partial class PdfObjectRegistry: 
+    IPdfObjectCreatorRegistry, IIndirectValueSource
 {
     [FromConstructor] private int nextObject;
-    public  List<PdfIndirectObject> Objects { get; } = new();
-    public DictionaryBuilder TrailerDictionaryItems { get; } = new();
+    
+    public  Dictionary<(int, int), PdfDirectValue> Objects { get; } = new();
+    public ValueDictionaryBuilder TrailerDictionaryItems { get; } = new();
     private ObjectStreamBuilder? objectStreamBuilder;
 
-    public PdfIndirectObject AsIndirectReference(PdfObject value) =>
-        value switch
+    public PdfIndirectValue Add(in PdfDirectValue item) =>
+        Add(item, nextObject++, 0);
+
+    public PdfIndirectValue Add(in PdfDirectValue item, int objectNumber, int generation)
+    {
+        if (!TryWriteToObjectStream(item, objectNumber, generation))
         {
-            PdfIndirectObject pio => pio,
-            null => throw new ArgumentException("To create unbound indirect objects use CreatePromiseObject.  Value cannot be null."),
-            _ => new PdfIndirectObject(nextObject++, 0, value)
-        };
-
-    public PromisedIndirectObject CreatePromiseObject() => new(nextObject++, 0);
-
-
-    public void AssignValueToReference(PdfIndirectObject reference, PdfObject value)
-    {
-        ((PromisedIndirectObject)reference).SetValue(value);
-    }
-    public PdfIndirectObject Add(PdfObject item) => InnerAdd(AsIndirectReference(item));
-
-    public PdfIndirectObject Add(PdfObject item, int objectNumber, int generation) =>
-        InnerAdd(new PdfIndirectObject(objectNumber, generation, item));
-
-    public void AddDelayedObject(Func<ValueTask<PdfObject>> creator)
-    {
-        var reference = new IndirectObjectWithAccessor(nextObject++, 0, creator);
-        Objects.Add(reference);
-    }
-
-    private PdfIndirectObject InnerAdd(PdfIndirectObject item)
-    {
-        if (!(Objects.Contains(item) || TryWriteToObjectStream(item)))
-        {
-            Objects.Add(item);
+            Objects[(objectNumber, generation)] = item;
         }
-        return item;
+
+        return new PdfIndirectValue(this, MementoUnion.CreateFrom(objectNumber, generation));
     }
 
-    private bool TryWriteToObjectStream(PdfIndirectObject item) =>
-        objectStreamBuilder is not null && objectStreamBuilder.TryAddRef(item);
+    private bool TryWriteToObjectStream(
+        in PdfDirectValue item, int objectNumber, int generation) =>
+        objectStreamBuilder is not null && generation == 0 &&
+        !objectStreamBuilder.TryAddRef(objectNumber, item);
 
-    public void AddToTrailerDictionary(PdfName key, PdfObject item) =>
+    public void Reassign(in PdfIndirectValue item, in PdfDirectValue newValue)
+    {
+        var ints = item.Memento.Int32s;
+        Objects[(ints[0],ints[1])] = newValue;
+    }
+
+    public void AddToTrailerDictionary(in PdfDirectValue key, in PdfIndirectValue item) => 
         TrailerDictionaryItems.WithItem(key, item);
 
-    public PdfDictionary CreateTrailerDictionary()
-    {
-        AddLengthToTrailerDictionary();
-        return TrailerDictionaryItems.AsDictionary();
-    }
-    private void AddLengthToTrailerDictionary()
-    {
-        AddToTrailerDictionary(KnownNames.Size, nextObject);
-    }
-
-    public IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null)
+    public IDisposable ObjectStreamContext(
+        ValueDictionaryBuilder? dictionaryBuilder = null)
     {
         if (objectStreamBuilder != null)
-            throw new InvalidOperationException("Cannot nest object stream contents");
-        objectStreamBuilder = new ObjectStreamBuilder();
-        return new ObjectStreamContextImpl(this, DefaultBuilderIfNull(dictionaryBuilder));
+            throw new InvalidOperationException("Cannot nest object stream builders");
+        objectStreamBuilder = new ObjectStreamBuilder(dictionaryBuilder);
+        return new DisposeToFinishStream(this);
     }
-    private static DictionaryBuilder DefaultBuilderIfNull(DictionaryBuilder? dictionaryBuilder) =>
-        dictionaryBuilder ?? new DictionaryBuilder().WithFilter(FilterName.FlateDecode);
 
+    public partial class DisposeToFinishStream: IDisposable
+    {
+        [FromConstructor]private readonly PdfObjectRegistry registry;
+
+        public void Dispose()
+        {
+            var osb = registry.objectStreamBuilder;
+            registry.objectStreamBuilder = null;
+            if (osb.HasValues())
+                registry.Add(new PdfDirectValue(osb, default));
+        }
+    }
+
+
+
+    public string GetValue(in MementoUnion memento)
+    {
+        var nums = memento.Int32s;
+        return $"{nums[0]} {nums[1]} R";
+    }
+
+    public ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
+    {
+        var ints = memento.Int32s;
+        return ValueTask.FromResult(Objects[((ints[0], ints[1]))]);
+    }
+
+    public PdfValueDictionary CreateTrailerDictionary() =>
+        TrailerDictionaryItems
+            .WithItem(KnownNames.SizeTName, nextObject)
+            .AsDictionary();
 }

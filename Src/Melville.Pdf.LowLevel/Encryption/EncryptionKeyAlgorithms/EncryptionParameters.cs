@@ -1,38 +1,42 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
 internal readonly partial struct EncryptionParameters
 {
-    [FromConstructor]public byte[] IdFirstElement {get;}
-    [FromConstructor]public byte[] OwnerPasswordHash {get;}
-    [FromConstructor]public byte[] UserPasswordHash {get;}
+    [FromConstructor]public Memory<byte> IdFirstElement {get;}
+    [FromConstructor]public Memory<byte> OwnerPasswordHash {get;}
+    [FromConstructor]public Memory<byte> UserPasswordHash {get;}
     [FromConstructor]public uint Permissions {get;}
     [FromConstructor]public int KeyLengthInBits {get;}
+
     public int KeyLengthInBytes => KeyLengthInBits / 8;
     
-    public static async ValueTask<EncryptionParameters> CreateAsync(PdfDictionary trailer) =>
-        (await trailer.GetOrNullAsync(KnownNames.ID).CA() is not PdfArray id ||
-         await id[0].CA() is not PdfString firstId ||
-         await trailer.GetOrNullAsync(KnownNames.Encrypt).CA() is not PdfDictionary dict ||
-         await dict.GetOrNullAsync(KnownNames.O).CA() is not PdfString ownerHash ||
-         await dict.GetOrNullAsync(KnownNames.U).CA() is not PdfString userHash ||
-         await dict.GetOrNullAsync(KnownNames.P).CA() is not PdfNumber permissions
-        )? throw new PdfSecurityException("Required parameter missing for encryption"):
+    public static async ValueTask<EncryptionParameters> CreateAsync(PdfValueDictionary trailer) =>
+        (await trailer.GetOrNullAsync(KnownNames.IDTName).CA()).TryGet(out PdfValueArray id)&&
+        (await id[0].CA()).TryGet(out Memory<byte> firstId) &&
+        (await trailer.GetOrNullAsync(KnownNames.EncryptTName).CA()).TryGet(out PdfValueDictionary dict)&&
+        (await dict.GetOrNullAsync(KnownNames.OTName).CA()).TryGet(out Memory<byte> ownerHash) &&
+        (await dict.GetOrNullAsync(KnownNames.UTName).CA()).TryGet(out Memory<byte> userHash) &&
+        (await dict.GetOrNullAsync(KnownNames.PTName).CA()).TryGet(out long permissions)?
             new EncryptionParameters(
-                firstId.Bytes, ownerHash.Bytes, userHash.Bytes, (uint)permissions.IntValue, 
-                (int)await dict.GetOrDefaultAsync(KnownNames.Length, 40).CA());
+                firstId, ownerHash, userHash, (uint)permissions, 
+                await dict.GetOrDefaultAsync(KnownNames.LengthTName, 40).CA()):
+            throw new PdfSecurityException("Required parameter missing for encryption");
 
     public override string ToString() =>
         $"""
-        IdFirstElt: {IdFirstElement.AsHex()}
-        Owner: {OwnerPasswordHash.AsHex()}
-        User: {UserPasswordHash.AsHex()}
+        IdFirstElt: {IdFirstElement.Span.AsHex()}
+        Owner: {OwnerPasswordHash.Span.AsHex()}
+        User: {UserPasswordHash.Span.AsHex()}
         Permissions: {Permissions}
         KeyLengthInBits: {KeyLengthInBits}
         """;

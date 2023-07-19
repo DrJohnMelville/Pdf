@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -84,7 +85,7 @@ public interface IStateChangingOperations
     /// <summary>
     /// Content stream operator font fontSize Tf
     /// </summary>
-    ValueTask SetFontAsync(PdfName font, double size);
+    ValueTask SetFontAsync(PdfDirectValue font, double size);
 
     /// <summary>
     /// Context stream textRendering Tr

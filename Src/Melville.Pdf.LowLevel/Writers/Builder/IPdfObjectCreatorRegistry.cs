@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
@@ -26,7 +27,7 @@ public static class LowLevelDocumentBuilderFactory
 /// <summary>
 /// Uszed to create new Pdf Documents
 /// </summary>
-public interface ILowLevelDocumentCreator : IPdfObjectRegistry
+public interface ILowLevelDocumentCreator : IPdfObjectCreatorRegistry
 {
     /// <summary>
     /// Create a Pdf Document with a given version and the current contents.
@@ -42,59 +43,22 @@ public interface ILowLevelDocumentCreator : IPdfObjectRegistry
     /// Ensure that the document trailer has an ID array -- creating one if necessary.
     /// </summary>
     /// <returns>The ID array</returns>
-    public PdfArray EnsureDocumentHasId();
+    public PdfValueArray EnsureDocumentHasId();
 
 }
 
 /// <summary>
 /// Methods to create or modify a PdfDocument
 /// </summary>
-public interface IPdfObjectRegistry
+public interface IPdfObjectCreatorRegistry
 {
-    /// <summary>
-    /// Create a PdfIndirectObject that points to a given object.  This does not add the object to the document.
-    /// </summary>
-    /// <param name="value">The PdfObject to be pointed to.</param>
-    /// <returns>A PdfIndirectObject with a number than points to value.</returns>
-    PdfIndirectObject AsIndirectReference(PdfObject value);
-
-    /// <summary>
-    /// Create a promise object that promises a literal object will be given at a later time.
-    /// </summary>
-    /// <returns>The initialized promise object.</returns>
-    PromisedIndirectObject CreatePromiseObject();
-
-    /// <summary>
-    /// Create a promise object and add it to the current document. 
-    /// </summary>
-    /// <returns>The PromisedIndirectObject</returns>
-    PromisedIndirectObject AddPromisedObject()
-    {
-        var ret = CreatePromiseObject();
-        Add(ret);
-        return ret;
-    }
 
     /// <summary>
     /// Add an object to the document.  If it is not a PdfIndirectObject, one will be created to contain the object.
     /// </summary>
     /// <param name="item">The item to add.</param>
-    /// <returns>The PdfIndirectObject that refers to the added object.</returns>
-    PdfIndirectObject Add(PdfObject item);
-
-    /// <summary>
-    /// Add an item to the document's trailer dictionary.
-    /// </summary>
-    /// <param name="key">The key to add the item under</param>
-    /// <param name="item">The item to add.</param>
-    void AddToTrailerDictionary(PdfName key, PdfObject item);
-
-    /// <summary>
-    /// Creates a objectstream context.  Objects added before the context is destroyed will be added to the object stream.
-    /// </summary>
-    /// <param name="dictionaryBuilder">The dictionary builder to use in constructing the object string.</param>
-    /// <returns></returns>
-    IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
+    /// <returns>The PdfIndirectValue that refers to the added object.</returns>
+    PdfIndirectValue Add(in PdfDirectValue item);
 
     /// <summary>
     /// Add an object with a specific object and generation number.
@@ -103,5 +67,27 @@ public interface IPdfObjectRegistry
     /// <param name="objectNumber">The object number to add at</param>
     /// <param name="generation">The desired generation number</param>
     /// <returns></returns>
-    internal PdfIndirectObject Add(PdfObject item, int objectNumber, int generation);
+    internal PdfIndirectValue Add(in PdfDirectValue item, int objectNumber, int generation);
+
+    /// <summary>
+    /// Assign a new mapping to an existing PdfIndirectValue -- fails if the value is resolved.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    void Reassign(in PdfIndirectValue item, in PdfDirectValue newValue);
+
+
+    /// <summary>
+    /// Add an item to the document's trailer dictionary.
+    /// </summary>
+    /// <param name="key">The key to add the item under</param>
+    /// <param name="item">The item to add.</param>
+    void AddToTrailerDictionary(in PdfDirectValue key, in PdfIndirectValue item);
+
+    /// <summary>
+    /// Creates a objectstream context.  Objects added before the context is destroyed will be added to the object stream.
+    /// </summary>
+    /// <param name="dictionaryBuilder">The dictionary builder to use in constructing the object string.</param>
+    /// <returns></returns>
+    IDisposable ObjectStreamContext(ValueDictionaryBuilder? dictionaryBuilder = null);
 }

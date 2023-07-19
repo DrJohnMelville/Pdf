@@ -3,37 +3,40 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Linq;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-internal readonly struct XrefStreamParserFactory
+internal readonly partial struct XrefStreamParserFactory
 {
-    private static readonly PdfArray DefaultIndex = new(0, int.MaxValue);
-    private readonly PdfStream xrefStream;
-    private readonly IIndirectObjectRegistry registry;
-    public XrefStreamParserFactory(PdfStream xrefStream, IIndirectObjectRegistry registry)
-    {
-        this.xrefStream = xrefStream;
-        this.registry = registry;
-    }
+    private static readonly int[] DefaultIndex = { 0, int.MaxValue};
+    [FromConstructor] private readonly PdfValueStream xrefStream;
+    [FromConstructor] private readonly IIndirectObjectRegistry registry;
 
     public async ValueTask<XrefStreamParser> CreateAsync()
     {
-        var w = await xrefStream.GetAsync<PdfArray>(KnownNames.W).CA();
+        var w = await xrefStream.GetAsync<PdfValueArray>(KnownNames.WTName).CA();
         return new XrefStreamParser(
-            await w.IntAtAsync(0).CA(),
-            await w.IntAtAsync(1).CA(),
-            await w.IntAtAsync(2).CA(),
-            await xrefStream.GetOrDefaultAsync(KnownNames.Index, DefaultIndex).CA(),
+            (await w[0].CA()).Get<int>(),
+            (await w[1].CA()).Get<int>(),
+            (await w[2].CA()).Get<int>(),
+            await ReadIndexArrayAsync().CA(),
             registry
         );
+    }
+
+    private async ValueTask<int[]> ReadIndexArrayAsync()
+    {
+        var readArray = await xrefStream.GetOrDefaultAsync(KnownNames.IndexTName, (PdfValueArray?)null).CA();
+        return readArray != null ? await readArray.CastAsync<int>().CA() : DefaultIndex;
     }
 }
 
@@ -44,9 +47,9 @@ internal readonly struct XrefStreamParser
     private readonly int col2Size;
     private readonly int itemSize;
     private readonly IIndirectObjectRegistry registry;
-    private readonly PdfArray index;
+    private readonly int[] index;
 
-    public XrefStreamParser(int col0Size, int col1Size, int col2Size, PdfArray index,
+    public XrefStreamParser(int col0Size, int col1Size, int col2Size, int[] index,
         IIndirectObjectRegistry registry)
     {
         this.col0Size = col0Size;
@@ -58,18 +61,18 @@ internal readonly struct XrefStreamParser
         VerifyIndexHasEvenNumberOfElements(index);
     }
 
-    private static void VerifyIndexHasEvenNumberOfElements(PdfArray index)
+    private static void VerifyIndexHasEvenNumberOfElements(int[] index)
     {
-        if (index.Count % 2 != 0)
+        if (index.Length % 2 != 0)
             throw new PdfParseException("Index of an xrefstream must have even number of elements");
     }
 
     public async ValueTask ParseAsync(PipeReader source)
     {
-        for (int i = 0; i < index.Count; i+=2)
+        for (int i = 0; i < index.Length; i+=2)
         {
-            var baseNum = await index.IntAtAsync(i).CA();
-            var length = await index.IntAtAsync(i+1).CA();
+            var baseNum = index[i];
+            var length = index[i+1];
             await ParseSectionAsync(source, baseNum, length).CA();
         }
     }
@@ -100,16 +103,16 @@ internal readonly struct XrefStreamParser
         switch (c0)
         {
             case 0: 
-                registry.RegisterDeletedBlock(index, c2, c1);
+                registry.RegisterDeletedBlock(index, (int)c2, (int)c1);
                 break;
             case 1:
-                registry.RegisterIndirectBlock(index, c2, c1);
+                registry.RegisterIndirectBlock(index, (int)c2, (long)c1);
                 break;
             case 2:
-                registry.RegisterObjectStreamBlock(index, c1, c2);
+                registry.RegisterObjectStreamBlock(index, (int)c1, (int)c2);
                 break;
             default:
-                registry.RegisterNullObject(index, c2, c1);
+                registry.RegisterNullObject(index, (int)c2, (int)c1);
                 break;
         }
     }

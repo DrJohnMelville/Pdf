@@ -6,6 +6,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Visitors;
 
@@ -14,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 internal interface IStreamDataSource
 {
     ValueTask<Stream> OpenRawStreamAsync(long streamLength);
-    Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfName cryptFilterName);
+    Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectValue cryptFilterName);
     Stream WrapStreamWithDecryptor(Stream encryptedStream);
     StreamFormat SourceFormat { get; }
 }
@@ -63,10 +64,17 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     private async Task<FilterProcessorBase> CreateFilterProcessorAsync(IObjectCryptContext innerEncryptor) =>
         await DefaultEncryptionSelector.TryAddDefaultEncryptionAsync(this, source, innerEncryptor,
                 new FilterProcessor(
-                    await FilterListAsync().CA(),
-                    await FilterParamListAsync().CA(),
+                    null!,
+                    null!,
                     CreateDecoder(innerEncryptor))).CA();
 
+    // private async Task<FilterProcessorBase> CreateFilterProcessorAsync(IObjectCryptContext innerEncryptor) =>
+    //     await DefaultEncryptionSelector.TryAddDefaultEncryptionAsync(this, source, innerEncryptor,
+    //             new FilterProcessor(
+    //                 await FilterListAsync().CA().,
+    //                 await FilterParamListAsync().CA(),
+    //                 CreateDecoder(innerEncryptor))).CA();
+    //
     private  IApplySingleFilter CreateDecoder(IObjectCryptContext innerEncryptor) =>
             new CryptSingleFilter(source, innerEncryptor,
                 SinglePredictionFilter.Instance);

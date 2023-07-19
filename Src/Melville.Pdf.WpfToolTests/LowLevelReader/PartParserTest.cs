@@ -92,7 +92,7 @@ public class PartParserTest
     }
 
     private async Task<DocumentPart[]> BuildSingleElementFileAsync(
-        Func<IPdfObjectRegistry,PdfObject> item)
+        Func<IPdfObjectCreatorRegistry,PdfObject> item)
     {
         var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));

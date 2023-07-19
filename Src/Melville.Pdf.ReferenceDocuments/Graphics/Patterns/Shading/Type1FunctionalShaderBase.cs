@@ -30,25 +30,25 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
         return new PdfStream[]{ret};
     }
 
-    protected override PdfObject CreatePattern(IPdfObjectRegistry arg) =>
+    protected override PdfObject CreatePattern(IPdfObjectCreatorRegistry arg) =>
         BuildPattern(arg, 
             BuildShader(arg, function ?? throw new InvalidOperationException("No func defined"), 
                 new DictionaryBuilder()).AsDictionary(),
             new DictionaryBuilder()).AsDictionary();
 
     protected virtual DictionaryBuilder BuildPattern(
-        IPdfObjectRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
+        IPdfObjectCreatorRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
             .WithItem(KnownNames.Shading, arg.Add(shading))
             .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
             .WithItem(KnownNames.PatternType, 2);
 
     protected virtual DictionaryBuilder BuildShader(
-        IPdfObjectRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) => builder
+        IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) => builder
             .WithItem(KnownNames.Function, arg.Add(ComputeLocalFunc(localFunc, arg)))
             .WithItem(KnownNames.ShadingType, 1)
             .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB);
 
-    private static PdfObject ComputeLocalFunc(PdfObject[] localFunc, IPdfObjectRegistry ldc)
+    private static PdfObject ComputeLocalFunc(PdfObject[] localFunc, IPdfObjectCreatorRegistry ldc)
     {
         if (localFunc.Length == 1) return localFunc[0];
         return new PdfArray(localFunc.Select(i => ldc.Add(i)));

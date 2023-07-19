@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -17,13 +18,15 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 /// </summary>
 public static class CrossReferenceStreamParser
 {
-    internal static async Task<PdfDictionary> ReadAsync(ParsingFileOwner owner, long offset)
+    internal static async Task<PdfValueStream> ReadAsync(ParsingFileOwner owner, long offset)
     {
-        PdfObject? xRefStreamAsPdfObject ;
         var context = await owner.RentReaderAsync(offset).CA();
-        xRefStreamAsPdfObject = await context.RootObjectParser.ParseAsync(context).CA();
 
-        if (xRefStreamAsPdfObject is not PdfStream crossRefPdfStream)
+        var xRefStreamAsPdfObject = await (await context.NewRootObjectParser.ParseAsync().CA())
+            .LoadValueAsync().CA();
+
+
+        if (!xRefStreamAsPdfObject.TryGet(out PdfValueStream crossRefPdfStream)) 
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
         await ReadXrefStreamDataAsync(owner, crossRefPdfStream).CA();
         await owner.InitializeDecryptionAsync(crossRefPdfStream).CA();
@@ -37,7 +40,7 @@ public static class CrossReferenceStreamParser
     /// <param name="owner">The target of the parsing operation.</param>
     /// <param name="crossRefPdfStream">The XRefStream to parse.</param>
     /// <returns>A task object representing completion of the operation.</returns>
-    public static async Task ReadXrefStreamDataAsync(IIndirectObjectRegistry owner, PdfStream crossRefPdfStream)
+    public static async Task ReadXrefStreamDataAsync(IIndirectObjectRegistry owner, PdfValueStream crossRefPdfStream)
     {
         var parser = await new XrefStreamParserFactory(crossRefPdfStream, owner).CreateAsync().CA();
         await parser.ParseAsync(PipeReader.Create(await crossRefPdfStream.StreamContentAsync().CA())).CA();

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Hacks.Reflection;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
@@ -27,21 +30,12 @@ internal abstract class FilterProcessorBase
 
 }
 
-internal class FilterProcessor: FilterProcessorBase
+internal partial class FilterProcessor: FilterProcessorBase
 {
 
-    private readonly IReadOnlyList<PdfObject> filters;
-    private readonly IReadOnlyList<PdfObject> parameters;
-    private readonly IApplySingleFilter singleFilter;
-
-    public FilterProcessor(
-        IReadOnlyList<PdfObject> filters, 
-        IReadOnlyList<PdfObject> parameters, IApplySingleFilter singleFilter)
-    {
-        this.filters = filters;
-        this.parameters = parameters;
-        this.singleFilter = singleFilter;
-    }
+    [FromConstructor] private readonly IReadOnlyList<PdfIndirectValue> filters;
+    [FromConstructor] private readonly IReadOnlyList<PdfIndirectValue> parameters;
+    [FromConstructor] private readonly IApplySingleFilter singleFilter;
 
     protected override async ValueTask<Stream> EncodeAsync(
         Stream source, StreamFormat sourceFormat, StreamFormat targetFormat)
@@ -51,7 +45,9 @@ internal class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = inclusiveUpperBound; i > exclusiveLowerBound; i--)
         {
-            ret = await singleFilter.EncodeAsync(ret, filters[i], TryGetParameter(i)).CA();
+            ret = await singleFilter.EncodeAsync(ret, 
+                await filters[i].LoadValueAsync().CA(), 
+                await TryGetParameter(i).LoadValueAsync().CA()).CA();
         }
 
         return ret;
@@ -65,10 +61,12 @@ internal class FilterProcessor: FilterProcessorBase
         var ret = source;
         for (int i = firstFilter; i < oneMoreThanLastFilter; i++)
         {
-            ret = await singleFilter.DecodeAsync(ret, filters[i], TryGetParameter(i)).CA();
+            ret = await singleFilter.DecodeAsync(ret, 
+                await filters[i].LoadValueAsync().CA(), 
+                await TryGetParameter(i).LoadValueAsync().CA()).CA();
         }
 
         return ret;
     }
-    private PdfObject TryGetParameter(int i) => i < parameters.Count?parameters[i]:PdfTokenValues.Null;
+    private PdfIndirectValue TryGetParameter(int i) => i < parameters.Count?parameters[i]:PdfDirectValue.CreateNull();
 }

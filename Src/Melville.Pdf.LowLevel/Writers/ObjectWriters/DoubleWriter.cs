@@ -9,10 +9,15 @@ internal static class DoubleWriter
 {
     public static ValueTask<FlushResult> WriteAsync(PipeWriter target, double item)
     {
+        NewMethod(target, item);
+        return target.FlushAsync();
+    }
+
+    private static void NewMethod(PipeWriter target, double item)
+    {
         var span = target.GetSpan(25);
         var written = Write(item, span);
         target.Advance(written);
-        return target.FlushAsync();
     }
 
     public static int Write(double item, in Span<byte> span)

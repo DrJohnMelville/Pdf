@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -116,13 +117,13 @@ public interface IDrawingOperations: IPathDrawingOperations
     /// <summary>
     /// Content stream operator name Do
     /// </summary>
-    ValueTask DoAsync(PdfName name);
+    ValueTask DoAsync(PdfDirectValue name);
     /// <summary>
     /// Content stream operator name sh
     /// </summary>
-    ValueTask PaintShaderAsync(PdfName name);
+    ValueTask PaintShaderAsync(PdfDirectValue name);
     /// <summary>
     /// Context stream operators BI, ID, and EI
     /// </summary>
-    ValueTask DoAsync(PdfStream inlineImage);
+    ValueTask DoAsync(PdfValueStream inlineImage);
 }

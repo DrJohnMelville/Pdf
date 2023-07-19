@@ -10,7 +10,7 @@ public class ExplicitType1FontWidth : FontDefinitionTest
         TextToRender = "ABCABC";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectRegistry arg) =>
+    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg) =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.Type1)

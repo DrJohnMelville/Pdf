@@ -9,7 +9,7 @@ public class Type0WithCidToGid : FontDefinitionTest
         TextToRender = "\x0\x4\x0\x5\x0\x6\x0\x7";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
+    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Zev.ttf")!;
         var stream = arg.Add(new DictionaryBuilder()

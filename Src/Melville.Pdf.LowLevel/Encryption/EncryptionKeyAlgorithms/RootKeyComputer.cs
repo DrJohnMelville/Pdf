@@ -28,7 +28,7 @@ internal class RootKeyComputer : IRootKeyComputer
     {
         var key = keyComputer.ComputeKey(userPassword, parameters);
         var userHash = userHashComputer.ComputeHash(key, parameters);
-        var matches = userHashComputer.CompareHashes(userHash, parameters.UserPasswordHash);
+        var matches = userHashComputer.CompareHashes(userHash, parameters.UserPasswordHash.Span);
         return matches ? key : null;
     }
 

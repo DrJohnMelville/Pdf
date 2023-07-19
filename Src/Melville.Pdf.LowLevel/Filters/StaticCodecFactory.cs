@@ -12,27 +12,28 @@ using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Filters.RunLengthEncodeFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Filters;
 
 internal static class StaticCodecFactory
 {
-    public static ICodecDefinition CodecFor(PdfName name) => codecs[name];
+    public static ICodecDefinition CodecFor(PdfDirectValue name) => codecs[name];
 
-    private static Dictionary<PdfName, ICodecDefinition> codecs = CreateDictionary();
+    private static Dictionary<PdfDirectValue, ICodecDefinition> codecs = CreateDictionary();
 
-    private static Dictionary<PdfName, ICodecDefinition> CreateDictionary() =>
+    private static Dictionary<PdfDirectValue, ICodecDefinition> CreateDictionary() =>
         new()
         {
-            { KnownNames.ASCIIHexDecode, ConstantCodec(new AsciiHexEncoder(), new AsciiHexDecoder()) },
-            { KnownNames.ASCII85Decode, ConstantCodec(new Ascii85Encoder(), new Ascii85Decoder()) },
-            { KnownNames.RunLengthDecode, ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()) },
-            { KnownNames.LZWDecode, new CodecDefinition(LzwFilterFactory.EncoderAsync, LzwFilterFactory.DecoderAsync)},
-            { KnownNames.FlateDecode, new FlateCodecDefinition() },
-            { KnownNames.DCTDecode, new DctCodec() },
-            { KnownNames.JBIG2Decode, new JbigToPdfAdapter()},
-            { KnownNames.JPXDecode, new JpxToPdfAdapter()},
-            { KnownNames.CCITTFaxDecode, new CodecDefinition(CcittFilterFactory.EncoderAsync, CcittFilterFactory.DecoderAsync) }
+            { KnownNames.ASCIIHexDecodeTName, ConstantCodec(new AsciiHexEncoder(), new AsciiHexDecoder()) },
+            { KnownNames.ASCII85DecodeTName, ConstantCodec(new Ascii85Encoder(), new Ascii85Decoder()) },
+            { KnownNames.RunLengthDecodeTName, ConstantCodec(new RunLengthEncoder(), new RunLengthDecoder()) },
+            { KnownNames.LZWDecodeTName, new CodecDefinition(LzwFilterFactory.EncoderAsync, LzwFilterFactory.DecoderAsync)},
+            { KnownNames.FlateDecodeTName, new FlateCodecDefinition() },
+            { KnownNames.DCTDecodeTName, new DctCodec() },
+            { KnownNames.JBIG2DecodeTName, new JbigToPdfAdapter()},
+            { KnownNames.JPXDecodeTName, new JpxToPdfAdapter()},
+            { KnownNames.CCITTFaxDecodeTName, new CodecDefinition(CcittFilterFactory.EncoderAsync, CcittFilterFactory.DecoderAsync) }
         };
 
     private static CodecDefinition ConstantCodec(

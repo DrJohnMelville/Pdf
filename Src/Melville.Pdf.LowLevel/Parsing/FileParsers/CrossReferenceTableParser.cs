@@ -83,7 +83,7 @@ internal class CrossReferenceTableParser
         return true;
     }
 
-    private (int first, int second, byte operation) ParseXrefLine(SequenceReader<byte> reader)
+    private (long first, int second, byte operation) ParseXrefLine(SequenceReader<byte> reader)
     {
         var first = GetInt(reader.UnreadSequence.Slice(0, 10));
         var second = GetInt(reader.UnreadSequence.Slice(11, 5));
@@ -103,15 +103,15 @@ internal class CrossReferenceTableParser
         return ret;
     }
 
-    private void HandleXrefLine(int first, int second, byte operation)
+    private void HandleXrefLine(long first, int second, byte operation)
     {
         switch (operation)
         {
             case (byte)'n':
-                source.Owner.RegisterIndirectBlock(line, (ulong)second, (ulong)first);
+                source.Owner.RegisterIndirectBlock(line, second, first);
                 break;
             case (byte)'f':
-                source.Owner.RegisterDeletedBlock(line, (ulong)first, (ulong) second);
+                source.Owner.RegisterDeletedBlock(line, (int)first, second);
                 break;
             default: throw new PdfParseException("Invalid Xref Table Operation");
         }

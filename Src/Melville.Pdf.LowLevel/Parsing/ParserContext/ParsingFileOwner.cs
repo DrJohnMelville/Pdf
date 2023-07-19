@@ -64,7 +64,7 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
 
     private static readonly StreamPipeReaderOptions pipeOptions = new(leaveOpen: true);
     
-    public async ValueTask InitializeDecryptionAsync(PdfDictionary trailerDictionary)
+    public async ValueTask InitializeDecryptionAsync(PdfValueDictionary trailerDictionary)
     {
         if (AlreadyInitializedDecryption()) return;
         documentCryptContext = await 
@@ -78,26 +78,26 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
 
     public void Dispose() => source.Dispose();
 
-    public void RegisterDeletedBlock(int number, ulong next, ulong generation)
+    public void RegisterDeletedBlock(int number, int next, int generation)
     {
     }
 
-    public void RegisterNullObject(int number, ulong next, ulong generation)
+    public void RegisterNullObject(int number, int next, int generation)
     {
-        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, (int)generation, PdfTokenValues.Null));
-        NewIndirectResolver.RegisterDirectObject((ulong)number, generation, PdfDirectValue.CreateNull());
+        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, generation, PdfTokenValues.Null));
+        NewIndirectResolver.RegisterDirectObject(number, generation, PdfDirectValue.CreateNull());
     }
 
-    public void RegisterIndirectBlock(int number, ulong generation, ulong offset)
+    public void RegisterIndirectBlock(int number, int generation, long offset)
     {
         IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation, this, (int)offset));
-        NewIndirectResolver.RegisterUnenclosedObject((ulong)number, generation, offset);
+        NewIndirectResolver.RegisterUnenclosedObject(number, generation, offset);
     }
 
-    public void RegisterObjectStreamBlock(int number, ulong referredStreamOrdinal, ulong positionInStream)
+    public void RegisterObjectStreamBlock(int number, int referredStreamOrdinal, int positionInStream)
     {
         IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this,
             (int)referredStreamOrdinal));
-        NewIndirectResolver.RegisterObjectStreamObject((ulong) number, referredStreamOrdinal, positionInStream);
+        NewIndirectResolver.RegisterObjectStreamObject(number, referredStreamOrdinal, positionInStream);
     }
 }

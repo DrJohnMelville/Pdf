@@ -11,7 +11,7 @@ public class DifferenceWithFontGlyphName : FontDefinitionTest
         TextToRender = "Text\x01";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
+    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var enc = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Encoding)

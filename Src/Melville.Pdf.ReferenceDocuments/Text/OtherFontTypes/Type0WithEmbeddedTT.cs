@@ -15,7 +15,7 @@ public class Type0WithTightDefaultCharSpacing : Type0Base
     {
     }
 
-    protected override DictionaryBuilder CidFontBuilder(IPdfObjectRegistry arg)
+    protected override DictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
     {
         return base.CidFontBuilder(arg).WithItem(KnownNames.DW, 500);
     }
@@ -26,7 +26,7 @@ public class Type0WithIndividualCharSpacing : Type0Base
     {
     }
 
-    protected override DictionaryBuilder CidFontBuilder(IPdfObjectRegistry arg)
+    protected override DictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
     {
         return base.CidFontBuilder(arg).WithItem(KnownNames.W, new PdfArray(
             4, new PdfArray(
@@ -41,7 +41,7 @@ public abstract class Type0Base : FontDefinitionTest
         TextToRender = "\x0\x4\x0\x5\x0\x6\x0\x7";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
+    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var CIDFont = arg.Add(CidFontBuilder(arg).AsDictionary());
         return new DictionaryBuilder()
@@ -53,7 +53,7 @@ public abstract class Type0Base : FontDefinitionTest
             .AsDictionary();
     }
 
-    protected virtual DictionaryBuilder CidFontBuilder(IPdfObjectRegistry arg)
+    protected virtual DictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Zev.ttf")!;
         var stream = arg.Add(new DictionaryBuilder()

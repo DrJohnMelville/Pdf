@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
@@ -15,8 +17,8 @@ public static class SpecializedSearchMethods
     /// <param name="tree">The tree to search.</param>
     /// <param name="s">The desired key</param>
     /// <returns>The objet with the given key</returns>
-    public static ValueTask<PdfObject> SearchAsync(this PdfTree<PdfString> tree, string s) =>
-        tree.SearchAsync(PdfString.CreateAscii(s));
+    public static ValueTask<PdfDirectValue> SearchAsync(this PdfTree tree, string s) =>
+        tree.SearchAsync(PdfDirectValue.CreateString(s.AsExtendedAsciiBytes()));
 
     /// <summary>
     /// Search a number tree given a C# integer.
@@ -24,8 +26,8 @@ public static class SpecializedSearchMethods
     /// <param name="tree">The tree to search.</param>
     /// <param name="num">The desired key</param>
     /// <returns>The object with the given key</returns>
-    public static ValueTask<PdfObject> SearchAsync(this PdfTree<PdfNumber> tree, int num) =>
-        tree.SearchAsync(new PdfInteger(num));
+    public static ValueTask<PdfDirectValue> SearchAsync(this PdfTree tree, int num) =>
+        tree.SearchAsync(num);
 
     /// <summary>
     /// Search a number tree given a C# double.
@@ -33,6 +35,6 @@ public static class SpecializedSearchMethods
     /// <param name="tree">The tree to search.</param>
     /// <param name="num">The desired key</param>
     /// <returns>The object with the given key</returns>
-    public static ValueTask<PdfObject> SearchAsync(this PdfTree<PdfNumber> tree, double num) =>
+    public static ValueTask<PdfDirectValue> SearchAsync(this PdfTree tree, double num) =>
         tree.SearchAsync(num);
 }

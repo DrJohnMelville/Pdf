@@ -2,41 +2,52 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Melville.INPC;
 using Melville.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-internal static class TreeCreator
+public static class PdfTreeElementNamer
 {
-    public static PdfDictionary CreateTree<T>(
-        this IPdfObjectRegistry builder, int nodeSize, params (T, PdfObject)[] items)
-        where T : PdfObject, IComparable<T> =>
-        CreateTree(builder, nodeSize, (IEnumerable<(T, PdfObject)>)items);
+    public static PdfDirectValue FinalArrayName(bool isNumberTree) =>
+        isNumberTree? KnownNames.NumsTName : KnownNames.NamesTName;
 
-    public static PdfDictionary CreateTree<T>(
-        this IPdfObjectRegistry builder, int nodeSize, IEnumerable<(T Key, PdfObject Item)> items)
-        where T : PdfObject, IComparable<T> =>
-        new TreeCreator<T>(builder, nodeSize).CreateTree(items);
 }
 
-internal readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
+internal static class TreeCreator
 {
-    private readonly IPdfObjectRegistry builder;
-    private readonly int nodeSize;
-    private readonly PdfName finalArrayName;
+    public static PdfValueDictionary CreateNumberTree(
+        this IPdfObjectCreatorRegistry builder, int nodeSize, params (PdfDirectValue, PdfIndirectValue)[] items) =>
+        CreateNumberTree(builder, nodeSize, (IEnumerable<(PdfDirectValue, PdfIndirectValue)>)items);
 
-    public TreeCreator(IPdfObjectRegistry builder, int nodeSize)
-    {
-        this.builder = builder;
-        this.nodeSize = nodeSize;
-        finalArrayName = PdfTreeElementNamer.FinalArrayName<T>();
-    }
+    public static PdfValueDictionary CreateNumberTree(
+        this IPdfObjectCreatorRegistry builder, int nodeSize,
+        IEnumerable<(PdfDirectValue Key, PdfIndirectValue Item)> items) =>
+        new TreeCreatorImpl(builder, nodeSize, KnownNames.NumsTName).CreateTree(items);
 
-    public PdfDictionary CreateTree(IEnumerable<(T Key, PdfObject Item)> items)
+    public static PdfValueDictionary CreateNameTree(
+        this IPdfObjectCreatorRegistry builder, int nodeSize, params (PdfDirectValue, PdfIndirectValue)[] items) =>
+        CreateNameTree(builder, nodeSize, (IEnumerable<(PdfDirectValue, PdfIndirectValue)>)items);
+
+    public static PdfValueDictionary CreateNameTree(
+        this IPdfObjectCreatorRegistry builder, int nodeSize,
+        IEnumerable<(PdfDirectValue Key, PdfIndirectValue Item)> items) =>
+        new TreeCreatorImpl(builder, nodeSize, KnownNames.NamesTName).CreateTree(items);
+}
+
+public readonly partial struct TreeCreatorImpl
+{
+
+    [FromConstructor] private readonly IPdfObjectCreatorRegistry builder;
+    [FromConstructor] private readonly int nodeSize;
+    [FromConstructor] private readonly PdfDirectValue finalArrayName;
+
+    public PdfValueDictionary CreateTree(IEnumerable<(PdfDirectValue Key, PdfIndirectValue Item)> items)
     {
         var ordered = items
             .OrderBy(i => i.Key)
@@ -46,59 +57,65 @@ internal readonly struct TreeCreator<T> where T : PdfObject, IComparable<T>
         return TreeFromLeaves(ordered);
     }
 
-    private PdfDictionary CreateLeafNode(IList<(T Key, PdfObject Item)> ordered)
+    private PdfValueDictionary CreateLeafNode(IList<(PdfDirectValue Key, PdfIndirectValue Item)> ordered)
     {
-        Debug.Assert(ordered.Count <= nodeSize);
-        return new DictionaryBuilder()
-            .WithItem(finalArrayName, new PdfArray(InterleveKeysAndValues(ordered)))
-            .WithItem(KnownNames.Limits, new PdfArray(ordered.First().Key, ordered.Last().Key))
+        Debug.Assert(ordered.Count <= nodeSize && ordered.Count > 0);
+        return new ValueDictionaryBuilder()
+            .WithItem(finalArrayName, new PdfValueArray(InterleveKeysAndValues(ordered)))
+            .WithItem(KnownNames.LimitsTName, new PdfValueArray(ordered.First().Key, ordered.Last().Key))
             .AsDictionary();
     }
 
-    private static List<PdfObject> InterleveKeysAndValues(IList<(T Key, PdfObject Item)> ordered)
+    private static PdfIndirectValue[] InterleveKeysAndValues(IList<(PdfDirectValue Key, PdfIndirectValue Item)> ordered)
     {
-        var finalList = new List<PdfObject>(ordered.Count * 2);
+        var finalList = new PdfIndirectValue[ordered.Count * 2];
+        int position = 0;
         foreach (var item in ordered)
         {
-            finalList.Add(item.Key);
-            finalList.Add(item.Item);
+            finalList[position++] = item.Key;
+            finalList[position++] = item.Item;
         }
-
         return finalList;
     }
 
-    private PdfDictionary TreeFromLeaves(IReadOnlyList<PdfDictionary> leaves) =>
+    private PdfValueDictionary TreeFromLeaves(IReadOnlyList<PdfValueDictionary> leaves) =>
         leaves.Count == 1 ? TrivialTree(leaves) : TreeFromChunks(leaves);
 
-    private PdfDictionary TrivialTree(IReadOnlyList<PdfDictionary> leaves) =>
-        new DictionaryBuilder().WithItem(finalArrayName, leaves[0].RawItems[finalArrayName]).AsDictionary();
+    private PdfValueDictionary TrivialTree(IReadOnlyList<PdfValueDictionary> leaves) => 
+        new ValueDictionaryBuilder().WithItem(finalArrayName, leaves[0].RawItems[finalArrayName]).AsDictionary();
 
-    private PdfDictionary TreeFromChunks(IReadOnlyList<PdfDictionary> leaves)
+    private PdfValueDictionary TreeFromChunks(IReadOnlyList<PdfValueDictionary> leaves)
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Kids,
-                new PdfArray(ReduceLeaves(leaves).Select(CreateIndirectReference)))
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.KidsTName,
+                new PdfValueArray(ReduceLeaves(leaves).Select(CreateIndirectReference).ToArray()))
             .AsDictionary();
     }
 
-    private IReadOnlyList<PdfDictionary> ReduceLeaves(IReadOnlyList<PdfDictionary> leaves) =>
+    private IReadOnlyList<PdfValueDictionary> ReduceLeaves(IReadOnlyList<PdfValueDictionary> leaves) =>
         leaves.Count <= nodeSize ? leaves : ReduceLeaves(leaves.Chunks(nodeSize).Select(MiddleNode).ToList());
 
-    private PdfDictionary MiddleNode(IList<PdfDictionary> nodes)
+    private PdfValueDictionary MiddleNode(IList<PdfValueDictionary> nodes)
     {
         Debug.Assert(nodes.Count <= nodeSize);
         return
-            new DictionaryBuilder()
-                .WithItem(KnownNames.Kids, new PdfArray(nodes.Select(CreateIndirectReference)))
-                .WithItem(KnownNames.Limits, new PdfArray(FirstKey(nodes.First()), LastKey(nodes.Last())))
+            new ValueDictionaryBuilder()
+                .WithItem(KnownNames.KidsTName, new PdfValueArray(nodes.Select(CreateIndirectReference).ToArray()))
+                .WithItem(KnownNames.LimitsTName, new PdfValueArray(FirstKey(nodes.First()), LastKey(nodes.Last())))
                 .AsDictionary();
     }
 
-    private PdfIndirectObject CreateIndirectReference(PdfDictionary i) => builder.Add(i);
+    private PdfIndirectValue CreateIndirectReference(PdfValueDictionary i) => builder.Add(i);
 
-    public T FirstKey(PdfDictionary node) => (T)LimitsArray(node)[0];
-    public T LastKey(PdfDictionary node) => (T)LimitsArray(node).Last();
+    public PdfIndirectValue FirstKey(PdfValueDictionary node) => LimitsArray(node)[0];
+    public PdfIndirectValue LastKey(PdfValueDictionary node) => LimitsArray(node).Last();
 
-    private IReadOnlyList<PdfObject> LimitsArray(PdfDictionary node) =>
-        ((PdfArray)node.RawItems[KnownNames.Limits]).RawItems;
+    private IReadOnlyList<PdfIndirectValue> LimitsArray(PdfValueDictionary node)
+    {
+        if (!(node.RawItems.TryGetValue(KnownNames.LimitsTName, out var indir) &&
+            indir.TryGetEmbeddedDirectValue(out var dirvalue) &&
+            dirvalue.TryGet(out PdfValueArray? limits)))
+            throw new InvalidOperationException("Cannot find item");
+        return limits.RawItems;
+    }
 }

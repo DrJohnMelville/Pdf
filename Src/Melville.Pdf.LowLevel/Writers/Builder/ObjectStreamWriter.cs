@@ -1,10 +1,12 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -27,35 +29,35 @@ internal readonly struct ObjectStreamWriter
         objectWriter = new PdfObjectWriter(objectStreamWriter);
     }
 
-    public async ValueTask TryAddRefAsync(PdfIndirectObject obj)
+    public async ValueTask TryAddRefAsync(int objectNumber, PdfDirectValue obj)
     {
-        var direcetValue = await obj.DirectValueAsync().CA();
-        WriteObjectPosition(obj);
-        await WriteObjectAsync(direcetValue).CA();
+        WriteObjectPosition(objectNumber);
+        await WriteObjectAsync(obj).CA();
     }
 
-    private void WriteObjectPosition(PdfIndirectObject item)
+    private void WriteObjectPosition(int objectNumber)
     {
-        IntegerWriter.Write(referenceStreamWriter, item.ObjectNumber);
+        IntegerWriter.Write(referenceStreamWriter, (long)objectNumber);
         referenceStreamWriter.WriteSpace();
         IntegerWriter.Write(referenceStreamWriter, objectStreamWriter.BytesWritten);
         referenceStreamWriter.WriteSpace();
     }
 
-    private async ValueTask WriteObjectAsync(PdfObject directValue)
-    {
-        await directValue.Visit(objectWriter).CA();
+    private async ValueTask WriteObjectAsync(PdfDirectValue directValue)
+    {            throw new NotSupportedException("Obsolete Object");
+
+//        await directValue.Visit(objectWriter).CA();
         objectStreamWriter.WriteLineFeed();
     }
 
-    public async ValueTask<PdfStream> BuildAsync(DictionaryBuilder builder, int count)
+    public async ValueTask<PdfValueStream> BuildAsync(ValueDictionaryBuilder builder, int count)
     {
         await referenceStreamWriter.FlushAsync().CA();
         await objectStreamWriter.FlushAsync().CA();
         return builder
-            .WithItem(KnownNames.Type, KnownNames.ObjStm)
-            .WithItem(KnownNames.N, count)
-            .WithItem(KnownNames.First, referenceStreamWriter.BytesWritten)
+            .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
+            .WithItem(KnownNames.NTName, count)
+            .WithItem(KnownNames.FirstTName, referenceStreamWriter.BytesWritten)
             .AsStream(FinalStreamContent());        
     }
     private ConcatStream FinalStreamContent() => 

@@ -27,7 +27,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// creates the given content from an IPdfObjectRegistry.
     /// </summary>
     protected Dictionary<(PdfName DictionaryName, PdfName ItemName), 
-            Func<IPdfObjectRegistry,PdfObject>> Resources { get; } = new();
+            Func<IPdfObjectCreatorRegistry,PdfObject>> Resources { get; } = new();
 
     /// <summary>
     /// Create the ItemsWithResourceDictionaryCreator
@@ -45,7 +45,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="parent">The parent of this item.</param>
     /// <returns>A reference to the object created and the number of pages created by the method call.</returns>
     public abstract (PdfIndirectObject Reference, int PageCount) 
-        ConstructItem(IPdfObjectRegistry creator, PdfIndirectObject? parent);
+        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent);
 
     /// <summary>
     /// Add an item to the top level item dictionary
@@ -55,7 +55,7 @@ public abstract class ItemWithResourceDictionaryCreator
     public void AddMetadata(PdfName name, PdfObject item) =>
         MetaData.WithItem(name, item);
 
-    private protected void TryAddResources(IPdfObjectRegistry creator)
+    private protected void TryAddResources(IPdfObjectCreatorRegistry creator)
     {
         if (Resources.Count == 0) return;
         var res = new DictionaryBuilder();
@@ -67,17 +67,17 @@ public abstract class ItemWithResourceDictionaryCreator
     }
 
     private PdfObject DictionaryValues(
-        IPdfObjectRegistry creator, 
+        IPdfObjectCreatorRegistry creator, 
         IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
-            Func<IPdfObjectRegistry,PdfObject>>> subDictionary) =>
+            Func<IPdfObjectCreatorRegistry,PdfObject>>> subDictionary) =>
         subDictionary.Key == KnownNames.ProcSet
             ? subDictionary.First().Value(creator)
             : CreateDictionary(subDictionary, creator);
 
     private PdfDictionary CreateDictionary(
         IEnumerable<KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
-            Func<IPdfObjectRegistry, PdfObject>>> items,
-        IPdfObjectRegistry creator) => items
+            Func<IPdfObjectCreatorRegistry, PdfObject>>> items,
+        IPdfObjectCreatorRegistry creator) => items
             .Aggregate(new DictionaryBuilder(),
                 (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value(creator))))
             .AsDictionary();
@@ -98,7 +98,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="name">Key for the object</param>
     /// <param name="obj">A delegate that will create the object from a IPdfObjectRegistry</param>
     public void AddResourceObject(
-        ResourceTypeName resourceType, PdfName name, Func<IPdfObjectRegistry,PdfObject> obj) =>
+        ResourceTypeName resourceType, PdfName name, Func<IPdfObjectCreatorRegistry,PdfObject> obj) =>
         Resources[(resourceType, name)] = obj;
 
     /// <summary>

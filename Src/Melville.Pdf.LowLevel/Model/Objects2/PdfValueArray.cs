@@ -118,3 +118,10 @@ public sealed class PdfValueArray :
         return ret;
     }
 }
+
+public static class PdfValueArrayOperations
+{
+    public static async ValueTask<T> GetAsync<T>(this PdfValueArray array, int index) =>
+        (await array[index].CA()).Get<T>();
+
+}

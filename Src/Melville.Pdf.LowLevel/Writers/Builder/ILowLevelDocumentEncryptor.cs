@@ -4,6 +4,7 @@ using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
@@ -18,7 +19,7 @@ public interface ILowLevelDocumentEncryptor
     /// </summary>
     /// <param name="id">The ID element from the document root.</param>
     /// <returns>The encryption dictionary</returns>
-    public PdfDictionary CreateEncryptionDictionary(PdfArray id);
+    public PdfValueDictionary CreateEncryptionDictionary(PdfValueArray id);
     /// <summary>
     /// The user password that will read a document encrypted with this encryptor.
     /// </summary>
@@ -60,34 +61,42 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
         this.keyComputer = keyComputer;
     }
         
-    public PdfDictionary CreateEncryptionDictionary(PdfArray id)
+    public PdfValueDictionary CreateEncryptionDictionary(PdfValueArray id)
     {
         return DictionaryItems(id)
-            .WithItem(KnownNames.Filter, KnownNames.Standard)
-            .WithItem(KnownNames.V, v) 
-            .WithItem(KnownNames.R,r)
-            .WithItem(KnownNames.Length, keyLengthInBits)
+            .WithItem(KnownNames.FilterTName, KnownNames.StandardTName)
+            .WithItem(KnownNames.VTName, v) 
+            .WithItem(KnownNames.RTName,r)
+            .WithItem(KnownNames.LengthTName, keyLengthInBits)
             .AsDictionary();
     }
 
-    protected virtual DictionaryBuilder DictionaryItems(PdfArray id)
+    protected virtual ValueDictionaryBuilder DictionaryItems(PdfValueArray id)
     {
-        var dict = new DictionaryBuilder();
+        var dict = new ValueDictionaryBuilder();
+        #warning ownerHash should be a span to avoid an allocation or ComputeOwnerKey could create a PdfDirectObject
         var ownerHash = ownerPasswordComputer.ComputeOwnerKey(ownerPassword,UserPassword, KeyLengthInBytes);
+
         var ep = new EncryptionParameters(
-            ((PdfString) id.RawItems[0]).Bytes, ownerHash, Array.Empty<byte>(),
+             ExtractFirstStringMemory(id),ownerHash, Array.Empty<byte>(),
             (uint)permissions, keyLengthInBits);
-        dict.WithItem(KnownNames.Filter, KnownNames.Standard);
-        dict.WithItem(KnownNames.V, v);
+        dict.WithItem(KnownNames.FilterTName, KnownNames.StandardTName);
+        dict.WithItem(KnownNames.VTName, v);
         if (keyLengthInBits > 0)
-            dict.WithItem(KnownNames.Length, keyLengthInBits);
-        dict.WithItem(KnownNames.P, permissions);
-        dict.WithItem(KnownNames.R, r);
-        dict.WithItem(KnownNames.U, new PdfString(UserHashForPassword(UserPassword, ep)));
-        dict.WithItem(KnownNames.O, new PdfString(ownerHash));
+            dict.WithItem(KnownNames.LengthTName, keyLengthInBits);
+        dict.WithItem(KnownNames.PTName, permissions);
+        dict.WithItem(KnownNames.RTName, r);
+        dict.WithItem(KnownNames.UTName, PdfDirectValue.CreateString(UserHashForPassword(UserPassword, ep)));
+        dict.WithItem(KnownNames.OTName, PdfDirectValue.CreateString(ownerHash));
         return dict;
     }
 
+    private Memory<byte> ExtractFirstStringMemory(PdfValueArray id) =>
+        !id.RawItems[0].TryGetEmbeddedDirectValue(out Memory<byte> ret)
+            ? ret
+            : throw new PdfParseException("Encryption dictionary must contain direct objects/");
+
+#warning -- use spans and return a PdfDirectValue
     public byte[] UserHashForPassword(in string userPassword, in EncryptionParameters parameters)
     {
         var key = keyComputer.ComputeKey(userPassword, parameters);

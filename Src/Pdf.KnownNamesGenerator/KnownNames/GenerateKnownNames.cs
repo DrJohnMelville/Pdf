@@ -172,22 +172,22 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                               /// </summary>
                               public readonly struct {{items.Key}}Name 
                               {
-                                 private readonly PdfName name;
+                                 private readonly PdfDirectValue name;
                                  /// <summary>
-                                 /// Implicitly convert a PdfName to a {{items.Key}}
+                                 /// Implicitly convert a PdfDirectValue to a {{items.Key}}
                                  /// </summary>    
-                                 public {{items.Key}}Name(PdfName name){ this.name = name;}
+                                 public {{items.Key}}Name(PdfDirectValue name){ this.name = name;}
                                  /// <summary>
-                                 /// Implicitly convert a {{items.Key}} to a PdfName
+                                 /// Implicitly convert a {{items.Key}} to a PdfDirectValue
                                  /// </summary>    
-                                 public static implicit operator PdfName({{items.Key}}Name wrapper) => wrapper.name; 
+                                 public static implicit operator PdfDirectValue({{items.Key}}Name wrapper) => wrapper.name; 
                         """);
                 foreach (var (value, name, type) in items)
                 {
                     sb.AppendLine("        /// <summary>");
                     sb.AppendLine($"        /// {type} value for {name}");
                     sb.AppendLine("        /// </summary>");
-                    sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name});");
+                    sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name}TName);");
                 }
 
                 sb.AppendLine(

@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -14,7 +15,7 @@ internal static class TrailerWriter
     private static ReadOnlySpan<byte> StartXrefTag => "\nstartxref\n"u8;
     private static ReadOnlySpan<byte>  EofTag => "\n%%EOF"u8;
     public static async Task WriteTrailerWithDictionaryAsync(
-        PipeWriter target, PdfDictionary dictionary, long xRefStart)
+        PipeWriter target, PdfValueDictionary dictionary, long xRefStart)
     {
         target.WriteBytes(TrailerTag);
         await dictionary.Visit(new PdfObjectWriter(target)).CA();

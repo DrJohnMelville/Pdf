@@ -1,5 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -14,6 +15,6 @@ public static class LowLevelDocumentBuilderOperations
     /// <param name="creator">IPdfObjectRegistry to add the root element to.</param>
     /// <param name="rootElt"></param>
     public static void AddRootElement(
-        this IPdfObjectRegistry creator, PdfDictionary rootElt) =>
-        creator.AddToTrailerDictionary(KnownNames.Root, creator.Add(rootElt));
+        this IPdfObjectCreatorRegistry creator, PdfValueDictionary rootElt) =>
+        creator.AddToTrailerDictionary(KnownNames.RootTName, creator.Add(rootElt));
 }

@@ -19,7 +19,7 @@ namespace Melville.Pdf.WpfToolTests.ComparingReader.SavePages;
 
 public class DeepCopyTest
 {
-    private readonly Mock<IPdfObjectRegistry> creator = new();
+    private readonly Mock<IPdfObjectCreatorRegistry> creator = new();
     private readonly DeepCopy sut;
 
     public DeepCopyTest()

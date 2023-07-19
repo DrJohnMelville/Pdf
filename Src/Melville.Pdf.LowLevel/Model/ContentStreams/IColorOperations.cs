@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 
@@ -14,12 +15,12 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator CS
     /// </summary>
-    ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace);
+    ValueTask SetStrokingColorSpaceAsync(PdfDirectValue colorSpace);
 
     /// <summary>
     /// Content stream operator cs
     /// </summary>
-    ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace);
+    ValueTask SetNonstrokingColorSpaceAsync(PdfDirectValue colorSpace);
 
     /// <summary>
     /// Content stream operator SC
@@ -34,12 +35,12 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator SCN
     /// </summary>
-    ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors);
+    ValueTask SetStrokeColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator scn
     /// </summary>
-    ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors);
+    ValueTask SetNonstrokingColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator G

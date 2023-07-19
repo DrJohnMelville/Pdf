@@ -29,7 +29,7 @@ public class PageCreator: ContentStreamCreator
 
     /// <inheritdoc />
     public override (PdfIndirectObject Reference, int PageCount) 
-        ConstructItem(IPdfObjectRegistry creator, PdfIndirectObject? parent)
+        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent)
     {
         if (parent is null) throw new ArgumentException("Pages must have a parent.");
         MetaData.WithItem(KnownNames.Parent, parent);
@@ -37,7 +37,7 @@ public class PageCreator: ContentStreamCreator
     }
 
     /// <inheritdoc />
-    protected override PdfIndirectObject CreateFinalObject(IPdfObjectRegistry creator)
+    protected override PdfIndirectObject CreateFinalObject(IPdfObjectCreatorRegistry creator)
     {
         TryAddContent(creator);
         return creator.Add(TryUsePromisedObject(MetaData.AsDictionary()));
@@ -50,7 +50,7 @@ public class PageCreator: ContentStreamCreator
     /// </summary>
     /// <param name="builder">The IPdfObjectRegistry from which to create the promise object</param>
     /// <returns>the promise object</returns>
-    public PdfIndirectObject InitializePromiseObject(IPdfObjectRegistry builder) =>
+    public PdfIndirectObject InitializePromiseObject(IPdfObjectCreatorRegistry builder) =>
         promisedPageObject = builder.CreatePromiseObject();
 
     private PdfObject TryUsePromisedObject(PdfObject value)
@@ -60,18 +60,18 @@ public class PageCreator: ContentStreamCreator
         return promisedPageObject;
     }
 
-    private void TryAddContent(IPdfObjectRegistry creator)
+    private void TryAddContent(IPdfObjectCreatorRegistry creator)
     {
         if (streamSegments.Count > 0)
             MetaData.WithItem(KnownNames.Contents, CreateContents(creator));
     }
 
-    private PdfObject CreateContents(IPdfObjectRegistry creator) =>
+    private PdfObject CreateContents(IPdfObjectCreatorRegistry creator) =>
         streamSegments.Count == 1
             ? CreateStreamSegment(creator, streamSegments[0])
             : new PdfArray(streamSegments.Select(i => CreateStreamSegment(creator, i)));
 
-    private PdfIndirectObject CreateStreamSegment(IPdfObjectRegistry creator, PdfStream stream) => 
+    private PdfIndirectObject CreateStreamSegment(IPdfObjectCreatorRegistry creator, PdfStream stream) => 
         creator.Add(stream);
 
     /// <summary>

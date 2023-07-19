@@ -1,6 +1,8 @@
 ﻿using System;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.Postscript.Interpreter.Values.Interfaces;
+using Melville.Postscript.Interpreter.Values.Numbers;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -13,8 +15,8 @@ public partial class PostscriptDouble :
     IPostscriptValueStrategy<int>,
     IPostscriptValueStrategy<long>,
     IPostscriptValueStrategy<double>,
-    IPostscriptValueStrategy<float>
-
+    IPostscriptValueStrategy<float>,
+    IPostscriptValueComparison
 {
     string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento) => 
         DoubleFromMemento(memento).ToString();
@@ -37,4 +39,11 @@ public partial class PostscriptDouble :
 
     private double DoubleFromMemento(in MementoUnion memento) => 
         memento.Doubles[0];
+
+    public int CompareTo(in MementoUnion memento, object otherStrategy, in MementoUnion otherMemento)
+    {
+        return (otherStrategy is IPostscriptValueStrategy<double> otherSpecificStrategy)?
+            DoubleFromMemento(memento).CompareTo(otherSpecificStrategy.GetValue(otherMemento)):
+            throw new PostscriptNamedErrorException("Cannot convert other to doubke.","typecheck");
+    }
 }

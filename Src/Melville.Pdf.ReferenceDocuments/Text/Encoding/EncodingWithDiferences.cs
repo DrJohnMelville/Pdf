@@ -10,7 +10,7 @@ public class EncodingWithDiferences : FontDefinitionTest
         TextToRender = "ABC DE";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectRegistry arg)
+    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var enc = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Differences, new PdfArray(

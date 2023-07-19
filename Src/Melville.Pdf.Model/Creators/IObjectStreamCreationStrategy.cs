@@ -7,19 +7,19 @@ namespace Melville.Pdf.Model.Creators;
 
 internal interface IObjectStreamCreationStrategy
 {
-    IDisposable EnterObjectStreamContext(IPdfObjectRegistry creator);
+    IDisposable EnterObjectStreamContext(IPdfObjectCreatorRegistry creator);
 }
 
 [StaticSingleton]
 internal partial class EncodeInObjectStream: IObjectStreamCreationStrategy
 {
-    public IDisposable EnterObjectStreamContext(IPdfObjectRegistry creator) => 
+    public IDisposable EnterObjectStreamContext(IPdfObjectCreatorRegistry creator) => 
         creator.ObjectStreamContext();
 }
 
 [StaticSingleton]
 internal partial class NoObjectStream: IObjectStreamCreationStrategy, IDisposable
 {
-    public IDisposable EnterObjectStreamContext(IPdfObjectRegistry creator) => this;
+    public IDisposable EnterObjectStreamContext(IPdfObjectCreatorRegistry creator) => this;
     public void Dispose() { }
 }

@@ -6,19 +6,20 @@ using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers.V6SecurityHandler;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
 internal static class SecurityHandlerFactory
 {
     public static async ValueTask<ISecurityHandler> CreateSecurityHandlerAsync(
-        PdfDictionary trailer, PdfDictionary dict)
+        PdfValueDictionary trailer, PdfValueDictionary dict)
     {
-        if (await dict.GetAsync<PdfName>(KnownNames.Filter).CA() != KnownNames.Standard)
+        if (!(await dict.GetOrNullAsync(KnownNames.FilterTName).CA()).Equals(KnownNames.StandardTName))
             throw new PdfSecurityException("Only standard security handler is supported.");
         
-        var V = (await dict.GetAsync<PdfNumber>(KnownNames.V).CA()).IntValue;
-        var R = (await dict.GetAsync<PdfNumber>(KnownNames.R).CA()).IntValue;
+        var V = (await dict.GetAsync<long>(KnownNames.VTName).CA());
+        var R = (await dict.GetAsync<long>(KnownNames.RTName).CA());
 
         var parameters = await EncryptionParameters.CreateAsync(trailer).CA();
             
@@ -36,7 +37,7 @@ internal static class SecurityHandlerFactory
     }
 
     private static ISecurityHandler SecurityHandlerV2(
-        in EncryptionParameters parameters, PdfObject dict) =>
+        in EncryptionParameters parameters, PdfValueDictionary dict) =>
         new SecurityHandler(Rc4KeySpecializer.Instance, 
             Rc4CipherFactory.Instance, 
             RootKeyComputerV2(parameters), dict);
@@ -50,7 +51,7 @@ internal static class SecurityHandlerFactory
     }
 
     private static ISecurityHandler SecurityHandlerV3(
-        in EncryptionParameters parameters, PdfObject dict) =>
+        in EncryptionParameters parameters, PdfValueDictionary dict) =>
         new SecurityHandler(Rc4KeySpecializer.Instance, 
             Rc4CipherFactory.Instance, 
             RootKeyComputerV3(parameters),

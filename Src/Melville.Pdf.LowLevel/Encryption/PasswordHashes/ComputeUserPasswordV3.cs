@@ -24,11 +24,10 @@ internal sealed class ComputeUserPasswordV3 : IComputeUserPassword
 
     private static byte[] ComputeInitialHash(EncryptionParameters parameters)
     {
-        var md5 = MD5.Create();
-        md5.AddData(BytePadder.PdfPasswordPaddingBytes);
-        md5.AddData(parameters.IdFirstElement);
-        md5.FinalizeHash();
-        return md5.Hash ?? throw new InvalidProgramException("Hash should exist at this point");
+        var md5 = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+        md5.AppendData(BytePadder.PdfPasswordPaddingBytes);
+        md5.AppendData(parameters.IdFirstElement.Span);
+        return md5.GetCurrentHash();
     }
         
     public bool CompareHashes(in ReadOnlySpan<byte> a, in ReadOnlySpan<byte> b) => 

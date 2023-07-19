@@ -1,32 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 internal class ObjectStreamBuilder
 {
-    private readonly List<PdfIndirectObject> members = new();
+    private readonly ValueDictionaryBuilder streamDictionaryItems;
+    private readonly Dictionary<int,PdfDirectValue> members = new();
 
-    public bool TryAddRef(PdfIndirectObject obj)
+    public ObjectStreamBuilder(ValueDictionaryBuilder? streamDictionaryItems = null)
     {
-        if (!(obj.TryGetDirectValue(out var directValue) && IsLegalWrite(obj, directValue))) return false;
-        if (!members.Contains(obj)) members.Add(obj);
+        this.streamDictionaryItems = streamDictionaryItems ?? DefaultBuilder();
+    }
+
+    private ValueDictionaryBuilder DefaultBuilder() => new ValueDictionaryBuilder()
+        .WithItem(KnownNames.FilterTName, KnownNames.FlateDecodeTName);
+
+    public bool TryAddRef(int number, PdfDirectValue obj)
+    {
+        if (!IsLegalWrite(obj)) return false;
+        members[number] = obj;
         return true;
     }
-    private bool IsLegalWrite(PdfIndirectObject pdfIndirectObject, PdfObject direcetValue) => 
-        pdfIndirectObject.GenerationNumber == 0 && direcetValue is not PdfStream;
+    private bool IsLegalWrite(PdfDirectValue value) => ! value.TryGet(out PdfValueStream _);
 
-    public async ValueTask<PdfObject> CreateStreamAsync(DictionaryBuilder builder)
+    public async ValueTask<PdfDirectValue> CreateStreamAsync()
     {
         var writer = new ObjectStreamWriter();
         foreach (var member in members)
         {
-            await  writer.TryAddRefAsync(member).CA();
+            await  writer.TryAddRefAsync(member.Key, member.Value).CA();
         }
-        return await writer.BuildAsync(builder, members.Count).CA();
+        return await writer.BuildAsync(streamDictionaryItems, members.Count).CA();
     }
 
     public bool HasValues() => members.Count > 0;

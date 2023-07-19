@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
@@ -48,7 +49,7 @@ internal partial class SecurityHandler : ISecurityHandler
     [FromConstructor]private readonly IKeySpecializer keySpecializer;
     [FromConstructor]private readonly ICipherFactory cipherFactory;
     [FromConstructor]private readonly IRootKeyComputer rootKeyComputer;
-    [FromConstructor]private readonly PdfObject? blockEncryption;
+    [FromConstructor]private readonly PdfValueDictionary? blockEncryption;
         
     public byte[]? TryComputeRootKey(string password, PasswordType type) => 
         rootKeyComputer.TryComputeRootKey(password, type);

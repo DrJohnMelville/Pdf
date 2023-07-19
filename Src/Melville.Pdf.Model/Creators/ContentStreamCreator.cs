@@ -18,7 +18,7 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
     }
 
     /// <inheritdoc />
-    public override (PdfIndirectObject Reference, int PageCount) ConstructItem(IPdfObjectRegistry creator,
+    public override (PdfIndirectObject Reference, int PageCount) ConstructItem(IPdfObjectCreatorRegistry creator,
         PdfIndirectObject? parent)
     {
         using var _ = objStreamStrategy.EnterObjectStreamContext(creator);
@@ -31,7 +31,7 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
     /// </summary>
     /// <param name="creator">PdfObjectRegistry to create new indirect objects.</param>
     /// <returns>Reference to the created object.</returns>
-    protected abstract PdfIndirectObject CreateFinalObject(IPdfObjectRegistry creator);
+    protected abstract PdfIndirectObject CreateFinalObject(IPdfObjectCreatorRegistry creator);
 
     /// <summary>
     /// Add a content stream to the build object.

@@ -38,7 +38,7 @@ ET
     }
 
 
-    protected override PdfObject CreatePattern(IPdfObjectRegistry lldc)
+    protected override PdfObject CreatePattern(IPdfObjectCreatorRegistry lldc)
     {
         var tpc = CreatePatternCreator();
 
@@ -47,7 +47,7 @@ ET
         return tpc.ConstructItem(lldc, null).Reference;
     }
 
-    private static PdfDictionary EncodedDingbatsFont(IPdfObjectRegistry lldc) =>
+    private static PdfDictionary EncodedDingbatsFont(IPdfObjectCreatorRegistry lldc) =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Font)
             .WithItem(KnownNames.Subtype, KnownNames.Type1)

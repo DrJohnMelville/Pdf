@@ -5,17 +5,18 @@ using Melville.INPC;
 using Melville.JpegLibrary.PipeAmdStreamAdapters;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Filters.JpegFilter;
 
 internal class DctCodec : ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfObject? parameters)
+    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectValue parameters)
     {
         throw new NotSupportedException();
     }
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters) => 
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectValue parameters) => 
         await new JpegStreamFactory( await new DctDecodeParameters(parameters).ColorTransformAsync().CA())
             .FromStreamAsync(input).CA();
 

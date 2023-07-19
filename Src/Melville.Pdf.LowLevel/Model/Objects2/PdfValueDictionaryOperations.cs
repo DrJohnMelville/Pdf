@@ -49,4 +49,20 @@ public static class PdfValueDictionaryOperations
         this PdfValueDictionary dict, PdfDirectValue name, T defaultValue) =>
         dict.TryGetValue(name, out var obj) && (await obj.CA()).TryGet(out T? definiteObj)
         ? definiteObj: defaultValue;
+
+    /// <summary>
+    /// Try to get a value with an alternative name if the first does not exist
+    /// </summary>
+    /// <param name="dict">The dictionary to search</param>
+    /// <param name="primaryName">The primary name to check</param>
+    /// <param name="alternateName">The name to check if the primary key does not exist</param>
+    /// <returns>Value associated with primary name if one exists, otherwise value associated with the
+    /// secondary name as it exists, otherwise PdfNull</returns>
+    public static ValueTask<PdfDirectValue> GetWithAlternativeName(
+        this PdfValueDictionary dict, PdfDirectValue primaryName, PdfDirectValue alternateName) => dict switch
+    {
+        _ when dict.TryGetValue(primaryName, out var ret) => ret,
+        _ when dict.TryGetValue(alternateName, out var ret) => ret,
+        _ => ValueTask.FromResult(PdfDirectValue.CreateNull())
+    };
 }

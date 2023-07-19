@@ -19,6 +19,6 @@ internal static class RandomAccessFileParser
          var dictionary = await PdfTrailerParser.ParseXrefAndTrailerAsync(owner, xrefPosition).CA();
 
          return new PdfLoadedLowLevelDocument(
-            major, minor, dictionary, owner.IndirectResolver.GetObjects(), xrefPosition, owner);
+            major, minor, dictionary, owner.NewIndirectResolver.GetObjects(), xrefPosition, owner);
     }
 }

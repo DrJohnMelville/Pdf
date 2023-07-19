@@ -5,6 +5,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Filters.Predictors;
@@ -17,27 +18,27 @@ internal partial class PredictorCodec : ICodecDefinition
     private const int TiffPredictor2 = 2;
     private const int NoPredictor = 1;
 
-    public async ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfObject? parameters)
+    public async ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectValue parameters)
     {
         var filter = await PredictionFilterAsync(parameters, true).CA();
         return filter == null ? data : ReadingFilterStream.Wrap(data, filter);
     }
         
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters)
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectValue parameters)
     {
         var filter = await PredictionFilterAsync(parameters, false).CA();
         return filter == null ? input : ReadingFilterStream.Wrap(input, filter);
     }
 
     private async ValueTask<IStreamFilterDefinition?> PredictionFilterAsync(
-        PdfObject? parameters, bool encoding) =>
-        parameters is not PdfDictionary dict
+        PdfDirectValue parameters, bool encoding) =>
+        !parameters.TryGet(out PdfValueDictionary dict)
             ? null
             : PredictionFilter(
-                await dict.GetOrDefaultAsync(KnownNames.Predictor, 1).CA(),
-                (int)await dict.GetOrDefaultAsync(KnownNames.Colors, 1).CA(),
-                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).CA(),
-                (int)await dict.GetOrDefaultAsync(KnownNames.Columns, 1).CA(), 
+                await dict.GetOrDefaultAsync(KnownNames.PredictorTName, 1).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.ColorsTName, 1).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponentTName, 8).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.ColumnsTName, 1).CA(), 
                 encoding);
 
     private IStreamFilterDefinition? PredictionFilter(

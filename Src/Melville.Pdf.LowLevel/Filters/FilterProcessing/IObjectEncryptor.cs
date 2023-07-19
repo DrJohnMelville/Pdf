@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
@@ -8,7 +9,7 @@ internal interface IObjectCryptContext
 {
     public ICipher StringCipher();
     public ICipher StreamCipher();
-    public ICipher NamedCipher(PdfName name);
+    public ICipher NamedCipher(in PdfDirectValue name);
         
 }
     
@@ -36,6 +37,6 @@ internal class ErrorObjectEncryptor: IObjectCryptContext
         throw new NotSupportedException("Should not be encrypting in this context.");
     public ICipher StreamCipher()=> 
         throw new NotSupportedException("Should not be encrypting in this context.");
-    public ICipher NamedCipher(PdfName name)=> 
+    public ICipher NamedCipher(in PdfDirectValue name)=> 
         throw new NotSupportedException("Should not be encrypting in this context.");
 }

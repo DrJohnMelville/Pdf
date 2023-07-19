@@ -20,7 +20,7 @@ public readonly partial struct PdfIndirectValue
     /// <summary>
     /// A memento that allows most PdfObjects to be represented without allocations
     /// </summary>
-    [FromConstructor] private readonly MementoUnion memento;
+    [FromConstructor] public readonly MementoUnion Memento { get; }
 
     private object NonNullValueStrategy() => (valueStrategy ?? PostscriptNull.Instance);
 
@@ -31,13 +31,13 @@ public readonly partial struct PdfIndirectValue
 
     public ValueTask<PdfDirectValue> LoadValueAsync() =>
         valueStrategy is IIndirectValueSource source?
-            source.Lookup(memento):
+            source.Lookup(Memento):
         new(CreateDirectValueUnsafe());
 
     private PdfDirectValue CreateDirectValueUnsafe()
     {
         Debug.Assert(valueStrategy is not IIndirectValueSource);
-        return new PdfDirectValue(valueStrategy, memento);
+        return new PdfDirectValue(valueStrategy, Memento);
     }
 
     public bool TryGetEmbeddedDirectValue(out PdfDirectValue value) =>
@@ -67,7 +67,7 @@ public readonly partial struct PdfIndirectValue
 
     public override string ToString() => NonNullValueStrategy() switch
     {
-        IPostscriptValueStrategy<string> vs => vs.GetValue(memento),
+        IPostscriptValueStrategy<string> vs => vs.GetValue(Memento),
         _=> valueStrategy.ToString()
     };
 

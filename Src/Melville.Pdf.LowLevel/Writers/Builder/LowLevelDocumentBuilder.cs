@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -12,7 +17,7 @@ internal partial class LowLevelDocumentBuilder : ILowLevelDocumentCreator
 {
 
     [DelegateTo(Visibility = SourceLocationVisibility.Public)] 
-    private IPdfObjectRegistry delegatedItems => registry;
+    private IPdfObjectCreatorRegistry delegatedItems => registry;
     
     private PdfObjectRegistry registry;
   
@@ -22,30 +27,30 @@ internal partial class LowLevelDocumentBuilder : ILowLevelDocumentCreator
     }
         
     
-    public PdfArray EnsureDocumentHasId() =>
-        registry.TrailerDictionaryItems.TryGetValue(KnownNames.ID, out var val) && val is PdfArray ret
+    public PdfValueArray EnsureDocumentHasId() =>
+        registry.TrailerDictionaryItems.TryGetValue(KnownNames.IDTName, out var val) && 
+        val.Value.TryGetEmbeddedDirectValue(out PdfValueArray ret)
             ? ret
             : AddNewIdArray();
 
-    private PdfArray AddNewIdArray()
+    private PdfValueArray AddNewIdArray()
     {
         var array = NewIdArray();
-        AddToTrailerDictionary(KnownNames.ID, array);
+        AddToTrailerDictionary(KnownNames.IDTName, array);
         return array;
     }
 
-    private PdfArray NewIdArray() => new(IdElement(), IdElement());
+    private PdfValueArray NewIdArray() => new(IdElement(), IdElement());
 
-    private PdfString IdElement()
+    private PdfDirectValue IdElement()
     {
-        var ret = new byte[32];
+        Span<byte> ret = stackalloc byte[32];
         Guid.NewGuid().TryWriteBytes(ret);
-        Guid.NewGuid().TryWriteBytes(ret.AsSpan(16));
-        return new PdfString(ret);
+        Guid.NewGuid().TryWriteBytes(ret[16..]);
+        return PdfDirectValue.CreateString(ret);
     }
 
     public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7) =>
         new PdfLowLevelDocument(major, minor, registry.CreateTrailerDictionary(), 
-            registry.Objects.ToDictionary(
-                static item => (item.ObjectNumber, item.GenerationNumber) ));
+           new IndirectRegistryWrapper<(int,int )>(registry.Objects));
 }

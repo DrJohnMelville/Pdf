@@ -1,34 +1,28 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Filters;
 
 internal interface ICodecDefinition
 {
-    public ValueTask<Stream>  EncodeOnReadStreamAsync(Stream data, PdfObject? parameters);
-    ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters);
+    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectValue parameters);
+    ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectValue parameters);
 }
 
-internal class CodecDefinition: ICodecDefinition
+internal partial class CodecDefinition: ICodecDefinition
 {
-    private readonly Func<PdfObject?, ValueTask<IStreamFilterDefinition>> encoder;
-    private readonly Func<PdfObject?, ValueTask<IStreamFilterDefinition>> decoder;
+    [FromConstructor]private readonly Func<PdfDirectValue, ValueTask<IStreamFilterDefinition>> encoder;
+    [FromConstructor]private readonly Func<PdfDirectValue, ValueTask<IStreamFilterDefinition>> decoder;
 
-    public CodecDefinition(
-        Func<PdfObject?, ValueTask<IStreamFilterDefinition>> encoder, 
-        Func<PdfObject?, ValueTask<IStreamFilterDefinition>> decoder)
-    {
-        this.encoder = encoder;
-        this.decoder = decoder;
-    }
-
-    public async ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfObject? parameters) =>
+    public async ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectValue parameters) =>
         ReadingFilterStream.Wrap(data, await encoder(parameters).CA());
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfObject parameters) =>
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectValue parameters) =>
         ReadingFilterStream.Wrap(input, await decoder(parameters).CA());
 }

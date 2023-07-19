@@ -3,22 +3,23 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class NameWriter
 {
-    public static ValueTask<FlushResult> WriteAsync(PipeWriter target, PdfName name)
+    public static ValueTask<FlushResult> WriteAsync(PipeWriter target, in PdfDirectValue name)
     {
         WriteWithoutlush(target, name);
         return target.FlushAsync();
     }
 
-    public static void WriteWithoutlush(PipeWriter target, PdfName name)
+    public static void WriteWithoutlush(PipeWriter target, in PdfDirectValue name)
     {
-        Span<byte> nameSpan = stackalloc byte[name.Length()];
-        name.Fill(nameSpan);
-        WriteWithoutlush(target, nameSpan);
+        var str = name.Get<StringSpanSource>().GetSpan();
+        WriteWithoutlush(target, str);
     }
     private static void WriteWithoutlush(PipeWriter target, Span<byte> name)
     {

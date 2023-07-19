@@ -3,14 +3,13 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
-using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Visitors;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
+#warning -- this can probably become a readonly struct
+internal class PdfObjectWriter/*: RecursiveDescentVisitor<ValueTask<FlushResult>>*/
 {
     private readonly PipeWriter target;
     private IDocumentCryptContext encryptor;
@@ -26,6 +25,19 @@ internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
         this.encryptor = encryptor;
     }
 
+    public void Write(PdfIndirectValue item) =>
+        throw new NotFiniteNumberException();
+    public void Write(PdfDirectValue item) =>
+        throw new NotFiniteNumberException();
+
+    public void Write(in ReadOnlySpan<byte> literal)
+    {
+        literal.CopyTo(target.GetSpan(literal.Length));
+        target.Advance(literal.Length);
+    }
+
+
+    /*
     // this is an unusual situation where the methods have to not be named async to
     //implement the interface which is defined over a valueType
     public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
@@ -66,5 +78,6 @@ internal class PdfObjectWriter: RecursiveDescentVisitor<ValueTask<FlushResult>>
     private IObjectCryptContext CreateEncryptor() =>
         currentIndirectObject == null ? NullSecurityHandler.Instance : 
             encryptor.ContextForObject(currentIndirectObject.ObjectNumber, currentIndirectObject.GenerationNumber);
+*/
 
 }

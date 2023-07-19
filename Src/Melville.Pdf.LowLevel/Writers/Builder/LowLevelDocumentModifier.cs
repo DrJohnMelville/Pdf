@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -9,6 +10,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -18,14 +20,14 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 /// This interface allows additions and replacement of objects in a PdfLowLevelDocument
 /// Then a follow up trailer can be written that modifies a PDF document using the new or replaced objects.
 /// </summary>
-public interface ILowLevelDocumentModifier : IPdfObjectRegistry
+public interface ILowLevelDocumentModifier : IPdfObjectCreatorRegistry
 {
     /// <summary>
     /// Give an indirect object reference a new value
     /// </summary>
     /// <param name="reference">The reference to reassign</param>
     /// <param name="value">The new value</param>
-    void ReplaceReferenceObject(PdfIndirectObject reference, PdfObject value);
+    void ReplaceReferenceObject(PdfIndirectValue reference, PdfDirectValue value);
     /// <summary>
     /// Append the modification trailer to a stream.
     /// </summary>
@@ -47,7 +49,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
 {
     private readonly PdfObjectRegistry builder;
     [DelegateTo(Visibility = SourceLocationVisibility.Public)]
-    private IPdfObjectRegistry InnerBuilder => builder;
+    private IPdfObjectCreatorRegistry InnerBuilder => builder;
     private readonly long priorXref;
 
     public LowLevelDocumentModifier(int nextObjectNum, long priorXref)
@@ -65,29 +67,33 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         }
     }
     
-    public void ReplaceReferenceObject(PdfIndirectObject reference, PdfObject value)
+    public void ReplaceReferenceObject(PdfIndirectValue reference, PdfDirectValue value)
     {
-            builder.Add(value, reference.ObjectNumber, reference.GenerationNumber);
+            builder.Reassign(reference, value);
     }
 
 
     public ValueTask WriteModificationTrailerAsync(PipeWriter cpw, long startPosition) =>
         WriteModificationTrailerAsync(new CountingPipeWriter(cpw, startPosition));
+
     private async ValueTask WriteModificationTrailerAsync(CountingPipeWriter target)
     {
         var lines = new List<XrefLine>();
         var writer = new PdfObjectWriter(target);
         foreach (var item in builder.Objects)
         {
+            var (objNum, genetationNum) = item.Key;
             lines.Add(new XrefLine(
-                item.ObjectNumber, target.BytesWritten, item.GenerationNumber, true));
-            await writer.VisitTopLevelObject(item).CA();
+                objNum, target.BytesWritten, genetationNum, true));
+            throw new NotSupportedException("Obsolete Object");
+            // need to use the new object writer here
+//            await writer.VisitTopLevelObject(item).CA();
         }
         var startXref = target.BytesWritten;
         XrefTableElementWriter.WriteXrefTitleLine(target);
         WriteRevisedXrefTable(target, lines);
         await target.FlushAsync().CA();
-        builder.AddToTrailerDictionary(KnownNames.Prev, priorXref);
+        builder.AddToTrailerDictionary(KnownNames.PrevTName, priorXref);
         await TrailerWriter.WriteTrailerWithDictionaryAsync(target, builder.CreateTrailerDictionary(), startXref).CA();
     }
 
