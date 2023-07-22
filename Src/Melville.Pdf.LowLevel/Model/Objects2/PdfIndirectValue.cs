@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
@@ -38,9 +37,11 @@ public readonly partial struct PdfIndirectValue
 
     private PdfDirectValue CreateDirectValueUnsafe()
     {
-        Debug.Assert(valueStrategy is not IIndirectValueSource);
+        Debug.Assert(IsEmbeddedDirectValue());
         return new PdfDirectValue(valueStrategy, Memento);
     }
+
+    public bool IsEmbeddedDirectValue() => valueStrategy is not IIndirectValueSource;
 
     public bool TryGetEmbeddedDirectValue(out PdfDirectValue value) =>
         valueStrategy is IIndirectValueSource

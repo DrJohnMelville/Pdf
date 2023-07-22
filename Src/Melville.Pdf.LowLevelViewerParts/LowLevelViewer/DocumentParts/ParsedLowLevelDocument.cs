@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Security.Cryptography.Xml;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.Model.Documents;
 
@@ -47,14 +49,15 @@ public class PageLookup : IPageLookup
         var kids = await node.KidsAsync();
         for (int i = 0; i < kids.Count; i++)
         {
-            var kid = await kids.GetAsync<PdfDictionary>(i);
-            var kidType = await kid.GetAsync<PdfName>(KnownNames.Type);
+            var kid = await kids.GetAsync<PdfValueDictionary>(i);
+            var kidType = await kid.GetAsync<PdfName>(KnownNames.TypeTName);
             if (kidType == KnownNames.Page)
             {
                 if (page == 0)
                 {
-                    var ret = (PdfIndirectObject)kids.RawItems[i];
-                    return new CrossReference(ret.ObjectNumber, ret.GenerationNumber);
+                    var ret = kids.RawItems[i];
+                    Debug.Assert(!ret.IsEmbeddedDirectValue());
+                    return ExtractCrossReference(ret);
                 }
                 else
                 {
@@ -62,12 +65,18 @@ public class PageLookup : IPageLookup
                 }
             } else if (kidType == KnownNames.Pages)
             {
-                var nodeCount = (int)(await kid.GetAsync<PdfNumber>(KnownNames.Count)).IntValue;
+                var nodeCount = (int)(await kid.GetAsync<PdfNumber>(KnownNames.CountTName)).IntValue;
                 if (page < nodeCount) return await InnerPageForNumberAsync(new PageTree(kid), page);
                 page -= nodeCount;
             }
         }
 
         return new CrossReference(0, 0);
+    }
+
+    private static CrossReference ExtractCrossReference(PdfIndirectValue ret)
+    {
+        var retNums = ret.Memento.UInt64s;
+        return new CrossReference((int)retNums[0], (int)retNums[1]);
     }
 }

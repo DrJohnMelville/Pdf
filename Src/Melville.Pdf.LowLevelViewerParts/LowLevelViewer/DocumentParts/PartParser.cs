@@ -5,6 +5,7 @@ using Melville.MVVM.WaitingServices;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
@@ -66,8 +67,8 @@ public class PartParser: IPartParser
     private static ValueTask<DocumentPart> GenerateSuffixElementAsync(PdfLowLevelDocument lowlevel) => 
         new ViewModelVisitor().GeneratePartAsync("Trailer: ", lowlevel.TrailerDictionary);
 
-    private static PdfIndirectObject[] OrderedListOfObjects(PdfLowLevelDocument lowlevel) => 
-        lowlevel.Objects.Values.OrderBy(i => i.ObjectNumber).ToArray();
+    private static PdfIndirectValue[] OrderedListOfObjects(PdfLowLevelDocument lowlevel) => 
+        lowlevel.Objects.Values.OrderBy(i => i.Memento.UInt64s[0]).ToArray();
 
     private DocumentPart GenerateHeaderElement(PdfLowLevelDocument lowlevel) =>
         new DocumentPart($"PDF-{lowlevel.MajorVersion}.{lowlevel.MinorVersion}");

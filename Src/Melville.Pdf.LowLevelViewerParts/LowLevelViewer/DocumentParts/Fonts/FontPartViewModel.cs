@@ -1,5 +1,6 @@
 ﻿using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
@@ -7,10 +8,10 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 
 public partial class FontPartViewModel: DocumentPart
 {
-    private readonly PdfDictionary fontDic;
+    private readonly PdfValueDictionary fontDic;
     [AutoNotify] private IRealizedFont? font;
     
-    public FontPartViewModel(string title, PdfDictionary fontDic, IReadOnlyList<DocumentPart> children) : base(title, children)
+    public FontPartViewModel(string title, PdfValueDictionary fontDic, IReadOnlyList<DocumentPart> children) : base(title, children)
     {
         this.fontDic = fontDic;
     }

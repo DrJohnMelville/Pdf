@@ -3,31 +3,32 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Melville.MVVM.WaitingServices;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
 public class ItemLoader : DocumentPart
 {
-    private readonly Memory<PdfIndirectObject> references;
+    private readonly Memory<PdfIndirectValue> references;
     private static readonly DocumentPart[] fakeContent = {
         new DocumentPart("Fake--this should never be seen")
     };
 
     private readonly int minObjectNumber;
     private readonly int maxObjectNumber;
-    private static string ComputeName(Memory<PdfIndirectObject> mem)
+    private static string ComputeName(Memory<PdfIndirectValue> mem)
     {
         var span = mem.Span;
-        return $"{span[0].ObjectNumber} ... {span[^1].ObjectNumber}";
+        return $"{span[0].Memento.UInt64s[0]} ... {span[^1].Memento.UInt64s[0]}";
     }
 
-    public ItemLoader(Memory<PdfIndirectObject> references) :
+    public ItemLoader(Memory<PdfIndirectValue> references) :
         base(ComputeName(references),fakeContent)
     {
         this.references = references;
         var span = references.Span;
-        minObjectNumber = span[0].ObjectNumber;
-        maxObjectNumber = span[^1].ObjectNumber;
+        minObjectNumber = (int)span[0].Memento.UInt64s[0];
+        maxObjectNumber = (int)span[^1].Memento.UInt64s[1];
     }
 
     public override bool CanSkipSearch(int objectNumber) =>
@@ -55,12 +56,12 @@ public class ItemLoader : DocumentPart
         for (int i = 0; i < references.Length; i++)
         {
             var item = GetAt(references, i);
-            waiting.MakeProgress($"Loading Object ({item.ObjectNumber}, {item.GenerationNumber})");
+            waiting.MakeProgress($"Loading Object ({item.Memento.UInt64s[0]}, {item.Memento.UInt64s[1]})");
             SetElement(ret, i, await generator.VisitTopLevelObject(item));
         }
     }
 
-    private PdfIndirectObject GetAt(Memory<PdfIndirectObject> memory, int i) => memory.Span[i];
+    private PdfIndirectValue GetAt(Memory<PdfIndirectValue> memory, int i) => memory.Span[i];
 
     private void SetElement(in Memory<DocumentPart> mem, int pos, DocumentPart item) => 
         mem.Span[pos] = item;

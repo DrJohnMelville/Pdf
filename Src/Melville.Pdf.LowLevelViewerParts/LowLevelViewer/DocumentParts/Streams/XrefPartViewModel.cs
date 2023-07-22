@@ -1,5 +1,6 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -17,7 +18,7 @@ public class XrefDisplayViewModel
 
 public class XrefPartViewModel : StreamPartViewModel
 {
-    public XrefPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : 
+    public XrefPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfValueStream source) : 
         base(title, children, source)
     {
     }
@@ -28,7 +29,7 @@ public class XrefPartViewModel : StreamPartViewModel
         fmts.Add(new StreamDisplayFormat("Xref", ParseXrefAsync));
     }
 
-    private async ValueTask<object> ParseXrefAsync(PdfStream arg)
+    private async ValueTask<object> ParseXrefAsync(PdfValueStream arg)
     {
         var factory = new XrefParseLogger();
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(factory, Source).CA();
@@ -39,22 +40,21 @@ public class XrefPartViewModel : StreamPartViewModel
 public class XrefParseLogger : IIndirectObjectRegistry
 {
     public List<XrefDisplayLine> Lines = new();
-
-    public void RegisterDeletedBlock(int number, ulong next, ulong generation) =>
-        Lines.Add(new XrefDisplayLine("Deleted", number, (long)next, (long)generation));
-
-    public void RegisterNullObject(int number, ulong next, ulong generation)=>
-        Lines.Add(new XrefDisplayLine("Null", number, (long)next, (long)generation));
     
-    public void RegisterIndirectBlock(int number, ulong generation, ulong offset) =>
-        Lines.Add(new XrefDisplayLine("Raw", number, (long)generation, (long)offset));
+    public XrefDisplayViewModel CreateViewModel() => new XrefDisplayViewModel(Lines);
+    public void RegisterDeletedBlock(int number, int next, int generation)=>
+        Lines.Add(new XrefDisplayLine("Deleted", number, next, generation));
+
+    public void RegisterNullObject(int number, int next, int generation)=>
+        Lines.Add(new XrefDisplayLine("Null", number, next, generation));
+
+    public void RegisterIndirectBlock(int number, int generation, long offset)=>
+        Lines.Add(new XrefDisplayLine("Raw", number, generation, offset));
 
     public void RegisterObjectStreamBlock(
-        int number, ulong referredStreamOrdinal, ulong positionInStream) =>
-        Lines.Add(new XrefDisplayLine("Object Stream", number, (long)referredStreamOrdinal,
-            (long)positionInStream));
-
-    public XrefDisplayViewModel CreateViewModel() => new XrefDisplayViewModel(Lines);
+        int number, int referredStreamOrdinal, int positionInStream)=>
+        Lines.Add(new XrefDisplayLine("Object Stream", number, referredStreamOrdinal,
+            positionInStream));
 }
 
 public record XrefDisplayLine(string Kind, int Number, long First, long Second)

@@ -10,14 +10,15 @@ using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
-public record StreamDisplayFormat(string Name, Func<PdfStream, ValueTask<object>> Creator);
+public record StreamDisplayFormat(string Name, Func<PdfValueStream, ValueTask<object>> Creator);
 
 public partial class StreamPartViewModel : DocumentPart, ICreateView
 {
-    public PdfStream Source { get; }
+    public PdfValueStream Source { get; }
     [AutoNotify] private IReadOnlyList<StreamDisplayFormat> formats = Array.Empty<StreamDisplayFormat>();
     [AutoNotify] private StreamDisplayFormat? selectedFormat = null;
     public override object? DetailView => this;
@@ -44,7 +45,7 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
             p => LoadBytesAsync(p, StreamFormat.DiskRepresentation)));
         fmts.Add(new StreamDisplayFormat("Implicit Encryption",
             p => LoadBytesAsync(p, StreamFormat.ImplicitEncryption)));
-        var fmtList = (await Source.GetOrNullAsync(KnownNames.Filter)).ObjectAsUnresolvedList();
+        var fmtList = (await Source.GetOrNullAsync(KnownNames.FilterTName)).ObjectAsUnresolvedList();
         for (int i = 0; i < fmtList.Count; i++)
         {
             fmts.Add(new StreamDisplayFormat(fmtList[i].ToString() ?? "No Name",
@@ -52,13 +53,13 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
         }
     }
 
-    public StreamPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : base(title, children)
+    public StreamPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfValueStream source) : base(title, children)
     {
         this.Source = source;
         LoadFormats();
     }
 
-    public async ValueTask<object> LoadBytesAsync(PdfStream stream, StreamFormat fmt)
+    public async ValueTask<object> LoadBytesAsync(PdfValueStream stream, StreamFormat fmt)
     {
         await using var streamData = await stream.StreamContentAsync(fmt);
         var final = new MemoryStream();

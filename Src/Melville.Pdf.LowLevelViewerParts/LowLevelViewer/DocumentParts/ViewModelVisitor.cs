@@ -3,6 +3,7 @@ using System.Net.NetworkInformation;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Pages;
@@ -12,11 +13,22 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
-public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
+public class ViewModelVisitor
 {
+
+    public ValueTask<DocumentPart> VisitTopLevelObject(PdfIndirectValue item)
+    {
+        return new(new DocumentPart("Need to Implement the object printer."));
+    }
+    public ValueTask<DocumentPart> GeneratePartAsync(string trailer, PdfValueDictionary lowlevelTrailerDictionary)
+    {
+        return new(new DocumentPart("Need to implement trailer dictionary printer"));
+    }
+
+    /*
     private string prefix = "";
 
-    public ValueTask<DocumentPart> GeneratePartAsync(string newPrefix, PdfObject item)
+    public ValueTask<DocumentPart> GeneratePartAsync(string newPrefix, PdfValueDictionary item)
     {
         prefix = newPrefix;
         return item.InvokeVisitor(this);
@@ -113,4 +125,5 @@ public class ViewModelVisitor : ILowLevelVisitor<ValueTask<DocumentPart>>
             return new XrefPartViewModel(title + "XRef Stream", children, item);
         return new StreamPartViewModel(title + "Stream", children, item);
     }
+    */
 }

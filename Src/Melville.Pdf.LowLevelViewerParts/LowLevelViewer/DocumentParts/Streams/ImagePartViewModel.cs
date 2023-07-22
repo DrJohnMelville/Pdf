@@ -3,6 +3,7 @@ using System.Windows.Media;
 using Melville.INPC;
 using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Wpf;
@@ -28,7 +29,7 @@ public partial class ImageDisplayViewModel
 
 public class ImagePartViewModel: StreamPartViewModel
 {
-    public ImagePartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : 
+    public ImagePartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfValueStream source) : 
         base(title, children, source)
     {
     }
