@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers;
@@ -18,19 +19,20 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers;
 /// <param name="Top">The top edge of the rectangle.</param>
 public readonly record struct PdfRect (double Left, double Bottom, double Right, double Top)
 {
+    #warning -- If I am going to optimize for short arrays -- here is the place to do so
     /// <summary>
     /// Convert the rectangle to a PdfArray
     /// </summary>
-    public PdfArray ToPdfArray => new(Left, Bottom, Right, Top);
+    public PdfValueArray ToPdfArray => new(Left, Bottom, Right, Top);
 
     /// <summary>
     /// Parse from a PdfArray of at exactly 4 doubles.
     /// </summary>
     /// <param name="array">The CodeSource PDF array.</param>
     /// <returns>A  PdfRectangle.</returns>
-    public static async ValueTask<PdfRect> CreateAsync(PdfArray array)
+    public static async ValueTask<PdfRect> CreateAsync(PdfValueArray array)
     {
-        var nums = await array.AsDoublesAsync().CA();
+        var nums = await array.CastAsync<double>().CA();
         return FromDoubleSpan(nums);
     }
 

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
@@ -21,65 +22,65 @@ public abstract class ItemWithResourceDictionaryCreator
     /// Dictionary Builder that will eventually build the target item.  This allows items
     /// to be added to the page or pattern dictionary.
     /// </summary>
-    protected DictionaryBuilder MetaData { get; }
+    protected ValueDictionaryBuilder MetaData { get; }
     /// <summary>
     /// A dictionary of resource items, indexed by a resource type/name key.  The delegate
     /// creates the given content from an IPdfObjectRegistry.
     /// </summary>
-    protected Dictionary<(PdfName DictionaryName, PdfName ItemName), 
-            Func<IPdfObjectCreatorRegistry,PdfObject>> Resources { get; } = new();
+    protected Dictionary<(PdfDirectValue DictionaryName, PdfDirectValue ItemName), 
+            Func<IPdfObjectCreatorRegistry,PdfIndirectValue>> Resources { get; } = new();
 
     /// <summary>
     /// Create the ItemsWithResourceDictionaryCreator
     /// </summary>
     /// <param name="metaData"></param>
-    protected ItemWithResourceDictionaryCreator(DictionaryBuilder metaData)
+    protected ItemWithResourceDictionaryCreator(ValueDictionaryBuilder metaData)
     {
         MetaData = metaData;
     }
-    
+
     /// <summary>
     /// Construct the item that is crated by this creator
     /// </summary>
     /// <param name="creator">IPdfObjectRegistry that shold be used to create new top level objects</param>
     /// <param name="parent">The parent of this item.</param>
     /// <returns>A reference to the object created and the number of pages created by the method call.</returns>
-    public abstract (PdfIndirectObject Reference, int PageCount) 
-        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent);
+    public abstract (PdfIndirectValue Reference, int PageCount)
+        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectValue parent);
 
     /// <summary>
     /// Add an item to the top level item dictionary
     /// </summary>
     /// <param name="name">The key of the item to add.</param>
     /// <param name="item">The item to add</param>
-    public void AddMetadata(PdfName name, PdfObject item) =>
+    public void AddMetadata(PdfDirectValue name, PdfDirectValue item) =>
         MetaData.WithItem(name, item);
 
     private protected void TryAddResources(IPdfObjectCreatorRegistry creator)
     {
         if (Resources.Count == 0) return;
-        var res = new DictionaryBuilder();
+        var res = new ValueDictionaryBuilder();
         foreach (var subDictionary in Resources.GroupBy(i=>i.Key.DictionaryName))
         {
             res.WithItem(subDictionary.Key, DictionaryValues(creator, subDictionary));
         }
-        MetaData.WithItem(KnownNames.Resources, res.AsDictionary());
+        MetaData.WithItem(KnownNames.ResourcesTName, res.AsDictionary());
     }
 
-    private PdfObject DictionaryValues(
+    private PdfIndirectValue DictionaryValues(
         IPdfObjectCreatorRegistry creator, 
-        IGrouping<PdfName, KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
-            Func<IPdfObjectCreatorRegistry,PdfObject>>> subDictionary) =>
-        subDictionary.Key == KnownNames.ProcSet
+        IGrouping<PdfDirectValue, KeyValuePair<(PdfDirectValue DictionaryName, PdfDirectValue ItemName), 
+            Func<IPdfObjectCreatorRegistry,PdfIndirectValue>>> subDictionary) =>
+        subDictionary.Key.Equals(KnownNames.ProcSetTName)
             ? subDictionary.First().Value(creator)
             : CreateDictionary(subDictionary, creator);
 
-    private PdfDictionary CreateDictionary(
-        IEnumerable<KeyValuePair<(PdfName DictionaryName, PdfName ItemName), 
-            Func<IPdfObjectCreatorRegistry, PdfObject>>> items,
+    private PdfValueDictionary CreateDictionary(
+        IEnumerable<KeyValuePair<(PdfDirectValue DictionaryName, PdfDirectValue ItemName), 
+            Func<IPdfObjectCreatorRegistry, PdfIndirectValue>>> items,
         IPdfObjectCreatorRegistry creator) => items
-            .Aggregate(new DictionaryBuilder(),
-                (builder, item) => builder.WithItem(item.Key.ItemName, creator.Add(item.Value(creator))))
+            .Aggregate(new ValueDictionaryBuilder(),
+                (builder, item) => builder.WithItem(item.Key.ItemName, creator.AddIfDirect(item.Value(creator))))
             .AsDictionary();
 
     /// <summary>
@@ -88,7 +89,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="resourceType">Type of object</param>
     /// <param name="name">Key for the object</param>
     /// <param name="obj">The object to add</param>
-    public void AddResourceObject(ResourceTypeName resourceType, PdfName name, PdfObject obj) =>
+    public void AddResourceObject(ResourceTypeName resourceType, PdfDirectValue name, PdfIndirectValue obj) =>
         AddResourceObject(resourceType, name, _ => obj);
 
     /// <summary>
@@ -98,7 +99,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="name">Key for the object</param>
     /// <param name="obj">A delegate that will create the object from a IPdfObjectRegistry</param>
     public void AddResourceObject(
-        ResourceTypeName resourceType, PdfName name, Func<IPdfObjectCreatorRegistry,PdfObject> obj) =>
+        ResourceTypeName resourceType, PdfDirectValue name, Func<IPdfObjectCreatorRegistry,PdfIndirectValue> obj) =>
         Resources[(resourceType, name)] = obj;
 
     /// <summary>
@@ -112,7 +113,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// Add a rotate declaration to the page dictionary
     /// </summary>
     /// <param name="rotation">The desired rotation value.</param>
-    public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.Rotate, rotation);
+    public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.RotateTName, rotation);
 
     /// <summary>
     /// Add a standard font reference to the resource divtionary
@@ -120,10 +121,10 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="assignedName">The name assigned to the font.</param>
     /// <param name="baseFont">The base font for the font</param>
     /// <param name="encoding">The desired encoding</param>
-    /// <returns>The PDFName of the font</returns>
-    public PdfName AddStandardFont(
-        string assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
-        AddStandardFont(NameDirectory.Get(assignedName), baseFont, encoding);
+    /// <returns>The PdfDirectValue of the font</returns>
+    public PdfDirectValue AddStandardFont(
+        ReadOnlySpan<byte> assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
+        AddStandardFont(PdfDirectValue.CreateName(assignedName), baseFont, encoding);
 
     /// <summary>
     /// Add a standard font reference to the resource divtionary
@@ -131,10 +132,10 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="assignedName">The name assigned to the font.</param>
     /// <param name="baseFont">The base font for the font</param>
     /// <param name="encoding">The desired encoding</param>
-    /// <returns>The PDFName of the font</returns>
-    public PdfName AddStandardFont(
-        PdfName assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
-        AddStandardFont(assignedName, baseFont, (PdfName)encoding);
+    /// <returns>The PdfDirectValue of the font</returns>
+    public PdfDirectValue AddStandardFont(
+        PdfDirectValue assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
+        AddStandardFont(assignedName, baseFont, encoding);
 
     /// <summary>
     /// Add a standard font reference to the resource divtionary
@@ -142,16 +143,16 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="assignedName">The name assigned to the font.</param>
     /// <param name="baseFont">The base font for the font</param>
     /// <param name="encoding">The desired encoding</param>
-    /// <returns>The PDFName of the font</returns>
-    public PdfName AddStandardFont(
-        PdfName assignedName, BuiltInFontName baseFont, PdfObject encoding)
+    /// <returns>The PdfDirectValue of the font</returns>
+    public PdfDirectValue AddStandardFont(
+        PdfDirectValue assignedName, BuiltInFontName baseFont, PdfIndirectValue encoding)
     {
-        Resources[(KnownNames.Font, assignedName)] = _=>new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type1)
-            .WithItem(KnownNames.Name, assignedName)
-            .WithItem(KnownNames.BaseFont, baseFont)
-            .WithItem(KnownNames.Encoding, encoding)
+        Resources[(KnownNames.FontTName, assignedName)] = _=>new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
+            .WithItem(KnownNames.NameTName, assignedName)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)baseFont)
+            .WithItem(KnownNames.EncodingTName, encoding)
             .AsDictionary();
         return assignedName;
     }

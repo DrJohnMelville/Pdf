@@ -18,7 +18,7 @@ internal static class TrailerWriter
         PipeWriter target, PdfValueDictionary dictionary, long xRefStart)
     {
         target.WriteBytes(TrailerTag);
-        await dictionary.Visit(new PdfObjectWriter(target)).CA();
+        new PdfObjectWriter(target).Write(dictionary);
         await WriteTerminalStartXrefAndEofAsync(target, xRefStart).CA();
     }
 

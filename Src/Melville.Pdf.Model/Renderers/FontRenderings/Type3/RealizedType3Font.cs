@@ -9,6 +9,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SpanAndMemory;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -24,7 +25,7 @@ public interface IFontTarget
     /// <param name="fontMatrix">The font matrix</param>
     /// <param name="fontDictionary">The dictionary defining the font -- which may contain resources.</param>
     /// <returns>A valuetask containing the width of the rendered character.</returns>
-    ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
+    ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfValueDictionary fontDictionary);
     /// <summary>
     /// Create a IDrawTarget that the stroked character can be drawn to.
     /// </summary>
@@ -36,7 +37,7 @@ internal partial class RealizedType3Font : IRealizedFont
     [FromConstructor]private readonly MultiBufferStream[] characters;
     [FromConstructor]private readonly byte firstCharacter;
     [FromConstructor]private readonly Matrix3x2 fontMatrix;
-    [FromConstructor]private readonly PdfDictionary rawFont;
+    [FromConstructor]private readonly PdfValueDictionary rawFont;
 
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
     {

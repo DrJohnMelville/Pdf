@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 using Melville.Postscript.Interpreter.FunctionLibrary;
@@ -16,6 +18,7 @@ using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.Postscript.Interpreter.Values.Numbers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
@@ -327,16 +330,16 @@ public readonly partial struct ContentStreamParser
         var name = PopName(engine);
         return dictValue.IsLiteralName
             ? E(engine).MarkedContentPointAsync(
-                name, NameFrom(dictValue.Get<StringSpanSource>()))
-            : E(engine).MarkedContentPointAsync(name, dictValue.Get<PdfDictionary>());
+                name, MapSimpleValue(dictValue))
+            : E(engine).MarkedContentPointAsync(name, dictValue.Get<PdfValueDictionary>());
         """, "DP")]
     [MacroItem("BeginMarkedRange2", """
         var dictValue = engine.OperandStack.Pop();
         var name = PopName(engine);
         return dictValue.IsLiteralName
             ? E(engine).BeginMarkedRangeAsync(
-                name, NameFrom(dictValue.Get<StringSpanSource>()))
-            : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfDictionary>());
+                name, MapSimpleValue(dictValue))
+            : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfValueDictionary>());
         """, "BDC")]
     [MacroItem("ParseMarkedImage", """
         engine.DisablePdfArrayParsing();
@@ -370,7 +373,7 @@ public readonly partial struct ContentStreamParser
         
     private static void CreatePdfDictionary(PostscriptEngine engine)
     {
-        var builder = new DictionaryBuilder();
+        var builder = new ValueDictionaryBuilder();
         while (engine.OperandStack.TryPop(out var item) && item is { IsMark: false })
         {
             var key = PopName(engine);
@@ -379,13 +382,14 @@ public readonly partial struct ContentStreamParser
         engine.OperandStack.Push(new PostscriptValue(builder.AsDictionary(), PostscriptBuiltInOperations.PushArgument,default));
     }
 
-    private static PdfObject PostscriptObjectToPdfObject(PostscriptValue item) => item switch
+    private static PdfDirectValue PostscriptObjectToPdfObject(PostscriptValue item) => item switch
     {
-        { IsInteger: true } => new PdfInteger(item.Get<long>()),
-        { IsDouble: true } => new PdfDouble(item.Get<double>()),
-        { IsString: true } => new PdfString(item.Get<StringSpanSource>().GetSpan().ToArray()),
-        {IsLiteralName:true} => NameFrom(item.Get<StringSpanSource>()),
-        var x when x.TryGet(out PdfDictionary? innerDictionary) => innerDictionary,
+        { IsInteger: true } or
+        { IsDouble: true } or
+        { IsString: true } or
+        { IsBoolean: true } or
+        {IsLiteralName:true} => MapSimpleValue(item),
+        var x when x.TryGet(out PdfValueDictionary? innerDictionary) => innerDictionary,
         _=> throw new PdfParseException("Cannot convert PostScriptToPdfObject")
     };
 
@@ -425,18 +429,20 @@ public readonly partial struct ContentStreamParser
             wordSpace, charSpace, strSource.Memory).CA();
     }
 
-    private static PdfName? TryPopName(PostscriptEngine engine)
+    private static PdfDirectValue? TryPopName(PostscriptEngine engine)
     {
-        if (!engine.OperandStack.Peek().TryGet<StringSpanSource>(out var source))
-            return null;
-
+        var posName = engine.OperandStack.Peek();
+        if (!posName.IsLiteralName) return null;
         engine.OperandStack.Pop();
-        return NameDirectory.Get(source.GetSpan());
-
+        return MapSimpleValue(posName);
     }
-    private static PdfName PopName(PostscriptEngine engine) => 
-        NameFrom(engine.PopAs<StringSpanSource>());
 
-    private static PdfName NameFrom(in StringSpanSource sss) =>
-        NameDirectory.Get(sss.GetSpan());
+    private static PdfDirectValue PopName(PostscriptEngine engine) =>
+        TryPopName(engine) ?? throw new PdfParseException("Name exoected");
+
+    private static PdfDirectValue MapSimpleValue(in PostscriptValue source)
+    {
+        Debug.Assert(source.ValueStrategy is PostscriptString or PostscriptDouble or PostscriptBoolean or PostscriptInteger);
+        return new PdfDirectValue(source.ValueStrategy, source.Memento);
+    }
 }

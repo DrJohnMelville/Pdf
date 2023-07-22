@@ -49,7 +49,7 @@ public static class NumberTokenizer
         return ret;
     }
 
-    private static byte TryGetDigitSequence(
+    public static byte TryGetDigitSequence(
         int radix, in ReadOnlySpan<byte> buffer, out long value, out int charsConsumed)
     {
         value = 0;

@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
@@ -11,7 +12,7 @@ internal class CompositeGlyphNameMapper : INameToGlyphMapping
     {
         this.mappings = mappings;
     }
-    public uint GetGlyphFor(PdfName name)
+    public uint GetGlyphFor(PdfDirectValue name)
     {
         foreach (var mapping in mappings)
         {

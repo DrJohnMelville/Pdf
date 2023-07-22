@@ -1,5 +1,6 @@
 ﻿using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -18,8 +19,8 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
     }
 
     /// <inheritdoc />
-    public override (PdfIndirectObject Reference, int PageCount) ConstructItem(IPdfObjectCreatorRegistry creator,
-        PdfIndirectObject? parent)
+    public override (PdfIndirectValue Reference, int PageCount) ConstructItem(IPdfObjectCreatorRegistry creator,
+        PdfIndirectValue parent)
     {
         using var _ = objStreamStrategy.EnterObjectStreamContext(creator);
         TryAddResources(creator);
@@ -31,13 +32,13 @@ public abstract class ContentStreamCreator: ItemWithResourceDictionaryCreator
     /// </summary>
     /// <param name="creator">PdfObjectRegistry to create new indirect objects.</param>
     /// <returns>Reference to the created object.</returns>
-    protected abstract PdfIndirectObject CreateFinalObject(IPdfObjectCreatorRegistry creator);
+    protected abstract PdfIndirectValue CreateFinalObject(IPdfObjectCreatorRegistry creator);
 
     /// <summary>
     /// Add a content stream to the build object.
     /// </summary>
     /// <param name="builder">The DictionarBuilder from which to create the content stream.</param>
     /// <param name="data">The data comprising the content stream.</param>
-    public abstract void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data);
+    public abstract void AddToContentStream(ValueDictionaryBuilder builder, MultiBufferStreamSource data);
 
 }

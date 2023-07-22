@@ -7,11 +7,13 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 
@@ -29,8 +31,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static ReadOnlySpan<byte> SegoeUISymbol => "Segoe UI Symbol"u8;
 
     /// <inheritdoc />
-    public DefaultFontReference FontFromName(
-        PdfName font, FontFlags fontFlags)
+    public DefaultFontReference FontFromName(PdfDirectValue font, FontFlags fontFlags)
     {
         return font.GetHashCode() switch
         {
@@ -62,13 +63,11 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
                ?? throw new IOException("Could not find required font file.");
     }
     private  DefaultFontReference? TrySystemFont(
-        PdfName pdfName, bool bold, bool italic)
+        PdfDirectValue pdfName, bool bold, bool italic)
     {
-        Span<byte> name = stackalloc byte[pdfName.Length()];
-        pdfName.Fill(name);
+        Span<byte> name = pdfName.Get<StringSpanSource>().GetSpan();
         var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);
-        if (fontReference is null) return null;
-        return fontReference.AsDefaultFontReference();
+        return fontReference?.AsDefaultFontReference();
     }
 
 

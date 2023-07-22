@@ -9,17 +9,17 @@
             Creates objects which will eventually be stored in a content stream
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry)">
             <summary>
             Create the intended object after the resource dictionary is build
             </summary>
             <param name="creator">PdfObjectRegistry to create new indirect objects.</param>
             <returns>Reference to the created object.</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Objects2.ValueDictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
             <summary>
             Add a content stream to the build object.
             </summary>
@@ -51,7 +51,7 @@
              ContentStreamWriter to define the desired content stream.</param>
             <returns>A ValueTask to signal completion of the operation.</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ContentStreamWritingImpl.AddToContentStreamAsync(Melville.Pdf.Model.Creators.ContentStreamCreator,Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,System.Func{Melville.Pdf.LowLevel.Writers.ContentStreams.ContentStreamWriter,System.Threading.Tasks.ValueTask})">
+        <member name="M:Melville.Pdf.Model.Creators.ContentStreamWritingImpl.AddToContentStreamAsync(Melville.Pdf.Model.Creators.ContentStreamCreator,Melville.Pdf.LowLevel.Model.Objects2.ValueDictionaryBuilder,System.Func{Melville.Pdf.LowLevel.Writers.ContentStreams.ContentStreamWriter,System.Threading.Tasks.ValueTask})">
             <summary>
             Write a content stream to a page creator by calling methods on a
             ContentStreamWriter
@@ -90,13 +90,13 @@
             creates the given content from an IPdfObjectRegistry.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.#ctor(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.#ctor(Melville.Pdf.LowLevel.Model.Objects2.ValueDictionaryBuilder)">
             <summary>
             Create the ItemsWithResourceDictionaryCreator
             </summary>
             <param name="metaData"></param>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <summary>
             Construct the item that is crated by this creator
             </summary>
@@ -104,14 +104,14 @@
             <param name="parent">The parent of this item.</param>
             <returns>A reference to the object created and the number of pages created by the method call.</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddMetadata(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddMetadata(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue)">
             <summary>
             Add an item to the top level item dictionary
             </summary>
             <param name="name">The key of the item to add.</param>
             <param name="item">The item to add</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddResourceObject(Melville.Pdf.LowLevel.Model.Conventions.ResourceTypeName,Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddResourceObject(Melville.Pdf.LowLevel.Model.Conventions.ResourceTypeName,Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <summary>
             Add an object to the resource dictionary
             </summary>
@@ -119,7 +119,7 @@
             <param name="name">Key for the object</param>
             <param name="obj">The object to add</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddResourceObject(Melville.Pdf.LowLevel.Model.Conventions.ResourceTypeName,Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Func{Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfObject})">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddResourceObject(Melville.Pdf.LowLevel.Model.Conventions.ResourceTypeName,Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,System.Func{Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue})">
             <summary>
             Add an object to the resource dictionary
             </summary>
@@ -140,48 +140,48 @@
             </summary>
             <param name="rotation">The desired rotation value.</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(System.String,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Conventions.FontEncodingName)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(System.ReadOnlySpan{System.Byte},Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Conventions.FontEncodingName)">
             <summary>
             Add a standard font reference to the resource divtionary
             </summary>
             <param name="assignedName">The name assigned to the font.</param>
             <param name="baseFont">The base font for the font</param>
             <param name="encoding">The desired encoding</param>
-            <returns>The PDFName of the font</returns>
+            <returns>The PdfDirectValue of the font</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Conventions.FontEncodingName)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Conventions.FontEncodingName)">
             <summary>
             Add a standard font reference to the resource divtionary
             </summary>
             <param name="assignedName">The name assigned to the font.</param>
             <param name="baseFont">The base font for the font</param>
             <param name="encoding">The desired encoding</param>
-            <returns>The PDFName of the font</returns>
+            <returns>The PdfDirectValue of the font</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddStandardFont(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.LowLevel.Model.Conventions.BuiltInFontName,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <summary>
             Add a standard font reference to the resource divtionary
             </summary>
             <param name="assignedName">The name assigned to the font.</param>
             <param name="baseFont">The base font for the font</param>
             <param name="encoding">The desired encoding</param>
-            <returns>The PDFName of the font</returns>
+            <returns>The PdfDirectValue of the font</returns>
         </member>
         <member name="T:Melville.Pdf.Model.Creators.PageCreator">
             <summary>
             This class creates PDF pages
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.PageCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Objects2.ValueDictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.PageCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.PageCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.PageCreator.InitializePromiseObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+        <member name="M:Melville.Pdf.Model.Creators.PageCreator.InitializePromiseObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry)">
             <summary>
             Create an indirect object that will eventually become the Page dictionary.  This is used
             wehn the page definition needs to refer back to the page object.  A client can get the
@@ -225,7 +225,7 @@
             </summary>
             <returns>The child PageTreeNodeCreator</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.PageTreeNodeCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+        <member name="M:Melville.Pdf.Model.Creators.PageTreeNodeCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <inheritdoc />
         </member>
         <member name="T:Melville.Pdf.Model.Creators.PdfDocumentCreator">
@@ -264,13 +264,13 @@
             <param name="major">Major version number</param>
             <param name="minor">Minor version number</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.SetVersionInCatalog(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.SetVersionInCatalog(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue)">
             <summary>
             Set a version number in the catalog, which may be different from the version number in the header.
             </summary>
             <param name="version">Version number as a PdfName</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.AddToRootDictionary(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.LowLevel.Model.Objects.PdfObject)">
+        <member name="M:Melville.Pdf.Model.Creators.PdfDocumentCreator.AddToRootDictionary(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <summary>
             Add an item to the document's root dictionaru
             </summary>
@@ -333,13 +333,13 @@
             </summary>
             <param name="matrix"></param>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry,Melville.Pdf.LowLevel.Model.Objects.PdfIndirectObject)">
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.ConstructItem(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Primitives.DictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.AddToContentStream(Melville.Pdf.LowLevel.Model.Objects2.ValueDictionaryBuilder,Melville.Parsing.Streams.MultiBufferStreamSource)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectRegistry)">
+        <member name="M:Melville.Pdf.Model.Creators.TilePatternCreator.CreateFinalObject(Melville.Pdf.LowLevel.Writers.Builder.IPdfObjectCreatorRegistry)">
             <inheritdoc />
         </member>
         <member name="T:Melville.Pdf.Model.Documents.FontFlags">
@@ -406,7 +406,7 @@
             </summary>
             <param name="LowLevel">The low level Dictionary representing this item.</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.#ctor(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             This is a base class for costume types PdfPage and PdfTilePattern, both of which
             have a content stream.  It is implemented as a record, and PdfPageTree actually depends
@@ -439,12 +439,6 @@
             Low level PdfDictionary representing this PageTree
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Documents.PageTree.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
-            <summary>
-            Create a PageTree from a low level PdfDictionary
-            </summary>
-            <param name="lowLevel">The low level dictionary defining the root of the page tree.</param>
-        </member>
         <member name="M:Melville.Pdf.Model.Documents.PageTree.CountAsync">
             <summary>
             Gets the number of pages in the tree
@@ -474,6 +468,12 @@
             of a large array of pages in PDF as a tree.
             </summary>
             <returns>The Kids array.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PageTree.#ctor(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
+            <summary>
+            Auto generated constructor for PageTree
+            </summary>
+            <param name="lowLevel">Low level PdfDictionary representing this PageTree</param> 
         </member>
         <member name="T:Melville.Pdf.Model.Documents.PdfArrayConcatStream">
             <summary>
@@ -532,7 +532,7 @@
             </summary>
             <param name="LowLevel"></param>
         </member>
-        <member name="M:Melville.Pdf.Model.Documents.PdfPage.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Documents.PdfPage.#ctor(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             This record is the primary abstraction for a page in a pdf document.
             </summary>
@@ -585,7 +585,7 @@
             Controls the display of optional content within a PDF page.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.OptionalContent.IOptionalContentState.IsGroupVisibleAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.OptionalContent.IOptionalContentState.IsGroupVisibleAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             Given a content state group, determines if the group should be displayed
             </summary>
@@ -597,7 +597,7 @@
             A list of optional content group configurations supported by the document.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.OptionalContent.IOptionalContentState.ConstructUiModelAsync(Melville.Pdf.LowLevel.Model.Objects.PdfArray)">
+        <member name="M:Melville.Pdf.Model.OptionalContent.IOptionalContentState.ConstructUiModelAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueArray)">
             <summary>
             Construct a tree of OptionalContentDisplayGroup objects, suitable for display in a user interface.
             </summary>
@@ -632,7 +632,7 @@
             <param name="Order">Specifies the order in which groups are presented in the user interface.</param>
             <param name="RadioButtons">Defines mutually exclusive visibility between content groups.</param>
         </member>
-        <member name="M:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.#ctor(System.String,System.String,System.Nullable{System.Boolean},Melville.Pdf.LowLevel.Model.Objects.PdfDictionary[],Melville.Pdf.LowLevel.Model.Objects.PdfDictionary[],Melville.Pdf.LowLevel.Model.Objects.PdfArray,System.Collections.Generic.IReadOnlyList{Melville.Pdf.Model.OptionalContent.OptionalContentExclusionGroup})">
+        <member name="M:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.#ctor(System.String,System.String,System.Nullable{System.Boolean},Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary[],Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary[],Melville.Pdf.LowLevel.Model.Objects2.PdfValueArray,System.Collections.Generic.IReadOnlyList{Melville.Pdf.Model.OptionalContent.OptionalContentExclusionGroup})">
             <summary>
             Represents a PDF? Optional Content Configuration. spec 2.0 sec 8.11.4.3
             </summary>
@@ -886,7 +886,7 @@
             </summary>
             <param name="bitmap">Bitmap to inquire about</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.PdfBitmapOperations.WrapForRenderingAsync(Melville.Pdf.LowLevel.Model.Objects.PdfStream,Melville.Pdf.Model.Renderers.Colors.DeviceColor)">
+        <member name="M:Melville.Pdf.Model.Renderers.Bitmaps.PdfBitmapOperations.WrapForRenderingAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueStream,Melville.Pdf.Model.Renderers.Colors.DeviceColor)">
             <summary>
             Create a IPdfBitmap from a stream
             </summary>
@@ -1009,7 +1009,7 @@
             Parse a ICCProfile from a PdfStream
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.Colors.IccProfileColorSpaceParser.ParseAsync(Melville.Pdf.LowLevel.Model.Objects.PdfStream)">
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IccProfileColorSpaceParser.ParseAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueStream)">
             <summary>
             Parse a ICC profile from a PDF stream
             </summary>
@@ -1299,7 +1299,7 @@
             A strategy implementation for mapping PDF default font names to actual fonts.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper.FontFromName(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.Model.Documents.FontFlags)">
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.IDefaultFontMapper.FontFromName(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.Model.Documents.FontFlags)">
             <summary>
             Get a Default Font reference for a given PDF Font name.
             </summary>
@@ -1326,7 +1326,7 @@
             This is a class tries to construct named font by checking the windows font directory.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts.FontFromName(Melville.Pdf.LowLevel.Model.Objects.PdfName,Melville.Pdf.Model.Documents.FontFlags)">
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts.FontFromName(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.Model.Documents.FontFlags)">
             <inheritdoc />
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.WindowsDefaultFonts.SetFontDirectory(System.String)">
@@ -1351,7 +1351,7 @@
             </summary>
             <param name="defaultMapper">IDefaultFontMapper to map the builting fonts to real fonts</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.FontReader.DictionaryToRealizedFontAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.FontReader.DictionaryToRealizedFontAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             Gets an IRealizedFont from a Pdf font dictionary
             </summary>
@@ -1451,7 +1451,7 @@
             This is the target of font writing operation.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget.RenderType3CharacterAsync(System.IO.Stream,System.Numerics.Matrix3x2,Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.Type3.IFontTarget.RenderType3CharacterAsync(System.IO.Stream,System.Numerics.Matrix3x2,Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             Render the type 3 font character represented by the given matrix and font dictionary
             </summary>
@@ -1499,13 +1499,13 @@
             </summary>
             <param name="color">The color for the brush</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.SetStrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.SetStrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.SetNonstrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.SetNonstrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.CreatePatternBrushAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState`1.CreatePatternBrushAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
             <summary>
             Create a pattern brush specific to the target renderer.
             </summary>
@@ -1567,7 +1567,7 @@
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineDashPattern(System.Double,System.ReadOnlySpan{System.Double}@)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineDashPatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfArray)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetLineDashPatternAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueArray)">
             <inheritdoc />
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetFlatnessTolerance(System.Double)">
@@ -1579,7 +1579,7 @@
              </summary>
              <param name="flatness"></param>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.LoadGraphicStateDictionaryAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.LoadGraphicStateDictionaryAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             Load Graphics State from a Graphic State Dictionary
             </summary>
@@ -1603,7 +1603,7 @@
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextLeading(System.Double)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetFontAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetFontAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,System.Double)">
             <inheritdoc />
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetTextRender(Melville.Pdf.LowLevel.Model.ContentStreams.TextRendering)">
@@ -1699,7 +1699,7 @@
             <typeparam name="T">The type of the argument passed</typeparam>
             <returns>The parameter passed in</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetStrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetStrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
             <summary>
             Set a pattern brush to the current stroke brush
             </summary>
@@ -1707,7 +1707,7 @@
             <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
             <returns>A valuetask noting the completion of the action.</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetNonstrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsState.SetNonstrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
             <summary>
             Set a pattern brush to the current nonstroking brush
             </summary>
@@ -1990,7 +1990,7 @@
             Content stream operator leading TL
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetFontAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.Double)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetFontAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,System.Double)">
             <summary>
             Content stream operator font fontSize Tf
             </summary>
@@ -2063,10 +2063,10 @@
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.NonstrokeColorChanged">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.SetStrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.SetStrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.SetNonstrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.UncoloredGraphicsState.SetNonstrokePatternAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary,Melville.Pdf.Model.Renderers.DocumentRenderers.DocumentRenderer)">
             <inheritdoc />
         </member>
         <member name="T:Melville.Pdf.Model.Renderers.GraphicsStates.WritingMode">
@@ -2316,7 +2316,7 @@
             Parses a PdfDictionary representing a shader into an IShaderWriter
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns.ShaderParser.ParseShaderAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns.ShaderParser.ParseShaderAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             Parse a shader dictionary into an IShaderWriter
             </summary>
@@ -2329,7 +2329,7 @@
             </summary>
             <param name="LowLevel">The PdfDictionary that represents the pattern.</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.#ctor(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             This is a costume type that represents wraps a dictionary as a tile pattern.
             </summary>
@@ -2399,19 +2399,19 @@
         <member name="P:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.TilePatternType">
             <summary>Colored or uncolored tile pattern.</summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.ParseAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest.ParseAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
             <summary>
             Parse a PdfDictionary into a TileBrushRequest
             </summary>
             <param name="dict">The dictionary defining the tile brush</param>
             <returns>A structure with many properties of the tile brush.</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue)">
             <summary>
             Content stream operator CS
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName)">
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue)">
             <summary>
             Content stream operator cs
             </summary>
@@ -2426,12 +2426,12 @@
             Content stream operator sc
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeColorExtendedAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.ReadOnlySpan{System.Double}@)">
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeColorExtendedAsync(System.Nullable{Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue},System.ReadOnlySpan{System.Double}@)">
             <summary>
             Content stream operator SCN
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorExtendedAsync(Melville.Pdf.LowLevel.Model.Objects.PdfName,System.ReadOnlySpan{System.Double}@)">
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorExtendedAsync(System.Nullable{Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue},System.ReadOnlySpan{System.Double}@)">
             <summary>
             Content stream operator scn
             </summary>

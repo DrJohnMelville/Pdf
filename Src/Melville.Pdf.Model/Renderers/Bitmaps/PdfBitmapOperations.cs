@@ -4,6 +4,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -33,15 +34,15 @@ public static class PdfBitmapOperations
     /// <param name="fillColor">The background color for the bitmap.</param>
     /// <returns></returns>
     public static ValueTask<IPdfBitmap> WrapForRenderingAsync(
-        this PdfStream stream, DeviceColor fillColor) =>
+        this PdfValueStream stream, DeviceColor fillColor) =>
         WrapForRenderingAsync(stream, NoPageContext.Instance, fillColor);
 
     internal static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
-        this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor) =>
+        this PdfValueStream stream, IHasPageAttributes page, DeviceColor fillColor) =>
         await GetByteWriterAsync(new BitmapRenderParameters(
             stream, page, fillColor,
-            (int)await stream.GetOrDefaultAsync(KnownNames.Width, 1).CA(),
-            (int)await stream.GetOrDefaultAsync(KnownNames.Height, 1).CA()
+            await stream.GetOrDefaultAsync(KnownNames.WidthTName, 1).CA(),
+            await stream.GetOrDefaultAsync(KnownNames.HeightTName, 1).CA()
         )).CA();
 
     private static async ValueTask<IPdfBitmap> GetByteWriterAsync(BitmapRenderParameters attr) =>

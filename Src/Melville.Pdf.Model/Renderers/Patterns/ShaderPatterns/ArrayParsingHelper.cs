@@ -1,14 +1,15 @@
 ﻿using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 internal static class ArrayParsingHelper
 {
-    public static async ValueTask<double[]?> ReadFixedLengthDoubleArrayAsync(this PdfDictionary dict, PdfName name, int length) =>
-        (await dict.GetOrNullAsync<PdfArray>(name).CA()) is
-        { } pdfArray && await pdfArray.AsDoublesAsync().CA() is {} ret && ret.Length == length
+    public static async ValueTask<double[]?> ReadFixedLengthDoubleArrayAsync(this PdfValueDictionary dict, PdfDirectValue name, int length) =>
+        (await dict.GetOrNullAsync<PdfValueArray>(name).CA()) is
+        { } pdfArray && await pdfArray.CastAsync<double>().CA() is {} ret && ret.Length == length
             ? ret
             : null;
 

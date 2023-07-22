@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
 [StaticSingleton]
 internal sealed partial class AllOptionalContentVisible : IOptionalContentState
 {
-    public ValueTask<bool> IsGroupVisibleAsync(PdfDictionary? dictionary) => new(true);
+    public ValueTask<bool> IsGroupVisibleAsync(PdfValueDictionary? dictionary) => new(true);
     public event EventHandler<EventArgs>? SelectedContentChanged
     {
         add {}
@@ -20,6 +21,6 @@ internal sealed partial class AllOptionalContentVisible : IOptionalContentState
 
     public IReadOnlyList<OptionalContentConfiguration> Configurations =>
         Array.Empty<OptionalContentConfiguration>();
-    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfArray? order) => 
+    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfValueArray? order) => 
         new(Array.Empty<IOptionalContentDisplayGroup>());
 }

@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 internal static class FunctionParsingMethods
 {
     public static async ValueTask<ClosedInterval[]> 
-        ReadIntervalsAsync(this PdfDictionary source, PdfName name)
+        ReadIntervalsAsync(this PdfValueDictionary source, PdfDirectValue name)
     {
         var array = await source.GetAsync<PdfArray>(name).CA();
         var length = array.Count / 2;
@@ -24,12 +25,12 @@ internal static class FunctionParsingMethods
         return ret;
     }
     public static async ValueTask<ClosedInterval[]> ReadOptionalRangesAsync(
-        this PdfDictionary source, int numberOfOutputs) =>
-        source.ContainsKey(KnownNames.Range)
-            ? await source.ReadIntervalsAsync(KnownNames.Range).CA()
+        this PdfValueDictionary source, int numberOfOutputs) =>
+        source.ContainsKey(KnownNames.RangeTName)
+            ? await source.ReadIntervalsAsync(KnownNames.RangeTName).CA()
             : Enumerable.Repeat(ClosedInterval.NoRestriction, numberOfOutputs).ToArray();
     public static async ValueTask<double[]> ReadArrayWithDefaultAsync(
-        this PdfDictionary source, PdfName name, int defaultValue) =>
+        this PdfValueDictionary source, PdfDirectValue name, int defaultValue) =>
         source.ContainsKey(name)
             ? await (await source.GetAsync<PdfArray>(name).CA()).AsDoublesAsync().CA()
             : new double[]{defaultValue};

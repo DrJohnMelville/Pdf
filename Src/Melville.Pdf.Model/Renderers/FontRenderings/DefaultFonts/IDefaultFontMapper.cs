@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 
@@ -34,5 +35,5 @@ public interface IDefaultFontMapper
     /// <param name="font">The PDFName of the font</param>
     /// <param name="flags">The fontflags from the font structure</param>
     /// <returns>A DefaultFontReference from which the font can be built.</returns>
-    DefaultFontReference FontFromName(PdfName font, FontFlags flags);
+    DefaultFontReference FontFromName(PdfDirectValue font, FontFlags flags);
 }

@@ -2,6 +2,7 @@
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.Model.Documents;
@@ -21,7 +22,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 public class TestGraphicsState : GraphicsState<DeviceColor>
 {
     protected override DeviceColor CreateSolidBrush(DeviceColor color) => color;
-    protected override ValueTask<DeviceColor> CreatePatternBrushAsync(PdfDictionary pattern,
+    protected override ValueTask<DeviceColor> CreatePatternBrushAsync(PdfValueDictionary pattern,
         DocumentRenderer parentRenderer) => 
         throw new System.NotSupportedException();
 }
@@ -106,7 +107,7 @@ public class GraphicStateDictionary
         return gs;
     }
 
-    private static PdfPage PageThatSetsPropFromGSDictionary(GraphicStateParameterName property, PdfObject values)
+    private static PdfPage PageThatSetsPropFromGSDictionary(GraphicStateParameterName property, PdfDirectValue values)
     {
         var pageDict = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Page)

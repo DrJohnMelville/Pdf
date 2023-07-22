@@ -4,20 +4,21 @@ using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Renderers.ColorOperations;
 
 [StaticSingleton()]
 internal partial class NullColorOperations : IColorOperations
 {
-    public ValueTask SetStrokingColorSpaceAsync(PdfName colorSpace) => ValueTask.CompletedTask;
+    public ValueTask SetStrokingColorSpaceAsync(PdfDirectValue colorSpace) => ValueTask.CompletedTask;
 
-    public ValueTask SetNonstrokingColorSpaceAsync(PdfName colorSpace) => ValueTask.CompletedTask;
+    public ValueTask SetNonstrokingColorSpaceAsync(PdfDirectValue colorSpace) => ValueTask.CompletedTask;
 
-    public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors) => 
+    public ValueTask SetStrokeColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors) => 
         ValueTask.CompletedTask;
 
-    public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors) => 
+    public ValueTask SetNonstrokingColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors) => 
         ValueTask.CompletedTask;
 
     public ValueTask SetStrokeGrayAsync(double grayLevel) => ValueTask.CompletedTask;

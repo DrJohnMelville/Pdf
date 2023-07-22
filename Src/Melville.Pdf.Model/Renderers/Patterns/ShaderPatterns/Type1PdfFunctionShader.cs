@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 using Melville.Pdf.LowLevel.Writers;
@@ -13,7 +14,7 @@ namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 internal readonly struct Type1PdfFunctionShaderFactory
 {
-    private readonly PdfDictionary shadingDictionary;
+    private readonly PdfValueDictionary shadingDictionary;
 
     private static readonly RectInterval defaultDomainInterval = new (
         new ClosedInterval(0,1), new ClosedInterval(0,1));
@@ -22,26 +23,26 @@ internal readonly struct Type1PdfFunctionShaderFactory
         new ClosedInterval(double.MinValue, double.MaxValue),
         new ClosedInterval(double.MinValue, double.MaxValue));
 
-    public Type1PdfFunctionShaderFactory(PdfDictionary shadingDictionary)
+    public Type1PdfFunctionShaderFactory(PdfValueDictionary shadingDictionary)
     {
         this.shadingDictionary = shadingDictionary;
     }
 
     public async ValueTask<IShaderWriter> ParseAsync(CommonShaderValues common)
     {
-        var domainToPattern = await (await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.Matrix).CA())
+        var domainToPattern = await (await shadingDictionary.GetOrNullAsync<PdfValueArray>(KnownNames.MatrixTName).CA())
             .AsMatrix3x2OrIdentityAsync().CA();
         Matrix3x2.Invert(domainToPattern, out var patternToDomain);          
 
 
         var domainInterval = 
-            (await ArrayParsingHelper.ReadFixedLengthDoubleArrayAsync(shadingDictionary, KnownNames.Domain, 4).CA()) is {} domainArray ?
+            (await ArrayParsingHelper.ReadFixedLengthDoubleArrayAsync(shadingDictionary, KnownNames.DomainTName, 4).CA()) is {} domainArray ?
                 new RectInterval(new ClosedInterval(domainArray[0], domainArray[1]),
                 new ClosedInterval(domainArray[2], domainArray[3])) : defaultDomainInterval;
 
         return new Type1PdfFunctionShader(
             common, patternToDomain, domainInterval,  
-            await (await shadingDictionary[KnownNames.Function].CA()).CreateFunctionAsync().CA());
+            await (await shadingDictionary[KnownNames.FunctionTName].CA()).CreateFunctionAsync().CA());
     }
 }
 

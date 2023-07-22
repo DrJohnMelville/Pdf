@@ -34,6 +34,7 @@ DocumentRenderers => FontMappings
 #Everyone can use the LowLevel Model
 * => Melville.Pdf.LowLevel.*
 * => Melville.Parsing.*
+* => Melville.Postscript.Interpreter.*
 
 #Cabin the freetype dependency
 Melville.Pdf.Model.Renderers.FontRenderings.FreeType.* ^=> Melville.SharpFont.*

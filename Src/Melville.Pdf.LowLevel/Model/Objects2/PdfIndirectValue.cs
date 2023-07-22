@@ -27,6 +27,8 @@ public readonly partial struct PdfIndirectValue
     internal PdfIndirectValue(IIndirectValueSource src, long objNum, long generation) :
         this(src, MementoUnion.CreateFrom(objNum, generation)){}
 
+    public bool IsNull => TryGetEmbeddedDirectValue(out var dirVal) && dirVal.IsNull;
+
     #region Getter
 
     public ValueTask<PdfDirectValue> LoadValueAsync() =>

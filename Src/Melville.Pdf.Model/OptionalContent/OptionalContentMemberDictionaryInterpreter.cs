@@ -1,26 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
-internal readonly struct OptionalContentMemberDictionaryInterpreter
+internal readonly partial struct OptionalContentMemberDictionaryInterpreter
 {
-    private readonly PdfDictionary dictionary;
-    private readonly IOptionalContentState state;
-
-    public OptionalContentMemberDictionaryInterpreter(PdfDictionary dictionary, IOptionalContentState state)
-    {
-        this.dictionary = dictionary;
-        this.state = state;
-    }
+    [FromConstructor] private readonly PdfValueDictionary dictionary;
+    [FromConstructor] private readonly IOptionalContentState state;
 
     public async  ValueTask<bool> ParseAsync() =>
-        await (await VeDictionaryAsync().CA() is PdfArray arr ? 
+        await ((await VeDictionaryAsync().CA()).TryGet(out PdfValueArray arr)? 
             EvaluateVeAsync(arr) : 
             EvaluateUsingOcgsAsync()).CA();
 
@@ -29,24 +25,25 @@ internal readonly struct OptionalContentMemberDictionaryInterpreter
             (await OcgsAsync().CA()).ObjectAsUnresolvedList(), 
             await PDictionaryAsync().CA()).CA();
 
-    private ValueTask<PdfName> PDictionaryAsync() => dictionary.GetOrDefaultAsync(KnownNames.P, KnownNames.AnyOn);
-    private ValueTask<PdfArray> OcgsAsync() => dictionary.GetOrDefaultAsync(KnownNames.OCGs, PdfArray.Empty);
-    private ValueTask<PdfObject> VeDictionaryAsync() => dictionary.GetOrNullAsync(KnownNames.VE);
+    private ValueTask<PdfDirectValue> PDictionaryAsync() => dictionary.GetOrDefaultAsync(KnownNames.PTName, KnownNames.AnyOnTName);
+    private ValueTask<PdfDirectValue> OcgsAsync() => dictionary.GetOrDefaultAsync(KnownNames.OCGsTName, (PdfDirectValue)PdfValueArray.Empty);
+    private ValueTask<PdfDirectValue> VeDictionaryAsync() => dictionary.GetOrNullAsync(KnownNames.VETName);
 
-    private ValueTask<bool> EvaluateUsingPAsync(IEnumerable<PdfObject> ocgs, PdfName rule) =>
-        rule.GetHashCode() switch
+    private ValueTask<bool> EvaluateUsingPAsync(IEnumerable<PdfIndirectValue> ocgs, PdfDirectValue rule)
+    {
+        return rule switch
         {
-            KnownNameKeys.AnyOn => CheckAnyAsync(ocgs, true),
-            KnownNameKeys.AnyOff => CheckAnyAsync(ocgs, false),
-            KnownNameKeys.AllOff => CheckAllAsync(ocgs, false),
-            _ => CheckAllAsync(ocgs, true)
-
+            _ when rule.Equals(KnownNames.AnyOnTName) => CheckAnyAsync(ocgs, true),
+            _ when rule.Equals(KnownNames.AnyOffTName) => CheckAnyAsync(ocgs, false),
+            _ when rule.Equals(KnownNames.AllOffTName) => CheckAllAsync(ocgs, false),
+            _ => CheckAllAsync(ocgs, true) 
         };
+    }
 
-    private ValueTask<bool> CheckAllAsync(IEnumerable<PdfObject> ocgs, bool expected) => CheckAsync(ocgs, !expected, false);
-    private ValueTask<bool> CheckAnyAsync(IEnumerable<PdfObject> ocgs, bool expected) => CheckAsync(ocgs, expected, true);
+    private ValueTask<bool> CheckAllAsync(IEnumerable<PdfIndirectValue> ocgs, bool expected) => CheckAsync(ocgs, !expected, false);
+    private ValueTask<bool> CheckAnyAsync(IEnumerable<PdfIndirectValue> ocgs, bool expected) => CheckAsync(ocgs, expected, true);
 
-    private async ValueTask<bool> CheckAsync(IEnumerable<PdfObject> ocgs, bool expected, bool valueIfFound)
+    private async ValueTask<bool> CheckAsync(IEnumerable<PdfIndirectValue> ocgs, bool expected, bool valueIfFound)
     {
         foreach (var ocg in ocgs)
         {
@@ -56,15 +53,15 @@ internal readonly struct OptionalContentMemberDictionaryInterpreter
         return !valueIfFound;
     }
 
-    private async ValueTask<bool> EvaluateVeItemAsync(PdfObject ocg) =>
-        await (await ocg.DirectValueAsync().CA() switch
+    private async ValueTask<bool> EvaluateVeItemAsync(PdfIndirectValue ocg) =>
+         await ((await ocg.LoadValueAsync().CA()) switch
         {
-            PdfDictionary dict => state.IsGroupVisibleAsync(dict),
-            PdfArray arr => EvaluateVeAsync(arr),
+            var x when x.TryGet(out PdfValueDictionary? dict) => state.IsGroupVisibleAsync(dict),
+            var x when x.TryGet(out PdfValueArray? arr) => EvaluateVeAsync(arr),
             _ => throw new PdfParseException("Invalid optional content member dictionary item")
         }).CA();
 
-    private async ValueTask<bool> EvaluateVeAsync(PdfArray arr) =>
+    private async ValueTask<bool> EvaluateVeAsync(PdfValueArray arr) =>
         (await arr[0].CA()).GetHashCode() switch
         {
             KnownNameKeys.Not => !await EvaluateVeItemAsync(arr.RawItems[1]).CA(),

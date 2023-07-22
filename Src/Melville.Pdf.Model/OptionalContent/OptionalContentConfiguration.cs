@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
@@ -21,21 +22,21 @@ public record class OptionalContentConfiguration(
     string Name,
     string Creator,
     bool? BaseState,
-    PdfDictionary[] On,
-    PdfDictionary[]  Off,
-    PdfArray Order,
+    PdfValueDictionary[] On,
+    PdfValueDictionary[]  Off,
+    PdfValueArray Order,
     IReadOnlyList<OptionalContentExclusionGroup> RadioButtons 
 )
 
 {
-    internal void ApplyTo(IReadOnlyDictionary<PdfDictionary, OptionalGroup> groupStates)
+    internal void ApplyTo(Dictionary<PdfValueDictionary, OptionalGroup> groupStates)
     {
         if (BaseState.HasValue) SetValues(groupStates, groupStates.Keys.ToArray(), BaseState.Value);
         SetValues(groupStates, On, true);
         SetValues(groupStates, Off, false);
     }
 
-    private void SetValues(IReadOnlyDictionary<PdfDictionary, OptionalGroup> dict, IEnumerable<PdfDictionary> values,
+    private void SetValues(Dictionary<PdfValueDictionary, OptionalGroup> dict, PdfValueDictionary[] values,
         bool baseState)
     {
         foreach (var value in values)

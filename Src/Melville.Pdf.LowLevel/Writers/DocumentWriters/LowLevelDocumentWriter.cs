@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -84,33 +86,28 @@ public class LowLevelDocumentWriter
         var objectWriter = new PdfObjectWriter(Target,
             await TrailerToDocumentCryptContext.CreateCryptContextAsync(
                 document.TrailerDictionary, userPassword).CA());
-        foreach (var item in document.Objects.Values)
+        foreach (var item in document.Objects)
         {
-            positions.DeclareIndirectObject(item.ObjectNumber, target.BytesWritten);
-            await DeclareContainedObjectsAsync(item, positions).CA();
-            await objectWriter.VisitTopLevelObject(item).CA();
+            positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
+            await DeclareContainedObjectsAsync(item.Key.ObjectNumber, item.Value, positions).CA();
+            await objectWriter.WriteTopLevelDeclarationAsync(item.Key.ObjectNumber, item.Key.GenerationNumber, await item.Value.LoadValueAsync().CA()).CA();
+            await Target.FlushAsync().CA();
         }
         return positions;
     }
 
-    private static async Task DeclareContainedObjectsAsync(PdfIndirectObject item, XRefTable positions)
+    private static async Task DeclareContainedObjectsAsync(int outerStreamNumber, PdfIndirectValue item,
+        XRefTable positions)
     {
-        if (await item.DirectValueAsync().CA() is IHasInternalIndirectObjects hiid)
+        if ((await item.LoadValueAsync().CA()).TryGet(out IHasInternalIndirectObjects? hiid))
         {
             int streamPosition = 0;
             foreach (var innerObjectNumber in await hiid.GetInternalObjectNumbersAsync().CA())
             {
-                EnsureOuterGenerationNumberIsZero(item);
-                positions.DeclareObjectStreamObject(
-                    innerObjectNumber.ObjectNumber, item.ObjectNumber, streamPosition++);
+                 positions.DeclareObjectStreamObject(
+                    innerObjectNumber.ObjectNumber, outerStreamNumber, streamPosition++);
             }
         }
-    }
-
-    private static void EnsureOuterGenerationNumberIsZero(PdfIndirectObject itemTarget)
-    {
-        if (itemTarget.GenerationNumber != 0)
-            throw new InvalidOperationException("Object streams must hae a generation number of 0.");
     }
 
     private XRefTable CreateIndexArray(PdfLowLevelDocument document)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
@@ -44,31 +46,50 @@ public readonly struct PdfTime
     /// Format the PdfTime into the shortest possible PDF representation -- exploiting all default values
     /// </summary>
     /// <returns>The time represented by this struct as a PDF time string</returns>
-    public byte[] AsPdfBytes()
+    public PdfDirectValue AsPdfBytes() => 
+        PdfDirectValue.CreateString(FillWithTime(stackalloc byte[22]));
+
+    private Span<byte> FillWithTime(in Span<byte> buffer)
     {
-        var lastField = LastNonDefaultElement();
-        Span<byte> buffer = stackalloc byte[22];
-        buffer[0] = (byte)'D';
-        buffer[1] = (byte)':';
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[2..], DateTime.Year, 4);
-        if (lastField == DateTimeMember.Year) return buffer[..6].ToArray();
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[6..8], DateTime.Month, 2);
-        if (lastField == DateTimeMember.Month) return buffer[..8].ToArray();
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[8..], DateTime.Day, 2);
-        if (lastField == DateTimeMember.Day) return buffer[..10].ToArray();
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[10..], DateTime.Hour, 2);
-        if (lastField == DateTimeMember.Hour) return buffer[..12].ToArray();
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[12..], DateTime.Minute, 2);
-        if (lastField == DateTimeMember.Minute) return buffer[..14].ToArray();
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[14..], DateTime.Second, 2);
-        if (lastField == DateTimeMember.Second) return buffer[..16].ToArray();
-        buffer[16] = (byte) (HourOffset < 0?'-':'+');
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[17..], Math.Abs(HourOffset), 2);
-        if (lastField == DateTimeMember.HourOffset) return buffer[..19].ToArray();
-        buffer[19] = (byte)'\'';
-        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[20..], Math.Abs(MinuteOffset), 2);
-        return buffer.ToArray();
+        var lastElement = LastNonDefaultElement();
+        Debug.Assert(buffer.Length >= (int)lastElement);
+        switch (lastElement)
+        {
+            case DateTimeMember.MinuteOffset:
+                buffer[19] = (byte)'\'';
+                WriteNumber(buffer, 20, 2, Math.Abs(MinuteOffset));
+                goto case DateTimeMember.HourOffset;
+            case DateTimeMember.HourOffset:
+                buffer[16] = (byte) (HourOffset < 0?'-':'+');
+                WriteNumber(buffer, 17, 2, Math.Abs(HourOffset));
+                goto case DateTimeMember.Second;
+            case DateTimeMember.Second:
+                WriteNumber(buffer, 14, 2, DateTime.Second);
+                goto case DateTimeMember.Minute;
+            case DateTimeMember.Minute:
+                WriteNumber(buffer, 12, 2, DateTime.Minute);
+                goto case DateTimeMember.Hour;
+            case DateTimeMember.Hour:
+                WriteNumber(buffer, 10, 2, DateTime.Hour);
+                goto case DateTimeMember.Day;
+            case DateTimeMember.Day:
+                WriteNumber(buffer, 8, 2, DateTime.Day);
+                goto case DateTimeMember.Month;
+            case DateTimeMember.Month:
+                WriteNumber(buffer, 6, 2, DateTime.Month);
+                goto case DateTimeMember.Year;
+            case DateTimeMember.Year:
+                WriteNumber(buffer, 2, 4, DateTime.Year);
+                buffer[0] = (byte)'D';
+                buffer[1] = (byte)':';
+                return buffer[..lastElement.LengthOfPdfTimeRepresentation()];
+            default: goto case DateTimeMember.MinuteOffset;
+        }
     }
+
+    private void WriteNumber(Span<byte> buffer, int position, int length, int value) => 
+        IntegerWriter.WriteFixedWidthPositiveNumber(buffer[position..], value, length);
+
     private DateTimeMember LastNonDefaultElement()
     {
         if (MinuteOffset != 0) return DateTimeMember.MinuteOffset;

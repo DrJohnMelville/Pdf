@@ -4,6 +4,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
@@ -11,19 +12,19 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 internal static class SampledFunctionParser
 {
-    public static async Task<SampledFunctionBase> ParseAsync( PdfStream source)
+    public static async Task<SampledFunctionBase> ParseAsync( PdfValueStream source)
     {
-        var domain = await source.ReadIntervalsAsync(KnownNames.Domain).CA();
-        var range = await source.ReadIntervalsAsync(KnownNames.Range).CA();
-        var size = await (await source.GetAsync<PdfArray>(KnownNames.Size).CA()).AsIntsAsync().CA();
-        var encode = source.ContainsKey(KnownNames.Encode)
-            ? await source.ReadIntervalsAsync(KnownNames.Encode).CA()
+        var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
+        var range = await source.ReadIntervalsAsync(KnownNames.RangeTName).CA();
+        var size = await (await source.GetAsync<PdfArray>(KnownNames.SizeTName).CA()).AsIntsAsync().CA();
+        var encode = source.ContainsKey(KnownNames.EncodeTName)
+            ? await source.ReadIntervalsAsync(KnownNames.EncodeTName).CA()
             : CreateEncodeFromSize(size);
         VerifyEqualLength(domain, encode);
         var order =
             size.All(i => i >= 4) &&
-            await source.GetOrNullAsync(KnownNames.Order).CA() is PdfNumber num
-                ? num.IntValue
+            await source.GetOrDefaultAsync(KnownNames.OrderTName,1).CA() is {} num
+                ? num
                 : 1;
 
         var samples = await ReadSamplesAsync(source, InputPermutations(size), range).CA();
@@ -44,12 +45,12 @@ internal static class SampledFunctionParser
         size.Select(i => new ClosedInterval(0, i - 1)).ToArray();
 
     private static async Task<double[]> ReadSamplesAsync(
-        PdfStream source, int inputPermutations, ClosedInterval[] range)
+        PdfValueStream source, int inputPermutations, ClosedInterval[] range)
     {
-        var decode = source.ContainsKey(KnownNames.Decode)?
-            await source.ReadIntervalsAsync(KnownNames.Decode).CA(): range;
+        var decode = source.ContainsKey(KnownNames.DecodeTName)?
+            await source.ReadIntervalsAsync(KnownNames.DecodeTName).CA(): range;
         var bitsPerSample = 
-            (int)(await source.GetAsync<PdfNumber>(KnownNames.BitsPerSample).CA()).IntValue;
+            await source.GetAsync<int>(KnownNames.BitsPerSampleTName).CA();
         var encodedRange = new ClosedInterval(0, (1 << bitsPerSample) - 1);
         var reader = new BitStreamReader(await source.StreamContentAsync().CA(), bitsPerSample);
         var ret = new double[inputPermutations * range.Length];

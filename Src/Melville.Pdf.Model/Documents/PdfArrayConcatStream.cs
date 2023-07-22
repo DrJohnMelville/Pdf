@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 namespace Melville.Pdf.Model.Documents;
 
@@ -15,9 +16,9 @@ namespace Melville.Pdf.Model.Documents;
 /// </summary>
 internal class PdfArrayConcatStream : ConcatStreamBase
 {
-    private readonly IEnumerator<ValueTask<PdfObject>> source;
+    private readonly IEnumerator<ValueTask<PdfDirectValue>> source;
 
-    public PdfArrayConcatStream(PdfArray source)
+    public PdfArrayConcatStream(PdfValueArray source)
     {
         this.source = source.GetEnumerator();
     }
@@ -25,8 +26,7 @@ internal class PdfArrayConcatStream : ConcatStreamBase
     protected override async ValueTask<Stream?> GetNextStreamAsync()
     {
         if (!source.MoveNext()) return null;
-        var stream = (await source.Current) as PdfStream ??
-                  throw new PdfParseException("Content array should contain only streams");
+        var stream = (await source.Current).Get<PdfValueStream>();
         return await stream.StreamContentAsync().CA();
     }
 }

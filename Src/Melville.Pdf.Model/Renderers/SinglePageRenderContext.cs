@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.ColorOperations;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
@@ -15,7 +16,7 @@ internal partial class SinglePageRenderContext
     [FromConstructor] public IRenderTarget Target { get; }
     [FromConstructor] public DocumentRenderer Renderer { get; }
     [FromConstructor] public IOptionalContentCounter OptionalContent { get;  }
-    public PendingItemsStack<PdfObject> ItemsBeingRendered = new();
+    public PendingItemsStack<PdfDirectValue> ItemsBeingRendered = new();
 
     public SwitchingColorStrategy CreateColorSwitcher(IHasPageAttributes page) =>
         new(

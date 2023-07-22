@@ -107,6 +107,7 @@ public sealed class PdfValueArray :
         return new PdfArray(ret);
     }
 
+    #warning  figue out if we could use an IReadOnlyDictionary to do this without copying
     public async ValueTask<T[]> CastAsync<T>()
     {
         var ret = new T[Count];
@@ -123,5 +124,16 @@ public static class PdfValueArrayOperations
 {
     public static async ValueTask<T> GetAsync<T>(this PdfValueArray array, int index) =>
         (await array[index].CA()).Get<T>();
+
+    public static async ValueTask<PdfDirectValue[]> AsDirectValues(this PdfValueArray array)
+    {
+        var ret = new PdfDirectValue[array.Count];
+        for (int i = 0; i < ret.Length; i++)
+        {
+            ret[i] = await array[i].CA();
+        }
+
+        return ret;
+    }
 
 }

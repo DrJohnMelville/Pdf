@@ -72,7 +72,8 @@ public interface IPdfObjectCreatorRegistry
     /// <summary>
     /// Assign a new mapping to an existing PdfIndirectValue -- fails if the value is resolved.
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">The indirect object to be reassigned</param>
+    /// <param name="newValue">The value to be a ssigned.</param>
     /// <returns></returns>
     void Reassign(in PdfIndirectValue item, in PdfDirectValue newValue);
 
@@ -90,4 +91,10 @@ public interface IPdfObjectCreatorRegistry
     /// <param name="dictionaryBuilder">The dictionary builder to use in constructing the object string.</param>
     /// <returns></returns>
     IDisposable ObjectStreamContext(ValueDictionaryBuilder? dictionaryBuilder = null);
+}
+
+public static class PdfObjectCreatorRegistry
+{
+    public static PdfIndirectValue AddIfDirect(this IPdfObjectCreatorRegistry registry, PdfIndirectValue value) =>
+        value.TryGetEmbeddedDirectValue(out var directVal) ? registry.Add(directVal) : value;
 }

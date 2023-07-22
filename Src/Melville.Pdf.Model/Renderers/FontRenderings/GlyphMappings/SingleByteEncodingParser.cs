@@ -4,8 +4,7 @@ using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
@@ -13,7 +12,7 @@ internal readonly partial struct SingleByteEncodingParser
 {
     [FromConstructor] private readonly INameToGlyphMapping nameMapper;
     [FromConstructor] private readonly uint[] output;
-    [FromConstructor] private readonly PdfName[]? overrideEncoding;
+    [FromConstructor] private readonly PdfDirectValue[]? overrideEncoding;
 
 #if DEBUG
     partial void OnConstructed()
@@ -22,16 +21,16 @@ internal readonly partial struct SingleByteEncodingParser
     }
 #endif
 
-    public async ValueTask WriteEncodingToArrayAsync(PdfObject encoding)
+    public async ValueTask WriteEncodingToArrayAsync(PdfDirectValue encoding)
     {
         switch (encoding)
         {
-            case PdfName name:
+            case {IsName:true} name:
                 WriteCharacterSet(overrideEncoding ?? CharactersFromName(name));
                 break;
-            case PdfDictionary dict:
-                await WriteEncodingToArrayAsync(await dict.GetOrNullAsync(KnownNames.BaseEncoding).CA()).CA();
-                if ((await dict.GetOrNullAsync<PdfArray>(KnownNames.Differences).CA()) is {} differences )
+            case var x when x.TryGet(out PdfValueDictionary dict):
+                await WriteEncodingToArrayAsync(await dict.GetOrNullAsync(KnownNames.BaseEncodingTName).CA()).CA();
+                if ((await dict.GetOrNullAsync<PdfValueArray>(KnownNames.DifferencesTName).CA()) is {} differences )
                     await WriteDifferencesAsync(differences).CA();
                 break; 
             default:
@@ -40,18 +39,18 @@ internal readonly partial struct SingleByteEncodingParser
         }
     }
     
-    private PdfName[] CharactersFromName(PdfName name) => 
-        name.GetHashCode() switch
+    private PdfDirectValue[] CharactersFromName(PdfDirectValue name) => 
+        name switch
     {
-        KnownNameKeys.MacRomanEncoding => CharacterEncodings.MacRoman,
-        KnownNameKeys.MacExpertEncoding => CharacterEncodings.MacExpert,
-        KnownNameKeys.Symbol => CharacterEncodings.Symbol,
-        KnownNameKeys.PdfDocEncoding => CharacterEncodings.Pdf,
-        KnownNameKeys.WinAnsiEncoding => CharacterEncodings.WinAnsi,
+        var x when x.Equals(KnownNames.MacRomanEncodingTName) => CharacterEncodings.MacRoman,
+        var x when x.Equals(KnownNames.MacExpertEncodingTName) => CharacterEncodings.MacExpert,
+        var x when x.Equals(KnownNames.SymbolTName) => CharacterEncodings.Symbol,
+        var x when x.Equals(KnownNames.PdfDocEncodingTName) => CharacterEncodings.Pdf,
+        var x when x.Equals(KnownNames.WinAnsiEncodingTName) => CharacterEncodings.WinAnsi,
         _ => CharacterEncodings.Standard
     };
 
-    private void WriteCharacterSet(PdfName[] characters)
+    private void WriteCharacterSet(PdfDirectValue[] characters)
     {
         for (int i = 0; i < output.Length; i++)
         {
@@ -59,17 +58,17 @@ internal readonly partial struct SingleByteEncodingParser
         }
     }
     
-    private async ValueTask WriteDifferencesAsync(PdfArray differences)
+    private async ValueTask WriteDifferencesAsync(PdfValueArray differences)
     {
         byte currentChar = 0;
         await foreach (var item in differences.CA())
         {
             switch (item)
             {
-                case PdfNumber num:
-                    currentChar = (byte)num.IntValue;
+                case var x when x.TryGet(out long num):
+                    currentChar = (byte)num;
                     break;
-                case PdfName name:
+                case {IsName:true} name:
                     var glyph = nameMapper.GetGlyphFor(name);
                     if (glyph > 0) output[currentChar++] = glyph;
                     break;

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
 using Melville.Pdf.Model.Renderers.DocumentPartCaches;
@@ -33,7 +34,7 @@ public class ContentStreamPreviewRenderer : DocumentRenderer
         ValueTask.FromResult<HasRenderableContentStream>(new ExplicitHRCS(content));
 
     private record ExplicitHRCS(Stream Content) : 
-        HasRenderableContentStream(PdfDictionary.Empty)
+        HasRenderableContentStream(PdfValueDictionary.Empty)
     {
         public override ValueTask<Stream> GetContentBytesAsync() => ValueTask.FromResult(Content);
     }

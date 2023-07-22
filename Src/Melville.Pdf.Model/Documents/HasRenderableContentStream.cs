@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Documents;
 
@@ -12,7 +13,7 @@ namespace Melville.Pdf.Model.Documents;
 /// on the equality members
 /// </summary>
 /// <param name="LowLevel">The low level Dictionary representing this item.</param>
-public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPageAttributes
+public record class HasRenderableContentStream(PdfValueDictionary LowLevel) : IHasPageAttributes
 {
     /// <summary>
     /// Get a stream representing the content stream for this item.
@@ -20,8 +21,8 @@ public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPag
     public virtual ValueTask<Stream> GetContentBytesAsync() => new(new MemoryStream());
 
     async ValueTask<IHasPageAttributes?> IHasPageAttributes.GetParentAsync() =>
-        LowLevel.TryGetValue(KnownNames.Parent, out var parentTask) &&
-        await parentTask.CA() is PdfDictionary dict
+        await LowLevel.GetOrDefaultAsync(
+            KnownNames.ParentTName, (PdfValueDictionary?) null).CA() is {} dict
             ? new HasRenderableContentStream(dict)
             : null;
     
@@ -30,5 +31,5 @@ public record class HasRenderableContentStream(PdfDictionary LowLevel) : IHasPag
     /// </summary>
     /// <returns>The desired rotation, in degrees</returns>
     public ValueTask<long> GetDefaultRotationAsync() => 
-        LowLevel.GetOrDefaultAsync(KnownNames.Rotate, 0);
+        LowLevel.GetOrDefaultAsync(KnownNames.RotateTName, 0L);
 }

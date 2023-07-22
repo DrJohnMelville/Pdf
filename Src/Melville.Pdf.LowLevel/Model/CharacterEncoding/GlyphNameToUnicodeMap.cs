@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
@@ -15,7 +17,7 @@ public interface IGlyphNameMap
     /// <param name="input">A PdfName representing the glyph to find</param>
     /// <param name="character">If the function returns true, this parameter receives the named character index</param>
     /// <returns>True if the glyph name is recognized, false otherwise</returns>
-    bool TryMap(PdfName input, out char character);
+    bool TryMap(PdfDirectValue input, out char character);
     /// <summary>
     /// Try to find a character index for a given glyph name.  Often characters are unicode
     /// </summary>
@@ -40,6 +42,6 @@ public partial class GlyphNameToUnicodeMap : IGlyphNameMap
     public bool TryMap(byte[] input, out char character) => 
         map.TryGetValue(FnvHash.FnvHashAsInt(input),out character);
     /// <inheritdoc />
-    public bool TryMap(PdfName input, out char character) => 
-        map.TryGetValue(input.GetHashCode(),out character);
+    public bool TryMap(PdfDirectValue input, out char character) => 
+        map.TryGetValue(FnvHash.FnvHashAsInt(input.Get<StringSpanSource>().GetSpan()),out character);
 }

@@ -10,6 +10,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
@@ -89,13 +90,13 @@ internal readonly partial struct CharacterToGlyphMapFactory
         }
     }
 
-    private async Task<PdfName[]?> BuiltInFontCharMappingsAsync()
+    private async Task<PdfDirectValue[]?> BuiltInFontCharMappingsAsync()
     {
-        if (font.SubType() != KnownNames.Type1) return null;
-        return (await font.BaseFontNameAsync().CA()).GetHashCode() switch
+        if (!font.SubType().Equals(KnownNames.Type1)) return null;
+        return (await font.BaseFontNameAsync().CA()) switch
         {
-            KnownNameKeys.Symbol => CharacterEncodings.Symbol,
-            KnownNameKeys.ZapfDingbats => CharacterEncodings.ZapfDingbats,
+            var x when x.Equals(KnownNames.SymbolTName) => CharacterEncodings.Symbol,
+            var x when x.Equals(KnownNames.ZapfDingbatsTName) => CharacterEncodings.ZapfDingbats,
             _=> null
         };
     }

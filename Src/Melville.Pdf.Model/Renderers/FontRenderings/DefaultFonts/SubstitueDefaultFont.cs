@@ -1,5 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
@@ -11,24 +12,24 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 /// </summary>
 public static class SubstituteDefaultFont
 {
-    private static readonly PdfName[] names =
+    private static readonly PdfDirectValue[] names =
     {
-        KnownNames.Courier,
-        KnownNames.CourierBold,
-        KnownNames.CourierOblique,
-        KnownNames.CourierBoldOblique,
-        KnownNames.Helvetica,
-        KnownNames.HelveticaBold,
-        KnownNames.HelveticaOblique,
-        KnownNames.HelveticaBoldOblique,
-        KnownNames.TimesRoman,
-        KnownNames.TimesBold,
-        KnownNames.TimesOblique,
-        KnownNames.TimesBoldOblique,
-        KnownNames.Symbol,
-        KnownNames.Symbol,
-        KnownNames.Symbol,
-        KnownNames.Symbol,
+        KnownNames.CourierTName,
+        KnownNames.CourierBoldTName,
+        KnownNames.CourierObliqueTName,
+        KnownNames.CourierBoldObliqueTName,
+        KnownNames.HelveticaTName,
+        KnownNames.HelveticaBoldTName,
+        KnownNames.HelveticaObliqueTName,
+        KnownNames.HelveticaBoldObliqueTName,
+        KnownNames.TimesRomanTName,
+        KnownNames.TimesBoldTName,
+        KnownNames.TimesObliqueTName,
+        KnownNames.TimesBoldObliqueTName,
+        KnownNames.SymbolTName,
+        KnownNames.SymbolTName,
+        KnownNames.SymbolTName,
+        KnownNames.SymbolTName,
     };
     
     /// <summary>
@@ -36,7 +37,7 @@ public static class SubstituteDefaultFont
     /// </summary>
     /// <param name="flags">Fontflags for the type to immitate</param>
     /// <returns>A PdfName corresponding to a built in font.</returns>
-    public static PdfName MapBuiltInFont(this FontFlags flags) => 
+    public static PdfDirectValue MapBuiltInFont(this FontFlags flags) => 
         names[FamilyOffset(flags) + BoldOffset(flags) + ItalicOffset(flags)];
 
     private static int FamilyOffset(FontFlags flags)

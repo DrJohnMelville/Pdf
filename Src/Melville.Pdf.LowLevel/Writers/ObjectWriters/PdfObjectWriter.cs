@@ -1,19 +1,21 @@
 ﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
-#warning -- this can probably become a readonly struct
-internal class PdfObjectWriter/*: RecursiveDescentVisitor<ValueTask<FlushResult>>*/
+internal class PdfObjectWriter
 {
     private readonly PipeWriter target;
     private IDocumentCryptContext encryptor;
-    private PdfIndirectObject? currentIndirectObject = null;
+    private (int ObjectNum,int Generation)? currentIndirectObject = null;
 
     public PdfObjectWriter(PipeWriter target) : this(target, NullSecurityHandler.Instance)
     {
@@ -25,9 +27,18 @@ internal class PdfObjectWriter/*: RecursiveDescentVisitor<ValueTask<FlushResult>
         this.encryptor = encryptor;
     }
 
-    public void Write(PdfIndirectValue item) =>
-        throw new NotFiniteNumberException();
+    public void Write(PdfIndirectValue item)
+    {
+        if (item.TryGetEmbeddedDirectValue(out var directValue))
+            Write(directValue);
+        else
+        { 
+            this.WriteObjectReference((int)item.Memento.UInt64s[0],(int)item.Memento.UInt64s[1]);
+        }
+    }
+
     public void Write(PdfDirectValue item) =>
+        // Assert that item is not a Stream
         throw new NotFiniteNumberException();
 
     public void Write(in ReadOnlySpan<byte> literal)
@@ -35,6 +46,29 @@ internal class PdfObjectWriter/*: RecursiveDescentVisitor<ValueTask<FlushResult>
         literal.CopyTo(target.GetSpan(literal.Length));
         target.Advance(literal.Length);
     }
+
+    public async ValueTask CopyFromStream(Stream stream)
+    {
+        await target.FlushAsync().CA();
+        await stream.CopyToAsync(target).CA();
+    }
+
+    public ValueTask WriteTopLevelDeclarationAsync(
+        int objNum, int generation, PdfDirectValue value)
+    {
+        currentIndirectObject =
+            value.TryGet(out PdfValueDictionary? pvd) && encryptor.BlockEncryption(pvd) ? 
+                default: (objNum, generation); ;
+        return this.WriteObjectDefinition(objNum, generation, value);
+    }
+
+    public ValueTask WriteStreamAsync(PdfValueStream stream) => 
+        StreamWriter.WriteAsync(this, stream, CreateEncryptor());
+
+    private IObjectCryptContext CreateEncryptor() =>
+        !currentIndirectObject.HasValue ? NullSecurityHandler.Instance : 
+            encryptor.ContextForObject(currentIndirectObject.Value.ObjectNum, 
+                currentIndirectObject.Value.Generation);
 
 
     /*

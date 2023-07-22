@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.Documents;
@@ -13,28 +15,19 @@ namespace Melville.Pdf.Model.Documents;
 /// This is a costume type that represents the PageTree structure in a PdfDocument.
 /// Helper methods expose the PageTree as a sequence of pages.
 /// </summary>
-public readonly struct PageTree: IAsyncEnumerable<PdfPage>
+public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
 {
     /// <summary>
     /// Low level PdfDictionary representing this PageTree
     /// </summary>
-    public PdfDictionary LowLevel { get; }
-
-    /// <summary>
-    /// Create a PageTree from a low level PdfDictionary
-    /// </summary>
-    /// <param name="lowLevel">The low level dictionary defining the root of the page tree.</param>
-    public PageTree(PdfDictionary lowLevel)
-    {
-        LowLevel = lowLevel;
-    }
+    [FromConstructor] public PdfValueDictionary LowLevel { get; }
 
     /// <summary>
     /// Gets the number of pages in the tree
     /// </summary>
     /// <returns>The number of pages in the tree.</returns>
     public async ValueTask<long> CountAsync() => 
-        (await LowLevel.GetAsync<PdfNumber>(KnownNames.Count).CA()).IntValue;
+        await LowLevel.GetAsync<long>(KnownNames.CountTName).CA();
 
     /// <summary>
     /// Enumerates the pages in the tree.
@@ -47,10 +40,10 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
         var kids = await KidsAsync().CA();
         await foreach (var kid in kids.CA())
         {
-            var kidAsDict = (PdfDictionary)kid;
-            var type = await kidAsDict.GetAsync<PdfName>(KnownNames.Type).CA();
-            if (type == KnownNames.Page) yield return new PdfPage(kidAsDict);
-            else if (type == KnownNames.Pages)
+            var kidAsDict = kid.Get<PdfValueDictionary>();
+            var type = await kidAsDict[KnownNames.TypeTName].CA();
+            if (type.Equals(KnownNames.PageTName)) yield return new PdfPage(kidAsDict);
+            else if (type.Equals(KnownNames.PagesTName))
             {
                 await foreach (var innerKid in new PageTree(kidAsDict).CA())
                 {
@@ -70,20 +63,20 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
     /// <exception cref="IndexOutOfRangeException">No page exists with the given number</exception>
     public async ValueTask<HasRenderableContentStream> GetPageAsync(long pageNumberOneBased)
     {
-        List<PdfObject> priorNodes = new();
+        HashSet<PdfValueDictionary> priorNodes = new();
         var items = await KidsAsync().CA();
         // this is an unrolled recursive function so I 
         for (int i = 0; i < items.RawItems.Count; i++)
         {
-            var kid = (PdfDictionary)await items.RawItems[i].DirectValueAsync().CA();
-            var type = (await kid.GetAsync<PdfName>(KnownNames.Type).CA()).GetHashCode();
+            var kid = (await items[i].CA()).Get<PdfValueDictionary>();
+            var type = await kid[KnownNames.TypeTName].CA();
             switch (type)
             {
-                case KnownNameKeys.Page:
+                case var x when type.Equals(KnownNames.PageTName):
                     if (IsDesiredPage(pageNumberOneBased)) return new PdfPage(kid);
                     pageNumberOneBased--;
                     break;
-                case KnownNameKeys.Pages:
+                case var x when type.Equals(KnownNames.PagesTName):
                     if (priorNodes.Contains(kid))
                         throw new PdfParseException("Cycle in Page Tree");
                     priorNodes.Add(kid);
@@ -119,5 +112,5 @@ public readonly struct PageTree: IAsyncEnumerable<PdfPage>
     /// of a large array of pages in PDF as a tree.
     /// </summary>
     /// <returns>The Kids array.</returns>
-    public ValueTask<PdfArray> KidsAsync() => LowLevel.GetAsync<PdfArray>(KnownNames.Kids);
+    public ValueTask<PdfValueArray> KidsAsync() => LowLevel.GetAsync<PdfValueArray>(KnownNames.KidsTName);
 }

@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers;
@@ -18,7 +19,7 @@ public static class MatrixExtensions
     /// </summary>
     /// <param name="matrix">The matrix to convert</param>
     /// <returns>The resulting PDFArray</returns>
-    public static PdfArray AsPdfArray(this in Matrix3x2 matrix) =>
+    public static PdfValueArray AsPdfArray(this in Matrix3x2 matrix) =>
         new(
             matrix.M11,
             matrix.M12,
@@ -33,7 +34,7 @@ public static class MatrixExtensions
     /// </summary>
     /// <param name="array">The array to convert</param>
     /// <returns>The resulting matrix</returns>
-    public static async ValueTask<Matrix3x2> AsMatrix3x2OrIdentityAsync(this PdfArray? array) =>
+    public static async ValueTask<Matrix3x2> AsMatrix3x2OrIdentityAsync(this PdfValueArray? array) =>
         array is { Count: 6 } ? await array.AsMatrix3x2Async().CA(): Matrix3x2.Identity;
 
     /// <summary>
@@ -42,8 +43,8 @@ public static class MatrixExtensions
     /// <param name="array">The array to convert</param>
     /// <returns>The resulting matrix</returns>
     /// <exception cref="PdfParseException">If the PdfArray does not contain exactly 6 doubles.</exception>
-    public static async ValueTask<Matrix3x2> AsMatrix3x2Async(this PdfArray array) =>
-        new ReadOnlySpan<double>(await array.AsDoublesAsync().CA()).AsMatrix3x2();
+    public static async ValueTask<Matrix3x2> AsMatrix3x2Async(this PdfValueArray array) =>
+        new ReadOnlySpan<double>(await array.CastAsync<double>().CA()).AsMatrix3x2();
 
     /// <summary>
     /// Convert a span of doubles into a Matrix3x2

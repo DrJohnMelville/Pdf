@@ -50,6 +50,7 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
         valueStrategy is PostscriptString ps && ps.StringKind == StringKind.String;
     public bool IsName =>
         valueStrategy is PostscriptString ps && ps.StringKind == StringKind.LiteralName;
+
     #endregion
 
     #region Value Accessors
@@ -105,8 +106,18 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
         var str => CreateString(str)
     };
 
+    public static PdfDirectValue CreateName(string name)
+    {
+        Span<byte> data = stackalloc byte[name.Length];
+        ExtendedAsciiEncoding.EncodeToSpan(name, data);
+        return CreateName(data);
+    }
+
     public static PdfDirectValue CreateName(in ReadOnlySpan<byte> name) => 
         CreateStringOrName(name, StringKind.LiteralName);
+
+    public static readonly PdfDirectValue EmptyString = CreateString(ReadOnlySpan<byte>.Empty);
+
 
     public static PdfDirectValue CreateString(in ReadOnlySpan<byte> str) => 
         CreateStringOrName(str, StringKind.String);
@@ -138,6 +149,7 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     public override int GetHashCode() => 
         HashCode.Combine(valueStrategy, memento);
+
 }
 
 public interface ITemporaryConverter

@@ -33,9 +33,9 @@ public static class StreamBuilderOperations
     /// <param name="b">The dictionary builder.</param>
     /// <param name="param">The parameter to add</param>
     /// <returns>The dictionary builder.</returns>
-    public static DictionaryBuilder WithFilterParam(
-        in this DictionaryBuilder b, PdfObject? param) =>
-        b.WithItem(KnownNames.DecodeParms, param);
+    public static ValueDictionaryBuilder WithFilterParam(
+        in this ValueDictionaryBuilder b, PdfIndirectValue param) =>
+        b.WithItem(KnownNames.DecodeParmsTName, param);
 
     /// <summary>
     /// Adds multiple parameter objects for filtera to a dictionary builder that will eventually
@@ -44,7 +44,7 @@ public static class StreamBuilderOperations
     /// <param name="b">The dictionary builder.</param>
     /// <param name="param">The parametera to add</param>
     /// <returns>The dictionary builder.</returns>
-    public static DictionaryBuilder WithFilterParam(
-        in this DictionaryBuilder b, params PdfObject[] param) =>
-        b.WithItem(KnownNames.DecodeParms, new PdfArray(param));
+    public static ValueDictionaryBuilder WithFilterParam(
+        in this ValueDictionaryBuilder b, params PdfIndirectValue[] param) =>
+        b.WithItem(KnownNames.DecodeParmsTName, new PdfValueArray(param));
 }

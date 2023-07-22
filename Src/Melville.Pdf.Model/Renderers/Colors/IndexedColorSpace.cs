@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.Model.Documents;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 
@@ -21,19 +23,20 @@ internal partial class IndexedColorSpace: IColorSpace
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
-    public static async ValueTask<IColorSpace> ParseAsync(Memory<PdfObject> array, IHasPageAttributes page)
+    public static async ValueTask<IColorSpace> ParseAsync(Memory<PdfDirectValue> array, IHasPageAttributes page)
     {
         var subColorSpace = await new ColorSpaceFactory(page).FromNameOrArrayAsync(array.Span[1]).CA();
-        int length = (int) (1 + ((PdfNumber)array.Span[2]).IntValue);
+        int length = (int) (1 + array.Span[2].Get<int>());
         return new IndexedColorSpace(await GetValuesAsync(array.Span[3], subColorSpace, length).CA(), subColorSpace);
     }
 
     private static ValueTask<DeviceColor[]> GetValuesAsync(
-        PdfObject stringOrStream, IColorSpace baseColorSpace, int length) =>
+        PdfDirectValue stringOrStream, IColorSpace baseColorSpace, int length) =>
         stringOrStream switch
         {
-            PdfString s => new(GetValues(s.Bytes, baseColorSpace, length)),
-            PdfStream s => GetValuesFromStreamAsync(s, baseColorSpace, length),
+            {IsString:true} s => new(GetValues(
+                stringOrStream.Get<StringSpanSource>().GetSpan(), baseColorSpace, length)),
+            var x when x.TryGet(out PdfValueStream? s) => GetValuesFromStreamAsync(s, baseColorSpace, length),
             _ => throw new PdfParseException("Invalid indexed color space definition")
         };
 
@@ -50,7 +53,7 @@ internal partial class IndexedColorSpace: IColorSpace
     }
 
     private static async ValueTask<DeviceColor[]> GetValuesFromStreamAsync(
-        PdfStream pdfStream, IColorSpace baseColorSpace, int length)
+        PdfValueStream pdfStream, IColorSpace baseColorSpace, int length)
     {
         var stream = await pdfStream.StreamContentAsync().CA();
         var ms = new MemoryStream();

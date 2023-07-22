@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 
 namespace Melville.Pdf.Model.Renderers.GraphicsStates;
@@ -22,12 +23,10 @@ public class UncoloredGraphicsState : GraphicsState
     }
 
     /// <inheritdoc />
-    public override ValueTask SetStrokePatternAsync(
-        PdfDictionary pattern, DocumentRenderer parentRenderer) =>
+    public override ValueTask SetStrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer) =>
         ValueTask.CompletedTask;
 
     /// <inheritdoc />
-    public override ValueTask SetNonstrokePatternAsync(
-        PdfDictionary pattern, DocumentRenderer parentRenderer) =>
+    public override ValueTask SetNonstrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer) =>
         ValueTask.CompletedTask;
 }

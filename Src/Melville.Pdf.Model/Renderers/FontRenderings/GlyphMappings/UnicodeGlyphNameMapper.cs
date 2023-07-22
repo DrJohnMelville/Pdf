@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
@@ -12,7 +13,7 @@ internal class UnicodeGlyphNameMapper : FontRenderings.GlyphMappings.DictionaryG
 
     protected override uint HashForString(byte[] name) => 
         GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
-    protected override uint HashForString(PdfName name) => 
+    protected override uint HashForString(PdfDirectValue name) => 
         GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
 }
 

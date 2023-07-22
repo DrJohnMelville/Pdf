@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 
@@ -29,7 +30,7 @@ public record struct
     /// </summary>
     /// <param name="dict">The dictionary defining the tile brush</param>
     /// <returns>A structure with many properties of the tile brush.</returns>
-    public static async ValueTask<TileBrushRequest> ParseAsync(PdfDictionary dict)
+    public static async ValueTask<TileBrushRequest> ParseAsync(PdfValueDictionary dict)
     {
         var pdfPattern = new PdfTilePattern(dict);
         var patternTransform = await pdfPattern.MatrixAsync().CA();

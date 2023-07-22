@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
@@ -15,7 +16,7 @@ public interface IOptionalContentState
     /// </summary>
     /// <param name="dictionary">The content state group dictionary inquired about</param>
     /// <returns>True if the item should be displayed, false otherwise.</returns>
-    ValueTask<bool> IsGroupVisibleAsync(PdfDictionary? dictionary);
+    ValueTask<bool> IsGroupVisibleAsync(PdfValueDictionary? dictionary);
 
     /// <summary>
     /// A list of optional content group configurations supported by the document.
@@ -27,7 +28,7 @@ public interface IOptionalContentState
     /// </summary>
     /// <param name="order">The order array from an optional content group.</param>
     /// <returns></returns>
-    ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfArray? order);
+    ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfValueArray? order);
 
     /// <summary>
     /// Indicates when the selected visible content has changed.

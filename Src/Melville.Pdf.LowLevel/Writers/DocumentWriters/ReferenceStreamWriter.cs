@@ -11,6 +11,7 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -33,39 +34,41 @@ internal readonly struct ReferenceStreamWriter
         columnWidths = objectOffsets.ColumnByteWidths();
     }
 
-    public async  ValueTask<FlushResult> WriteAsync() =>
-        await 
-            UnencryptedPdfObjectWriter().VisitTopLevelObject(
-            new PdfIndirectObject(XrefStreamObjectNumber(), 0, await CreateReferenceStreamAsync().CA())).CA();
+    public async  ValueTask<FlushResult> WriteAsync()
+    {
+        await UnencryptedPdfObjectWriter().WriteTopLevelDeclarationAsync(XrefStreamObjectNumber(), 0,
+                await CreateReferenceStreamAsync().CA()).CA();
+        return await target.FlushAsync().CA();
+    }
 
     private PdfObjectWriter UnencryptedPdfObjectWriter() => new(target);
 
     private int XrefStreamObjectNumber() => objectOffsets.Entries.Length-1;
 
-    private async ValueTask<PdfStream> CreateReferenceStreamAsync()
+    private async ValueTask<PdfValueStream> CreateReferenceStreamAsync()
     {
         var data = new MultiBufferStream(2048);
         await GenerateXrefStreamAsync(data).CA();
 
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithMultiItem(document.TrailerDictionary.RawItems
-                .Where(i => i.Key != KnownNames.Size).Select(i=>
-                    new KeyValuePair<PdfName, PdfObject>(i.Key, i.Value)))
-            .WithItem(KnownNames.Type, KnownNames.XRef)
-            .WithItem(KnownNames.W, WidthsAsArray())
-            .WithItem(KnownNames.Size, objectOffsets.Entries.Length)
+                .Where(i => !i.Key.Equals(KnownNames.SizeTName))
+                .Select(i=> new KeyValuePair<PdfDirectValue, PdfIndirectValue>(i.Key, i.Value)))
+            .WithItem(KnownNames.TypeTName, KnownNames.XRefTName)
+            .WithItem(KnownNames.WTName, WidthsAsArray())
+            .WithItem(KnownNames.SizeTName, objectOffsets.Entries.Length)
             .WithFilter(FilterName.FlateDecode)
             .WithFilterParam(FilterParam())
             .AsStream(data);
     }
 
-    private PdfDictionary FilterParam() => new DictionaryBuilder()
-        .WithItem(KnownNames.Predictor, 12)
-        .WithItem(KnownNames.Columns, columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)
+    private PdfValueDictionary FilterParam() => new ValueDictionaryBuilder()
+        .WithItem(KnownNames.PredictorTName, 12)
+        .WithItem(KnownNames.ColumnsTName, columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)
         .AsDictionary();
 
-    private PdfObject WidthsAsArray() =>
-        new PdfArray(
+    private PdfDirectValue WidthsAsArray() =>
+        new PdfValueArray(
             columnWidths.Item1,
             columnWidths.Item2,
             columnWidths.Item3

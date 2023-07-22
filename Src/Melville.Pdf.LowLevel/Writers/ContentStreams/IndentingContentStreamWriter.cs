@@ -6,6 +6,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using  Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters; // for generated code
 
 
@@ -83,21 +84,21 @@ public partial class IndentingContentStreamWriter : IContentStreamOperations
     }
 
     /// <inheritdoc />
-    public void BeginMarkedRange(PdfName tag)
+    public void BeginMarkedRange(PdfDirectValue tag)
     {
         Indented().BeginMarkedRange(tag);
         IncreaseIndent();
     }
 
     /// <inheritdoc />
-    public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfName dictName)
+    public async ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfDirectValue dictName)
     {
         await Indented().BeginMarkedRangeAsync(tag, dictName).CA();
         IncreaseIndent();
     }
 
     /// <inheritdoc />
-    public async ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
+    public async ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary)
     {
         await Indented().BeginMarkedRangeAsync(tag, dictionary).CA();
         IncreaseIndent();

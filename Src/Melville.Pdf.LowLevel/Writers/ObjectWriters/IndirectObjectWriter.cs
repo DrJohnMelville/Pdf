@@ -1,47 +1,35 @@
 ﻿using System;
-using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Visitors;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class IndirectObjectWriter
 {
-    private static ReadOnlySpan<byte> ObjectLabel => " obj "u8;
     private static ReadOnlySpan<byte> ReferenceLabel => " R"u8;
-    private static ReadOnlySpan<byte> EndObjLabel => " endobj\n"u8;
 
-    public static ValueTask<FlushResult> WriteObjectReferenceAsync(PipeWriter target, PdfIndirectObject item)
+    public static void WriteObjectReference(this PdfObjectWriter writer,
+        int objNum, int generation) =>
+        WriteObjectHeader(writer, objNum, generation, " R"u8);
+
+    public static async ValueTask WriteObjectDefinition(this PdfObjectWriter writer,
+        int objNum, int generation, PdfDirectValue value)
     {
-        target.Advance(WriteObjectHeader(target.GetSpan(25), item, ReferenceLabel));
-        return  target.FlushAsync();
+        WriteObjectHeader(writer, objNum, generation, " obj "u8);
+        if (value.TryGet(out PdfValueStream stream))
+            await writer.WriteStreamAsync(stream).CA();
+        else
+            writer.Write(value);
+        writer.Write(" endobj\n"u8);
     }
 
-    private static int WriteObjectHeader(Span<byte> buffer, PdfIndirectObject item, ReadOnlySpan<byte> suffix)
+    private static void WriteObjectHeader(PdfObjectWriter writer, int objNum, int generation,
+        ReadOnlySpan<byte> objectHeaderOperation)
     {
-        var position = WriteObjectIdDigits(buffer, item);
-        suffix.CopyTo(buffer.Slice(position));
-        return position + suffix.Length;
-    }
-
-    public static async ValueTask<FlushResult> WriteObjectDefinitionAsync(
-        PipeWriter target, PdfIndirectObject item,  ILowLevelVisitor<ValueTask<FlushResult>> innerWriter)
-    {
-        target.Advance(WriteObjectHeader(target.GetSpan(25), item, ObjectLabel)); 
-        await target.FlushAsync().CA();
-        await (await item.DirectValueAsync().CA()).Visit(innerWriter).CA();
-        target.WriteBytes(EndObjLabel);
-        return await target.FlushAsync().CA();
-    }
-        
-    private static int WriteObjectIdDigits(Span<byte> buffer, PdfIndirectObject pdfIndirectObject)
-    {
-        int position = IntegerWriter.Write(buffer, pdfIndirectObject.ObjectNumber);
-        buffer[position++] = 32; //space
-        position += IntegerWriter.Write(buffer.Slice(position), pdfIndirectObject.GenerationNumber);
-        return position;
+        writer.Write(objNum);
+        writer.Write(" "u8);
+        writer.Write(generation);
+        writer.Write(objectHeaderOperation);
     }
 }

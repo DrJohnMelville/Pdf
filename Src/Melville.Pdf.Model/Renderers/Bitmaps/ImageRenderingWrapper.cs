@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -14,8 +15,8 @@ internal readonly partial struct ImageRenderingWrapper
     [FromConstructor] private readonly bool isImageMask;
     [FromConstructor] private readonly IColorSpace colorSpace;
     [FromConstructor] private readonly int bitsPerComponent;
-    [FromConstructor] private readonly PdfObject mask;
-    [FromConstructor] private readonly PdfObject softMask;
+    [FromConstructor] private readonly PdfDirectValue mask;
+    [FromConstructor] private readonly PdfDirectValue softMask;
     [FromConstructor] private readonly bool shouldInterpolate;
     [FromConstructor] private readonly BitmapRenderParameters attr;
 
@@ -54,21 +55,21 @@ internal readonly partial struct ImageRenderingWrapper
     private async ValueTask<IPdfBitmap> WrapWithHardMaskAsync(
         IPdfBitmap writer) => mask switch
         {
-            PdfArray maskArr => 
+            var x when x.TryGet(out PdfValueArray maskArr) => 
                  new SelfMaskAdjuster<ColorRangeMaskType>(writer,
                      new ColorRangeMaskType(
-                     await maskArr.AsIntsAsync().CA(), bitsPerComponent, colorSpace)),                
-            PdfStream str => await CreateMaskWriterAsync<HardMask>(writer, str).CA(),
+                     await maskArr.CastAsync<int>().CA(), bitsPerComponent, colorSpace)),                
+            var x when x.TryGet(out PdfValueStream str) => await CreateMaskWriterAsync<HardMask>(writer, str).CA(),
             _ => writer
         };
 
     private ValueTask<IPdfBitmap> WrapWithSoftMaskAsync(
-        IPdfBitmap writer) => softMask is PdfStream str ?
+        IPdfBitmap writer) => softMask.TryGet(out PdfValueStream str) ?
             CreateMaskWriterAsync<SoftMask>(writer, str) :
             ValueTask.FromResult(writer);
 
     private async ValueTask<IPdfBitmap> CreateMaskWriterAsync<T>(
-        IPdfBitmap target, PdfStream str)
+        IPdfBitmap target, PdfValueStream str)
         where T : IMaskType, new()
     {
         var maskBitmap = await MaskBitmap.CreateAsync(str, attr.Page).CA();

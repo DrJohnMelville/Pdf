@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -35,7 +36,7 @@ internal readonly struct MaskBitmap
         return 4 * (col + (row * Width));
     }
 
-    public static async ValueTask<MaskBitmap> CreateAsync(PdfStream stream, IHasPageAttributes page)
+    public static async ValueTask<MaskBitmap> CreateAsync(PdfValueStream stream, IHasPageAttributes page)
     {
         var wrapped = await stream.WrapForRenderingAsync(page, DeviceColor.Black).CA();
         var buffer = await wrapped.AsByteArrayAsync().CA();

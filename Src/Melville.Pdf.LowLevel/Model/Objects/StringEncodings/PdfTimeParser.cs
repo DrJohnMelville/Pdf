@@ -1,18 +1,20 @@
 ﻿using System;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
-internal readonly ref struct PdfTimeParser
+public readonly ref struct PdfTimeParser
 {
-    private readonly ReadOnlySpan<char> source;
+    private readonly ReadOnlySpan<byte> source;
 
-    public PdfTimeParser(ReadOnlySpan<char> source)
+    public PdfTimeParser(ReadOnlySpan<byte> source)
     {
         this.source = TrimTerminalApostrophe(source);
     }
 
-    private static ReadOnlySpan<char> TrimTerminalApostrophe(ReadOnlySpan<char> span) => 
-        span.Length == 0 || span[^1] != '\'' ? span : span[..^1];
+    private static ReadOnlySpan<byte> TrimTerminalApostrophe(ReadOnlySpan<byte> span) => 
+        span.Length == 0 || span[^1] != (byte)'\'' ? span : span[..^1];
+
      public  PdfTime AsPdfTime() =>
         new( new DateTime(
                 TryGetInt(2, 4, 1), // Year 
@@ -27,9 +29,9 @@ internal readonly ref struct PdfTimeParser
     private int TryGetSign(int i) => 
         i < source.Length && source[i] == '-' ? -1 : 1;
 
-    private int TryGetInt(int start, int length, int defaultValue=0)
-    {
-        if (start + length > source.Length ||
-            !int.TryParse(source.Slice(start, length), out var value)) return defaultValue;
-        return value;
-    }} 
+    private int TryGetInt(int start, int length, int defaultValue=0) =>
+        start + length > source.Length &&
+        NumberTokenizer.TryGetDigitSequence(10, source.Slice(start, length), out var value, out var _) == 0
+            ? (int)value
+            : defaultValue;
+} 

@@ -9,6 +9,7 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -16,28 +17,26 @@ internal static class StreamWriter
 {
     private static ReadOnlySpan<byte> StreamToken => " stream\r\n"u8;
     private static ReadOnlySpan<byte> EndStreamToken => "\r\nendstream"u8;
-    public static async ValueTask<FlushResult> WriteAsync(
-        PipeWriter target, PdfObjectWriter innerWriter, PdfStream item,
+    public static async ValueTask WriteAsync(
+        PdfObjectWriter innerWriter, PdfValueStream item,
         IObjectCryptContext encryptor)
     {
-        Stream diskrep;
         await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).CA();
-        diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
+        var diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
             
-        await DictionaryWriter.WriteAsync(target, innerWriter, 
-            MergeDictionaryItems(item.RawItems, (KnownNames.Length, new PdfInteger(diskrep.Length)))).CA();
-        target.WriteBytes(StreamToken);
-        await diskrep.CopyToAsync(target).CA();
-        target.WriteBytes(EndStreamToken);
-        return await target.FlushAsync().CA();
+        DictionaryWriter.Write(innerWriter, 
+            MergeDictionaryItems(item.RawItems, (KnownNames.LengthTName, diskrep.Length)));
+        innerWriter.Write(StreamToken);
+        await innerWriter.CopyFromStream(diskrep).CA();
+        innerWriter.Write(EndStreamToken);
     }
 
-    private static IEnumerable<KeyValuePair<PdfName, PdfObject>> MergeDictionaryItems(
-        IEnumerable<KeyValuePair<PdfName, PdfObject>> sources, params (PdfName Key, PdfObject Item)[] items)
+    private static IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> MergeDictionaryItems(
+        IReadOnlyDictionary<PdfDirectValue, PdfIndirectValue> sources, params (PdfDirectValue Key, PdfIndirectValue Item)[] items)
     {
         foreach (var source in sources)
         {
-            if (!items.Any(i => i.Key ==  source.Key)) yield return source;
+            if (!items.Any(i => i.Key.Equals(source.Key))) yield return source;
         }
 
         foreach (var item in items)
@@ -48,18 +47,10 @@ internal static class StreamWriter
 
     private static async Task<Stream> EnsureStreamHasKnownLengthAsync(Stream rawStream)
     {
-        Stream diskrep;
-        if (rawStream.Length < 1)
-        {
-            var mbs = new MultiBufferStream(2048);
-            await rawStream.CopyToAsync(mbs).CA();
-            diskrep = mbs.CreateReader();
-        }
-        else
-        {
-            diskrep = rawStream;
-        }
+        if (rawStream.Length > 0) return rawStream;
 
-        return diskrep;
+        var mbs = new MultiBufferStream(2048);
+        await rawStream.CopyToAsync(mbs).CA();
+        return mbs.CreateReader();
     }
 }

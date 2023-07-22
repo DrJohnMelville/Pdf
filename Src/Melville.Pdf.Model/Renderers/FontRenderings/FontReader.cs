@@ -5,6 +5,7 @@ using Melville.CSJ2K.j2k.wavelet;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
@@ -33,7 +34,7 @@ public readonly struct FontReader
     /// </summary>
     /// <param name="fontDict">A PdfDictionary representing the font</param>
     /// <returns>An IRealizedFont that can render characters in the font.</returns>
-    public  ValueTask<IRealizedFont> DictionaryToRealizedFontAsync(PdfDictionary fontDict) => 
+    public  ValueTask<IRealizedFont> DictionaryToRealizedFontAsync(PdfValueDictionary fontDict) => 
          PdfFontToRealizedFontAsync(new PdfFont(fontDict));
 
     private ValueTask<IRealizedFont> PdfFontToRealizedFontAsync(PdfFont font)
@@ -50,7 +51,7 @@ public readonly struct FontReader
 
     private async ValueTask<IRealizedFont> CreateType0FontAsync(PdfFont font, FreeTypeFontFactory factory)
     {
-        Debug.Assert(KnownNames.Type0 == font.SubType());
+        Debug.Assert(KnownNames.Type0TName.Equals(font.SubType()));
         var cidFont = await font.Type0SubFontAsync().CA();
         return await CreateRealizedFontAsync(cidFont, factory).CA();
     }

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -56,7 +57,8 @@ internal  partial class FakeFontDrawTarget : IFontTarget
 {
     [FromConstructor] private readonly IRenderTarget target;
 
-    public async ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
+    public async ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix,
+        PdfValueDictionary fontDictionary)
     {
         var render = new ContentStreamPreviewRenderer(WindowsDefaultFonts.Instance, s);
         target.GraphicsState.SetLineWidth(2);

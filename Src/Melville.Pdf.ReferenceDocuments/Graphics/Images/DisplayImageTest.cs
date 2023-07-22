@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Model.Creators;
 
@@ -14,7 +15,7 @@ public abstract class DisplayImageTest : Card3x5
     }
     protected override void SetPageProperties(PageCreator page)
     {
-        page.AddResourceObject(ResourceTypeName.XObject, NameDirectory.Get("I1"),
+        page.AddResourceObject(ResourceTypeName.XObject, "/I1"u8,
             cr=>CreateImage()
         );
     }
@@ -26,8 +27,8 @@ public abstract class DisplayImageTest : Card3x5
         csw.ModifyTransformMatrix(Matrix3x2.CreateScale(250, 150));
         csw.Rectangle(0,0,1,1);
         csw.StrokePath();
-        await csw.DoAsync(NameDirectory.Get("I1"));
+        await csw.DoAsync("/I1");
     }
 
-    protected abstract PdfStream CreateImage();
+    protected abstract PdfValueStream CreateImage();
 }

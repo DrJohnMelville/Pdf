@@ -1,4 +1,5 @@
 ﻿using Melville.Parsing.VariableBitEncoding;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.CCITTEncoded;
@@ -9,21 +10,21 @@ public abstract class CcottEncodedBase: DisplayImageTest
     {
     }
 
-    protected override PdfStream CreateImage()
+    protected override PdfValueStream CreateImage()
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-            .WithItem(KnownNames.Width, new PdfInteger(32))
-            .WithItem(KnownNames.Height, new PdfInteger(16))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(1))
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
+            .WithItem(KnownNames.WidthTName, 32)
+            .WithItem(KnownNames.HeightTName, 16)
+            .WithItem(KnownNames.BitsPerComponentTName, 1)
             .WithFilter(FilterName.CCITTFaxDecode)
             .WithFilterParam(CcittParamDictionary())
             .AsStream(GenerateImage());
     }
 
-    protected abstract PdfDictionary CcittParamDictionary();
+    protected abstract PdfValueDictionary CcittParamDictionary();
 
     private byte[] GenerateImage()
     {

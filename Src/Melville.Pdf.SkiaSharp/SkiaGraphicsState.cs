@@ -2,6 +2,7 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -19,10 +20,10 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
     protected override ISkiaBrushCreator CreateSolidBrush(DeviceColor color) => 
         new SolidColorBrushCreator(color);
 
-    protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrushAsync(PdfDictionary pattern,
+    protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrushAsync(PdfValueDictionary pattern,
         DocumentRenderer parentRenderer)
     {
-        return await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
+        return await pattern.GetOrDefaultAsync(KnownNames.PatternTypeTName, 0).CA() switch
         {
             1 => await CreateTilePatternBrushAsync(pattern, parentRenderer).CA(),
             2 => await CreateShaderBrushAsync(pattern).CA(),
@@ -30,7 +31,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
         };
     }
 
-    private async Task<ISkiaBrushCreator> CreateTilePatternBrushAsync(PdfDictionary pattern, DocumentRenderer parentRenderer)
+    private async Task<ISkiaBrushCreator> CreateTilePatternBrushAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.ParseAsync(pattern).CA();
         var tileItem = await RenderWithSkia.ToSurfaceAsync(
@@ -38,7 +39,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
         return new SurfacePatternHolder(tileItem, request.PatternTransform);
     }
 
-    private async Task<ISkiaBrushCreator> CreateShaderBrushAsync(PdfDictionary pattern)
+    private async Task<ISkiaBrushCreator> CreateShaderBrushAsync(PdfValueDictionary pattern)
     {
         var shader = await ShaderParser.ParseShaderAsync(pattern).CA();
         var bitmap = new SKBitmap(new SKImageInfo((int)PageWidth, (int)PageHeight,

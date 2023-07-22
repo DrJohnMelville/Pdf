@@ -8,6 +8,7 @@ using Melville.Icc.Parser;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
@@ -23,7 +24,7 @@ public static class IccProfileColorSpaceParser
     /// </summary>
     /// <param name="stream">The CodeSource to read the ICC profile from.</param>
     /// <returns>The ICC colorspace read from the stream.</returns>
-    public static async ValueTask<IColorSpace> ParseAsync(PdfStream stream)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfValueStream stream)
     {
         try
         {
@@ -35,17 +36,17 @@ public static class IccProfileColorSpaceParser
         }
     }
 
-    private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpaceAsync(PdfStream stream) =>
+    private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpaceAsync(PdfValueStream stream) =>
         new ColorSpaceFactory(NoPageContext.Instance)
-            .FromNameOrArrayAsync(await stream.GetOrDefaultAsync(KnownNames.Alternate,
-                DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.N, 0).CA())).CA()).CA();
+            .FromNameOrArrayAsync(await stream.GetOrDefaultAsync(KnownNames.AlternateTName,
+                DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.NTName, 0).CA())).CA()).CA();
 
-    private static PdfName DefaultColorSpace(long n) =>
+    private static PdfDirectValue DefaultColorSpace(long n) =>
         n switch
         {
-            1 => KnownNames.DeviceGray,
-            3 => KnownNames.DeviceRGB,
-            4 => KnownNames.DeviceCMYK,
+            1 => KnownNames.DeviceGrayTName,
+            3 => KnownNames.DeviceRGBTName,
+            4 => KnownNames.DeviceCMYKTName,
             _ => throw new PdfParseException("Cannot construct default colorspace")
         };
 

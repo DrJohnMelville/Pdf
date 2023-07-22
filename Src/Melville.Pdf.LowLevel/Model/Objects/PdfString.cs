@@ -87,13 +87,14 @@ public sealed class PdfString : PdfByteArrayObject, IComparable<PdfString>
     /// Parse a PdfString that represents a DateTime field in PDF format/
     /// </summary>
     /// <returns>The date /time as a PdfTime structure</returns>
-    public PdfTime AsPdfTime() => new PdfTimeParser(AsTextString().AsSpan()).AsPdfTime();
+    public PdfTime AsPdfTime() => throw new PdfParseException("Obsolete");
+
     /// <summary>
     /// Format a PdfTime into a string for storage in a PDF file.
     /// </summary>
     /// <param name="time">The Date and Time to be encoded/</param>
     /// <returns></returns>
-    public static PdfString CreateDate(PdfTime time) => new PdfString(time.AsPdfBytes());
+    public static PdfString CreateDate(PdfTime time) => PdfString.Empty;
 
     /// <inheritdoc />
     public int CompareTo(PdfString? other) => 

@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -74,19 +75,21 @@ public abstract partial class GraphicsState<T> : GraphicsState
     protected abstract T CreateSolidBrush(DeviceColor color);
 
     /// <inheritdoc />
-    public override async ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) => 
+    public override async ValueTask SetStrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer) => 
         StrokeBrush = await CreatePatternBrushAsync(pattern, parentRenderer).CA();
 
     /// <inheritdoc />
-    public override async ValueTask SetNonstrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) =>
+    public override async ValueTask SetNonstrokePatternAsync(PdfValueDictionary pattern,
+        DocumentRenderer parentRenderer) =>
         NonstrokeBrush = await CreatePatternBrushAsync(pattern, parentRenderer).CA();
+
     /// <summary>
     /// Create a pattern brush specific to the target renderer.
     /// </summary>
     /// <param name="pattern">The pattern to put in the brush.</param>
     /// <param name="parentRenderer">DocumentRenderer with resources to render the pattern.</param>
     /// <returns>Valuetask governing completion of the task.</returns>
-    protected abstract ValueTask<T> CreatePatternBrushAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
+    protected abstract ValueTask<T> CreatePatternBrushAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer);
 }
 
 /// <summary>
@@ -184,11 +187,11 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     }
 
     /// <inheritdoc />
-    private async ValueTask SetLineDashPatternAsync(PdfArray entryValue)
+    private async ValueTask SetLineDashPatternAsync(PdfValueArray entryValue)
     {
-        DashPhase = (await entryValue.GetAsync<PdfNumber>(1).CA()).DoubleValue;
-        var pattern = await entryValue.GetAsync<PdfArray>(0).CA();
-        DashArray = await pattern.AsDoublesAsync().CA();
+        DashPhase = await entryValue.GetAsync<double>(1).CA();
+        var pattern = await entryValue.GetAsync<PdfValueArray>(0).CA();
+        DashArray = await pattern.CastAsync<double>().CA();
     }
     
     /// <summary>
@@ -207,42 +210,42 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// </summary>
     /// <param name="dictionary"></param>
     /// <returns></returns>
-    public async ValueTask LoadGraphicStateDictionaryAsync(PdfDictionary dictionary)
+    public async ValueTask LoadGraphicStateDictionaryAsync(PdfValueDictionary dictionary)
     {
-        foreach (var entry in dictionary.RawItems)
+        foreach (var entry in dictionary.RawItems) await ApplySingleKeyAsync(entry).CA();
+    }
+
+    private async ValueTask ApplySingleKeyAsync(KeyValuePair<PdfDirectValue, PdfIndirectValue> entry)
+    {
+        switch (entry.Key)
         {
-            var hashCode = entry.Key.GetHashCode();
-            switch (hashCode)
-            {
-                case KnownNameKeys.LW:
-                    SetLineWidth((await EntryValueAsync<PdfNumber>(entry).CA()).DoubleValue);
-                    break;
-                case KnownNameKeys.FL:
-                    SetFlatnessTolerance((await EntryValueAsync<PdfNumber>(entry).CA()).DoubleValue);
-                    break;
-                case KnownNameKeys.LC:
-                    SetLineCap((LineCap)(await EntryValueAsync<PdfNumber>(entry).CA()).IntValue);
-                    break;
-                case KnownNameKeys.LJ:
-                    SetLineJoinStyle((LineJoinStyle)(await EntryValueAsync<PdfNumber>(entry).CA()).IntValue);
-                    break;
-                case KnownNameKeys.ML:
-                    SetMiterLimit((await EntryValueAsync<PdfNumber>(entry).CA()).DoubleValue);
-                    break;
-                case KnownNameKeys.D:
-                    await SetLineDashPatternAsync(await EntryValueAsync<PdfArray>(entry).CA()).CA();
-                    break;
-                case KnownNameKeys.RI:
-                    SetRenderIntent(new RenderIntentName(await EntryValueAsync<PdfName>(entry).CA()));
-                    break;
-            }
+            case var x when x.Equals(KnownNames.LWTName):
+                SetLineWidth(await EntryValueAsync<double>(entry).CA());
+                break;
+            case var x when x.Equals(KnownNames.FLTName):
+                SetFlatnessTolerance(await EntryValueAsync<double>(entry).CA());
+                break;
+            case var x when x.Equals(KnownNames.LCTName):
+                SetLineCap((LineCap)await EntryValueAsync<long>(entry).CA());
+                break;
+            case var x when x.Equals(KnownNames.LJTName):
+                SetLineJoinStyle((LineJoinStyle)await EntryValueAsync<long>(entry).CA());
+                break;
+            case var x when x.Equals(KnownNames.MLTName):
+                SetMiterLimit(await EntryValueAsync<double>(entry).CA());
+                break;
+            case var x when x.Equals(KnownNames.DTName):
+                await SetLineDashPatternAsync(await EntryValueAsync<PdfValueArray>(entry).CA()).CA();
+                break;
+            case var x when x.Equals(KnownNames.RITName):
+                SetRenderIntent(new RenderIntentName(await entry.Value.LoadValueAsync().CA()));
+                break;
         }
     }
-    
-    private static async ValueTask<T> EntryValueAsync<T>(KeyValuePair<PdfName, PdfObject> entry)
-        where T:PdfObject
+
+    private static async ValueTask<T> EntryValueAsync<T>(KeyValuePair<PdfDirectValue, PdfIndirectValue> entry)
     {
-        return (T) await entry.Value.DirectValueAsync().CA();
+        return (await entry.Value.LoadValueAsync().CA()).Get<T>();
     }
 
     #region Text State
@@ -261,7 +264,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// <inheritdoc />
     public void SetTextLeading(double value) => TextLeading = value;
     /// <inheritdoc />
-    public ValueTask SetFontAsync(PdfName font, double size)
+    public ValueTask SetFontAsync(PdfDirectValue font, double size)
     {
         FontSize = size;
         return ValueTask.CompletedTask;
@@ -408,14 +411,15 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// <param name="pattern">The pattern dictionary for the new brush.</param>
     /// <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
     /// <returns>A valuetask noting the completion of the action.</returns>
-    public abstract ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
+    public abstract ValueTask SetStrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer);
+
     /// <summary>
     /// Set a pattern brush to the current nonstroking brush
     /// </summary>
     /// <param name="pattern">The pattern dictionary for the new brush.</param>
     /// <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
     /// <returns>A valuetask noting the completion of the action.</returns>
-    public abstract ValueTask SetNonstrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
+    public abstract ValueTask SetNonstrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer);
 
     /// <summary>
     /// Designate the current transform matrix as the initial matrix for the page.

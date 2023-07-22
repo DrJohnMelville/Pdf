@@ -45,10 +45,35 @@ public static class PdfValueDictionaryOperations
     /// <param name="name">The key for the desired item</param>
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
     /// <returns>The desired item, after resolving indirect references</returns>
+    public static ValueTask<PdfDirectValue> GetOrDefaultAsync(
+        this PdfValueDictionary dict, PdfDirectValue name, PdfDirectValue defaultValue = default) =>
+        dict.TryGetValue(name, out var obj) 
+        ? obj: new(defaultValue);
+
+    /// <summary>
+    /// Get the value from a key, or a default if the item does not exist or is not the correct type
+    /// </summary>
+    /// <typeparam name="T">The desired subtype of PdfObject</typeparam>
+    /// <param name="dict">The dictionary</param>
+    /// <param name="name">The key for the desired item</param>
+    /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
+    /// <returns>The desired item, after resolving indirect references</returns>
     public static async ValueTask<T> GetOrDefaultAsync<T>(
-        this PdfValueDictionary dict, PdfDirectValue name, T defaultValue) =>
+        this PdfValueDictionary dict, PdfDirectValue name, T defaultValue = default) =>
         dict.TryGetValue(name, out var obj) && (await obj.CA()).TryGet(out T? definiteObj)
         ? definiteObj: defaultValue;
+
+    /// <summary>
+    /// Get the value from a key, or a default if the item does not exist or is not the correct type
+    /// </summary>
+    /// <typeparam name="T">The desired subtype of PdfObject</typeparam>
+    /// <param name="dict">The dictionary</param>
+    /// <param name="name">The key for the desired item</param>
+    /// <returns>The desired item, after resolving indirect references and getting the desired type</returns>
+    public static async ValueTask<T?> GetOrNullAsync<T>(
+        this PdfValueDictionary dict, PdfDirectValue name) =>
+        dict.TryGetValue(name, out var obj) && (await obj.CA()).TryGet(out T? definiteObj)
+        ? definiteObj: default;
 
     /// <summary>
     /// Try to get a value with an alternative name if the first does not exist

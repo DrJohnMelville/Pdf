@@ -2,6 +2,7 @@
 using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
@@ -17,12 +18,12 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
     private readonly IList<ItemWithResourceDictionaryCreator> children;
     private readonly int maxNodeSize;
 
-    private PageTreeNodeCreator(DictionaryBuilder metaData, IList<ItemWithResourceDictionaryCreator> children, int maxNodeSize):
+    private PageTreeNodeCreator(ValueDictionaryBuilder metaData, IList<ItemWithResourceDictionaryCreator> children, int maxNodeSize):
         base(metaData)
     {
         this.children = children;
         this.maxNodeSize = maxNodeSize;
-        metaData.WithItem(KnownNames.Type, KnownNames.Pages);
+        metaData.WithItem(KnownNames.TypeTName, KnownNames.PagesTName);
     }
 
     /// <summary>
@@ -60,8 +61,8 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
 
 
     /// <inheritdoc />
-    public override (PdfIndirectObject Reference, int PageCount)
-        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent) =>
+    public override (PdfIndirectValue Reference, int PageCount)
+        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectValue parent) =>
         TrySegmentedPageTree().InnnerConstructPageTree(creator, parent);
 
     private PageTreeNodeCreator TrySegmentedPageTree() =>
@@ -74,40 +75,42 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
             new(),i, maxNodeSize)).ToArray(), maxNodeSize
         );
 
-    private (PdfIndirectObject Reference, int PageCount)
-        InnnerConstructPageTree(IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent)
+    private (PdfIndirectValue Reference, int PageCount)
+        InnnerConstructPageTree(IPdfObjectCreatorRegistry creator, PdfIndirectValue parent)
     {
-        var ret = creator.AddPromisedObject();
+        var ret = creator.Add(PdfDirectValue.CreateNull());
         AddExtraFieldsFromTreeLevel(creator,parent);
-        var kids = new PdfObject[children.Count];
+        var kids = new PdfIndirectValue[children.Count];
         int count = 0;
-        for (int i = 0; i < kids.Length; i++)
+        for (var i = 0; i < kids.Length; i++)
         {
             (kids[i], var localCount) = children[i].ConstructItem(creator, ret);
             count += localCount;
         }
-        MetaData.WithItem(KnownNames.Kids, new PdfArray(kids)).
-            WithItem(KnownNames.Count, count);
-        ret.SetValue(MetaData.AsDictionary());
+        MetaData.WithItem(KnownNames.KidsTName, new PdfValueArray(kids)).
+            WithItem(KnownNames.CountTName, count);
+        creator.Reassign(ret, MetaData.AsDictionary());
         return (ret, count);
     }
     
     private void AddExtraFieldsFromTreeLevel(
-        IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent)
+        IPdfObjectCreatorRegistry creator, PdfIndirectValue parent)
     {
-        if (parent is not null)
+        if (parent.TryGetEmbeddedDirectValue(out var dirPar) && dirPar.IsNull )
         {
-            MetaData.WithItem(KnownNames.Parent, parent);
+            Resources.Add((KnownNames.ProcSetTName, KnownNames.ProcSetTName), cr => cr.Add(DefaultProcSet()));
         }
         else
         {
-            Resources.Add((KnownNames.ProcSet, KnownNames.ProcSet), cr=>cr.Add(DefaultProcSet()));
+            MetaData.WithItem(KnownNames.ParentTName, parent);
         }
+
         TryAddResources(creator);
     }
 
     // Per standard section 14.2, the procset is deprecated.  We just add a default procset requesting
     // the entire set of ProcSets for backward compatibility with older readers.
-    private static PdfArray DefaultProcSet() => new(KnownNames.PDF, KnownNames.Text, KnownNames.ImageB,
-        KnownNames.ImageC, KnownNames.ImageI);
+    private static PdfValueArray DefaultProcSet() => new(
+        KnownNames.PDFTName, KnownNames.TextTName, KnownNames.ImageBTName,
+        KnownNames.ImageCTName, KnownNames.ImageITName);
 }

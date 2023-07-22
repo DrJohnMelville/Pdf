@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
@@ -27,9 +28,10 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
         return  _=>brush;
     }
 
-    protected override async ValueTask<Func<WpfGraphicsState, Brush>> CreatePatternBrushAsync(PdfDictionary pattern,
+    protected override async ValueTask<Func<WpfGraphicsState, Brush>> CreatePatternBrushAsync(
+        PdfValueDictionary pattern,
         DocumentRenderer parentRenderer) =>
-        await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
+        await pattern.GetOrDefaultAsync(KnownNames.PatternTypeTName, 0).CA() switch
         {
             1 => await CreateTilePatternAsync(pattern, parentRenderer),
             2 => await CreateShaderBrushAsync(pattern),
@@ -51,7 +53,7 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
     }
 
     private async Task<Func<WpfGraphicsState, Brush>> CreateTilePatternAsync(
-        PdfDictionary pattern, DocumentRenderer parentRenderer)
+        PdfValueDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.ParseAsync(pattern);
         var pattternItem = await PatternRenderer(parentRenderer, request).RenderAsync();
@@ -78,7 +80,7 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
         return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request, this), 0);
     }
     
-    public async ValueTask<Func<WpfGraphicsState, Brush>> CreateShaderBrushAsync(PdfDictionary pattern)
+    public async ValueTask<Func<WpfGraphicsState, Brush>> CreateShaderBrushAsync(PdfValueDictionary pattern)
     {
         var bmp = RenderShaderToBitmap(await ShaderParser.ParseShaderAsync(pattern));
         var viewport = new Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);

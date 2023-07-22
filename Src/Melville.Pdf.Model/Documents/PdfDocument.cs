@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -39,30 +40,31 @@ public readonly struct PdfDocument: IDisposable
         LowLevel = lowLevel;
     }
 
-    private ValueTask<PdfDictionary> CatalogAsync() => 
-        LowLevel.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
+    private ValueTask<PdfValueDictionary> CatalogAsync() => 
+        LowLevel.TrailerDictionary.GetAsync<PdfValueDictionary>(KnownNames.RootTName);
 
     /// <summary>
     /// Gets the effective PDF version for this document, prefering the document caalog if it differs from the
     /// file header.
     /// </summary>
     /// <returns>A PDF name representing the header.</returns>
-    public async ValueTask<PdfName> VersionAsync() =>
-        (await CatalogAsync().CA()).TryGetValue(KnownNames.Version, out var task) &&
-        (await task.CA()) is PdfName version?
-            version: NameDirectory.Get($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
+    public async ValueTask<PdfDirectValue> VersionAsync() =>
+        (await (await CatalogAsync().CA()).GetOrNullAsync(KnownNames.VersionTName).CA()) is
+        {IsName:true }version?
+            version: PdfDirectValue.CreateName($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
 
     /// <summary>
     /// Gets the PageTree representing the pages in the document
     /// </summary>
     public async ValueTask<PageTree> PagesAsync() =>
-        new(await (await CatalogAsync().CA()).GetAsync<PdfDictionary>(KnownNames.Pages).CA());
+        new(await (await CatalogAsync().CA()).GetAsync<PdfValueDictionary>(KnownNames.PagesTName).CA());
 
     /// <summary>
     /// Optional content declaration for the document
     /// </summary>
-    public async ValueTask<PdfDictionary?> OptionalContentPropertiesAsync() =>
-        await (await CatalogAsync().CA()).GetOrNullAsync<PdfDictionary>(KnownNames.OCProperties).CA();
+    public async ValueTask<PdfValueDictionary?> OptionalContentPropertiesAsync() =>
+        await (await CatalogAsync().CA()).GetOrNullAsync<PdfValueDictionary>(
+            KnownNames.OCPropertiesTName).CA();
 
     /// <inheritdoc />
     public void Dispose()

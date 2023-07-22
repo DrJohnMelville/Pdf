@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
@@ -76,8 +77,8 @@ internal partial class WpfCachedFont : IRealizedFont
         public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix) => 
             innerWriter.RenderCurrentString(stroke, fill, clip, textMatrix);
 
-        public ValueTask<double> RenderType3CharacterAsync(
-            Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary) => 
+        public ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix,
+            PdfValueDictionary fontDictionary) => 
             fontTarget.RenderType3CharacterAsync(s, fontMatrix, fontDictionary);
 
         public IDrawTarget CreateDrawTarget() => 

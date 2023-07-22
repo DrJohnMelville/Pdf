@@ -3,6 +3,7 @@ using System.Numerics;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
@@ -66,32 +67,32 @@ public class TilePatternCreator : ContentStreamCreator
         double xStep, double yStep, PdfRect bBox)
         : base(NoObjectStream.Instance)
     {
-        MetaData.WithItem(KnownNames.Type, KnownNames.Pattern)
-            .WithItem(KnownNames.PatternType, 1)
-            .WithItem(KnownNames.PaintType, (int)paint)
-            .WithItem(KnownNames.TilingType, (int)tile)
-            .WithItem(KnownNames.XStep, xStep)
-            .WithItem(KnownNames.YStep, yStep)
-            .WithItem(KnownNames.BBox, bBox.ToPdfArray);
+        MetaData.WithItem(KnownNames.TypeTName, KnownNames.PatternTName)
+            .WithItem(KnownNames.PatternTypeTName, 1)
+            .WithItem(KnownNames.PaintTypeTName, (int)paint)
+            .WithItem(KnownNames.TilingTypeTName, (int)tile)
+            .WithItem(KnownNames.XStepTName, xStep)
+            .WithItem(KnownNames.YStepTName, yStep)
+            .WithItem(KnownNames.BBoxTName, bBox.ToPdfArray);
     }
 
     /// <summary>
     /// Add a matrix to the pattern dictionay
     /// </summary>
     /// <param name="matrix"></param>
-    public void AddMatrix(Matrix3x2 matrix) => MetaData.WithItem(KnownNames.Matrix, matrix.AsPdfArray());
+    public void AddMatrix(Matrix3x2 matrix) => MetaData.WithItem(KnownNames.MatrixTName, matrix.AsPdfArray());
 
     /// <inheritdoc />
-    public override (PdfIndirectObject Reference, int PageCount) ConstructItem(
-        IPdfObjectCreatorRegistry creator, PdfIndirectObject? parent)
+    public override (PdfIndirectValue Reference, int PageCount) ConstructItem(IPdfObjectCreatorRegistry creator,
+        PdfIndirectValue parent)
     {
-        if (parent != null)
+        if (parent.IsNull)
             throw new InvalidOperationException("Patterns may not have a parent");
         return base.ConstructItem(creator, parent);
     }
 
     /// <inheritdoc />
-    public override void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data)
+    public override void AddToContentStream(ValueDictionaryBuilder builder, MultiBufferStreamSource data)
     {
         if (content != null)
             throw new InvalidOperationException("Tile Pattern may have only 1 content stream");
@@ -99,7 +100,7 @@ public class TilePatternCreator : ContentStreamCreator
     }
 
     /// <inheritdoc />
-    protected override PdfIndirectObject CreateFinalObject(IPdfObjectCreatorRegistry creator)
+    protected override PdfIndirectValue CreateFinalObject(IPdfObjectCreatorRegistry creator)
     {
         if (content is null) throw new InvalidOperationException("Tile Pattern must have content.");
         return creator.Add(MetaData.AsStream(content));

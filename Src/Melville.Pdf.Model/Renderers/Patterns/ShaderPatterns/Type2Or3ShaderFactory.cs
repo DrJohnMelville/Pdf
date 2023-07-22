@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
@@ -11,26 +12,26 @@ namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 internal readonly struct Type2Or3ShaderFactory
 {
-    private readonly PdfDictionary shading;
+    private readonly PdfValueDictionary shading;
 
-    public Type2Or3ShaderFactory(PdfDictionary shading)
+    public Type2Or3ShaderFactory(PdfValueDictionary shading)
     {
         this.shading = shading;
     }
 
     public async ValueTask<IShaderWriter> ParseAsync(CommonShaderValues common, int expectedCoords)
     {
-        var coords = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.Coords, expectedCoords).CA()) ??
-                     throw new PdfParseException("Cannot find coords for axial or radia shader");
+        var coords = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.CoordsTName, expectedCoords).CA()) ??
+                     throw new PdfParseException("Cannot find coords for axial or radial shader");
 
-        var domain = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.Domain, 2).CA()) is { } arr
+        var domain = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.DomainTName, 2).CA()) is { } arr
             ? new ClosedInterval(arr[0], arr[1])
             : new ClosedInterval(0, 1);
 
-        var function = await (await shading[KnownNames.Function].CA()).CreateFunctionAsync().CA();
+        var function = await (await shading[KnownNames.FunctionTName].CA()).CreateFunctionAsync().CA();
 
         var (extendLow, extendHigh) =
-            (await shading.GetOrNullAsync<PdfArray>(KnownNames.Extend).CA()) is { Count: 2 } extArr
+            (await shading.GetOrNullAsync<PdfValueArray>(KnownNames.ExtendTName).CA()) is { Count: 2 } extArr
                 ? (await ElementIsTrueAsync(extArr, 0).CA(), await ElementIsTrueAsync(extArr, 1).CA())
                 : (false, false);
 
@@ -65,6 +66,6 @@ internal readonly struct Type2Or3ShaderFactory
         };
     }
 
-    private async ValueTask<bool> ElementIsTrueAsync(PdfArray extArr, int index) =>
-        (await extArr[index].CA()) == PdfBoolean.True;
+    private async ValueTask<bool> ElementIsTrueAsync(PdfValueArray extArr, int index) =>
+        (await extArr[index].CA()).Get<bool>();
 }

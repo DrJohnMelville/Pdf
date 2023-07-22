@@ -51,6 +51,7 @@ public class EncodingGenerator
     {
         sb.AppendLine("#nullable enable");
         sb.AppendLine("using Melville.Pdf.LowLevel.Model.Objects;");
+        sb.AppendLine("using Melville.Pdf.LowLevel.Model.Objects2;");
         sb.AppendLine("namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;");
         sb.AppendLine("#pragma warning disable CS1591");
         sb.AppendLine();
@@ -68,7 +69,7 @@ public class EncodingGenerator
 
     private void GenerateEncoding(StringBuilder sb, string name, IReadOnlyDictionary<byte, string> map)
     {
-        sb.AppendLine($"    public static PdfName[] {name} = {{");
+        sb.AppendLine($"    public static PdfDirectValue[] {name} = {{");
         for (int i = 0; i < 256; i++)
         {
             var value = ComputeUnicodeForGlyph(map, i);
@@ -89,9 +90,9 @@ public class EncodingGenerator
         sb.AppendLine("{");
         foreach (var name in AllCharacterNames())
         {
-            sb.Append("    public static readonly PdfName ");
+            sb.Append("    public static readonly PdfDirectValue ");
             sb.Append(name);
-            sb.Append(" = PdfNameFactory.Create(\"");
+            sb.Append(" = PdfDirectValue.CreateName(\"");
             sb.Append(name);
             sb.AppendLine("\"u8);");
         }
