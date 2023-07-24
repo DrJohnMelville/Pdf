@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
@@ -46,27 +47,27 @@ public readonly struct ExponentialFunctionBuilder
     /// Render the described function as a Pdf Dictionary.
     /// </summary>
     /// <returns>A PdfDictionary declaring this function</returns>
-    public PdfDictionary Create() => DictionaryItems().AsDictionary();
+    public PdfValueDictionary Create() => DictionaryItems().AsDictionary();
 
-    private DictionaryBuilder DictionaryItems()
+    private ValueDictionaryBuilder DictionaryItems()
     {
-        var ret = new DictionaryBuilder();
-        ret.WithItem(KnownNames.FunctionType, 2);
-        ret.WithItem(KnownNames.Domain, DomainArray());
-        ret.WithItem(KnownNames.N, exponent);
+        var ret = new ValueDictionaryBuilder();
+        ret.WithItem(KnownNames.FunctionTypeTName, 2);
+        ret.WithItem(KnownNames.DomainTName, DomainArray());
+        ret.WithItem(KnownNames.NTName, exponent);
         if (!RangeIsDefault()) 
-            ret.WithItem(KnownNames.Range, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count));
+            ret.WithItem(KnownNames.RangeTName, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count));
         if (!TrivialC0())
-            ret.WithItem(KnownNames.C0, new PdfArray(mappings.Select(i=>(PdfNumber)i.Bounds.MinValue)));
+            ret.WithItem(KnownNames.C0TName, new PdfValueArray(mappings.Select(i => (PdfIndirectValue)i.Bounds.MinValue).ToArray()));
         if (!TrivialC1())
-            ret.WithItem(KnownNames.C1, new PdfArray(mappings.Select(i=>(PdfNumber)i.Bounds.MaxValue)));
+            ret.WithItem(KnownNames.C1TName, new PdfValueArray(mappings.Select(i=>(PdfIndirectValue)i.Bounds.MaxValue).ToArray()));
         return ret;
     }
 
     private bool TrivialC0() => mappings.Count == 1 && mappings[0].Bounds.MinValue == 0;
     private bool TrivialC1() => mappings.Count == 1 && mappings[0].Bounds.MaxValue == 1;
 
-    private PdfArray DomainArray() => 
+    private PdfValueArray DomainArray() => 
         new(domain.MinValue, domain.MaxValue);
 
     private bool RangeIsDefault() => 

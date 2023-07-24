@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.TextRenderings;
 
@@ -11,13 +12,13 @@ public class ExplicitType1FontWidth : FontDefinitionTest
     }
 
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg) =>
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type1)
-            .WithItem(KnownNames.BaseFont, BuiltInFontName.Helvetica)
-            .WithItem(KnownNames.FirstChar, 'A')
-            .WithItem(KnownNames.LastChar, 'C')
-            .WithItem(KnownNames.Widths, new PdfArray(
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
+            .WithItem(KnownNames.BaseFontTName, BuiltInFontName.Helvetica)
+            .WithItem(KnownNames.FirstCharTName, 'A')
+            .WithItem(KnownNames.LastCharTName, 'C')
+            .WithItem(KnownNames.WidthsTName, new PdfValueArray(
                 250,
                 1500,
                 1000

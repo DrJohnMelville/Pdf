@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.FormXobjects;
 
@@ -8,20 +9,20 @@ public class ResourceDictionaryInForm : FormXObjectBase
     {
     }
 
-    protected override PdfStream FormDefinition() =>
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Form)
-            .WithItem(KnownNames.Resources, new DictionaryBuilder()
-                .WithItem(KnownNames.ExtGState, new DictionaryBuilder()
-                    .WithItem(KnownNames.AHx, new DictionaryBuilder()
-                        .WithItem(KnownNames.LW, 5)
-                        .WithItem(KnownNames.D, new PdfArray(new PdfArray(30, 10), 0))
+    protected override PdfValueStream FormDefinition() =>
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.FormTName)
+            .WithItem(KnownNames.ResourcesTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.ExtGStateTName, new ValueDictionaryBuilder()
+                    .WithItem(KnownNames.AHxTName, new ValueDictionaryBuilder()
+                        .WithItem(KnownNames.LWTName, 5)
+                        .WithItem(KnownNames.DTName, new PdfValueArray(new PdfValueArray(30, 10), 0))
                         .AsDictionary())
                     .AsDictionary())
                 .AsDictionary()
             )
-            .WithItem(KnownNames.BBox, new PdfArray(
+            .WithItem(KnownNames.BBoxTName, new PdfValueArray(
                 0, 0, 100, 100))
             .AsStream("/AHx gs 0 0 m 50 50 l S");
 }
@@ -35,17 +36,17 @@ public class ResourceDictionaryInPage : FormXObjectBase
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ExtGState, KnownNames.AHx, new DictionaryBuilder()
-                .WithItem(KnownNames.LW, 5)
-                .WithItem(KnownNames.D, new PdfArray(new PdfArray(20, 10), 0))
+        page.AddResourceObject(ResourceTypeName.ExtGState, KnownNames.AHxTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.LWTName, 5)
+                .WithItem(KnownNames.DTName, new PdfValueArray(new PdfValueArray(20, 10), 0))
                 .AsDictionary());
     }
 
-    protected override PdfStream FormDefinition() =>
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Form)
-            .WithItem(KnownNames.BBox, new PdfArray(
+    protected override PdfValueStream FormDefinition() =>
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.FormTName)
+            .WithItem(KnownNames.BBoxTName, new PdfValueArray(
                 0, 0, 100, 100))
             .AsStream("/AHx gs 0 0 m 50 50 l S");
 }

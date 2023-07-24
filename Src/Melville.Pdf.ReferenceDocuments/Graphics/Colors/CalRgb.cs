@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -13,14 +14,14 @@ public class CalRgb: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"), new PdfArray(
-            KnownNames.CalRGB, new DictionaryBuilder()
-                .WithItem(KnownNames.WhitePoint, new PdfArray(
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"), new PdfValueArray(
+            KnownNames.CalRGBTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.WhitePointTName, new PdfValueArray(
                 0.9505, 1.000, 1.0890))
-                .WithItem(KnownNames.Gamma, new PdfArray(
+                .WithItem(KnownNames.GammaTName, new PdfValueArray(
                     1.8,1.8,1.8
                     ))
-                .WithItem(KnownNames.Matrix, new PdfArray(
+                .WithItem(KnownNames.MatrixTName, new PdfValueArray(
                     0.4497,
                     0.2446,
                     0.0252,
@@ -42,7 +43,7 @@ public class CalRgb: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(0.25,0,0);
         DrawLine(csw);

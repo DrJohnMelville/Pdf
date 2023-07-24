@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
@@ -10,7 +11,7 @@ public abstract class TextAttributeTest : Card3x5
     {
     }
 
-    private static readonly PdfName fontName = NameDirectory.Get("F1");
+    private static readonly PdfDirectValue fontName = PdfDirectValue.CreateName("F1");
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(fontName, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);

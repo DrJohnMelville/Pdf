@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -14,11 +15,11 @@ public class LabColorSpace: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"), new PdfArray(
-            KnownNames.Lab, new DictionaryBuilder()
-                .WithItem(KnownNames.WhitePoint, new PdfArray(
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"), new PdfValueArray(
+            KnownNames.LabTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.WhitePointTName, new PdfValueArray(
                     0.9505, 1.000, 1.0890))
-                .WithItem(KnownNames.Range, new PdfArray(
+                .WithItem(KnownNames.RangeTName, new PdfValueArray(
                         MinA,127,-128,127
                 ))
                 .AsDictionary()));
@@ -32,7 +33,7 @@ public class LabColorSpace: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(50,50,50);
         DrawLine(csw);

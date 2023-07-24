@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
@@ -9,7 +10,7 @@ public class Type1TrippleFunctions : Type1FunctionalShaderBase
     {
     }
 
-    protected override async Task<PdfStream[]> BuildFunctionAsync()
+    protected override async Task<PdfValueStream[]> BuildFunctionAsync()
     {
         var ret = new[]
         {
@@ -20,7 +21,7 @@ public class Type1TrippleFunctions : Type1FunctionalShaderBase
         return ret;
     }
 
-    private static async Task<PdfStream> SingleMethodAsync(Func<double, double, double> defn)
+    private static async Task<PdfValueStream> SingleMethodAsync(Func<double, double, double> defn)
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));

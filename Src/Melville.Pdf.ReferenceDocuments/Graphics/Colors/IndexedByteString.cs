@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Colors;
@@ -12,17 +13,17 @@ public class IndexedByteString: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"),
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"),
             IndexedColorspace()
         );
     }
 
-    private static PdfArray IndexedColorspace()
+    private static PdfValueArray IndexedColorspace()
     {
-        return new PdfArray(
-            KnownNames.Indexed, KnownNames.DeviceRGB, 
+        return new PdfValueArray(
+            KnownNames.IndexedTName, KnownNames.DeviceRGBTName, 
             3,
-            new PdfString(new byte[]
+            PdfDirectValue.CreateString(new byte[]
             {
                 0xff, 0, 0,
                 0x7f, 0x7f, 0x7f,
@@ -39,7 +40,7 @@ public class IndexedByteString: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(1);
         DrawLine(csw);

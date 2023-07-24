@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
@@ -11,17 +12,17 @@ public class Type1FunctionalGray : Type1FunctionalShaderBase
         
     }
 
-    protected override async Task<PdfStream[]> BuildFunctionAsync()
+    protected override async Task<PdfValueStream[]> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddOutput((x, y) => x*y, new ClosedInterval(0, 1));
         var ret = await fbuilder.CreateSampledFunctionAsync();
-        return new PdfStream[] { ret };
+        return new PdfValueStream[] { ret };
     }
 
-    protected override DictionaryBuilder BuildShader(
-        IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) => 
-        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray);
+    protected override ValueDictionaryBuilder BuildShader(
+        IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) => 
+        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName);
 }

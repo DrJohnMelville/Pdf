@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
@@ -18,7 +19,7 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
         await base.SetPagePropertiesAsync(page);
     }
 
-    protected virtual async Task<PdfStream[]> BuildFunctionAsync()
+    protected virtual async Task<PdfValueStream[]> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
@@ -27,30 +28,30 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
         fbuilder.AddOutput((x, y) => y, new ClosedInterval(0, 1));
         fbuilder.AddOutput((x, y) => 1 - x, new ClosedInterval(0, 1));
         var ret = await fbuilder.CreateSampledFunctionAsync();
-        return new PdfStream[]{ret};
+        return new PdfValueStream[]{ret};
     }
 
     protected override PdfObject CreatePattern(IPdfObjectCreatorRegistry arg) =>
         BuildPattern(arg, 
             BuildShader(arg, function ?? throw new InvalidOperationException("No func defined"), 
-                new DictionaryBuilder()).AsDictionary(),
-            new DictionaryBuilder()).AsDictionary();
+                new ValueDictionaryBuilder()).AsDictionary(),
+            new ValueDictionaryBuilder()).AsDictionary();
 
-    protected virtual DictionaryBuilder BuildPattern(
-        IPdfObjectCreatorRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
-            .WithItem(KnownNames.Shading, arg.Add(shading))
-            .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
-            .WithItem(KnownNames.PatternType, 2);
+    protected virtual ValueDictionaryBuilder BuildPattern(
+        IPdfObjectCreatorRegistry arg, PdfDictionary shading, ValueDictionaryBuilder builder) => builder
+            .WithItem(KnownNames.ShadingTName, arg.Add(shading))
+            .WithItem(KnownNames.MatrixTName, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfValueArray())
+            .WithItem(KnownNames.PatternTypeTName, 2);
 
-    protected virtual DictionaryBuilder BuildShader(
-        IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) => builder
-            .WithItem(KnownNames.Function, arg.Add(ComputeLocalFunc(localFunc, arg)))
-            .WithItem(KnownNames.ShadingType, 1)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB);
+    protected virtual ValueDictionaryBuilder BuildShader(
+        IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) => builder
+            .WithItem(KnownNames.FunctionTName, arg.Add(ComputeLocalFunc(localFunc, arg)))
+            .WithItem(KnownNames.ShadingTypeTName, 1)
+            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName);
 
     private static PdfObject ComputeLocalFunc(PdfObject[] localFunc, IPdfObjectCreatorRegistry ldc)
     {
         if (localFunc.Length == 1) return localFunc[0];
-        return new PdfArray(localFunc.Select(i => ldc.Add(i)));
+        return new PdfValueArray(localFunc.Select(i => ldc.Add(i)));
     }
 }

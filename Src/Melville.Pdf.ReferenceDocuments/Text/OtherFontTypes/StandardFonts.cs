@@ -22,7 +22,7 @@ public class StandardFonts : CreatePdfParser
                 creator.Pages.AddStandardFont(font, font, FontEncodingName.WinAnsiEncoding);
                 i.SetFontAsync(font, 24);
                 block.MovePositionBy(100, ypos);
-                block.ShowStringAsync($"This is {(PdfName)font}");
+                block.ShowStringAsync($"This is {(PdfDirectValue)font}");
                 ypos -= 25;
             }
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
@@ -12,8 +13,8 @@ public abstract class FontDefinitionTest : Card3x5
     {
     }
 
-    private static readonly PdfName Font1 = NameDirectory.Get("F1"); 
-    private static readonly PdfName Font2 = NameDirectory.Get("F2"); 
+    private static readonly PdfDirectValue Font1 = PdfDirectValue.CreateName("F1"); 
+    private static readonly PdfDirectValue Font2 = PdfDirectValue.CreateName("F2"); 
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(Font1, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);
@@ -36,7 +37,7 @@ public abstract class FontDefinitionTest : Card3x5
         return ValueTask.CompletedTask;
     }
 
-    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfName font, int yOffset)
+    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfDirectValue font, int yOffset)
     {
         await csw.SetFontAsync(font, FontSize);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);

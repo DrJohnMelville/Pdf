@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
@@ -11,7 +12,7 @@ public abstract class DisplayCharSet : Card3x5
     protected DisplayCharSet(BuiltInFontName name) : this(name, FontEncodingName.StandardEncoding) { }
 
     protected DisplayCharSet(BuiltInFontName name, FontEncodingName fontEncodingName) :
-        this(name, (PdfName)fontEncodingName)
+        this(name, (PdfDirectValue)fontEncodingName)
     {
     }
 
@@ -22,7 +23,7 @@ public abstract class DisplayCharSet : Card3x5
         this.fontEncodingName = fontEncodingName;
     }
 
-    private static readonly PdfName fontName = NameDirectory.Get("F1");
+    private static readonly PdfDirectValue fontName = PdfDirectValue.CreateName("F1");
 
     protected override void SetPageProperties(PageCreator page)
     {

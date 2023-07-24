@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -6,24 +7,24 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Colors;
 
 public class Separation: ColorBars
 {
-    private readonly PdfName inkName;
-    public Separation(PdfName inkName) : base("A separation color space with a fallback function.")
+    private readonly PdfDirectValue inkName;
+    public Separation(PdfDirectValue inkName) : base("A separation color space with a fallback function.")
     {
         this.inkName = inkName;
     }
 
-    public Separation() : this(NameDirectory.Get("UnknownInkName"))
+    public Separation() : this(PdfDirectValue.CreateName("UnknownInkName"))
     {
     }
 
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"),
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"),
             CreateColorSpace);
     }
 
-    private PdfObject CreateColorSpace(IPdfObjectCreatorRegistry i)
+    private PdfIndirectValue CreateColorSpace(IPdfObjectCreatorRegistry i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));
@@ -31,8 +32,8 @@ public class Separation: ColorBars
         builder.AddOutput((0, 1));
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{1 exch sub dup 0}"));
-        return new PdfArray(
-            KnownNames.Separation, inkName, KnownNames.DeviceRGB, func);
+        return new PdfValueArray(
+            KnownNames.SeparationTName, inkName, KnownNames.DeviceRGBTName, func);
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
@@ -42,7 +43,7 @@ public class Separation: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(0.25);
         DrawLine(csw);
@@ -55,13 +56,13 @@ public class Separation: ColorBars
 
 public class SeparationAll: Separation
 {
-    public SeparationAll() : base(KnownNames.All)
+    public SeparationAll() : base(KnownNames.AllTName)
     {
     }
 }
 public class SeparationNone: Separation
 {
-    public SeparationNone() : base(KnownNames.None)
+    public SeparationNone() : base(KnownNames.NoneTName)
     {
     }
 }

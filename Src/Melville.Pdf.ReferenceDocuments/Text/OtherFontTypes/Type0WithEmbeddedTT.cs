@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.OtherFontTypes;
 
@@ -15,9 +16,9 @@ public class Type0WithTightDefaultCharSpacing : Type0Base
     {
     }
 
-    protected override DictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
+    protected override ValueDictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
     {
-        return base.CidFontBuilder(arg).WithItem(KnownNames.DW, 500);
+        return base.CidFontBuilder(arg).WithItem(KnownNames.DWTName, 500);
     }
 }
 public class Type0WithIndividualCharSpacing : Type0Base
@@ -26,10 +27,10 @@ public class Type0WithIndividualCharSpacing : Type0Base
     {
     }
 
-    protected override DictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
+    protected override ValueDictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
     {
-        return base.CidFontBuilder(arg).WithItem(KnownNames.W, new PdfArray(
-            4, new PdfArray(
+        return base.CidFontBuilder(arg).WithItem(KnownNames.WTName, new PdfValueArray(
+            4, new PdfValueArray(
                 500, 750, 250)));
     }
 }
@@ -44,41 +45,41 @@ public abstract class Type0Base : FontDefinitionTest
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var CIDFont = arg.Add(CidFontBuilder(arg).AsDictionary());
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type0)
-            .WithItem(KnownNames.BaseFont, NameDirectory.Get("ABCDE+Zev+Regular"))
-            .WithItem(KnownNames.Encoding, KnownNames.IdentityH)
-            .WithItem(KnownNames.DescendantFonts, new PdfArray(CIDFont))
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type0TName)
+            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("ABCDE+Zev+Regular"))
+            .WithItem(KnownNames.EncodingTName, KnownNames.IdentityHTName)
+            .WithItem(KnownNames.DescendantFontsTName, new PdfValueArray(CIDFont))
             .AsDictionary();
     }
 
-    protected virtual DictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
+    protected virtual ValueDictionaryBuilder CidFontBuilder(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Zev.ttf")!;
-        var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1, fontStream.Length)
+        var stream = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.Length1TName, fontStream.Length)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream));
-        var descrip = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
-            .WithItem(KnownNames.Flags, 32)
-            .WithItem(KnownNames.FontBBox,
-                new PdfArray(-511, -250, 1390, 750))
-            .WithItem(KnownNames.FontFile2, stream)
+        var descrip = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
+            .WithItem(KnownNames.FlagsTName, 32)
+            .WithItem(KnownNames.FontBBoxTName,
+                new PdfValueArray(-511, -250, 1390, 750))
+            .WithItem(KnownNames.FontFile2TName, stream)
             .AsDictionary());
-        var sysinfo = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Registry, "Adobe")
-            .WithItem(KnownNames.Ordering, "Identity")
-            .WithItem(KnownNames.Supplement, 0)
+        var sysinfo = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.RegistryTName, "Adobe")
+            .WithItem(KnownNames.OrderingTName, "Identity")
+            .WithItem(KnownNames.SupplementTName, 0)
             .AsDictionary()
         );
-        var CIDFontBuilder = new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.CIDFontType2)
-            .WithItem(KnownNames.FontDescriptor, descrip)
-            .WithItem(KnownNames.BaseFont, NameDirectory.Get("Zev"))
-            .WithItem(KnownNames.CIDSystemInfo, sysinfo);
+        var CIDFontBuilder = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
+            .WithItem(KnownNames.FontDescriptorTName, descrip)
+            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("Zev"))
+            .WithItem(KnownNames.CIDSystemInfoTName, sysinfo);
         return CIDFontBuilder;
     }
 }

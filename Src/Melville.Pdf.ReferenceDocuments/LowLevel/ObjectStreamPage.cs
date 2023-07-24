@@ -1,5 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -20,7 +21,7 @@ public class ObjectStreamPage: CreatePdfParser
     {
         var creator = new PdfDocumentCreator();
         using (creator.LowLevelCreator.ObjectStreamContext(
-                         new DictionaryBuilder()))
+                         new ValueDictionaryBuilder()))
         {
             var page = creator.Pages.CreatePageInObjectStream();
             var fontName = page.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);

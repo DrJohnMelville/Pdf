@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.FormXobjects;
 
@@ -8,11 +9,11 @@ public class SimpleForm: FormXObjectBase
     {
     }
 
-    protected override PdfStream FormDefinition() =>
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Form)
-            .WithItem(KnownNames.BBox, new PdfArray(
+    protected override PdfValueStream FormDefinition() =>
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.FormTName)
+            .WithItem(KnownNames.BBoxTName, new PdfValueArray(
                 0, 0, 100, 100))
             .AsStream("0 0 m 50 50 l S");
 }

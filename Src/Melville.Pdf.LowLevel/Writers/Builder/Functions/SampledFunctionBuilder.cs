@@ -7,6 +7,7 @@ using Melville.Parsing.Streams;
 using Melville.Parsing.VariableBitEncoding;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
@@ -117,32 +118,32 @@ public readonly struct SampledFunctionBuilder
     /// </summary>
     /// <param name="members">A DictionaryBuilder that should be used to build the stream.</param>
     /// <returns>The stream that defines this function.</returns>
-    private DictionaryBuilder DictionaryEntries(in DictionaryBuilder members) =>
+    private ValueDictionaryBuilder DictionaryEntries(in ValueDictionaryBuilder members) =>
         members
-            .WithItem(KnownNames.FunctionType, 0)
-            .WithItem(KnownNames.Domain, inputs.Select(i => i.Domain).AsPdfArray(inputs.Count))
-            .WithItem(KnownNames.Range, outputs.Select(i => i.Range).AsPdfArray(outputs.Count))
-            .WithItem(KnownNames.Size, SizeArray())
-            .WithItem(KnownNames.BitsPerSample, bitsPerSample)
-            .WithItem(KnownNames.Order, OrderIfNotLinear())
-            .WithItem(KnownNames.Encode, EncodeArray())
-            .WithItem(KnownNames.Decode, DecodeArray());
+            .WithItem(KnownNames.FunctionTypeTName, 0)
+            .WithItem(KnownNames.DomainTName, inputs.Select(i => i.Domain).AsPdfArray(inputs.Count))
+            .WithItem(KnownNames.RangeTName, outputs.Select(i => i.Range).AsPdfArray(outputs.Count))
+            .WithItem(KnownNames.SizeTName, SizeArray())
+            .WithItem(KnownNames.BitsPerSampleTName, bitsPerSample)
+            .WithItem(KnownNames.OrderTName, OrderIfNotLinear())
+            .WithItem(KnownNames.EncodeTName, EncodeArray())
+            .WithItem(KnownNames.DecodeTName, DecodeArray());
 
-    private PdfArray SizeArray() => new(inputs.Select(i=>(PdfNumber)i.Samples));
+    private PdfValueArray SizeArray() => new(inputs.Select(i => (PdfIndirectValue)i.Samples).ToArray());
 
-    private PdfObject OrderIfNotLinear() => 
-        order == SampledFunctionOrder.Linear?PdfTokenValues.Null:3;
+    private PdfDirectValue OrderIfNotLinear() => 
+        order == SampledFunctionOrder.Linear?PdfDirectValue.CreateNull(): 3;
 
-    private PdfObject EncodeArray() =>
+    private PdfDirectValue EncodeArray() =>
         EncodeArrayIsTrivial()
-            ? PdfTokenValues.Null
+            ? PdfDirectValue.CreateNull()
             : inputs.Select(i => i.Encode).AsPdfArray(inputs.Count);
 
     private bool EncodeArrayIsTrivial() => inputs.All(i => i.EncodeTrivial());
         
-    private PdfObject DecodeArray() =>
+    private PdfDirectValue DecodeArray() =>
         DecodeArrayIsTrivial()
-            ? PdfTokenValues.Null
+            ? PdfDirectValue.CreateNull()
             : outputs.Select(i => i.Decode).AsPdfArray(outputs.Count);
 
     private bool DecodeArrayIsTrivial()
@@ -200,14 +201,14 @@ public readonly struct SampledFunctionBuilder
     /// Build the resulting function.
     /// </summary>
     /// <returns>The resulting function, as a PDF stream</returns>
-    public ValueTask<PdfStream> CreateSampledFunctionAsync() =>
-        CreateSampledFunctionAsync(new DictionaryBuilder());
+    public ValueTask<PdfValueStream> CreateSampledFunctionAsync() =>
+        CreateSampledFunctionAsync(new ValueDictionaryBuilder());
 
     /// <summary>
     /// Build the resulting function.
     /// </summary>
     /// <param name="members">The DictionaryBuilder which should be used to build the function</param>
     /// <returns>The resulting function, as a PDF stream</returns>
-    public async ValueTask<PdfStream> CreateSampledFunctionAsync(DictionaryBuilder members) =>
+    public async ValueTask<PdfValueStream> CreateSampledFunctionAsync(ValueDictionaryBuilder members) =>
         DictionaryEntries(members).AsStream(await SamplesStreamAsync().CA());
 }

@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
 
@@ -9,9 +10,9 @@ public class Type1WithDomain : Type1FunctionalShaderBase
         
     }
 
-    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.Domain, new PdfArray(0.3,0.6, 0.25, 0.75));
+            .WithItem(KnownNames.DomainTName, new PdfValueArray(0.3,0.6, 0.25, 0.75));
 }
 
 public class Type1WithDomainAndBackground : Type1FunctionalShaderBase
@@ -21,10 +22,10 @@ public class Type1WithDomainAndBackground : Type1FunctionalShaderBase
         
     }
 
-    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, DictionaryBuilder builder) =>
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.Domain, new PdfArray(0.3,0.6, 0.25, 0.75))
-            .WithItem(KnownNames.Background, new PdfArray(1.0, 0,0));
+            .WithItem(KnownNames.DomainTName, new PdfValueArray(0.3,0.6, 0.25, 0.75))
+            .WithItem(KnownNames.BackgroundTName, new PdfValueArray(1.0, 0,0));
 }
 
 public class Type1WithDomainBackgroundAndBBox : Type1FunctionalShaderBase
@@ -34,10 +35,10 @@ public class Type1WithDomainBackgroundAndBBox : Type1FunctionalShaderBase
         
     }
 
-    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc,
-        DictionaryBuilder builder) =>
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc,
+        ValueDictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.Domain, new PdfArray(0.3, 0.6, 0.25, 0.75))
-            .WithItem(KnownNames.Background, new PdfArray(1.0, 0, 0))
-            .WithItem(KnownNames.BBox, new PdfArray(0.1, 0.4, 0.9, 0.6));
+            .WithItem(KnownNames.DomainTName, new PdfValueArray(0.3, 0.6, 0.25, 0.75))
+            .WithItem(KnownNames.BackgroundTName, new PdfValueArray(1.0, 0, 0))
+            .WithItem(KnownNames.BBoxTName, new PdfValueArray(0.1, 0.4, 0.9, 0.6));
 }

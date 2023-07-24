@@ -1,13 +1,14 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
 
 public class WinAnsiCharSet : DisplayCharSet
 {
     public WinAnsiCharSet() : base(BuiltInFontName.Courier,
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Encoding)
-            .WithItem(KnownNames.BaseEncoding, KnownNames.WinAnsiEncoding)
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
+            .WithItem(KnownNames.BaseEncodingTName, KnownNames.WinAnsiEncodingTName)
             .AsDictionary()
         )
     {

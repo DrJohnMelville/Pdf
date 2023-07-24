@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns;
@@ -11,9 +12,9 @@ public abstract class PatternDisplayClass : Card3x5
     
     protected override void SetPageProperties(PageCreator page)
     {
-        page.AddResourceObject(ResourceTypeName.Pattern, NameDirectory.Get("P1"), CreatePattern);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("Cs12"), new PdfArray(
-            KnownNames.Pattern, KnownNames.DeviceRGB));
+        page.AddResourceObject(ResourceTypeName.Pattern, PdfDirectValue.CreateName("P1"), CreatePattern);
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("Cs12"), new PdfValueArray(
+            KnownNames.PatternTName, KnownNames.DeviceRGBTName));
     }
 
     protected abstract PdfObject CreatePattern(IPdfObjectCreatorRegistry arg);
@@ -24,8 +25,8 @@ public abstract class PatternDisplayClass : Card3x5
         csw.Rectangle(25, 175, 175, -150);
         csw.FillPath();
 
-        await csw.SetNonstrokingColorSpaceAsync(NameDirectory.Get("Cs12"));
-        await csw.SetNonstrokingColorExtendedAsync(NameDirectory.Get("P1"));
+        await csw.SetNonstrokingColorSpaceAsync(PdfDirectValue.CreateName("Cs12"));
+        await csw.SetNonstrokingColorExtendedAsync(PdfDirectValue.CreateName("P1"));
         
         csw.MoveTo(99.92, 49.92);
         csw.CurveTo(99.92, 77.52, 77.52, 99.91, 49.92, 99.92);

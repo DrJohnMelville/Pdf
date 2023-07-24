@@ -1,11 +1,12 @@
 ﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.FormXobjects;
 
 public abstract class FormXObjectBase : Card3x5
 {
-    private static readonly PdfName gName = NameDirectory.Get("Fx01");
+    private static readonly PdfDirectValue gName = PdfDirectValue.CreateName("Fx01");
 
     protected FormXObjectBase(string helpText) : base(helpText)
     {
@@ -29,5 +30,5 @@ public abstract class FormXObjectBase : Card3x5
         await csw.DoAsync(gName);
     }
 
-    protected abstract PdfStream FormDefinition();
+    protected abstract PdfValueStream FormDefinition();
 }

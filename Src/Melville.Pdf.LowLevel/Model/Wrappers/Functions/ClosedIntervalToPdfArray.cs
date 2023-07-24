@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 internal static class ClosedIntervalToPdfArray
 {
-    public static PdfArray AsPdfArray(this ICollection<ClosedInterval> source) =>
+    public static PdfValueArray AsPdfArray(this ICollection<ClosedInterval> source) =>
         source.AsPdfArray(source.Count);
-    public static PdfArray AsPdfArray(this IEnumerable<ClosedInterval> source, int count= 0)
+    public static PdfValueArray AsPdfArray(this IEnumerable<ClosedInterval> source, int count= 0)
     {
-        var numArray = new List<PdfObject>(count*2);
+        var numArray = new PdfIndirectValue[count*2];
+        int position=0;
         foreach (var item in source)
         {
-            numArray.Add(item.MinValue);
-            numArray.Add(item.MaxValue);
+            numArray[position++] = item.MinValue;
+            numArray[position++] = item.MaxValue;
         }
-        return new PdfArray(numArray);
+        return new PdfValueArray(numArray);
     }
 }

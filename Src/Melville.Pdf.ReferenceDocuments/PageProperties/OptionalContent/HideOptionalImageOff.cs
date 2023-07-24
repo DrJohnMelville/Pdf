@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
@@ -16,7 +17,7 @@ public class HideOptionalImageOn : HideOptionalImageOff
     {
     }
 
-    protected override PdfName OnOrOff() => KnownNames.ON;
+    protected override PdfDirectValue OnOrOff() => KnownNames.ONTName;
 }
 public class HideOptionalImageOff: DisplayImageTest
 {
@@ -31,39 +32,39 @@ public class HideOptionalImageOff: DisplayImageTest
 
     protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {
-        var usageDictionary = new DictionaryBuilder()
-            .WithItem(KnownNames.CreatorInfo, new DictionaryBuilder().WithItem(KnownNames.Creator,"JDM").AsDictionary())
+        var usageDictionary = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.CreatorInfoTName, new ValueDictionaryBuilder().WithItem(KnownNames.CreatorTName,"JDM").AsDictionary())
             .AsDictionary();
 
-        ocg = docCreator.LowLevelCreator.Add(new DictionaryBuilder().WithItem(KnownNames.Name, "OptionalGroup")
-            .WithItem(KnownNames.Type, KnownNames.OCG)
-            .WithItem(KnownNames.Intent, new PdfArray(KnownNames.View, KnownNames.Design))
-            .WithItem(KnownNames.Usage, usageDictionary)
+        ocg = docCreator.LowLevelCreator.Add(new ValueDictionaryBuilder().WithItem(KnownNames.NameTName, "OptionalGroup")
+            .WithItem(KnownNames.TypeTName, KnownNames.OCGTName)
+            .WithItem(KnownNames.IntentTName, new PdfValueArray(KnownNames.ViewTName, KnownNames.DesignTName))
+            .WithItem(KnownNames.UsageTName, usageDictionary)
             .AsDictionary());
 
-        docCreator.AddToRootDictionary(KnownNames.OCProperties, new DictionaryBuilder()
-            .WithItem(KnownNames.OCGs, new PdfArray(ocg))
-            .WithItem(KnownNames.D, new DictionaryBuilder()
-                .WithItem(OnOrOff(), new PdfArray(ocg))
+        docCreator.AddToRootDictionary(KnownNames.OCPropertiesTName, new ValueDictionaryBuilder()
+            .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg))
+            .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
+                .WithItem(OnOrOff(), new PdfValueArray(ocg))
                 .AsDictionary())
             .AsDictionary()
         );
         return base.AddContentToDocumentAsync(docCreator);
     }
 
-    protected virtual PdfName OnOrOff() => KnownNames.OFF;
+    protected virtual PdfDirectValue OnOrOff() => KnownNames.OFFTName;
 
     protected override void SetPageProperties(PageCreator page)
     {
 
-        page.AddResourceObject(ResourceTypeName.Properties, NameDirectory.Get("OCLayer"),
+        page.AddResourceObject(ResourceTypeName.Properties, PdfDirectValue.CreateName("OCLayer"),
             ocg!
         );
         base.SetPageProperties(page);
     }
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        using (await csw.BeginMarkedRangeAsync(KnownNames.OC, NameDirectory.Get("OCLayer")))
+        using (await csw.BeginMarkedRangeAsync(KnownNames.OCTName, PdfDirectValue.CreateName("OCLayer")))
         {
             csw.MoveTo(0,0);
             csw.LineTo(300,300);
@@ -72,16 +73,16 @@ public class HideOptionalImageOff: DisplayImageTest
         await base.DoPaintingAsync(csw);
     }
 
-    protected override PdfStream CreateImage()
+    protected override PdfValueStream CreateImage()
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
-            .WithItem(KnownNames.Width, 256)
-            .WithItem(KnownNames.Height, 256)
-            .WithItem(KnownNames.BitsPerComponent, 8)
-            .WithItem(KnownNames.OC, ocg??throw new InvalidOperationException())
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
+            .WithItem(KnownNames.WidthTName, 256)
+            .WithItem(KnownNames.HeightTName, 256)
+            .WithItem(KnownNames.BitsPerComponentTName, 8)
+            .WithItem(KnownNames.OCTName, ocg??throw new InvalidOperationException())
             .AsStream(GenerateImage());
     }
 

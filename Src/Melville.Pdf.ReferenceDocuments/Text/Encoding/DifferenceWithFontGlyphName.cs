@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
@@ -13,32 +14,32 @@ public class DifferenceWithFontGlyphName : FontDefinitionTest
 
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        var enc = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Encoding)
-            .WithItem(KnownNames.Differences, new PdfArray(
+        var enc = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
+            .WithItem(KnownNames.DifferencesTName, new PdfValueArray(
                 1,
-                NameDirectory.Get("H20648")
+                PdfDirectValue.CreateName("H20648")
             ))
             .AsDictionary());
-        var fontStream = arg.Add(new DictionaryBuilder()
+        var fontStream = arg.Add(new ValueDictionaryBuilder()
             .WithFilter(FilterName.FlateDecode)
-            .WithItem(KnownNames.Subtype, NameDirectory.Get("Type1C"))
+            .WithItem(KnownNames.SubtypeTName, PdfDirectValue.CreateName("Type1C"))
             .AsStream(GetType().Assembly
                 .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.FlateEncodedPiFont.fon")!, StreamFormat.DiskRepresentation));
-        var fontDescriptor = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.FontBBox, new PdfArray(-27, -292, 1023, 981))
-            .WithItem(KnownNames.FontFile3, fontStream)
-            .WithItem(KnownNames.Flags, 4)
+        var fontDescriptor = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.FontBBoxTName, new PdfValueArray(-27, -292, 1023, 981))
+            .WithItem(KnownNames.FontFile3TName, fontStream)
+            .WithItem(KnownNames.FlagsTName, 4)
             .AsDictionary());
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type1)
-            .WithItem(KnownNames.BaseFont, NameDirectory.Get("UKGVJKB+MathmaticaPi-Three"))
-            .WithItem(KnownNames.Encoding, enc)
-            .WithItem(KnownNames.FirstChar, 1)
-            .WithItem(KnownNames.LastChar, 1)
-            .WithItem(KnownNames.FontDescriptor, fontDescriptor)
-            .WithItem(KnownNames.Widths, new PdfArray(333))
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
+            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("UKGVJKB+MathmaticaPi-Three"))
+            .WithItem(KnownNames.EncodingTName, enc)
+            .WithItem(KnownNames.FirstCharTName, 1)
+            .WithItem(KnownNames.LastCharTName, 1)
+            .WithItem(KnownNames.FontDescriptorTName, fontDescriptor)
+            .WithItem(KnownNames.WidthsTName, new PdfValueArray(333))
             .AsDictionary();
     }
 }

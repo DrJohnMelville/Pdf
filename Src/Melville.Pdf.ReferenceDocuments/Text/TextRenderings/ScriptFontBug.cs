@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.TextRenderings;
 
@@ -9,9 +10,9 @@ public class ScriptFontBug : FontDefinitionTest
     }
 
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg) =>
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.TrueType)
-            .WithItem(KnownNames.BaseFont, NameDirectory.Get("Script"))
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
+            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("Script"))
             .AsDictionary();
 }

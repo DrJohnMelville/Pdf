@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -13,19 +14,19 @@ public class IndexedStream: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS2"), new PdfArray(
-            KnownNames.Lab, new DictionaryBuilder()
-                .WithItem(KnownNames.WhitePoint, new PdfArray(
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS2"), new PdfValueArray(
+            KnownNames.LabTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.WhitePointTName, new PdfValueArray(
                     0.9505, 1.000, 1.0890))
-                .WithItem(KnownNames.Range, new PdfArray(
+                .WithItem(KnownNames.RangeTName, new PdfValueArray(
                     -128,127,-128,127
                 ))
                 .AsDictionary()));        
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"),
-            i=>new PdfArray(
-                KnownNames.Indexed, KnownNames.DeviceRGB,// NameDirectory.Get("CS2"), 
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"),
+            i=>new PdfValueArray(
+                KnownNames.IndexedTName, KnownNames.DeviceRGBTName,// PdfDirectValue.CreateName("CS2"), 
                 3,
-                i.Add(new DictionaryBuilder().AsStream(
+                i.Add(new ValueDictionaryBuilder().AsStream(
                     new byte[]
                     {
                         0x80, 0x80, 0x80,
@@ -45,7 +46,7 @@ public class IndexedStream: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(1);
         DrawLine(csw);

@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -13,11 +14,11 @@ public class DefaultGray: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, KnownNames.DefaultGray,
+        page.AddResourceObject(ResourceTypeName.ColorSpace, KnownNames.DefaultGrayTName,
             CreateColorSpace);
     }
 
-    private PdfObject CreateColorSpace(IPdfObjectCreatorRegistry i)
+    private PdfIndirectValue CreateColorSpace(IPdfObjectCreatorRegistry i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));
@@ -25,14 +26,14 @@ public class DefaultGray: ColorBars
         builder.AddOutput((0, 1));
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{dup 0}"));
-        return new PdfArray(
-            KnownNames.DeviceN, ColorantNames(), KnownNames.DeviceRGB, func);
+        return new PdfValueArray(
+            KnownNames.DeviceNTName, ColorantNames(), KnownNames.DeviceRGBTName, func);
     }
 
-    protected virtual PdfArray ColorantNames()
+    protected virtual PdfValueArray ColorantNames()
     {
-        return new PdfArray(
-            NameDirectory.Get("khed")
+        return new PdfValueArray(
+            PdfDirectValue.CreateName("khed")
         );
     }
 
@@ -43,7 +44,7 @@ public class DefaultGray: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceGray);
+        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceGrayTName);
         DrawLine(csw);
         csw.SetStrokeColor(.25);
         DrawLine(csw);

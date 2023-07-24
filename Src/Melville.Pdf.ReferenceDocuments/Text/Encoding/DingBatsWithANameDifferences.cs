@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
 
@@ -12,21 +13,21 @@ public class DingBatsWithANameDifferences : FontDefinitionTest
 
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        var enc = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Encoding)
-            .WithItem(KnownNames.Differences, new PdfArray(
+        var enc = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
+            .WithItem(KnownNames.DifferencesTName, new PdfValueArray(
                 1,
-                NameDirectory.Get("a109"),
-                NameDirectory.Get("a110"),
-                NameDirectory.Get("a111"),
-                NameDirectory.Get("a112")
+                PdfDirectValue.CreateName("a109"),
+                PdfDirectValue.CreateName("a110"),
+                PdfDirectValue.CreateName("a111"),
+                PdfDirectValue.CreateName("a112")
             ))
             .AsDictionary());
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type1)
-            .WithItem(KnownNames.BaseFont, BuiltInFontName.ZapfDingbats)
-            .WithItem(KnownNames.Encoding, enc)
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
+            .WithItem(KnownNames.BaseFontTName, BuiltInFontName.ZapfDingbats)
+            .WithItem(KnownNames.EncodingTName, enc)
             .AsDictionary();
     }
 }

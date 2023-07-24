@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
 
@@ -12,19 +13,19 @@ public class EncodingWithDiferences : FontDefinitionTest
 
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        var enc = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Differences, new PdfArray(
+        var enc = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.DifferencesTName, new PdfValueArray(
                 65,
-                NameDirectory.Get("AE"),
-                NameDirectory.Get("Adieresis"),
-                NameDirectory.Get("ff")
+                PdfDirectValue.CreateName("AE"),
+                PdfDirectValue.CreateName("Adieresis"),
+                PdfDirectValue.CreateName("ff")
             ))
             .AsDictionary());
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type1)
-            .WithItem(KnownNames.BaseFont, BuiltInFontName.Courier)
-            .WithItem(KnownNames.Encoding, enc)
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
+            .WithItem(KnownNames.BaseFontTName, BuiltInFontName.Courier)
+            .WithItem(KnownNames.EncodingTName, enc)
             .AsDictionary();
     }
 }

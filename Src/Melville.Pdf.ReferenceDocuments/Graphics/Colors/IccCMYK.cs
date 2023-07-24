@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
@@ -14,14 +15,14 @@ public class IccCMYK: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, NameDirectory.Get("CS1"),
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"),
             cr =>
             {
 
-                var strRef = cr.Add(new DictionaryBuilder()
-                    .WithItem(KnownNames.N, 4)
+                var strRef = cr.Add(new ValueDictionaryBuilder()
+                    .WithItem(KnownNames.NTName, 4)
                     .AsStream(CmykIccProfile.GetCmykProfileStream()));
-                return new PdfArray(KnownNames.ICCBased, strRef);
+                return new PdfValueArray(KnownNames.ICCBasedTName, strRef);
             }
         );
     }
@@ -33,7 +34,7 @@ public class IccCMYK: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(NameDirectory.Get("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(1,0,0,0);
         DrawLine(csw);

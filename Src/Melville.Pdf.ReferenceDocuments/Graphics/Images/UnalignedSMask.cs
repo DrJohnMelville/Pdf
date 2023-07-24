@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
@@ -12,13 +13,13 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
         private PdfIndirectObject? smask;
         protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
         {
-            smask = docCreator.LowLevelCreator.Add(new DictionaryBuilder()
-                .WithItem(KnownNames.Type, KnownNames.XObject)
-                .WithItem(KnownNames.Subtype, KnownNames.Image)
-                .WithItem(KnownNames.Width, 2)
-                .WithItem(KnownNames.Height, 2)
-                .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-                .WithItem(KnownNames.BitsPerComponent, 8)
+            smask = docCreator.LowLevelCreator.Add(new ValueDictionaryBuilder()
+                .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+                .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+                .WithItem(KnownNames.WidthTName, 2)
+                .WithItem(KnownNames.HeightTName, 2)
+                .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
+                .WithItem(KnownNames.BitsPerComponentTName, 8)
                 .AsStream(new byte[]{10,64,127,212})
             );
             return base.AddContentToDocumentAsync(docCreator);
@@ -34,16 +35,16 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
             await base.DoPaintingAsync(csw);
         }
 
-        protected override PdfStream CreateImage()
+        protected override PdfValueStream CreateImage()
         {
-            return new DictionaryBuilder()
-                .WithItem(KnownNames.Type, KnownNames.XObject)
-                .WithItem(KnownNames.Subtype, KnownNames.Image)
-                .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
-                .WithItem(KnownNames.Width, 256)
-                .WithItem(KnownNames.Height, 256)
-                .WithItem(KnownNames.BitsPerComponent, 8)
-                .WithItem(KnownNames.SMask, smask)
+            return new ValueDictionaryBuilder()
+                .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+                .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+                .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
+                .WithItem(KnownNames.WidthTName, 256)
+                .WithItem(KnownNames.HeightTName, 256)
+                .WithItem(KnownNames.BitsPerComponentTName, 8)
+                .WithItem(KnownNames.SMaskTName, smask)
                 .AsStream(GenerateImage());
         }
 

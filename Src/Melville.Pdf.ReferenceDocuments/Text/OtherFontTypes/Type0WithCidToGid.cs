@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.OtherFontTypes;
 
@@ -12,43 +13,43 @@ public class Type0WithCidToGid : FontDefinitionTest
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Zev.ttf")!;
-        var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1, fontStream.Length)
+        var stream = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.Length1TName, fontStream.Length)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream));
-        var descrip = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
-            .WithItem(KnownNames.Flags, 32)
-            .WithItem(KnownNames.FontBBox, new PdfArray(-511, -250, 1390, 750))
-            .WithItem(KnownNames.FontFile2, stream)
+        var descrip = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
+            .WithItem(KnownNames.FlagsTName, 32)
+            .WithItem(KnownNames.FontBBoxTName, new PdfValueArray(-511, -250, 1390, 750))
+            .WithItem(KnownNames.FontFile2TName, stream)
             .AsDictionary());
-        var sysinfo = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Registry, "Adobe")
-            .WithItem(KnownNames.Ordering, "Identity")
-            .WithItem(KnownNames.Supplement, 0)
+        var sysinfo = arg.Add(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.RegistryTName, "Adobe")
+            .WithItem(KnownNames.OrderingTName, "Identity")
+            .WithItem(KnownNames.SupplementTName, 0)
             .AsDictionary()
         );
-        var map = arg.Add(new DictionaryBuilder().AsStream(CreateCDIDToGID()));
+        var map = arg.Add(new ValueDictionaryBuilder().AsStream(CreateCDIDToGID()));
         var CIDFont = arg.Add(CreateCidFont(descrip, sysinfo, map).AsDictionary());
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type0)
-            .WithItem(KnownNames.BaseFont, NameDirectory.Get("ABCDE+Zev+Regular"))
-            .WithItem(KnownNames.Encoding, KnownNames.IdentityH)
-            .WithItem(KnownNames.DescendantFonts, new PdfArray(CIDFont))
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type0TName)
+            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("ABCDE+Zev+Regular"))
+            .WithItem(KnownNames.EncodingTName, KnownNames.IdentityHTName)
+            .WithItem(KnownNames.DescendantFontsTName, new PdfValueArray(CIDFont))
             .AsDictionary();
     }
 
-    private static DictionaryBuilder CreateCidFont(PdfIndirectObject descrip, PdfIndirectObject sysinfo,
+    private static ValueDictionaryBuilder CreateCidFont(PdfIndirectObject descrip, PdfIndirectObject sysinfo,
         PdfIndirectObject map)
     {
-        var CIDFontBuilder = new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.CIDFontType2)
-            .WithItem(KnownNames.FontDescriptor, descrip)
-            .WithItem(KnownNames.BaseFont, NameDirectory.Get("Zev"))
-            .WithItem(KnownNames.CIDSystemInfo, sysinfo)
-            .WithItem(KnownNames.CIDToGIDMap, map);
+        var CIDFontBuilder = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
+            .WithItem(KnownNames.FontDescriptorTName, descrip)
+            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("Zev"))
+            .WithItem(KnownNames.CIDSystemInfoTName, sysinfo)
+            .WithItem(KnownNames.CIDToGIDMapTName, map);
         return CIDFontBuilder;
     }
 

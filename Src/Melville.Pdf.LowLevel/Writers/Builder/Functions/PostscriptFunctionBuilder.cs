@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
@@ -38,7 +39,7 @@ public readonly struct PostscriptFunctionBuilder
     /// </summary>
     /// <param name="code">The PostScript code for the function.</param>
     /// <returns>A PdfDictionary that defines this function</returns>
-    public PdfStream Create(string code) => Create(code, new DictionaryBuilder());
+    public PdfValueStream Create(string code) => Create(code, new ValueDictionaryBuilder());
 
     /// <summary>
     /// Create a PdfStream that defines this function.
@@ -46,12 +47,12 @@ public readonly struct PostscriptFunctionBuilder
     /// <param name="code">The PostScript code for the function.</param>
     /// <param name="members">A DictionaryBuilder to which the function declaration should be added/</param>
     /// <returns>A PdfDictionary that defines this function</returns>
-    public PdfStream Create(string code, DictionaryBuilder members) =>
+    public PdfValueStream Create(string code, ValueDictionaryBuilder members) =>
         AddFunctionItems(members).AsStream(code);
 
-    private DictionaryBuilder AddFunctionItems(in DictionaryBuilder builder) =>
+    private ValueDictionaryBuilder AddFunctionItems(in ValueDictionaryBuilder builder) =>
         builder
-            .WithItem(KnownNames.FunctionType, 4)
-            .WithItem(KnownNames.Domain, domains.AsPdfArray())
-            .WithItem(KnownNames.Range, ranges.AsPdfArray());
+            .WithItem(KnownNames.FunctionTypeTName, 4)
+            .WithItem(KnownNames.DomainTName, domains.AsPdfArray())
+            .WithItem(KnownNames.RangeTName, ranges.AsPdfArray());
 }

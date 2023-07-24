@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
@@ -31,21 +32,21 @@ public abstract class Type3RadialShaderBase : PatternDisplayClass
     protected override PdfObject CreatePattern(IPdfObjectCreatorRegistry arg) =>
         BuildPattern(arg, 
             BuildShader(arg, function ?? throw new InvalidOperationException("No func defined"), 
-                new DictionaryBuilder()).AsDictionary(),
-            new DictionaryBuilder()).AsDictionary();
+                new ValueDictionaryBuilder()).AsDictionary(),
+            new ValueDictionaryBuilder()).AsDictionary();
 
-    protected virtual DictionaryBuilder BuildPattern(
-        IPdfObjectCreatorRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
-        .WithItem(KnownNames.Shading, arg.Add(shading))
-        .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
-        .WithItem(KnownNames.PatternType, 2);
+    protected virtual ValueDictionaryBuilder BuildPattern(
+        IPdfObjectCreatorRegistry arg, PdfDictionary shading, ValueDictionaryBuilder builder) => builder
+        .WithItem(KnownNames.ShadingTName, arg.Add(shading))
+        .WithItem(KnownNames.MatrixTName, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfValueArray())
+        .WithItem(KnownNames.PatternTypeTName, 2);
 
-    protected virtual DictionaryBuilder BuildShader(
-        IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
-        .WithItem(KnownNames.Function, arg.Add(localFunc))
-        .WithItem(KnownNames.Coords, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
-        .WithItem(KnownNames.ShadingType, 3)
-        .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB);
+    protected virtual ValueDictionaryBuilder BuildShader(
+        IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, ValueDictionaryBuilder builder) => builder
+        .WithItem(KnownNames.FunctionTName, arg.Add(localFunc))
+        .WithItem(KnownNames.CoordsTName, new PdfValueArray(0.25, .4, 0.1, .35, .4, .01))
+        .WithItem(KnownNames.ShadingTypeTName, 3)
+        .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName);
 }
 
 public class Type3RadialShader: Type3RadialShaderBase
@@ -61,6 +62,6 @@ public class Type3RadialShaderWithBackground: Type3RadialShaderBase
     {
     }
 
-    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) => 
-        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.Background, new PdfArray(0,0, 1));
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, ValueDictionaryBuilder builder) => 
+        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.BackgroundTName, new PdfValueArray(0,0, 1));
 }

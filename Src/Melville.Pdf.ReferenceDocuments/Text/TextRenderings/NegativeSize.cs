@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
@@ -14,10 +15,10 @@ public class NegativeSize: FontDefinitionTest
 
     protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Font)
-            .WithItem(KnownNames.Subtype, KnownNames.Type1)
-            .WithItem(KnownNames.BaseFont, BuiltInFontName.Helvetica)
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
+            .WithItem(KnownNames.BaseFontTName, BuiltInFontName.Helvetica)
             .AsDictionary();
     }
 
