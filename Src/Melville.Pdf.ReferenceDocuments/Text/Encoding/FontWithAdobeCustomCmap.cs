@@ -22,7 +22,7 @@ public class FontWithAdobeCustomCmap : FontDefinitionTest
         TextToRender = "\xB6";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream(
             "Melville.Pdf.ReferenceDocuments.Text.FlatedFontWithAdobeCmap.ttf")!;
@@ -31,7 +31,7 @@ public class FontWithAdobeCustomCmap : FontDefinitionTest
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1CTName)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream, StreamFormat.DiskRepresentation));
-        var widthArray = arg.Add(new PdfValueArray(Enumerable.Repeat<PdfObject>(600, 256)));
+        var widthArray = arg.Add(new PdfValueArray(Enumerable.Repeat<PdfIndirectValue>(600, 256).ToArray()));
         var descrip = arg.Add(new ValueDictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
             .WithItem(KnownNames.FlagsTName, 4)

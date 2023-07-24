@@ -22,7 +22,7 @@ public class Type1FunctionalGray : Type1FunctionalShaderBase
         return new PdfValueStream[] { ret };
     }
 
-    protected override ValueDictionaryBuilder BuildShader(
-        IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) => 
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueStream[] localFunc,
+        ValueDictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName);
 }

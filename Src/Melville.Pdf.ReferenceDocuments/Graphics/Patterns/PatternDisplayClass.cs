@@ -17,7 +17,7 @@ public abstract class PatternDisplayClass : Card3x5
             KnownNames.PatternTName, KnownNames.DeviceRGBTName));
     }
 
-    protected abstract PdfObject CreatePattern(IPdfObjectCreatorRegistry arg);
+    protected abstract PdfIndirectValue CreatePattern(IPdfObjectCreatorRegistry arg);
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {

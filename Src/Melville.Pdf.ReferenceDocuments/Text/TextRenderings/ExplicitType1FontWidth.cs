@@ -11,11 +11,11 @@ public class ExplicitType1FontWidth : FontDefinitionTest
         TextToRender = "ABCABC";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg) =>
+    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg) =>
         new ValueDictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, BuiltInFontName.Helvetica)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)BuiltInFontName.Helvetica)
             .WithItem(KnownNames.FirstCharTName, 'A')
             .WithItem(KnownNames.LastCharTName, 'C')
             .WithItem(KnownNames.WidthsTName, new PdfValueArray(

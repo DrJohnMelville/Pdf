@@ -27,7 +27,7 @@ public class ShadingOperator: Card3x5{
         await base.SetPagePropertiesAsync(page);
     }
 
-    private async Task<PdfDictionary> BuildFunctionAsync()
+    private async Task<PdfValueDictionary> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));

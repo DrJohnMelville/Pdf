@@ -20,7 +20,7 @@ public abstract class Type3FontBase: FontDefinitionTest
                 .AsDictionary());
     }
 
-    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var triangle = arg.Add(new ValueDictionaryBuilder().AsStream(@"
 /GS1 gs

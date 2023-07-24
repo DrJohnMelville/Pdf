@@ -10,7 +10,7 @@ public class Type0WithCidToGid : FontDefinitionTest
         TextToRender = "\x0\x4\x0\x5\x0\x6\x0\x7";
     }
 
-    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Zev.ttf")!;
         var stream = arg.Add(new ValueDictionaryBuilder()
@@ -40,8 +40,8 @@ public class Type0WithCidToGid : FontDefinitionTest
             .AsDictionary();
     }
 
-    private static ValueDictionaryBuilder CreateCidFont(PdfIndirectObject descrip, PdfIndirectObject sysinfo,
-        PdfIndirectObject map)
+    private static ValueDictionaryBuilder CreateCidFont(PdfIndirectValue descrip, PdfIndirectValue sysinfo,
+        PdfIndirectValue map)
     {
         var CIDFontBuilder = new ValueDictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)

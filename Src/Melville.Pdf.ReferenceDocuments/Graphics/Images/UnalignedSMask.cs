@@ -10,7 +10,7 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
         {
         }
 
-        private PdfIndirectObject? smask;
+        private PdfIndirectValue smask;
         protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
         {
             smask = docCreator.LowLevelCreator.Add(new ValueDictionaryBuilder()

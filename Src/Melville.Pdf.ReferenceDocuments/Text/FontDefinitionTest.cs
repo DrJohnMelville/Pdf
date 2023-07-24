@@ -18,10 +18,10 @@ public abstract class FontDefinitionTest : Card3x5
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(Font1, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);
-        page.AddResourceObject(ResourceTypeName.Font, Font2, CreateFont);
+        page.AddResourceObject(ResourceTypeName.Font, Font2, i=>CreateFont(i));
     }
 
-    protected abstract PdfObject CreateFont(IPdfObjectCreatorRegistry arg);
+    protected abstract PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg);
     
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {

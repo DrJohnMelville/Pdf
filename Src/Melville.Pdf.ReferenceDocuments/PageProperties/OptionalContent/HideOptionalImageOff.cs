@@ -28,7 +28,7 @@ public class HideOptionalImageOff: DisplayImageTest
     public HideOptionalImageOff(string helpText) : base(helpText)
     { }
 
-    private PdfIndirectObject? ocg;
+    private PdfIndirectValue ocg;
 
     protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {
@@ -82,7 +82,7 @@ public class HideOptionalImageOff: DisplayImageTest
             .WithItem(KnownNames.WidthTName, 256)
             .WithItem(KnownNames.HeightTName, 256)
             .WithItem(KnownNames.BitsPerComponentTName, 8)
-            .WithItem(KnownNames.OCTName, ocg??throw new InvalidOperationException())
+            .WithItem(KnownNames.OCTName, ocg)
             .AsStream(GenerateImage());
     }
 

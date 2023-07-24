@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Model.Document;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
@@ -19,7 +20,7 @@ public class EncryptedRefStm: EncryptedFileWriter
         await base.BuildDocumentAsync(builder);
         using (var b1 = builder.LowLevelCreator.ObjectStreamContext())
         {
-            builder.LowLevelCreator.Add(PdfString.CreateAscii("String in Stream Context."));
+            builder.LowLevelCreator.Add(PdfDirectValue.CreateString("String in Stream Context."u8));
         }
     }
 }

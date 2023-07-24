@@ -10,7 +10,8 @@ public class Type1WithDomain : Type1FunctionalShaderBase
         
     }
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) =>
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueStream[] localFunc,
+        ValueDictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.DomainTName, new PdfValueArray(0.3,0.6, 0.25, 0.75));
 }
@@ -22,7 +23,8 @@ public class Type1WithDomainAndBackground : Type1FunctionalShaderBase
         
     }
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) =>
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueStream[] localFunc,
+        ValueDictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.DomainTName, new PdfValueArray(0.3,0.6, 0.25, 0.75))
             .WithItem(KnownNames.BackgroundTName, new PdfValueArray(1.0, 0,0));
@@ -35,8 +37,8 @@ public class Type1WithDomainBackgroundAndBBox : Type1FunctionalShaderBase
         
     }
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfObject[] localFunc,
-        ValueDictionaryBuilder builder) =>
+    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueStream[] localFunc,
+        ValueDictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.DomainTName, new PdfValueArray(0.3, 0.6, 0.25, 0.75))
             .WithItem(KnownNames.BackgroundTName, new PdfValueArray(1.0, 0, 0))

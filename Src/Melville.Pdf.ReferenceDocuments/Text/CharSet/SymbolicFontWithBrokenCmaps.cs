@@ -11,14 +11,14 @@ public class SymbolicFontWithBrokenCmaps : FontDefinitionTest
     {
     }
 
-    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.SymbolicTTFontWithABrokenCMAP.TTF")!;
         var stream = arg.Add(new ValueDictionaryBuilder()
             .WithItem(KnownNames.Length1TName, fontStream.Length)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream, StreamFormat.DiskRepresentation));
-        var widthArray = arg.Add(new PdfValueArray(Enumerable.Repeat<PdfObject>(600, 256)));
+        var widthArray = arg.Add(new PdfValueArray(Enumerable.Repeat<PdfIndirectValue>(600, 256).ToArray()));
         var descrip = arg.Add(new ValueDictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
             .WithItem(KnownNames.FlagsTName, (int)FontFlags.Symbolic)

@@ -7,7 +7,7 @@ namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
 public abstract class DisplayCharSet : Card3x5
 {
     private readonly BuiltInFontName name;
-    private readonly PdfObject fontEncodingName;
+    private readonly PdfDirectValue fontEncodingName;
 
     protected DisplayCharSet(BuiltInFontName name) : this(name, FontEncodingName.StandardEncoding) { }
 
@@ -16,7 +16,7 @@ public abstract class DisplayCharSet : Card3x5
     {
     }
 
-    protected DisplayCharSet(BuiltInFontName name, PdfObject fontEncodingName) :
+    protected DisplayCharSet(BuiltInFontName name, PdfDirectValue fontEncodingName) :
         base($"All Characters of the {name} Charset")
     {
         this.name = name;

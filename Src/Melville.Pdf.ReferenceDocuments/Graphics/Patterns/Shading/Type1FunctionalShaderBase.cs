@@ -12,7 +12,7 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
     {
     }
 
-    private PdfObject[]? function = null;
+    private PdfValueStream[] function;
     protected override async ValueTask SetPagePropertiesAsync(PageCreator page)
     {
         function = await BuildFunctionAsync();
@@ -31,27 +31,27 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
         return new PdfValueStream[]{ret};
     }
 
-    protected override PdfObject CreatePattern(IPdfObjectCreatorRegistry arg) =>
+    protected override PdfIndirectValue CreatePattern(IPdfObjectCreatorRegistry arg) =>
         BuildPattern(arg, 
-            BuildShader(arg, function ?? throw new InvalidOperationException("No func defined"), 
+            BuildShader(arg, function , 
                 new ValueDictionaryBuilder()).AsDictionary(),
             new ValueDictionaryBuilder()).AsDictionary();
 
     protected virtual ValueDictionaryBuilder BuildPattern(
-        IPdfObjectCreatorRegistry arg, PdfDictionary shading, ValueDictionaryBuilder builder) => builder
+        IPdfObjectCreatorRegistry arg, PdfValueDictionary shading, ValueDictionaryBuilder builder) => builder
             .WithItem(KnownNames.ShadingTName, arg.Add(shading))
-            .WithItem(KnownNames.MatrixTName, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfValueArray())
+            .WithItem(KnownNames.MatrixTName, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
             .WithItem(KnownNames.PatternTypeTName, 2);
 
     protected virtual ValueDictionaryBuilder BuildShader(
-        IPdfObjectCreatorRegistry arg, PdfObject[] localFunc, ValueDictionaryBuilder builder) => builder
+        IPdfObjectCreatorRegistry arg, PdfValueStream[] localFunc, ValueDictionaryBuilder builder) => builder
             .WithItem(KnownNames.FunctionTName, arg.Add(ComputeLocalFunc(localFunc, arg)))
             .WithItem(KnownNames.ShadingTypeTName, 1)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName);
 
-    private static PdfObject ComputeLocalFunc(PdfObject[] localFunc, IPdfObjectCreatorRegistry ldc)
+    private static PdfDirectValue ComputeLocalFunc(PdfValueStream[] localFunc, IPdfObjectCreatorRegistry ldc)
     {
         if (localFunc.Length == 1) return localFunc[0];
-        return new PdfValueArray(localFunc.Select(i => ldc.Add(i)));
+        return new PdfValueArray(localFunc.Select(i => ldc.Add(i)).ToArray());
     }
 }

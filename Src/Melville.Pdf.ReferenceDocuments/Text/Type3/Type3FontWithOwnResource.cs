@@ -10,7 +10,7 @@ public class Type3FontWithOwnResource: FontDefinitionTest
         TextToRender = "abaabb";
     }
     
-    private static PdfDictionary LineStyleDict()
+    private static PdfValueDictionary LineStyleDict()
     {
         return new ValueDictionaryBuilder()
             .WithItem(KnownNames.LWTName, 15)
@@ -19,7 +19,7 @@ public class Type3FontWithOwnResource: FontDefinitionTest
             .AsDictionary();
     }
 
-    protected override PdfObject CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var triangle = arg.Add(new ValueDictionaryBuilder().AsStream(@"
 /GS1 gs

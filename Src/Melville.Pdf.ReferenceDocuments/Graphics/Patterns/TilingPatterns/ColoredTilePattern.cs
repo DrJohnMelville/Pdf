@@ -39,24 +39,24 @@ ET
     }
 
 
-    protected override PdfObject CreatePattern(IPdfObjectCreatorRegistry lldc)
+    protected override PdfIndirectValue CreatePattern(IPdfObjectCreatorRegistry lldc)
     {
         var tpc = CreatePatternCreator();
 
         tpc.AddResourceObject(ResourceTypeName.Font, PdfDirectValue.CreateName("F1"), EncodedDingbatsFont(lldc));
         tpc.AddToContentStream(new ValueDictionaryBuilder(), PatternContent());
-        return tpc.ConstructItem(lldc, null).Reference;
+        return tpc.ConstructItem(lldc, PdfDirectValue.CreateNull()).Reference;
     }
 
-    private static PdfDictionary EncodedDingbatsFont(IPdfObjectCreatorRegistry lldc) =>
+    private static PdfValueDictionary EncodedDingbatsFont(IPdfObjectCreatorRegistry lldc) =>
         new ValueDictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, BuiltInFontName.ZapfDingbats)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)BuiltInFontName.ZapfDingbats)
             .WithItem(KnownNames.EncodingTName, lldc.Add(EncodeSuitesAs1To4()))
             .AsDictionary();
 
-    private static PdfDictionary EncodeSuitesAs1To4() =>
+    private static PdfValueDictionary EncodeSuitesAs1To4() =>
         new ValueDictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
             .WithItem(KnownNames.DifferencesTName, new PdfValueArray(

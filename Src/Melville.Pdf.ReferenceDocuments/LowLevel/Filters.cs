@@ -53,9 +53,9 @@ internal class FiltersGenerator : CreatePdfParser
     }
 
     private static ValueTask CreatePageAsync(PdfDocumentCreator builder, string Text, FilterName encoding,
-        PdfObject? parameters = null) =>
+        PdfDirectValue? parameters = null) =>
         builder.Pages.CreatePage().AddToContentStreamAsync(
-            new ValueDictionaryBuilder().WithFilter(encoding).WithFilterParam(parameters),
+            new ValueDictionaryBuilder().WithFilter(encoding).WithFilterParam(parameters ?? PdfDirectValue.CreateNull()),
             i => {
                 i.SetFontAsync(PdfDirectValue.CreateName("F1"), 24);
                 using var block = i.StartTextBlock();
