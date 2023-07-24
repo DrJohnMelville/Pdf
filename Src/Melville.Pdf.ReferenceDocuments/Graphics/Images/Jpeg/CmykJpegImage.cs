@@ -1,4 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.Jpeg;
@@ -9,17 +10,17 @@ public class CmykJpegImage: DisplayImageTest
     {
     }
     
-    protected override PdfStream CreateImage()
+    protected override PdfValueStream CreateImage()
     {
         using var img = GetType().Assembly
             .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Graphics.Images.CMYKJpeg.jpg");
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceCMYK)
-            .WithItem(KnownNames.Width, new PdfInteger(70))
-            .WithItem(KnownNames.Height, new PdfInteger(65))
-            .WithItem(KnownNames.BitsPerComponent, new PdfInteger(8))
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceCMYKTName)
+            .WithItem(KnownNames.WidthTName, 70)
+            .WithItem(KnownNames.HeightTName,65)
+            .WithItem(KnownNames.BitsPerComponentTName, 8)
             .WithFilter(FilterName.DCTDecode)
             .AsStream(img!, StreamFormat.DiskRepresentation);
     }

@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
@@ -15,28 +16,27 @@ public abstract class IndexedImageBase : DisplayImageTest
     }
 
 
-    protected override PdfStream CreateImage()
+    protected override PdfValueStream CreateImage()
     {
-        var builder = new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.ColorSpace, IndexedColorspace())
-            .WithItem(KnownNames.Width, 3)
-            .WithItem(KnownNames.Height, 3)
-            .WithItem(KnownNames.BitsPerComponent, sampleBits);
+        var builder = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+            .WithItem(KnownNames.ColorSpaceTName, IndexedColorspace())
+            .WithItem(KnownNames.WidthTName, 3)
+            .WithItem(KnownNames.HeightTName, 3)
+            .WithItem(KnownNames.BitsPerComponentTName, sampleBits);
         if (interpolate.HasValue)
-            builder.WithItem(KnownNames.Interpolate,
-                interpolate.Value ? PdfBoolean.True : PdfBoolean.False);
+            builder.WithItem(KnownNames.InterpolateTName, interpolate.Value);
         return builder
             .AsStream(GenerateImage());
     }
 
-    private static PdfArray IndexedColorspace()
+    private static PdfValueArray IndexedColorspace()
     {
-        return new PdfArray(
-            KnownNames.Indexed, KnownNames.DeviceRGB,
+        return new PdfValueArray(
+            KnownNames.IndexedTName, KnownNames.DeviceRGBTName,
             8,
-            new PdfString(new byte[]
+            PdfDirectValue.CreateString(new byte[]
             {
                 0x00, 0x00, 0x00,
                 0x00, 0x00, 0xFF,

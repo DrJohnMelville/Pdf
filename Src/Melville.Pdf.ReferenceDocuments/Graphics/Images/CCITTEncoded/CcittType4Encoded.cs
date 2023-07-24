@@ -8,9 +8,9 @@ public class CcittType4Encoded : CcottEncodedBase
     public CcittType4Encoded() : base("Encode using CCITT Type 4 encoding")
     {
     }
-    protected override PdfDictionary CcittParamDictionary()
+    protected override PdfValueDictionary CcittParamDictionary()
     {
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithItem(KnownNames.KTName, -1)
             .WithItem(KnownNames.EncodedByteAlignTName, false)
             .WithItem(KnownNames.ColumnsTName, 32)
@@ -27,9 +27,9 @@ public class CcittType3K0Encoded : CcottEncodedBase
     public CcittType3K0Encoded() : base("Encode using CCITT Type 3 K = 0 encoding")
     {
     }
-    protected override PdfDictionary CcittParamDictionary()
+    protected override PdfValueDictionary CcittParamDictionary()
     {
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithItem(KnownNames.KTName, 0)
             .WithItem(KnownNames.EncodedByteAlignTName, false)
             .WithItem(KnownNames.ColumnsTName, 32)
@@ -45,9 +45,9 @@ public class CcittType3K1Encoded : CcottEncodedBase
     public CcittType3K1Encoded() : base("Encode using CCITT Type 3 K = 1 encoding")
     {
     }
-    protected override PdfDictionary CcittParamDictionary()
+    protected override PdfValueDictionary CcittParamDictionary()
     {
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithItem(KnownNames.KTName, 1)
             .WithItem(KnownNames.EncodedByteAlignTName, false)
             .WithItem(KnownNames.ColumnsTName, 32)
@@ -63,9 +63,9 @@ public class CcittType3K10Encoded : CcottEncodedBase
     public CcittType3K10Encoded() : base("Encode using CCITT Type 3 K = 10 encoding")
     {
     }
-    protected override PdfDictionary CcittParamDictionary()
+    protected override PdfValueDictionary CcittParamDictionary()
     {
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithItem(KnownNames.KTName, 10)
             .WithItem(KnownNames.EncodedByteAlignTName, false)
             .WithItem(KnownNames.ColumnsTName, 32)
@@ -81,9 +81,9 @@ public class CcittEncodedByteAlign : CcottEncodedBase
     public CcittEncodedByteAlign() : base("Encode using CCITT with byte aligned rows")
     {
     }
-    protected override PdfDictionary CcittParamDictionary()
+    protected override PdfValueDictionary CcittParamDictionary()
     {
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithItem(KnownNames.KTName, -1)
             .WithItem(KnownNames.EncodedByteAlignTName, true)
             .WithItem(KnownNames.ColumnsTName, 32)
@@ -98,9 +98,9 @@ public class CcittFirst8Rows : CcottEncodedBase
     public CcittFirst8Rows() : base("Encode using CCITT but rows forces decode of top half of image")
     {
     }
-    protected override PdfDictionary CcittParamDictionary()
+    protected override PdfValueDictionary CcittParamDictionary()
     {
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithItem(KnownNames.KTName, -1)
             .WithItem(KnownNames.EncodedByteAlignTName, false)
             .WithItem(KnownNames.ColumnsTName, 32)

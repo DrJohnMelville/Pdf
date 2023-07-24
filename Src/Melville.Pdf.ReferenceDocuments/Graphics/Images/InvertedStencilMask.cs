@@ -1,4 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
+﻿using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
@@ -15,15 +16,15 @@ public class InvertedStencilMask : DisplayImageTest
         await base.DoPaintingAsync(csw);
     }
 
-    protected override PdfStream CreateImage()
+    protected override PdfValueStream CreateImage()
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.Width, 3)
-            .WithItem(KnownNames.Height, 3)
-            .WithItem(KnownNames.ImageMask, PdfBoolean.True)
-            .WithItem(KnownNames.Decode, new PdfArray(1, 0))
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+            .WithItem(KnownNames.WidthTName, 3)
+            .WithItem(KnownNames.HeightTName, 3)
+            .WithItem(KnownNames.ImageMaskTName, true)
+            .WithItem(KnownNames.DecodeTName, new PdfValueArray(1, 0))
             .AsStream(GenerateImage());
     }
 

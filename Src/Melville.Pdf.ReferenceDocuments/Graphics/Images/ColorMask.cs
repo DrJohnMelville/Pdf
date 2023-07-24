@@ -1,4 +1,5 @@
 ﻿
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
@@ -10,16 +11,16 @@ public class ColorMask: DisplayImageTest
     }
 
 
-    protected override PdfStream CreateImage()
+    protected override PdfValueStream CreateImage()
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
-            .WithItem(KnownNames.Width, 256)
-            .WithItem(KnownNames.Height, 256)
-            .WithItem(KnownNames.BitsPerComponent, 8)
-            .WithItem(KnownNames.Mask, new PdfArray(
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
+            .WithItem(KnownNames.WidthTName, 256)
+            .WithItem(KnownNames.HeightTName, 256)
+            .WithItem(KnownNames.BitsPerComponentTName, 8)
+            .WithItem(KnownNames.MaskTName, new PdfValueArray(
                 75, 200,
                 75, 200,
                 0, 255
