@@ -73,14 +73,24 @@ internal partial class PdfObjectRegistry:
 
     public string GetValue(in MementoUnion memento)
     {
-        var nums = memento.Int32s;
-        return $"{nums[0]} {nums[1]} R";
+        if (!TryGetObjectReference(out var obj, out var gen, memento))
+            throw new InvalidOperationException("Find reference for direct object");
+        return $"{obj} {gen} R";
     }
 
     public ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
     {
+        if (!TryGetObjectReference(out var obj, out var gen, memento))
+            throw new InvalidOperationException("Find reference for direct object");
+        return ValueTask.FromResult(Objects[(obj,gen)]);
+    }
+
+    public bool TryGetObjectReference(out int objectNumber, out int generation, MementoUnion memento)
+    {
         var ints = memento.Int32s;
-        return ValueTask.FromResult(Objects[((ints[0], ints[1]))]);
+        objectNumber = ints[0];
+        generation = ints[1];
+        return true;
     }
 
     public PdfValueDictionary CreateTrailerDictionary() =>

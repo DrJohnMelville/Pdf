@@ -9,6 +9,7 @@ using Melville.Pdf.ComparingReader.SavePagesImpl;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
@@ -21,12 +22,12 @@ public partial class ReplViewModel
 {
     private readonly IMultiRenderer renderer;
     private readonly byte[] buffer;
-    private readonly PdfIndirectObject contentStream;
+    private readonly PdfIndirectValue contentStream;
     readonly IPageSelector page;
     [AutoNotify] private string contentStreamText;
     
     public ReplViewModel(
-        string contentStreamText, IMultiRenderer renderer, byte[] buffer, PdfIndirectObject contentStream, 
+        string contentStreamText, IMultiRenderer renderer, byte[] buffer, PdfIndirectValue contentStream, 
         IPageSelector page)
     {
         this.contentStreamText = contentStreamText;
@@ -45,14 +46,14 @@ public partial class ReplViewModel
         renderer.SetTarget(target, page.Page);
     }
 
-    private async Task<PdfStream> CreateReplacementStreamAsync(string newValue)
+    private async Task<PdfValueStream> CreateReplacementStreamAsync(string newValue)
     {
-        var source = await contentStream.DirectValueAsync();
+        var source = await contentStream.LoadValueAsync();
         var newStream = StreamWithContent(source, newValue);
         return newStream;
     }
 
-    private async Task WriteStreamModificationBlockAsync(PdfLoadedLowLevelDocument doc, PdfStream newStream,
+    private async Task WriteStreamModificationBlockAsync(PdfLoadedLowLevelDocument doc, PdfValueStream newStream,
         MultiBufferStream target)
     {
         var modifier = doc.Modify();
@@ -67,10 +68,10 @@ public partial class ReplViewModel
         return target;
     }
 
-    private static PdfStream StreamWithContent(PdfObject source, string newValue)
+    private static PdfValueStream StreamWithContent(PdfDirectValue source, string newValue)
     {
-        var builder = new DictionaryBuilder();
-        if (source is PdfDictionary sourceDict) builder.CopyFrom(sourceDict);
+        var builder = new ValueDictionaryBuilder();
+        if (source.TryGet(out PdfValueDictionary? sourceDict)) builder.CopyFrom(sourceDict);
         return builder.AsStream(newValue);
     }
 

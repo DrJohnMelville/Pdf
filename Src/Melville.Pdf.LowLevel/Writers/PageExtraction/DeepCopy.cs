@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.LowLevel.Writers.PageExtraction;
@@ -21,63 +20,67 @@ public readonly partial struct DeepCopy
     /// </summary>
     [FromConstructor] private readonly IPdfObjectCreatorRegistry creator;
     
-    private readonly Dictionary<(int, int), PdfObject> buffer = new();
+    private readonly Dictionary<(int, int), PdfIndirectValue> buffer = new();
 
     /// <summary>
     /// Clone an object, making a deep copy
     /// </summary>
     /// <param name="itemValue">The item to clone</param>
     /// <returns>The clones item</returns>
-    public async ValueTask<PdfObject> CloneAsync(PdfObject itemValue) => itemValue switch
+    public ValueTask<PdfIndirectValue> CloneAsync(PdfIndirectValue itemValue) => 
+        itemValue.TryGetEmbeddedDirectValue(out PdfDirectValue pdv) ? 
+            CloneDirectValueAsync(pdv) : 
+            CloneReferenceValueAsync(itemValue);
+
+
+    private ValueTask<PdfIndirectValue> CloneDirectValueAsync(PdfDirectValue value) => value switch
     {
-        PdfIndirectObject pio => await CloneIndirectObjectAsync(pio).CA(),
-        PdfArray pa => await DeepCloneArrayAsync(pa).CA(),
-        PdfStream ps => await CopyPdfStreamAsync(ps).CA(),
-        PdfDictionary pd => (await CopyPdfDictionaryAsync(pd).CA()).AsDictionary(),
-        _ => itemValue
+        var x when x.TryGet(out PdfValueArray? arr) => DuplicateArrayAsync(arr),
+        var x when x.TryGet(out PdfValueStream? str) => DuplicateStreamAsync(str),
+        var x when x.TryGet(out PdfValueDictionary? dict) => DuplicateDictionaryAsync(dict),
+        _ => new(value)
     };
 
-    private async ValueTask<PdfObject> CloneIndirectObjectAsync(PdfIndirectObject pio)
-    {
-        if (buffer.TryGetValue((pio.GenerationNumber, pio.ObjectNumber), out var item)) return item;
-        //var newPio = creator.AddPromisedObject();
-        PdfIndirectObject newPio = null!;
-        ReserveIndirectMapping(pio, newPio);
-        ((PromisedIndirectObject)newPio).SetValue(await CloneAsync(await pio.DirectValueAsync().CA()).CA());
-        return newPio;
-    }
+    private async ValueTask<PdfIndirectValue> DuplicateDictionaryAsync(PdfValueDictionary value) =>
+        (await DuplicateDictionaryBuilderAsync(value).CA()).AsDictionary();
 
-    /// <summary>
-    /// Reserve an object number and associate it with the given indirect object
-    /// </summary>
-    /// <param name="pio">The CodeSource indirect object that maps to the reserved object</param>
-    /// <param name="promise">The object mapping to the indirect object in the copy</param>
-    public void ReserveIndirectMapping(PdfIndirectObject pio, PdfIndirectObject promise)
-    {
-        buffer.Add((pio.GenerationNumber, pio.ObjectNumber), promise);
-    }
-    
-    private async Task<PdfStream> CopyPdfStreamAsync(PdfStream ps) =>
-        (await CopyPdfDictionaryAsync(ps).CA()).AsStream(
-            await ps.StreamContentAsync(StreamFormat.DiskRepresentation).CA(), StreamFormat.DiskRepresentation);
+    private async ValueTask<PdfIndirectValue> DuplicateStreamAsync(PdfValueStream value) => 
+        (await DuplicateDictionaryBuilderAsync(value).CA())
+        .AsStream(await value.StreamContentAsync(StreamFormat.DiskRepresentation).CA());
 
-    private async ValueTask<DictionaryBuilder> CopyPdfDictionaryAsync(PdfDictionary dict)
+    private async Task<ValueDictionaryBuilder> DuplicateDictionaryBuilderAsync(PdfValueDictionary value)
     {
-        var ret = new DictionaryBuilder();
-        foreach (var item in dict.RawItems)
+        var builder = new ValueDictionaryBuilder();
+        foreach (var pair in value.RawItems)
         {
-            ret.WithItem(item.Key, await CloneAsync(item.Value).CA());
+            builder.WithItem(pair.Key, await CloneAsync(pair.Value).CA());
         }
-        return ret;
+
+        return builder;
     }
 
-    private async ValueTask<PdfObject> DeepCloneArrayAsync(PdfArray pa)
+    private async ValueTask<PdfIndirectValue> DuplicateArrayAsync(PdfValueArray value)
     {
-        var target = new PdfObject[pa.Count];
-        for (int i = 0; i < pa.Count; i++)
+        var ret = new PdfIndirectValue[value.Count];
+        for (int i = 0; i < ret.Length; i++)
         {
-            target[i] = await CloneAsync(pa.RawItems[i]).CA();
+            ret[i] = await CloneAsync(value.RawItems[i]).CA();
         }
-        return new PdfArray(target);
+
+        return new PdfValueArray(ret);
     }
+
+    private async ValueTask<PdfIndirectValue> CloneReferenceValueAsync(PdfIndirectValue itemValue)
+    {
+        var pair = itemValue.GetObjectReference();
+        if (buffer.TryGetValue(pair, out var ret)) return ret;
+
+        var clonedDirectRef = await CloneDirectValueAsync(await itemValue.LoadValueAsync().CA()).CA();
+        var newIndirectRef = creator.Add(await clonedDirectRef.LoadValueAsync().CA());
+        buffer[pair] = newIndirectRef;
+        return newIndirectRef;
+    }
+
+    public void ReserveIndirectMapping(int objNum, int gen, PdfIndirectValue targetPromise) => 
+        buffer[(objNum, gen)] = targetPromise;
 }

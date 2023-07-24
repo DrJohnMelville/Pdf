@@ -59,6 +59,12 @@ internal class IndirectValueRegistry : IIndirectValueSource
         return (ints[0], ints[1]);
     }
 
+    public bool TryGetObjectReference(out int objectNumber, out int generation, MementoUnion memento)
+    {
+        (objectNumber, generation) = MementoToPair(memento);
+        return true;
+    }
+
     public void RegisterDirectObject(in MementoUnion memento, in PdfDirectValue value) =>
         items[MementoToPair(memento)] = value;
 

@@ -53,7 +53,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// </summary>
     /// <param name="name">The key of the item to add.</param>
     /// <param name="item">The item to add</param>
-    public void AddMetadata(PdfDirectValue name, PdfDirectValue item) =>
+    public void AddMetadata(PdfDirectValue name, PdfIndirectValue item) =>
         MetaData.WithItem(name, item);
 
     private protected void TryAddResources(IPdfObjectCreatorRegistry creator)

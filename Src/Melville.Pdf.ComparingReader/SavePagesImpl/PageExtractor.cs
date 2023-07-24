@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.Model.Creators;
@@ -22,8 +23,10 @@ public readonly partial struct PageExtractor
     {
         var copier = new DeepCopy(documentCreator.LowLevelCreator);
         var targetPage = documentCreator.Pages.CreatePage();
-        copier.ReserveIndirectMapping(await FindRefToPageAsync(),
-            targetPage.InitializePromiseObject(documentCreator.LowLevelCreator));
+        var targetPromise = targetPage.InitializePromiseObject(documentCreator.LowLevelCreator);
+
+        var (objNum, gen) = await FindRefToPageAsync();
+        copier.ReserveIndirectMapping(objNum, gen, targetPromise);
         foreach (var item in page.LowLevel.RawItems)
         {
             if (item.Key.GetHashCode() is KnownNameKeys.Contents or KnownNameKeys.Parent) continue;
@@ -31,21 +34,22 @@ public readonly partial struct PageExtractor
                 await copier.CloneAsync(item.Value));
         }
 
-        targetPage.AddToContentStream(new DictionaryBuilder(), contentData);
+        targetPage.AddToContentStream(new ValueDictionaryBuilder(), contentData);
         var doc = documentCreator.CreateDocument();
         await new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(output), doc).WriteAsync();
     }
 
-    private async ValueTask<PdfIndirectObject> FindRefToPageAsync()
+    private async ValueTask<(int objNum, int gen)> FindRefToPageAsync()
     {
-        var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.Parent)) ??
-                        throw new InvalidDataException("Page does not have a parent");
-        var kids = (PdfArray)await treeLeaf[KnownNames.Kids];
-        foreach (var value in kids.RawItems)
-        {
-            if (value is PdfIndirectObject pio && (await pio.DirectValueAsync()) == page.LowLevel)
-                return pio;
-        }
+        #warning fix this once we can compile
+        // var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.ParentTName)) ??
+        //                 throw new InvalidDataException("Page does not have a parent");
+        // var kids = (PdfValueArray)await treeLeaf[KnownNames.Kids];
+        // foreach (var value in kids.RawItems)
+        // {
+        //     if (value is PdfIndirectObject pio && (await pio.DirectValueAsync()).Equals(page.LowLevel))
+        //         return pio;
+        // }
 
         throw new InvalidDataException("Page should be a child of its parent");
     }

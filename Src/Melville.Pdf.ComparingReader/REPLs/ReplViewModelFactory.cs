@@ -7,6 +7,7 @@ using Melville.Hacks;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.Model.Documents;
@@ -34,7 +35,7 @@ public readonly struct ReplViewModelFactory
 
         if (crossReference.HasValue && doc.LowLevel.Objects.TryGetValue(
                 (crossReference.Value.Object, crossReference.Value.Generation), out var indir) &&
-            await indir.DirectValueAsync() is PdfStream stream)
+            (await indir.LoadValueAsync()).TryGet(out PdfValueStream stream))
         {
             var text = await ReadContentStringAsync(stream);
             return new ReplViewModel(text, renderer, buffer, indir, pageSel);
@@ -42,7 +43,7 @@ public readonly struct ReplViewModelFactory
         return await CreateFromCurrentPageAsync(doc, buffer);
     }
 
-    private static async Task<string> ReadContentStringAsync(PdfStream stream)
+    private static async Task<string> ReadContentStringAsync(PdfValueStream stream)
     {
         await using var source = await stream.StreamContentAsync();
         return await ReadContentStringAsync(source);
@@ -67,7 +68,7 @@ public readonly struct ReplViewModelFactory
     private async Task<ReplViewModel> CreateFromCurrentPageAsync(PdfDocument doc, byte[] buffer)
     {
         var page = await (await doc.PagesAsync()).GetPageAsync(pageSel.Page - 1);
-        var content = (PdfIndirectObject)page.LowLevel.RawItems[KnownNames.Contents];
+        var content = page.LowLevel.RawItems[KnownNames.ContentsTName];
         var replContent = await ReadContentStringAsync(await page.GetContentBytesAsync());
         return new(replContent, renderer, buffer, content, pageSel);
     }

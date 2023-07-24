@@ -104,7 +104,7 @@
             <param name="parent">The parent of this item.</param>
             <returns>A reference to the object created and the number of pages created by the method call.</returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddMetadata(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue)">
+        <member name="M:Melville.Pdf.Model.Creators.ItemWithResourceDictionaryCreator.AddMetadata(Melville.Pdf.LowLevel.Model.Objects2.PdfDirectValue,Melville.Pdf.LowLevel.Model.Objects2.PdfIndirectValue)">
             <summary>
             Add an item to the top level item dictionary
             </summary>

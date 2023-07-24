@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
@@ -47,6 +49,7 @@ public readonly partial struct PdfIndirectValue
         valueStrategy is IIndirectValueSource
             ? ((PdfDirectValue)default).AsFalseValue(out value)
             : CreateDirectValueUnsafe().AsTrueValue(out value);
+
     public bool TryGetEmbeddedDirectValue<T>(out T value)
     {
         value = default;
@@ -54,6 +57,21 @@ public readonly partial struct PdfIndirectValue
                dv.TryGet(out value);
     }
 
+    public (int ObjectNumber, int Generation) GetObjectReference() =>
+        (TryGetObjectReference(out int number, out int generation))
+            ? (number, generation)
+            : throw new PdfParseException("Try to get an object reference from a non reference");
+
+    private bool TryGetObjectReference(out int objectNumber, out int generation)
+    {
+        if (valueStrategy is IIndirectValueSource ivs)
+        {
+            return ivs.TryGetObjectReference(out objectNumber, out generation, Memento);
+        }
+
+        objectNumber = generation = 0;
+        return false;
+    }
     #endregion
 
     #region Implicit Operators
