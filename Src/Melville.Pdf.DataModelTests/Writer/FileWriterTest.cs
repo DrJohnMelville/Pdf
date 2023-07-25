@@ -7,6 +7,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -37,7 +38,7 @@ public class FileWriterTest
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
-        builder.AsIndirectReference(true); // includes a dead object to be skipped
+        builder.Add(true); // includes a dead object to be skipped
         builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         return await WriteAsync(builder.CreateDocument(majorVersion, minorVersion));
     }
@@ -46,7 +47,7 @@ public class FileWriterTest
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
-        builder.AsIndirectReference(true); // includes a dead object to be skipped
+        builder.Add(true); // includes a dead object to be skipped
         builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         PdfLowLevelDocument doc = builder.CreateDocument(majorVersion, minorVersion);
         var target = new TestWriter();

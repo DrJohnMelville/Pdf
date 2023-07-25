@@ -10,7 +10,7 @@ public class S7_3_1HelpersForObjects
     [Fact]
     public void ObjectIsAnArray()
     {
-        var ret = true.ObjectAsUnresolvedList();
+        var ret = ((PdfDirectValue)true).ObjectAsUnresolvedList();
         Assert.Equal(1, ret.Count);
         Assert.Equal(true, ret[0]);
     }

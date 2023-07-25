@@ -7,6 +7,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers;
@@ -41,12 +42,12 @@ public class EncryptionAlgorithmsActuallyEncryptTest
     {
         var docBuilder = new LowLevelDocumentBuilder();
         docBuilder.AddToTrailerDictionary(KnownNames.IDTName, new PdfValueArray(
-            PdfString.CreateAscii("12345678901234567890123456789012"),
-            PdfString.CreateAscii("12345678901234567890123456789012")));
+            PdfDirectValue.CreateString("12345678901234567890123456789012"u8),
+            PdfDirectValue.CreateString("12345678901234567890123456789012"u8)));
         docBuilder.AddEncryption(encryptionDeclaration);
         var creator = docBuilder;
 
-        docBuilder.Add(PdfString.CreateAscii("Encrypted String"));
+        docBuilder.Add(PdfDirectValue.CreateString("Encrypted String"u8));
         docBuilder.Add(new ValueDictionaryBuilder().AsStream("This is an encrypted stream"));
         var doc = creator.CreateDocument();
         var str = await WriteAsync(doc);
@@ -54,9 +55,9 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         Assert.DoesNotContain("encrypted stream", str);
 
         var doc2 = await str.ParseWithPasswordAsync("User", PasswordType.User);
-        var outstr = await doc2.Objects[(2, 0)].DirectValueAsync();
+        var outstr = await doc2.Objects[(2, 0)].LoadValueAsync();
         Assert.Equal("Encrypted String", outstr.ToString());
-        var stream = (PdfValueStream)await doc2.Objects[(3,0)].DirectValueAsync();
+        var stream = await doc2.Objects[(3,0)].LoadValueAsync<PdfValueStream>();
         Assert.Equal("This is an encrypted stream", await new StreamReader(
             await stream.StreamContentAsync()).ReadToEndAsync());
     }

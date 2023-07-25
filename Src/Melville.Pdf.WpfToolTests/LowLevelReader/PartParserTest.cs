@@ -5,6 +5,7 @@ using Melville.MVVM.WaitingServices;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -63,7 +64,7 @@ public class PartParserTest
     public async Task ParseArrayAsync()
     {
         var model = await BuildSingleElementFileAsync(_=>
-            new PdfValueArray(PdfBoolean.True, PdfBoolean.False, KnownNames.MaxTName));
+            new PdfValueArray(new PdfIndirectValue[]{true, false, KnownNames.MaxTName}));
         var array = model[1];
         Assert.Equal("1 0: Array", array.Title);
         Assert.Equal("[0]: true", array.Children[0].Title);
@@ -85,14 +86,14 @@ public class PartParserTest
         Assert.Equal("The Stream Data", str.AsAsciiString);
     }
 
-    private async Task TestSingleElementAsync(PdfObject item, string renderAs)
+    private async Task TestSingleElementAsync(PdfDirectValue item, string renderAs)
     {
         var model = await BuildSingleElementFileAsync(_=>item);
         Assert.Equal("1 0: "+renderAs, model[1].Title);
     }
 
     private async Task<DocumentPart[]> BuildSingleElementFileAsync(
-        Func<IPdfObjectCreatorRegistry,PdfObject> item)
+        Func<IPdfObjectCreatorRegistry,PdfDirectValue> item)
     {
         var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));
@@ -104,11 +105,11 @@ public class PartParserTest
 
     [Fact] public Task RenderDoubleValueAsync()=>TestSingleElementAsync(3.14, "3.14");
     [Fact] public Task RenderIntegerValueAsync()=>TestSingleElementAsync(314, "314");
-    [Fact] public Task RenderTrueValueAsync()=>TestSingleElementAsync(PdfBoolean.True, "true");
-    [Fact] public Task RenderFalseValueAsync()=>TestSingleElementAsync(PdfBoolean.False, "false");
-    [Fact] public Task RenderNullValueAsync()=>TestSingleElementAsync(PdfTokenValues.Null, "null");
-    [Fact] public Task RenderStringValueAsync()=>TestSingleElementAsync(PdfString.CreateAscii("Foo"), "(Foo)");
-    [Fact] public Task RenderSpecialtringValueAsync()=>TestSingleElementAsync(PdfString.CreateAscii("o\no"), "(o\no)");
+    [Fact] public Task RenderTrueValueAsync()=>TestSingleElementAsync(true, "true");
+    [Fact] public Task RenderFalseValueAsync()=>TestSingleElementAsync(false, "false");
+    [Fact] public Task RenderNullValueAsync()=>TestSingleElementAsync(default, "null");
+    [Fact] public Task RenderStringValueAsync()=>TestSingleElementAsync(PdfDirectValue.CreateString("Foo"u8), "(Foo)");
+    [Fact] public Task RenderSpecialtringValueAsync()=>TestSingleElementAsync(PdfDirectValue.CreateString("o\no"u8), "(o\no)");
 
     [Fact]
     public async Task ParseFourPagesAsync()

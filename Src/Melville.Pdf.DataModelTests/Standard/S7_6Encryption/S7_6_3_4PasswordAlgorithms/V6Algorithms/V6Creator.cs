@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
@@ -41,11 +42,11 @@ public class V6Creator
             "407B6076".BitsFromHex()
         );
         var dict = new V6Encryptor("User", "User", (PdfPermission)(-4),
-            KnownNames.StdCFTName, KnownNames.StdCFTName, null, new V4CfDictionary(KnownNames.AESV3TName, 256),
+            KnownNames.StdCFTName, KnownNames.StdCFTName, default, new V4CfDictionary(KnownNames.AESV3TName, 256),
             rng).CreateEncryptionDictionary(
             new PdfValueArray(
-                new PdfString("591462DB348F2F4E849B5C9195C94B95".BitsFromHex()),
-                new PdfString("DAC57C30E8425659C52B7DDE83523235".BitsFromHex())
+                PdfDirectValue.CreateString("591462DB348F2F4E849B5C9195C94B95".BitsFromHex()),
+                PdfDirectValue.CreateString("DAC57C30E8425659C52B7DDE83523235".BitsFromHex())
             ));
 
         Assert.Equal("/Standard", (await dict.GetAsync<PdfObject>(KnownNames.FilterTName)).ToString());

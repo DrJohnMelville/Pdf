@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers;
@@ -26,8 +27,8 @@ public class ComputeUserPasswordTest
         var de = new ComputeEncryptionDictionary("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
             ComputeOwnerPasswordV3.Instance, new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3());
         var id = new PdfValueArray(
-            PdfString.CreateAscii("12345678901234567890123456789012"),
-            PdfString.CreateAscii("12345678901234567890123456789012"));
+            PdfDirectValue.CreateString("12345678901234567890123456789012"u8),
+            PdfDirectValue.CreateString("12345678901234567890123456789012"u8));
         var encDict = de.CreateEncryptionDictionary(id);
         var trailer = new ValueDictionaryBuilder()
             .WithItem(KnownNames.IDTName, id)
@@ -50,7 +51,7 @@ public class ComputeUserPasswordTest
     public async Task VerifyUserPasswordStreamAsync(
         bool succeed,string trailer, string passwords, PasswordType passwordType)
     {
-        var tDict = (PdfValueDictionary)await trailer.ParseObjectAsync();
+        var tDict = (await trailer.ParseValueObjectAsync()).ForceTo<PdfValueDictionary>();
         var handler = await  SecurityHandlerFactory.CreateSecurityHandlerAsync(
             tDict, await tDict.GetAsync<PdfValueDictionary>(KnownNames.EncryptTName));
         try

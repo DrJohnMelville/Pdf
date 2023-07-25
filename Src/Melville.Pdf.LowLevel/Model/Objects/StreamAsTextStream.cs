@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
@@ -18,7 +19,7 @@ public static class StreamAsTextStream
     /// </summary>
     /// <param name="source">The CodeSource PDF string.</param>
     /// <returns>A text reader that will properly decode the text stream.</returns>
-    public static async ValueTask<TextReader> TextStreamReaderAsync(this PdfStream source)
+    public static async ValueTask<TextReader> TextStreamReaderAsync(this PdfValueStream source)
     {
         var stream = await source.StreamContentAsync().CA();
         var buffer = new byte[3];

@@ -28,6 +28,8 @@ public class TestWriter
 
 public static class TestWriterOperations
 {
+    public static ValueTask<string> WriteToStringAsync(this PdfDirectValue obj) =>
+        ((PdfIndirectValue)obj).WriteToStringAsync();
     public static async ValueTask<string> WriteToStringAsync(this PdfIndirectValue obj)
     {
         var writer = new TestWriter();

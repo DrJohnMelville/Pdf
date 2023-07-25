@@ -120,7 +120,7 @@ public class DeepCopyTest
         Assert.Equal(a, b);
     }
 
-    private async Task AssertSameDictionaryAsync(PdfDictionary a, PdfDictionary b)
+    private async Task AssertSameDictionaryAsync(PdfValueDictionary a, PdfValueDictionary b)
     {
         Assert.Equal(a.Count, b.Count);
         foreach (var (ai,bi) in a.RawItems.Zip(b.RawItems, (i,j)=>(i,j)))

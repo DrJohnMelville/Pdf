@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
@@ -55,10 +56,10 @@ public class S7_7_3_3PageAttributes
         var name = PdfDirectValue.CreateName("N1");
         var doc = await RoundTripPageWithAsync(i =>
         {
-            PdfObject obj = 10;
+            PdfDirectValue obj = 10;
             i.AddResourceObject(ResourceTypeName.XObject, name, obj);
         });
-        Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceAsync(ResourceTypeName.XObject, name)))?.IntValue);
+        Assert.Equal(10, (await doc.GetResourceAsync(ResourceTypeName.XObject, name)).Get<int>());
     }
     [Fact]
     public async Task WithInheritedXObjectDictionaryAsync()
@@ -67,10 +68,10 @@ public class S7_7_3_3PageAttributes
         var doc = await RoundTripPageWithAsync(j => { }, 
             i =>
             {
-                PdfObject obj = 10;
+                PdfDirectValue obj = 10;
                 i.AddResourceObject(ResourceTypeName.XObject, name, obj);
             });
-        Assert.Equal(10, ((PdfNumber?)(await doc.GetResourceAsync(ResourceTypeName.XObject, name)))?.IntValue);
+        Assert.Equal(10, (await doc.GetResourceAsync(ResourceTypeName.XObject, name)).Get<int>());
     }
 
     [Fact]

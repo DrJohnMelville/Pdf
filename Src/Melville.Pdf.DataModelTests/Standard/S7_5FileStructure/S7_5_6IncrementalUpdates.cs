@@ -42,13 +42,13 @@ public class S7_5_6IncrementalUpdates
         }, async (ld, modifier) =>
         {
             Assert.Equal("true", (await ld.TrailerDictionary[KnownNames.RootTName]).ToString());
-            Assert.Equal("2", (await ld.Objects[(2, 0)].DirectValueAsync()).ToString());
-            modifier.ReplaceReferenceObject((PdfIndirectObject) ld.TrailerDictionary.RawItems[KnownNames.RootTName],
+            Assert.Equal("2", (await ld.Objects[(2, 0)].LoadValueAsync()).ToString());
+            modifier.ReplaceReferenceObject(ld.TrailerDictionary.RawItems[KnownNames.RootTName],
                 false);
         });
 
         Assert.Equal("false", (await ld2.TrailerDictionary[KnownNames.RootTName]).ToString());
-        Assert.Equal("2", (await ld2.Objects[(2,0)].DirectValueAsync()).ToString());
+        Assert.Equal("2", (await ld2.Objects[(2,0)].LoadValueAsync()).ToString());
 
     }
 

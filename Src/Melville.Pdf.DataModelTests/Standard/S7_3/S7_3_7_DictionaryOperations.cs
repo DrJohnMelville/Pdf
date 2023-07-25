@@ -40,8 +40,8 @@ public class S7_3_7_DictionaryOperations
         var d = await IndirectTestDictAsync;
 
         Assert.Equal(new []{true, false}, 
-            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfObject>>>()
-            .Select(i=>i.Value.Result));
+            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfIndirectValue>>>()
+            .Select(i=>i.Value.Result.ForceTo<bool>()));
         Assert.Equal(new []{KnownNames.HeightTName, KnownNames.ACTName},
             ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfObject>>>().Select(i=>i.Key));
             
@@ -71,7 +71,7 @@ public class S7_3_7_DictionaryOperations
     {
         var d = await IndirectTestDictAsync;
         AAssert.False(d.TryGetValue(KnownNames.ActivationTName, out var returned));
-        Assert.Equal(default(ValueTask<PdfObject>), returned);
+        Assert.Equal(default(ValueTask<PdfDirectValue>), returned);
     }
     [Fact]
     public async Task EnumerateValuesHandlesIndirectReferencesAsync()
@@ -79,7 +79,7 @@ public class S7_3_7_DictionaryOperations
         var d = await IndirectTestDictAsync;
 
         Assert.Equal(new []{true, false}, 
-            d.Values.Select(i=>i.Result));
+            d.Values.Select(i=>i.Result.Get<bool>()));
     }
 
     [Theory]

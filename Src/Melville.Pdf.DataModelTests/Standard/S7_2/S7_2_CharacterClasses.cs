@@ -2,6 +2,7 @@
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_2;
@@ -37,9 +38,9 @@ public class S7_2_CharacterClasses
     [InlineData("[    true%this is a / % comment true\r\r\r\r\nfalse ]1")]
     public async Task CommentAsync(string twoBoolString)
     {
-        var arr = (PdfValueArray) await twoBoolString.ParseObjectAsync();
+        var arr = (await (await twoBoolString.ParseValueObjectAsync()).LoadValueAsync()).Get<PdfValueArray>();
         Assert.Equal(2, arr.RawItems.Count);
-        Assert.Equal(PdfBoolean.True, arr.RawItems[0]);
-        Assert.Equal(PdfBoolean.False, arr.RawItems[1]);
+        Assert.True(arr.RawItems[0].TryGetEmbeddedDirectValue(out bool ret) && ret);
+        Assert.True(arr.RawItems[1].TryGetEmbeddedDirectValue(out bool ret2) && !ret2);
     }
 }

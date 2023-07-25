@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.LowLevel.Writers;
@@ -36,8 +37,8 @@ public class TilePatternCreatorTest
             csw.Rectangle(1, 2, 3, 4);
             return ValueTask.CompletedTask;
         });
-        var (ir, num) = builder.ConstructItem(new LowLevelDocumentBuilder(), null);
-        var str = await (await ir.DirectValueAsync()).WriteToStringAsync();
+        var (ir, num) = builder.ConstructItem(new LowLevelDocumentBuilder(), PdfDirectValue.CreateNull());
+        var str = await ((PdfIndirectValue)(await ir.LoadValueAsync())).WriteToStringAsync();
         Assert.Contains(partialString, str);
     }
     [Theory]

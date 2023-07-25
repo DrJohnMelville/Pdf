@@ -22,6 +22,6 @@ public partial class S7_4_2AsciiHexDecodeFilter
     [InlineData("707", "pp")]
     [InlineData("20 \r\n\t 20", "  ")]
     public Task SpecialCasesAsync(string encoded, string decoded) =>
-        StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCIIHexDecodeTName, PdfTokenValues.Null);
+        StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCIIHexDecodeTName, default);
 
 }

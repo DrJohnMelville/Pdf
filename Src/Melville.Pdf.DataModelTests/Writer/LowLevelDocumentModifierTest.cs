@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -87,9 +88,9 @@ public class LowLevelDocumentModifierTest
             $"2 0 obj (Two) endobj\n3 0 obj (Three) endobj\n5 0 obj (Five) endobj\nxref\n2 2\n0000005000 00000 n\r\n0000005021 00000 n\r\n5 1\n0000005044 00000 n\r\ntrailer\n<</Prev 161/Size 7>>\nstartxref\n5066\n%%EOF",
             (doc, mod) =>
             {
-                mod.ReplaceReferenceObject(doc.Objects[(2,0)], PdfString.CreateAscii("Two"));
-                mod.ReplaceReferenceObject(doc.Objects[(3,0)], PdfString.CreateAscii("Three"));
-                mod.ReplaceReferenceObject(doc.Objects[(5,0)], PdfString.CreateAscii("Five"));
+                mod.ReplaceReferenceObject(doc.Objects[(2,0)], PdfDirectValue.CreateString("Two"u8));
+                mod.ReplaceReferenceObject(doc.Objects[(3,0)], PdfDirectValue.CreateString("Three"u8));
+                mod.ReplaceReferenceObject(doc.Objects[(5,0)], PdfDirectValue.CreateString("Five"u8));
             }
             , SixItemDocument(), 5000);
     }

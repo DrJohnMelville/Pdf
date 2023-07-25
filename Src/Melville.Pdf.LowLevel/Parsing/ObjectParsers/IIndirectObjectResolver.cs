@@ -6,6 +6,8 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
+#warning get rid of this
+[Obsolete]
 internal interface IIndirectObjectResolver
 {
     IReadOnlyDictionary<(int, int), PdfIndirectObject> GetObjects();

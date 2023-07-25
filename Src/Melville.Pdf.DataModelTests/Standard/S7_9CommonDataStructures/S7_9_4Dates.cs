@@ -1,6 +1,8 @@
 ﻿using System;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
+using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Postscript.Interpreter.Values;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_9CommonDataStructures;
@@ -56,7 +58,7 @@ public class S7_9_4Dates
     public void ParseWithZ()
     {
         Assert.Equal(new PdfTime(new DateTime(1975,07,28,01,23,59)), 
-            PdfString.CreateAscii("D:19750728012359Z").AsPdfTime());
+            new PdfTimeParser(PdfDirectValue.CreateString("D:19750728012359Z"u8).Get<StringSpanSource>().GetSpan()).AsPdfTime());
             
     }
 }

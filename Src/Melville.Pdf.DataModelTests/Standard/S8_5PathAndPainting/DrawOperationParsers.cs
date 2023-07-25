@@ -5,6 +5,7 @@
  using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
  using Melville.Pdf.LowLevel.Model.ContentStreams;
  using Melville.Pdf.LowLevel.Model.Conventions;
+ using Melville.Pdf.LowLevel.Model.Objects2;
  using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;

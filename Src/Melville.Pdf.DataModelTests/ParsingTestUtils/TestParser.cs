@@ -32,6 +32,9 @@ public static class TestParser
     public static ValueTask<PdfIndirectValue> ParseValueObjectAsync(this string s) =>
         ParseValueObjectAsync(AsParsingSource(s));
 
+    public static async ValueTask<T> ParseValueObjectAsync<T>(this string s) =>
+        await (await ParseValueObjectAsync(AsParsingSource(s))).LoadValueAsync<T>();
+
     public static ValueTask<PdfIndirectValue> ParseValueObjectAsync(this byte[] bytes) => 
         ParseValueObjectAsync(AsParsingSource(bytes));
 

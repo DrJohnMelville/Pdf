@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Encryption;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;
 using Xunit;
@@ -25,7 +26,7 @@ public class SecurityHandlerFactoryTest
     public async Task CreateSecurityHandlerAsync(string trailer)
     { 
         await  TrailerToDocumentCryptContext.CreateDecryptorFactoryAsync(
-            (PdfValueDictionary)await trailer.ParseObjectAsync(), password);
+            await trailer.ParseValueObjectAsync<PdfValueDictionary>(), password);
         // test is for absence of an exception
     }
     [Theory]
@@ -47,7 +48,7 @@ public class SecurityHandlerFactoryTest
            /ID [<1521FBE61419FCAD51878CC5D478D5FF> <1521FBE61419FCAD51878CC5D478D5FF>] >>")]
     public async Task FailToCreateSecurityHandlerAsync(string trailer)
     {
-        var dict = (PdfValueDictionary)await trailer.ParseObjectAsync();
+        var dict = await trailer.ParseValueObjectAsync<PdfValueDictionary>();
         await Assert.ThrowsAsync<PdfSecurityException>(
             ()=> TrailerToDocumentCryptContext.CreateDecryptorFactoryAsync(dict, password).AsTask());
     }

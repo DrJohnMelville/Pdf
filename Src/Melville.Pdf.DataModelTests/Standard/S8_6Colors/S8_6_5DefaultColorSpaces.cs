@@ -45,7 +45,7 @@ public class S8_6_5DefaultColorSpaces
     public async Task IndexedMapsToBaseColorSpaceAsync()
     {
         SetDefault(KnownNames.DefaultRGBTName, 
-            new PdfValueArray(KnownNames.IndexedTName, KnownNames.DeviceGrayTName, 1, PdfString.CreateAscii("AA")));
+            new PdfValueArray(KnownNames.IndexedTName, KnownNames.DeviceGrayTName, 1, PdfDirectValue.CreateString("AA"u8)));
         var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
         Assert.IsType<DeviceGray>(ret);
 

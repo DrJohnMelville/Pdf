@@ -45,8 +45,8 @@ public class S7_5_7ObjectStreamExtends
  
         """);
         var reader = await new PdfLowLevelReader().ReadFromAsync(mbs.CreateReader());
-        Assert.Equal("1234", (await reader.Objects[(2,0)].DirectValueAsync()).ToString());
-        Assert.Equal("String", (await reader.Objects[(3,0)].DirectValueAsync()).ToString());
+        Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
+        Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
     [Fact]
     public async Task ExtendedStreamTestAsync()
@@ -74,8 +74,8 @@ public class S7_5_7ObjectStreamExtends
  
         """);
         var reader = await new PdfLowLevelReader().ReadFromAsync(mbs.CreateReader());
-        Assert.Equal("1234", (await reader.Objects[(2,0)].DirectValueAsync()).ToString());
-        Assert.Equal("String", (await reader.Objects[(3,0)].DirectValueAsync()).ToString());
+        Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
+        Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
     [Fact]
     public async Task OverridePriorTestAsync()
@@ -103,8 +103,8 @@ public class S7_5_7ObjectStreamExtends
  
         """);
         var reader = await new PdfLowLevelReader().ReadFromAsync(mbs.CreateReader());
-        Assert.Equal("1234", (await reader.Objects[(2,0)].DirectValueAsync()).ToString());
-        Assert.Equal("NewStr", (await reader.Objects[(3,0)].DirectValueAsync()).ToString());
+        Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
+        Assert.Equal("NewStr", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
 
     private static MultiBufferWriter CreateFile(string firstStream, string SecondStream)

@@ -6,6 +6,7 @@ using Melville.Pdf.LowLevel.Encryption;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Performance.Playground.Encryption
@@ -27,9 +28,9 @@ namespace Performance.Playground.Encryption
 
         private async ValueTask<ISecurityHandler> InitializeAsync()
         {
-            var tDict = (PdfDictionary)await V2R3128RC4CipherWithBlankUserPasswordFromExampleFile.ParseObjectAsync();
+            var tDict = await V2R3128RC4CipherWithBlankUserPasswordFromExampleFile.ParseValueObjectAsync<PdfValueDictionary>();
             return await  SecurityHandlerFactory.CreateSecurityHandlerAsync(
-                tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
+                tDict, await tDict.GetAsync<PdfValueDictionary>(KnownNames.EncryptTName));
 
         }
 

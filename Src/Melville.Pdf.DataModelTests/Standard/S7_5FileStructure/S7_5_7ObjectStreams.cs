@@ -9,6 +9,7 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
@@ -22,7 +23,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 
 public class S7_5_7ObjectStreams
 {
-    
+    [Fact]
+    public void NeedToTestObjectStreasms() => Assert.Fail("Need to test obejct streams");
+    /*
     [Theory]
     [InlineData("1 0 2 6 11111\n22222")]
     [InlineData("1 0 2 5 1111122222")]
@@ -35,8 +38,8 @@ public class S7_5_7ObjectStreams
             .WithItem(KnownNames.FirstTName, 8)
             .AsStream(streamText);
 
-        var res = new IndirectObjectResolver();
-        var pfo = new ParsingFileOwner(new MemoryStream(), NullPasswordSource.Instance, res);
+        var pfo = new ParsingFileOwner(new MemoryStream(), NullPasswordSource.Instance, new IndirectObjectResolver());
+        var res = pfo.NewIndirectResolver;
         res.AddLocationHint(new ObjectStreamIndirectObject(1, 0, pfo, 10));
         res.AddLocationHint(new ObjectStreamIndirectObject(2, 0, pfo, 10));
         res.AddLocationHint(new PdfIndirectObject(10, 0, os));
@@ -63,7 +66,7 @@ public class S7_5_7ObjectStreams
 
     private static async Task AssertIndirectAsync(IndirectObjectResolver res, int objectNumber, string expected)
     {
-        var o1 = await res.FindIndirect(objectNumber, 0).DirectValueAsync();
+        var o1 = await res.FindIndirect(objectNumber, 0).LoadValueAsync();
         Assert.Equal(expected, o1.ToString());
     }
 
@@ -87,7 +90,7 @@ public class S7_5_7ObjectStreams
     public async Task RoundTripAsync()
     {
         var doc = await (await DocWithObjectStreamAsync()).ParseDocumentAsync();
-        Assert.Equal("One", (await doc.Objects[(1,0)].DirectValueAsync()).ToString());
+        Assert.Equal("One", (await doc.Objects[(1,0)].LoadValueAsync()).ToString());
             
     }
 
@@ -108,8 +111,8 @@ public class S7_5_7ObjectStreams
         var builder = LowLevelDocumentBuilderFactory.New();
         using (builder.ObjectStreamContext(new ValueDictionaryBuilder()))
         {
-            builder.Add(PdfString.CreateAscii("One"));
-            builder.Add(PdfString.CreateAscii("Two"));
+            builder.Add(PdfDirectValue.CreateString("One"u8));
+            builder.Add(PdfDirectValue.CreateString("Two"u8));
         }
         var fileAsString = await DocCreatorToStringAsync(builder);
         return fileAsString;
@@ -119,8 +122,8 @@ public class S7_5_7ObjectStreams
         var builder = LowLevelDocumentBuilderFactory.New();
         using (builder.ObjectStreamContext(new ValueDictionaryBuilder()))
         {
-            builder.Add(PdfString.CreateAscii("One"));
-            builder.Add(new PdfIndirectObject(20, 0, PdfString.CreateAscii("Two")));
+            builder.Add(PdfDirectValue.CreateString("One"u8));
+            builder.Add(new PdfIndirectObject(20, 0, PdfDirectValue.CreateString("Two"u8)));
         }
         var fileAsString = await DocCreatorToStringAsync(builder);
         return fileAsString;
@@ -139,8 +142,8 @@ public class S7_5_7ObjectStreams
     public async Task ExtractIncludedObjectReferencesAsync()
     {
         var builder = new ObjectStreamBuilder();
-        builder.TryAddRef(new PdfIndirectObject(1,0,PdfString.CreateAscii("One")));
-        builder.TryAddRef(new PdfIndirectObject(2,0,PdfString.CreateAscii("Two")));
+        builder.TryAddRef(new PdfIndirectObject(1,0,PdfDirectValue.CreateString("One"u8)));
+        builder.TryAddRef(new PdfIndirectObject(2,0,PdfDirectValue.CreateString("Two"u8)));
         var str = (PdfValueStream)await builder.CreateStreamAsync(new ValueDictionaryBuilder());
 
         var output = await str.GetIncludedObjectNumbersAsync();
@@ -160,11 +163,11 @@ public class S7_5_7ObjectStreams
         var doc = await 
             new PdfLowLevelReader(new ConstantPasswordSource(PasswordType.User, "User")).ReadFromAsync(ms);
         var embeddedStream = "String in Stream Context.";
-        Assert.Equal(embeddedStream, (await doc.Objects[(2,0)].DirectValueAsync()).ToString());
+        Assert.Equal(embeddedStream, (await doc.Objects[(2,0)].LoadValueAsync()).ToString());
         
         // string is not encoded inside stream
-        var objSter = (PdfValueStream)(await doc.Objects[(3, 0)].DirectValueAsync());
+        var objSter = (PdfValueStream)(await doc.Objects[(3, 0)].LoadValueAsync());
         var strText = await new StreamReader(await objSter.StreamContentAsync()).ReadToEndAsync();
         Assert.Contains(strText, strText);
-    }
+    }*/
 }

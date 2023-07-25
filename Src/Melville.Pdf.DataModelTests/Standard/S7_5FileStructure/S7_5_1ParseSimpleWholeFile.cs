@@ -9,6 +9,7 @@ using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -31,7 +32,7 @@ public class S7_5_1ParseSimpleWholeFile
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
-        builder.AsIndirectReference(true); // includes a dead object to be skipped
+        builder.Add(true); // includes a dead object to be skipped
         builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         return await WriteAsync(builder.CreateDocument(majorVersion, minorVersion));
     }
@@ -48,14 +49,13 @@ public class S7_5_1ParseSimpleWholeFile
     public async Task GenerateDocumentWithDelayedIndirectAsync()
     {
         var builder = new LowLevelDocumentBuilder();
-        var pointer = builder.CreatePromiseObject();
+        var pointer = builder.Add(default);
         builder.AddRootElement(new ValueDictionaryBuilder().WithItem(KnownNames.WidthTName, pointer).AsDictionary());
-        pointer.SetValue(10);
-        builder.Add(pointer);
+        builder.Reassign(pointer, 10);
         var doc = await WriteAsync(builder.CreateDocument());
         var doc2 = await doc.ParseDocumentAsync();
-        var rootDic = (PdfValueDictionary)await doc2.TrailerDictionary[KnownNames.RootTName];
-        Assert.Equal(10, ((PdfNumber)await rootDic[KnownNames.WidthTName]).IntValue);
+        var rootDic = await doc2.TrailerDictionary.GetAsync<PdfValueDictionary>(KnownNames.RootTName);
+        Assert.Equal(10, (await rootDic[KnownNames.WidthTName]).Get<int>());
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class S7_5_1ParseSimpleWholeFile
         var serialized = await WriteAsync(doc);
         Assert.Contains("Stream data", serialized);
         var doc2 = await serialized.ParseDocumentAsync();
-        var stream = (PdfValueStream) (await doc2.TrailerDictionary[KnownNames.RootTName]);
+        var stream =  await doc2.TrailerDictionary.GetAsync<PdfValueStream>(KnownNames.RootTName);
         var value = await new StreamReader(
             await stream.StreamContentAsync(StreamFormat.DiskRepresentation)).ReadToEndAsync();
         Assert.Equal("Stream data", value);
@@ -88,8 +88,8 @@ public class S7_5_1ParseSimpleWholeFile
         Assert.Equal(1, doc.MajorVersion);
         Assert.Equal(7, doc.MinorVersion);
         Assert.Equal(2, doc.Objects.Count);
-        Assert.Equal(4, ((PdfNumber)(await doc.TrailerDictionary[KnownNames.SizeTName])).IntValue);
-        var dict = (PdfValueDictionary) (await doc.TrailerDictionary[KnownNames.RootTName]);
+        Assert.Equal(4, (await doc.TrailerDictionary[KnownNames.SizeTName]).Get<int>());
+        var dict =  (await doc.TrailerDictionary.GetAsync<PdfValueDictionary>(KnownNames.RootTName));
         Assert.Equal(KnownNames.CatalogTName, await dict[KnownNames.TypeTName]);
     }
 }       

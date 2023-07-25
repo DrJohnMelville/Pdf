@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.REPLs;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
@@ -17,8 +18,11 @@ public class ReplViewModelTest
     [Fact]
     public async Task ReplViewModelCanPrettyPrintAsync()
     {
-        var sut = new ReplViewModel("q Q", Mock.Of<IMultiRenderer>(), Array.Empty<byte>(),
-            new PdfIndirectObject(1,0, new ValueDictionaryBuilder().AsStream("q Q")), Mock.Of<IPageSelector>());
+        var sut = new ReplViewModel("q Q",
+            Mock.Of<IMultiRenderer>(), 
+            Array.Empty<byte>(),
+            ((PdfDirectValue)new ValueDictionaryBuilder().AsStream("q Q")),
+                Mock.Of<IPageSelector>());
         await sut.PrettyPrintAsync();
         Assert.Equal("q\nQ\n", sut.ContentStreamText);
     }
