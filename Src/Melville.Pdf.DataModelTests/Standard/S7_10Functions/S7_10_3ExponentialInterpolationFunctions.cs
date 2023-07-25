@@ -17,12 +17,12 @@ public class S7_10_3ExponentialInterpolationFunctions
         builder.AddFunction(5, 10);
         builder.AddFunction(15, 20);
         var dict = builder.Create();
-        await dict.VerifyNumberAsync(KnownNames.FunctionType, 2);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 1);
-        Assert.False(dict.ContainsKey(KnownNames.Range));
-        await dict.VerifyNumberAsync(KnownNames.N, 10);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.C0, 5, 15);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.C1, 10, 20);
+        await dict.VerifyNumberAsync(KnownNames.FunctionTypeTName, 2);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 0, 1);
+        Assert.False(dict.ContainsKey(KnownNames.RangeTName));
+        await dict.VerifyNumberAsync(KnownNames.NTName, 10);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.C0TName, 5, 15);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.C1TName, 10, 20);
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class S7_10_3ExponentialInterpolationFunctions
         builder.AddFunction(0, 1);
         builder.AddFunction(0, 1, (4,9));
         var dict = builder.Create();
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 2, 3);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Range, double.MinValue, double.MaxValue, 4, 9);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 2, 3);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.RangeTName, double.MinValue, double.MaxValue, 4, 9);
     }
     [Fact]
     public async Task DeclareWithDefaultsAsync()
@@ -41,11 +41,11 @@ public class S7_10_3ExponentialInterpolationFunctions
         var builder = new ExponentialFunctionBuilder(20);
         builder.AddFunction(0, 1);
         var dict = builder.Create();
-        await dict.VerifyNumberAsync(KnownNames.N, 20);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 1);
-        Assert.False(dict.ContainsKey(KnownNames.Range));
-        Assert.False(dict.ContainsKey(KnownNames.C0));
-        Assert.False(dict.ContainsKey(KnownNames.C1));
+        await dict.VerifyNumberAsync(KnownNames.NTName, 20);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 0, 1);
+        Assert.False(dict.ContainsKey(KnownNames.RangeTName));
+        Assert.False(dict.ContainsKey(KnownNames.C0TName));
+        Assert.False(dict.ContainsKey(KnownNames.C1TName));
     }
 
     [Theory]

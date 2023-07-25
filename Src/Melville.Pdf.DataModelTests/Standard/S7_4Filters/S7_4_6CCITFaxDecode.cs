@@ -7,6 +7,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 // the next using is used by the macros
 using Melville.Pdf.DataModelTests.StreamUtilities;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
@@ -53,15 +54,15 @@ public ref struct CCITEncodingTestBuilder
 [MacroItem("\xFF\xFF\xFF\xFE","VL(1).V(0)", "VerticalMinusOne", "JustData32v4")]
 [MacroItem("\x55\x55\x55\x55", "HW(0,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).HW(1,1).VL(2).VL(1).V(0)", "Alternate1And0", "JustData32v4")]
 [MacroItem("\x0\x0\x0\x0\x0\x0\x0\x0","HW(0,32).V(0).V(0)", "TwoBlack", "JustData32v4")]
-[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",new CCITEncodingTestBuilder().~1~.Build(), KnownNames.CCITTFaxDecode, S7_4_6CCITFaxDecode.~3~){}}")]
+[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",new CCITEncodingTestBuilder().~1~.Build(), KnownNames.CCITTFaxDecodeTName, S7_4_6CCITFaxDecode.~3~){}}")]
 public partial class S7_4_6CCITFaxDecode
 {
-    public static PdfDictionary JustData32v4 => new DictionaryBuilder()
-        .WithItem(KnownNames.K, -1)
-        .WithItem(KnownNames.EncodedByteAlign, false)
-        .WithItem(KnownNames.Columns, 32)
-        .WithItem(KnownNames.EndOfBlock, false)
-        .WithItem(KnownNames.BlackIs1, false)
-        .WithItem(KnownNames.DamagedRowsBeforeError, 0)
+    public static PdfValueDictionary JustData32v4 => new ValueDictionaryBuilder()
+        .WithItem(KnownNames.KTName, -1)
+        .WithItem(KnownNames.EncodedByteAlignTName, false)
+        .WithItem(KnownNames.ColumnsTName, 32)
+        .WithItem(KnownNames.EndOfBlockTName, false)
+        .WithItem(KnownNames.BlackIs1TName, false)
+        .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
         .AsDictionary();
 }

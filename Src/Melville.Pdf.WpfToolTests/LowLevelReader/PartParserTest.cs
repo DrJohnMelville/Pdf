@@ -63,7 +63,7 @@ public class PartParserTest
     public async Task ParseArrayAsync()
     {
         var model = await BuildSingleElementFileAsync(_=>
-            new PdfArray(PdfBoolean.True, PdfBoolean.False, KnownNames.Max));
+            new PdfValueArray(PdfBoolean.True, PdfBoolean.False, KnownNames.MaxTName));
         var array = model[1];
         Assert.Equal("1 0: Array", array.Title);
         Assert.Equal("[0]: true", array.Children[0].Title);
@@ -74,7 +74,7 @@ public class PartParserTest
     public async Task ParseSteamAsync()
     {
         var model = await BuildSingleElementFileAsync(i=>
-            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.C1).AsStream("The Stream Data"));
+            new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.C1TName).AsStream("The Stream Data"));
         var stream = (StreamPartViewModel)model[1];
         Assert.Equal("1 0: Stream", stream.Title);
         Assert.Equal("/Type: /C1", stream.Children[0].Title);

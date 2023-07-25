@@ -31,7 +31,7 @@ public class TilePatternCreatorTest
 
     private static async Task TestTilePatternAsync(string partialString, TilePatternCreator builder)
     {
-        await builder.AddToContentStreamAsync(new DictionaryBuilder(), csw =>
+        await builder.AddToContentStreamAsync(new ValueDictionaryBuilder(), csw =>
         {
             csw.Rectangle(1, 2, 3, 4);
             return ValueTask.CompletedTask;

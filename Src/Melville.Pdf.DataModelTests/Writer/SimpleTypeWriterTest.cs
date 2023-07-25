@@ -19,8 +19,8 @@ public class SimpleTypeWriterTest
     [Fact]
     public async Task WriteTokensAsync()
     {
-        Assert.Equal("true",await PdfBoolean.True.WriteToStringAsync());
-        Assert.Equal("false",await PdfBoolean.False.WriteToStringAsync());
+        Assert.Equal("true",await true.WriteToStringAsync());
+        Assert.Equal("false",await false.WriteToStringAsync());
         Assert.Equal("null",await PdfTokenValues.Null.WriteToStringAsync());
         Assert.Equal("]",await PdfTokenValues.ArrayTerminator.WriteToStringAsync());
         Assert.Equal(">>",await PdfTokenValues.DictionaryTerminator.WriteToStringAsync());
@@ -51,7 +51,7 @@ public class SimpleTypeWriterTest
     [InlineData("Hel lo", "/Hel#20lo")]
     public async Task WriteNameAsync(string source, string dest)
     {
-        Assert.Equal(dest, await NameDirectory.Get(source).WriteToStringAsync());
+        Assert.Equal(dest, await PdfDirectValue.CreateName(source).WriteToStringAsync());
     }
     [Theory]
     [InlineData(0, "0")]
@@ -74,16 +74,16 @@ public class SimpleTypeWriterTest
     [Fact]
     public async Task WriteIndirectObjectReferenceAsync()
     {
-        var reference = new PdfIndirectObject(34, 555, PdfBoolean.False);
+        var reference = new PdfIndirectObject(34, 555, false);
         Assert.Equal("34 555 R", await reference.WriteToStringAsync());
 
     }
     [Fact]
     public async Task WriteArrayAsync()
     {
-        var array = new PdfArray(new[]
+        var array = new PdfValueArray(new[]
         {
-            PdfBoolean.True, PdfBoolean.False, PdfTokenValues.Null
+            true, false, PdfTokenValues.Null
         });
         Assert.Equal("[true false null]", await array.WriteToStringAsync());
     }
@@ -91,9 +91,9 @@ public class SimpleTypeWriterTest
     public async Task WriteDictionaryAsync()
     {
         var array =
-            new DictionaryBuilder()
-                .WithItem(KnownNames.Width, 20)
-                .WithItem(KnownNames.Height, 40)
+            new ValueDictionaryBuilder()
+                .WithItem(KnownNames.WidthTName, 20)
+                .WithItem(KnownNames.HeightTName, 40)
                 .AsDictionary();
         Assert.Equal("<</Width 20/Height 40>>", await array.WriteToStringAsync());
     }
@@ -101,8 +101,8 @@ public class SimpleTypeWriterTest
     [Fact]
     public async Task WriteStreamAsync()
     {
-        var array = new DictionaryBuilder()
-            .WithItem(KnownNames.Length, 5).AsStream("Hello");
+        var array = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.LengthTName, 5).AsStream("Hello");
         Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await array.WriteToStringAsync());
     }
 }

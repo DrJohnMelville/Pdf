@@ -32,8 +32,8 @@ public class GraphicStateDictionary
     [Fact]
     public void KeysHashCorrectly()
     {
-        Assert.Equal(KnownNameKeys.LW, KnownNames.LW.GetHashCode());
-        Assert.Equal(KnownNameKeys.LW, KnownNames.LW.GetHashCode());
+        Assert.Equal(KnownNameKeys.LW, KnownNames.LWTName.GetHashCode());
+        Assert.Equal(KnownNameKeys.LW, KnownNames.LWTName.GetHashCode());
     }
     [Fact]
     public async Task SetLineWidthWithDictionaryAsync()
@@ -83,8 +83,8 @@ public class GraphicStateDictionary
     public async Task SetDashStyleWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.D, 
-            new PdfArray(
-                new PdfArray(1, 2),
+            new PdfValueArray(
+                new PdfValueArray(1, 2),
                 3
                 ));
         var gs = await ComputeFinalGraphicsStackAsync(page);
@@ -109,14 +109,14 @@ public class GraphicStateDictionary
 
     private static PdfPage PageThatSetsPropFromGSDictionary(GraphicStateParameterName property, PdfDirectValue values)
     {
-        var pageDict = new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.Page)
-            .WithItem(KnownNames.Contents, new DictionaryBuilder().AsStream("/GSDict gs"))
-            .WithItem(KnownNames.Resources, new DictionaryBuilder()
-                .WithItem(KnownNames.Type, KnownNames.Resources)
-                .WithItem(ResourceTypeName.ExtGState, new DictionaryBuilder()
-                    .WithItem(NameDirectory.Get("GSDict"), new DictionaryBuilder()
-                        .WithItem(KnownNames.Type, KnownNames.ExtGState)
+        var pageDict = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.PageTName)
+            .WithItem(KnownNames.ContentsTName, new ValueDictionaryBuilder().AsStream("/GSDict gs"))
+            .WithItem(KnownNames.ResourcesTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.TypeTName, KnownNames.ResourcesTName)
+                .WithItem(ResourceTypeName.ExtGState, new ValueDictionaryBuilder()
+                    .WithItem(PdfDirectValue.CreateName("GSDict"), new ValueDictionaryBuilder()
+                        .WithItem(KnownNames.TypeTName, KnownNames.ExtGStateTName)
                         .WithItem(property, values)
                         .AsDictionary())
                     .AsDictionary())

@@ -42,17 +42,17 @@ public class S7_7_3_3PageAttributes
         var procSets = await doc.GetProcSetsAsync();
         Assert.NotNull(procSets);
         Assert.Equal(5, procSets!.Count);
-        Assert.Equal(KnownNames.PDF, await procSets.GetAsync<PdfName>(0));
-        Assert.Equal(KnownNames.Text, await procSets.GetAsync<PdfName>(1));
-        Assert.Equal(KnownNames.ImageB, await procSets.GetAsync<PdfName>(2));
-        Assert.Equal(KnownNames.ImageC, await procSets.GetAsync<PdfName>(3));
-        Assert.Equal(KnownNames.ImageI, await procSets.GetAsync<PdfName>(4));
+        Assert.Equal(KnownNames.PDFTName, await procSets.GetAsync<PdfDirectValue>(0));
+        Assert.Equal(KnownNames.TextTName, await procSets.GetAsync<PdfDirectValue>(1));
+        Assert.Equal(KnownNames.ImageBTName, await procSets.GetAsync<PdfDirectValue>(2));
+        Assert.Equal(KnownNames.ImageCTName, await procSets.GetAsync<PdfDirectValue>(3));
+        Assert.Equal(KnownNames.ImageITName, await procSets.GetAsync<PdfDirectValue>(4));
     }
 
     [Fact]
     public async Task WithXObjectDictionaryAsync()
     {
-        var name = NameDirectory.Get("N1");
+        var name = PdfDirectValue.CreateName("N1");
         var doc = await RoundTripPageWithAsync(i =>
         {
             PdfObject obj = 10;
@@ -63,7 +63,7 @@ public class S7_7_3_3PageAttributes
     [Fact]
     public async Task WithInheritedXObjectDictionaryAsync()
     {
-        var name = NameDirectory.Get("N1");
+        var name = PdfDirectValue.CreateName("N1");
         var doc = await RoundTripPageWithAsync(j => { }, 
             i =>
             {
@@ -130,28 +130,28 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.BleedBox));
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.TrimBox));
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.ArtBox));
-        Assert.False(doc.LowLevel.ContainsKey(KnownNames.Contents));
+        Assert.False(doc.LowLevel.ContainsKey(KnownNames.ContentsTName));
     }
 
     [Fact]
     public async Task AddBuiltinFontAsync()
     {
-        PdfName fontName = KnownNames.Type;
+        PdfDirectValue fontName = KnownNames.TypeTName;
         var page = await RoundTripPageWithAsync(i =>
             fontName = i.AddStandardFont("F1", BuiltInFontName.CourierBoldOblique, FontEncodingName.WinAnsiEncoding));
-        var res = await page.LowLevel.GetAsync<PdfDictionary>(KnownNames.Resources);
-        var fonts = await res.GetAsync<PdfDictionary>(KnownNames.Font);
-        var font = await fonts.GetAsync<PdfDictionary>(fontName);
-        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Type), KnownNames.Font);
-        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Subtype), KnownNames.Type1);
-        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Name), fontName);
-        Assert.Equal(await font.GetAsync<PdfName>(KnownNames.Encoding), FontEncodingName.WinAnsiEncoding);  
+        var res = await page.LowLevel.GetAsync<PdfValueDictionary>(KnownNames.ResourcesTName);
+        var fonts = await res.GetAsync<PdfValueDictionary>(KnownNames.FontTName);
+        var font = await fonts.GetAsync<PdfValueDictionary>(fontName);
+        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.TypeTName), KnownNames.FontTName);
+        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.SubtypeTName), KnownNames.Type1TName);
+        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.NameTName), fontName);
+        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.EncodingTName), FontEncodingName.WinAnsiEncoding);  
     }
 
     [Fact] 
     public async Task LiteratContentStreamAsync()
     {
-        var doc = await RoundTripPageWithAsync(i => i.AddToContentStream(new DictionaryBuilder(), "xxyyy"));
+        var doc = await RoundTripPageWithAsync(i => i.AddToContentStream(new ValueDictionaryBuilder(), "xxyyy"));
         var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xxyyy", dat);
@@ -161,8 +161,8 @@ public class S7_7_3_3PageAttributes
     {
         var doc = await RoundTripPageWithAsync(i =>
         {
-            i.AddToContentStream(new DictionaryBuilder(), "xx");
-            i.AddToContentStream(new DictionaryBuilder(), "yyy");
+            i.AddToContentStream(new ValueDictionaryBuilder(), "xx");
+            i.AddToContentStream(new ValueDictionaryBuilder(), "yyy");
         });
         var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();

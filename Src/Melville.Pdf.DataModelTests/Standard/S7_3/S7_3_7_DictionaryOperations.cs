@@ -6,18 +6,18 @@ using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
-using PdfDictionary = Melville.Pdf.LowLevel.Model.Objects.PdfDictionary;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_7_DictionaryOperations
 {
-    private async Task<PdfDictionary> CreateDictAsync(string definition) =>
-        (PdfDictionary) (await definition.ParseObjectAsync());
+    private async Task<PdfValueDictionary> CreateDictAsync(string definition) =>
+        await (await definition.ParseValueObjectAsync()).LoadValueAsync<PdfValueDictionary>();
 
 
-    private Task<PdfDictionary> IndirectTestDictAsync => 
+    private Task<PdfValueDictionary> IndirectTestDictAsync => 
         CreateDictAsync("<</Height true /AC false>>");
 
     [Fact]
@@ -31,46 +31,46 @@ public class S7_3_7_DictionaryOperations
     {
         var d = await IndirectTestDictAsync;
 
-        Assert.True(d.ContainsKey(KnownNames.Height));
-        Assert.False(d.ContainsKey(KnownNames.FormType));
+        Assert.True(d.ContainsKey(KnownNames.HeightTName));
+        Assert.False(d.ContainsKey(KnownNames.FormTypeTName));
     }
     [Fact]
     public async Task EnumerateHandlesIndirectReferencesAsync()
     {
         var d = await IndirectTestDictAsync;
 
-        Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False}, 
-            ((IEnumerable)d).OfType<KeyValuePair<PdfName,ValueTask<PdfObject>>>()
+        Assert.Equal(new []{true, false}, 
+            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfObject>>>()
             .Select(i=>i.Value.Result));
-        Assert.Equal(new []{KnownNames.Height, KnownNames.AC},
-            ((IEnumerable)d).OfType<KeyValuePair<PdfName,ValueTask<PdfObject>>>().Select(i=>i.Key));
+        Assert.Equal(new []{KnownNames.HeightTName, KnownNames.ACTName},
+            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfObject>>>().Select(i=>i.Key));
             
     }
     [Fact]
     public async Task EnumerateKeysAsync()
     {
         var d = await IndirectTestDictAsync;
-        Assert.Equal(new []{KnownNames.Height, KnownNames.AC},d.Keys);
+        Assert.Equal(new []{KnownNames.HeightTName, KnownNames.ACTName},d.Keys);
             
     }
     [Fact]
     public async Task IndexerHandlesIndirectionAsync()
     {
         var d = await IndirectTestDictAsync;
-        Assert.Equal(PdfBoolean.True, await d[KnownNames.Height]);
+        Assert.Equal(true, await d[KnownNames.HeightTName]);
     }
     [Fact]
     public async Task TryGetValueSucceedAsync()
     {
         var d = await IndirectTestDictAsync;
-        AAssert.True(d.TryGetValue(KnownNames.Height, out var returned));
-        Assert.Equal(PdfBoolean.True, await returned);
+        AAssert.True(d.TryGetValue(KnownNames.HeightTName, out var returned));
+        Assert.Equal(true, await returned);
     }
     [Fact]
     public async Task TryGetValueFailsAsync()
     {
         var d = await IndirectTestDictAsync;
-        AAssert.False(d.TryGetValue(KnownNames.Activation, out var returned));
+        AAssert.False(d.TryGetValue(KnownNames.ActivationTName, out var returned));
         Assert.Equal(default(ValueTask<PdfObject>), returned);
     }
     [Fact]
@@ -78,7 +78,7 @@ public class S7_3_7_DictionaryOperations
     {
         var d = await IndirectTestDictAsync;
 
-        Assert.Equal(new []{PdfBoolean.True, PdfBoolean.False}, 
+        Assert.Equal(new []{true, false}, 
             d.Values.Select(i=>i.Result));
     }
 
@@ -88,9 +88,9 @@ public class S7_3_7_DictionaryOperations
     public async Task SisSubtypeEquivilenceAsync(string text)
     {
         var item = await CreateDictAsync(text);
-        Assert.Equal(KnownNames.Font, item.SubTypeOrNull());
+        Assert.Equal(KnownNames.FontTName, item.SubTypeOrNull());
         Assert.True(item.TryGetSubType(out var st));
-        Assert.Equal(KnownNames.Font, st);
+        Assert.Equal(KnownNames.FontTName, st);
         
     }
 }

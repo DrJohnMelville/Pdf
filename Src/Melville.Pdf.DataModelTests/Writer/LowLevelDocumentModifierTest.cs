@@ -22,9 +22,9 @@ public class LowLevelDocumentModifierTest
     public LowLevelDocumentModifierTest()
     {
         var builder = new LowLevelDocumentBuilder();
-        var rootref = builder.Add(PdfBoolean.True);
-        builder.Add(PdfBoolean.False);
-        builder.AddToTrailerDictionary(KnownNames.Root, rootref);
+        var rootref = builder.Add(true);
+        builder.Add(false);
+        builder.AddToTrailerDictionary(KnownNames.RootTName, rootref);
         baseDoc = builder.CreateDocument();
     }
 
@@ -58,12 +58,12 @@ public class LowLevelDocumentModifierTest
     [Fact]
     public Task AddOneObjectAsync() =>
         DoDocumentModificationTestsAsync($"2 0 obj false endobj\nxref\n2 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 3>>\nstartxref\n1255\n%%EOF",
-            (doc, mod) => mod.Add(PdfBoolean.False), baseDoc,
+            (doc, mod) => mod.Add(false), baseDoc,
             1234);
     [Fact]
     public Task ReplaceOneObjectAsync() =>
         DoDocumentModificationTestsAsync($"1 0 obj false endobj\nxref\n1 1\n0000001234 00000 n\r\ntrailer\n<</Root 1 0 R/Prev 83/Size 2>>\nstartxref\n1255\n%%EOF",
-            (doc, mod) => mod.ReplaceReferenceObject(doc.Objects[(1,0)],PdfBoolean.False), baseDoc,
+            (doc, mod) => mod.ReplaceReferenceObject(doc.Objects[(1,0)],false), baseDoc,
             1234);
 
     private static PdfLowLevelDocument SixItemDocument()

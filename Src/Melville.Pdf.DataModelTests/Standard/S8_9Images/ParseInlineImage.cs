@@ -6,6 +6,7 @@ using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Moq;
 using Xunit;
 
@@ -16,9 +17,9 @@ public partial class ParseInlineImage : ParserTest
     private partial class DoImpl : MockBase, IContentStreamOperations
     {
         [DelegateTo] private IContentStreamOperations fake = null!;
-        private Func<PdfStream, ValueTask> verify;
+        private Func<PdfValueStream, ValueTask> verify;
 
-        public DoImpl(Action<PdfStream> verify) :
+        public DoImpl(Action<PdfValueStream> verify) :
             this(s =>
             {
                 verify(s);
@@ -27,12 +28,12 @@ public partial class ParseInlineImage : ParserTest
         {
         }
 
-        public DoImpl(Func<PdfStream, ValueTask> verify)
+        public DoImpl(Func<PdfValueStream, ValueTask> verify)
         {
             this.verify = verify;
         }
 
-        public ValueTask DoAsync(PdfStream stream)
+        public ValueTask DoAsync(PdfValueStream stream)
         {
             this.SetCalled();
             return verify(stream);
@@ -45,10 +46,10 @@ public partial class ParseInlineImage : ParserTest
             new DoImpl(async i =>
             {
                 Assert.Equal(4, i.Count);
-                Assert.Equal(KnownNames.XObject, (await i.GetAsync<PdfName>(KnownNames.Type)));
-                Assert.Equal(KnownNames.Image, (await i.GetAsync<PdfName>(KnownNames.Subtype)));
-                Assert.Equal(12, (await i.GetAsync<PdfNumber>(KnownNames.Width)).IntValue);
-                Assert.Equal(24, (await i.GetAsync<PdfNumber>(KnownNames.Height)).IntValue);
+                Assert.Equal(KnownNames.XObjectTName, (await i.GetAsync<PdfDirectValue>(KnownNames.TypeTName)));
+                Assert.Equal(KnownNames.ImageTName, (await i.GetAsync<PdfDirectValue>(KnownNames.SubtypeTName)));
+                Assert.Equal(12, (await i.GetAsync<PdfNumber>(KnownNames.WidthTName)).IntValue);
+                Assert.Equal(24, (await i.GetAsync<PdfNumber>(KnownNames.HeightTName)).IntValue);
             }));
 
     [Theory]
@@ -80,8 +81,8 @@ public partial class ParseInlineImage : ParserTest
         TestInputAsync($"BI/Filter {synonym}\nID\nStreamDataEI",
             new DoImpl(async i =>
             {
-                Assert.Equal(NameDirectory.Get(preferredTerm), 
-                    await i[KnownNames.Filter]);
+                Assert.Equal(PdfDirectValue.CreateName(preferredTerm), 
+                    await i[KnownNames.FilterTName]);
 
             }));
 
@@ -100,7 +101,7 @@ public partial class ParseInlineImage : ParserTest
             new DoImpl(async i =>
             {
                 Assert.Equal(1234,
-                        (await i.GetAsync<PdfNumber>(NameDirectory.Get(preferredTerm))).
+                        (await i.GetAsync<PdfNumber>(PdfDirectValue.CreateName(preferredTerm))).
                         IntValue);
 
             }));
@@ -111,6 +112,6 @@ public partial class ParseInlineImage : ParserTest
             "BI/D[/AHx/DCT]ID\nHelloEI",
             new DoImpl(async i =>
             {
-                Assert.True((await i.GetAsync<PdfArray>(KnownNames.Decode)) is PdfArray);
+                Assert.True((await i.GetAsync<PdfValueArray>(KnownNames.DecodeTName)) is PdfValueArray);
             }));
 }

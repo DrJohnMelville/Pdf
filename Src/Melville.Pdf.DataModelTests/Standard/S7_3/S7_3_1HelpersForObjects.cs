@@ -1,4 +1,6 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects;
+﻿using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
@@ -8,9 +10,9 @@ public class S7_3_1HelpersForObjects
     [Fact]
     public void ObjectIsAnArray()
     {
-        var ret = PdfBoolean.True.ObjectAsUnresolvedList();
+        var ret = true.ObjectAsUnresolvedList();
         Assert.Equal(1, ret.Count);
-        Assert.Equal(PdfBoolean.True, ret[0]);
+        Assert.Equal(true, ret[0]);
     }
     [Fact]
     public void NullIsEmptyArray()
@@ -19,11 +21,11 @@ public class S7_3_1HelpersForObjects
         Assert.Equal(0, ret.Count);
     }
     [Fact]
-    public void ArrayIsArray()
+    public async Task ArrayIsArray()
     {
-        var ret = new PdfArray(PdfBoolean.True, PdfBoolean.False).ObjectAsUnresolvedList();
-        Assert.Equal(2, ret.Count);
-        Assert.Equal(PdfBoolean.True, ret[0]);
-        Assert.Equal(PdfBoolean.False, ret[1]);
+        var ret = await new PdfValueArray(true, false).CastAsync<bool>();
+        Assert.Equal(2, ret.Length);
+        Assert.Equal(true, ret[0]);
+        Assert.False(ret[1]);
     }
 }

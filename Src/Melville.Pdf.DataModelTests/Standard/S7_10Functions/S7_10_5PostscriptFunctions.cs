@@ -8,6 +8,7 @@ using Melville.Linq;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
@@ -28,11 +29,11 @@ public class S7_10_5PostscriptFunctions
         builder.AddArgument((0,10));
         builder.AddOutput((0,20));
         var dict = builder.Create("2 mul", 
-            new DictionaryBuilder().WithItem(KnownNames.Decode, KnownNames.FlateDecode));
-        Assert.Equal(KnownNames.FlateDecode, await dict.GetAsync<PdfName>(KnownNames.Decode));
-        await dict.VerifyNumberAsync(KnownNames.FunctionType, 4);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 10);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Range, 0, 20);
+            new ValueDictionaryBuilder().WithItem(KnownNames.DecodeTName, KnownNames.FlateDecodeTName));
+        Assert.Equal(KnownNames.FlateDecodeTName, await dict.GetAsync<PdfDirectValue>(KnownNames.DecodeTName));
+        await dict.VerifyNumberAsync(KnownNames.FunctionTypeTName, 4);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 0, 10);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.RangeTName, 0, 20);
         Assert.Equal("2 mul", await (await dict.StreamContentAsync()).ReadAsStringAsync());
             
     }
@@ -155,7 +156,7 @@ public class S7_10_5PostscriptFunctions
         Assert.Equal(outputs, func.Compute(inputs).Select(i=>Math.Round(i,3)));
     }
 
-    private static PdfDictionary CreateFunction(string code, int inputCount, int outputCount)
+    private static PdfValueDictionary CreateFunction(string code, int inputCount, int outputCount)
     {
         var builder = new PostscriptFunctionBuilder();
         for (int i = 0; i < inputCount; i++)

@@ -10,7 +10,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_8_StreamsDefined
 {
-    private static long GetPosition(PdfStream obj) => 
+    private static long GetPosition(PdfValueStream obj) => 
         (long)(obj.GetField("source")!.GetField("sourceFilePosition")!);
 
     private const string ObjectPrefix = "1 2 obj ";

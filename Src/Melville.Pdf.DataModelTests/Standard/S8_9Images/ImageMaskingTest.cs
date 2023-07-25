@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -17,7 +18,7 @@ public class ImageMaskingTest
         var maskImage = GrayImageBuilder(maskWidth, maskHeight)
             .AsStream(maskBytes);
         var image = GrayImageBuilder(imageWidth, imageHeight)
-            .WithItem(KnownNames.SMask, maskImage)
+            .WithItem(KnownNames.SMaskTName, maskImage)
             .AsStream(imageBytes);
 
         var result = await (await image.WrapForRenderingAsync(DeviceColor.Black))
@@ -25,15 +26,15 @@ public class ImageMaskingTest
         return result;
     }
 
-    private static DictionaryBuilder GrayImageBuilder(int width, int height)
+    private static ValueDictionaryBuilder GrayImageBuilder(int width, int height)
     {
-        return new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.XObject)
-            .WithItem(KnownNames.Subtype, KnownNames.Image)
-            .WithItem(KnownNames.Width, width)
-            .WithItem(KnownNames.Height, height)
-            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
-            .WithItem(KnownNames.BitsPerComponent, 8);
+        return new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
+            .WithItem(KnownNames.WidthTName, width)
+            .WithItem(KnownNames.HeightTName, height)
+            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
+            .WithItem(KnownNames.BitsPerComponentTName, 8);
     }
 
 

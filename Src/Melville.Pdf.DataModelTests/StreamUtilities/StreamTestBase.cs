@@ -8,21 +8,22 @@ using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;
 
-public abstract class StreamTestBase
+public abstract partial class StreamTestBase
 {
     private readonly string source;
     private readonly string dest;
-    private readonly PdfObject compression;
-    private readonly PdfObject? parameters;
+    private readonly PdfDirectValue compression;
+    private readonly PdfDirectValue? parameters;
 
     protected StreamTestBase(
-        string source, string dest, PdfObject compression, PdfObject? parameters = null)
+        string source, string dest, PdfDirectValue compression, PdfDirectValue? parameters = null)
     {
         this.source = source;
         this.dest = dest;
@@ -31,17 +32,17 @@ public abstract class StreamTestBase
     }
 
 
-    private DictionaryBuilder StreamBuilder() =>
-        new DictionaryBuilder()
-            .WithItem(KnownNames.Filter, compression)
-            .WithItem(KnownNames.DecodeParms, parameters);
-
-    private PdfStream StreamWithPlainTextBacking() =>
+    private ValueDictionaryBuilder StreamBuilder() =>
+        new ValueDictionaryBuilder()
+            .WithItem(KnownNames.FilterTName, compression)
+            .WithItem(KnownNames.DecodeParmsTName, parameters??PdfDirectValue.CreateNull());
+    
+    private PdfValueStream StreamWithPlainTextBacking() =>
         StreamBuilder().AsStream(source);
 
-    private PdfStream StreamWithEncodedBacking() =>
+    private PdfValueStream StreamWithEncodedBacking() =>
         StreamBuilder()
-            .WithItem(KnownNames.Length, dest.Length)
+            .WithItem(KnownNames.LengthTName, dest.Length)
             .AsStream(dest.AsExtendedAsciiBytes(),
                 StreamFormat.DiskRepresentation);
 
@@ -60,22 +61,22 @@ public abstract class StreamTestBase
 
         var strSourceMock = MockStreamSource(src);
 
-        var pdfStream = StreamBuilder().AsStream(strSourceMock.Object);
-        var innerStream = await pdfStream.StreamContentAsync();
+        var PdfValueStream = StreamBuilder().AsStream(strSourceMock.Object);
+        var innerStream = await PdfValueStream.StreamContentAsync();
         await VerifyDecodedStreamAsync(innerStream);
     }
 
 
-    private async Task VerifyEncodingAsync(PdfStream stream) => 
-        Assert.Equal(SimulateStreamOutput(), await stream.WriteToStringAsync());
+    private async Task VerifyEncodingAsync(PdfValueStream stream) => 
+        Assert.Equal(SimulateStreamOutput(), await ((PdfIndirectValue)stream).WriteToStringAsync());
         
     private string SimulateStreamOutput() => 
         $"<</Filter{compression}{RenderParams(parameters)}/Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
 
-    private static string RenderParams(PdfObject? parameters) =>
-        parameters is not PdfDictionary dict
-            ? ""
-            : "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}")) + ">>";
+    private static string RenderParams(PdfDirectValue? parameters) =>
+        parameters.HasValue && parameters.Value.TryGet(out PdfValueDictionary? dict)
+            ? "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}")) + ">>"
+            : "";
 
     [Fact]
     public async Task VerifyDisposal1Async()
@@ -91,8 +92,8 @@ public abstract class StreamTestBase
         var streamMock = new Mock<Stream>();
         var strSourceMock = MockStreamSource(streamMock.Object);
 
-        var pdfStream = StreamBuilder().AsStream(strSourceMock.Object);
-        var innerStream = await pdfStream.StreamContentAsync();
+        var PdfValueStream = StreamBuilder().AsStream(strSourceMock.Object);
+        var innerStream = await PdfValueStream.StreamContentAsync();
         return (streamMock, innerStream);
     }
 
@@ -115,11 +116,11 @@ public abstract class StreamTestBase
         streamMock.Verify(i => i.Close(), Times.Once);
     }
 
-    private ValueTask<PdfStream> StreamWithEncodedBackEndAsync() =>
+    private ValueTask<PdfValueStream> StreamWithEncodedBackEndAsync() =>
          ToStreamWithEncodedBackEndAsync(StreamWithPlainTextBacking());
 
-    private async ValueTask<PdfStream> ToStreamWithEncodedBackEndAsync(PdfStream str) =>
-        new DictionaryBuilder(str.RawItems).AsStream(
+    private async ValueTask<PdfValueStream> ToStreamWithEncodedBackEndAsync(PdfValueStream str) =>
+        new ValueDictionaryBuilder(str.RawItems).AsStream(
             await str.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance),
             StreamFormat.DiskRepresentation);
 

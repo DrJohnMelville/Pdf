@@ -2,9 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Melville.FileSystem;
 using Melville.Parsing.Streams;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -12,12 +10,10 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
-using Melville.Pdf.LowLevel.Parsing.FileParsers;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
@@ -46,22 +42,22 @@ public class RoundTripEncryptedFiles
         string text, MultiBufferStream target)
     {
         var doc = await ParseTargetAsync(target, PasswordType.User, "User");
-        var encrypt = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Encrypt);
-        await VerifyNumberAsync(encrypt, KnownNames.V, V);
-        await VerifyNumberAsync(encrypt, KnownNames.R, R);
-        await VerifyNumberAsync(encrypt, KnownNames.Length, keyLengthInBits);
+        var encrypt = await doc.TrailerDictionary.GetAsync<PdfValueDictionary>(KnownNames.EncryptTName);
+        await VerifyNumberAsync(encrypt, KnownNames.VTName, V);
+        await VerifyNumberAsync(encrypt, KnownNames.RTName, R);
+        await VerifyNumberAsync(encrypt, KnownNames.LengthTName, keyLengthInBits);
 
         foreach (var indirectReference in doc.Objects.Values)
         {
-            var obj = await indirectReference.DirectValueAsync();
-            if (obj is PdfStream ps && ! ps.Keys.Contains(KnownNames.Filter) && ps.Keys.Count()==1)
+            var obj = await indirectReference.LoadValueAsync();
+            if (obj.TryGet(out PdfValueStream? ps) && ! ps.Keys.Contains(KnownNames.FilterTName) && ps.Keys.Count()==1)
             {
                 await VerifyStreamContainsAsync(ps, text);
             }
         }
     }
 
-    private async ValueTask VerifyStreamContainsAsync(PdfStream ps, string text)
+    private async ValueTask VerifyStreamContainsAsync(PdfValueStream ps, string text)
     {
         await using var stream = await ps.StreamContentAsync(StreamFormat.PlainText);
         var streamSource = await new StreamReader(stream).ReadToEndAsync();
@@ -73,9 +69,9 @@ public class RoundTripEncryptedFiles
         new PdfLowLevelReader(new ConstantPasswordSource(passwordType, password))
             .ReadFromAsync(target);
 
-    private async ValueTask VerifyNumberAsync(PdfDictionary encrypt, PdfName pdfName, int expected)
+    private async ValueTask VerifyNumberAsync(PdfValueDictionary encrypt, PdfDirectValue PdfDirectValue, int expected)
     {
-        var num = await encrypt.GetAsync<PdfNumber>(pdfName);
+        var num = await encrypt.GetAsync<PdfNumber>(PdfDirectValue);
         Assert.Equal(expected, num.IntValue);
             
     }

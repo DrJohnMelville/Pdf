@@ -4,6 +4,7 @@ using Melville.Pdf.DataModelTests.StreamUtilities;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
@@ -16,12 +17,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
 public class S7_10_2SampledFunctions
 {
-    private static async Task<PdfStream> ComplexSampledFunctionAsync()
+    private static async Task<PdfValueStream> ComplexSampledFunctionAsync()
     {
         var builder = new SampledFunctionBuilder(8, SampledFunctionOrder.Cubic);
         builder.AddInput(12, (1, 10), (1, 10));
         builder.AddOutput(x => 5 * x, (5, 50), (0, 255));
-        return await builder.CreateSampledFunctionAsync(new DictionaryBuilder().WithFilter(FilterName.ASCIIHexDecode));
+        return await builder.CreateSampledFunctionAsync(new ValueDictionaryBuilder().WithFilter(FilterName.ASCIIHexDecode));
     }
 
     [Theory]
@@ -30,13 +31,13 @@ public class S7_10_2SampledFunctions
     [InlineData(0.5, 6.5)]
     public async Task SampledFunctionDecodeAsync(double input, double output)
     {
-        var funcDict = new DictionaryBuilder()
-            .WithItem(KnownNames.BitsPerSample, 8)
-            .WithItem(KnownNames.FunctionType, 0)
-            .WithItem(KnownNames.Decode, new PdfArray(3, 10))
-            .WithItem(KnownNames.Range, new PdfArray(-10, 20))
-            .WithItem(KnownNames.Domain, new PdfArray(0, 1))
-            .WithItem(KnownNames.Size, new PdfArray(2))
+        var funcDict = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.BitsPerSampleTName, 8)
+            .WithItem(KnownNames.FunctionTypeTName, 0)
+            .WithItem(KnownNames.DecodeTName, new PdfValueArray(3, 10))
+            .WithItem(KnownNames.RangeTName, new PdfValueArray(-10, 20))
+            .WithItem(KnownNames.DomainTName, new PdfValueArray(0, 1))
+            .WithItem(KnownNames.SizeTName, new PdfValueArray(2))
             .AsStream(new byte[] { 0xFF, 0x00 });
         var func = await funcDict.CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(input));
@@ -47,14 +48,14 @@ public class S7_10_2SampledFunctions
     public async Task CreateFullySpecifiedFunctionAsync()
     {
         var str = await ComplexSampledFunctionAsync();
-        Assert.Equal(0, (await str.GetAsync<PdfNumber>(KnownNames.FunctionType)).IntValue);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 1, 10);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.Range, 5, 50);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.Size, 12);
-        await str.VerifyNumberAsync(KnownNames.BitsPerSample, 8);
-        await str.VerifyNumberAsync(KnownNames.Order, 3);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.Encode, 1, 10);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.Decode, 0, 255);
+        Assert.Equal(0, (await str.GetAsync<PdfNumber>(KnownNames.FunctionTypeTName)).IntValue);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 1, 10);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.RangeTName, 5, 50);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.SizeTName, 12);
+        await str.VerifyNumberAsync(KnownNames.BitsPerSampleTName, 8);
+        await str.VerifyNumberAsync(KnownNames.OrderTName, 3);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.EncodeTName, 1, 10);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.DecodeTName, 0, 255);
         await StreamTest.VerifyStreamContentAsync(
             "00050A0F14191E23282D3237", await str.StreamContentAsync(StreamFormat.ImplicitEncryption));
     }
@@ -137,8 +138,8 @@ public class S7_10_2SampledFunctions
         builder.AddOutput(x=>5*x, (0, 255));
         var str = await builder.CreateSampledFunctionAsync();
             
-        Assert.False(str.ContainsKey(KnownNames.Order));
-        Assert.False(str.ContainsKey(KnownNames.Encode));
-        Assert.False(str.ContainsKey(KnownNames.Decode));
+        Assert.False(str.ContainsKey(KnownNames.OrderTName));
+        Assert.False(str.ContainsKey(KnownNames.EncodeTName));
+        Assert.False(str.ContainsKey(KnownNames.DecodeTName));
     }
 }

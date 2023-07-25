@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.OptionalContent;
@@ -13,8 +14,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_11_OptionalContent;
 
 public class OptionalContentCounterTest
 {
-    private readonly PdfDictionary On = new DictionaryBuilder().AsDictionary();
-    private readonly PdfDictionary Off = new DictionaryBuilder().AsDictionary();
+    private readonly PdfValueDictionary On = new ValueDictionaryBuilder().AsDictionary();
+    private readonly PdfValueDictionary Off = new ValueDictionaryBuilder().AsDictionary();
     private readonly Mock<IOptionalContentState> state = new();
     private readonly Mock<IHasPageAttributes> attrs = new();
 
@@ -22,13 +23,13 @@ public class OptionalContentCounterTest
 
     public OptionalContentCounterTest()
     {
-        state.Setup(i => i.IsGroupVisibleAsync(It.IsAny<PdfDictionary>())).
-            Returns((PdfDictionary d) => new(d == On));
+        state.Setup(i => i.IsGroupVisibleAsync(It.IsAny<PdfValueDictionary>())).
+            Returns((PdfValueDictionary d) => new(d == On));
         attrs.SetupGet(i => i.LowLevel).Returns(
-            new DictionaryBuilder()
-                .WithItem(KnownNames.Properties, new DictionaryBuilder()
-                    .WithItem(KnownNames.ON, On)
-                    .WithItem(KnownNames.OFF, Off)
+            new ValueDictionaryBuilder()
+                .WithItem(KnownNames.PropertiesTName, new ValueDictionaryBuilder()
+                    .WithItem(KnownNames.ONTName, On)
+                    .WithItem(KnownNames.OFFTName, Off)
                     .AsDictionary())
                 .AsDictionary());
         sut = new OptionalContentCounter(state.Object);
@@ -43,33 +44,33 @@ public class OptionalContentCounterTest
     [Fact]
     public async Task EncounterInvisibleGroupMakesInvisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OC, Off);
+        await sut.EnterGroupAsync(KnownNames.OCTName, Off);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task OCPrefixRequiredAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.AC, Off);
+        await sut.EnterGroupAsync(KnownNames.ACTName, Off);
         Assert.False(sut.IsHidden);
     }
     [Fact]
     public async Task EncounterInvisibleGroupNameMakesInvisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
+        await sut.EnterGroupAsync(KnownNames.OCTName, KnownNames.OFFTName, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task EncounterVisibleGroupNameLeavesVisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
+        await sut.EnterGroupAsync(KnownNames.OCTName, KnownNames.OFFTName, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task PopOutOfInvisibleGroupAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OC, Off);
+        await sut.EnterGroupAsync(KnownNames.OCTName, Off);
         Assert.True(sut.IsHidden);
-        await sut.EnterGroupAsync(KnownNames.OC, On);
+        await sut.EnterGroupAsync(KnownNames.OCTName, On);
         Assert.True(sut.IsHidden);
         sut.PopContentGroup();
         Assert.True(sut.IsHidden);
@@ -80,7 +81,7 @@ public class OptionalContentCounterTest
     [Fact]
     public async Task EncounterVisibleGroupStaysVisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OC, On);
+        await sut.EnterGroupAsync(KnownNames.OCTName, On);
         Assert.False(sut.IsHidden);
     }
 }

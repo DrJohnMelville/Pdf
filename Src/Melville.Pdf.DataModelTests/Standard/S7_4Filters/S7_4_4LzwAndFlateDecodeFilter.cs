@@ -15,9 +15,9 @@ using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
-[MacroItem("Hello World.", "GhVa[c,n(/#gY0H8^RV?***28~>", "FlateDecode", "KnownNames.FlateDecode")]
-[MacroItem("-----A---B", "(;QS2(`<Y^~>", "LzwDecode", "KnownNames.LZWDecode")]
-[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", new PdfArray(KnownNames.ASCII85Decode, ~3~)){}}")]
+[MacroItem("Hello World.", "GhVa[c,n(/#gY0H8^RV?***28~>", "FlateDecode", "KnownNames.FlateDecodeTName")]
+[MacroItem("-----A---B", "(;QS2(`<Y^~>", "LzwDecode", "KnownNames.LZWDecodeTName")]
+[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", new PdfValueArray(KnownNames.ASCII85DecodeTName, ~3~)){}}")]
 public partial class S7_4_4LzwAndFlateDecodeFilter
 {
 
@@ -39,11 +39,11 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
 
         var creator = new LowLevelDocumentBuilder();
         var param =
-            new DictionaryBuilder()
-                .WithItem(KnownNames.EarlyChange, EarlySwitch)
+            new ValueDictionaryBuilder()
+                .WithItem(KnownNames.EarlyChangeTName, EarlySwitch)
                 .AsDictionary();
 
-        var str = new DictionaryBuilder()
+        var str = new ValueDictionaryBuilder()
             .WithFilter(FilterName.LZWDecode)
             .WithFilterParam(EarlySwitch < 2 ? param : null)
             .AsStream(buffer);
@@ -61,7 +61,7 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
     [Fact]
     public async Task LzwDecodeBugAsync()
     {
-        var str = new DictionaryBuilder()
+        var str = new ValueDictionaryBuilder()
             .WithFilter(FilterName.ASCIIHexDecode, FilterName.LZWDecode)
             .AsStream(LzwDecodeBugText, StreamFormat.DiskRepresentation);
         var result = await new StreamReader(await str.StreamContentAsync()).ReadToEndAsync();

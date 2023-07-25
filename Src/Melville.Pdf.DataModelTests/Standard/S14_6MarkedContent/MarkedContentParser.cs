@@ -4,6 +4,7 @@ using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Moq;
 using Xunit;
 
@@ -13,7 +14,7 @@ public partial class MarkedContentParser : ParserTest
 {
     [Fact]
     public Task MarkedContentPointAsync() =>
-        TestInputAsync("/M1 MP", i => i.MarkedContentPoint(NameDirectory.Get("M1")));
+        TestInputAsync("/M1 MP", i => i.MarkedContentPoint(PdfDirectValue.CreateName("M1")));
     [Fact]
     public Task MarkedContentPointWithNamedParamAsync() =>
         TestInputAsync("/M1 /M2 DP", i => i.MarkedContentPointAsync("M1", "M2"));
@@ -37,7 +38,7 @@ public partial class MarkedContentParser : ParserTest
             this.expected = expected;
         }
 
-        public ValueTask MarkedContentPointAsync(PdfName tag, PdfDictionary dict)
+        public ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfValueDictionary dict)
         {
             Assert.Equal("/M1", tag.ToString());
             Assert.Single(dict);
@@ -47,7 +48,7 @@ public partial class MarkedContentParser : ParserTest
 
         }
 
-        public ValueTask BeginMarkedRangeAsync(PdfName tag, PdfDictionary dictionary)
+        public ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary)
         {
             MarkedContentPointAsync(tag, dictionary);
             return ValueTask.CompletedTask;

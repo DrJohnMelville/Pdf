@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -20,11 +21,11 @@ public class S8_6_5DefaultColorSpaces
         sut = new ColorSpaceFactory(page.Object);
     }
 
-    private void SetDefault(PdfName defaultName, PdfArray value)
+    private void SetDefault(PdfDirectValue defaultName, PdfValueArray value)
     {
-        var dict = new DictionaryBuilder()
-            .WithItem(KnownNames.Resources, new DictionaryBuilder()
-                .WithItem(KnownNames.ColorSpace, new DictionaryBuilder()
+        var dict = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.ResourcesTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.ColorSpaceTName, new ValueDictionaryBuilder()
                     .WithItem(defaultName, value)
                     .AsDictionary()).AsDictionary())
             .AsDictionary();
@@ -34,8 +35,8 @@ public class S8_6_5DefaultColorSpaces
     [Fact]
     public async Task MapRgbToDeviceGrayAsync()
     {
-        SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.DeviceGray));
-        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
+        SetDefault(KnownNames.DefaultRGBTName, new PdfValueArray(KnownNames.DeviceGrayTName));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
         Assert.IsType<DeviceGray>(ret);
 
     }
@@ -43,17 +44,17 @@ public class S8_6_5DefaultColorSpaces
     [Fact]
     public async Task IndexedMapsToBaseColorSpaceAsync()
     {
-        SetDefault(KnownNames.DefaultRGB, 
-            new PdfArray(KnownNames.Indexed, KnownNames.DeviceGray, 1, PdfString.CreateAscii("AA")));
-        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
+        SetDefault(KnownNames.DefaultRGBTName, 
+            new PdfValueArray(KnownNames.IndexedTName, KnownNames.DeviceGrayTName, 1, PdfString.CreateAscii("AA")));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
         Assert.IsType<DeviceGray>(ret);
 
     }
     [Fact]
     public async Task PatternMapsToBaseColorSpaceAsync()
     {
-        SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.Pattern, KnownNames.DeviceGray));
-        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
+        SetDefault(KnownNames.DefaultRGBTName, new PdfValueArray(KnownNames.PatternTName, KnownNames.DeviceGrayTName));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
         Assert.IsType<DeviceGray>(ret);
     }
 }

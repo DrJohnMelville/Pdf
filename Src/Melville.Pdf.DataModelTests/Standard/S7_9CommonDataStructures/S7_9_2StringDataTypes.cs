@@ -72,12 +72,12 @@ public class S7_9_2StringDataTypes
     [InlineData("a\u2014b")]
     public async Task TextStreamTestAsync(string text)
     {
-        var utf8 = new DictionaryBuilder().AsStream(PdfString.CreateUtf8(text).Bytes);
+        var utf8 = new ValueDictionaryBuilder().AsStream(PdfString.CreateUtf8(text).Bytes);
         Assert.Equal(text, await (await utf8.TextStreamReaderAsync()).ReadToEndAsync());
-        var utf = new DictionaryBuilder().AsStream(PdfString.CreateUtf16(text).Bytes);
+        var utf = new ValueDictionaryBuilder().AsStream(PdfString.CreateUtf16(text).Bytes);
         Assert.Equal(text, await (await utf.TextStreamReaderAsync()).ReadToEndAsync());
 
-        var pdfEnc = new DictionaryBuilder().AsStream(PdfString.CreatePdfEncoding(text).Bytes);
+        var pdfEnc = new ValueDictionaryBuilder().AsStream(PdfString.CreatePdfEncoding(text).Bytes);
         Assert.Equal(text, await (await pdfEnc.TextStreamReaderAsync()).ReadToEndAsync());
             
     }

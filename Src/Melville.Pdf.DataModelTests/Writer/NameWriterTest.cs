@@ -25,7 +25,7 @@ public class NameWriterTest
     {
         var correctResult = printedAs.AsExtendedAsciiBytes();
         var dest = new MemoryStream();
-        await NameWriter.WriteAsync(PipeWriter.Create(dest), NameDirectory.Get(nameText));
+        await NameWriter.WriteAsync(PipeWriter.Create(dest), PdfDirectValue.CreateName(nameText));
         Assert.Equal(correctResult, dest.ToArray());
     }
 }

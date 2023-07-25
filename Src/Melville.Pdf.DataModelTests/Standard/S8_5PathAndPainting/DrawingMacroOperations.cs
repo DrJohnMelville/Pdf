@@ -21,7 +21,7 @@ public class DrawingMacroOperations
     public DrawingMacroOperations()
     {
         target.Setup(i => i.CreateDrawTarget()).Returns(drawTarget.Object);
-        var page = new PdfPage(new DictionaryBuilder().AsDictionary());
+        var page = new PdfPage(new ValueDictionaryBuilder().AsDictionary());
         sut = new RenderEngine(page, new(target.Object, 
             DocumentRendererFactory.CreateRenderer(page, WindowsDefaultFonts.Instance),
             NullOptionalContentCounter.Instance));

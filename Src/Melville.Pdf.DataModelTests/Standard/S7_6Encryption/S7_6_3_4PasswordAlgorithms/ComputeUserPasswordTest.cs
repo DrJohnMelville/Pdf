@@ -25,13 +25,13 @@ public class ComputeUserPasswordTest
     {
         var de = new ComputeEncryptionDictionary("User", "Owner", V, 3, keyLengthInBits, PdfPermission.None,
             ComputeOwnerPasswordV3.Instance, new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3());
-        var id = new PdfArray(
+        var id = new PdfValueArray(
             PdfString.CreateAscii("12345678901234567890123456789012"),
             PdfString.CreateAscii("12345678901234567890123456789012"));
         var encDict = de.CreateEncryptionDictionary(id);
-        var trailer = new DictionaryBuilder()
-            .WithItem(KnownNames.ID, id)
-            .WithItem(KnownNames.Encrypt, encDict)
+        var trailer = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.IDTName, id)
+            .WithItem(KnownNames.EncryptTName, encDict)
             .AsDictionary();
         var handler = await SecurityHandlerFactory.CreateSecurityHandlerAsync(trailer, encDict);
         Assert.NotNull(handler.TryComputeRootKey("User", PasswordType.User));
@@ -50,9 +50,9 @@ public class ComputeUserPasswordTest
     public async Task VerifyUserPasswordStreamAsync(
         bool succeed,string trailer, string passwords, PasswordType passwordType)
     {
-        var tDict = (PdfDictionary)await trailer.ParseObjectAsync();
+        var tDict = (PdfValueDictionary)await trailer.ParseObjectAsync();
         var handler = await  SecurityHandlerFactory.CreateSecurityHandlerAsync(
-            tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
+            tDict, await tDict.GetAsync<PdfValueDictionary>(KnownNames.EncryptTName));
         try
         {
             await handler.InteractiveGetCryptContextAsync(

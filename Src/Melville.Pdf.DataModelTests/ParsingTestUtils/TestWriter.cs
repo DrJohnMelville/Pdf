@@ -6,6 +6,7 @@ using Melville.FileSystem;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -27,11 +28,11 @@ public class TestWriter
 
 public static class TestWriterOperations
 {
-    public static async ValueTask<string> WriteToStringAsync(this PdfObject obj)
+    public static async ValueTask<string> WriteToStringAsync(this PdfIndirectValue obj)
     {
         var writer = new TestWriter();
         var objWriter = new PdfObjectWriter(writer.Writer);
-        await obj.Visit(objWriter);
+        objWriter.Write(obj);
         return writer.Result();
     }
 }

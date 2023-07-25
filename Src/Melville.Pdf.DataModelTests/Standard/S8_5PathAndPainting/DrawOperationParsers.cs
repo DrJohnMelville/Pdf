@@ -59,7 +59,7 @@ public class DrawOperationParsers: ParserTest
     [Fact]
     public Task DoOperationTestAsync()
     {
-        var name = NameDirectory.Get("BBB");
+        var name = PdfDirectValue.CreateName("BBB");
         return TestInputAsync("/BBB Do", i=>i.DoAsync(name));
         
     }

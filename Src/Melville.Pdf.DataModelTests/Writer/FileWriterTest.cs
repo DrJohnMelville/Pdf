@@ -29,25 +29,25 @@ public class FileWriterTest
     {
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
-            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
+            new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
         return await WriteAsync(builder.CreateDocument(majorVersion, minorVersion));
     }
     private async Task<string> OutputTwoItemDocumentAsync(byte majorVersion = 1, byte minorVersion = 7)
     {
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
-            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
-        builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
-        builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
+            new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
+        builder.AsIndirectReference(true); // includes a dead object to be skipped
+        builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         return await WriteAsync(builder.CreateDocument(majorVersion, minorVersion));
     }
     private async Task<string> OutputTwoItemRefStreamAsync(byte majorVersion = 1, byte minorVersion = 7)
     {
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
-            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
-        builder.AsIndirectReference(PdfBoolean.True); // includes a dead object to be skipped
-        builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
+            new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
+        builder.AsIndirectReference(true); // includes a dead object to be skipped
+        builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         PdfLowLevelDocument doc = builder.CreateDocument(majorVersion, minorVersion);
         var target = new TestWriter();
         var writer = new XrefStreamLowLevelDocumentWriter(target.Writer, doc);
@@ -73,7 +73,7 @@ public class FileWriterTest
     {
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
-            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
+            new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
         return Assert.ThrowsAsync<ArgumentException>(
             ()=> OutputSimpleDocumentAsync(majorVersion, minorVersion));
             

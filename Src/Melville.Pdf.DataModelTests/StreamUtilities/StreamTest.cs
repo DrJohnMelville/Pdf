@@ -4,6 +4,7 @@ using Melville.Hacks;
 using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
 
@@ -12,7 +13,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities;
 public static class StreamTest
 {
     public static async Task TestContentAsync(
-        string encoded, string decoded, PdfName decoder, PdfObject parameters) =>
+        string encoded, string decoded, PdfDirectValue decoder, PdfObject parameters) =>
         await VerifyStreamContentAsync(decoded,
             await StaticCodecFactory.CodecFor(decoder)
                 .DecodeOnReadStreamAsync(StringAsAsciiStream(encoded), parameters));

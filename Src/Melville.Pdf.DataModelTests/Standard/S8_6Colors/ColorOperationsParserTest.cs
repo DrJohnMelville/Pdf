@@ -6,6 +6,7 @@ using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
@@ -46,14 +47,14 @@ public partial class ColorOperationsParserTest: ParserTest
     {
         [DelegateTo()] private IContentStreamOperations fake = null!;
 
-        private PdfName? expectedName;
+        private PdfDirectValue? expectedName;
 
-        public StrokeColorExtendedMock(PdfName? expectedName)
+        public StrokeColorExtendedMock(PdfDirectValue? expectedName)
         {
             this.expectedName = expectedName;
         }
 
-        public ValueTask SetStrokeColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
+        public ValueTask SetStrokeColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors)
         {
             Assert.Equal(expectedName, patternName);
             Assert.Equal(new double[]{1,2,3}, colors.ToArray());
@@ -66,20 +67,20 @@ public partial class ColorOperationsParserTest: ParserTest
         new StrokeColorExtendedMock(null));
     [Fact]
     public Task SetStrokingExtended2Async() => TestInputAsync("1 2 3 /P1 SCN", 
-        new StrokeColorExtendedMock(NameDirectory.Get("P1")));
+        new StrokeColorExtendedMock(PdfDirectValue.CreateName("P1")));
 
     private partial class NonStrokeColorExtendedMock : MockBase, IContentStreamOperations
     {
         [DelegateTo()] private IContentStreamOperations fake = null!;
 
-        private PdfName? expectedName;
+        private PdfDirectValue? expectedName;
 
-        public NonStrokeColorExtendedMock(PdfName? expectedName)
+        public NonStrokeColorExtendedMock(PdfDirectValue? expectedName)
         {
             this.expectedName = expectedName;
         }
 
-        public ValueTask SetNonstrokingColorExtendedAsync(PdfName? patternName, in ReadOnlySpan<double> colors)
+        public ValueTask SetNonstrokingColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors)
         {
             Assert.Equal(expectedName, patternName);
             Assert.Equal(new double[]{1,2,3}, colors.ToArray());
@@ -92,7 +93,7 @@ public partial class ColorOperationsParserTest: ParserTest
         new NonStrokeColorExtendedMock(null));
     [Fact]
     public Task SetNonStrokingExtended2Async() => TestInputAsync("1 2 3 /P1 scn", 
-        new NonStrokeColorExtendedMock(NameDirectory.Get("P1")));
+        new NonStrokeColorExtendedMock(PdfDirectValue.CreateName("P1")));
     
     [Fact]
     public Task SetStrokeGrayAsync() => TestInputAsync("12 G", i => i.SetStrokeGrayAsync(12));

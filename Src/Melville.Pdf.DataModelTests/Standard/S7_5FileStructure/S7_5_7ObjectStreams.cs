@@ -29,10 +29,10 @@ public class S7_5_7ObjectStreams
     [InlineData("1 0 2 7 11111\n222222")]
     public async Task RawLoadObjectStreamAsync(string streamText)
     {
-        var os = new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.ObjStm)
-            .WithItem(KnownNames.N, 2)
-            .WithItem(KnownNames.First, 8)
+        var os = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
+            .WithItem(KnownNames.NTName, 2)
+            .WithItem(KnownNames.FirstTName, 8)
             .AsStream(streamText);
 
         var res = new IndirectObjectResolver();
@@ -48,10 +48,10 @@ public class S7_5_7ObjectStreams
     [Fact]
     public async Task EmptyObjectStreamAsync()
     {
-        var os = new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.ObjStm)
-            .WithItem(KnownNames.N, 0)
-            .WithItem(KnownNames.First, 0)
+        var os = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
+            .WithItem(KnownNames.NTName, 0)
+            .WithItem(KnownNames.FirstTName, 0)
             .AsStream(Array.Empty<byte>());
 
         var res = new IndirectObjectResolver();
@@ -95,18 +95,18 @@ public class S7_5_7ObjectStreams
     public void CannotPutStreamInObjectStream()
     {
         Assert.False(new ObjectStreamBuilder().TryAddRef(
-            new PdfIndirectObject(2,0,new DictionaryBuilder().AsStream("Hello"))));
+            new PdfIndirectObject(2,0,new ValueDictionaryBuilder().AsStream("Hello"))));
     }
     [Fact]
     public void CannotPutNonZeroGenerationStream()
     {
-        Assert.False(new ObjectStreamBuilder().TryAddRef(new PdfIndirectObject(12,1, KnownNames.All)));
+        Assert.False(new ObjectStreamBuilder().TryAddRef(new PdfIndirectObject(12,1, KnownNames.AllTName)));
     }
         
     private static async Task<string> DocWithObjectStreamAsync()
     {
         var builder = LowLevelDocumentBuilderFactory.New();
-        using (builder.ObjectStreamContext(new DictionaryBuilder()))
+        using (builder.ObjectStreamContext(new ValueDictionaryBuilder()))
         {
             builder.Add(PdfString.CreateAscii("One"));
             builder.Add(PdfString.CreateAscii("Two"));
@@ -117,7 +117,7 @@ public class S7_5_7ObjectStreams
     private static async Task<string> DocWithObjectStreamWithHighObjectNumberAsync()
     {
         var builder = LowLevelDocumentBuilderFactory.New();
-        using (builder.ObjectStreamContext(new DictionaryBuilder()))
+        using (builder.ObjectStreamContext(new ValueDictionaryBuilder()))
         {
             builder.Add(PdfString.CreateAscii("One"));
             builder.Add(new PdfIndirectObject(20, 0, PdfString.CreateAscii("Two")));
@@ -141,7 +141,7 @@ public class S7_5_7ObjectStreams
         var builder = new ObjectStreamBuilder();
         builder.TryAddRef(new PdfIndirectObject(1,0,PdfString.CreateAscii("One")));
         builder.TryAddRef(new PdfIndirectObject(2,0,PdfString.CreateAscii("Two")));
-        var str = (PdfStream)await builder.CreateStreamAsync(new DictionaryBuilder());
+        var str = (PdfValueStream)await builder.CreateStreamAsync(new ValueDictionaryBuilder());
 
         var output = await str.GetIncludedObjectNumbersAsync();
         Assert.Equal(1, output[0].ObjectNumber);
@@ -163,7 +163,7 @@ public class S7_5_7ObjectStreams
         Assert.Equal(embeddedStream, (await doc.Objects[(2,0)].DirectValueAsync()).ToString());
         
         // string is not encoded inside stream
-        var objSter = (PdfStream)(await doc.Objects[(3, 0)].DirectValueAsync());
+        var objSter = (PdfValueStream)(await doc.Objects[(3, 0)].DirectValueAsync());
         var strText = await new StreamReader(await objSter.StreamContentAsync()).ReadToEndAsync();
         Assert.Contains(strText, strText);
     }

@@ -4,6 +4,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -14,39 +15,39 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 public class S7_6_5CryptFilters
 {
     private async Task VerifyStringAndStreamEncodingAsync(bool hideStream, bool hideString,
-        ILowLevelDocumentCreator creator, PdfName? cryptFilterTypeForStream = null)
+        ILowLevelDocumentCreator creator, PdfDirectValue? cryptFilterTypeForStream = null)
     {
-        creator.Add(PdfString.CreateAscii("plaintext string"));
+        creator.Add(PdfDirectValue.CreateString("plaintext string"u8));
         creator.Add(InsertedStream(creator, cryptFilterTypeForStream));
         var str = await creator.AsStringAsync();
         Assert.Equal(!hideString, str.Contains("plaintext string"));
         Assert.Equal(!hideStream, str.Contains("plaintext stream"));
         var doc = await str.ParseDocumentAsync();
         Assert.Equal(3, doc.Objects.Count);
-        Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].DirectValueAsync()).ToString());
+        Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].LoadValueAsync()).ToString());
         Assert.Equal("plaintext stream", await (
-                await ((PdfStream)(
-                    await doc.Objects[(3, 0)].DirectValueAsync().CA())).StreamContentAsync())
+                await (
+                    await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfValueStream>().StreamContentAsync())
             .ReadAsStringAsync());
     }
 
-    private PdfStream InsertedStream(
-        IPdfObjectCreatorRegistry creator, PdfName? cryptFilterTypeForStream)
+    private PdfValueStream InsertedStream(
+        IPdfObjectCreatorRegistry creator, PdfDirectValue? cryptFilterTypeForStream)
     {
-        var builder = cryptFilterTypeForStream == null ?
-            new DictionaryBuilder():
-            EncryptedStreamBuilder(cryptFilterTypeForStream);
+        var builder = !cryptFilterTypeForStream.HasValue ?
+            new ValueDictionaryBuilder():
+            EncryptedStreamBuilder(cryptFilterTypeForStream.Value);
 
         return builder.AsStream("plaintext stream");
     }
 
-    private static DictionaryBuilder EncryptedStreamBuilder(PdfName cryptFilterTypeForStream)
+    private static ValueDictionaryBuilder EncryptedStreamBuilder(PdfDirectValue cryptFilterTypeForStream)
     {
-        return new DictionaryBuilder()
+        return new ValueDictionaryBuilder()
             .WithFilter(FilterName.Crypt)
-            .WithFilterParam(new DictionaryBuilder()
-                .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
-                .WithItem(KnownNames.Name, cryptFilterTypeForStream).AsDictionary());
+            .WithFilterParam(new ValueDictionaryBuilder()
+                .WithItem(KnownNames.TypeTName, KnownNames.CryptFilterDecodeParmsTName)
+                .WithItem(KnownNames.NameTName, cryptFilterTypeForStream).AsDictionary());
     }
 
     [Theory]
@@ -58,7 +59,7 @@ public class S7_6_5CryptFilters
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            Encoder(hideStream), Encoder(hideString), Encoder(hideStream), new V4CfDictionary(KnownNames.V2, 16)));
+            Encoder(hideStream), Encoder(hideString), Encoder(hideStream), new V4CfDictionary(KnownNames.V2TName, 16)));
         await VerifyStringAndStreamEncodingAsync(hideStream, hideString, creator);
     }
 
@@ -67,8 +68,8 @@ public class S7_6_5CryptFilters
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF, new V4CfDictionary(KnownNames.V2, 16)));
-        return VerifyStringAndStreamEncodingAsync(false, true, creator, KnownNames.Identity);
+            KnownNames.StdCFTName, KnownNames.StdCFTName, KnownNames.StmFTName, new V4CfDictionary(KnownNames.V2TName, 16)));
+        return VerifyStringAndStreamEncodingAsync(false, true, creator, KnownNames.IdentityTName);
     }
 
     [Fact]
@@ -76,8 +77,8 @@ public class S7_6_5CryptFilters
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            KnownNames.Identity, KnownNames.StdCF, KnownNames.StmF, new V4CfDictionary(KnownNames.V2, 16)));
-        return VerifyStringAndStreamEncodingAsync(true, true, creator, KnownNames.StdCF);
+            KnownNames.IdentityTName, KnownNames.StdCFTName, KnownNames.StmFTName, new V4CfDictionary(KnownNames.V2TName, 16)));
+        return VerifyStringAndStreamEncodingAsync(true, true, creator, KnownNames.StdCFTName);
     }
 
     [Fact]
@@ -85,11 +86,11 @@ public class S7_6_5CryptFilters
     {
         var creator = LowLevelDocumentBuilderFactory.New();
         creator.AddEncryption(DocumentEncryptorFactory.V4("","", PdfPermission.None,
-            Encoder(true), Encoder(true),Encoder(true), new V4CfDictionary(KnownNames.None, 16)));
+            Encoder(true), Encoder(true),Encoder(true), new V4CfDictionary(KnownNames.NoneTName, 16)));
         return VerifyStringAndStreamEncodingAsync(false, false, creator);
             
     }
         
-    private static PdfName Encoder(bool hideString) => 
-        hideString?KnownNames.StdCF:KnownNames.Identity;
+    private static PdfDirectValue Encoder(bool hideString) => 
+        hideString?KnownNames.StdCFTName:KnownNames.IdentityTName;
 }

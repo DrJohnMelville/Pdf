@@ -5,7 +5,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
-using PdfDictionary = Melville.Pdf.LowLevel.Model.Objects.PdfDictionary;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
