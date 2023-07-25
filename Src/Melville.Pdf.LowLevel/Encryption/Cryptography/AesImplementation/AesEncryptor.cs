@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -14,7 +15,7 @@ internal class AesEncryptor : ICipherOperations
         this.encryptor = encryptor;
     }
 
-    public byte[] CryptSpan(byte[] input)
+    public Span<byte> CryptSpan(Span<byte> input)
     {
         using var ms = new MemoryStream();
         ms.Write(encryptor.IV);

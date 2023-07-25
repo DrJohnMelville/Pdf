@@ -61,7 +61,7 @@ public readonly struct ValueDictionaryBuilder
     /// </summary>
     /// <param name="value">The object to test</param>
     /// <returns>True if the object can be omitted from the PDF file, false otherwise.</returns>
-    public static bool IsEmptyObject(PdfIndirectValue value) => !value.IsNull;
+    public static bool IsEmptyObject(PdfIndirectValue value) => value.IsNull;
 
     /// <summary>
     /// Add an item to this builder, potentially replacing and item with the same key.

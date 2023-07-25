@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
@@ -24,9 +25,8 @@ public class NameWriterTest
     [InlineData("/The_Key_of_F#23_Minor","The_Key_of_F#_Minor")]
     public async Task WriteNameAsync(string printedAs, string nameText)
     {
-        var correctResult = printedAs.AsExtendedAsciiBytes();
-        var dest = new MemoryStream();
-        await NameWriter.WriteAsync(PipeWriter.Create(dest), PdfDirectValue.CreateName(nameText));
-        Assert.Equal(correctResult, dest.ToArray());
+        var pdfDirectValue = PdfDirectValue.CreateName(nameText);
+        Assert.Equal(printedAs, await pdfDirectValue.WriteToStringAsync());
+
     }
 }

@@ -8,6 +8,9 @@ using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Postscript.Interpreter.Values;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
@@ -37,9 +40,39 @@ internal class PdfObjectWriter
         }
     }
 
-    public void Write(PdfDirectValue item) =>
-        // Assert that item is not a Stream
-        throw new NotFiniteNumberException();
+    public void Write(PdfDirectValue item)
+    {
+        switch (item)
+        {
+            case {IsInteger:true}:
+                IntegerWriter.Write(target, item.Get<long>());
+                break;
+            case {IsDouble:true}:
+                DoubleWriter.Write(target, item.Get<double>());
+                break;
+            case {IsBool:true}:
+                Write(item.Get<bool>()?"true"u8:"false"u8);
+                break;
+            case {IsNull:true}:
+                Write("null"u8);
+                break;
+            case {IsName:true}:
+                NameWriter.Write(target, item);
+                break;
+            case {IsString:true}:
+                StringWriter.Write(target, item.Get<StringSpanSource>().GetSpan(), 
+                    CreateEncryptor());
+                break;
+            case var x when x.TryGet(out PdfValueArray arr):
+                ArrayWriter.WriteArray(this, arr);
+                break;
+            case var x when x.TryGet(out PdfValueDictionary dict):
+                DictionaryWriter.Write(this, dict.RawItems);
+                break;
+            default:
+                throw new NotImplementedException($"Cannot write value {item}");
+        }
+    }
 
     public void Write(in ReadOnlySpan<byte> literal)
     {
@@ -70,18 +103,15 @@ internal class PdfObjectWriter
             encryptor.ContextForObject(currentIndirectObject.Value.ObjectNum, 
                 currentIndirectObject.Value.Generation);
 
-
+    #warning -- get rid of this comment when all the tests pass
     /*
     // this is an unusual situation where the methods have to not be named async to
     //implement the interface which is defined over a valueType
     public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
         TokenValueWriter.WriteAsync(target, item);
+
     public override ValueTask<FlushResult> Visit(PdfString item) => 
         StringWriter.WriteAsync(target, item, CreateEncryptor());
-    public override ValueTask<FlushResult> Visit(PdfInteger item) =>
-        IntegerWriter.WriteAndFlushAsync(target, item.IntValue);
-    public override ValueTask<FlushResult> Visit(PdfDouble item) =>
-        DoubleWriter.WriteAsync(target, item.DoubleValue);
 
     public override ValueTask<FlushResult> VisitTopLevelObject(PdfIndirectObject item)
     { 

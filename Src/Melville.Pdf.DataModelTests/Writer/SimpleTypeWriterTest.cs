@@ -32,7 +32,7 @@ public class SimpleTypeWriterTest
     public async Task WriteStringsAsync(string source, string dest)
     {
         Assert.Equal(dest, await PdfDirectValue.CreateString(source.AsExtendedAsciiBytes()).WriteToStringAsync());
-        Assert.Equal(source, (await dest.ParseObjectAsync()).ToString());
+        Assert.Equal(source, (await dest.ParseValueObjectAsync()).ToString());
             
     }
     [Theory]
@@ -93,6 +93,6 @@ public class SimpleTypeWriterTest
     {
         var array = new ValueDictionaryBuilder()
             .WithItem(KnownNames.LengthTName, 5).AsStream("Hello");
-        Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await ((PdfDirectValue)array).WriteToStringAsync());
+        Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await ((PdfDirectValue)array).WriteStreamToStringAsync());
     }
 }

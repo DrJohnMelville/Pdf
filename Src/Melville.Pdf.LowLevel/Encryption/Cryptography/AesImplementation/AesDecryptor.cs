@@ -14,13 +14,14 @@ internal class AesDecryptor: ICipherOperations
         this.encryptor = encryptor;
     }
 
-    public byte[] CryptSpan(byte[] input)
+    public Span<byte> CryptSpan(Span<byte> input)
     {
         var blockSizeInBytes = encryptor.BlockSize / 8;
-        encryptor.IV = input[..blockSizeInBytes];
+        #warning -- get rid of the ToArray
+        encryptor.IV = input[..blockSizeInBytes].ToArray();
         using var ms = new MemoryStream();
         using var cryptStream = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write);
-        cryptStream.Write(input.AsSpan(blockSizeInBytes));
+        cryptStream.Write(input[blockSizeInBytes..]);
         cryptStream.FlushFinalBlock();
         return ms.ToArray();
     }

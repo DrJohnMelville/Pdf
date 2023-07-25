@@ -19,7 +19,7 @@ internal interface ICipherOperations
     /// Encrypt or decrypt a span of bytes.  If the length of plaintext is the same as the length of the
     /// ciphertext , then this function is allowed to do the decryption in place and return the original span
     /// </summary>
-    byte[] CryptSpan(byte[] input);
+    Span<byte> CryptSpan(Span<byte> input);
     Stream CryptStream(Stream input);
 }
 

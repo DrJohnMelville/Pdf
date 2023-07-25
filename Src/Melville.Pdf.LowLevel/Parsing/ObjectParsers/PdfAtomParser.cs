@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -32,6 +33,7 @@ internal abstract class PdfAtomParser : IPdfObjectParser
 
 internal static class DecryptStringOperation
 {
-    public static PdfString CreateDecryptedString(this IParsingReader reader, byte[] text) =>
-        new(reader.ObjectCryptContext().StringCipher().Decrypt().CryptSpan(text));
+    public static PdfDirectValue CreateDecryptedString(this IParsingReader reader, byte[] text) =>
+        PdfDirectValue.CreateName(
+            reader.ObjectCryptContext().StringCipher().Decrypt().CryptSpan(text));
 }

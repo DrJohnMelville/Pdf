@@ -16,6 +16,13 @@ internal static class StringWriter
         return writer.FlushAsync();
     }
 
+    public static void Write(
+        PipeWriter writer, in Span<byte> value, IObjectCryptContext encryptor)
+    {
+        var encrypted = encryptor.StringCipher().Encrypt().CryptSpan(value);
+        WriteSpanAsString(writer, encrypted);
+    }
+
     public static void WriteSpanAsString(PipeWriter writer, in ReadOnlySpan<byte> encrypted)
     {
         var buffer = writer.GetSpan(MaximumRenderedStringLength(encrypted.Length));

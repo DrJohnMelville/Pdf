@@ -22,7 +22,8 @@ internal class StringDecoderParser<T, TState> : PdfAtomParser
                 throw new PdfParseException("Unterminated String");
             return PdfTokenValues.Null.AsFalseValue(out obj);
         }
-        obj = source.CreateDecryptedString(stringBytes);
+//        obj = source.CreateDecryptedString(stringBytes);
+        obj = null;
         return true;
     }
 }

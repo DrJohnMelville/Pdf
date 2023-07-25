@@ -55,5 +55,5 @@ internal static class DictionaryWriter
         !itemValue.TryGetEmbeddedDirectValue(out var dv) || NeedsLeadingSpace(dv);
 
         private static bool NeedsLeadingSpace(PdfDirectValue itemValue) => itemValue is
-            { IsName: true } or { IsNull: true } or { IsBool: true };
+            { IsName: true } or { IsNull: true } or { IsBool: true } or {IsNumber:true};
 }

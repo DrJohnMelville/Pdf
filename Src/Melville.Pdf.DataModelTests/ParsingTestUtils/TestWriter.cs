@@ -35,6 +35,15 @@ public static class TestWriterOperations
         var writer = new TestWriter();
         var objWriter = new PdfObjectWriter(writer.Writer);
         objWriter.Write(obj);
+        await writer.Writer.FlushAsync();
+        return writer.Result();
+    }
+    public static async ValueTask<string> WriteStreamToStringAsync(this PdfDirectValue obj)
+    {
+        var writer = new TestWriter();
+        var objWriter = new PdfObjectWriter(writer.Writer);
+        await objWriter.WriteStreamAsync(obj.Get<PdfValueStream>());
+        await writer.Writer.FlushAsync();
         return writer.Result();
     }
 }

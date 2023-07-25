@@ -84,7 +84,7 @@ internal readonly struct ContentStreamPipeWriter
 
     public void WriteName(PdfDirectValue name)
     {
-        NameWriter.WriteWithoutlush(destPipe, name);
+        NameWriter.Write(destPipe, name);
         WriteSpace();
     }
 

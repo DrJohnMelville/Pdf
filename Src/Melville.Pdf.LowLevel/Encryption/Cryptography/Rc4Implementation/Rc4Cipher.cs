@@ -13,7 +13,7 @@ internal class Rc4Cipher: ICipherOperations, ICipher
         cryptoImplementation = new RC4(finalKey);
     }
 
-    public byte[] CryptSpan(byte[] input)
+    public Span<byte> CryptSpan(Span<byte> input)
     {
         cryptoImplementation.TransfromInPlace(input);
         return input;

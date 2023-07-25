@@ -21,11 +21,11 @@ internal partial class NullSecurityHandler:
     public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) => this;
     public ICipher StringCipher() => this;
     public ICipher StreamCipher() => this;
-    public ICipher NamedCipher(in PdfDirectValue name) =>
-        (name.Equals(KnownNames.IdentityTName)) ? this :
+    public ICipher NamedCipher(in PdfDirectValue name) => 
+        name.Equals(KnownNames.IdentityTName) ? this :
             throw new PdfParseException("Should not have a crypt filter in an unencrypted document.");
     public ICipherOperations Encrypt() => this;
     public ICipherOperations Decrypt() => this;
-    public byte[] CryptSpan(byte[] input) => input;
+    public Span<byte> CryptSpan(Span<byte> input) => input;
     public Stream CryptStream(Stream input) => input;
 }
