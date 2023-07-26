@@ -1,20 +1,15 @@
-﻿using Melville.MVVM.WaitingServices;
+﻿using Melville.INPC;
+using Melville.MVVM.WaitingServices;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
-public readonly struct ParsePdfObjectsToView
+public readonly partial struct ParsePdfObjectsToView
 {
-    private readonly IWaitingService waiting;
-    private readonly PdfIndirectValue[] sourceList;
+    [FromConstructor] private readonly IWaitingService waiting;
+    [FromConstructor] private readonly KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>[] sourceList;
 
-    public ParsePdfObjectsToView(IWaitingService waiting, PdfIndirectValue[] sourceList)
-    {
-        this.waiting = waiting;
-        this.sourceList = sourceList;
-    }
-    
     private const int maxSegmentLength = 1000;
 
     public async Task<DocumentPart[]> ParseItemElementsAsync()
@@ -38,7 +33,7 @@ public readonly struct ParsePdfObjectsToView
         return ret;
     }
 
-    private Memory<PdfIndirectValue> MemoryForSegment(int i) => 
+    private Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> MemoryForSegment(int i) => 
         sourceList.AsMemory(i * maxSegmentLength, SegmentLength(i));
 
     private int SegmentLength(int i) => 

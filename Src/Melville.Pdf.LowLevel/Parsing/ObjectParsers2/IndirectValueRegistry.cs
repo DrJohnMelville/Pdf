@@ -19,7 +19,7 @@ internal class IndirectValueRegistry : IIndirectValueSource
     private readonly UnenclosedDeferredPdfStrategy unenclosedObjectStrategy;
     private readonly ObjectStreamDeferredPdfStrategy objectStreamStrategy;
 
-    private readonly Dictionary<(int, int), PdfDirectValue> items = new();
+    private readonly Dictionary<(int, int), PdfIndirectValue> items = new();
 
     public IndirectValueRegistry(ParsingFileOwner owner)
     {
@@ -38,16 +38,16 @@ internal class IndirectValueRegistry : IIndirectValueSource
         var item = CollectionsMarshal.GetValueRefOrNullRef(items, MementoToPair(memento));
         if (Unsafe.IsNullRef(ref item)) return PdfDirectValue.CreateNull();
 
-        if (item.TryGet(out DeferredPdfHolder deferred))
-        {
-            item = await deferred.GetAsync().CA();
-        }
+        if (item.TryGetEmbeddedDirectValue(out var dv)) return dv;
 
-        return item;
+        var ret = await item.LoadValueAsync().CA();
+        item = ret;
+        return ret;
     }
 
 
-    public void RegisterDirectObject(int number, int generation, in PdfDirectValue value) =>
+    #warning if Value is null we can just clear the record which may save a bunch of memory on some files
+    public void RegisterDirectObject(int number, int generation, in PdfIndirectValue value) =>
         items[(number,generation)] = value;
 
     private static MementoUnion PairToMemento(int number, int generation) => 
@@ -69,60 +69,59 @@ internal class IndirectValueRegistry : IIndirectValueSource
         items[MementoToPair(memento)] = value;
 
     public void RegisterUnenclosedObject(int number, int generation, long offset) => 
-        RegisterDirectObject(number, generation, unenclosedObjectStrategy.Create(offset));
+        RegisterDirectObject(number, generation, unenclosedObjectStrategy.Create(offset, number, generation));
 
     public void RegisterObjectStreamObject(int number, int streamNumber, int streamPosition) =>
         RegisterDirectObject(number, 0,
             objectStreamStrategy.Create(streamNumber, streamPosition));
 
-    public IReadOnlyDictionary<(int, int), PdfIndirectValue> GetObjects()
-    {
-        return new IndirectRegistryWrapper<(int, int)>(items);
-    }
+    public IReadOnlyDictionary<(int, int), PdfIndirectValue> GetObjects() => items;
 }
 
-internal interface IDeferredPdfObject: IPostscriptValueStrategy<DeferredPdfHolder>
-{
-    public ValueTask<PdfDirectValue> GetValue(MementoUnion memento);
-
-    DeferredPdfHolder IPostscriptValueStrategy<DeferredPdfHolder>.GetValue(
-        in MementoUnion memento) => new DeferredPdfHolder(this, memento);
-}
-
-internal readonly partial struct DeferredPdfHolder
-{
-    [FromConstructor] private readonly IDeferredPdfObject strategy;
-    [FromConstructor] private readonly MementoUnion memento;
-
-    public ValueTask<PdfDirectValue> GetAsync() => strategy.GetValue(memento);
-}
-
-internal partial class UnenclosedDeferredPdfStrategy : IDeferredPdfObject
+internal partial class UnenclosedDeferredPdfStrategy : IIndirectValueSource
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
 
-    public ValueTask<PdfDirectValue> GetValue(MementoUnion memento)
+    public string GetValue(in MementoUnion memento) => $"Raw Offset Reference @{memento.UInt64s[0]}";
+
+    public async ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
     {
-        throw new NotImplementedException("Need to Read a root pdf value");
+        var objectNumber = memento.Int32s[0];
+        var generation = memento.Int32s[1];
+        var offset = memento.Int64s[1];
+        var reader = await owner.RentReaderAsync(offset, objectNumber, generation).CA();
+        var result = await reader.NewRootObjectParser.ParseTopLevelObject().CA();
+        return result;
     }
 
-    public PdfDirectValue Create(long offset)
+    public bool TryGetObjectReference(out int objectNumber, out int generation, MementoUnion memento)
     {
-        return new(this, MementoUnion.CreateFrom(offset));
+        objectNumber = memento.Int32s[0];
+        generation = memento.Int32s[1];
+        return true;
     }
+
+    public PdfIndirectValue Create(long offset, int number, int generation) => new(this, MementoUnion.CreateFrom(number, generation, offset));
 }
 
-internal partial class ObjectStreamDeferredPdfStrategy : IDeferredPdfObject
+internal partial class ObjectStreamDeferredPdfStrategy : IIndirectValueSource
 {
     [FromConstructor] private readonly IndirectValueRegistry owner;
 
-    public ValueTask<PdfDirectValue> GetValue(MementoUnion memento)
+    public string GetValue(in MementoUnion memento) =>
+        $"Load from Object Stream # {memento.Int32s[0]} as position {memento.Int32s[1]}";
+
+    public ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
     {
-        throw new NotImplementedException("Need to Read ObjectStrea pdf values");
+        throw new NotImplementedException("Load object from object stream not implemented");
     }
 
-    public PdfDirectValue Create(int streamNum, int streamPosition)
+    public bool TryGetObjectReference(out int objectNumber, out int generation, MementoUnion memento)
     {
-        return new(this, MementoUnion.CreateFrom(streamNum, streamPosition));
+        objectNumber = generation = -1;
+        return false;
     }
+
+    public PdfIndirectValue Create(int streamNum, int streamPosition) => 
+        new(this, MementoUnion.CreateFrom(streamNum, streamPosition));
 }

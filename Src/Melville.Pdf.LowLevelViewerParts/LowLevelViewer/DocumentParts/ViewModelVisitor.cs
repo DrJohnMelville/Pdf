@@ -1,10 +1,5 @@
-﻿using System.Globalization;
-using System.Net.NetworkInformation;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
+﻿using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Pages;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
@@ -15,25 +10,7 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
 public class ViewModelVisitor
 {
-
-    public ValueTask<DocumentPart> VisitTopLevelObject(PdfIndirectValue item)
-    {
-        return new(new DocumentPart("Need to Implement the object printer."));
-    }
-    public ValueTask<DocumentPart> GeneratePartAsync(string trailer, PdfValueDictionary lowlevelTrailerDictionary)
-    {
-        return new(new DocumentPart("Need to implement trailer dictionary printer"));
-    }
-
-    /*
     private string prefix = "";
-
-    public ValueTask<DocumentPart> GeneratePartAsync(string newPrefix, PdfValueDictionary item)
-    {
-        prefix = newPrefix;
-        return item.InvokeVisitor(this);
-    }
-
     private string ConsumePrefix()
     {
         var ret = prefix;
@@ -41,22 +18,116 @@ public class ViewModelVisitor
         return ret;
     }
 
-    private ValueTask<DocumentPart> TerminalAsync(string text) => 
-        new ValueTask<DocumentPart>(new DocumentPart(ConsumePrefix() + text));
-
-    public async ValueTask<DocumentPart> Visit(PdfArray item)
+    public DocumentPart GeneratePartAsync(string trailer, PdfIndirectValue dictionary)
     {
-        var title = prefix + "Array";
-        var children = new DocumentPart[item.Count];
-        for (int i = 0; i < children.Length; i++)
-        {
-            children[i] = await GeneratePartAsync($"[{i}]: ", item.RawItems[i]);
-        }
-
-        return new DocumentPart(title, children);
+        prefix = trailer;
+        return GenerateForObject(dictionary);
     }
 
-    public ValueTask<DocumentPart> Visit(PdfBoolean item) => TerminalAsync(item.ToString());
+    private DocumentPart GenerateForObject(PdfIndirectValue indir) =>
+        indir.TryGetEmbeddedDirectValue(out var dirValue)
+            ? GenerateForObject(dirValue)
+            : RenderReference(indir.GetObjectReference());
+
+
+    private DocumentPart GenerateForObject(PdfDirectValue directValue)
+    {
+        return directValue switch
+        {
+            {IsString: true} => TerminalNode($"({directValue})"),
+            {IsName: true} => TerminalNode($"/{directValue}"),
+            var x when x.TryGet(out PdfValueArray array) => ParseArray(array),
+            var x when x.TryGet(out PdfValueStream stream) => ParseStream(stream),
+            var x when x.TryGet(out PdfValueDictionary dictionary) => ParseDictionary(dictionary),
+            _ => TerminalNode(directValue.ToString())
+        };
+    }
+
+    private DocumentPart ParseStream(PdfValueStream stream)
+    {
+        var localPrefix = ConsumePrefix();
+        var items = ParseDictionaryFields(stream, out var nodeType, out var subType);
+        return SelectSpecialStream(localPrefix, nodeType, subType, stream, items);
+    }
+
+    private DocumentPart SelectSpecialStream(
+        string localPrefix, PdfDirectValue nodeType, PdfDirectValue nodeSubType, PdfValueStream stream, 
+        DocumentPart[] items)
+    {
+        if (nodeSubType.Equals(KnownNames.ImageTName))
+            return new ImagePartViewModel($"{localPrefix}Image Stream", items, stream);
+        if (nodeType.Equals(KnownNames.XRefTName))
+            return new XrefPartViewModel($"{localPrefix}Xref Stream", items, stream);
+        return new StreamPartViewModel($"{localPrefix}Stream", items, stream);
+    }
+
+    private DocumentPart ParseDictionary(PdfValueDictionary dictionary)
+    {
+        var localPrefix = ConsumePrefix();
+        var items = ParseDictionaryFields(dictionary, out var nodeType, out _);
+        return SelectSpecialDictionaryView(dictionary, nodeType, localPrefix, items);
+    }
+
+    private static DocumentPart SelectSpecialDictionaryView(
+        PdfValueDictionary dictionary, PdfDirectValue nodeType, string localPrefix, DocumentPart[] items) =>
+        nodeType switch
+        {
+            var x when x.Equals(KnownNames.FontTName) =>
+                new FontPartViewModel(localPrefix + "Font", dictionary, items),
+            var x when x.Equals(KnownNames.PageTName) =>
+                new PagePartViewModel(localPrefix + "Page", items, new PdfPage(dictionary)),
+            _ => new DocumentPart($"{localPrefix}Dictionary", items)
+        };
+
+    private DocumentPart[] ParseDictionaryFields(PdfValueDictionary dictionary, out PdfDirectValue nodeType,
+        out PdfDirectValue nodeSubType)
+    {
+        var items = new DocumentPart[dictionary.Count];
+        int position = 0;
+        nodeType = default;
+        nodeSubType = default;
+        foreach (var item in dictionary.RawItems)
+        {
+            CheckForType(item, KnownNames.TypeTName, ref nodeType);
+            CheckForType(item, KnownNames.SubtypeTName, ref nodeSubType);
+            CheckForType(item, KnownNames.STName, ref nodeSubType);
+            items[position++] = GeneratePartAsync($"/{item.Key}: ", item.Value);
+        }
+
+        return items;
+    }
+
+    public void CheckForType(
+        in KeyValuePair<PdfDirectValue, PdfIndirectValue> item, PdfDirectValue name,
+        ref PdfDirectValue value)
+    {
+        if (item.Key.Equals(name) &&
+            item.Value.TryGetEmbeddedDirectValue(out var typeValue))
+            value = typeValue;
+    }
+
+    private DocumentPart ParseArray(PdfValueArray value)
+    {
+        var localPrefix = ConsumePrefix();
+        var items = new DocumentPart[value.Count];
+        for (int i = 0; i < items.Length; i++) 
+            items[i] = GeneratePartAsync($"[{i}]: ", value.RawItems[i]);
+
+        return new DocumentPart($"{localPrefix}Array", items);
+    }
+
+    private DocumentPart TerminalNode(string text) => new(ConsumePrefix() + text);
+
+    private DocumentPart RenderReference((int ObjectNumber, int Generation) item) => 
+        new ReferencePartViewModel(ConsumePrefix(), item.ObjectNumber, item.Generation);
+
+    /*
+        prefix = newPrefix;
+        return item.InvokeVisitor(this);
+    }
+
+    private ValueTask<DocumentPart> TerminalAsync(string text) => 
+        new ValueTask<DocumentPart>(new DocumentPart(ConsumePrefix() + text));
 
     public async ValueTask<DocumentPart> Visit(PdfDictionary item)
     {
@@ -93,27 +164,10 @@ public class ViewModelVisitor
     private ValueTask<DocumentPart> GenerateDictionaryItemAsync(KeyValuePair<PdfName, PdfObject> item) => 
         GeneratePartAsync($"{item.Key}: ", item.Value);
 
-    public ValueTask<DocumentPart> Visit(PdfTokenValues item) => TerminalAsync(item.ToString());
-
-    public async ValueTask<DocumentPart> VisitTopLevelObject(PdfIndirectObject item)
-    {
-        prefix = $"{prefix}{item.ObjectNumber} {item.GenerationNumber}: ";
-        return (await (await item.DirectValueAsync()).InvokeVisitor(this))
-            .WithTarget(item.ObjectNumber, item.GenerationNumber);
-    }
-
     public ValueTask<DocumentPart> Visit(PdfIndirectObject item) =>
         new(new ReferencePartViewModel(ConsumePrefix(), item.ObjectNumber, item.GenerationNumber));
 
     public ValueTask<DocumentPart> Visit(PdfName item) => TerminalAsync(item.ToString() ?? "<Null>");
-
-    public ValueTask<DocumentPart> Visit(PdfInteger item) => TerminalAsync(item.IntValue.ToString());
-
-    public ValueTask<DocumentPart> Visit(PdfDouble item) => 
-        TerminalAsync(item.DoubleValue.ToString(CultureInfo.CurrentUICulture));
-
-    public ValueTask<DocumentPart> Visit(PdfString item) => 
-        new(new StringDocumentPart(item, ConsumePrefix()));
 
     public async ValueTask<DocumentPart> Visit(PdfStream item)
     {

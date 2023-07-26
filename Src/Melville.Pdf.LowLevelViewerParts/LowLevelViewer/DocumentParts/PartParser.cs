@@ -39,9 +39,9 @@ public class PartParser: IPartParser
 
     private async Task<ParsedLowLevelDocument> GenerateUIListAsync(IWaitingService waiting, PdfLowLevelDocument lowlevel)
     {
-        var sourceList = OrderedListOfObjects(lowlevel);
+        var sourceList = OrderedListOfObjects(lowlevel).ToArray();
         var items = await new ParsePdfObjectsToView(waiting, sourceList).ParseItemElementsAsync();
-        await AddPrefixAndSuffixAsync(items, lowlevel);
+        AddPrefixAndSuffix(items, lowlevel);
         return new ParsedLowLevelDocument(items, 
             await CreatePageLookupAsync(lowlevel));
     }
@@ -58,17 +58,18 @@ public class PartParser: IPartParser
         }
     }
 
-    private async ValueTask AddPrefixAndSuffixAsync(DocumentPart[] items, PdfLowLevelDocument lowlevel)
+    private void AddPrefixAndSuffix(DocumentPart[] items, PdfLowLevelDocument lowlevel)
     {
         items[0] = GenerateHeaderElement(lowlevel);
-        items[^1] = await GenerateSuffixElementAsync(lowlevel);
+        items[^1] = GenerateSuffixElement(lowlevel);
     }
 
-    private static ValueTask<DocumentPart> GenerateSuffixElementAsync(PdfLowLevelDocument lowlevel) => 
+    private static DocumentPart GenerateSuffixElement(PdfLowLevelDocument lowlevel) => 
         new ViewModelVisitor().GeneratePartAsync("Trailer: ", lowlevel.TrailerDictionary);
 
-    private static PdfIndirectValue[] OrderedListOfObjects(PdfLowLevelDocument lowlevel) => 
-        lowlevel.Objects.Values.OrderBy(i => i.Memento.UInt64s[0]).ToArray();
+    private static IEnumerable<KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectValue>>
+    OrderedListOfObjects(PdfLowLevelDocument lowlevel) => 
+        lowlevel.Objects.OrderBy(i => i.Key.ObjectNumber).ThenBy(i=>i.Key.GenerationNumber);
 
     private DocumentPart GenerateHeaderElement(PdfLowLevelDocument lowlevel) =>
         new DocumentPart($"PDF-{lowlevel.MajorVersion}.{lowlevel.MinorVersion}");

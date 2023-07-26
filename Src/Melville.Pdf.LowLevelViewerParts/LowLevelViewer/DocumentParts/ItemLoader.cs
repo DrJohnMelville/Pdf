@@ -9,26 +9,26 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
 public class ItemLoader : DocumentPart
 {
-    private readonly Memory<PdfIndirectValue> references;
+    private readonly Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> references;
     private static readonly DocumentPart[] fakeContent = {
         new DocumentPart("Fake--this should never be seen")
     };
 
     private readonly int minObjectNumber;
     private readonly int maxObjectNumber;
-    private static string ComputeName(Memory<PdfIndirectValue> mem)
+    private static string ComputeName(Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> mem)
     {
         var span = mem.Span;
-        return $"{span[0].Memento.UInt64s[0]} ... {span[^1].Memento.UInt64s[0]}";
+        return $"{span[0].Key.ObjectNumber} ... {span[^1].Key.ObjectNumber}";
     }
 
-    public ItemLoader(Memory<PdfIndirectValue> references) :
+    public ItemLoader(Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> references) :
         base(ComputeName(references),fakeContent)
     {
         this.references = references;
         var span = references.Span;
-        minObjectNumber = (int)span[0].Memento.UInt64s[0];
-        maxObjectNumber = (int)span[^1].Memento.UInt64s[1];
+        minObjectNumber = (int)span[0].Key.ObjectNumber;
+        maxObjectNumber = (int)span[^1].Key.ObjectNumber;
     }
 
     public override bool CanSkipSearch(int objectNumber) =>
@@ -56,12 +56,17 @@ public class ItemLoader : DocumentPart
         for (int i = 0; i < references.Length; i++)
         {
             var item = GetAt(references, i);
-            waiting.MakeProgress($"Loading Object ({item.Memento.UInt64s[0]}, {item.Memento.UInt64s[1]})");
-            SetElement(ret, i, await generator.VisitTopLevelObject(item));
+            waiting.MakeProgress($"Loading Object ({item.Key.ObjectNumber}, {item.Key.ObjectNumber})");
+
+            SetElement(ret, i, generator.GeneratePartAsync(
+                $"{item.Key.ObjectNumber} {item.Key.Generation}: ",
+                await item.Value.LoadValueAsync()));
         }
     }
 
-    private PdfIndirectValue GetAt(Memory<PdfIndirectValue> memory, int i) => memory.Span[i];
+    private KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue> GetAt(
+        Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> memory,
+        int i) => memory.Span[i];
 
     private void SetElement(in Memory<DocumentPart> mem, int pos, DocumentPart item) => 
         mem.Span[pos] = item;

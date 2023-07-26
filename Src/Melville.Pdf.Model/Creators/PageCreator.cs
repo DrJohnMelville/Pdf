@@ -43,16 +43,16 @@ public class PageCreator: ContentStreamCreator
     {
         TryAddContent(creator);
         var page = MetaData.AsDictionary();
-        AddPageDictionaryToRegistry(creator, page);
-        return page;
+        return AddPageDictionaryToRegistry(creator, page);
     }
 
-    private void AddPageDictionaryToRegistry(IPdfObjectCreatorRegistry creator, PdfValueDictionary dict)
+    private PdfIndirectValue AddPageDictionaryToRegistry(IPdfObjectCreatorRegistry creator, PdfValueDictionary dict)
     {
-        if (promisedPageObject.HasValue)
-            creator.Reassign(promisedPageObject.Value, dict);
-        else
-            creator.Add(dict);
+        if (!promisedPageObject.HasValue)            
+            return creator.Add(dict);
+
+        creator.Reassign(promisedPageObject.Value, dict);
+        return promisedPageObject.Value;
     }
 
     /// <summary>

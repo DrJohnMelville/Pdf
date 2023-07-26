@@ -32,5 +32,5 @@ public partial class IndirectRegistryWrapper<T> : IReadOnlyDictionary<T, PdfIndi
     public PdfIndirectValue this[T key] => inner[key];
 
     /// <inheritdoc />
-    public IEnumerable<PdfIndirectValue> Values { get; }
+    public IEnumerable<PdfIndirectValue> Values => inner.Values.Select(i=>(PdfIndirectValue)i);
 }

@@ -50,8 +50,8 @@ public class PageLookup : IPageLookup
         for (int i = 0; i < kids.Count; i++)
         {
             var kid = await kids.GetAsync<PdfValueDictionary>(i);
-            var kidType = await kid.GetAsync<PdfName>(KnownNames.TypeTName);
-            if (kidType == KnownNames.Page)
+            var kidType = await kid[KnownNames.TypeTName];
+            if (kidType.Equals(KnownNames.PageTName))
             {
                 if (page == 0)
                 {
@@ -63,7 +63,7 @@ public class PageLookup : IPageLookup
                 {
                     page--;
                 }
-            } else if (kidType == KnownNames.Pages)
+            } else if (kidType.Equals(KnownNames.PagesTName))
             {
                 var nodeCount = (int)(await kid.GetAsync<PdfNumber>(KnownNames.CountTName)).IntValue;
                 if (page < nodeCount) return await InnerPageForNumberAsync(new PageTree(kid), page);
