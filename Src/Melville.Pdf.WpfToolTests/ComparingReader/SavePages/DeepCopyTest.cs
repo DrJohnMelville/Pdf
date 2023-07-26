@@ -51,7 +51,7 @@ public class DeepCopyTest
     {
         var datum = new PdfValueArray(1, 
             new PdfValueArray(2),
-            new PdfIndirectValue(Mock.Of<IIndirectValueSource>(), 1, 1));
+            "/Hello"u8);
         var clone = await sut.CloneAsync(datum);
         await DeepAssertSameAsync(datum, clone);
     }
@@ -84,11 +84,11 @@ public class DeepCopyTest
     {
         switch (a)
         {
-            case var x when x.IsEmbeddedDirectValue(): await AssertSameIndirectobjectAsync(a, b); break;
+            case var x when !x.IsEmbeddedDirectValue(): await AssertSameIndirectobjectAsync(a, b); break;
             case var x when Force(a,b, out PdfValueStream? aval, out var bval): await AssertSameStreamAsync(aval, bval); break;
             case var x when Force(a,b, out PdfValueDictionary? aval, out var bval): await AssertSameDictionaryAsync(aval, bval); break;
             case var x when Force(a,b, out PdfValueArray? aval, out var bval): await AssertSameArrayAsync(aval, bval); break;
-            default: Assert.Same(a,b); break;
+            default: Assert.Equal(a,b); break;
         }
     }
 
