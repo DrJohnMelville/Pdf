@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.Model.Renderers.Bitmaps;
 using Moq;
 using Xunit;
 
@@ -68,14 +69,23 @@ public abstract partial class StreamTestBase
 
 
     private async Task VerifyEncodingAsync(PdfValueStream stream) => 
-        Assert.Equal(SimulateStreamOutput(), await ((PdfIndirectValue)stream).WriteToStringAsync());
+        Assert.Equal(SimulateStreamOutput(), await stream.WriteStreamToStringAsync());
         
     private string SimulateStreamOutput() => 
-        $"<</Filter{compression}{RenderParams(parameters)}/Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
+        $"<</Filter{RenderCompression(compression)}{RenderParams(parameters)}/Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
+
+    private string RenderCompression(PdfDirectValue val)
+    {
+        if (val.TryGet(out PdfValueArray? arr)) return RenderArray(arr);
+        return $"/{val}";
+    }
+
+    private string RenderArray(PdfValueArray value) => 
+        $"[{string.Join(' ',value.RawItems.Select(i => RenderCompression(i.TryGetEmbeddedDirectValue(out var dir) ? dir : default)))}]";
 
     private static string RenderParams(PdfDirectValue? parameters) =>
         parameters.HasValue && parameters.Value.TryGet(out PdfValueDictionary? dict)
-            ? "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"{i.Key} {i.Value}")) + ">>"
+            ? "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"/{i.Key} {i.Value}")) + ">>"
             : "";
 
     [Fact]

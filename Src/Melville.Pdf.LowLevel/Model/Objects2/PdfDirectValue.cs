@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -108,8 +109,9 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     public static PdfDirectValue CreateName(string name)
     {
-        Span<byte> data = stackalloc byte[name.Length];
-        ExtendedAsciiEncoding.EncodeToSpan(name, data);
+        var len = Encoding.UTF8.GetByteCount(name);
+        Span<byte> data = stackalloc byte[len];
+        Encoding.UTF8.GetBytes(name.AsSpan(), data);
         return CreateName(data);
     }
 

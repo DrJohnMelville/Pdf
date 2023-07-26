@@ -40,10 +40,10 @@ public class S7_3_7_DictionaryOperations
         var d = await IndirectTestDictAsync;
 
         Assert.Equal(new []{true, false}, 
-            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfIndirectValue>>>()
-            .Select(i=>i.Value.Result.ForceTo<bool>()));
+            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfDirectValue>>>()
+            .Select(i=>i.Value.Result.Get<bool>()));
         Assert.Equal(new []{KnownNames.HeightTName, KnownNames.ACTName},
-            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfObject>>>().Select(i=>i.Key));
+            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfDirectValue>>>().Select(i=>i.Key));
             
     }
     [Fact]

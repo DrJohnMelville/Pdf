@@ -37,7 +37,7 @@ public abstract partial class PostscriptString :
         RenderStringValue(memento);
 
     private string RenderStringValue(MementoUnion memento) =>
-        Encoding.ASCII.GetString(
+        Encoding.UTF8.GetString(
             GetBytes(in memento, stackalloc byte[ShortStringLimit]));
 
     StringKind IPostscriptValueStrategy<StringKind>.GetValue(in MementoUnion memento) => 

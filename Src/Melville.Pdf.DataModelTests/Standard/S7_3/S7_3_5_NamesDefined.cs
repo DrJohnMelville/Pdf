@@ -18,7 +18,7 @@ public class S7_3_5_NamesDefined
     [InlineData("Fo\u1234o")]
     public void NameCanRenderInUtf8(string name)
     {
-        Assert.Equal("/" + name, PdfDirectValue.CreateName(name).ToString());
+        Assert.Equal(name, PdfDirectValue.CreateName(name).ToString());
     }
     
     private static async ValueTask<PdfDirectValue> TryParseStringToNameAsync(string source) =>

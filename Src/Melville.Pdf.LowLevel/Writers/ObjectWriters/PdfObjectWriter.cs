@@ -66,6 +66,10 @@ internal class PdfObjectWriter
             case var x when x.TryGet(out PdfValueArray arr):
                 ArrayWriter.WriteArray(this, arr);
                 break;
+            #if DEBUG
+            case var x when x.TryGet(out PdfValueStream dict):
+                throw new InvalidOperationException("Cannot write a stream from this method");
+            #endif
             case var x when x.TryGet(out PdfValueDictionary dict):
                 DictionaryWriter.Write(this, dict.RawItems);
                 break;
