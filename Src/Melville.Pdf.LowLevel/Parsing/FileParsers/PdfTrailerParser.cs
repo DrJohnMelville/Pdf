@@ -58,7 +58,7 @@ internal static class PdfTrailerParser
     {
         if (!await TokenChecker.CheckTokenAsync(context.Reader, xrefTag).CA()) return null;
         await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
-        await new CrossReferenceTableParser(context).ParseAsync().CA();
+        await new CrossReferenceTableParser(context.Reader, context.Owner.NewIndirectResolver).ParseAsync().CA();
         await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
         if (!await TokenChecker.CheckTokenAsync(context.Reader, trailerTag).CA())
             throw new PdfParseException("Trailer does not follow xref");

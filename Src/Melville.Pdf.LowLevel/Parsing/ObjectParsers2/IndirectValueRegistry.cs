@@ -8,13 +8,15 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 
-internal class IndirectValueRegistry : IIndirectValueSource
+
+internal class IndirectValueRegistry : IIndirectValueSource, IIndirectObjectRegistry
 {
     private readonly UnenclosedDeferredPdfStrategy unenclosedObjectStrategy;
     private readonly ObjectStreamDeferredPdfStrategy objectStreamStrategy;
@@ -45,9 +47,7 @@ internal class IndirectValueRegistry : IIndirectValueSource
         return ret;
     }
 
-
-    #warning if Value is null we can just clear the record which may save a bunch of memory on some files
-    public void RegisterDirectObject(int number, int generation, in PdfIndirectValue value) =>
+    private void RegisterDirectObject(int number, int generation, in PdfIndirectValue value) =>
         items[(number,generation)] = value;
 
     private static MementoUnion PairToMemento(int number, int generation) => 
@@ -65,15 +65,19 @@ internal class IndirectValueRegistry : IIndirectValueSource
         return true;
     }
 
-    public void RegisterDirectObject(in MementoUnion memento, in PdfDirectValue value) =>
-        items[MementoToPair(memento)] = value;
 
-    public void RegisterUnenclosedObject(int number, int generation, long offset) => 
-        RegisterDirectObject(number, generation, unenclosedObjectStrategy.Create(offset, number, generation));
+    public void RegisterDeletedBlock(int number, int next, int generation)
+    {
+    }
 
-    public void RegisterObjectStreamObject(int number, int streamNumber, int streamPosition) =>
-        RegisterDirectObject(number, 0,
-            objectStreamStrategy.Create(streamNumber, streamPosition));
+    public void RegisterIndirectBlock(int number, int generation, long offset)=> 
+        RegisterDirectObject(number, generation, unenclosedObjectStrategy.Create(
+            offset, number, generation));
+
+    public void RegisterObjectStreamBlock(
+        int number, int referredStreamOrdinal, int positionInStream) => 
+        RegisterDirectObject(number, 0, objectStreamStrategy.Create(
+            referredStreamOrdinal, positionInStream));
 
     public IReadOnlyDictionary<(int, int), PdfIndirectValue> GetObjects() => items;
 }

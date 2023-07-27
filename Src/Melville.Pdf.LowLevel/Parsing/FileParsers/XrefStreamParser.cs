@@ -112,8 +112,7 @@ internal readonly struct XrefStreamParser
                 registry.RegisterObjectStreamBlock(index, (int)c1, (int)c2);
                 break;
             default:
-                registry.RegisterNullObject(index, (int)c2, (int)c1);
-                break;
+                throw new PdfParseException("Unrecognized xref stream entry type");
         }
     }
 

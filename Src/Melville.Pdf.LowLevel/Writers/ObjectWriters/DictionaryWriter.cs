@@ -45,15 +45,10 @@ internal static class DictionaryWriter
 
     private static void AddWhitespaceIfNeeded(in PdfObjectWriter writer, PdfIndirectValue item)
     {
-        if (NeedsLeadingSpace(item))
+        if (item.NeedsLeadingSpace())
         {
             writer.Write(SingleSpace);
         }
     }
 
-    private static bool NeedsLeadingSpace(PdfIndirectValue itemValue) =>
-        !itemValue.TryGetEmbeddedDirectValue(out var dv) || NeedsLeadingSpace(dv);
-
-        private static bool NeedsLeadingSpace(PdfDirectValue itemValue) => itemValue is
-            { IsNull: true } or { IsBool: true } or {IsNumber:true};
 }

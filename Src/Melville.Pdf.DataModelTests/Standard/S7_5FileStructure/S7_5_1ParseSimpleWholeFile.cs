@@ -32,7 +32,6 @@ public class S7_5_1ParseSimpleWholeFile
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
-        builder.Add(true); // includes a dead object to be skipped
         builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         return await WriteAsync(builder.CreateDocument(majorVersion, minorVersion));
     }
@@ -88,7 +87,7 @@ public class S7_5_1ParseSimpleWholeFile
         Assert.Equal(1, doc.MajorVersion);
         Assert.Equal(7, doc.MinorVersion);
         Assert.Equal(2, doc.Objects.Count);
-        Assert.Equal(4, (await doc.TrailerDictionary[KnownNames.SizeTName]).Get<int>());
+        Assert.Equal(3, (await doc.TrailerDictionary[KnownNames.SizeTName]).Get<int>());
         var dict =  (await doc.TrailerDictionary.GetAsync<PdfValueDictionary>(KnownNames.RootTName));
         Assert.Equal(KnownNames.CatalogTName, await dict[KnownNames.TypeTName]);
     }

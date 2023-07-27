@@ -3,21 +3,23 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Filters.FilterProcessing;
 
 internal static class DefaultEncryptionSelector
 {
     public static async ValueTask<FilterProcessorBase> TryAddDefaultEncryptionAsync(
-        PdfStream stream, IStreamDataSource source, IObjectCryptContext encryptor,
+        PdfValueStream stream, IStreamDataSource source, IObjectCryptContext encryptor,
         FilterProcessorBase inner) =>
         await ShouldApplyDefaultEncryptionAsync(stream).CA()
             ? new DefaultEncryptionFilterProcessor(inner, source, encryptor)
             : inner;
     
-    private static async Task<bool> ShouldApplyDefaultEncryptionAsync(PdfStream stream) =>
-        !(await stream.GetOrNullAsync(KnownNames.Type).CA() == KnownNames.XRef ||
-          await stream.HasFilterOfTypeAsync(KnownNames.Crypt).CA());
+    private static async Task<bool> ShouldApplyDefaultEncryptionAsync(PdfValueStream stream) =>
+        !((await stream.GetOrNullAsync(KnownNames.TypeTName).CA()).Equals(KnownNames.XRefTName) ||
+          await stream.HasFilterOfTypeAsync(KnownNames.CryptTName).CA());
+
 }
 
 internal class DefaultEncryptionFilterProcessor : FilterProcessorBase

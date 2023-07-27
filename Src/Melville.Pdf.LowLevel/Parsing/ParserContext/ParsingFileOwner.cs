@@ -81,23 +81,15 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     public void RegisterDeletedBlock(int number, int next, int generation)
     {
     }
-
-    public void RegisterNullObject(int number, int next, int generation)
-    {
-        IndirectResolver.AddLocationHint(new PdfIndirectObject(number, generation, PdfTokenValues.Null));
-        NewIndirectResolver.RegisterDirectObject(number, generation, PdfDirectValue.CreateNull());
-    }
-
+    #warning -- should be able to get rid of this by passing an IIndirectValueregistry to the parsers
     public void RegisterIndirectBlock(int number, int generation, long offset)
     {
-        IndirectResolver.AddLocationHint(new RawLocationIndirectObject(number, (int)generation, this, (int)offset));
-        NewIndirectResolver.RegisterUnenclosedObject(number, generation, offset);
+        NewIndirectResolver.RegisterIndirectBlock(number, generation, offset);
     }
 
+    #warning -- should be able to get rid of this by passing an IIndirectValueregistry to the parsers
     public void RegisterObjectStreamBlock(int number, int referredStreamOrdinal, int positionInStream)
     {
-        IndirectResolver.AddLocationHint(new ObjectStreamIndirectObject(number, 0, this,
-            (int)referredStreamOrdinal));
-        NewIndirectResolver.RegisterObjectStreamObject(number, referredStreamOrdinal, positionInStream);
+        NewIndirectResolver.RegisterObjectStreamBlock(number, referredStreamOrdinal, positionInStream);
     }
 }

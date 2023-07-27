@@ -50,7 +50,7 @@ public class PdfValueStream : PdfValueDictionary
 
     private async Task<FilterProcessorBase> CreateFilterProcessorAsync(IObjectCryptContext innerEncryptor) =>
         await DefaultEncryptionSelector.TryAddDefaultEncryptionAsync(
-            (PdfStream)TemporaryConvert(), source, innerEncryptor,
+            this, source, innerEncryptor,
             new FilterProcessor(
                 await FilterListAsync().CA(),
                 await FilterParamListAsync().CA(),
@@ -70,4 +70,13 @@ public class PdfValueStream : PdfValueDictionary
 
     protected override PdfDictionary TemporaryConvert(DictionaryBuilder builder) =>
         builder.AsStream(source);
+
+    public async ValueTask<bool> HasFilterOfTypeAsync(PdfDirectValue filterType)
+    {
+        foreach (var item in await FilterListAsync().CA())
+        {
+            if ((await item.LoadValueAsync().CA()).Equals(filterType)) return true;
+        }
+        return false;
+    }
 }

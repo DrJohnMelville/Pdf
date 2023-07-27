@@ -29,17 +29,6 @@ public interface IIndirectObjectRegistry
     void RegisterDeletedBlock(int number, int next, int generation);
     
     /// <summary>
-    /// Registers an object of a type unknown to this version of the PDF parser.  This is either a
-    /// corrupted file, or a file in a later version of PDF.  The suggested behavior is to map this
-    /// object to PdfNull, since there is no way this parser can find the target object in a format
-    /// it does not recognize.
-    /// </summary>
-    /// <param name="number">The object number</param>
-    /// <param name="next">A datum associated with this object</param>
-    /// <param name="generation">The generation of the object</param>
-    void RegisterNullObject(int number, int next, int generation);
-    
-    /// <summary>
     /// Register a PdfObject at a given position in the PDF file.
     /// </summary>
     /// <param name="number">The object number</param>

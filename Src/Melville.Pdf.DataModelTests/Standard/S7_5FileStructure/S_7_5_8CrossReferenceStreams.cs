@@ -27,7 +27,8 @@ public class S_7_5_8CrossReferenceStreams
         var ms = new MultiBufferStream();
         var writer = new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(ms), document);
         await writer.WriteAsync();
-        var fileAsString = ms.CreateReader().ReadToArray().ExtendedAsciiString();
+        var docAsArrat = ms.CreateReader().ReadToArray();
+        var fileAsString = docAsArrat.ExtendedAsciiString();
         Assert.DoesNotContain(fileAsString, "trailer");
         var doc = await (fileAsString).ParseDocumentAsync();
         Assert.NotNull(doc.TrailerDictionary);

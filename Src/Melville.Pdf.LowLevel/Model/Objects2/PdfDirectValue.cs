@@ -52,6 +52,8 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
     public bool IsName =>
         valueStrategy is PostscriptString ps && ps.StringKind == StringKind.LiteralName;
 
+    public bool NeedsLeadingSpace => IsNumber || IsBool || IsNull;
+
     #endregion
 
     #region Value Accessors

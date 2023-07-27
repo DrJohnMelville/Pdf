@@ -92,6 +92,9 @@ public readonly partial struct PdfIndirectValue
         _=> valueStrategy.ToString()
     };
 
+    public bool NeedsLeadingSpace() =>
+        !TryGetEmbeddedDirectValue(out PdfDirectValue direct) || direct.NeedsLeadingSpace;
+
     #endregion
 }
 

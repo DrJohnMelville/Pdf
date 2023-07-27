@@ -1,28 +1,27 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
-internal class CrossReferenceTableParser
+internal partial class CrossReferenceTableParser
 {
-    private readonly IParsingReader source;
     private int firstUnspecifiedLine = 0;
     private int line = 1;
 
-    public CrossReferenceTableParser(IParsingReader source)
-    {
-        this.source = source;
-    }
+    [FromConstructor] private readonly IByteSource byteSource;
+    [FromConstructor] private readonly IIndirectObjectRegistry registry;
 
     public async Task ParseAsync()
     {
-        while (!ParseNextLine(await source.Reader.ReadAsync().CA()))
+        while (!ParseNextLine(await byteSource.ReadAsync().CA()))
         {
         }       
     }
@@ -31,7 +30,7 @@ internal class CrossReferenceTableParser
     {
         var reader = new SequenceReader<byte>(data.Buffer);
         var ret = ParseNextLine(ref reader);
-        source.Reader.AdvanceTo(reader.Position, data.Buffer.End);
+        byteSource.AdvanceTo(reader.Position, data.Buffer.End);
         return ret;
     }
 
@@ -108,10 +107,10 @@ internal class CrossReferenceTableParser
         switch (operation)
         {
             case (byte)'n':
-                source.Owner.RegisterIndirectBlock(line, second, first);
+                registry.RegisterIndirectBlock(line, second, first);
                 break;
             case (byte)'f':
-                source.Owner.RegisterDeletedBlock(line, (int)first, second);
+                registry.RegisterDeletedBlock(line, (int)first, second);
                 break;
             default: throw new PdfParseException("Invalid Xref Table Operation");
         }
