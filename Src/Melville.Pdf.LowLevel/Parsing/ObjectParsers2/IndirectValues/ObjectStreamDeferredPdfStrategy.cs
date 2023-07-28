@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -23,37 +25,29 @@ internal partial class ObjectStreamDeferredPdfStrategy : IIndirectValueSource
 
     public async ValueTask<PdfDirectValue> LookupAsync(MementoUnion memento)
     {
-        var source = (await owner.NewIndirectResolver.LookupAsync(memento.Int32s[0], 0).CA()).Get<PdfValueStream>();
-        var sourceStream = await source.StreamContentAsync().CA();
-        var reader = new ParsingReader(owner, PipeReader.Create(sourceStream), 0);
-        var subsetReader = new SubsetParsingReader(reader);
-        var parser = new RootObjectParser(subsetReader);
+        var source = (await owner.NewIndirectResolver
+            .LookupAsync(memento.Int32s[0], 0).CA()).Get<PdfValueStream>();
+        int desiredOrdinal = (int)memento.Int64s[1];
 
-        var locations = await ObjectStreamOperations.GetIncludedObjectNumbersAsync(
-            source, subsetReader).CA();
-
-        int desiredOrdinal = memento.Int32s[1];
-
-        PdfDirectValue ret = default;
-        for (int i = 0; i < locations.Count; i++)
-        {
-            var location = locations[i];
-            await subsetReader.AdvanceToLocalPositionAsync(location.Offset).CA();
-            subsetReader.ExclusiveEndPosition = NextOffset(locations, i);
-            var indirValue = await parser.ParseAsync().CA();
-            if (!indirValue.TryGetEmbeddedDirectValue(out var dirValue))
-                throw new PdfParseException("Object stream member may not be a reference");
-            owner.NewIndirectResolver.RegisterDirectObject(location.ObjectNumber, 0, dirValue);
-            if (desiredOrdinal == i) ret = dirValue;
-        }
-
-        return ret;
+        return await ReadObjectStream(source, desiredOrdinal).CA();
     }
 
-    private long NextOffset(IList<ObjectLocation> locations, int i)
+    private async Task<PdfDirectValue> ReadObjectStream(
+        PdfValueStream source, int desiredObjectNumber)
     {
-        return (i + 1 >= locations.Count) ? long.MaxValue : locations[i + 1].Offset;
+        var ret = await TryReadExtendsStream(source, desiredObjectNumber).CA();
+
+        var parser = await ObjectStreamParser.CreateAsync(owner, source, desiredObjectNumber).CA();
+
+        return await parser.ParseAsync(ret).CA();
     }
+
+    private async Task<PdfDirectValue> TryReadExtendsStream(
+        PdfValueStream source, int desiredObjectNumber) =>
+        source.TryGetValue(KnownNames.ExtendsTName, out var task) &&
+        (await task).TryGet(out PdfValueStream? innerStream)
+            ? await ReadObjectStream(innerStream, desiredObjectNumber).CA()
+            : default;
 
     public bool TryGetObjectReference(out int objectNumber, out int generation, MementoUnion memento)
     {
@@ -61,6 +55,6 @@ internal partial class ObjectStreamDeferredPdfStrategy : IIndirectValueSource
         return false;
     }
 
-    public PdfIndirectValue Create(int streamNum, int streamPosition) => 
-        new(this, MementoUnion.CreateFrom(streamNum, streamPosition));
+    public PdfIndirectValue Create(int streamNum, int streamPosition, int number) => 
+        new(this, MementoUnion.CreateFrom(streamNum, streamPosition, number));
 }

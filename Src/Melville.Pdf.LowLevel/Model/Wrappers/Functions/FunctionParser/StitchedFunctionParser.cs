@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -12,7 +13,7 @@ internal static class StitchedFunctionParser
     {
         var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
         var encode = await source.ReadIntervalsAsync(KnownNames.EncodeTName).CA();
-        var bounds = await (await source.GetAsync<PdfArray>(KnownNames.BoundsTName).CA()).AsDoublesAsync().CA();
+        var bounds = await (await source.GetAsync<PdfValueArray>(KnownNames.BoundsTName).CA()).CastAsync<double>().CA();
         var functionDecls =
             await (await source.GetAsync<PdfValueArray>(KnownNames.FunctionsTName).CA()).CastAsync<PdfValueDictionary>().CA();
         var functions = await CreateFunctionSegmentsAsync(functionDecls, domain[0], bounds, encode).CA();

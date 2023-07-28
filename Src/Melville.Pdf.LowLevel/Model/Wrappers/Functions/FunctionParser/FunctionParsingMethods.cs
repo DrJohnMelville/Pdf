@@ -12,14 +12,14 @@ internal static class FunctionParsingMethods
     public static async ValueTask<ClosedInterval[]> 
         ReadIntervalsAsync(this PdfValueDictionary source, PdfDirectValue name)
     {
-        var array = await source.GetAsync<PdfArray>(name).CA();
+        var array = await source.GetAsync<PdfValueArray>(name).CA();
         var length = array.Count / 2;
         var ret = new ClosedInterval[length];
         for (int i = 0; i < length; i++)
         {
             ret[i] = new ClosedInterval(
-                (await array.GetAsync<PdfNumber>(2 * i).CA()).DoubleValue,
-                (await array.GetAsync<PdfNumber>((2 * i) + 1).CA()).DoubleValue);
+                await array.GetAsync<double>(2 * i).CA(),
+                await array.GetAsync<double>((2 * i) + 1).CA());
         }
 
         return ret;
@@ -32,7 +32,7 @@ internal static class FunctionParsingMethods
     public static async ValueTask<double[]> ReadArrayWithDefaultAsync(
         this PdfValueDictionary source, PdfDirectValue name, int defaultValue) =>
         source.ContainsKey(name)
-            ? await (await source.GetAsync<PdfArray>(name).CA()).AsDoublesAsync().CA()
+            ? await (await source.GetAsync<PdfValueArray>(name).CA()).CastAsync<double>().CA()
             : new double[]{defaultValue};
 
 }

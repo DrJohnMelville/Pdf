@@ -30,7 +30,7 @@ public class S7_10_5PostscriptFunctions
         builder.AddOutput((0,20));
         var dict = builder.Create("2 mul", 
             new ValueDictionaryBuilder().WithItem(KnownNames.DecodeTName, KnownNames.FlateDecodeTName));
-        Assert.Equal(KnownNames.FlateDecodeTName, await dict.GetAsync<PdfDirectValue>(KnownNames.DecodeTName));
+        Assert.Equal(KnownNames.FlateDecodeTName, await dict[KnownNames.DecodeTName]);
         await dict.VerifyNumberAsync(KnownNames.FunctionTypeTName, 4);
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 0, 10);
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.RangeTName, 0, 20);

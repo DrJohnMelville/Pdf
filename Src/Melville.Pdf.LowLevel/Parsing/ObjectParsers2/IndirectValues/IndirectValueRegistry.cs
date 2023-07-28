@@ -55,19 +55,11 @@ internal class IndirectValueRegistry : IIndirectValueSource, IIndirectObjectRegi
         return ret;
     }
 
-
-    /// <summary>
-    /// Associate a specific indirect value with a number and generation.
-    /// This method is internal, rather than private so test methods can plug objects into
-    /// the registry without creating an entire parsed stream;
-    /// </summary>
-    /// <param name="number"></param>
-    /// <param name="generation"></param>
-    /// <param name="value"></param>
-    internal void RegisterDirectObject(int number, int generation, in PdfIndirectValue value)
+    internal void RegisterDirectObject(
+        int number, int generation, in PdfIndirectValue value, bool doNotOverwrite)
     {
         ref var item = ref CollectionsMarshal.GetValueRefOrAddDefault(items, (number, generation), out var previouslyDefined);
-        if (previouslyDefined) return; 
+        if (previouslyDefined && doNotOverwrite ) return; 
         item = value;
     }
 
@@ -93,12 +85,12 @@ internal class IndirectValueRegistry : IIndirectValueSource, IIndirectObjectRegi
 
     public void RegisterIndirectBlock(int number, int generation, long offset)=> 
         RegisterDirectObject(number, generation, unenclosedObjectStrategy.Create(
-            offset, number, generation));
+            offset, number, generation), true);
 
     public void RegisterObjectStreamBlock(
         int number, int referredStreamOrdinal, int positionInStream) => 
         RegisterDirectObject(number, 0, objectStreamStrategy.Create(
-            referredStreamOrdinal, positionInStream));
+            referredStreamOrdinal, positionInStream, number), true);
 
     public IReadOnlyDictionary<(int, int), PdfIndirectValue> GetObjects() => items;
 

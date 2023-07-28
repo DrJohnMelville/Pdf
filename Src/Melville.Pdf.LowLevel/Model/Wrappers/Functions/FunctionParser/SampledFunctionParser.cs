@@ -16,7 +16,7 @@ internal static class SampledFunctionParser
     {
         var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
         var range = await source.ReadIntervalsAsync(KnownNames.RangeTName).CA();
-        var size = await (await source.GetAsync<PdfArray>(KnownNames.SizeTName).CA()).AsIntsAsync().CA();
+        var size = await (await source.GetAsync<PdfValueArray>(KnownNames.SizeTName).CA()).CastAsync<int>().CA();
         var encode = source.ContainsKey(KnownNames.EncodeTName)
             ? await source.ReadIntervalsAsync(KnownNames.EncodeTName).CA()
             : CreateEncodeFromSize(size);

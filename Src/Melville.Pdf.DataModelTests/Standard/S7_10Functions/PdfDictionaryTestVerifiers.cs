@@ -13,17 +13,17 @@ public static class PdfDictionaryTestVerifiers
         Assert.Equal(domain.Count, values.Length);
         for (int i = 0; i < values.Length; i++)
         {
-            Assert.Equal(values[i], (await domain.GetAsync<PdfNumber>(i)).DoubleValue);
+            Assert.Equal(values[i], await domain.GetAsync<double>(i));
         }
     }
     public static async Task VerifyNumberAsync(this PdfValueDictionary str, PdfDirectValue name, int value)
     {
-        var number = await str.GetAsync<PdfNumber>(name);
-        Assert.Equal(value, number.IntValue);
+        var number = await str.GetAsync<int>(name);
+        Assert.Equal(value, number);
     }
     public static async Task VerifyNumberAsync(this PdfValueDictionary str, PdfDirectValue name, double value)
     {
-        var number = await str.GetAsync<PdfNumber>(name);
-        Assert.Equal(value, number.DoubleValue);
+        var number = await str.GetAsync<double>(name);
+        Assert.Equal(value, number);
     }
 }

@@ -68,13 +68,14 @@ public class S7_5_7ObjectStreamExtends
         /N 1
         /First 4
         /Length 12>>
-        stream 
+        stream
         3 0 (String)
         endstream
  
         """);
         var reader = await new PdfLowLevelReader().ReadFromAsync(mbs.CreateReader());
         Assert.Equal("1234", (await reader.Objects[(2,0)].LoadValueAsync()).ToString());
+
         Assert.Equal("String", (await reader.Objects[(3,0)].LoadValueAsync()).ToString());
     }
     [Fact]

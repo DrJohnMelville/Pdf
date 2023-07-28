@@ -48,7 +48,7 @@ public class S7_10_2SampledFunctions
     public async Task CreateFullySpecifiedFunctionAsync()
     {
         var str = await ComplexSampledFunctionAsync();
-        Assert.Equal(0, (await str.GetAsync<PdfNumber>(KnownNames.FunctionTypeTName)).IntValue);
+        Assert.Equal(0, await str.GetAsync<int>(KnownNames.FunctionTypeTName));
         await str.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 1, 10);
         await str.VerifyPdfDoubleArrayAsync(KnownNames.RangeTName, 5, 50);
         await str.VerifyPdfDoubleArrayAsync(KnownNames.SizeTName, 12);
