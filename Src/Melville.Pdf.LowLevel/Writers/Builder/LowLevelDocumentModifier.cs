@@ -85,9 +85,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
             var (objNum, genetationNum) = item.Key;
             lines.Add(new XrefLine(
                 objNum, target.BytesWritten, genetationNum, true));
-            throw new NotSupportedException("Obsolete Object");
-            // need to use the new object writer here
-//            await writer.VisitTopLevelObject(item).CA();
+            await writer.WriteTopLevelDeclarationAsync(objNum, genetationNum, item.Value).CA();
         }
         var startXref = target.BytesWritten;
         XrefTableElementWriter.WriteXrefTitleLine(target);

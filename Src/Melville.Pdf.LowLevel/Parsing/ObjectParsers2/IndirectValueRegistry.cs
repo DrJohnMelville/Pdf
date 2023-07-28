@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -37,18 +38,22 @@ internal class IndirectValueRegistry : IIndirectValueSource, IIndirectObjectRegi
 
     public async ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
     {
-        var item = CollectionsMarshal.GetValueRefOrNullRef(items, MementoToPair(memento));
-        if (Unsafe.IsNullRef(ref item)) return PdfDirectValue.CreateNull();
+        var key = MementoToPair(memento);
+        if (!items.TryGetValue(key, out var item)) return PdfDirectValue.CreateNull();
 
         if (item.TryGetEmbeddedDirectValue(out var dv)) return dv;
 
         var ret = await item.LoadValueAsync().CA();
-        item = ret;
+        items[key] = ret; // have to do the duplicate  lookup because it is an async method.
         return ret;
     }
 
-    private void RegisterDirectObject(int number, int generation, in PdfIndirectValue value) =>
-        items[(number,generation)] = value;
+    private void RegisterDirectObject(int number, int generation, in PdfIndirectValue value)
+    {
+        ref var item = ref CollectionsMarshal.GetValueRefOrAddDefault(items, (number, generation), out var previouslyDefined);
+        if (previouslyDefined) return; 
+        item = value;
+    }
 
     private static MementoUnion PairToMemento(int number, int generation) => 
         MementoUnion.CreateFrom(number, generation);
@@ -86,7 +91,7 @@ internal partial class UnenclosedDeferredPdfStrategy : IIndirectValueSource
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
 
-    public string GetValue(in MementoUnion memento) => $"Raw Offset Reference @{memento.UInt64s[0]}";
+    public string GetValue(in MementoUnion memento) => $"Raw Offset Reference @{memento.UInt64s[1]}";
 
     public async ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
     {
