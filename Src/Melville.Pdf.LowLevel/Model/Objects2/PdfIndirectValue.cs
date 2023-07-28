@@ -34,7 +34,7 @@ public readonly partial struct PdfIndirectValue
 
     public ValueTask<PdfDirectValue> LoadValueAsync() =>
         valueStrategy is IIndirectValueSource source?
-            source.Lookup(Memento):
+            source.LookupAsync(Memento):
         new(CreateDirectValueUnsafe());
 
     private PdfDirectValue CreateDirectValueUnsafe()

@@ -101,7 +101,7 @@ public class S7_3NewObjects
     public async Task GetReferredIndirectAsync()
     {
         var registry = new Mock<IIndirectValueSource>();
-        registry.Setup(i => i.Lookup(MementoUnion.CreateFrom(2L,5L))).Returns(
+        registry.Setup(i => i.LookupAsync(MementoUnion.CreateFrom(2L,5L))).Returns(
             new ValueTask<PdfDirectValue>(25));  
 
         var refValue = new PdfIndirectValue(registry.Object, 2, 5);

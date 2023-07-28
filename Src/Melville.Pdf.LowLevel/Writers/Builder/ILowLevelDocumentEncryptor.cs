@@ -92,7 +92,7 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
     }
 
     private Memory<byte> ExtractFirstStringMemory(PdfValueArray id) =>
-        !id.RawItems[0].TryGetEmbeddedDirectValue(out Memory<byte> ret)
+        id.RawItems[0].TryGetEmbeddedDirectValue(out Memory<byte> ret)
             ? ret
             : throw new PdfParseException("Encryption dictionary must contain direct objects/");
 

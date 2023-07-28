@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers2.IndirectValues;
 using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.EncryptingParsingReader;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;

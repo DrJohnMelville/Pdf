@@ -38,7 +38,7 @@ public class FileWriterTest
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
-        builder.Add(true); // includes a dead object to be skipped
+        builder.Add(default); // includes a dead object to be skipped
         builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         return await WriteAsync(builder.CreateDocument(majorVersion, minorVersion));
     }
@@ -47,7 +47,7 @@ public class FileWriterTest
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
             new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
-        builder.Add(true); // includes a dead object to be skipped
+        builder.Add(PdfDirectValue.CreateNull()); // includes a dead object to be skipped
         builder.Add(new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
         PdfLowLevelDocument doc = builder.CreateDocument(majorVersion, minorVersion);
         var target = new TestWriter();

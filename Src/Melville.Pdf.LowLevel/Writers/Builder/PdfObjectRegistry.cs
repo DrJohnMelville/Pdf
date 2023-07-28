@@ -78,7 +78,7 @@ internal partial class PdfObjectRegistry:
         return $"{obj} {gen} R";
     }
 
-    public ValueTask<PdfDirectValue> Lookup(MementoUnion memento)
+    public ValueTask<PdfDirectValue> LookupAsync(MementoUnion memento)
     {
         if (!TryGetObjectReference(out var obj, out var gen, memento))
             throw new InvalidOperationException("Find reference for direct object");

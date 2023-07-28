@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
@@ -29,10 +30,10 @@ internal readonly struct ObjectStreamWriter
         objectWriter = new PdfObjectWriter(objectStreamWriter);
     }
 
-    public async ValueTask TryAddRefAsync(int objectNumber, PdfDirectValue obj)
+    public ValueTask<FlushResult> TryAddRefAsync(int objectNumber, PdfDirectValue obj)
     {
         WriteObjectPosition(objectNumber);
-        await WriteObjectAsync(obj).CA();
+        return WriteObjectAsync(obj);
     }
 
     private void WriteObjectPosition(int objectNumber)
@@ -43,11 +44,11 @@ internal readonly struct ObjectStreamWriter
         referenceStreamWriter.WriteSpace();
     }
 
-    private async ValueTask WriteObjectAsync(PdfDirectValue directValue)
-    {            throw new NotSupportedException("Obsolete Object");
-
-//        await directValue.Visit(objectWriter).CA();
+    private ValueTask<FlushResult> WriteObjectAsync(PdfDirectValue directValue)
+    {           
+        objectWriter.Write(directValue);
         objectStreamWriter.WriteLineFeed();
+        return objectStreamWriter.FlushAsync();
     }
 
     public async ValueTask<PdfValueStream> BuildAsync(ValueDictionaryBuilder builder, int count)

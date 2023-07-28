@@ -135,7 +135,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <returns>The PdfDirectValue of the font</returns>
     public PdfDirectValue AddStandardFont(
         PdfDirectValue assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
-        AddStandardFont(assignedName, baseFont, encoding);
+        AddStandardFont(assignedName, baseFont, (PdfDirectValue)encoding);
 
     /// <summary>
     /// Add a standard font reference to the resource divtionary

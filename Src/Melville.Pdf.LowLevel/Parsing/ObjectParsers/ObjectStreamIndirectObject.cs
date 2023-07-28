@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System;
+using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -32,20 +33,21 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
 
     public static async ValueTask LoadObjectStreamAsync(ParsingFileOwner owner, PdfStream source)
     {
-        await TryLoadExtendedBaseStreamAsync(owner, source).CA();
-
-        await using var data = await source.StreamContentAsync().CA();
-        var reader = new SubsetParsingReader( owner.ParsingReaderForStream(data, 0));
-        var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbersAsync(
-            source, reader.Reader).CA();
-        var first = (await source.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue;
-        foreach (var location in objectLocations)
-        {
-            await reader.Reader.AdvanceToLocalPositionAsync(first + location.Offset).CA();
-            reader.ExclusiveEndPosition = first + location.NextOffset;
-            var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
-            AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);
-        }
+        throw new InvalidOperationException("Obsolete object");
+        // await TryLoadExtendedBaseStreamAsync(owner, source).CA();
+        //
+        // await using var data = await source.StreamContentAsync().CA();
+        // var reader = new SubsetParsingReader( owner.ParsingReaderForStream(data, 0));
+        // var objectLocations = await ObjectStreamOperations.GetIncludedObjectNumbersAsync(
+        //     source, reader.Reader).CA();
+        // var first = (await source.GetAsync<PdfNumber>(KnownNames.First).CA()).IntValue;
+        // foreach (var location in objectLocations)
+        // {
+        //     await reader.Reader.AdvanceToLocalPositionAsync(first + location.Offset).CA();
+        //     reader.ExclusiveEndPosition = first + location.NextOffset;
+        //     var obj = await PdfParserParts.Composite.ParseAsync(reader).CA();
+        //     AcceptObject(owner.IndirectResolver,location.ObjectNumber,obj);
+        // }
     }
 
     private static async ValueTask TryLoadExtendedBaseStreamAsync(ParsingFileOwner owner, PdfStream source)
@@ -63,6 +65,7 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
     }
 }
 
+#warning -- get rid of this -- good stuff when to SubsetByteSource
 internal partial class SubsetParsingReader : IParsingReader, IByteSourceWithGlobalPosition
 {
     public long ExclusiveEndPosition { get; set; } = long.MaxValue;

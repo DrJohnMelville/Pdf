@@ -77,8 +77,11 @@ public static class PostscriptValueFactory
     public static PostscriptValue CreateString(
         ReadOnlySpan<char> data, StringKind kind)
     {
-        Span<byte> buffer = stackalloc byte[Encoding.ASCII.GetByteCount(data)];
-        Encoding.ASCII.GetBytes(data, buffer);
+        Span<byte> buffer = stackalloc byte[data.Length];
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            buffer[i] = (byte)(data[i]);
+        }
         return CreateString(buffer, kind);
     }
 

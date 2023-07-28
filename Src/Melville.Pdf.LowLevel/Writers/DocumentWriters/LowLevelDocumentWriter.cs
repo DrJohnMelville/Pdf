@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Linq;
@@ -8,6 +9,7 @@ using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
@@ -88,12 +90,26 @@ public class LowLevelDocumentWriter
                 document.TrailerDictionary, userPassword).CA());
         foreach (var item in document.Objects)
         {
+            if (item.Value.IsNull) continue;
             positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
             await DeclareContainedObjectsAsync(item.Key.ObjectNumber, item.Value, positions).CA();
-            await objectWriter.WriteTopLevelDeclarationAsync(item.Key.ObjectNumber, item.Key.GenerationNumber, await item.Value.LoadValueAsync().CA()).CA();
+            var value = await ResolveValueToWrite(item).CA();
+            await objectWriter.WriteTopLevelDeclarationAsync(
+                item.Key.ObjectNumber, item.Key.GenerationNumber, value).CA();
             await Target.FlushAsync().CA();
         }
         return positions;
+    }
+
+    private static async Task<PdfDirectValue> ResolveValueToWrite(KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectValue> item)
+    {
+        var value = await item.Value.LoadValueAsync().CA();
+        if (value.TryGet(out ObjectStreamBuilder? osb))
+        {
+            value = await osb.CreateStreamAsync().CA();
+        }
+
+        return value;
     }
 
     private static async Task DeclareContainedObjectsAsync(int outerStreamNumber, PdfIndirectValue item,
