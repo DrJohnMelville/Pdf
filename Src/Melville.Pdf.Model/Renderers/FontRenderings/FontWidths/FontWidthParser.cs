@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
@@ -24,7 +25,7 @@ internal readonly struct FontWidthParser
     {
         try
         {
-            return await ParseAsync(pdfFont.SubType().GetHashCode()).CA();
+            return await ParseAsync(pdfFont.SubType()).CA();
         }
         catch (Exception )
         {
@@ -32,11 +33,11 @@ internal readonly struct FontWidthParser
         }
     }
 
-    private ValueTask<IFontWidthComputer> ParseAsync(int subTypeKey) => subTypeKey switch
+    private ValueTask<IFontWidthComputer> ParseAsync(in PdfDirectValue subTypeKey) => subTypeKey switch
     {
-        KnownNameKeys.Type3 => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),
-        KnownNameKeys.Type0 => ParseSubFontWidthAsync(),
-        KnownNameKeys.CIDFontType2 or KnownNameKeys.CIDFontType0 => ParseCidFontWidthsAsync(),
+        var x when x.Equals(KnownNames.Type3TName) => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),
+        var x when x.Equals(KnownNames.Type0TName) => ParseSubFontWidthAsync(),
+        var x when x.Equals(KnownNames.CIDFontType2TName) || x.Equals(KnownNames.CIDFontType0TName) => ParseCidFontWidthsAsync(),
         _ => ParseSimpleFontWidthsAsync()
     };
 
@@ -81,18 +82,17 @@ internal readonly struct FontWidthParser
     }
 
     private async ValueTask<int> ParseSingleArrayItemAsync(
-        PdfArray charWidthArray, Dictionary<uint, double> ret, int pos)
+        PdfValueArray charWidthArray, Dictionary<uint, double> ret, int pos)
     {
-        var first = (uint)(await charWidthArray.GetAsync<PdfNumber>(pos).CA()).IntValue;
+        var first = (uint)(await charWidthArray.GetAsync<int>(pos).CA());
         switch (await charWidthArray[pos + 1].CA())
         {
-            case
-                PdfArray arr:
-                AddItems(ret, first, await arr.AsDoublesAsync().CA());
+            case var x when x.TryGet(out PdfValueArray? arr):
+                AddItems(ret, first, await arr.CastAsync<double>().CA());
                 return 2;
-            case PdfNumber last:
-                AddItems(ret, first, (uint)last.IntValue,
-                    (await charWidthArray.GetAsync<PdfNumber>(pos + 2).CA()).DoubleValue);
+            case var x when x.TryGet(out long last):
+                AddItems(ret, first, (uint)last,
+                    (await charWidthArray.GetAsync<double>(pos + 2).CA()));
                 return 3;
             default: throw new PdfParseException("Invalid W array");
         }

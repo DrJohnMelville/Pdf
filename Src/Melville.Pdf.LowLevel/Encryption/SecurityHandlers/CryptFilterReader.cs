@@ -59,15 +59,15 @@ internal readonly partial struct CryptFilterReader
         encryptionDictionary.GetOrDefaultAsync(name, (PdfDirectValue)KnownNames.IdentityTName);
     
     private ISecurityHandler CreateSubSecurityHandler(PdfDirectValue cfm, PdfValueDictionary dictionary) => 
-        cfm.GetHashCode() switch
+        cfm switch
     {
-        KnownNameKeys.V2 => new SecurityHandler(
+        var x when x.Equals(KnownNames.V2TName) => new SecurityHandler(
             Rc4KeySpecializer.Instance, Rc4CipherFactory.Instance, rootKeyComputer, dictionary),
-        KnownNameKeys.AESV2 => new SecurityHandler(
+        var x when x.Equals(KnownNames.AESV2TName) => new SecurityHandler(
             AesKeySpecializer.AesInstance, AesCipherFactory.Instance, rootKeyComputer, dictionary),
-         KnownNameKeys.AESV3 => new SecurityHandler(
+        var x when x.Equals(KnownNames.AESV3TName) => new SecurityHandler(
              AesV6KeySpecializer.Instance, AesCipherFactory.Instance, rootKeyComputer, dictionary), 
-        KnownNameKeys.None => NullSecurityHandler.Instance,
+        var x when x.Equals(KnownNames.NoneTName) => NullSecurityHandler.Instance,
         _ => throw new PdfSecurityException("Unknown Security Handler Type: " + cfm)
     };
 

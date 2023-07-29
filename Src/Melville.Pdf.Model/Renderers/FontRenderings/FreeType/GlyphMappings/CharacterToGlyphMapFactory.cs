@@ -25,12 +25,12 @@ internal readonly partial struct CharacterToGlyphMapFactory
     [FromConstructor] private readonly PdfEncoding encoding;
 
     public ValueTask<IMapCharacterToGlyph> ParseAsync() =>
-        (font.SubType()).GetHashCode() switch
+        (font.SubType()) switch
         {
-            KnownNameKeys.Type0 => Type0CharMappingAsync(),
-            KnownNameKeys.MMType1 => SingleByteNamedMappingAsync(),
-            KnownNameKeys.Type1 => SingleByteNamedMappingAsync(),
-            KnownNameKeys.TrueType =>  ParseTrueTypeMappingAsync(),
+            var x when x.Equals(KnownNames.Type0TName) => Type0CharMappingAsync(),
+            var x when x.Equals(KnownNames.MMType1TName) => SingleByteNamedMappingAsync(),
+            var x when x.Equals(KnownNames.Type1TName) => SingleByteNamedMappingAsync(),
+            var x when x.Equals(KnownNames.TrueTypeTName) =>  ParseTrueTypeMappingAsync(),
             _ => throw new PdfParseException("Unknown Font Type"),
 
         };

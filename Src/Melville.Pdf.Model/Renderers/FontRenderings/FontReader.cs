@@ -39,11 +39,11 @@ public readonly struct FontReader
 
     private ValueTask<IRealizedFont> PdfFontToRealizedFontAsync(PdfFont font)
     {
-        var fontTypeKey = font.SubType().GetHashCode();
+        var fontTypeKey = font.SubType();
         return fontTypeKey switch
         {
-            KnownNameKeys.Type3 => new Type3FontFactory(font.LowLevel).ParseAsync(),
-            KnownNameKeys.Type0 => CreateType0FontAsync(font, new FreeTypeFontFactory(font)),
+            var x when x.Equals(KnownNames.Type3TName) => new Type3FontFactory(font.LowLevel).ParseAsync(),
+            var x when x.Equals(KnownNames.Type0TName) => CreateType0FontAsync(font, new FreeTypeFontFactory(font)),
             _ => CreateRealizedFontAsync(font, new FreeTypeFontFactory(font))
         };
     }

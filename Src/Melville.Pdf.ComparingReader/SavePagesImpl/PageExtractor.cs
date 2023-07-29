@@ -29,7 +29,7 @@ public readonly partial struct PageExtractor
         copier.ReserveIndirectMapping(objNum, gen, targetPromise);
         foreach (var item in page.LowLevel.RawItems)
         {
-            if (item.Key.GetHashCode() is KnownNameKeys.Contents or KnownNameKeys.Parent) continue;
+            if (item.Key.Equals(KnownNames.ContentsTName) || item.Key.Equals(KnownNames.ParentTName)) continue;
             targetPage.AddMetadata(item.Key,
                 await copier.CloneAsync(item.Value));
         }

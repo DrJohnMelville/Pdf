@@ -33,22 +33,22 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     /// <inheritdoc />
     public DefaultFontReference FontFromName(PdfDirectValue font, FontFlags fontFlags)
     {
-        return font.GetHashCode() switch
+        return font switch
         {
-            KnownNameKeys.Courier => SystemFont(CourierNew,  false, false),
-            KnownNameKeys.CourierBold => SystemFont(CourierNew,  true, false),
-            KnownNameKeys.CourierOblique => SystemFont(CourierNew,  false, true),
-            KnownNameKeys.CourierBoldOblique => SystemFont(CourierNew,  true, true),
-            KnownNameKeys.Helvetica => SystemFont(Arial,  false, false),
-            KnownNameKeys.HelveticaBold => SystemFont(Arial,  true, false),
-            KnownNameKeys.HelveticaOblique => SystemFont(Arial,  false, true),
-            KnownNameKeys.HelveticaBoldOblique => SystemFont(Arial,  true, true),
-            KnownNameKeys.TimesRoman => SystemFont(TimesNewRoman,  false, false),
-            KnownNameKeys.TimesBold => SystemFont(TimesNewRoman,  true, false),
-            KnownNameKeys.TimesOblique => SystemFont(TimesNewRoman,  false, true),
-            KnownNameKeys.TimesBoldOblique => SystemFont(TimesNewRoman,  true, true),
-            KnownNameKeys.Symbol => SystemFont(SegoeUISymbol,  false, false), 
-            KnownNameKeys.ZapfDingbats => SystemFont(SegoeUISymbol,  false, false),
+            var x when x.Equals(KnownNames.CourierTName) => SystemFont(CourierNew,  false, false),
+            var x when x.Equals(KnownNames.CourierBoldTName) => SystemFont(CourierNew,  true, false),
+            var x when x.Equals(KnownNames.CourierObliqueTName) => SystemFont(CourierNew,  false, true),
+            var x when x.Equals(KnownNames.CourierBoldObliqueTName) => SystemFont(CourierNew,  true, true),
+            var x when x.Equals(KnownNames.HelveticaTName) => SystemFont(Arial,  false, false),
+            var x when x.Equals(KnownNames.HelveticaBoldTName) => SystemFont(Arial,  true, false),
+            var x when x.Equals(KnownNames.HelveticaObliqueTName) => SystemFont(Arial,  false, true),
+            var x when x.Equals(KnownNames.HelveticaBoldObliqueTName) => SystemFont(Arial,  true, true),
+            var x when x.Equals(KnownNames.TimesRomanTName) => SystemFont(TimesNewRoman,  false, false),
+            var x when x.Equals(KnownNames.TimesBoldTName) => SystemFont(TimesNewRoman,  true, false),
+            var x when x.Equals(KnownNames.TimesObliqueTName) => SystemFont(TimesNewRoman,  false, true),
+            var x when x.Equals(KnownNames.TimesBoldObliqueTName) => SystemFont(TimesNewRoman,  true, true),
+            var x when x.Equals(KnownNames.SymbolTName) => SystemFont(SegoeUISymbol,  false, false), 
+            var x when x.Equals(KnownNames.ZapfDingbatsTName) => SystemFont(SegoeUISymbol,  false, false),
             _ => TrySystemFont(font, 
                         fontFlags.HasFlag(FontFlags.ForceBold), fontFlags.HasFlag(FontFlags.Italic))??
                  FontFromName(fontFlags.MapBuiltInFont(), fontFlags)

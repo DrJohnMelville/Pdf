@@ -111,10 +111,10 @@ internal readonly struct OptionalContentPropertiesParser
 
     private bool? ParseBaseState(PdfDirectValue baseStateVal)
     {
-        bool? baseState = baseStateVal.GetHashCode() switch
+        bool? baseState = baseStateVal switch
         {
-            KnownNameKeys.ON => true,
-            KnownNameKeys.OFF => false,
+            var x when x.Equals(KnownNames.ONTName) => true,
+            var x when x.Equals(KnownNames.OFFTName) => false,
             _ => null
         };
         return baseState;

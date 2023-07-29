@@ -36,14 +36,15 @@ public class CompositeFontWidthParserTest
     [Fact]
     public async Task CanFollowType1DeclAsync()
     {
-        var sut = await new FontWidthParser(new PdfFont(new ValueDictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-                .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
-                .WithItem(KnownNames.WTName, new PdfValueArray(
-                    4, new PdfValueArray(500),
-                    6,7,1233))
-                .AsDictionary()
-            )).ParseAsync();
+        var font = new PdfFont(new ValueDictionaryBuilder()
+            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
+            .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
+            .WithItem(KnownNames.WTName, new PdfValueArray(
+                4, new PdfValueArray(500),
+                6,7,1233))
+            .AsDictionary()
+        );
+        var sut = await new FontWidthParser(font).ParseAsync();
         Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
         Assert.Equal(1000*1f/1000, sut.GetWidth(0x05, 0),3);
         Assert.Equal(1233*1f/1000, sut.GetWidth(0x06, 0), 3);

@@ -75,7 +75,7 @@ internal readonly partial struct PdfFont
     public ValueTask<double> DefaultWidthAsync() =>
         LowLevel.GetOrDefaultAsync(KnownNames.DWTName, 1000.0);
 
-    public ValueTask<PdfArray> WArrayAsync() =>
-        LowLevel.GetOrDefaultAsync(KnownNames.WTName, PdfArray.Empty);
+    public ValueTask<PdfValueArray> WArrayAsync() =>
+        LowLevel.GetOrDefaultAsync(KnownNames.WTName, PdfValueArray.Empty);
 }
 

@@ -140,8 +140,8 @@ public class ViewModelVisitor
 
         return type.GetHashCode() switch
         {
-            KnownNameKeys.Font => new FontPartViewModel(savedPrefix + "Font", item, children),
-            KnownNameKeys.Page => new PagePartViewModel(savedPrefix+"Page", children, new PdfPage(item)),
+            KnownNames.Font => new FontPartViewModel(savedPrefix + "Font", item, children),
+            KnownNames.Page => new PagePartViewModel(savedPrefix+"Page", children, new PdfPage(item)),
             _ => new DocumentPart(savedPrefix + DictionaryTitle(type), children)
         };
     }
