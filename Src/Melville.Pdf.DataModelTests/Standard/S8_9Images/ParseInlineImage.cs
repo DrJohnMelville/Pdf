@@ -46,10 +46,11 @@ public partial class ParseInlineImage : ParserTest
             new DoImpl(async i =>
             {
                 Assert.Equal(4, i.Count);
-                Assert.Equal(KnownNames.XObjectTName, (await i.GetAsync<PdfDirectValue>(KnownNames.TypeTName)));
-                Assert.Equal(KnownNames.ImageTName, (await i.GetAsync<PdfDirectValue>(KnownNames.SubtypeTName)));
-                Assert.Equal(12, (await i.GetAsync<PdfNumber>(KnownNames.WidthTName)).IntValue);
-                Assert.Equal(24, (await i.GetAsync<PdfNumber>(KnownNames.HeightTName)).IntValue);
+                Assert.Equal(KnownNames.XObjectTName, await i[KnownNames.TypeTName]);
+                Assert.Equal(KnownNames.ImageTName, await i[KnownNames.SubtypeTName]);
+                Assert.Equal(12, await i.GetAsync<int>(KnownNames.WidthTName));
+                Assert.Equal(24, await i.GetAsync<int>(KnownNames.HeightTName)
+                );
             }));
 
     [Theory]
@@ -101,8 +102,7 @@ public partial class ParseInlineImage : ParserTest
             new DoImpl(async i =>
             {
                 Assert.Equal(1234,
-                        (await i.GetAsync<PdfNumber>(PdfDirectValue.CreateName(preferredTerm))).
-                        IntValue);
+                        (await i.GetAsync<int>(PdfDirectValue.CreateName(preferredTerm))));
 
             }));
 

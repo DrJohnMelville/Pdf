@@ -46,7 +46,10 @@ internal static class ParsePdfArrays
         { IsDouble: true } => value.Get<double>(),
         { IsInteger: true } => value.Get<long>(),
         { IsBoolean: true} => value.Get<bool>(),
-        { IsLiteralName: true} => PdfDirectValue.CreateName(value.Get<StringSpanSource>().GetSpan()),
+        { IsLiteralName: true} => PdfDirectValue.CreateName(
+            ExpandValueSynonym(value.Get<StringSpanSource>().GetSpan())),
+        {ValueStrategy: PdfValueArray or PdfValueDictionary} => 
+            new PdfDirectValue(value.ValueStrategy, value.Memento),
         _ => throw new InvalidOperationException("Cannot Render this type.")
     };
     private static ReadOnlySpan<byte> ExpandValueSynonym(ReadOnlySpan<byte> name) => name switch
