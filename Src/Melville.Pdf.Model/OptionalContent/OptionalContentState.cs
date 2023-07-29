@@ -11,7 +11,7 @@ namespace Melville.Pdf.Model.OptionalContent;
 
 internal partial class OptionalContentState : IOptionalContentState
 {
-    private Dictionary<PdfValueDictionary, OptionalGroup> groupStates;
+    private readonly Dictionary<PdfValueDictionary, OptionalGroup> groupStates;
     public IReadOnlyList<OptionalContentConfiguration> Configurations { get; }
     [AutoNotify] private OptionalContentConfiguration? selectedConfiguration;
     public event EventHandler<EventArgs>? SelectedContentChanged; 

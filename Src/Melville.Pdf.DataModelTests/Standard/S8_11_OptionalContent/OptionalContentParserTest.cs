@@ -69,14 +69,13 @@ public class OptionalContentParserTest
     [Fact]
     public async Task ParseSimpleOrderAsync()
     {
-        var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
-                .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
-                    .WithItem(KnownNames.OrderTName, new PdfValueArray(ocg2, ocg1))
-                    .AsDictionary())
-                .AsDictionary()
-        );
+        var source = new ValueDictionaryBuilder()
+            .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
+            .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
+                .WithItem(KnownNames.OrderTName, new PdfValueArray(ocg2, ocg1))
+                .AsDictionary())
+            .AsDictionary();
+        var sut = await OptionalContentPropertiesParser.ParseAsync(source);
 
         var display = await sut.ConstructUiModelAsync(sut.Configurations[0].Order);
         Assert.Equal("O2", display[0].Name);

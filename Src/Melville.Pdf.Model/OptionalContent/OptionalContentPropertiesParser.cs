@@ -5,6 +5,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Postscript.Interpreter.Values;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Melville.Pdf.Model.OptionalContent;
@@ -49,7 +50,8 @@ internal readonly struct OptionalContentPropertiesParser
     {
         var intent = (await ocg.GetOrNullAsync(KnownNames.IntentTName).CA()).ObjectAsUnresolvedList();
         return new OptionalGroup(
-            (await ocg.GetOrDefaultAsync(KnownNames.NameTName, PdfString.Empty).CA()).AsTextString())
+            ocg.TryGetValue(KnownNames.NameTName, out var nameTask) ?
+                (await nameTask.CA()).DecodedString():"No Name")
         {
             Visible = await FindNameAsync(intent, KnownNames.ViewTName).CA()
         };

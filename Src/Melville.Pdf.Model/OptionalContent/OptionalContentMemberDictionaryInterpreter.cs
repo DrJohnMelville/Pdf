@@ -15,10 +15,14 @@ internal readonly partial struct OptionalContentMemberDictionaryInterpreter
     [FromConstructor] private readonly PdfValueDictionary dictionary;
     [FromConstructor] private readonly IOptionalContentState state;
 
-    public async  ValueTask<bool> ParseAsync() =>
-        await ((await VeDictionaryAsync().CA()).TryGet(out PdfValueArray arr)? 
-            EvaluateVeAsync(arr) : 
-            EvaluateUsingOcgsAsync()).CA();
+    public async  ValueTask<bool> ParseAsync()
+    {
+        var veItem = await VeDictionaryAsync().CA();
+        var veAsArray = veItem.TryGet(out PdfValueArray? arr);
+        return await (veAsArray
+            ? EvaluateVeAsync(arr!)
+            : EvaluateUsingOcgsAsync()).CA();
+    }
 
     private async ValueTask<bool> EvaluateUsingOcgsAsync() =>
         await EvaluateUsingPAsync(
@@ -62,10 +66,12 @@ internal readonly partial struct OptionalContentMemberDictionaryInterpreter
         }).CA();
 
     private async ValueTask<bool> EvaluateVeAsync(PdfValueArray arr) =>
-        (await arr[0].CA()).GetHashCode() switch
+        (await arr[0].CA()) switch
         {
-            KnownNameKeys.Not => !await EvaluateVeItemAsync(arr.RawItems[1]).CA(),
-            KnownNameKeys.Or => await CheckAnyAsync(arr.RawItems.Skip(1), true).CA(),
+            var x when x.Equals(KnownNames.NotTName) =>
+                !await EvaluateVeItemAsync(arr.RawItems[1]).CA(),
+            var x when x.Equals(KnownNames.OrTName) =>
+                 await CheckAnyAsync(arr.RawItems.Skip(1), true).CA(),
             _ => await CheckAllAsync(arr.RawItems.Skip(1), true).CA(),
         };
 

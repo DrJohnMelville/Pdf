@@ -27,11 +27,18 @@ internal partial class OptionalContentCounter: IOptionalContentCounter
     public async ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfValueDictionary? visibilityGroup) =>
         IsHidden || !await contentState.IsGroupVisibleAsync(visibilityGroup).CA();
 
-    public async ValueTask EnterGroupAsync(PdfDirectValue oc, PdfDirectValue off, IHasPageAttributes attributeSource) =>
-        await EnterGroupAsync(oc, 
-            (await attributeSource.GetResourceAsync(ResourceTypeName.Properties, off).CA()).Get<PdfValueDictionary>()).CA();
+    public async ValueTask EnterGroupAsync(
+        PdfDirectValue oc, PdfDirectValue off, IHasPageAttributes attributeSource) =>
+        await EnterGroupAsync(oc, await TryGetDictionary(off, attributeSource).CA()).CA();
 
-    public async ValueTask EnterGroupAsync(PdfDirectValue oc, PdfValueDictionary off)
+    private static async Task<PdfValueDictionary?> TryGetDictionary(
+        PdfDirectValue off, IHasPageAttributes attributeSource)
+    {
+        var resource = await attributeSource.GetResourceAsync(ResourceTypeName.Properties, off).CA();
+        return resource.TryGet(out PdfValueDictionary? dict) ? dict : null;
+    }
+
+    public async ValueTask EnterGroupAsync(PdfDirectValue oc, PdfValueDictionary? off)
     {
         if (IsHidden || (oc.Equals(KnownNames.OCTName) && !await contentState.IsGroupVisibleAsync(off).CA())) 
             groupsBelowDeepestVisibleGroup++;
