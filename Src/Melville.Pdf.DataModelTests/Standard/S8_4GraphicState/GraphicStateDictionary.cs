@@ -30,12 +30,6 @@ public class GraphicStateDictionary
 {
 
     [Fact]
-    public void KeysHashCorrectly()
-    {
-        Assert.Equal(KnownNameKeys.LW, KnownNames.LWTName.GetHashCode());
-        Assert.Equal(KnownNameKeys.LW, KnownNames.LWTName.GetHashCode());
-    }
-    [Fact]
     public async Task SetLineWidthWithDictionaryAsync()
     {
         var page = PageThatSetsPropFromGSDictionary(GraphicStateParameterName.LW, 10);

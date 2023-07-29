@@ -86,7 +86,7 @@ public class TilePatternCreator : ContentStreamCreator
     public override (PdfIndirectValue Reference, int PageCount) ConstructItem(IPdfObjectCreatorRegistry creator,
         PdfIndirectValue parent)
     {
-        if (parent.IsNull)
+        if (!parent.IsNull)
             throw new InvalidOperationException("Patterns may not have a parent");
         return base.ConstructItem(creator, parent);
     }

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -38,7 +39,10 @@ public class TilePatternCreatorTest
             return ValueTask.CompletedTask;
         });
         var (ir, num) = builder.ConstructItem(new LowLevelDocumentBuilder(), PdfDirectValue.CreateNull());
-        var str = await ((PdfIndirectValue)(await ir.LoadValueAsync())).WriteToStringAsync();
+        var str = (await ir.LoadValueAsync())
+            .TryGet(out PdfValueStream? innerStr)
+            ? await innerStr.WriteStreamToStringAsync()
+            : throw new InvalidOperationException("Pattern must be a stream");
         Assert.Contains(partialString, str);
     }
     [Theory]
