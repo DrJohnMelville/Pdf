@@ -22,15 +22,23 @@ internal sealed class UnicodeEncoder
     public byte[] GetBytesWithBOM(string text)
     {
         if (text.Length == 0) return Array.Empty<byte>();
-        var len = preamble.Length+Encoder.GetByteCount(text);
+        var len = EncodedLength(text);
         var ret = new byte[len ];
-        preamble.CopyTo(ret, 0);
-        Encoder.GetBytes(text, 0, text.Length, ret, preamble.Length);
+        FillEncodedSpan(text, ret);
         return ret;
     }
+
+    public void FillEncodedSpan(in ReadOnlySpan<char> text, in Span<byte> ret)
+    {
+        preamble.AsSpan().CopyTo(ret);
+        Encoder.GetBytes(text, ret[preamble.Length..]);
+    }
+
+    public int EncodedLength(ReadOnlySpan<char> text) => preamble.Length+Encoder.GetByteCount(text);
+
     public string GetString(byte[] bytes)
     {
-        if (!HasUtf16BOM(bytes))
+        if (!HasByteOrderMark(bytes))
         {
             if (bytes.Length == 0) return "";
             throw new PdfParseException("Invalid ByteOrderMark on UtfString");
@@ -38,9 +46,14 @@ internal sealed class UnicodeEncoder
         return Encoder.GetString(bytes.AsSpan(preamble.Length));
     }
 
-    public string? TryGetFromBOM(in ReadOnlySpan<byte> bytes) =>
-        HasUtf16BOM(bytes) ? Encoder.GetString(bytes[preamble.Length..]) : null;
+    public int DecodedLength(ReadOnlySpan<byte> text) =>
+        Encoder.GetCharCount(text[preamble.Length..]);
 
-    public bool HasUtf16BOM(in ReadOnlySpan<byte> bytes) =>
+    public void FillDecodedSpan(ReadOnlySpan<byte> bytes, in Span<char> output) => Encoder.GetChars(bytes[preamble.Length..], output);
+
+    public string? TryGetFromBOM(in ReadOnlySpan<byte> bytes) =>
+        HasByteOrderMark(bytes) ? Encoder.GetString(bytes[preamble.Length..]) : null;
+
+    public bool HasByteOrderMark(in ReadOnlySpan<byte> bytes) =>
         bytes.Length >= preamble.Length && preamble.AsSpan().SequenceEqual(bytes[..preamble.Length]);
 }

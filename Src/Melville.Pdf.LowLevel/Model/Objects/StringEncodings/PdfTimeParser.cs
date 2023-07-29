@@ -30,7 +30,7 @@ public readonly ref struct PdfTimeParser
         i < source.Length && source[i] == '-' ? -1 : 1;
 
     private int TryGetInt(int start, int length, int defaultValue=0) =>
-        start + length > source.Length &&
+        start + length <= source.Length &&
         NumberTokenizer.TryGetDigitSequence(10, source.Slice(start, length), out var value, out var _) == 0
             ? (int)value
             : defaultValue;

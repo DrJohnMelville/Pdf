@@ -41,7 +41,7 @@ public class S7_5_7ObjectStreams
         var res = pfo.NewIndirectResolver;
         res.RegisterObjectStreamBlock(1, 10, 0);
         res.RegisterObjectStreamBlock(2, 10, 1);
-        res.RegisterDirectObject(10, 0, os);
+        res.RegisterDirectObject(10, 0, os, false);
 
         await AssertIndirectAsync(res, 1, "11111");
         await AssertIndirectAsync(res, 2, "22222");
@@ -67,7 +67,7 @@ public class S7_5_7ObjectStreams
         var pfo = new ParsingFileOwner(new MemoryStream(), NullPasswordSource.Instance, new IndirectObjectResolver());
         var res = pfo.NewIndirectResolver;
         res.RegisterObjectStreamBlock(1, 10, 0);
-        res.RegisterDirectObject(10, 0, os);
+        res.RegisterDirectObject(10, 0, os, false);
 
         await AssertIndirectAsync(res, 1, "null");
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Objects2;
@@ -26,39 +27,39 @@ public class S7_9_4Dates
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimePrinter(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(pdfFormat, PdfString.CreateDate(rec).AsTextString());
+        Assert.Equal(pdfFormat, rec.AsPdfBytes().AsTextString());
     }   
 
     [Theory]
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimeParserAscii(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(rec, PdfString.CreateAscii(pdfFormat).AsPdfTime());
+        Assert.Equal(rec, new PdfTimeParser(pdfFormat.AsExtendedAsciiBytes()).AsPdfTime());
     }
 [Theory]
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimeParserUtf8(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(rec, PdfString.CreateUtf8(pdfFormat).AsPdfTime());
+        Assert.Equal(rec, PdfDirectValue.CreateUtf8String(pdfFormat).AsPdfTime());
     }
 [Theory]
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimeParserUtf16(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(rec, PdfString.CreateUtf16(pdfFormat).AsPdfTime());
+        Assert.Equal(rec, PdfDirectValue.CreateUtf16String(pdfFormat).AsPdfTime());
     }
 [Theory]
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimeParserWithApostrophes(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(rec, PdfString.CreateUtf16(pdfFormat+"'").AsPdfTime());
+        Assert.Equal(rec, PdfDirectValue.CreateUtf16String(pdfFormat+"'").AsPdfTime());
     }
 
     [Fact]
     public void ParseWithZ()
     {
         Assert.Equal(new PdfTime(new DateTime(1975,07,28,01,23,59)), 
-            new PdfTimeParser(PdfDirectValue.CreateString("D:19750728012359Z"u8).Get<StringSpanSource>().GetSpan()).AsPdfTime());
+            PdfDirectValue.CreateString("D:19750728012359Z"u8).AsPdfTime());
             
     }
 }

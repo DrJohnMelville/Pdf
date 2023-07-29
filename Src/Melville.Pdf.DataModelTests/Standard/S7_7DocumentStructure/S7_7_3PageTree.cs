@@ -93,19 +93,19 @@ public class S7_7_3PageTree
     {
         var doc = FifteenPageDocumentTree();
         var p0 = await (await doc.PagesAsync()).GetPageAsync(0);
-        Assert.Equal(KnownNames.PageTName, await p0.LowLevel.GetAsync<PdfDirectValue>(KnownNames.TypeTName));
+        Assert.Equal(KnownNames.PageTName, await p0.LowLevel[KnownNames.TypeTName]);
         var p1 = await ((IHasPageAttributes) p0).GetParentAsync();
         Assert.Equal(KnownNames.PagesTName, 
-            await ((HasRenderableContentStream)p1!).LowLevel.GetAsync<PdfDirectValue>(KnownNames.TypeTName));
+            await ((HasRenderableContentStream)p1!).LowLevel[KnownNames.TypeTName]);
         Assert.True(p1 != null);
         var p2 = await p1!.GetParentAsync();
         Assert.True(p2 != null);
         Assert.Equal(KnownNames.PagesTName, 
-            await ((HasRenderableContentStream)p2!).LowLevel.GetAsync<PdfDirectValue>(KnownNames.TypeTName));
+            await ((HasRenderableContentStream)p2!).LowLevel[KnownNames.TypeTName]);
         var p3 = await p2.GetParentAsync();
         Assert.True(p3!= null);
         Assert.Equal(KnownNames.PagesTName, 
-            await ((HasRenderableContentStream)p3!).LowLevel.GetAsync<PdfDirectValue>(KnownNames.TypeTName));
+            await ((HasRenderableContentStream)p3!).LowLevel[KnownNames.TypeTName]);
         var p4 = await p3.GetParentAsync();
         Assert.False(p4 != null);
     }

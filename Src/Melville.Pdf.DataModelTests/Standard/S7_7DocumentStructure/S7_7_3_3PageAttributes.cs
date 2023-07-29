@@ -1,14 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Melville.FileSystem;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers;
-using Melville.Pdf.LowLevel.Writers;
-using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
 using Xunit;
@@ -43,11 +38,11 @@ public class S7_7_3_3PageAttributes
         var procSets = await doc.GetProcSetsAsync();
         Assert.NotNull(procSets);
         Assert.Equal(5, procSets!.Count);
-        Assert.Equal(KnownNames.PDFTName, await procSets.GetAsync<PdfDirectValue>(0));
-        Assert.Equal(KnownNames.TextTName, await procSets.GetAsync<PdfDirectValue>(1));
-        Assert.Equal(KnownNames.ImageBTName, await procSets.GetAsync<PdfDirectValue>(2));
-        Assert.Equal(KnownNames.ImageCTName, await procSets.GetAsync<PdfDirectValue>(3));
-        Assert.Equal(KnownNames.ImageITName, await procSets.GetAsync<PdfDirectValue>(4));
+        Assert.Equal(KnownNames.PDFTName, await procSets[0]);
+        Assert.Equal(KnownNames.TextTName, await procSets[1]);
+        Assert.Equal(KnownNames.ImageBTName, await procSets[2]);
+        Assert.Equal(KnownNames.ImageCTName, await procSets[3]);
+        Assert.Equal(KnownNames.ImageITName, await procSets[4]);
     }
 
     [Fact]
@@ -143,10 +138,10 @@ public class S7_7_3_3PageAttributes
         var res = await page.LowLevel.GetAsync<PdfValueDictionary>(KnownNames.ResourcesTName);
         var fonts = await res.GetAsync<PdfValueDictionary>(KnownNames.FontTName);
         var font = await fonts.GetAsync<PdfValueDictionary>(fontName);
-        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.TypeTName), KnownNames.FontTName);
-        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.SubtypeTName), KnownNames.Type1TName);
-        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.NameTName), fontName);
-        Assert.Equal(await font.GetAsync<PdfDirectValue>(KnownNames.EncodingTName), FontEncodingName.WinAnsiEncoding);  
+        Assert.Equal(await font[KnownNames.TypeTName], KnownNames.FontTName);
+        Assert.Equal(await font[KnownNames.SubtypeTName], KnownNames.Type1TName);
+        Assert.Equal(await font[KnownNames.NameTName], fontName);
+        Assert.Equal(await font[KnownNames.EncodingTName], FontEncodingName.WinAnsiEncoding);  
     }
 
     [Fact] 

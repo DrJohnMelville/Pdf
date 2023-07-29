@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 
-public class PdfValueDictionary: IReadOnlyDictionary<PdfDirectValue, ValueTask<PdfDirectValue>>,
-    ITemporaryConverter
+public class PdfValueDictionary: IReadOnlyDictionary<PdfDirectValue, ValueTask<PdfDirectValue>>
 {
     public static readonly PdfValueDictionary Empty = new PdfValueStream(
         new LiteralStreamSource(Array.Empty<byte>(), StreamFormat.DiskRepresentation),
@@ -62,17 +60,4 @@ public class PdfValueDictionary: IReadOnlyDictionary<PdfDirectValue, ValueTask<P
             i.Key, i.Value.LoadValueAsync())).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    public PdfObject TemporaryConvert()
-    {
-        var builder = new DictionaryBuilder();
-        foreach (var item in RawItems)
-        {
-            builder.WithItem(item.Key.AsOldObject<PdfName>(), item.Value.AsOldObject());
-        }
-
-        return TemporaryConvert(builder);
-    }
-
-    protected virtual PdfDictionary TemporaryConvert(DictionaryBuilder builder) =>
-        builder.AsDictionary();
 }

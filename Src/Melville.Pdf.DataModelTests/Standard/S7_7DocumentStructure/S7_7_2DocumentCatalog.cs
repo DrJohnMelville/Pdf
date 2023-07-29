@@ -11,9 +11,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 public class S7_7_2DocumentCatalog
 {
     [Theory]
-    [InlineData(1,2,"/1.2")]
-    [InlineData(1,9,"/1.9")]
-    [InlineData(2,0,"/2.0")]
+    [InlineData(1,2,"1.2")]
+    [InlineData(1,9,"1.9")]
+    [InlineData(2,0,"2.0")]
     public async Task DefaultVersionsAsync(byte major, byte minor, string result)
     {
         var creator = new PdfDocumentCreator();

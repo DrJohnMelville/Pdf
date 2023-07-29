@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Postscript.Interpreter.InterpreterState;
@@ -122,6 +123,20 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     public static readonly PdfDirectValue EmptyString = CreateString(ReadOnlySpan<byte>.Empty);
 
+    public static PdfDirectValue CreateUtf8String(string source) =>
+        CreateString(source, UnicodeEncoder.Utf8, StringKind.String);
+    public static PdfDirectValue CreateUtf16String(string source) =>
+        CreateString(source, UnicodeEncoder.BigEndian, StringKind.String);
+    public static PdfDirectValue CreateUtf16LittleEndianString(string source) =>
+        CreateString(source, UnicodeEncoder.LittleEndian, StringKind.String);
+
+    private static PdfDirectValue CreateString(
+        string source, UnicodeEncoder encoder, StringKind stringKind)
+    {
+        Span<byte> text = stackalloc byte[encoder.EncodedLength(source)];
+        encoder.FillEncodedSpan(source, text);
+        return CreateStringOrName(text, stringKind);
+    }
 
     public static PdfDirectValue CreateString(in ReadOnlySpan<byte> str) => 
         CreateStringOrName(str, StringKind.String);
@@ -153,36 +168,4 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     public override int GetHashCode() => 
         HashCode.Combine(valueStrategy, memento);
-
-}
-
-public interface ITemporaryConverter
-{
-    PdfObject TemporaryConvert();
-}
-
-public static class TemporaryObjectBridge
-{
-    public static PdfObject AsOldObject(in this PdfIndirectValue value)
-    {
-        if (value.TryGetEmbeddedDirectValue(out var dv))
-            return dv.AsOldObject();
-        else
-            throw new NotImplementedException("cannot convert indirect objects");
-    }
-
-    public static PdfObject AsOldObject(in this PdfDirectValue value) => value switch
-    {
-        { IsInteger: true } => new PdfInteger(value.Get<long>()),
-        { IsDouble: true } => new PdfDouble(value.Get<double>()),
-        { IsBool: true } => value.Get<bool>() ? PdfBoolean.True : PdfBoolean.False,
-        { IsNull: true } => PdfTokenValues.Null,
-        { IsString: true } => new PdfString(value.Get<StringSpanSource>().GetSpan().ToArray()),
-        { IsName: true } => NameDirectory.Get(value.Get<StringSpanSource>().GetSpan()),
-        _ when value.TryGet(out ITemporaryConverter cvt) => cvt.TemporaryConvert(),
-    };
-
-    public static T AsOldObject<T>(in this PdfDirectValue value) where T : PdfObject =>
-        (T)value.AsOldObject();
-
 }

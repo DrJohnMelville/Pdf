@@ -68,7 +68,7 @@ public class PdfValueStream : PdfValueDictionary
 
 
 
-    protected override PdfDictionary TemporaryConvert(DictionaryBuilder builder) =>
+    protected virtual PdfDictionary TemporaryConvert(DictionaryBuilder builder) =>
         builder.AsStream(source);
 
     public async ValueTask<bool> HasFilterOfTypeAsync(PdfDirectValue filterType)

@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects2;
 /// contain different types of objects at each position, including other arrays.
 /// </summary>
 public sealed class PdfValueArray :
-    IReadOnlyList<ValueTask<PdfDirectValue>>, IAsyncEnumerable<PdfDirectValue>, ITemporaryConverter
+    IReadOnlyList<ValueTask<PdfDirectValue>>, IAsyncEnumerable<PdfDirectValue>
 {
     /// <summary>
     /// A Pdf Array with no elements
@@ -95,17 +95,6 @@ public sealed class PdfValueArray :
 
     /// <inheritdoc />
     public override string ToString() => "["+string.Join(" ", RawItems) +"]";
-
-    public PdfObject TemporaryConvert()
-    {
-        var ret = new PdfObject[Count];
-        for (int i = 0; i < ret.Length; i++)
-        {
-            ret[i] = RawItems[i].AsOldObject();
-        }
-
-        return new PdfArray(ret);
-    }
 
     #warning  figue out if we could use an IReadOnlyDictionary to do this without copying
     public async ValueTask<T[]> CastAsync<T>()
