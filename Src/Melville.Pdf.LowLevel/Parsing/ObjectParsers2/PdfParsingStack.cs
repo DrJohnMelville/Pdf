@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
@@ -21,9 +22,11 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
 {
     private IParsingReader Source { get; }
+    private readonly LazyCryptContextBuffer cryptoBuffer;
     public PdfParsingStack(IParsingReader source) : base(0,"")
     {
         Source = source;
+        cryptoBuffer = new LazyCryptContextBuffer(source.Owner);
     }
 
     public void PushMark() =>
@@ -84,10 +87,21 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
     public void ObjOperator()
     {
         Debug.Assert(Count == 3);
-        Pop();
-        Pop();
+        SetObjectNumber();
         this.ClearAfterPop(3);
     }
+
+    private void SetObjectNumber()
+    {
+        var generation = ForcePopInteger();
+        var objectNumber = ForcePopInteger();
+        cryptoBuffer.SetCurrentObject(objectNumber, generation);
+    }
+
+    private int ForcePopInteger() =>
+        Pop().TryGetEmbeddedDirectValue(out var dirVal) && dirVal.TryGet(out int ret)
+            ? ret
+            : throw new PdfParseException("Direct valued integer expected");
 
     public void CreateReference()
     {
@@ -110,7 +124,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
         Pop().TryGetEmbeddedDirectValue(out var dv);
         Pop();
         Push(new PdfValueStream(new  PdfFileStreamSource(
-                Source.Reader.GlobalPosition, Source.Owner, Source.ObjectCryptContext()), 
+                Source.Reader.GlobalPosition, Source.Owner, CryptoContext()), 
                 dv.Get<Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>>>()));
     }
 
@@ -132,6 +146,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
     {
         Debug.Assert(Count == 2);
         var result = Pop();
+        cryptoBuffer.ClearObject();
         Pop();
         ClearAfterPop(2);
         Push(result.TryGetEmbeddedDirectValue(
@@ -140,10 +155,12 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
             : result);
     }
 
+    
     public void EndStreamOperator()
     {
     }
 
-    private bool IdentifyPdfOperator(PdfIndirectValue i) => i.IsPdfParsingOperation();
+    public IObjectCryptContext CryptoContext() => cryptoBuffer.GetContext();
 
+    private bool IdentifyPdfOperator(PdfIndirectValue i) => i.IsPdfParsingOperation();
 }

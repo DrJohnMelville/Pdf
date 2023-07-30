@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.FileSystem;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
@@ -71,8 +72,8 @@ public class RoundTripEncryptedFiles
 
     private async ValueTask VerifyNumberAsync(PdfValueDictionary encrypt, PdfDirectValue PdfDirectValue, int expected)
     {
-        var num = await encrypt.GetAsync<PdfNumber>(PdfDirectValue);
-        Assert.Equal(expected, num.IntValue);
+        var num = await encrypt.GetAsync<int>(PdfDirectValue);
+        Assert.Equal(expected, num);
             
     }
 

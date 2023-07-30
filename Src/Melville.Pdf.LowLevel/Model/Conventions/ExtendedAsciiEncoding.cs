@@ -33,6 +33,16 @@ public static class ExtendedAsciiEncoding
         }
     }
 
+    public static Span<byte> StripZeros(this in Span<byte> source)
+    {
+        for (int i = 0; i < source.Length; i++)
+        {
+            if (source[i] == 0) source[i] = (byte)'_';
+        }
+
+        return source;
+    }
+
     /// <summary>
     /// Decode a byte array into a string.
     /// </summary>
@@ -40,6 +50,14 @@ public static class ExtendedAsciiEncoding
     /// <returns>A string representing the bytes in the input</returns>
     public static string ExtendedAsciiString(this byte[] source) =>
         ((ReadOnlySpan<byte>) source).ExtendedAsciiString();
+
+    /// <summary>
+    /// Decode a byte array into a string.
+    /// </summary>
+    /// <param name="source">The bytes to be converted</param>
+    /// <returns>A string representing the bytes in the input</returns>
+    public static unsafe string ExtendedAsciiString(this Span<byte> source) =>
+        ((ReadOnlySpan<byte>)source).ExtendedAsciiString();
 
     /// <summary>
     /// Decode a byte array into a string.

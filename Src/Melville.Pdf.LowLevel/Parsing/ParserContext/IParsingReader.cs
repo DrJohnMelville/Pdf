@@ -9,12 +9,14 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 internal interface IParsingReader
 {
+    #warning -- needs to go away
     IPdfObjectParser RootObjectParser { get; }
     #warning == figure out if I  can share this.
     RootObjectParser NewRootObjectParser => new RootObjectParser(this);
     IIndirectObjectResolver IndirectResolver { get; }
     ParsingFileOwner Owner { get; }
     IByteSourceWithGlobalPosition Reader { get; }
+    #warning need to get rid of this
     IObjectCryptContext ObjectCryptContext();
 }
 

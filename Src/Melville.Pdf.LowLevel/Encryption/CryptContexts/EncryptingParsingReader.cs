@@ -1,9 +1,13 @@
-﻿using Melville.INPC;
+﻿using System;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Encryption.CryptContexts;
 
+
+#warning -- get rid of this
+[Obsolete("Can handle crypt contexts better with the pdf stack")]
 internal partial class EncryptingParsingReader : IParsingReader
 {
     [DelegateTo]

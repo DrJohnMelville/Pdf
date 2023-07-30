@@ -23,7 +23,7 @@ public abstract class EncryptedFileWriter : CreatePdfParser
     {
         BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, encryptor);
         var page = builder.Pages.CreatePage();
-        var font = page.AddStandardFont("F1", BuiltInFontName.TimesRoman, FontEncodingName.WinAnsiEncoding);
+        var font = page.AddStandardFont("/F1", BuiltInFontName.TimesRoman, FontEncodingName.WinAnsiEncoding);
         await page.AddToContentStreamAsync(i =>
         {
             i.SetFontAsync(font, 12);

@@ -6,6 +6,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
+using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -39,11 +40,11 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
 
     private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
+    #warning make this a synchronous method
     public ValueTask<IParsingReader> RentReaderAsync(long offset, int objectNumber=-1, int generation = -1)
     {
-        var reader = ParsingReaderForStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(offset)), offset);
-        return new ValueTask<IParsingReader>(TryWrapWithDecryptor(objectNumber, generation, reader));
-            
+        return new(ParsingReaderForStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(offset)), offset));
+
     }
 
     public ValueTask<Stream> RentStreamAsync(long position, long length)
@@ -52,13 +53,9 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
         return new ValueTask<Stream>(ret);
     }
 
-    private IParsingReader TryWrapWithDecryptor(int objectNumber, int generation, IParsingReader reader)
-    {
-        return objectNumber > 0 && generation >= 0
-            ? new EncryptingParsingReader(reader,
-                documentCryptContext.ContextForObject(objectNumber, generation))
-            : reader;
-    }
+
+    public IObjectCryptContext CryptContextForObject(int objectNumber, int generation) =>
+        documentCryptContext.ContextForObject(objectNumber, generation);
 
     public IParsingReader ParsingReaderForStream(Stream s, long position) =>
         new ParsingReader(this, PipeReader.Create(s, pipeOptions), position);
