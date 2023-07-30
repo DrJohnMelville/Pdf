@@ -5,7 +5,8 @@ namespace Melville.Pdf.ReferenceDocuments.Utility;
 public static class BitStreamCreator
 {
     private static readonly char[] hexDigits = { '0', '1', '2', '3','4', '5','6','7','8','9','A','B','C','D','E','F'};
-    public static string HexFromBits(this Span<byte> bits)
+    public static string HexFromBits(this Span<byte> bits) => ((ReadOnlySpan<byte>)bits).HexFromBits();
+    public static string HexFromBits(this ReadOnlySpan<byte> bits)
     {
         Span<char> ret = stackalloc char[bits.Length * 2];
         int position = 0;

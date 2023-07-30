@@ -14,48 +14,53 @@ internal class GlobalEncryptionKeyComputerV2: IGlobalEncryptionKeyComputer
 {
     public byte[] ComputeKey(string userPassword, in EncryptionParameters parameters)
     {
-        var hash = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+        HashAlgorithm hash = MD5.Create();
         AddPaddedUserPasswordToHash(userPassword, hash);
-        hash.AppendData(parameters.OwnerPasswordHash.Span);
+        #warning eventually use incrementalHash to avoid some allocations
+        hash.AddData(parameters.OwnerPasswordHash.ToArray());
         AddLittleEndianInt(hash, parameters.Permissions);
-        hash.AppendData(parameters.IdFirstElement.Span);
+#warning eventually use incrementalHash to avoid some allocations
+        hash.AddData(parameters.IdFirstElement.ToArray());
         var bytesInKey = parameters.KeyLengthInBits/8;
         var bits = V3Spin(hash, bytesInKey);
         return (bits.Length == bytesInKey) ? bits : bits[..bytesInKey];
     }
 
-    private static void AddPaddedUserPasswordToHash(string userPassword, IncrementalHash hash)
+    private static void AddPaddedUserPasswordToHash(string userPassword, HashAlgorithm hash)
     {
-        Span<byte> data = stackalloc byte[32];
-        BytePadder.Pad(userPassword, data);
-        hash.AppendData(data);
+        var data = ArrayPool<byte>.Shared.Rent(32);
+        BytePadder.Pad(userPassword, data.AsSpan(0, 32));
+        hash.AddData(data, 32);
+        ArrayPool<byte>.Shared.Return(data);
     }
 
-    protected virtual byte[] V3Spin(IncrementalHash hash, int bytesInKey)
+    protected virtual byte[] V3Spin(HashAlgorithm hash, int bytesInKey)
     {
-        return hash.GetCurrentHash();
+        hash.FinalizeHash();
+        return hash.Hash ?? throw new PdfSecurityException("Should have a hash");
     }
 
-    private static void AddLittleEndianInt(IncrementalHash hash, uint localP)
+    private static void AddLittleEndianInt(HashAlgorithm hash, uint localP)
     {
-        Span<byte>  pValue = stackalloc byte[4];
+        var pValue = ArrayPool<byte>.Shared.Rent(4);
         for (int i = 0; i < 4; i++)
         {
             pValue[i] = (byte)localP;
             localP >>= 8;
         }
-        hash.AppendData(pValue);
+        hash.AddData(pValue, 4);
+        ArrayPool<byte>.Shared.Return(pValue);
     }
 }
 
 internal class GlobalEncryptionKeyComputerV3 : GlobalEncryptionKeyComputerV2
 {
-    protected override byte[] V3Spin(IncrementalHash hash, int bytesInKey)
+    protected override byte[] V3Spin(HashAlgorithm hash, int bytesInKey)
     {
         var ret = base.V3Spin(hash, bytesInKey);
         for (int i = 0; i < 50; i++)
         {
-            hash.AppendData(ret);
+            hash.AddData(ret, bytesInKey);
             ret = base.V3Spin(hash, bytesInKey);
         }
         return ret;

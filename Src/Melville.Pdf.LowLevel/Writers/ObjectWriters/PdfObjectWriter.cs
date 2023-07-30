@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ internal class PdfObjectWriter
 {
     private readonly PipeWriter target;
     private IDocumentCryptContext encryptor;
-    private (int ObjectNum,int Generation)? currentIndirectObject = null;
+    private (int ObjectNum,int Generation) currentIndirectObject = (-1,-1);
 
     public PdfObjectWriter(PipeWriter target) : this(target, NullSecurityHandler.Instance)
     {
@@ -95,19 +96,23 @@ internal class PdfObjectWriter
     {
         currentIndirectObject =
             value.TryGet(out PdfValueDictionary? pvd) && encryptor.BlockEncryption(pvd) ? 
-                default: (objNum, generation); ;
+                (-1,-1): (objNum, generation); ;
         return this.WriteObjectDefinition(objNum, generation, value);
     }
 
     public ValueTask WriteStreamAsync(PdfValueStream stream) => 
         StreamWriter.WriteAsync(this, stream, CreateEncryptor());
 
-    private IObjectCryptContext CreateEncryptor() =>
-        !currentIndirectObject.HasValue ? NullSecurityHandler.Instance : 
-            encryptor.ContextForObject(currentIndirectObject.Value.ObjectNum, 
-                currentIndirectObject.Value.Generation);
+    private IObjectCryptContext CreateEncryptor()
+    {
+        Debug.Assert(currentIndirectObject.ObjectNum != 0);
+        return currentIndirectObject.ObjectNum < 0
+            ? NullSecurityHandler.Instance
+            : encryptor.ContextForObject(currentIndirectObject.ObjectNum,
+                currentIndirectObject.Generation);
+    }
 
-    #warning -- get rid of this comment when all the tests pass
+#warning -- get rid of this comment when all the tests pass
     /*
     // this is an unusual situation where the methods have to not be named async to
     //implement the interface which is defined over a valueType

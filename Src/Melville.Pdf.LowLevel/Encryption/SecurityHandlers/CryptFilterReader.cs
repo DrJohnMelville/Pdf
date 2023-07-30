@@ -48,8 +48,8 @@ internal readonly partial struct CryptFilterReader
 
     private async Task SetDefaultFiltersAsync()
     {
-        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.IdentityTName).CA();
-        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.IdentityTName).CA();
+        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.StmFTName).CA();
+        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.StrFTName).CA();
     }
 
     private async Task SetSingleDefaultFilterAsync(PdfDirectValue filterName) => 

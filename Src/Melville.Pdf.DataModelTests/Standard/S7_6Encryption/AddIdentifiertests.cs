@@ -26,7 +26,7 @@ public class AddIdentifiertests
         Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.IDTName, out var idObj));
         builder.EnsureDocumentHasId();
         Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.IDTName, out var idObj2));
-        Assert.Same(await idObj, await idObj2);
+        Assert.Equal(await idObj, await idObj2);
     }
     [Fact]
     public async Task IDHas2ProperStringElementsAsync()

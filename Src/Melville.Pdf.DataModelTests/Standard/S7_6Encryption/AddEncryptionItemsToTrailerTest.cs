@@ -11,6 +11,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
+using Melville.Postscript.Interpreter.Values;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
@@ -41,12 +42,12 @@ public class AddEncryptionItemsToTrailerTest
     {
         Assert.True(trailer.ContainsKey(KnownNames.EncryptTName));
         var dict = await trailer.GetAsync<PdfValueDictionary>(KnownNames.EncryptTName);
-        Assert.Equal(2, (await dict.GetAsync<PdfNumber>(KnownNames.VTName)).IntValue);
-        Assert.Equal(3, (await dict.GetAsync<PdfNumber>(KnownNames.RTName)).IntValue);
-        Assert.Equal(128, (await dict.GetAsync<PdfNumber>(KnownNames.LengthTName)).IntValue);
-        Assert.Equal(-1, (await dict.GetAsync<PdfNumber>(KnownNames.PTName)).IntValue);
-        Assert.Equal(32, (await dict.GetAsync<PdfString>(KnownNames.UTName)).Bytes.Length);
-        Assert.Equal(32, (await dict.GetAsync<PdfString>(KnownNames.OTName)).Bytes.Length);
-        Assert.Equal(KnownNames.StandardTName, (await dict.GetAsync<PdfDirectValue>(KnownNames.FilterTName)));
+        Assert.Equal(2, (await dict.GetAsync<int>(KnownNames.VTName)));
+        Assert.Equal(3, (await dict.GetAsync<int>(KnownNames.RTName)));
+        Assert.Equal(128, (await dict.GetAsync<int>(KnownNames.LengthTName)));
+        Assert.Equal(-1, (await dict.GetAsync<int>(KnownNames.PTName)));
+        Assert.Equal(32, (await dict.GetAsync<StringSpanSource>(KnownNames.UTName)).GetSpan().Length);
+        Assert.Equal(32, (await dict.GetAsync<StringSpanSource>(KnownNames.OTName)).GetSpan().Length);
+        Assert.Equal(KnownNames.StandardTName, await dict[KnownNames.FilterTName]);
     }
 }

@@ -8,6 +8,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.Postscript.Interpreter.Values;
 using Xunit;
 using Xunit.Abstractions;
 using V6Encryptor = Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6.V6Encryptor;
@@ -49,27 +50,27 @@ public class V6Creator
                 PdfDirectValue.CreateString("DAC57C30E8425659C52B7DDE83523235".BitsFromHex())
             ));
 
-        Assert.Equal("/Standard", (await dict.GetAsync<PdfObject>(KnownNames.FilterTName)).ToString());
-        Assert.Equal("5", (await dict.GetAsync<PdfObject>(KnownNames.VTName)).ToString());
-        Assert.Equal("6", (await dict.GetAsync<PdfObject>(KnownNames.RTName)).ToString());
-        Assert.Equal("256", (await dict.GetAsync<PdfObject>(KnownNames.LengthTName)).ToString());
+        Assert.Equal("Standard", (await dict.GetAsync<string>(KnownNames.FilterTName)));
+        Assert.Equal("5", (await dict.GetAsync<string>(KnownNames.VTName)).ToString());
+        Assert.Equal("6", (await dict.GetAsync<string>(KnownNames.RTName)).ToString());
+        Assert.Equal("256", (await dict.GetAsync<string>(KnownNames.LengthTName)).ToString());
         Assert.Equal("9339F5439BC00EE5DD113FE21796E2D7A2FA0D2864CC86F1947F925A1521849259D66D8A8192A7F2176FF01AC0BD50B4",
-            (await dict.GetAsync<PdfString>(KnownNames.UTName)).Bytes.AsSpan().HexFromBits());
+            (await dict.GetAsync<StringSpanSource>(KnownNames.UTName)).GetSpan().HexFromBits());
         Assert.Equal("7263A4774ED221E01C50DFB1772B1EB1565F42EA12696C2981802D1787423EE2",
-            (await dict.GetAsync<PdfString>(KnownNames.UETName)).Bytes.AsSpan().HexFromBits());
+            (await dict.GetAsync<StringSpanSource>(KnownNames.UETName)).GetSpan().HexFromBits());
         Assert.Equal("2662FD1939D25F33DA79A35FC18BD18F9E363E704AA8C792452B440DB17B093456569AAB5856B73AF0D38D86BA03C104",
-            (await dict.GetAsync<PdfString>(KnownNames.OTName)).Bytes.AsSpan().HexFromBits());
+            (await dict.GetAsync<StringSpanSource>(KnownNames.OTName)).GetSpan().HexFromBits());
         Assert.Equal("5C106EAA70A47C00E476B8FF8CDF36D208D4D29B9C390B2F9A4DC86F41B8ED74",
-            (await dict.GetAsync<PdfString>(KnownNames.OETName)).Bytes.AsSpan().HexFromBits());
-        Assert.Equal(-4, (await dict.GetAsync<PdfNumber>(KnownNames.PTName)).IntValue);
+            (await dict.GetAsync<StringSpanSource>(KnownNames.OETName)).GetSpan().HexFromBits());
+        Assert.Equal(-4, (await dict.GetAsync<long>(KnownNames.PTName)));
         Assert.Equal("C78CE80AABBAF32EF29E84C78E1473A3",
-            (await dict.GetAsync<PdfString>(KnownNames.PermsTName)).Bytes.AsSpan().HexFromBits());
-        Assert.Equal(KnownNames.StdCFTName, await dict.GetAsync<PdfDirectValue>(KnownNames.StmFTName));
-        Assert.Equal(KnownNames.StdCFTName, await dict.GetAsync<PdfDirectValue>(KnownNames.StrFTName));
+            (await dict.GetAsync<StringSpanSource>(KnownNames.PermsTName)).GetSpan().HexFromBits());
+        Assert.Equal(KnownNames.StdCFTName, await dict[KnownNames.StmFTName]);
+        Assert.Equal(KnownNames.StdCFTName, await dict[KnownNames.StrFTName]);
         var cf = await dict.GetAsync<PdfValueDictionary>(KnownNames.CFTName);
         var stdCf = await cf.GetAsync<PdfValueDictionary>(KnownNames.StdCFTName);
-        Assert.Equal(KnownNames.AESV3TName, await stdCf.GetAsync<PdfDirectValue>(KnownNames.CFMTName));
-        Assert.Equal(KnownNames.DocOpenTName, await stdCf.GetAsync<PdfDirectValue>(KnownNames.AuthEventTName));
-        Assert.Equal(256, (await stdCf.GetAsync<PdfNumber>(KnownNames.LengthTName)).IntValue);
+        Assert.Equal(KnownNames.AESV3TName, await stdCf[KnownNames.CFMTName]);
+        Assert.Equal(KnownNames.DocOpenTName, await stdCf[KnownNames.AuthEventTName]);
+        Assert.Equal(256, await stdCf.GetAsync<int>(KnownNames.LengthTName));
     }
 }
