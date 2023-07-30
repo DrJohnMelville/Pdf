@@ -134,7 +134,7 @@ public class S7_7_3_3PageAttributes
     {
         PdfDirectValue fontName = KnownNames.TypeTName;
         var page = await RoundTripPageWithAsync(i =>
-            fontName = i.AddStandardFont("F1", BuiltInFontName.CourierBoldOblique, FontEncodingName.WinAnsiEncoding));
+            fontName = i.AddStandardFont("/F1", BuiltInFontName.CourierBoldOblique, FontEncodingName.WinAnsiEncoding));
         var res = await page.LowLevel.GetAsync<PdfValueDictionary>(KnownNames.ResourcesTName);
         var fonts = await res.GetAsync<PdfValueDictionary>(KnownNames.FontTName);
         var font = await fonts.GetAsync<PdfValueDictionary>(fontName);

@@ -71,6 +71,8 @@ public readonly struct ValueDictionaryBuilder
     /// <returns>This builder.</returns>
     public ValueDictionaryBuilder WithForcedItem(PdfDirectValue name, PdfIndirectValue value)
     {
+        if (!name.IsName)
+            throw new InvalidOperationException("Dictionary keys must be names");
         TryDelete(name);
         attributes.Add(new KeyValuePair<PdfDirectValue, PdfIndirectValue>(name, value));
         return this;

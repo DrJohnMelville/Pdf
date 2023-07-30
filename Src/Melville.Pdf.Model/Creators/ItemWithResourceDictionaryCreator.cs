@@ -99,8 +99,12 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="name">Key for the object</param>
     /// <param name="obj">A delegate that will create the object from a IPdfObjectRegistry</param>
     public void AddResourceObject(
-        ResourceTypeName resourceType, PdfDirectValue name, Func<IPdfObjectCreatorRegistry,PdfIndirectValue> obj) =>
+        ResourceTypeName resourceType, PdfDirectValue name, Func<IPdfObjectCreatorRegistry,PdfIndirectValue> obj)
+    {
+        if (!name.IsName)
+            throw new InvalidOperationException("Resource key must be a name");
         Resources[(resourceType, name)] = obj;
+    }
 
     /// <summary>
     /// Add a box to the item metadata.  Pages and Pagetrees can have box objects.
@@ -147,13 +151,14 @@ public abstract class ItemWithResourceDictionaryCreator
     public PdfDirectValue AddStandardFont(
         PdfDirectValue assignedName, BuiltInFontName baseFont, PdfIndirectValue encoding)
     {
-        Resources[(KnownNames.FontTName, assignedName)] = _=>new ValueDictionaryBuilder()
+        AddResourceObject(ResourceTypeName.Font, assignedName,
+            new ValueDictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
             .WithItem(KnownNames.NameTName, assignedName)
             .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)baseFont)
             .WithItem(KnownNames.EncodingTName, encoding)
-            .AsDictionary();
+            .AsDictionary());
         return assignedName;
     }
 }
