@@ -406,17 +406,6 @@
             </summary>
             <param name="LowLevel">The low level Dictionary representing this item.</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.#ctor(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
-            <summary>
-            This is a base class for costume types PdfPage and PdfTilePattern, both of which
-            have a content stream.  It is implemented as a record, and PdfPageTree actually depends
-            on the equality members
-            </summary>
-            <param name="LowLevel">The low level Dictionary representing this item.</param>
-        </member>
-        <member name="P:Melville.Pdf.Model.Documents.HasRenderableContentStream.LowLevel">
-            <summary>The low level Dictionary representing this item.</summary>
-        </member>
         <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.GetContentBytesAsync">
             <summary>
             Get a stream representing the content stream for this item.
@@ -525,18 +514,6 @@
         </member>
         <member name="M:Melville.Pdf.Model.Documents.PdfDocument.Dispose">
             <inheritdoc />
-        </member>
-        <member name="T:Melville.Pdf.Model.Documents.PdfPage">
-            <summary>
-            This record is the primary abstraction for a page in a pdf document.
-            </summary>
-            <param name="LowLevel"></param>
-        </member>
-        <member name="M:Melville.Pdf.Model.Documents.PdfPage.#ctor(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
-            <summary>
-            This record is the primary abstraction for a page in a pdf document.
-            </summary>
-            <param name="LowLevel"></param>
         </member>
         <member name="M:Melville.Pdf.Model.Documents.PdfPage.LastModifiedAsync">
             <summary>
@@ -2322,18 +2299,6 @@
             </summary>
             <param name="patternDictionary">The PdfDictioanry representing the pattern.</param>
             <returns>An IShaderWriter to write the shader data</returns>
-        </member>
-        <member name="T:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern">
-            <summary>
-            This is a costume type that represents wraps a dictionary as a tile pattern.
-            </summary>
-            <param name="LowLevel">The PdfDictionary that represents the pattern.</param>
-        </member>
-        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.#ctor(Melville.Pdf.LowLevel.Model.Objects2.PdfValueDictionary)">
-            <summary>
-            This is a costume type that represents wraps a dictionary as a tile pattern.
-            </summary>
-            <param name="LowLevel">The PdfDictionary that represents the pattern.</param>
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.GetContentBytesAsync">
             <inheritdoc />

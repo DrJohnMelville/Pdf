@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
@@ -14,7 +15,7 @@ namespace Melville.Pdf.Model.Renderers.DocumentRenderers;
 /// to an IRenderTarget.  It exists so the low level viewer can preview glyphs from
 /// Type 3 fonts.
 /// </summary>
-public class ContentStreamPreviewRenderer : DocumentRenderer
+public partial class ContentStreamPreviewRenderer : DocumentRenderer
 {
     private readonly Stream content;
 
@@ -33,9 +34,14 @@ public class ContentStreamPreviewRenderer : DocumentRenderer
     protected override ValueTask<HasRenderableContentStream> GetPageContentAsync(int oneBasedPageNumber) => 
         ValueTask.FromResult<HasRenderableContentStream>(new ExplicitHRCS(content));
 
-    private record ExplicitHRCS(Stream Content) : 
-        HasRenderableContentStream(PdfValueDictionary.Empty)
+    private partial class ExplicitHRCS : HasRenderableContentStream
     {
+        public ExplicitHRCS(Stream content) : base(PdfValueDictionary.Empty)
+        {
+            Content = content;
+        }
+
+        public Stream Content { get; }
         public override ValueTask<Stream> GetContentBytesAsync() => ValueTask.FromResult(Content);
     }
 }

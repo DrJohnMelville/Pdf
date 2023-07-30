@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -11,11 +13,12 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
+[FromConstructor]
 /// <summary>
 /// This is a costume type that represents wraps a dictionary as a tile pattern.
 /// </summary>
 /// <param name="LowLevel">The PdfDictionary that represents the pattern.</param>
-public record PdfTilePattern(PdfValueDictionary LowLevel) : HasRenderableContentStream(LowLevel)
+public partial class PdfTilePattern: HasRenderableContentStream
 {
     /// <inheritdoc />
     public override ValueTask<Stream> GetContentBytesAsync() => ((PdfValueStream)LowLevel).StreamContentAsync();
@@ -40,7 +43,7 @@ public record PdfTilePattern(PdfValueDictionary LowLevel) : HasRenderableContent
     /// Patternn matrix transform.
     /// </summary>
     public async ValueTask<Matrix3x2> MatrixAsync() =>
-        (await LowLevel.GetOrDefaultAsync(KnownNames.MatrixTName, PdfValueArray.Empty).CA()) is { } matArray
+        (await LowLevel.GetOrDefaultAsync(KnownNames.MatrixTName, PdfValueArray.Empty).CA()) is {Count:6 } matArray
             ? await matArray.AsMatrix3x2Async().CA()
             : Matrix3x2.Identity;
 

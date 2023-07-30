@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -9,11 +10,12 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.Model.Documents;
 
+[FromConstructor]
 /// <summary>
 /// This record is the primary abstraction for a page in a pdf document.
 /// </summary>
 /// <param name="LowLevel"></param>
-public record class PdfPage(PdfValueDictionary LowLevel) : HasRenderableContentStream(LowLevel)
+public partial class PdfPage: HasRenderableContentStream
 {
     /// <summary>
     /// Get the last modified time for a page from the page's dictionary

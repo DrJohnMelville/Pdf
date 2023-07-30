@@ -24,7 +24,7 @@ public class ObjectStreamPage: CreatePdfParser
                          new ValueDictionaryBuilder()))
         {
             var page = creator.Pages.CreatePageInObjectStream();
-            var fontName = page.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);
+            var fontName = page.AddStandardFont("/F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);
             await page.AddToContentStreamAsync(i=>
             {
                 using var block = i.StartTextBlock();

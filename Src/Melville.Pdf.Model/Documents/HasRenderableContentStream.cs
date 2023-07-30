@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -13,8 +14,16 @@ namespace Melville.Pdf.Model.Documents;
 /// on the equality members
 /// </summary>
 /// <param name="LowLevel">The low level Dictionary representing this item.</param>
-public record class HasRenderableContentStream(PdfValueDictionary LowLevel) : IHasPageAttributes
+public class HasRenderableContentStream : IHasPageAttributes
 {
+    public PdfValueDictionary LowLevel { get; }
+
+    public HasRenderableContentStream(PdfValueDictionary lowLevel)
+    {
+        ArgumentNullException.ThrowIfNull(lowLevel);
+        LowLevel = lowLevel;
+    }
+
     /// <summary>
     /// Get a stream representing the content stream for this item.
     /// </summary>

@@ -19,20 +19,22 @@ internal readonly partial struct Type3FontFactory
         var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstCharTName, 0).CA();
         var lastChar = await font.GetOrDefaultAsync(KnownNames.LastCharTName, 255).CA();
         var characters = new MultiBufferStream[1 + lastChar - firstChar];
-        var encoding = await font.GetAsync<PdfDictionary>(KnownNames.EncodingTName).CA();
-        var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcsTName).CA();
-        var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences).CA();
+        var encoding = await font.GetAsync<PdfValueDictionary>(KnownNames.EncodingTName).CA();
+        var charProcs = await font.GetAsync<PdfValueDictionary>(KnownNames.CharProcsTName).CA();
+        var differences = await encoding.GetAsync<PdfValueArray>(KnownNames.DifferencesTName).CA();
         int currentChar = 0;
         await foreach (var item in differences.CA())
         {
             switch (item)
             {
-                case PdfNumber num: 
-                    currentChar = (int)num.IntValue;
+                case var x when x.TryGet(out int nextChar): 
+                    currentChar = currentChar = nextChar;
                     break;
-                case PdfName name:
+                case {IsName:true}:
                     var stream = new MultiBufferStream();
-                    var source = await (await charProcs.GetAsync<PdfStream>(name).CA()).StreamContentAsync().CA();
+                    var source = 
+                        await (await charProcs.GetAsync<PdfValueStream>(item).CA())
+                            .StreamContentAsync().CA();
                     await source.CopyToAsync(stream).CA();
                     characters[currentChar - firstChar] = stream;
                     currentChar++;

@@ -80,9 +80,9 @@ internal readonly struct ColorSpaceFactory
         return name switch
         {
             var x when x.Equals(KnownNames.CalGrayTName) => 
-                CalGray.ParseAsync(ColorSpaceParameterAs<PdfDictionary>(array)),
+                CalGray.ParseAsync(ColorSpaceParameterAs<PdfValueDictionary>(array)),
             var x when x.Equals(KnownNames.LabTName) => 
-                LabColorSpace.ParseAsync(ColorSpaceParameterAs<PdfDictionary>(array)),
+                LabColorSpace.ParseAsync(ColorSpaceParameterAs<PdfValueDictionary>(array)),
             var x when x.Equals(KnownNames.ICCBasedTName) => 
                 IccProfileColorSpaceParser.ParseAsync(ColorSpaceParameterAs<PdfValueStream>(array)),
             var x when x.Equals(KnownNames.IndexedTName) => 

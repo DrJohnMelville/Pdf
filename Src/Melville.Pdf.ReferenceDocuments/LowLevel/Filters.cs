@@ -15,7 +15,7 @@ internal class FiltersGenerator : CreatePdfParser
     public async ValueTask<PdfLowLevelDocument> FiltersAsync()
     {
         var builder = new PdfDocumentCreator();
-        builder.Pages.AddStandardFont("F1", BuiltInFontName.Helvetica, FontEncodingName.StandardEncoding);
+        builder.Pages.AddStandardFont("/F1", BuiltInFontName.Helvetica, FontEncodingName.StandardEncoding);
 
         BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, 
             

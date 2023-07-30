@@ -92,8 +92,8 @@ public class LowLevelDocumentWriter
         {
             if (item.Value.IsNull) continue;
             positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
-            await DeclareContainedObjectsAsync(item.Key.ObjectNumber, item.Value, positions).CA();
             var value = await ResolveValueToWrite(item).CA();
+            await DeclareContainedObjectsAsync(item.Key.ObjectNumber, value, positions).CA();
             await objectWriter.WriteTopLevelDeclarationAsync(
                 item.Key.ObjectNumber, item.Key.GenerationNumber, value).CA();
             await Target.FlushAsync().CA();

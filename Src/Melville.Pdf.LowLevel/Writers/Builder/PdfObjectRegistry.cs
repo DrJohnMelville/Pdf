@@ -36,7 +36,7 @@ internal partial class PdfObjectRegistry:
     private bool TryWriteToObjectStream(
         in PdfDirectValue item, int objectNumber, int generation) =>
         objectStreamBuilder is not null && generation == 0 &&
-        !objectStreamBuilder.TryAddRef(objectNumber, item);
+        objectStreamBuilder.TryAddRef(objectNumber, item);
 
     public void Reassign(in PdfIndirectValue item, in PdfDirectValue newValue)
     {

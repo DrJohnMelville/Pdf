@@ -11,7 +11,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 
-public class PdfValueStream : PdfValueDictionary
+public class PdfValueStream : PdfValueDictionary, IHasInternalIndirectObjects
 {
     private readonly IStreamDataSource source;
 
@@ -79,4 +79,9 @@ public class PdfValueStream : PdfValueDictionary
         }
         return false;
     }
+
+    async ValueTask<IEnumerable<ObjectLocation>> IHasInternalIndirectObjects.GetInternalObjectNumbersAsync() =>
+        (await this.GetOrNullAsync(KnownNames.TypeTName).CA()).Equals(KnownNames.ObjStmTName)
+            ? await this.GetIncludedObjectNumbersAsync().CA()
+            : Array.Empty<ObjectLocation>();
 }

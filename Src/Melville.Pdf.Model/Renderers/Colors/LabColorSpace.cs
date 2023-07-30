@@ -8,6 +8,7 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
@@ -34,11 +35,12 @@ internal class LabColorSpace : IColorSpace
     public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) => outputIntervals;
 
 
-    public static async ValueTask<IColorSpace> ParseAsync(PdfDictionary parameters)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfValueDictionary parameters)
     {
         var wp = await ReadWhitePointAsync(parameters).CA();
-        var array = await parameters.GetOrNullAsync(KnownNames.Range).CA() is PdfArray arr
-            ? await arr.AsDoublesAsync().CA()
+        var array = (await parameters.GetOrNullAsync(KnownNames.RangeTName).CA())
+            .TryGet(out PdfValueArray arr)
+            ? await arr.CastAsync<double>().CA()
             : Array.Empty<double>();
         
         return new LabColorSpace(wp, 
@@ -47,14 +49,10 @@ internal class LabColorSpace : IColorSpace
             );
     }
 
-    private static async Task<DoubleColor> ReadWhitePointAsync(PdfDictionary parameters)
+    private static async Task<DoubleColor> ReadWhitePointAsync(PdfValueDictionary parameters)
     {
-        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePoint).CA();
-        return new DoubleColor(
-            (await array.GetAsync<PdfNumber>(0).CA()).DoubleValue,
-            (await array.GetAsync<PdfNumber>(1).CA()).DoubleValue,
-            (await array.GetAsync<PdfNumber>(2).CA()).DoubleValue
-        );
+        var array = await parameters.GetAsync<PdfValueArray>(KnownNames.WhitePointTName).CA();
+        return await array.AsDoubleColorAsync().CA();
     }
 
     private static double TryGet(double[]? arr, int index, double defaultValue) =>

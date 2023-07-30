@@ -81,7 +81,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
             case var x when x.Equals(KnownNames.ImageTName):
                 await TryRenderBitmapAsync(inlineImage).CA();
                 break;
-            case var x when x.Equals(KnownNames.Form):
+            case var x when x.Equals(KnownNames.FormTName):
                 await RunTargetGroupAsync(inlineImage).CA();
                 break;
             default: throw new PdfParseException("Cannot do the provided object");

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -53,10 +54,8 @@ internal readonly struct RootObjectParser
     private PdfDirectValue DecryptString(PdfDirectValue token)
     {
         #warning need a shortcut for null strings to pass through quickly
-        var context = stack.CryptoContext();
-        var decryptedSpan = context.StringCipher().Decrypt().CryptSpan(
+        var decryptedSpan = stack.CryptoContext().StringCipher().Decrypt().CryptSpan(
             token.Get<StringSpanSource>().GetSpan());
-        var ret = PdfDirectValue.CreateString(decryptedSpan);
-        return token;
+        return PdfDirectValue.CreateString(decryptedSpan);
     }
 }

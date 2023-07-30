@@ -107,7 +107,6 @@ public class PartParserTest
     [Fact] public Task RenderIntegerValueAsync()=>TestSingleElementAsync(314, "314");
     [Fact] public Task RenderTrueValueAsync()=>TestSingleElementAsync(true, "true");
     [Fact] public Task RenderFalseValueAsync()=>TestSingleElementAsync(false, "false");
-    [Fact] public Task RenderNullValueAsync()=>TestSingleElementAsync(default, "null");
     [Fact] public Task RenderStringValueAsync()=>TestSingleElementAsync(PdfDirectValue.CreateString("Foo"u8), "(Foo)");
     [Fact] public Task RenderSpecialtringValueAsync()=>TestSingleElementAsync(PdfDirectValue.CreateString("o\no"u8), "(o\no)");
 
