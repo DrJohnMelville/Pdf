@@ -97,6 +97,7 @@ public sealed class PdfValueArray :
     public override string ToString() => "["+string.Join(" ", RawItems) +"]";
 
     #warning  figue out if we could use an IReadOnlyDictionary to do this without copying
+    #warning perhaps we could have a writeToSpan method to not need to allocate temporaries.
     public async ValueTask<T[]> CastAsync<T>()
     {
         var ret = new T[Count];

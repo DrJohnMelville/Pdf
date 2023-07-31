@@ -52,7 +52,7 @@ internal class ObjectStreamIndirectObject : OwnedLocationIndirectObject
 
     private static async ValueTask TryLoadExtendedBaseStreamAsync(ParsingFileOwner owner, PdfStream source)
     {
-        var refstr = await source.GetOrNullAsync<PdfStream>(KnownNames.Extends).CA();
+        var refstr = await source.GetOrNullAsync<PdfStream>(null).CA();
         if (refstr is { } referredStream)
             await LoadObjectStreamAsync(owner, referredStream).CA();
     }

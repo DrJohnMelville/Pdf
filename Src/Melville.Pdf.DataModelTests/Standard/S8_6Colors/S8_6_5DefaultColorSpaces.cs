@@ -1,9 +1,6 @@
-﻿using System.Security.Cryptography;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 using Moq;
@@ -38,6 +35,14 @@ public class S8_6_5DefaultColorSpaces
         SetDefault(KnownNames.DefaultRGBTName, new PdfValueArray(KnownNames.DeviceGrayTName));
         var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
         Assert.IsType<DeviceGray>(ret);
+
+    }
+    [Fact]
+    public async Task MapGrayToRgbAsync()
+    {
+        SetDefault(KnownNames.DefaultGrayTName, new PdfValueArray(KnownNames.DeviceRGBTName));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceGrayTName);
+        Assert.IsType<DeviceRgb>(ret);
 
     }
 

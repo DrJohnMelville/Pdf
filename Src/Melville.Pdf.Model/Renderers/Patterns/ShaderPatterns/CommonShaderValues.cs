@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -43,8 +44,8 @@ internal readonly record struct CommonShaderValues(
     {
         if (supressBackground) return 0;        
         var backGroundArray = 
-            await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.BackgroundTName).CA() is { } arr
-            ? await arr.AsDoublesAsync().CA()
+            await shadingDictionary.GetOrNullAsync<PdfValueArray>(KnownNames.BackgroundTName).CA() is { } arr
+            ? await arr.CastAsync<double>().CA()
             : Array.Empty<double>();
         var backGroundInt = ComputeBackgroundUint(backGroundArray, colorSpace);
         return backGroundInt;

@@ -155,7 +155,15 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     /// <inheritdoc />
     public bool Equals(PdfDirectValue other) => 
+        ShallowEquals(other) || DeepEquals(other);
+
+
+    private bool ShallowEquals(in PdfDirectValue other) => 
         Equals(valueStrategy, other.valueStrategy) && memento.Equals(other.memento);
+
+    private bool DeepEquals(in PdfDirectValue other) =>
+        valueStrategy is IPostscriptValueEqualityTest pvet && 
+        pvet.Equals(memento, other.valueStrategy, other.memento);
 
     public int CompareTo(PdfDirectValue other)
     {

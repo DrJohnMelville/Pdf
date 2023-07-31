@@ -43,7 +43,7 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     /// The length of the stream as declared in the stream dictionary.
     /// </summary>
     /// <returns></returns>
-    public ValueTask<long> DeclaredLengthAsync() => this.GetOrDefaultAsync(KnownNames.Length, -1);
+    public ValueTask<long> DeclaredLengthAsync() => this.GetOrDefaultAsync(null, -1);
 
     /// <summary>
     /// Retrieves a C# stream that will read the stream contents in the desired format.
@@ -80,9 +80,9 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
                 SinglePredictionFilter.Instance);
 
     private async ValueTask<IReadOnlyList<PdfObject>> FilterListAsync() => 
-        (await this.GetOrNullAsync(KnownNames.Filter).CA()).ObjectAsUnresolvedList();
+        (await this.GetOrNullAsync(null).CA()).ObjectAsUnresolvedList();
     private async ValueTask<IReadOnlyList<PdfObject>> FilterParamListAsync() => 
-        (await this.GetOrNullAsync(KnownNames.DecodeParms).CA()).ObjectAsUnresolvedList();
+        (await this.GetOrNullAsync(null).CA()).ObjectAsUnresolvedList();
 
     internal async ValueTask<bool> HasFilterOfTypeAsync(PdfName filterType)
     {
@@ -95,7 +95,7 @@ public sealed class PdfStream : PdfDictionary, IHasInternalIndirectObjects
 
     async ValueTask<IEnumerable<ObjectLocation>> IHasInternalIndirectObjects.GetInternalObjectNumbersAsync()
     {
-        if (await this.GetOrNullAsync(KnownNames.Type).CA() != KnownNames.ObjStm)
+        if (await this.GetOrNullAsync(null).CA() != null)
             return Array.Empty<ObjectLocation>();
         return await this.GetIncludedObjectNumbersAsync().CA();
     }

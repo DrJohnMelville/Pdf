@@ -1,4 +1,4 @@
-RenderingTest.cs_wpf-StandardFonts|385729785
+RenderingTest.cs_wpf-StandardFonts|1353796384
 RenderingTest.cs_wpf-FiltersGenerator|2509839506
 RenderingTest.cs_wpf-MinimalPdfParser|1706411023
 RenderingTest.cs_wpf-ObjectStreamPage|3473790605
@@ -15,7 +15,7 @@ RenderingTest.cs_wpf-EndCaps|3890543918
 RenderingTest.cs_wpf-LineJoin|2548825538
 RenderingTest.cs_wpf-LineWidths|4196252740
 RenderingTest.cs_wpf-MiterLimit|2470350407
-RenderingTest.cs_Skia-StandardFonts|3918391837
+RenderingTest.cs_Skia-StandardFonts|943784450
 RenderingTest.cs_Skia-FiltersGenerator|4218269690
 RenderingTest.cs_Skia-MinimalPdfParser|2633483471
 RenderingTest.cs_Skia-ObjectStreamPage|215763051

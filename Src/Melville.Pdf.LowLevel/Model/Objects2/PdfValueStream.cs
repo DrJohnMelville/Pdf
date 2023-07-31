@@ -7,7 +7,6 @@ using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 
@@ -65,11 +64,6 @@ public class PdfValueStream : PdfValueDictionary, IHasInternalIndirectObjects
     private async ValueTask<IReadOnlyList<PdfIndirectValue>> FilterParamListAsync() => 
         (await this.GetOrNullAsync(KnownNames.DecodeParmsTName).CA()).ObjectAsUnresolvedList();
 
-
-
-
-    protected virtual PdfDictionary TemporaryConvert(DictionaryBuilder builder) =>
-        builder.AsStream(source);
 
     public async ValueTask<bool> HasFilterOfTypeAsync(PdfDirectValue filterType)
     {

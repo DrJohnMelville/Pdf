@@ -154,9 +154,10 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.AppendLine("        /// </summary>");
             sb.AppendLine($"""        public static PdfDirectValue {name}TName => PdfDirectValue.CreateName({name}U8);""");
             sb.AppendLine("        /// <summary>");
-            sb.AppendLine($"        /// PdfName with value: ({value})");
-            sb.AppendLine("        /// </summary>");
-            sb.AppendLine($"""        public static readonly PdfName {name} = NameDirectory.ForceAdd({name}U8);""");
+            #warning -- get rid of this
+            // sb.AppendLine($"        /// PdfName with value: ({value})");
+            // sb.AppendLine("        /// </summary>");
+            // sb.AppendLine($"""        public static readonly PdfName {name} = NameDirectory.ForceAdd({name}U8);""");
         }
 
         private static void RenderPdfNameGroup(StringBuilder sb, 

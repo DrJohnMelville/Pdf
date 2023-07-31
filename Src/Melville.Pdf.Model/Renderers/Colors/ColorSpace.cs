@@ -34,7 +34,7 @@ internal readonly struct ColorSpaceFactory
     public ValueTask<IColorSpace> ParseColorSpaceAsync(PdfDirectValue colorSpaceName)
     {
         var code = colorSpaceName;
-        return code.Equals(KnownNames.DefaultGrayTName) ||
+        return code.Equals(KnownNames.DeviceGrayTName) ||
                code.Equals(KnownNames.DeviceRGBTName) ||
                code.Equals(KnownNames.DeviceCMYKTName)
             ? SpacesWithoutParametersAsync(code)
