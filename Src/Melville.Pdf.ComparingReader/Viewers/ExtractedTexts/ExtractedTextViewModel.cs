@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -15,7 +16,19 @@ public partial class ExtractedTextViewModel
 
     public async Task LoadPageAsync(int page)
     {
-        Text = await renderer.PageTextAsync(page);
+        Text = await PageText(page);
+    }
+
+    private async Task<string> PageText(int page)
+    {
+        try
+        {
+            return await renderer.PageTextAsync(page);
+        }
+        catch (Exception e)
+        {
+            return $"{e.Message}\r\n\r\n{e.StackTrace}";
+        }
     }
 }
 

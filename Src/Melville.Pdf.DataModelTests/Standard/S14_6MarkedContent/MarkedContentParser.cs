@@ -27,6 +27,9 @@ public partial class MarkedContentParser : ParserTest
     [Fact]
     public Task EndMarkedRangeAsync() =>
         TestInputAsync("EMC", i => i.EndMarkedRange());
+    [Fact]
+    public Task ArrayInDictionaryTest() =>
+        TestInputAsync("/Artifact <</Attached [/Bottom ]/BBox [31.4126 35.5546 95.7888 47.7571 ]/Subtype /Footer /Type /Pagination >>BDC", i => i.EndMarkedRange());
 
     private partial class MarkedContentPointMock: MockBase, IContentStreamOperations 
     {

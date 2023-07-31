@@ -59,7 +59,7 @@ public partial class PostscriptStack<T>
 
     private void CheckForStackOverflow()
     {
-        if (buffer.Length < 1024) return;
+        if (buffer.Length < 10240) return;
         AddSpecialStackSpaceForErrorHandler();
         throw new PostscriptNamedErrorException(
             $"{errorPrefix} stack overflow.", $"{errorPrefix}stackoverflow");
