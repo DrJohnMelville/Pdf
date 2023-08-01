@@ -2,7 +2,6 @@
 using Melville.Icc.ColorTransforms;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
 

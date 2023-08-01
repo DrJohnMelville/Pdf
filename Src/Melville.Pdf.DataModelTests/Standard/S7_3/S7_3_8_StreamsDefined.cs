@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Melville.Hacks.Reflection;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;

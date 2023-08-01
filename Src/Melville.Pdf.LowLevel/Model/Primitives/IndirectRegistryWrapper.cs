@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Postscript.Interpreter.Tokenizers;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
+using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 

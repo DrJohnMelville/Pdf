@@ -1,7 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Postscript.Interpreter.Values;
 
-namespace Melville.Pdf.LowLevel.Model.Objects2;
+namespace Melville.Pdf.LowLevel.Model.Objects;
 
 /// <summary>
 /// Convert pdf strings and names to various formats.

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;

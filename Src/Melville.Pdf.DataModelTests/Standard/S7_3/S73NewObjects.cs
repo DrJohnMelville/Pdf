@@ -1,11 +1,13 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Postscript.Interpreter.Values;
 using Microsoft.CodeAnalysis;
 using Moq;
 using Xunit;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
+using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 

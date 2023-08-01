@@ -1,12 +1,15 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
+using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 
+#warning -- I think this can go away because we have more robust pdf object parsing.
 internal static class ParsePdfArrays
 {
     private static readonly IPostscriptDictionary ArrayParsingOperators =

@@ -2,7 +2,7 @@
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.LowLevel.Model.Objects2;
+namespace Melville.Pdf.LowLevel.Model.Objects;
 
 /// <summary>
 /// Operations to get values out of a PDF dictionary

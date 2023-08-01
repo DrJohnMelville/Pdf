@@ -1,5 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Model.Wrappers;
+﻿using Melville.Pdf.LowLevel.Model.Wrappers;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.OtherFontTypes;
 

@@ -1,4 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects2;
+﻿using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 

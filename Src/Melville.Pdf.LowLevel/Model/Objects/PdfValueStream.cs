@@ -6,9 +6,9 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.CryptFilters;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
-namespace Melville.Pdf.LowLevel.Model.Objects2;
+namespace Melville.Pdf.LowLevel.Model.Objects;
 
 public class PdfValueStream : PdfValueDictionary, IHasInternalIndirectObjects
 {

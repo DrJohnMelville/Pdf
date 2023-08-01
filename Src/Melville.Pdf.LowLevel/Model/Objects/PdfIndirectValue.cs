@@ -7,7 +7,7 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 
-namespace Melville.Pdf.LowLevel.Model.Objects2;
+namespace Melville.Pdf.LowLevel.Model.Objects;
 
 
 
@@ -26,7 +26,7 @@ public readonly partial struct PdfIndirectValue
     private object NonNullValueStrategy() => (valueStrategy ?? PostscriptNull.Instance);
 
     internal PdfIndirectValue(IIndirectValueSource src, long objNum, long generation) :
-        this(src, MementoUnion.CreateFrom(objNum, generation)){}
+        this((object?)src, MementoUnion.CreateFrom(objNum, generation)){}
 
     public bool IsNull => TryGetEmbeddedDirectValue(out var dirVal) && dirVal.IsNull;
 

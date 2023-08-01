@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Melville.INPC;
 
-namespace Melville.Pdf.LowLevel.Model.Objects2;
+namespace Melville.Pdf.LowLevel.Model.Objects;
 
 /// <summary>
 /// This class is an optimization for the small dictionaries of PdfName,PdfObject that are so very prevelent

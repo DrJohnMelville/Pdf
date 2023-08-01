@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Postscript.Interpreter.Values;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;
 

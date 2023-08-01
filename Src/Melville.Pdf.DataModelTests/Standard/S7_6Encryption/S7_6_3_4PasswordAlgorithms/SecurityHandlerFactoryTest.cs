@@ -5,7 +5,6 @@ using Melville.Pdf.LowLevel.Encryption;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Moq;
 using Xunit;

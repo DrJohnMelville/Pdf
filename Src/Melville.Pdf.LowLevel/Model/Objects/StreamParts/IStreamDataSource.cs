@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Objects2;
 
-namespace Melville.Pdf.LowLevel.Model.Objects;
+namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 internal interface IStreamDataSource
 {

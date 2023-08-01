@@ -1,5 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Objects2;
-
+﻿
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.CCITTEncoded;
 
 public class CcittBlackIs1 : CcottEncodedBase

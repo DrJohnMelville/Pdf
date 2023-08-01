@@ -1,5 +1,4 @@
 ﻿using Melville.Parsing.VariableBitEncoding;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.CCITTEncoded;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 

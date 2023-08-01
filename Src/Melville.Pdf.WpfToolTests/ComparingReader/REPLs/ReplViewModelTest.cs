@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.REPLs;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Wpf.Controls;
 using Moq;
 using Xunit;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.WpfToolTests.ComparingReader.REPLs;
 

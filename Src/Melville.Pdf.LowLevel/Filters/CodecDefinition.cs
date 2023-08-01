@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Filters;
 

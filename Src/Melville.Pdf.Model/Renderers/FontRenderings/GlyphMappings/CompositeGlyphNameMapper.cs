@@ -1,6 +1,6 @@
 ﻿using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 

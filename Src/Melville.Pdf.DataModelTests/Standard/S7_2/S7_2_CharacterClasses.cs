@@ -2,7 +2,6 @@
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_2;

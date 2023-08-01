@@ -1,6 +1,7 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
+using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns;
 

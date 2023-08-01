@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects2;
 
-namespace Melville.Pdf.LowLevel.Model.Objects;
+namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 internal class LiteralStreamSource : IStreamDataSource
 {

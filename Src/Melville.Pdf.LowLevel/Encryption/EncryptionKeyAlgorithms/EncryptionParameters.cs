@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 
@@ -39,4 +39,10 @@ internal readonly partial struct EncryptionParameters
         Permissions: {Permissions}
         KeyLengthInBits: {KeyLengthInBits}
         """;
+}
+
+internal static class HexStrings
+{
+    public static string AsHex(in this Span<byte> str) =>
+        string.Join(" ", str.ToArray().Select(i => i.ToString("X2")));
 }

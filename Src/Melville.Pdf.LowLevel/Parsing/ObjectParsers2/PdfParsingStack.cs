@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.Postscript.Interpreter.Values;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
+using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 
@@ -71,7 +74,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
         ClearThrough(IdentifyPdfOperator);
         ClearAfterPop(priorSize);
         var dataMemory = dictArray.AsMemory(0, finalPos);
-        Push(new(PrepareDictionary(dataMemory), default));
+        Push(new(PrepareDictionary(dataMemory), (MementoUnion)default));
     }
 
     private object PrepareDictionary(

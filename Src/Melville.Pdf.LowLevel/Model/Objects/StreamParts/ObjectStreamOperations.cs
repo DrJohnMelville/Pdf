@@ -5,15 +5,9 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.LowLevel.Model.Objects;
-
-internal interface IHasInternalIndirectObjects
-{
-    ValueTask<IEnumerable<ObjectLocation>> GetInternalObjectNumbersAsync();
-}
+namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 internal static class ObjectStreamOperations
 {
@@ -61,5 +55,3 @@ internal static class ObjectStreamOperations
         return ret;
     }
 }
-
-internal record struct ObjectLocation(int ObjectNumber, int Offset);

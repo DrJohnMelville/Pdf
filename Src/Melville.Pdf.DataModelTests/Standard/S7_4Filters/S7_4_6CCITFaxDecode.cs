@@ -7,7 +7,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers;
 // the next using is used by the macros
 using Melville.Pdf.DataModelTests.StreamUtilities;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;

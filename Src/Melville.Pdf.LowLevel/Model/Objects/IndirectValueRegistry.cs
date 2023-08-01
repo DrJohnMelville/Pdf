@@ -1,8 +1,8 @@
-﻿using Melville.Postscript.Interpreter.Values;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Postscript.Interpreter.Values;
 
-namespace Melville.Pdf.LowLevel.Model.Objects2;
+namespace Melville.Pdf.LowLevel.Model.Objects;
 
 internal interface IIndirectValueSource: IPostscriptValueStrategy<string>, IPostscriptValueStrategy<DeferredPdfHolder>
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Postscript.Interpreter.Tokenizers;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2
 {

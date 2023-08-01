@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Objects;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 

@@ -3,8 +3,9 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 using StringWriter = Melville.Pdf.LowLevel.Writers.ObjectWriters.StringWriter;
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;

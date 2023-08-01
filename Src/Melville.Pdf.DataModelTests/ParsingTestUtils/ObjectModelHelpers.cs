@@ -1,5 +1,5 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 

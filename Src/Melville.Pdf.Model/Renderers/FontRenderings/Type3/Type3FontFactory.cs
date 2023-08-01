@@ -6,7 +6,6 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Objects2;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 

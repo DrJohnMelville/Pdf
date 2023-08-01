@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Objects2;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 

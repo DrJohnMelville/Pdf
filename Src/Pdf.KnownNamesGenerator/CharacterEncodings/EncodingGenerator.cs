@@ -51,7 +51,6 @@ public class EncodingGenerator
     {
         sb.AppendLine("#nullable enable");
         sb.AppendLine("using Melville.Pdf.LowLevel.Model.Objects;");
-        sb.AppendLine("using Melville.Pdf.LowLevel.Model.Objects2;");
         sb.AppendLine("namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;");
         sb.AppendLine("#pragma warning disable CS1591");
         sb.AppendLine();

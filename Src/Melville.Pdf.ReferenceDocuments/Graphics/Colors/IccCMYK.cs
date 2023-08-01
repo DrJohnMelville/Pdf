@@ -1,8 +1,8 @@
 ﻿using Melville.Pdf.LowLevel.Model.ContentStreams;
-using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Model.Renderers.Colors.Profiles;
+using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Colors;
 
