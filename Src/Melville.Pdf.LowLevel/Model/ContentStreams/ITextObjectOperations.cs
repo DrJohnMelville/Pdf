@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Model.ContentStreams;
 

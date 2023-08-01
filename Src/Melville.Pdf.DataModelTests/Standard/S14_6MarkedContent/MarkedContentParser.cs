@@ -29,7 +29,9 @@ public partial class MarkedContentParser : ParserTest
         TestInputAsync("EMC", i => i.EndMarkedRange());
     [Fact]
     public Task ArrayInDictionaryTest() =>
-        TestInputAsync("/Artifact <</Attached [/Bottom ]/BBox [31.4126 35.5546 95.7888 47.7571 ]/Subtype /Footer /Type /Pagination >>BDC", i => i.EndMarkedRange());
+        TestInputAsync("/Artifact <</Attached [/Bottom ]/BBox [31.4126 35.5546 95.7888 47.7571 ]/Subtype /Footer /Type /Pagination >>BDC", 
+            i => i.BeginMarkedRangeAsync(
+                PdfDirectValue.CreateName("Artifact"), It.IsAny<PdfValueDictionary>()));
 
     private partial class MarkedContentPointMock: MockBase, IContentStreamOperations 
     {

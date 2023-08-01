@@ -22,6 +22,12 @@ using Melville.Postscript.Interpreter.Values.Numbers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
+[StaticSingleton]
+internal sealed partial class ArrayTopMarker
+{
+    public override string ToString() => "Top of Array Declaration";
+}
+
 /// <summary>
 /// Parses a content stream (expressed as a PipeReader) and "renders" it to an IContentStreamOperations.
 /// </summary>
@@ -66,8 +72,9 @@ public readonly partial struct ContentStreamParser
         dict.Put("true"u8, PostscriptValueFactory.Create(true));
         dict.Put("false"u8, PostscriptValueFactory.Create(false));
         dict.Put("F"u8, dict.Get("f"));
-        dict.Put("["u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
-        dict.Put("]"u8, PostscriptValueFactory.Create(PostscriptOperators.Nop));
+        dict.Put("["u8, PostscriptValueFactory.CreateMark());
+        dict.Put("]"u8, new PostscriptValue(ArrayTopMarker.Instance,
+            PostscriptBuiltInOperations.PushArgument, default));
         dict.Put("<<"u8, PostscriptValueFactory.CreateMark());
         dict.Put("$IgnoreCount"u8, PostscriptValueFactory.Create(0));
     }
@@ -151,11 +158,15 @@ public readonly partial struct ContentStreamParser
         E(engine).SetRenderIntent(new RenderIntentName(PopName(engine)));
         """, "ri")]
     [MacroItem("SetLineDashPattern", """
-        int patternLen = engine.OperandStack.Count - 1;
+        var phase = engine.PopAs<double>();
+        var arrayTop = engine.OperandStack.Pop();
+        Debug.Assert(IsArrayTopMarker(arrayTop));
+        var patternLen = engine.OperandStack.CountToMark();
         Span<double> pattern = stackalloc double[patternLen];
         engine.PopSpan(pattern);
-        E(engine).SetLineDashPattern(pattern[^1], pattern[..^1]);
-        """, "d")]
+        E(engine).SetLineDashPattern(phase, pattern);
+        PopMarkObject(engine);
+ """, "d")]
     [MacroItem("SetStrokingColor", """
         int patternLen = engine.OperandStack.Count - 1;
         Span<double> pattern = stackalloc double[patternLen];
@@ -349,6 +360,13 @@ public readonly partial struct ContentStreamParser
 #if DEBUG
     private static ValueTask ScratchAsync(PostscriptEngine engine)
     {
+        var phase = engine.PopAs<double>();
+        var arrayTop = engine.OperandStack.Pop();
+        Debug.Assert(IsArrayTopMarker(arrayTop));
+        var patternLen = engine.OperandStack.CountToMark();
+        Span<double> pattern = stackalloc double[patternLen];
+        engine.PopSpan(pattern);
+        E(engine).SetLineDashPattern(phase, pattern);
         return ValueTask.CompletedTask;
     }
 #endif
@@ -370,17 +388,45 @@ public readonly partial struct ContentStreamParser
             engine.ErrorData.Put("newerror"u8, false);
         }
     }
-        
+
+
     private static void CreatePdfDictionary(PostscriptEngine engine)
     {
         var builder = new ValueDictionaryBuilder();
         while (engine.OperandStack.TryPop(out var item) && item is { IsMark: false })
         {
+            if (IsArrayTopMarker(item))
+            {
+                item = CreatePdfArray(engine);
+            }
             var key = PopName(engine);
             builder.WithItem(key, PostscriptObjectToPdfObject(item));
         }
         engine.OperandStack.Push(new PostscriptValue(builder.AsDictionary(), PostscriptBuiltInOperations.PushArgument,default));
     }
+
+    private static bool IsArrayTopMarker(PostscriptValue item) => 
+        item.TryGet(out ArrayTopMarker _);
+
+    private static PostscriptValue CreatePdfArray(PostscriptEngine engine)
+    {
+        var ret = new PdfIndirectValue[engine.OperandStack.CountToMark()];
+        for (int i = ret.Length - 1; i >= 0; i--)
+        {
+            ret[i] = PostscriptObjectToPdfObject(engine.OperandStack.Pop());
+        }
+
+        PopMarkObject(engine);
+        return new PostscriptValue(new PdfValueArray(ret),
+            PostscriptBuiltInOperations.PushArgument, default);
+    }
+
+    private static void PopMarkObject(PostscriptEngine engine)
+    {
+        var mark = engine.OperandStack.Pop();
+        Debug.Assert(mark.IsMark);
+    }
+
 
     private static PdfDirectValue PostscriptObjectToPdfObject(PostscriptValue item) => item switch
     {
@@ -390,13 +436,16 @@ public readonly partial struct ContentStreamParser
         { IsBoolean: true } or
         {IsLiteralName:true} => MapSimpleValue(item),
         var x when x.TryGet(out PdfValueDictionary? innerDictionary) => innerDictionary,
+        var x when x.TryGet(out PdfValueArray? innerArray) => innerArray,
         _=> throw new PdfParseException("Cannot convert PostScriptToPdfObject")
     };
 
     private static async ValueTask ShowSpacedStringAsync(PostscriptEngine engine)
     {
+        var arrayTop = engine.OperandStack.Pop();
+        Debug.Assert(IsArrayTopMarker(arrayTop));
         var builder = E(engine).GetSpacedStringBuilder();
-        for (int i = 1; i < engine.OperandStack.Count; i++)
+        for (int i = 2; i < engine.OperandStack.Count; i++)
         {
             var item = engine.OperandStack[i];
             if (item.IsNumber)
