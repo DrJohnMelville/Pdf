@@ -1,5 +1,4 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Filters.Ascii85Filter;

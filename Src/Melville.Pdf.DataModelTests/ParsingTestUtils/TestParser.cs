@@ -17,18 +17,6 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
 public static class TestParser
 {
-    public static Task<PdfObject> ParseObjectAsync(this string s) =>
-        ParseObjectAsync(AsParsingSource(s));
-
-    public static Task<PdfObject> ParseObjectAsync(this byte[] bytes) => 
-        ParseObjectAsync(AsParsingSource(bytes));
-
-    internal static async Task<PdfObject> ParseObjectAsync(this ParsingFileOwner source, long position = 0)
-    {
-        var reader = await source.RentReaderAsync(position);
-        return await PdfParserParts.Composite.ParseAsync(reader);
-    }
-
     public static ValueTask<PdfIndirectValue> ParseValueObjectAsync(this string s) =>
         ParseValueObjectAsync(AsParsingSource(s));
 
@@ -56,13 +44,10 @@ public static class TestParser
         return await new RootObjectParser(reader).ParseTopLevelObject();
     }
 
-    internal static ParsingFileOwner AsParsingSource(this string str, 
-        IIndirectObjectResolver? indirectObjectResolver =null) =>
-        AsParsingSource(str.AsExtendedAsciiBytes(), indirectObjectResolver);
-    internal static ParsingFileOwner AsParsingSource(this byte[] bytes, 
-        IIndirectObjectResolver? indirectObjectResolver =null) => 
-        new(new OneCharAtATimeStream(bytes), NullPasswordSource.Instance, 
-            indirectObjectResolver?? new IndirectObjectResolver());
+    internal static ParsingFileOwner AsParsingSource(this string str) =>
+        AsParsingSource(str.AsExtendedAsciiBytes());
+    internal static ParsingFileOwner AsParsingSource(this byte[] bytes) => 
+        new(new OneCharAtATimeStream(bytes), NullPasswordSource.Instance);
         
     public static ValueTask<PdfLoadedLowLevelDocument> ParseDocumentAsync(this string str, int sizeHint = 1024) =>
         RandomAccessFileParser.ParseAsync(str.AsParsingSource(), sizeHint);

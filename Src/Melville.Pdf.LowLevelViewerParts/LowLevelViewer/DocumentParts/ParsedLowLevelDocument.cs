@@ -65,7 +65,7 @@ public class PageLookup : IPageLookup
                 }
             } else if (kidType.Equals(KnownNames.PagesTName))
             {
-                var nodeCount = (int)(await kid.GetAsync<PdfNumber>(KnownNames.CountTName)).IntValue;
+                var nodeCount = (int)(await kid.GetAsync<int>(KnownNames.CountTName));
                 if (page < nodeCount) return await InnerPageForNumberAsync(new PageTree(kid), page);
                 page -= nodeCount;
             }

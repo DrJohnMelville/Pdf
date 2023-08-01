@@ -5,8 +5,6 @@ using System.Linq;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.LowLevel.Model.Objects2;
 

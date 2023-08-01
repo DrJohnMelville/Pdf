@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
@@ -18,12 +17,6 @@ internal interface IHasInternalIndirectObjects
 
 internal static class ObjectStreamOperations
 {
-    public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
-        this PdfStream stream)
-    {
-        throw new InvalidOperationException("Obsolete method");
-    }
-
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
         this PdfValueStream stream)
     {

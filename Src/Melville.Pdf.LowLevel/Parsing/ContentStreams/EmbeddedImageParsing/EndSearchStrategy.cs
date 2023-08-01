@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Net.Http.Headers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Tokenizers;
 

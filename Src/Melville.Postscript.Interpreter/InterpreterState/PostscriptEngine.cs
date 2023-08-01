@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -8,8 +6,6 @@ using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
-using Melville.Postscript.Interpreter.Values.Execution;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 
@@ -18,7 +14,7 @@ namespace Melville.Postscript.Interpreter.InterpreterState;
 /// Postscript operators modify the state to implement their operations.
 /// </summary>
 public class PostscriptEngine
-{
+{ 
     /// <summary>
     /// This is the current operation stack for the engine;
     /// </summary>

@@ -7,13 +7,9 @@ using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers2.IndirectValues;
-using EncryptingParsingReader = Melville.Pdf.LowLevel.Encryption.CryptContexts.EncryptingParsingReader;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
@@ -22,17 +18,14 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     private readonly MultiplexedStream source;
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
-    public IIndirectObjectResolver IndirectResolver { get; }
     public IndirectValueRegistry NewIndirectResolver { get; }
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private readonly IPasswordSource passwordSource;
 
-    public ParsingFileOwner(Stream source, IPasswordSource passwordSource,
-        IIndirectObjectResolver indirectResolver)
+    public ParsingFileOwner(Stream source, IPasswordSource passwordSource)
     {
         this.source = new MultiplexedStream(source);
         this.passwordSource = passwordSource;
-        IndirectResolver = indirectResolver;
         NewIndirectResolver = new IndirectValueRegistry(this);
     }
     

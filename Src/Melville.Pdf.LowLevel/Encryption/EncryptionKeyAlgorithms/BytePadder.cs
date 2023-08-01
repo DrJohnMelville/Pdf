@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;

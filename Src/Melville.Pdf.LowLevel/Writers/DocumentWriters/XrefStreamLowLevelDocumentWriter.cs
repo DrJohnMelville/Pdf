@@ -1,7 +1,5 @@
 ﻿using System.IO.Pipelines;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Document;
 

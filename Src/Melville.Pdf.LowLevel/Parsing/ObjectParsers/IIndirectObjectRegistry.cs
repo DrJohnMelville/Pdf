@@ -1,19 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Objects;
-
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-
-#warning get rid of this
-[Obsolete]
-internal interface IIndirectObjectResolver
-{
-    IReadOnlyDictionary<(int, int), PdfIndirectObject> GetObjects();
-    PdfIndirectObject FindIndirect(int number, int generation);
-    void AddLocationHint(PdfIndirectObject newItem);
-}
+﻿namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 /// <summary>
 /// This interface represents an object that stores the locations of indirect PDF objects

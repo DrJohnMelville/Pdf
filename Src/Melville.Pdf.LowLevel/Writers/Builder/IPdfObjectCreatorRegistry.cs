@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 

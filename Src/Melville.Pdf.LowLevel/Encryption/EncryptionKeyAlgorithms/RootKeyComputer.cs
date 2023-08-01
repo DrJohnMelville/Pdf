@@ -1,4 +1,3 @@
-using System;
 using Melville.Pdf.LowLevel.Encryption.PasswordHashes;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 

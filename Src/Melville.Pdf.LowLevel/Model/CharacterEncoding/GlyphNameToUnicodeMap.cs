@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Postscript.Interpreter.Values;

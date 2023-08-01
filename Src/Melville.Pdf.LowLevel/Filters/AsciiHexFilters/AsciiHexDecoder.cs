@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Buffers;
-using Melville.Parsing.StreamFilters;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Filters.AsciiHexFilters;

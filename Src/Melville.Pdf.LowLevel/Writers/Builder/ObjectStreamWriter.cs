@@ -1,12 +1,9 @@
-﻿using System;
-using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
+﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.ObjectWriters;

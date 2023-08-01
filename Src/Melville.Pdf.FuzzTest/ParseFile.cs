@@ -2,14 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Melville.Pdf.LowLevel.Parsing.FileParsers;
-using Melville.Pdf.LowLevel.Visitors;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.SkiaSharp;

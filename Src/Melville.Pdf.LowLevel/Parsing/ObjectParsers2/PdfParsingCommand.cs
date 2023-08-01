@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
-using Melville.Postscript.Interpreter.InterpreterState;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 

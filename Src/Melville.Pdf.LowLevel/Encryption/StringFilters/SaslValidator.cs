@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Reflection;
-using System.Text.Unicode;
 
 namespace Melville.Pdf.LowLevel.Encryption.StringFilters;
 

@@ -17,7 +17,7 @@ public class S7_3_1HelpersForObjects
     [Fact]
     public void NullIsEmptyArray()
     {
-        var ret = PdfTokenValues.Null.ObjectAsUnresolvedList();
+        var ret = PdfDirectValue.CreateNull().ObjectAsUnresolvedList();
         Assert.Equal(0, ret.Count);
     }
     [Fact]

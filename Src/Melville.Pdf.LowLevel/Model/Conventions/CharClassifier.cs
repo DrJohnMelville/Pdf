@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 
 namespace Melville.Pdf.LowLevel.Model.Conventions;
 

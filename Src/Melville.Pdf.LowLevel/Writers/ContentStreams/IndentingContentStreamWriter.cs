@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
-using  Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Melville.Pdf.LowLevel.Writers.ObjectWriters; // for generated code
+
+// for generated code
 
 
 namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
@@ -19,7 +19,6 @@ namespace Melville.Pdf.LowLevel.Writers.ContentStreams;
 /// </summary>
 public partial class IndentingContentStreamWriter : IContentStreamOperations
 {
-
     private readonly PipeWriter destPipe;
     private readonly ContentStreamWriter target;
     private int indentLevel = 0;

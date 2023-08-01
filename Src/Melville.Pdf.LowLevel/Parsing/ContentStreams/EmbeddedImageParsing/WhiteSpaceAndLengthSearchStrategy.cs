@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 

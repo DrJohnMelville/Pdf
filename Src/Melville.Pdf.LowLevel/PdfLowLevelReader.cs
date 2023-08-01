@@ -64,5 +64,5 @@ public readonly struct PdfLowLevelReader
     /// <returns> The PdfLowLevelDocument read;</returns>
     public ValueTask<PdfLoadedLowLevelDocument> ReadFromAsync(Stream input) =>
         RandomAccessFileParser.ParseAsync(
-            new ParsingFileOwner(input, passwordSource, new IndirectObjectResolver()));
+            new ParsingFileOwner(input, passwordSource));
 }

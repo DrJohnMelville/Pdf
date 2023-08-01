@@ -1,21 +1,11 @@
 ﻿using System;
 using System.IO.Pipelines;
-using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 
 internal static class StringWriter
 {
-    public static ValueTask<FlushResult> WriteAsync(
-        PipeWriter writer, PdfString value, IObjectCryptContext encryptor)
-    {
-        var encrypted = encryptor.StringCipher().Encrypt().CryptSpan(value.Bytes);
-        WriteSpanAsString(writer, encrypted);
-        return writer.FlushAsync();
-    }
-
     public static void Write(
         PipeWriter writer, in Span<byte> value, IObjectCryptContext encryptor)
     {

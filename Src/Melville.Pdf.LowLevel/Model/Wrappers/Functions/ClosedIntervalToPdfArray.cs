@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 

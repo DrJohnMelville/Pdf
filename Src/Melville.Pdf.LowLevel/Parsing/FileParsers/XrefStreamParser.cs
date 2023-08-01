@@ -1,14 +1,10 @@
 ﻿using System.Buffers;
-using System.Diagnostics;
 using System.IO.Pipelines;
-using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Melville.INPC;
-using Melville.Linq;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects2;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;

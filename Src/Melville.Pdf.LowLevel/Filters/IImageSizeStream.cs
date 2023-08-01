@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Melville.Pdf.LowLevel.Filters;
+﻿namespace Melville.Pdf.LowLevel.Filters;
 
 internal interface IImageSizeStream
 {
