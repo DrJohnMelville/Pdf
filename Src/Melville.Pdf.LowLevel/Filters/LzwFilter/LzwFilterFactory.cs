@@ -7,9 +7,9 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
 internal static class LzwFilterFactory
 {
-    public static async ValueTask<IStreamFilterDefinition> DecoderAsync(PdfDirectValue p) => 
+    public static async ValueTask<IStreamFilterDefinition> DecoderAsync(PdfDirectObject p) => 
         new LzwDecodeFilter(await p.EarlySwitchLengthAsync().CA());
 
-    public static async ValueTask<IStreamFilterDefinition> EncoderAsync(PdfDirectValue p) => 
+    public static async ValueTask<IStreamFilterDefinition> EncoderAsync(PdfDirectObject p) => 
         new LzwEncodeFilter(await p.EarlySwitchLengthAsync().CA());
 }

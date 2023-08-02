@@ -22,9 +22,9 @@ internal class CalGray : IColorSpace
         this.gamma = gamma;
     }
 
-    public static async ValueTask<IColorSpace> ParseAsync(PdfValueDictionary parameters)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfDictionary parameters)
     {
-        var array = await parameters.GetAsync<PdfValueArray>(KnownNames.WhitePointTName).CA();
+        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePointTName).CA();
         var wp = await array.AsDoubleColorAsync().CA();
         var gamma = await parameters.GetOrDefaultAsync(KnownNames.GammaTName, 1.0).CA();
         return new CalGray(wp, gamma);

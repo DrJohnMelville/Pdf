@@ -17,11 +17,11 @@ namespace Melville.Pdf.LowLevel.Filters;
 
 internal static class StaticCodecFactory
 {
-    public static ICodecDefinition CodecFor(PdfDirectValue name) => codecs[name];
+    public static ICodecDefinition CodecFor(PdfDirectObject name) => codecs[name];
 
-    private static Dictionary<PdfDirectValue, ICodecDefinition> codecs = CreateDictionary();
+    private static Dictionary<PdfDirectObject, ICodecDefinition> codecs = CreateDictionary();
 
-    private static Dictionary<PdfDirectValue, ICodecDefinition> CreateDictionary() =>
+    private static Dictionary<PdfDirectObject, ICodecDefinition> CreateDictionary() =>
         new()
         {
             { KnownNames.ASCIIHexDecodeTName, ConstantCodec(new AsciiHexEncoder(), new AsciiHexDecoder()) },

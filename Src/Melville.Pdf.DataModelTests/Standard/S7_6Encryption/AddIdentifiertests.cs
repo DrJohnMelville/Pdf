@@ -32,13 +32,13 @@ public class AddIdentifiertests
     {
         var builder = new LowLevelDocumentBuilder();
         builder.EnsureDocumentHasId();
-        var ary = await builder.CreateDocument().TrailerDictionary.GetAsync<PdfValueArray>(KnownNames.IDTName);
+        var ary = await builder.CreateDocument().TrailerDictionary.GetAsync<PdfArray>(KnownNames.IDTName);
         Assert.Equal(2, ary.Count);
         await VerifyIdMemberAsync(ary, 0);
         await VerifyIdMemberAsync(ary, 1);
     }
 
-    private static async Task VerifyIdMemberAsync(PdfValueArray ary, int index)
+    private static async Task VerifyIdMemberAsync(PdfArray ary, int index)
     {
         var str1 = (await ary[index]).Get<StringSpanSource>();
         Assert.Equal(32, str1.GetSpan().Length);

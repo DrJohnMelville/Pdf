@@ -24,9 +24,9 @@ public class TestWriter
 
 public static class TestWriterOperations
 {
-    public static ValueTask<string> WriteToStringAsync(this PdfDirectValue obj) =>
-        ((PdfIndirectValue)obj).WriteToStringAsync();
-    public static async ValueTask<string> WriteToStringAsync(this PdfIndirectValue obj)
+    public static ValueTask<string> WriteToStringAsync(this PdfDirectObject obj) =>
+        ((PdfIndirectObject)obj).WriteToStringAsync();
+    public static async ValueTask<string> WriteToStringAsync(this PdfIndirectObject obj)
     {
         var writer = new TestWriter();
         var objWriter = new PdfObjectWriter(writer.Writer);
@@ -34,17 +34,17 @@ public static class TestWriterOperations
         await writer.Writer.FlushAsync();
         return writer.Result();
     }
-    public static async ValueTask<string> WriteStreamToStringAsync(this PdfDirectValue obj)
+    public static async ValueTask<string> WriteStreamToStringAsync(this PdfDirectObject obj)
     {
-        var pdfValueStream = obj.Get<PdfValueStream>();
+        var pdfValueStream = obj.Get<PdfStream>();
         return await WriteStreamToStringAsync(pdfValueStream);
     }
 
-    public static async Task<string> WriteStreamToStringAsync(this PdfValueStream pdfValueStream)
+    public static async Task<string> WriteStreamToStringAsync(this PdfStream pdfStream)
     {
         var writer = new TestWriter();
         var objWriter = new PdfObjectWriter(writer.Writer);
-        await objWriter.WriteStreamAsync(pdfValueStream);
+        await objWriter.WriteStreamAsync(pdfStream);
         await writer.Writer.FlushAsync();
         return writer.Result();
     }

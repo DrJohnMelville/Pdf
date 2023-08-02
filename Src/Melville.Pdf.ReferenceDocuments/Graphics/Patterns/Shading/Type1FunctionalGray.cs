@@ -10,17 +10,17 @@ public class Type1FunctionalGray : Type1FunctionalShaderBase
         
     }
 
-    protected override async Task<PdfValueStream[]> BuildFunctionAsync()
+    protected override async Task<PdfStream[]> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
         fbuilder.AddOutput((x, y) => x*y, new ClosedInterval(0, 1));
         var ret = await fbuilder.CreateSampledFunctionAsync();
-        return new PdfValueStream[] { ret };
+        return new PdfStream[] { ret };
     }
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueStream[] localFunc,
-        ValueDictionaryBuilder builder) => 
+    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfStream[] localFunc,
+        DictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName);
 }

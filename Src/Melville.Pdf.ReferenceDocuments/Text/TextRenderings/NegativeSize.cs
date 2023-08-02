@@ -11,12 +11,12 @@ public class NegativeSize: FontDefinitionTest
         FontSize = -70;
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)BuiltInFontName.Helvetica)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.Helvetica)
             .AsDictionary();
     }
 

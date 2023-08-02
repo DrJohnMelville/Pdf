@@ -14,9 +14,9 @@ namespace Melville.Pdf.Model.Documents;
 /// </summary>
 internal class PdfArrayConcatStream : ConcatStreamBase
 {
-    private readonly IEnumerator<ValueTask<PdfDirectValue>> source;
+    private readonly IEnumerator<ValueTask<PdfDirectObject>> source;
 
-    public PdfArrayConcatStream(PdfValueArray source)
+    public PdfArrayConcatStream(PdfArray source)
     {
         this.source = source.GetEnumerator();
     }
@@ -24,7 +24,7 @@ internal class PdfArrayConcatStream : ConcatStreamBase
     protected override async ValueTask<Stream?> GetNextStreamAsync()
     {
         if (!source.MoveNext()) return null;
-        var stream = (await source.Current).Get<PdfValueStream>();
+        var stream = (await source.Current).Get<PdfStream>();
         return await stream.StreamContentAsync().CA();
     }
 }

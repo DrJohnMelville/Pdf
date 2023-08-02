@@ -17,7 +17,7 @@ public class DefaultGray: ColorBars
             CreateColorSpace);
     }
 
-    private PdfIndirectValue CreateColorSpace(IPdfObjectCreatorRegistry i)
+    private PdfIndirectObject CreateColorSpace(IPdfObjectCreatorRegistry i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));
@@ -25,14 +25,14 @@ public class DefaultGray: ColorBars
         builder.AddOutput((0, 1));
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{dup 0}"));
-        return new PdfValueArray(
+        return new PdfArray(
             KnownNames.DeviceNTName, ColorantNames(), KnownNames.DeviceRGBTName, func);
     }
 
-    protected virtual PdfValueArray ColorantNames()
+    protected virtual PdfArray ColorantNames()
     {
-        return new PdfValueArray(
-            PdfDirectValue.CreateName("khed")
+        return new PdfArray(
+            PdfDirectObject.CreateName("khed")
         );
     }
 

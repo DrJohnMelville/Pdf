@@ -6,23 +6,23 @@ namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
 public abstract class DisplayCharSet : Card3x5
 {
     private readonly BuiltInFontName name;
-    private readonly PdfDirectValue fontEncodingName;
+    private readonly PdfDirectObject fontEncodingName;
 
     protected DisplayCharSet(BuiltInFontName name) : this(name, FontEncodingName.StandardEncoding) { }
 
     protected DisplayCharSet(BuiltInFontName name, FontEncodingName fontEncodingName) :
-        this(name, (PdfDirectValue)fontEncodingName)
+        this(name, (PdfDirectObject)fontEncodingName)
     {
     }
 
-    protected DisplayCharSet(BuiltInFontName name, PdfDirectValue fontEncodingName) :
+    protected DisplayCharSet(BuiltInFontName name, PdfDirectObject fontEncodingName) :
         base($"All Characters of the {name} Charset")
     {
         this.name = name;
         this.fontEncodingName = fontEncodingName;
     }
 
-    private static readonly PdfDirectValue fontName = PdfDirectValue.CreateName("F1");
+    private static readonly PdfDirectObject fontName = PdfDirectObject.CreateName("F1");
 
     protected override void SetPageProperties(PageCreator page)
     {

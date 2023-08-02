@@ -15,14 +15,14 @@ public static class StreamBuilderOperations
     /// <param name="b">The dictionary b</param>
     /// <param name="filters">The filters to add.</param>
     /// <returns>The dictionary builder</returns>
-    public static ValueDictionaryBuilder WithFilter(
-        in this ValueDictionaryBuilder b, params FilterName[] filters) => 
+    public static DictionaryBuilder WithFilter(
+        in this DictionaryBuilder b, params FilterName[] filters) => 
         b.WithItem(KnownNames.FilterTName, EncodeFilterSelection(filters));
 
-    private static PdfDirectValue EncodeFilterSelection(FilterName[] filters) =>
+    private static PdfDirectObject EncodeFilterSelection(FilterName[] filters) =>
         filters.Length == 1 ? 
             filters[0]:
-            new PdfValueArray(filters.Select(i=>(PdfIndirectValue)(PdfDirectValue)i).ToArray());
+            new PdfArray(filters.Select(i=>(PdfIndirectObject)(PdfDirectObject)i).ToArray());
 
     /// <summary>
     /// Adds a parameter object for a single filter to a dictionary builder that will eventually
@@ -31,8 +31,8 @@ public static class StreamBuilderOperations
     /// <param name="b">The dictionary builder.</param>
     /// <param name="param">The parameter to add</param>
     /// <returns>The dictionary builder.</returns>
-    public static ValueDictionaryBuilder WithFilterParam(
-        in this ValueDictionaryBuilder b, PdfIndirectValue param) =>
+    public static DictionaryBuilder WithFilterParam(
+        in this DictionaryBuilder b, PdfIndirectObject param) =>
         b.WithItem(KnownNames.DecodeParmsTName, param);
 
     /// <summary>
@@ -42,7 +42,7 @@ public static class StreamBuilderOperations
     /// <param name="b">The dictionary builder.</param>
     /// <param name="param">The parametera to add</param>
     /// <returns>The dictionary builder.</returns>
-    public static ValueDictionaryBuilder WithFilterParam(
-        in this ValueDictionaryBuilder b, params PdfIndirectValue[] param) =>
-        b.WithItem(KnownNames.DecodeParmsTName, new PdfValueArray(param));
+    public static DictionaryBuilder WithFilterParam(
+        in this DictionaryBuilder b, params PdfIndirectObject[] param) =>
+        b.WithItem(KnownNames.DecodeParmsTName, new PdfArray(param));
 }

@@ -18,7 +18,7 @@ public class ReplViewModelTest
         var sut = new ReplViewModel("q Q",
             Mock.Of<IMultiRenderer>(), 
             Array.Empty<byte>(),
-            ((PdfDirectValue)new ValueDictionaryBuilder().AsStream("q Q")),
+            ((PdfDirectObject)new DictionaryBuilder().AsStream("q Q")),
                 Mock.Of<IPageSelector>());
         await sut.PrettyPrintAsync();
         Assert.Equal("q\nQ\n", sut.ContentStreamText);

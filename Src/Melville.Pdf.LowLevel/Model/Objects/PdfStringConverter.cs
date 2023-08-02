@@ -6,14 +6,14 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// <summary>
 /// Convert pdf strings and names to various formats.
 /// </summary>
-public static class PdfValueStringConverter
+public static class PdfStringConverter
 {
     /// <summary>
     /// Extract a string using the byte order marks.
     /// </summary>
     /// <param name="value">The value to convert to a string</param>
     /// <returns>Representation of the item for the </returns>
-    public static string AsTextString(this PdfDirectValue value)
+    public static string AsTextString(this PdfDirectObject value)
     {
         var span = value.Get<StringSpanSource>().GetSpan();
         return UnicodeEncoder.BigEndian.TryGetFromBOM(span) ??

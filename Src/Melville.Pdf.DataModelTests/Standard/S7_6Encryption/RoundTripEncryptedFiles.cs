@@ -41,7 +41,7 @@ public class RoundTripEncryptedFiles
         string text, MultiBufferStream target)
     {
         var doc = await ParseTargetAsync(target, PasswordType.User, "User");
-        var encrypt = await doc.TrailerDictionary.GetAsync<PdfValueDictionary>(KnownNames.EncryptTName);
+        var encrypt = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.EncryptTName);
         await VerifyNumberAsync(encrypt, KnownNames.VTName, V);
         await VerifyNumberAsync(encrypt, KnownNames.RTName, R);
         await VerifyNumberAsync(encrypt, KnownNames.LengthTName, keyLengthInBits);
@@ -49,14 +49,14 @@ public class RoundTripEncryptedFiles
         foreach (var indirectReference in doc.Objects.Values)
         {
             var obj = await indirectReference.LoadValueAsync();
-            if (obj.TryGet(out PdfValueStream? ps) && ! ps.Keys.Contains(KnownNames.FilterTName) && ps.Keys.Count()==1)
+            if (obj.TryGet(out PdfStream? ps) && ! ps.Keys.Contains(KnownNames.FilterTName) && ps.Keys.Count()==1)
             {
                 await VerifyStreamContainsAsync(ps, text);
             }
         }
     }
 
-    private async ValueTask VerifyStreamContainsAsync(PdfValueStream ps, string text)
+    private async ValueTask VerifyStreamContainsAsync(PdfStream ps, string text)
     {
         await using var stream = await ps.StreamContentAsync(StreamFormat.PlainText);
         var streamSource = await new StreamReader(stream).ReadToEndAsync();
@@ -68,9 +68,9 @@ public class RoundTripEncryptedFiles
         new PdfLowLevelReader(new ConstantPasswordSource(passwordType, password))
             .ReadFromAsync(target);
 
-    private async ValueTask VerifyNumberAsync(PdfValueDictionary encrypt, PdfDirectValue PdfDirectValue, int expected)
+    private async ValueTask VerifyNumberAsync(PdfDictionary encrypt, PdfDirectObject PdfDirectObject, int expected)
     {
-        var num = await encrypt.GetAsync<int>(PdfDirectValue);
+        var num = await encrypt.GetAsync<int>(PdfDirectObject);
         Assert.Equal(expected, num);
             
     }

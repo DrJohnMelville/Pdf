@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 internal static class ObjectStreamOperations
 {
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
-        this PdfValueStream stream)
+        this PdfStream stream)
     {
         await using var decoded = await stream.StreamContentAsync().CA();
         return await GetIncludedObjectNumbersAsync(stream, 
@@ -21,7 +21,7 @@ internal static class ObjectStreamOperations
 
 
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
-        PdfValueStream stream, IByteSource reader) =>
+        PdfStream stream, IByteSource reader) =>
         await reader.GetIncludedObjectNumbersAsync(
             (await stream.GetAsync<int>(KnownNames.NTName).CA()),
             (await stream.GetAsync<int>(KnownNames.FirstTName).CA())).CA();

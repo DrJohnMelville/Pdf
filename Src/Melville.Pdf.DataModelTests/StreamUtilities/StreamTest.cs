@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.StreamUtilities;
 public static class StreamTest
 {
     public static async Task TestContentAsync(
-        string encoded, string decoded, PdfDirectValue decoder, PdfDirectValue parameters) =>
+        string encoded, string decoded, PdfDirectObject decoder, PdfDirectObject parameters) =>
         await VerifyStreamContentAsync(decoded,
             await StaticCodecFactory.CodecFor(decoder)
                 .DecodeOnReadStreamAsync(StringAsAsciiStream(encoded), parameters));

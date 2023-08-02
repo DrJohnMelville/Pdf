@@ -25,5 +25,5 @@ public abstract class DisplayImageTest : Card3x5
         await csw.DoAsync("/I1");
     }
 
-    protected abstract PdfValueStream CreateImage();
+    protected abstract PdfStream CreateImage();
 }

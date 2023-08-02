@@ -24,9 +24,9 @@ public class ImageMaskingTest
         return result;
     }
 
-    private static ValueDictionaryBuilder GrayImageBuilder(int width, int height)
+    private static DictionaryBuilder GrayImageBuilder(int width, int height)
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.WidthTName, width)

@@ -12,7 +12,7 @@ internal class UnicodeGlyphNameMapper : FontRenderings.GlyphMappings.DictionaryG
 
     protected override uint HashForString(byte[] name) => 
         GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
-    protected override uint HashForString(PdfDirectValue name) => 
+    protected override uint HashForString(PdfDirectObject name) => 
         GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
 }
 

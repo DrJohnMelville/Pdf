@@ -11,15 +11,15 @@ public abstract class FontDefinitionTest : Card3x5
     {
     }
 
-    private static readonly PdfDirectValue Font1 = PdfDirectValue.CreateName("F1"); 
-    private static readonly PdfDirectValue Font2 = PdfDirectValue.CreateName("F2"); 
+    private static readonly PdfDirectObject Font1 = PdfDirectObject.CreateName("F1"); 
+    private static readonly PdfDirectObject Font2 = PdfDirectObject.CreateName("F2"); 
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(Font1, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);
         page.AddResourceObject(ResourceTypeName.Font, Font2, i=>CreateFont(i));
     }
 
-    protected abstract PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg);
+    protected abstract PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg);
     
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
@@ -35,7 +35,7 @@ public abstract class FontDefinitionTest : Card3x5
         return ValueTask.CompletedTask;
     }
 
-    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfDirectValue font, int yOffset)
+    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfDirectObject font, int yOffset)
     {
         await csw.SetFontAsync(font, FontSize);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);

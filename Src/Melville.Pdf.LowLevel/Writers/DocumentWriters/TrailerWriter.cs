@@ -14,7 +14,7 @@ internal static class TrailerWriter
     private static ReadOnlySpan<byte> StartXrefTag => "\nstartxref\n"u8;
     private static ReadOnlySpan<byte>  EofTag => "\n%%EOF"u8;
     public static async Task WriteTrailerWithDictionaryAsync(
-        PipeWriter target, PdfValueDictionary dictionary, long xRefStart)
+        PipeWriter target, PdfDictionary dictionary, long xRefStart)
     {
         target.WriteBytes(TrailerTag);
         new PdfObjectWriter(target).Write(dictionary);

@@ -11,7 +11,7 @@ public class WriteInllineImage:WriterTest
     [Fact]
     public async Task WriteSimpleImageAsync()
     {
-         await sut.DoAsync(new ValueDictionaryBuilder()
+         await sut.DoAsync(new DictionaryBuilder()
              .WithItem(KnownNames.WidthTName, 12)
              .WithItem(KnownNames.HeightTName, 24)
              .AsStream("StreamData"));

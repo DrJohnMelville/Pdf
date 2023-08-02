@@ -13,12 +13,12 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
 public class S7_10_2SampledFunctions
 {
-    private static async Task<PdfValueStream> ComplexSampledFunctionAsync()
+    private static async Task<PdfStream> ComplexSampledFunctionAsync()
     {
         var builder = new SampledFunctionBuilder(8, SampledFunctionOrder.Cubic);
         builder.AddInput(12, (1, 10), (1, 10));
         builder.AddOutput(x => 5 * x, (5, 50), (0, 255));
-        return await builder.CreateSampledFunctionAsync(new ValueDictionaryBuilder().WithFilter(FilterName.ASCIIHexDecode));
+        return await builder.CreateSampledFunctionAsync(new DictionaryBuilder().WithFilter(FilterName.ASCIIHexDecode));
     }
 
     [Theory]
@@ -27,13 +27,13 @@ public class S7_10_2SampledFunctions
     [InlineData(0.5, 6.5)]
     public async Task SampledFunctionDecodeAsync(double input, double output)
     {
-        var funcDict = new ValueDictionaryBuilder()
+        var funcDict = new DictionaryBuilder()
             .WithItem(KnownNames.BitsPerSampleTName, 8)
             .WithItem(KnownNames.FunctionTypeTName, 0)
-            .WithItem(KnownNames.DecodeTName, new PdfValueArray(3, 10))
-            .WithItem(KnownNames.RangeTName, new PdfValueArray(-10, 20))
-            .WithItem(KnownNames.DomainTName, new PdfValueArray(0, 1))
-            .WithItem(KnownNames.SizeTName, new PdfValueArray(2))
+            .WithItem(KnownNames.DecodeTName, new PdfArray(3, 10))
+            .WithItem(KnownNames.RangeTName, new PdfArray(-10, 20))
+            .WithItem(KnownNames.DomainTName, new PdfArray(0, 1))
+            .WithItem(KnownNames.SizeTName, new PdfArray(2))
             .AsStream(new byte[] { 0xFF, 0x00 });
         var func = await funcDict.CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(input));

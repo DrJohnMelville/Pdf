@@ -26,43 +26,43 @@ internal partial class ColorMacroExpansions : IColorOperations
 
     public void SetRenderIntent(RenderIntentName intent) => target.CurrentState().SetRenderIntent(intent);
 
-    public async ValueTask SetStrokingColorSpaceAsync(PdfDirectValue colorSpace) =>
+    public async ValueTask SetStrokingColorSpaceAsync(PdfDirectObject colorSpace) =>
         target.CurrentState().SetStrokeColorSpace(
             await new ColorSpaceFactory(page).ParseColorSpaceAsync(colorSpace).CA());
     
-    public async ValueTask SetNonstrokingColorSpaceAsync(PdfDirectValue colorSpace) =>
+    public async ValueTask SetNonstrokingColorSpaceAsync(PdfDirectObject colorSpace) =>
         target.CurrentState().SetNonstrokeColorSpace(
             await new ColorSpaceFactory(page).ParseColorSpaceAsync(colorSpace).CA());
     
-    public ValueTask SetStrokeColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetStrokeColorExtendedAsync(PdfDirectObject? patternName, in ReadOnlySpan<double> colors)
     {
         if (colors.Length > 0) SetStrokeColor(colors);
         return SetStrokingPatternAsync(patternName);
     }
 
-    private async ValueTask SetStrokingPatternAsync(PdfDirectValue? patternName)
+    private async ValueTask SetStrokingPatternAsync(PdfDirectObject? patternName)
     {
         if ((await GetPatternDictAsync(patternName).CA()) is { } patternDict)
             await target.CurrentState()
                 .SetStrokePatternAsync(patternDict, renderer).CA();
     }
 
-    public ValueTask SetNonstrokingColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors)
+    public ValueTask SetNonstrokingColorExtendedAsync(PdfDirectObject? patternName, in ReadOnlySpan<double> colors)
     {
         if (colors.Length > 0) SetNonstrokingColor(colors);
         return SetNonstrokingPatternAsync(patternName);
     }
 
-    private async ValueTask SetNonstrokingPatternAsync(PdfDirectValue? patternName)
+    private async ValueTask SetNonstrokingPatternAsync(PdfDirectObject? patternName)
     {
         if ((await GetPatternDictAsync(patternName).CA()) is { } patternDict)
             await target.CurrentState()
                 .SetNonstrokePatternAsync(patternDict, renderer).CA();
     }
 
-    private async ValueTask<PdfValueDictionary?> GetPatternDictAsync(PdfDirectValue? patternName) =>
+    private async ValueTask<PdfDictionary?> GetPatternDictAsync(PdfDirectObject? patternName) =>
         patternName.HasValue && (await page.GetResourceAsync(ResourceTypeName.Pattern, patternName.Value).CA())
-        .TryGet(out PdfValueDictionary patternDict)
+        .TryGet(out PdfDictionary patternDict)
             ? patternDict
             : null;
 

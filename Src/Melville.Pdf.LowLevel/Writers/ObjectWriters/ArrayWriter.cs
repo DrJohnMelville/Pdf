@@ -5,7 +5,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 internal static class ArrayWriter
 {
 
-    public static void WriteArray(in PdfObjectWriter writer, PdfValueArray arr)
+    public static void WriteArray(in PdfObjectWriter writer, PdfArray arr)
     {
         writer.Write("["u8);
         if (arr.Count > 0)

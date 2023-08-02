@@ -24,7 +24,7 @@ public interface ILowLevelDocumentModifier : IPdfObjectCreatorRegistry
     /// </summary>
     /// <param name="reference">The reference to reassign</param>
     /// <param name="value">The new value</param>
-    void ReplaceReferenceObject(PdfIndirectValue reference, PdfDirectValue value);
+    void ReplaceReferenceObject(PdfIndirectObject reference, PdfDirectObject value);
     /// <summary>
     /// Append the modification trailer to a stream.
     /// </summary>
@@ -64,7 +64,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         }
     }
     
-    public void ReplaceReferenceObject(PdfIndirectValue reference, PdfDirectValue value)
+    public void ReplaceReferenceObject(PdfIndirectObject reference, PdfDirectObject value)
     {
             builder.Reassign(reference, value);
     }

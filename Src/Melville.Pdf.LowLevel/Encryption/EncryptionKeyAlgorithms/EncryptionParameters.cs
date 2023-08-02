@@ -19,10 +19,10 @@ internal readonly partial struct EncryptionParameters
 
     public int KeyLengthInBytes => KeyLengthInBits / 8;
     
-    public static async ValueTask<EncryptionParameters> CreateAsync(PdfValueDictionary trailer) =>
-        (await trailer.GetOrNullAsync(KnownNames.IDTName).CA()).TryGet(out PdfValueArray id)&&
+    public static async ValueTask<EncryptionParameters> CreateAsync(PdfDictionary trailer) =>
+        (await trailer.GetOrNullAsync(KnownNames.IDTName).CA()).TryGet(out PdfArray id)&&
         (await id[0].CA()).TryGet(out Memory<byte> firstId) &&
-        (await trailer.GetOrNullAsync(KnownNames.EncryptTName).CA()).TryGet(out PdfValueDictionary dict)&&
+        (await trailer.GetOrNullAsync(KnownNames.EncryptTName).CA()).TryGet(out PdfDictionary dict)&&
         (await dict.GetOrNullAsync(KnownNames.OTName).CA()).TryGet(out Memory<byte> ownerHash) &&
         (await dict.GetOrNullAsync(KnownNames.UTName).CA()).TryGet(out Memory<byte> userHash) &&
         (await dict.GetOrNullAsync(KnownNames.PTName).CA()).TryGet(out long permissions)?

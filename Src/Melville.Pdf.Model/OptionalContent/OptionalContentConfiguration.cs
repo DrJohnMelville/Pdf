@@ -18,21 +18,21 @@ public record class OptionalContentConfiguration(
     string Name,
     string Creator,
     bool? BaseState,
-    PdfValueDictionary[] On,
-    PdfValueDictionary[]  Off,
-    PdfValueArray Order,
+    PdfDictionary[] On,
+    PdfDictionary[]  Off,
+    PdfArray Order,
     IReadOnlyList<OptionalContentExclusionGroup> RadioButtons 
 )
 
 {
-    internal void ApplyTo(Dictionary<PdfValueDictionary, OptionalGroup> groupStates)
+    internal void ApplyTo(Dictionary<PdfDictionary, OptionalGroup> groupStates)
     {
         if (BaseState.HasValue) SetValues(groupStates, groupStates.Keys.ToArray(), BaseState.Value);
         SetValues(groupStates, On, true);
         SetValues(groupStates, Off, false);
     }
 
-    private void SetValues(Dictionary<PdfValueDictionary, OptionalGroup> dict, PdfValueDictionary[] values,
+    private void SetValues(Dictionary<PdfDictionary, OptionalGroup> dict, PdfDictionary[] values,
         bool baseState)
     {
         foreach (var value in values)

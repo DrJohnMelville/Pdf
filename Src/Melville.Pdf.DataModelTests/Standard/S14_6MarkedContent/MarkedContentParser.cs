@@ -12,7 +12,7 @@ public partial class MarkedContentParser : ParserTest
 {
     [Fact]
     public Task MarkedContentPointAsync() =>
-        TestInputAsync("/M1 MP", i => i.MarkedContentPoint(PdfDirectValue.CreateName("M1")));
+        TestInputAsync("/M1 MP", i => i.MarkedContentPoint(PdfDirectObject.CreateName("M1")));
     [Fact]
     public Task MarkedContentPointWithNamedParamAsync() =>
         TestInputAsync("/M1 /M2 DP", i => i.MarkedContentPointAsync("/M1", "/M2"));
@@ -29,7 +29,7 @@ public partial class MarkedContentParser : ParserTest
     public Task ArrayInDictionaryTest() =>
         TestInputAsync("/Artifact <</Attached [/Bottom ]/BBox [31.4126 35.5546 95.7888 47.7571 ]/Subtype /Footer /Type /Pagination >>BDC", 
             i => i.BeginMarkedRangeAsync(
-                PdfDirectValue.CreateName("Artifact"), It.IsAny<PdfValueDictionary>()));
+                PdfDirectObject.CreateName("Artifact"), It.IsAny<PdfDictionary>()));
 
     private partial class MarkedContentPointMock: MockBase, IContentStreamOperations 
     {
@@ -41,7 +41,7 @@ public partial class MarkedContentParser : ParserTest
             this.expected = expected;
         }
 
-        public ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfValueDictionary dict)
+        public ValueTask MarkedContentPointAsync(PdfDirectObject tag, PdfDictionary dict)
         {
             Assert.Equal("M1", tag.ToString());
             Assert.Single(dict);
@@ -51,7 +51,7 @@ public partial class MarkedContentParser : ParserTest
 
         }
 
-        public ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary)
+        public ValueTask BeginMarkedRangeAsync(PdfDirectObject tag, PdfDictionary dictionary)
         {
             MarkedContentPointAsync(tag, dictionary);
             return ValueTask.CompletedTask;

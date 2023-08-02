@@ -47,7 +47,7 @@ public class PageLookup : IPageLookup
         var kids = await node.KidsAsync();
         for (int i = 0; i < kids.Count; i++)
         {
-            var kid = await kids.GetAsync<PdfValueDictionary>(i);
+            var kid = await kids.GetAsync<PdfDictionary>(i);
             var kidType = await kid[KnownNames.TypeTName];
             if (kidType.Equals(KnownNames.PageTName))
             {
@@ -72,7 +72,7 @@ public class PageLookup : IPageLookup
         return new CrossReference(0, 0);
     }
 
-    private static CrossReference ExtractCrossReference(PdfIndirectValue ret)
+    private static CrossReference ExtractCrossReference(PdfIndirectObject ret)
     {
         var retNums = ret.Memento.UInt64s;
         return new CrossReference((int)retNums[0], (int)retNums[1]);

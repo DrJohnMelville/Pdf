@@ -28,7 +28,7 @@ internal class PdfFileStreamSource: IStreamDataSource
         return await parsingFileOwner.RentStreamAsync(sourceFilePosition, streamLength).CA();
     }
 
-    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectValue cryptFilterName) => 
+    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectObject cryptFilterName) => 
         decryptor.NamedCipher(cryptFilterName).Decrypt().CryptStream(encryptedStream);
     public Stream WrapStreamWithDecryptor(Stream encryptedStream) => 
         decryptor.StreamCipher().Decrypt().CryptStream(encryptedStream);

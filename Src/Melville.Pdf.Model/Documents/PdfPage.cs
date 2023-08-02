@@ -27,7 +27,7 @@ public partial class PdfPage: HasRenderableContentStream
             : null;
     }
 
-    private static PdfTime ParseToDateTime(PdfDirectValue str) => 
+    private static PdfTime ParseToDateTime(PdfDirectObject str) => 
         new PdfTimeParser(str.Get<StringSpanSource>().GetSpan()).AsPdfTime();
 
     /// <summary>
@@ -36,8 +36,8 @@ public partial class PdfPage: HasRenderableContentStream
     public override async ValueTask<Stream> GetContentBytesAsync() =>
         await LowLevel.GetOrNullAsync(KnownNames.ContentsTName).CA() switch
         {
-            var x when x.TryGet(out PdfValueStream? strm) => await strm.StreamContentAsync().CA(),
-            var x when x.TryGet(out PdfValueArray? array) => new PdfArrayConcatStream(array),
+            var x when x.TryGet(out PdfStream? strm) => await strm.StreamContentAsync().CA(),
+            var x when x.TryGet(out PdfArray? array) => new PdfArrayConcatStream(array),
             var x => new MemoryStream()
         };
 }

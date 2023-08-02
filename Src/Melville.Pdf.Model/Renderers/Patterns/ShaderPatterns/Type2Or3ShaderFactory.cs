@@ -11,9 +11,9 @@ namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 internal readonly struct Type2Or3ShaderFactory
 {
-    private readonly PdfValueDictionary shading;
+    private readonly PdfDictionary shading;
 
-    public Type2Or3ShaderFactory(PdfValueDictionary shading)
+    public Type2Or3ShaderFactory(PdfDictionary shading)
     {
         this.shading = shading;
     }
@@ -30,7 +30,7 @@ internal readonly struct Type2Or3ShaderFactory
         var function = await (await shading[KnownNames.FunctionTName].CA()).CreateFunctionAsync().CA();
 
         var (extendLow, extendHigh) =
-            (await shading.GetOrNullAsync<PdfValueArray>(KnownNames.ExtendTName).CA()) is { Count: 2 } extArr
+            (await shading.GetOrNullAsync<PdfArray>(KnownNames.ExtendTName).CA()) is { Count: 2 } extArr
                 ? (await ElementIsTrueAsync(extArr, 0).CA(), await ElementIsTrueAsync(extArr, 1).CA())
                 : (false, false);
 
@@ -65,6 +65,6 @@ internal readonly struct Type2Or3ShaderFactory
         };
     }
 
-    private async ValueTask<bool> ElementIsTrueAsync(PdfValueArray extArr, int index) =>
+    private async ValueTask<bool> ElementIsTrueAsync(PdfArray extArr, int index) =>
         (await extArr[index].CA()).Get<bool>();
 }

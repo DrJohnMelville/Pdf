@@ -18,13 +18,13 @@ internal readonly struct RootObjectParser
         tokenizer = new PdfTokenizer(source.Reader);
     }
 
-    public async ValueTask<PdfDirectValue> ParseTopLevelObject()
+    public async ValueTask<PdfDirectObject> ParseTopLevelObject()
     {
         stack.PushRootSignal();
         return await (await ParseAsync().CA()).LoadValueAsync().CA();
     }
 
-    public async ValueTask<PdfIndirectValue> ParseAsync()
+    public async ValueTask<PdfIndirectObject> ParseAsync()
     {
         Debug.Assert(stack.Count == 0 || 
             (stack.HasRootSignal() && stack.Count == 1) );
@@ -36,7 +36,7 @@ internal readonly struct RootObjectParser
         return stack.Pop();
     }
 
-    private ValueTask ProcessToken(PdfDirectValue token)
+    private ValueTask ProcessToken(PdfDirectObject token)
     {
         if (token.IsPdfParsingOperation())
             return token.TryExecutePdfParseOperation(stack);
@@ -48,11 +48,11 @@ internal readonly struct RootObjectParser
 
     }
 
-    private PdfDirectValue DecryptString(PdfDirectValue token)
+    private PdfDirectObject DecryptString(PdfDirectObject token)
     {
         #warning need a shortcut for null strings to pass through quickly
         var decryptedSpan = stack.CryptoContext().StringCipher().Decrypt().CryptSpan(
             token.Get<StringSpanSource>().GetSpan());
-        return PdfDirectValue.CreateString(decryptedSpan);
+        return PdfDirectObject.CreateString(decryptedSpan);
     }
 }

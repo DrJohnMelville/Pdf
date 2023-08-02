@@ -25,7 +25,7 @@ public partial class ImageDisplayViewModel
 
 public class ImagePartViewModel: StreamPartViewModel
 {
-    public ImagePartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfValueStream source) : 
+    public ImagePartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : 
         base(title, children, source)
     {
     }

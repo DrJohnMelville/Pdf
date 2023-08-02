@@ -72,11 +72,11 @@ public abstract partial class GraphicsState<T> : GraphicsState
     protected abstract T CreateSolidBrush(DeviceColor color);
 
     /// <inheritdoc />
-    public override async ValueTask SetStrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer) => 
+    public override async ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) => 
         StrokeBrush = await CreatePatternBrushAsync(pattern, parentRenderer).CA();
 
     /// <inheritdoc />
-    public override async ValueTask SetNonstrokePatternAsync(PdfValueDictionary pattern,
+    public override async ValueTask SetNonstrokePatternAsync(PdfDictionary pattern,
         DocumentRenderer parentRenderer) =>
         NonstrokeBrush = await CreatePatternBrushAsync(pattern, parentRenderer).CA();
 
@@ -86,7 +86,7 @@ public abstract partial class GraphicsState<T> : GraphicsState
     /// <param name="pattern">The pattern to put in the brush.</param>
     /// <param name="parentRenderer">DocumentRenderer with resources to render the pattern.</param>
     /// <returns>Valuetask governing completion of the task.</returns>
-    protected abstract ValueTask<T> CreatePatternBrushAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer);
+    protected abstract ValueTask<T> CreatePatternBrushAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
 }
 
 /// <summary>
@@ -184,10 +184,10 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     }
 
     /// <inheritdoc />
-    private async ValueTask SetLineDashPatternAsync(PdfValueArray entryValue)
+    private async ValueTask SetLineDashPatternAsync(PdfArray entryValue)
     {
         DashPhase = await entryValue.GetAsync<double>(1).CA();
-        var pattern = await entryValue.GetAsync<PdfValueArray>(0).CA();
+        var pattern = await entryValue.GetAsync<PdfArray>(0).CA();
         DashArray = await pattern.CastAsync<double>().CA();
     }
     
@@ -207,12 +207,12 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// </summary>
     /// <param name="dictionary"></param>
     /// <returns></returns>
-    public async ValueTask LoadGraphicStateDictionaryAsync(PdfValueDictionary dictionary)
+    public async ValueTask LoadGraphicStateDictionaryAsync(PdfDictionary dictionary)
     {
         foreach (var entry in dictionary.RawItems) await ApplySingleKeyAsync(entry).CA();
     }
 
-    private async ValueTask ApplySingleKeyAsync(KeyValuePair<PdfDirectValue, PdfIndirectValue> entry)
+    private async ValueTask ApplySingleKeyAsync(KeyValuePair<PdfDirectObject, PdfIndirectObject> entry)
     {
         switch (entry.Key)
         {
@@ -232,7 +232,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
                 SetMiterLimit(await EntryValueAsync<double>(entry).CA());
                 break;
             case var x when x.Equals(KnownNames.DTName):
-                await SetLineDashPatternAsync(await EntryValueAsync<PdfValueArray>(entry).CA()).CA();
+                await SetLineDashPatternAsync(await EntryValueAsync<PdfArray>(entry).CA()).CA();
                 break;
             case var x when x.Equals(KnownNames.RITName):
                 SetRenderIntent(new RenderIntentName(await entry.Value.LoadValueAsync().CA()));
@@ -240,7 +240,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
         }
     }
 
-    private static async ValueTask<T> EntryValueAsync<T>(KeyValuePair<PdfDirectValue, PdfIndirectValue> entry)
+    private static async ValueTask<T> EntryValueAsync<T>(KeyValuePair<PdfDirectObject, PdfIndirectObject> entry)
     {
         return (await entry.Value.LoadValueAsync().CA()).Get<T>();
     }
@@ -261,7 +261,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// <inheritdoc />
     public void SetTextLeading(double value) => TextLeading = value;
     /// <inheritdoc />
-    public ValueTask SetFontAsync(PdfDirectValue font, double size)
+    public ValueTask SetFontAsync(PdfDirectObject font, double size)
     {
         FontSize = size;
         return ValueTask.CompletedTask;
@@ -408,7 +408,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// <param name="pattern">The pattern dictionary for the new brush.</param>
     /// <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
     /// <returns>A valuetask noting the completion of the action.</returns>
-    public abstract ValueTask SetStrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer);
+    public abstract ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
 
     /// <summary>
     /// Set a pattern brush to the current nonstroking brush
@@ -416,7 +416,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     /// <param name="pattern">The pattern dictionary for the new brush.</param>
     /// <param name="parentRenderer">The document renderer with resources to paint the brush.</param>
     /// <returns>A valuetask noting the completion of the action.</returns>
-    public abstract ValueTask SetNonstrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer);
+    public abstract ValueTask SetNonstrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer);
 
     /// <summary>
     /// Designate the current transform matrix as the initial matrix for the page.

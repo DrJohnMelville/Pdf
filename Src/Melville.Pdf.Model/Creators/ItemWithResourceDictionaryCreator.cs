@@ -18,19 +18,19 @@ public abstract class ItemWithResourceDictionaryCreator
     /// Dictionary Builder that will eventually build the target item.  This allows items
     /// to be added to the page or pattern dictionary.
     /// </summary>
-    protected ValueDictionaryBuilder MetaData { get; }
+    protected DictionaryBuilder MetaData { get; }
     /// <summary>
     /// A dictionary of resource items, indexed by a resource type/name key.  The delegate
     /// creates the given content from an IPdfObjectRegistry.
     /// </summary>
-    protected Dictionary<(PdfDirectValue DictionaryName, PdfDirectValue ItemName), 
-            Func<IPdfObjectCreatorRegistry,PdfIndirectValue>> Resources { get; } = new();
+    protected Dictionary<(PdfDirectObject DictionaryName, PdfDirectObject ItemName), 
+            Func<IPdfObjectCreatorRegistry,PdfIndirectObject>> Resources { get; } = new();
 
     /// <summary>
     /// Create the ItemsWithResourceDictionaryCreator
     /// </summary>
     /// <param name="metaData"></param>
-    protected ItemWithResourceDictionaryCreator(ValueDictionaryBuilder metaData)
+    protected ItemWithResourceDictionaryCreator(DictionaryBuilder metaData)
     {
         MetaData = metaData;
     }
@@ -41,21 +41,21 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="creator">IPdfObjectRegistry that shold be used to create new top level objects</param>
     /// <param name="parent">The parent of this item.</param>
     /// <returns>A reference to the object created and the number of pages created by the method call.</returns>
-    public abstract (PdfIndirectValue Reference, int PageCount)
-        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectValue parent);
+    public abstract (PdfIndirectObject Reference, int PageCount)
+        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectObject parent);
 
     /// <summary>
     /// Add an item to the top level item dictionary
     /// </summary>
     /// <param name="name">The key of the item to add.</param>
     /// <param name="item">The item to add</param>
-    public void AddMetadata(PdfDirectValue name, PdfIndirectValue item) =>
+    public void AddMetadata(PdfDirectObject name, PdfIndirectObject item) =>
         MetaData.WithItem(name, item);
 
     private protected void TryAddResources(IPdfObjectCreatorRegistry creator)
     {
         if (Resources.Count == 0) return;
-        var res = new ValueDictionaryBuilder();
+        var res = new DictionaryBuilder();
         foreach (var subDictionary in Resources.GroupBy(i=>i.Key.DictionaryName))
         {
             res.WithItem(subDictionary.Key, DictionaryValues(creator, subDictionary));
@@ -63,19 +63,19 @@ public abstract class ItemWithResourceDictionaryCreator
         MetaData.WithItem(KnownNames.ResourcesTName, res.AsDictionary());
     }
 
-    private PdfIndirectValue DictionaryValues(
+    private PdfIndirectObject DictionaryValues(
         IPdfObjectCreatorRegistry creator, 
-        IGrouping<PdfDirectValue, KeyValuePair<(PdfDirectValue DictionaryName, PdfDirectValue ItemName), 
-            Func<IPdfObjectCreatorRegistry,PdfIndirectValue>>> subDictionary) =>
+        IGrouping<PdfDirectObject, KeyValuePair<(PdfDirectObject DictionaryName, PdfDirectObject ItemName), 
+            Func<IPdfObjectCreatorRegistry,PdfIndirectObject>>> subDictionary) =>
         subDictionary.Key.Equals(KnownNames.ProcSetTName)
             ? subDictionary.First().Value(creator)
             : CreateDictionary(subDictionary, creator);
 
-    private PdfValueDictionary CreateDictionary(
-        IEnumerable<KeyValuePair<(PdfDirectValue DictionaryName, PdfDirectValue ItemName), 
-            Func<IPdfObjectCreatorRegistry, PdfIndirectValue>>> items,
+    private PdfDictionary CreateDictionary(
+        IEnumerable<KeyValuePair<(PdfDirectObject DictionaryName, PdfDirectObject ItemName), 
+            Func<IPdfObjectCreatorRegistry, PdfIndirectObject>>> items,
         IPdfObjectCreatorRegistry creator) => items
-            .Aggregate(new ValueDictionaryBuilder(),
+            .Aggregate(new DictionaryBuilder(),
                 (builder, item) => builder.WithItem(item.Key.ItemName, creator.AddIfDirect(item.Value(creator))))
             .AsDictionary();
 
@@ -85,7 +85,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="resourceType">Type of object</param>
     /// <param name="name">Key for the object</param>
     /// <param name="obj">The object to add</param>
-    public void AddResourceObject(ResourceTypeName resourceType, PdfDirectValue name, PdfIndirectValue obj) =>
+    public void AddResourceObject(ResourceTypeName resourceType, PdfDirectObject name, PdfIndirectObject obj) =>
         AddResourceObject(resourceType, name, _ => obj);
 
     /// <summary>
@@ -95,7 +95,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="name">Key for the object</param>
     /// <param name="obj">A delegate that will create the object from a IPdfObjectRegistry</param>
     public void AddResourceObject(
-        ResourceTypeName resourceType, PdfDirectValue name, Func<IPdfObjectCreatorRegistry,PdfIndirectValue> obj)
+        ResourceTypeName resourceType, PdfDirectObject name, Func<IPdfObjectCreatorRegistry,PdfIndirectObject> obj)
     {
         if (!name.IsName)
             throw new InvalidOperationException("Resource key must be a name");
@@ -121,10 +121,10 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="assignedName">The name assigned to the font.</param>
     /// <param name="baseFont">The base font for the font</param>
     /// <param name="encoding">The desired encoding</param>
-    /// <returns>The PdfDirectValue of the font</returns>
-    public PdfDirectValue AddStandardFont(
+    /// <returns>The PdfDirectObject of the font</returns>
+    public PdfDirectObject AddStandardFont(
         ReadOnlySpan<byte> assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
-        AddStandardFont(PdfDirectValue.CreateName(assignedName), baseFont, encoding);
+        AddStandardFont(PdfDirectObject.CreateName(assignedName), baseFont, encoding);
 
     /// <summary>
     /// Add a standard font reference to the resource divtionary
@@ -132,10 +132,10 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="assignedName">The name assigned to the font.</param>
     /// <param name="baseFont">The base font for the font</param>
     /// <param name="encoding">The desired encoding</param>
-    /// <returns>The PdfDirectValue of the font</returns>
-    public PdfDirectValue AddStandardFont(
-        PdfDirectValue assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
-        AddStandardFont(assignedName, baseFont, (PdfDirectValue)encoding);
+    /// <returns>The PdfDirectObject of the font</returns>
+    public PdfDirectObject AddStandardFont(
+        PdfDirectObject assignedName, BuiltInFontName baseFont, FontEncodingName encoding) =>
+        AddStandardFont(assignedName, baseFont, (PdfDirectObject)encoding);
 
     /// <summary>
     /// Add a standard font reference to the resource divtionary
@@ -143,16 +143,16 @@ public abstract class ItemWithResourceDictionaryCreator
     /// <param name="assignedName">The name assigned to the font.</param>
     /// <param name="baseFont">The base font for the font</param>
     /// <param name="encoding">The desired encoding</param>
-    /// <returns>The PdfDirectValue of the font</returns>
-    public PdfDirectValue AddStandardFont(
-        PdfDirectValue assignedName, BuiltInFontName baseFont, PdfIndirectValue encoding)
+    /// <returns>The PdfDirectObject of the font</returns>
+    public PdfDirectObject AddStandardFont(
+        PdfDirectObject assignedName, BuiltInFontName baseFont, PdfIndirectObject encoding)
     {
         AddResourceObject(ResourceTypeName.Font, assignedName,
-            new ValueDictionaryBuilder()
+            new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
             .WithItem(KnownNames.NameTName, assignedName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)baseFont)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)baseFont)
             .WithItem(KnownNames.EncodingTName, encoding)
             .AsDictionary());
         return assignedName;

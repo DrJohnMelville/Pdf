@@ -8,11 +8,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_11_OptionalContent;
 
 public class OptionalContentParserTest
 {
-    private readonly PdfValueDictionary ocg1 = OCG("O1");
-    private readonly PdfValueDictionary ocg2 = OCG("O2");
-    private readonly PdfValueDictionary ocg3 = OCG("O3");
-    private static PdfValueDictionary OCG(string name) =>
-        new ValueDictionaryBuilder()
+    private readonly PdfDictionary ocg1 = OCG("O1");
+    private readonly PdfDictionary ocg2 = OCG("O2");
+    private readonly PdfDictionary ocg3 = OCG("O3");
+    private static PdfDictionary OCG(string name) =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.OCGTName)
             .WithItem(KnownNames.NameTName, name)
             .AsDictionary();
@@ -22,8 +22,8 @@ public class OptionalContentParserTest
     {
         
         var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2))
                 .AsDictionary()
             );
         
@@ -35,9 +35,9 @@ public class OptionalContentParserTest
     {
         
         var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
-                .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2))
+                .WithItem(KnownNames.DTName, new DictionaryBuilder()
                     .WithItem(KnownNames.BaseStateTName, KnownNames.OFFTName)
                     .AsDictionary())
                 .AsDictionary()
@@ -50,11 +50,11 @@ public class OptionalContentParserTest
     public async Task TurnOneOnAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
-                .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2))
+                .WithItem(KnownNames.DTName, new DictionaryBuilder()
                     .WithItem(KnownNames.BaseStateTName, KnownNames.OFFTName)
-                    .WithItem(KnownNames.ONTName, new PdfValueArray(ocg1))
+                    .WithItem(KnownNames.ONTName, new PdfArray(ocg1))
                     .AsDictionary())
                 .AsDictionary()
             );
@@ -66,10 +66,10 @@ public class OptionalContentParserTest
     [Fact]
     public async Task ParseSimpleOrderAsync()
     {
-        var source = new ValueDictionaryBuilder()
-            .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
-            .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OrderTName, new PdfValueArray(ocg2, ocg1))
+        var source = new DictionaryBuilder()
+            .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2))
+            .WithItem(KnownNames.DTName, new DictionaryBuilder()
+                .WithItem(KnownNames.OrderTName, new PdfArray(ocg2, ocg1))
                 .AsDictionary())
             .AsDictionary();
         var sut = await OptionalContentPropertiesParser.ParseAsync(source);
@@ -83,11 +83,11 @@ public class OptionalContentParserTest
     public async Task RadioButtonsAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
-                .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
-                    .WithItem(KnownNames.OrderTName, new PdfValueArray(ocg2, ocg1))
-                    .WithItem(KnownNames.RBGroupsTName, new PdfValueArray(new PdfValueArray(ocg2, ocg1)))
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2))
+                .WithItem(KnownNames.DTName, new DictionaryBuilder()
+                    .WithItem(KnownNames.OrderTName, new PdfArray(ocg2, ocg1))
+                    .WithItem(KnownNames.RBGroupsTName, new PdfArray(new PdfArray(ocg2, ocg1)))
                     .AsDictionary())
                 .AsDictionary()
         );
@@ -108,11 +108,11 @@ public class OptionalContentParserTest
     public async Task ParseOrderWithTitleAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2))
-                .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
-                    .WithItem(KnownNames.OrderTName, new PdfValueArray( 
-                        new PdfValueArray(PdfDirectValue.CreateString("Title"u8),ocg2, ocg1)))
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2))
+                .WithItem(KnownNames.DTName, new DictionaryBuilder()
+                    .WithItem(KnownNames.OrderTName, new PdfArray( 
+                        new PdfArray(PdfDirectObject.CreateString("Title"u8),ocg2, ocg1)))
                     .AsDictionary())
                 .AsDictionary()
         );
@@ -129,11 +129,11 @@ public class OptionalContentParserTest
     public async Task ParseOrderWithSuperGroupAsync()
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2,ocg3))
-                .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
-                    .WithItem(KnownNames.OrderTName, new PdfValueArray( 
-                        new PdfValueArray(ocg3,ocg2, ocg1)))
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2,ocg3))
+                .WithItem(KnownNames.DTName, new DictionaryBuilder()
+                    .WithItem(KnownNames.OrderTName, new PdfArray( 
+                        new PdfArray(ocg3,ocg2, ocg1)))
                     .AsDictionary())
                 .AsDictionary()
         );
@@ -173,11 +173,11 @@ public class OptionalContentParserTest
     
     [Theory]
     [MemberData(nameof(PTestItems))]
-    public async Task MemerContentPTestAsync(bool v1, bool v2, bool v3, PdfDirectValue pOp, bool result)
+    public async Task MemerContentPTestAsync(bool v1, bool v2, bool v3, PdfDirectObject pOp, bool result)
     {
         var sut = await CreateVisContextAsync(v1, v2, v3);
-        Assert.Equal(result, await sut.IsGroupVisibleAsync(new ValueDictionaryBuilder()
-            .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1,ocg2,ocg3))
+        Assert.Equal(result, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
+            .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1,ocg2,ocg3))
             .WithItem(KnownNames.TypeTName, KnownNames.OCMDTName)
             .WithItem(KnownNames.PTName, pOp)
             .AsDictionary()));
@@ -186,10 +186,10 @@ public class OptionalContentParserTest
     private async Task<IOptionalContentState> CreateVisContextAsync(bool v1, bool v2, bool v3)
     {
         var sut = await OptionalContentPropertiesParser.ParseAsync(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.OCGsTName, new PdfValueArray(ocg1, ocg2, ocg3))
-                .WithItem(KnownNames.DTName, new ValueDictionaryBuilder()
-                    .WithItem(KnownNames.OrderTName, new PdfValueArray(ocg1, ocg2, ocg3))
+            new DictionaryBuilder()
+                .WithItem(KnownNames.OCGsTName, new PdfArray(ocg1, ocg2, ocg3))
+                .WithItem(KnownNames.DTName, new DictionaryBuilder()
+                    .WithItem(KnownNames.OrderTName, new PdfArray(ocg1, ocg2, ocg3))
                     .AsDictionary())
                 .AsDictionary());
         var display = await sut.ConstructUiModelAsync(sut.Configurations[0].Order);
@@ -207,9 +207,9 @@ public class OptionalContentParserTest
     public async Task AndVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);
-        Assert.Equal(a & b, await sut.IsGroupVisibleAsync(new ValueDictionaryBuilder()
+        Assert.Equal(a & b, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.OCMDTName)
-            .WithItem(KnownNames.VETName, new PdfValueArray(KnownNames.AndTName, ocg1, ocg2))
+            .WithItem(KnownNames.VETName, new PdfArray(KnownNames.AndTName, ocg1, ocg2))
             .AsDictionary()));
         
     }
@@ -222,9 +222,9 @@ public class OptionalContentParserTest
     public async Task OrVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);
-        Assert.Equal(a | b, await sut.IsGroupVisibleAsync(new ValueDictionaryBuilder()
+        Assert.Equal(a | b, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.OCMDTName)
-            .WithItem(KnownNames.VETName, new PdfValueArray(KnownNames.OrTName, ocg1, ocg2))
+            .WithItem(KnownNames.VETName, new PdfArray(KnownNames.OrTName, ocg1, ocg2))
             .AsDictionary()));
         
     }
@@ -236,9 +236,9 @@ public class OptionalContentParserTest
     public async Task NotVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);
-        Assert.Equal(!a, await sut.IsGroupVisibleAsync(new ValueDictionaryBuilder()
+        Assert.Equal(!a, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.OCMDTName)
-            .WithItem(KnownNames.VETName, new PdfValueArray(KnownNames.NotTName, ocg1, ocg2))
+            .WithItem(KnownNames.VETName, new PdfArray(KnownNames.NotTName, ocg1, ocg2))
             .AsDictionary()));
         
     }
@@ -250,10 +250,10 @@ public class OptionalContentParserTest
     public async Task ImplicationVETestAsync(bool a, bool b)
     {
         var sut = await CreateVisContextAsync(a, b, true);
-        Assert.Equal((!a) | b, await sut.IsGroupVisibleAsync(new ValueDictionaryBuilder()
+        Assert.Equal((!a) | b, await sut.IsGroupVisibleAsync(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.OCMDTName)
             .WithItem(KnownNames.VETName, 
-                new PdfValueArray(KnownNames.OrTName, ocg2, new PdfValueArray(KnownNames.NotTName, ocg1)))
+                new PdfArray(KnownNames.OrTName, ocg2, new PdfArray(KnownNames.NotTName, ocg1)))
             .AsDictionary()));
         
     }

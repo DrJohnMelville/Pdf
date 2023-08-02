@@ -31,11 +31,11 @@ public static class PdfBitmapOperations
     /// <param name="fillColor">The background color for the bitmap.</param>
     /// <returns></returns>
     public static ValueTask<IPdfBitmap> WrapForRenderingAsync(
-        this PdfValueStream stream, DeviceColor fillColor) =>
+        this PdfStream stream, DeviceColor fillColor) =>
         WrapForRenderingAsync(stream, NoPageContext.Instance, fillColor);
 
     internal static async ValueTask<IPdfBitmap> WrapForRenderingAsync(
-        this PdfValueStream stream, IHasPageAttributes page, DeviceColor fillColor) =>
+        this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor) =>
         await GetByteWriterAsync(new BitmapRenderParameters(
             stream, page, fillColor,
             await stream.GetOrDefaultAsync(KnownNames.WidthTName, 1).CA(),

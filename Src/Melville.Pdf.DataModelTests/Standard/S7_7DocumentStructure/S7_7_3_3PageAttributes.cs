@@ -48,10 +48,10 @@ public class S7_7_3_3PageAttributes
     [Fact]
     public async Task WithXObjectDictionaryAsync()
     {
-        var name = PdfDirectValue.CreateName("N1");
+        var name = PdfDirectObject.CreateName("N1");
         var doc = await RoundTripPageWithAsync(i =>
         {
-            PdfDirectValue obj = 10;
+            PdfDirectObject obj = 10;
             i.AddResourceObject(ResourceTypeName.XObject, name, obj);
         });
         Assert.Equal(10, (await doc.GetResourceAsync(ResourceTypeName.XObject, name)).Get<int>());
@@ -59,11 +59,11 @@ public class S7_7_3_3PageAttributes
     [Fact]
     public async Task WithInheritedXObjectDictionaryAsync()
     {
-        var name = PdfDirectValue.CreateName("N1");
+        var name = PdfDirectObject.CreateName("N1");
         var doc = await RoundTripPageWithAsync(j => { }, 
             i =>
             {
-                PdfDirectValue obj = 10;
+                PdfDirectObject obj = 10;
                 i.AddResourceObject(ResourceTypeName.XObject, name, obj);
             });
         Assert.Equal(10, (await doc.GetResourceAsync(ResourceTypeName.XObject, name)).Get<int>());
@@ -132,12 +132,12 @@ public class S7_7_3_3PageAttributes
     [Fact]
     public async Task AddBuiltinFontAsync()
     {
-        PdfDirectValue fontName = KnownNames.TypeTName;
+        PdfDirectObject fontName = KnownNames.TypeTName;
         var page = await RoundTripPageWithAsync(i =>
             fontName = i.AddStandardFont("/F1", BuiltInFontName.CourierBoldOblique, FontEncodingName.WinAnsiEncoding));
-        var res = await page.LowLevel.GetAsync<PdfValueDictionary>(KnownNames.ResourcesTName);
-        var fonts = await res.GetAsync<PdfValueDictionary>(KnownNames.FontTName);
-        var font = await fonts.GetAsync<PdfValueDictionary>(fontName);
+        var res = await page.LowLevel.GetAsync<PdfDictionary>(KnownNames.ResourcesTName);
+        var fonts = await res.GetAsync<PdfDictionary>(KnownNames.FontTName);
+        var font = await fonts.GetAsync<PdfDictionary>(fontName);
         Assert.Equal(await font[KnownNames.TypeTName], KnownNames.FontTName);
         Assert.Equal(await font[KnownNames.SubtypeTName], KnownNames.Type1TName);
         Assert.Equal(await font[KnownNames.NameTName], fontName);
@@ -147,7 +147,7 @@ public class S7_7_3_3PageAttributes
     [Fact] 
     public async Task LiteratContentStreamAsync()
     {
-        var doc = await RoundTripPageWithAsync(i => i.AddToContentStream(new ValueDictionaryBuilder(), "xxyyy"));
+        var doc = await RoundTripPageWithAsync(i => i.AddToContentStream(new DictionaryBuilder(), "xxyyy"));
         var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();
         Assert.Equal("xxyyy", dat);
@@ -157,8 +157,8 @@ public class S7_7_3_3PageAttributes
     {
         var doc = await RoundTripPageWithAsync(i =>
         {
-            i.AddToContentStream(new ValueDictionaryBuilder(), "xx");
-            i.AddToContentStream(new ValueDictionaryBuilder(), "yyy");
+            i.AddToContentStream(new DictionaryBuilder(), "xx");
+            i.AddToContentStream(new DictionaryBuilder(), "yyy");
         });
         var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();

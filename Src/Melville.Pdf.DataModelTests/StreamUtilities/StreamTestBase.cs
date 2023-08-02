@@ -18,11 +18,11 @@ public abstract partial class StreamTestBase
 {
     private readonly string source;
     private readonly string dest;
-    private readonly PdfDirectValue compression;
-    private readonly PdfDirectValue? parameters;
+    private readonly PdfDirectObject compression;
+    private readonly PdfDirectObject? parameters;
 
     protected StreamTestBase(
-        string source, string dest, PdfDirectValue compression, PdfDirectValue? parameters = null)
+        string source, string dest, PdfDirectObject compression, PdfDirectObject? parameters = null)
     {
         this.source = source;
         this.dest = dest;
@@ -31,15 +31,15 @@ public abstract partial class StreamTestBase
     }
 
 
-    private ValueDictionaryBuilder StreamBuilder() =>
-        new ValueDictionaryBuilder()
+    private DictionaryBuilder StreamBuilder() =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.FilterTName, compression)
-            .WithItem(KnownNames.DecodeParmsTName, parameters??PdfDirectValue.CreateNull());
+            .WithItem(KnownNames.DecodeParmsTName, parameters??PdfDirectObject.CreateNull());
     
-    private PdfValueStream StreamWithPlainTextBacking() =>
+    private PdfStream StreamWithPlainTextBacking() =>
         StreamBuilder().AsStream(source);
 
-    private PdfValueStream StreamWithEncodedBacking() =>
+    private PdfStream StreamWithEncodedBacking() =>
         StreamBuilder()
             .WithItem(KnownNames.LengthTName, dest.Length)
             .AsStream(dest.AsExtendedAsciiBytes(),
@@ -66,23 +66,23 @@ public abstract partial class StreamTestBase
     }
 
 
-    private async Task VerifyEncodingAsync(PdfValueStream stream) => 
+    private async Task VerifyEncodingAsync(PdfStream stream) => 
         Assert.Equal(SimulateStreamOutput(), await stream.WriteStreamToStringAsync());
         
     private string SimulateStreamOutput() => 
         $"<</Filter{RenderCompression(compression)}{RenderParams(parameters)}/Length {dest.Length}>> stream\r\n{dest}\r\nendstream";
 
-    private string RenderCompression(PdfDirectValue val)
+    private string RenderCompression(PdfDirectObject val)
     {
-        if (val.TryGet(out PdfValueArray? arr)) return RenderArray(arr);
+        if (val.TryGet(out PdfArray? arr)) return RenderArray(arr);
         return $"/{val}";
     }
 
-    private string RenderArray(PdfValueArray value) => 
+    private string RenderArray(PdfArray value) => 
         $"[{string.Join(' ',value.RawItems.Select(i => RenderCompression(i.TryGetEmbeddedDirectValue(out var dir) ? dir : default)))}]";
 
-    private static string RenderParams(PdfDirectValue? parameters) =>
-        parameters.HasValue && parameters.Value.TryGet(out PdfValueDictionary? dict)
+    private static string RenderParams(PdfDirectObject? parameters) =>
+        parameters.HasValue && parameters.Value.TryGet(out PdfDictionary? dict)
             ? "/DecodeParms<<" + string.Join("", dict.RawItems.Select(i => $"/{i.Key} {i.Value}")) + ">>"
             : "";
 
@@ -124,11 +124,11 @@ public abstract partial class StreamTestBase
         streamMock.Verify(i => i.Close(), Times.Once);
     }
 
-    private ValueTask<PdfValueStream> StreamWithEncodedBackEndAsync() =>
+    private ValueTask<PdfStream> StreamWithEncodedBackEndAsync() =>
          ToStreamWithEncodedBackEndAsync(StreamWithPlainTextBacking());
 
-    private async ValueTask<PdfValueStream> ToStreamWithEncodedBackEndAsync(PdfValueStream str) =>
-        new ValueDictionaryBuilder(str.RawItems).AsStream(
+    private async ValueTask<PdfStream> ToStreamWithEncodedBackEndAsync(PdfStream str) =>
+        new DictionaryBuilder(str.RawItems).AsStream(
             await str.StreamContentAsync(StreamFormat.DiskRepresentation, NullSecurityHandler.Instance),
             StreamFormat.DiskRepresentation);
 

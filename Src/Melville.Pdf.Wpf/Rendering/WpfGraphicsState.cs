@@ -25,7 +25,7 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
     }
 
     protected override async ValueTask<Func<WpfGraphicsState, Brush>> CreatePatternBrushAsync(
-        PdfValueDictionary pattern,
+        PdfDictionary pattern,
         DocumentRenderer parentRenderer) =>
         await pattern.GetOrDefaultAsync(KnownNames.PatternTypeTName, 0).CA() switch
         {
@@ -49,7 +49,7 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
     }
 
     private async Task<Func<WpfGraphicsState, Brush>> CreateTilePatternAsync(
-        PdfValueDictionary pattern, DocumentRenderer parentRenderer)
+        PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.ParseAsync(pattern);
         var pattternItem = await PatternRenderer(parentRenderer, request).RenderAsync();
@@ -76,7 +76,7 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
         return new RenderToDrawingGroup(parentRenderer.PatternRenderer(request, this), 0);
     }
     
-    public async ValueTask<Func<WpfGraphicsState, Brush>> CreateShaderBrushAsync(PdfValueDictionary pattern)
+    public async ValueTask<Func<WpfGraphicsState, Brush>> CreateShaderBrushAsync(PdfDictionary pattern)
     {
         var bmp = RenderShaderToBitmap(await ShaderParser.ParseShaderAsync(pattern));
         var viewport = new Rect(0, 0, bmp.PixelWidth, bmp.PixelHeight);

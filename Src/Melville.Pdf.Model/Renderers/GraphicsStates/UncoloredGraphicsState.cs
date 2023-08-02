@@ -22,10 +22,10 @@ public class UncoloredGraphicsState : GraphicsState
     }
 
     /// <inheritdoc />
-    public override ValueTask SetStrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer) =>
+    public override ValueTask SetStrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) =>
         ValueTask.CompletedTask;
 
     /// <inheritdoc />
-    public override ValueTask SetNonstrokePatternAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer) =>
+    public override ValueTask SetNonstrokePatternAsync(PdfDictionary pattern, DocumentRenderer parentRenderer) =>
         ValueTask.CompletedTask;
 }

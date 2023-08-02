@@ -16,7 +16,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
     protected override ISkiaBrushCreator CreateSolidBrush(DeviceColor color) => 
         new SolidColorBrushCreator(color);
 
-    protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrushAsync(PdfValueDictionary pattern,
+    protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrushAsync(PdfDictionary pattern,
         DocumentRenderer parentRenderer)
     {
         return await pattern.GetOrDefaultAsync(KnownNames.PatternTypeTName, 0).CA() switch
@@ -27,7 +27,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
         };
     }
 
-    private async Task<ISkiaBrushCreator> CreateTilePatternBrushAsync(PdfValueDictionary pattern, DocumentRenderer parentRenderer)
+    private async Task<ISkiaBrushCreator> CreateTilePatternBrushAsync(PdfDictionary pattern, DocumentRenderer parentRenderer)
     {
         var request = await TileBrushRequest.ParseAsync(pattern).CA();
         var tileItem = await RenderWithSkia.ToSurfaceAsync(
@@ -35,7 +35,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
         return new SurfacePatternHolder(tileItem, request.PatternTransform);
     }
 
-    private async Task<ISkiaBrushCreator> CreateShaderBrushAsync(PdfValueDictionary pattern)
+    private async Task<ISkiaBrushCreator> CreateShaderBrushAsync(PdfDictionary pattern)
     {
         var shader = await ShaderParser.ParseShaderAsync(pattern).CA();
         var bitmap = new SKBitmap(new SKImageInfo((int)PageWidth, (int)PageHeight,

@@ -18,32 +18,32 @@ public class ViewModelVisitor
         return ret;
     }
 
-    public DocumentPart GeneratePartAsync(string trailer, PdfIndirectValue dictionary)
+    public DocumentPart GeneratePartAsync(string trailer, PdfIndirectObject dictionary)
     {
         prefix = trailer;
         return GenerateForObject(dictionary);
     }
 
-    private DocumentPart GenerateForObject(PdfIndirectValue indir) =>
+    private DocumentPart GenerateForObject(PdfIndirectObject indir) =>
         indir.TryGetEmbeddedDirectValue(out var dirValue)
             ? GenerateForObject(dirValue)
             : RenderReference(indir.GetObjectReference());
 
 
-    private DocumentPart GenerateForObject(PdfDirectValue directValue)
+    private DocumentPart GenerateForObject(PdfDirectObject directValue)
     {
         return directValue switch
         {
             {IsString: true} => TerminalNode($"({directValue})"),
             {IsName: true} => TerminalNode($"/{directValue}"),
-            var x when x.TryGet(out PdfValueArray array) => ParseArray(array),
-            var x when x.TryGet(out PdfValueStream stream) => ParseStream(stream),
-            var x when x.TryGet(out PdfValueDictionary dictionary) => ParseDictionary(dictionary),
+            var x when x.TryGet(out PdfArray array) => ParseArray(array),
+            var x when x.TryGet(out PdfStream stream) => ParseStream(stream),
+            var x when x.TryGet(out PdfDictionary dictionary) => ParseDictionary(dictionary),
             _ => TerminalNode(directValue.ToString())
         };
     }
 
-    private DocumentPart ParseStream(PdfValueStream stream)
+    private DocumentPart ParseStream(PdfStream stream)
     {
         var localPrefix = ConsumePrefix();
         var items = ParseDictionaryFields(stream, out var nodeType, out var subType);
@@ -51,7 +51,7 @@ public class ViewModelVisitor
     }
 
     private DocumentPart SelectSpecialStream(
-        string localPrefix, PdfDirectValue nodeType, PdfDirectValue nodeSubType, PdfValueStream stream, 
+        string localPrefix, PdfDirectObject nodeType, PdfDirectObject nodeSubType, PdfStream stream, 
         DocumentPart[] items)
     {
         if (nodeSubType.Equals(KnownNames.ImageTName))
@@ -61,7 +61,7 @@ public class ViewModelVisitor
         return new StreamPartViewModel($"{localPrefix}Stream", items, stream);
     }
 
-    private DocumentPart ParseDictionary(PdfValueDictionary dictionary)
+    private DocumentPart ParseDictionary(PdfDictionary dictionary)
     {
         var localPrefix = ConsumePrefix();
         var items = ParseDictionaryFields(dictionary, out var nodeType, out _);
@@ -69,7 +69,7 @@ public class ViewModelVisitor
     }
 
     private static DocumentPart SelectSpecialDictionaryView(
-        PdfValueDictionary dictionary, PdfDirectValue nodeType, string localPrefix, DocumentPart[] items) =>
+        PdfDictionary dictionary, PdfDirectObject nodeType, string localPrefix, DocumentPart[] items) =>
         nodeType switch
         {
             var x when x.Equals(KnownNames.FontTName) =>
@@ -79,8 +79,8 @@ public class ViewModelVisitor
             _ => new DocumentPart($"{localPrefix}Dictionary", items)
         };
 
-    private DocumentPart[] ParseDictionaryFields(PdfValueDictionary dictionary, out PdfDirectValue nodeType,
-        out PdfDirectValue nodeSubType)
+    private DocumentPart[] ParseDictionaryFields(PdfDictionary dictionary, out PdfDirectObject nodeType,
+        out PdfDirectObject nodeSubType)
     {
         var items = new DocumentPart[dictionary.Count];
         int position = 0;
@@ -98,15 +98,15 @@ public class ViewModelVisitor
     }
 
     public void CheckForType(
-        in KeyValuePair<PdfDirectValue, PdfIndirectValue> item, PdfDirectValue name,
-        ref PdfDirectValue value)
+        in KeyValuePair<PdfDirectObject, PdfIndirectObject> item, PdfDirectObject name,
+        ref PdfDirectObject value)
     {
         if (item.Key.Equals(name) &&
             item.Value.TryGetEmbeddedDirectValue(out var typeValue))
             value = typeValue;
     }
 
-    private DocumentPart ParseArray(PdfValueArray value)
+    private DocumentPart ParseArray(PdfArray value)
     {
         var localPrefix = ConsumePrefix();
         var items = new DocumentPart[value.Count];

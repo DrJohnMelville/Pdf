@@ -10,14 +10,14 @@ public abstract class Type2LinearShaderBase : PatternDisplayClass
     {
     }
     
-    private PdfValueDictionary? function = null;
+    private PdfDictionary? function = null;
     protected override async ValueTask SetPagePropertiesAsync(PageCreator page)
     {
         function = await BuildFunctionAsync();
         await base.SetPagePropertiesAsync(page);
     }
 
-    protected virtual async Task<PdfValueDictionary> BuildFunctionAsync()
+    protected virtual async Task<PdfDictionary> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
@@ -27,22 +27,22 @@ public abstract class Type2LinearShaderBase : PatternDisplayClass
         return await fbuilder.CreateSampledFunctionAsync();
     }
 
-    protected override PdfIndirectValue CreatePattern(IPdfObjectCreatorRegistry arg) =>
+    protected override PdfIndirectObject CreatePattern(IPdfObjectCreatorRegistry arg) =>
         BuildPattern(arg, 
             BuildShader(arg, function ?? throw new InvalidOperationException("No func defined"), 
-                new ValueDictionaryBuilder()).AsDictionary(),
-            new ValueDictionaryBuilder()).AsDictionary();
+                new DictionaryBuilder()).AsDictionary(),
+            new DictionaryBuilder()).AsDictionary();
 
-    protected virtual ValueDictionaryBuilder BuildPattern(
-        IPdfObjectCreatorRegistry arg, PdfValueDictionary shading, ValueDictionaryBuilder builder) => builder
+    protected virtual DictionaryBuilder BuildPattern(
+        IPdfObjectCreatorRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
             .WithItem(KnownNames.ShadingTName, arg.Add(shading))
             .WithItem(KnownNames.MatrixTName, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
             .WithItem(KnownNames.PatternTypeTName, 2);
 
-    protected virtual ValueDictionaryBuilder BuildShader(
-        IPdfObjectCreatorRegistry arg, PdfValueDictionary localFunc, ValueDictionaryBuilder builder) => builder
+    protected virtual DictionaryBuilder BuildShader(
+        IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
             .WithItem(KnownNames.FunctionTName, arg.Add(localFunc))
-            .WithItem(KnownNames.CoordsTName, new PdfValueArray(0, .2, 0, .8))
+            .WithItem(KnownNames.CoordsTName, new PdfArray(0, .2, 0, .8))
             .WithItem(KnownNames.ShadingTypeTName, 2)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName);
 }
@@ -58,44 +58,44 @@ public class Type2ExtendLow : Type2LinearShaderBase
 {
     public Type2ExtendLow() : base ("Axial shader that extends its low extent"){}
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueDictionary localFunc, ValueDictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.ExtendTName, new PdfValueArray(true, false));
+            .WithItem(KnownNames.ExtendTName, new PdfArray(true, false));
 }
 
 public class Type2ExtendHigh : Type2LinearShaderBase
 {
     public Type2ExtendHigh() : base ("Axial shader that extends its high extent"){}
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueDictionary localFunc, ValueDictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.ExtendTName, new PdfValueArray(false, true));
+            .WithItem(KnownNames.ExtendTName, new PdfArray(false, true));
 }
 
 public class Type2ExtendBoth : Type2LinearShaderBase
 {
     public Type2ExtendBoth() : base ("Axial shader that extends both ends"){}
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueDictionary localFunc, ValueDictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.ExtendTName, new PdfValueArray(true, true));
+            .WithItem(KnownNames.ExtendTName, new PdfArray(true, true));
 }
 
 public class Type2ExtendBothWithBackground : Type2LinearShaderBase
 {
     public Type2ExtendBothWithBackground() : base ("Axial shader that extends both ends with a background"){}
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueDictionary localFunc, ValueDictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.ExtendTName, new PdfValueArray(true, true))
-            .WithItem(KnownNames.BackgroundTName, new PdfValueArray(0, 1, 0));
+            .WithItem(KnownNames.ExtendTName, new PdfArray(true, true))
+            .WithItem(KnownNames.BackgroundTName, new PdfArray(0, 1, 0));
 }
 
 public class Type2ExtendNoneWithBackground : Type2LinearShaderBase
 {
     public Type2ExtendNoneWithBackground() : base ("Axial shader that extends both ends with a background"){}
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueDictionary localFunc, ValueDictionaryBuilder builder) =>
+    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) =>
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.BackgroundTName, new PdfValueArray(0, 1, 0));
+            .WithItem(KnownNames.BackgroundTName, new PdfArray(0, 1, 0));
 }

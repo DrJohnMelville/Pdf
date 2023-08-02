@@ -18,7 +18,7 @@ public readonly partial struct PdfTokenizer
 {
     [FromConstructor] private readonly IByteSource source;
 
-    public async ValueTask<PdfDirectValue> NextTokenAsync()
+    public async ValueTask<PdfDirectObject> NextTokenAsync()
     {
         while (true)
         {
@@ -28,7 +28,7 @@ public readonly partial struct PdfTokenizer
         }
     }
 
-    private bool TryParseToken(ReadResult readResult, out PdfDirectValue result)
+    private bool TryParseToken(ReadResult readResult, out PdfDirectObject result)
     {
         var reader = new SequenceReader<byte>(FinalSequence(readResult));
         if (!ParseToken(ref reader, out result)) return false;
@@ -39,10 +39,10 @@ public readonly partial struct PdfTokenizer
     private static ReadOnlySequence<byte> FinalSequence(ReadResult readResult) =>
         readResult.IsCompleted ? readResult.Buffer.AppendCR() : readResult.Buffer;
 
-    private bool ParseToken(ref SequenceReader<byte> reader, out PdfDirectValue result)
+    private bool ParseToken(ref SequenceReader<byte> reader, out PdfDirectObject result)
     {
         if (!reader.TryPeekNextNonComment(out byte value))
-            return (default(PdfDirectValue)).AsFalseValue(out result);
+            return (default(PdfDirectObject)).AsFalseValue(out result);
         reader.Advance(1);
         return (char)value switch
         {
@@ -50,57 +50,57 @@ public readonly partial struct PdfTokenizer
             '<' => HandleOpenWakka(ref reader, out result),
             '>' => HandleCloseWakka(ref reader, out result),
             '/' => PdfNameTokenizer.Parse(ref reader, out result),
-            '[' => ((PdfDirectValue)PdfParsingCommand.PushMark).AsTrueValue(out result),
-            ']' => ((PdfDirectValue)PdfParsingCommand.CreateArray).AsTrueValue(out result),
+            '[' => ((PdfDirectObject)PdfParsingCommand.PushMark).AsTrueValue(out result),
+            ']' => ((PdfDirectObject)PdfParsingCommand.CreateArray).AsTrueValue(out result),
             _ => TryParseUnprefixedItem(ref reader, out result)
         };
     }
 
-    private bool HandleOpenWakka(ref SequenceReader<byte> reader, out PdfDirectValue result)
+    private bool HandleOpenWakka(ref SequenceReader<byte> reader, out PdfDirectObject result)
     {
         if (!reader.TryPeek(out var character)) 
-            return default(PdfDirectValue).AsFalseValue(out result);
+            return default(PdfDirectObject).AsFalseValue(out result);
         if (character != (byte)'<')
             return ParseString<HexStringDecoder, byte>(ref reader, out result);
 
         reader.Advance(1);
-        return ((PdfDirectValue)PdfParsingCommand.PushMark).AsTrueValue(out result);
+        return ((PdfDirectObject)PdfParsingCommand.PushMark).AsTrueValue(out result);
     }
-    private bool HandleCloseWakka(ref SequenceReader<byte> reader, out PdfDirectValue result)
+    private bool HandleCloseWakka(ref SequenceReader<byte> reader, out PdfDirectObject result)
     {
         if (!reader.TryRead(out var secondChar))
-            return default(PdfDirectValue).AsFalseValue(out result);
+            return default(PdfDirectObject).AsFalseValue(out result);
         if (secondChar != (byte)'>')
             throw new PdfParseException("Unexpected Character following >: " + (char)secondChar);
 
-        return ((PdfDirectValue)PdfParsingCommand.CreateDictionary).AsTrueValue(out result);
+        return ((PdfDirectObject)PdfParsingCommand.CreateDictionary).AsTrueValue(out result);
 
     }
 
-    private bool ParseString<T, TState>(ref SequenceReader<byte> reader, out PdfDirectValue result)
+    private bool ParseString<T, TState>(ref SequenceReader<byte> reader, out PdfDirectObject result)
        where T: IStringDecoder<TState>, new() where TState: new()
     {
         return new StringTokenizer<T, TState>().Parse(ref reader, out PostscriptValue psStr)
             ? ToDirectValue(psStr).AsTrueValue(out result)
-            : default(PdfDirectValue).AsFalseValue(out result);
+            : default(PdfDirectObject).AsFalseValue(out result);
     }
 
-    private bool TryParseUnprefixedItem(ref SequenceReader<byte> reader, out PdfDirectValue result)
+    private bool TryParseUnprefixedItem(ref SequenceReader<byte> reader, out PdfDirectObject result)
     {
         reader.Rewind(1);
         if (!reader.TryReadToAny(out ReadOnlySpan<byte> value,
                 CharacterClassifier.DelimiterChars(), false))
-            return default(PdfDirectValue).AsFalseValue(out result);
+            return default(PdfDirectObject).AsFalseValue(out result);
         result = RecognizeItem(value);
         return true;
     }
 
-    private PdfDirectValue RecognizeItem(ReadOnlySpan<byte> value) => value switch
+    private PdfDirectObject RecognizeItem(ReadOnlySpan<byte> value) => value switch
     {
         _ when NumberTokenizer.TryDetectNumber(value, out var psNum) => ToDirectValue(psNum),
         _ when "true"u8.SequenceEqual(value) => true,
         _ when "false"u8.SequenceEqual(value) => false,
-        _ when "null"u8.SequenceEqual(value) => PdfDirectValue.CreateNull(),
+        _ when "null"u8.SequenceEqual(value) => PdfDirectObject.CreateNull(),
         _ when "obj"u8.SequenceEqual(value) => PdfParsingCommand.ObjOperator,
         _ when "stream"u8.SequenceEqual(value) => PdfParsingCommand.StreamOperator,
         _ when "endstream"u8.SequenceEqual(value) => PdfParsingCommand.EndStreamOperator,
@@ -109,5 +109,5 @@ public readonly partial struct PdfTokenizer
         _ => throw new PdfParseException($"Unrecognized Token: {value.ExtendedAsciiString()}")
     };
 
-    private static PdfDirectValue ToDirectValue(PostscriptValue psNum) => new(psNum.ValueStrategy, psNum.Memento);
+    private static PdfDirectObject ToDirectValue(PostscriptValue psNum) => new(psNum.ValueStrategy, psNum.Memento);
 }

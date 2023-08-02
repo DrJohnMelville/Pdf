@@ -13,15 +13,15 @@ namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 internal readonly partial struct CryptFilterReader
 {
     [FromConstructor] private readonly IRootKeyComputer rootKeyComputer;
-    [FromConstructor] private readonly PdfValueDictionary encryptionDictionary;
-    [FromConstructor] private readonly PdfValueDictionary cfd;
-    private readonly Dictionary<PdfDirectValue, ISecurityHandler> finalDictionary = new()        
+    [FromConstructor] private readonly PdfDictionary encryptionDictionary;
+    [FromConstructor] private readonly PdfDictionary cfd;
+    private readonly Dictionary<PdfDirectObject, ISecurityHandler> finalDictionary = new()        
     {
         { KnownNames.IdentityTName, NullSecurityHandler.Instance }
     };
 
     
-    public async ValueTask<Dictionary<PdfDirectValue, ISecurityHandler>> ParseCfDictionaryAsync()
+    public async ValueTask<Dictionary<PdfDirectObject, ISecurityHandler>> ParseCfDictionaryAsync()
     {
         await ReadAllFiltersAsync();
 
@@ -37,9 +37,9 @@ internal readonly partial struct CryptFilterReader
         }
     }
 
-    private async Task<ISecurityHandler> ReadSingleHandlerAsync(KeyValuePair<PdfDirectValue, ValueTask<PdfDirectValue>> entry)
+    private async Task<ISecurityHandler> ReadSingleHandlerAsync(KeyValuePair<PdfDirectObject, ValueTask<PdfDirectObject>> entry)
     {
-        var cryptDictionary = (await entry.Value).Get<PdfValueDictionary>();
+        var cryptDictionary = (await entry.Value).Get<PdfDictionary>();
         var cfm = await cryptDictionary[KnownNames.CFMTName].CA();
         var handler = CreateSubSecurityHandler(cfm, encryptionDictionary);
         return handler;
@@ -47,17 +47,17 @@ internal readonly partial struct CryptFilterReader
 
     private async Task SetDefaultFiltersAsync()
     {
-        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.StmFTName).CA();
-        await SetSingleDefaultFilterAsync((PdfDirectValue)KnownNames.StrFTName).CA();
+        await SetSingleDefaultFilterAsync((PdfDirectObject)KnownNames.StmFTName).CA();
+        await SetSingleDefaultFilterAsync((PdfDirectObject)KnownNames.StrFTName).CA();
     }
 
-    private async Task SetSingleDefaultFilterAsync(PdfDirectValue filterName) => 
+    private async Task SetSingleDefaultFilterAsync(PdfDirectObject filterName) => 
         finalDictionary.Add(filterName, finalDictionary[await FindDefaultFilterAsync(filterName).CA()]);
 
-    private ValueTask<PdfDirectValue> FindDefaultFilterAsync(PdfDirectValue name) => 
-        encryptionDictionary.GetOrDefaultAsync(name, (PdfDirectValue)KnownNames.IdentityTName);
+    private ValueTask<PdfDirectObject> FindDefaultFilterAsync(PdfDirectObject name) => 
+        encryptionDictionary.GetOrDefaultAsync(name, (PdfDirectObject)KnownNames.IdentityTName);
     
-    private ISecurityHandler CreateSubSecurityHandler(PdfDirectValue cfm, PdfValueDictionary dictionary) => 
+    private ISecurityHandler CreateSubSecurityHandler(PdfDirectObject cfm, PdfDictionary dictionary) => 
         cfm switch
     {
         var x when x.Equals(KnownNames.V2TName) => new SecurityHandler(
@@ -70,9 +70,9 @@ internal readonly partial struct CryptFilterReader
         _ => throw new PdfSecurityException("Unknown Security Handler Type: " + cfm)
     };
 
-    public static async ValueTask<ISecurityHandler> CreateAsync(IRootKeyComputer rootKeyComputer, PdfValueDictionary encryptionDictionary)
+    public static async ValueTask<ISecurityHandler> CreateAsync(IRootKeyComputer rootKeyComputer, PdfDictionary encryptionDictionary)
     {
-        var cfd = await encryptionDictionary.GetAsync<PdfValueDictionary>(KnownNames.CFTName).CA();
+        var cfd = await encryptionDictionary.GetAsync<PdfDictionary>(KnownNames.CFTName).CA();
         var finalDictionary =
             await new CryptFilterReader(rootKeyComputer, encryptionDictionary, cfd)
                 .ParseCfDictionaryAsync().CA();

@@ -21,7 +21,7 @@ public interface IFontTarget
     /// <param name="fontMatrix">The font matrix</param>
     /// <param name="fontDictionary">The dictionary defining the font -- which may contain resources.</param>
     /// <returns>A valuetask containing the width of the rendered character.</returns>
-    ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfValueDictionary fontDictionary);
+    ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary);
     /// <summary>
     /// Create a IDrawTarget that the stroked character can be drawn to.
     /// </summary>
@@ -33,7 +33,7 @@ internal partial class RealizedType3Font : IRealizedFont
     [FromConstructor]private readonly MultiBufferStream[] characters;
     [FromConstructor]private readonly byte firstCharacter;
     [FromConstructor]private readonly Matrix3x2 fontMatrix;
-    [FromConstructor]private readonly PdfValueDictionary rawFont;
+    [FromConstructor]private readonly PdfDictionary rawFont;
 
     public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
     {

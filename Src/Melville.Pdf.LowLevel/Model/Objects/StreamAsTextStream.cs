@@ -19,7 +19,7 @@ public static class StreamAsTextStream
     /// </summary>
     /// <param name="source">The CodeSource PDF string.</param>
     /// <returns>A text reader that will properly decode the text stream.</returns>
-    public static async ValueTask<TextReader> TextStreamReaderAsync(this PdfValueStream source)
+    public static async ValueTask<TextReader> TextStreamReaderAsync(this PdfStream source)
     {
         var stream = await source.StreamContentAsync().CA();
         var buffer = new byte[3];

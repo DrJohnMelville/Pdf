@@ -14,9 +14,9 @@ public abstract class IndexedImageBase : DisplayImageTest
     }
 
 
-    protected override PdfValueStream CreateImage()
+    protected override PdfStream CreateImage()
     {
-        var builder = new ValueDictionaryBuilder()
+        var builder = new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.ColorSpaceTName, IndexedColorspace())
@@ -29,12 +29,12 @@ public abstract class IndexedImageBase : DisplayImageTest
             .AsStream(GenerateImage());
     }
 
-    private static PdfValueArray IndexedColorspace()
+    private static PdfArray IndexedColorspace()
     {
-        return new PdfValueArray(
+        return new PdfArray(
             KnownNames.IndexedTName, KnownNames.DeviceRGBTName,
             8,
-            PdfDirectValue.CreateString(new byte[]
+            PdfDirectObject.CreateString(new byte[]
             {
                 0x00, 0x00, 0x00,
                 0x00, 0x00, 0xFF,

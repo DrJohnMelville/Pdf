@@ -16,7 +16,7 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
-internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
+internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
 {
     private IParsingReader Source { get; }
     private readonly LazyCryptContextBuffer cryptoBuffer;
@@ -27,11 +27,11 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
     }
 
     public void PushMark() =>
-        Push(new PdfIndirectValue(PdfParsingCommand.PushMark, default));
+        Push(new PdfIndirectObject(PdfParsingCommand.PushMark, default));
 
     public void CreateArray()
     {
-        var ret = new PdfValueArray(SpanAbove(IdentifyPdfOperator).ToArray());
+        var ret = new PdfArray(SpanAbove(IdentifyPdfOperator).ToArray());
         var priorSize = Count;
         ClearThrough(IdentifyPdfOperator);
         ClearAfterPop(priorSize);
@@ -41,7 +41,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
     public void PushRootSignal()
     {
         Debug.Assert(Count == 0);
-        Push(new PdfIndirectValue(PdfParsingCommand.ObjOperator, default));
+        Push(new PdfIndirectObject(PdfParsingCommand.ObjOperator, default));
     }
 
     public bool HasRootSignal() =>
@@ -55,7 +55,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
         if (stackSpan.Length % 2 == 1)
             throw new PdfParseException("Pdf Dictionary much have a even number of elements");
 
-        var dictArray = new KeyValuePair<PdfDirectValue, PdfIndirectValue>[stackSpan.Length / 2];
+        var dictArray = new KeyValuePair<PdfDirectObject, PdfIndirectObject>[stackSpan.Length / 2];
         var finalPos = 0;
         for (int i = 0; i < stackSpan.Length; i += 2)
         {
@@ -75,9 +75,9 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
     }
 
     private object PrepareDictionary(
-        Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> dataMemory) =>
+        Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>> dataMemory) =>
         PosibleStreamDeclaration() ?
-            dataMemory:new PdfValueDictionary(dataMemory);
+            dataMemory:new PdfDictionary(dataMemory);
 
     private bool PosibleStreamDeclaration() => HasRootSignal()&&Count== 1;
 
@@ -116,13 +116,13 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
     {
         Debug.Assert(Count == 2);
         Debug.Assert(Peek().TryGetEmbeddedDirectValue(
-            out Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> _));
+            out Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>> _));
         AdvavancePastWhiteSpace(await Source.Reader.ReadMinAsync(2).CA());
         Pop().TryGetEmbeddedDirectValue(out var dv);
         Pop();
-        Push(new PdfValueStream(new  PdfFileStreamSource(
+        Push(new PdfStream(new  PdfFileStreamSource(
                 Source.Reader.GlobalPosition, Source.Owner, CryptoContext()), 
-                dv.Get<Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>>>()));
+                dv.Get<Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>>>()));
     }
 
     private void AdvavancePastWhiteSpace(ReadResult ca)
@@ -147,8 +147,8 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
         Pop();
         ClearAfterPop(2);
         Push(result.TryGetEmbeddedDirectValue(
-            out Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> mem)
-            ? new PdfValueDictionary(mem)
+            out Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>> mem)
+            ? new PdfDictionary(mem)
             : result);
     }
 
@@ -159,5 +159,5 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectValue>
 
     public IObjectCryptContext CryptoContext() => cryptoBuffer.GetContext();
 
-    private bool IdentifyPdfOperator(PdfIndirectValue i) => i.IsPdfParsingOperation();
+    private bool IdentifyPdfOperator(PdfIndirectObject i) => i.IsPdfParsingOperation();
 }

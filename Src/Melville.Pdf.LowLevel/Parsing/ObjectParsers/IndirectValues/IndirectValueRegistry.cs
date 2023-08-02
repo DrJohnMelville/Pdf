@@ -9,40 +9,40 @@ using Melville.Postscript.Interpreter.Values;
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
 
-internal class IndirectValueRegistry : IIndirectValueSource, IIndirectObjectRegistry
+internal class IndirectObjectRegistry : IIndirectObjectSource, IIndirectObjectRegistry
 {
     private readonly UnenclosedDeferredPdfStrategy unenclosedObjectStrategy;
     private readonly ObjectStreamDeferredPdfStrategy objectStreamStrategy;
 
-    private readonly Dictionary<(int, int), PdfIndirectValue> items = new();
+    private readonly Dictionary<(int, int), PdfIndirectObject> items = new();
 
-    public IndirectValueRegistry(ParsingFileOwner owner)
+    public IndirectObjectRegistry(ParsingFileOwner owner)
     {
         unenclosedObjectStrategy = new(owner);
         objectStreamStrategy = new(owner);
     }
 
-    public PdfIndirectValue CreateReference(int item, int generation) =>
+    public PdfIndirectObject CreateReference(int item, int generation) =>
         new(this, PairToMemento(item, generation));
 
     public string GetValue(in MementoUnion memento) =>
         $"{memento.Int32s[0]} {memento.Int32s[1]} R";
 
-    public ValueTask<PdfDirectValue> LookupAsync(MementoUnion memento) =>
+    public ValueTask<PdfDirectObject> LookupAsync(MementoUnion memento) =>
         LookupAsync(MementoToPair(memento));
 
-    public ValueTask<PdfDirectValue> LookupAsync(int objectNumber, int generation) =>
+    public ValueTask<PdfDirectObject> LookupAsync(int objectNumber, int generation) =>
         LookupAsync((objectNumber, generation));
 
-    private ValueTask<PdfDirectValue> LookupAsync((int ObjectNumber, int Generation) key)
+    private ValueTask<PdfDirectObject> LookupAsync((int ObjectNumber, int Generation) key)
     {
-        if (!items.TryGetValue(key, out var item)) return new(PdfDirectValue.CreateNull());
+        if (!items.TryGetValue(key, out var item)) return new(PdfDirectObject.CreateNull());
         if (item.TryGetEmbeddedDirectValue(out var dv)) return new(dv);
         return ResolveIndirectValueAsync(key, item);
     }
 
-    private async ValueTask<PdfDirectValue> ResolveIndirectValueAsync(
-        (int ObjectNumber, int Generation) key, PdfIndirectValue item)
+    private async ValueTask<PdfDirectObject> ResolveIndirectValueAsync(
+        (int ObjectNumber, int Generation) key, PdfIndirectObject item)
     {
         var ret = await item.LoadValueAsync().CA();
         items[key] = ret; // have to do the duplicate  lookup because it is an async method.
@@ -50,7 +50,7 @@ internal class IndirectValueRegistry : IIndirectValueSource, IIndirectObjectRegi
     }
 
     internal void RegisterDirectObject(
-        int number, int generation, in PdfIndirectValue value, bool doNotOverwrite)
+        int number, int generation, in PdfIndirectObject value, bool doNotOverwrite)
     {
         ref var item = ref CollectionsMarshal.GetValueRefOrAddDefault(items, (number, generation), out var previouslyDefined);
         if (previouslyDefined && doNotOverwrite ) return; 
@@ -86,6 +86,6 @@ internal class IndirectValueRegistry : IIndirectValueSource, IIndirectObjectRegi
         RegisterDirectObject(number, 0, objectStreamStrategy.Create(
             referredStreamOrdinal, positionInStream, number), true);
 
-    public IReadOnlyDictionary<(int, int), PdfIndirectValue> GetObjects() => items;
+    public IReadOnlyDictionary<(int, int), PdfIndirectObject> GetObjects() => items;
 
 }

@@ -7,10 +7,10 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 
 public partial class FontPartViewModel: DocumentPart
 {
-    private readonly PdfValueDictionary fontDic;
+    private readonly PdfDictionary fontDic;
     [AutoNotify] private IRealizedFont? font;
     
-    public FontPartViewModel(string title, PdfValueDictionary fontDic, IReadOnlyList<DocumentPart> children) : base(title, children)
+    public FontPartViewModel(string title, PdfDictionary fontDic, IReadOnlyList<DocumentPart> children) : base(title, children)
     {
         this.fontDic = fontDic;
     }

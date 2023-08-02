@@ -13,7 +13,7 @@ public class ObjectStreamPage: CreatePdfParser
     {
         var creator = new PdfDocumentCreator();
         using (creator.LowLevelCreator.ObjectStreamContext(
-                         new ValueDictionaryBuilder()))
+                         new DictionaryBuilder()))
         {
             var page = creator.Pages.CreatePageInObjectStream();
             var fontName = page.AddStandardFont("/F1", BuiltInFontName.Helvetica, FontEncodingName.WinAnsiEncoding);

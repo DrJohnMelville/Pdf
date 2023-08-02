@@ -52,7 +52,7 @@ internal  partial class FakeFontDrawTarget : IFontTarget
     [FromConstructor] private readonly IRenderTarget target;
 
     public async ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix,
-        PdfValueDictionary fontDictionary)
+        PdfDictionary fontDictionary)
     {
         var render = new ContentStreamPreviewRenderer(WindowsDefaultFonts.Instance, s);
         target.GraphicsState.SetLineWidth(2);

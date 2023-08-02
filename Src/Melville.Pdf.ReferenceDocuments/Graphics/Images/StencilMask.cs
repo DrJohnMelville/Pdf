@@ -14,9 +14,9 @@ public class StencilMask : DisplayImageTest
         await base.DoPaintingAsync(csw);
     }
 
-    protected override PdfValueStream CreateImage()
+    protected override PdfStream CreateImage()
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.WidthTName, 3)

@@ -14,6 +14,6 @@ public static class LowLevelDocumentBuilderOperations
     /// <param name="creator">IPdfObjectRegistry to add the root element to.</param>
     /// <param name="rootElt"></param>
     public static void AddRootElement(
-        this IPdfObjectCreatorRegistry creator, PdfValueDictionary rootElt) =>
+        this IPdfObjectCreatorRegistry creator, PdfDictionary rootElt) =>
         creator.AddToTrailerDictionary(KnownNames.RootTName, creator.Add(rootElt));
 }

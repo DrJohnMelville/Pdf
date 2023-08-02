@@ -14,7 +14,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
     private readonly IList<ItemWithResourceDictionaryCreator> children;
     private readonly int maxNodeSize;
 
-    private PageTreeNodeCreator(ValueDictionaryBuilder metaData, IList<ItemWithResourceDictionaryCreator> children, int maxNodeSize):
+    private PageTreeNodeCreator(DictionaryBuilder metaData, IList<ItemWithResourceDictionaryCreator> children, int maxNodeSize):
         base(metaData)
     {
         this.children = children;
@@ -57,8 +57,8 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
 
 
     /// <inheritdoc />
-    public override (PdfIndirectValue Reference, int PageCount)
-        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectValue parent) =>
+    public override (PdfIndirectObject Reference, int PageCount)
+        ConstructItem(IPdfObjectCreatorRegistry creator, PdfIndirectObject parent) =>
         TrySegmentedPageTree().InnnerConstructPageTree(creator, parent);
 
     private PageTreeNodeCreator TrySegmentedPageTree() =>
@@ -71,26 +71,26 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
             new(),i, maxNodeSize)).ToArray(), maxNodeSize
         );
 
-    private (PdfIndirectValue Reference, int PageCount)
-        InnnerConstructPageTree(IPdfObjectCreatorRegistry creator, PdfIndirectValue parent)
+    private (PdfIndirectObject Reference, int PageCount)
+        InnnerConstructPageTree(IPdfObjectCreatorRegistry creator, PdfIndirectObject parent)
     {
-        var ret = creator.Add(PdfDirectValue.CreateNull());
+        var ret = creator.Add(PdfDirectObject.CreateNull());
         AddExtraFieldsFromTreeLevel(creator,parent);
-        var kids = new PdfIndirectValue[children.Count];
+        var kids = new PdfIndirectObject[children.Count];
         int count = 0;
         for (var i = 0; i < kids.Length; i++)
         {
             (kids[i], var localCount) = children[i].ConstructItem(creator, ret);
             count += localCount;
         }
-        MetaData.WithItem(KnownNames.KidsTName, new PdfValueArray(kids)).
+        MetaData.WithItem(KnownNames.KidsTName, new PdfArray(kids)).
             WithItem(KnownNames.CountTName, count);
         creator.Reassign(ret, MetaData.AsDictionary());
         return (ret, count);
     }
     
     private void AddExtraFieldsFromTreeLevel(
-        IPdfObjectCreatorRegistry creator, PdfIndirectValue parent)
+        IPdfObjectCreatorRegistry creator, PdfIndirectObject parent)
     {
         if (parent.TryGetEmbeddedDirectValue(out var dirPar) && dirPar.IsNull )
         {
@@ -106,7 +106,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
 
     // Per standard section 14.2, the procset is deprecated.  We just add a default procset requesting
     // the entire set of ProcSets for backward compatibility with older readers.
-    private static PdfValueArray DefaultProcSet() => new(
+    private static PdfArray DefaultProcSet() => new(
         KnownNames.PDFTName, KnownNames.TextTName, KnownNames.ImageBTName,
         KnownNames.ImageCTName, KnownNames.ImageITName);
 }

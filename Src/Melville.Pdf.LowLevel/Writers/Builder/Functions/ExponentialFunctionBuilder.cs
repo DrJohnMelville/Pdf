@@ -44,27 +44,27 @@ public readonly struct ExponentialFunctionBuilder
     /// Render the described function as a Pdf Dictionary.
     /// </summary>
     /// <returns>A PdfDictionary declaring this function</returns>
-    public PdfValueDictionary Create() => DictionaryItems().AsDictionary();
+    public PdfDictionary Create() => DictionaryItems().AsDictionary();
 
-    private ValueDictionaryBuilder DictionaryItems()
+    private DictionaryBuilder DictionaryItems()
     {
-        var ret = new ValueDictionaryBuilder();
+        var ret = new DictionaryBuilder();
         ret.WithItem(KnownNames.FunctionTypeTName, 2);
         ret.WithItem(KnownNames.DomainTName, DomainArray());
         ret.WithItem(KnownNames.NTName, exponent);
         if (!RangeIsDefault()) 
             ret.WithItem(KnownNames.RangeTName, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count));
         if (!TrivialC0())
-            ret.WithItem(KnownNames.C0TName, new PdfValueArray(mappings.Select(i => (PdfIndirectValue)i.Bounds.MinValue).ToArray()));
+            ret.WithItem(KnownNames.C0TName, new PdfArray(mappings.Select(i => (PdfIndirectObject)i.Bounds.MinValue).ToArray()));
         if (!TrivialC1())
-            ret.WithItem(KnownNames.C1TName, new PdfValueArray(mappings.Select(i=>(PdfIndirectValue)i.Bounds.MaxValue).ToArray()));
+            ret.WithItem(KnownNames.C1TName, new PdfArray(mappings.Select(i=>(PdfIndirectObject)i.Bounds.MaxValue).ToArray()));
         return ret;
     }
 
     private bool TrivialC0() => mappings.Count == 1 && mappings[0].Bounds.MinValue == 0;
     private bool TrivialC1() => mappings.Count == 1 && mappings[0].Bounds.MaxValue == 1;
 
-    private PdfValueArray DomainArray() => 
+    private PdfArray DomainArray() => 
         new(domain.MinValue, domain.MaxValue);
 
     private bool RangeIsDefault() => 

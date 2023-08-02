@@ -31,7 +31,7 @@ internal readonly struct FontWidthParser
         }
     }
 
-    private ValueTask<IFontWidthComputer> ParseAsync(in PdfDirectValue subTypeKey) => subTypeKey switch
+    private ValueTask<IFontWidthComputer> ParseAsync(in PdfDirectObject subTypeKey) => subTypeKey switch
     {
         var x when x.Equals(KnownNames.Type3TName) => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),
         var x when x.Equals(KnownNames.Type0TName) => ParseSubFontWidthAsync(),
@@ -80,12 +80,12 @@ internal readonly struct FontWidthParser
     }
 
     private async ValueTask<int> ParseSingleArrayItemAsync(
-        PdfValueArray charWidthArray, Dictionary<uint, double> ret, int pos)
+        PdfArray charWidthArray, Dictionary<uint, double> ret, int pos)
     {
         var first = (uint)(await charWidthArray.GetAsync<int>(pos).CA());
         switch (await charWidthArray[pos + 1].CA())
         {
-            case var x when x.TryGet(out PdfValueArray? arr):
+            case var x when x.TryGet(out PdfArray? arr):
                 AddItems(ret, first, await arr.CastAsync<double>().CA());
                 return 2;
             case var x when x.TryGet(out long last):

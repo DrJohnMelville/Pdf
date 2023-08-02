@@ -8,7 +8,7 @@ internal interface IObjectCryptContext
 {
     public ICipher StringCipher();
     public ICipher StreamCipher();
-    public ICipher NamedCipher(in PdfDirectValue name);
+    public ICipher NamedCipher(in PdfDirectObject name);
         
 }
     
@@ -36,6 +36,6 @@ internal class ErrorObjectEncryptor: IObjectCryptContext
         throw new NotSupportedException("Should not be encrypting in this context.");
     public ICipher StreamCipher()=> 
         throw new NotSupportedException("Should not be encrypting in this context.");
-    public ICipher NamedCipher(in PdfDirectValue name)=> 
+    public ICipher NamedCipher(in PdfDirectObject name)=> 
         throw new NotSupportedException("Should not be encrypting in this context.");
 }

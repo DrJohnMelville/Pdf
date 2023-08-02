@@ -7,30 +7,30 @@ using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
-public partial class IndirectRegistryWrapper<T> : IReadOnlyDictionary<T, PdfIndirectValue>
+public partial class IndirectRegistryWrapper<T> : IReadOnlyDictionary<T, PdfIndirectObject>
 {
 
-    [FromConstructor] [DelegateTo] private readonly IReadOnlyDictionary<T, PdfDirectValue> inner;
+    [FromConstructor] [DelegateTo] private readonly IReadOnlyDictionary<T, PdfDirectObject> inner;
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <inheritdoc />
-    public IEnumerator<KeyValuePair<T, PdfIndirectValue>> GetEnumerator() =>
-        inner.Select(directItem => new KeyValuePair<T, PdfIndirectValue>(
+    public IEnumerator<KeyValuePair<T, PdfIndirectObject>> GetEnumerator() =>
+        inner.Select(directItem => new KeyValuePair<T, PdfIndirectObject>(
             directItem.Key, directItem.Value)).GetEnumerator();
 
 
     /// <inheritdoc />
-    public bool TryGetValue(T key, out PdfIndirectValue value)
+    public bool TryGetValue(T key, out PdfIndirectObject value)
     {
         return inner.TryGetValue(key, out var dirValkue)
-            ? ((PdfIndirectValue)dirValkue).AsTrueValue(out value)
-            : default(PdfIndirectValue).AsFalseValue(out value);
+            ? ((PdfIndirectObject)dirValkue).AsTrueValue(out value)
+            : default(PdfIndirectObject).AsFalseValue(out value);
     }
 
     /// <inheritdoc />
-    public PdfIndirectValue this[T key] => inner[key];
+    public PdfIndirectObject this[T key] => inner[key];
 
     /// <inheritdoc />
-    public IEnumerable<PdfIndirectValue> Values => inner.Values.Select(i=>(PdfIndirectValue)i);
+    public IEnumerable<PdfIndirectObject> Values => inner.Values.Select(i=>(PdfIndirectObject)i);
 }

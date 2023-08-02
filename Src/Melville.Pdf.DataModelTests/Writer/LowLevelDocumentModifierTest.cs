@@ -84,9 +84,9 @@ public class LowLevelDocumentModifierTest
             $"2 0 obj (Two) endobj\n3 0 obj (Three) endobj\n5 0 obj (Five) endobj\nxref\n2 2\n0000005000 00000 n\r\n0000005021 00000 n\r\n5 1\n0000005044 00000 n\r\ntrailer\n<</Prev 161/Size 7>>\nstartxref\n5066\n%%EOF",
             (doc, mod) =>
             {
-                mod.ReplaceReferenceObject(doc.Objects[(2,0)], PdfDirectValue.CreateString("Two"u8));
-                mod.ReplaceReferenceObject(doc.Objects[(3,0)], PdfDirectValue.CreateString("Three"u8));
-                mod.ReplaceReferenceObject(doc.Objects[(5,0)], PdfDirectValue.CreateString("Five"u8));
+                mod.ReplaceReferenceObject(doc.Objects[(2,0)], PdfDirectObject.CreateString("Two"u8));
+                mod.ReplaceReferenceObject(doc.Objects[(3,0)], PdfDirectObject.CreateString("Three"u8));
+                mod.ReplaceReferenceObject(doc.Objects[(5,0)], PdfDirectObject.CreateString("Five"u8));
             }
             , SixItemDocument(), 5000);
     }

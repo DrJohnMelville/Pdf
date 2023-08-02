@@ -100,5 +100,5 @@ public partial class GraphicStateParsers: ParserTest
             TestInputAsync("27 i", i => i.SetFlatnessTolerance(27));
     [Fact]
     public Task LoadGsDictionaryAsync() => 
-        TestInputAsync("/JdmState gs", i => i.LoadGraphicStateDictionaryAsync(PdfDirectValue.CreateName("JdmState")));
+        TestInputAsync("/JdmState gs", i => i.LoadGraphicStateDictionaryAsync(PdfDirectObject.CreateName("JdmState")));
 }

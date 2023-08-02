@@ -14,7 +14,7 @@ public class S7_3NewObjects
     [InlineData(false, "false")]
     public void CreateBooleanValue(bool value, string str)
     {
-        var pdfValue = ((PdfDirectValue)value);
+        var pdfValue = ((PdfDirectObject)value);
         Assert.Equal(value, pdfValue.Get<bool>());
         Assert.Equal(str, pdfValue.Get<string>());
         Assert.Equal(str, pdfValue.ToString());
@@ -28,7 +28,7 @@ public class S7_3NewObjects
     [InlineData(true)]
     public void NullTests(bool explicitNull)
     {
-        PdfDirectValue value = explicitNull?PdfDirectValue.CreateNull() : default;
+        PdfDirectObject value = explicitNull?PdfDirectObject.CreateNull() : default;
         Assert.Equal("null", value.ToString());
         Assert.Equal("null", value.Get<string>());
         Assert.True(value.IsNull);
@@ -41,7 +41,7 @@ public class S7_3NewObjects
     [InlineData(long.MaxValue, "9223372036854775807")]
     public void IntegerTests(long value, string str)
     {
-        var valueLong = (PdfDirectValue)(long)value;
+        var valueLong = (PdfDirectObject)(long)value;
         Assert.Equal((long)value, valueLong.Get<long>());
         Assert.Equal((double)value, valueLong.Get<double>());
         Assert.Equal(str, valueLong.ToString());
@@ -51,7 +51,7 @@ public class S7_3NewObjects
 
         if (value < int.MaxValue)
         {
-            var valueInt = (PdfDirectValue)value;
+            var valueInt = (PdfDirectObject)value;
             Assert.Equal(value, valueInt.Get<int>());
             Assert.Equal(str, valueInt.ToString());
             Assert.Equal(valueInt, valueLong);
@@ -66,7 +66,7 @@ public class S7_3NewObjects
     [InlineData(10.51, 11, "10.51")]
     public void DoubleTests(double value, int intValue, string str)
     {
-        var pdfValue = (PdfDirectValue)value;
+        var pdfValue = (PdfDirectObject)value;
         Assert.Equal(value, pdfValue.Get<double>());
         Assert.Equal(intValue, pdfValue.Get<int>());
         Assert.Equal(str, pdfValue.ToString());
@@ -80,7 +80,7 @@ public class S7_3NewObjects
     [InlineData("/abc","abc", true)]
     public void StringAndNameTests(string input, string value, bool isName)
     {
-        var pdfValue = (PdfDirectValue)input;
+        var pdfValue = (PdfDirectObject)input;
         Assert.Equal(value, pdfValue.ToString());
         Assert.Equal(!isName, pdfValue.IsString);
         Assert.Equal(isName, pdfValue.IsName);
@@ -90,7 +90,7 @@ public class S7_3NewObjects
     [Fact]
     public async Task GetEmbeddedIndirectAsync()
     {
-        var indirect = (PdfIndirectValue)1;
+        var indirect = (PdfIndirectObject)1;
         Assert.Equal("1", indirect.ToString());
         Assert.Equal("1", (await indirect.LoadValueAsync()).ToString());
     }
@@ -98,11 +98,11 @@ public class S7_3NewObjects
     [Fact]
     public async Task GetReferredIndirectAsync()
     {
-        var registry = new Mock<IIndirectValueSource>();
+        var registry = new Mock<IIndirectObjectSource>();
         registry.Setup(i => i.LookupAsync(MementoUnion.CreateFrom(2L,5L))).Returns(
-            new ValueTask<PdfDirectValue>(25));  
+            new ValueTask<PdfDirectObject>(25));  
 
-        var refValue = new PdfIndirectValue(registry.Object, 2, 5);
+        var refValue = new PdfIndirectObject(registry.Object, 2, 5);
 
         Assert.Equal("25", (await refValue.LoadValueAsync()).ToString());
     }
@@ -110,21 +110,21 @@ public class S7_3NewObjects
     [Fact]
     public async Task ArrayaAccessAsync()
     {
-        var value = PdfDirectValue.FromArray(1, 2.3, "Hello World"u8);
+        var value = PdfDirectObject.FromArray(1, 2.3, "Hello World"u8);
         Assert.Equal($"[1 2.3 Hello World]", value.ToString());
-        var asArray = value.Get<PdfValueArray>();
+        var asArray = value.Get<PdfArray>();
         Assert.Equal(1, (await asArray[0]).Get<int>());
         Assert.Equal(2.3, (await asArray.RawItems[1].LoadValueAsync()).Get<double>(),4);
         Assert.Equal(3, asArray.Count);
     }
 
     [Fact]
-    public void EmptyDictionaryExists() => Assert.Empty(PdfValueDictionary.Empty);
+    public void EmptyDictionaryExists() => Assert.Empty(PdfDictionary.Empty);
 
     [Fact]
     public void LongDictionaryTest()
     {
-        var builder = new ValueDictionaryBuilder();
+        var builder = new DictionaryBuilder();
         for (int i = 0; i < 30; i++)
         {
             builder.WithItem($"/a{i}", i);
@@ -137,7 +137,7 @@ public class S7_3NewObjects
     [Fact]
     public async Task StreamTest()
     {
-        var str = new ValueDictionaryBuilder()
+        var str = new DictionaryBuilder()
             .WithItem("/Length"u8, 11)
             .AsStream("Hello World");
 

@@ -16,7 +16,7 @@ internal static class StreamWriter
     private static ReadOnlySpan<byte> StreamToken => " stream\r\n"u8;
     private static ReadOnlySpan<byte> EndStreamToken => "\r\nendstream"u8;
     public static async ValueTask WriteAsync(
-        PdfObjectWriter innerWriter, PdfValueStream item,
+        PdfObjectWriter innerWriter, PdfStream item,
         IObjectCryptContext encryptor)
     {
         await using var rawStream = await item.StreamContentAsync(StreamFormat.DiskRepresentation, encryptor).CA();
@@ -29,8 +29,8 @@ internal static class StreamWriter
         innerWriter.Write(EndStreamToken);
     }
 
-    private static IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> MergeDictionaryItems(
-        IReadOnlyDictionary<PdfDirectValue, PdfIndirectValue> sources, params (PdfDirectValue Key, PdfIndirectValue Item)[] items)
+    private static IEnumerable<KeyValuePair<PdfDirectObject, PdfIndirectObject>> MergeDictionaryItems(
+        IReadOnlyDictionary<PdfDirectObject, PdfIndirectObject> sources, params (PdfDirectObject Key, PdfIndirectObject Item)[] items)
     {
         foreach (var source in sources)
         {

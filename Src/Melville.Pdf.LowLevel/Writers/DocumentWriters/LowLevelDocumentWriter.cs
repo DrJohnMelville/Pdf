@@ -99,7 +99,7 @@ public class LowLevelDocumentWriter
         return positions;
     }
 
-    private static async Task<PdfDirectValue> ResolveValueToWrite(KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectValue> item)
+    private static async Task<PdfDirectObject> ResolveValueToWrite(KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectObject> item)
     {
         var value = await item.Value.LoadValueAsync().CA();
         if (value.TryGet(out ObjectStreamBuilder? osb))
@@ -110,7 +110,7 @@ public class LowLevelDocumentWriter
         return value;
     }
 
-    private static async Task DeclareContainedObjectsAsync(int outerStreamNumber, PdfIndirectValue item,
+    private static async Task DeclareContainedObjectsAsync(int outerStreamNumber, PdfIndirectObject item,
         XRefTable positions)
     {
         if ((await item.LoadValueAsync().CA()).TryGet(out IHasInternalIndirectObjects? hiid))

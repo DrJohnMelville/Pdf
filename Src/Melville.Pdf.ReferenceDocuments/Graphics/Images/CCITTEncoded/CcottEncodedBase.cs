@@ -8,9 +8,9 @@ public abstract class CcottEncodedBase: DisplayImageTest
     {
     }
 
-    protected override PdfValueStream CreateImage()
+    protected override PdfStream CreateImage()
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
@@ -22,7 +22,7 @@ public abstract class CcottEncodedBase: DisplayImageTest
             .AsStream(GenerateImage());
     }
 
-    protected abstract PdfValueDictionary CcittParamDictionary();
+    protected abstract PdfDictionary CcittParamDictionary();
 
     private byte[] GenerateImage()
     {

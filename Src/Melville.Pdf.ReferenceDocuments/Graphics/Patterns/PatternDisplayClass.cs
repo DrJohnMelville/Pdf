@@ -11,12 +11,12 @@ public abstract class PatternDisplayClass : Card3x5
     
     protected override void SetPageProperties(PageCreator page)
     {
-        page.AddResourceObject(ResourceTypeName.Pattern, PdfDirectValue.CreateName("P1"), CreatePattern);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("Cs12"), new PdfValueArray(
+        page.AddResourceObject(ResourceTypeName.Pattern, PdfDirectObject.CreateName("P1"), CreatePattern);
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("Cs12"), new PdfArray(
             KnownNames.PatternTName, KnownNames.DeviceRGBTName));
     }
 
-    protected abstract PdfIndirectValue CreatePattern(IPdfObjectCreatorRegistry arg);
+    protected abstract PdfIndirectObject CreatePattern(IPdfObjectCreatorRegistry arg);
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
@@ -24,8 +24,8 @@ public abstract class PatternDisplayClass : Card3x5
         csw.Rectangle(25, 175, 175, -150);
         csw.FillPath();
 
-        await csw.SetNonstrokingColorSpaceAsync(PdfDirectValue.CreateName("Cs12"));
-        await csw.SetNonstrokingColorExtendedAsync(PdfDirectValue.CreateName("P1"));
+        await csw.SetNonstrokingColorSpaceAsync(PdfDirectObject.CreateName("Cs12"));
+        await csw.SetNonstrokingColorExtendedAsync(PdfDirectObject.CreateName("P1"));
         
         csw.MoveTo(99.92, 49.92);
         csw.CurveTo(99.92, 77.52, 77.52, 99.91, 49.92, 99.92);

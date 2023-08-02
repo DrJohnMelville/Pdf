@@ -17,7 +17,7 @@ public class XrefDisplayViewModel
 
 public class XrefPartViewModel : StreamPartViewModel
 {
-    public XrefPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfValueStream source) : 
+    public XrefPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : 
         base(title, children, source)
     {
     }
@@ -28,7 +28,7 @@ public class XrefPartViewModel : StreamPartViewModel
         fmts.Add(new StreamDisplayFormat("Xref", ParseXrefAsync));
     }
 
-    private async ValueTask<object> ParseXrefAsync(PdfValueStream arg)
+    private async ValueTask<object> ParseXrefAsync(PdfStream arg)
     {
         var factory = new XrefParseLogger();
         await CrossReferenceStreamParser.ReadXrefStreamDataAsync(factory, Source).CA();

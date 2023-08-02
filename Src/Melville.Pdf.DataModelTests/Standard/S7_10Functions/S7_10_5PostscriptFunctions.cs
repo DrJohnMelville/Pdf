@@ -21,7 +21,7 @@ public class S7_10_5PostscriptFunctions
         builder.AddArgument((0,10));
         builder.AddOutput((0,20));
         var dict = builder.Create("2 mul", 
-            new ValueDictionaryBuilder().WithItem(KnownNames.DecodeTName, KnownNames.FlateDecodeTName));
+            new DictionaryBuilder().WithItem(KnownNames.DecodeTName, KnownNames.FlateDecodeTName));
         Assert.Equal(KnownNames.FlateDecodeTName, await dict[KnownNames.DecodeTName]);
         await dict.VerifyNumberAsync(KnownNames.FunctionTypeTName, 4);
         await dict.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 0, 10);
@@ -148,7 +148,7 @@ public class S7_10_5PostscriptFunctions
         Assert.Equal(outputs, func.Compute(inputs).Select(i=>Math.Round(i,3)));
     }
 
-    private static PdfValueDictionary CreateFunction(string code, int inputCount, int outputCount)
+    private static PdfDictionary CreateFunction(string code, int inputCount, int outputCount)
     {
         var builder = new PostscriptFunctionBuilder();
         for (int i = 0; i < inputCount; i++)

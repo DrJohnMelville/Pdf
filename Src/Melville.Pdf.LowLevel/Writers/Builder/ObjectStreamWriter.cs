@@ -27,7 +27,7 @@ internal readonly struct ObjectStreamWriter
         objectWriter = new PdfObjectWriter(objectStreamWriter);
     }
 
-    public ValueTask<FlushResult> TryAddRefAsync(int objectNumber, PdfDirectValue obj)
+    public ValueTask<FlushResult> TryAddRefAsync(int objectNumber, PdfDirectObject obj)
     {
         WriteObjectPosition(objectNumber);
         return WriteObjectAsync(obj);
@@ -41,14 +41,14 @@ internal readonly struct ObjectStreamWriter
         referenceStreamWriter.WriteSpace();
     }
 
-    private ValueTask<FlushResult> WriteObjectAsync(PdfDirectValue directValue)
+    private ValueTask<FlushResult> WriteObjectAsync(PdfDirectObject directValue)
     {           
         objectWriter.Write(directValue);
         objectStreamWriter.WriteLineFeed();
         return objectStreamWriter.FlushAsync();
     }
 
-    public async ValueTask<PdfValueStream> BuildAsync(ValueDictionaryBuilder builder, int count)
+    public async ValueTask<PdfStream> BuildAsync(DictionaryBuilder builder, int count)
     {
         await referenceStreamWriter.FlushAsync().CA();
         await objectStreamWriter.FlushAsync().CA();

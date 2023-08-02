@@ -9,20 +9,20 @@ public class EncodingWithDiferences : FontDefinitionTest
         TextToRender = "ABC DE";
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        var enc = arg.Add(new ValueDictionaryBuilder()
-            .WithItem(KnownNames.DifferencesTName, new PdfValueArray(
+        var enc = arg.Add(new DictionaryBuilder()
+            .WithItem(KnownNames.DifferencesTName, new PdfArray(
                 65,
-                PdfDirectValue.CreateName("AE"),
-                PdfDirectValue.CreateName("Adieresis"),
-                PdfDirectValue.CreateName("ff")
+                PdfDirectObject.CreateName("AE"),
+                PdfDirectObject.CreateName("Adieresis"),
+                PdfDirectObject.CreateName("ff")
             ))
             .AsDictionary());
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)BuiltInFontName.Courier)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.Courier)
             .WithItem(KnownNames.EncodingTName, enc)
             .AsDictionary();
     }

@@ -6,8 +6,8 @@ public class CcittBlackIs1 : CcottEncodedBase
     public CcittBlackIs1() : base("CCITT encoding with the black is 1 bit set")
     {
     }
-    protected override PdfValueDictionary CcittParamDictionary() =>
-        new ValueDictionaryBuilder()
+    protected override PdfDictionary CcittParamDictionary() =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.KTName, -1)
             .WithItem(KnownNames.EncodedByteAlignTName, false)
             .WithItem(KnownNames.ColumnsTName, 32)

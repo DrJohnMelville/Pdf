@@ -17,7 +17,7 @@ internal readonly record struct CommonShaderValues(
         new ClosedInterval(double.MinValue, double.MaxValue),
         new ClosedInterval(double.MinValue, double.MaxValue));
 
-    public static async ValueTask<CommonShaderValues> ParseAsync(Matrix3x2 patternToPixels, PdfValueDictionary shadingDictionary,
+    public static async ValueTask<CommonShaderValues> ParseAsync(Matrix3x2 patternToPixels, PdfDictionary shadingDictionary,
         bool supressBackground)
     {
         Matrix3x2.Invert(patternToPixels, out var pixelsToPattern);
@@ -38,11 +38,11 @@ internal readonly record struct CommonShaderValues(
     }
 
     private static async Task<uint> ComputeBackgroundAsync(
-        PdfValueDictionary shadingDictionary, IColorSpace colorSpace, bool supressBackground)
+        PdfDictionary shadingDictionary, IColorSpace colorSpace, bool supressBackground)
     {
         if (supressBackground) return 0;        
         var backGroundArray = 
-            await shadingDictionary.GetOrNullAsync<PdfValueArray>(KnownNames.BackgroundTName).CA() is { } arr
+            await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.BackgroundTName).CA() is { } arr
             ? await arr.CastAsync<double>().CA()
             : Array.Empty<double>();
         var backGroundInt = ComputeBackgroundUint(backGroundArray, colorSpace);

@@ -13,11 +13,11 @@ public class DeviceN: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"),
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"),
             CreateColorSpace);
     }
 
-    private PdfIndirectValue CreateColorSpace(IPdfObjectCreatorRegistry i)
+    private PdfIndirectObject CreateColorSpace(IPdfObjectCreatorRegistry i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));
@@ -27,16 +27,16 @@ public class DeviceN: ColorBars
         builder.AddOutput((0, 1));
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{exch}"));
-        return new PdfValueArray(
+        return new PdfArray(
             KnownNames.DeviceNTName, ColorantNames(), KnownNames.DeviceRGBTName, func);
     }
 
-    protected virtual PdfValueArray ColorantNames()
+    protected virtual PdfArray ColorantNames()
     {
-        return new PdfValueArray(
-            PdfDirectValue.CreateName("khed"),
-            PdfDirectValue.CreateName("QGR"),
-            PdfDirectValue.CreateName("DFS")
+        return new PdfArray(
+            PdfDirectObject.CreateName("khed"),
+            PdfDirectObject.CreateName("QGR"),
+            PdfDirectObject.CreateName("DFS")
         );
     }
 
@@ -47,7 +47,7 @@ public class DeviceN: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectObject.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(1, 0, 0);
         DrawLine(csw);
@@ -64,7 +64,7 @@ public class DeviceNNone : DeviceN
     {
     }
 
-    protected override PdfValueArray ColorantNames() => new PdfValueArray(
+    protected override PdfArray ColorantNames() => new PdfArray(
         KnownNames.NoneTName, KnownNames.NoneTName, KnownNames.NoneTName
     );
 }

@@ -9,11 +9,11 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
-public record StreamDisplayFormat(string Name, Func<PdfValueStream, ValueTask<object>> Creator);
+public record StreamDisplayFormat(string Name, Func<PdfStream, ValueTask<object>> Creator);
 
 public partial class StreamPartViewModel : DocumentPart, ICreateView
 {
-    public PdfValueStream Source { get; }
+    public PdfStream Source { get; }
     [AutoNotify] private IReadOnlyList<StreamDisplayFormat> formats = Array.Empty<StreamDisplayFormat>();
     [AutoNotify] private StreamDisplayFormat? selectedFormat = null;
     public override object? DetailView => this;
@@ -48,13 +48,13 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
         }
     }
 
-    public StreamPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfValueStream source) : base(title, children)
+    public StreamPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : base(title, children)
     {
         this.Source = source;
         LoadFormats();
     }
 
-    public async ValueTask<object> LoadBytesAsync(PdfValueStream stream, StreamFormat fmt)
+    public async ValueTask<object> LoadBytesAsync(PdfStream stream, StreamFormat fmt)
     {
         await using var streamData = await stream.StreamContentAsync(fmt);
         var final = new MemoryStream();

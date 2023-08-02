@@ -6,24 +6,24 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Colors;
 
 public class Separation: ColorBars
 {
-    private readonly PdfDirectValue inkName;
-    public Separation(PdfDirectValue inkName) : base("A separation color space with a fallback function.")
+    private readonly PdfDirectObject inkName;
+    public Separation(PdfDirectObject inkName) : base("A separation color space with a fallback function.")
     {
         this.inkName = inkName;
     }
 
-    public Separation() : this(PdfDirectValue.CreateName("UnknownInkName"))
+    public Separation() : this(PdfDirectObject.CreateName("UnknownInkName"))
     {
     }
 
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"),
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"),
             CreateColorSpace);
     }
 
-    private PdfIndirectValue CreateColorSpace(IPdfObjectCreatorRegistry i)
+    private PdfIndirectObject CreateColorSpace(IPdfObjectCreatorRegistry i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));
@@ -31,7 +31,7 @@ public class Separation: ColorBars
         builder.AddOutput((0, 1));
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{1 exch sub dup 0}"));
-        return new PdfValueArray(
+        return new PdfArray(
             KnownNames.SeparationTName, inkName, KnownNames.DeviceRGBTName, func);
     }
 
@@ -42,7 +42,7 @@ public class Separation: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectObject.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(0.25);
         DrawLine(csw);

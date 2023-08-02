@@ -8,13 +8,13 @@ public class GarmondBold : FontDefinitionTest
     {
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg) =>
-        new ValueDictionaryBuilder()
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg) =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("GarmondBold"))
+            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("GarmondBold"))
             .WithItem(KnownNames.FontDescriptorTName,
-                arg.Add(new ValueDictionaryBuilder()
+                arg.Add(new DictionaryBuilder()
                     .WithItem(KnownNames.FlagsTName, (long)FontFlags.ForceBold)
                     .AsDictionary())
                 )
@@ -26,13 +26,13 @@ public class GarmondItalic : FontDefinitionTest
     {
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg) =>
-        new ValueDictionaryBuilder()
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg) =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("GarmondItalic"))
+            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("GarmondItalic"))
             .WithItem(KnownNames.FontDescriptorTName,
-                arg.Add(new ValueDictionaryBuilder()
+                arg.Add(new DictionaryBuilder()
                     .WithItem(KnownNames.FlagsTName, (long)FontFlags.Italic)
                     .AsDictionary())
                 )

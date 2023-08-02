@@ -14,7 +14,7 @@ public class PdfDocumentCreator
     /// The LowLevelDocumentCreator that will receive the created document
     /// </summary>
     public ILowLevelDocumentCreator LowLevelCreator { get; } = LowLevelDocumentBuilderFactory.New();
-    private readonly ValueDictionaryBuilder rootItems = new();
+    private readonly DictionaryBuilder rootItems = new();
     /// <summary>
     /// The pages that will be included in the new document.
     /// </summary>
@@ -43,8 +43,8 @@ public class PdfDocumentCreator
         return LowLevelCreator.CreateDocument(major, minor);
     }
 
-    private PdfIndirectValue CreateResourceDictionaryItem(ItemWithResourceDictionaryCreator creator) => 
-        creator.ConstructItem(LowLevelCreator, PdfDirectValue.CreateNull()).Reference;
+    private PdfIndirectObject CreateResourceDictionaryItem(ItemWithResourceDictionaryCreator creator) => 
+        creator.ConstructItem(LowLevelCreator, PdfDirectObject.CreateNull()).Reference;
 
     /// <summary>
     /// Set a version number in the catalog, which may be different from the version number in the header.
@@ -52,18 +52,18 @@ public class PdfDocumentCreator
     /// <param name="major">Major version number</param>
     /// <param name="minor">Minor version number</param>
     public void SetVersionInCatalog(byte major, byte minor) =>
-        SetVersionInCatalog(PdfDirectValue.CreateName($"{major}.{minor}"));
+        SetVersionInCatalog(PdfDirectObject.CreateName($"{major}.{minor}"));
 
     /// <summary>
     /// Set a version number in the catalog, which may be different from the version number in the header.
     /// </summary>
     /// <param name="version">Version number as a PdfName</param>
-    public void SetVersionInCatalog(PdfDirectValue version) => rootItems.WithItem(KnownNames.VersionTName, version);
+    public void SetVersionInCatalog(PdfDirectObject version) => rootItems.WithItem(KnownNames.VersionTName, version);
 
     /// <summary>
     /// Add an item to the document's root dictionaru
     /// </summary>
     /// <param name="name">Key for the added item</param>
     /// <param name="obj">The object to be added.</param>
-    public void AddToRootDictionary(PdfDirectValue name, PdfIndirectValue obj) => rootItems.WithItem(name, obj);
+    public void AddToRootDictionary(PdfDirectObject name, PdfIndirectObject obj) => rootItems.WithItem(name, obj);
 }

@@ -13,9 +13,9 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 public class S7_6_5CryptFilters
 {
     private async Task VerifyStringAndStreamEncodingAsync(bool hideStream, bool hideString,
-        ILowLevelDocumentCreator creator, PdfDirectValue? cryptFilterTypeForStream = null)
+        ILowLevelDocumentCreator creator, PdfDirectObject? cryptFilterTypeForStream = null)
     {
-        creator.Add(PdfDirectValue.CreateString("plaintext string"u8));
+        creator.Add(PdfDirectObject.CreateString("plaintext string"u8));
         creator.Add(InsertedStream(creator, cryptFilterTypeForStream));
         var str = await creator.AsStringAsync();
         Assert.Equal(!hideString, str.Contains("plaintext string"));
@@ -25,25 +25,25 @@ public class S7_6_5CryptFilters
         Assert.Equal("plaintext string", (await doc.Objects[(2, 0)].LoadValueAsync()).ToString());
         Assert.Equal("plaintext stream", await (
                 await (
-                    await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfValueStream>().StreamContentAsync())
+                    await doc.Objects[(3, 0)].LoadValueAsync().CA()).Get<PdfStream>().StreamContentAsync())
             .ReadAsStringAsync());
     }
 
-    private PdfValueStream InsertedStream(
-        IPdfObjectCreatorRegistry creator, PdfDirectValue? cryptFilterTypeForStream)
+    private PdfStream InsertedStream(
+        IPdfObjectCreatorRegistry creator, PdfDirectObject? cryptFilterTypeForStream)
     {
         var builder = !cryptFilterTypeForStream.HasValue ?
-            new ValueDictionaryBuilder():
+            new DictionaryBuilder():
             EncryptedStreamBuilder(cryptFilterTypeForStream.Value);
 
         return builder.AsStream("plaintext stream");
     }
 
-    private static ValueDictionaryBuilder EncryptedStreamBuilder(PdfDirectValue cryptFilterTypeForStream)
+    private static DictionaryBuilder EncryptedStreamBuilder(PdfDirectObject cryptFilterTypeForStream)
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithFilter(FilterName.Crypt)
-            .WithFilterParam(new ValueDictionaryBuilder()
+            .WithFilterParam(new DictionaryBuilder()
                 .WithItem(KnownNames.TypeTName, KnownNames.CryptFilterDecodeParmsTName)
                 .WithItem(KnownNames.NameTName, cryptFilterTypeForStream).AsDictionary());
     }
@@ -89,6 +89,6 @@ public class S7_6_5CryptFilters
             
     }
         
-    private static PdfDirectValue Encoder(bool hideString) => 
+    private static PdfDirectObject Encoder(bool hideString) => 
         hideString?KnownNames.StdCFTName:KnownNames.IdentityTName;
 }

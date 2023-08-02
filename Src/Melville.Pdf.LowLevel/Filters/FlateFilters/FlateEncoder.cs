@@ -10,10 +10,10 @@ namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
 
 internal class FlateCodecDefinition: ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectValue parameters) => 
+    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters) => 
         new(new MinimumReadSizeFilter(new FlateEncodeWrapper(data), 4));
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectValue parameters)
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters)
     {
         await Skip2BytePrefixAsync(input);
         return new DeflateStream(input, CompressionMode.Decompress);

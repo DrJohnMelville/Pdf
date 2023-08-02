@@ -10,7 +10,7 @@ public abstract class TextAttributeTest : Card3x5
     {
     }
 
-    private static readonly PdfDirectValue fontName = PdfDirectValue.CreateName("F1");
+    private static readonly PdfDirectObject fontName = PdfDirectObject.CreateName("F1");
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(fontName, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);

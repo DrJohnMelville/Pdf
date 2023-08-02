@@ -49,8 +49,8 @@ ET
         csw.Rectangle(25, 175, 175, -150);
         csw.FillPath();
 
-        await csw.SetNonstrokingColorSpaceAsync(PdfDirectValue.CreateName("Cs12"));
-        await csw.SetNonstrokingColorExtendedAsync(PdfDirectValue.CreateName("P1"), 0.77, 0.2, 0.0);
+        await csw.SetNonstrokingColorSpaceAsync(PdfDirectObject.CreateName("Cs12"));
+        await csw.SetNonstrokingColorExtendedAsync(PdfDirectObject.CreateName("P1"), 0.77, 0.2, 0.0);
         
         csw.MoveTo(99.92, 49.92);
         csw.CurveTo(99.92, 77.52, 77.52, 99.91, 49.92, 99.92);
@@ -59,7 +59,7 @@ ET
         csw.CurveTo(77.52, -0.08, 99.92, 22.32, 99.92, 49.92);
         csw.FillAndStrokePath();
         
-        await csw.SetNonstrokingColorExtendedAsync(PdfDirectValue.CreateName("P1"), 0.2, 0.8, 0.4);
+        await csw.SetNonstrokingColorExtendedAsync(PdfDirectObject.CreateName("P1"), 0.2, 0.8, 0.4);
         csw.MoveTo(224.96, 49.92);
         csw.CurveTo(224.96, 77.52, 202.56, 99.92, 174.96, 99.92);
         csw.CurveTo(147.26, 99.92, 124.96, 77.52, 124.96, 49.92);
@@ -67,7 +67,7 @@ ET
         csw.CurveTo(202.56, -0.08, 224.96, 22.32, 224.96, 49.92);
         csw.CloseFillAndStrokePath();
         
-        await csw.SetNonstrokingColorExtendedAsync(PdfDirectValue.CreateName("P1"), 0.3, 0.7, 1.0);
+        await csw.SetNonstrokingColorExtendedAsync(PdfDirectObject.CreateName("P1"), 0.3, 0.7, 1.0);
         csw.MoveTo(87.56, 201.70);
         csw.CurveTo(63.66, 187.90, 55.46, 157.32, 69.26, 133.40);
         csw.CurveTo(83.06, 109.50, 113.66, 101.30, 137.56, 115.10);
@@ -75,7 +75,7 @@ ET
         csw.CurveTo(142.06, 207.30, 111.46, 215.50, 87.56, 201.70);
         csw.FillAndStrokePath();
         
-        await csw.SetNonstrokingColorExtendedAsync(PdfDirectValue.CreateName("P1"), 0.5, 0.2, 1.0);
+        await csw.SetNonstrokingColorExtendedAsync(PdfDirectObject.CreateName("P1"), 0.5, 0.2, 1.0);
         csw.MoveTo(50,50);
         csw.LineTo(175, 50);
         csw.LineTo(112.5, 158.253);

@@ -16,8 +16,8 @@ public static class SpecializedSearchMethods
     /// <param name="tree">The tree to search.</param>
     /// <param name="s">The desired key</param>
     /// <returns>The objet with the given key</returns>
-    public static ValueTask<PdfDirectValue> SearchAsync(this PdfTree tree, string s) =>
-        tree.SearchAsync(PdfDirectValue.CreateString(s.AsExtendedAsciiBytes()));
+    public static ValueTask<PdfDirectObject> SearchAsync(this PdfTree tree, string s) =>
+        tree.SearchAsync(PdfDirectObject.CreateString(s.AsExtendedAsciiBytes()));
 
     /// <summary>
     /// Search a number tree given a C# integer.
@@ -25,7 +25,7 @@ public static class SpecializedSearchMethods
     /// <param name="tree">The tree to search.</param>
     /// <param name="num">The desired key</param>
     /// <returns>The object with the given key</returns>
-    public static ValueTask<PdfDirectValue> SearchAsync(this PdfTree tree, int num) =>
+    public static ValueTask<PdfDirectObject> SearchAsync(this PdfTree tree, int num) =>
         tree.SearchAsync(num);
 
     /// <summary>
@@ -34,6 +34,6 @@ public static class SpecializedSearchMethods
     /// <param name="tree">The tree to search.</param>
     /// <param name="num">The desired key</param>
     /// <returns>The object with the given key</returns>
-    public static ValueTask<PdfDirectValue> SearchAsync(this PdfTree tree, double num) =>
+    public static ValueTask<PdfDirectObject> SearchAsync(this PdfTree tree, double num) =>
         tree.SearchAsync(num);
 }

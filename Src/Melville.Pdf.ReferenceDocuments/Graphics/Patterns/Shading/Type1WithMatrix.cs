@@ -9,8 +9,8 @@ public class Type1WithMatrix : Type1FunctionalShaderBase
         
     }
 
-    protected override ValueDictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfValueStream[] localFunc,
-        ValueDictionaryBuilder builder) => 
+    protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfStream[] localFunc,
+        DictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder)
             .WithItem(KnownNames.MatrixTName, (
                 Matrix3x2.CreateRotation(0.2f)

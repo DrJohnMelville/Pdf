@@ -14,18 +14,18 @@ internal static class DictionaryWriter
 
     public static void Write(
         in PdfObjectWriter target,
-        IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> items) =>
+        IEnumerable<KeyValuePair<PdfDirectObject, PdfIndirectObject>> items) =>
         Write(target, items, StandardPrefix, StandardSuffix);
 
     public static void WriteInlineImageDict(
         in PdfObjectWriter target,
-        IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> items) =>
+        IEnumerable<KeyValuePair<PdfDirectObject, PdfIndirectObject>> items) =>
         Write(target, items, InlineImagePrefix, InlineImageSuffix);
 
 
     private static void Write(
         in PdfObjectWriter writer,
-        IEnumerable<KeyValuePair<PdfDirectValue, PdfIndirectValue>> items,
+        IEnumerable<KeyValuePair<PdfDirectObject, PdfIndirectObject>> items,
         in ReadOnlySpan<byte> prefix, in ReadOnlySpan<byte> suffix)    {
         writer.Write(prefix);
         foreach (var item in items)
@@ -37,7 +37,7 @@ internal static class DictionaryWriter
         writer.Write(suffix);
     }
 
-    private static void AddWhitespaceIfNeeded(in PdfObjectWriter writer, PdfIndirectValue item)
+    private static void AddWhitespaceIfNeeded(in PdfObjectWriter writer, PdfIndirectObject item)
     {
         if (item.NeedsLeadingSpace())
         {

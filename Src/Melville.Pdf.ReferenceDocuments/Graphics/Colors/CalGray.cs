@@ -12,14 +12,14 @@ public class CalGray: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"), new PdfValueArray(
-            KnownNames.CalGrayTName, new ValueDictionaryBuilder().WithItem(KnownNames.WhitePointTName, new PdfValueArray(
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"), new PdfArray(
+            KnownNames.CalGrayTName, new DictionaryBuilder().WithItem(KnownNames.WhitePointTName, new PdfArray(
                 0.9505, 1.000, 1.0890)).AsDictionary()));
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectObject.CreateName("CS1"));
         csw.SetLineWidth(15);
         DrawLine(csw);
         csw.SetStrokeColor(0.25);

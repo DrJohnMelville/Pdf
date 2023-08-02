@@ -12,7 +12,7 @@ public class S7_3_4_StringsDefined
     [Fact]
     public void StringObjectDefinitions()
     {
-        var str = PdfDirectValue.CreateString("Foo Bar"u8);
+        var str = PdfDirectObject.CreateString("Foo Bar"u8);
         Assert.Equal("Foo Bar", str.ToString());
     }
 
@@ -78,9 +78,9 @@ public class S7_3_4_StringsDefined
     [InlineData("azzzz","baaaa", -1)]
     public void CompareStrings(string a, string b, int result)
     {
-        Assert.Equal(result, PdfDirectValue.CreateString(a.AsExtendedAsciiBytes())
-            .CompareTo(PdfDirectValue.CreateString(b.AsExtendedAsciiBytes())));
-        Assert.Equal(result*-1, PdfDirectValue.CreateString(b.AsExtendedAsciiBytes())
-            .CompareTo(PdfDirectValue.CreateString(a.AsExtendedAsciiBytes())));
+        Assert.Equal(result, PdfDirectObject.CreateString(a.AsExtendedAsciiBytes())
+            .CompareTo(PdfDirectObject.CreateString(b.AsExtendedAsciiBytes())));
+        Assert.Equal(result*-1, PdfDirectObject.CreateString(b.AsExtendedAsciiBytes())
+            .CompareTo(PdfDirectObject.CreateString(a.AsExtendedAsciiBytes())));
     }
 }

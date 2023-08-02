@@ -83,21 +83,21 @@ public partial class IndentingContentStreamWriter : IContentStreamOperations
     }
 
     /// <inheritdoc />
-    public void BeginMarkedRange(PdfDirectValue tag)
+    public void BeginMarkedRange(PdfDirectObject tag)
     {
         Indented().BeginMarkedRange(tag);
         IncreaseIndent();
     }
 
     /// <inheritdoc />
-    public async ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfDirectValue dictName)
+    public async ValueTask BeginMarkedRangeAsync(PdfDirectObject tag, PdfDirectObject dictName)
     {
         await Indented().BeginMarkedRangeAsync(tag, dictName).CA();
         IncreaseIndent();
     }
 
     /// <inheritdoc />
-    public async ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary)
+    public async ValueTask BeginMarkedRangeAsync(PdfDirectObject tag, PdfDictionary dictionary)
     {
         await Indented().BeginMarkedRangeAsync(tag, dictionary).CA();
         IncreaseIndent();

@@ -7,21 +7,21 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     internal static class PdfNameTokenizer
     {
-        public static bool Parse(ref SequenceReader<byte> reader, out PdfDirectValue result)
+        public static bool Parse(ref SequenceReader<byte> reader, out PdfDirectObject result)
         {
             if (!reader.TryReadToAny(
                     out ReadOnlySpan<byte> text,CharacterClassifier.DelimiterChars(), false))
-                return default(PdfDirectValue).AsFalseValue(out result);
+                return default(PdfDirectObject).AsFalseValue(out result);
             return Parse(text).AsTrueValue(out result);
         }
-        public static PdfDirectValue Parse(ReadOnlySpan<byte> nameText)
+        public static PdfDirectObject Parse(ReadOnlySpan<byte> nameText)
         {
             if (!nameText.Contains((byte)'#'))
-               return PdfDirectValue.CreateName(nameText);
+               return PdfDirectObject.CreateName(nameText);
             return ParseNameWithHashMark(nameText);
         }
 
-        private static PdfDirectValue ParseNameWithHashMark(ReadOnlySpan<byte> nameText)
+        private static PdfDirectObject ParseNameWithHashMark(ReadOnlySpan<byte> nameText)
         {
             Span<byte> scratch = stackalloc byte[nameText.Length];
             var destPos = 0;
@@ -37,7 +37,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
                     scratch[destPos++] = nameText[srcPos];
             }
 
-            return PdfDirectValue.CreateName(scratch[..destPos]);
+            return PdfDirectObject.CreateName(scratch[..destPos]);
         }
 
         private static byte AssembleBytes(byte highNibble, byte lowNibble) => 

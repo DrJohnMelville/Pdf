@@ -37,7 +37,7 @@ public readonly struct PostscriptFunctionBuilder
     /// </summary>
     /// <param name="code">The PostScript code for the function.</param>
     /// <returns>A PdfDictionary that defines this function</returns>
-    public PdfValueStream Create(string code) => Create(code, new ValueDictionaryBuilder());
+    public PdfStream Create(string code) => Create(code, new DictionaryBuilder());
 
     /// <summary>
     /// Create a PdfStream that defines this function.
@@ -45,10 +45,10 @@ public readonly struct PostscriptFunctionBuilder
     /// <param name="code">The PostScript code for the function.</param>
     /// <param name="members">A DictionaryBuilder to which the function declaration should be added/</param>
     /// <returns>A PdfDictionary that defines this function</returns>
-    public PdfValueStream Create(string code, ValueDictionaryBuilder members) =>
+    public PdfStream Create(string code, DictionaryBuilder members) =>
         AddFunctionItems(members).AsStream(code);
 
-    private ValueDictionaryBuilder AddFunctionItems(in ValueDictionaryBuilder builder) =>
+    private DictionaryBuilder AddFunctionItems(in DictionaryBuilder builder) =>
         builder
             .WithItem(KnownNames.FunctionTypeTName, 4)
             .WithItem(KnownNames.DomainTName, domains.AsPdfArray())

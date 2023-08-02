@@ -11,32 +11,32 @@ public interface IMarkedContentCSOperations
     /// <summary>
     /// Content stream operator tag MP
     /// </summary>
-    void MarkedContentPoint(PdfDirectValue tag);
+    void MarkedContentPoint(PdfDirectObject tag);
 
     /// <summary>
     /// Content stream operator tag properties MP
     /// </summary>
-    ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfDirectValue properties);
+    ValueTask MarkedContentPointAsync(PdfDirectObject tag, PdfDirectObject properties);
 
     /// <summary>
     /// Content stream operator tag dictionaru MP
     /// </summary>
-    ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfValueDictionary dictionary);
+    ValueTask MarkedContentPointAsync(PdfDirectObject tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator tag BMC
     /// </summary>
-    void BeginMarkedRange(PdfDirectValue tag);
+    void BeginMarkedRange(PdfDirectObject tag);
 
     /// <summary>
     /// Content stream operator tag dictName BDC
     /// </summary>
-    ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfDirectValue dictName);
+    ValueTask BeginMarkedRangeAsync(PdfDirectObject tag, PdfDirectObject dictName);
 
     /// <summary>
     /// Content stream operator tag  inlineDicitionary BDC
     /// </summary>
-    ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary);
+    ValueTask BeginMarkedRangeAsync(PdfDirectObject tag, PdfDictionary dictionary);
 
     /// <summary>
     /// Content stream operator EMC

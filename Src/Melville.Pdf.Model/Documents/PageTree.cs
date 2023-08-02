@@ -19,7 +19,7 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
     /// <summary>
     /// Low level PdfDictionary representing this PageTree
     /// </summary>
-    [FromConstructor] public PdfValueDictionary LowLevel { get; }
+    [FromConstructor] public PdfDictionary LowLevel { get; }
 
     /// <summary>
     /// Gets the number of pages in the tree
@@ -39,7 +39,7 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
         var kids = await KidsAsync().CA();
         await foreach (var kid in kids.CA())
         {
-            var kidAsDict = kid.Get<PdfValueDictionary>();
+            var kidAsDict = kid.Get<PdfDictionary>();
             var type = await kidAsDict[KnownNames.TypeTName].CA();
             if (type.Equals(KnownNames.PageTName)) yield return new PdfPage(kidAsDict);
             else if (type.Equals(KnownNames.PagesTName))
@@ -62,12 +62,12 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
     /// <exception cref="IndexOutOfRangeException">No page exists with the given number</exception>
     public async ValueTask<HasRenderableContentStream> GetPageAsync(long pageNumberOneBased)
     {
-        HashSet<PdfValueDictionary> priorNodes = new();
+        HashSet<PdfDictionary> priorNodes = new();
         var items = await KidsAsync().CA();
         // this is an unrolled recursive function so I 
         for (int i = 0; i < items.RawItems.Count; i++)
         {
-            var kid = (await items[i].CA()).Get<PdfValueDictionary>();
+            var kid = (await items[i].CA()).Get<PdfDictionary>();
             var type = await kid[KnownNames.TypeTName].CA();
             switch (type)
             {
@@ -111,5 +111,5 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
     /// of a large array of pages in PDF as a tree.
     /// </summary>
     /// <returns>The Kids array.</returns>
-    public ValueTask<PdfValueArray> KidsAsync() => LowLevel.GetAsync<PdfValueArray>(KnownNames.KidsTName);
+    public ValueTask<PdfArray> KidsAsync() => LowLevel.GetAsync<PdfArray>(KnownNames.KidsTName);
 }

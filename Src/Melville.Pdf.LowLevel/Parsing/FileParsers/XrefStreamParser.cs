@@ -14,12 +14,12 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 internal readonly partial struct XrefStreamParserFactory
 {
     private static readonly int[] DefaultIndex = { 0, int.MaxValue};
-    [FromConstructor] private readonly PdfValueStream xrefStream;
+    [FromConstructor] private readonly PdfStream xrefStream;
     [FromConstructor] private readonly IIndirectObjectRegistry registry;
 
     public async ValueTask<XrefStreamParser> CreateAsync()
     {
-        var w = await xrefStream.GetAsync<PdfValueArray>(KnownNames.WTName).CA();
+        var w = await xrefStream.GetAsync<PdfArray>(KnownNames.WTName).CA();
         return new XrefStreamParser(
             (await w[0].CA()).Get<int>(),
             (await w[1].CA()).Get<int>(),
@@ -31,7 +31,7 @@ internal readonly partial struct XrefStreamParserFactory
 
     private async ValueTask<int[]> ReadIndexArrayAsync()
     {
-        var readArray = await xrefStream.GetOrDefaultAsync(KnownNames.IndexTName, (PdfValueArray?)null).CA();
+        var readArray = await xrefStream.GetOrDefaultAsync(KnownNames.IndexTName, (PdfArray?)null).CA();
         return readArray != null ? await readArray.CastAsync<int>().CA() : DefaultIndex;
     }
 }

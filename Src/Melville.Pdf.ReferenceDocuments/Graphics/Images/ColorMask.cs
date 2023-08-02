@@ -8,16 +8,16 @@ public class ColorMask: DisplayImageTest
     }
 
 
-    protected override PdfValueStream CreateImage()
+    protected override PdfStream CreateImage()
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
             .WithItem(KnownNames.WidthTName, 256)
             .WithItem(KnownNames.HeightTName, 256)
             .WithItem(KnownNames.BitsPerComponentTName, 8)
-            .WithItem(KnownNames.MaskTName, new PdfValueArray(
+            .WithItem(KnownNames.MaskTName, new PdfArray(
                 75, 200,
                 75, 200,
                 0, 255

@@ -8,10 +8,10 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
         {
         }
 
-        private PdfIndirectValue smask;
+        private PdfIndirectObject smask;
         protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
         {
-            smask = docCreator.LowLevelCreator.Add(new ValueDictionaryBuilder()
+            smask = docCreator.LowLevelCreator.Add(new DictionaryBuilder()
                 .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
                 .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
                 .WithItem(KnownNames.WidthTName, 2)
@@ -33,9 +33,9 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
             await base.DoPaintingAsync(csw);
         }
 
-        protected override PdfValueStream CreateImage()
+        protected override PdfStream CreateImage()
         {
-            return new ValueDictionaryBuilder()
+            return new DictionaryBuilder()
                 .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
                 .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
                 .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)

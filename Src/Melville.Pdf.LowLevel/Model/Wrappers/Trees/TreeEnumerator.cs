@@ -6,20 +6,20 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 
-internal class TreeEnumerator: IAsyncEnumerator<PdfDirectValue>
+internal class TreeEnumerator: IAsyncEnumerator<PdfDirectObject>
 {
-    private PdfValueArray? currentLeafArray;
+    private PdfArray? currentLeafArray;
     private int currentLeafIndex;
-    private readonly Stack<PdfValueDictionary> pendingIntermediateNodes = new();
+    private readonly Stack<PdfDictionary> pendingIntermediateNodes = new();
         
-    public TreeEnumerator(PdfValueDictionary root)
+    public TreeEnumerator(PdfDictionary root)
     {
         pendingIntermediateNodes.Push(root);
     }
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
-    public PdfDirectValue Current { get; private set; } = default;
+    public PdfDirectObject Current { get; private set; } = default;
     private async ValueTask SetCurrentValueAsync() => Current = await currentLeafArray![currentLeafIndex].CA();
 
     public async ValueTask<bool> MoveNextAsync()
@@ -51,15 +51,15 @@ internal class TreeEnumerator: IAsyncEnumerator<PdfDirectValue>
         return pendingIntermediateNodes.Count < 1;
     }
 
-    private async ValueTask<bool> TryFindFirstLeafItemAsync(PdfValueDictionary node)
+    private async ValueTask<bool> TryFindFirstLeafItemAsync(PdfDictionary node)
     {
         if (await TryPushIntermediateNodeKidsAsync(node).CA()) return false;
         return RecordLeafItems(
             (await node.GetWithAlternativeName(
-                KnownNames.NumsTName, KnownNames.NamesTName).CA()).Get<PdfValueArray>());
+                KnownNames.NumsTName, KnownNames.NamesTName).CA()).Get<PdfArray>());
     }
 
-    private bool RecordLeafItems(PdfValueArray leaves)
+    private bool RecordLeafItems(PdfArray leaves)
     {
         if (leaves.Count == 0)
         {
@@ -71,22 +71,22 @@ internal class TreeEnumerator: IAsyncEnumerator<PdfDirectValue>
         return true;
     }
 
-    private async Task<bool> TryPushIntermediateNodeKidsAsync(PdfValueDictionary node)
+    private async Task<bool> TryPushIntermediateNodeKidsAsync(PdfDictionary node)
     {
         if (!node.TryGetValue(KnownNames.KidsTName, out var kidsTask)) return false;
-        if (!(await kidsTask.CA()).TryGet(out PdfValueArray kids)) return true;
+        if (!(await kidsTask.CA()).TryGet(out PdfArray kids)) return true;
             
         await PushInReverseOrderAsync(kids).CA();
 
         return true;
     }
 
-    private async Task PushInReverseOrderAsync(PdfValueArray kids)
+    private async Task PushInReverseOrderAsync(PdfArray kids)
     {
         // do not use kids.Reverse because we want to use valuetasks immediately after creating them
         for (var i = kids.Count - 1; i >= 0; i--)
         {
-            pendingIntermediateNodes.Push((await kids[i].CA()).Get<PdfValueDictionary>());
+            pendingIntermediateNodes.Push((await kids[i].CA()).Get<PdfDictionary>());
         }
     }
 }

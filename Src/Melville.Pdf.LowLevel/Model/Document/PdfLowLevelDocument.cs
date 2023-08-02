@@ -22,10 +22,10 @@ public partial class PdfLowLevelDocument
     /// <summary>
     /// Trailer dictionary, which contains pointers to various important objects like encryption information and the document root.
     /// </summary>
-    [FromConstructor]public PdfValueDictionary TrailerDictionary { get; }
+    [FromConstructor]public PdfDictionary TrailerDictionary { get; }
     /// <summary>
     /// A dictionary of the PDF objects (other than the trailer dictionary) that comprise the low level document.
     /// </summary>
-    [FromConstructor]public IReadOnlyDictionary<(int ObjectNumber,int GenerationNumber), PdfIndirectValue> 
+    [FromConstructor]public IReadOnlyDictionary<(int ObjectNumber,int GenerationNumber), PdfIndirectObject> 
         Objects { get; }
 }

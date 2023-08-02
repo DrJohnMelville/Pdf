@@ -26,7 +26,7 @@ public class S7_5_7ObjectStreams
     [InlineData("1 0 2 7 11111\n222222")]
     public async Task RawLoadObjectStreamAsync(string streamText)
     {
-        var os = new ValueDictionaryBuilder()
+        var os = new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
             .WithItem(KnownNames.NTName, 2)
             .WithItem(KnownNames.FirstTName, 8)
@@ -42,7 +42,7 @@ public class S7_5_7ObjectStreams
         await AssertIndirectAsync(res, 2, "22222");
     }
 
-    private static async Task AssertIndirectAsync(IndirectValueRegistry res, int objectNumber, string expected)
+    private static async Task AssertIndirectAsync(IndirectObjectRegistry res, int objectNumber, string expected)
     {
         var o1 = await res.LookupAsync(objectNumber, 0);
         Assert.Equal(expected, o1.ToString());
@@ -53,7 +53,7 @@ public class S7_5_7ObjectStreams
     {
         //this tests that empty object streams can exist.
         // it also tests the error condition where an object is referenced to an ordinal off the end of the object stream.
-        var os = new ValueDictionaryBuilder()
+        var os = new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
             .WithItem(KnownNames.NTName, 0)
             .WithItem(KnownNames.FirstTName, 0)
@@ -94,16 +94,16 @@ public class S7_5_7ObjectStreams
     [Fact]
     public void CannotPutStreamInObjectStream()
     {
-        Assert.False(new ObjectStreamBuilder().TryAddRef(2,new ValueDictionaryBuilder().AsStream("Hello")));
+        Assert.False(new ObjectStreamBuilder().TryAddRef(2,new DictionaryBuilder().AsStream("Hello")));
     }
         
     private static async Task<string> DocWithObjectStreamAsync()
     {
         var builder = LowLevelDocumentBuilderFactory.New();
-        using (builder.ObjectStreamContext(new ValueDictionaryBuilder()))
+        using (builder.ObjectStreamContext(new DictionaryBuilder()))
         {
-            builder.Add(PdfDirectValue.CreateString("One"u8));
-            builder.Add(PdfDirectValue.CreateString("Two"u8));
+            builder.Add(PdfDirectObject.CreateString("One"u8));
+            builder.Add(PdfDirectObject.CreateString("Two"u8));
         }
         var fileAsString = await DocCreatorToStringAsync(builder);
         return fileAsString;
@@ -111,10 +111,10 @@ public class S7_5_7ObjectStreams
     private static async Task<string> DocWithObjectStreamWithHighObjectNumberAsync()
     {
         var builder = LowLevelDocumentBuilderFactory.New();
-        using (builder.ObjectStreamContext(new ValueDictionaryBuilder()))
+        using (builder.ObjectStreamContext(new DictionaryBuilder()))
         {
-            builder.Add(PdfDirectValue.CreateString("One"u8));
-            builder.Add(PdfDirectValue.CreateString("Two"u8), 20, 1);
+            builder.Add(PdfDirectObject.CreateString("One"u8));
+            builder.Add(PdfDirectObject.CreateString("Two"u8), 20, 1);
         }
         var fileAsString = await DocCreatorToStringAsync(builder);
         return fileAsString;
@@ -133,9 +133,9 @@ public class S7_5_7ObjectStreams
     public async Task ExtractIncludedObjectReferencesAsync()
     {
         var builder = new ObjectStreamBuilder();
-        builder.TryAddRef(1,PdfDirectValue.CreateString("One"u8));
-        builder.TryAddRef(2,PdfDirectValue.CreateString("Two"u8));
-        var str = (await builder.CreateStreamAsync()).Get<PdfValueStream>();
+        builder.TryAddRef(1,PdfDirectObject.CreateString("One"u8));
+        builder.TryAddRef(2,PdfDirectObject.CreateString("Two"u8));
+        var str = (await builder.CreateStreamAsync()).Get<PdfStream>();
 
         var output = await str.GetIncludedObjectNumbersAsync();
         Assert.Equal(1, output[0].ObjectNumber);
@@ -158,7 +158,7 @@ public class S7_5_7ObjectStreams
         Assert.Equal(embeddedStream, (await doc.Objects[(2,0)].LoadValueAsync()).ToString());
         
         // string is not encoded inside stream
-        var objSter = (await doc.Objects[(3, 0)].LoadValueAsync()).Get<PdfValueStream>();
+        var objSter = (await doc.Objects[(3, 0)].LoadValueAsync()).Get<PdfStream>();
         var strText = await new StreamReader(await objSter.StreamContentAsync()).ReadToEndAsync();
         Assert.Contains(strText, strText);
     }

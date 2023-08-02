@@ -8,7 +8,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_7NewDictionary
 {
-    private readonly PdfValueDictionary sut = new ValueDictionaryBuilder()
+    private readonly PdfDictionary sut = new DictionaryBuilder()
         .WithItem("/A"u8, 1)
         .WithItem("/B"u8, "String")
         .WithItem("/C"u8, true)

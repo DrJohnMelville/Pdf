@@ -13,7 +13,7 @@ namespace Melville.Pdf.FontLibrary;
 public partial class SelfContainedDefaultFonts: IDefaultFontMapper
 {
     /// <inheritdoc />
-    public DefaultFontReference FontFromName(PdfDirectValue font, FontFlags fontFlags)
+    public DefaultFontReference FontFromName(PdfDirectObject font, FontFlags fontFlags)
     {
         return font switch
         {

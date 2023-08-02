@@ -38,30 +38,30 @@ public readonly struct PdfDocument: IDisposable
         LowLevel = lowLevel;
     }
 
-    private ValueTask<PdfValueDictionary> CatalogAsync() => 
-        LowLevel.TrailerDictionary.GetAsync<PdfValueDictionary>(KnownNames.RootTName);
+    private ValueTask<PdfDictionary> CatalogAsync() => 
+        LowLevel.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.RootTName);
 
     /// <summary>
     /// Gets the effective PDF version for this document, prefering the document caalog if it differs from the
     /// file header.
     /// </summary>
     /// <returns>A PDF name representing the header.</returns>
-    public async ValueTask<PdfDirectValue> VersionAsync() =>
+    public async ValueTask<PdfDirectObject> VersionAsync() =>
         (await (await CatalogAsync().CA()).GetOrNullAsync(KnownNames.VersionTName).CA()) is
         {IsName:true }version?
-            version: PdfDirectValue.CreateName($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
+            version: PdfDirectObject.CreateName($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
 
     /// <summary>
     /// Gets the PageTree representing the pages in the document
     /// </summary>
     public async ValueTask<PageTree> PagesAsync() =>
-        new(await (await CatalogAsync().CA()).GetAsync<PdfValueDictionary>(KnownNames.PagesTName).CA());
+        new(await (await CatalogAsync().CA()).GetAsync<PdfDictionary>(KnownNames.PagesTName).CA());
 
     /// <summary>
     /// Optional content declaration for the document
     /// </summary>
-    public async ValueTask<PdfValueDictionary?> OptionalContentPropertiesAsync() =>
-        await (await CatalogAsync().CA()).GetOrNullAsync<PdfValueDictionary>(
+    public async ValueTask<PdfDictionary?> OptionalContentPropertiesAsync() =>
+        await (await CatalogAsync().CA()).GetOrNullAsync<PdfDictionary>(
             KnownNames.OCPropertiesTName).CA();
 
     /// <inheritdoc />

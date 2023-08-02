@@ -12,28 +12,28 @@ namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
 public static class TestParser
 {
-    public static ValueTask<PdfIndirectValue> ParseValueObjectAsync(this string s) =>
+    public static ValueTask<PdfIndirectObject> ParseValueObjectAsync(this string s) =>
         ParseValueObjectAsync(AsParsingSource(s));
 
     public static async ValueTask<T> ParseValueObjectAsync<T>(this string s) =>
         await (await ParseValueObjectAsync(AsParsingSource(s))).LoadValueAsync<T>();
 
-    public static ValueTask<PdfIndirectValue> ParseValueObjectAsync(this byte[] bytes) => 
+    public static ValueTask<PdfIndirectObject> ParseValueObjectAsync(this byte[] bytes) => 
         ParseValueObjectAsync(AsParsingSource(bytes));
 
-    internal static async ValueTask<PdfIndirectValue> ParseValueObjectAsync(this ParsingFileOwner source, long position = 0)
+    internal static async ValueTask<PdfIndirectObject> ParseValueObjectAsync(this ParsingFileOwner source, long position = 0)
     {
         var reader = await source.RentReaderAsync(position);
         return await new RootObjectParser(reader).ParseAsync();
     }
 
-    public static ValueTask<PdfDirectValue> ParseRootObjectAsync(this string s) =>
+    public static ValueTask<PdfDirectObject> ParseRootObjectAsync(this string s) =>
         ParseRootObjectAsync(AsParsingSource(s));
 
-    public static ValueTask<PdfDirectValue> ParseRootObjectAsync(this byte[] bytes) => 
+    public static ValueTask<PdfDirectObject> ParseRootObjectAsync(this byte[] bytes) => 
         ParseRootObjectAsync(AsParsingSource(bytes));
 
-    internal static async ValueTask<PdfDirectValue> ParseRootObjectAsync(this ParsingFileOwner source, long position = 0)
+    internal static async ValueTask<PdfDirectObject> ParseRootObjectAsync(this ParsingFileOwner source, long position = 0)
     {
         var reader = await source.RentReaderAsync(position);
         return await new RootObjectParser(reader).ParseTopLevelObject();

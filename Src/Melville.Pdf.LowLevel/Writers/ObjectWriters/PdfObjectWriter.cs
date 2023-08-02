@@ -29,7 +29,7 @@ internal class PdfObjectWriter
         this.encryptor = encryptor;
     }
 
-    public void Write(PdfIndirectValue item)
+    public void Write(PdfIndirectObject item)
     {
         if (item.TryGetEmbeddedDirectValue(out var directValue))
             Write(directValue);
@@ -39,7 +39,7 @@ internal class PdfObjectWriter
         }
     }
 
-    public void Write(PdfDirectValue item)
+    public void Write(PdfDirectObject item)
     {
         switch (item)
         {
@@ -62,14 +62,14 @@ internal class PdfObjectWriter
                 StringWriter.Write(target, item.Get<StringSpanSource>().GetSpan(), 
                     CreateEncryptor());
                 break;
-            case var x when x.TryGet(out PdfValueArray arr):
+            case var x when x.TryGet(out PdfArray arr):
                 ArrayWriter.WriteArray(this, arr);
                 break;
             #if DEBUG
             case var x when x.TryGet(out PdfValueStream dict):
                 throw new InvalidOperationException("Cannot write a stream from this method");
             #endif
-            case var x when x.TryGet(out PdfValueDictionary dict):
+            case var x when x.TryGet(out PdfDictionary dict):
                 DictionaryWriter.Write(this, dict.RawItems);
                 break;
             default:
@@ -90,15 +90,15 @@ internal class PdfObjectWriter
     }
 
     public ValueTask WriteTopLevelDeclarationAsync(
-        int objNum, int generation, PdfDirectValue value)
+        int objNum, int generation, PdfDirectObject value)
     {
         currentIndirectObject =
-            value.TryGet(out PdfValueDictionary? pvd) && encryptor.BlockEncryption(pvd) ? 
+            value.TryGet(out PdfDictionary? pvd) && encryptor.BlockEncryption(pvd) ? 
                 (-1,-1): (objNum, generation); ;
         return this.WriteObjectDefinition(objNum, generation, value);
     }
 
-    public ValueTask WriteStreamAsync(PdfValueStream stream) => 
+    public ValueTask WriteStreamAsync(PdfStream stream) => 
         StreamWriter.WriteAsync(this, stream, CreateEncryptor());
 
     private IObjectCryptContext CreateEncryptor()

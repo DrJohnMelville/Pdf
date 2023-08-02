@@ -22,14 +22,14 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
     /// <summary>
     /// Convert the rectangle to a PdfArray
     /// </summary>
-    public PdfValueArray ToPdfArray => new(Left, Bottom, Right, Top);
+    public PdfArray ToPdfArray => new(Left, Bottom, Right, Top);
 
     /// <summary>
     /// Parse from a PdfArray of at exactly 4 doubles.
     /// </summary>
     /// <param name="array">The CodeSource PDF array.</param>
     /// <returns>A  PdfRectangle.</returns>
-    public static async ValueTask<PdfRect> CreateAsync(PdfValueArray array)
+    public static async ValueTask<PdfRect> CreateAsync(PdfArray array)
     {
         var nums = await array.CastAsync<double>().CA();
         return FromDoubleSpan(nums);

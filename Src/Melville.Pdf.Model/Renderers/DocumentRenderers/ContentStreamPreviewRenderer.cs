@@ -34,7 +34,7 @@ public partial class ContentStreamPreviewRenderer : DocumentRenderer
 
     private partial class ExplicitHRCS : HasRenderableContentStream
     {
-        public ExplicitHRCS(Stream content) : base(PdfValueDictionary.Empty)
+        public ExplicitHRCS(Stream content) : base(PdfDictionary.Empty)
         {
             Content = content;
         }

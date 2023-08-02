@@ -15,7 +15,7 @@ public static class DictionarySubtypeOperations
     /// <param name="result">If the operation succeds, this parameter receives the subtype, as a PDF Name.</param>
     /// <returns>True if a subtype is found, false otherwise.</returns>
     public static bool TryGetSubType(
-        this PdfValueDictionary dict, [NotNullWhen(true)]out PdfDirectValue result)
+        this PdfDictionary dict, [NotNullWhen(true)]out PdfDirectObject result)
     {
         result = dict.SubTypeOrNull();
         return !result.IsNull;
@@ -27,7 +27,7 @@ public static class DictionarySubtypeOperations
     /// </summary>
     /// <param name="dict">The dictionary to check</param>
     /// <returns>The subtyppe as a PdfName, or null if the subtype does not exist or is not a PDF name.</returns>
-    public static PdfDirectValue SubTypeOrNull(this PdfValueDictionary dict, PdfDirectValue defaultValue = default) =>
+    public static PdfDirectObject SubTypeOrNull(this PdfDictionary dict, PdfDirectObject defaultValue = default) =>
         (dict.RawItems.TryGetValue(KnownNames.SubtypeTName, out var obj) ||
          dict.RawItems.TryGetValue(KnownNames.STName, out obj)) &&
         obj.TryGetEmbeddedDirectValue(out var dirObj) &&

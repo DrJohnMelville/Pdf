@@ -29,7 +29,7 @@ internal class LiteralStreamSource : IStreamDataSource
         return new ValueTask<Stream>(source.CreateReader());
     }
 
-    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectValue cryptFilterName) =>
+    public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectObject cryptFilterName) =>
         encryptedStream;
     public Stream WrapStreamWithDecryptor(Stream encryptedStream) =>
         encryptedStream;

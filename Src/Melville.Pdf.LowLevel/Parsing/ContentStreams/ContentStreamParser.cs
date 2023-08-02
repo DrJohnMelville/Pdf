@@ -339,7 +339,7 @@ public readonly partial struct ContentStreamParser
         return dictValue.IsLiteralName
             ? E(engine).MarkedContentPointAsync(
                 name, MapSimpleValue(dictValue))
-            : E(engine).MarkedContentPointAsync(name, dictValue.Get<PdfValueDictionary>());
+            : E(engine).MarkedContentPointAsync(name, dictValue.Get<PdfDictionary>());
         """, "DP")]
     [MacroItem("BeginMarkedRange2", """
         var dictValue = engine.OperandStack.Pop();
@@ -347,7 +347,7 @@ public readonly partial struct ContentStreamParser
         return dictValue.IsLiteralName
             ? E(engine).BeginMarkedRangeAsync(
                 name, MapSimpleValue(dictValue))
-            : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfValueDictionary>());
+            : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfDictionary>());
         """, "BDC")]
     [MacroItem("ParseMarkedImage", """
         engine.DisablePdfArrayParsing();
@@ -389,7 +389,7 @@ public readonly partial struct ContentStreamParser
 
     private static void CreatePdfDictionary(PostscriptEngine engine)
     {
-        var builder = new ValueDictionaryBuilder();
+        var builder = new DictionaryBuilder();
         while (engine.OperandStack.TryPop(out var item) && item is { IsMark: false })
         {
             if (IsArrayTopMarker(item))
@@ -407,14 +407,14 @@ public readonly partial struct ContentStreamParser
 
     private static PostscriptValue CreatePdfArray(PostscriptEngine engine)
     {
-        var ret = new PdfIndirectValue[engine.OperandStack.CountToMark()];
+        var ret = new PdfIndirectObject[engine.OperandStack.CountToMark()];
         for (int i = ret.Length - 1; i >= 0; i--)
         {
             ret[i] = PostscriptObjectToPdfObject(engine.OperandStack.Pop());
         }
 
         PopMarkObject(engine);
-        return new PostscriptValue(new PdfValueArray(ret),
+        return new PostscriptValue(new PdfArray(ret),
             PostscriptBuiltInOperations.PushArgument, default);
     }
 
@@ -425,15 +425,15 @@ public readonly partial struct ContentStreamParser
     }
 
 
-    private static PdfDirectValue PostscriptObjectToPdfObject(PostscriptValue item) => item switch
+    private static PdfDirectObject PostscriptObjectToPdfObject(PostscriptValue item) => item switch
     {
         { IsInteger: true } or
         { IsDouble: true } or
         { IsString: true } or
         { IsBoolean: true } or
         {IsLiteralName:true} => MapSimpleValue(item),
-        var x when x.TryGet(out PdfValueDictionary? innerDictionary) => innerDictionary,
-        var x when x.TryGet(out PdfValueArray? innerArray) => innerArray,
+        var x when x.TryGet(out PdfDictionary? innerDictionary) => innerDictionary,
+        var x when x.TryGet(out PdfArray? innerArray) => innerArray,
         _=> throw new PdfParseException("Cannot convert PostScriptToPdfObject")
     };
 
@@ -475,7 +475,7 @@ public readonly partial struct ContentStreamParser
             wordSpace, charSpace, strSource.Memory).CA();
     }
 
-    private static PdfDirectValue? TryPopName(PostscriptEngine engine)
+    private static PdfDirectObject? TryPopName(PostscriptEngine engine)
     {
         var posName = engine.OperandStack.Peek();
         if (!posName.IsLiteralName) return null;
@@ -483,12 +483,12 @@ public readonly partial struct ContentStreamParser
         return MapSimpleValue(posName);
     }
 
-    private static PdfDirectValue PopName(PostscriptEngine engine) =>
+    private static PdfDirectObject PopName(PostscriptEngine engine) =>
         TryPopName(engine) ?? throw new PdfParseException("Name exoected");
 
-    private static PdfDirectValue MapSimpleValue(in PostscriptValue source)
+    private static PdfDirectObject MapSimpleValue(in PostscriptValue source)
     {
         Debug.Assert(source.ValueStrategy is PostscriptString or PostscriptDouble or PostscriptBoolean or PostscriptInteger);
-        return new PdfDirectValue(source.ValueStrategy, source.Memento);
+        return new PdfDirectObject(source.ValueStrategy, source.Memento);
     }
 }

@@ -11,10 +11,10 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal static class PdfTrailerParser
 {
-    public static Task<PdfValueDictionary> ParseXrefAndTrailerAsync(ParsingFileOwner source, long xrefPosition) => 
+    public static Task<PdfDictionary> ParseXrefAndTrailerAsync(ParsingFileOwner source, long xrefPosition) => 
         XrefAndTrailerAsync(source, xrefPosition, null);
 
-    private static async Task<PdfValueDictionary> XrefAndTrailerAsync(
+    private static async Task<PdfDictionary> XrefAndTrailerAsync(
         ParsingFileOwner source, long xrefPosition, List<long>? priorPositions)
     {
 
@@ -51,7 +51,7 @@ internal static class PdfTrailerParser
         priorPositions.Add(xrefPosition);
     }
 
-    private static async Task<PdfValueDictionary?> ReadSingleRefTrailerBlockAsync(IParsingReader context)
+    private static async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync(IParsingReader context)
     {
         if (!await TokenChecker.CheckTokenAsync(context.Reader, xrefTag).CA()) return null;
         await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
@@ -60,7 +60,7 @@ internal static class PdfTrailerParser
         if (!await TokenChecker.CheckTokenAsync(context.Reader, trailerTag).CA())
             throw new PdfParseException("Trailer does not follow xref");
         var trailerIndirect = (await new RootObjectParser(context).ParseAsync().CA());
-        if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfValueDictionary trailer))
+        if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary trailer))
             throw new PdfParseException("Trailer dictionary is invalid");
         return trailer;
     }

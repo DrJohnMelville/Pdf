@@ -7,27 +7,27 @@ public class EmbeddedOpenType : FontDefinitionTest
     {
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.GFSEustace.otf")!;
-        var stream = arg.Add(new ValueDictionaryBuilder()
+        var stream = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.Length1TName, fontStream.Length)
             .WithItem(KnownNames.SubtypeTName, KnownNames.OpenTypeTName)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream));
-        var widthArray = arg.Add(new PdfValueArray(Enumerable.Repeat<PdfIndirectValue>(600, 256).ToArray()));
-        var descrip = arg.Add(new ValueDictionaryBuilder()
+        var widthArray = arg.Add(new PdfArray(Enumerable.Repeat<PdfIndirectObject>(600, 256).ToArray()));
+        var descrip = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
             .WithItem(KnownNames.FlagsTName, 32)
-            .WithItem(KnownNames.FontBBoxTName, new PdfValueArray(-511, -250, 1390, 750))
+            .WithItem(KnownNames.FontBBoxTName, new PdfArray(-511, -250, 1390, 750))
             .WithItem(KnownNames.FontFile3TName, stream)
             .AsDictionary());
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
             .WithItem(KnownNames.FontDescriptorTName, descrip)
             .WithItem(KnownNames.WidthsTName, widthArray)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("Zev"))
+            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("Zev"))
             .AsDictionary();
     }
 }

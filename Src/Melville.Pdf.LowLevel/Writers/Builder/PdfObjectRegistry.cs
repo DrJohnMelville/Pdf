@@ -9,43 +9,43 @@ using Melville.Postscript.Interpreter.Values;
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 internal partial class PdfObjectRegistry: 
-    IPdfObjectCreatorRegistry, IIndirectValueSource
+    IPdfObjectCreatorRegistry, IIndirectObjectSource
 {
     [FromConstructor] private int nextObject;
     
-    public  Dictionary<(int, int), PdfDirectValue> Objects { get; } = new();
-    public ValueDictionaryBuilder TrailerDictionaryItems { get; } = new();
+    public  Dictionary<(int, int), PdfDirectObject> Objects { get; } = new();
+    public DictionaryBuilder TrailerDictionaryItems { get; } = new();
     private ObjectStreamBuilder? objectStreamBuilder;
 
-    public PdfIndirectValue Add(in PdfDirectValue item) =>
+    public PdfIndirectObject Add(in PdfDirectObject item) =>
         Add(item, nextObject++, 0);
 
-    public PdfIndirectValue Add(in PdfDirectValue item, int objectNumber, int generation)
+    public PdfIndirectObject Add(in PdfDirectObject item, int objectNumber, int generation)
     {
         if (!TryWriteToObjectStream(item, objectNumber, generation))
         {
             Objects[(objectNumber, generation)] = item;
         }
 
-        return new PdfIndirectValue(this, MementoUnion.CreateFrom(objectNumber, generation));
+        return new PdfIndirectObject(this, MementoUnion.CreateFrom(objectNumber, generation));
     }
 
     private bool TryWriteToObjectStream(
-        in PdfDirectValue item, int objectNumber, int generation) =>
+        in PdfDirectObject item, int objectNumber, int generation) =>
         objectStreamBuilder is not null && generation == 0 &&
         objectStreamBuilder.TryAddRef(objectNumber, item);
 
-    public void Reassign(in PdfIndirectValue item, in PdfDirectValue newValue)
+    public void Reassign(in PdfIndirectObject item, in PdfDirectObject newValue)
     {
         var ints = item.Memento.Int32s;
         Objects[(ints[0],ints[1])] = newValue;
     }
 
-    public void AddToTrailerDictionary(in PdfDirectValue key, in PdfIndirectValue item) => 
+    public void AddToTrailerDictionary(in PdfDirectObject key, in PdfIndirectObject item) => 
         TrailerDictionaryItems.WithItem(key, item);
 
     public IDisposable ObjectStreamContext(
-        ValueDictionaryBuilder? dictionaryBuilder = null)
+        DictionaryBuilder? dictionaryBuilder = null)
     {
         if (objectStreamBuilder != null)
             throw new InvalidOperationException("Cannot nest object stream builders");
@@ -62,7 +62,7 @@ internal partial class PdfObjectRegistry:
             var osb = registry.objectStreamBuilder;
             registry.objectStreamBuilder = null;
             if (osb.HasValues())
-                registry.Add(new PdfDirectValue(osb, default));
+                registry.Add(new PdfDirectObject(osb, default));
         }
     }
 
@@ -75,7 +75,7 @@ internal partial class PdfObjectRegistry:
         return $"{obj} {gen} R";
     }
 
-    public ValueTask<PdfDirectValue> LookupAsync(MementoUnion memento)
+    public ValueTask<PdfDirectObject> LookupAsync(MementoUnion memento)
     {
         if (!TryGetObjectReference(out var obj, out var gen, memento))
             throw new InvalidOperationException("Find reference for direct object");
@@ -90,7 +90,7 @@ internal partial class PdfObjectRegistry:
         return true;
     }
 
-    public PdfValueDictionary CreateTrailerDictionary() =>
+    public PdfDictionary CreateTrailerDictionary() =>
         TrailerDictionaryItems
             .WithItem(KnownNames.SizeTName, nextObject)
             .AsDictionary();

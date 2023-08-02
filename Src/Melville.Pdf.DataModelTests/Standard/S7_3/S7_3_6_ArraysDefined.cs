@@ -19,7 +19,7 @@ public class S7_3_6_ArraysDefined
     [InlineData("[/WIDTH /HGH /X1 /HEIGHT]", 4)]
     public async Task ParseArrayAsync(string src, int length)
     {
-        var obj = await (await src.ParseValueObjectAsync()).LoadValueAsync<PdfValueArray>();
+        var obj = await (await src.ParseValueObjectAsync()).LoadValueAsync<PdfArray>();
         Assert.Equal(length, obj.RawItems.Count);
     }
 
@@ -29,7 +29,7 @@ public class S7_3_6_ArraysDefined
         var expected = Enumerable.Range(0, 1000).ToArray();
         var source = $"[{string.Join(" ", expected)}]";
         var parsed = await (await source.ParseValueObjectAsync()).LoadValueAsync();
-        var asInts = await parsed.Get<PdfValueArray>().CastAsync<int>();
+        var asInts = await parsed.Get<PdfArray>().CastAsync<int>();
         Assert.Equal(expected, asInts);
     }
 }

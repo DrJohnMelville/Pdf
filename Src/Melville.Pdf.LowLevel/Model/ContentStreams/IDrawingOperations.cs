@@ -116,13 +116,13 @@ public interface IDrawingOperations: IPathDrawingOperations
     /// <summary>
     /// Content stream operator name Do
     /// </summary>
-    ValueTask DoAsync(PdfDirectValue name);
+    ValueTask DoAsync(PdfDirectObject name);
     /// <summary>
     /// Content stream operator name sh
     /// </summary>
-    ValueTask PaintShaderAsync(PdfDirectValue name);
+    ValueTask PaintShaderAsync(PdfDirectObject name);
     /// <summary>
     /// Context stream operators BI, ID, and EI
     /// </summary>
-    ValueTask DoAsync(PdfValueStream inlineImage);
+    ValueTask DoAsync(PdfStream inlineImage);
 }

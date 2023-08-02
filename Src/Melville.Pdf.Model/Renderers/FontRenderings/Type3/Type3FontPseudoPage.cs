@@ -9,10 +9,10 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 internal partial class Type3FontPseudoPage : IHasPageAttributes
 {
     [FromConstructor] private readonly IHasPageAttributes parent;
-    [FromConstructor] private readonly PdfValueDictionary fontDecl;
+    [FromConstructor] private readonly PdfDictionary fontDecl;
     [FromConstructor] private readonly Stream characterDecl;
 
-    public PdfValueDictionary LowLevel => fontDecl;
+    public PdfDictionary LowLevel => fontDecl;
     public ValueTask<Stream> GetContentBytesAsync() => new(characterDecl);
 
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);

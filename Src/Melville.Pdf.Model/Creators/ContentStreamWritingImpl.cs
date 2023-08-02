@@ -41,7 +41,7 @@ public static class ContentStreamWritingImpl
     /// <returns>A ValueTask to signal completion of the operation.</returns>
     public static ValueTask AddToContentStreamAsync(
         this PageCreator pc, Func<ContentStreamWriter, ValueTask> creator) =>
-        pc.AddToContentStreamAsync(new ValueDictionaryBuilder().WithFilter(FilterName.FlateDecode), creator);
+        pc.AddToContentStreamAsync(new DictionaryBuilder().WithFilter(FilterName.FlateDecode), creator);
 
     /// <summary>
     /// Write a content stream to a page creator by calling methods on a
@@ -53,7 +53,7 @@ public static class ContentStreamWritingImpl
     ///  ContentStreamWriter to define the desired content stream.</param>
     /// <returns>A ValueTask to signal completion of the operation.</returns>
     public static async ValueTask AddToContentStreamAsync(
-        this ContentStreamCreator pc, ValueDictionaryBuilder dict, Func<ContentStreamWriter, ValueTask> creator)
+        this ContentStreamCreator pc, DictionaryBuilder dict, Func<ContentStreamWriter, ValueTask> creator)
     {
         var streamData = new MultiBufferStream();
         var pipe = PipeWriter.Create(streamData);

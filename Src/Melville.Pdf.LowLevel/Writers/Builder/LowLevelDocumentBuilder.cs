@@ -21,27 +21,27 @@ internal partial class LowLevelDocumentBuilder : ILowLevelDocumentCreator
     }
         
     
-    public PdfValueArray EnsureDocumentHasId() =>
+    public PdfArray EnsureDocumentHasId() =>
         registry.TrailerDictionaryItems.TryGetValue(KnownNames.IDTName, out var val) && 
-        val.Value.TryGetEmbeddedDirectValue(out PdfValueArray ret)
+        val.Value.TryGetEmbeddedDirectValue(out PdfArray ret)
             ? ret
             : AddNewIdArray();
 
-    private PdfValueArray AddNewIdArray()
+    private PdfArray AddNewIdArray()
     {
         var array = NewIdArray();
         AddToTrailerDictionary(KnownNames.IDTName, array);
         return array;
     }
 
-    private PdfValueArray NewIdArray() => new(IdElement(), IdElement());
+    private PdfArray NewIdArray() => new(IdElement(), IdElement());
 
-    private PdfDirectValue IdElement()
+    private PdfDirectObject IdElement()
     {
         Span<byte> ret = stackalloc byte[32];
         Guid.NewGuid().TryWriteBytes(ret);
         Guid.NewGuid().TryWriteBytes(ret[16..]);
-        return PdfDirectValue.CreateString(ret);
+        return PdfDirectObject.CreateString(ret);
     }
 
     public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7) =>

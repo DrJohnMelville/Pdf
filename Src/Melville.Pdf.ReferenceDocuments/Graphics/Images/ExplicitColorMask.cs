@@ -7,13 +7,13 @@ public class ExplicitColorMask: DisplayImageTest
     {
     }
 
-    private PdfIndirectValue? pir = null;
+    private PdfIndirectObject? pir = null;
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddResourceObject(ResourceTypeName.XObject, "/Fake"u8,
             cr =>
             {
-                pir = cr.Add((PdfDirectValue)new ValueDictionaryBuilder()
+                pir = cr.Add((PdfDirectObject)new DictionaryBuilder()
                     .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
                     .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
                     .WithItem(KnownNames.WidthTName, 3)
@@ -24,14 +24,14 @@ public class ExplicitColorMask: DisplayImageTest
                         0b10100000,
                         0b01000000
                     }));
-                return PdfDirectValue.CreateNull();
+                return PdfDirectObject.CreateNull();
             });
         base.SetPageProperties(page);
     }
 
-    protected override PdfValueStream CreateImage()
+    protected override PdfStream CreateImage()
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)

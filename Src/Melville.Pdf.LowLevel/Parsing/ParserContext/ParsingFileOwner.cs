@@ -18,7 +18,7 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     private readonly MultiplexedStream source;
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
-    public IndirectValueRegistry NewIndirectResolver { get; }
+    public IndirectObjectRegistry NewIndirectResolver { get; }
     private IDocumentCryptContext documentCryptContext = NullSecurityHandler.Instance;
     private readonly IPasswordSource passwordSource;
 
@@ -26,7 +26,7 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     {
         this.source = new MultiplexedStream(source);
         this.passwordSource = passwordSource;
-        NewIndirectResolver = new IndirectValueRegistry(this);
+        NewIndirectResolver = new IndirectObjectRegistry(this);
     }
     
     public void SetPreheaderOffset(long offset) => preHeaderOffset = offset;
@@ -55,7 +55,7 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
 
     private static readonly StreamPipeReaderOptions pipeOptions = new(leaveOpen: true);
     
-    public async ValueTask InitializeDecryptionAsync(PdfValueDictionary trailerDictionary)
+    public async ValueTask InitializeDecryptionAsync(PdfDictionary trailerDictionary)
     {
         if (AlreadyInitializedDecryption()) return;
         documentCryptContext = await 

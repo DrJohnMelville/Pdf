@@ -10,9 +10,9 @@ using Melville.Pdf.Model.OptionalContent;
 namespace Melville.Pdf.Model.Renderers.OptionalContents;
 internal interface IOptionalContentCounter 
 {
-    ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfValueDictionary? visibilityGroup);
-    ValueTask EnterGroupAsync(PdfDirectValue oc, PdfDirectValue off, IHasPageAttributes attributeSource);
-    ValueTask EnterGroupAsync(PdfDirectValue oc, PdfValueDictionary off);
+    ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfDictionary? visibilityGroup);
+    ValueTask EnterGroupAsync(PdfDirectObject oc, PdfDirectObject off, IHasPageAttributes attributeSource);
+    ValueTask EnterGroupAsync(PdfDirectObject oc, PdfDictionary off);
     void PopContentGroup();
     public IDrawTarget WrapDrawTarget(IDrawTarget inner);
 }
@@ -24,21 +24,21 @@ internal partial class OptionalContentCounter: IOptionalContentCounter
 
     public bool IsHidden => groupsBelowDeepestVisibleGroup > 0;
 
-    public async ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfValueDictionary? visibilityGroup) =>
+    public async ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfDictionary? visibilityGroup) =>
         IsHidden || !await contentState.IsGroupVisibleAsync(visibilityGroup).CA();
 
     public async ValueTask EnterGroupAsync(
-        PdfDirectValue oc, PdfDirectValue off, IHasPageAttributes attributeSource) =>
+        PdfDirectObject oc, PdfDirectObject off, IHasPageAttributes attributeSource) =>
         await EnterGroupAsync(oc, await TryGetDictionary(off, attributeSource).CA()).CA();
 
-    private static async Task<PdfValueDictionary?> TryGetDictionary(
-        PdfDirectValue off, IHasPageAttributes attributeSource)
+    private static async Task<PdfDictionary?> TryGetDictionary(
+        PdfDirectObject off, IHasPageAttributes attributeSource)
     {
         var resource = await attributeSource.GetResourceAsync(ResourceTypeName.Properties, off).CA();
-        return resource.TryGet(out PdfValueDictionary? dict) ? dict : null;
+        return resource.TryGet(out PdfDictionary? dict) ? dict : null;
     }
 
-    public async ValueTask EnterGroupAsync(PdfDirectValue oc, PdfValueDictionary? off)
+    public async ValueTask EnterGroupAsync(PdfDirectObject oc, PdfDictionary? off)
     {
         if (IsHidden || (oc.Equals(KnownNames.OCTName) && !await contentState.IsGroupVisibleAsync(off).CA())) 
             groupsBelowDeepestVisibleGroup++;

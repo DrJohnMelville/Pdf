@@ -13,7 +13,7 @@ namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 internal readonly struct Type1PdfFunctionShaderFactory
 {
-    private readonly PdfValueDictionary shadingDictionary;
+    private readonly PdfDictionary shadingDictionary;
 
     private static readonly RectInterval defaultDomainInterval = new (
         new ClosedInterval(0,1), new ClosedInterval(0,1));
@@ -22,7 +22,7 @@ internal readonly struct Type1PdfFunctionShaderFactory
         new ClosedInterval(double.MinValue, double.MaxValue),
         new ClosedInterval(double.MinValue, double.MaxValue));
 
-    public Type1PdfFunctionShaderFactory(PdfValueDictionary shadingDictionary)
+    public Type1PdfFunctionShaderFactory(PdfDictionary shadingDictionary)
     {
         this.shadingDictionary = shadingDictionary;
     }
@@ -30,7 +30,7 @@ internal readonly struct Type1PdfFunctionShaderFactory
     public async ValueTask<IShaderWriter> ParseAsync(CommonShaderValues common)
     {
         var domainToPattern = await (
-                await shadingDictionary.GetOrNullAsync<PdfValueArray>(KnownNames.MatrixTName).CA())
+                await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.MatrixTName).CA())
             .AsMatrix3x2OrIdentityAsync().CA();
         Matrix3x2.Invert(domainToPattern, out var patternToDomain);          
 

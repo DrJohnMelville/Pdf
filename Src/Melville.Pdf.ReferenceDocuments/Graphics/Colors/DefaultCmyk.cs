@@ -17,7 +17,7 @@ public class DefaultCmyk: ColorBars
             CreateColorSpace);
     }
 
-    private PdfIndirectValue CreateColorSpace(IPdfObjectCreatorRegistry i)
+    private PdfIndirectObject CreateColorSpace(IPdfObjectCreatorRegistry i)
     {
         var builder = new PostscriptFunctionBuilder();
         builder.AddArgument((0, 1));
@@ -28,17 +28,17 @@ public class DefaultCmyk: ColorBars
         builder.AddOutput((0, 1));
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{pop 0.2 mul exch 0.4 mul add exch 0.2 mul add dup dup}"));
-        return new PdfValueArray(
+        return new PdfArray(
             KnownNames.DeviceNTName, ColorantNames(), KnownNames.DeviceRGBTName, func);
     }
 
-    protected virtual PdfValueArray ColorantNames()
+    protected virtual PdfArray ColorantNames()
     {
-        return new PdfValueArray(
-            PdfDirectValue.CreateName("khed"),
-            PdfDirectValue.CreateName("QGR"),
-            PdfDirectValue.CreateName("DFS"),
-            PdfDirectValue.CreateName("DFS")
+        return new PdfArray(
+            PdfDirectObject.CreateName("khed"),
+            PdfDirectObject.CreateName("QGR"),
+            PdfDirectObject.CreateName("DFS"),
+            PdfDirectObject.CreateName("DFS")
         );
     }
 

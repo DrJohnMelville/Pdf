@@ -13,14 +13,14 @@ public class IccCMYK: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"),
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"),
             cr =>
             {
 
-                var strRef = cr.Add(new ValueDictionaryBuilder()
+                var strRef = cr.Add(new DictionaryBuilder()
                     .WithItem(KnownNames.NTName, 4)
                     .AsStream(CmykIccProfile.GetCmykProfileStream()));
-                return new PdfValueArray(KnownNames.ICCBasedTName, strRef);
+                return new PdfArray(KnownNames.ICCBasedTName, strRef);
             }
         );
     }
@@ -32,7 +32,7 @@ public class IccCMYK: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectObject.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(1,0,0,0);
         DrawLine(csw);

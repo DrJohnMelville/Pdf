@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// <summary>
 /// Operations to get values out of a PDF dictionary
 /// </summary>
-public static class PdfValueDictionaryOperations
+public static class PdfDictionaryOperations
 {
     /// <summary>
     /// Get a value from the PDF Dictionary of a given type
@@ -18,7 +18,7 @@ public static class PdfValueDictionaryOperations
     /// <returns>The value corresponding to the given key</returns>
     /// <exception cref="PdfParseException">The item does not exist or is the wrong type</exception>
     public static async ValueTask<T> GetAsync<T>(
-        this PdfValueDictionary source, PdfDirectValue key)
+        this PdfDictionary source, PdfDirectObject key)
     {
         if (source.TryGetValue(key, out var obj) && (await obj.CA()).TryGet(out T? ret)) 
             return ret;
@@ -31,9 +31,9 @@ public static class PdfValueDictionaryOperations
     /// <param name="dict">The dictionary</param>
     /// <param name="name">The key for the desired item</param>
     /// <returns>The desired item, after resolving indirect references</returns>
-    public static ValueTask<PdfDirectValue> GetOrNullAsync(
-        this PdfValueDictionary dict, PdfDirectValue name) =>
-        dict.TryGetValue(name, out var obj) ? obj: new(PdfDirectValue.CreateNull());
+    public static ValueTask<PdfDirectObject> GetOrNullAsync(
+        this PdfDictionary dict, PdfDirectObject name) =>
+        dict.TryGetValue(name, out var obj) ? obj: new(PdfDirectObject.CreateNull());
 
 
     /// <summary>
@@ -44,8 +44,8 @@ public static class PdfValueDictionaryOperations
     /// <param name="name">The key for the desired item</param>
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
     /// <returns>The desired item, after resolving indirect references</returns>
-    public static ValueTask<PdfDirectValue> GetOrDefaultAsync(
-        this PdfValueDictionary dict, PdfDirectValue name, PdfDirectValue defaultValue = default) =>
+    public static ValueTask<PdfDirectObject> GetOrDefaultAsync(
+        this PdfDictionary dict, PdfDirectObject name, PdfDirectObject defaultValue = default) =>
         dict.TryGetValue(name, out var obj) 
         ? obj: new(defaultValue);
 
@@ -58,7 +58,7 @@ public static class PdfValueDictionaryOperations
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
     /// <returns>The desired item, after resolving indirect references</returns>
     public static async ValueTask<T> GetOrDefaultAsync<T>(
-        this PdfValueDictionary dict, PdfDirectValue name, T defaultValue = default) =>
+        this PdfDictionary dict, PdfDirectObject name, T defaultValue = default) =>
         dict.TryGetValue(name, out var obj) && (await obj.CA()).TryGet(out T? definiteObj)
         ? definiteObj: defaultValue;
 
@@ -70,7 +70,7 @@ public static class PdfValueDictionaryOperations
     /// <param name="name">The key for the desired item</param>
     /// <returns>The desired item, after resolving indirect references and getting the desired type</returns>
     public static async ValueTask<T?> GetOrNullAsync<T>(
-        this PdfValueDictionary dict, PdfDirectValue name) =>
+        this PdfDictionary dict, PdfDirectObject name) =>
         dict.TryGetValue(name, out var obj) && (await obj.CA()).TryGet(out T? definiteObj)
         ? definiteObj: default;
 
@@ -82,11 +82,11 @@ public static class PdfValueDictionaryOperations
     /// <param name="alternateName">The name to check if the primary key does not exist</param>
     /// <returns>Value associated with primary name if one exists, otherwise value associated with the
     /// secondary name as it exists, otherwise PdfNull</returns>
-    public static ValueTask<PdfDirectValue> GetWithAlternativeName(
-        this PdfValueDictionary dict, PdfDirectValue primaryName, PdfDirectValue alternateName) => dict switch
+    public static ValueTask<PdfDirectObject> GetWithAlternativeName(
+        this PdfDictionary dict, PdfDirectObject primaryName, PdfDirectObject alternateName) => dict switch
     {
         _ when dict.TryGetValue(primaryName, out var ret) => ret,
         _ when dict.TryGetValue(alternateName, out var ret) => ret,
-        _ => ValueTask.FromResult(PdfDirectValue.CreateNull())
+        _ => ValueTask.FromResult(PdfDirectObject.CreateNull())
     };
 }

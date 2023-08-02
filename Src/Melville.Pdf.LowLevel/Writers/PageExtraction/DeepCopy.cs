@@ -20,37 +20,37 @@ public readonly partial struct DeepCopy
     /// </summary>
     [FromConstructor] private readonly IPdfObjectCreatorRegistry creator;
     
-    private readonly Dictionary<(int, int), PdfIndirectValue> buffer = new();
+    private readonly Dictionary<(int, int), PdfIndirectObject> buffer = new();
 
     /// <summary>
     /// Clone an object, making a deep copy
     /// </summary>
     /// <param name="itemValue">The item to clone</param>
     /// <returns>The clones item</returns>
-    public ValueTask<PdfIndirectValue> CloneAsync(PdfIndirectValue itemValue) => 
-        itemValue.TryGetEmbeddedDirectValue(out PdfDirectValue pdv) ? 
+    public ValueTask<PdfIndirectObject> CloneAsync(PdfIndirectObject itemValue) => 
+        itemValue.TryGetEmbeddedDirectValue(out PdfDirectObject pdv) ? 
             CloneDirectValueAsync(pdv) : 
             CloneReferenceValueAsync(itemValue);
 
 
-    private ValueTask<PdfIndirectValue> CloneDirectValueAsync(PdfDirectValue value) => value switch
+    private ValueTask<PdfIndirectObject> CloneDirectValueAsync(PdfDirectObject value) => value switch
     {
-        var x when x.TryGet(out PdfValueArray? arr) => DuplicateArrayAsync(arr),
-        var x when x.TryGet(out PdfValueStream? str) => DuplicateStreamAsync(str),
-        var x when x.TryGet(out PdfValueDictionary? dict) => DuplicateDictionaryAsync(dict),
+        var x when x.TryGet(out PdfArray? arr) => DuplicateArrayAsync(arr),
+        var x when x.TryGet(out PdfStream? str) => DuplicateStreamAsync(str),
+        var x when x.TryGet(out PdfDictionary? dict) => DuplicateDictionaryAsync(dict),
         _ => new(value)
     };
 
-    private async ValueTask<PdfIndirectValue> DuplicateDictionaryAsync(PdfValueDictionary value) =>
+    private async ValueTask<PdfIndirectObject> DuplicateDictionaryAsync(PdfDictionary value) =>
         (await DuplicateDictionaryBuilderAsync(value).CA()).AsDictionary();
 
-    private async ValueTask<PdfIndirectValue> DuplicateStreamAsync(PdfValueStream value) => 
+    private async ValueTask<PdfIndirectObject> DuplicateStreamAsync(PdfStream value) => 
         (await DuplicateDictionaryBuilderAsync(value).CA())
         .AsStream(await value.StreamContentAsync(StreamFormat.DiskRepresentation).CA());
 
-    private async Task<ValueDictionaryBuilder> DuplicateDictionaryBuilderAsync(PdfValueDictionary value)
+    private async Task<DictionaryBuilder> DuplicateDictionaryBuilderAsync(PdfDictionary value)
     {
-        var builder = new ValueDictionaryBuilder();
+        var builder = new DictionaryBuilder();
         foreach (var pair in value.RawItems)
         {
             builder.WithItem(pair.Key, await CloneAsync(pair.Value).CA());
@@ -59,18 +59,18 @@ public readonly partial struct DeepCopy
         return builder;
     }
 
-    private async ValueTask<PdfIndirectValue> DuplicateArrayAsync(PdfValueArray value)
+    private async ValueTask<PdfIndirectObject> DuplicateArrayAsync(PdfArray value)
     {
-        var ret = new PdfIndirectValue[value.Count];
+        var ret = new PdfIndirectObject[value.Count];
         for (int i = 0; i < ret.Length; i++)
         {
             ret[i] = await CloneAsync(value.RawItems[i]).CA();
         }
 
-        return new PdfValueArray(ret);
+        return new PdfArray(ret);
     }
 
-    private async ValueTask<PdfIndirectValue> CloneReferenceValueAsync(PdfIndirectValue itemValue)
+    private async ValueTask<PdfIndirectObject> CloneReferenceValueAsync(PdfIndirectObject itemValue)
     {
         var pair = itemValue.GetObjectReference();
         if (buffer.TryGetValue(pair, out var ret)) return ret;
@@ -81,6 +81,6 @@ public readonly partial struct DeepCopy
         return newIndirectRef;
     }
 
-    public void ReserveIndirectMapping(int objNum, int gen, PdfIndirectValue targetPromise) => 
+    public void ReserveIndirectMapping(int objNum, int gen, PdfIndirectObject targetPromise) => 
         buffer[(objNum, gen)] = targetPromise;
 }

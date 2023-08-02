@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Filters.LzwFilter;
 
 internal static class LzwParameterParser
 {
-    public static async ValueTask<int> EarlySwitchLengthAsync(this PdfDirectValue parameters) =>
-        parameters.TryGet(out PdfValueDictionary dict)?
+    public static async ValueTask<int> EarlySwitchLengthAsync(this PdfDirectObject parameters) =>
+        parameters.TryGet(out PdfDictionary dict)?
             await dict.GetOrDefaultAsync(KnownNames.EarlyChangeTName, 1).CA(): 1;
 }

@@ -10,7 +10,7 @@ public class WriteSpacedText : Card3x5
     {
     }
 
-    private static readonly PdfDirectValue Font1 = PdfDirectValue.CreateName("F1");
+    private static readonly PdfDirectObject Font1 = PdfDirectObject.CreateName("F1");
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddStandardFont(Font1, BuiltInFontName.Courier, FontEncodingName.StandardEncoding);
@@ -27,7 +27,7 @@ public class WriteSpacedText : Card3x5
         await WriteStringAsync(csw, tr, Font1, 25);
     }
 
-    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfDirectValue font, int yOffset)
+    private async Task WriteStringAsync(ContentStreamWriter csw, TextBlockWriter tr, PdfDirectObject font, int yOffset)
     {
         await csw.SetFontAsync(font, 70);
         tr.SetTextMatrix(1, 0, 0, 1, 30, yOffset);

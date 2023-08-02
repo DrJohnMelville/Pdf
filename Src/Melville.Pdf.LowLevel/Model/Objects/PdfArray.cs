@@ -12,25 +12,25 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// Represnts an Array in the PDF specification.  Arrays in PDF are polymorphic and can
 /// contain different types of objects at each position, including other arrays.
 /// </summary>
-public sealed class PdfValueArray :
-    IReadOnlyList<ValueTask<PdfDirectValue>>, IAsyncEnumerable<PdfDirectValue>
+public sealed class PdfArray :
+    IReadOnlyList<ValueTask<PdfDirectObject>>, IAsyncEnumerable<PdfDirectObject>
 {
     /// <summary>
     /// A Pdf Array with no elements
     /// </summary>
-    public static PdfValueArray Empty = new(Array.Empty<PdfIndirectValue>());
+    public static PdfArray Empty = new(Array.Empty<PdfIndirectObject>());
 
-    private readonly PdfIndirectValue[] rawItems;
+    private readonly PdfIndirectObject[] rawItems;
     /// <summary>
     /// Items in the array as raw PDF objects, without references being resolved.
     /// </summary>
-    public IReadOnlyList<PdfIndirectValue> RawItems => rawItems;
+    public IReadOnlyList<PdfIndirectObject> RawItems => rawItems;
 
     /// <summary>
     /// Create a PDFArray
     /// </summary>
     /// <param name="rawItems">the items in the array</param>
-    public PdfValueArray(params PdfIndirectValue[] rawItems)
+    public PdfArray(params PdfIndirectObject[] rawItems)
     {
         this.rawItems = rawItems;
     }
@@ -41,7 +41,7 @@ public sealed class PdfValueArray :
     /// This method will follow all indirect objects to their direct destination.
     /// </summary>
     /// <returns>An IEnumerator object</returns>
-    public IEnumerator<ValueTask<PdfDirectValue>> GetEnumerator() =>
+    public IEnumerator<ValueTask<PdfDirectObject>> GetEnumerator() =>
         rawItems.Select(i => i.LoadValueAsync()).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -56,7 +56,7 @@ public sealed class PdfValueArray :
     /// </summary>
     /// <param name="index">The index of the array to retrieve.</param>
     /// <returns>A ValueTask&lt;PdfObject&gt; that contains the returned object.</returns>
-    public ValueTask<PdfDirectValue> this[int index] => rawItems[index].LoadValueAsync();
+    public ValueTask<PdfDirectObject> this[int index] => rawItems[index].LoadValueAsync();
 
     /// <summary>
     /// This method allows the PdfArray to be enumerated in await foreach statements.  This operation
@@ -64,16 +64,16 @@ public sealed class PdfValueArray :
     /// </summary>
     /// <param name="cancellationToken">Cancellation token for the await foreach operation</param>
     /// <returns>An async enumerator object that</returns>
-    public IAsyncEnumerator<PdfDirectValue> 
+    public IAsyncEnumerator<PdfDirectObject> 
         GetAsyncEnumerator(CancellationToken cancellationToken = new()) =>
         new Enumerator(rawItems);
     
-    private class Enumerator : IAsyncEnumerator<PdfDirectValue>
+    private class Enumerator : IAsyncEnumerator<PdfDirectObject>
     {
         private int currentPosition = -1;
-        private readonly PdfIndirectValue[] items;
+        private readonly PdfIndirectObject[] items;
             
-        public Enumerator(PdfIndirectValue[] items)
+        public Enumerator(PdfIndirectObject[] items)
         {
             this.items = items;
         }
@@ -88,7 +88,7 @@ public sealed class PdfValueArray :
             return true;
         }
 
-        public PdfDirectValue Current { get; private set; } = default;
+        public PdfDirectObject Current { get; private set; } = default;
     }
 
     /// <inheritdoc />
@@ -110,12 +110,12 @@ public sealed class PdfValueArray :
 
 public static class PdfValueArrayOperations
 {
-    public static async ValueTask<T> GetAsync<T>(this PdfValueArray array, int index) =>
+    public static async ValueTask<T> GetAsync<T>(this PdfArray array, int index) =>
         (await array[index].CA()).Get<T>();
 
-    public static async ValueTask<PdfDirectValue[]> AsDirectValues(this PdfValueArray array)
+    public static async ValueTask<PdfDirectObject[]> AsDirectValues(this PdfArray array)
     {
-        var ret = new PdfDirectValue[array.Count];
+        var ret = new PdfDirectObject[array.Count];
         for (int i = 0; i < ret.Length; i++)
         {
             ret[i] = await array[i].CA();

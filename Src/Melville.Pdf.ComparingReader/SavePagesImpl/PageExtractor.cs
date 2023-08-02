@@ -32,7 +32,7 @@ public readonly partial struct PageExtractor
                 await copier.CloneAsync(item.Value));
         }
 
-        targetPage.AddToContentStream(new ValueDictionaryBuilder(), contentData);
+        targetPage.AddToContentStream(new DictionaryBuilder(), contentData);
         var doc = documentCreator.CreateDocument();
         await new XrefStreamLowLevelDocumentWriter(PipeWriter.Create(output), doc).WriteAsync();
     }

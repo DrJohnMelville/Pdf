@@ -17,7 +17,7 @@ public interface ILowLevelDocumentEncryptor
     /// </summary>
     /// <param name="id">The ID element from the document root.</param>
     /// <returns>The encryption dictionary</returns>
-    public PdfValueDictionary CreateEncryptionDictionary(PdfValueArray id);
+    public PdfDictionary CreateEncryptionDictionary(PdfArray id);
     /// <summary>
     /// The user password that will read a document encrypted with this encryptor.
     /// </summary>
@@ -59,7 +59,7 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
         this.keyComputer = keyComputer;
     }
         
-    public PdfValueDictionary CreateEncryptionDictionary(PdfValueArray id)
+    public PdfDictionary CreateEncryptionDictionary(PdfArray id)
     {
         return DictionaryItems(id)
             .WithItem(KnownNames.FilterTName, KnownNames.StandardTName)
@@ -69,9 +69,9 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
             .AsDictionary();
     }
 
-    protected virtual ValueDictionaryBuilder DictionaryItems(PdfValueArray id)
+    protected virtual DictionaryBuilder DictionaryItems(PdfArray id)
     {
-        var dict = new ValueDictionaryBuilder();
+        var dict = new DictionaryBuilder();
         #warning ownerHash should be a span to avoid an allocation or ComputeOwnerKey could create a PdfDirectObject
         var ownerHash = ownerPasswordComputer.ComputeOwnerKey(ownerPassword,UserPassword, KeyLengthInBytes);
 
@@ -84,17 +84,17 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
             dict.WithItem(KnownNames.LengthTName, keyLengthInBits);
         dict.WithItem(KnownNames.PTName, permissions);
         dict.WithItem(KnownNames.RTName, r);
-        dict.WithItem(KnownNames.UTName, PdfDirectValue.CreateString(UserHashForPassword(UserPassword, ep)));
-        dict.WithItem(KnownNames.OTName, PdfDirectValue.CreateString(ownerHash));
+        dict.WithItem(KnownNames.UTName, PdfDirectObject.CreateString(UserHashForPassword(UserPassword, ep)));
+        dict.WithItem(KnownNames.OTName, PdfDirectObject.CreateString(ownerHash));
         return dict;
     }
 
-    private Memory<byte> ExtractFirstStringMemory(PdfValueArray id) =>
+    private Memory<byte> ExtractFirstStringMemory(PdfArray id) =>
         id.RawItems[0].TryGetEmbeddedDirectValue(out Memory<byte> ret)
             ? ret
             : throw new PdfParseException("Encryption dictionary must contain direct objects/");
 
-#warning -- use spans and return a PdfDirectValue
+#warning -- use spans and return a PdfDirectObject
     public byte[] UserHashForPassword(in string userPassword, in EncryptionParameters parameters)
     {
         var key = keyComputer.ComputeKey(userPassword, parameters);

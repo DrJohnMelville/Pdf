@@ -16,7 +16,7 @@ public class EncryptedRefStm: EncryptedFileWriter
         await base.BuildDocumentAsync(builder);
         using (var b1 = builder.LowLevelCreator.ObjectStreamContext())
         {
-            builder.LowLevelCreator.Add(PdfDirectValue.CreateString("String in Stream Context."u8));
+            builder.LowLevelCreator.Add(PdfDirectObject.CreateString("String in Stream Context."u8));
         }
     }
 }

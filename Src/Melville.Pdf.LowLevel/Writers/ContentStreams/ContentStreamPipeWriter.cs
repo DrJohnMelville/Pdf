@@ -26,12 +26,12 @@ internal readonly struct ContentStreamPipeWriter
 
     public void WriteBytes(ReadOnlySpan<byte> name) => destPipe.WriteBytes(name);
 
-    public void WriteOperator(in ReadOnlySpan<byte> op, PdfDirectValue name)
+    public void WriteOperator(in ReadOnlySpan<byte> op, PdfDirectObject name)
     {
         WriteName(name);
         WriteOperator(op);
     }
-    public void WriteOperator(in ReadOnlySpan<byte> op, params PdfDirectValue[] names)
+    public void WriteOperator(in ReadOnlySpan<byte> op, params PdfDirectObject[] names)
     {
         foreach (var name in names)
         {
@@ -79,7 +79,7 @@ internal readonly struct ContentStreamPipeWriter
 
     public void WriteDouble(double d) => destPipe.Advance(DoubleWriter.Write(d, destPipe.GetSpan(25)));
 
-    public void WriteName(PdfDirectValue name)
+    public void WriteName(PdfDirectObject name)
     {
         NameWriter.Write(destPipe, name);
         WriteSpace();
@@ -110,16 +110,16 @@ internal readonly struct ContentStreamPipeWriter
         }
     }
 
-    public void WriteOperator(in ReadOnlySpan<byte> operation, PdfValueDictionary dictionary)
+    public void WriteOperator(in ReadOnlySpan<byte> operation, PdfDictionary dictionary)
     {
         WriteDictionary(dictionary);
         WriteOperator(operation);
     }
 
-    public void WriteDictionary(PdfValueDictionary dict) => 
+    public void WriteDictionary(PdfDictionary dict) => 
         new PdfObjectWriter(destPipe).Write(dict);
 
-    public void WriteInlineImageDict(PdfValueDictionary dict) =>
+    public void WriteInlineImageDict(PdfDictionary dict) =>
         DictionaryWriter.WriteInlineImageDict(new PdfObjectWriter(destPipe), dict.RawItems);
 
     public Task WriteStreamContentAsync(Stream str) => str.CopyToAsync(destPipe);

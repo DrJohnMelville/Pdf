@@ -31,8 +31,8 @@ internal abstract class FilterProcessorBase
 internal partial class FilterProcessor: FilterProcessorBase
 {
 
-    [FromConstructor] private readonly IReadOnlyList<PdfIndirectValue> filters;
-    [FromConstructor] private readonly IReadOnlyList<PdfIndirectValue> parameters;
+    [FromConstructor] private readonly IReadOnlyList<PdfIndirectObject> filters;
+    [FromConstructor] private readonly IReadOnlyList<PdfIndirectObject> parameters;
     [FromConstructor] private readonly IApplySingleFilter singleFilter;
 
     protected override async ValueTask<Stream> EncodeAsync(
@@ -66,5 +66,5 @@ internal partial class FilterProcessor: FilterProcessorBase
 
         return ret;
     }
-    private PdfIndirectValue TryGetParameter(int i) => i < parameters.Count?parameters[i]:PdfDirectValue.CreateNull();
+    private PdfIndirectObject TryGetParameter(int i) => i < parameters.Count?parameters[i]:PdfDirectObject.CreateNull();
 }

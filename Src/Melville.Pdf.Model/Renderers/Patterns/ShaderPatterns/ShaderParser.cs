@@ -18,17 +18,17 @@ public static class ShaderParser
     /// </summary>
     /// <param name="patternDictionary">The PdfDictioanry representing the pattern.</param>
     /// <returns>An IShaderWriter to write the shader data</returns>
-    public static async ValueTask<IShaderWriter> ParseShaderAsync(PdfValueDictionary patternDictionary)
+    public static async ValueTask<IShaderWriter> ParseShaderAsync(PdfDictionary patternDictionary)
     {
-        var shadingDictionary = await patternDictionary.GetAsync<PdfValueDictionary>(KnownNames.ShadingTName).CA();
-        var patternToPixels = await (await patternDictionary.GetOrNullAsync<PdfValueArray>(KnownNames.MatrixTName).CA())
+        var shadingDictionary = await patternDictionary.GetAsync<PdfDictionary>(KnownNames.ShadingTName).CA();
+        var patternToPixels = await (await patternDictionary.GetOrNullAsync<PdfArray>(KnownNames.MatrixTName).CA())
             .AsMatrix3x2OrIdentityAsync().CA();
         
         return await ParseShaderAsync(patternToPixels, shadingDictionary, false).CA();
     }
 
     internal static async Task<IShaderWriter> ParseShaderAsync(
-        Matrix3x2 patternToPixels, PdfValueDictionary shadingDictionary, bool supressBackground)
+        Matrix3x2 patternToPixels, PdfDictionary shadingDictionary, bool supressBackground)
     {
         var common = await CommonShaderValues.ParseAsync(
             patternToPixels, shadingDictionary, supressBackground).CA();

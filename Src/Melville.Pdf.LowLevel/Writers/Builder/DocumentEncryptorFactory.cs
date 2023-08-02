@@ -110,7 +110,7 @@ public static class DocumentEncryptorFactory
     /// <returns>An ILowLevelDocumentEncryptor which can be used to make an LowLevelDocumentWriter write an encrypted document.</returns>
     public static ILowLevelDocumentEncryptor V4(
         string userPassword, string ownerPassword, PdfPermission restrictedPermissions,
-        PdfDirectValue streamEnc, PdfDirectValue stringEnc, PdfDirectValue embededFileEnc, in V4CfDictionary encryptors) =>
+        PdfDirectObject streamEnc, PdfDirectObject stringEnc, PdfDirectObject embededFileEnc, in V4CfDictionary encryptors) =>
         new V4Encryptor(userPassword, ownerPassword, 128, restrictedPermissions,
             streamEnc, stringEnc, embededFileEnc, encryptors);
 
@@ -138,7 +138,7 @@ public static class DocumentEncryptorFactory
     /// <returns>An ILowLevelDocumentEncryptor which can be used to make an LowLevelDocumentWriter write an encrypted document.</returns>
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions,
-        PdfDirectValue streamEnc, PdfDirectValue stringEnc, PdfDirectValue embededFileEnc, V4CfDictionary? dictionary = null) =>
+        PdfDirectObject streamEnc, PdfDirectObject stringEnc, PdfDirectObject embededFileEnc, V4CfDictionary? dictionary = null) =>
         new EncryptionV6.V6Encryptor(user, owner, restrictedPermissions,
             streamEnc, stringEnc, embededFileEnc,
              dictionary ?? new V4CfDictionary(KnownNames.AESV3TName, 32, KnownNames.DocOpenTName));

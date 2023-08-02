@@ -33,7 +33,7 @@ public readonly struct ReplViewModelFactory
 
         if (crossReference.HasValue && doc.LowLevel.Objects.TryGetValue(
                 (crossReference.Value.Object, crossReference.Value.Generation), out var indir) &&
-            (await indir.LoadValueAsync()).TryGet(out PdfValueStream stream))
+            (await indir.LoadValueAsync()).TryGet(out PdfStream stream))
         {
             var text = await ReadContentStringAsync(stream);
             return new ReplViewModel(text, renderer, buffer, indir, pageSel);
@@ -41,7 +41,7 @@ public readonly struct ReplViewModelFactory
         return await CreateFromCurrentPageAsync(doc, buffer);
     }
 
-    private static async Task<string> ReadContentStringAsync(PdfValueStream stream)
+    private static async Task<string> ReadContentStringAsync(PdfStream stream)
     {
         await using var source = await stream.StreamContentAsync();
         return await ReadContentStringAsync(source);

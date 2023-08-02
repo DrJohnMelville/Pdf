@@ -148,9 +148,9 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.AppendLine("        /// </summary>");
             sb.AppendLine($"        public static ReadOnlySpan<byte> {name}U8 => \"{value}\"u8;");
             sb.AppendLine("        /// <summary>");
-            sb.AppendLine($"        /// PdfDirectValue for span for ({value})");
+            sb.AppendLine($"        /// PdfDirectObject for span for ({value})");
             sb.AppendLine("        /// </summary>");
-            sb.AppendLine($"""        public static PdfDirectValue {name}TName => PdfDirectValue.CreateName({name}U8);""");
+            sb.AppendLine($"""        public static PdfDirectObject {name}TName => PdfDirectObject.CreateName({name}U8);""");
             sb.AppendLine("        /// <summary>");
             #warning -- get rid of this
             // sb.AppendLine($"        /// PdfName with value: ({value})");
@@ -171,15 +171,15 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                               /// </summary>
                               public readonly struct {{items.Key}}Name 
                               {
-                                 private readonly PdfDirectValue name;
+                                 private readonly PdfDirectObject name;
                                  /// <summary>
-                                 /// Implicitly convert a PdfDirectValue to a {{items.Key}}
+                                 /// Implicitly convert a PdfDirectObject to a {{items.Key}}
                                  /// </summary>    
-                                 public {{items.Key}}Name(PdfDirectValue name){ this.name = name;}
+                                 public {{items.Key}}Name(PdfDirectObject name){ this.name = name;}
                                  /// <summary>
-                                 /// Implicitly convert a {{items.Key}} to a PdfDirectValue
+                                 /// Implicitly convert a {{items.Key}} to a PdfDirectObject
                                  /// </summary>    
-                                 public static implicit operator PdfDirectValue({{items.Key}}Name wrapper) => wrapper.name; 
+                                 public static implicit operator PdfDirectObject({{items.Key}}Name wrapper) => wrapper.name; 
                         """);
                 foreach (var (value, name, type) in items)
                 {

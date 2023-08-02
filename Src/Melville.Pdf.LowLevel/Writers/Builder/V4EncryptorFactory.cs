@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 /// </summary>
 public readonly struct V4CfDictionary
 {
-    private readonly ValueDictionaryBuilder items = new();
+    private readonly DictionaryBuilder items = new();
 
     /// <summary>
     /// Create a v4 dictionary
@@ -18,7 +18,7 @@ public readonly struct V4CfDictionary
     /// <param name="cfm">Encryption algorithm for the default encryption.</param>
     /// <param name="keyLengthInBytes">Key length for the default encryption</param>
     /// <param name="authEvent">When the password would be checked.  (Melville.PDF does not honor this parameter.)</param>
-    public V4CfDictionary(PdfDirectValue cfm, int keyLengthInBytes, PdfDirectValue authEvent = default) => 
+    public V4CfDictionary(PdfDirectObject cfm, int keyLengthInBytes, PdfDirectObject authEvent = default) => 
         AddDefinition(KnownNames.StdCFTName, cfm, keyLengthInBytes, authEvent);
 
     /// <summary>
@@ -29,31 +29,31 @@ public readonly struct V4CfDictionary
     /// <param name="lengthInBytes">Length of the encryption key used.</param>
     /// <param name="authEvent">When the password would be checked.  (Melville.PDF does not honor this parameter.)</param>
     public void AddDefinition(
-        PdfDirectValue name, PdfDirectValue cfm, int lengthInBytes, PdfDirectValue authEvent = default) => 
+        PdfDirectObject name, PdfDirectObject cfm, int lengthInBytes, PdfDirectObject authEvent = default) => 
         items.WithItem(name, CreateDefinition(cfm, lengthInBytes, authEvent.IsNull?KnownNames.DocOpenTName:authEvent));
 
-    private PdfValueDictionary CreateDefinition(PdfDirectValue cfm, int lengthInBytes, PdfDirectValue authEvent) =>
-        new ValueDictionaryBuilder()
+    private PdfDictionary CreateDefinition(PdfDirectObject cfm, int lengthInBytes, PdfDirectObject authEvent) =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.AuthEventTName, authEvent)
             .WithItem(KnownNames.CFMTName, cfm)
             .WithItem(KnownNames.LengthTName, lengthInBytes)
             .AsDictionary();
 
-    internal PdfValueDictionary Build() => items.AsDictionary();
+    internal PdfDictionary Build() => items.AsDictionary();
 }
 
 internal class EncryptorWithCfsDictionary : ComputeEncryptionDictionary
 {
-    private readonly PdfDirectValue defStream;
-    private readonly PdfDirectValue defString;
-    private readonly PdfDirectValue defEmbeddedFile;
-    private readonly PdfValueDictionary cfs;
+    private readonly PdfDirectObject defStream;
+    private readonly PdfDirectObject defString;
+    private readonly PdfDirectObject defEmbeddedFile;
+    private readonly PdfDictionary cfs;
 
     public EncryptorWithCfsDictionary(
         string userPassword, string ownerPassword, int v, int r, int keyLengthInBits, 
         PdfPermission permissionsRestricted, IComputeOwnerPassword ownerPasswordComputer, 
         IComputeUserPassword userPasswordComputer, IGlobalEncryptionKeyComputer keyComputer, 
-        PdfDirectValue defStream, PdfDirectValue defString, PdfDirectValue defEmbeddedFile, V4CfDictionary cfs) : 
+        PdfDirectObject defStream, PdfDirectObject defString, PdfDirectObject defEmbeddedFile, V4CfDictionary cfs) : 
         base(userPassword, ownerPassword, v, r, keyLengthInBits, permissionsRestricted, 
             ownerPasswordComputer, userPasswordComputer, keyComputer)
     {
@@ -63,7 +63,7 @@ internal class EncryptorWithCfsDictionary : ComputeEncryptionDictionary
         this.cfs = cfs.Build();
     }
     
-    protected override ValueDictionaryBuilder DictionaryItems(PdfValueArray id)
+    protected override DictionaryBuilder DictionaryItems(PdfArray id)
     {
         var ret = base.DictionaryItems(id);
         ret.WithItem(KnownNames.CFTName, cfs);
@@ -78,7 +78,7 @@ internal class V4Encryptor: EncryptorWithCfsDictionary
 {
     public V4Encryptor(
         string userPassword, string ownerPassword, int keyLengthInBits, PdfPermission permissionsRestricted,
-        PdfDirectValue defStream, PdfDirectValue defString, PdfDirectValue defEmbeddedFile, in V4CfDictionary cfs) : 
+        PdfDirectObject defStream, PdfDirectObject defString, PdfDirectObject defEmbeddedFile, in V4CfDictionary cfs) : 
         base(userPassword, ownerPassword, 4,4, keyLengthInBits, permissionsRestricted, 
             ComputeOwnerPasswordV3.Instance, new ComputeUserPasswordV3(), new GlobalEncryptionKeyComputerV3(),
             defStream, defString, defEmbeddedFile, cfs)

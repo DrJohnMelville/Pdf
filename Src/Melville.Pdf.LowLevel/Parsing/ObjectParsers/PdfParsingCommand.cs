@@ -39,20 +39,20 @@ internal abstract partial class PdfParsingCommand
     }
 #endif
 
-    public static implicit operator PdfDirectValue(PdfParsingCommand cmd) =>
+    public static implicit operator PdfDirectObject(PdfParsingCommand cmd) =>
         new(cmd, default);
 }
 
 internal static class PdfParsingCommandOperations
 {
-    public static bool IsPdfParsingOperation(in this PdfIndirectValue value) =>
+    public static bool IsPdfParsingOperation(in this PdfIndirectObject value) =>
         value.TryGetEmbeddedDirectValue(out var directValue) &&
         directValue.IsPdfParsingOperation();
 
-    public static bool IsPdfParsingOperation(in this PdfDirectValue value) =>
+    public static bool IsPdfParsingOperation(in this PdfDirectObject value) =>
         value.TryGet<PdfParsingCommand>(out _);
 
     public static ValueTask TryExecutePdfParseOperation(
-        this in PdfDirectValue value, PdfParsingStack stack) =>
+        this in PdfDirectObject value, PdfParsingStack stack) =>
         value.TryGet(out PdfParsingCommand cmd) ? cmd.ExecuteAsync(stack) : ValueTask.CompletedTask;
 }

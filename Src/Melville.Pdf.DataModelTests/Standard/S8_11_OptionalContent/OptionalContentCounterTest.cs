@@ -11,8 +11,8 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_11_OptionalContent;
 
 public class OptionalContentCounterTest
 {
-    private readonly PdfValueDictionary On = new ValueDictionaryBuilder().AsDictionary();
-    private readonly PdfValueDictionary Off = new ValueDictionaryBuilder().AsDictionary();
+    private readonly PdfDictionary On = new DictionaryBuilder().AsDictionary();
+    private readonly PdfDictionary Off = new DictionaryBuilder().AsDictionary();
     private readonly Mock<IOptionalContentState> state = new();
     private readonly Mock<IHasPageAttributes> attrs = new();
 
@@ -20,11 +20,11 @@ public class OptionalContentCounterTest
 
     public OptionalContentCounterTest()
     {
-        state.Setup(i => i.IsGroupVisibleAsync(It.IsAny<PdfValueDictionary>())).
-            Returns((PdfValueDictionary d) => new(d == On));
+        state.Setup(i => i.IsGroupVisibleAsync(It.IsAny<PdfDictionary>())).
+            Returns((PdfDictionary d) => new(d == On));
         attrs.SetupGet(i => i.LowLevel).Returns(
-            new ValueDictionaryBuilder()
-                .WithItem(KnownNames.PropertiesTName, new ValueDictionaryBuilder()
+            new DictionaryBuilder()
+                .WithItem(KnownNames.PropertiesTName, new DictionaryBuilder()
                     .WithItem(KnownNames.ONTName, On)
                     .WithItem(KnownNames.OFFTName, Off)
                     .AsDictionary())

@@ -27,7 +27,7 @@ public class MarkedContentWriterTest: WriterTest
     [Fact]
     public async Task MarkedPointWithInlineDictionaryAsync()
     {
-        await sut.MarkedContentPointAsync("M1", new ValueDictionaryBuilder()
+        await sut.MarkedContentPointAsync("M1", new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.CatalogTName)
             .AsDictionary());
         Assert.Equal("/M1 <</Type/Catalog>>DP\n", await WrittenTextAsync());
@@ -57,7 +57,7 @@ public class MarkedContentWriterTest: WriterTest
     [Fact]
     public async Task NamedMarkRangeWithInlineDictAsync()
     {
-        using (await sut.BeginMarkedRangeAsync("M2", new ValueDictionaryBuilder()
+        using (await sut.BeginMarkedRangeAsync("M2", new DictionaryBuilder()
                    .WithItem(KnownNames.TypeTName, KnownNames.TypeTName)
                    .AsDictionary()))
         {

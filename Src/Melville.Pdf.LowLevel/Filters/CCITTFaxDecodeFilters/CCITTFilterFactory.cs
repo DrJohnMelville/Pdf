@@ -9,16 +9,16 @@ namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 
 internal class CcittFilterFactory
 {
-    public static async ValueTask<IStreamFilterDefinition> EncoderAsync(PdfDirectValue arg) => 
+    public static async ValueTask<IStreamFilterDefinition> EncoderAsync(PdfDirectObject arg) => 
         CcittCodecFactory.SelectEncoder(await ParseCcittOptionsAsync(arg).CA());
 
-    public static async ValueTask<IStreamFilterDefinition> DecoderAsync(PdfDirectValue arg) => 
+    public static async ValueTask<IStreamFilterDefinition> DecoderAsync(PdfDirectObject arg) => 
         CcittCodecFactory.SelectDecoder(await ParseCcittOptionsAsync(arg).CA());
 
-    public static ValueTask<CcittParameters> ParseCcittOptionsAsync(PdfDirectValue parameters) =>
-        FromDictionaryAsync(parameters.TryGet(out PdfValueDictionary dict)? dict:PdfValueDictionary.Empty);
+    public static ValueTask<CcittParameters> ParseCcittOptionsAsync(PdfDirectObject parameters) =>
+        FromDictionaryAsync(parameters.TryGet(out PdfDictionary dict)? dict:PdfDictionary.Empty);
 
-    public static async ValueTask<CcittParameters> FromDictionaryAsync(PdfValueDictionary parameters) =>
+    public static async ValueTask<CcittParameters> FromDictionaryAsync(PdfDictionary parameters) =>
         new(await parameters.GetOrDefaultAsync(KnownNames.KTName, 0).CA(),
             await parameters.GetOrDefaultAsync(KnownNames.EncodedByteAlignTName, false).CA(),
             await parameters.GetOrDefaultAsync(KnownNames.ColumnsTName, 1728).CA(),

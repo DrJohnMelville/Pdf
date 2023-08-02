@@ -3,7 +3,7 @@
 public class WinAnsiCharSet : DisplayCharSet
 {
     public WinAnsiCharSet() : base(BuiltInFontName.Courier,
-        new ValueDictionaryBuilder()
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
             .WithItem(KnownNames.BaseEncodingTName, KnownNames.WinAnsiEncodingTName)
             .AsDictionary()

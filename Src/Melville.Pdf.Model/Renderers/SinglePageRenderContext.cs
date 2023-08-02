@@ -13,7 +13,7 @@ internal partial class SinglePageRenderContext
     [FromConstructor] public IRenderTarget Target { get; }
     [FromConstructor] public DocumentRenderer Renderer { get; }
     [FromConstructor] public IOptionalContentCounter OptionalContent { get;  }
-    public PendingItemsStack<PdfDirectValue> ItemsBeingRendered = new();
+    public PendingItemsStack<PdfDirectObject> ItemsBeingRendered = new();
 
     public SwitchingColorStrategy CreateColorSwitcher(IHasPageAttributes page) =>
         new(

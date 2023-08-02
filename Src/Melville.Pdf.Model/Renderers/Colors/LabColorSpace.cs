@@ -30,11 +30,11 @@ internal class LabColorSpace : IColorSpace
     public ClosedInterval[] ColorComponentRanges(int bitsPerComponent) => outputIntervals;
 
 
-    public static async ValueTask<IColorSpace> ParseAsync(PdfValueDictionary parameters)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfDictionary parameters)
     {
         var wp = await ReadWhitePointAsync(parameters).CA();
         var array = (await parameters.GetOrNullAsync(KnownNames.RangeTName).CA())
-            .TryGet(out PdfValueArray arr)
+            .TryGet(out PdfArray arr)
             ? await arr.CastAsync<double>().CA()
             : Array.Empty<double>();
         
@@ -44,9 +44,9 @@ internal class LabColorSpace : IColorSpace
             );
     }
 
-    private static async Task<DoubleColor> ReadWhitePointAsync(PdfValueDictionary parameters)
+    private static async Task<DoubleColor> ReadWhitePointAsync(PdfDictionary parameters)
     {
-        var array = await parameters.GetAsync<PdfValueArray>(KnownNames.WhitePointTName).CA();
+        var array = await parameters.GetAsync<PdfArray>(KnownNames.WhitePointTName).CA();
         return await array.AsDoubleColorAsync().CA();
     }
 

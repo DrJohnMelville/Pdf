@@ -37,32 +37,32 @@ ET
     }
 
 
-    protected override PdfIndirectValue CreatePattern(IPdfObjectCreatorRegistry lldc)
+    protected override PdfIndirectObject CreatePattern(IPdfObjectCreatorRegistry lldc)
     {
         var tpc = CreatePatternCreator();
 
-        tpc.AddResourceObject(ResourceTypeName.Font, PdfDirectValue.CreateName("F1"), EncodedDingbatsFont(lldc));
-        tpc.AddToContentStream(new ValueDictionaryBuilder(), PatternContent());
-        return tpc.ConstructItem(lldc, PdfDirectValue.CreateNull()).Reference;
+        tpc.AddResourceObject(ResourceTypeName.Font, PdfDirectObject.CreateName("F1"), EncodedDingbatsFont(lldc));
+        tpc.AddToContentStream(new DictionaryBuilder(), PatternContent());
+        return tpc.ConstructItem(lldc, PdfDirectObject.CreateNull()).Reference;
     }
 
-    private static PdfValueDictionary EncodedDingbatsFont(IPdfObjectCreatorRegistry lldc) =>
-        new ValueDictionaryBuilder()
+    private static PdfDictionary EncodedDingbatsFont(IPdfObjectCreatorRegistry lldc) =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)BuiltInFontName.ZapfDingbats)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.ZapfDingbats)
             .WithItem(KnownNames.EncodingTName, lldc.Add(EncodeSuitesAs1To4()))
             .AsDictionary();
 
-    private static PdfValueDictionary EncodeSuitesAs1To4() =>
-        new ValueDictionaryBuilder()
+    private static PdfDictionary EncodeSuitesAs1To4() =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
-            .WithItem(KnownNames.DifferencesTName, new PdfValueArray(
+            .WithItem(KnownNames.DifferencesTName, new PdfArray(
                 1,
-                PdfDirectValue.CreateName("a109"),
-                PdfDirectValue.CreateName("a110"),
-                PdfDirectValue.CreateName("a111"),
-                PdfDirectValue.CreateName("a112")
+                PdfDirectObject.CreateName("a109"),
+                PdfDirectObject.CreateName("a110"),
+                PdfDirectObject.CreateName("a111"),
+                PdfDirectObject.CreateName("a112")
             ))
             .AsDictionary();
 

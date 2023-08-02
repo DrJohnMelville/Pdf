@@ -11,11 +11,11 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 internal static class SampledFunctionParser
 {
-    public static async Task<SampledFunctionBase> ParseAsync( PdfValueStream source)
+    public static async Task<SampledFunctionBase> ParseAsync( PdfStream source)
     {
         var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
         var range = await source.ReadIntervalsAsync(KnownNames.RangeTName).CA();
-        var size = await (await source.GetAsync<PdfValueArray>(KnownNames.SizeTName).CA()).CastAsync<int>().CA();
+        var size = await (await source.GetAsync<PdfArray>(KnownNames.SizeTName).CA()).CastAsync<int>().CA();
         var encode = source.ContainsKey(KnownNames.EncodeTName)
             ? await source.ReadIntervalsAsync(KnownNames.EncodeTName).CA()
             : CreateEncodeFromSize(size);
@@ -44,7 +44,7 @@ internal static class SampledFunctionParser
         size.Select(i => new ClosedInterval(0, i - 1)).ToArray();
 
     private static async Task<double[]> ReadSamplesAsync(
-        PdfValueStream source, int inputPermutations, ClosedInterval[] range)
+        PdfStream source, int inputPermutations, ClosedInterval[] range)
     {
         var decode = source.ContainsKey(KnownNames.DecodeTName)?
             await source.ReadIntervalsAsync(KnownNames.DecodeTName).CA(): range;

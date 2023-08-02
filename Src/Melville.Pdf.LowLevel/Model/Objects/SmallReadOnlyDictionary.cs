@@ -13,7 +13,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// </summary>
 /// <typeparam name="TKey">The type of the key to the dictionary</typeparam>
 /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-public readonly partial struct SmallReadOnlyValueDictionary<TKey,TValue>:IReadOnlyDictionary<TKey, TValue>
+public readonly partial struct SmallReadOnlyDictionary<TKey,TValue>:IReadOnlyDictionary<TKey, TValue>
     where TKey: IEquatable<TKey>
 {
     /// <summary>

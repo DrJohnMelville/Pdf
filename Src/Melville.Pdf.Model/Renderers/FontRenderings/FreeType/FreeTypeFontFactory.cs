@@ -16,7 +16,7 @@ internal readonly partial struct FreeTypeFontFactory
 {
     [FromConstructor] private readonly PdfFont fontDefinitionDictionary;
 
-    public async ValueTask<IRealizedFont> FromStreamAsync(PdfValueStream pdfStream)
+    public async ValueTask<IRealizedFont> FromStreamAsync(PdfStream pdfStream)
     {
         await using var source = await pdfStream.StreamContentAsync().CA();
         return await FromCSharpStreamAsync(source).CA();

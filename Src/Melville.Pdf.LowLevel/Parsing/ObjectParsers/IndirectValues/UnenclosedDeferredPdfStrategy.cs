@@ -7,14 +7,14 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal partial class UnenclosedDeferredPdfStrategy : IIndirectValueSource
+internal partial class UnenclosedDeferredPdfStrategy : IIndirectObjectSource
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
 
     public string GetValue(in MementoUnion memento) => 
         $"Raw Offset Reference @{memento.UInt64s[1]}";
 
-    public async ValueTask<PdfDirectValue> LookupAsync(MementoUnion memento)
+    public async ValueTask<PdfDirectObject> LookupAsync(MementoUnion memento)
     {
         var objectNumber = memento.Int32s[0];
         var generation = memento.Int32s[1];
@@ -32,6 +32,6 @@ internal partial class UnenclosedDeferredPdfStrategy : IIndirectValueSource
         return true;
     }
 
-    public PdfIndirectValue Create(long offset, int number, int generation) => 
+    public PdfIndirectObject Create(long offset, int number, int generation) => 
         new(this, MementoUnion.CreateFrom(number, generation, offset));
 }

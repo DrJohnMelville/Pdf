@@ -27,26 +27,26 @@ internal static class ParsePdfArrays
         public override void Execute(PostscriptEngine engine, in PostscriptValue value)
         {
             var count = engine.OperandStack.CountToMark();
-            var items = new PdfIndirectValue[count];
+            var items = new PdfIndirectObject[count];
             for (int i = count - 1; i >= 0; i--)
             {
                 items[i] = engine.OperandStack.Pop().ToPdfObject();
             }
             engine.OperandStack.Pop();
-            engine.OperandStack.Push(new PostscriptValue(new PdfValueArray(items), 
+            engine.OperandStack.Push(new PostscriptValue(new PdfArray(items), 
                 PostscriptBuiltInOperations.PushArgument, default));
         }
     }
 
-    public static PdfDirectValue ToPdfObject(in this PostscriptValue value) => value switch
+    public static PdfDirectObject ToPdfObject(in this PostscriptValue value) => value switch
     {
         { IsDouble: true } => value.Get<double>(),
         { IsInteger: true } => value.Get<long>(),
         { IsBoolean: true} => value.Get<bool>(),
-        { IsLiteralName: true} => PdfDirectValue.CreateName(
+        { IsLiteralName: true} => PdfDirectObject.CreateName(
             ExpandValueSynonym(value.Get<StringSpanSource>().GetSpan())),
-        {ValueStrategy: PdfValueArray or PdfValueDictionary} => 
-            new PdfDirectValue(value.ValueStrategy, value.Memento),
+        {ValueStrategy: PdfArray or PdfDictionary} => 
+            new PdfDirectObject(value.ValueStrategy, value.Memento),
         _ => throw new InvalidOperationException("Cannot Render this type.")
     };
     private static ReadOnlySpan<byte> ExpandValueSynonym(ReadOnlySpan<byte> name) => name switch

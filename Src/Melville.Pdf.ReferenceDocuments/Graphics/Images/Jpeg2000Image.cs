@@ -9,11 +9,11 @@ public class Jpeg2000Image: DisplayImageTest
     }
 
 
-    protected override PdfValueStream CreateImage()
+    protected override PdfStream CreateImage()
     {
         using var img = GetType().Assembly
             .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Graphics.Images.Jpeg2000.jp2");
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)

@@ -10,14 +10,14 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption;
 public class AddEncryptionItemsToTrailerTest
 {
     private LowLevelDocumentBuilder docBuilder;
-    private readonly PdfValueDictionary trailer;
+    private readonly PdfDictionary trailer;
 
     public AddEncryptionItemsToTrailerTest()
     {
         docBuilder = new LowLevelDocumentBuilder();
-        docBuilder.AddToTrailerDictionary(KnownNames.IDTName, new PdfValueArray(
-            PdfDirectValue.CreateString("12345678901234567890123456789012"u8),
-            PdfDirectValue.CreateString("12345678901234567890123456789012"u8)));
+        docBuilder.AddToTrailerDictionary(KnownNames.IDTName, new PdfArray(
+            PdfDirectObject.CreateString("12345678901234567890123456789012"u8),
+            PdfDirectObject.CreateString("12345678901234567890123456789012"u8)));
         docBuilder.AddEncryption(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
         trailer = docBuilder.CreateDocument().TrailerDictionary;
     }
@@ -32,7 +32,7 @@ public class AddEncryptionItemsToTrailerTest
     public async Task EcryptionWithV3DictionaryAsync()
     {
         Assert.True(trailer.ContainsKey(KnownNames.EncryptTName));
-        var dict = await trailer.GetAsync<PdfValueDictionary>(KnownNames.EncryptTName);
+        var dict = await trailer.GetAsync<PdfDictionary>(KnownNames.EncryptTName);
         Assert.Equal(2, (await dict.GetAsync<int>(KnownNames.VTName)));
         Assert.Equal(3, (await dict.GetAsync<int>(KnownNames.RTName)));
         Assert.Equal(128, (await dict.GetAsync<int>(KnownNames.LengthTName)));

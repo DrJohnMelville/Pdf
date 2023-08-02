@@ -9,7 +9,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_8_StreamsDefined
 {
-    private static long GetPosition(PdfValueStream obj) => 
+    private static long GetPosition(PdfStream obj) => 
         (long)(obj.GetField("source")!.GetField("sourceFilePosition")!);
 
     private const string ObjectPrefix = "1 2 obj ";
@@ -22,7 +22,7 @@ public class S7_3_8_StreamsDefined
     public async Task ParseSimpleStreamAsync(string data, int expectedPosition)
     {
         var obj = await $"{ObjectPrefix}{data}\r\nendobj".ParseRootObjectAsync();
-        var cSharpStream = await obj.Get<PdfValueStream>().StreamContentAsync();
+        var cSharpStream = await obj.Get<PdfStream>().StreamContentAsync();
         Assert.Equal("123456", await new StreamReader(cSharpStream).ReadToEndAsync());
     }
 }

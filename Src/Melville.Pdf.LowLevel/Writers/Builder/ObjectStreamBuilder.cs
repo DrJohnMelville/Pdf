@@ -8,26 +8,26 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 internal class ObjectStreamBuilder
 {
-    private readonly ValueDictionaryBuilder streamDictionaryItems;
-    private readonly Dictionary<int,PdfDirectValue> members = new();
+    private readonly DictionaryBuilder streamDictionaryItems;
+    private readonly Dictionary<int,PdfDirectObject> members = new();
 
-    public ObjectStreamBuilder(ValueDictionaryBuilder? streamDictionaryItems = null)
+    public ObjectStreamBuilder(DictionaryBuilder? streamDictionaryItems = null)
     {
         this.streamDictionaryItems = streamDictionaryItems ?? DefaultBuilder();
     }
 
-    private ValueDictionaryBuilder DefaultBuilder() => new ValueDictionaryBuilder()
+    private DictionaryBuilder DefaultBuilder() => new DictionaryBuilder()
         .WithItem(KnownNames.FilterTName, KnownNames.FlateDecodeTName);
 
-    public bool TryAddRef(int number, PdfDirectValue obj)
+    public bool TryAddRef(int number, PdfDirectObject obj)
     {
         if (!IsLegalWrite(obj)) return false;
         members[number] = obj;
         return true;
     }
-    private bool IsLegalWrite(PdfDirectValue value) => ! value.TryGet(out PdfValueStream _);
+    private bool IsLegalWrite(PdfDirectObject value) => ! value.TryGet(out PdfStream _);
 
-    public async ValueTask<PdfDirectValue> CreateStreamAsync()
+    public async ValueTask<PdfDirectObject> CreateStreamAsync()
     {
         var writer = new ObjectStreamWriter();
         foreach (var member in members)

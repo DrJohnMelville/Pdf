@@ -23,7 +23,7 @@ public static class IccProfileColorSpaceParser
     /// </summary>
     /// <param name="stream">The CodeSource to read the ICC profile from.</param>
     /// <returns>The ICC colorspace read from the stream.</returns>
-    public static async ValueTask<IColorSpace> ParseAsync(PdfValueStream stream)
+    public static async ValueTask<IColorSpace> ParseAsync(PdfStream stream)
     {
         try
         {
@@ -35,12 +35,12 @@ public static class IccProfileColorSpaceParser
         }
     }
 
-    private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpaceAsync(PdfValueStream stream) =>
+    private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpaceAsync(PdfStream stream) =>
         new ColorSpaceFactory(NoPageContext.Instance)
             .FromNameOrArrayAsync(await stream.GetOrDefaultAsync(KnownNames.AlternateTName,
                 DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.NTName, 0).CA())).CA()).CA();
 
-    private static PdfDirectValue DefaultColorSpace(long n) =>
+    private static PdfDirectObject DefaultColorSpace(long n) =>
         n switch
         {
             1 => KnownNames.DeviceGrayTName,

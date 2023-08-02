@@ -81,8 +81,8 @@ public class TilePatternCreator : ContentStreamCreator
     public void AddMatrix(Matrix3x2 matrix) => MetaData.WithItem(KnownNames.MatrixTName, matrix.AsPdfArray());
 
     /// <inheritdoc />
-    public override (PdfIndirectValue Reference, int PageCount) ConstructItem(IPdfObjectCreatorRegistry creator,
-        PdfIndirectValue parent)
+    public override (PdfIndirectObject Reference, int PageCount) ConstructItem(IPdfObjectCreatorRegistry creator,
+        PdfIndirectObject parent)
     {
         if (!parent.IsNull)
             throw new InvalidOperationException("Patterns may not have a parent");
@@ -90,7 +90,7 @@ public class TilePatternCreator : ContentStreamCreator
     }
 
     /// <inheritdoc />
-    public override void AddToContentStream(ValueDictionaryBuilder builder, MultiBufferStreamSource data)
+    public override void AddToContentStream(DictionaryBuilder builder, MultiBufferStreamSource data)
     {
         if (content != null)
             throw new InvalidOperationException("Tile Pattern may have only 1 content stream");
@@ -98,7 +98,7 @@ public class TilePatternCreator : ContentStreamCreator
     }
 
     /// <inheritdoc />
-    protected override PdfIndirectValue CreateFinalObject(IPdfObjectCreatorRegistry creator)
+    protected override PdfIndirectObject CreateFinalObject(IPdfObjectCreatorRegistry creator)
     {
         if (content is null) throw new InvalidOperationException("Tile Pattern must have content.");
         return creator.Add(MetaData.AsStream(content));

@@ -11,7 +11,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 /// </summary>
 public static class SubstituteDefaultFont
 {
-    private static readonly PdfDirectValue[] names =
+    private static readonly PdfDirectObject[] names =
     {
         KnownNames.CourierTName,
         KnownNames.CourierBoldTName,
@@ -36,7 +36,7 @@ public static class SubstituteDefaultFont
     /// </summary>
     /// <param name="flags">Fontflags for the type to immitate</param>
     /// <returns>A PdfName corresponding to a built in font.</returns>
-    public static PdfDirectValue MapBuiltInFont(this FontFlags flags) => 
+    public static PdfDirectObject MapBuiltInFont(this FontFlags flags) => 
         names[FamilyOffset(flags) + BoldOffset(flags) + ItalicOffset(flags)];
 
     private static int FamilyOffset(FontFlags flags)

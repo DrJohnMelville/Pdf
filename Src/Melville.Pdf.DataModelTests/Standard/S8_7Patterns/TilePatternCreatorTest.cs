@@ -30,14 +30,14 @@ public class TilePatternCreatorTest
 
     private static async Task TestTilePatternAsync(string partialString, TilePatternCreator builder)
     {
-        await builder.AddToContentStreamAsync(new ValueDictionaryBuilder(), csw =>
+        await builder.AddToContentStreamAsync(new DictionaryBuilder(), csw =>
         {
             csw.Rectangle(1, 2, 3, 4);
             return ValueTask.CompletedTask;
         });
-        var (ir, num) = builder.ConstructItem(new LowLevelDocumentBuilder(), PdfDirectValue.CreateNull());
+        var (ir, num) = builder.ConstructItem(new LowLevelDocumentBuilder(), PdfDirectObject.CreateNull());
         var str = (await ir.LoadValueAsync())
-            .TryGet(out PdfValueStream? innerStr)
+            .TryGet(out PdfStream? innerStr)
             ? await innerStr.WriteStreamToStringAsync()
             : throw new InvalidOperationException("Pattern must be a stream");
         Assert.Contains(partialString, str);

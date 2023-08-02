@@ -25,6 +25,6 @@ public class S7_7_2DocumentCatalog
         var creator = new PdfDocumentCreator();
         creator.SetVersionInCatalog(3,4);
         var doc = new PdfDocument(creator.CreateDocument());
-        Assert.Equal(PdfDirectValue.CreateName("3.4"), await doc.VersionAsync());
+        Assert.Equal(PdfDirectObject.CreateName("3.4"), await doc.VersionAsync());
     }
 }

@@ -20,11 +20,11 @@ public static class PdfObjectToListOperations
     /// </summary>
     /// <param name="item">The item to follow.</param>
     /// <returns>A list of PdfObjects with the semantics given above.</returns>
-    public static IReadOnlyList<PdfIndirectValue> ObjectAsUnresolvedList(this PdfDirectValue item) =>
+    public static IReadOnlyList<PdfIndirectObject> ObjectAsUnresolvedList(this PdfDirectObject item) =>
         item switch
         {
-            {IsNull:true} => Array.Empty<PdfIndirectValue>(),
-            _ when item.TryGet(out PdfValueArray valueArray) => valueArray.RawItems,
-            _ => new [] {(PdfIndirectValue)item}
+            {IsNull:true} => Array.Empty<PdfIndirectObject>(),
+            _ when item.TryGet(out PdfArray valueArray) => valueArray.RawItems,
+            _ => new [] {(PdfIndirectObject)item}
         };
 }

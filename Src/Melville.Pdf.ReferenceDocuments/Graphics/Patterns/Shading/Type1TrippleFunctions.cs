@@ -9,7 +9,7 @@ public class Type1TrippleFunctions : Type1FunctionalShaderBase
     {
     }
 
-    protected override async Task<PdfValueStream[]> BuildFunctionAsync()
+    protected override async Task<PdfStream[]> BuildFunctionAsync()
     {
         var ret = new[]
         {
@@ -20,7 +20,7 @@ public class Type1TrippleFunctions : Type1FunctionalShaderBase
         return ret;
     }
 
-    private static async Task<PdfValueStream> SingleMethodAsync(Func<double, double, double> defn)
+    private static async Task<PdfStream> SingleMethodAsync(Func<double, double, double> defn)
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));

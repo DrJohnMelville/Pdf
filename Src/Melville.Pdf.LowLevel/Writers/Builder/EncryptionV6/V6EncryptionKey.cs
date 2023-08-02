@@ -27,7 +27,7 @@ internal readonly partial struct V6EncryptionKey
     }
 
     private void SetRandomBits(IRandomNumberSource source) => source.Fill(data.Span.Slice(32, 16));
-    public PdfDirectValue HashAsPdfString() => PdfDirectValue.CreateString(data.Span);
-    public PdfDirectValue EncodedKeyAsPdfString() => PdfDirectValue.CreateString(encryptedFileKey.Span);
+    public PdfDirectObject HashAsPdfString() => PdfDirectObject.CreateString(data.Span);
+    public PdfDirectObject EncodedKeyAsPdfString() => PdfDirectObject.CreateString(encryptedFileKey.Span);
     
 }

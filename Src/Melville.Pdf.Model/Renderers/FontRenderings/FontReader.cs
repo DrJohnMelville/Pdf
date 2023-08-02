@@ -31,7 +31,7 @@ public readonly struct FontReader
     /// </summary>
     /// <param name="fontDict">A PdfDictionary representing the font</param>
     /// <returns>An IRealizedFont that can render characters in the font.</returns>
-    public  ValueTask<IRealizedFont> DictionaryToRealizedFontAsync(PdfValueDictionary fontDict) => 
+    public  ValueTask<IRealizedFont> DictionaryToRealizedFontAsync(PdfDictionary fontDict) => 
          PdfFontToRealizedFontAsync(new PdfFont(fontDict));
 
     private ValueTask<IRealizedFont> PdfFontToRealizedFontAsync(PdfFont font)

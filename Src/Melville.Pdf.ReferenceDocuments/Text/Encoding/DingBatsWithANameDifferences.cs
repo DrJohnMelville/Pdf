@@ -9,22 +9,22 @@ public class DingBatsWithANameDifferences : FontDefinitionTest
         TextToRender = "\u0001\u0002\u0003\u0004";
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        var enc = arg.Add(new ValueDictionaryBuilder()
+        var enc = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
-            .WithItem(KnownNames.DifferencesTName, new PdfValueArray(
+            .WithItem(KnownNames.DifferencesTName, new PdfArray(
                 1,
-                PdfDirectValue.CreateName("a109"),
-                PdfDirectValue.CreateName("a110"),
-                PdfDirectValue.CreateName("a111"),
-                PdfDirectValue.CreateName("a112")
+                PdfDirectObject.CreateName("a109"),
+                PdfDirectObject.CreateName("a110"),
+                PdfDirectObject.CreateName("a111"),
+                PdfDirectObject.CreateName("a112")
             ))
             .AsDictionary());
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectValue)BuiltInFontName.ZapfDingbats)
+            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.ZapfDingbats)
             .WithItem(KnownNames.EncodingTName, enc)
             .AsDictionary();
     }

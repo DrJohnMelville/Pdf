@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_10Functions;
 
 public class S7_10_4StitchingFunctions
 {
-    private PdfValueDictionary LinearMapping(int min, int max)
+    private PdfDictionary LinearMapping(int min, int max)
     {
         var builder = new ExponentialFunctionBuilder(1);
         builder.AddFunction(min, max);
@@ -36,14 +36,14 @@ public class S7_10_4StitchingFunctions
     public void CannotAddBelowMinimum()
     {
         var builder = new StitchingFunctionBuilder(0);
-        Assert.Throws<ArgumentException>(() => builder.AddFunction(new ValueDictionaryBuilder().AsDictionary(), -1));
+        Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), -1));
     }
     [Fact]
     public void CannotAddBelowLast()
     {
         var builder = new StitchingFunctionBuilder(0);
-        builder.AddFunction(new ValueDictionaryBuilder().AsDictionary(), 0.5);
-        Assert.Throws<ArgumentException>(() => builder.AddFunction(new ValueDictionaryBuilder().AsDictionary(), 0.25));
+        builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.5);
+        Assert.Throws<ArgumentException>(() => builder.AddFunction(new DictionaryBuilder().AsDictionary(), 0.25));
     }
 
     [Theory]

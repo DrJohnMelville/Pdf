@@ -11,7 +11,7 @@ internal class CompositeGlyphNameMapper : INameToGlyphMapping
     {
         this.mappings = mappings;
     }
-    public uint GetGlyphFor(PdfDirectValue name)
+    public uint GetGlyphFor(PdfDirectObject name)
     {
         foreach (var mapping in mappings)
         {

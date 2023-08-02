@@ -42,15 +42,15 @@ internal readonly struct ReferenceStreamWriter
 
     private int XrefStreamObjectNumber() => objectOffsets.Entries.Length-1;
 
-    private async ValueTask<PdfValueStream> CreateReferenceStreamAsync()
+    private async ValueTask<PdfStream> CreateReferenceStreamAsync()
     {
         var data = new MultiBufferStream(2048);
         await GenerateXrefStreamAsync(data).CA();
 
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithMultiItem(document.TrailerDictionary.RawItems
                 .Where(i => !i.Key.Equals(KnownNames.SizeTName))
-                .Select(i=> new KeyValuePair<PdfDirectValue, PdfIndirectValue>(i.Key, i.Value)))
+                .Select(i=> new KeyValuePair<PdfDirectObject, PdfIndirectObject>(i.Key, i.Value)))
             .WithItem(KnownNames.TypeTName, KnownNames.XRefTName)
             .WithItem(KnownNames.WTName, WidthsAsArray())
             .WithItem(KnownNames.SizeTName, objectOffsets.Entries.Length)
@@ -59,13 +59,13 @@ internal readonly struct ReferenceStreamWriter
             .AsStream(data);
     }
 
-    private PdfValueDictionary FilterParam() => new ValueDictionaryBuilder()
+    private PdfDictionary FilterParam() => new DictionaryBuilder()
         .WithItem(KnownNames.PredictorTName, 12)
         .WithItem(KnownNames.ColumnsTName, columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)
         .AsDictionary();
 
-    private PdfDirectValue WidthsAsArray() =>
-        new PdfValueArray(
+    private PdfDirectObject WidthsAsArray() =>
+        new PdfArray(
             columnWidths.Item1,
             columnWidths.Item2,
             columnWidths.Item3

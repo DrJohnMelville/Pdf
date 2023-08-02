@@ -8,11 +8,11 @@ namespace Melville.Pdf.Model.Renderers.OptionalContents;
 [StaticSingleton]
 internal sealed partial class NullOptionalContentCounter : IOptionalContentCounter
 {
-    public ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfValueDictionary? visibilityGroup) => new(false);
+    public ValueTask<bool> CanSkipXObjectDoOperationAsync(PdfDictionary? visibilityGroup) => new(false);
 
-    public ValueTask EnterGroupAsync(PdfDirectValue oc, PdfDirectValue off, IHasPageAttributes attributeSource) =>
+    public ValueTask EnterGroupAsync(PdfDirectObject oc, PdfDirectObject off, IHasPageAttributes attributeSource) =>
         ValueTask.CompletedTask;
-    public ValueTask EnterGroupAsync(PdfDirectValue oc, PdfValueDictionary off) => ValueTask.CompletedTask;
+    public ValueTask EnterGroupAsync(PdfDirectObject oc, PdfDictionary off) => ValueTask.CompletedTask;
     public void PopContentGroup()
     {
     }

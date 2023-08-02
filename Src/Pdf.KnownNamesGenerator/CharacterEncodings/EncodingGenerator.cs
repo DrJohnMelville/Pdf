@@ -67,7 +67,7 @@ public class EncodingGenerator
 
     private void GenerateEncoding(StringBuilder sb, string name, IReadOnlyDictionary<byte, string> map)
     {
-        sb.AppendLine($"    public static PdfDirectValue[] {name} = {{");
+        sb.AppendLine($"    public static PdfDirectObject[] {name} = {{");
         for (int i = 0; i < 256; i++)
         {
             var value = ComputeUnicodeForGlyph(map, i);
@@ -88,9 +88,9 @@ public class EncodingGenerator
         sb.AppendLine("{");
         foreach (var name in AllCharacterNames())
         {
-            sb.Append("    public static readonly PdfDirectValue ");
+            sb.Append("    public static readonly PdfDirectObject ");
             sb.Append(name);
-            sb.Append(" = PdfDirectValue.CreateName(\"");
+            sb.Append(" = PdfDirectObject.CreateName(\"");
             sb.Append(name);
             sb.AppendLine("\"u8);");
         }

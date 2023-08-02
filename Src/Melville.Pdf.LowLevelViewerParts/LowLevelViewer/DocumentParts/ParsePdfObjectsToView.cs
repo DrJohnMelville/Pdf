@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 public readonly partial struct ParsePdfObjectsToView
 {
     [FromConstructor] private readonly IWaitingService waiting;
-    [FromConstructor] private readonly KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>[] sourceList;
+    [FromConstructor] private readonly KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectObject>[] sourceList;
 
     private const int maxSegmentLength = 1000;
 
@@ -32,7 +32,7 @@ public readonly partial struct ParsePdfObjectsToView
         return ret;
     }
 
-    private Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> MemoryForSegment(int i) => 
+    private Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectObject>> MemoryForSegment(int i) => 
         sourceList.AsMemory(i * maxSegmentLength, SegmentLength(i));
 
     private int SegmentLength(int i) => 

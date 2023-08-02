@@ -14,8 +14,8 @@ internal readonly partial struct ImageRenderingWrapper
     [FromConstructor] private readonly bool isImageMask;
     [FromConstructor] private readonly IColorSpace colorSpace;
     [FromConstructor] private readonly int bitsPerComponent;
-    [FromConstructor] private readonly PdfDirectValue mask;
-    [FromConstructor] private readonly PdfDirectValue softMask;
+    [FromConstructor] private readonly PdfDirectObject mask;
+    [FromConstructor] private readonly PdfDirectObject softMask;
     [FromConstructor] private readonly bool shouldInterpolate;
     [FromConstructor] private readonly BitmapRenderParameters attr;
 
@@ -54,21 +54,21 @@ internal readonly partial struct ImageRenderingWrapper
     private async ValueTask<IPdfBitmap> WrapWithHardMaskAsync(
         IPdfBitmap writer) => mask switch
         {
-            var x when x.TryGet(out PdfValueArray maskArr) => 
+            var x when x.TryGet(out PdfArray maskArr) => 
                  new SelfMaskAdjuster<ColorRangeMaskType>(writer,
                      new ColorRangeMaskType(
                      await maskArr.CastAsync<int>().CA(), bitsPerComponent, colorSpace)),                
-            var x when x.TryGet(out PdfValueStream str) => await CreateMaskWriterAsync<HardMask>(writer, str).CA(),
+            var x when x.TryGet(out PdfStream str) => await CreateMaskWriterAsync<HardMask>(writer, str).CA(),
             _ => writer
         };
 
     private ValueTask<IPdfBitmap> WrapWithSoftMaskAsync(
-        IPdfBitmap writer) => softMask.TryGet(out PdfValueStream str) ?
+        IPdfBitmap writer) => softMask.TryGet(out PdfStream str) ?
             CreateMaskWriterAsync<SoftMask>(writer, str) :
             ValueTask.FromResult(writer);
 
     private async ValueTask<IPdfBitmap> CreateMaskWriterAsync<T>(
-        IPdfBitmap target, PdfValueStream str)
+        IPdfBitmap target, PdfStream str)
         where T : IMaskType, new()
     {
         var maskBitmap = await MaskBitmap.CreateAsync(str, attr.Page).CA();

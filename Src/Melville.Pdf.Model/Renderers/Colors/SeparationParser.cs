@@ -10,7 +10,7 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 internal static class SeparationParser
 {
-    public static ValueTask<IColorSpace> ParseSeparationAsync(in Memory<PdfDirectValue> array, IHasPageAttributes page) =>
+    public static ValueTask<IColorSpace> ParseSeparationAsync(in Memory<PdfDirectObject> array, IHasPageAttributes page) =>
         array.Span[1] switch
         {
             var x when x.Equals(KnownNames.AllTName) => new(DeviceGray.InvertedInstance),
@@ -18,21 +18,21 @@ internal static class SeparationParser
             _=>AlternateColorspaceAsync(array, page)
         };
 
-    private static async ValueTask<IColorSpace> AlternateColorspaceAsync(Memory<PdfDirectValue> array, IHasPageAttributes page) =>
+    private static async ValueTask<IColorSpace> AlternateColorspaceAsync(Memory<PdfDirectObject> array, IHasPageAttributes page) =>
         new ColorSpaceCache(
         new RelativeColorSpace(
             await new ColorSpaceFactory(page).FromNameOrArrayAsync(array.Span[2]).CA(),
-            await (array.Span[3].Get<PdfValueDictionary>()).CreateFunctionAsync().CA()), 10);
+            await (array.Span[3].Get<PdfDictionary>()).CreateFunctionAsync().CA()), 10);
 
-    public static async ValueTask<IColorSpace> ParseDeviceNAsync(Memory<PdfDirectValue> array, IHasPageAttributes page)
+    public static async ValueTask<IColorSpace> ParseDeviceNAsync(Memory<PdfDirectObject> array, IHasPageAttributes page)
     {
-        var nameArray = array.Span[1].Get<PdfValueArray>();
+        var nameArray = array.Span[1].Get<PdfArray>();
         return (await AllNonesAsync(nameArray).CA())
             ? new InvisibleColorSpace(nameArray.Count)
             : await AlternateColorspaceAsync(array, page).CA();
     }
 
-    private static async ValueTask<bool> AllNonesAsync(PdfValueArray array)
+    private static async ValueTask<bool> AllNonesAsync(PdfArray array)
     {
         foreach (var itemTask in array)
         {

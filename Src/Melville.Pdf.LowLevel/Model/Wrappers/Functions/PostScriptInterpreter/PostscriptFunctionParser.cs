@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.PostScriptInterpreter;
 
 internal static class PostscriptFunctionParser
 {
-    public static async Task<PdfFunction> ParseAsync(PdfValueStream source)
+    public static async Task<PdfFunction> ParseAsync(PdfStream source)
     {
         var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
         var range = await source.ReadIntervalsAsync(KnownNames.RangeTName).CA();

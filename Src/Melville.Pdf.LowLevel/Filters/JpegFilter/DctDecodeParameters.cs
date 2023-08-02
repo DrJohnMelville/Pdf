@@ -6,9 +6,9 @@ namespace Melville.Pdf.LowLevel.Filters.JpegFilter;
 
 internal readonly partial struct DctDecodeParameters
 {
-    private readonly PdfValueDictionary dict;
+    private readonly PdfDictionary dict;
 
-    public DctDecodeParameters(PdfDirectValue dict) => this.dict = dict.TryGet(out PdfValueDictionary? temp) ? temp: PdfValueDictionary.Empty;
+    public DctDecodeParameters(PdfDirectObject dict) => this.dict = dict.TryGet(out PdfDictionary? temp) ? temp: PdfDictionary.Empty;
 
     public ValueTask<long> ColorTransformAsync() => dict.GetOrDefaultAsync(KnownNames.ColorTransformTName, -1L);
 }

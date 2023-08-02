@@ -26,7 +26,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
     private static ReadOnlySpan<byte> SegoeUISymbol => "Segoe UI Symbol"u8;
 
     /// <inheritdoc />
-    public DefaultFontReference FontFromName(PdfDirectValue font, FontFlags fontFlags)
+    public DefaultFontReference FontFromName(PdfDirectObject font, FontFlags fontFlags)
     {
         return font switch
         {
@@ -58,7 +58,7 @@ public partial class WindowsDefaultFonts : IDefaultFontMapper
                ?? throw new IOException("Could not find required font file.");
     }
     private  DefaultFontReference? TrySystemFont(
-        PdfDirectValue pdfName, bool bold, bool italic)
+        PdfDirectObject pdfName, bool bold, bool italic)
     {
         Span<byte> name = pdfName.Get<StringSpanSource>().GetSpan();
         var fontReference = SystemFontLibrary().FontFromName(name, bold, italic);

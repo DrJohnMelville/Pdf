@@ -7,10 +7,10 @@ public class ScriptFontBug : FontDefinitionTest
     {
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg) =>
-        new ValueDictionaryBuilder()
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg) =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectValue.CreateName("Script"))
+            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("Script"))
             .AsDictionary();
 }

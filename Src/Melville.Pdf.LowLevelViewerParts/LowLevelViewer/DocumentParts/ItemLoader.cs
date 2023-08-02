@@ -5,20 +5,20 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 
 public class ItemLoader : DocumentPart
 {
-    private readonly Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> references;
+    private readonly Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectObject>> references;
     private static readonly DocumentPart[] fakeContent = {
         new DocumentPart("Fake--this should never be seen")
     };
 
     private readonly int minObjectNumber;
     private readonly int maxObjectNumber;
-    private static string ComputeName(Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> mem)
+    private static string ComputeName(Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectObject>> mem)
     {
         var span = mem.Span;
         return $"{span[0].Key.ObjectNumber} ... {span[^1].Key.ObjectNumber}";
     }
 
-    public ItemLoader(Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> references) :
+    public ItemLoader(Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectObject>> references) :
         base(ComputeName(references),fakeContent)
     {
         this.references = references;
@@ -60,8 +60,8 @@ public class ItemLoader : DocumentPart
         }
     }
 
-    private KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue> GetAt(
-        Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectValue>> memory,
+    private KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectObject> GetAt(
+        Memory<KeyValuePair<(int ObjectNumber, int Generation), PdfIndirectObject>> memory,
         int i) => memory.Span[i];
 
     private void SetElement(in Memory<DocumentPart> mem, int pos, DocumentPart item) => 

@@ -14,19 +14,19 @@ public class S7_9Trees
 {
     private readonly ILowLevelDocumentCreator builder = LowLevelDocumentBuilderFactory.New();
 
-    private PdfValueDictionary CreateNumberTree(int count)
+    private PdfDictionary CreateNumberTree(int count)
     {
         return builder.CreateNumberTree(10,
             Enumerable.Range(1, count)
                 .Reverse()
-                .Select(i => ((PdfDirectValue)i, (PdfIndirectValue)(i*10))));
+                .Select(i => ((PdfDirectObject)i, (PdfIndirectObject)(i*10))));
     }
 
     [Fact]
     public async Task CreateTrivialNumberTreeAsync()
     {
         var result = CreateNumberTree(5);
-        var array = await result.GetAsync<PdfValueArray>(KnownNames.NumsTName);
+        var array = await result.GetAsync<PdfArray>(KnownNames.NumsTName);
         for (int i = 0; i < 5; i++)
         {
             Assert.Equal(1+i, (await array[2*i]).Get<int>());
@@ -38,16 +38,16 @@ public class S7_9Trees
     public async Task TwoLevelTreeAsync()
     {
         var result = CreateNumberTree(50);
-        var array = await result.GetAsync<PdfValueArray>(KnownNames.KidsTName);
+        var array = await result.GetAsync<PdfArray>(KnownNames.KidsTName);
         builder.Add(result);
         Assert.Equal(5, array.Count);
-        var secondNode = await array.GetAsync<PdfValueDictionary>(1);
-        Assert.Equal(11, (await (await secondNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[0]).Get<int>());
-        Assert.Equal(110, (await (await secondNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[1]).Get<int>());
-        Assert.Equal(20,  (await (await secondNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[18]).Get<int>());
-        Assert.Equal(200, (await (await secondNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[19]).Get<int>());
-        Assert.Equal(11,  ( await (await secondNode.GetAsync<PdfValueArray>(KnownNames.LimitsTName))[0]).Get<int>());
-        Assert.Equal(20,  ( await (await secondNode.GetAsync<PdfValueArray>(KnownNames.LimitsTName))[1]).Get<int>());
+        var secondNode = await array.GetAsync<PdfDictionary>(1);
+        Assert.Equal(11, (await (await secondNode.GetAsync<PdfArray>(KnownNames.NumsTName))[0]).Get<int>());
+        Assert.Equal(110, (await (await secondNode.GetAsync<PdfArray>(KnownNames.NumsTName))[1]).Get<int>());
+        Assert.Equal(20,  (await (await secondNode.GetAsync<PdfArray>(KnownNames.NumsTName))[18]).Get<int>());
+        Assert.Equal(200, (await (await secondNode.GetAsync<PdfArray>(KnownNames.NumsTName))[19]).Get<int>());
+        Assert.Equal(11,  ( await (await secondNode.GetAsync<PdfArray>(KnownNames.LimitsTName))[0]).Get<int>());
+        Assert.Equal(20,  ( await (await secondNode.GetAsync<PdfArray>(KnownNames.LimitsTName))[1]).Get<int>());
         var docAsString = await builder.AsStringAsync();
         Assert.Contains("1 0 obj <</Nums[1 10", docAsString);
         Assert.Contains("6 0 obj <</Kids[1 0 R 2 0 R 3 0 R 4 0 R 5 0 R]>> endobj", docAsString);
@@ -56,30 +56,30 @@ public class S7_9Trees
     public async Task ThreeLevelTreeAsync()
     {
         var result = CreateNumberTree(500);
-        var array = await result.GetAsync<PdfValueArray>(KnownNames.KidsTName);
+        var array = await result.GetAsync<PdfArray>(KnownNames.KidsTName);
         builder.Add(result);
         Assert.Equal(5, array.Count);
-        var secondNode = await array.GetAsync<PdfValueDictionary>(1);
-        Assert.Equal(101, ( await (await secondNode.GetAsync<PdfValueArray>(KnownNames.LimitsTName))[0]).Get<int>());
-        Assert.Equal(200, ( await (await secondNode.GetAsync<PdfValueArray>(KnownNames.LimitsTName))[1]).Get<int>());
-        var thirdNode = await (await secondNode.GetAsync<PdfValueArray>(KnownNames.KidsTName)).GetAsync<PdfValueDictionary>(1);
-        Assert.Equal(111, (await (await thirdNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[0]).Get<int>());
-        Assert.Equal(1110, (await (await thirdNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[1]).Get<int>());
-        Assert.Equal(120, (await (await thirdNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[18]).Get<int>());
-        Assert.Equal(1200, (await (await thirdNode.GetAsync<PdfValueArray>(KnownNames.NumsTName))[19]).Get<int>());
-        Assert.Equal(111, ( await (await thirdNode.GetAsync<PdfValueArray>(KnownNames.LimitsTName))[0]).Get<int>());
-        Assert.Equal(120, ( await (await thirdNode.GetAsync<PdfValueArray>(KnownNames.LimitsTName))[1]).Get<int>());
+        var secondNode = await array.GetAsync<PdfDictionary>(1);
+        Assert.Equal(101, ( await (await secondNode.GetAsync<PdfArray>(KnownNames.LimitsTName))[0]).Get<int>());
+        Assert.Equal(200, ( await (await secondNode.GetAsync<PdfArray>(KnownNames.LimitsTName))[1]).Get<int>());
+        var thirdNode = await (await secondNode.GetAsync<PdfArray>(KnownNames.KidsTName)).GetAsync<PdfDictionary>(1);
+        Assert.Equal(111, (await (await thirdNode.GetAsync<PdfArray>(KnownNames.NumsTName))[0]).Get<int>());
+        Assert.Equal(1110, (await (await thirdNode.GetAsync<PdfArray>(KnownNames.NumsTName))[1]).Get<int>());
+        Assert.Equal(120, (await (await thirdNode.GetAsync<PdfArray>(KnownNames.NumsTName))[18]).Get<int>());
+        Assert.Equal(1200, (await (await thirdNode.GetAsync<PdfArray>(KnownNames.NumsTName))[19]).Get<int>());
+        Assert.Equal(111, ( await (await thirdNode.GetAsync<PdfArray>(KnownNames.LimitsTName))[0]).Get<int>());
+        Assert.Equal(120, ( await (await thirdNode.GetAsync<PdfArray>(KnownNames.LimitsTName))[1]).Get<int>());
     }
 
     [Fact]
     public async Task CreateTrivialNameTreeAsync()
     {
         var result = builder.CreateNameTree(10,
-            (PdfDirectValue.CreateString("A"u8), PdfDirectValue.CreateString("Alpha"u8)),
-            (PdfDirectValue.CreateString("C"u8), PdfDirectValue.CreateString("Charlie"u8)),
-            (PdfDirectValue.CreateString("B"u8), PdfDirectValue.CreateString("Bravo"u8))
+            (PdfDirectObject.CreateString("A"u8), PdfDirectObject.CreateString("Alpha"u8)),
+            (PdfDirectObject.CreateString("C"u8), PdfDirectObject.CreateString("Charlie"u8)),
+            (PdfDirectObject.CreateString("B"u8), PdfDirectObject.CreateString("Bravo"u8))
         );
-        var array = await result.GetAsync<PdfValueArray>(KnownNames.NamesTName);
+        var array = await result.GetAsync<PdfArray>(KnownNames.NamesTName);
         Assert.Equal("A", (await array[0]).ToString());
         Assert.Equal("Alpha", (await array[1]).ToString());
         Assert.Equal("B", (await array[2]).ToString());

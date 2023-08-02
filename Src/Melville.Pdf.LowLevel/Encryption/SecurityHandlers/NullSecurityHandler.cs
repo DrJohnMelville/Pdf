@@ -14,13 +14,13 @@ namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 internal partial class NullSecurityHandler: 
     ISecurityHandler, IDocumentCryptContext, IObjectCryptContext, ICipher, ICipherOperations
 {
-    public bool BlockEncryption(PdfValueDictionary item) => false;
+    public bool BlockEncryption(PdfDictionary item) => false;
     public byte[]? TryComputeRootKey(string password, PasswordType type) => Array.Empty<byte>();
     public IDocumentCryptContext CreateCryptContext(byte[] rootKey) => this;
     public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) => this;
     public ICipher StringCipher() => this;
     public ICipher StreamCipher() => this;
-    public ICipher NamedCipher(in PdfDirectValue name) => 
+    public ICipher NamedCipher(in PdfDirectObject name) => 
         name.Equals(KnownNames.IdentityTName) ? this :
             throw new PdfParseException("Should not have a crypt filter in an unencrypted document.");
     public ICipherOperations Encrypt() => this;

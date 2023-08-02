@@ -11,13 +11,13 @@ namespace Melville.Pdf.Model.OptionalContent;
 
 internal partial class OptionalContentState : IOptionalContentState
 {
-    private readonly Dictionary<PdfValueDictionary, OptionalGroup> groupStates;
+    private readonly Dictionary<PdfDictionary, OptionalGroup> groupStates;
     public IReadOnlyList<OptionalContentConfiguration> Configurations { get; }
     [AutoNotify] private OptionalContentConfiguration? selectedConfiguration;
     public event EventHandler<EventArgs>? SelectedContentChanged; 
     private bool allVisible = true;
 
-    public OptionalContentState(Dictionary<PdfValueDictionary, OptionalGroup> groupStates,
+    public OptionalContentState(Dictionary<PdfDictionary, OptionalGroup> groupStates,
         IReadOnlyList<OptionalContentConfiguration> configurations)
     {
         this.groupStates = groupStates;
@@ -31,7 +31,7 @@ internal partial class OptionalContentState : IOptionalContentState
         allVisible = groupStates.Values.All(i => i.Visible);
     }
 
-    private void RegisterGroupStateChangeNotifications(Dictionary<PdfValueDictionary, OptionalGroup> groupStates)
+    private void RegisterGroupStateChangeNotifications(Dictionary<PdfDictionary, OptionalGroup> groupStates)
     {
         foreach (var state in groupStates.Values)
         {
@@ -48,7 +48,7 @@ internal partial class OptionalContentState : IOptionalContentState
         SelectedContentChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public async ValueTask<bool> IsGroupVisibleAsync(PdfValueDictionary? dictionary)
+    public async ValueTask<bool> IsGroupVisibleAsync(PdfDictionary? dictionary)
     {
         if (dictionary == null) return true;
         if ((await dictionary.GetOrDefaultAsync(
@@ -67,6 +67,6 @@ internal partial class OptionalContentState : IOptionalContentState
     }
 
 
-    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfValueArray? order) => 
+    public ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ConstructUiModelAsync(PdfArray? order) => 
         new UiModelParser(groupStates).ParseAsync(order);
 }

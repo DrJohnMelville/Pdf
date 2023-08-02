@@ -15,7 +15,7 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 [StaticSingleton]
 internal partial class NoPageContext : IHasPageAttributes
 {
-    public PdfValueDictionary LowLevel => PdfValueDictionary.Empty;
+    public PdfDictionary LowLevel => PdfDictionary.Empty;
     public ValueTask<Stream> GetContentBytesAsync() => new(new MemoryStream(Array.Empty<byte>()));
 
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new((IHasPageAttributes?)null);
@@ -29,7 +29,7 @@ internal readonly struct ColorSpaceFactory
         this.page = page;
     }
 
-    public ValueTask<IColorSpace> ParseColorSpaceAsync(PdfDirectValue colorSpaceName)
+    public ValueTask<IColorSpace> ParseColorSpaceAsync(PdfDirectObject colorSpaceName)
     {
         var code = colorSpaceName;
         return code.Equals(KnownNames.DeviceGrayTName) ||
@@ -39,17 +39,17 @@ internal readonly struct ColorSpaceFactory
             : LookupInResourceDictionaryAsync(colorSpaceName);
     }
 
-    private async ValueTask<IColorSpace> SearchForDefaultAsync(PdfDirectValue name, Func<ValueTask<IColorSpace>> space) =>
-        await ((await page.GetResourceAsync(ResourceTypeName.ColorSpace, name).CA()).TryGet(out PdfValueArray? array) 
+    private async ValueTask<IColorSpace> SearchForDefaultAsync(PdfDirectObject name, Func<ValueTask<IColorSpace>> space) =>
+        await ((await page.GetResourceAsync(ResourceTypeName.ColorSpace, name).CA()).TryGet(out PdfArray? array) 
             ?  ExcludeIllegalDefaultAsync(array): space()).CA();
 
-    private async ValueTask<IColorSpace> ExcludeIllegalDefaultAsync(PdfValueArray array) => 
+    private async ValueTask<IColorSpace> ExcludeIllegalDefaultAsync(PdfArray array) => 
         (await FromArrayAsync(array).CA()).AsValidDefaultColorSpace();
 
-    public ValueTask<IColorSpace> FromNameOrArrayAsync(PdfDirectValue datum) => datum switch
+    public ValueTask<IColorSpace> FromNameOrArrayAsync(PdfDirectObject datum) => datum switch
     {
         {IsName:true} name => ParseColorSpaceAsync(name),
-        var x when x.TryGet(out PdfValueArray? array) => FromArrayAsync(array),
+        var x when x.TryGet(out PdfArray? array) => FromArrayAsync(array),
         _ => throw new PdfParseException("Invalid Color space definition")
     };
 
@@ -58,31 +58,31 @@ internal readonly struct ColorSpaceFactory
     public static async ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => cmykColorSpacel ??= 
         new IccColorspaceWithBlackDefault( (await CmykIccProfile.ReadCmykProfileAsync().CA()).DeviceToSrgb());
 
-    private async ValueTask<IColorSpace> LookupInResourceDictionaryAsync(PdfDirectValue colorSpaceName)
+    private async ValueTask<IColorSpace> LookupInResourceDictionaryAsync(PdfDirectObject colorSpaceName)
     {
         var obj = await page.GetResourceAsync(ResourceTypeName.ColorSpace, colorSpaceName).CA();
-        return obj.TryGet(out PdfValueArray? array)? await FromArrayAsync(array).CA(): DeviceGray.Instance;
+        return obj.TryGet(out PdfArray? array)? await FromArrayAsync(array).CA(): DeviceGray.Instance;
     }
 
-    private async ValueTask<IColorSpace> FromArrayAsync(PdfValueArray array) =>
+    private async ValueTask<IColorSpace> FromArrayAsync(PdfArray array) =>
         await FromMemoryAsync((await array.AsDirectValues().CA()).AsMemory()).CA();
 
-    private ValueTask<IColorSpace> FromMemoryAsync(Memory<PdfDirectValue> memory)
+    private ValueTask<IColorSpace> FromMemoryAsync(Memory<PdfDirectObject> memory)
     {
         var array = memory.Span;
         if (array.Length == 0) return new(DeviceRgb.Instance);
-        if (array.Length == 1 && array[0].TryGet(out PdfValueArray innerArray)) 
+        if (array.Length == 1 && array[0].TryGet(out PdfArray innerArray)) 
             return FromArrayAsync(innerArray);
         if (array[0] is not {IsName:true} name) 
             throw new PdfParseException("'Name expected in colorspace array");
         return name switch
         {
             var x when x.Equals(KnownNames.CalGrayTName) => 
-                CalGray.ParseAsync(ColorSpaceParameterAs<PdfValueDictionary>(array)),
+                CalGray.ParseAsync(ColorSpaceParameterAs<PdfDictionary>(array)),
             var x when x.Equals(KnownNames.LabTName) => 
-                LabColorSpace.ParseAsync(ColorSpaceParameterAs<PdfValueDictionary>(array)),
+                LabColorSpace.ParseAsync(ColorSpaceParameterAs<PdfDictionary>(array)),
             var x when x.Equals(KnownNames.ICCBasedTName) => 
-                IccProfileColorSpaceParser.ParseAsync(ColorSpaceParameterAs<PdfValueStream>(array)),
+                IccProfileColorSpaceParser.ParseAsync(ColorSpaceParameterAs<PdfStream>(array)),
             var x when x.Equals(KnownNames.IndexedTName) => 
                 IndexedColorSpace.ParseAsync(memory, page),
             var x when x.Equals(KnownNames.SeparationTName) => 
@@ -94,7 +94,7 @@ internal readonly struct ColorSpaceFactory
         };
     }
 
-    private ValueTask<IColorSpace> SpacesWithoutParametersAsync(PdfDirectValue nameHashCode) => 
+    private ValueTask<IColorSpace> SpacesWithoutParametersAsync(PdfDirectObject nameHashCode) => 
         nameHashCode switch
     {
         // for monitors ignore CalRGB see standard section 8.6.5.7
@@ -111,6 +111,6 @@ internal readonly struct ColorSpaceFactory
     };
         
 
-    private static T ColorSpaceParameterAs<T>(in Span<PdfDirectValue> array) =>
+    private static T ColorSpaceParameterAs<T>(in Span<PdfDirectObject> array) =>
         array[1].TryGet(out T ret)? ret: throw new PdfParseException("Dictionary Expected");
 }

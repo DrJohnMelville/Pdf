@@ -49,10 +49,10 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     }
 
 
-    public async ValueTask LoadGraphicStateDictionaryAsync(PdfDirectValue dictionaryName) =>
+    public async ValueTask LoadGraphicStateDictionaryAsync(PdfDirectObject dictionaryName) =>
          await GraphicsState.LoadGraphicStateDictionaryAsync(
             (await page.GetResourceAsync(ResourceTypeName.ExtGState, dictionaryName).CA())
-            .TryGet(out PdfValueDictionary? dict)? dict: PdfValueDictionary.Empty).CA();
+            .TryGet(out PdfDictionary? dict)? dict: PdfDictionary.Empty).CA();
     #endregion
     
     #region Drawing Operations
@@ -64,15 +64,15 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     private IPathDrawingOperations PathDrawingOperations() =>
         pathDrawing.IsInvalid? pathDrawing.WithNewTarget(CreateDrawTarget()): pathDrawing;
 
-    public async ValueTask DoAsync(PdfDirectValue name) =>
+    public async ValueTask DoAsync(PdfDirectObject name) =>
         await DoAsync((await page.GetResourceAsync(ResourceTypeName.XObject, name).CA())
-            .TryGet(out PdfValueStream? stream)? 
+            .TryGet(out PdfStream? stream)? 
             stream: throw new PdfParseException("Co command can only be called on Streams")).CA();
 
-    public async ValueTask DoAsync(PdfValueStream inlineImage)
+    public async ValueTask DoAsync(PdfStream inlineImage)
     {
         if (await pageRenderContext.OptionalContent.CanSkipXObjectDoOperationAsync(
-                await inlineImage.GetOrNullAsync<PdfValueDictionary>(KnownNames.OCTName).CA()).CA())
+                await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OCTName).CA()).CA())
             return;
         switch (inlineImage.SubTypeOrNull())
         {
@@ -87,7 +87,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         }
     }
 
-    private async Task TryRenderBitmapAsync(PdfValueStream inlineImage)
+    private async Task TryRenderBitmapAsync(PdfStream inlineImage)
     {
         try
         {
@@ -100,10 +100,10 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         }
     }
 
-    public async ValueTask PaintShaderAsync(PdfDirectValue name)
+    public async ValueTask PaintShaderAsync(PdfDirectObject name)
     {
         var shader = await page.GetResourceAsync(ResourceTypeName.Shading, name).CA();
-        if (!shader.TryGet(out PdfValueDictionary? shaderDict)) return;
+        if (!shader.TryGet(out PdfDictionary? shaderDict)) return;
         var factory = await ShaderParser.ParseShaderAsync(
             GraphicsState.TransformMatrix, shaderDict, true).CA();
         StateOps.SaveGraphicsState();
@@ -121,7 +121,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
             (float)state.PageWidth, (float)state.PageHeight)*inv);
     }
     
-    private async ValueTask RunTargetGroupAsync(PdfValueStream xObjectAsStream)
+    private async ValueTask RunTargetGroupAsync(PdfStream xObjectAsStream)
     {
         SaveGraphicsState();
         var formXObject = new PdfFormXObject(xObjectAsStream, page);
@@ -189,10 +189,10 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     public void MoveToNextTextLine() => 
         MovePositionBy(0, - GraphicsState.TextLeading);
 
-    public async ValueTask SetFontAsync(PdfDirectValue font, double size)
+    public async ValueTask SetFontAsync(PdfDirectObject font, double size)
     {
         var fontResource = await page.GetResourceAsync(ResourceTypeName.Font, font).CA();
-        var genericRealizedFont = fontResource.TryGet(out PdfValueDictionary fontDic) ?
+        var genericRealizedFont = fontResource.TryGet(out PdfDictionary fontDic) ?
             await FontFromDictionaryAsync(fontDic).CA():
             await SystemFontFromNameAsync(font).CA();
         
@@ -200,21 +200,21 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         await GraphicsState.SetFontAsync(font,size).CA();
     }
 
-    private ValueTask<IRealizedFont> SystemFontFromNameAsync(PdfDirectValue font) =>
-        FontFromDictionaryAsync(new ValueDictionaryBuilder()
+    private ValueTask<IRealizedFont> SystemFontFromNameAsync(PdfDirectObject font) =>
+        FontFromDictionaryAsync(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
             .WithItem(KnownNames.BaseFontTName, font)
             .AsDictionary()
         );
 
-    private async ValueTask<IRealizedFont> FontFromDictionaryAsync(PdfValueDictionary fontDic) => 
+    private async ValueTask<IRealizedFont> FontFromDictionaryAsync(PdfDictionary fontDic) => 
         BlockFontDispose.AsNonDisposableTypeface(await CheckCacheForFontAsync(fontDic).CA());
 
     private ValueTask<IRealizedFont> RendererSpecificFontAsync(IRealizedFont typeFace) =>
         pageRenderContext.Renderer.Cache.GetAsync(typeFace, r=> new ValueTask<IRealizedFont>(pageRenderContext.Target.WrapRealizedFont(r)));
 
-    private ValueTask<IRealizedFont> CheckCacheForFontAsync(PdfValueDictionary fontDic) =>
+    private ValueTask<IRealizedFont> CheckCacheForFontAsync(PdfDictionary fontDic) =>
         pageRenderContext.Renderer.Cache.GetAsync(fontDic, r=> FontReader().DictionaryToRealizedFontAsync(r));
      
     private FontReader FontReader() => new(pageRenderContext.Renderer.FontMapper);
@@ -303,7 +303,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
 
     #region Type 3 font rendering
     public async ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix,
-        PdfValueDictionary fontDictionary)
+        PdfDictionary fontDictionary)
     {
         if (!(GraphicsState.TextRender is TextRendering.Invisible or TextRendering.Clip))
         {
@@ -314,7 +314,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         return ret.X;
     }
 
-    private async Task DrawType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfValueDictionary fontDictionary)
+    private async Task DrawType3CharacterAsync(Stream s, Matrix3x2 fontMatrix, PdfDictionary fontDictionary)
     {
         SaveGraphicsState();
         var textMatrix = CharacterPositionMatrix();
@@ -359,18 +359,18 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
 
     #region Marked Operations
 
-    public void MarkedContentPoint(PdfDirectValue tag) { }
+    public void MarkedContentPoint(PdfDirectObject tag) { }
 
-    public ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfDirectValue properties) => ValueTask.CompletedTask;
+    public ValueTask MarkedContentPointAsync(PdfDirectObject tag, PdfDirectObject properties) => ValueTask.CompletedTask;
 
-    public ValueTask MarkedContentPointAsync(PdfDirectValue tag, PdfValueDictionary dictionary) => ValueTask.CompletedTask;
+    public ValueTask MarkedContentPointAsync(PdfDirectObject tag, PdfDictionary dictionary) => ValueTask.CompletedTask;
 
-    public void BeginMarkedRange(PdfDirectValue tag) {}
+    public void BeginMarkedRange(PdfDirectObject tag) {}
 
-    public ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfDirectValue dictName) => 
+    public ValueTask BeginMarkedRangeAsync(PdfDirectObject tag, PdfDirectObject dictName) => 
         pageRenderContext.OptionalContent.EnterGroupAsync(tag, dictName, page);
 
-    public ValueTask BeginMarkedRangeAsync(PdfDirectValue tag, PdfValueDictionary dictionary) =>
+    public ValueTask BeginMarkedRangeAsync(PdfDirectObject tag, PdfDictionary dictionary) =>
         pageRenderContext.OptionalContent.EnterGroupAsync(tag, dictionary);
 
     public void EndMarkedRange() => pageRenderContext.OptionalContent.PopContentGroup();

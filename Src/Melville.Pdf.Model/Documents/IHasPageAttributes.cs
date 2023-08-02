@@ -11,7 +11,7 @@ namespace Melville.Pdf.Model.Documents;
 
 internal interface IHasPageAttributes
 {
-    PdfValueDictionary LowLevel { get; }
+    PdfDictionary LowLevel { get; }
     ValueTask<Stream> GetContentBytesAsync();
     ValueTask<IHasPageAttributes?> GetParentAsync();
 
@@ -19,14 +19,14 @@ internal interface IHasPageAttributes
 
 public static class SelectFromImpl
 {
-    public static IEnumerable<T> SelectInner<T>(this IEnumerable<PdfDirectValue> items)
+    public static IEnumerable<T> SelectInner<T>(this IEnumerable<PdfDirectObject> items)
     {
         foreach (var item in items)
         {
             if (item.TryGet(out T casted)) yield return casted;
         }
     }
-    public static async IAsyncEnumerable<T> SelectInnerAsync<T>(this IAsyncEnumerable<PdfDirectValue> items)
+    public static async IAsyncEnumerable<T> SelectInnerAsync<T>(this IAsyncEnumerable<PdfDirectObject> items)
     {
         await foreach (var item in items)
         {
@@ -37,7 +37,7 @@ public static class SelectFromImpl
 
 internal static class PdfPageAttributesOperations
 {
-    private static async IAsyncEnumerable<PdfDirectValue> InheritedPagePropertiesAsync(IHasPageAttributes item, PdfDirectValue name)
+    private static async IAsyncEnumerable<PdfDirectObject> InheritedPagePropertiesAsync(IHasPageAttributes item, PdfDirectObject name)
     {
         var dict = item;
         while (dict != null)
@@ -47,37 +47,37 @@ internal static class PdfPageAttributesOperations
         }
     }
 
-    private static IAsyncEnumerable<PdfDirectValue> InheritedResourceItemAsync(IHasPageAttributes item, PdfDirectValue name) =>
+    private static IAsyncEnumerable<PdfDirectObject> InheritedResourceItemAsync(IHasPageAttributes item, PdfDirectObject name) =>
         InheritedPagePropertiesAsync(item, KnownNames.ResourcesTName)
-            .SelectInnerAsync<PdfValueDictionary>()
+            .SelectInnerAsync<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
             .Where(i => !i.IsNull);
 
-    public static async ValueTask<PdfValueArray?> GetProcSetsAsync<T>(this T item)
+    public static async ValueTask<PdfArray?> GetProcSetsAsync<T>(this T item)
         where T : IHasPageAttributes =>
         await InheritedResourceItemAsync(item, KnownNames.ProcSetTName)
-            .Select(i=>i.TryGet(out PdfValueArray? arr) ? arr:null)
-            .OfType<PdfValueArray>()
+            .Select(i=>i.TryGet(out PdfArray? arr) ? arr:null)
+            .OfType<PdfArray>()
             .FirstOrDefaultAsync().CA();
 
-    public static ValueTask<PdfDirectValue> GetResourceAsync(
-        this IHasPageAttributes item, ResourceTypeName resourceType, PdfDirectValue name) =>
+    public static ValueTask<PdfDirectObject> GetResourceAsync(
+        this IHasPageAttributes item, ResourceTypeName resourceType, PdfDirectObject name) =>
         TwoLevelResourceDictionaryAccessAsync(item, resourceType, name);
 
-    private static ValueTask<PdfDirectValue> TwoLevelResourceDictionaryAccessAsync(
-        IHasPageAttributes item, PdfDirectValue subDictionaryName, PdfDirectValue name) =>
+    private static ValueTask<PdfDirectObject> TwoLevelResourceDictionaryAccessAsync(
+        IHasPageAttributes item, PdfDirectObject subDictionaryName, PdfDirectObject name) =>
         InheritedResourceItemAsync(item, subDictionaryName)
-            .Select(i=>i.TryGet(out PdfValueDictionary? dict)?dict:null)
-            .OfType<PdfValueDictionary>()
+            .Select(i=>i.TryGet(out PdfDictionary? dict)?dict:null)
+            .OfType<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
             .Where(i => !i.IsNull)
-            .DefaultIfEmpty(PdfDirectValue.CreateNull())
+            .DefaultIfEmpty(PdfDirectObject.CreateNull())
             .FirstOrDefaultAsync();
 
-    private static ValueTask<PdfRect?> GetSingleBoxAsync(IHasPageAttributes item, PdfDirectValue name) =>
+    private static ValueTask<PdfRect?> GetSingleBoxAsync(IHasPageAttributes item, PdfDirectObject name) =>
         InheritedPagePropertiesAsync(item, name)
-            .Select(i=>i.TryGet(out PdfValueArray? arr)?arr:null)
-            .OfType<PdfValueArray>()
+            .Select(i=>i.TryGet(out PdfArray? arr)?arr:null)
+            .OfType<PdfArray>()
             .SelectAwait(PdfRect.CreateAsync)
             .Select(i => new PdfRect?(i))
             .DefaultIfEmpty(new PdfRect?())
@@ -101,8 +101,8 @@ internal static class PdfPageAttributesOperations
 
     private static BoxName? FallbackBox(BoxName boxType)
     {
-        if (((PdfDirectValue)boxType).Equals(KnownNames.MediaBoxTName)) return null;
-        if (((PdfDirectValue)boxType).Equals(KnownNames.CropBoxTName)) return BoxName.MediaBox;
+        if (((PdfDirectObject)boxType).Equals(KnownNames.MediaBoxTName)) return null;
+        if (((PdfDirectObject)boxType).Equals(KnownNames.CropBoxTName)) return BoxName.MediaBox;
         return BoxName.CropBox;
     }
 }

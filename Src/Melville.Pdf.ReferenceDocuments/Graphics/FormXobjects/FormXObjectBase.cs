@@ -5,7 +5,7 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.FormXobjects;
 
 public abstract class FormXObjectBase : Card3x5
 {
-    private static readonly PdfDirectValue gName = PdfDirectValue.CreateName("Fx01");
+    private static readonly PdfDirectObject gName = PdfDirectObject.CreateName("Fx01");
 
     protected FormXObjectBase(string helpText) : base(helpText)
     {
@@ -29,5 +29,5 @@ public abstract class FormXObjectBase : Card3x5
         await csw.DoAsync(gName);
     }
 
-    protected abstract PdfValueStream FormDefinition();
+    protected abstract PdfStream FormDefinition();
 }

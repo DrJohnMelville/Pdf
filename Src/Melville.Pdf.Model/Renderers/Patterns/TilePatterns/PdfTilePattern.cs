@@ -19,7 +19,7 @@ namespace Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 public partial class PdfTilePattern: HasRenderableContentStream
 {
     /// <inheritdoc />
-    public override ValueTask<Stream> GetContentBytesAsync() => ((PdfValueStream)LowLevel).StreamContentAsync();
+    public override ValueTask<Stream> GetContentBytesAsync() => ((PdfStream)LowLevel).StreamContentAsync();
 
     /// <summary>
     /// The horizontal size of the pattern cell
@@ -35,13 +35,13 @@ public partial class PdfTilePattern: HasRenderableContentStream
     /// Bounding box for the pattern cell.
     /// </summary>
     public async ValueTask<PdfRect> BBoxAsync() => await PdfRect.CreateAsync(
-        await LowLevel.GetAsync<PdfValueArray>(KnownNames.BBoxTName).CA()).CA();
+        await LowLevel.GetAsync<PdfArray>(KnownNames.BBoxTName).CA()).CA();
 
     /// <summary>
     /// Patternn matrix transform.
     /// </summary>
     public async ValueTask<Matrix3x2> MatrixAsync() =>
-        (await LowLevel.GetOrDefaultAsync(KnownNames.MatrixTName, PdfValueArray.Empty).CA()) is {Count:6 } matArray
+        (await LowLevel.GetOrDefaultAsync(KnownNames.MatrixTName, PdfArray.Empty).CA()) is {Count:6 } matArray
             ? await matArray.AsMatrix3x2Async().CA()
             : Matrix3x2.Identity;
 

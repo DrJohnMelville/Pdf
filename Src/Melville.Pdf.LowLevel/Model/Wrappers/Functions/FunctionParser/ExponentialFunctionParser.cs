@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 internal static class ExponentialFunctionParser
 {
-    public static async ValueTask<PdfFunction> ParseAsync(PdfValueDictionary source)
+    public static async ValueTask<PdfFunction> ParseAsync(PdfDictionary source)
     {
         var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
         var c0 = await source.ReadArrayWithDefaultAsync(KnownNames.C0TName, 0).CA();

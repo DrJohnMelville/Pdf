@@ -14,12 +14,12 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator CS
     /// </summary>
-    ValueTask SetStrokingColorSpaceAsync(PdfDirectValue colorSpace);
+    ValueTask SetStrokingColorSpaceAsync(PdfDirectObject colorSpace);
 
     /// <summary>
     /// Content stream operator cs
     /// </summary>
-    ValueTask SetNonstrokingColorSpaceAsync(PdfDirectValue colorSpace);
+    ValueTask SetNonstrokingColorSpaceAsync(PdfDirectObject colorSpace);
 
     /// <summary>
     /// Content stream operator SC
@@ -34,12 +34,12 @@ public interface IColorOperations
     /// <summary>
     /// Content stream operator SCN
     /// </summary>
-    ValueTask SetStrokeColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors);
+    ValueTask SetStrokeColorExtendedAsync(PdfDirectObject? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator scn
     /// </summary>
-    ValueTask SetNonstrokingColorExtendedAsync(PdfDirectValue? patternName, in ReadOnlySpan<double> colors);
+    ValueTask SetNonstrokingColorExtendedAsync(PdfDirectObject? patternName, in ReadOnlySpan<double> colors);
     
     /// <summary>
     /// Content stream operator G

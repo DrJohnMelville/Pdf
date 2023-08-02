@@ -26,13 +26,13 @@ internal readonly partial struct InlineImageParser
         await target.DoAsync(builder.AsStream(await StreamDataAsync(strategy).CA())).CA();
     }
 
-    private ValueDictionaryBuilder PopDictionaryFromPostscriptStack()
+    private DictionaryBuilder PopDictionaryFromPostscriptStack()
     {
         Span<byte> nameSpan = stackalloc byte[PostscriptString.ShortStringLimit];
         var builder = DefaultImageDictionaryBuilder();
         while (engine.OperandStack.TryPop(out var last) && !last.IsMark)
         {
-            var name = PdfDirectValue.CreateName(
+            var name = PdfDirectObject.CreateName(
                 ExpandNameSynonym(engine.PopAs<StringSpanSource>().GetSpan()));
 
             builder.WithItem(name, last.ToPdfObject());
@@ -56,8 +56,8 @@ internal readonly partial struct InlineImageParser
 
     };
  
-    private ValueDictionaryBuilder DefaultImageDictionaryBuilder() =>
-        new ValueDictionaryBuilder()
+    private DictionaryBuilder DefaultImageDictionaryBuilder() =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName);
 

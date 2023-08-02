@@ -12,10 +12,10 @@ namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 
 internal class DocumentCryptContextV4: IDocumentCryptContext
 {
-    private Dictionary<PdfDirectValue, IDocumentCryptContext> contexts;
+    private Dictionary<PdfDirectObject, IDocumentCryptContext> contexts;
         
 
-    public DocumentCryptContextV4(Dictionary<PdfDirectValue, IDocumentCryptContext> contexts)
+    public DocumentCryptContextV4(Dictionary<PdfDirectObject, IDocumentCryptContext> contexts)
     {
         this.contexts = contexts;
     }
@@ -23,15 +23,15 @@ internal class DocumentCryptContextV4: IDocumentCryptContext
     public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) =>
         new ObjectContextV4(contexts, objectNumber, generationNumber);
 
-    public bool BlockEncryption(PdfValueDictionary item) => contexts.Values.Any(i => i.BlockEncryption(item));
+    public bool BlockEncryption(PdfDictionary item) => contexts.Values.Any(i => i.BlockEncryption(item));
 }
 internal class ObjectContextV4: IObjectCryptContext
 {
-    private readonly IReadOnlyDictionary<PdfDirectValue, IDocumentCryptContext> context;
+    private readonly IReadOnlyDictionary<PdfDirectObject, IDocumentCryptContext> context;
     private readonly int objectNumber;
     private readonly int genetrationNumber;
 
-    public ObjectContextV4(Dictionary<PdfDirectValue, IDocumentCryptContext> context, int objectNumber, int genetrationNumber)
+    public ObjectContextV4(Dictionary<PdfDirectObject, IDocumentCryptContext> context, int objectNumber, int genetrationNumber)
     {
         this.context = context;
         this.objectNumber = objectNumber;
@@ -48,7 +48,7 @@ internal class ObjectContextV4: IObjectCryptContext
             .ContextForObject(objectNumber, genetrationNumber)
             .StringCipher();
 
-    public ICipher NamedCipher(in PdfDirectValue name) =>
+    public ICipher NamedCipher(in PdfDirectObject name) =>
         context[name]
             .ContextForObject(objectNumber, genetrationNumber)
             .NamedCipher(name);
@@ -57,7 +57,7 @@ internal class ObjectContextV4: IObjectCryptContext
 internal partial class SecurityHandlerV4 : ISecurityHandler
 {
     [FromConstructor]private readonly IRootKeyComputer rootKeyComputer;
-    [FromConstructor]private readonly Dictionary<PdfDirectValue, ISecurityHandler> handlers;
+    [FromConstructor]private readonly Dictionary<PdfDirectObject, ISecurityHandler> handlers;
     
     public byte[]? TryComputeRootKey(string password, PasswordType type) => 
         rootKeyComputer.TryComputeRootKey(password, type);

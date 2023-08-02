@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 internal static class SecurityHandlerFactory
 {
     public static async ValueTask<ISecurityHandler> CreateSecurityHandlerAsync(
-        PdfValueDictionary trailer, PdfValueDictionary dict)
+        PdfDictionary trailer, PdfDictionary dict)
     {
         if (!(await dict.GetOrNullAsync(KnownNames.FilterTName).CA()).Equals(KnownNames.StandardTName))
             throw new PdfSecurityException("Only standard security handler is supported.");
@@ -36,7 +36,7 @@ internal static class SecurityHandlerFactory
     }
 
     private static ISecurityHandler SecurityHandlerV2(
-        in EncryptionParameters parameters, PdfValueDictionary dict) =>
+        in EncryptionParameters parameters, PdfDictionary dict) =>
         new SecurityHandler(Rc4KeySpecializer.Instance, 
             Rc4CipherFactory.Instance, 
             RootKeyComputerV2(parameters), dict);
@@ -50,7 +50,7 @@ internal static class SecurityHandlerFactory
     }
 
     private static ISecurityHandler SecurityHandlerV3(
-        in EncryptionParameters parameters, PdfValueDictionary dict) =>
+        in EncryptionParameters parameters, PdfDictionary dict) =>
         new SecurityHandler(Rc4KeySpecializer.Instance, 
             Rc4CipherFactory.Instance, 
             RootKeyComputerV3(parameters),

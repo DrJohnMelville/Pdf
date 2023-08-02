@@ -75,7 +75,7 @@ internal partial class WpfCachedFont : IRealizedFont
             innerWriter.RenderCurrentString(stroke, fill, clip, textMatrix);
 
         public ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix,
-            PdfValueDictionary fontDictionary) => 
+            PdfDictionary fontDictionary) => 
             fontTarget.RenderType3CharacterAsync(s, fontMatrix, fontDictionary);
 
         public IDrawTarget CreateDrawTarget() => 

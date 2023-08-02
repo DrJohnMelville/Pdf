@@ -16,5 +16,5 @@ public interface IContentStreamOperations:
     /// <summary>
     /// Content stream operator gs
     /// </summary>
-    ValueTask LoadGraphicStateDictionaryAsync(PdfDirectValue dictionaryName);
+    ValueTask LoadGraphicStateDictionaryAsync(PdfDirectObject dictionaryName);
 }

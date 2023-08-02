@@ -16,14 +16,14 @@ namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 /// </summary>
 public static class CrossReferenceStreamParser
 {
-    internal static async Task<PdfValueStream> ReadAsync(ParsingFileOwner owner, long offset)
+    internal static async Task<PdfStream> ReadAsync(ParsingFileOwner owner, long offset)
     {
         var context = await owner.RentReaderAsync(offset).CA();
 
         var xRefStreamAsPdfObject = await context.NewRootObjectParser.ParseTopLevelObject().CA();
 
 
-        if (!xRefStreamAsPdfObject.TryGet(out PdfValueStream? crossRefPdfStream)) 
+        if (!xRefStreamAsPdfObject.TryGet(out PdfStream? crossRefPdfStream)) 
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
         await ReadXrefStreamDataAsync(owner, crossRefPdfStream).CA();
         await owner.InitializeDecryptionAsync(crossRefPdfStream).CA();
@@ -37,7 +37,7 @@ public static class CrossReferenceStreamParser
     /// <param name="owner">The target of the parsing operation.</param>
     /// <param name="crossRefPdfStream">The XRefStream to parse.</param>
     /// <returns>A task object representing completion of the operation.</returns>
-    public static async Task ReadXrefStreamDataAsync(IIndirectObjectRegistry owner, PdfValueStream crossRefPdfStream)
+    public static async Task ReadXrefStreamDataAsync(IIndirectObjectRegistry owner, PdfStream crossRefPdfStream)
     {
         var parser = await new XrefStreamParserFactory(crossRefPdfStream, owner).CreateAsync().CA();
         await parser.ParseAsync(PipeReader.Create(await crossRefPdfStream.StreamContentAsync().CA())).CA();

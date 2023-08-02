@@ -7,16 +7,16 @@ public class DecodeArray: DisplayImageTest
     }
 
 
-    protected override PdfValueStream CreateImage()
+    protected override PdfStream CreateImage()
     {
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
             .WithItem(KnownNames.WidthTName, 256)
             .WithItem(KnownNames.HeightTName, 256)
             .WithItem(KnownNames.BitsPerComponentTName, 8)
-            .WithItem(KnownNames.DecodeTName, new PdfValueArray(
+            .WithItem(KnownNames.DecodeTName, new PdfArray(
                 1.0, 0.0,
                 0.25, 0.75,
                 0.75, 0.75

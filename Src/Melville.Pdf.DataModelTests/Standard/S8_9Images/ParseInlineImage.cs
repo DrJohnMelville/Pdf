@@ -15,9 +15,9 @@ public partial class ParseInlineImage : ParserTest
     private partial class DoImpl : MockBase, IContentStreamOperations
     {
         [DelegateTo] private IContentStreamOperations fake = null!;
-        private Func<PdfValueStream, ValueTask> verify;
+        private Func<PdfStream, ValueTask> verify;
 
-        public DoImpl(Action<PdfValueStream> verify) :
+        public DoImpl(Action<PdfStream> verify) :
             this(s =>
             {
                 verify(s);
@@ -26,12 +26,12 @@ public partial class ParseInlineImage : ParserTest
         {
         }
 
-        public DoImpl(Func<PdfValueStream, ValueTask> verify)
+        public DoImpl(Func<PdfStream, ValueTask> verify)
         {
             this.verify = verify;
         }
 
-        public ValueTask DoAsync(PdfValueStream stream)
+        public ValueTask DoAsync(PdfStream stream)
         {
             this.SetCalled();
             return verify(stream);
@@ -80,7 +80,7 @@ public partial class ParseInlineImage : ParserTest
         TestInputAsync($"BI/Filter {synonym}\nID\nStreamDataEI",
             new DoImpl(async i =>
             {
-                Assert.Equal(PdfDirectValue.CreateName(preferredTerm), 
+                Assert.Equal(PdfDirectObject.CreateName(preferredTerm), 
                     await i[KnownNames.FilterTName]);
 
             }));
@@ -100,7 +100,7 @@ public partial class ParseInlineImage : ParserTest
             new DoImpl(async i =>
             {
                 Assert.Equal(1234,
-                        (await i.GetAsync<int>(PdfDirectValue.CreateName(preferredTerm))));
+                        (await i.GetAsync<int>(PdfDirectObject.CreateName(preferredTerm))));
 
             }));
 
@@ -110,6 +110,6 @@ public partial class ParseInlineImage : ParserTest
             "BI/D[/AHx/DCT]ID\nHelloEI",
             new DoImpl(async i =>
             {
-                Assert.True((await i.GetAsync<PdfValueArray>(KnownNames.DecodeTName)) is PdfValueArray);
+                Assert.True((await i.GetAsync<PdfArray>(KnownNames.DecodeTName)) is PdfArray);
             }));
 }

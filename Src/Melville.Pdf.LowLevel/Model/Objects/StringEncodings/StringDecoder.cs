@@ -11,11 +11,11 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 public static class StringDecoder
 {
     /// <summary>
-    /// Get the decoded string value of a PdfDirectValue 
+    /// Get the decoded string value of a PdfDirectObject 
     /// </summary>
     /// <param name="value">The value to decode.</param>
     /// <returns>The decoded value</returns>
-    public static string DecodedString(this PdfDirectValue value) =>
+    public static string DecodedString(this PdfDirectObject value) =>
         value.TryGet(out StringSpanSource sss) ? DecodedString(sss) : 
             value.ToString();
 

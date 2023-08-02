@@ -12,7 +12,7 @@ namespace Melville.Pdf.Wpf.FontCaching;
 internal class FontCachingTarget : WpfPathCreator, IFontTarget
 {
     public ValueTask<double> RenderType3CharacterAsync(Stream s, Matrix3x2 fontMatrix,
-        PdfValueDictionary fontDictionary) => 
+        PdfDictionary fontDictionary) => 
         throw new NotSupportedException("This should only be used to cache FreeType fonts");
     public IDrawTarget CreateDrawTarget() => this;
    public FillRule Fill() => Geometry?.FillRule ?? FillRule.Nonzero;

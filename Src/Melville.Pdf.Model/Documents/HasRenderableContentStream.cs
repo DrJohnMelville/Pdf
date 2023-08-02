@@ -15,9 +15,9 @@ namespace Melville.Pdf.Model.Documents;
 /// <param name="LowLevel">The low level Dictionary representing this item.</param>
 public class HasRenderableContentStream : IHasPageAttributes
 {
-    public PdfValueDictionary LowLevel { get; }
+    public PdfDictionary LowLevel { get; }
 
-    public HasRenderableContentStream(PdfValueDictionary lowLevel)
+    public HasRenderableContentStream(PdfDictionary lowLevel)
     {
         ArgumentNullException.ThrowIfNull(lowLevel);
         LowLevel = lowLevel;
@@ -30,7 +30,7 @@ public class HasRenderableContentStream : IHasPageAttributes
 
     async ValueTask<IHasPageAttributes?> IHasPageAttributes.GetParentAsync() =>
         await LowLevel.GetOrDefaultAsync(
-            KnownNames.ParentTName, (PdfValueDictionary?) null).CA() is {} dict
+            KnownNames.ParentTName, (PdfDictionary?) null).CA() is {} dict
             ? new HasRenderableContentStream(dict)
             : null;
     

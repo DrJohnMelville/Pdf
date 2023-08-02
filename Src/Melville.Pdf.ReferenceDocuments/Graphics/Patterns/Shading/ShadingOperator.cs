@@ -13,18 +13,18 @@ public class ShadingOperator: Card3x5{
     protected override async ValueTask SetPagePropertiesAsync(PageCreator page)
     {
         var func = await BuildFunctionAsync();
-        page.AddResourceObject(ResourceTypeName.Shading, PdfDirectValue.CreateName("Sh1") ,
-            ll=> new ValueDictionaryBuilder()
+        page.AddResourceObject(ResourceTypeName.Shading, PdfDirectObject.CreateName("Sh1") ,
+            ll=> new DictionaryBuilder()
                 .WithItem(KnownNames.FunctionTName, ll.Add(func))
-                .WithItem(KnownNames.CoordsTName, new PdfValueArray(0.25, .4, 0.1, .35, .4, .01))
+                .WithItem(KnownNames.CoordsTName, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
                 .WithItem(KnownNames.ShadingTypeTName, 3)
                 .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
-                .WithItem(KnownNames.BackgroundTName, new PdfValueArray(0,0,1))
+                .WithItem(KnownNames.BackgroundTName, new PdfArray(0,0,1))
                 .AsDictionary());
         await base.SetPagePropertiesAsync(page);
     }
 
-    private async Task<PdfValueDictionary> BuildFunctionAsync()
+    private async Task<PdfDictionary> BuildFunctionAsync()
     {
         var fbuilder = new SampledFunctionBuilder(4, SampledFunctionOrder.Linear);
         fbuilder.AddInput(2, new ClosedInterval(0, 1));
@@ -37,7 +37,7 @@ public class ShadingOperator: Card3x5{
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
         csw.ModifyTransformMatrix(Matrix3x2.CreateScale(72f*5f, 72f*3f));
-        await csw.PaintShaderAsync(PdfDirectValue.CreateName("Sh1"));
+        await csw.PaintShaderAsync(PdfDirectObject.CreateName("Sh1"));
         await base.DoPaintingAsync(csw);
     }
 }

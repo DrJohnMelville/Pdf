@@ -10,7 +10,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder.Functions;
 
 internal readonly partial struct StitchedFunction
 {
-    [FromConstructor] public PdfIndirectValue Function { get; }
+    [FromConstructor] public PdfIndirectObject Function { get; }
     [FromConstructor] public double ExclusiveMaximum { get; }
     [FromConstructor] public ClosedInterval Encode { get; }
 
@@ -37,19 +37,19 @@ public readonly struct StitchingFunctionBuilder
     /// Create a PdfDictionary that defines this function.
     /// </summary>
     /// <returns>A pdfdictionary that declares this function.</returns>
-    public PdfValueDictionary Create() =>
-        new ValueDictionaryBuilder()
+    public PdfDictionary Create() =>
+        new DictionaryBuilder()
             .WithItem(KnownNames.FunctionTypeTName, 3)
             .WithItem(KnownNames.DomainTName, DomainArray())
             .WithItem(KnownNames.BoundsTName, BoundsArray())
             .WithItem(KnownNames.EncodeTName, functions.Select(i => i.Encode).AsPdfArray(functions.Count))
-            .WithItem(KnownNames.FunctionsTName, new PdfValueArray(functions.Select(i => i.Function).ToArray()))
+            .WithItem(KnownNames.FunctionsTName, new PdfArray(functions.Select(i => i.Function).ToArray()))
             .AsDictionary();
 
-    private PdfValueArray BoundsArray() =>
-        new(functions.Select(i=>(PdfIndirectValue)i.ExclusiveMaximum).SkipLast(1).ToArray());
+    private PdfArray BoundsArray() =>
+        new(functions.Select(i=>(PdfIndirectObject)i.ExclusiveMaximum).SkipLast(1).ToArray());
 
-    private PdfValueArray DomainArray() => 
+    private PdfArray DomainArray() => 
         new(minimum, CurrentMaxInterval());
 
     private double CurrentMaxInterval() => 
@@ -61,7 +61,7 @@ public readonly struct StitchingFunctionBuilder
     /// <param name="function">PdfObject that defines the function for this interval.</param>
     /// <param name="exclusiveMaximum">The maximum value of this interval</param>
     /// <exception cref="ArgumentException">If the exclusiveMaximum is less than the currently declared maximum.</exception>
-    public void AddFunction(PdfValueDictionary function, double exclusiveMaximum) =>
+    public void AddFunction(PdfDictionary function, double exclusiveMaximum) =>
         AddFunction(function, exclusiveMaximum, (minimum, exclusiveMaximum));
 
     /// <summary>
@@ -71,7 +71,7 @@ public readonly struct StitchingFunctionBuilder
     /// <param name="exclusiveMaximum">The maximum value of this interval</param>
     /// <param name="encode">Encode interval for this segment</param>
     /// <exception cref="ArgumentException">If the exclusiveMaximum is less than the currently declared maximum.</exception>
-    public void AddFunction(PdfIndirectValue function, double exclusiveMaximum, ClosedInterval encode)
+    public void AddFunction(PdfIndirectObject function, double exclusiveMaximum, ClosedInterval encode)
     {
         if (exclusiveMaximum < CurrentMaxInterval())
             throw new ArgumentException("Exclusive maximum must be greater than the prior maximum");

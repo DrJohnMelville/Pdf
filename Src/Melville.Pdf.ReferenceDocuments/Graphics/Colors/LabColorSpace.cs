@@ -13,11 +13,11 @@ public class LabColorSpace: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectValue.CreateName("CS1"), new PdfValueArray(
-            KnownNames.LabTName, new ValueDictionaryBuilder()
-                .WithItem(KnownNames.WhitePointTName, new PdfValueArray(
+        page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"), new PdfArray(
+            KnownNames.LabTName, new DictionaryBuilder()
+                .WithItem(KnownNames.WhitePointTName, new PdfArray(
                     0.9505, 1.000, 1.0890))
-                .WithItem(KnownNames.RangeTName, new PdfValueArray(
+                .WithItem(KnownNames.RangeTName, new PdfArray(
                         MinA,127,-128,127
                 ))
                 .AsDictionary()));
@@ -31,7 +31,7 @@ public class LabColorSpace: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(PdfDirectValue.CreateName("CS1"));
+        await csw.SetStrokingColorSpaceAsync(PdfDirectObject.CreateName("CS1"));
         DrawLine(csw);
         csw.SetStrokeColor(50,50,50);
         DrawLine(csw);

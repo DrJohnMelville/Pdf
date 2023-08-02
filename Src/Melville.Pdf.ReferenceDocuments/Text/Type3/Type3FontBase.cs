@@ -10,17 +10,17 @@ public abstract class Type3FontBase: FontDefinitionTest
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ExtGState, PdfDirectValue.CreateName("GS1"),
-            new ValueDictionaryBuilder()
+        page.AddResourceObject(ResourceTypeName.ExtGState, PdfDirectObject.CreateName("GS1"),
+            new DictionaryBuilder()
                 .WithItem(KnownNames.LWTName, 15)
                 .WithItem(KnownNames.DTName,
-                    new PdfValueArray(new PdfValueArray(30), 0))
+                    new PdfArray(new PdfArray(30), 0))
                 .AsDictionary());
     }
 
-    protected override PdfDirectValue CreateFont(IPdfObjectCreatorRegistry arg)
+    protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
-        var triangle = arg.Add(new ValueDictionaryBuilder().AsStream(@"
+        var triangle = arg.Add(new DictionaryBuilder().AsStream(@"
 /GS1 gs
 1000 0 0 0 750 750 d1
 0 0 1 RG %prove color setting operations have no effect
@@ -30,34 +30,34 @@ public abstract class Type3FontBase: FontDefinitionTest
 750 0 l
 s
 "));
-        var square = arg.Add(new ValueDictionaryBuilder().AsStream(@"
+        var square = arg.Add(new DictionaryBuilder().AsStream(@"
 1000 0 0 0 750 750 d1
 0 0 750 750 re
 B"));
-        var triName = PdfDirectValue.CreateName("triangle");
-        var sqName = PdfDirectValue.CreateName("square");
-        var chanProcs = arg.Add(new ValueDictionaryBuilder()
+        var triName = PdfDirectObject.CreateName("triangle");
+        var sqName = PdfDirectObject.CreateName("square");
+        var chanProcs = arg.Add(new DictionaryBuilder()
             .WithItem(sqName, square)
             .WithItem(triName, triangle)
             .AsDictionary()
         );
 
-        var encoding = arg.Add(new ValueDictionaryBuilder()
+        var encoding = arg.Add(new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
-            .WithItem(KnownNames.DifferencesTName, new PdfValueArray(97, sqName, triName))
+            .WithItem(KnownNames.DifferencesTName, new PdfArray(97, sqName, triName))
             .AsDictionary()
         );
         
-        return new ValueDictionaryBuilder()
+        return new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.Type3TName)
-            .WithItem(KnownNames.FontBBoxTName, new PdfValueArray(
+            .WithItem(KnownNames.FontBBoxTName, new PdfArray(
                 0,
                 0,
                 750,
                 750
             ))
-            .WithItem(KnownNames.FontMatrixTName, new PdfValueArray(
+            .WithItem(KnownNames.FontMatrixTName, new PdfArray(
                 0.001,
                 0,
                 0,
@@ -69,7 +69,7 @@ B"));
             .WithItem(KnownNames.EncodingTName, encoding)
             .WithItem(KnownNames.FirstCharTName, 97)
             .WithItem(KnownNames.LastCharTName, 98)
-            .WithItem(KnownNames.WidthsTName, new PdfValueArray(1000, 1000))
+            .WithItem(KnownNames.WidthsTName, new PdfArray(1000, 1000))
             .AsDictionary();
     }
 }

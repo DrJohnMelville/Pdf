@@ -40,9 +40,9 @@ public class V6Creator
         var dict = new V6Encryptor("User", "User", (PdfPermission)(-4),
             KnownNames.StdCFTName, KnownNames.StdCFTName, default, new V4CfDictionary(KnownNames.AESV3TName, 256),
             rng).CreateEncryptionDictionary(
-            new PdfValueArray(
-                PdfDirectValue.CreateString("591462DB348F2F4E849B5C9195C94B95".BitsFromHex()),
-                PdfDirectValue.CreateString("DAC57C30E8425659C52B7DDE83523235".BitsFromHex())
+            new PdfArray(
+                PdfDirectObject.CreateString("591462DB348F2F4E849B5C9195C94B95".BitsFromHex()),
+                PdfDirectObject.CreateString("DAC57C30E8425659C52B7DDE83523235".BitsFromHex())
             ));
 
         Assert.Equal("Standard", (await dict.GetAsync<string>(KnownNames.FilterTName)));
@@ -62,8 +62,8 @@ public class V6Creator
             (await dict.GetAsync<StringSpanSource>(KnownNames.PermsTName)).GetSpan().HexFromBits());
         Assert.Equal(KnownNames.StdCFTName, await dict[KnownNames.StmFTName]);
         Assert.Equal(KnownNames.StdCFTName, await dict[KnownNames.StrFTName]);
-        var cf = await dict.GetAsync<PdfValueDictionary>(KnownNames.CFTName);
-        var stdCf = await cf.GetAsync<PdfValueDictionary>(KnownNames.StdCFTName);
+        var cf = await dict.GetAsync<PdfDictionary>(KnownNames.CFTName);
+        var stdCf = await cf.GetAsync<PdfDictionary>(KnownNames.StdCFTName);
         Assert.Equal(KnownNames.AESV3TName, await stdCf[KnownNames.CFMTName]);
         Assert.Equal(KnownNames.DocOpenTName, await stdCf[KnownNames.AuthEventTName]);
         Assert.Equal(256, await stdCf.GetAsync<int>(KnownNames.LengthTName));

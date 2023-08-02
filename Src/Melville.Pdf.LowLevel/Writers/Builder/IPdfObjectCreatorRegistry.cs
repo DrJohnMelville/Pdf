@@ -40,7 +40,7 @@ public interface ILowLevelDocumentCreator : IPdfObjectCreatorRegistry
     /// Ensure that the document trailer has an ID array -- creating one if necessary.
     /// </summary>
     /// <returns>The ID array</returns>
-    public PdfValueArray EnsureDocumentHasId();
+    public PdfArray EnsureDocumentHasId();
 
 }
 
@@ -55,7 +55,7 @@ public interface IPdfObjectCreatorRegistry
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <returns>The PdfIndirectValue that refers to the added object.</returns>
-    PdfIndirectValue Add(in PdfDirectValue item);
+    PdfIndirectObject Add(in PdfDirectObject item);
 
     /// <summary>
     /// Add an object with a specific object and generation number.
@@ -64,7 +64,7 @@ public interface IPdfObjectCreatorRegistry
     /// <param name="objectNumber">The object number to add at</param>
     /// <param name="generation">The desired generation number</param>
     /// <returns></returns>
-    internal PdfIndirectValue Add(in PdfDirectValue item, int objectNumber, int generation);
+    internal PdfIndirectObject Add(in PdfDirectObject item, int objectNumber, int generation);
 
     /// <summary>
     /// Assign a new mapping to an existing PdfIndirectValue -- fails if the value is resolved.
@@ -72,7 +72,7 @@ public interface IPdfObjectCreatorRegistry
     /// <param name="item">The indirect object to be reassigned</param>
     /// <param name="newValue">The value to be a ssigned.</param>
     /// <returns></returns>
-    void Reassign(in PdfIndirectValue item, in PdfDirectValue newValue);
+    void Reassign(in PdfIndirectObject item, in PdfDirectObject newValue);
 
 
     /// <summary>
@@ -80,18 +80,18 @@ public interface IPdfObjectCreatorRegistry
     /// </summary>
     /// <param name="key">The key to add the item under</param>
     /// <param name="item">The item to add.</param>
-    void AddToTrailerDictionary(in PdfDirectValue key, in PdfIndirectValue item);
+    void AddToTrailerDictionary(in PdfDirectObject key, in PdfIndirectObject item);
 
     /// <summary>
     /// Creates a objectstream context.  Objects added before the context is destroyed will be added to the object stream.
     /// </summary>
     /// <param name="dictionaryBuilder">The dictionary builder to use in constructing the object string.</param>
     /// <returns></returns>
-    IDisposable ObjectStreamContext(ValueDictionaryBuilder? dictionaryBuilder = null);
+    IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
 }
 
 public static class PdfObjectCreatorRegistry
 {
-    public static PdfIndirectValue AddIfDirect(this IPdfObjectCreatorRegistry registry, PdfIndirectValue value) =>
+    public static PdfIndirectObject AddIfDirect(this IPdfObjectCreatorRegistry registry, PdfIndirectObject value) =>
         value.TryGetEmbeddedDirectValue(out var directVal) ? registry.Add(directVal) : value;
 }

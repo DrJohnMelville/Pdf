@@ -21,17 +21,17 @@ internal interface IDocumentCryptContext
     /// </summary>
     /// <param name="item">A PDF object</param>
     /// <returns></returns>
-    bool BlockEncryption(PdfValueDictionary item);
+    bool BlockEncryption(PdfDictionary item);
 }
 internal class DocumentCryptContext : IDocumentCryptContext
 {
     private readonly byte[] rootKey;
     private readonly IKeySpecializer keySpecializer;
     private readonly ICipherFactory cipherFactory;
-    private readonly PdfValueDictionary? blockEncryption;
+    private readonly PdfDictionary? blockEncryption;
 
     public DocumentCryptContext(byte[] rootKey, IKeySpecializer keySpecializer, 
-        ICipherFactory cipherFactory, PdfValueDictionary? blockEncryption)
+        ICipherFactory cipherFactory, PdfDictionary? blockEncryption)
     {
         this.rootKey = rootKey;
         this.keySpecializer = keySpecializer;
@@ -39,7 +39,7 @@ internal class DocumentCryptContext : IDocumentCryptContext
         this.blockEncryption = blockEncryption;
     }
 
-    public bool BlockEncryption(PdfValueDictionary item) => blockEncryption == item;
+    public bool BlockEncryption(PdfDictionary item) => blockEncryption == item;
 
     public IObjectCryptContext ContextForObject(int objectNumber, int generationNumber) =>
         new ObjectCryptContext(this, objectNumber, generationNumber);
@@ -61,7 +61,7 @@ internal class DocumentCryptContext : IDocumentCryptContext
             documentContext.cipherFactory.CipherFromKey(KeyForObject());
         public ICipher StreamCipher() => 
             documentContext.cipherFactory.CipherFromKey(KeyForObject());
-        public ICipher NamedCipher(in PdfDirectValue name) => 
+        public ICipher NamedCipher(in PdfDirectObject name) => 
             documentContext.cipherFactory.CipherFromKey(documentContext.rootKey);
  
         private ReadOnlySpan<byte> KeyForObject() => 

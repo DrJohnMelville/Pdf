@@ -116,7 +116,7 @@ public readonly struct SampledFunctionBuilder
     /// </summary>
     /// <param name="members">A DictionaryBuilder that should be used to build the stream.</param>
     /// <returns>The stream that defines this function.</returns>
-    private ValueDictionaryBuilder DictionaryEntries(in ValueDictionaryBuilder members) =>
+    private DictionaryBuilder DictionaryEntries(in DictionaryBuilder members) =>
         members
             .WithItem(KnownNames.FunctionTypeTName, 0)
             .WithItem(KnownNames.DomainTName, inputs.Select(i => i.Domain).AsPdfArray(inputs.Count))
@@ -127,21 +127,21 @@ public readonly struct SampledFunctionBuilder
             .WithItem(KnownNames.EncodeTName, EncodeArray())
             .WithItem(KnownNames.DecodeTName, DecodeArray());
 
-    private PdfValueArray SizeArray() => new(inputs.Select(i => (PdfIndirectValue)i.Samples).ToArray());
+    private PdfArray SizeArray() => new(inputs.Select(i => (PdfIndirectObject)i.Samples).ToArray());
 
-    private PdfDirectValue OrderIfNotLinear() => 
-        order == SampledFunctionOrder.Linear?PdfDirectValue.CreateNull(): 3;
+    private PdfDirectObject OrderIfNotLinear() => 
+        order == SampledFunctionOrder.Linear?PdfDirectObject.CreateNull(): 3;
 
-    private PdfDirectValue EncodeArray() =>
+    private PdfDirectObject EncodeArray() =>
         EncodeArrayIsTrivial()
-            ? PdfDirectValue.CreateNull()
+            ? PdfDirectObject.CreateNull()
             : inputs.Select(i => i.Encode).AsPdfArray(inputs.Count);
 
     private bool EncodeArrayIsTrivial() => inputs.All(i => i.EncodeTrivial());
         
-    private PdfDirectValue DecodeArray() =>
+    private PdfDirectObject DecodeArray() =>
         DecodeArrayIsTrivial()
-            ? PdfDirectValue.CreateNull()
+            ? PdfDirectObject.CreateNull()
             : outputs.Select(i => i.Decode).AsPdfArray(outputs.Count);
 
     private bool DecodeArrayIsTrivial()
@@ -199,14 +199,14 @@ public readonly struct SampledFunctionBuilder
     /// Build the resulting function.
     /// </summary>
     /// <returns>The resulting function, as a PDF stream</returns>
-    public ValueTask<PdfValueStream> CreateSampledFunctionAsync() =>
-        CreateSampledFunctionAsync(new ValueDictionaryBuilder());
+    public ValueTask<PdfStream> CreateSampledFunctionAsync() =>
+        CreateSampledFunctionAsync(new DictionaryBuilder());
 
     /// <summary>
     /// Build the resulting function.
     /// </summary>
     /// <param name="members">The DictionaryBuilder which should be used to build the function</param>
     /// <returns>The resulting function, as a PDF stream</returns>
-    public async ValueTask<PdfValueStream> CreateSampledFunctionAsync(ValueDictionaryBuilder members) =>
+    public async ValueTask<PdfStream> CreateSampledFunctionAsync(DictionaryBuilder members) =>
         DictionaryEntries(members).AsStream(await SamplesStreamAsync().CA());
 }

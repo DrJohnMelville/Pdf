@@ -14,7 +14,7 @@ public class S7_3_7_DictionaryDefined
     public async Task ParseSimpleDictionaryAsync(string input)
     {
         var dict = (await (await input.ParseValueObjectAsync()).LoadValueAsync())
-            .Get<PdfValueDictionary>();
+            .Get<PdfDictionary>();
         Assert.Equal(2, dict.RawItems.Count);
         Assert.Equal(213, await dict.GetAsync<int>("/Height"u8));
         Assert.Equal(456, await dict.GetAsync<int>("/Width"u8));
@@ -27,7 +27,7 @@ public class S7_3_7_DictionaryDefined
     public async Task SpecialCasesAsync(string input, int size)
     {
         var dict = (await (await input.ParseValueObjectAsync()).LoadValueAsync())
-            .Get<PdfValueDictionary>();
+            .Get<PdfDictionary>();
         Assert.Equal(size, dict.RawItems.Count);
     }
 
@@ -41,7 +41,7 @@ public class S7_3_7_DictionaryDefined
     public async Task ParseRootDictionary()
     {
         var item = await " 1 2 obj<</Height 213/Width 456>>endobj".ParseRootObjectAsync();
-        var dict = item.Get<PdfValueDictionary>();
+        var dict = item.Get<PdfDictionary>();
         Assert.Equal(213, await dict.GetAsync<int>("/Height"u8));
         Assert.Equal(456, await dict.GetAsync<int>("/Width"u8));
 

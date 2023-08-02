@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Writers.ObjectWriters;
 internal static class NameWriter
 {
 
-    public static void Write(PipeWriter target, in PdfDirectValue name)
+    public static void Write(PipeWriter target, in PdfDirectObject name)
     {
         var str = name.Get<StringSpanSource>().GetSpan();
         WriteWithoutlush(target, str);

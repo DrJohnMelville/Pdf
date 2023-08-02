@@ -54,7 +54,7 @@ public ref struct CCITEncodingTestBuilder
 [MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",new CCITEncodingTestBuilder().~1~.Build(), KnownNames.CCITTFaxDecodeTName, S7_4_6CCITFaxDecode.~3~){}}")]
 public partial class S7_4_6CCITFaxDecode
 {
-    public static PdfValueDictionary JustData32v4 => new ValueDictionaryBuilder()
+    public static PdfDictionary JustData32v4 => new DictionaryBuilder()
         .WithItem(KnownNames.KTName, -1)
         .WithItem(KnownNames.EncodedByteAlignTName, false)
         .WithItem(KnownNames.ColumnsTName, 32)

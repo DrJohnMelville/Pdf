@@ -21,7 +21,7 @@ internal readonly partial struct ObjectStreamParser
 
 
     public static async ValueTask<ObjectStreamParser> CreateAsync(
-        ParsingFileOwner owner, PdfValueStream source, int desiredObjectNumber)
+        ParsingFileOwner owner, PdfStream source, int desiredObjectNumber)
     {
         var sourceStream = await source.StreamContentAsync().CA();
         var reader = new ParsingReader(owner, PipeReader.Create(sourceStream), 0);
@@ -34,7 +34,7 @@ internal readonly partial struct ObjectStreamParser
         return new(owner, subsetReader, parser, locations, desiredObjectNumber);
     }
 
-    public async ValueTask<PdfDirectValue> ParseAsync(PdfDirectValue objectValue)
+    public async ValueTask<PdfDirectObject> ParseAsync(PdfDirectObject objectValue)
     {
         for (int i = 0; i < locations.Count; i++)
         {
@@ -45,7 +45,7 @@ internal readonly partial struct ObjectStreamParser
         return objectValue;
     }
 
-    private async Task<PdfDirectValue> ReadSingleObjectAsync(ObjectLocation location, int i)
+    private async Task<PdfDirectObject> ReadSingleObjectAsync(ObjectLocation location, int i)
     {
         await PositionForNextObjectAsync(location, i).CA();
 

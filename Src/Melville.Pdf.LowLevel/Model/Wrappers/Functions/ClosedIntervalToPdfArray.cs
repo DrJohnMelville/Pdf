@@ -5,17 +5,17 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 internal static class ClosedIntervalToPdfArray
 {
-    public static PdfValueArray AsPdfArray(this ICollection<ClosedInterval> source) =>
+    public static PdfArray AsPdfArray(this ICollection<ClosedInterval> source) =>
         source.AsPdfArray(source.Count);
-    public static PdfValueArray AsPdfArray(this IEnumerable<ClosedInterval> source, int count= 0)
+    public static PdfArray AsPdfArray(this IEnumerable<ClosedInterval> source, int count= 0)
     {
-        var numArray = new PdfIndirectValue[count*2];
+        var numArray = new PdfIndirectObject[count*2];
         int position=0;
         foreach (var item in source)
         {
             numArray[position++] = item.MinValue;
             numArray[position++] = item.MaxValue;
         }
-        return new PdfValueArray(numArray);
+        return new PdfArray(numArray);
     }
 }

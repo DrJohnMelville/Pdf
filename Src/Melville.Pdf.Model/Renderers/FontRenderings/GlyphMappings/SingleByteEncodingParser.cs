@@ -11,7 +11,7 @@ internal readonly partial struct SingleByteEncodingParser
 {
     [FromConstructor] private readonly INameToGlyphMapping nameMapper;
     [FromConstructor] private readonly uint[] output;
-    [FromConstructor] private readonly PdfDirectValue[]? overrideEncoding;
+    [FromConstructor] private readonly PdfDirectObject[]? overrideEncoding;
 
 #if DEBUG
     partial void OnConstructed()
@@ -20,16 +20,16 @@ internal readonly partial struct SingleByteEncodingParser
     }
 #endif
 
-    public async ValueTask WriteEncodingToArrayAsync(PdfDirectValue encoding)
+    public async ValueTask WriteEncodingToArrayAsync(PdfDirectObject encoding)
     {
         switch (encoding)
         {
             case {IsName:true} name:
                 WriteCharacterSet(overrideEncoding ?? CharactersFromName(name));
                 break;
-            case var x when x.TryGet(out PdfValueDictionary dict):
+            case var x when x.TryGet(out PdfDictionary dict):
                 await WriteEncodingToArrayAsync(await dict.GetOrNullAsync(KnownNames.BaseEncodingTName).CA()).CA();
-                if ((await dict.GetOrNullAsync<PdfValueArray>(KnownNames.DifferencesTName).CA()) is {} differences )
+                if ((await dict.GetOrNullAsync<PdfArray>(KnownNames.DifferencesTName).CA()) is {} differences )
                     await WriteDifferencesAsync(differences).CA();
                 break; 
             default:
@@ -38,7 +38,7 @@ internal readonly partial struct SingleByteEncodingParser
         }
     }
     
-    private PdfDirectValue[] CharactersFromName(PdfDirectValue name) => 
+    private PdfDirectObject[] CharactersFromName(PdfDirectObject name) => 
         name switch
     {
         var x when x.Equals(KnownNames.MacRomanEncodingTName) => CharacterEncodings.MacRoman,
@@ -49,7 +49,7 @@ internal readonly partial struct SingleByteEncodingParser
         _ => CharacterEncodings.Standard
     };
 
-    private void WriteCharacterSet(PdfDirectValue[] characters)
+    private void WriteCharacterSet(PdfDirectObject[] characters)
     {
         for (int i = 0; i < output.Length; i++)
         {
@@ -57,7 +57,7 @@ internal readonly partial struct SingleByteEncodingParser
         }
     }
     
-    private async ValueTask WriteDifferencesAsync(PdfValueArray differences)
+    private async ValueTask WriteDifferencesAsync(PdfArray differences)
     {
         byte currentChar = 0;
         await foreach (var item in differences.CA())

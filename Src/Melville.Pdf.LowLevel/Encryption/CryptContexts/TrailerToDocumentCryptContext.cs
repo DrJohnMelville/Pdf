@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Encryption.CryptContexts;
 internal static class TrailerToDocumentCryptContext
 {
     public static async ValueTask<IDocumentCryptContext> CreateCryptContextAsync(
-        PdfValueDictionary trailer, string? userPassword)
+        PdfDictionary trailer, string? userPassword)
     {
         var securityHandler = await SecurityHandlerFromTrailerAsync(trailer).CA();
         var key = securityHandler.TryComputeRootKey(userPassword??"", PasswordType.User);
@@ -20,12 +20,12 @@ internal static class TrailerToDocumentCryptContext
             securityHandler.CreateCryptContext(key);
     }
 
-    private static async ValueTask<ISecurityHandler> SecurityHandlerFromTrailerAsync(PdfValueDictionary trailer) =>
-        (await trailer.GetOrNullAsync(KnownNames.EncryptTName).CA()).TryGet(out PdfValueDictionary? dict)
+    private static async ValueTask<ISecurityHandler> SecurityHandlerFromTrailerAsync(PdfDictionary trailer) =>
+        (await trailer.GetOrNullAsync(KnownNames.EncryptTName).CA()).TryGet(out PdfDictionary? dict)
             ? await SecurityHandlerFactory.CreateSecurityHandlerAsync(trailer, dict).CA()
             : NullSecurityHandler.Instance;
 
     public static async ValueTask<IDocumentCryptContext> CreateDecryptorFactoryAsync(
-        PdfValueDictionary trailer, IPasswordSource passwordSource) =>
+        PdfDictionary trailer, IPasswordSource passwordSource) =>
         await (await SecurityHandlerFromTrailerAsync(trailer).CA()).InteractiveGetCryptContextAsync(passwordSource).CA();
 }

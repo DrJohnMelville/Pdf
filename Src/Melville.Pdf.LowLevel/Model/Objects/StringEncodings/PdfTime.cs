@@ -8,7 +8,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 public static class PdfTimeExtenstions
 {
-    public static PdfTime AsPdfTime(this in PdfDirectValue value)
+    public static PdfTime AsPdfTime(this in PdfDirectObject value)
     {
         var sourceSpan = (ReadOnlySpan<byte>)value.Get<StringSpanSource>().GetSpan();
         Span<char> decoded = stackalloc char[sourceSpan.DecodedLength()];
@@ -78,8 +78,8 @@ public readonly struct PdfTime
     /// Format the PdfTime into the shortest possible PDF representation -- exploiting all default values
     /// </summary>
     /// <returns>The time represented by this struct as a PDF time string</returns>
-    public PdfDirectValue AsPdfBytes() => 
-        PdfDirectValue.CreateString(FillWithTime(stackalloc byte[22]));
+    public PdfDirectObject AsPdfBytes() => 
+        PdfDirectObject.CreateString(FillWithTime(stackalloc byte[22]));
 
     private Span<byte> FillWithTime(in Span<byte> buffer)
     {

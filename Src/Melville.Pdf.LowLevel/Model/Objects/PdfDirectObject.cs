@@ -14,8 +14,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// <summary>
 /// this defines a Pdf Object that is not an indirect reference
 /// </summary>
-public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>, 
-    IComparable<PdfDirectValue>
+public readonly partial struct PdfDirectObject: IEquatable<PdfDirectObject>, 
+    IComparable<PdfDirectObject>
 {
     /// <summary>
     /// Strategy object that defines the type of the PdfObject
@@ -31,8 +31,8 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     partial void OnConstructed()
     {
-        if (valueStrategy is IIndirectValueSource)
-            throw new PdfParseException("An indirect value source may not be the strategy for a PdfDirectValue");
+        if (valueStrategy is IIndirectObjectSource)
+            throw new PdfParseException("An indirect value source may not be the strategy for a PdfDirectObject");
     }
 
     #region TypeTesters
@@ -76,36 +76,36 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
 
     #region Operators and Factories
 
-    public static implicit operator PdfDirectValue(bool value) =>
+    public static implicit operator PdfDirectObject(bool value) =>
         new(PostscriptBoolean.Instance, MementoUnion.CreateFrom(value));
-    public static implicit operator PdfDirectValue(int value) =>
+    public static implicit operator PdfDirectObject(int value) =>
         new(PostscriptInteger.Instance, MementoUnion.CreateFrom((long)value));
-    public static implicit operator PdfDirectValue(long value) =>
+    public static implicit operator PdfDirectObject(long value) =>
         new(PostscriptInteger.Instance, MementoUnion.CreateFrom(value));
-    public static implicit operator PdfDirectValue(double value) =>
+    public static implicit operator PdfDirectObject(double value) =>
         new(PostscriptDouble.Instance, MementoUnion.CreateFrom(value));
-    public static implicit operator PdfDirectValue(PdfValueArray array) =>
+    public static implicit operator PdfDirectObject(PdfArray array) =>
         new(array, default);
-    public static implicit operator PdfDirectValue(PdfValueDictionary array) =>
+    public static implicit operator PdfDirectObject(PdfDictionary array) =>
         new(array, default);
 
-    public static implicit operator PdfDirectValue(string value)
+    public static implicit operator PdfDirectObject(string value)
     {
         Span<byte> intemediate = stackalloc byte[value.Length];
         ExtendedAsciiEncoding.EncodeToSpan(value, intemediate);
-        return (PdfDirectValue)(ReadOnlySpan<byte>)intemediate;
+        return (PdfDirectObject)(ReadOnlySpan<byte>)intemediate;
     }
 
-    public static implicit operator PdfIndirectValue(PdfDirectValue value) =>
+    public static implicit operator PdfIndirectObject(PdfDirectObject value) =>
         new(value.valueStrategy, value.memento);
 
-    public static implicit operator PdfDirectValue(in ReadOnlySpan<byte> value) => value switch
+    public static implicit operator PdfDirectObject(in ReadOnlySpan<byte> value) => value switch
     {
         [(byte)'/', .. var name] => CreateName(name),
         var str => CreateString(str)
     };
 
-    public static PdfDirectValue CreateName(string name)
+    public static PdfDirectObject CreateName(string name)
     {
         var len = Encoding.UTF8.GetByteCount(name);
         Span<byte> data = stackalloc byte[len];
@@ -113,19 +113,19 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
         return CreateName(data);
     }
 
-    public static PdfDirectValue CreateName(in ReadOnlySpan<byte> name) => 
+    public static PdfDirectObject CreateName(in ReadOnlySpan<byte> name) => 
         CreateStringOrName(name, StringKind.LiteralName);
 
-    public static readonly PdfDirectValue EmptyString = CreateString(ReadOnlySpan<byte>.Empty);
+    public static readonly PdfDirectObject EmptyString = CreateString(ReadOnlySpan<byte>.Empty);
 
-    public static PdfDirectValue CreateUtf8String(string source) =>
+    public static PdfDirectObject CreateUtf8String(string source) =>
         CreateString(source, UnicodeEncoder.Utf8, StringKind.String);
-    public static PdfDirectValue CreateUtf16String(string source) =>
+    public static PdfDirectObject CreateUtf16String(string source) =>
         CreateString(source, UnicodeEncoder.BigEndian, StringKind.String);
-    public static PdfDirectValue CreateUtf16LittleEndianString(string source) =>
+    public static PdfDirectObject CreateUtf16LittleEndianString(string source) =>
         CreateString(source, UnicodeEncoder.LittleEndian, StringKind.String);
 
-    private static PdfDirectValue CreateString(
+    private static PdfDirectObject CreateString(
         string source, UnicodeEncoder encoder, StringKind stringKind)
     {
         Span<byte> text = stackalloc byte[encoder.EncodedLength(source)];
@@ -133,41 +133,41 @@ public readonly partial struct PdfDirectValue: IEquatable<PdfDirectValue>,
         return CreateStringOrName(text, stringKind);
     }
 
-    public static PdfDirectValue CreateString(in ReadOnlySpan<byte> str) => 
+    public static PdfDirectObject CreateString(in ReadOnlySpan<byte> str) => 
         CreateStringOrName(str, StringKind.String);
 
-    private static PdfDirectValue CreateStringOrName(in ReadOnlySpan<byte> str, StringKind kind)
+    private static PdfDirectObject CreateStringOrName(in ReadOnlySpan<byte> str, StringKind kind)
     {
         var (strategy, memento) = str.PostscriptEncode(kind);
         return new(strategy, memento);
     }
 
-    public static PdfDirectValue CreateNull() => new(PostscriptNull.Instance, default);
+    public static PdfDirectObject CreateNull() => new(PostscriptNull.Instance, default);
     #endregion
 
-    public static PdfDirectValue FromArray(params PdfIndirectValue[] values) => 
-        new PdfValueArray(values);
+    public static PdfDirectObject FromArray(params PdfIndirectObject[] values) => 
+        new PdfArray(values);
 
     /// <inheritdoc />
-    public bool Equals(PdfDirectValue other) => 
+    public bool Equals(PdfDirectObject other) => 
         ShallowEquals(other) || DeepEquals(other);
 
 
-    private bool ShallowEquals(in PdfDirectValue other) => 
+    private bool ShallowEquals(in PdfDirectObject other) => 
         Equals(valueStrategy, other.valueStrategy) && memento.Equals(other.memento);
 
-    private bool DeepEquals(in PdfDirectValue other) =>
+    private bool DeepEquals(in PdfDirectObject other) =>
         valueStrategy is IPostscriptValueEqualityTest pvet && 
         pvet.Equals(memento, other.valueStrategy, other.memento);
 
-    public int CompareTo(PdfDirectValue other)
+    public int CompareTo(PdfDirectObject other)
     {
         return Get<IPostscriptValueComparison>().CompareTo(
             memento, other.NonNullValueStrategy(), other.memento);
     }
 
     public override bool Equals(object? obj) => 
-        obj is PdfDirectValue other && Equals(other);
+        obj is PdfDirectObject other && Equals(other);
 
     public override int GetHashCode() => 
         HashCode.Combine(valueStrategy, memento);

@@ -31,5 +31,5 @@ public interface IDefaultFontMapper
     /// <param name="font">The PDFName of the font</param>
     /// <param name="flags">The fontflags from the font structure</param>
     /// <returns>A DefaultFontReference from which the font can be built.</returns>
-    DefaultFontReference FontFromName(PdfDirectValue font, FontFlags flags);
+    DefaultFontReference FontFromName(PdfDirectObject font, FontFlags flags);
 }

@@ -11,11 +11,11 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 
 public class S7_3_7_DictionaryOperations
 {
-    private async Task<PdfValueDictionary> CreateDictAsync(string definition) =>
-        await (await definition.ParseValueObjectAsync()).LoadValueAsync<PdfValueDictionary>();
+    private async Task<PdfDictionary> CreateDictAsync(string definition) =>
+        await (await definition.ParseValueObjectAsync()).LoadValueAsync<PdfDictionary>();
 
 
-    private Task<PdfValueDictionary> IndirectTestDictAsync => 
+    private Task<PdfDictionary> IndirectTestDictAsync => 
         CreateDictAsync("<</Height true /AC false>>");
 
     [Fact]
@@ -38,10 +38,10 @@ public class S7_3_7_DictionaryOperations
         var d = await IndirectTestDictAsync;
 
         Assert.Equal(new []{true, false}, 
-            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfDirectValue>>>()
+            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectObject,ValueTask<PdfDirectObject>>>()
             .Select(i=>i.Value.Result.Get<bool>()));
         Assert.Equal(new []{KnownNames.HeightTName, KnownNames.ACTName},
-            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectValue,ValueTask<PdfDirectValue>>>().Select(i=>i.Key));
+            ((IEnumerable)d).OfType<KeyValuePair<PdfDirectObject,ValueTask<PdfDirectObject>>>().Select(i=>i.Key));
             
     }
     [Fact]
@@ -69,7 +69,7 @@ public class S7_3_7_DictionaryOperations
     {
         var d = await IndirectTestDictAsync;
         AAssert.False(d.TryGetValue(KnownNames.ActivationTName, out var returned));
-        Assert.Equal(default(ValueTask<PdfDirectValue>), returned);
+        Assert.Equal(default(ValueTask<PdfDirectObject>), returned);
     }
     [Fact]
     public async Task EnumerateValuesHandlesIndirectReferencesAsync()

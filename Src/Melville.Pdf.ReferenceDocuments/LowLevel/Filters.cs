@@ -22,19 +22,19 @@ internal class FiltersGenerator : CreatePdfParser
             new V4CfDictionary(KnownNames.V2TName, 128 / 8)));
 
         await CreatePageAsync(builder, "Rc4 Crypt Filter", FilterName.Crypt,
-            new ValueDictionaryBuilder()
+            new DictionaryBuilder()
                 .WithItem(KnownNames.TypeTName, KnownNames.CryptFilterDecodeParmsTName)
                 .WithItem(KnownNames.NameTName, KnownNames.StdCFTName)
                 .AsDictionary());
         await CreatePageAsync(builder, "Identity Crypt Filter", FilterName.Crypt,
-            new ValueDictionaryBuilder()
+            new DictionaryBuilder()
                 .WithItem(KnownNames.TypeTName, KnownNames.CryptFilterDecodeParmsTName)
                 .WithItem(KnownNames.NameTName, KnownNames.IdentityTName)
                 .AsDictionary());
         await CreatePageAsync(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
             FilterName.RunLengthDecode);
         await CreatePageAsync(builder, "LZW -- LateChange" + RandomString(9270), FilterName.LZWDecode,
-            new ValueDictionaryBuilder().WithItem(KnownNames.EarlyChangeTName, 0).AsDictionary());
+            new DictionaryBuilder().WithItem(KnownNames.EarlyChangeTName, 0).AsDictionary());
         await CreatePageAsync(builder, "LZW -- " + RandomString(9270), FilterName.LZWDecode);
         await CreatePageAsync(builder, "Ascii Hex", FilterName.ASCIIHexDecode);
         await CreatePageAsync(builder, "Ascii 85", FilterName.ASCII85Decode);
@@ -51,11 +51,11 @@ internal class FiltersGenerator : CreatePdfParser
     }
 
     private static ValueTask CreatePageAsync(PdfDocumentCreator builder, string Text, FilterName encoding,
-        PdfDirectValue? parameters = null) =>
+        PdfDirectObject? parameters = null) =>
         builder.Pages.CreatePage().AddToContentStreamAsync(
-            new ValueDictionaryBuilder().WithFilter(encoding).WithFilterParam(parameters ?? PdfDirectValue.CreateNull()),
+            new DictionaryBuilder().WithFilter(encoding).WithFilterParam(parameters ?? PdfDirectObject.CreateNull()),
             i => {
-                i.SetFontAsync(PdfDirectValue.CreateName("F1"), 24);
+                i.SetFontAsync(PdfDirectObject.CreateName("F1"), 24);
                 using var block = i.StartTextBlock();
                 block.MovePositionBy(100, 700);
                 block.ShowStringAsync(Text);
@@ -64,7 +64,7 @@ internal class FiltersGenerator : CreatePdfParser
 
     private static ValueTask PredictionPageAsync(PdfDocumentCreator builder, string text, int Predictor) =>
         CreatePageAsync(builder, text, FilterName.FlateDecode,
-            new ValueDictionaryBuilder()
+            new DictionaryBuilder()
                 .WithItem(KnownNames.ColorsTName, 2)
                 .WithItem(KnownNames.ColumnsTName, 5)
                 .WithItem(KnownNames.PredictorTName, Predictor)

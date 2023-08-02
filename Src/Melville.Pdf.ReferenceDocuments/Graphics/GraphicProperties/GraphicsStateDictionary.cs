@@ -4,7 +4,7 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.GraphicProperties;
 
 public class GraphicsStateDictionary:Card3x5
 {
-    private PdfDirectValue dictionaryName = PdfDirectValue.CreateName("GS1");
+    private PdfDirectObject dictionaryName = PdfDirectObject.CreateName("GS1");
 
     public GraphicsStateDictionary() : base("Line with Style set from GraphicStateDictionary")
     {
@@ -13,7 +13,7 @@ public class GraphicsStateDictionary:Card3x5
 
     protected override void SetPageProperties(PageCreator page)
     {
-        page.AddResourceObject(ResourceTypeName.ExtGState, dictionaryName, new ValueDictionaryBuilder()
+        page.AddResourceObject(ResourceTypeName.ExtGState, dictionaryName, new DictionaryBuilder()
             .WithItem(KnownNames.LWTName, 25).AsDictionary());
     }
 

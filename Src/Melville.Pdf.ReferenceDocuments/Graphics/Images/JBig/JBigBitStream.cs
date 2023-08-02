@@ -15,7 +15,7 @@ public abstract class JBigBitStream: DisplayImageTest
         this.width = width;
         this.height = height;
     }
-    private PdfValueStream? image;
+    private PdfStream? image;
     protected override async ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {
         MemoryStream global = new();
@@ -26,18 +26,18 @@ public abstract class JBigBitStream: DisplayImageTest
         global.Seek(0, SeekOrigin.Begin);
         specific.Seek(0, SeekOrigin.Begin);
         
-        image = new ValueDictionaryBuilder()
+        image = new DictionaryBuilder()
             .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
             .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
             .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
             .WithItem(KnownNames.WidthTName, width)
             .WithItem(KnownNames.HeightTName, height)
             .WithItem(KnownNames.BitsPerComponentTName, 1)
-            .WithItem(KnownNames.DecodeParmsTName, new PdfValueArray(
-                new ValueDictionaryBuilder()
+            .WithItem(KnownNames.DecodeParmsTName, new PdfArray(
+                new DictionaryBuilder()
                     .WithItem(KnownNames.JBIG2GlobalsTName,
                         docCreator.LowLevelCreator.Add(
-                            new ValueDictionaryBuilder().AsStream(global, StreamFormat.DiskRepresentation)))
+                            new DictionaryBuilder().AsStream(global, StreamFormat.DiskRepresentation)))
                     .AsDictionary()
             ))
             .WithFilter(FilterName.JBIG2Decode)
@@ -47,5 +47,5 @@ public abstract class JBigBitStream: DisplayImageTest
 
     protected abstract byte[] SourceBits();
 
-    protected override PdfValueStream CreateImage() => image!;
+    protected override PdfStream CreateImage() => image!;
 }

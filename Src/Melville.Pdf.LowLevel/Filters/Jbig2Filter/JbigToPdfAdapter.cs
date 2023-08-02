@@ -11,15 +11,15 @@ namespace Melville.Pdf.LowLevel.Filters.Jbig2Filter;
 
 internal class JbigToPdfAdapter: ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectValue parameters) => 
+    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters) => 
         throw new NotSupportedException();
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectValue parameters)
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters)
     {
         var reader = new JbigExplicitPageReader();
         reader.RequestPage(1);
-        if (parameters.TryGet(out PdfValueDictionary dict)&&
-            (await dict[KnownNames.JBIG2GlobalsTName].CA()).TryGet(out PdfValueStream globals))
+        if (parameters.TryGet(out PdfDictionary dict)&&
+            (await dict[KnownNames.JBIG2GlobalsTName].CA()).TryGet(out PdfStream globals))
         {
             await reader.ProcessSequentialSegmentsAsync(await globals.StreamContentAsync().CA(), 1).CA();
         }

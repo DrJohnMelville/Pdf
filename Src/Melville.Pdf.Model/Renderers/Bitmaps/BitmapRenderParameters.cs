@@ -7,12 +7,12 @@ using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
-internal record struct BitmapRenderParameters(PdfValueStream Stream, IHasPageAttributes Page, DeviceColor FillColor,
+internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttributes Page, DeviceColor FillColor,
     int Width, int Height)
 {
     public async ValueTask<double[]?> DecodeAsync() =>
         Stream.TryGetValue(KnownNames.DecodeTName, out var arrayTask) &&
-        (await arrayTask.CA()).TryGet(out PdfValueArray array) 
+        (await arrayTask.CA()).TryGet(out PdfArray array) 
             ? await array.CastAsync<double>().CA()
             : null;
 
@@ -28,9 +28,9 @@ internal record struct BitmapRenderParameters(PdfValueStream Stream, IHasPageAtt
     public ValueTask<long> BitsPerComponentAsync() =>
         Stream.GetOrDefaultAsync(KnownNames.BitsPerComponentTName, 8L);
 
-    public ValueTask<PdfDirectValue> MaskAsync() => 
+    public ValueTask<PdfDirectObject> MaskAsync() => 
         Stream.GetOrNullAsync(KnownNames.MaskTName);
-    public ValueTask<PdfDirectValue> SoftMaskAsync() => 
+    public ValueTask<PdfDirectObject> SoftMaskAsync() => 
         Stream.GetOrNullAsync(KnownNames.SMaskTName);
 
     public ValueTask<bool> ShouldInterpolateAsync() =>

@@ -6,7 +6,7 @@ namespace Melville.Pdf.Model.Documents;
 
 internal readonly partial struct PdfEncoding
 {
-    [FromConstructor] public PdfDirectValue LowLevel { get; }
+    [FromConstructor] public PdfDirectObject LowLevel { get; }
 
     public bool IsIdentityCdiEncoding() =>
         LowLevel.Equals(KnownNames.IdentityHTName) ||

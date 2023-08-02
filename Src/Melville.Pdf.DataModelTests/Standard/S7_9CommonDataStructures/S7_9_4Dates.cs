@@ -38,26 +38,26 @@ public class S7_9_4Dates
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimeParserUtf8(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(rec, PdfDirectValue.CreateUtf8String(pdfFormat).AsPdfTime());
+        Assert.Equal(rec, PdfDirectObject.CreateUtf8String(pdfFormat).AsPdfTime());
     }
 [Theory]
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimeParserUtf16(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(rec, PdfDirectValue.CreateUtf16String(pdfFormat).AsPdfTime());
+        Assert.Equal(rec, PdfDirectObject.CreateUtf16String(pdfFormat).AsPdfTime());
     }
 [Theory]
     [MemberData(nameof(DateTimeTests))]
     public void TestDateTimeParserWithApostrophes(string pdfFormat, PdfTime rec)
     {
-        Assert.Equal(rec, PdfDirectValue.CreateUtf16String(pdfFormat+"'").AsPdfTime());
+        Assert.Equal(rec, PdfDirectObject.CreateUtf16String(pdfFormat+"'").AsPdfTime());
     }
 
     [Fact]
     public void ParseWithZ()
     {
         Assert.Equal(new PdfTime(new DateTime(1975,07,28,01,23,59)), 
-            PdfDirectValue.CreateString("D:19750728012359Z"u8).AsPdfTime());
+            PdfDirectObject.CreateString("D:19750728012359Z"u8).AsPdfTime());
             
     }
 }

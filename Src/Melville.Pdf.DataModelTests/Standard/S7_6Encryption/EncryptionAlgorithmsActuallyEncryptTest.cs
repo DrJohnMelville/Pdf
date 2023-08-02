@@ -38,14 +38,14 @@ public class EncryptionAlgorithmsActuallyEncryptTest
     private async Task CreateAndTestDocumentAsync(ILowLevelDocumentEncryptor encryptionDeclaration)
     {
         var docBuilder = new LowLevelDocumentBuilder();
-        docBuilder.AddToTrailerDictionary(KnownNames.IDTName, new PdfValueArray(
-            PdfDirectValue.CreateString("12345678901234567890123456789012"u8),
-            PdfDirectValue.CreateString("12345678901234567890123456789012"u8)));
+        docBuilder.AddToTrailerDictionary(KnownNames.IDTName, new PdfArray(
+            PdfDirectObject.CreateString("12345678901234567890123456789012"u8),
+            PdfDirectObject.CreateString("12345678901234567890123456789012"u8)));
         docBuilder.AddEncryption(encryptionDeclaration);
         var creator = docBuilder;
 
-        docBuilder.Add(PdfDirectValue.CreateString("Encrypted String"u8));
-        docBuilder.Add(new ValueDictionaryBuilder().AsStream("This is an encrypted stream"));
+        docBuilder.Add(PdfDirectObject.CreateString("Encrypted String"u8));
+        docBuilder.Add(new DictionaryBuilder().AsStream("This is an encrypted stream"));
         var doc = creator.CreateDocument();
         var str = await WriteAsync(doc);
         Assert.DoesNotContain("Encrypted String", str);
@@ -54,7 +54,7 @@ public class EncryptionAlgorithmsActuallyEncryptTest
         var doc2 = await str.ParseWithPasswordAsync("User", PasswordType.User);
         var outstr = await doc2.Objects[(2, 0)].LoadValueAsync();
         Assert.Equal("Encrypted String", outstr.ToString());
-        var stream = await doc2.Objects[(3,0)].LoadValueAsync<PdfValueStream>();
+        var stream = await doc2.Objects[(3,0)].LoadValueAsync<PdfStream>();
         Assert.Equal("This is an encrypted stream", await new StreamReader(
             await stream.StreamContentAsync()).ReadToEndAsync());
     }

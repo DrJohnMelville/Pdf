@@ -20,12 +20,12 @@ public partial class ReplViewModel
 {
     private readonly IMultiRenderer renderer;
     private readonly byte[] buffer;
-    private readonly PdfIndirectValue contentStream;
+    private readonly PdfIndirectObject contentStream;
     readonly IPageSelector page;
     [AutoNotify] private string contentStreamText;
     
     public ReplViewModel(
-        string contentStreamText, IMultiRenderer renderer, byte[] buffer, PdfIndirectValue contentStream, 
+        string contentStreamText, IMultiRenderer renderer, byte[] buffer, PdfIndirectObject contentStream, 
         IPageSelector page)
     {
         this.contentStreamText = contentStreamText;
@@ -44,14 +44,14 @@ public partial class ReplViewModel
         renderer.SetTarget(target, page.Page);
     }
 
-    private async Task<PdfValueStream> CreateReplacementStreamAsync(string newValue)
+    private async Task<PdfStream> CreateReplacementStreamAsync(string newValue)
     {
         var source = await contentStream.LoadValueAsync();
         var newStream = StreamWithContent(source, newValue);
         return newStream;
     }
 
-    private async Task WriteStreamModificationBlockAsync(PdfLoadedLowLevelDocument doc, PdfValueStream newStream,
+    private async Task WriteStreamModificationBlockAsync(PdfLoadedLowLevelDocument doc, PdfStream newStream,
         MultiBufferStream target)
     {
         var modifier = doc.Modify();
@@ -66,10 +66,10 @@ public partial class ReplViewModel
         return target;
     }
 
-    private static PdfValueStream StreamWithContent(PdfDirectValue source, string newValue)
+    private static PdfStream StreamWithContent(PdfDirectObject source, string newValue)
     {
-        var builder = new ValueDictionaryBuilder();
-        if (source.TryGet(out PdfValueDictionary? sourceDict)) builder.CopyFrom(sourceDict);
+        var builder = new DictionaryBuilder();
+        if (source.TryGet(out PdfDictionary? sourceDict)) builder.CopyFrom(sourceDict);
         return builder.AsStream(newValue);
     }
 

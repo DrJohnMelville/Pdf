@@ -21,7 +21,7 @@ public class NameWriterTest
     [InlineData("/The_Key_of_F#23_Minor","The_Key_of_F#_Minor")]
     public async Task WriteNameAsync(string printedAs, string nameText)
     {
-        var pdfDirectValue = PdfDirectValue.CreateName(nameText);
+        var pdfDirectValue = PdfDirectObject.CreateName(nameText);
         Assert.Equal(printedAs, await pdfDirectValue.WriteToStringAsync());
 
     }

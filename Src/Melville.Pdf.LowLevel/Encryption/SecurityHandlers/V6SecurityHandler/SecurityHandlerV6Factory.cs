@@ -9,16 +9,16 @@ namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers.V6SecurityHandler;
 
 internal static class SecurityHandlerV6Factory
 {
-    public async static ValueTask<ISecurityHandler> CreateAsync(PdfValueDictionary dict) => 
+    public async static ValueTask<ISecurityHandler> CreateAsync(PdfDictionary dict) => 
         await CryptFilterReader.CreateAsync(await ReadV6KeysAsync(dict).CA(), dict).CA();
 
-    private static async Task<RootKeyComputerV6> ReadV6KeysAsync(PdfValueDictionary dict) =>
+    private static async Task<RootKeyComputerV6> ReadV6KeysAsync(PdfDictionary dict) =>
         new(
             await ReadKeyAsync(dict, KnownNames.UTName, KnownNames.UETName).CA(),
             await ReadKeyAsync(dict, KnownNames.OTName, KnownNames.OETName).CA());
 
     private static async Task<V6EncryptionKey> ReadKeyAsync(
-        PdfValueDictionary dict, PdfDirectValue hashName, PdfDirectValue encodedKeyName) => new (
+        PdfDictionary dict, PdfDirectObject hashName, PdfDirectObject encodedKeyName) => new (
         await dict.GetAsync<Memory<byte>>(hashName).CA(),
         await dict.GetAsync<Memory<byte>>(encodedKeyName).CA());
 }

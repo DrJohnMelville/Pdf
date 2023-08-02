@@ -62,7 +62,7 @@ public class PartParserTest
     public async Task ParseArrayAsync()
     {
         var model = await BuildSingleElementFileAsync(_=>
-            new PdfValueArray(new PdfIndirectValue[]{true, false, KnownNames.MaxTName}));
+            new PdfArray(new PdfIndirectObject[]{true, false, KnownNames.MaxTName}));
         var array = model[1];
         Assert.Equal("1 0: Array", array.Title);
         Assert.Equal("[0]: true", array.Children[0].Title);
@@ -73,7 +73,7 @@ public class PartParserTest
     public async Task ParseSteamAsync()
     {
         var model = await BuildSingleElementFileAsync(i=>
-            new ValueDictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.C1TName).AsStream("The Stream Data"));
+            new DictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.C1TName).AsStream("The Stream Data"));
         var stream = (StreamPartViewModel)model[1];
         Assert.Equal("1 0: Stream", stream.Title);
         Assert.Equal("/Type: /C1", stream.Children[0].Title);
@@ -84,14 +84,14 @@ public class PartParserTest
         Assert.Equal("The Stream Data", str.AsAsciiString);
     }
 
-    private async Task TestSingleElementAsync(PdfDirectValue item, string renderAs)
+    private async Task TestSingleElementAsync(PdfDirectObject item, string renderAs)
     {
         var model = await BuildSingleElementFileAsync(_=>item);
         Assert.Equal("1 0: "+renderAs, model[1].Title);
     }
 
     private async Task<DocumentPart[]> BuildSingleElementFileAsync(
-        Func<IPdfObjectCreatorRegistry,PdfDirectValue> item)
+        Func<IPdfObjectCreatorRegistry,PdfDirectObject> item)
     {
         var builder = new LowLevelDocumentBuilder();
         builder.Add(item(builder));
@@ -105,8 +105,8 @@ public class PartParserTest
     [Fact] public Task RenderIntegerValueAsync()=>TestSingleElementAsync(314, "314");
     [Fact] public Task RenderTrueValueAsync()=>TestSingleElementAsync(true, "true");
     [Fact] public Task RenderFalseValueAsync()=>TestSingleElementAsync(false, "false");
-    [Fact] public Task RenderStringValueAsync()=>TestSingleElementAsync(PdfDirectValue.CreateString("Foo"u8), "(Foo)");
-    [Fact] public Task RenderSpecialtringValueAsync()=>TestSingleElementAsync(PdfDirectValue.CreateString("o\no"u8), "(o\no)");
+    [Fact] public Task RenderStringValueAsync()=>TestSingleElementAsync(PdfDirectObject.CreateString("Foo"u8), "(Foo)");
+    [Fact] public Task RenderSpecialtringValueAsync()=>TestSingleElementAsync(PdfDirectObject.CreateString("o\no"u8), "(o\no)");
 
     [Fact]
     public async Task ParseFourPagesAsync()

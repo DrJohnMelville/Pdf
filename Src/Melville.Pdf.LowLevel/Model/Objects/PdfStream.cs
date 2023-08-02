@@ -10,12 +10,12 @@ using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
-public class PdfValueStream : PdfValueDictionary, IHasInternalIndirectObjects
+public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
 {
     private readonly IStreamDataSource source;
 
-    internal PdfValueStream(IStreamDataSource source, 
-        Memory<KeyValuePair<PdfDirectValue, PdfIndirectValue>> values) : base(values)
+    internal PdfStream(IStreamDataSource source, 
+        Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>> values) : base(values)
     {
         this.source = source;
     }
@@ -59,13 +59,13 @@ public class PdfValueStream : PdfValueDictionary, IHasInternalIndirectObjects
         new CryptSingleFilter(source, innerEncryptor,
             SinglePredictionFilter.Instance);
 
-    private async ValueTask<IReadOnlyList<PdfIndirectValue>> FilterListAsync() => 
+    private async ValueTask<IReadOnlyList<PdfIndirectObject>> FilterListAsync() => 
         (await this.GetOrNullAsync(KnownNames.FilterTName).CA()).ObjectAsUnresolvedList();
-    private async ValueTask<IReadOnlyList<PdfIndirectValue>> FilterParamListAsync() => 
+    private async ValueTask<IReadOnlyList<PdfIndirectObject>> FilterParamListAsync() => 
         (await this.GetOrNullAsync(KnownNames.DecodeParmsTName).CA()).ObjectAsUnresolvedList();
 
 
-    public async ValueTask<bool> HasFilterOfTypeAsync(PdfDirectValue filterType)
+    public async ValueTask<bool> HasFilterOfTypeAsync(PdfDirectObject filterType)
     {
         foreach (var item in await FilterListAsync().CA())
         {

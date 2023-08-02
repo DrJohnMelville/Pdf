@@ -10,71 +10,71 @@ namespace Melville.Pdf.Model.Documents;
 
 internal readonly partial struct PdfFont
 {
-    [FromConstructor]public readonly PdfValueDictionary LowLevel { get; }
+    [FromConstructor]public readonly PdfDictionary LowLevel { get; }
 
-    public PdfDirectValue SubType() => LowLevel.SubTypeOrNull(KnownNames.Type1TName);
+    public PdfDirectObject SubType() => LowLevel.SubTypeOrNull(KnownNames.Type1TName);
     
     public async ValueTask<PdfEncoding> EncodingAsync() => 
         new(await LowLevel.GetOrNullAsync(KnownNames.EncodingTName).CA());
 
-    private ValueTask<PdfValueDictionary?> DescriptorAsync() =>
-        LowLevel.GetOrNullAsync<PdfValueDictionary>(KnownNames.FontDescriptorTName);
+    private ValueTask<PdfDictionary?> DescriptorAsync() =>
+        LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.FontDescriptorTName);
 
     public async ValueTask<FontFlags> FontFlagsAsync() =>
         await DescriptorAsync().CA() is { } descriptor
             ? (FontFlags)(await descriptor.GetOrDefaultAsync(KnownNames.FlagsTName, 0).CA())
             : FontFlags.None;
 
-    public async ValueTask<PdfValueStream?> EmbeddedStreamAsync() =>
+    public async ValueTask<PdfStream?> EmbeddedStreamAsync() =>
         await DescriptorAsync().CA() is { } descriptor
             && (
             descriptor.TryGetValue(KnownNames.FontFileTName, out var retTask) ||
                 descriptor.TryGetValue(KnownNames.FontFile2TName, out retTask) ||
               descriptor.TryGetValue(KnownNames.FontFile3TName, out retTask) )? 
-                (await retTask.CA()).Get<PdfValueStream>(): null;
+                (await retTask.CA()).Get<PdfStream>(): null;
 
-    public ValueTask<PdfDirectValue> BaseFontNameAsync() =>
+    public ValueTask<PdfDirectObject> BaseFontNameAsync() =>
         LowLevel.GetOrDefaultAsync(KnownNames.BaseFontTName, KnownNames.HelveticaTName);
 
     public async ValueTask<byte> FirstCharAsync() =>
         (byte)await LowLevel.GetOrDefaultAsync(KnownNames.FirstCharTName, 0).CA();
 
     public async ValueTask<double[]?> WidthsArrayAsync() =>
-        (await LowLevel.GetOrNullAsync<PdfValueArray>(KnownNames.WidthsTName).CA()) is { } widthArray
+        (await LowLevel.GetOrNullAsync<PdfArray>(KnownNames.WidthsTName).CA()) is { } widthArray
             ? await widthArray.CastAsync<double>().CA()
             : null;
     
 
-    public async ValueTask<PdfDirectValue> OsFontNameAsync() =>
+    public async ValueTask<PdfDirectObject> OsFontNameAsync() =>
         ComputeOsFontName(SubType(), await BaseFontNameAsync().CA());
     
-    private PdfDirectValue ComputeOsFontName(PdfDirectValue fontType, PdfDirectValue baseFontName) =>
+    private PdfDirectObject ComputeOsFontName(PdfDirectObject fontType, PdfDirectObject baseFontName) =>
         fontType.Equals(KnownNames.MMType1TName)?
             RemoveMultMasterSuffix(baseFontName):baseFontName;
     
-    private PdfDirectValue RemoveMultMasterSuffix(PdfDirectValue baseFontName)
+    private PdfDirectObject RemoveMultMasterSuffix(PdfDirectObject baseFontName)
     {
         Span<byte> source = baseFontName.Get<StringSpanSource>().GetSpan();
         var firstUnderscore = source.IndexOf((byte)'_');
-        return firstUnderscore < 0 ? baseFontName : PdfDirectValue.CreateName(source[..firstUnderscore]);
+        return firstUnderscore < 0 ? baseFontName : PdfDirectObject.CreateName(source[..firstUnderscore]);
     }
 
     public async ValueTask<PdfFont> Type0SubFontAsync() =>
         new PdfFont(
-            await (await LowLevel.GetAsync<PdfValueArray>(KnownNames.DescendantFontsTName).CA())
-                .GetAsync<PdfValueDictionary>(0).CA()
+            await (await LowLevel.GetAsync<PdfArray>(KnownNames.DescendantFontsTName).CA())
+                .GetAsync<PdfDictionary>(0).CA()
         );
 
-    public ValueTask<PdfValueDictionary?> CidSystemInfoAsync() =>
-        LowLevel.GetOrDefaultAsync(KnownNames.CIDSystemInfoTName, (PdfValueDictionary?)null);
+    public ValueTask<PdfDictionary?> CidSystemInfoAsync() =>
+        LowLevel.GetOrDefaultAsync(KnownNames.CIDSystemInfoTName, (PdfDictionary?)null);
 
-    public ValueTask<PdfValueStream?> CidToGidMapStreamAsync() => 
-        LowLevel.GetOrDefaultAsync(KnownNames.CIDToGIDMapTName, (PdfValueStream?)null);
+    public ValueTask<PdfStream?> CidToGidMapStreamAsync() => 
+        LowLevel.GetOrDefaultAsync(KnownNames.CIDToGIDMapTName, (PdfStream?)null);
 
     public ValueTask<double> DefaultWidthAsync() =>
         LowLevel.GetOrDefaultAsync(KnownNames.DWTName, 1000.0);
 
-    public ValueTask<PdfValueArray> WArrayAsync() =>
-        LowLevel.GetOrDefaultAsync(KnownNames.WTName, PdfValueArray.Empty);
+    public ValueTask<PdfArray> WArrayAsync() =>
+        LowLevel.GetOrDefaultAsync(KnownNames.WTName, PdfArray.Empty);
 }
 

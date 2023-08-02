@@ -11,7 +11,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 
 
 
-public readonly partial struct PdfIndirectValue
+public readonly partial struct PdfIndirectObject
 {
     /// <summary>
     /// Strategy object that defines the type of the PdfObject
@@ -25,35 +25,35 @@ public readonly partial struct PdfIndirectValue
 
     private object NonNullValueStrategy() => (valueStrategy ?? PostscriptNull.Instance);
 
-    internal PdfIndirectValue(IIndirectValueSource src, long objNum, long generation) :
+    internal PdfIndirectObject(IIndirectObjectSource src, long objNum, long generation) :
         this((object?)src, MementoUnion.CreateFrom(objNum, generation)){}
 
     public bool IsNull => TryGetEmbeddedDirectValue(out var dirVal) && dirVal.IsNull;
 
     #region Getter
 
-    public ValueTask<PdfDirectValue> LoadValueAsync() =>
-        valueStrategy is IIndirectValueSource source?
+    public ValueTask<PdfDirectObject> LoadValueAsync() =>
+        valueStrategy is IIndirectObjectSource source?
             source.LookupAsync(Memento):
         new(CreateDirectValueUnsafe());
 
-    private PdfDirectValue CreateDirectValueUnsafe()
+    private PdfDirectObject CreateDirectValueUnsafe()
     {
         Debug.Assert(IsEmbeddedDirectValue());
-        return new PdfDirectValue(valueStrategy, Memento);
+        return new PdfDirectObject(valueStrategy, Memento);
     }
 
-    public bool IsEmbeddedDirectValue() => valueStrategy is not IIndirectValueSource;
+    public bool IsEmbeddedDirectValue() => valueStrategy is not IIndirectObjectSource;
 
-    public bool TryGetEmbeddedDirectValue(out PdfDirectValue value) =>
-        valueStrategy is IIndirectValueSource
-            ? ((PdfDirectValue)default).AsFalseValue(out value)
+    public bool TryGetEmbeddedDirectValue(out PdfDirectObject value) =>
+        valueStrategy is IIndirectObjectSource
+            ? ((PdfDirectObject)default).AsFalseValue(out value)
             : CreateDirectValueUnsafe().AsTrueValue(out value);
 
     public bool TryGetEmbeddedDirectValue<T>(out T value)
     {
         value = default;
-        return TryGetEmbeddedDirectValue(out PdfDirectValue dv) &&
+        return TryGetEmbeddedDirectValue(out PdfDirectObject dv) &&
                dv.TryGet(out value);
     }
 
@@ -64,7 +64,7 @@ public readonly partial struct PdfIndirectValue
 
     private bool TryGetObjectReference(out int objectNumber, out int generation)
     {
-        if (valueStrategy is IIndirectValueSource ivs)
+        if (valueStrategy is IIndirectObjectSource ivs)
         {
             return ivs.TryGetObjectReference(out objectNumber, out generation, Memento);
         }
@@ -76,15 +76,15 @@ public readonly partial struct PdfIndirectValue
 
     #region Implicit Operators
 
-    public static implicit operator PdfIndirectValue(bool value) => (PdfDirectValue)value;
-    public static implicit operator PdfIndirectValue(int value) => (PdfDirectValue)value;
-    public static implicit operator PdfIndirectValue(long value) => (PdfDirectValue)value;
-    public static implicit operator PdfIndirectValue(double value) => (PdfDirectValue)value;
-    public static implicit operator PdfIndirectValue(string value) => (PdfDirectValue)value;
-    public static implicit operator PdfIndirectValue(PdfValueArray value) => (PdfDirectValue)value;
-    public static implicit operator PdfIndirectValue(PdfValueDictionary value) => (PdfDirectValue)value;
-    public static implicit operator PdfIndirectValue(in ReadOnlySpan<byte> value) => 
-        (PdfDirectValue)value;
+    public static implicit operator PdfIndirectObject(bool value) => (PdfDirectObject)value;
+    public static implicit operator PdfIndirectObject(int value) => (PdfDirectObject)value;
+    public static implicit operator PdfIndirectObject(long value) => (PdfDirectObject)value;
+    public static implicit operator PdfIndirectObject(double value) => (PdfDirectObject)value;
+    public static implicit operator PdfIndirectObject(string value) => (PdfDirectObject)value;
+    public static implicit operator PdfIndirectObject(PdfArray value) => (PdfDirectObject)value;
+    public static implicit operator PdfIndirectObject(PdfDictionary value) => (PdfDirectObject)value;
+    public static implicit operator PdfIndirectObject(in ReadOnlySpan<byte> value) => 
+        (PdfDirectObject)value;
 
     public override string ToString() => NonNullValueStrategy() switch
     {
@@ -93,13 +93,13 @@ public readonly partial struct PdfIndirectValue
     };
 
     public bool NeedsLeadingSpace() =>
-        !TryGetEmbeddedDirectValue(out PdfDirectValue direct) || direct.NeedsLeadingSpace;
+        !TryGetEmbeddedDirectValue(out PdfDirectObject direct) || direct.NeedsLeadingSpace;
 
     #endregion
 }
 
 public static class IndirectValueOperations
 {
-    public static async ValueTask<T> LoadValueAsync<T>(this PdfIndirectValue value) =>
+    public static async ValueTask<T> LoadValueAsync<T>(this PdfIndirectObject value) =>
         (await value.LoadValueAsync().CA()).Get<T>();
 }

@@ -9,12 +9,12 @@ namespace Melville.Pdf.LowLevel.Filters.JpegFilter;
 
 internal class DctCodec : ICodecDefinition
 {
-    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectValue parameters)
+    public ValueTask<Stream> EncodeOnReadStreamAsync(Stream data, PdfDirectObject parameters)
     {
         throw new NotSupportedException();
     }
 
-    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectValue parameters) => 
+    public async ValueTask<Stream> DecodeOnReadStreamAsync(Stream input, PdfDirectObject parameters) => 
         await new JpegStreamFactory( await new DctDecodeParameters(parameters).ColorTransformAsync().CA())
             .FromStreamAsync(input).CA();
 
