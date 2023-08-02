@@ -9,6 +9,6 @@ internal readonly partial struct PdfEncoding
     [FromConstructor] public PdfDirectObject LowLevel { get; }
 
     public bool IsIdentityCdiEncoding() =>
-        LowLevel.Equals(KnownNames.IdentityHTName) ||
-        LowLevel.Equals(KnownNames.IdentityVTName);
+        LowLevel.Equals(KnownNames.IdentityH) ||
+        LowLevel.Equals(KnownNames.IdentityV);
 }

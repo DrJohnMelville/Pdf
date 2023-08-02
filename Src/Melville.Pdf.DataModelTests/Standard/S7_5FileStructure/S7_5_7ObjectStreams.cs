@@ -27,9 +27,9 @@ public class S7_5_7ObjectStreams
     public async Task RawLoadObjectStreamAsync(string streamText)
     {
         var os = new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
-            .WithItem(KnownNames.NTName, 2)
-            .WithItem(KnownNames.FirstTName, 8)
+            .WithItem(KnownNames.Type, KnownNames.ObjStm)
+            .WithItem(KnownNames.N, 2)
+            .WithItem(KnownNames.First, 8)
             .AsStream(streamText);
 
         var pfo = new ParsingFileOwner(new MemoryStream(), NullPasswordSource.Instance);
@@ -54,9 +54,9 @@ public class S7_5_7ObjectStreams
         //this tests that empty object streams can exist.
         // it also tests the error condition where an object is referenced to an ordinal off the end of the object stream.
         var os = new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
-            .WithItem(KnownNames.NTName, 0)
-            .WithItem(KnownNames.FirstTName, 0)
+            .WithItem(KnownNames.Type, KnownNames.ObjStm)
+            .WithItem(KnownNames.N, 0)
+            .WithItem(KnownNames.First, 0)
             .AsStream(Array.Empty<byte>());
 
         var pfo = new ParsingFileOwner(new MemoryStream(), NullPasswordSource.Instance);

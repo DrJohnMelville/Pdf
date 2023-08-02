@@ -30,7 +30,7 @@ public class HasRenderableContentStream : IHasPageAttributes
 
     async ValueTask<IHasPageAttributes?> IHasPageAttributes.GetParentAsync() =>
         await LowLevel.GetOrDefaultAsync(
-            KnownNames.ParentTName, (PdfDictionary?) null).CA() is {} dict
+            KnownNames.Parent, (PdfDictionary?) null).CA() is {} dict
             ? new HasRenderableContentStream(dict)
             : null;
     
@@ -39,5 +39,5 @@ public class HasRenderableContentStream : IHasPageAttributes
     /// </summary>
     /// <returns>The desired rotation, in degrees</returns>
     public ValueTask<long> GetDefaultRotationAsync() => 
-        LowLevel.GetOrDefaultAsync(KnownNames.RotateTName, 0L);
+        LowLevel.GetOrDefaultAsync(KnownNames.Rotate, 0L);
 }

@@ -49,15 +49,15 @@ public readonly struct ExponentialFunctionBuilder
     private DictionaryBuilder DictionaryItems()
     {
         var ret = new DictionaryBuilder();
-        ret.WithItem(KnownNames.FunctionTypeTName, 2);
-        ret.WithItem(KnownNames.DomainTName, DomainArray());
-        ret.WithItem(KnownNames.NTName, exponent);
+        ret.WithItem(KnownNames.FunctionType, 2);
+        ret.WithItem(KnownNames.Domain, DomainArray());
+        ret.WithItem(KnownNames.N, exponent);
         if (!RangeIsDefault()) 
-            ret.WithItem(KnownNames.RangeTName, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count));
+            ret.WithItem(KnownNames.Range, mappings.Select(i=>i.Range).AsPdfArray(mappings.Count));
         if (!TrivialC0())
-            ret.WithItem(KnownNames.C0TName, new PdfArray(mappings.Select(i => (PdfIndirectObject)i.Bounds.MinValue).ToArray()));
+            ret.WithItem(KnownNames.C0, new PdfArray(mappings.Select(i => (PdfIndirectObject)i.Bounds.MinValue).ToArray()));
         if (!TrivialC1())
-            ret.WithItem(KnownNames.C1TName, new PdfArray(mappings.Select(i=>(PdfIndirectObject)i.Bounds.MaxValue).ToArray()));
+            ret.WithItem(KnownNames.C1, new PdfArray(mappings.Select(i=>(PdfIndirectObject)i.Bounds.MaxValue).ToArray()));
         return ret;
     }
 

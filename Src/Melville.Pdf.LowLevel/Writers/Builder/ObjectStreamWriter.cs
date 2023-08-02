@@ -53,9 +53,9 @@ internal readonly struct ObjectStreamWriter
         await referenceStreamWriter.FlushAsync().CA();
         await objectStreamWriter.FlushAsync().CA();
         return builder
-            .WithItem(KnownNames.TypeTName, KnownNames.ObjStmTName)
-            .WithItem(KnownNames.NTName, count)
-            .WithItem(KnownNames.FirstTName, referenceStreamWriter.BytesWritten)
+            .WithItem(KnownNames.Type, KnownNames.ObjStm)
+            .WithItem(KnownNames.N, count)
+            .WithItem(KnownNames.First, referenceStreamWriter.BytesWritten)
             .AsStream(FinalStreamContent());        
     }
     private ConcatStream FinalStreamContent() => 

@@ -48,16 +48,16 @@ ET
 
     private static PdfDictionary EncodedDingbatsFont(IPdfObjectCreatorRegistry lldc) =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.ZapfDingbats)
-            .WithItem(KnownNames.EncodingTName, lldc.Add(EncodeSuitesAs1To4()))
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, (PdfDirectObject)BuiltInFontName.ZapfDingbats)
+            .WithItem(KnownNames.Encoding, lldc.Add(EncodeSuitesAs1To4()))
             .AsDictionary();
 
     private static PdfDictionary EncodeSuitesAs1To4() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
-            .WithItem(KnownNames.DifferencesTName, new PdfArray(
+            .WithItem(KnownNames.Type, KnownNames.Encoding)
+            .WithItem(KnownNames.Differences, new PdfArray(
                 1,
                 PdfDirectObject.CreateName("a109"),
                 PdfDirectObject.CreateName("a110"),

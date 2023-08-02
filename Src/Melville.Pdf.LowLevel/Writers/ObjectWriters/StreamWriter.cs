@@ -23,7 +23,7 @@ internal static class StreamWriter
         var diskrep = await EnsureStreamHasKnownLengthAsync(rawStream).CA();
             
         DictionaryWriter.Write(innerWriter, 
-            MergeDictionaryItems(item.RawItems, (KnownNames.LengthTName, diskrep.Length)));
+            MergeDictionaryItems(item.RawItems, (KnownNames.Length, diskrep.Length)));
         innerWriter.Write(StreamToken);
         await innerWriter.CopyFromStream(diskrep).CA();
         innerWriter.Write(EndStreamToken);

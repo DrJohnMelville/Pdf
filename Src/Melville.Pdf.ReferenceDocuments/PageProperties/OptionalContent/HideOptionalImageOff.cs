@@ -9,7 +9,7 @@ public class HideOptionalImageOn : HideOptionalImageOff
     {
     }
 
-    protected override PdfDirectObject OnOrOff() => KnownNames.ONTName;
+    protected override PdfDirectObject OnOrOff() => KnownNames.ON;
 }
 public class HideOptionalImageOff: DisplayImageTest
 {
@@ -25,18 +25,18 @@ public class HideOptionalImageOff: DisplayImageTest
     protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
     {
         var usageDictionary = new DictionaryBuilder()
-            .WithItem(KnownNames.CreatorInfoTName, new DictionaryBuilder().WithItem(KnownNames.CreatorTName,"JDM").AsDictionary())
+            .WithItem(KnownNames.CreatorInfo, new DictionaryBuilder().WithItem(KnownNames.Creator,"JDM").AsDictionary())
             .AsDictionary();
 
-        ocg = docCreator.LowLevelCreator.Add(new DictionaryBuilder().WithItem(KnownNames.NameTName, "OptionalGroup")
-            .WithItem(KnownNames.TypeTName, KnownNames.OCGTName)
-            .WithItem(KnownNames.IntentTName, new PdfArray(KnownNames.ViewTName, KnownNames.DesignTName))
-            .WithItem(KnownNames.UsageTName, usageDictionary)
+        ocg = docCreator.LowLevelCreator.Add(new DictionaryBuilder().WithItem(KnownNames.Name, "OptionalGroup")
+            .WithItem(KnownNames.Type, KnownNames.OCG)
+            .WithItem(KnownNames.Intent, new PdfArray(KnownNames.View, KnownNames.Design))
+            .WithItem(KnownNames.Usage, usageDictionary)
             .AsDictionary());
 
-        docCreator.AddToRootDictionary(KnownNames.OCPropertiesTName, new DictionaryBuilder()
-            .WithItem(KnownNames.OCGsTName, new PdfArray(ocg))
-            .WithItem(KnownNames.DTName, new DictionaryBuilder()
+        docCreator.AddToRootDictionary(KnownNames.OCProperties, new DictionaryBuilder()
+            .WithItem(KnownNames.OCGs, new PdfArray(ocg))
+            .WithItem(KnownNames.D, new DictionaryBuilder()
                 .WithItem(OnOrOff(), new PdfArray(ocg))
                 .AsDictionary())
             .AsDictionary()
@@ -44,7 +44,7 @@ public class HideOptionalImageOff: DisplayImageTest
         return base.AddContentToDocumentAsync(docCreator);
     }
 
-    protected virtual PdfDirectObject OnOrOff() => KnownNames.OFFTName;
+    protected virtual PdfDirectObject OnOrOff() => KnownNames.OFF;
 
     protected override void SetPageProperties(PageCreator page)
     {
@@ -56,7 +56,7 @@ public class HideOptionalImageOff: DisplayImageTest
     }
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
     {
-        using (await csw.BeginMarkedRangeAsync(KnownNames.OCTName, PdfDirectObject.CreateName("OCLayer")))
+        using (await csw.BeginMarkedRangeAsync(KnownNames.OC, PdfDirectObject.CreateName("OCLayer")))
         {
             csw.MoveTo(0,0);
             csw.LineTo(300,300);
@@ -68,13 +68,13 @@ public class HideOptionalImageOff: DisplayImageTest
     protected override PdfStream CreateImage()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
-            .WithItem(KnownNames.WidthTName, 256)
-            .WithItem(KnownNames.HeightTName, 256)
-            .WithItem(KnownNames.BitsPerComponentTName, 8)
-            .WithItem(KnownNames.OCTName, ocg)
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
+            .WithItem(KnownNames.Width, 256)
+            .WithItem(KnownNames.Height, 256)
+            .WithItem(KnownNames.BitsPerComponent, 8)
+            .WithItem(KnownNames.OC, ocg)
             .AsStream(GenerateImage());
     }
 

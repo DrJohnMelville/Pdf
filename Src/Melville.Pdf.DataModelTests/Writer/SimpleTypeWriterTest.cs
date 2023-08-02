@@ -82,8 +82,8 @@ public class SimpleTypeWriterTest
     {
         var array =
             new DictionaryBuilder()
-                .WithItem(KnownNames.WidthTName, 20)
-                .WithItem(KnownNames.HeightTName, 40)
+                .WithItem(KnownNames.Width, 20)
+                .WithItem(KnownNames.Height, 40)
                 .AsDictionary();
         Assert.Equal("<</Width 20/Height 40>>", await ((PdfDirectObject)array).WriteToStringAsync());
     }
@@ -92,7 +92,7 @@ public class SimpleTypeWriterTest
     public async Task WriteStreamAsync()
     {
         var array = new DictionaryBuilder()
-            .WithItem(KnownNames.LengthTName, 5).AsStream("Hello");
+            .WithItem(KnownNames.Length, 5).AsStream("Hello");
         Assert.Equal("<</Length 5>> stream\r\nHello\r\nendstream", await ((PdfDirectObject)array).WriteStreamToStringAsync());
     }
 }

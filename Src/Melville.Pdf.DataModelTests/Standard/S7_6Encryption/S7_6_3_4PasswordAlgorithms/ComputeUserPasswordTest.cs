@@ -26,8 +26,8 @@ public class ComputeUserPasswordTest
             PdfDirectObject.CreateString("12345678901234567890123456789012"u8));
         var encDict = de.CreateEncryptionDictionary(id);
         var trailer = new DictionaryBuilder()
-            .WithItem(KnownNames.IDTName, id)
-            .WithItem(KnownNames.EncryptTName, encDict)
+            .WithItem(KnownNames.ID, id)
+            .WithItem(KnownNames.Encrypt, encDict)
             .AsDictionary();
         var handler = await SecurityHandlerFactory.CreateSecurityHandlerAsync(trailer, encDict);
         Assert.NotNull(handler.TryComputeRootKey("User", PasswordType.User));
@@ -48,7 +48,7 @@ public class ComputeUserPasswordTest
     {
         var tDict = (await trailer.ParseValueObjectAsync()).ForceTo<PdfDictionary>();
         var handler = await  SecurityHandlerFactory.CreateSecurityHandlerAsync(
-            tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.EncryptTName));
+            tDict, await tDict.GetAsync<PdfDictionary>(KnownNames.Encrypt));
         try
         {
             await handler.InteractiveGetCryptContextAsync(

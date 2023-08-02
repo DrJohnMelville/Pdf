@@ -37,15 +37,15 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
 
     protected virtual DictionaryBuilder BuildPattern(
         IPdfObjectCreatorRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
-            .WithItem(KnownNames.ShadingTName, arg.Add(shading))
-            .WithItem(KnownNames.MatrixTName, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
-            .WithItem(KnownNames.PatternTypeTName, 2);
+            .WithItem(KnownNames.Shading, arg.Add(shading))
+            .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
+            .WithItem(KnownNames.PatternType, 2);
 
     protected virtual DictionaryBuilder BuildShader(
         IPdfObjectCreatorRegistry arg, PdfStream[] localFunc, DictionaryBuilder builder) => builder
-            .WithItem(KnownNames.FunctionTName, arg.Add(ComputeLocalFunc(localFunc, arg)))
-            .WithItem(KnownNames.ShadingTypeTName, 1)
-            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName);
+            .WithItem(KnownNames.Function, arg.Add(ComputeLocalFunc(localFunc, arg)))
+            .WithItem(KnownNames.ShadingType, 1)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB);
 
     private static PdfDirectObject ComputeLocalFunc(PdfStream[] localFunc, IPdfObjectCreatorRegistry ldc)
     {

@@ -29,7 +29,7 @@ public class DeepCopyTest
     [Fact] public Task CopyIntAsync() => PassthroughCopyAsync(1);
     [Fact] public Task CopyRealAsync() => PassthroughCopyAsync(1.5);
     [Fact] public Task CopyStringAsync() => PassthroughCopyAsync("Hello World");
-    [Fact] public Task CopyNameAsync() => PassthroughCopyAsync(KnownNames.LengthTName);
+    [Fact] public Task CopyNameAsync() => PassthroughCopyAsync(KnownNames.Length);
     [Fact] public Task CopyBoolAsync() => PassthroughCopyAsync(true);
     [Fact] public Task CopyNullAsync() => PassthroughCopyAsync(PdfDirectObject.CreateNull());
 
@@ -52,9 +52,9 @@ public class DeepCopyTest
     public async Task CopyDictionaryAsync()
     {
         var datum = new DictionaryBuilder()
-            .WithItem(KnownNames.A85TName, 23)
-            .WithItem(KnownNames.AllOnTName, new DictionaryBuilder()
-                .WithItem(KnownNames.AllTName, KnownNames.WTName)
+            .WithItem(KnownNames.A85, 23)
+            .WithItem(KnownNames.AllOn, new DictionaryBuilder()
+                .WithItem(KnownNames.All, KnownNames.W)
                 .AsDictionary())
             .AsDictionary();
         var clone = await sut.CloneAsync(datum);
@@ -64,9 +64,9 @@ public class DeepCopyTest
     public async Task StreamAsync()
     {
         var datum = new DictionaryBuilder()
-            .WithItem(KnownNames.A85TName, 23)
-            .WithItem(KnownNames.AllOnTName, new DictionaryBuilder()
-                .WithItem(KnownNames.AllTName, KnownNames.WTName)
+            .WithItem(KnownNames.A85, 23)
+            .WithItem(KnownNames.AllOn, new DictionaryBuilder()
+                .WithItem(KnownNames.All, KnownNames.W)
                 .AsDictionary())
             .AsStream("Hello World", StreamFormat.DiskRepresentation);
         var clone = await sut.CloneAsync(datum);

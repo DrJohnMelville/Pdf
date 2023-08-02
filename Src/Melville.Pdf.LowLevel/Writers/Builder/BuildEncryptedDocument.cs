@@ -16,7 +16,7 @@ public static class BuildEncryptedDocument
         this ILowLevelDocumentCreator builder,ILowLevelDocumentEncryptor encryptor)
     {
         builder.AddToTrailerDictionary(
-            KnownNames.EncryptTName,
+            KnownNames.Encrypt,
             builder.Add(
                 encryptor.CreateEncryptionDictionary(builder.EnsureDocumentHasId())));
     }

@@ -22,7 +22,7 @@ public partial class PdfPage: HasRenderableContentStream
     /// <returns>The last modified time if it exists, null otherwise.</returns>
     public async ValueTask<PdfTime?> LastModifiedAsync()
     {
-        return (await LowLevel.GetOrNullAsync(KnownNames.LastModifiedTName).CA()) is {IsName:false} str
+        return (await LowLevel.GetOrNullAsync(KnownNames.LastModified).CA()) is {IsName:false} str
             ? ParseToDateTime(str)
             : null;
     }
@@ -34,7 +34,7 @@ public partial class PdfPage: HasRenderableContentStream
     /// Gets a C# stream that represents the content stream for this page
     /// </summary>
     public override async ValueTask<Stream> GetContentBytesAsync() =>
-        await LowLevel.GetOrNullAsync(KnownNames.ContentsTName).CA() switch
+        await LowLevel.GetOrNullAsync(KnownNames.Contents).CA() switch
         {
             var x when x.TryGet(out PdfStream? strm) => await strm.StreamContentAsync().CA(),
             var x when x.TryGet(out PdfArray? array) => new PdfArrayConcatStream(array),

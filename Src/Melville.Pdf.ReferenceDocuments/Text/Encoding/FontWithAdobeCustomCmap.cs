@@ -25,23 +25,23 @@ public class FontWithAdobeCustomCmap : FontDefinitionTest
         var fontStream = GetType().Assembly.GetManifestResourceStream(
             "Melville.Pdf.ReferenceDocuments.Text.FlatedFontWithAdobeCmap.ttf")!;
         var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1TName, fontStream.Length)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1CTName)
+            .WithItem(KnownNames.Length1, fontStream.Length)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1C)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream, StreamFormat.DiskRepresentation));
         var widthArray = arg.Add(new PdfArray(Enumerable.Repeat<PdfIndirectObject>(600, 256).ToArray()));
         var descrip = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
-            .WithItem(KnownNames.FlagsTName, 4)
-            .WithItem(KnownNames.FontBBoxTName, new PdfArray(-511, -250, 1390, 750))
-            .WithItem(KnownNames.FontFile3TName, stream)
+            .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
+            .WithItem(KnownNames.Flags, 4)
+            .WithItem(KnownNames.FontBBox, new PdfArray(-511, -250, 1390, 750))
+            .WithItem(KnownNames.FontFile3, stream)
             .AsDictionary());
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.FirstCharTName, 0)
-            .WithItem(KnownNames.FontDescriptorTName, descrip)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("JLPYHV+UniversalStd-NewsmithCommPo"))
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.FirstChar, 0)
+            .WithItem(KnownNames.FontDescriptor, descrip)
+            .WithItem(KnownNames.BaseFont, PdfDirectObject.CreateName("JLPYHV+UniversalStd-NewsmithCommPo"))
             .AsDictionary();
     }
 }

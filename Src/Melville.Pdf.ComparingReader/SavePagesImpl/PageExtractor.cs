@@ -27,7 +27,7 @@ public readonly partial struct PageExtractor
         copier.ReserveIndirectMapping(objNum, gen, targetPromise);
         foreach (var item in page.LowLevel.RawItems)
         {
-            if (item.Key.Equals(KnownNames.ContentsTName) || item.Key.Equals(KnownNames.ParentTName)) continue;
+            if (item.Key.Equals(KnownNames.Contents) || item.Key.Equals(KnownNames.Parent)) continue;
             targetPage.AddMetadata(item.Key,
                 await copier.CloneAsync(item.Value));
         }
@@ -40,7 +40,7 @@ public readonly partial struct PageExtractor
     private async ValueTask<(int objNum, int gen)> FindRefToPageAsync()
     {
         #warning fix this once we can compile
-        // var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.ParentTName)) ??
+        // var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.Parent)) ??
         //                 throw new InvalidDataException("Page does not have a parent");
         // var kids = (PdfValueArray)await treeLeaf[KnownNames.Kids];
         // foreach (var value in kids.RawItems)

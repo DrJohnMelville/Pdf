@@ -37,15 +37,15 @@ public class BlockColorOperatorsTest: IDisposable
         target.VerifyNoOtherCalls();
     }
 
-    [Fact] public void BlockCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGBTName);
+    [Fact] public void BlockCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGB);
     [Fact] public void BlockSC() => sut.SetStrokeColor(1, 2, 3);
-    [Fact] public void BlockSCN() => sut.SetStrokeColorExtendedAsync(KnownNames.DeviceRGBTName, 1, 23);
+    [Fact] public void BlockSCN() => sut.SetStrokeColorExtendedAsync(KnownNames.DeviceRGB, 1, 23);
     [Fact] public void BlockG() => sut.SetStrokeGrayAsync(1);
     [Fact] public void BlockRG() => sut.SetStrokeRGBAsync(1,2,3);
     [Fact] public void BlockK() => sut.SetStrokeCMYKAsync(1,2,3, 4);
-    [Fact] public void BlockNonstrokinhCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGBTName);
+    [Fact] public void BlockNonstrokinhCS() => sut.SetStrokingColorSpaceAsync(KnownNames.DeviceRGB);
     [Fact] public void BlockNonstrokinhSC() => sut.SetNonstrokingColor(1, 2, 3);
-    [Fact] public void BlockNonstrokinhSCN() => sut.SetNonstrokingColorExtendedAsync(KnownNames.DeviceRGBTName, 1, 23);
+    [Fact] public void BlockNonstrokinhSCN() => sut.SetNonstrokingColorExtendedAsync(KnownNames.DeviceRGB, 1, 23);
     [Fact] public void BlockNonstrokinhG() => sut.SetNonstrokingGrayAsync(1);
     [Fact] public void BlockNonstrokinhRG() => sut.SetNonstrokingRgbAsync(1,2,3);
     [Fact] public void BlockNonstrokinhK() => sut.SetNonstrokingCMYKAsync(1,2,3, 4);

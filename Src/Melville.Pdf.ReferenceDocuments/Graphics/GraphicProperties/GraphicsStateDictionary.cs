@@ -14,7 +14,7 @@ public class GraphicsStateDictionary:Card3x5
     protected override void SetPageProperties(PageCreator page)
     {
         page.AddResourceObject(ResourceTypeName.ExtGState, dictionaryName, new DictionaryBuilder()
-            .WithItem(KnownNames.LWTName, 25).AsDictionary());
+            .WithItem(KnownNames.LW, 25).AsDictionary());
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)

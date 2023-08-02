@@ -13,8 +13,8 @@ internal static class SeparationParser
     public static ValueTask<IColorSpace> ParseSeparationAsync(in Memory<PdfDirectObject> array, IHasPageAttributes page) =>
         array.Span[1] switch
         {
-            var x when x.Equals(KnownNames.AllTName) => new(DeviceGray.InvertedInstance),
-            var x when x.Equals(KnownNames.NoneTName) => new(new InvisibleColorSpace(1)),
+            var x when x.Equals(KnownNames.All) => new(DeviceGray.InvertedInstance),
+            var x when x.Equals(KnownNames.None) => new(new InvisibleColorSpace(1)),
             _=>AlternateColorspaceAsync(array, page)
         };
 
@@ -37,7 +37,7 @@ internal static class SeparationParser
         foreach (var itemTask in array)
         {
             var item = await itemTask.CA();
-            if (!item.Equals(KnownNames.NoneTName)) return false;
+            if (!item.Equals(KnownNames.None)) return false;
         }
 
         return true;

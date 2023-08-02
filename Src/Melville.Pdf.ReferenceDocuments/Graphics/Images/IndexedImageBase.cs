@@ -17,14 +17,14 @@ public abstract class IndexedImageBase : DisplayImageTest
     protected override PdfStream CreateImage()
     {
         var builder = new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.ColorSpaceTName, IndexedColorspace())
-            .WithItem(KnownNames.WidthTName, 3)
-            .WithItem(KnownNames.HeightTName, 3)
-            .WithItem(KnownNames.BitsPerComponentTName, sampleBits);
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.ColorSpace, IndexedColorspace())
+            .WithItem(KnownNames.Width, 3)
+            .WithItem(KnownNames.Height, 3)
+            .WithItem(KnownNames.BitsPerComponent, sampleBits);
         if (interpolate.HasValue)
-            builder.WithItem(KnownNames.InterpolateTName, interpolate.Value);
+            builder.WithItem(KnownNames.Interpolate, interpolate.Value);
         return builder
             .AsStream(GenerateImage());
     }
@@ -32,7 +32,7 @@ public abstract class IndexedImageBase : DisplayImageTest
     private static PdfArray IndexedColorspace()
     {
         return new PdfArray(
-            KnownNames.IndexedTName, KnownNames.DeviceRGBTName,
+            KnownNames.Indexed, KnownNames.DeviceRGB,
             8,
             PdfDirectObject.CreateString(new byte[]
             {

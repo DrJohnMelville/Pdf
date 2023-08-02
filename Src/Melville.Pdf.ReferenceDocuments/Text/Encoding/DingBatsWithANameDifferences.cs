@@ -12,8 +12,8 @@ public class DingBatsWithANameDifferences : FontDefinitionTest
     protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var enc = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
-            .WithItem(KnownNames.DifferencesTName, new PdfArray(
+            .WithItem(KnownNames.Type, KnownNames.Encoding)
+            .WithItem(KnownNames.Differences, new PdfArray(
                 1,
                 PdfDirectObject.CreateName("a109"),
                 PdfDirectObject.CreateName("a110"),
@@ -22,10 +22,10 @@ public class DingBatsWithANameDifferences : FontDefinitionTest
             ))
             .AsDictionary());
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.ZapfDingbats)
-            .WithItem(KnownNames.EncodingTName, enc)
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, (PdfDirectObject)BuiltInFontName.ZapfDingbats)
+            .WithItem(KnownNames.Encoding, enc)
             .AsDictionary();
     }
 }

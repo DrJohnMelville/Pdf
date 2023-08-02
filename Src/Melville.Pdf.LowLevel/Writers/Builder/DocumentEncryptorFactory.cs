@@ -94,7 +94,7 @@ public static class DocumentEncryptorFactory
         string userPassword, string ownerPassword, PdfPermission restrictedPermissions,
         EncryptorName encryptor, int keyLengthInBytes) =>
         V4(userPassword, ownerPassword, restrictedPermissions, 
-            KnownNames.StdCFTName, KnownNames.StdCFTName, KnownNames.StmFTName, 
+            KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF, 
             new V4CfDictionary(encryptor, keyLengthInBytes));
 
     /// <summary>
@@ -123,7 +123,7 @@ public static class DocumentEncryptorFactory
     /// <returns>An ILowLevelDocumentEncryptor which can be used to make an LowLevelDocumentWriter write an encrypted document.</returns>
     public static ILowLevelDocumentEncryptor V6(
         string user, string owner, PdfPermission restrictedPermissions) => V6(
-        user, owner, restrictedPermissions, KnownNames.StdCFTName, KnownNames.StdCFTName, KnownNames.StmFTName);
+        user, owner, restrictedPermissions, KnownNames.StdCF, KnownNames.StdCF, KnownNames.StmF);
 
     /// <summary>
     /// Create a document encryptor using the V6 encryption algorithms.
@@ -141,5 +141,5 @@ public static class DocumentEncryptorFactory
         PdfDirectObject streamEnc, PdfDirectObject stringEnc, PdfDirectObject embededFileEnc, V4CfDictionary? dictionary = null) =>
         new EncryptionV6.V6Encryptor(user, owner, restrictedPermissions,
             streamEnc, stringEnc, embededFileEnc,
-             dictionary ?? new V4CfDictionary(KnownNames.AESV3TName, 32, KnownNames.DocOpenTName));
+             dictionary ?? new V4CfDictionary(KnownNames.AESV3, 32, KnownNames.DocOpen));
 }

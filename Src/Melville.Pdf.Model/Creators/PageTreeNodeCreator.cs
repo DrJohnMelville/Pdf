@@ -19,7 +19,7 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
     {
         this.children = children;
         this.maxNodeSize = maxNodeSize;
-        metaData.WithItem(KnownNames.TypeTName, KnownNames.PagesTName);
+        metaData.WithItem(KnownNames.Type, KnownNames.Pages);
     }
 
     /// <summary>
@@ -83,8 +83,8 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
             (kids[i], var localCount) = children[i].ConstructItem(creator, ret);
             count += localCount;
         }
-        MetaData.WithItem(KnownNames.KidsTName, new PdfArray(kids)).
-            WithItem(KnownNames.CountTName, count);
+        MetaData.WithItem(KnownNames.Kids, new PdfArray(kids)).
+            WithItem(KnownNames.Count, count);
         creator.Reassign(ret, MetaData.AsDictionary());
         return (ret, count);
     }
@@ -94,11 +94,11 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
     {
         if (parent.TryGetEmbeddedDirectValue(out var dirPar) && dirPar.IsNull )
         {
-            Resources.Add((KnownNames.ProcSetTName, KnownNames.ProcSetTName), cr => cr.Add(DefaultProcSet()));
+            Resources.Add((KnownNames.ProcSet, KnownNames.ProcSet), cr => cr.Add(DefaultProcSet()));
         }
         else
         {
-            MetaData.WithItem(KnownNames.ParentTName, parent);
+            MetaData.WithItem(KnownNames.Parent, parent);
         }
 
         TryAddResources(creator);
@@ -107,6 +107,6 @@ public sealed class PageTreeNodeCreator: ItemWithResourceDictionaryCreator
     // Per standard section 14.2, the procset is deprecated.  We just add a default procset requesting
     // the entire set of ProcSets for backward compatibility with older readers.
     private static PdfArray DefaultProcSet() => new(
-        KnownNames.PDFTName, KnownNames.TextTName, KnownNames.ImageBTName,
-        KnownNames.ImageCTName, KnownNames.ImageITName);
+        KnownNames.PDF, KnownNames.Text, KnownNames.ImageB,
+        KnownNames.ImageC, KnownNames.ImageI);
 }

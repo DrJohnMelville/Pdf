@@ -28,8 +28,8 @@ internal readonly partial struct SingleByteEncodingParser
                 WriteCharacterSet(overrideEncoding ?? CharactersFromName(name));
                 break;
             case var x when x.TryGet(out PdfDictionary dict):
-                await WriteEncodingToArrayAsync(await dict.GetOrNullAsync(KnownNames.BaseEncodingTName).CA()).CA();
-                if ((await dict.GetOrNullAsync<PdfArray>(KnownNames.DifferencesTName).CA()) is {} differences )
+                await WriteEncodingToArrayAsync(await dict.GetOrNullAsync(KnownNames.BaseEncoding).CA()).CA();
+                if ((await dict.GetOrNullAsync<PdfArray>(KnownNames.Differences).CA()) is {} differences )
                     await WriteDifferencesAsync(differences).CA();
                 break; 
             default:
@@ -41,11 +41,11 @@ internal readonly partial struct SingleByteEncodingParser
     private PdfDirectObject[] CharactersFromName(PdfDirectObject name) => 
         name switch
     {
-        var x when x.Equals(KnownNames.MacRomanEncodingTName) => CharacterEncodings.MacRoman,
-        var x when x.Equals(KnownNames.MacExpertEncodingTName) => CharacterEncodings.MacExpert,
-        var x when x.Equals(KnownNames.SymbolTName) => CharacterEncodings.Symbol,
-        var x when x.Equals(KnownNames.PdfDocEncodingTName) => CharacterEncodings.Pdf,
-        var x when x.Equals(KnownNames.WinAnsiEncodingTName) => CharacterEncodings.WinAnsi,
+        var x when x.Equals(KnownNames.MacRomanEncoding) => CharacterEncodings.MacRoman,
+        var x when x.Equals(KnownNames.MacExpertEncoding) => CharacterEncodings.MacExpert,
+        var x when x.Equals(KnownNames.Symbol) => CharacterEncodings.Symbol,
+        var x when x.Equals(KnownNames.PdfDocEncoding) => CharacterEncodings.Pdf,
+        var x when x.Equals(KnownNames.WinAnsiEncoding) => CharacterEncodings.WinAnsi,
         _ => CharacterEncodings.Standard
     };
 

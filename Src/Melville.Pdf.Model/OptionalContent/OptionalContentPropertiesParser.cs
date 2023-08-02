@@ -22,14 +22,14 @@ internal readonly struct OptionalContentPropertiesParser
 
     private async ValueTask<IOptionalContentState> ParsePropertiesAsync(PdfDictionary oCProperties)
     {
-        var ocgs = await (await oCProperties.GetAsync<PdfArray>(KnownNames.OCGsTName).CA()).CastAsync<PdfDictionary>().CA();
+        var ocgs = await (await oCProperties.GetAsync<PdfArray>(KnownNames.OCGs).CA()).CastAsync<PdfDictionary>().CA();
         foreach (var ocg in ocgs)
         {
             ocDict[ocg] = await ParseOptionalGroupAsync(ocg).CA();
         }
 
         var configs = new List<OptionalContentConfiguration>();
-        if (oCProperties.TryGetValue(KnownNames.DTName, out var dTask) && 
+        if (oCProperties.TryGetValue(KnownNames.D, out var dTask) && 
             (await dTask.CA()).TryGet(out PdfDictionary? occ))
         { 
             configs.Add(await ParseOptionalContentConfigurationAsync(occ).CA());
@@ -45,12 +45,12 @@ internal readonly struct OptionalContentPropertiesParser
 
     private static async Task<OptionalGroup> ParseOptionalGroupAsync(PdfDictionary ocg)
     {
-        var intent = (await ocg.GetOrNullAsync(KnownNames.IntentTName).CA()).ObjectAsUnresolvedList();
+        var intent = (await ocg.GetOrNullAsync(KnownNames.Intent).CA()).ObjectAsUnresolvedList();
         return new OptionalGroup(
-            ocg.TryGetValue(KnownNames.NameTName, out var nameTask) ?
+            ocg.TryGetValue(KnownNames.Name, out var nameTask) ?
                 (await nameTask.CA()).DecodedString():"No Name")
         {
-            Visible = await FindNameAsync(intent, KnownNames.ViewTName).CA()
+            Visible = await FindNameAsync(intent, KnownNames.View).CA()
         };
     }
 
@@ -69,16 +69,16 @@ internal readonly struct OptionalContentPropertiesParser
         PdfDictionary occ)
     {
         var name = await occ.GetOrDefaultAsync(
-            KnownNames.NameTName, PdfDirectObject.EmptyString).CA();
+            KnownNames.Name, PdfDirectObject.EmptyString).CA();
         var creator = await occ.GetOrDefaultAsync(
-            KnownNames.CreatorTName, PdfDirectObject.EmptyString).CA();
-        var baseState = ParseBaseState(await occ.GetOrNullAsync(KnownNames.BaseStateTName).CA());
-        var onArr = await ParseOnOffArrayAsync(occ, KnownNames.ONTName).CA();
-        var offArr = await ParseOnOffArrayAsync(occ, KnownNames.OFFTName).CA();
-        var order = await occ.GetOrDefaultAsync(KnownNames.OrderTName, PdfArray.Empty).CA();
+            KnownNames.Creator, PdfDirectObject.EmptyString).CA();
+        var baseState = ParseBaseState(await occ.GetOrNullAsync(KnownNames.BaseState).CA());
+        var onArr = await ParseOnOffArrayAsync(occ, KnownNames.ON).CA();
+        var offArr = await ParseOnOffArrayAsync(occ, KnownNames.OFF).CA();
+        var order = await occ.GetOrDefaultAsync(KnownNames.Order, PdfArray.Empty).CA();
 
         var rbGroups = await ParseRadioButtonGroupsAsync(
-            await occ.GetOrDefaultAsync(KnownNames.RBGroupsTName, PdfArray.Empty).CA()).CA();
+            await occ.GetOrDefaultAsync(KnownNames.RBGroups, PdfArray.Empty).CA()).CA();
 
         return new OptionalContentConfiguration(
             name.AsTextString(), 
@@ -110,8 +110,8 @@ internal readonly struct OptionalContentPropertiesParser
     {
         bool? baseState = baseStateVal switch
         {
-            var x when x.Equals(KnownNames.ONTName) => true,
-            var x when x.Equals(KnownNames.OFFTName) => false,
+            var x when x.Equals(KnownNames.ON) => true,
+            var x when x.Equals(KnownNames.OFF) => false,
             _ => null
         };
         return baseState;

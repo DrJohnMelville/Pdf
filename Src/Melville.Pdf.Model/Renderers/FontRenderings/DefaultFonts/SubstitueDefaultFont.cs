@@ -13,22 +13,22 @@ public static class SubstituteDefaultFont
 {
     private static readonly PdfDirectObject[] names =
     {
-        KnownNames.CourierTName,
-        KnownNames.CourierBoldTName,
-        KnownNames.CourierObliqueTName,
-        KnownNames.CourierBoldObliqueTName,
-        KnownNames.HelveticaTName,
-        KnownNames.HelveticaBoldTName,
-        KnownNames.HelveticaObliqueTName,
-        KnownNames.HelveticaBoldObliqueTName,
-        KnownNames.TimesRomanTName,
-        KnownNames.TimesBoldTName,
-        KnownNames.TimesObliqueTName,
-        KnownNames.TimesBoldObliqueTName,
-        KnownNames.SymbolTName,
-        KnownNames.SymbolTName,
-        KnownNames.SymbolTName,
-        KnownNames.SymbolTName,
+        KnownNames.Courier,
+        KnownNames.CourierBold,
+        KnownNames.CourierOblique,
+        KnownNames.CourierBoldOblique,
+        KnownNames.Helvetica,
+        KnownNames.HelveticaBold,
+        KnownNames.HelveticaOblique,
+        KnownNames.HelveticaBoldOblique,
+        KnownNames.TimesRoman,
+        KnownNames.TimesBold,
+        KnownNames.TimesOblique,
+        KnownNames.TimesBoldOblique,
+        KnownNames.Symbol,
+        KnownNames.Symbol,
+        KnownNames.Symbol,
+        KnownNames.Symbol,
     };
     
     /// <summary>

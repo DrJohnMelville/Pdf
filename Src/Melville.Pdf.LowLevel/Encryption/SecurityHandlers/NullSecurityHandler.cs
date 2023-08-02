@@ -21,7 +21,7 @@ internal partial class NullSecurityHandler:
     public ICipher StringCipher() => this;
     public ICipher StreamCipher() => this;
     public ICipher NamedCipher(in PdfDirectObject name) => 
-        name.Equals(KnownNames.IdentityTName) ? this :
+        name.Equals(KnownNames.Identity) ? this :
             throw new PdfParseException("Should not have a crypt filter in an unencrypted document.");
     public ICipherOperations Encrypt() => this;
     public ICipherOperations Decrypt() => this;

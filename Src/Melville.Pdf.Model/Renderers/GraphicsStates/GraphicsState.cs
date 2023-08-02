@@ -216,25 +216,25 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     {
         switch (entry.Key)
         {
-            case var x when x.Equals(KnownNames.LWTName):
+            case var x when x.Equals(KnownNames.LW):
                 SetLineWidth(await EntryValueAsync<double>(entry).CA());
                 break;
-            case var x when x.Equals(KnownNames.FLTName):
+            case var x when x.Equals(KnownNames.FL):
                 SetFlatnessTolerance(await EntryValueAsync<double>(entry).CA());
                 break;
-            case var x when x.Equals(KnownNames.LCTName):
+            case var x when x.Equals(KnownNames.LC):
                 SetLineCap((LineCap)await EntryValueAsync<long>(entry).CA());
                 break;
-            case var x when x.Equals(KnownNames.LJTName):
+            case var x when x.Equals(KnownNames.LJ):
                 SetLineJoinStyle((LineJoinStyle)await EntryValueAsync<long>(entry).CA());
                 break;
-            case var x when x.Equals(KnownNames.MLTName):
+            case var x when x.Equals(KnownNames.ML):
                 SetMiterLimit(await EntryValueAsync<double>(entry).CA());
                 break;
-            case var x when x.Equals(KnownNames.DTName):
+            case var x when x.Equals(KnownNames.D):
                 await SetLineDashPatternAsync(await EntryValueAsync<PdfArray>(entry).CA()).CA();
                 break;
-            case var x when x.Equals(KnownNames.RITName):
+            case var x when x.Equals(KnownNames.RI):
                 SetRenderIntent(new RenderIntentName(await entry.Value.LoadValueAsync().CA()));
                 break;
         }

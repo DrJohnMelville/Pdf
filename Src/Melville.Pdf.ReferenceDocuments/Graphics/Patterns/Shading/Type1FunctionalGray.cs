@@ -22,5 +22,5 @@ public class Type1FunctionalGray : Type1FunctionalShaderBase
 
     protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfStream[] localFunc,
         DictionaryBuilder builder) => 
-        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName);
+        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray);
 }

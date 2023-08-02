@@ -20,8 +20,8 @@ public static class ShaderParser
     /// <returns>An IShaderWriter to write the shader data</returns>
     public static async ValueTask<IShaderWriter> ParseShaderAsync(PdfDictionary patternDictionary)
     {
-        var shadingDictionary = await patternDictionary.GetAsync<PdfDictionary>(KnownNames.ShadingTName).CA();
-        var patternToPixels = await (await patternDictionary.GetOrNullAsync<PdfArray>(KnownNames.MatrixTName).CA())
+        var shadingDictionary = await patternDictionary.GetAsync<PdfDictionary>(KnownNames.Shading).CA();
+        var patternToPixels = await (await patternDictionary.GetOrNullAsync<PdfArray>(KnownNames.Matrix).CA())
             .AsMatrix3x2OrIdentityAsync().CA();
         
         return await ParseShaderAsync(patternToPixels, shadingDictionary, false).CA();
@@ -32,7 +32,7 @@ public static class ShaderParser
     {
         var common = await CommonShaderValues.ParseAsync(
             patternToPixels, shadingDictionary, supressBackground).CA();
-        return await shadingDictionary.GetOrDefaultAsync(KnownNames.ShadingTypeTName, 0).CA() switch
+        return await shadingDictionary.GetOrDefaultAsync(KnownNames.ShadingType, 0).CA() switch
         {
             1 => await new Type1PdfFunctionShaderFactory(shadingDictionary).ParseAsync(common).CA(),
             2 => await new Type2Or3ShaderFactory(shadingDictionary).ParseAsync(common, 4).CA(),

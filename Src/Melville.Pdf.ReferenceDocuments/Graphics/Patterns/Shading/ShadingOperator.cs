@@ -15,11 +15,11 @@ public class ShadingOperator: Card3x5{
         var func = await BuildFunctionAsync();
         page.AddResourceObject(ResourceTypeName.Shading, PdfDirectObject.CreateName("Sh1") ,
             ll=> new DictionaryBuilder()
-                .WithItem(KnownNames.FunctionTName, ll.Add(func))
-                .WithItem(KnownNames.CoordsTName, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
-                .WithItem(KnownNames.ShadingTypeTName, 3)
-                .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
-                .WithItem(KnownNames.BackgroundTName, new PdfArray(0,0,1))
+                .WithItem(KnownNames.Function, ll.Add(func))
+                .WithItem(KnownNames.Coords, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
+                .WithItem(KnownNames.ShadingType, 3)
+                .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
+                .WithItem(KnownNames.Background, new PdfArray(0,0,1))
                 .AsDictionary());
         await base.SetPagePropertiesAsync(page);
     }

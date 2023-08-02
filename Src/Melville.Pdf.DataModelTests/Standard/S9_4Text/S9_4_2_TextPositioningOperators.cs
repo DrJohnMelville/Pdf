@@ -29,7 +29,7 @@ public class S9_4_2_TextPositioningOperators
     {
         rf = new RealizedFontMock(fw.Object);
         targetMock.SetupGet(i => i.GraphicsState).Returns(()=>state.StronglyTypedCurrentState());
-        state.CurrentState().SetFontAsync(KnownNames.CourierTName, 1.0);
+        state.CurrentState().SetFontAsync(KnownNames.Courier, 1.0);
         SetupMockRealizedFont();
 
         sut = new RenderEngine(pageMock.Object, new( targetMock.Object,
@@ -170,7 +170,7 @@ public class S9_4_2_TextPositioningOperators
     public async Task ShowSpacedStreamAsync(double horizontalScale, float xPosition, int fontSize)
     {
         sut.SetHorizontalTextScaling(horizontalScale);
-        await state.StronglyTypedCurrentState().SetFontAsync(KnownNames.HelveticaTName, fontSize);
+        await state.StronglyTypedCurrentState().SetFontAsync(KnownNames.Helvetica, fontSize);
         var builder = sut.GetSpacedStringBuilder();
         await builder.SpacedStringComponentAsync("e".AsExtendedAsciiBytes());
         await builder.SpacedStringComponentAsync(1000);

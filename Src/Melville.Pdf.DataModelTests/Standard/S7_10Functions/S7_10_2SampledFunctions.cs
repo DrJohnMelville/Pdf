@@ -28,12 +28,12 @@ public class S7_10_2SampledFunctions
     public async Task SampledFunctionDecodeAsync(double input, double output)
     {
         var funcDict = new DictionaryBuilder()
-            .WithItem(KnownNames.BitsPerSampleTName, 8)
-            .WithItem(KnownNames.FunctionTypeTName, 0)
-            .WithItem(KnownNames.DecodeTName, new PdfArray(3, 10))
-            .WithItem(KnownNames.RangeTName, new PdfArray(-10, 20))
-            .WithItem(KnownNames.DomainTName, new PdfArray(0, 1))
-            .WithItem(KnownNames.SizeTName, new PdfArray(2))
+            .WithItem(KnownNames.BitsPerSample, 8)
+            .WithItem(KnownNames.FunctionType, 0)
+            .WithItem(KnownNames.Decode, new PdfArray(3, 10))
+            .WithItem(KnownNames.Range, new PdfArray(-10, 20))
+            .WithItem(KnownNames.Domain, new PdfArray(0, 1))
+            .WithItem(KnownNames.Size, new PdfArray(2))
             .AsStream(new byte[] { 0xFF, 0x00 });
         var func = await funcDict.CreateFunctionAsync();
         Assert.Equal(output, func.ComputeSingleResult(input));
@@ -44,14 +44,14 @@ public class S7_10_2SampledFunctions
     public async Task CreateFullySpecifiedFunctionAsync()
     {
         var str = await ComplexSampledFunctionAsync();
-        Assert.Equal(0, await str.GetAsync<int>(KnownNames.FunctionTypeTName));
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 1, 10);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.RangeTName, 5, 50);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.SizeTName, 12);
-        await str.VerifyNumberAsync(KnownNames.BitsPerSampleTName, 8);
-        await str.VerifyNumberAsync(KnownNames.OrderTName, 3);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.EncodeTName, 1, 10);
-        await str.VerifyPdfDoubleArrayAsync(KnownNames.DecodeTName, 0, 255);
+        Assert.Equal(0, await str.GetAsync<int>(KnownNames.FunctionType));
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 1, 10);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Range, 5, 50);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Size, 12);
+        await str.VerifyNumberAsync(KnownNames.BitsPerSample, 8);
+        await str.VerifyNumberAsync(KnownNames.Order, 3);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Encode, 1, 10);
+        await str.VerifyPdfDoubleArrayAsync(KnownNames.Decode, 0, 255);
         await StreamTest.VerifyStreamContentAsync(
             "00050A0F14191E23282D3237", await str.StreamContentAsync(StreamFormat.ImplicitEncryption));
     }
@@ -134,8 +134,8 @@ public class S7_10_2SampledFunctions
         builder.AddOutput(x=>5*x, (0, 255));
         var str = await builder.CreateSampledFunctionAsync();
             
-        Assert.False(str.ContainsKey(KnownNames.OrderTName));
-        Assert.False(str.ContainsKey(KnownNames.EncodeTName));
-        Assert.False(str.ContainsKey(KnownNames.DecodeTName));
+        Assert.False(str.ContainsKey(KnownNames.Order));
+        Assert.False(str.ContainsKey(KnownNames.Encode));
+        Assert.False(str.ContainsKey(KnownNames.Decode));
     }
 }

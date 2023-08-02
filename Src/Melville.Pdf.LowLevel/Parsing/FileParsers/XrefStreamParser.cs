@@ -19,7 +19,7 @@ internal readonly partial struct XrefStreamParserFactory
 
     public async ValueTask<XrefStreamParser> CreateAsync()
     {
-        var w = await xrefStream.GetAsync<PdfArray>(KnownNames.WTName).CA();
+        var w = await xrefStream.GetAsync<PdfArray>(KnownNames.W).CA();
         return new XrefStreamParser(
             (await w[0].CA()).Get<int>(),
             (await w[1].CA()).Get<int>(),
@@ -31,7 +31,7 @@ internal readonly partial struct XrefStreamParserFactory
 
     private async ValueTask<int[]> ReadIndexArrayAsync()
     {
-        var readArray = await xrefStream.GetOrDefaultAsync(KnownNames.IndexTName, (PdfArray?)null).CA();
+        var readArray = await xrefStream.GetOrDefaultAsync(KnownNames.Index, (PdfArray?)null).CA();
         return readArray != null ? await readArray.CastAsync<int>().CA() : DefaultIndex;
     }
 }

@@ -20,17 +20,17 @@ internal readonly struct Type2Or3ShaderFactory
 
     public async ValueTask<IShaderWriter> ParseAsync(CommonShaderValues common, int expectedCoords)
     {
-        var coords = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.CoordsTName, expectedCoords).CA()) ??
+        var coords = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.Coords, expectedCoords).CA()) ??
                      throw new PdfParseException("Cannot find coords for axial or radial shader");
 
-        var domain = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.DomainTName, 2).CA()) is { } arr
+        var domain = (await shading.ReadFixedLengthDoubleArrayAsync(KnownNames.Domain, 2).CA()) is { } arr
             ? new ClosedInterval(arr[0], arr[1])
             : new ClosedInterval(0, 1);
 
-        var function = await (await shading[KnownNames.FunctionTName].CA()).CreateFunctionAsync().CA();
+        var function = await (await shading[KnownNames.Function].CA()).CreateFunctionAsync().CA();
 
         var (extendLow, extendHigh) =
-            (await shading.GetOrNullAsync<PdfArray>(KnownNames.ExtendTName).CA()) is { Count: 2 } extArr
+            (await shading.GetOrNullAsync<PdfArray>(KnownNames.Extend).CA()) is { Count: 2 } extArr
                 ? (await ElementIsTrueAsync(extArr, 0).CA(), await ElementIsTrueAsync(extArr, 1).CA())
                 : (false, false);
 

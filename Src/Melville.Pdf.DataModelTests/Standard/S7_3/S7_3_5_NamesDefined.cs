@@ -54,8 +54,8 @@ public class S7_3_5_NamesDefined
     [Fact]
     public void KnownameIsCorrect()
     {
-        Assert.Equal("Page", KnownNames.PageTName);
-        Assert.Equal("Helvetica-Bold", KnownNames.HelveticaBoldTName);
-        Assert.Equal("Helvetica-BoldOblique", KnownNames.HelveticaBoldObliqueTName);
+        Assert.Equal("Page", KnownNames.Page);
+        Assert.Equal("Helvetica-Bold", KnownNames.HelveticaBold);
+        Assert.Equal("Helvetica-BoldOblique", KnownNames.HelveticaBoldOblique);
     }
 }

@@ -15,7 +15,7 @@ public class AddEncryptionItemsToTrailerTest
     public AddEncryptionItemsToTrailerTest()
     {
         docBuilder = new LowLevelDocumentBuilder();
-        docBuilder.AddToTrailerDictionary(KnownNames.IDTName, new PdfArray(
+        docBuilder.AddToTrailerDictionary(KnownNames.ID, new PdfArray(
             PdfDirectObject.CreateString("12345678901234567890123456789012"u8),
             PdfDirectObject.CreateString("12345678901234567890123456789012"u8)));
         docBuilder.AddEncryption(DocumentEncryptorFactory.V2R3Rc4128("User", "Owner", PdfPermission.None));
@@ -25,20 +25,20 @@ public class AddEncryptionItemsToTrailerTest
     [Fact]
     public void EcryptionRequiresAnID()
     {
-        Assert.True(trailer.ContainsKey(KnownNames.IDTName));
+        Assert.True(trailer.ContainsKey(KnownNames.ID));
     }
 
     [Fact]
     public async Task EcryptionWithV3DictionaryAsync()
     {
-        Assert.True(trailer.ContainsKey(KnownNames.EncryptTName));
-        var dict = await trailer.GetAsync<PdfDictionary>(KnownNames.EncryptTName);
-        Assert.Equal(2, (await dict.GetAsync<int>(KnownNames.VTName)));
-        Assert.Equal(3, (await dict.GetAsync<int>(KnownNames.RTName)));
-        Assert.Equal(128, (await dict.GetAsync<int>(KnownNames.LengthTName)));
-        Assert.Equal(-1, (await dict.GetAsync<int>(KnownNames.PTName)));
-        Assert.Equal(32, (await dict.GetAsync<StringSpanSource>(KnownNames.UTName)).GetSpan().Length);
-        Assert.Equal(32, (await dict.GetAsync<StringSpanSource>(KnownNames.OTName)).GetSpan().Length);
-        Assert.Equal(KnownNames.StandardTName, await dict[KnownNames.FilterTName]);
+        Assert.True(trailer.ContainsKey(KnownNames.Encrypt));
+        var dict = await trailer.GetAsync<PdfDictionary>(KnownNames.Encrypt);
+        Assert.Equal(2, (await dict.GetAsync<int>(KnownNames.V)));
+        Assert.Equal(3, (await dict.GetAsync<int>(KnownNames.R)));
+        Assert.Equal(128, (await dict.GetAsync<int>(KnownNames.Length)));
+        Assert.Equal(-1, (await dict.GetAsync<int>(KnownNames.P)));
+        Assert.Equal(32, (await dict.GetAsync<StringSpanSource>(KnownNames.U)).GetSpan().Length);
+        Assert.Equal(32, (await dict.GetAsync<StringSpanSource>(KnownNames.O)).GetSpan().Length);
+        Assert.Equal(KnownNames.Standard, await dict[KnownNames.Filter]);
     }
 }

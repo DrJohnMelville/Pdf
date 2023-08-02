@@ -28,7 +28,7 @@ public class DeviceN: ColorBars
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{exch}"));
         return new PdfArray(
-            KnownNames.DeviceNTName, ColorantNames(), KnownNames.DeviceRGBTName, func);
+            KnownNames.DeviceN, ColorantNames(), KnownNames.DeviceRGB, func);
     }
 
     protected virtual PdfArray ColorantNames()
@@ -65,6 +65,6 @@ public class DeviceNNone : DeviceN
     }
 
     protected override PdfArray ColorantNames() => new PdfArray(
-        KnownNames.NoneTName, KnownNames.NoneTName, KnownNames.NoneTName
+        KnownNames.None, KnownNames.None, KnownNames.None
     );
 }

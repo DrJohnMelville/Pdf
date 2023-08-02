@@ -12,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Writers.Builder;
 public static class PdfTreeElementNamer
 {
     public static PdfDirectObject FinalArrayName(bool isNumberTree) =>
-        isNumberTree? KnownNames.NumsTName : KnownNames.NamesTName;
+        isNumberTree? KnownNames.Nums : KnownNames.Names;
 
 }
 
@@ -25,7 +25,7 @@ internal static class TreeCreator
     public static PdfDictionary CreateNumberTree(
         this IPdfObjectCreatorRegistry builder, int nodeSize,
         IEnumerable<(PdfDirectObject Key, PdfIndirectObject Item)> items) =>
-        new TreeCreatorImpl(builder, nodeSize, KnownNames.NumsTName).CreateTree(items);
+        new TreeCreatorImpl(builder, nodeSize, KnownNames.Nums).CreateTree(items);
 
     public static PdfDictionary CreateNameTree(
         this IPdfObjectCreatorRegistry builder, int nodeSize, params (PdfDirectObject, PdfIndirectObject)[] items) =>
@@ -34,7 +34,7 @@ internal static class TreeCreator
     public static PdfDictionary CreateNameTree(
         this IPdfObjectCreatorRegistry builder, int nodeSize,
         IEnumerable<(PdfDirectObject Key, PdfIndirectObject Item)> items) =>
-        new TreeCreatorImpl(builder, nodeSize, KnownNames.NamesTName).CreateTree(items);
+        new TreeCreatorImpl(builder, nodeSize, KnownNames.Names).CreateTree(items);
 }
 
 public readonly partial struct TreeCreatorImpl
@@ -59,7 +59,7 @@ public readonly partial struct TreeCreatorImpl
         Debug.Assert(ordered.Count <= nodeSize && ordered.Count > 0);
         return new DictionaryBuilder()
             .WithItem(finalArrayName, new PdfArray(InterleveKeysAndValues(ordered)))
-            .WithItem(KnownNames.LimitsTName, new PdfArray(ordered.First().Key, ordered.Last().Key))
+            .WithItem(KnownNames.Limits, new PdfArray(ordered.First().Key, ordered.Last().Key))
             .AsDictionary();
     }
 
@@ -84,7 +84,7 @@ public readonly partial struct TreeCreatorImpl
     private PdfDictionary TreeFromChunks(IReadOnlyList<PdfDictionary> leaves)
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.KidsTName,
+            .WithItem(KnownNames.Kids,
                 new PdfArray(ReduceLeaves(leaves).Select(CreateIndirectReference).ToArray()))
             .AsDictionary();
     }
@@ -97,8 +97,8 @@ public readonly partial struct TreeCreatorImpl
         Debug.Assert(nodes.Count <= nodeSize);
         return
             new DictionaryBuilder()
-                .WithItem(KnownNames.KidsTName, new PdfArray(nodes.Select(CreateIndirectReference).ToArray()))
-                .WithItem(KnownNames.LimitsTName, new PdfArray(FirstKey(nodes.First()), LastKey(nodes.Last())))
+                .WithItem(KnownNames.Kids, new PdfArray(nodes.Select(CreateIndirectReference).ToArray()))
+                .WithItem(KnownNames.Limits, new PdfArray(FirstKey(nodes.First()), LastKey(nodes.Last())))
                 .AsDictionary();
     }
 
@@ -109,7 +109,7 @@ public readonly partial struct TreeCreatorImpl
 
     private IReadOnlyList<PdfIndirectObject> LimitsArray(PdfDictionary node)
     {
-        if (!(node.RawItems.TryGetValue(KnownNames.LimitsTName, out var indir) &&
+        if (!(node.RawItems.TryGetValue(KnownNames.Limits, out var indir) &&
             indir.TryGetEmbeddedDirectValue(out var dirvalue) &&
             dirvalue.TryGet(out PdfArray? limits)))
             throw new InvalidOperationException("Cannot find item");

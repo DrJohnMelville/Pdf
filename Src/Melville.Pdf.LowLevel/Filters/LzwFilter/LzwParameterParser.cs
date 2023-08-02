@@ -9,5 +9,5 @@ internal static class LzwParameterParser
 {
     public static async ValueTask<int> EarlySwitchLengthAsync(this PdfDirectObject parameters) =>
         parameters.TryGet(out PdfDictionary dict)?
-            await dict.GetOrDefaultAsync(KnownNames.EarlyChangeTName, 1).CA(): 1;
+            await dict.GetOrDefaultAsync(KnownNames.EarlyChange, 1).CA(): 1;
 }

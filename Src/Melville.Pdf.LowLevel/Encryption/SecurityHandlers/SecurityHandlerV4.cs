@@ -39,12 +39,12 @@ internal class ObjectContextV4: IObjectCryptContext
     }
 
     public ICipher StringCipher() =>
-        context[KnownNames.StrFTName]
+        context[KnownNames.StrF]
             .ContextForObject(objectNumber, genetrationNumber)
             .StringCipher();
 
     public ICipher StreamCipher()=>
-        context[KnownNames.StmFTName]
+        context[KnownNames.StmF]
             .ContextForObject(objectNumber, genetrationNumber)
             .StringCipher();
 

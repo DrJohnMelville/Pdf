@@ -11,28 +11,28 @@ internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttribut
     int Width, int Height)
 {
     public async ValueTask<double[]?> DecodeAsync() =>
-        Stream.TryGetValue(KnownNames.DecodeTName, out var arrayTask) &&
+        Stream.TryGetValue(KnownNames.Decode, out var arrayTask) &&
         (await arrayTask.CA()).TryGet(out PdfArray array) 
             ? await array.CastAsync<double>().CA()
             : null;
 
     public async ValueTask<bool> IsImageMaskAsync() =>
-        await Stream.GetOrDefaultAsync(KnownNames.ImageMaskTName, false).CA();
+        await Stream.GetOrDefaultAsync(KnownNames.ImageMask, false).CA();
 
     public async ValueTask<IColorSpace> ColorSpaceAsync() =>
-        Stream.ContainsKey(KnownNames.ColorSpaceTName)?
+        Stream.ContainsKey(KnownNames.ColorSpace)?
         await new ColorSpaceFactory(Page)
-            .FromNameOrArrayAsync(await Stream[KnownNames.ColorSpaceTName].CA()).CA() :
+            .FromNameOrArrayAsync(await Stream[KnownNames.ColorSpace].CA()).CA() :
         DeviceRgb.Instance;
 
     public ValueTask<long> BitsPerComponentAsync() =>
-        Stream.GetOrDefaultAsync(KnownNames.BitsPerComponentTName, 8L);
+        Stream.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8L);
 
     public ValueTask<PdfDirectObject> MaskAsync() => 
-        Stream.GetOrNullAsync(KnownNames.MaskTName);
+        Stream.GetOrNullAsync(KnownNames.Mask);
     public ValueTask<PdfDirectObject> SoftMaskAsync() => 
-        Stream.GetOrNullAsync(KnownNames.SMaskTName);
+        Stream.GetOrNullAsync(KnownNames.SMask);
 
     public ValueTask<bool> ShouldInterpolateAsync() =>
-        Stream.GetOrDefaultAsync(KnownNames.InterpolateTName, false);
+        Stream.GetOrDefaultAsync(KnownNames.Interpolate, false);
 }

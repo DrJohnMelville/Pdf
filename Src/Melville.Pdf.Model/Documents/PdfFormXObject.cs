@@ -23,11 +23,11 @@ internal partial class PdfFormXObject: IHasPageAttributes
     public ValueTask<IHasPageAttributes?> GetParentAsync() => new(parent);
 
     public async ValueTask<Matrix3x2> MatrixAsync() =>
-        await (await lowLevel.GetOrDefaultAsync(KnownNames.MatrixTName, (PdfArray?)null).CA())
+        await (await lowLevel.GetOrDefaultAsync(KnownNames.Matrix, (PdfArray?)null).CA())
         .AsMatrix3x2OrIdentityAsync().CA();
 
     public async ValueTask<PdfRect?> BboxAsync() =>
-        (await lowLevel.GetOrDefaultAsync(KnownNames.BBoxTName, PdfArray.Empty).CA())
+        (await lowLevel.GetOrDefaultAsync(KnownNames.BBox, PdfArray.Empty).CA())
         is { Count: 4 } arr
             ? await PdfRect.CreateAsync(arr).CA()
             : null;

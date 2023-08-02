@@ -26,10 +26,10 @@ public class S7_10_4StitchingFunctions
         builder.AddFunction(LinearMapping(0, 1), 0.5);
         builder.AddFunction(LinearMapping(2,3), 1.0, (2,3));
         var stitched = builder.Create();
-        await stitched.VerifyNumberAsync(KnownNames.FunctionTypeTName, 3);
-        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 0, 1.0);
-        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.BoundsTName, 0.5);
-        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.EncodeTName, 0, 0.5, 2, 3);
+        await stitched.VerifyNumberAsync(KnownNames.FunctionType, 3);
+        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 1.0);
+        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.Bounds, 0.5);
+        await stitched.VerifyPdfDoubleArrayAsync(KnownNames.Encode, 0, 0.5, 2, 3);
     }
 
     [Fact]

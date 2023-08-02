@@ -22,14 +22,14 @@ internal readonly record struct CommonShaderValues(
     {
         Matrix3x2.Invert(patternToPixels, out var pixelsToPattern);
         var bbox =
-            (await shadingDictionary.ReadFixedLengthDoubleArrayAsync(KnownNames.BBoxTName, 4).CA()) is { } bbArray
+            (await shadingDictionary.ReadFixedLengthDoubleArrayAsync(KnownNames.BBox, 4).CA()) is { } bbArray
                 ? new RectInterval(new ClosedInterval(bbArray[0], bbArray[2]),
                     new ClosedInterval(bbArray[1], bbArray[3]))
                 : defaultBBox;
 
 
         var colorSpace = await new ColorSpaceFactory(NoPageContext.Instance)
-            .FromNameOrArrayAsync(await shadingDictionary[KnownNames.ColorSpaceTName].CA()).CA();
+            .FromNameOrArrayAsync(await shadingDictionary[KnownNames.ColorSpace].CA()).CA();
         var backGroundInt = await ComputeBackgroundAsync(shadingDictionary, colorSpace, supressBackground).CA();
 
         var common = new CommonShaderValues(
@@ -42,7 +42,7 @@ internal readonly record struct CommonShaderValues(
     {
         if (supressBackground) return 0;        
         var backGroundArray = 
-            await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.BackgroundTName).CA() is { } arr
+            await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.Background).CA() is { } arr
             ? await arr.CastAsync<double>().CA()
             : Array.Empty<double>();
         var backGroundInt = ComputeBackgroundUint(backGroundArray, colorSpace);

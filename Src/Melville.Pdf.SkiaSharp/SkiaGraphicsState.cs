@@ -19,7 +19,7 @@ internal class SkiaGraphicsState:GraphicsState<ISkiaBrushCreator>
     protected override async ValueTask<ISkiaBrushCreator> CreatePatternBrushAsync(PdfDictionary pattern,
         DocumentRenderer parentRenderer)
     {
-        return await pattern.GetOrDefaultAsync(KnownNames.PatternTypeTName, 0).CA() switch
+        return await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
         {
             1 => await CreateTilePatternBrushAsync(pattern, parentRenderer).CA(),
             2 => await CreateShaderBrushAsync(pattern).CA(),

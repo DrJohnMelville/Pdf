@@ -30,7 +30,7 @@ internal static class PdfTrailerParser
             trailerDictionary = await CrossReferenceStreamParser.ReadAsync(source, xrefPosition).CA();
         }
 
-        if ((await trailerDictionary.GetOrDefaultAsync(KnownNames.PrevTName, -1L).CA()) is var offset && offset >= 0)
+        if ((await trailerDictionary.GetOrDefaultAsync(KnownNames.Prev, -1L).CA()) is var offset && offset >= 0)
         {
             AddToPriorPositions(xrefPosition, ref priorPositions);
             await TryReadPriorTRailerAsync(source, priorPositions, offset).CA();

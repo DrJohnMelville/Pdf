@@ -8,5 +8,5 @@ namespace Melville.Pdf.DataModelTests.Standard.S8_7Patterns;
 public class ShaderOperatorParserTest : ParserTest
 {
     [Fact]
-    public Task DrawShaderAsync() => TestInputAsync("/DeviceRGB sh", i => i.PaintShaderAsync(KnownNames.DeviceRGBTName));
+    public Task DrawShaderAsync() => TestInputAsync("/DeviceRGB sh", i => i.PaintShaderAsync(KnownNames.DeviceRGB));
 }

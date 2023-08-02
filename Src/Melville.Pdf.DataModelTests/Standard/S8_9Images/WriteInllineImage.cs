@@ -12,8 +12,8 @@ public class WriteInllineImage:WriterTest
     public async Task WriteSimpleImageAsync()
     {
          await sut.DoAsync(new DictionaryBuilder()
-             .WithItem(KnownNames.WidthTName, 12)
-             .WithItem(KnownNames.HeightTName, 24)
+             .WithItem(KnownNames.Width, 12)
+             .WithItem(KnownNames.Height, 24)
              .AsStream("StreamData"));
 
          Assert.Equal("BI/Width 12/Height 24\nID\nStreamDataEI", await WrittenTextAsync());

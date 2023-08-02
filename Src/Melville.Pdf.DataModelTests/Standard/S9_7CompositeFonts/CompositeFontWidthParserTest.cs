@@ -17,9 +17,9 @@ public class CompositeFontWidthParserTest
     public async Task ParseType1ItemAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-                .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
-                .WithItem(KnownNames.WTName, new PdfArray(
+                .WithItem(KnownNames.Type, KnownNames.Font)
+                .WithItem(KnownNames.Subtype, KnownNames.CIDFontType2)
+                .WithItem(KnownNames.W, new PdfArray(
                     4, new PdfArray(
                         500, 750, 250)))
                 .AsDictionary()
@@ -34,9 +34,9 @@ public class CompositeFontWidthParserTest
     public async Task CanFollowType1DeclAsync()
     {
         var font = new PdfFont(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
-            .WithItem(KnownNames.WTName, new PdfArray(
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.CIDFontType2)
+            .WithItem(KnownNames.W, new PdfArray(
                 4, new PdfArray(500),
                 6,7,1233))
             .AsDictionary()
@@ -52,12 +52,12 @@ public class CompositeFontWidthParserTest
     public async Task CanFollowType2DeclAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-                .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
-                .WithItem(KnownNames.WTName, new PdfArray(
+                .WithItem(KnownNames.Type, KnownNames.Font)
+                .WithItem(KnownNames.Subtype, KnownNames.CIDFontType2)
+                .WithItem(KnownNames.W, new PdfArray(
                     4, 4, 500,
                     6, 7, 1233))
-                .WithItem(KnownNames.DWTName, 34)
+                .WithItem(KnownNames.DW, 34)
                 .AsDictionary()
             )).ParseAsync();
         Assert.Equal(500*1f/1000, sut.GetWidth(0x04, 0),3);
@@ -70,9 +70,9 @@ public class CompositeFontWidthParserTest
     public async Task ParseType2ItemAsync()
     {
         var sut = await new FontWidthParser(new PdfFont(new DictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-                .WithItem(KnownNames.SubtypeTName, KnownNames.CIDFontType2TName)
-                .WithItem(KnownNames.WTName, new PdfArray(
+                .WithItem(KnownNames.Type, KnownNames.Font)
+                .WithItem(KnownNames.Subtype, KnownNames.CIDFontType2)
+                .WithItem(KnownNames.W, new PdfArray(
                     4, 6,500))
                 .AsDictionary()
             )).ParseAsync();

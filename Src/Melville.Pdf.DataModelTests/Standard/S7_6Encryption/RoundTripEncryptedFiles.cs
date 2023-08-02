@@ -41,15 +41,15 @@ public class RoundTripEncryptedFiles
         string text, MultiBufferStream target)
     {
         var doc = await ParseTargetAsync(target, PasswordType.User, "User");
-        var encrypt = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.EncryptTName);
-        await VerifyNumberAsync(encrypt, KnownNames.VTName, V);
-        await VerifyNumberAsync(encrypt, KnownNames.RTName, R);
-        await VerifyNumberAsync(encrypt, KnownNames.LengthTName, keyLengthInBits);
+        var encrypt = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Encrypt);
+        await VerifyNumberAsync(encrypt, KnownNames.V, V);
+        await VerifyNumberAsync(encrypt, KnownNames.R, R);
+        await VerifyNumberAsync(encrypt, KnownNames.Length, keyLengthInBits);
 
         foreach (var indirectReference in doc.Objects.Values)
         {
             var obj = await indirectReference.LoadValueAsync();
-            if (obj.TryGet(out PdfStream? ps) && ! ps.Keys.Contains(KnownNames.FilterTName) && ps.Keys.Count()==1)
+            if (obj.TryGet(out PdfStream? ps) && ! ps.Keys.Contains(KnownNames.Filter) && ps.Keys.Count()==1)
             {
                 await VerifyStreamContainsAsync(ps, text);
             }

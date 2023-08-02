@@ -33,7 +33,7 @@ public static class FunctionFactory
     /// <returns>The PdfFunction defined by CodeSource.</returns>
     /// <exception cref="PdfParseException">The CodeSource does not define a PdfFunction</exception>
     public static async ValueTask<IPdfFunction> CreateFunctionAsync(this PdfDictionary source) =>
-        (await source.GetOrDefaultAsync(KnownNames.FunctionTypeTName, 10).CA()) switch
+        (await source.GetOrDefaultAsync(KnownNames.FunctionType, 10).CA()) switch
         {
             0 => await SampledFunctionParser.ParseAsync(AsStream(source)).CA(),
             2 => await ExponentialFunctionParser.ParseAsync(source).CA(),

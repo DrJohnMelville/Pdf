@@ -135,12 +135,12 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         {
             var (low, high) = TryPackNum(value);
             sb.AppendLine(
-                $"""        public static PdfDirectObject {name}TName => PdfDirectObject.CreateName({low},{high});""");
+                $"""        public static PdfDirectObject {name} => PdfDirectObject.CreateName({low},{high});""");
         }
 
         private static void CreateLongString(StringBuilder sb, string name, string value) =>
             sb.AppendLine(
-                $"""        public static readonly PdfDirectObject {name} = PdfDirectValue.CreateName("{value}"u8);""");
+                $"""        public static readonly PdfDirectObject {name} = PdfDirectObject.CreateName("{value}"u8);""");
 
         private static void RenderPdfNameGroup(StringBuilder sb, 
             IGrouping<string, (string Value, string CSharpName, string type)> items)
@@ -170,7 +170,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
                     sb.AppendLine("        /// <summary>");
                     sb.AppendLine($"        /// {type} value for {name}");
                     sb.AppendLine("        /// </summary>");
-                    sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name}TName);");
+                    sb.AppendLine($"        public static {type}Name {name} => new(KnownNames.{name});");
                 }
 
                 sb.AppendLine(

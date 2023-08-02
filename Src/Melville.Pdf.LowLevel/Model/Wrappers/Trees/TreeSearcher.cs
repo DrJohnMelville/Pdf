@@ -14,11 +14,11 @@ internal readonly partial struct TreeSearcher
     [FromConstructor]private readonly PdfDirectObject key;
     
     public ValueTask<PdfDirectObject> SearchAsync() =>
-        source.ContainsKey(KnownNames.KidsTName) ? SearchInteriorNodeAsync() : SearchLeafAsync();
+        source.ContainsKey(KnownNames.Kids) ? SearchInteriorNodeAsync() : SearchLeafAsync();
 
     private async ValueTask<PdfDirectObject> SearchInteriorNodeAsync()
     {
-        var kids = await source.GetAsync<PdfArray>(KnownNames.KidsTName).CA();
+        var kids = await source.GetAsync<PdfArray>(KnownNames.Kids).CA();
         return await new TreeSearcher(
             await BinarySearchInteriorNodeAsync(kids, 0, kids.Count-1).CA(), key).SearchAsync().CA();
     }
@@ -27,7 +27,7 @@ internal readonly partial struct TreeSearcher
     {
         var middle = ComputeMiddleValue(low, high);
         var centerItem = await array.GetAsync<PdfDictionary>(middle).CA();
-        var limits = await centerItem.GetAsync<PdfArray>(KnownNames.LimitsTName).CA();
+        var limits = await centerItem.GetAsync<PdfArray>(KnownNames.Limits).CA();
         return key.CompareTo(await limits[0].CA()) switch
         {
             < 0 => await BinarySearchInteriorNodeAsync(array, low, middle - 1).CA(),
@@ -40,7 +40,7 @@ internal readonly partial struct TreeSearcher
 
     private async ValueTask<PdfDirectObject> SearchLeafAsync()
     {
-        var array = (await source. GetWithAlternativeName(KnownNames.NumsTName, KnownNames.NamesTName).CA()).
+        var array = (await source. GetWithAlternativeName(KnownNames.Nums, KnownNames.Names).CA()).
             Get<PdfArray>();
         return await BinarySearchLeafAsync(array, 0, (array.Count / 2) -1).CA();
     }

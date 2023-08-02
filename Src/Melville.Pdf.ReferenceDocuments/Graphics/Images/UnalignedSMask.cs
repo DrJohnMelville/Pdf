@@ -12,12 +12,12 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
         protected override ValueTask AddContentToDocumentAsync(PdfDocumentCreator docCreator)
         {
             smask = docCreator.LowLevelCreator.Add(new DictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-                .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-                .WithItem(KnownNames.WidthTName, 2)
-                .WithItem(KnownNames.HeightTName, 2)
-                .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
-                .WithItem(KnownNames.BitsPerComponentTName, 8)
+                .WithItem(KnownNames.Type, KnownNames.XObject)
+                .WithItem(KnownNames.Subtype, KnownNames.Image)
+                .WithItem(KnownNames.Width, 2)
+                .WithItem(KnownNames.Height, 2)
+                .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
+                .WithItem(KnownNames.BitsPerComponent, 8)
                 .AsStream(new byte[]{10,64,127,212})
             );
             return base.AddContentToDocumentAsync(docCreator);
@@ -36,13 +36,13 @@ namespace Melville.Pdf.ReferenceDocuments.Graphics.Images
         protected override PdfStream CreateImage()
         {
             return new DictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-                .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-                .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName)
-                .WithItem(KnownNames.WidthTName, 256)
-                .WithItem(KnownNames.HeightTName, 256)
-                .WithItem(KnownNames.BitsPerComponentTName, 8)
-                .WithItem(KnownNames.SMaskTName, smask)
+                .WithItem(KnownNames.Type, KnownNames.XObject)
+                .WithItem(KnownNames.Subtype, KnownNames.Image)
+                .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB)
+                .WithItem(KnownNames.Width, 256)
+                .WithItem(KnownNames.Height, 256)
+                .WithItem(KnownNames.BitsPerComponent, 8)
+                .WithItem(KnownNames.SMask, smask)
                 .AsStream(GenerateImage());
         }
 

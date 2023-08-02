@@ -17,11 +17,11 @@ public class StencilMask : DisplayImageTest
     protected override PdfStream CreateImage()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.WidthTName, 3)
-            .WithItem(KnownNames.HeightTName, 3)
-            .WithItem(KnownNames.ImageMaskTName, true)
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.Width, 3)
+            .WithItem(KnownNames.Height, 3)
+            .WithItem(KnownNames.ImageMask, true)
             .AsStream(new byte[]{
                 0b01000000,
                 0b10100000,

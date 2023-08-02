@@ -12,22 +12,22 @@ public class EmbeddedType1 : FontDefinitionTest
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.Type1Font.Fon")!;
         var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1TName, fontStream.Length)
+            .WithItem(KnownNames.Length1, fontStream.Length)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream));
         var widthArray = arg.Add(new PdfArray(Enumerable.Repeat<PdfIndirectObject>(600, 256).ToArray()));
         var descrip = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
-            .WithItem(KnownNames.FlagsTName, 32)
-            .WithItem(KnownNames.FontBBoxTName, new PdfArray(-511, -250, 1390, 750))
-            .WithItem(KnownNames.FontFileTName, stream)
+            .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
+            .WithItem(KnownNames.Flags, 32)
+            .WithItem(KnownNames.FontBBox, new PdfArray(-511, -250, 1390, 750))
+            .WithItem(KnownNames.FontFile, stream)
             .AsDictionary());
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.FontDescriptorTName, descrip)
-            .WithItem(KnownNames.WidthsTName, widthArray)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("MFSGS-Dingbats"))
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.FontDescriptor, descrip)
+            .WithItem(KnownNames.Widths, widthArray)
+            .WithItem(KnownNames.BaseFont, PdfDirectObject.CreateName("MFSGS-Dingbats"))
             .AsDictionary();
     }
 }

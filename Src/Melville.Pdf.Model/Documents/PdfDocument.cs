@@ -39,7 +39,7 @@ public readonly struct PdfDocument: IDisposable
     }
 
     private ValueTask<PdfDictionary> CatalogAsync() => 
-        LowLevel.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.RootTName);
+        LowLevel.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
 
     /// <summary>
     /// Gets the effective PDF version for this document, prefering the document caalog if it differs from the
@@ -47,7 +47,7 @@ public readonly struct PdfDocument: IDisposable
     /// </summary>
     /// <returns>A PDF name representing the header.</returns>
     public async ValueTask<PdfDirectObject> VersionAsync() =>
-        (await (await CatalogAsync().CA()).GetOrNullAsync(KnownNames.VersionTName).CA()) is
+        (await (await CatalogAsync().CA()).GetOrNullAsync(KnownNames.Version).CA()) is
         {IsName:true }version?
             version: PdfDirectObject.CreateName($"{LowLevel.MajorVersion}.{LowLevel.MinorVersion}");
 
@@ -55,14 +55,14 @@ public readonly struct PdfDocument: IDisposable
     /// Gets the PageTree representing the pages in the document
     /// </summary>
     public async ValueTask<PageTree> PagesAsync() =>
-        new(await (await CatalogAsync().CA()).GetAsync<PdfDictionary>(KnownNames.PagesTName).CA());
+        new(await (await CatalogAsync().CA()).GetAsync<PdfDictionary>(KnownNames.Pages).CA());
 
     /// <summary>
     /// Optional content declaration for the document
     /// </summary>
     public async ValueTask<PdfDictionary?> OptionalContentPropertiesAsync() =>
         await (await CatalogAsync().CA()).GetOrNullAsync<PdfDictionary>(
-            KnownNames.OCPropertiesTName).CA();
+            KnownNames.OCProperties).CA();
 
     /// <inheritdoc />
     public void Dispose()

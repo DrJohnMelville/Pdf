@@ -17,7 +17,7 @@ internal class ObjectStreamBuilder
     }
 
     private DictionaryBuilder DefaultBuilder() => new DictionaryBuilder()
-        .WithItem(KnownNames.FilterTName, KnownNames.FlateDecodeTName);
+        .WithItem(KnownNames.Filter, KnownNames.FlateDecode);
 
     public bool TryAddRef(int number, PdfDirectObject obj)
     {

@@ -14,8 +14,8 @@ internal static class SecurityHandlerV6Factory
 
     private static async Task<RootKeyComputerV6> ReadV6KeysAsync(PdfDictionary dict) =>
         new(
-            await ReadKeyAsync(dict, KnownNames.UTName, KnownNames.UETName).CA(),
-            await ReadKeyAsync(dict, KnownNames.OTName, KnownNames.OETName).CA());
+            await ReadKeyAsync(dict, KnownNames.U, KnownNames.UE).CA(),
+            await ReadKeyAsync(dict, KnownNames.O, KnownNames.OE).CA());
 
     private static async Task<V6EncryptionKey> ReadKeyAsync(
         PdfDictionary dict, PdfDirectObject hashName, PdfDirectObject encodedKeyName) => new (

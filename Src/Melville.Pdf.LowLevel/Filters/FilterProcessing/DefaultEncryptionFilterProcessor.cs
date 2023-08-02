@@ -17,8 +17,8 @@ internal static class DefaultEncryptionSelector
             : inner;
     
     private static async Task<bool> ShouldApplyDefaultEncryptionAsync(PdfStream stream) =>
-        !((await stream.GetOrNullAsync(KnownNames.TypeTName).CA()).Equals(KnownNames.XRefTName) ||
-          await stream.HasFilterOfTypeAsync(KnownNames.CryptTName).CA());
+        !((await stream.GetOrNullAsync(KnownNames.Type).CA()).Equals(KnownNames.XRef) ||
+          await stream.HasFilterOfTypeAsync(KnownNames.Crypt).CA());
 
 }
 

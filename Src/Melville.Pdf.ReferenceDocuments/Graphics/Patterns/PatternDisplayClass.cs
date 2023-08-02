@@ -13,7 +13,7 @@ public abstract class PatternDisplayClass : Card3x5
     {
         page.AddResourceObject(ResourceTypeName.Pattern, PdfDirectObject.CreateName("P1"), CreatePattern);
         page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("Cs12"), new PdfArray(
-            KnownNames.PatternTName, KnownNames.DeviceRGBTName));
+            KnownNames.Pattern, KnownNames.DeviceRGB));
     }
 
     protected abstract PdfIndirectObject CreatePattern(IPdfObjectCreatorRegistry arg);

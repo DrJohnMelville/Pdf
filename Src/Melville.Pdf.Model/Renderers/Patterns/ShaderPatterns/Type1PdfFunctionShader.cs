@@ -30,19 +30,19 @@ internal readonly struct Type1PdfFunctionShaderFactory
     public async ValueTask<IShaderWriter> ParseAsync(CommonShaderValues common)
     {
         var domainToPattern = await (
-                await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.MatrixTName).CA())
+                await shadingDictionary.GetOrNullAsync<PdfArray>(KnownNames.Matrix).CA())
             .AsMatrix3x2OrIdentityAsync().CA();
         Matrix3x2.Invert(domainToPattern, out var patternToDomain);          
 
 
         var domainInterval = 
-            (await ArrayParsingHelper.ReadFixedLengthDoubleArrayAsync(shadingDictionary, KnownNames.DomainTName, 4).CA()) is {} domainArray ?
+            (await ArrayParsingHelper.ReadFixedLengthDoubleArrayAsync(shadingDictionary, KnownNames.Domain, 4).CA()) is {} domainArray ?
                 new RectInterval(new ClosedInterval(domainArray[0], domainArray[1]),
                 new ClosedInterval(domainArray[2], domainArray[3])) : defaultDomainInterval;
 
         return new Type1PdfFunctionShader(
             common, patternToDomain, domainInterval,  
-            await (await shadingDictionary[KnownNames.FunctionTName].CA()).CreateFunctionAsync().CA());
+            await (await shadingDictionary[KnownNames.Function].CA()).CreateFunctionAsync().CA());
     }
 }
 

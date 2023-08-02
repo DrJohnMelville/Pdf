@@ -9,8 +9,8 @@ public class BuiltInTrueType : FontDefinitionTest
 
     protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg) =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("CooperBlack"))
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.TrueType)
+            .WithItem(KnownNames.BaseFont, PdfDirectObject.CreateName("CooperBlack"))
             .AsDictionary();
 }

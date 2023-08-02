@@ -8,11 +8,11 @@ public class CcittBlackIs1 : CcottEncodedBase
     }
     protected override PdfDictionary CcittParamDictionary() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, -1)
-            .WithItem(KnownNames.EncodedByteAlignTName, false)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.EndOfBlockTName, false)
-            .WithItem(KnownNames.BlackIs1TName, true)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, -1)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, true)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
 }

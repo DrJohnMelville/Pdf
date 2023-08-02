@@ -32,7 +32,7 @@ public class Separation: ColorBars
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{1 exch sub dup 0}"));
         return new PdfArray(
-            KnownNames.SeparationTName, inkName, KnownNames.DeviceRGBTName, func);
+            KnownNames.Separation, inkName, KnownNames.DeviceRGB, func);
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)
@@ -55,13 +55,13 @@ public class Separation: ColorBars
 
 public class SeparationAll: Separation
 {
-    public SeparationAll() : base(KnownNames.AllTName)
+    public SeparationAll() : base(KnownNames.All)
     {
     }
 }
 public class SeparationNone: Separation
 {
-    public SeparationNone() : base(KnownNames.NoneTName)
+    public SeparationNone() : base(KnownNames.None)
     {
     }
 }

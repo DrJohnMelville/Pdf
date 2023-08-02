@@ -12,8 +12,8 @@ public abstract class Type3FontBase: FontDefinitionTest
         base.SetPageProperties(page);
         page.AddResourceObject(ResourceTypeName.ExtGState, PdfDirectObject.CreateName("GS1"),
             new DictionaryBuilder()
-                .WithItem(KnownNames.LWTName, 15)
-                .WithItem(KnownNames.DTName,
+                .WithItem(KnownNames.LW, 15)
+                .WithItem(KnownNames.D,
                     new PdfArray(new PdfArray(30), 0))
                 .AsDictionary());
     }
@@ -43,21 +43,21 @@ B"));
         );
 
         var encoding = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.EncodingTName)
-            .WithItem(KnownNames.DifferencesTName, new PdfArray(97, sqName, triName))
+            .WithItem(KnownNames.Type, KnownNames.Encoding)
+            .WithItem(KnownNames.Differences, new PdfArray(97, sqName, triName))
             .AsDictionary()
         );
         
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type3TName)
-            .WithItem(KnownNames.FontBBoxTName, new PdfArray(
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type3)
+            .WithItem(KnownNames.FontBBox, new PdfArray(
                 0,
                 0,
                 750,
                 750
             ))
-            .WithItem(KnownNames.FontMatrixTName, new PdfArray(
+            .WithItem(KnownNames.FontMatrix, new PdfArray(
                 0.001,
                 0,
                 0,
@@ -65,11 +65,11 @@ B"));
                 0,
                 0
             ))
-            .WithItem(KnownNames.CharProcsTName, chanProcs)
-            .WithItem(KnownNames.EncodingTName, encoding)
-            .WithItem(KnownNames.FirstCharTName, 97)
-            .WithItem(KnownNames.LastCharTName, 98)
-            .WithItem(KnownNames.WidthsTName, new PdfArray(1000, 1000))
+            .WithItem(KnownNames.CharProcs, chanProcs)
+            .WithItem(KnownNames.Encoding, encoding)
+            .WithItem(KnownNames.FirstChar, 97)
+            .WithItem(KnownNames.LastChar, 98)
+            .WithItem(KnownNames.Widths, new PdfArray(1000, 1000))
             .AsDictionary();
     }
 }

@@ -14,7 +14,7 @@ public class S7_4_1_TwoStreamDecoder
     public async Task Example3FromStandardAsync()
     {
         var stream = new DictionaryBuilder()
-            .WithItem(KnownNames.LengthTName, 562)
+            .WithItem(KnownNames.Length, 562)
             .WithFilter(FilterName.ASCII85Decode, FilterName.FlateDecode)
             .AsStream(compressedData, StreamFormat.DiskRepresentation);
 

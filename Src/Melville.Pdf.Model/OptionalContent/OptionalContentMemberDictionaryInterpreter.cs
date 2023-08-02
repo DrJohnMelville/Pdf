@@ -28,17 +28,17 @@ internal readonly partial struct OptionalContentMemberDictionaryInterpreter
             (await OcgsAsync().CA()).ObjectAsUnresolvedList(), 
             await PDictionaryAsync().CA()).CA();
 
-    private ValueTask<PdfDirectObject> PDictionaryAsync() => dictionary.GetOrDefaultAsync(KnownNames.PTName, KnownNames.AnyOnTName);
-    private ValueTask<PdfDirectObject> OcgsAsync() => dictionary.GetOrDefaultAsync(KnownNames.OCGsTName, (PdfDirectObject)PdfArray.Empty);
-    private ValueTask<PdfDirectObject> VeDictionaryAsync() => dictionary.GetOrNullAsync(KnownNames.VETName);
+    private ValueTask<PdfDirectObject> PDictionaryAsync() => dictionary.GetOrDefaultAsync(KnownNames.P, KnownNames.AnyOn);
+    private ValueTask<PdfDirectObject> OcgsAsync() => dictionary.GetOrDefaultAsync(KnownNames.OCGs, (PdfDirectObject)PdfArray.Empty);
+    private ValueTask<PdfDirectObject> VeDictionaryAsync() => dictionary.GetOrNullAsync(KnownNames.VE);
 
     private ValueTask<bool> EvaluateUsingPAsync(IEnumerable<PdfIndirectObject> ocgs, PdfDirectObject rule)
     {
         return rule switch
         {
-            _ when rule.Equals(KnownNames.AnyOnTName) => CheckAnyAsync(ocgs, true),
-            _ when rule.Equals(KnownNames.AnyOffTName) => CheckAnyAsync(ocgs, false),
-            _ when rule.Equals(KnownNames.AllOffTName) => CheckAllAsync(ocgs, false),
+            _ when rule.Equals(KnownNames.AnyOn) => CheckAnyAsync(ocgs, true),
+            _ when rule.Equals(KnownNames.AnyOff) => CheckAnyAsync(ocgs, false),
+            _ when rule.Equals(KnownNames.AllOff) => CheckAllAsync(ocgs, false),
             _ => CheckAllAsync(ocgs, true) 
         };
     }
@@ -67,9 +67,9 @@ internal readonly partial struct OptionalContentMemberDictionaryInterpreter
     private async ValueTask<bool> EvaluateVeAsync(PdfArray arr) =>
         (await arr[0].CA()) switch
         {
-            var x when x.Equals(KnownNames.NotTName) =>
+            var x when x.Equals(KnownNames.Not) =>
                 !await EvaluateVeItemAsync(arr.RawItems[1]).CA(),
-            var x when x.Equals(KnownNames.OrTName) =>
+            var x when x.Equals(KnownNames.Or) =>
                  await CheckAnyAsync(arr.RawItems.Skip(1), true).CA(),
             _ => await CheckAllAsync(arr.RawItems.Skip(1), true).CA(),
         };

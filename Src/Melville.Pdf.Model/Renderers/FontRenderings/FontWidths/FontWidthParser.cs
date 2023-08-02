@@ -33,9 +33,9 @@ internal readonly struct FontWidthParser
 
     private ValueTask<IFontWidthComputer> ParseAsync(in PdfDirectObject subTypeKey) => subTypeKey switch
     {
-        var x when x.Equals(KnownNames.Type3TName) => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),
-        var x when x.Equals(KnownNames.Type0TName) => ParseSubFontWidthAsync(),
-        var x when x.Equals(KnownNames.CIDFontType2TName) || x.Equals(KnownNames.CIDFontType0TName) => ParseCidFontWidthsAsync(),
+        var x when x.Equals(KnownNames.Type3) => new ValueTask<IFontWidthComputer>(NullFontWidthComputer.Instance),
+        var x when x.Equals(KnownNames.Type0) => ParseSubFontWidthAsync(),
+        var x when x.Equals(KnownNames.CIDFontType2) || x.Equals(KnownNames.CIDFontType0) => ParseCidFontWidthsAsync(),
         _ => ParseSimpleFontWidthsAsync()
     };
 

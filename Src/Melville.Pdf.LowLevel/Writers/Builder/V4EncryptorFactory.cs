@@ -19,7 +19,7 @@ public readonly struct V4CfDictionary
     /// <param name="keyLengthInBytes">Key length for the default encryption</param>
     /// <param name="authEvent">When the password would be checked.  (Melville.PDF does not honor this parameter.)</param>
     public V4CfDictionary(PdfDirectObject cfm, int keyLengthInBytes, PdfDirectObject authEvent = default) => 
-        AddDefinition(KnownNames.StdCFTName, cfm, keyLengthInBytes, authEvent);
+        AddDefinition(KnownNames.StdCF, cfm, keyLengthInBytes, authEvent);
 
     /// <summary>
     /// Add a named encryption algorithm to the dictionary.
@@ -30,13 +30,13 @@ public readonly struct V4CfDictionary
     /// <param name="authEvent">When the password would be checked.  (Melville.PDF does not honor this parameter.)</param>
     public void AddDefinition(
         PdfDirectObject name, PdfDirectObject cfm, int lengthInBytes, PdfDirectObject authEvent = default) => 
-        items.WithItem(name, CreateDefinition(cfm, lengthInBytes, authEvent.IsNull?KnownNames.DocOpenTName:authEvent));
+        items.WithItem(name, CreateDefinition(cfm, lengthInBytes, authEvent.IsNull?KnownNames.DocOpen:authEvent));
 
     private PdfDictionary CreateDefinition(PdfDirectObject cfm, int lengthInBytes, PdfDirectObject authEvent) =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.AuthEventTName, authEvent)
-            .WithItem(KnownNames.CFMTName, cfm)
-            .WithItem(KnownNames.LengthTName, lengthInBytes)
+            .WithItem(KnownNames.AuthEvent, authEvent)
+            .WithItem(KnownNames.CFM, cfm)
+            .WithItem(KnownNames.Length, lengthInBytes)
             .AsDictionary();
 
     internal PdfDictionary Build() => items.AsDictionary();
@@ -66,10 +66,10 @@ internal class EncryptorWithCfsDictionary : ComputeEncryptionDictionary
     protected override DictionaryBuilder DictionaryItems(PdfArray id)
     {
         var ret = base.DictionaryItems(id);
-        ret.WithItem(KnownNames.CFTName, cfs);
-        ret.WithItem(KnownNames.StrFTName, defString);
-        ret.WithItem(KnownNames.StmFTName, defStream);
-        ret.WithItem(KnownNames.EFFTName, defEmbeddedFile);
+        ret.WithItem(KnownNames.CF, cfs);
+        ret.WithItem(KnownNames.StrF, defString);
+        ret.WithItem(KnownNames.StmF, defStream);
+        ret.WithItem(KnownNames.EFF, defEmbeddedFile);
         return ret;
     }
 

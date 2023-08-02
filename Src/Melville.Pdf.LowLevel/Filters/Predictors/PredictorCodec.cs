@@ -34,10 +34,10 @@ internal partial class PredictorCodec : ICodecDefinition
         !parameters.TryGet(out PdfDictionary dict)
             ? null
             : PredictionFilter(
-                await dict.GetOrDefaultAsync(KnownNames.PredictorTName, 1).CA(),
-                (int)await dict.GetOrDefaultAsync(KnownNames.ColorsTName, 1).CA(),
-                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponentTName, 8).CA(),
-                (int)await dict.GetOrDefaultAsync(KnownNames.ColumnsTName, 1).CA(), 
+                await dict.GetOrDefaultAsync(KnownNames.Predictor, 1).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.Colors, 1).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.BitsPerComponent, 8).CA(),
+                (int)await dict.GetOrDefaultAsync(KnownNames.Columns, 1).CA(), 
                 encoding);
 
     private IStreamFilterDefinition? PredictionFilter(

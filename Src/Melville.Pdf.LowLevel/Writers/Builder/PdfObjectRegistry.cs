@@ -92,6 +92,6 @@ internal partial class PdfObjectRegistry:
 
     public PdfDictionary CreateTrailerDictionary() =>
         TrailerDictionaryItems
-            .WithItem(KnownNames.SizeTName, nextObject)
+            .WithItem(KnownNames.Size, nextObject)
             .AsDictionary();
 }

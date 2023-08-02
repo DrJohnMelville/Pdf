@@ -11,12 +11,12 @@ public class ExplicitType1FontWidth : FontDefinitionTest
 
     protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg) =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.Helvetica)
-            .WithItem(KnownNames.FirstCharTName, 'A')
-            .WithItem(KnownNames.LastCharTName, 'C')
-            .WithItem(KnownNames.WidthsTName, new PdfArray(
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, (PdfDirectObject)BuiltInFontName.Helvetica)
+            .WithItem(KnownNames.FirstChar, 'A')
+            .WithItem(KnownNames.LastChar, 'C')
+            .WithItem(KnownNames.Widths, new PdfArray(
                 250,
                 1500,
                 1000

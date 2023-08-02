@@ -11,12 +11,12 @@ public abstract class CcottEncodedBase: DisplayImageTest
     protected override PdfStream CreateImage()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
-            .WithItem(KnownNames.WidthTName, 32)
-            .WithItem(KnownNames.HeightTName, 16)
-            .WithItem(KnownNames.BitsPerComponentTName, 1)
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
+            .WithItem(KnownNames.Width, 32)
+            .WithItem(KnownNames.Height, 16)
+            .WithItem(KnownNames.BitsPerComponent, 1)
             .WithFilter(FilterName.CCITTFaxDecode)
             .WithFilterParam(CcittParamDictionary())
             .AsStream(GenerateImage());

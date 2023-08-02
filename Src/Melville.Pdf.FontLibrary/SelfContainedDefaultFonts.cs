@@ -17,20 +17,20 @@ public partial class SelfContainedDefaultFonts: IDefaultFontMapper
     {
         return font switch
         {
-            var x when x.Equals(KnownNames.CourierTName) => SystemFont("Courier Prime.ttf"),
-            var x when x.Equals(KnownNames.CourierBoldTName) => SystemFont("Courier Prime Bold.ttf"),
-            var x when x.Equals(KnownNames.CourierObliqueTName) => SystemFont("Courier Prime Italic.ttf"),
-            var x when x.Equals(KnownNames.CourierBoldObliqueTName) => SystemFont("Courier Prime Bold Italic.ttf"),
-            var x when x.Equals(KnownNames.HelveticaTName) => SystemFont("Roboto-Regular.ttf"),
-            var x when x.Equals(KnownNames.HelveticaBoldTName) => SystemFont("Roboto-Bold.ttf"),
-            var x when x.Equals(KnownNames.HelveticaObliqueTName) => SystemFont("Roboto-Italic.ttf"),
-            var x when x.Equals(KnownNames.HelveticaBoldObliqueTName) => SystemFont("Roboto-BoldItalic.ttf"),
-            var x when x.Equals(KnownNames.TimesRomanTName) => SystemFont("LinLibertine_R.otf"),
-            var x when x.Equals(KnownNames.TimesBoldTName) => SystemFont("LinLibertine_RB.otf"),
-            var x when x.Equals(KnownNames.TimesObliqueTName) => SystemFont("LinLibertine_RI.otf"),
-            var x when x.Equals(KnownNames.TimesBoldObliqueTName) => SystemFont("LinLibertine_RBI.otf"),
-            var x when x.Equals(KnownNames.SymbolTName) => SystemFont("Symbola.ttf"), 
-            var x when x.Equals(KnownNames.ZapfDingbatsTName) => SystemFont("Symbola.ttf"),
+            var x when x.Equals(KnownNames.Courier) => SystemFont("Courier Prime.ttf"),
+            var x when x.Equals(KnownNames.CourierBold) => SystemFont("Courier Prime Bold.ttf"),
+            var x when x.Equals(KnownNames.CourierOblique) => SystemFont("Courier Prime Italic.ttf"),
+            var x when x.Equals(KnownNames.CourierBoldOblique) => SystemFont("Courier Prime Bold Italic.ttf"),
+            var x when x.Equals(KnownNames.Helvetica) => SystemFont("Roboto-Regular.ttf"),
+            var x when x.Equals(KnownNames.HelveticaBold) => SystemFont("Roboto-Bold.ttf"),
+            var x when x.Equals(KnownNames.HelveticaOblique) => SystemFont("Roboto-Italic.ttf"),
+            var x when x.Equals(KnownNames.HelveticaBoldOblique) => SystemFont("Roboto-BoldItalic.ttf"),
+            var x when x.Equals(KnownNames.TimesRoman) => SystemFont("LinLibertine_R.otf"),
+            var x when x.Equals(KnownNames.TimesBold) => SystemFont("LinLibertine_RB.otf"),
+            var x when x.Equals(KnownNames.TimesOblique) => SystemFont("LinLibertine_RI.otf"),
+            var x when x.Equals(KnownNames.TimesBoldOblique) => SystemFont("LinLibertine_RBI.otf"),
+            var x when x.Equals(KnownNames.Symbol) => SystemFont("Symbola.ttf"), 
+            var x when x.Equals(KnownNames.ZapfDingbats) => SystemFont("Symbola.ttf"),
             _ => FontFromName(fontFlags.MapBuiltInFont(), fontFlags)
         };
     }

@@ -27,15 +27,15 @@ public abstract class JBigBitStream: DisplayImageTest
         specific.Seek(0, SeekOrigin.Begin);
         
         image = new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
-            .WithItem(KnownNames.WidthTName, width)
-            .WithItem(KnownNames.HeightTName, height)
-            .WithItem(KnownNames.BitsPerComponentTName, 1)
-            .WithItem(KnownNames.DecodeParmsTName, new PdfArray(
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
+            .WithItem(KnownNames.Width, width)
+            .WithItem(KnownNames.Height, height)
+            .WithItem(KnownNames.BitsPerComponent, 1)
+            .WithItem(KnownNames.DecodeParms, new PdfArray(
                 new DictionaryBuilder()
-                    .WithItem(KnownNames.JBIG2GlobalsTName,
+                    .WithItem(KnownNames.JBIG2Globals,
                         docCreator.LowLevelCreator.Add(
                             new DictionaryBuilder().AsStream(global, StreamFormat.DiskRepresentation)))
                     .AsDictionary()

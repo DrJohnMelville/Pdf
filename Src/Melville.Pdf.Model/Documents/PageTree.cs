@@ -26,7 +26,7 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
     /// </summary>
     /// <returns>The number of pages in the tree.</returns>
     public async ValueTask<long> CountAsync() => 
-        await LowLevel.GetAsync<long>(KnownNames.CountTName).CA();
+        await LowLevel.GetAsync<long>(KnownNames.Count).CA();
 
     /// <summary>
     /// Enumerates the pages in the tree.
@@ -40,9 +40,9 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
         await foreach (var kid in kids.CA())
         {
             var kidAsDict = kid.Get<PdfDictionary>();
-            var type = await kidAsDict[KnownNames.TypeTName].CA();
-            if (type.Equals(KnownNames.PageTName)) yield return new PdfPage(kidAsDict);
-            else if (type.Equals(KnownNames.PagesTName))
+            var type = await kidAsDict[KnownNames.Type].CA();
+            if (type.Equals(KnownNames.Page)) yield return new PdfPage(kidAsDict);
+            else if (type.Equals(KnownNames.Pages))
             {
                 await foreach (var innerKid in new PageTree(kidAsDict).CA())
                 {
@@ -68,14 +68,14 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
         for (int i = 0; i < items.RawItems.Count; i++)
         {
             var kid = (await items[i].CA()).Get<PdfDictionary>();
-            var type = await kid[KnownNames.TypeTName].CA();
+            var type = await kid[KnownNames.Type].CA();
             switch (type)
             {
-                case var x when type.Equals(KnownNames.PageTName):
+                case var x when type.Equals(KnownNames.Page):
                     if (IsDesiredPage(pageNumberOneBased)) return new PdfPage(kid);
                     pageNumberOneBased--;
                     break;
-                case var x when type.Equals(KnownNames.PagesTName):
+                case var x when type.Equals(KnownNames.Pages):
                     if (priorNodes.Contains(kid))
                         throw new PdfParseException("Cycle in Page Tree");
                     priorNodes.Add(kid);
@@ -111,5 +111,5 @@ public readonly partial struct PageTree: IAsyncEnumerable<PdfPage>
     /// of a large array of pages in PDF as a tree.
     /// </summary>
     /// <returns>The Kids array.</returns>
-    public ValueTask<PdfArray> KidsAsync() => LowLevel.GetAsync<PdfArray>(KnownNames.KidsTName);
+    public ValueTask<PdfArray> KidsAsync() => LowLevel.GetAsync<PdfArray>(KnownNames.Kids);
 }

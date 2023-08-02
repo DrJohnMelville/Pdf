@@ -25,8 +25,8 @@ internal static class FunctionParsingMethods
     }
     public static async ValueTask<ClosedInterval[]> ReadOptionalRangesAsync(
         this PdfDictionary source, int numberOfOutputs) =>
-        source.ContainsKey(KnownNames.RangeTName)
-            ? await source.ReadIntervalsAsync(KnownNames.RangeTName).CA()
+        source.ContainsKey(KnownNames.Range)
+            ? await source.ReadIntervalsAsync(KnownNames.Range).CA()
             : Enumerable.Repeat(ClosedInterval.NoRestriction, numberOfOutputs).ToArray();
     public static async ValueTask<double[]> ReadArrayWithDefaultAsync(
         this PdfDictionary source, PdfDirectObject name, int defaultValue) =>

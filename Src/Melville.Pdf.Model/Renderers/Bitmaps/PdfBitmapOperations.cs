@@ -38,8 +38,8 @@ public static class PdfBitmapOperations
         this PdfStream stream, IHasPageAttributes page, DeviceColor fillColor) =>
         await GetByteWriterAsync(new BitmapRenderParameters(
             stream, page, fillColor,
-            await stream.GetOrDefaultAsync(KnownNames.WidthTName, 1).CA(),
-            await stream.GetOrDefaultAsync(KnownNames.HeightTName, 1).CA()
+            await stream.GetOrDefaultAsync(KnownNames.Width, 1).CA(),
+            await stream.GetOrDefaultAsync(KnownNames.Height, 1).CA()
         )).CA();
 
     private static async ValueTask<IPdfBitmap> GetByteWriterAsync(BitmapRenderParameters attr) =>

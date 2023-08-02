@@ -13,16 +13,16 @@ internal static class SampledFunctionParser
 {
     public static async Task<SampledFunctionBase> ParseAsync( PdfStream source)
     {
-        var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
-        var range = await source.ReadIntervalsAsync(KnownNames.RangeTName).CA();
-        var size = await (await source.GetAsync<PdfArray>(KnownNames.SizeTName).CA()).CastAsync<int>().CA();
-        var encode = source.ContainsKey(KnownNames.EncodeTName)
-            ? await source.ReadIntervalsAsync(KnownNames.EncodeTName).CA()
+        var domain = await source.ReadIntervalsAsync(KnownNames.Domain).CA();
+        var range = await source.ReadIntervalsAsync(KnownNames.Range).CA();
+        var size = await (await source.GetAsync<PdfArray>(KnownNames.Size).CA()).CastAsync<int>().CA();
+        var encode = source.ContainsKey(KnownNames.Encode)
+            ? await source.ReadIntervalsAsync(KnownNames.Encode).CA()
             : CreateEncodeFromSize(size);
         VerifyEqualLength(domain, encode);
         var order =
             size.All(i => i >= 4) &&
-            await source.GetOrDefaultAsync(KnownNames.OrderTName,1).CA() is {} num
+            await source.GetOrDefaultAsync(KnownNames.Order,1).CA() is {} num
                 ? num
                 : 1;
 
@@ -46,10 +46,10 @@ internal static class SampledFunctionParser
     private static async Task<double[]> ReadSamplesAsync(
         PdfStream source, int inputPermutations, ClosedInterval[] range)
     {
-        var decode = source.ContainsKey(KnownNames.DecodeTName)?
-            await source.ReadIntervalsAsync(KnownNames.DecodeTName).CA(): range;
+        var decode = source.ContainsKey(KnownNames.Decode)?
+            await source.ReadIntervalsAsync(KnownNames.Decode).CA(): range;
         var bitsPerSample = 
-            await source.GetAsync<int>(KnownNames.BitsPerSampleTName).CA();
+            await source.GetAsync<int>(KnownNames.BitsPerSample).CA();
         var encodedRange = new ClosedInterval(0, (1 << bitsPerSample) - 1);
         var reader = new BitStreamReader(await source.StreamContentAsync().CA(), bitsPerSample);
         var ret = new double[inputPermutations * range.Length];

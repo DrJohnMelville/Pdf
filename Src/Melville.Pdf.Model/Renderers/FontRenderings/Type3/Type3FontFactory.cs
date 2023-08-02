@@ -14,12 +14,12 @@ internal readonly partial struct Type3FontFactory
 
     public async ValueTask<IRealizedFont> ParseAsync()
     {
-        var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstCharTName, 0).CA();
-        var lastChar = await font.GetOrDefaultAsync(KnownNames.LastCharTName, 255).CA();
+        var firstChar = await font.GetOrDefaultAsync(KnownNames.FirstChar, 0).CA();
+        var lastChar = await font.GetOrDefaultAsync(KnownNames.LastChar, 255).CA();
         var characters = new MultiBufferStream[1 + lastChar - firstChar];
-        var encoding = await font.GetAsync<PdfDictionary>(KnownNames.EncodingTName).CA();
-        var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcsTName).CA();
-        var differences = await encoding.GetAsync<PdfArray>(KnownNames.DifferencesTName).CA();
+        var encoding = await font.GetAsync<PdfDictionary>(KnownNames.Encoding).CA();
+        var charProcs = await font.GetAsync<PdfDictionary>(KnownNames.CharProcs).CA();
+        var differences = await encoding.GetAsync<PdfArray>(KnownNames.Differences).CA();
         int currentChar = 0;
         await foreach (var item in differences.CA())
         {
@@ -45,7 +45,7 @@ internal readonly partial struct Type3FontFactory
 
     private async Task<Matrix3x2> ReadTransformMatrixAsync()
     {
-        var digits = await (await font.GetAsync<PdfArray>(KnownNames.FontMatrixTName).CA()).CastAsync<double>().CA();
+        var digits = await (await font.GetAsync<PdfArray>(KnownNames.FontMatrix).CA()).CastAsync<double>().CA();
         return new Matrix3x2(
             (float) digits[0], (float) digits[1], (float) digits[2], (float) digits[3], (float) digits[4],
             (float) digits[5]);

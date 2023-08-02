@@ -40,7 +40,7 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
             p => LoadBytesAsync(p, StreamFormat.DiskRepresentation)));
         fmts.Add(new StreamDisplayFormat("Implicit Encryption",
             p => LoadBytesAsync(p, StreamFormat.ImplicitEncryption)));
-        var fmtList = (await Source.GetOrNullAsync(KnownNames.FilterTName)).ObjectAsUnresolvedList();
+        var fmtList = (await Source.GetOrNullAsync(KnownNames.Filter)).ObjectAsUnresolvedList();
         for (int i = 0; i < fmtList.Count; i++)
         {
             fmts.Add(new StreamDisplayFormat(fmtList[i].ToString() ?? "No Name",

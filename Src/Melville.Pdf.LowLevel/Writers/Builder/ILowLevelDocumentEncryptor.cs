@@ -62,10 +62,10 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
     public PdfDictionary CreateEncryptionDictionary(PdfArray id)
     {
         return DictionaryItems(id)
-            .WithItem(KnownNames.FilterTName, KnownNames.StandardTName)
-            .WithItem(KnownNames.VTName, v) 
-            .WithItem(KnownNames.RTName,r)
-            .WithItem(KnownNames.LengthTName, keyLengthInBits)
+            .WithItem(KnownNames.Filter, KnownNames.Standard)
+            .WithItem(KnownNames.V, v) 
+            .WithItem(KnownNames.R,r)
+            .WithItem(KnownNames.Length, keyLengthInBits)
             .AsDictionary();
     }
 
@@ -78,14 +78,14 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
         var ep = new EncryptionParameters(
              ExtractFirstStringMemory(id),ownerHash, Array.Empty<byte>(),
             (uint)permissions, keyLengthInBits);
-        dict.WithItem(KnownNames.FilterTName, KnownNames.StandardTName);
-        dict.WithItem(KnownNames.VTName, v);
+        dict.WithItem(KnownNames.Filter, KnownNames.Standard);
+        dict.WithItem(KnownNames.V, v);
         if (keyLengthInBits > 0)
-            dict.WithItem(KnownNames.LengthTName, keyLengthInBits);
-        dict.WithItem(KnownNames.PTName, permissions);
-        dict.WithItem(KnownNames.RTName, r);
-        dict.WithItem(KnownNames.UTName, PdfDirectObject.CreateString(UserHashForPassword(UserPassword, ep)));
-        dict.WithItem(KnownNames.OTName, PdfDirectObject.CreateString(ownerHash));
+            dict.WithItem(KnownNames.Length, keyLengthInBits);
+        dict.WithItem(KnownNames.P, permissions);
+        dict.WithItem(KnownNames.R, r);
+        dict.WithItem(KnownNames.U, PdfDirectObject.CreateString(UserHashForPassword(UserPassword, ep)));
+        dict.WithItem(KnownNames.O, PdfDirectObject.CreateString(ownerHash));
         return dict;
     }
 

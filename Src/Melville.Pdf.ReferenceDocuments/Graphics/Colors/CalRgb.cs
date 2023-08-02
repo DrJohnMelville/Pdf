@@ -13,13 +13,13 @@ public class CalRgb: ColorBars
     {
         base.SetPageProperties(page);
         page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"), new PdfArray(
-            KnownNames.CalRGBTName, new DictionaryBuilder()
-                .WithItem(KnownNames.WhitePointTName, new PdfArray(
+            KnownNames.CalRGB, new DictionaryBuilder()
+                .WithItem(KnownNames.WhitePoint, new PdfArray(
                 0.9505, 1.000, 1.0890))
-                .WithItem(KnownNames.GammaTName, new PdfArray(
+                .WithItem(KnownNames.Gamma, new PdfArray(
                     1.8,1.8,1.8
                     ))
-                .WithItem(KnownNames.MatrixTName, new PdfArray(
+                .WithItem(KnownNames.Matrix, new PdfArray(
                     0.4497,
                     0.2446,
                     0.0252,

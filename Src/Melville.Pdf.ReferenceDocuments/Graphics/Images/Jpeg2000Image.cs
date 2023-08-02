@@ -14,12 +14,12 @@ public class Jpeg2000Image: DisplayImageTest
         using var img = GetType().Assembly
             .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Graphics.Images.Jpeg2000.jp2");
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
-            .WithItem(KnownNames.WidthTName, 768)
-            .WithItem(KnownNames.HeightTName, 512)
-            .WithItem(KnownNames.BitsPerComponentTName, 8)
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
+            .WithItem(KnownNames.Width, 768)
+            .WithItem(KnownNames.Height, 512)
+            .WithItem(KnownNames.BitsPerComponent, 8)
             .WithFilter(FilterName.JPXDecode)
             .AsStream(img!, StreamFormat.DiskRepresentation);
     }

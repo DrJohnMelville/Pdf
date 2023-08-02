@@ -39,11 +39,11 @@ public readonly struct StitchingFunctionBuilder
     /// <returns>A pdfdictionary that declares this function.</returns>
     public PdfDictionary Create() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.FunctionTypeTName, 3)
-            .WithItem(KnownNames.DomainTName, DomainArray())
-            .WithItem(KnownNames.BoundsTName, BoundsArray())
-            .WithItem(KnownNames.EncodeTName, functions.Select(i => i.Encode).AsPdfArray(functions.Count))
-            .WithItem(KnownNames.FunctionsTName, new PdfArray(functions.Select(i => i.Function).ToArray()))
+            .WithItem(KnownNames.FunctionType, 3)
+            .WithItem(KnownNames.Domain, DomainArray())
+            .WithItem(KnownNames.Bounds, BoundsArray())
+            .WithItem(KnownNames.Encode, functions.Select(i => i.Encode).AsPdfArray(functions.Count))
+            .WithItem(KnownNames.Functions, new PdfArray(functions.Select(i => i.Function).ToArray()))
             .AsDictionary();
 
     private PdfArray BoundsArray() =>

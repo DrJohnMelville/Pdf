@@ -40,7 +40,7 @@ internal partial class OptionalContentCounter: IOptionalContentCounter
 
     public async ValueTask EnterGroupAsync(PdfDirectObject oc, PdfDictionary? off)
     {
-        if (IsHidden || (oc.Equals(KnownNames.OCTName) && !await contentState.IsGroupVisibleAsync(off).CA())) 
+        if (IsHidden || (oc.Equals(KnownNames.OC) && !await contentState.IsGroupVisibleAsync(off).CA())) 
             groupsBelowDeepestVisibleGroup++;
     } 
     public void PopContentGroup()

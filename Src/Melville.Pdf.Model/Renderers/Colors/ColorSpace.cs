@@ -32,9 +32,9 @@ internal readonly struct ColorSpaceFactory
     public ValueTask<IColorSpace> ParseColorSpaceAsync(PdfDirectObject colorSpaceName)
     {
         var code = colorSpaceName;
-        return code.Equals(KnownNames.DeviceGrayTName) ||
-               code.Equals(KnownNames.DeviceRGBTName) ||
-               code.Equals(KnownNames.DeviceCMYKTName)
+        return code.Equals(KnownNames.DeviceGray) ||
+               code.Equals(KnownNames.DeviceRGB) ||
+               code.Equals(KnownNames.DeviceCMYK)
             ? SpacesWithoutParametersAsync(code)
             : LookupInResourceDictionaryAsync(colorSpaceName);
     }
@@ -77,19 +77,19 @@ internal readonly struct ColorSpaceFactory
             throw new PdfParseException("'Name expected in colorspace array");
         return name switch
         {
-            var x when x.Equals(KnownNames.CalGrayTName) => 
+            var x when x.Equals(KnownNames.CalGray) => 
                 CalGray.ParseAsync(ColorSpaceParameterAs<PdfDictionary>(array)),
-            var x when x.Equals(KnownNames.LabTName) => 
+            var x when x.Equals(KnownNames.Lab) => 
                 LabColorSpace.ParseAsync(ColorSpaceParameterAs<PdfDictionary>(array)),
-            var x when x.Equals(KnownNames.ICCBasedTName) => 
+            var x when x.Equals(KnownNames.ICCBased) => 
                 IccProfileColorSpaceParser.ParseAsync(ColorSpaceParameterAs<PdfStream>(array)),
-            var x when x.Equals(KnownNames.IndexedTName) => 
+            var x when x.Equals(KnownNames.Indexed) => 
                 IndexedColorSpace.ParseAsync(memory, page),
-            var x when x.Equals(KnownNames.SeparationTName) => 
+            var x when x.Equals(KnownNames.Separation) => 
                 SeparationParser.ParseSeparationAsync(memory, page),
-            var x when x.Equals(KnownNames.DeviceNTName) => 
+            var x when x.Equals(KnownNames.DeviceN) => 
                 SeparationParser.ParseDeviceNAsync(memory, page),
-            var x when x.Equals(KnownNames.PatternTName) => FromMemoryAsync(memory.Slice(1)),
+            var x when x.Equals(KnownNames.Pattern) => FromMemoryAsync(memory.Slice(1)),
             var other => SpacesWithoutParametersAsync(other)
         };
     }
@@ -98,15 +98,15 @@ internal readonly struct ColorSpaceFactory
         nameHashCode switch
     {
         // for monitors ignore CalRGB see standard section 8.6.5.7
-        var x when x.Equals(KnownNames.CalRGBTName) => new(DeviceRgb.Instance),
-        var x when x.Equals(KnownNames.CalCMYKTName) => 
+        var x when x.Equals(KnownNames.CalRGB) => new(DeviceRgb.Instance),
+        var x when x.Equals(KnownNames.CalCMYK) => 
             CreateCmykColorSpaceAsync(), // standard section 8.6.5.1
-        var x when x.Equals(KnownNames.DeviceGrayTName) => 
-            SearchForDefaultAsync(KnownNames.DefaultGrayTName, static ()=>new(DeviceGray.Instance)),
-        var x when x.Equals(KnownNames.DeviceRGBTName) => 
-            SearchForDefaultAsync(KnownNames.DefaultRGBTName, static ()=>new(DeviceRgb.Instance)),
-        var x when x.Equals(KnownNames.DeviceCMYKTName) =>  
-            SearchForDefaultAsync(KnownNames.DefaultCMYKTName, CreateCmykColorSpaceAsync),
+        var x when x.Equals(KnownNames.DeviceGray) => 
+            SearchForDefaultAsync(KnownNames.DefaultGray, static ()=>new(DeviceGray.Instance)),
+        var x when x.Equals(KnownNames.DeviceRGB) => 
+            SearchForDefaultAsync(KnownNames.DefaultRGB, static ()=>new(DeviceRgb.Instance)),
+        var x when x.Equals(KnownNames.DeviceCMYK) =>  
+            SearchForDefaultAsync(KnownNames.DefaultCMYK, CreateCmykColorSpaceAsync),
         _ => throw new PdfParseException("Unrecognized Colorspace")
     };
         

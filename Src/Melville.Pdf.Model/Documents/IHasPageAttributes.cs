@@ -48,14 +48,14 @@ internal static class PdfPageAttributesOperations
     }
 
     private static IAsyncEnumerable<PdfDirectObject> InheritedResourceItemAsync(IHasPageAttributes item, PdfDirectObject name) =>
-        InheritedPagePropertiesAsync(item, KnownNames.ResourcesTName)
+        InheritedPagePropertiesAsync(item, KnownNames.Resources)
             .SelectInnerAsync<PdfDictionary>()
             .SelectAwait(i => i.GetOrNullAsync(name))
             .Where(i => !i.IsNull);
 
     public static async ValueTask<PdfArray?> GetProcSetsAsync<T>(this T item)
         where T : IHasPageAttributes =>
-        await InheritedResourceItemAsync(item, KnownNames.ProcSetTName)
+        await InheritedResourceItemAsync(item, KnownNames.ProcSet)
             .Select(i=>i.TryGet(out PdfArray? arr) ? arr:null)
             .OfType<PdfArray>()
             .FirstOrDefaultAsync().CA();
@@ -101,8 +101,8 @@ internal static class PdfPageAttributesOperations
 
     private static BoxName? FallbackBox(BoxName boxType)
     {
-        if (((PdfDirectObject)boxType).Equals(KnownNames.MediaBoxTName)) return null;
-        if (((PdfDirectObject)boxType).Equals(KnownNames.CropBoxTName)) return BoxName.MediaBox;
+        if (((PdfDirectObject)boxType).Equals(KnownNames.MediaBox)) return null;
+        if (((PdfDirectObject)boxType).Equals(KnownNames.CropBox)) return BoxName.MediaBox;
         return BoxName.CropBox;
     }
 }

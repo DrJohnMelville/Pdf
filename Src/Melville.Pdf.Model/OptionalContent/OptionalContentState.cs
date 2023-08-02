@@ -52,8 +52,8 @@ internal partial class OptionalContentState : IOptionalContentState
     {
         if (dictionary == null) return true;
         if ((await dictionary.GetOrDefaultAsync(
-                KnownNames.TypeTName, KnownNames.DamagedRowsBeforeErrorTName).CA())
-                .Equals(KnownNames.OCMDTName))
+                KnownNames.Type, KnownNames.DamagedRowsBeforeError).CA())
+                .Equals(KnownNames.OCMD))
             return await
                 new OptionalContentMemberDictionaryInterpreter(dictionary, this)
                     .ParseAsync().CA();

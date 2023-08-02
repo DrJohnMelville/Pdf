@@ -49,19 +49,19 @@ internal readonly struct ReferenceStreamWriter
 
         return new DictionaryBuilder()
             .WithMultiItem(document.TrailerDictionary.RawItems
-                .Where(i => !i.Key.Equals(KnownNames.SizeTName))
+                .Where(i => !i.Key.Equals(KnownNames.Size))
                 .Select(i=> new KeyValuePair<PdfDirectObject, PdfIndirectObject>(i.Key, i.Value)))
-            .WithItem(KnownNames.TypeTName, KnownNames.XRefTName)
-            .WithItem(KnownNames.WTName, WidthsAsArray())
-            .WithItem(KnownNames.SizeTName, objectOffsets.Entries.Length)
+            .WithItem(KnownNames.Type, KnownNames.XRef)
+            .WithItem(KnownNames.W, WidthsAsArray())
+            .WithItem(KnownNames.Size, objectOffsets.Entries.Length)
             .WithFilter(FilterName.FlateDecode)
             .WithFilterParam(FilterParam())
             .AsStream(data);
     }
 
     private PdfDictionary FilterParam() => new DictionaryBuilder()
-        .WithItem(KnownNames.PredictorTName, 12)
-        .WithItem(KnownNames.ColumnsTName, columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)
+        .WithItem(KnownNames.Predictor, 12)
+        .WithItem(KnownNames.Columns, columnWidths.Item1 + columnWidths.Item2 + columnWidths.Item3)
         .AsDictionary();
 
     private PdfDirectObject WidthsAsArray() =>

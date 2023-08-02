@@ -37,18 +37,18 @@ public class S7_5_6IncrementalUpdates
         var ld2 = await CompositeDocumentAsync(creator =>
         {
             var e1 = creator.Add(true);
-            creator.AddToTrailerDictionary(KnownNames.RootTName, e1);
+            creator.AddToTrailerDictionary(KnownNames.Root, e1);
             creator.Add(2);
         }, async (ld, modifier) =>
         {
-            Assert.Equal("true", (await ld.TrailerDictionary[KnownNames.RootTName]).ToString());
+            Assert.Equal("true", (await ld.TrailerDictionary[KnownNames.Root]).ToString());
             Assert.Equal("2", (await ld.Objects[(2, 0)].LoadValueAsync()).ToString());
-            modifier.ReplaceReferenceObject(ld.TrailerDictionary.RawItems[KnownNames.RootTName],
+            modifier.ReplaceReferenceObject(ld.TrailerDictionary.RawItems[KnownNames.Root],
                 false);
         });
 
         
-        Assert.Equal("false", (await ld2.TrailerDictionary[KnownNames.RootTName]).ToString());
+        Assert.Equal("false", (await ld2.TrailerDictionary[KnownNames.Root]).ToString());
         Assert.Equal("2", (await ld2.Objects[(2,0)].LoadValueAsync()).ToString());
 
     }

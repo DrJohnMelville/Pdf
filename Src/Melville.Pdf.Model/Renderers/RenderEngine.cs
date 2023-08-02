@@ -72,15 +72,15 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     public async ValueTask DoAsync(PdfStream inlineImage)
     {
         if (await pageRenderContext.OptionalContent.CanSkipXObjectDoOperationAsync(
-                await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OCTName).CA()).CA())
+                await inlineImage.GetOrNullAsync<PdfDictionary>(KnownNames.OC).CA()).CA())
             return;
         switch (inlineImage.SubTypeOrNull())
         {
             case {IsNull:true}:
-            case var x when x.Equals(KnownNames.ImageTName):
+            case var x when x.Equals(KnownNames.Image):
                 await TryRenderBitmapAsync(inlineImage).CA();
                 break;
-            case var x when x.Equals(KnownNames.FormTName):
+            case var x when x.Equals(KnownNames.Form):
                 await RunTargetGroupAsync(inlineImage).CA();
                 break;
             default: throw new PdfParseException("Cannot do the provided object");
@@ -202,9 +202,9 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
 
     private ValueTask<IRealizedFont> SystemFontFromNameAsync(PdfDirectObject font) =>
         FontFromDictionaryAsync(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, font)
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, font)
             .AsDictionary()
         );
 

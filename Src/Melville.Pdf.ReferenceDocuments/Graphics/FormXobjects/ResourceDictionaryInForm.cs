@@ -8,18 +8,18 @@ public class ResourceDictionaryInForm : FormXObjectBase
 
     protected override PdfStream FormDefinition() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.FormTName)
-            .WithItem(KnownNames.ResourcesTName, new DictionaryBuilder()
-                .WithItem(KnownNames.ExtGStateTName, new DictionaryBuilder()
-                    .WithItem(KnownNames.AHxTName, new DictionaryBuilder()
-                        .WithItem(KnownNames.LWTName, 5)
-                        .WithItem(KnownNames.DTName, new PdfArray(new PdfArray(30, 10), 0))
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Form)
+            .WithItem(KnownNames.Resources, new DictionaryBuilder()
+                .WithItem(KnownNames.ExtGState, new DictionaryBuilder()
+                    .WithItem(KnownNames.AHx, new DictionaryBuilder()
+                        .WithItem(KnownNames.LW, 5)
+                        .WithItem(KnownNames.D, new PdfArray(new PdfArray(30, 10), 0))
                         .AsDictionary())
                     .AsDictionary())
                 .AsDictionary()
             )
-            .WithItem(KnownNames.BBoxTName, new PdfArray(
+            .WithItem(KnownNames.BBox, new PdfArray(
                 0, 0, 100, 100))
             .AsStream("/AHx gs 0 0 m 50 50 l S");
 }
@@ -33,17 +33,17 @@ public class ResourceDictionaryInPage : FormXObjectBase
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ExtGState, KnownNames.AHxTName, new DictionaryBuilder()
-                .WithItem(KnownNames.LWTName, 5)
-                .WithItem(KnownNames.DTName, new PdfArray(new PdfArray(20, 10), 0))
+        page.AddResourceObject(ResourceTypeName.ExtGState, KnownNames.AHx, new DictionaryBuilder()
+                .WithItem(KnownNames.LW, 5)
+                .WithItem(KnownNames.D, new PdfArray(new PdfArray(20, 10), 0))
                 .AsDictionary());
     }
 
     protected override PdfStream FormDefinition() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.FormTName)
-            .WithItem(KnownNames.BBoxTName, new PdfArray(
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Form)
+            .WithItem(KnownNames.BBox, new PdfArray(
                 0, 0, 100, 100))
             .AsStream("/AHx gs 0 0 m 50 50 l S");
 }

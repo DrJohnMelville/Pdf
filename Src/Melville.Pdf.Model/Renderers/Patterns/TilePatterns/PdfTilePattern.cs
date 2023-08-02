@@ -24,24 +24,24 @@ public partial class PdfTilePattern: HasRenderableContentStream
     /// <summary>
     /// The horizontal size of the pattern cell
     /// </summary>
-    public ValueTask<double> XStepAsync() => LowLevel.GetOrDefaultAsync(KnownNames.XStepTName, 0.0);
+    public ValueTask<double> XStepAsync() => LowLevel.GetOrDefaultAsync(KnownNames.XStep, 0.0);
     
     /// <summary>
     /// The vertical size of the pattern cell
     /// </summary>
-    public ValueTask<double> YStepAsync() => LowLevel.GetOrDefaultAsync(KnownNames.XStepTName, 0.0);
+    public ValueTask<double> YStepAsync() => LowLevel.GetOrDefaultAsync(KnownNames.XStep, 0.0);
 
     /// <summary>
     /// Bounding box for the pattern cell.
     /// </summary>
     public async ValueTask<PdfRect> BBoxAsync() => await PdfRect.CreateAsync(
-        await LowLevel.GetAsync<PdfArray>(KnownNames.BBoxTName).CA()).CA();
+        await LowLevel.GetAsync<PdfArray>(KnownNames.BBox).CA()).CA();
 
     /// <summary>
     /// Patternn matrix transform.
     /// </summary>
     public async ValueTask<Matrix3x2> MatrixAsync() =>
-        (await LowLevel.GetOrDefaultAsync(KnownNames.MatrixTName, PdfArray.Empty).CA()) is {Count:6 } matArray
+        (await LowLevel.GetOrDefaultAsync(KnownNames.Matrix, PdfArray.Empty).CA()) is {Count:6 } matArray
             ? await matArray.AsMatrix3x2Async().CA()
             : Matrix3x2.Identity;
 
@@ -50,5 +50,5 @@ public partial class PdfTilePattern: HasRenderableContentStream
     /// </summary>
     /// <returns>1 is for a Colored Tile Pattern, and 2 for an Uncolored Tile Pattern</returns>
     public async ValueTask<int> PaintTypeAsync() =>
-        (int)(await LowLevel.GetAsync<int>(KnownNames.PaintTypeTName).CA());
+        (int)(await LowLevel.GetAsync<int>(KnownNames.PaintType).CA());
 }

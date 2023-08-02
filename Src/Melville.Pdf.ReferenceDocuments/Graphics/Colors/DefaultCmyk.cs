@@ -13,7 +13,7 @@ public class DefaultCmyk: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, KnownNames.DefaultCMYKTName,
+        page.AddResourceObject(ResourceTypeName.ColorSpace, KnownNames.DefaultCMYK,
             CreateColorSpace);
     }
 
@@ -29,7 +29,7 @@ public class DefaultCmyk: ColorBars
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{pop 0.2 mul exch 0.4 mul add exch 0.2 mul add dup dup}"));
         return new PdfArray(
-            KnownNames.DeviceNTName, ColorantNames(), KnownNames.DeviceRGBTName, func);
+            KnownNames.DeviceN, ColorantNames(), KnownNames.DeviceRGB, func);
     }
 
     protected virtual PdfArray ColorantNames()
@@ -49,7 +49,7 @@ public class DefaultCmyk: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceCMYKTName);
+        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceCMYK);
         DrawLine(csw);
         csw.SetStrokeColor(1, 0, 0, .25);
         DrawLine(csw);

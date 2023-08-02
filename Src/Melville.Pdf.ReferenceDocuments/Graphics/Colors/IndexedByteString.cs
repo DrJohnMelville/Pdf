@@ -20,7 +20,7 @@ public class IndexedByteString: ColorBars
     private static PdfArray IndexedColorspace()
     {
         return new PdfArray(
-            KnownNames.IndexedTName, KnownNames.DeviceRGBTName, 
+            KnownNames.Indexed, KnownNames.DeviceRGB, 
             3,
             PdfDirectObject.CreateString(new byte[]
             {

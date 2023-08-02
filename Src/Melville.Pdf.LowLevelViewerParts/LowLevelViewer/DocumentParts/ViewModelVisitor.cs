@@ -54,9 +54,9 @@ public class ViewModelVisitor
         string localPrefix, PdfDirectObject nodeType, PdfDirectObject nodeSubType, PdfStream stream, 
         DocumentPart[] items)
     {
-        if (nodeSubType.Equals(KnownNames.ImageTName))
+        if (nodeSubType.Equals(KnownNames.Image))
             return new ImagePartViewModel($"{localPrefix}Image Stream", items, stream);
-        if (nodeType.Equals(KnownNames.XRefTName))
+        if (nodeType.Equals(KnownNames.XRef))
             return new XrefPartViewModel($"{localPrefix}Xref Stream", items, stream);
         return new StreamPartViewModel($"{localPrefix}Stream", items, stream);
     }
@@ -72,9 +72,9 @@ public class ViewModelVisitor
         PdfDictionary dictionary, PdfDirectObject nodeType, string localPrefix, DocumentPart[] items) =>
         nodeType switch
         {
-            var x when x.Equals(KnownNames.FontTName) =>
+            var x when x.Equals(KnownNames.Font) =>
                 new FontPartViewModel(localPrefix + "Font", dictionary, items),
-            var x when x.Equals(KnownNames.PageTName) =>
+            var x when x.Equals(KnownNames.Page) =>
                 new PagePartViewModel(localPrefix + "Page", items, new PdfPage(dictionary)),
             _ => new DocumentPart($"{localPrefix}Dictionary", items)
         };
@@ -88,9 +88,9 @@ public class ViewModelVisitor
         nodeSubType = default;
         foreach (var item in dictionary.RawItems)
         {
-            CheckForType(item, KnownNames.TypeTName, ref nodeType);
-            CheckForType(item, KnownNames.SubtypeTName, ref nodeSubType);
-            CheckForType(item, KnownNames.STName, ref nodeSubType);
+            CheckForType(item, KnownNames.Type, ref nodeType);
+            CheckForType(item, KnownNames.Subtype, ref nodeSubType);
+            CheckForType(item, KnownNames.S, ref nodeSubType);
             items[position++] = GeneratePartAsync($"/{item.Key}: ", item.Value);
         }
 

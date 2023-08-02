@@ -8,12 +8,12 @@ public class CcittType4Encoded : CcottEncodedBase
     protected override PdfDictionary CcittParamDictionary()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, -1)
-            .WithItem(KnownNames.EncodedByteAlignTName, false)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.EndOfBlockTName, false)
-            .WithItem(KnownNames.BlackIs1TName, false)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, -1)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
     }
 
@@ -27,12 +27,12 @@ public class CcittType3K0Encoded : CcottEncodedBase
     protected override PdfDictionary CcittParamDictionary()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, 0)
-            .WithItem(KnownNames.EncodedByteAlignTName, false)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.EndOfBlockTName, false)
-            .WithItem(KnownNames.BlackIs1TName, false)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, 0)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
     }
 
@@ -45,12 +45,12 @@ public class CcittType3K1Encoded : CcottEncodedBase
     protected override PdfDictionary CcittParamDictionary()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, 1)
-            .WithItem(KnownNames.EncodedByteAlignTName, false)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.EndOfBlockTName, false)
-            .WithItem(KnownNames.BlackIs1TName, false)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, 1)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
     }
 }
@@ -63,12 +63,12 @@ public class CcittType3K10Encoded : CcottEncodedBase
     protected override PdfDictionary CcittParamDictionary()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, 10)
-            .WithItem(KnownNames.EncodedByteAlignTName, false)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.EndOfBlockTName, false)
-            .WithItem(KnownNames.BlackIs1TName, false)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, 10)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
     }
 }
@@ -81,12 +81,12 @@ public class CcittEncodedByteAlign : CcottEncodedBase
     protected override PdfDictionary CcittParamDictionary()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, -1)
-            .WithItem(KnownNames.EncodedByteAlignTName, true)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.EndOfBlockTName, false)
-            .WithItem(KnownNames.BlackIs1TName, false)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, -1)
+            .WithItem(KnownNames.EncodedByteAlign, true)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
     }
 }
@@ -98,13 +98,13 @@ public class CcittFirst8Rows : CcottEncodedBase
     protected override PdfDictionary CcittParamDictionary()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, -1)
-            .WithItem(KnownNames.EncodedByteAlignTName, false)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.RowsTName, 8)
-            .WithItem(KnownNames.EndOfBlockTName, false)
-            .WithItem(KnownNames.BlackIs1TName, false)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, -1)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.Rows, 8)
+            .WithItem(KnownNames.EndOfBlock, false)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
     }
 }
@@ -115,12 +115,12 @@ public class CcittEndOfBlockRescuesLowRowCount : CcottEncodedBase
     }
     protected override PdfDictionary CcittParamDictionary() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.KTName, -1)
-            .WithItem(KnownNames.EncodedByteAlignTName, false)
-            .WithItem(KnownNames.ColumnsTName, 32)
-            .WithItem(KnownNames.RowsTName, 8)
-            .WithItem(KnownNames.EndOfBlockTName, true)
-            .WithItem(KnownNames.BlackIs1TName, false)
-            .WithItem(KnownNames.DamagedRowsBeforeErrorTName, 0)
+            .WithItem(KnownNames.K, -1)
+            .WithItem(KnownNames.EncodedByteAlign, false)
+            .WithItem(KnownNames.Columns, 32)
+            .WithItem(KnownNames.Rows, 8)
+            .WithItem(KnownNames.EndOfBlock, true)
+            .WithItem(KnownNames.BlackIs1, false)
+            .WithItem(KnownNames.DamagedRowsBeforeError, 0)
             .AsDictionary();
 }

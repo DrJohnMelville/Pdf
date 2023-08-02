@@ -21,7 +21,7 @@ internal static class TrailerToDocumentCryptContext
     }
 
     private static async ValueTask<ISecurityHandler> SecurityHandlerFromTrailerAsync(PdfDictionary trailer) =>
-        (await trailer.GetOrNullAsync(KnownNames.EncryptTName).CA()).TryGet(out PdfDictionary? dict)
+        (await trailer.GetOrNullAsync(KnownNames.Encrypt).CA()).TryGet(out PdfDictionary? dict)
             ? await SecurityHandlerFactory.CreateSecurityHandlerAsync(trailer, dict).CA()
             : NullSecurityHandler.Instance;
 

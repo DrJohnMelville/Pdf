@@ -12,7 +12,7 @@ public class EncodingWithDiferences : FontDefinitionTest
     protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         var enc = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.DifferencesTName, new PdfArray(
+            .WithItem(KnownNames.Differences, new PdfArray(
                 65,
                 PdfDirectObject.CreateName("AE"),
                 PdfDirectObject.CreateName("Adieresis"),
@@ -20,10 +20,10 @@ public class EncodingWithDiferences : FontDefinitionTest
             ))
             .AsDictionary());
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.Courier)
-            .WithItem(KnownNames.EncodingTName, enc)
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, (PdfDirectObject)BuiltInFontName.Courier)
+            .WithItem(KnownNames.Encoding, enc)
             .AsDictionary();
     }
 }

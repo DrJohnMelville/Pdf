@@ -50,7 +50,7 @@ public readonly struct PostscriptFunctionBuilder
 
     private DictionaryBuilder AddFunctionItems(in DictionaryBuilder builder) =>
         builder
-            .WithItem(KnownNames.FunctionTypeTName, 4)
-            .WithItem(KnownNames.DomainTName, domains.AsPdfArray())
-            .WithItem(KnownNames.RangeTName, ranges.AsPdfArray());
+            .WithItem(KnownNames.FunctionType, 4)
+            .WithItem(KnownNames.Domain, domains.AsPdfArray())
+            .WithItem(KnownNames.Range, ranges.AsPdfArray());
 }

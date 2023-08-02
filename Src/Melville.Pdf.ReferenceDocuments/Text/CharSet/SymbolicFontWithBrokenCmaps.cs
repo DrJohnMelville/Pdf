@@ -13,22 +13,22 @@ public class SymbolicFontWithBrokenCmaps : FontDefinitionTest
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.SymbolicTTFontWithABrokenCMAP.TTF")!;
         var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1TName, fontStream.Length)
+            .WithItem(KnownNames.Length1, fontStream.Length)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream, StreamFormat.DiskRepresentation));
         var widthArray = arg.Add(new PdfArray(Enumerable.Repeat<PdfIndirectObject>(600, 256).ToArray()));
         var descrip = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
-            .WithItem(KnownNames.FlagsTName, (int)FontFlags.Symbolic)
-            .WithItem(KnownNames.FontBBoxTName, new PdfArray(-511, -250, 1390, 750))
-            .WithItem(KnownNames.FontFile2TName, stream)
+            .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
+            .WithItem(KnownNames.Flags, (int)FontFlags.Symbolic)
+            .WithItem(KnownNames.FontBBox, new PdfArray(-511, -250, 1390, 750))
+            .WithItem(KnownNames.FontFile2, stream)
             .AsDictionary());
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.FontDescriptorTName, descrip)
-            .WithItem(KnownNames.WidthsTName, widthArray)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("Zev"))
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.TrueType)
+            .WithItem(KnownNames.FontDescriptor, descrip)
+            .WithItem(KnownNames.Widths, widthArray)
+            .WithItem(KnownNames.BaseFont, PdfDirectObject.CreateName("Zev"))
             .AsDictionary();
     }
 }

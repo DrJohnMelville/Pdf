@@ -11,8 +11,8 @@ internal static class PostscriptFunctionParser
 {
     public static async Task<PdfFunction> ParseAsync(PdfStream source)
     {
-        var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
-        var range = await source.ReadIntervalsAsync(KnownNames.RangeTName).CA();
+        var domain = await source.ReadIntervalsAsync(KnownNames.Domain).CA();
+        var range = await source.ReadIntervalsAsync(KnownNames.Range).CA();
 
         var interp = SharedPostscriptParser.BasicPostscriptEngine();
         await interp.ExecuteAsync(await source.StreamContentAsync().CA()).CA();

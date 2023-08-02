@@ -13,18 +13,18 @@ public class AddIdentifiertests
     public void EnsureBuilderHasIdentifierTest()
     {
         var builder = new LowLevelDocumentBuilder();
-        Assert.False(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.IDTName, out _));
+        Assert.False(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.ID, out _));
         builder.EnsureDocumentHasId();
-        Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.IDTName, out var idObj));
+        Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.ID, out var idObj));
     }
     [Fact]
     public async Task DoNotAddIfAlreadyIdentifiedAsync()
     {
         var builder = new LowLevelDocumentBuilder();
         builder.EnsureDocumentHasId();
-        Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.IDTName, out var idObj));
+        Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.ID, out var idObj));
         builder.EnsureDocumentHasId();
-        Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.IDTName, out var idObj2));
+        Assert.True(builder.CreateDocument().TrailerDictionary.TryGetValue(KnownNames.ID, out var idObj2));
         Assert.Equal(await idObj, await idObj2);
     }
     [Fact]
@@ -32,7 +32,7 @@ public class AddIdentifiertests
     {
         var builder = new LowLevelDocumentBuilder();
         builder.EnsureDocumentHasId();
-        var ary = await builder.CreateDocument().TrailerDictionary.GetAsync<PdfArray>(KnownNames.IDTName);
+        var ary = await builder.CreateDocument().TrailerDictionary.GetAsync<PdfArray>(KnownNames.ID);
         Assert.Equal(2, ary.Count);
         await VerifyIdMemberAsync(ary, 0);
         await VerifyIdMemberAsync(ary, 1);

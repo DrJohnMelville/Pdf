@@ -21,7 +21,7 @@ public class LowLevelDocumentModifierTest
         var builder = new LowLevelDocumentBuilder();
         var rootref = builder.Add(true);
         builder.Add(false);
-        builder.AddToTrailerDictionary(KnownNames.RootTName, rootref);
+        builder.AddToTrailerDictionary(KnownNames.Root, rootref);
         baseDoc = builder.CreateDocument();
     }
 

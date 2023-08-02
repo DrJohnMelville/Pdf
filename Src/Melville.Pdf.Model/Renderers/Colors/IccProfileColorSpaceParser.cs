@@ -37,15 +37,15 @@ public static class IccProfileColorSpaceParser
 
     private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpaceAsync(PdfStream stream) =>
         new ColorSpaceFactory(NoPageContext.Instance)
-            .FromNameOrArrayAsync(await stream.GetOrDefaultAsync(KnownNames.AlternateTName,
-                DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.NTName, 0).CA())).CA()).CA();
+            .FromNameOrArrayAsync(await stream.GetOrDefaultAsync(KnownNames.Alternate,
+                DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.N, 0).CA())).CA()).CA();
 
     private static PdfDirectObject DefaultColorSpace(long n) =>
         n switch
         {
-            1 => KnownNames.DeviceGrayTName,
-            3 => KnownNames.DeviceRGBTName,
-            4 => KnownNames.DeviceCMYKTName,
+            1 => KnownNames.DeviceGray,
+            3 => KnownNames.DeviceRGB,
+            4 => KnownNames.DeviceCMYK,
             _ => throw new PdfParseException("Cannot construct default colorspace")
         };
 

@@ -22,7 +22,7 @@ internal partial class LowLevelDocumentBuilder : ILowLevelDocumentCreator
         
     
     public PdfArray EnsureDocumentHasId() =>
-        registry.TrailerDictionaryItems.TryGetValue(KnownNames.IDTName, out var val) && 
+        registry.TrailerDictionaryItems.TryGetValue(KnownNames.ID, out var val) && 
         val.Value.TryGetEmbeddedDirectValue(out PdfArray ret)
             ? ret
             : AddNewIdArray();
@@ -30,7 +30,7 @@ internal partial class LowLevelDocumentBuilder : ILowLevelDocumentCreator
     private PdfArray AddNewIdArray()
     {
         var array = NewIdArray();
-        AddToTrailerDictionary(KnownNames.IDTName, array);
+        AddToTrailerDictionary(KnownNames.ID, array);
         return array;
     }
 

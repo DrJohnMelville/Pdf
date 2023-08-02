@@ -13,9 +13,9 @@ public class CalGrayGamma: ColorBars
     {
         base.SetPageProperties(page);
         page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"), new PdfArray(
-            KnownNames.CalGrayTName, new DictionaryBuilder().WithItem(KnownNames.WhitePointTName, new PdfArray(
+            KnownNames.CalGray, new DictionaryBuilder().WithItem(KnownNames.WhitePoint, new PdfArray(
                     0.9505, 1.000, 1.0890))
-                .WithItem(KnownNames.GammaTName, 2.5).AsDictionary()));
+                .WithItem(KnownNames.Gamma, 2.5).AsDictionary()));
     }
 
     protected override async ValueTask DoPaintingAsync(ContentStreamWriter csw)

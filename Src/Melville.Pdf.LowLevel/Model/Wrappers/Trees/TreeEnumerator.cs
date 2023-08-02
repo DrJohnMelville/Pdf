@@ -56,7 +56,7 @@ internal class TreeEnumerator: IAsyncEnumerator<PdfDirectObject>
         if (await TryPushIntermediateNodeKidsAsync(node).CA()) return false;
         return RecordLeafItems(
             (await node.GetWithAlternativeName(
-                KnownNames.NumsTName, KnownNames.NamesTName).CA()).Get<PdfArray>());
+                KnownNames.Nums, KnownNames.Names).CA()).Get<PdfArray>());
     }
 
     private bool RecordLeafItems(PdfArray leaves)
@@ -73,7 +73,7 @@ internal class TreeEnumerator: IAsyncEnumerator<PdfDirectObject>
 
     private async Task<bool> TryPushIntermediateNodeKidsAsync(PdfDictionary node)
     {
-        if (!node.TryGetValue(KnownNames.KidsTName, out var kidsTask)) return false;
+        if (!node.TryGetValue(KnownNames.Kids, out var kidsTask)) return false;
         if (!(await kidsTask.CA()).TryGet(out PdfArray kids)) return true;
             
         await PushInReverseOrderAsync(kids).CA();

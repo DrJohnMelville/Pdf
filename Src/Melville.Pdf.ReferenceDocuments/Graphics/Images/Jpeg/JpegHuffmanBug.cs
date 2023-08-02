@@ -13,12 +13,12 @@ public class JpegHuffmanBug: DisplayImageTest
         using var img = GetType().Assembly
             .GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Graphics.Images.Jpeg.JpegHuffmanBug.jpg");
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
-            .WithItem(KnownNames.WidthTName, 632)
-            .WithItem(KnownNames.HeightTName, 279)
-            .WithItem(KnownNames.BitsPerComponentTName, 8)
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
+            .WithItem(KnownNames.Width, 632)
+            .WithItem(KnownNames.Height, 279)
+            .WithItem(KnownNames.BitsPerComponent, 8)
             .WithFilter(FilterName.DCTDecode)
             .AsStream(img!, StreamFormat.DiskRepresentation);
     }

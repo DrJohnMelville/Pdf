@@ -58,8 +58,8 @@ internal readonly partial struct InlineImageParser
  
     private DictionaryBuilder DefaultImageDictionaryBuilder() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName);
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image);
 
     private async ValueTask<byte[]> StreamDataAsync(EndSearchStrategy strategy)
     {

@@ -21,8 +21,8 @@ public class S8_6_5DefaultColorSpaces
     private void SetDefault(PdfDirectObject defaultName, PdfArray value)
     {
         var dict = new DictionaryBuilder()
-            .WithItem(KnownNames.ResourcesTName, new DictionaryBuilder()
-                .WithItem(KnownNames.ColorSpaceTName, new DictionaryBuilder()
+            .WithItem(KnownNames.Resources, new DictionaryBuilder()
+                .WithItem(KnownNames.ColorSpace, new DictionaryBuilder()
                     .WithItem(defaultName, value)
                     .AsDictionary()).AsDictionary())
             .AsDictionary();
@@ -32,16 +32,16 @@ public class S8_6_5DefaultColorSpaces
     [Fact]
     public async Task MapRgbToDeviceGrayAsync()
     {
-        SetDefault(KnownNames.DefaultRGBTName, new PdfArray(KnownNames.DeviceGrayTName));
-        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
+        SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.DeviceGray));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
         Assert.IsType<DeviceGray>(ret);
 
     }
     [Fact]
     public async Task MapGrayToRgbAsync()
     {
-        SetDefault(KnownNames.DefaultGrayTName, new PdfArray(KnownNames.DeviceRGBTName));
-        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceGrayTName);
+        SetDefault(KnownNames.DefaultGray, new PdfArray(KnownNames.DeviceRGB));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceGray);
         Assert.IsType<DeviceRgb>(ret);
 
     }
@@ -49,17 +49,17 @@ public class S8_6_5DefaultColorSpaces
     [Fact]
     public async Task IndexedMapsToBaseColorSpaceAsync()
     {
-        SetDefault(KnownNames.DefaultRGBTName, 
-            new PdfArray(KnownNames.IndexedTName, KnownNames.DeviceGrayTName, 1, PdfDirectObject.CreateString("AA"u8)));
-        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
+        SetDefault(KnownNames.DefaultRGB, 
+            new PdfArray(KnownNames.Indexed, KnownNames.DeviceGray, 1, PdfDirectObject.CreateString("AA"u8)));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
         Assert.IsType<DeviceGray>(ret);
 
     }
     [Fact]
     public async Task PatternMapsToBaseColorSpaceAsync()
     {
-        SetDefault(KnownNames.DefaultRGBTName, new PdfArray(KnownNames.PatternTName, KnownNames.DeviceGrayTName));
-        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGBTName);
+        SetDefault(KnownNames.DefaultRGB, new PdfArray(KnownNames.Pattern, KnownNames.DeviceGray));
+        var ret = await sut.ParseColorSpaceAsync(KnownNames.DeviceRGB);
         Assert.IsType<DeviceGray>(ret);
     }
 }

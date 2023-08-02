@@ -24,9 +24,9 @@ public class OptionalContentCounterTest
             Returns((PdfDictionary d) => new(d == On));
         attrs.SetupGet(i => i.LowLevel).Returns(
             new DictionaryBuilder()
-                .WithItem(KnownNames.PropertiesTName, new DictionaryBuilder()
-                    .WithItem(KnownNames.ONTName, On)
-                    .WithItem(KnownNames.OFFTName, Off)
+                .WithItem(KnownNames.Properties, new DictionaryBuilder()
+                    .WithItem(KnownNames.ON, On)
+                    .WithItem(KnownNames.OFF, Off)
                     .AsDictionary())
                 .AsDictionary());
         sut = new OptionalContentCounter(state.Object);
@@ -41,33 +41,33 @@ public class OptionalContentCounterTest
     [Fact]
     public async Task EncounterInvisibleGroupMakesInvisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OCTName, Off);
+        await sut.EnterGroupAsync(KnownNames.OC, Off);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task OCPrefixRequiredAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.ACTName, Off);
+        await sut.EnterGroupAsync(KnownNames.AC, Off);
         Assert.False(sut.IsHidden);
     }
     [Fact]
     public async Task EncounterInvisibleGroupNameMakesInvisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OCTName, KnownNames.OFFTName, attrs.Object);
+        await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task EncounterVisibleGroupNameLeavesVisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OCTName, KnownNames.OFFTName, attrs.Object);
+        await sut.EnterGroupAsync(KnownNames.OC, KnownNames.OFF, attrs.Object);
         Assert.True(sut.IsHidden);
     }
     [Fact]
     public async Task PopOutOfInvisibleGroupAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OCTName, Off);
+        await sut.EnterGroupAsync(KnownNames.OC, Off);
         Assert.True(sut.IsHidden);
-        await sut.EnterGroupAsync(KnownNames.OCTName, On);
+        await sut.EnterGroupAsync(KnownNames.OC, On);
         Assert.True(sut.IsHidden);
         sut.PopContentGroup();
         Assert.True(sut.IsHidden);
@@ -78,7 +78,7 @@ public class OptionalContentCounterTest
     [Fact]
     public async Task EncounterVisibleGroupStaysVisibleAsync()
     {
-        await sut.EnterGroupAsync(KnownNames.OCTName, On);
+        await sut.EnterGroupAsync(KnownNames.OC, On);
         Assert.False(sut.IsHidden);
     }
 }

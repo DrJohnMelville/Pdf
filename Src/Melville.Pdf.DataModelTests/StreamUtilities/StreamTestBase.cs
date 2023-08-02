@@ -33,15 +33,15 @@ public abstract partial class StreamTestBase
 
     private DictionaryBuilder StreamBuilder() =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.FilterTName, compression)
-            .WithItem(KnownNames.DecodeParmsTName, parameters??PdfDirectObject.CreateNull());
+            .WithItem(KnownNames.Filter, compression)
+            .WithItem(KnownNames.DecodeParms, parameters??PdfDirectObject.CreateNull());
     
     private PdfStream StreamWithPlainTextBacking() =>
         StreamBuilder().AsStream(source);
 
     private PdfStream StreamWithEncodedBacking() =>
         StreamBuilder()
-            .WithItem(KnownNames.LengthTName, dest.Length)
+            .WithItem(KnownNames.Length, dest.Length)
             .AsStream(dest.AsExtendedAsciiBytes(),
                 StreamFormat.DiskRepresentation);
 

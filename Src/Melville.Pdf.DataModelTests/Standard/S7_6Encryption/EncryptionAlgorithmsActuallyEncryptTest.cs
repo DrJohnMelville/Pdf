@@ -38,7 +38,7 @@ public class EncryptionAlgorithmsActuallyEncryptTest
     private async Task CreateAndTestDocumentAsync(ILowLevelDocumentEncryptor encryptionDeclaration)
     {
         var docBuilder = new LowLevelDocumentBuilder();
-        docBuilder.AddToTrailerDictionary(KnownNames.IDTName, new PdfArray(
+        docBuilder.AddToTrailerDictionary(KnownNames.ID, new PdfArray(
             PdfDirectObject.CreateString("12345678901234567890123456789012"u8),
             PdfDirectObject.CreateString("12345678901234567890123456789012"u8)));
         docBuilder.AddEncryption(encryptionDeclaration);

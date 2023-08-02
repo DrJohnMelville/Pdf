@@ -10,12 +10,12 @@ public class GarmondBold : FontDefinitionTest
 
     protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg) =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("GarmondBold"))
-            .WithItem(KnownNames.FontDescriptorTName,
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.TrueType)
+            .WithItem(KnownNames.BaseFont, PdfDirectObject.CreateName("GarmondBold"))
+            .WithItem(KnownNames.FontDescriptor,
                 arg.Add(new DictionaryBuilder()
-                    .WithItem(KnownNames.FlagsTName, (long)FontFlags.ForceBold)
+                    .WithItem(KnownNames.Flags, (long)FontFlags.ForceBold)
                     .AsDictionary())
                 )
             .AsDictionary();
@@ -28,12 +28,12 @@ public class GarmondItalic : FontDefinitionTest
 
     protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg) =>
         new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("GarmondItalic"))
-            .WithItem(KnownNames.FontDescriptorTName,
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.TrueType)
+            .WithItem(KnownNames.BaseFont, PdfDirectObject.CreateName("GarmondItalic"))
+            .WithItem(KnownNames.FontDescriptor,
                 arg.Add(new DictionaryBuilder()
-                    .WithItem(KnownNames.FlagsTName, (long)FontFlags.Italic)
+                    .WithItem(KnownNames.Flags, (long)FontFlags.Italic)
                     .AsDictionary())
                 )
             .AsDictionary();

@@ -27,7 +27,7 @@ internal class WpfGraphicsState : GraphicsState<Func<WpfGraphicsState,Brush>>
     protected override async ValueTask<Func<WpfGraphicsState, Brush>> CreatePatternBrushAsync(
         PdfDictionary pattern,
         DocumentRenderer parentRenderer) =>
-        await pattern.GetOrDefaultAsync(KnownNames.PatternTypeTName, 0).CA() switch
+        await pattern.GetOrDefaultAsync(KnownNames.PatternType, 0).CA() switch
         {
             1 => await CreateTilePatternAsync(pattern, parentRenderer),
             2 => await CreateShaderBrushAsync(pattern),

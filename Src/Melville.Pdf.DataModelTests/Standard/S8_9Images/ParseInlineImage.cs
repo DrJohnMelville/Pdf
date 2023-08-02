@@ -44,10 +44,10 @@ public partial class ParseInlineImage : ParserTest
             new DoImpl(async i =>
             {
                 Assert.Equal(4, i.Count);
-                Assert.Equal(KnownNames.XObjectTName, await i[KnownNames.TypeTName]);
-                Assert.Equal(KnownNames.ImageTName, await i[KnownNames.SubtypeTName]);
-                Assert.Equal(12, await i.GetAsync<int>(KnownNames.WidthTName));
-                Assert.Equal(24, await i.GetAsync<int>(KnownNames.HeightTName)
+                Assert.Equal(KnownNames.XObject, await i[KnownNames.Type]);
+                Assert.Equal(KnownNames.Image, await i[KnownNames.Subtype]);
+                Assert.Equal(12, await i.GetAsync<int>(KnownNames.Width));
+                Assert.Equal(24, await i.GetAsync<int>(KnownNames.Height)
                 );
             }));
 
@@ -81,7 +81,7 @@ public partial class ParseInlineImage : ParserTest
             new DoImpl(async i =>
             {
                 Assert.Equal(PdfDirectObject.CreateName(preferredTerm), 
-                    await i[KnownNames.FilterTName]);
+                    await i[KnownNames.Filter]);
 
             }));
 
@@ -110,6 +110,6 @@ public partial class ParseInlineImage : ParserTest
             "BI/D[/AHx/DCT]ID\nHelloEI",
             new DoImpl(async i =>
             {
-                Assert.True((await i.GetAsync<PdfArray>(KnownNames.DecodeTName)) is PdfArray);
+                Assert.True((await i.GetAsync<PdfArray>(KnownNames.Decode)) is PdfArray);
             }));
 }

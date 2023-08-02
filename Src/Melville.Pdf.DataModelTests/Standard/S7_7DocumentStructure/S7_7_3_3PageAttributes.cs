@@ -38,11 +38,11 @@ public class S7_7_3_3PageAttributes
         var procSets = await doc.GetProcSetsAsync();
         Assert.NotNull(procSets);
         Assert.Equal(5, procSets!.Count);
-        Assert.Equal(KnownNames.PDFTName, await procSets[0]);
-        Assert.Equal(KnownNames.TextTName, await procSets[1]);
-        Assert.Equal(KnownNames.ImageBTName, await procSets[2]);
-        Assert.Equal(KnownNames.ImageCTName, await procSets[3]);
-        Assert.Equal(KnownNames.ImageITName, await procSets[4]);
+        Assert.Equal(KnownNames.PDF, await procSets[0]);
+        Assert.Equal(KnownNames.Text, await procSets[1]);
+        Assert.Equal(KnownNames.ImageB, await procSets[2]);
+        Assert.Equal(KnownNames.ImageC, await procSets[3]);
+        Assert.Equal(KnownNames.ImageI, await procSets[4]);
     }
 
     [Fact]
@@ -126,22 +126,22 @@ public class S7_7_3_3PageAttributes
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.BleedBox));
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.TrimBox));
         Assert.Equal(media, await doc.GetBoxAsync(BoxName.ArtBox));
-        Assert.False(doc.LowLevel.ContainsKey(KnownNames.ContentsTName));
+        Assert.False(doc.LowLevel.ContainsKey(KnownNames.Contents));
     }
 
     [Fact]
     public async Task AddBuiltinFontAsync()
     {
-        PdfDirectObject fontName = KnownNames.TypeTName;
+        PdfDirectObject fontName = KnownNames.Type;
         var page = await RoundTripPageWithAsync(i =>
             fontName = i.AddStandardFont("/F1", BuiltInFontName.CourierBoldOblique, FontEncodingName.WinAnsiEncoding));
-        var res = await page.LowLevel.GetAsync<PdfDictionary>(KnownNames.ResourcesTName);
-        var fonts = await res.GetAsync<PdfDictionary>(KnownNames.FontTName);
+        var res = await page.LowLevel.GetAsync<PdfDictionary>(KnownNames.Resources);
+        var fonts = await res.GetAsync<PdfDictionary>(KnownNames.Font);
         var font = await fonts.GetAsync<PdfDictionary>(fontName);
-        Assert.Equal(await font[KnownNames.TypeTName], KnownNames.FontTName);
-        Assert.Equal(await font[KnownNames.SubtypeTName], KnownNames.Type1TName);
-        Assert.Equal(await font[KnownNames.NameTName], fontName);
-        Assert.Equal(await font[KnownNames.EncodingTName], FontEncodingName.WinAnsiEncoding);  
+        Assert.Equal(await font[KnownNames.Type], KnownNames.Font);
+        Assert.Equal(await font[KnownNames.Subtype], KnownNames.Type1);
+        Assert.Equal(await font[KnownNames.Name], fontName);
+        Assert.Equal(await font[KnownNames.Encoding], FontEncodingName.WinAnsiEncoding);  
     }
 
     [Fact] 

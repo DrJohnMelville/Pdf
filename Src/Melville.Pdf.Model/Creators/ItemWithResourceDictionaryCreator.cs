@@ -60,14 +60,14 @@ public abstract class ItemWithResourceDictionaryCreator
         {
             res.WithItem(subDictionary.Key, DictionaryValues(creator, subDictionary));
         }
-        MetaData.WithItem(KnownNames.ResourcesTName, res.AsDictionary());
+        MetaData.WithItem(KnownNames.Resources, res.AsDictionary());
     }
 
     private PdfIndirectObject DictionaryValues(
         IPdfObjectCreatorRegistry creator, 
         IGrouping<PdfDirectObject, KeyValuePair<(PdfDirectObject DictionaryName, PdfDirectObject ItemName), 
             Func<IPdfObjectCreatorRegistry,PdfIndirectObject>>> subDictionary) =>
-        subDictionary.Key.Equals(KnownNames.ProcSetTName)
+        subDictionary.Key.Equals(KnownNames.ProcSet)
             ? subDictionary.First().Value(creator)
             : CreateDictionary(subDictionary, creator);
 
@@ -113,7 +113,7 @@ public abstract class ItemWithResourceDictionaryCreator
     /// Add a rotate declaration to the page dictionary
     /// </summary>
     /// <param name="rotation">The desired rotation value.</param>
-    public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.RotateTName, rotation);
+    public void AddRotate(int rotation) => MetaData.WithItem(KnownNames.Rotate, rotation);
 
     /// <summary>
     /// Add a standard font reference to the resource divtionary
@@ -149,11 +149,11 @@ public abstract class ItemWithResourceDictionaryCreator
     {
         AddResourceObject(ResourceTypeName.Font, assignedName,
             new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.NameTName, assignedName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)baseFont)
-            .WithItem(KnownNames.EncodingTName, encoding)
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.Name, assignedName)
+            .WithItem(KnownNames.BaseFont, (PdfDirectObject)baseFont)
+            .WithItem(KnownNames.Encoding, encoding)
             .AsDictionary());
         return assignedName;
     }

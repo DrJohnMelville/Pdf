@@ -19,7 +19,7 @@ internal class JbigToPdfAdapter: ICodecDefinition
         var reader = new JbigExplicitPageReader();
         reader.RequestPage(1);
         if (parameters.TryGet(out PdfDictionary dict)&&
-            (await dict[KnownNames.JBIG2GlobalsTName].CA()).TryGet(out PdfStream globals))
+            (await dict[KnownNames.JBIG2Globals].CA()).TryGet(out PdfStream globals))
         {
             await reader.ProcessSequentialSegmentsAsync(await globals.StreamContentAsync().CA(), 1).CA();
         }

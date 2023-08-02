@@ -14,11 +14,11 @@ internal static class SecurityHandlerFactory
     public static async ValueTask<ISecurityHandler> CreateSecurityHandlerAsync(
         PdfDictionary trailer, PdfDictionary dict)
     {
-        if (!(await dict.GetOrNullAsync(KnownNames.FilterTName).CA()).Equals(KnownNames.StandardTName))
+        if (!(await dict.GetOrNullAsync(KnownNames.Filter).CA()).Equals(KnownNames.Standard))
             throw new PdfSecurityException("Only standard security handler is supported.");
         
-        var V = (await dict.GetAsync<long>(KnownNames.VTName).CA());
-        var R = (await dict.GetAsync<long>(KnownNames.RTName).CA());
+        var V = (await dict.GetAsync<long>(KnownNames.V).CA());
+        var R = (await dict.GetAsync<long>(KnownNames.R).CA());
 
         var parameters = await EncryptionParameters.CreateAsync(trailer).CA();
             

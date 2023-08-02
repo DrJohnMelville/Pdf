@@ -20,15 +20,15 @@ internal readonly partial struct EncryptionParameters
     public int KeyLengthInBytes => KeyLengthInBits / 8;
     
     public static async ValueTask<EncryptionParameters> CreateAsync(PdfDictionary trailer) =>
-        (await trailer.GetOrNullAsync(KnownNames.IDTName).CA()).TryGet(out PdfArray id)&&
+        (await trailer.GetOrNullAsync(KnownNames.ID).CA()).TryGet(out PdfArray id)&&
         (await id[0].CA()).TryGet(out Memory<byte> firstId) &&
-        (await trailer.GetOrNullAsync(KnownNames.EncryptTName).CA()).TryGet(out PdfDictionary dict)&&
-        (await dict.GetOrNullAsync(KnownNames.OTName).CA()).TryGet(out Memory<byte> ownerHash) &&
-        (await dict.GetOrNullAsync(KnownNames.UTName).CA()).TryGet(out Memory<byte> userHash) &&
-        (await dict.GetOrNullAsync(KnownNames.PTName).CA()).TryGet(out long permissions)?
+        (await trailer.GetOrNullAsync(KnownNames.Encrypt).CA()).TryGet(out PdfDictionary dict)&&
+        (await dict.GetOrNullAsync(KnownNames.O).CA()).TryGet(out Memory<byte> ownerHash) &&
+        (await dict.GetOrNullAsync(KnownNames.U).CA()).TryGet(out Memory<byte> userHash) &&
+        (await dict.GetOrNullAsync(KnownNames.P).CA()).TryGet(out long permissions)?
             new EncryptionParameters(
                 firstId, ownerHash, userHash, (uint)permissions, 
-                await dict.GetOrDefaultAsync(KnownNames.LengthTName, 40).CA()):
+                await dict.GetOrDefaultAsync(KnownNames.Length, 40).CA()):
             throw new PdfSecurityException("Required parameter missing for encryption");
 
     public override string ToString() =>

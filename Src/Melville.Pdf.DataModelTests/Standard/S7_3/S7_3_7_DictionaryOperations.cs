@@ -29,8 +29,8 @@ public class S7_3_7_DictionaryOperations
     {
         var d = await IndirectTestDictAsync;
 
-        Assert.True(d.ContainsKey(KnownNames.HeightTName));
-        Assert.False(d.ContainsKey(KnownNames.FormTypeTName));
+        Assert.True(d.ContainsKey(KnownNames.Height));
+        Assert.False(d.ContainsKey(KnownNames.FormType));
     }
     [Fact]
     public async Task EnumerateHandlesIndirectReferencesAsync()
@@ -40,7 +40,7 @@ public class S7_3_7_DictionaryOperations
         Assert.Equal(new []{true, false}, 
             ((IEnumerable)d).OfType<KeyValuePair<PdfDirectObject,ValueTask<PdfDirectObject>>>()
             .Select(i=>i.Value.Result.Get<bool>()));
-        Assert.Equal(new []{KnownNames.HeightTName, KnownNames.ACTName},
+        Assert.Equal(new []{KnownNames.Height, KnownNames.AC},
             ((IEnumerable)d).OfType<KeyValuePair<PdfDirectObject,ValueTask<PdfDirectObject>>>().Select(i=>i.Key));
             
     }
@@ -48,27 +48,27 @@ public class S7_3_7_DictionaryOperations
     public async Task EnumerateKeysAsync()
     {
         var d = await IndirectTestDictAsync;
-        Assert.Equal(new []{KnownNames.HeightTName, KnownNames.ACTName},d.Keys);
+        Assert.Equal(new []{KnownNames.Height, KnownNames.AC},d.Keys);
             
     }
     [Fact]
     public async Task IndexerHandlesIndirectionAsync()
     {
         var d = await IndirectTestDictAsync;
-        Assert.Equal(true, await d[KnownNames.HeightTName]);
+        Assert.Equal(true, await d[KnownNames.Height]);
     }
     [Fact]
     public async Task TryGetValueSucceedAsync()
     {
         var d = await IndirectTestDictAsync;
-        AAssert.True(d.TryGetValue(KnownNames.HeightTName, out var returned));
+        AAssert.True(d.TryGetValue(KnownNames.Height, out var returned));
         Assert.Equal(true, await returned);
     }
     [Fact]
     public async Task TryGetValueFailsAsync()
     {
         var d = await IndirectTestDictAsync;
-        AAssert.False(d.TryGetValue(KnownNames.ActivationTName, out var returned));
+        AAssert.False(d.TryGetValue(KnownNames.Activation, out var returned));
         Assert.Equal(default(ValueTask<PdfDirectObject>), returned);
     }
     [Fact]
@@ -86,9 +86,9 @@ public class S7_3_7_DictionaryOperations
     public async Task SisSubtypeEquivilenceAsync(string text)
     {
         var item = await CreateDictAsync(text);
-        Assert.Equal(KnownNames.FontTName, item.SubTypeOrNull());
+        Assert.Equal(KnownNames.Font, item.SubTypeOrNull());
         Assert.True(item.TryGetSubType(out var st));
-        Assert.Equal(KnownNames.FontTName, st);
+        Assert.Equal(KnownNames.Font, st);
         
     }
 }

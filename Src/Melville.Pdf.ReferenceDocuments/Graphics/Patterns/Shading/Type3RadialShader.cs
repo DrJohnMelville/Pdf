@@ -35,16 +35,16 @@ public abstract class Type3RadialShaderBase : PatternDisplayClass
 
     protected virtual DictionaryBuilder BuildPattern(
         IPdfObjectCreatorRegistry arg, PdfDictionary shading, DictionaryBuilder builder) => builder
-        .WithItem(KnownNames.ShadingTName, arg.Add(shading))
-        .WithItem(KnownNames.MatrixTName, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
-        .WithItem(KnownNames.PatternTypeTName, 2);
+        .WithItem(KnownNames.Shading, arg.Add(shading))
+        .WithItem(KnownNames.Matrix, Matrix3x2.CreateScale(5 * 72, 3 * 72).AsPdfArray())
+        .WithItem(KnownNames.PatternType, 2);
 
     protected virtual DictionaryBuilder BuildShader(
         IPdfObjectCreatorRegistry arg, PdfDictionary localFunc, DictionaryBuilder builder) => builder
-        .WithItem(KnownNames.FunctionTName, arg.Add(localFunc))
-        .WithItem(KnownNames.CoordsTName, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
-        .WithItem(KnownNames.ShadingTypeTName, 3)
-        .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceRGBTName);
+        .WithItem(KnownNames.Function, arg.Add(localFunc))
+        .WithItem(KnownNames.Coords, new PdfArray(0.25, .4, 0.1, .35, .4, .01))
+        .WithItem(KnownNames.ShadingType, 3)
+        .WithItem(KnownNames.ColorSpace, KnownNames.DeviceRGB);
 }
 
 public class Type3RadialShader: Type3RadialShaderBase
@@ -62,5 +62,5 @@ public class Type3RadialShaderWithBackground: Type3RadialShaderBase
 
     protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfDictionary localFunc,
         DictionaryBuilder builder)=> 
-        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.BackgroundTName, new PdfArray(0,0, 1));
+        base.BuildShader(arg, localFunc, builder).WithItem(KnownNames.Background, new PdfArray(0,0, 1));
 }

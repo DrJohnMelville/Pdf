@@ -27,8 +27,8 @@ public class S7_5_1ParseSimpleWholeFile
     {
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(
-            new DictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.CatalogTName).AsDictionary());
-        builder.Add(new DictionaryBuilder().WithItem(KnownNames.TypeTName, KnownNames.PageTName).AsDictionary());
+            new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Catalog).AsDictionary());
+        builder.Add(new DictionaryBuilder().WithItem(KnownNames.Type, KnownNames.Page).AsDictionary());
         return await WriteAsync(builder.CreateDocument(majorVersion, minorVersion));
     }
 
@@ -45,12 +45,12 @@ public class S7_5_1ParseSimpleWholeFile
     {
         var builder = new LowLevelDocumentBuilder();
         var pointer = builder.Add(default);
-        builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.WidthTName, pointer).AsDictionary());
+        builder.AddRootElement(new DictionaryBuilder().WithItem(KnownNames.Width, pointer).AsDictionary());
         builder.Reassign(pointer, 10);
         var doc = await WriteAsync(builder.CreateDocument());
         var doc2 = await doc.ParseDocumentAsync();
-        var rootDic = await doc2.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.RootTName);
-        Assert.Equal(10, (await rootDic[KnownNames.WidthTName]).Get<int>());
+        var rootDic = await doc2.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
+        Assert.Equal(10, (await rootDic[KnownNames.Width]).Get<int>());
     }
 
     [Fact]
@@ -58,12 +58,12 @@ public class S7_5_1ParseSimpleWholeFile
     {
         var builder = new LowLevelDocumentBuilder();
         builder.AddRootElement(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.ImageTName).AsStream("Stream data"));
+            .WithItem(KnownNames.Type, KnownNames.Image).AsStream("Stream data"));
         var doc = builder.CreateDocument();
         var serialized = await WriteAsync(doc);
         Assert.Contains("Stream data", serialized);
         var doc2 = await serialized.ParseDocumentAsync();
-        var stream =  await doc2.TrailerDictionary.GetAsync<PdfStream>(KnownNames.RootTName);
+        var stream =  await doc2.TrailerDictionary.GetAsync<PdfStream>(KnownNames.Root);
         var value = await new StreamReader(
             await stream.StreamContentAsync(StreamFormat.DiskRepresentation)).ReadToEndAsync();
         Assert.Equal("Stream data", value);
@@ -83,8 +83,8 @@ public class S7_5_1ParseSimpleWholeFile
         Assert.Equal(1, doc.MajorVersion);
         Assert.Equal(7, doc.MinorVersion);
         Assert.Equal(2, doc.Objects.Count);
-        Assert.Equal(3, (await doc.TrailerDictionary[KnownNames.SizeTName]).Get<int>());
-        var dict =  (await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.RootTName));
-        Assert.Equal(KnownNames.CatalogTName, await dict[KnownNames.TypeTName]);
+        Assert.Equal(3, (await doc.TrailerDictionary[KnownNames.Size]).Get<int>());
+        var dict =  (await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root));
+        Assert.Equal(KnownNames.Catalog, await dict[KnownNames.Type]);
     }
 }       

@@ -118,14 +118,14 @@ public readonly struct SampledFunctionBuilder
     /// <returns>The stream that defines this function.</returns>
     private DictionaryBuilder DictionaryEntries(in DictionaryBuilder members) =>
         members
-            .WithItem(KnownNames.FunctionTypeTName, 0)
-            .WithItem(KnownNames.DomainTName, inputs.Select(i => i.Domain).AsPdfArray(inputs.Count))
-            .WithItem(KnownNames.RangeTName, outputs.Select(i => i.Range).AsPdfArray(outputs.Count))
-            .WithItem(KnownNames.SizeTName, SizeArray())
-            .WithItem(KnownNames.BitsPerSampleTName, bitsPerSample)
-            .WithItem(KnownNames.OrderTName, OrderIfNotLinear())
-            .WithItem(KnownNames.EncodeTName, EncodeArray())
-            .WithItem(KnownNames.DecodeTName, DecodeArray());
+            .WithItem(KnownNames.FunctionType, 0)
+            .WithItem(KnownNames.Domain, inputs.Select(i => i.Domain).AsPdfArray(inputs.Count))
+            .WithItem(KnownNames.Range, outputs.Select(i => i.Range).AsPdfArray(outputs.Count))
+            .WithItem(KnownNames.Size, SizeArray())
+            .WithItem(KnownNames.BitsPerSample, bitsPerSample)
+            .WithItem(KnownNames.Order, OrderIfNotLinear())
+            .WithItem(KnownNames.Encode, EncodeArray())
+            .WithItem(KnownNames.Decode, DecodeArray());
 
     private PdfArray SizeArray() => new(inputs.Select(i => (PdfIndirectObject)i.Samples).ToArray());
 

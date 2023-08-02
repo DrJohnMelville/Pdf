@@ -18,9 +18,9 @@ public class IccCMYK: ColorBars
             {
 
                 var strRef = cr.Add(new DictionaryBuilder()
-                    .WithItem(KnownNames.NTName, 4)
+                    .WithItem(KnownNames.N, 4)
                     .AsStream(CmykIccProfile.GetCmykProfileStream()));
-                return new PdfArray(KnownNames.ICCBasedTName, strRef);
+                return new PdfArray(KnownNames.ICCBased, strRef);
             }
         );
     }

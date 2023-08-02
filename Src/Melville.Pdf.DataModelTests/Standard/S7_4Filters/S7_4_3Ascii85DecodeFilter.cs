@@ -23,7 +23,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 [MacroItem(@"\xFF\xFF\xFF\xFF", "s8W-!", "AllOnes")]
 [MacroItem(@"dddd\0\0\0\0dddd", "A7T4]zA7T4]", "EmbeddedZeros")]
 [MacroItem(@"", "", "Empty")]
-[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\"+\"~>\", KnownNames.ASCII85DecodeTName){}}")]
+[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\"+\"~>\", KnownNames.ASCII85Decode){}}")]
 public partial class S7_4_3Ascii85DecodeFilter
 {
     [Theory]
@@ -60,5 +60,5 @@ public partial class S7_4_3Ascii85DecodeFilter
     [InlineData("ddd", "A7T3  ~>")]
     [InlineData("ddd", "A7T3~> jsdhlk oky wqo' gdwqj 'ggb3eg2kph rgkj ohe3fgho' ihk tb3")]
     public Task SpecialCasesAsync(string decoded, string encoded) =>
-        StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCII85DecodeTName, default);
+        StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCII85Decode, default);
 }

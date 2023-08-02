@@ -23,8 +23,8 @@ internal static class ObjectStreamOperations
     public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
         PdfStream stream, IByteSource reader) =>
         await reader.GetIncludedObjectNumbersAsync(
-            (await stream.GetAsync<int>(KnownNames.NTName).CA()),
-            (await stream.GetAsync<int>(KnownNames.FirstTName).CA())).CA();
+            (await stream.GetAsync<int>(KnownNames.N).CA()),
+            (await stream.GetAsync<int>(KnownNames.First).CA())).CA();
 
     private static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbersAsync(
         this IByteSource reader, int count, int first)

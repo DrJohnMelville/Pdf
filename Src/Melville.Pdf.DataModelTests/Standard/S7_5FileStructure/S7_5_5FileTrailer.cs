@@ -14,7 +14,7 @@ public class S7_5_5FileTrailer
     {
         var doc = await (await MinimalPdfParser.MinimalPdf(1, 7).AsStringAsync()).ParseDocumentAsync(2);
         Assert.Equal(2, doc.TrailerDictionary.Count);
-        Assert.Equal(5, (await doc.TrailerDictionary[KnownNames.SizeTName]).Get<int>());
+        Assert.Equal(5, (await doc.TrailerDictionary[KnownNames.Size]).Get<int>());
             
     }
    

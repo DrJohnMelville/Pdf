@@ -38,7 +38,7 @@ public class PdfDocumentCreator
     public PdfLowLevelDocument CreateDocument(byte major = 1, byte minor = 7)
     {
         var pageTree = CreateResourceDictionaryItem(Pages);
-        rootItems.WithItem(KnownNames.PagesTName, pageTree);
+        rootItems.WithItem(KnownNames.Pages, pageTree);
         LowLevelCreator.AddRootElement(rootItems.AsDictionary());
         return LowLevelCreator.CreateDocument(major, minor);
     }
@@ -58,7 +58,7 @@ public class PdfDocumentCreator
     /// Set a version number in the catalog, which may be different from the version number in the header.
     /// </summary>
     /// <param name="version">Version number as a PdfName</param>
-    public void SetVersionInCatalog(PdfDirectObject version) => rootItems.WithItem(KnownNames.VersionTName, version);
+    public void SetVersionInCatalog(PdfDirectObject version) => rootItems.WithItem(KnownNames.Version, version);
 
     /// <summary>
     /// Add an item to the document's root dictionaru

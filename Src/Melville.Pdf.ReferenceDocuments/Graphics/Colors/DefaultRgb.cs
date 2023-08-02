@@ -13,7 +13,7 @@ public class DefaultRgb: ColorBars
     protected override void SetPageProperties(PageCreator page)
     {
         base.SetPageProperties(page);
-        page.AddResourceObject(ResourceTypeName.ColorSpace, KnownNames.DefaultRGBTName,
+        page.AddResourceObject(ResourceTypeName.ColorSpace, KnownNames.DefaultRGB,
             CreateColorSpace);
     }
 
@@ -26,7 +26,7 @@ public class DefaultRgb: ColorBars
         builder.AddOutput((0, 1));
         var func = i.Add(builder.Create("{0.2 mul exch 0.4 mul add exch 0.2 mul add}"));
         return new PdfArray(
-            KnownNames.DeviceNTName, ColorantNames(), KnownNames.DeviceGrayTName, func);
+            KnownNames.DeviceN, ColorantNames(), KnownNames.DeviceGray, func);
     }
 
     protected virtual PdfArray ColorantNames()
@@ -45,7 +45,7 @@ public class DefaultRgb: ColorBars
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
         
-        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceRGBTName);
+        await csw.SetStrokingColorSpaceAsync(KnownNames.DeviceRGB);
         DrawLine(csw);
         csw.SetStrokeColor(1, 0, 0);
         DrawLine(csw);

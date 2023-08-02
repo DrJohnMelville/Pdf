@@ -88,7 +88,7 @@ internal partial class LowLevelDocumentModifier : ILowLevelDocumentModifier
         XrefTableElementWriter.WriteXrefTitleLine(target);
         WriteRevisedXrefTable(target, lines);
         await target.FlushAsync().CA();
-        builder.AddToTrailerDictionary(KnownNames.PrevTName, priorXref);
+        builder.AddToTrailerDictionary(KnownNames.Prev, priorXref);
         await TrailerWriter.WriteTrailerWithDictionaryAsync(target, builder.CreateTrailerDictionary(), startXref).CA();
     }
 

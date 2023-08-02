@@ -19,11 +19,11 @@ internal class CcittFilterFactory
         FromDictionaryAsync(parameters.TryGet(out PdfDictionary dict)? dict:PdfDictionary.Empty);
 
     public static async ValueTask<CcittParameters> FromDictionaryAsync(PdfDictionary parameters) =>
-        new(await parameters.GetOrDefaultAsync(KnownNames.KTName, 0).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.EncodedByteAlignTName, false).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.ColumnsTName, 1728).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.RowsTName, 0).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.EndOfBlockTName, true).CA(),
-            await parameters.GetOrDefaultAsync(KnownNames.BlackIs1TName, false).CA()
+        new(await parameters.GetOrDefaultAsync(KnownNames.K, 0).CA(),
+            await parameters.GetOrDefaultAsync(KnownNames.EncodedByteAlign, false).CA(),
+            await parameters.GetOrDefaultAsync(KnownNames.Columns, 1728).CA(),
+            await parameters.GetOrDefaultAsync(KnownNames.Rows, 0).CA(),
+            await parameters.GetOrDefaultAsync(KnownNames.EndOfBlock, true).CA(),
+            await parameters.GetOrDefaultAsync(KnownNames.BlackIs1, false).CA()
         );
 }

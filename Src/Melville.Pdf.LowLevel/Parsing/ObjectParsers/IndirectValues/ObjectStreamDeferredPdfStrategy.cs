@@ -36,7 +36,7 @@ internal partial class ObjectStreamDeferredPdfStrategy : IIndirectObjectSource
 
     private async Task<PdfDirectObject> TryReadExtendsStream(
         PdfStream source, int desiredObjectNumber) =>
-        source.TryGetValue(KnownNames.ExtendsTName, out var task) &&
+        source.TryGetValue(KnownNames.Extends, out var task) &&
         (await task).TryGet(out PdfStream? innerStream)
             ? await ReadObjectStream(innerStream, desiredObjectNumber).CA()
             : default;

@@ -16,7 +16,7 @@ public class ImageMaskingTest
         var maskImage = GrayImageBuilder(maskWidth, maskHeight)
             .AsStream(maskBytes);
         var image = GrayImageBuilder(imageWidth, imageHeight)
-            .WithItem(KnownNames.SMaskTName, maskImage)
+            .WithItem(KnownNames.SMask, maskImage)
             .AsStream(imageBytes);
 
         var result = await (await image.WrapForRenderingAsync(DeviceColor.Black))
@@ -27,12 +27,12 @@ public class ImageMaskingTest
     private static DictionaryBuilder GrayImageBuilder(int width, int height)
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XObjectTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.ImageTName)
-            .WithItem(KnownNames.WidthTName, width)
-            .WithItem(KnownNames.HeightTName, height)
-            .WithItem(KnownNames.ColorSpaceTName, KnownNames.DeviceGrayTName)
-            .WithItem(KnownNames.BitsPerComponentTName, 8);
+            .WithItem(KnownNames.Type, KnownNames.XObject)
+            .WithItem(KnownNames.Subtype, KnownNames.Image)
+            .WithItem(KnownNames.Width, width)
+            .WithItem(KnownNames.Height, height)
+            .WithItem(KnownNames.ColorSpace, KnownNames.DeviceGray)
+            .WithItem(KnownNames.BitsPerComponent, 8);
     }
 
 

@@ -28,8 +28,8 @@ public static class DictionarySubtypeOperations
     /// <param name="dict">The dictionary to check</param>
     /// <returns>The subtyppe as a PdfName, or null if the subtype does not exist or is not a PDF name.</returns>
     public static PdfDirectObject SubTypeOrNull(this PdfDictionary dict, PdfDirectObject defaultValue = default) =>
-        (dict.RawItems.TryGetValue(KnownNames.SubtypeTName, out var obj) ||
-         dict.RawItems.TryGetValue(KnownNames.STName, out obj)) &&
+        (dict.RawItems.TryGetValue(KnownNames.Subtype, out var obj) ||
+         dict.RawItems.TryGetValue(KnownNames.S, out obj)) &&
         obj.TryGetEmbeddedDirectValue(out var dirObj) &&
         dirObj.IsName
             ? dirObj

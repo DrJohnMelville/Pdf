@@ -14,9 +14,9 @@ public class NegativeSize: FontDefinitionTest
     protected override PdfDirectObject CreateFont(IPdfObjectCreatorRegistry arg)
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.Type1TName)
-            .WithItem(KnownNames.BaseFontTName, (PdfDirectObject)BuiltInFontName.Helvetica)
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.Type1)
+            .WithItem(KnownNames.BaseFont, (PdfDirectObject)BuiltInFontName.Helvetica)
             .AsDictionary();
     }
 

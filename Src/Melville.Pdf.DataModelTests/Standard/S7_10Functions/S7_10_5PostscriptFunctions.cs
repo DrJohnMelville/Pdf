@@ -21,11 +21,11 @@ public class S7_10_5PostscriptFunctions
         builder.AddArgument((0,10));
         builder.AddOutput((0,20));
         var dict = builder.Create("2 mul", 
-            new DictionaryBuilder().WithItem(KnownNames.DecodeTName, KnownNames.FlateDecodeTName));
-        Assert.Equal(KnownNames.FlateDecodeTName, await dict[KnownNames.DecodeTName]);
-        await dict.VerifyNumberAsync(KnownNames.FunctionTypeTName, 4);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.DomainTName, 0, 10);
-        await dict.VerifyPdfDoubleArrayAsync(KnownNames.RangeTName, 0, 20);
+            new DictionaryBuilder().WithItem(KnownNames.Decode, KnownNames.FlateDecode));
+        Assert.Equal(KnownNames.FlateDecode, await dict[KnownNames.Decode]);
+        await dict.VerifyNumberAsync(KnownNames.FunctionType, 4);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Domain, 0, 10);
+        await dict.VerifyPdfDoubleArrayAsync(KnownNames.Range, 0, 20);
         Assert.Equal("2 mul", await (await dict.StreamContentAsync()).ReadAsStringAsync());
             
     }

@@ -12,7 +12,7 @@ internal readonly partial struct ReadCharacterFactory
 
     public IReadCharacter Create()
     {
-        return KnownNames.Type0TName.Equals(font.SubType()) ?
+        return KnownNames.Type0.Equals(font.SubType()) ?
            ParseType0FontEncoding(): 
            SingleByteCharacters.Instance;
     }

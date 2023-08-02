@@ -18,7 +18,7 @@ public class PageCreator: ContentStreamCreator
     private PdfIndirectObject? promisedPageObject;
     internal PageCreator(IObjectStreamCreationStrategy objStreamStrategy) : base(objStreamStrategy)
     {
-        MetaData.WithItem(KnownNames.TypeTName, KnownNames.PageTName);
+        MetaData.WithItem(KnownNames.Type, KnownNames.Page);
     }
 
     /// <inheritdoc />
@@ -31,7 +31,7 @@ public class PageCreator: ContentStreamCreator
     {
         if (parent.TryGetEmbeddedDirectValue(out var _)) 
             throw new ArgumentException("Pages must have a parent.");
-        MetaData.WithItem(KnownNames.ParentTName, parent);
+        MetaData.WithItem(KnownNames.Parent, parent);
         return base.ConstructItem(creator, parent);
     }
 
@@ -71,7 +71,7 @@ public class PageCreator: ContentStreamCreator
     private void TryAddContent(IPdfObjectCreatorRegistry creator)
     {
         if (streamSegments.Count > 0)
-            MetaData.WithItem(KnownNames.ContentsTName, CreateContents(creator));
+            MetaData.WithItem(KnownNames.Contents, CreateContents(creator));
     }
 
     private PdfIndirectObject CreateContents(IPdfObjectCreatorRegistry creator) =>
@@ -87,5 +87,5 @@ public class PageCreator: ContentStreamCreator
     /// </summary>
     /// <param name="dateAndTime">The last modified time to add</param>
     public void AddLastModifiedTime(PdfTime dateAndTime) => 
-        MetaData.WithItem(KnownNames.LastModifiedTName, dateAndTime.AsPdfBytes());
+        MetaData.WithItem(KnownNames.LastModified, dateAndTime.AsPdfBytes());
 }

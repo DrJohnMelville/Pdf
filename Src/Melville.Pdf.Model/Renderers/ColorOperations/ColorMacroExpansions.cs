@@ -68,37 +68,37 @@ internal partial class ColorMacroExpansions : IColorOperations
 
         public async ValueTask SetStrokeGrayAsync(double grayLevel)
     {
-        await SetStrokingColorSpaceAsync(KnownNames.DeviceGrayTName).CA();
+        await SetStrokingColorSpaceAsync(KnownNames.DeviceGray).CA();
         SetStrokeColor(stackalloc double[] { grayLevel });
     }
 
     public async ValueTask SetStrokeRGBAsync(double red, double green, double blue)
     {
-        await SetStrokingColorSpaceAsync(KnownNames.DeviceRGBTName).CA();
+        await SetStrokingColorSpaceAsync(KnownNames.DeviceRGB).CA();
         SetStrokeColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetStrokeCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
-        await SetStrokingColorSpaceAsync(KnownNames.DeviceCMYKTName).CA();
+        await SetStrokingColorSpaceAsync(KnownNames.DeviceCMYK).CA();
         SetStrokeColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
 
     public async ValueTask SetNonstrokingGrayAsync(double grayLevel)
     {
-        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceGrayTName).CA();
+        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceGray).CA();
         SetNonstrokingColor(stackalloc double[] { grayLevel });
     }
 
     public async ValueTask SetNonstrokingRgbAsync(double red, double green, double blue)
     {
-        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceRGBTName).CA();
+        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceRGB).CA();
         SetNonstrokingColor(stackalloc double[] { red, green, blue });
     }
 
     public async ValueTask SetNonstrokingCMYKAsync(double cyan, double magenta, double yellow, double black)
     {
-        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceCMYKTName).CA();
+        await SetNonstrokingColorSpaceAsync(KnownNames.DeviceCMYK).CA();
         SetNonstrokingColor(stackalloc double[] { cyan, magenta, yellow, black });
     }
 }

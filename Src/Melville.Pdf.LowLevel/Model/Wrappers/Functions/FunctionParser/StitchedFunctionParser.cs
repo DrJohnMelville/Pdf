@@ -9,11 +9,11 @@ internal static class StitchedFunctionParser
 {
     public static async ValueTask<PdfFunction> ParseAsync(PdfDictionary source)
     {
-        var domain = await source.ReadIntervalsAsync(KnownNames.DomainTName).CA();
-        var encode = await source.ReadIntervalsAsync(KnownNames.EncodeTName).CA();
-        var bounds = await (await source.GetAsync<PdfArray>(KnownNames.BoundsTName).CA()).CastAsync<double>().CA();
+        var domain = await source.ReadIntervalsAsync(KnownNames.Domain).CA();
+        var encode = await source.ReadIntervalsAsync(KnownNames.Encode).CA();
+        var bounds = await (await source.GetAsync<PdfArray>(KnownNames.Bounds).CA()).CastAsync<double>().CA();
         var functionDecls =
-            await (await source.GetAsync<PdfArray>(KnownNames.FunctionsTName).CA()).CastAsync<PdfDictionary>().CA();
+            await (await source.GetAsync<PdfArray>(KnownNames.Functions).CA()).CastAsync<PdfDictionary>().CA();
         var functions = await CreateFunctionSegmentsAsync(functionDecls, domain[0], bounds, encode).CA();
 
         var range = await source.ReadOptionalRangesAsync(functions[0].NumberOfOutputs).CA();

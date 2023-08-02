@@ -8,7 +8,7 @@ namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 
 [MacroItem("Hello World.", "48656C6C6F20576F726C642E", "HelloWorld")]
 [MacroItem(@"\x16\xc0\xa0\x44\x18\x19\x0a\x02", "16C0A04418190A02", "HexDecodeBugCheck")]
-[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecodeTName){}}")]
+[MacroCode("public class ~2~:StreamTestBase { public ~2~():base(\"~0~\",\"~1~\", KnownNames.ASCIIHexDecode){}}")]
 public partial class S7_4_2AsciiHexDecodeFilter
 {
     [Theory]
@@ -20,6 +20,6 @@ public partial class S7_4_2AsciiHexDecodeFilter
     [InlineData("707", "pp")]
     [InlineData("20 \r\n\t 20", "  ")]
     public Task SpecialCasesAsync(string encoded, string decoded) =>
-        StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCIIHexDecodeTName, default);
+        StreamTest.TestContentAsync(encoded, decoded, KnownNames.ASCIIHexDecode, default);
 
 }

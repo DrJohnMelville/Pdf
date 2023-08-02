@@ -18,23 +18,23 @@ internal class FiltersGenerator : CreatePdfParser
         BuildEncryptedDocument.AddEncryption(builder.LowLevelCreator, 
             
             DocumentEncryptorFactory.V4("","", PdfPermission.None, 
-            KnownNames.IdentityTName, KnownNames.IdentityTName, KnownNames.IdentityTName,
-            new V4CfDictionary(KnownNames.V2TName, 128 / 8)));
+            KnownNames.Identity, KnownNames.Identity, KnownNames.Identity,
+            new V4CfDictionary(KnownNames.V2, 128 / 8)));
 
         await CreatePageAsync(builder, "Rc4 Crypt Filter", FilterName.Crypt,
             new DictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.CryptFilterDecodeParmsTName)
-                .WithItem(KnownNames.NameTName, KnownNames.StdCFTName)
+                .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
+                .WithItem(KnownNames.Name, KnownNames.StdCF)
                 .AsDictionary());
         await CreatePageAsync(builder, "Identity Crypt Filter", FilterName.Crypt,
             new DictionaryBuilder()
-                .WithItem(KnownNames.TypeTName, KnownNames.CryptFilterDecodeParmsTName)
-                .WithItem(KnownNames.NameTName, KnownNames.IdentityTName)
+                .WithItem(KnownNames.Type, KnownNames.CryptFilterDecodeParms)
+                .WithItem(KnownNames.Name, KnownNames.Identity)
                 .AsDictionary());
         await CreatePageAsync(builder, "RunLength AAAAAAAAAAAAAAAAAAAAAA " + RandomString(9270),
             FilterName.RunLengthDecode);
         await CreatePageAsync(builder, "LZW -- LateChange" + RandomString(9270), FilterName.LZWDecode,
-            new DictionaryBuilder().WithItem(KnownNames.EarlyChangeTName, 0).AsDictionary());
+            new DictionaryBuilder().WithItem(KnownNames.EarlyChange, 0).AsDictionary());
         await CreatePageAsync(builder, "LZW -- " + RandomString(9270), FilterName.LZWDecode);
         await CreatePageAsync(builder, "Ascii Hex", FilterName.ASCIIHexDecode);
         await CreatePageAsync(builder, "Ascii 85", FilterName.ASCII85Decode);
@@ -65,9 +65,9 @@ internal class FiltersGenerator : CreatePdfParser
     private static ValueTask PredictionPageAsync(PdfDocumentCreator builder, string text, int Predictor) =>
         CreatePageAsync(builder, text, FilterName.FlateDecode,
             new DictionaryBuilder()
-                .WithItem(KnownNames.ColorsTName, 2)
-                .WithItem(KnownNames.ColumnsTName, 5)
-                .WithItem(KnownNames.PredictorTName, Predictor)
+                .WithItem(KnownNames.Colors, 2)
+                .WithItem(KnownNames.Columns, 5)
+                .WithItem(KnownNames.Predictor, Predictor)
                 .AsDictionary());
 
 

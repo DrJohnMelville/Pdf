@@ -39,8 +39,8 @@ public readonly struct FontReader
         var fontTypeKey = font.SubType();
         return fontTypeKey switch
         {
-            var x when x.Equals(KnownNames.Type3TName) => new Type3FontFactory(font.LowLevel).ParseAsync(),
-            var x when x.Equals(KnownNames.Type0TName) => CreateType0FontAsync(font, new FreeTypeFontFactory(font)),
+            var x when x.Equals(KnownNames.Type3) => new Type3FontFactory(font.LowLevel).ParseAsync(),
+            var x when x.Equals(KnownNames.Type0) => CreateType0FontAsync(font, new FreeTypeFontFactory(font)),
             _ => CreateRealizedFontAsync(font, new FreeTypeFontFactory(font))
         };
     }
@@ -48,7 +48,7 @@ public readonly struct FontReader
 
     private async ValueTask<IRealizedFont> CreateType0FontAsync(PdfFont font, FreeTypeFontFactory factory)
     {
-        Debug.Assert(KnownNames.Type0TName.Equals(font.SubType()));
+        Debug.Assert(KnownNames.Type0.Equals(font.SubType()));
         var cidFont = await font.Type0SubFontAsync().CA();
         return await CreateRealizedFontAsync(cidFont, factory).CA();
     }

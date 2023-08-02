@@ -12,7 +12,7 @@ public class Type1WithMatrix : Type1FunctionalShaderBase
     protected override DictionaryBuilder BuildShader(IPdfObjectCreatorRegistry arg, PdfStream[] localFunc,
         DictionaryBuilder builder) => 
         base.BuildShader(arg, localFunc, builder)
-            .WithItem(KnownNames.MatrixTName, (
+            .WithItem(KnownNames.Matrix, (
                 Matrix3x2.CreateRotation(0.2f)
             ).AsPdfArray());
 }

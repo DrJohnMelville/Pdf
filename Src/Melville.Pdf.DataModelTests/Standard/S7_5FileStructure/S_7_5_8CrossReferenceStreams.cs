@@ -29,9 +29,9 @@ public class S_7_5_8CrossReferenceStreams
         var doc = await (fileAsString).ParseDocumentAsync();
         Assert.NotNull(doc.TrailerDictionary);
         Assert.IsType<PdfStream>(doc.TrailerDictionary);
-        var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.RootTName);
-        var pages = await root.GetAsync<PdfDictionary>(KnownNames.PagesTName);
-        var kids = await pages.GetAsync<PdfArray>(KnownNames.KidsTName);
+        var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
+        var pages = await root.GetAsync<PdfDictionary>(KnownNames.Pages);
+        var kids = await pages.GetAsync<PdfArray>(KnownNames.Kids);
         await Assert.Single(kids);
     }
 
@@ -39,7 +39,7 @@ public class S_7_5_8CrossReferenceStreams
     public async Task ParseSingleDeletedItemAsync()
     {
         var xs = XrefBase()
-            .WithItem(KnownNames.IndexTName, new PdfArray(10, 1))
+            .WithItem(KnownNames.Index, new PdfArray(10, 1))
             .AsStream(new byte[] { 0, 1, 2 });
         
         var target = new Mock<IIndirectObjectRegistry>();
@@ -53,15 +53,15 @@ public class S_7_5_8CrossReferenceStreams
     private static DictionaryBuilder XrefBase()
     {
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.XRefTName)
-            .WithItem(KnownNames.WTName, new PdfArray(1, 1, 1));
+            .WithItem(KnownNames.Type, KnownNames.XRef)
+            .WithItem(KnownNames.W, new PdfArray(1, 1, 1));
     }
 
     [Fact]
     public async Task ParseSingleIndirectItemAsync()
     {
         var xs = XrefBase()
-            .WithItem(KnownNames.IndexTName, new PdfArray(10, 1))
+            .WithItem(KnownNames.Index, new PdfArray(10, 1))
             .AsStream(new byte[] { 1, 1, 2 });
         
         var target = new Mock<IIndirectObjectRegistry>();
@@ -75,7 +75,7 @@ public class S_7_5_8CrossReferenceStreams
     public async Task ParseSingleStreamItemAsync()
     {
         var xs = XrefBase()
-            .WithItem(KnownNames.IndexTName, new PdfArray(10, 1))
+            .WithItem(KnownNames.Index, new PdfArray(10, 1))
             .AsStream(new byte[] { 2, 1, 2 });
         
         var target = new Mock<IIndirectObjectRegistry>();
@@ -89,7 +89,7 @@ public class S_7_5_8CrossReferenceStreams
     public async Task ParseTrippleIndirectItemAsync()
     {
         var xs = XrefBase()
-            .WithItem(KnownNames.IndexTName, new PdfArray(10, 3))
+            .WithItem(KnownNames.Index, new PdfArray(10, 3))
             .AsStream(new byte[] { 1, 1, 2,   1,110,21,  1,50, 0});
         
         var target = new Mock<IIndirectObjectRegistry>();
@@ -105,7 +105,7 @@ public class S_7_5_8CrossReferenceStreams
     public async Task IndirectWithMultipleSectionsAsync()
     {
         var xs = XrefBase()
-            .WithItem(KnownNames.IndexTName, new PdfArray(10, 2,  255,1))
+            .WithItem(KnownNames.Index, new PdfArray(10, 2,  255,1))
             .AsStream(new byte[] { 1, 1, 2,   1,110,21,  1,50, 0});
         
         var target = new Mock<IIndirectObjectRegistry>();

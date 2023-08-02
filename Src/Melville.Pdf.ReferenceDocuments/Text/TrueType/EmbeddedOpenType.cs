@@ -11,23 +11,23 @@ public class EmbeddedOpenType : FontDefinitionTest
     {
         var fontStream = GetType().Assembly.GetManifestResourceStream("Melville.Pdf.ReferenceDocuments.Text.GFSEustace.otf")!;
         var stream = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Length1TName, fontStream.Length)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.OpenTypeTName)
+            .WithItem(KnownNames.Length1, fontStream.Length)
+            .WithItem(KnownNames.Subtype, KnownNames.OpenType)
             .WithFilter(FilterName.FlateDecode)
             .AsStream(fontStream));
         var widthArray = arg.Add(new PdfArray(Enumerable.Repeat<PdfIndirectObject>(600, 256).ToArray()));
         var descrip = arg.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontDescriptorTName)
-            .WithItem(KnownNames.FlagsTName, 32)
-            .WithItem(KnownNames.FontBBoxTName, new PdfArray(-511, -250, 1390, 750))
-            .WithItem(KnownNames.FontFile3TName, stream)
+            .WithItem(KnownNames.Type, KnownNames.FontDescriptor)
+            .WithItem(KnownNames.Flags, 32)
+            .WithItem(KnownNames.FontBBox, new PdfArray(-511, -250, 1390, 750))
+            .WithItem(KnownNames.FontFile3, stream)
             .AsDictionary());
         return new DictionaryBuilder()
-            .WithItem(KnownNames.TypeTName, KnownNames.FontTName)
-            .WithItem(KnownNames.SubtypeTName, KnownNames.TrueTypeTName)
-            .WithItem(KnownNames.FontDescriptorTName, descrip)
-            .WithItem(KnownNames.WidthsTName, widthArray)
-            .WithItem(KnownNames.BaseFontTName, PdfDirectObject.CreateName("Zev"))
+            .WithItem(KnownNames.Type, KnownNames.Font)
+            .WithItem(KnownNames.Subtype, KnownNames.TrueType)
+            .WithItem(KnownNames.FontDescriptor, descrip)
+            .WithItem(KnownNames.Widths, widthArray)
+            .WithItem(KnownNames.BaseFont, PdfDirectObject.CreateName("Zev"))
             .AsDictionary();
     }
 }

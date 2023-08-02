@@ -22,10 +22,10 @@ internal readonly partial struct CharacterToGlyphMapFactory
     public ValueTask<IMapCharacterToGlyph> ParseAsync() =>
         (font.SubType()) switch
         {
-            var x when x.Equals(KnownNames.Type0TName) => Type0CharMappingAsync(),
-            var x when x.Equals(KnownNames.MMType1TName) => SingleByteNamedMappingAsync(),
-            var x when x.Equals(KnownNames.Type1TName) => SingleByteNamedMappingAsync(),
-            var x when x.Equals(KnownNames.TrueTypeTName) =>  ParseTrueTypeMappingAsync(),
+            var x when x.Equals(KnownNames.Type0) => Type0CharMappingAsync(),
+            var x when x.Equals(KnownNames.MMType1) => SingleByteNamedMappingAsync(),
+            var x when x.Equals(KnownNames.Type1) => SingleByteNamedMappingAsync(),
+            var x when x.Equals(KnownNames.TrueType) =>  ParseTrueTypeMappingAsync(),
             _ => throw new PdfParseException("Unknown Font Type"),
 
         };
@@ -87,11 +87,11 @@ internal readonly partial struct CharacterToGlyphMapFactory
 
     private async Task<PdfDirectObject[]?> BuiltInFontCharMappingsAsync()
     {
-        if (!font.SubType().Equals(KnownNames.Type1TName)) return null;
+        if (!font.SubType().Equals(KnownNames.Type1)) return null;
         return (await font.BaseFontNameAsync().CA()) switch
         {
-            var x when x.Equals(KnownNames.SymbolTName) => CharacterEncodings.Symbol,
-            var x when x.Equals(KnownNames.ZapfDingbatsTName) => CharacterEncodings.ZapfDingbats,
+            var x when x.Equals(KnownNames.Symbol) => CharacterEncodings.Symbol,
+            var x when x.Equals(KnownNames.ZapfDingbats) => CharacterEncodings.ZapfDingbats,
             _=> null
         };
     }
