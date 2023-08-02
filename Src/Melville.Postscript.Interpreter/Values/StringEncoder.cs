@@ -29,4 +29,12 @@ public static class StringEncoder
     private static (object Strategy, MementoUnion memento) AsLongString(
         in ReadOnlySpan<byte> data, StringKind kind) =>
         new(new PostscriptLongString(kind, data.ToArray()), default);
+
+    public static (object Strategy, MementoUnion Memento) FromULongs(
+        StringKind kind, ulong low, ulong high) =>
+        (kind.ShortStringStraegy, MementoUnion.CreateFrom(low, high));
+
+    public static (object Strategy, MementoUnion Memento) CreateLongString(
+        StringKind kind, byte[] value) =>
+        (new PostscriptLongString(kind, value),  default);
 }

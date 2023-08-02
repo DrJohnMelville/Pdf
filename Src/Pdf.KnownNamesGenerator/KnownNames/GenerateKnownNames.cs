@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -76,7 +78,6 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             var allNames = ReadNames().ToList();
             RenderPdfNameSubsets(sb, allNames);
             RenderPdfNameDeclarations(sb, allNames);
-            RenderPdfNameKeyDeclarations(sb, allNames);
         }
 
         private static void RenderPdfNameSubsets(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
@@ -90,7 +91,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         private static void RenderPdfNameDeclarations(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
         {
             sb.AppendLine("      /// <summary>");
-            sb.AppendLine("      /// Precomputed FNV hashes for the known names.");
+            sb.AppendLine("      /// Precomputed FNV known names.");
             sb.AppendLine("      /// </summary>");
             sb.AppendLine("      public static partial class KnownNames {");
             foreach (var (value, name, _) in UniquePdfNames(allNames))
@@ -100,40 +101,18 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
 
             sb.AppendLine("          }");
         }
-        private static void RenderPdfNameKeyDeclarations(StringBuilder sb, List<(string Value, string CSharpName, string type)> allNames)
+ 
+        private static (ulong lowValue, ulong highValur) TryPackNum(string value)
         {
-            sb.AppendLine("      /// <summary>");
-            sb.AppendLine($"      /// Precomputed keys for the known names");
-            sb.AppendLine("      /// </summary>");
-            sb.AppendLine("      public static partial class KnownNameKeys {");
-            foreach (var (value, name, _) in UniquePdfNames(allNames))
-            {
-                var fnvValue = Fnv.FromString(value);
-                sb.AppendLine("        /// <summary>");
-                sb.AppendLine($"        /// PdfName ({value}) has FNV Hash of {fnvValue}");
-                sb.AppendLine("        /// </summary>");
-                sb.AppendLine($"        public const int {name} = {fnvValue};");
-                sb.AppendLine();
-            }
-
-            sb.AppendLine("          }");
-        }
-
-        private static bool TryPackNum(string value, out string result)
-        {
-            if (value.Length > 18)
-            {
-                result = "";
-                return false;
-            }
+            Debug.Assert(value.Length <= 18);
             var ret = new BigInteger();
-            foreach (var character in value)
+            for (int i = value.Length -1; i >= 0; i--)
             {
                 ret <<= 7;
-                ret |= (character & 0x7F);
+                ret |= (value[i] & 0x7F);
             }
-            result =  ret.ToString();
-            return true;
+
+            return ((ulong)(ret & 0XFFFF_FFFF_FFFF_FFFF), (ulong)(ret >> 64));
         }
 
         private static IOrderedEnumerable<(string Value, string CSharpName, string type)> UniquePdfNames(List<(string Value, string CSharpName, string type)> allNames) =>
@@ -144,19 +123,24 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
         private static void RenderPdfNameCreation(StringBuilder sb, string name, string value)
         {
             sb.AppendLine("        /// <summary>");
-            sb.AppendLine($"        /// u8 span for ({value})");
+            sb.AppendLine($"        /// PdfDirectObject for for ({value})");
             sb.AppendLine("        /// </summary>");
-            sb.AppendLine($"        public static ReadOnlySpan<byte> {name}U8 => \"{value}\"u8;");
-            sb.AppendLine("        /// <summary>");
-            sb.AppendLine($"        /// PdfDirectObject for span for ({value})");
-            sb.AppendLine("        /// </summary>");
-            sb.AppendLine($"""        public static PdfDirectObject {name}TName => PdfDirectObject.CreateName({name}U8);""");
-            sb.AppendLine("        /// <summary>");
-            #warning -- get rid of this
-            // sb.AppendLine($"        /// PdfName with value: ({value})");
-            // sb.AppendLine("        /// </summary>");
-            // sb.AppendLine($"""        public static readonly PdfName {name} = NameDirectory.ForceAdd({name}U8);""");
+            if (value.Length <= 18)
+                CreateShortString(sb, name, value);
+            else
+                CreateLongString(sb, name, value);
         }
+
+        private static void CreateShortString(StringBuilder sb, string name, string value)
+        {
+            var (low, high) = TryPackNum(value);
+            sb.AppendLine(
+                $"""        public static PdfDirectObject {name}TName => PdfDirectObject.CreateName({low},{high});""");
+        }
+
+        private static void CreateLongString(StringBuilder sb, string name, string value) =>
+            sb.AppendLine(
+                $"""        public static readonly PdfDirectObject {name} = PdfDirectValue.CreateName("{value}"u8);""");
 
         private static void RenderPdfNameGroup(StringBuilder sb, 
             IGrouping<string, (string Value, string CSharpName, string type)> items)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Melville.INPC;
@@ -111,6 +112,18 @@ public readonly partial struct PdfDirectObject: IEquatable<PdfDirectObject>,
         Span<byte> data = stackalloc byte[len];
         Encoding.UTF8.GetBytes(name.AsSpan(), data);
         return CreateName(data);
+    }
+
+    public static PdfDirectObject CreateLongName(byte[] value)
+    {
+        Debug.Assert(value.Length > 18);
+        var (strategy, memento) = StringEncoder.CreateLongString(StringKind.LiteralName, value);
+        return new PdfDirectObject(strategy, memento);
+    }
+     public static PdfDirectObject CreateName(ulong low, ulong high)
+    {
+        var (strategy, memento) = StringEncoder.FromULongs(StringKind.LiteralName, low, high);
+        return new PdfDirectObject(strategy, memento);
     }
 
     public static PdfDirectObject CreateName(in ReadOnlySpan<byte> name) => 

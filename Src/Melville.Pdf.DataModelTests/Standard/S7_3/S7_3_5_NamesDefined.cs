@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
 
@@ -48,5 +49,13 @@ public class S7_3_5_NamesDefined
         var n1 = await TryParseStringToNameAsync("/Width");
         var n2 = await TryParseStringToNameAsync("/Width");
         Assert.True(n1.Equals(n2));
+    }
+
+    [Fact]
+    public void KnownameIsCorrect()
+    {
+        Assert.Equal("Page", KnownNames.PageTName);
+        Assert.Equal("Helvetica-Bold", KnownNames.HelveticaBoldTName);
+        Assert.Equal("Helvetica-BoldOblique", KnownNames.HelveticaBoldObliqueTName);
     }
 }

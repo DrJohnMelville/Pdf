@@ -22,6 +22,9 @@ public class StringKind
 
     internal IExecutePostscript DefaultAction { get; }
     internal IExecutionSelector ExecutionSelector { get; }
+    /// <summary>
+    /// Shortstringstrategy containing this kind
+    /// </summary>
     internal PostscriptShortString ShortStringStraegy { get; }
 
     private StringKind(IExecutionSelector selector, bool parseAsExecutable)
