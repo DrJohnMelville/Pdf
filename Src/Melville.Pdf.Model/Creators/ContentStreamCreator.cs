@@ -1,8 +1,6 @@
 ﻿using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.Model.Creators;
 

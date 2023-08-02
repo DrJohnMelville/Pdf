@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using Melville.INPC;
-using Melville.Postscript.Interpreter.Values.Interfaces;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 

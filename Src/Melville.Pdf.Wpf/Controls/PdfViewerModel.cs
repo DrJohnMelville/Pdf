@@ -2,7 +2,6 @@
 using System.Windows.Media;
 using Melville.INPC;
 using Melville.Pdf.Model.OptionalContent;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Wpf.Rendering;
 

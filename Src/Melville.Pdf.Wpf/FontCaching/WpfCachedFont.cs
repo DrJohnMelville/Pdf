@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
 using System.Windows.Media;
 using Melville.INPC;
@@ -7,7 +6,6 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Wpf.Rendering;
 

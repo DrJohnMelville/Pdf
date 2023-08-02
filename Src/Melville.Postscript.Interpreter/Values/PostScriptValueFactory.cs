@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Numbers;
-using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values;
 

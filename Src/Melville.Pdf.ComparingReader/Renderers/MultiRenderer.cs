@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Melville.INPC;
 using Melville.Parsing.Streams;
-using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Wpf.Controls;
 

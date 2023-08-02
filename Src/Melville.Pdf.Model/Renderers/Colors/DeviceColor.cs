@@ -1,7 +1,4 @@
-﻿using System;
-using System.Drawing;
-
-namespace Melville.Pdf.Model.Renderers.Colors;
+﻿namespace Melville.Pdf.Model.Renderers.Colors;
 
 /// <summary>
 /// Melville.PDF's primary objective is to render to the screen.  Screen colors are represented

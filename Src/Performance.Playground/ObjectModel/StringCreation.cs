@@ -2,7 +2,6 @@
 using System.Text;
 using BenchmarkDotNet.Attributes;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Performance.Playground.ObjectModel
 {

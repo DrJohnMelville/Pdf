@@ -6,18 +6,16 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
-using FileFormatBoxes = Melville.CSJ2K.j2k.fileformat.FileFormatBoxes;
+
 using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
 using HeaderDecoder = Melville.CSJ2K.j2k.codestream.reader.HeaderDecoder;
 using RandomAccessIO = Melville.CSJ2K.j2k.io.RandomAccessIO;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
 using PaletteBox = Melville.CSJ2K.Color.Boxes.PaletteBox;
 using ComponentMappingBox = Melville.CSJ2K.Color.Boxes.ComponentMappingBox;
 using ColorSpecificationBox = Melville.CSJ2K.Color.Boxes.ColorSpecificationBox;
 using ChannelDefinitionBox = Melville.CSJ2K.Color.Boxes.ChannelDefinitionBox;
 using ImageHeaderBox = Melville.CSJ2K.Color.Boxes.ImageHeaderBox;
-using JP2Box = Melville.CSJ2K.Color.Boxes.JP2Box;
+
 namespace Melville.CSJ2K.Color
 {
 	

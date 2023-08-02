@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
-using Melville.SharpFont;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Primatives;

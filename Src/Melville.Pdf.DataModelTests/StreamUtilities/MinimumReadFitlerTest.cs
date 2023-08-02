@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Melville.Parsing.StreamFilters;
 using Melville.Parsing.Streams.Bases;
-using Melville.Pdf.LowLevel.Filters;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.StreamUtilities;

@@ -41,9 +41,9 @@
 * 
 * 
 */
-using System;
+
 using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k;
+
 namespace Melville.CSJ2K.j2k.quantization
 {
 	

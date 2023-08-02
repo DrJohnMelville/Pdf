@@ -7,7 +7,6 @@ using Melville.MVVM.Wpf.EventBindings.SearchTree;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer;
-using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 namespace Melville.Pdf.LowLevelViewer.MainDisplay;
 

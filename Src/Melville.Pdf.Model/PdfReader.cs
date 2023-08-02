@@ -6,7 +6,6 @@ using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Model.Documents;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 

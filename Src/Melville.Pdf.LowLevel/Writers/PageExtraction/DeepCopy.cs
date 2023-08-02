@@ -5,8 +5,6 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.LowLevel.Writers.PageExtraction;
 

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
-using System.Text;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 

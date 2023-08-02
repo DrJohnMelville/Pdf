@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Melville.JBig2.HuffmanTables;
+﻿using Melville.JBig2.HuffmanTables;
 using Melville.JBig2.Segments;
 using Xunit;
 

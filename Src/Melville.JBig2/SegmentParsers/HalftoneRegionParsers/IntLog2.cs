@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace Melville.JBig2.SegmentParsers.HalftoneRegionParsers;
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Melville.Icc.Model.Tags;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.Wpf.Controls;

@@ -1,8 +1,6 @@
 ﻿using System;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 

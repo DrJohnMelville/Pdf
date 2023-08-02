@@ -1,10 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Postscript.Interpreter.Tokenizers;
-using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Primatives;

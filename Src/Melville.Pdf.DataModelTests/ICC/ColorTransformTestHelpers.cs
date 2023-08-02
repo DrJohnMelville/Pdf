@@ -1,6 +1,5 @@
 ﻿using System;
 using Melville.Icc.ColorTransforms;
-using Melville.Icc.Model.Tags;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;

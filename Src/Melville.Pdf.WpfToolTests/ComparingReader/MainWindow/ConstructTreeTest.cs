@@ -1,5 +1,4 @@
 ﻿using System;
-using Melville.Pdf.ComparingReader.MainWindow;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;
 using Moq;

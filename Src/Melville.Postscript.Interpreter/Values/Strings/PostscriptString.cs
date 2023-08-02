@@ -4,8 +4,6 @@ using Melville.INPC;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
-using Melville.Postscript.Interpreter.Values.Strings;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 

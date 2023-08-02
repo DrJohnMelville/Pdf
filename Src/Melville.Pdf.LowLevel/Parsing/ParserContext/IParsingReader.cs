@@ -2,7 +2,7 @@
 using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 

@@ -43,7 +43,7 @@
 * 
 * 
 */
-using System;
+
 namespace Melville.CSJ2K.j2k.fileformat
 {
 	

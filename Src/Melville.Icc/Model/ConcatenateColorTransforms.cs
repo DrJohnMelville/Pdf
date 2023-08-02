@@ -1,5 +1,4 @@
 ﻿using Melville.Icc.ColorTransforms;
-using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.Model;
 

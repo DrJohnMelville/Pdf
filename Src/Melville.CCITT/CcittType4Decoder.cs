@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using Melville.Parsing.StreamFilters;
 using Melville.Parsing.VariableBitEncoding;
 
 namespace Melville.CCITT;

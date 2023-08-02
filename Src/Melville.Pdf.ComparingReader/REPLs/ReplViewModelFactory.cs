@@ -7,7 +7,6 @@ using Melville.Hacks;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Wpf.Controls;

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Buffers;
-using System.Diagnostics;
-using System.Reflection.Metadata;
-using System.Text.RegularExpressions;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 

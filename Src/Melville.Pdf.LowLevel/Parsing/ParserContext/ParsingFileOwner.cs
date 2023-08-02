@@ -9,7 +9,7 @@ using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2.IndirectValues;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 

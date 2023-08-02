@@ -4,7 +4,6 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Filters.CCITTFaxDecodeFilters;
 

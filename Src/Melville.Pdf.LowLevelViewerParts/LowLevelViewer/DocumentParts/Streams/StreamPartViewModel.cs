@@ -1,11 +1,7 @@
 ﻿using System.IO;
-using System.IO.Pipelines;
 using System.Windows;
-using Melville.FileSystem;
 using Melville.INPC;
 using Melville.Linq;
-using Melville.MVVM.Wpf.DiParameterSources;
-using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Model.Conventions;

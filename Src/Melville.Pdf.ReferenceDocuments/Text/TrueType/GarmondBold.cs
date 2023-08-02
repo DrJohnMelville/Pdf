@@ -1,6 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.Model.Documents;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
+﻿using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.TrueType;
 

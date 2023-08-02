@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;
 

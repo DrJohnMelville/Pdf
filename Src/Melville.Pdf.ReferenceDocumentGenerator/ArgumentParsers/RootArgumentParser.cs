@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Melville.Pdf.ReferenceDocumentGenerator.Targets;
+﻿using Melville.Pdf.ReferenceDocumentGenerator.Targets;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 

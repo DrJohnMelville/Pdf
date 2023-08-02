@@ -4,18 +4,13 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
-using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Wpf.Controls;
 using Melville.Pdf.Wpf.Rendering;
-using Melville.SharpFont;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Fonts;
 

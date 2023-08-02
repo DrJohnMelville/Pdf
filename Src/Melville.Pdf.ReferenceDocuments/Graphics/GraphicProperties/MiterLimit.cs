@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.GraphicProperties;

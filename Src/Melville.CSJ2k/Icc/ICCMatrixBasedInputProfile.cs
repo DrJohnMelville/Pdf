@@ -6,10 +6,10 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
+
 using ColorSpace = Melville.CSJ2K.Color.ColorSpace;
 using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
-using RandomAccessIO = Melville.CSJ2K.j2k.io.RandomAccessIO;
+
 namespace Melville.CSJ2K.Icc
 {
 	

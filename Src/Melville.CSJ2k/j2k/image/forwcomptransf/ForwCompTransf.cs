@@ -42,11 +42,9 @@
 * */
 using System;
 using Melville.CSJ2K.j2k.wavelet.analysis;
-using Melville.CSJ2K.j2k.wavelet;
 using Melville.CSJ2K.j2k.encoder;
-using Melville.CSJ2K.j2k.image;
 using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k;
+
 namespace Melville.CSJ2K.j2k.image.forwcomptransf
 {
 	

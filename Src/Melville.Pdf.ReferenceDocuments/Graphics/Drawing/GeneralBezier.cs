@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Drawing;
 

@@ -1,5 +1,3 @@
-using System;
-using Melville.CSJ2K.Icc;
 using Melville.CSJ2K.Icc.Types;
 
 namespace Melville.CSJ2K.Icc.Tags

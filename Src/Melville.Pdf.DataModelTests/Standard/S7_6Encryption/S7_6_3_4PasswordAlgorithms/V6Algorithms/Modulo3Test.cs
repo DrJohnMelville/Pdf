@@ -1,5 +1,4 @@
 ﻿using System;
-using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6;
 using Xunit;
 

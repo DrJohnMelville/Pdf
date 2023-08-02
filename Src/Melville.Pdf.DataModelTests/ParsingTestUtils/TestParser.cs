@@ -1,18 +1,12 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Melville.Parsing.AwaitConfiguration;
+﻿using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 

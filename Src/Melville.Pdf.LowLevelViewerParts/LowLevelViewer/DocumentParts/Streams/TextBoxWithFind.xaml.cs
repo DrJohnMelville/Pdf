@@ -1,12 +1,7 @@
-﻿using System.Drawing;
-using System.Net.Mime;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using Melville.INPC;
-using Melville.MVVM.Wpf.Bindings;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 

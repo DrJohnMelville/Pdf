@@ -1,6 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-
+﻿
 namespace Melville.Pdf.ReferenceDocuments.Text.Type3;
 
 public abstract class Type3FontBase: FontDefinitionTest

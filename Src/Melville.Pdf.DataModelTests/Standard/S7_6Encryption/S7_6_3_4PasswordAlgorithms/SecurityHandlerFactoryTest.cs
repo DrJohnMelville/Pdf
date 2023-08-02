@@ -1,12 +1,10 @@
 ﻿
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Encryption;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms;

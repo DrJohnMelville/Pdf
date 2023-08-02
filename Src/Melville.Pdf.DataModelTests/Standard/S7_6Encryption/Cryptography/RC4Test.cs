@@ -1,7 +1,5 @@
-﻿using Melville.Pdf.LowLevel.Encryption.Cryptography;
-using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
+﻿using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.Cryptography;

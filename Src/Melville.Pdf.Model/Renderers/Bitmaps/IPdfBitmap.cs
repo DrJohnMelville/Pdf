@@ -1,9 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.SharpFont.PostScript;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 

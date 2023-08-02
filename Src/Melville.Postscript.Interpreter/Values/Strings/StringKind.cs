@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Melville.Postscript.Interpreter.Values.Execution;
+﻿using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.Values;
 

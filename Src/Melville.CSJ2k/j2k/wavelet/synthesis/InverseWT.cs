@@ -41,13 +41,9 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-using System;
-using Melville.CSJ2K.j2k.quantization.dequantizer;
-using Melville.CSJ2K.j2k.wavelet;
+
 using Melville.CSJ2K.j2k.decoder;
 using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k;
 
 namespace Melville.CSJ2K.j2k.wavelet.synthesis
 {

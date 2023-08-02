@@ -1,9 +1,6 @@
-﻿using System;
-using System.Numerics;
-using System.Security.AccessControl;
+﻿using System.Numerics;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
-using Melville.Pdf.Model.Renderers.OptionalContents;
 using SkiaSharp;
 
 namespace Melville.Pdf.SkiaSharp;

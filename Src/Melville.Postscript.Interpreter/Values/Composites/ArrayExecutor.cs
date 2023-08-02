@@ -1,7 +1,5 @@
-﻿using System;
-using Melville.INPC;
+﻿using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
-using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.Values

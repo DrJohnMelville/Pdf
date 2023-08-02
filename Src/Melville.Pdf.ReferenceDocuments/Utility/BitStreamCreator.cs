@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace Melville.Pdf.ReferenceDocuments.Utility;
+﻿namespace Melville.Pdf.ReferenceDocuments.Utility;
 
 public static class BitStreamCreator
 {

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.INPC;
-using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;

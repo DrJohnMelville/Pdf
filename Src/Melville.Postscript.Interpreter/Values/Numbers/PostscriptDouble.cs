@@ -1,8 +1,5 @@
-﻿using System;
-using Melville.INPC;
-using Melville.Postscript.Interpreter.Values.Execution;
+﻿using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Interfaces;
-using Melville.Postscript.Interpreter.Values.Numbers;
 
 namespace Melville.Postscript.Interpreter.Values;
 

@@ -4,10 +4,8 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Postscript.Interpreter.Values;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2.IndirectValues;
+namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
 internal partial class UnenclosedDeferredPdfStrategy : IIndirectValueSource
 {

@@ -8,7 +8,6 @@ using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 

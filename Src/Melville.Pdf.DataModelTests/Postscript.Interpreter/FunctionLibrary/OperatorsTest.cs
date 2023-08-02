@@ -1,7 +1,5 @@
 ﻿using Melville.Postscript.Interpreter.InterpreterState;
-using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.FunctionLibrary;
-using Melville.Postscript.Interpreter.Tokenizers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.FunctionLibrary;

@@ -6,9 +6,7 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
-using ColorSpaceException = Melville.CSJ2K.Color.ColorSpaceException;
-using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
+
 using RandomAccessIO = Melville.CSJ2K.j2k.io.RandomAccessIO;
 using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
 namespace Melville.CSJ2K.Color.Boxes

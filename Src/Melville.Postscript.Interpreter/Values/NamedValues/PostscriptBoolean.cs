@@ -1,5 +1,4 @@
-﻿using System;
-using Melville.INPC;
+﻿using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values
 {

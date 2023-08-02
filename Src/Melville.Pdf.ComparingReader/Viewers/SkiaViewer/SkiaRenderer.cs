@@ -4,7 +4,6 @@ using System.Windows.Media.Imaging;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.Viewers.GenericImageViewers;
 using Melville.Pdf.FontLibrary;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using Melville.Pdf.SkiaSharp;

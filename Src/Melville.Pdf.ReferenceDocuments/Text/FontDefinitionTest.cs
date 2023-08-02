@@ -1,7 +1,5 @@
-﻿using System.ComponentModel.Design;
-using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.ReferenceDocuments.Text;
 

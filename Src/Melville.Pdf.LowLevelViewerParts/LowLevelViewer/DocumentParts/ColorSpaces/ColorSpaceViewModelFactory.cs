@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.IO;
-using Melville.Icc.Model;
 using Melville.Pdf.Model.Renderers.Colors;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.ColorSpaces;

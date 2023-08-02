@@ -23,7 +23,6 @@ SOFTWARE.*/
 #endregion
 
 using System;
-using System.Runtime.InteropServices;
 using Melville.SharpFont.PostScript.Internal;
 
 namespace Melville.SharpFont.PostScript

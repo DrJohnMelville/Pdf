@@ -6,10 +6,8 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
+
 using ColorSpace = Melville.CSJ2K.Color.ColorSpace;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
-using RestrictedICCProfile = Melville.CSJ2K.Icc.RestrictedICCProfile;
 using ICCXYZType = Melville.CSJ2K.Icc.Tags.ICCXYZType;
 using DataBlkInt = Melville.CSJ2K.j2k.image.DataBlkInt;
 using DataBlkFloat = Melville.CSJ2K.j2k.image.DataBlkFloat;

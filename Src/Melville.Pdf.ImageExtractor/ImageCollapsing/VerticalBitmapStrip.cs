@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-using Melville.INPC;
+﻿using System.Numerics;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 
 namespace Melville.Pdf.ImageExtractor.ImageCollapsing;

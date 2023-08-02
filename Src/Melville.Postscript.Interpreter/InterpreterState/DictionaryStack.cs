@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Melville.INPC;
+﻿using System.Collections.Generic;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
-using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 

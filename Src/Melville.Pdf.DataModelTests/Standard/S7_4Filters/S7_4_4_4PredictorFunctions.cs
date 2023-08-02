@@ -1,13 +1,10 @@
 ﻿using Melville.INPC;
-using Melville.Pdf.LowLevel.Filters.Predictors;
-using Xunit;
-//Rider reports that the usings are unneeded, it does not know the Macro expander uses it.
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Melville.Pdf.DataModelTests.StreamUtilities;
-using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Filters.Predictors;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
+using Xunit;
+using Melville.Pdf.LowLevel.Model.Conventions;
+//Rider reports that the usings are unneeded, it does not know the Macro expander uses it.
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;
 

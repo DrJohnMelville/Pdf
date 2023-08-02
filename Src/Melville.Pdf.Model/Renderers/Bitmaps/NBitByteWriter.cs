@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 

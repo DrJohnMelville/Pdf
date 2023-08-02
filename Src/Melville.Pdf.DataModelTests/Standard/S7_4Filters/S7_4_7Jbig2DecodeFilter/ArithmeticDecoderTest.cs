@@ -1,8 +1,6 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using Melville.JBig2.ArithmeticEncodings;
 using Melville.Parsing.VariableBitEncoding;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Xunit;
 using Xunit.Abstractions;

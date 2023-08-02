@@ -6,11 +6,10 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
+
 using Melville.CSJ2K.j2k.util;
 using Melville.CSJ2K.j2k.io;
-using Melville.CSJ2K.Color;
-using Melville.CSJ2K.Icc;
+
 namespace Melville.CSJ2K.Color.Boxes
 {
 	

@@ -43,7 +43,7 @@
 * */
 using System;
 using Melville.CSJ2K.j2k.wavelet.analysis;
-using Melville.CSJ2K.j2k.entropy;
+
 namespace Melville.CSJ2K.j2k.entropy.encoder
 {
 	

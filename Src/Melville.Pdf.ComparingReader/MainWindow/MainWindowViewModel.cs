@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using ABI.System.Collections.Generic;
 using Melville.FileSystem;
 using Melville.INPC;
 using Melville.MVVM.Wpf.Bindings;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.RootWindows;
-using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Parsing.Streams;
 using Melville.Pdf.ComparingReader.MainWindow.ReferenceDocumentTree;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ComparingReader.REPLs;
 using Melville.Pdf.ComparingReader.Viewers.LowLevel;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.ComparingReader.MainWindow;
 

@@ -7,7 +7,6 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
 using Xunit;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 

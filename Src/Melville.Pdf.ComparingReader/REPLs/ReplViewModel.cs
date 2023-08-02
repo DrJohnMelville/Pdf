@@ -9,13 +9,10 @@ using Melville.Pdf.ComparingReader.SavePagesImpl;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Wpf.Controls;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.ComparingReader.REPLs;
 

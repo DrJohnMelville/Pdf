@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
-using System.Linq;
 using System.Threading.Tasks;
 using Melville.FileSystem;
 using Melville.Parsing.Streams;
@@ -10,17 +9,12 @@ using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers2.IndirectValues;
+using Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using Melville.Pdf.LowLevel.Writers;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 using Xunit;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
 

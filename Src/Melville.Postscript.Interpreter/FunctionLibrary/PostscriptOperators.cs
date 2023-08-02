@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
-using Melville.Postscript.Interpreter.Values.Composites; // used in generated files
+using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
-using Melville.Postscript.Interpreter.Values.Strings;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.VisualBasic.CompilerServices; // used in generated files
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+// used in generated files
+// used in generated files
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
@@ -372,5 +369,5 @@ public static partial class PostscriptOperators
     [MacroItem("Round", "Math.Round(a, MidpointRounding.AwayFromZero)", "Round argument to nearest whole integer")]
     [MacroItem("Truncate", "Math.Truncate(a)", "Truncate fractional part of a number")]
     static partial void DoubleOnlyOpsHolder();
-
+    
 }

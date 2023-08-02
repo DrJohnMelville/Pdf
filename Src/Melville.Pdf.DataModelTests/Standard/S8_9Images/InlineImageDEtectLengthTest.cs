@@ -1,10 +1,5 @@
-﻿using System;
-using System.Buffers;
-using System.IO;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
+﻿using System.Buffers;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 using Xunit;
 

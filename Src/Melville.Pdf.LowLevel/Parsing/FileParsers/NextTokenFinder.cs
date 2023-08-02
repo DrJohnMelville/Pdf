@@ -7,7 +7,7 @@ using Melville.Parsing.CountingReaders;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Primitives;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal static class NextTokenFinder
 {

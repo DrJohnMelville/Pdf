@@ -8,7 +8,7 @@
 /// </summary>
 using System;
 using System.Text;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
+
 namespace Melville.CSJ2K.Icc.Tags
 {
 	

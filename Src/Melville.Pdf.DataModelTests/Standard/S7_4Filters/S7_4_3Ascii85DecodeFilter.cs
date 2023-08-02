@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.DataModelTests.StreamUtilities;
-using Melville.Pdf.LowLevel.Filters.Ascii85Filter;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_4Filters;

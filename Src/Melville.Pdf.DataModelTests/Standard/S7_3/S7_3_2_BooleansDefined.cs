@@ -1,9 +1,7 @@
-﻿using System.Formats.Tar;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_3;

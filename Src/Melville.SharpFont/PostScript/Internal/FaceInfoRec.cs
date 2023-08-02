@@ -24,9 +24,6 @@ SOFTWARE.*/
 
 using System;
 using System.Runtime.InteropServices;
-
-using Melville.SharpFont.Internal;
-
 using FT_Long = System.IntPtr;
 using FT_ULong = System.UIntPtr;
 

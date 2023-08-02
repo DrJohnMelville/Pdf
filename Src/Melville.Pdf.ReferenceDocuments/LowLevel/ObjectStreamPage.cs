@@ -1,11 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Writers;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.ReferenceDocuments.Infrastructure;
-
-namespace Melville.Pdf.ReferenceDocuments.LowLevel;
+﻿namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class ObjectStreamPage: CreatePdfParser
 {

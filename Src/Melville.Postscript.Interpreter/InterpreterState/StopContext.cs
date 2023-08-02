@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Melville.INPC;
-using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Execution;
-using Microsoft.CodeAnalysis.Emit;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
 

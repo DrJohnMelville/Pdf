@@ -1,6 +1,3 @@
-using System;
-using Melville.CSJ2K.Icc;
-
 namespace Melville.CSJ2K.Icc.Tags
 {
     internal class ICCDataType : ICCTag

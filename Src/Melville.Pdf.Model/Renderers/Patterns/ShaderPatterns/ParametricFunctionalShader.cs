@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 

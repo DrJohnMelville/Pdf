@@ -42,11 +42,10 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-using System;
+
 using Melville.CSJ2K.j2k.wavelet.analysis;
 using Melville.CSJ2K.j2k.entropy.encoder;
-using Melville.CSJ2K.j2k.wavelet;
-using Melville.CSJ2K.j2k.image;
+
 namespace Melville.CSJ2K.j2k.quantization.quantizer
 {
 	

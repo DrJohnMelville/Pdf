@@ -11,7 +11,6 @@
 
 using System;
 using System.IO;
-using Melville.CSJ2K.Util;
 using Melville.CSJ2K.j2k.util;
 
 /// <summary>

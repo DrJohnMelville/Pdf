@@ -40,8 +40,7 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-using System;
-using Coord = Melville.CSJ2K.j2k.image.Coord;
+
 namespace Melville.CSJ2K.j2k.codestream
 {
 	

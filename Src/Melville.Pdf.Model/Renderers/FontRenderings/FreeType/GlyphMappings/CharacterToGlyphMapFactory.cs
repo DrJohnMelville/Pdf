@@ -1,8 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -14,7 +10,6 @@ using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.SharpFont;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType.GlyphMappings;
 

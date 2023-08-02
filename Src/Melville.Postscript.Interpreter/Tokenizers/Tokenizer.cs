@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.CountingReaders;
-using Melville.Parsing.Streams;
-using Melville.Parsing.VariableBitEncoding;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;

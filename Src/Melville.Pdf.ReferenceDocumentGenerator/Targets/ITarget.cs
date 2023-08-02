@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 
 namespace Melville.Pdf.ReferenceDocumentGenerator.Targets;
 

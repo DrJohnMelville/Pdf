@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Hacks;
 using Melville.INPC;
-using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.SpanAndMemory;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
 

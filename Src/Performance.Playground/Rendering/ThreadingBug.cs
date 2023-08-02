@@ -2,12 +2,10 @@
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
 using System.Linq;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.Streams;
 using Melville.Pdf.SkiaSharp;
-using Melville.SharpFont.Internal;
 
 namespace Performance.Playground.Rendering;
 

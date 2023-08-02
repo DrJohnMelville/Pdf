@@ -23,7 +23,6 @@ SOFTWARE.*/
 #endregion
 
 using System;
-using System.Runtime.InteropServices;
 using Melville.SharpFont.Cache.Internal;
 
 namespace Melville.SharpFont.Cache

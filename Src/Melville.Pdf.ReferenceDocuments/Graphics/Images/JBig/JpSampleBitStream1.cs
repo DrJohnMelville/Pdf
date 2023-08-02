@@ -1,5 +1,4 @@
-﻿using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.ReferenceDocuments.Utility;
+﻿using Melville.Pdf.ReferenceDocuments.Utility;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 

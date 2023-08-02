@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Buffers;
-using System.IO;
-using System.IO.Pipelines;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Melville.Parsing.VariableBitEncoding;
-using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.Lzw;

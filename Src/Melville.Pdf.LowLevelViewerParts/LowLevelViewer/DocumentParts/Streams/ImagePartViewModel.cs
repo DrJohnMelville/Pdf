@@ -1,11 +1,8 @@
-﻿using System.Windows;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Melville.INPC;
-using Melville.MVVM.Wpf.ViewFrames;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
-using Melville.Pdf.Wpf;
 using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;

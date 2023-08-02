@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
-using System.Security.Cryptography;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
-using Melville.SharpFont;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 

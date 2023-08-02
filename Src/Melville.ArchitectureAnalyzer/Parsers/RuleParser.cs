@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using ArchitectureAnalyzer.Models;
 
 namespace ArchitectureAnalyzer.Parsers;

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Buffers;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Postscript.Interpreter.Tokenizers;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2
+namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers
 {
     internal static class PdfNameTokenizer
     {

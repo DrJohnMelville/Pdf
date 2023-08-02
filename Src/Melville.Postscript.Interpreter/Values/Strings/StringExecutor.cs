@@ -1,12 +1,8 @@
 ﻿using System;
-using System.IO.Pipelines;
-using System.Threading;
-using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Melville.Postscript.Interpreter.Values;
 

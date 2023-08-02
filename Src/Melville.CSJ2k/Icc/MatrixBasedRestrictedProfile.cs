@@ -6,7 +6,7 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
+
 using ICCCurveType = Melville.CSJ2K.Icc.Tags.ICCCurveType;
 using ICCXYZType = Melville.CSJ2K.Icc.Tags.ICCXYZType;
 namespace Melville.CSJ2K.Icc

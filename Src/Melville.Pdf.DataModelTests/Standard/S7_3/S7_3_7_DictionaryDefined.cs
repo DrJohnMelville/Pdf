@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;

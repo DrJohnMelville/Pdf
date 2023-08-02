@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using Melville.Hacks;
 using Melville.INPC;
-using Melville.Lists;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;

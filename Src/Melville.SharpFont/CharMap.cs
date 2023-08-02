@@ -23,7 +23,6 @@ SOFTWARE.*/
 #endregion
 
 using System;
-using System.Runtime.InteropServices;
 using Melville.SharpFont.Internal;
 using Melville.SharpFont.TrueType;
 

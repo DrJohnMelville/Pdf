@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Melville.Postscript.Interpreter.Values;
+﻿namespace Melville.Postscript.Interpreter.Values;
 
 /// <summary>
 /// Test if this postscript value strategy with the given memento is equivilent to another strategy and memento.

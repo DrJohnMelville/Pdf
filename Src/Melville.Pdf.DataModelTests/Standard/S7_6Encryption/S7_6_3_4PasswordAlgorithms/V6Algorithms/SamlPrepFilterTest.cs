@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using Melville.Pdf.LowLevel.Encryption.StringFilters;
 using Xunit;
 

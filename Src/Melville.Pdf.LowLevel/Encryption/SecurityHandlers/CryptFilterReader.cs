@@ -7,7 +7,6 @@ using Melville.Pdf.LowLevel.Encryption.Cryptography.Rc4Implementation;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 

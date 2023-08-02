@@ -1,8 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using Melville.Pdf.ReferenceDocuments.Infrastructure;
-
-namespace Melville.Pdf.ReferenceDocuments.LowLevel;
+﻿namespace Melville.Pdf.ReferenceDocuments.LowLevel;
 
 public class MinimalPdfParser: CreatePdfParser
 {

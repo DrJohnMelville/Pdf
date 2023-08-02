@@ -2,8 +2,6 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.ImageExtractor;
-using Melville.Pdf.Model;
-using Melville.Pdf.Model.Creators;
 using Melville.Pdf.ReferenceDocuments.Graphics.Images;
 using Melville.Pdf.ReferenceDocuments.Graphics.Images.JBig;
 using Melville.Pdf.ReferenceDocuments.Infrastructure;

@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using Melville.Parsing.AwaitConfiguration;
+﻿using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;

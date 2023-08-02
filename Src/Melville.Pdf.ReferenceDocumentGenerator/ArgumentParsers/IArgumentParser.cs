@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
+﻿namespace Melville.Pdf.ReferenceDocumentGenerator.ArgumentParsers;
 
 public interface IArgumentParser
 {

@@ -1,8 +1,6 @@
 ﻿using System.Numerics;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
 

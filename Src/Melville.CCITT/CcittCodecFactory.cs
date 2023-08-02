@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Melville.Parsing.StreamFilters;
+﻿using Melville.Parsing.StreamFilters;
 
 namespace Melville.CCITT;
 

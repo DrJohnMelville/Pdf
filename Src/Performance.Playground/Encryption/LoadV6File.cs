@@ -1,9 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.JpegLibrary.PipeAmdStreamAdapters;
-using Melville.JpegLibrary.Readers;
-using Melville.Pdf.LowLevel;
-using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Performance.Playground.Encryption;
 

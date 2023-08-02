@@ -1,9 +1,7 @@
 ﻿using System;
-using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Values;
 

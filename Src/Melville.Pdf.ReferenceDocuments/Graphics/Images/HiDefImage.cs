@@ -1,6 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
-
-namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
+﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.Images;
 
 public class HiDefImage: DisplayImageTest
 {

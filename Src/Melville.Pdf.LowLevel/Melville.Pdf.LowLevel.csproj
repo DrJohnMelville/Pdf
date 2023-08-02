@@ -42,8 +42,4 @@
       <AdditionalFiles Include="Model\CharacterEncoding\Symbol.cedsl" />
       <AdditionalFiles Include="Model\CharacterEncoding\MacExpert.cedsl" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Model\Objects2\" />
-    </ItemGroup>
 </Project>

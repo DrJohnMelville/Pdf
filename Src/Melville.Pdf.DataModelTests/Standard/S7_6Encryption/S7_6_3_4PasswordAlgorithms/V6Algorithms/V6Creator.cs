@@ -1,16 +1,11 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.Utility;
 using Melville.Postscript.Interpreter.Values;
 using Xunit;
-using Xunit.Abstractions;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 using V6Encryptor = Melville.Pdf.LowLevel.Writers.Builder.EncryptionV6.V6Encryptor;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms.V6Algorithms;

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
+using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 

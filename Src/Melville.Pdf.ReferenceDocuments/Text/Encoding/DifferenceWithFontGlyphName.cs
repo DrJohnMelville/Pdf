@@ -1,6 +1,4 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FilterProcessing;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.Encoding;
 

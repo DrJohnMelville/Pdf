@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Pdf.KnownNamesGenerator.CharacterEncodings;
 using Pdf.KnownNamesGenerator.KnownNames;

@@ -41,12 +41,9 @@
 /// Copyright (c) 1999/2000 JJ2000 Partners.
 /// 
 /// </summary>
-using System;
+
 using System.Collections.Generic;
 using Melville.CSJ2K.j2k.wavelet.synthesis;
-using Melville.CSJ2K.j2k.codestream;
-using Melville.CSJ2K.j2k.entropy;
-using Melville.CSJ2K.j2k.wavelet;
 using Melville.CSJ2K.j2k.decoder;
 using Melville.CSJ2K.j2k.image;
 using Melville.CSJ2K.j2k.util;

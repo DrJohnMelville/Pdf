@@ -1,9 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Encryption;
 using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_6Encryption.S7_6_3_4PasswordAlgorithms;

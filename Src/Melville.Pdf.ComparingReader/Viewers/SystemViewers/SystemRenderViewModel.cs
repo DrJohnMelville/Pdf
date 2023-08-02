@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Melville.INPC;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;

@@ -6,10 +6,9 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
+
 using System.IO;
 using ColorSpace = Melville.CSJ2K.Color.ColorSpace;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
 using ICCProfileHeader = Melville.CSJ2K.Icc.Types.ICCProfileHeader;
 namespace Melville.CSJ2K.Icc.Tags
 {

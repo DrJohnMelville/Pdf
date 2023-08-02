@@ -1,11 +1,7 @@
-﻿using System.IO;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Writers.ObjectWriters;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.DataModelTests.Writer;
 

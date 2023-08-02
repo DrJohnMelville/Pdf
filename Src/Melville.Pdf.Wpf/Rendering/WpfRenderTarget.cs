@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
@@ -8,7 +7,6 @@ using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.FontRenderings;
-using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Wpf.FontCaching;
 

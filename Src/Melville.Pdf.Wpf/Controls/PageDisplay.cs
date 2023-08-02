@@ -1,9 +1,6 @@
-﻿using System.Numerics;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Media;
 using Melville.INPC;
-using Melville.Pdf.Wpf.Rendering;
 
 namespace Melville.Pdf.Wpf.Controls;
 

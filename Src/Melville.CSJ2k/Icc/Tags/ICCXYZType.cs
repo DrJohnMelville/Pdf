@@ -6,9 +6,7 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
-using XYZNumber = Melville.CSJ2K.Icc.Types.XYZNumber;
+
 namespace Melville.CSJ2K.Icc.Tags
 {
 	

@@ -34,8 +34,6 @@
  * Copyright (c) 1999/2000 JJ2000 Partners.
  */
 
-using Melville.CSJ2K.j2k.util;
-
 namespace Melville.CSJ2K.j2k.util;
 
 internal static class FacilityManager

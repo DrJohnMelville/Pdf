@@ -5,7 +5,6 @@ using Melville.MVVM.WaitingServices;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
@@ -16,8 +15,6 @@ using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Moq;
 using Xunit;
 using DocumentPart = Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.DocumentPart;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.WpfToolTests.LowLevelReader;
 

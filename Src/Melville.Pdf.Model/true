@@ -1967,6 +1967,11 @@
             Content stream operator leading TL
             </summary>
         </member>
+        <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetFontAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue,System.Double)">
+            <summary>
+            Content stream operator font fontSize Tf
+            </summary>
+        </member>
         <member name="M:Melville.Pdf.Model.Renderers.GraphicsStates.GraphicsStateStack`1.SetTextRender(Melville.Pdf.LowLevel.Model.ContentStreams.TextRendering)">
             <summary>
             Context stream textRendering Tr
@@ -2366,6 +2371,16 @@
             <param name="dict">The dictionary defining the tile brush</param>
             <returns>A structure with many properties of the tile brush.</returns>
         </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue)">
+            <summary>
+            Content stream operator CS
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorSpaceAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue)">
+            <summary>
+            Content stream operator cs
+            </summary>
+        </member>
         <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeColor(System.ReadOnlySpan{System.Double}@)">
             <summary>
             Content stream operator SC
@@ -2374,6 +2389,16 @@
         <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColor(System.ReadOnlySpan{System.Double}@)">
             <summary>
             Content stream operator sc
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeColorExtendedAsync(System.Nullable{Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue},System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator SCN
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetNonstrokingColorExtendedAsync(System.Nullable{Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue},System.ReadOnlySpan{System.Double}@)">
+            <summary>
+            Content stream operator scn
             </summary>
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.RenderEngine.SetStrokeGrayAsync(System.Double)">

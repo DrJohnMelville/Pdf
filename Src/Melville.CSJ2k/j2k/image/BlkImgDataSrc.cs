@@ -40,7 +40,6 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-using System;
 
 namespace Melville.CSJ2K.j2k.image
 {

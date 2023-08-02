@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Melville.Postscript.Interpreter.Values;
+﻿namespace Melville.Postscript.Interpreter.Values;
 
 /// <summary>
 /// This strategy object represents the way to get a value of a given type out of a

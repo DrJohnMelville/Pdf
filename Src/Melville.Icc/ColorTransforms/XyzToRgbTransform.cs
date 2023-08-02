@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Melville.Icc.Model.Tags;
+﻿using Melville.Icc.Model.Tags;
 
 namespace Melville.Icc.ColorTransforms;
 

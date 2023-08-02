@@ -6,13 +6,11 @@
 /// $Date $
 /// ***************************************************************************
 /// </summary>
-using System;
-using ParameterList = Melville.CSJ2K.j2k.util.ParameterList;
+
 using BlkImgDataSrc = Melville.CSJ2K.j2k.image.BlkImgDataSrc;
 using DataBlk = Melville.CSJ2K.j2k.image.DataBlk;
 using DataBlkInt = Melville.CSJ2K.j2k.image.DataBlkInt;
 using DataBlkFloat = Melville.CSJ2K.j2k.image.DataBlkFloat;
-using ImgDataAdapter = Melville.CSJ2K.j2k.image.ImgDataAdapter;
 using FacilityManager = Melville.CSJ2K.j2k.util.FacilityManager;
 
 namespace Melville.CSJ2K.Color

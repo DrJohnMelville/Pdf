@@ -3,7 +3,6 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Pdf.ImageExtractor;
-using Melville.Pdf.LowLevel.Encryption.EncryptionKeyAlgorithms;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Xunit;
 

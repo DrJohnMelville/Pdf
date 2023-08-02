@@ -44,7 +44,7 @@
 * 
 * 
 */
-using System;
+
 using Melville.CSJ2K.j2k.codestream;
 namespace Melville.CSJ2K.j2k.entropy
 {

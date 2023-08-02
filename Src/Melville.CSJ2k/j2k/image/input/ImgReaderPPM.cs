@@ -39,10 +39,7 @@
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
 using System;
-using Melville.CSJ2K.Util;
-using Melville.CSJ2K.j2k.image;
-using Melville.CSJ2K.j2k.io;
-using Melville.CSJ2K.j2k;
+
 namespace Melville.CSJ2K.j2k.image.input
 {
 	

@@ -5,7 +5,6 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Colors;
 using Moq;
 using Xunit;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_6Colors;
 

@@ -4,8 +4,6 @@ using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Melville.Postscript.Interpreter.Values.Execution;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 

@@ -1,5 +1,4 @@
-﻿using System;
-using Melville.Icc.Model.Tags;
+﻿using Melville.Icc.Model.Tags;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;

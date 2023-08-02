@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal static class TokenChecker
 {

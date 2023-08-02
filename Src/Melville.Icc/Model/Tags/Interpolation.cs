@@ -1,7 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Runtime.InteropServices.ComTypes;
-
-namespace Melville.Icc.Model.Tags;
+﻿namespace Melville.Icc.Model.Tags;
 
 internal static class Interpolation
 {

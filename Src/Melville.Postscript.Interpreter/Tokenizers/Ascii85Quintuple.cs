@@ -1,5 +1,4 @@
 ﻿using System;
-using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.Tokenizers

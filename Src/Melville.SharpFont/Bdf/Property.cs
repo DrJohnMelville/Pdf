@@ -23,7 +23,6 @@ SOFTWARE.*/
 #endregion
 
 using System;
-using System.Runtime.InteropServices;
 using Melville.SharpFont.Bdf.Internal;
 
 namespace Melville.SharpFont.Bdf

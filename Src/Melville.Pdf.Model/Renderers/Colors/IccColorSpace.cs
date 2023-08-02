@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Melville.Icc.ColorTransforms;
-using Melville.Icc.Model.Tags;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 

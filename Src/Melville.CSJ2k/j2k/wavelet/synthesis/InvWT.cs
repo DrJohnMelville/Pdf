@@ -41,8 +41,7 @@
 * 
 * Copyright (c) 1999/2000 JJ2000 Partners.
 * */
-using System;
-using Melville.CSJ2K.j2k.wavelet;
+
 namespace Melville.CSJ2K.j2k.wavelet.synthesis
 {
 	

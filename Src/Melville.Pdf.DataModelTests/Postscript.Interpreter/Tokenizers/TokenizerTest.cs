@@ -1,9 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;

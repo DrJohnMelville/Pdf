@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Melville.Hacks.Reflection;
 using Melville.Pdf.ImageExtractor;
 using Melville.Pdf.ImageExtractor.ImageCollapsing;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client.Payloads;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ImageExtractors;

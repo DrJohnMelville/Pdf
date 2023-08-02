@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections;
 using System.Text;
-using Melville.INPC;
 
 namespace Melville.Postscript.Interpreter.Values.Composites;
 

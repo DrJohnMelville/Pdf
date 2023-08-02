@@ -1,9 +1,5 @@
-﻿using System.Reflection.Metadata;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Parsing.FileParsers;
-using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Xunit;
 

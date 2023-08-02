@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Creators;
 using Melville.Pdf.Model.Documents;
 using Xunit;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_7DocumentStructure;
 

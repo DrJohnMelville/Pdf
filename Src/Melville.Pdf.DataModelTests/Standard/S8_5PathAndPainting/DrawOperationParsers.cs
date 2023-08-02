@@ -4,10 +4,9 @@
  using System.Threading.Tasks;
  using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
  using Melville.Pdf.LowLevel.Model.ContentStreams;
- using Melville.Pdf.LowLevel.Model.Conventions;
-  using Xunit;
- using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-
+ using Melville.Pdf.LowLevel.Model.Objects;
+ using Xunit;
+ 
  namespace Melville.Pdf.DataModelTests.Standard.S8_5PathAndPainting;
 
 public class DrawOperationParsers: ParserTest

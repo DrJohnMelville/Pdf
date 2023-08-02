@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Runtime;
 using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.Postscript.Interpreter.Values.Numbers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 namespace Melville.Postscript.Interpreter.Values;
 
 /// <summary>

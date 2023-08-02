@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
+﻿namespace Melville.JpegLibrary.PipeAmdStreamAdapters;
 
 internal class YCCKStream: ConvertingStream
 {

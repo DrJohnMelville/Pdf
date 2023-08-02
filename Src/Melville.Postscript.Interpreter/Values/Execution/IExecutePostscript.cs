@@ -1,5 +1,4 @@
-﻿using System.Security.Principal;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Postscript.Interpreter.InterpreterState;
 
 namespace Melville.Postscript.Interpreter.Values.Execution;

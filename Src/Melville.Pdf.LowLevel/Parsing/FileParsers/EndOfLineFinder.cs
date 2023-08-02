@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
+namespace Melville.Pdf.LowLevel.Parsing.FileParsers;
 
 internal static class EndOfLineFinder
 {

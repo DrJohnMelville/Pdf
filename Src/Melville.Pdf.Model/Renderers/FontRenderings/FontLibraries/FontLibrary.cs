@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 

@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Melville.INPC;
 using Melville.MVVM.WaitingServices;
-using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;

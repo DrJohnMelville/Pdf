@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using ArchitectureAnalyzer.Models;
+﻿using ArchitectureAnalyzer.Models;
 using ArchitectureAnalyzer.Parsers;
 using Xunit;
 

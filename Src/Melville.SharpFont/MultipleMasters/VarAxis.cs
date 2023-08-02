@@ -23,7 +23,6 @@ SOFTWARE.*/
 #endregion
 
 using System;
-using System.Runtime.InteropServices;
 using Melville.SharpFont.MultipleMasters.Internal;
 
 namespace Melville.SharpFont.MultipleMasters

@@ -1,11 +1,8 @@
 ﻿using System;
 using Melville.Postscript.Interpreter.Values;
 using System.Buffers;
-using System.Diagnostics;
-using System.Net.Http.Headers;
 using Melville.Parsing.SequenceReaders;
 using Melville.Postscript.Interpreter.Values.Interfaces;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Tokenizers;
 

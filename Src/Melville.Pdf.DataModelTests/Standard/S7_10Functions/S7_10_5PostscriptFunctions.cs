@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.FileSystem;
-using Melville.Linq;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
-using Melville.Pdf.LowLevel.Writers;
-using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 using Xunit;
 

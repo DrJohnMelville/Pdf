@@ -1,6 +1,4 @@
 ﻿using System.Numerics;
-using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 
 namespace Melville.Pdf.ImageExtractor;

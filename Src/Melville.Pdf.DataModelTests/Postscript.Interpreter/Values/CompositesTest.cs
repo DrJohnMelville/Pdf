@@ -1,5 +1,4 @@
-﻿using Melville.CSJ2K.j2k.wavelet.analysis;
-using Melville.Postscript.Interpreter.Values;
+﻿using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 using Xunit;
 

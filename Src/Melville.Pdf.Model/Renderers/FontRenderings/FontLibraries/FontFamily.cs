@@ -1,5 +1,4 @@
 ﻿using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.Model.Renderers.FontRenderings.FreeType.FontLibraries;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.FontLibraries;
 

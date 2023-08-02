@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
-using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Xunit;
 

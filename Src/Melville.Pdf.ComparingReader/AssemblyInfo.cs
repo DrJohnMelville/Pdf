@@ -1,5 +1,4 @@
 using System.Windows;
-using Melville.INPC;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located

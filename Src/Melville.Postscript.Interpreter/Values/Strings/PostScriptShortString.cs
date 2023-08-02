@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using Melville.INPC;
-using Melville.Parsing.CountingReaders;
 using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values;

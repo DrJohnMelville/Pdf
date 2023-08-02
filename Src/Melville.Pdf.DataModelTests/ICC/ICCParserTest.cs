@@ -9,7 +9,6 @@ using Melville.Icc.Model;
 using Melville.Icc.Model.Tags;
 using Melville.Icc.Parser;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ICC;

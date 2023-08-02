@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace Melville.Parsing.ObjectRentals;
+﻿namespace Melville.Parsing.ObjectRentals;
 
 /// <summary>
 /// Simple onbject rental facility.

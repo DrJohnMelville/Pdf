@@ -1,6 +1,5 @@
 ﻿using Melville.INPC;
 using Melville.Postscript.Interpreter.InterpreterState;
-using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.Values.Execution;
 

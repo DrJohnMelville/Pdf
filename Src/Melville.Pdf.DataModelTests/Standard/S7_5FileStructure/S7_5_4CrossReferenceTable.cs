@@ -1,16 +1,7 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Melville.Parsing.CountingReaders;
-using Melville.Pdf.DataModelTests.ParsingTestUtils;
+﻿using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.FileParsers;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
-using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.ReferenceDocuments.LowLevel;
 using Melville.Postscript.Interpreter.Tokenizers;
 using Moq;
 using Xunit;

@@ -43,9 +43,7 @@
 using System;
 using Melville.CSJ2K.j2k.wavelet.synthesis;
 using Melville.CSJ2K.j2k.decoder;
-using Melville.CSJ2K.j2k.image;
 using Melville.CSJ2K.j2k.util;
-using Melville.CSJ2K.j2k;
 
 namespace Melville.CSJ2K.j2k.image.invcomptransf
 {

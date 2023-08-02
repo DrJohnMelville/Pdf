@@ -1,9 +1,6 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.SharpFont;

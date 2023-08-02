@@ -1,7 +1,4 @@
-﻿using Melville.Pdf.Model.Renderers.Bitmaps;
-using System;
-
-namespace Melville.Pdf.Model.Renderers.Bitmaps;
+﻿namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal interface IMaskType
 {

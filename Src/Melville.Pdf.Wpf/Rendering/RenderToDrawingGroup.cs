@@ -5,7 +5,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
-using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Wpf.Controls;
 

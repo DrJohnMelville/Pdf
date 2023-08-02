@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
-using Melville.Pdf.LowLevel.Model;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Xunit;
 

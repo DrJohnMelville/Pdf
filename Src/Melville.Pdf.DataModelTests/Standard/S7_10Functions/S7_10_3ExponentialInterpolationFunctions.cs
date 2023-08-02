@@ -2,7 +2,6 @@
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
-using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.Builder.Functions;
 using Xunit;
 

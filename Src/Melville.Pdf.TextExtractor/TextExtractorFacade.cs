@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Melville.Pdf.Model.Renderers.DocumentRenderers;
+﻿using Melville.Pdf.Model.Renderers.DocumentRenderers;
 
 namespace Melville.Pdf.TextExtractor;
 

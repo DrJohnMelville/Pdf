@@ -1,7 +1,5 @@
-﻿using System.IO.Pipelines;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Filters;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Documents;

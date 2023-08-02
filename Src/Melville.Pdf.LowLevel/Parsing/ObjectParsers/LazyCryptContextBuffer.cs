@@ -3,7 +3,7 @@ using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2;
+namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 internal partial class LazyCryptContextBuffer
 {

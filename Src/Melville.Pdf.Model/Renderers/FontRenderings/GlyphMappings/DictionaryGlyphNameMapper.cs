@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Postscript.Interpreter.Values;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 

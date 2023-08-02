@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics;
-using System.Security.Cryptography.Xml;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.References;
 using Melville.Pdf.Model.Documents;
-using PdfIndirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfIndirectValue;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts;
 

@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
-
-namespace ArchitectureAnalyzer.Models;
+﻿namespace ArchitectureAnalyzer.Models;
 
 public class Rule
 {

@@ -4,7 +4,6 @@
 namespace Melville.CSJ2K.Util
 {
     using System;
-    using System.Reflection;
 
 
     internal abstract class ImageBase<TBase> 

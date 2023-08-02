@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Melville.Postscript.Interpreter.FunctionLibrary;
-using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.Values;

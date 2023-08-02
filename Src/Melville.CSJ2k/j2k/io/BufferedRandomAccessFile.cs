@@ -45,9 +45,7 @@ namespace Melville.CSJ2K.j2k.io
 	using System;
 	using System.IO;
 
-	using Melville.CSJ2K.Util;
-
-	/// <summary> This class defines a Buffered Random Access File.  It implements the
+    /// <summary> This class defines a Buffered Random Access File.  It implements the
 	/// <tt>BinaryDataInput</tt> and <tt>BinaryDataOutput</tt> interfaces so that
 	/// binary data input/output can be performed. This class is abstract since no
 	/// assumption is done about the byte ordering type (little Endian, big

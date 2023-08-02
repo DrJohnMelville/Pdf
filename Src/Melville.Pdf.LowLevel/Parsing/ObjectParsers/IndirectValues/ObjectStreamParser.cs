@@ -8,9 +8,8 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
 
-namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers2.IndirectValues;
+namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
 internal readonly partial struct ObjectStreamParser
 {

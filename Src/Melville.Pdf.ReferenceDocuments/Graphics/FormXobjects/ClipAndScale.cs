@@ -1,6 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
-
-namespace Melville.Pdf.ReferenceDocuments.Graphics.FormXobjects;
+﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.FormXobjects;
 
 public class ClipAndScale: FormXObjectBase
 {

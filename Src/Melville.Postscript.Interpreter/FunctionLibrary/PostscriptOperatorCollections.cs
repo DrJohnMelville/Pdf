@@ -1,8 +1,5 @@
-﻿using System;
-using Melville.Postscript.Interpreter.InterpreterState;
-using Melville.Postscript.Interpreter.Values;
+﻿using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
-using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 

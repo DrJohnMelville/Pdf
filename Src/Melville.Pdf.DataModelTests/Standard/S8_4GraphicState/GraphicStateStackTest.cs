@@ -1,5 +1,4 @@
-﻿using Melville.Pdf.Model.Renderers.Colors;
-using Melville.Pdf.Model.Renderers.GraphicsStates;
+﻿using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;

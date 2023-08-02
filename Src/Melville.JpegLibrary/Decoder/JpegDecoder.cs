@@ -1,13 +1,10 @@
 ﻿using System.Buffers;
 using System.Buffers.Binary;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Melville.JpegLibrary.ArithmeticDecoding;
 using Melville.JpegLibrary.BlockOutputWriters;
 using Melville.JpegLibrary.HuffmanCoding;
-using Melville.JpegLibrary.Maths;
 using Melville.JpegLibrary.Quantization;
 using Melville.JpegLibrary.Readers;
 using Melville.JpegLibrary.ScanDecoders;

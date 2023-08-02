@@ -2,8 +2,6 @@
 using Melville.Pdf.DataModelTests.Standard.S8_4GraphicState;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Pdf.LowLevel.Writers;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S8_9Images;

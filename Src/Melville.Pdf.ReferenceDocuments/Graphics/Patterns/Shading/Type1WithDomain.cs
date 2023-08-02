@@ -1,6 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Primitives;
-
-namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
+﻿namespace Melville.Pdf.ReferenceDocuments.Graphics.Patterns.Shading;
 
 public class Type1WithDomain : Type1FunctionalShaderBase
 {

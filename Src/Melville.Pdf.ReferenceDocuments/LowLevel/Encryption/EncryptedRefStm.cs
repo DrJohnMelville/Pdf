@@ -1,8 +1,4 @@
-﻿using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Writers.Builder;
-using Melville.Pdf.LowLevel.Writers.DocumentWriters;
-using PdfDirectValue = Melville.Pdf.LowLevel.Model.Objects.PdfDirectValue;
-
+﻿
 namespace Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
 
 public class EncryptedRefStm: EncryptedFileWriter

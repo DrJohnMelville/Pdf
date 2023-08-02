@@ -1,6 +1,5 @@
 ﻿using Melville.Pdf.LowLevel.Filters.FlateFilters;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Writer.Lzw;

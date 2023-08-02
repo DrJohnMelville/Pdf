@@ -7,7 +7,7 @@
 /// ***************************************************************************
 /// </summary>
 using System;
-using ICCProfile = Melville.CSJ2K.Icc.ICCProfile;
+
 namespace Melville.CSJ2K.Icc.Tags
 {
 	
