@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
@@ -64,31 +66,13 @@ public sealed class PdfArray :
     /// </summary>
     /// <param name="cancellationToken">Cancellation token for the await foreach operation</param>
     /// <returns>An async enumerator object that</returns>
-    public IAsyncEnumerator<PdfDirectObject> 
-        GetAsyncEnumerator(CancellationToken cancellationToken = new()) =>
-        new Enumerator(rawItems);
-    
-    private class Enumerator : IAsyncEnumerator<PdfDirectObject>
+    public async IAsyncEnumerator<PdfDirectObject>
+        GetAsyncEnumerator(CancellationToken cancellationToken = new())
     {
-        private int currentPosition = -1;
-        private readonly PdfIndirectObject[] items;
-            
-        public Enumerator(PdfIndirectObject[] items)
+        foreach (var item in rawItems)
         {
-            this.items = items;
+            yield return await item.LoadValueAsync().CA();
         }
-
-        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
-
-        public async ValueTask<bool> MoveNextAsync()
-        {
-            currentPosition++;
-            if (currentPosition >= items.Length) return false;
-            Current = await items[currentPosition].LoadValueAsync().CA();
-            return true;
-        }
-
-        public PdfDirectObject Current { get; private set; } = default;
     }
 
     /// <inheritdoc />
@@ -98,12 +82,42 @@ public sealed class PdfArray :
     #warning perhaps we could have a writeToSpan method to not need to allocate temporaries.
     public async ValueTask<IReadOnlyList<T>> CastAsync<T>()
     {
-        var ret = new T[Count];
-        for (int i = 0; i < ret.Length; i++)
-        {
-            ret[i] = (await RawItems[i].LoadValueAsync().CA()).Get<T>();
-        }
+        await ResolveAllIndirectElementsAsync().CA();
+        return new CastedPdfArray<T>(rawItems);
+    }
 
-        return ret;
+    private async ValueTask ResolveAllIndirectElementsAsync()
+    {
+        for (int i = 0; i < rawItems.Length; i++)
+        {
+            if (!rawItems[i].IsEmbeddedDirectValue())
+            {
+                rawItems[i] = await rawItems[i].LoadValueAsync().CA();
+            }
+        }
+    }
+}
+
+internal partial class CastedPdfArray<T> : IReadOnlyList<T>
+{
+    [FromConstructor] private PdfIndirectObject[] source;
+    public IEnumerator<T> GetEnumerator()
+    {
+        foreach (var item in source)
+        {
+            yield return CastToDesiredType(item);
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int Count => source.Length;
+
+    public T this[int index] => CastToDesiredType(source[index]);
+
+    private T CastToDesiredType(PdfIndirectObject item)
+    {
+        return item.TryGetEmbeddedDirectValue(out T ret)?ret:
+            throw new PdfParseException("Tried to cast a PDF array to an inappropriate value");
     }
 }
