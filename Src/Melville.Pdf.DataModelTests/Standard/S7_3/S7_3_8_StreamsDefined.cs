@@ -14,12 +14,12 @@ public class S7_3_8_StreamsDefined
 
     private const string ObjectPrefix = "1 2 obj ";
     [Theory]
-    [InlineData("<</Length 6>> stream\r\n123456\r\nendstream", 22)]
-    [InlineData("<</Length 6>> stream\n123456\r\nendstream", 21)]
+    [InlineData("<</Length 6>> stream\r\n123456\r\nendstream")]
+    [InlineData("<</Length 6>> stream\n123456\r\nendstream")]
     // PDF Spec section 7.3.8.1 says this is illegal but real pdf files do it, and PDF reader accepts it.
-    [InlineData("<</Length 6>> stream\r123456\r\nendstream", 21)]
-    [InlineData("                                    <</Length 6>> stream\r123456\r\nendstream", 21)]
-    public async Task ParseSimpleStreamAsync(string data, int expectedPosition)
+    [InlineData("<</Length 6>> stream\r123456\r\nendstream")]
+    [InlineData("                                    <</Length 6>> stream\r123456\r\nendstream")]
+    public async Task ParseSimpleStreamAsync(string data)
     {
         var obj = await $"{ObjectPrefix}{data}\r\nendobj".ParseRootObjectAsync();
         var cSharpStream = await obj.Get<PdfStream>().StreamContentAsync();

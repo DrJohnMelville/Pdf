@@ -13,7 +13,7 @@ public class S7_5_4CrossReferenceTable
 
     private readonly Mock<IIndirectObjectRegistry> resolver = new();
 
-    private async ValueTask<long> ReadTable(string data)
+    private async ValueTask<long> ReadTableAsync(string data)
     {
         var reader = new MemoryWrapper(data.AsExtendedAsciiBytes());
         var parser = new CrossReferenceTableParser(reader, resolver.Object);
@@ -24,7 +24,7 @@ public class S7_5_4CrossReferenceTable
     [Fact]
     public async Task ParseSimpleTableAsync()
     {
-        await ReadTable("""
+        await ReadTableAsync("""
             0 6
             0000000003 65535 f
             0000000017 00000 n
@@ -46,7 +46,7 @@ public class S7_5_4CrossReferenceTable
     [Fact]
     public async Task ParseCompoundTableAsync()
     {
-        await ReadTable("""
+        await ReadTableAsync("""
             0 4
             0000000003 65535 f
             0000000017 00000 n
@@ -69,7 +69,7 @@ public class S7_5_4CrossReferenceTable
     [Fact]
     public async Task ParseZeroTableAsync()
     {
-        await ReadTable("""
+        await ReadTableAsync("""
             0 0
             trailer
             """);

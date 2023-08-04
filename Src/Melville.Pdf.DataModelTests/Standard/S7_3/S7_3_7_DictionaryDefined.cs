@@ -38,7 +38,7 @@ public class S7_3_7_DictionaryDefined
         Assert.ThrowsAsync<PdfParseException>(() => input.ParseValueObjectAsync().AsTask());
 
     [Fact]
-    public async Task ParseRootDictionary()
+    public async Task ParseRootDictionaryAsync()
     {
         var item = await " 1 2 obj<</Height 213/Width 456>>endobj".ParseRootObjectAsync();
         var dict = item.Get<PdfDictionary>();

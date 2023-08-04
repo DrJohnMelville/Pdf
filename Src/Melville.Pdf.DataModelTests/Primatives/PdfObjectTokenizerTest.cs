@@ -11,7 +11,7 @@ public class PdfObjectTokenizerTest
     [Theory]
     [InlineData("true false", "true", "false")]
     [InlineData("true%hello\r\nfalse", "true", "false")]
-    public async Task TwoTokenTest(string content, string text1, string text2)
+    public async Task TwoTokenTestAsync(string content, string text1, string text2)
     {
         var source = new MemoryWrapper(content.AsExtendedAsciiBytes());
         var parser = new PdfTokenizer(source);

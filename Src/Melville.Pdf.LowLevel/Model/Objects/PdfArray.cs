@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Pdf.LowLevel.Model.Primitives;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
@@ -15,7 +13,8 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 /// contain different types of objects at each position, including other arrays.
 /// </summary>
 public sealed class PdfArray :
-    IReadOnlyList<ValueTask<PdfDirectObject>>, IAsyncEnumerable<PdfDirectObject>
+    IReadOnlyList<ValueTask<PdfDirectObject>>, 
+    IAsyncEnumerable<PdfDirectObject>
 {
     /// <summary>
     /// A Pdf Array with no elements
@@ -78,8 +77,6 @@ public sealed class PdfArray :
     /// <inheritdoc />
     public override string ToString() => "["+string.Join(" ", RawItems) +"]";
 
-    #warning  figue out if we could use an IReadOnlyDictionary to do this without copying
-    #warning perhaps we could have a writeToSpan method to not need to allocate temporaries.
     public async ValueTask<IReadOnlyList<T>> CastAsync<T>()
     {
         await ResolveAllIndirectElementsAsync().CA();
@@ -95,29 +92,5 @@ public sealed class PdfArray :
                 rawItems[i] = await rawItems[i].LoadValueAsync().CA();
             }
         }
-    }
-}
-
-internal partial class CastedPdfArray<T> : IReadOnlyList<T>
-{
-    [FromConstructor] private PdfIndirectObject[] source;
-    public IEnumerator<T> GetEnumerator()
-    {
-        foreach (var item in source)
-        {
-            yield return CastToDesiredType(item);
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    public int Count => source.Length;
-
-    public T this[int index] => CastToDesiredType(source[index]);
-
-    private T CastToDesiredType(PdfIndirectObject item)
-    {
-        return item.TryGetEmbeddedDirectValue(out T ret)?ret:
-            throw new PdfParseException("Tried to cast a PDF array to an inappropriate value");
     }
 }

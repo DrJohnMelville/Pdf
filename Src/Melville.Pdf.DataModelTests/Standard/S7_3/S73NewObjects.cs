@@ -135,7 +135,7 @@ public class S7_3NewObjects
     }
 
     [Fact]
-    public async Task StreamTest()
+    public async Task StreamTestAsync()
     {
         var str = new DictionaryBuilder()
             .WithItem("/Length"u8, 11)

@@ -43,7 +43,7 @@ public partial class S7_4_4LzwAndFlateDecodeFilter
 
         var str = new DictionaryBuilder()
             .WithFilter(FilterName.LZWDecode)
-            .WithFilterParam(EarlySwitch < 2 ? param : null)
+            .WithFilterParam(EarlySwitch < 2 ? param : PdfDirectObject.CreateNull())
             .AsStream(buffer);
         var destination = new byte[length];
         var decoded = await str.StreamContentAsync();

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -20,9 +21,8 @@ public class DeepCopyTest
     {
         creator.Setup(i => i.Add(It.IsAny<PdfDirectObject>())).Returns((PdfDirectObject i) => i switch
         {
-            _ => new PdfIndirectObject(default, 5, 6)
+            _ => new PdfIndirectObject(Mock.Of<IIndirectObjectSource>(), 5, 6)
         });
-//        creator.Setup(i => i.AddPromisedObject()).Returns(() => new PromisedIndirectObject(3, 4));
         sut = new DeepCopy(creator.Object);
     }
 
@@ -77,7 +77,7 @@ public class DeepCopyTest
     {
         switch (a)
         {
-            case var x when !x.IsEmbeddedDirectValue(): await AssertSameIndirectobjectAsync(a, b); break;
+            case var x when !x.IsEmbeddedDirectValue(): AssertSameIndirectobject(a, b); break;
             case var x when Force(a,b, out PdfStream? aval, out var bval): await AssertSameStreamAsync(aval, bval); break;
             case var x when Force(a,b, out PdfDictionary? aval, out var bval): await AssertSameDictionaryAsync(aval, bval); break;
             case var x when Force(a,b, out PdfArray? aval, out var bval): await AssertSameArrayAsync(aval, bval); break;
@@ -85,7 +85,8 @@ public class DeepCopyTest
         }
     }
 
-    private static bool Force<T>(PdfIndirectObject a, PdfIndirectObject  b, out T aval, out T bval)
+    private static bool Force<T>(PdfIndirectObject a, PdfIndirectObject  b,
+        [NotNullWhen(true)] out T? aval, [NotNullWhen(true)]out T? bval)
     {
         aval = bval = default;
         return a.TryGetEmbeddedDirectValue(out var y) && y.TryGet(out aval) &&
@@ -108,7 +109,7 @@ public class DeepCopyTest
 
     }
 
-    private async Task AssertSameIndirectobjectAsync(PdfIndirectObject a, PdfIndirectObject b)
+    private  void AssertSameIndirectobject(PdfIndirectObject a, PdfIndirectObject b)
     {
         Assert.Equal(a, b);
     }
