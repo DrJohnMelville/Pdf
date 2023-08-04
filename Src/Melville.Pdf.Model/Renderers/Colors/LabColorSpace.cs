@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
 using Melville.Parsing.AwaitConfiguration;
@@ -50,8 +51,8 @@ internal class LabColorSpace : IColorSpace
         return await array.AsDoubleColorAsync().CA();
     }
 
-    private static double TryGet(double[]? arr, int index, double defaultValue) =>
-        arr is not null && arr.Length > index ? arr[index] : defaultValue;
+    private static double TryGet(IReadOnlyList<double> arr, int index, double defaultValue) =>
+         arr.Count > index ? arr[index] : defaultValue;
 
     public DeviceColor SetColor(in ReadOnlySpan<double> newColor)
     {

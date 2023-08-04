@@ -31,7 +31,7 @@ internal partial class PredictorCodec : ICodecDefinition
 
     private async ValueTask<IStreamFilterDefinition?> PredictionFilterAsync(
         PdfDirectObject parameters, bool encoding) =>
-        !parameters.TryGet(out PdfDictionary dict)
+        !parameters.TryGet(out PdfDictionary? dict)
             ? null
             : PredictionFilter(
                 await dict.GetOrDefaultAsync(KnownNames.Predictor, 1).CA(),

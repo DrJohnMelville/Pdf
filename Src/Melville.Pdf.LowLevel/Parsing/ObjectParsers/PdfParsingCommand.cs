@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Postscript.Interpreter.InterpreterState;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
@@ -34,7 +35,7 @@ internal abstract partial class PdfParsingCommand
     }
 
 #if DEBUG
-    public void ExecuteTest(PostscriptStack<PdfIndirectValue> stack)
+    public void ExecuteTest(PostscriptStack<PdfIndirectObject> stack)
     {
     }
 #endif

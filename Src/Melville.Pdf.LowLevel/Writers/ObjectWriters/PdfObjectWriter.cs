@@ -62,14 +62,14 @@ internal class PdfObjectWriter
                 StringWriter.Write(target, item.Get<StringSpanSource>().GetSpan(), 
                     CreateEncryptor());
                 break;
-            case var x when x.TryGet(out PdfArray arr):
+            case var x when x.TryGet(out PdfArray? arr):
                 ArrayWriter.WriteArray(this, arr);
                 break;
             #if DEBUG
-            case var x when x.TryGet(out PdfValueStream dict):
+            case var x when x.TryGet(out PdfStream? dict):
                 throw new InvalidOperationException("Cannot write a stream from this method");
             #endif
-            case var x when x.TryGet(out PdfDictionary dict):
+            case var x when x.TryGet(out PdfDictionary? dict):
                 DictionaryWriter.Write(this, dict.RawItems);
                 break;
             default:

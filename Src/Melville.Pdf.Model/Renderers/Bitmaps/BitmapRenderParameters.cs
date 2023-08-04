@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -10,7 +11,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttributes Page, DeviceColor FillColor,
     int Width, int Height)
 {
-    public async ValueTask<double[]?> DecodeAsync() =>
+    public async Task<IReadOnlyList<double>?> DecodeAsync() =>
         Stream.TryGetValue(KnownNames.Decode, out var arrayTask) &&
         (await arrayTask.CA()).TryGet(out PdfArray array) 
             ? await array.CastAsync<double>().CA()

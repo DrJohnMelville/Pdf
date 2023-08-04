@@ -33,7 +33,7 @@ public static class ExtendedAsciiEncoding
         }
     }
 
-    public static Span<byte> StripZeros(this in Span<byte> source)
+    public static Span<byte> StripZerosAsync(this in Span<byte> source)
     {
         for (int i = 0; i < source.Length; i++)
         {

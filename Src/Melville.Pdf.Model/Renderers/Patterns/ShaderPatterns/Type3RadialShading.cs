@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
@@ -8,7 +9,7 @@ internal class Type3RadialShading : ParametricFunctionalShader
     private RadialShadingComputer computer;
 
     public Type3RadialShading(CommonShaderValues common,
-        double[] coords, ClosedInterval domain, IPdfFunction function, bool extendLow, bool extendHigh) :
+        IReadOnlyList<double> coords, ClosedInterval domain, IPdfFunction function, bool extendLow, bool extendHigh) :
         base(common, domain, function, extendLow, extendHigh)
     {
         computer = new RadialShadingComputer(coords);

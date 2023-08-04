@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -29,7 +30,7 @@ internal readonly partial struct XrefStreamParserFactory
         );
     }
 
-    private async ValueTask<int[]> ReadIndexArrayAsync()
+    private async ValueTask<IReadOnlyList<int>> ReadIndexArrayAsync()
     {
         var readArray = await xrefStream.GetOrDefaultAsync(KnownNames.Index, (PdfArray?)null).CA();
         return readArray != null ? await readArray.CastAsync<int>().CA() : DefaultIndex;
@@ -43,9 +44,9 @@ internal readonly struct XrefStreamParser
     private readonly int col2Size;
     private readonly int itemSize;
     private readonly IIndirectObjectRegistry registry;
-    private readonly int[] index;
+    private readonly IReadOnlyList<int> index;
 
-    public XrefStreamParser(int col0Size, int col1Size, int col2Size, int[] index,
+    public XrefStreamParser(int col0Size, int col1Size, int col2Size, IReadOnlyList<int> index,
         IIndirectObjectRegistry registry)
     {
         this.col0Size = col0Size;
@@ -57,15 +58,15 @@ internal readonly struct XrefStreamParser
         VerifyIndexHasEvenNumberOfElements(index);
     }
 
-    private static void VerifyIndexHasEvenNumberOfElements(int[] index)
+    private static void VerifyIndexHasEvenNumberOfElements(IReadOnlyList<int> index)
     {
-        if (index.Length % 2 != 0)
+        if (index.Count % 2 != 0)
             throw new PdfParseException("Index of an xrefstream must have even number of elements");
     }
 
     public async ValueTask ParseAsync(PipeReader source)
     {
-        for (int i = 0; i < index.Length; i+=2)
+        for (int i = 0; i < index.Count; i+=2)
         {
             var baseNum = index[i];
             var length = index[i+1];

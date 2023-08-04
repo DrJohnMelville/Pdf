@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
@@ -8,7 +9,7 @@ internal abstract class SampledFunctionBase : PdfFunction
     private readonly MultiDimensionalArray<double> values;
     public SampledFunctionBase(
         ClosedInterval[] domain, ClosedInterval[] range, 
-        int[] sizes, ClosedInterval[] encode, double[] values) : base(domain, range)
+        IReadOnlyList<int> sizes, ClosedInterval[] encode, double[] values) : base(domain, range)
     {
         this.encode = encode;
         this.values = new MultiDimensionalArray<double>(sizes, range.Length, values);

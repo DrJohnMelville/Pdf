@@ -54,9 +54,9 @@ public class ItemLoader : DocumentPart
             var item = GetAt(references, i);
             waiting.MakeProgress($"Loading Object ({item.Key.ObjectNumber}, {item.Key.ObjectNumber})");
 
-            SetElement(ret, i, generator.GeneratePartAsync(
+            SetElement(ret, i, generator.GeneratePart(
                 $"{item.Key.ObjectNumber} {item.Key.Generation}: ",
-                await item.Value.LoadValueAsync()));
+                await item.Value.LoadValueAsync()).WithTarget(item.Key.ObjectNumber, item.Key.Generation));
         }
     }
 

@@ -46,7 +46,7 @@ public readonly partial struct DeepCopy
 
     private async ValueTask<PdfIndirectObject> DuplicateStreamAsync(PdfStream value) => 
         (await DuplicateDictionaryBuilderAsync(value).CA())
-        .AsStream(await value.StreamContentAsync(StreamFormat.DiskRepresentation).CA());
+        .AsStream(await value.StreamContentAsync(StreamFormat.DiskRepresentation).CA(), StreamFormat.DiskRepresentation);
 
     private async Task<DictionaryBuilder> DuplicateDictionaryBuilderAsync(PdfDictionary value)
     {

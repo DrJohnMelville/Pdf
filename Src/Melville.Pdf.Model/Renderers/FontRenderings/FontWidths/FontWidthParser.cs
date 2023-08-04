@@ -44,18 +44,9 @@ internal readonly struct FontWidthParser
 
     private async ValueTask<IFontWidthComputer> ParseSimpleFontWidthsAsync()
     {
-        return await pdfFont.WidthsArrayAsync().CA() is {Length: > 0} pdfWidths ? 
-            new ArrayFontWidthComputer(await pdfFont.FirstCharAsync().CA(), PreMultiply(pdfWidths)) : 
+        return await pdfFont.WidthsArrayAsync().CA() is {Count: > 0} pdfWidths ? 
+            new ArrayFontWidthComputer(await pdfFont.FirstCharAsync().CA(), pdfWidths, sizeFactor) : 
             NullFontWidthComputer.Instance;
-    }
-
-    private double[] PreMultiply(double[] pdfWidths)
-    {   
-        for (int i = 0; i < pdfWidths.Length; i++)
-        {
-            pdfWidths[i] *= sizeFactor;
-        }
-        return pdfWidths;
     }
     
     private async ValueTask<IFontWidthComputer> ParseCidFontWidthsAsync()
@@ -105,7 +96,7 @@ internal readonly struct FontWidthParser
         }
     }
 
-    private void AddItems(Dictionary<uint, double> ret, uint first, double[] widths)
+    private void AddItems(Dictionary<uint, double> ret, uint first, IReadOnlyList<double> widths)
     {
         foreach (var width in widths)
         {

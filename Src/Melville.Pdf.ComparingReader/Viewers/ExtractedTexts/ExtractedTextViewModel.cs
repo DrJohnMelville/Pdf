@@ -13,10 +13,10 @@ public partial class ExtractedTextViewModel
 
     public async Task LoadPageAsync(int page)
     {
-        Text = await PageText(page);
+        Text = await PageTextAsync(page);
     }
 
-    private async Task<string> PageText(int page)
+    private async Task<string> PageTextAsync(int page)
     {
         try
         {

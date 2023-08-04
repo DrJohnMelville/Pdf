@@ -20,11 +20,11 @@ public class S7_3_1HelpersForObjects
         Assert.Equal(0, ret.Count);
     }
     [Fact]
-    public async Task ArrayIsArray()
+    public async Task ArrayIsArrayAsync()
     {
         var ret = await new PdfArray(true, false).CastAsync<bool>();
-        Assert.Equal(2, ret.Length);
-        Assert.Equal(true, ret[0]);
+        Assert.Equal(2, ret.Count);
+        Assert.True(ret[0]);
         Assert.False(ret[1]);
     }
 }

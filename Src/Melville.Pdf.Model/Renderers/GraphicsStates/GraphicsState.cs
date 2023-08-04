@@ -105,7 +105,7 @@ public abstract partial class GraphicsState: IGraphicsState, IDisposable
     [MacroItem("LineCap", "LineCap", "LineCap.Butt", "Controls how the ends of of paths are drawn")]
     [MacroItem("double", "DashPhase", "0.0", "The initial phase of a dashed line.")]
     [MacroItem("double", "FlatnessTolerance", "1.0", "Not currently used, but could control the flatness precision in bezier curve rendering")]
-    [MacroItem("double[]", "DashArray", "Array.Empty<double>()", "dash or dot pattern for dotted lines")]
+    [MacroItem("IReadOnlyList<double>", "DashArray", "Array.Empty<double>()", "dash or dot pattern for dotted lines")]
     [MacroItem("RenderIntentName", "RenderIntent", "RenderIntentName.RelativeColoriMetric", "The desired rendering intent for various color transformations")]
     [MacroItem("IColorSpace", "StrokeColorSpace", "DeviceGray.Instance", "Color space for stroking brushes.")]
     [MacroItem("IColorSpace", "NonstrokeColorSpace", "DeviceGray.Instance", "Color space for nonstroking brushes.")]

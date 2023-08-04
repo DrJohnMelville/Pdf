@@ -609,7 +609,7 @@
             <param name="Order">Specifies the order in which groups are presented in the user interface.</param>
             <param name="RadioButtons">Defines mutually exclusive visibility between content groups.</param>
         </member>
-        <member name="M:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.#ctor(System.String,System.String,System.Nullable{System.Boolean},Melville.Pdf.LowLevel.Model.Objects.PdfDictionary[],Melville.Pdf.LowLevel.Model.Objects.PdfDictionary[],Melville.Pdf.LowLevel.Model.Objects.PdfArray,System.Collections.Generic.IReadOnlyList{Melville.Pdf.Model.OptionalContent.OptionalContentExclusionGroup})">
+        <member name="M:Melville.Pdf.Model.OptionalContent.OptionalContentConfiguration.#ctor(System.String,System.String,System.Nullable{System.Boolean},System.Collections.Generic.IReadOnlyList{Melville.Pdf.LowLevel.Model.Objects.PdfDictionary},System.Collections.Generic.IReadOnlyList{Melville.Pdf.LowLevel.Model.Objects.PdfDictionary},Melville.Pdf.LowLevel.Model.Objects.PdfArray,System.Collections.Generic.IReadOnlyList{Melville.Pdf.Model.OptionalContent.OptionalContentExclusionGroup})">
             <summary>
             Represents a PDF? Optional Content Configuration. spec 2.0 sec 8.11.4.3
             </summary>
@@ -1042,6 +1042,14 @@
             colorspace is the default. 
             </summary>
             <returns>The colorspace that should be used as the default colorspace.</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Colors.IColorSpaceOperations.SetColor(Melville.Pdf.Model.Renderers.Colors.IColorSpace,System.Collections.Generic.IReadOnlyList{System.Double})">
+            <summary>
+            Convert a color in the colorspace to the device color.
+            </summary>
+            <param name="target">The colorspace to compute a color in.</param>
+            <param name="newColor">Color in the colorspace.</param>
+            <returns>DEviceColor corresponding to the color in the colorspace.</returns>
         </member>
         <member name="T:Melville.Pdf.Model.Renderers.Colors.Profiles.CmykIccProfile">
             <summary>

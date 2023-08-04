@@ -44,7 +44,7 @@ internal static class WpfStateInterpreter
             CustomDashStyle(state.DashArray, state.DashPhase, state.LineWidth):
             DashStyles.Solid;
 
-    private static DashStyle CustomDashStyle(double[] dashes, double phase, double width) =>
+    private static DashStyle CustomDashStyle(IReadOnlyList<double> dashes, double phase, double width) =>
         new(dashes.Select(i => i / width).ToArray(), phase / width);
 
     private static PenLineCap ConvertLineCap(LineCap stateLineCap) => 

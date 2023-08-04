@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -45,7 +46,7 @@ internal readonly struct Type2Or3ShaderFactory
     }
 
     private CommonShaderValues OptimizeTypeAlialBBox(
-        CommonShaderValues common, double[] coords, bool extendLow, bool extendHigh)
+        CommonShaderValues common, IReadOnlyList<double> coords, bool extendLow, bool extendHigh)
     {
         if (coords[2] < Double.Epsilon*2) return AdjustBox(common, coords[3], coords[4], coords[5], extendHigh);
         if (coords[5] < double.Epsilon*2) return AdjustBox(common, coords[1], coords[1], coords[2], extendLow);

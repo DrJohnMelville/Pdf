@@ -80,7 +80,7 @@ public class GraphicStateDictionary
         Assert.Equal(3.0, gs.StronglyTypedCurrentState().DashPhase);
         Assert.Equal(1.0, gs.StronglyTypedCurrentState().DashArray[0]);
         Assert.Equal(2.0, gs.StronglyTypedCurrentState().DashArray[1]);
-        Assert.Equal(2, gs.StronglyTypedCurrentState().DashArray.Length);
+        Assert.Equal(2, gs.StronglyTypedCurrentState().DashArray.Count);
     }
 
     private static async Task<GraphicsStateStack<TestGraphicsState>> ComputeFinalGraphicsStackAsync(PdfPage page)

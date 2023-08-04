@@ -18,7 +18,6 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers;
 /// <param name="Top">The top edge of the rectangle.</param>
 public readonly record struct PdfRect (double Left, double Bottom, double Right, double Top)
 {
-    #warning -- If I am going to optimize for short arrays -- here is the place to do so
     /// <summary>
     /// Convert the rectangle to a PdfArray
     /// </summary>
@@ -32,15 +31,13 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
     public static async ValueTask<PdfRect> CreateAsync(PdfArray array)
     {
         var nums = await array.CastAsync<double>().CA();
-        return FromDoubleSpan(nums);
+        return FromDoubleSpan(nums[0], nums[1], nums[2],nums[3]);
     }
 
-    private static PdfRect FromDoubleSpan(in ReadOnlySpan<double> nums)
+    private static PdfRect FromDoubleSpan(double x1, double y1, double x2, double y2)
     {
-        if (nums.Length != 4)
-            throw new PdfParseException("Pdf Rectangle must have exactly 4 items.");
-        var (left, right) = MinMax(nums[0], nums[2]);
-        var (bottom, top) = MinMax(nums[1], nums[3]);
+        var (left, right) = MinMax(x1,x2);
+        var (bottom, top) = MinMax(y1,y2);
         return new PdfRect(left, bottom, right, top);
     }
 
@@ -67,7 +64,6 @@ public readonly record struct PdfRect (double Left, double Bottom, double Right,
     {
         var ll = Vector2.Transform(new Vector2((float)Left, (float)Bottom), transform);
         var ur = Vector2.Transform(new Vector2((float)Right, (float)Top), transform);
-        Span<double> nums = stackalloc double[] { ll.X, ll.Y, ur.X, ur.Y };
-        return FromDoubleSpan(nums);
+        return FromDoubleSpan(ll.X, ll.Y, ur.X, ur.Y);
     }
 }

@@ -61,7 +61,7 @@ public class PartParser: IPartParser
     }
 
     private static DocumentPart GenerateSuffixElement(PdfLowLevelDocument lowlevel) => 
-        new ViewModelVisitor().GeneratePartAsync("Trailer: ", lowlevel.TrailerDictionary);
+        new ViewModelVisitor().GeneratePart("Trailer: ", lowlevel.TrailerDictionary);
 
     private static IEnumerable<KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectObject>>
     OrderedListOfObjects(PdfLowLevelDocument lowlevel) => 

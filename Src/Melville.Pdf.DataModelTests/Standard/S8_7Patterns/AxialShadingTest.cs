@@ -17,7 +17,7 @@ public class AxialShadingTest
     [InlineData(0.35, 1, 0.35, 0.35)]
     public void HorizontalRowTest(double x, double y, double low, double high)
     {
-        var comp = new RadialShadingComputer(0, 0, 1, 1, 0, 1);
+        var comp = new RadialShadingComputer(new double[]{0, 0, 1, 1, 0, 1});
         Assert.True(comp.TParameterFor(new Vector2((float)x,(float)y), out var lowVal, out var highVal));
         Assert.Equal(low, lowVal, 4);
         Assert.Equal(high, highVal, 4);
@@ -34,7 +34,7 @@ public class AxialShadingTest
     [InlineData(0.5, 0.75, -0.5 , 0.5)]
     public void SlopingLine(double x, double y, double low, double high)
     {
-        var comp = new RadialShadingComputer(0, 0, 1, 1, 0, 0.5);
+        var comp = new RadialShadingComputer(new[]{0, 0, 1, 1, 0, 0.5});
         Assert.True(comp.TParameterFor(new Vector2((float)x,(float)y), out var lowVal, out var highVal));
         Assert.Equal(low, lowVal, 4);
         Assert.Equal(high, highVal, 4);
@@ -51,7 +51,7 @@ public class AxialShadingTest
     [InlineData(0.5, 0.75, 0.5 , 1.5)]
     public void SlopingLineInverse(double x, double y, double low, double high)
     {
-        var comp = new RadialShadingComputer( 1, 0, 0.5, 0, 0, 1);
+        var comp = new RadialShadingComputer(new[]{1, 0, 0.5, 0, 0, 1});
         Assert.True(comp.TParameterFor(new Vector2((float)x,(float)y), out var lowVal, out var highVal));
         Assert.Equal(low, lowVal, 4);
         Assert.Equal(high, highVal, 4);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -39,7 +40,7 @@ internal readonly partial struct PdfFont
     public async ValueTask<byte> FirstCharAsync() =>
         (byte)await LowLevel.GetOrDefaultAsync(KnownNames.FirstChar, 0).CA();
 
-    public async ValueTask<double[]?> WidthsArrayAsync() =>
+    public async Task<IReadOnlyList<double>?> WidthsArrayAsync() =>
         (await LowLevel.GetOrNullAsync<PdfArray>(KnownNames.Widths).CA()) is { } widthArray
             ? await widthArray.CastAsync<double>().CA()
             : null;

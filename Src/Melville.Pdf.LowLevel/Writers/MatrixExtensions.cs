@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -43,7 +44,7 @@ public static class MatrixExtensions
     /// <returns>The resulting matrix</returns>
     /// <exception cref="PdfParseException">If the PdfArray does not contain exactly 6 doubles.</exception>
     public static async ValueTask<Matrix3x2> AsMatrix3x2Async(this PdfArray array) =>
-        new ReadOnlySpan<double>(await array.CastAsync<double>().CA()).AsMatrix3x2();
+        (await array.CastAsync<double>().CA()).AsMatrix3x2();
 
     /// <summary>
     /// Convert a span of doubles into a Matrix3x2
@@ -51,8 +52,8 @@ public static class MatrixExtensions
     /// <param name="items">a span which must contain exactly 6 doubles</param>
     /// <returns>The resulting Matrix3x2</returns>
     /// <exception cref="PdfParseException">If the span does not contain exaclty 6 doubles.</exception>
-    public static Matrix3x2 AsMatrix3x2(this in ReadOnlySpan<double> items) =>
-        items.Length == 6
+    public static Matrix3x2 AsMatrix3x2(this IReadOnlyList<double> items) =>
+        items.Count == 6
             ? new Matrix3x2((float)items[0], (float)items[1], (float)items[2], (float)items[3],
                 (float)items[4], (float)items[5])
             : throw new PdfParseException("Matrix array must have exactly 6 elements");

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -7,9 +8,9 @@ namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 internal readonly struct RadialShadingComputer
 {
     private readonly double x0, y0;
-    public RadialShadingComputer(params double[] coords) : this()
+    public RadialShadingComputer(IReadOnlyList<double> coords) : this()
     {
-        Debug.Assert(coords.Length == 6);
+        Debug.Assert(coords.Count == 6);
         x0 = coords[0];
         y0 = coords[1];
         var r0 = coords[2];

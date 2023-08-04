@@ -18,9 +18,9 @@ public class ViewModelVisitor
         return ret;
     }
 
-    public DocumentPart GeneratePartAsync(string trailer, PdfIndirectObject dictionary)
+    public DocumentPart GeneratePart(string prefix, PdfIndirectObject dictionary)
     {
-        prefix = trailer;
+        this.prefix = prefix;
         return GenerateForObject(dictionary);
     }
 
@@ -36,9 +36,9 @@ public class ViewModelVisitor
         {
             {IsString: true} => TerminalNode($"({directValue})"),
             {IsName: true} => TerminalNode($"/{directValue}"),
-            var x when x.TryGet(out PdfArray array) => ParseArray(array),
-            var x when x.TryGet(out PdfStream stream) => ParseStream(stream),
-            var x when x.TryGet(out PdfDictionary dictionary) => ParseDictionary(dictionary),
+            var x when x.TryGet(out PdfArray? array) => ParseArray(array),
+            var x when x.TryGet(out PdfStream? stream) => ParseStream(stream),
+            var x when x.TryGet(out PdfDictionary? dictionary) => ParseDictionary(dictionary),
             _ => TerminalNode(directValue.ToString())
         };
     }
@@ -91,7 +91,7 @@ public class ViewModelVisitor
             CheckForType(item, KnownNames.Type, ref nodeType);
             CheckForType(item, KnownNames.Subtype, ref nodeSubType);
             CheckForType(item, KnownNames.S, ref nodeSubType);
-            items[position++] = GeneratePartAsync($"/{item.Key}: ", item.Value);
+            items[position++] = GeneratePart($"/{item.Key}: ", item.Value);
         }
 
         return items;
@@ -111,8 +111,7 @@ public class ViewModelVisitor
         var localPrefix = ConsumePrefix();
         var items = new DocumentPart[value.Count];
         for (int i = 0; i < items.Length; i++) 
-            items[i] = GeneratePartAsync($"[{i}]: ", value.RawItems[i]);
-
+            items[i] = GeneratePart($"[{i}]: ", value.RawItems[i]);
         return new DocumentPart($"{localPrefix}Array", items);
     }
 

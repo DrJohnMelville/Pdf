@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Colors;
@@ -60,4 +61,21 @@ internal static class IColorSpaceOperations
 
         return cs.SetColor(doubles);
     }
+
+    /// <summary>
+    /// Convert a color in the colorspace to the device color.
+    /// </summary>
+    /// <param name="target">The colorspace to compute a color in.</param>
+    /// <param name="newColor">Color in the colorspace.</param>
+    /// <returns>DEviceColor corresponding to the color in the colorspace.</returns>
+    public static DeviceColor SetColor(this IColorSpace target, IReadOnlyList<double> newColor)
+    {
+        Span<double> elts = stackalloc double[newColor.Count];
+        for (int i = 0; i < elts.Length; i++)
+        {
+            elts[i] = newColor[i];
+        }
+        return target.SetColor(elts);
+    }
+
 }

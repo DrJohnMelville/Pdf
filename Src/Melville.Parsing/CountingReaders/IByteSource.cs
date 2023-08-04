@@ -1,5 +1,4 @@
 ﻿using System.IO.Pipelines;
-using Melville.Parsing.AwaitConfiguration;
 
 namespace Melville.Parsing.CountingReaders;
 
@@ -56,17 +55,4 @@ public interface IByteSource
     /// The current position in the source stream.
     /// </summary>
     public long Position { get; }
-}
-
-public static class IByteSourceOperations
-{
-    public static async ValueTask<ReadResult> ReadMinAsync(this IByteSource source, int length)
-    {
-        while (true)
-        {
-            var result = await source.ReadAsync().CA();
-            if (result.Buffer.Length >= length) return result;
-            source.MarkSequenceAsExamined();
-        }
-    }
 }

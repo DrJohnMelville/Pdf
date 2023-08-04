@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -10,7 +11,7 @@ namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
 internal readonly partial struct ImageRenderingWrapper
 {
-    [FromConstructor] private readonly double[]? decode;
+    [FromConstructor] private readonly IReadOnlyList<double>? decode;
     [FromConstructor] private readonly bool isImageMask;
     [FromConstructor] private readonly IColorSpace colorSpace;
     [FromConstructor] private readonly int bitsPerComponent;

@@ -45,7 +45,7 @@ internal class CryptSingleFilter: IApplySingleFilter
     }
 
     public async ValueTask<PdfDirectObject> EncryptionAlgAsync(PdfDirectObject parameter) =>
-        parameter.TryGet(out PdfDictionary dict)
+        parameter.TryGet(out PdfDictionary? dict)
             ? await dict.GetOrDefaultAsync(KnownNames.Name, KnownNames.Identity).CA()
             : KnownNames.Identity;
 }

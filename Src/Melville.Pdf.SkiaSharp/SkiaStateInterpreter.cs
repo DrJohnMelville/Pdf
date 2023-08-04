@@ -44,12 +44,12 @@ internal static class SkiaStateInterpreter
         }
     }
 
-    private static SKPathEffect CreatePathEffect(double[] dashes, double phase) => 
+    private static SKPathEffect CreatePathEffect(IReadOnlyList<double> dashes, double phase) => 
         SKPathEffect.CreateDash(CreateDashArray(dashes), (float)phase);
 
-    private static float[] CreateDashArray(double[] dashes)
+    private static float[] CreateDashArray(IReadOnlyList<double> dashes)
     {
-        if (dashes.Length % 2 == 0)
+        if (dashes.Count % 2 == 0)
             return dashes.Select(i => (float)i).ToArray();
         else
             return dashes.Concat(dashes).Select(i => (float)i).ToArray();

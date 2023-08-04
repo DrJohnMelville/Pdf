@@ -26,6 +26,7 @@ public static class DictionarySubtypeOperations
     /// Get the PDfName that is the subtype of a dictionary
     /// </summary>
     /// <param name="dict">The dictionary to check</param>
+    /// <param name="defaultValue">The value to return if no subtype is found.</param>
     /// <returns>The subtyppe as a PdfName, or null if the subtype does not exist or is not a PDF name.</returns>
     public static PdfDirectObject SubTypeOrNull(this PdfDictionary dict, PdfDirectObject defaultValue = default) =>
         (dict.RawItems.TryGetValue(KnownNames.Subtype, out var obj) ||

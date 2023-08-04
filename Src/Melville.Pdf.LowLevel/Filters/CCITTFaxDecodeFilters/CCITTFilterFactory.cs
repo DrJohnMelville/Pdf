@@ -16,7 +16,7 @@ internal class CcittFilterFactory
         CcittCodecFactory.SelectDecoder(await ParseCcittOptionsAsync(arg).CA());
 
     public static ValueTask<CcittParameters> ParseCcittOptionsAsync(PdfDirectObject parameters) =>
-        FromDictionaryAsync(parameters.TryGet(out PdfDictionary dict)? dict:PdfDictionary.Empty);
+        FromDictionaryAsync(parameters.TryGet(out PdfDictionary? dict)? dict:PdfDictionary.Empty);
 
     public static async ValueTask<CcittParameters> FromDictionaryAsync(PdfDictionary parameters) =>
         new(await parameters.GetOrDefaultAsync(KnownNames.K, 0).CA(),

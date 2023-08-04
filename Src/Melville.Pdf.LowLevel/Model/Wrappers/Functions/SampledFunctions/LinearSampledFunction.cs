@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
 internal sealed class LinearSampledFunction : SampledFunctionBase
 {
-    public LinearSampledFunction(ClosedInterval[] domain, ClosedInterval[] range, int[] sizes, ClosedInterval[] encode, double[] values) : base(domain, range, sizes, encode, values)
+    public LinearSampledFunction(ClosedInterval[] domain, ClosedInterval[] range, IReadOnlyList<int> sizes, ClosedInterval[] encode, double[] values) : base(domain, range, sizes, encode, values)
     {
     }
     protected override void InterpolateValueAtPoint(

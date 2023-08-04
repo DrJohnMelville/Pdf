@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
@@ -10,11 +11,11 @@ internal class Type2AxialShading : ParametricFunctionalShader
     private readonly double xDelta, yDelta, denominator;
 
     public Type2AxialShading(CommonShaderValues common,
-        double[] coords, ClosedInterval domain,
+        IReadOnlyList<double> coords, ClosedInterval domain,
         IPdfFunction function, bool extendLow, bool extendHigh) : base(common,
         domain, function, extendLow, extendHigh)
     {
-        Debug.Assert(coords.Length == 4);
+        Debug.Assert(coords.Count == 4);
         this.xBase = coords[0];
         this.yBase = coords[1];
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
@@ -49,9 +50,9 @@ internal readonly record struct CommonShaderValues(
         return backGroundInt;
     }
 
-    private static uint ComputeBackgroundUint(double[] backGroundArray, IColorSpace colorSpace)
+    private static uint ComputeBackgroundUint(IReadOnlyList<double> backGroundArray, IColorSpace colorSpace)
     {
-        return (backGroundArray.Length == colorSpace.ExpectedComponents?
+        return (backGroundArray.Count == colorSpace.ExpectedComponents?
             colorSpace.SetColor(backGroundArray).AsPreMultiplied():DeviceColor.Invisible)
             .AsArgbUint32();
     }

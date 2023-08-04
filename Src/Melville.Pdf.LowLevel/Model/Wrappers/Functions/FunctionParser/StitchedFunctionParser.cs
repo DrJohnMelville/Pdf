@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -21,11 +22,11 @@ internal static class StitchedFunctionParser
     }
         
     private static async Task<StitchedFunctionSegment[]> CreateFunctionSegmentsAsync(
-        PdfDictionary[] functionDecls, ClosedInterval domain, double[] bounds, 
+        IReadOnlyList<PdfDictionary> functionDecls, ClosedInterval domain, IReadOnlyList<double> bounds, 
         ClosedInterval[] encode)
     {
-        var functions = new StitchedFunctionSegment[functionDecls.Length];
-        for (int i = 0; i < functionDecls.Length; i++)
+        var functions = new StitchedFunctionSegment[functionDecls.Count];
+        for (int i = 0; i < functionDecls.Count; i++)
         {
             functions[i] = new StitchedFunctionSegment(
                 SegmentDomain(bounds, i, domain),
@@ -36,8 +37,8 @@ internal static class StitchedFunctionParser
         return functions;
     }
 
-    private static ClosedInterval SegmentDomain(double[] bounds, int i, ClosedInterval domain) =>
+    private static ClosedInterval SegmentDomain(IReadOnlyList<double> bounds, int i, ClosedInterval domain) =>
         new(
             i == 0 ? domain.MinValue : bounds[i-1],
-            i >= bounds.Length ? domain.MaxValue : bounds[i]);
+            i >= bounds.Count ? domain.MaxValue : bounds[i]);
 }

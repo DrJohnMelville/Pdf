@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Melville.Pdf.Model.Renderers.Colors;
 
@@ -10,14 +11,14 @@ internal class StencilWriter : IByteWriter
    private readonly uint zeroColor;
     private readonly uint oneColor;
     
-    public StencilWriter(double[]? decode, DeviceColor color)
+    public StencilWriter(IReadOnlyList<double>? decode, DeviceColor color)
     {
         var drawColor = color.AsPreMultiplied().AsArgbUint32();
         (zeroColor, oneColor) = ZeroIsMarkingValue(decode) ? (drawColor, 0u) : (0, drawColor);
     }
 
-    private static bool ZeroIsMarkingValue(double[]? decode) => 
-        decode == null || decode.Length < 1  || decode[0] < 0.5;
+    private static bool ZeroIsMarkingValue(IReadOnlyList<double>? decode) => 
+        decode == null || decode.Count< 1  || decode[0] < 0.5;
     
     public unsafe void WriteBytes(scoped ref SequenceReader<byte> input, scoped ref byte* output, byte* nextPos)
     {

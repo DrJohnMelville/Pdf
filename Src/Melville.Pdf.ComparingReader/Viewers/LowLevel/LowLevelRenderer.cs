@@ -21,5 +21,5 @@ public class LowLevelRenderer : IRenderer
     public void SetTarget(Stream pdfBits, IPasswordSource source) => 
         model.InnerModel.SetStream(pdfBits);
 
-    public void SetPage(int page) { model.InnerModel.JumpTOPage(page-1); }
+    public void SetPage(int page) => model.InnerModel.JumpTOPage(page-1); 
 }

@@ -98,6 +98,9 @@ public readonly partial struct PdfIndirectObject
     #endregion
 }
 
+/// <summary>
+/// Extensions object for IndirectValueOperations.
+/// </summary>
 public static class IndirectValueOperations
 {
     public static async ValueTask<T> LoadValueAsync<T>(this PdfIndirectObject value) =>

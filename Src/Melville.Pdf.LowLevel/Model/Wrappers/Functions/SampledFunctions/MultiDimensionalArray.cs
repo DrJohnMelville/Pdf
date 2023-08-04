@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Melville.Hacks;
 
@@ -6,19 +7,19 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.SampledFunctions;
 
 internal readonly struct MultiDimensionalArray<T>
 {
-    private readonly int[] sizes;
+    private readonly IReadOnlyList<int> sizes;
     private readonly int[] dimensionLengthInValuesArray;
     private readonly T[] values;
 
-    public MultiDimensionalArray(int[] sizes, int valuesPerIndex, T[] values) : this()
+    public MultiDimensionalArray(IReadOnlyList<int> sizes, int valuesPerIndex, T[] values) : this()
     {
         this.sizes = sizes;
         this.values = values;
         dimensionLengthInValuesArray = CreateCompositeSizes(sizes, valuesPerIndex);
     }
-    private static int[] CreateCompositeSizes(int[] inputSizes, int outputCount)
+    private static int[] CreateCompositeSizes(IReadOnlyList<int> inputSizes, int outputCount)
     {
-        var ret = new int[inputSizes.Length];
+        var ret = new int[inputSizes.Count];
         ret[0] = outputCount;
         for (int i = 1; i < ret.Length; i++)
         {

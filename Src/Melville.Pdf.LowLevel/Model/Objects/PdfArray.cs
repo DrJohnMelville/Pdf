@@ -96,7 +96,7 @@ public sealed class PdfArray :
 
     #warning  figue out if we could use an IReadOnlyDictionary to do this without copying
     #warning perhaps we could have a writeToSpan method to not need to allocate temporaries.
-    public async ValueTask<T[]> CastAsync<T>()
+    public async ValueTask<IReadOnlyList<T>> CastAsync<T>()
     {
         var ret = new T[Count];
         for (int i = 0; i < ret.Length; i++)
@@ -106,22 +106,4 @@ public sealed class PdfArray :
 
         return ret;
     }
-}
-
-public static class PdfValueArrayOperations
-{
-    public static async ValueTask<T> GetAsync<T>(this PdfArray array, int index) =>
-        (await array[index].CA()).Get<T>();
-
-    public static async ValueTask<PdfDirectObject[]> AsDirectValues(this PdfArray array)
-    {
-        var ret = new PdfDirectObject[array.Count];
-        for (int i = 0; i < ret.Length; i++)
-        {
-            ret[i] = await array[i].CA();
-        }
-
-        return ret;
-    }
-
 }

@@ -14,7 +14,7 @@ public static class GraphicsStateHelpers
     /// <returns>True if the current line style is likely to be dashed,
     /// false if it is definitely solid.</returns>
     public static bool IsDashedStroke(this GraphicsState gs) =>
-        gs.DashArray.Length > 0;
+        gs.DashArray.Count > 0;
 
     /// <summary>
     /// In PDF zero line widths are one pixel wide.  This converts a raw width to the actual width.

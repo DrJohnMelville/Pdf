@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -28,7 +29,7 @@ internal static class FunctionParsingMethods
         source.ContainsKey(KnownNames.Range)
             ? await source.ReadIntervalsAsync(KnownNames.Range).CA()
             : Enumerable.Repeat(ClosedInterval.NoRestriction, numberOfOutputs).ToArray();
-    public static async ValueTask<double[]> ReadArrayWithDefaultAsync(
+    public static async ValueTask<IReadOnlyList<double>> ReadArrayWithDefaultAsync(
         this PdfDictionary source, PdfDirectObject name, int defaultValue) =>
         source.ContainsKey(name)
             ? await (await source.GetAsync<PdfArray>(name).CA()).CastAsync<double>().CA()

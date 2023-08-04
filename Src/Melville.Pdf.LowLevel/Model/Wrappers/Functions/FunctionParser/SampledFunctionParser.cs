@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.VariableBitEncoding;
@@ -11,7 +12,7 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Functions.FunctionParser;
 
 internal static class SampledFunctionParser
 {
-    public static async Task<SampledFunctionBase> ParseAsync( PdfStream source)
+    public static async Task<SampledFunctionBase> ParseAsync(PdfStream source)
     {
         var domain = await source.ReadIntervalsAsync(KnownNames.Domain).CA();
         var range = await source.ReadIntervalsAsync(KnownNames.Range).CA();
@@ -32,7 +33,7 @@ internal static class SampledFunctionParser
             : new LinearSampledFunction(domain, range, size, encode, samples);
     }
 
-    private static int InputPermutations(int[] size) => size.Aggregate(1, (a, b) => a * b);
+    private static int InputPermutations(IReadOnlyList<int> size) => size.Aggregate(1, (a, b) => a * b);
 
     private static void VerifyEqualLength(ClosedInterval[] arr1, ClosedInterval[] arr2)
     {
@@ -40,7 +41,7 @@ internal static class SampledFunctionParser
             throw new PdfParseException("Invalid Sampled Function Definition");
     }
 
-    private static ClosedInterval[] CreateEncodeFromSize(int[] size) => 
+    private static ClosedInterval[] CreateEncodeFromSize(IReadOnlyList<int> size) => 
         size.Select(i => new ClosedInterval(0, i - 1)).ToArray();
 
     private static async Task<double[]> ReadSamplesAsync(

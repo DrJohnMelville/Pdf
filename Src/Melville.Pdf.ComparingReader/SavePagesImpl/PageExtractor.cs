@@ -39,15 +39,16 @@ public readonly partial struct PageExtractor
 
     private async ValueTask<(int objNum, int gen)> FindRefToPageAsync()
     {
-        #warning fix this once we can compile
-        // var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.Parent)) ??
-        //                 throw new InvalidDataException("Page does not have a parent");
-        // var kids = (PdfValueArray)await treeLeaf[KnownNames.Kids];
-        // foreach (var value in kids.RawItems)
-        // {
-        //     if (value is PdfIndirectObject pio && (await pio.DirectValueAsync()).Equals(page.LowLevel))
-        //         return pio;
-        // }
+        var treeLeaf = (await page.LowLevel.GetOrNullAsync<PdfDictionary>(KnownNames.Parent)) ??
+                        throw new InvalidDataException("Page does not have a parent");
+        var kids = await treeLeaf.GetAsync<PdfArray>(KnownNames.Kids);
+
+        foreach (var value in kids.RawItems)
+        {
+            var referredObject = await value.LoadValueAsync();
+            if (referredObject.TryGet(out PdfDictionary? dict) && dict == page.LowLevel)
+                return value.GetObjectReference();
+        }
 
         throw new InvalidDataException("Page should be a child of its parent");
     }

@@ -90,11 +90,11 @@ internal readonly struct OptionalContentPropertiesParser
         ParseRadioButtonGroupsAsync(PdfArray rbGroups)
     {
         var dicts = await rbGroups.CastAsync<PdfArray>().CA();
-        var ret = new OptionalContentExclusionGroup[dicts.Length];
+        var ret = new OptionalContentExclusionGroup[dicts.Count];
         for (int i = 0; i < ret.Length; i++)
         {
             var groupDicts = await dicts[i].CastAsync<PdfDictionary>().CA();
-            var groupItems = new OptionalGroup[groupDicts.Length];
+            var groupItems = new OptionalGroup[groupDicts.Count];
             for (int j = 0; j < groupItems.Length; j++)
             {
                 groupItems[j] = ocDict[groupDicts[j]];
@@ -117,7 +117,7 @@ internal readonly struct OptionalContentPropertiesParser
         return baseState;
     }
 
-    private async ValueTask<PdfDictionary[]> ParseOnOffArrayAsync(
+    private async Task<IReadOnlyList<PdfDictionary>> ParseOnOffArrayAsync(
         PdfDictionary occ, PdfDirectObject dictName)
     {
         return await (await occ.GetOrDefaultAsync(dictName, PdfArray.Empty).CA())
