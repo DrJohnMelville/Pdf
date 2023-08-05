@@ -14,6 +14,7 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.Builder;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.ReferenceDocuments.LowLevel.Encryption;
+using Moq;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Standard.S7_5FileStructure;
@@ -137,9 +138,12 @@ public class S7_5_7ObjectStreams
         builder.TryAddRef(2,PdfDirectObject.CreateString("Two"u8));
         var str = (await builder.CreateStreamAsync()).Get<PdfStream>();
 
-        var output = await str.GetIncludedObjectNumbersAsync();
-        Assert.Equal(1, output[0].ObjectNumber);
-        Assert.Equal(2, output[1].ObjectNumber);
+        var target = new Mock<IInternalObjectTarget>();
+        await str.ReportIncludedObjects(new(target.Object, 15));
+
+        target.Verify(i=>i.DeclareObjectStreamObjectAsync(1, 15, 0, 8));
+        target.Verify(i=>i.DeclareObjectStreamObjectAsync(2, 15, 1, 14));
+        target.VerifyNoOtherCalls();
     }
 
     [Fact]

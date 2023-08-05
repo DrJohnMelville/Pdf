@@ -11,14 +11,14 @@ using Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
-internal readonly partial struct ObjectStreamParser
+internal partial class ObjectStreamParser: IInternalObjectTarget
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
     [FromConstructor] private readonly SubsetParsingReader subsetReader;
     [FromConstructor] private readonly RootObjectParser parser;
-    [FromConstructor] private readonly IList<ObjectLocation> locations;
     [FromConstructor] private readonly int desiredObjectNumber;
-
+    [FromConstructor] private readonly PdfStream source;
+    private PdfDirectObject result = default;
 
     public static async ValueTask<ObjectStreamParser> CreateAsync(
         ParsingFileOwner owner, PdfStream source, int desiredObjectNumber)
@@ -28,42 +28,53 @@ internal readonly partial struct ObjectStreamParser
         var subsetReader = new SubsetParsingReader(reader);
         var parser = new RootObjectParser(subsetReader);
 
-        var locations = await ObjectStreamOperations.GetIncludedObjectNumbersAsync(
-            source, subsetReader).CA();
-
-        return new(owner, subsetReader, parser, locations, desiredObjectNumber);
+        
+        return new(owner, subsetReader, parser, desiredObjectNumber, source);
     }
 
-    public async ValueTask<PdfDirectObject> ParseAsync(PdfDirectObject objectValue)
+    public async ValueTask<PdfDirectObject> ParseAsync(PdfDirectObject priorResult)
     {
-        for (int i = 0; i < locations.Count; i++)
+        result = priorResult;
+        await ObjectStreamOperations.ReportIncludedObjects(source,
+            new InternalObjectTargetForStream(this, -1), subsetReader).CA();
+        await DeclareObjectStreamObjectAsync(-1, -1, -1, int.MaxValue).CA();
+        return result;
+    }
+
+    private int priorObjectNumber = -1;
+    private int priorOffset = -1;
+    public async ValueTask DeclareObjectStreamObjectAsync(
+        int objectNumber, int streamObjectNumber, int streamOrdinal, int streamOffset)
+    {
+        if (priorObjectNumber >= 0)
         {
-            var dirValue = await ReadSingleObjectAsync(locations[i], i).CA();
-            if (desiredObjectNumber == locations[i].ObjectNumber) objectValue = dirValue;
+            await ParseSingleObject(streamOffset).CA();
         }
 
-        return objectValue;
+        priorObjectNumber = objectNumber;
+        priorOffset = streamOffset;
     }
 
-    private async Task<PdfDirectObject> ReadSingleObjectAsync(ObjectLocation location, int i)
+    private async ValueTask ParseSingleObject(int nextOffset)
     {
-        await PositionForNextObjectAsync(location, i).CA();
+        var obj = await ReadSingleObjectAsync(priorOffset, nextOffset).CA();
+        if (priorObjectNumber == desiredObjectNumber) result = obj;
+        owner.NewIndirectResolver.RegisterDirectObject(priorObjectNumber, 0, obj, false);
+    }
+
+    private async Task<PdfDirectObject> ReadSingleObjectAsync(int objectOffset, int nextOffset)
+    {
+        await PositionForNextObjectAsync(objectOffset, nextOffset).CA();
 
         var indirValue = await parser.ParseAsync().CA();
         if (!indirValue.TryGetEmbeddedDirectValue(out var dirValue))
             throw new PdfParseException("Object stream member may not be a reference");
-        
-        owner.NewIndirectResolver.RegisterDirectObject(location.ObjectNumber, 0, dirValue, false);
-        
         return dirValue;
     }
 
-    private ValueTask PositionForNextObjectAsync(ObjectLocation location, int i)
+    private ValueTask PositionForNextObjectAsync(int startLocation, int nextLocation)
     {
-        subsetReader.ExclusiveEndPosition = NextOffset(locations, i);
-        return subsetReader.AdvanceToLocalPositionAsync(locations[i].Offset);
+        subsetReader.ExclusiveEndPosition = nextLocation;
+        return subsetReader.AdvanceToLocalPositionAsync(startLocation);
     }
-
-    private long NextOffset(IList<ObjectLocation> locations, int i) => 
-        (i + 1 >= locations.Count) ? long.MaxValue : locations[i + 1].Offset;
 }

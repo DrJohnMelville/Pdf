@@ -117,7 +117,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
         Debug.Assert(Count == 2);
         Debug.Assert(Peek().TryGetEmbeddedDirectValue(
             out Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>> _));
-        AdvavancePastWhiteSpace(await Source.Reader.ReadMinAsync(2).CA());
+        AdvavancePastWhiteSpace(await Source.Reader.ReadAtLeastAsync(2).CA());
         Pop().TryGetEmbeddedDirectValue(out var dv);
         Pop();
         Push(new PdfStream(new  PdfFileStreamSource(

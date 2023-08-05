@@ -69,7 +69,7 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
         (await this.GetOrNullAsync(KnownNames.DecodeParms).CA()).ObjectAsUnresolvedList();
 
 
-    public async ValueTask<bool> HasFilterOfTypeAsync(PdfDirectObject filterType)
+    internal async ValueTask<bool> HasFilterOfTypeAsync(PdfDirectObject filterType)
     {
         foreach (var item in await FilterListAsync().CA())
         {
@@ -78,8 +78,10 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
         return false;
     }
 
-    async ValueTask<IEnumerable<ObjectLocation>> IHasInternalIndirectObjects.GetInternalObjectNumbersAsync() =>
-        (await this.GetOrNullAsync(KnownNames.Type).CA()).Equals(KnownNames.ObjStm)
-            ? await this.GetIncludedObjectNumbersAsync().CA()
-            : Array.Empty<ObjectLocation>();
+    async ValueTask IHasInternalIndirectObjects.RegisterInternalObjects(
+        InternalObjectTargetForStream target)
+    {
+        if ((await this.GetOrNullAsync(KnownNames.Type).CA()).Equals(KnownNames.ObjStm))
+            await this.ReportIncludedObjects(target).CA();
+    }
 }

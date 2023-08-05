@@ -104,6 +104,9 @@ public sealed class PdfArray :
         }
     }
 
+    /// <summary>
+    /// Resolve all the indirect references and return an IReadOnlyList of direct objects.
+    /// </summary>
     public async ValueTask<IReadOnlyList<PdfDirectObject>> AsDirectValuesAsync()
     {
         await ResolveAllIndirectElementsAsync().CA();

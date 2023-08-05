@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 namespace Melville.Pdf.LowLevel.Writers.DocumentWriters;
 
-internal class XRefTable
+internal class XRefTable: IInternalObjectTarget
 {
     private readonly int extraSlots;
     private XRefTableEntry[] entries;
@@ -16,11 +18,14 @@ internal class XRefTable
 
     public void DeclareIndirectObject(int objNumber, long offset, long generation = 0) =>
         StoreObjectEntry(objNumber, XRefTableEntry.IndirectEntry(offset, generation));
-        
 
-    public void DeclareObjectStreamObject(
-        int objectNumber, int streamObjectNumber, int streamOrdinal) =>
-        StoreObjectEntry(objectNumber, XRefTableEntry.ObjStreamEntry(streamObjectNumber, streamOrdinal));
+    public ValueTask DeclareObjectStreamObjectAsync(
+        int objectNumber, int streamObjectNumber, int streamOrdinal, int streamOffset)
+    {
+        StoreObjectEntry(objectNumber,
+            XRefTableEntry.ObjStreamEntry(streamObjectNumber, streamOrdinal));
+        return ValueTask.CompletedTask;
+    }
 
     private void StoreObjectEntry(int objectNumber, XRefTableEntry item)
     {

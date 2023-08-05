@@ -1,57 +1,57 @@
-﻿using System.Buffers;
-using System.Collections.Generic;
+﻿using System;
+using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.CountingReaders;
+using Melville.Pdf.LowLevel.Filters.LzwFilter;
 using Melville.Pdf.LowLevel.Model.Conventions;
-using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 internal static class ObjectStreamOperations
 {
-    public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
-        this PdfStream stream)
+    public static async ValueTask ReportIncludedObjects(
+        this PdfStream stream, InternalObjectTargetForStream target)
     {
         await using var decoded = await stream.StreamContentAsync().CA();
-        return await GetIncludedObjectNumbersAsync(stream, 
-            new ByteSource(PipeReader.Create(decoded))).CA();
+        var bytes = new ByteSource(PipeReader.Create(decoded));
+
+        await ReportIncludedObjects(stream, target, bytes).CA();
     }
 
-
-    public static async ValueTask<IList<ObjectLocation>> GetIncludedObjectNumbersAsync(
-        PdfStream stream, IByteSource reader) =>
-        await reader.GetIncludedObjectNumbersAsync(
-            (await stream.GetAsync<int>(KnownNames.N).CA()),
-            (await stream.GetAsync<int>(KnownNames.First).CA())).CA();
-
-    private static async ValueTask<ObjectLocation[]> GetIncludedObjectNumbersAsync(
-        this IByteSource reader, int count, int first)
+    public static async Task ReportIncludedObjects(
+        PdfStream stream, InternalObjectTargetForStream target, IByteSource bytes)
     {
-        var source = await reader.ReadAsync().CA();
-        while (source.Buffer.Length < first)
-        {
-            reader.MarkSequenceAsExamined();
-            source = await reader.ReadAsync().CA();
-        }
+        var firstObjectOffset = await stream.GetAsync<int>(KnownNames.First).CA();
+        var buffer = ArrayPool<byte>.Shared.Rent(firstObjectOffset);
+        var result = await bytes.ReadAtLeastAsync(firstObjectOffset).CA();
+        result.Buffer.Slice(0, firstObjectOffset).CopyTo(buffer);
+        bytes.AdvanceTo(result.Buffer.GetPosition(firstObjectOffset));
 
-        var ret = FillInts(new SequenceReader<byte>(source.Buffer), count, first);
-        reader.AdvanceTo(source.Buffer.GetPosition(first));
-        return ret;
+        var numbers = buffer.AsMemory(0, firstObjectOffset);
+        for (var i = 0;; i++)
+        {
+            var objNum = ParseNumber(ref numbers);
+            if (objNum < 0) return;
+            var offset = ParseNumber(ref numbers);
+            if (offset < 0) return;
+            await target.ReportObject(objNum, i, offset + firstObjectOffset).CA();
+        }
     }
 
-    private static ObjectLocation[] FillInts(SequenceReader<byte> seqReader, int count, int first)
+    private static int ParseNumber(ref Memory<byte> sourceMemory)
     {
-        #warning try to get rid of this allocation.
-        var ret = new ObjectLocation[count];
-        for (int i = 0; i < count; i++)
-        {
-            WholeNumberParser.TryParsePositiveWholeNumber(ref seqReader, out int number, out _);
-            WholeNumberParser.TryParsePositiveWholeNumber(ref seqReader, out int offset, out _);
-            ret[i] = new ObjectLocation(number, offset + first);
-        }
-
-        return ret;
+        var source = sourceMemory.Span;
+        var consumed = source.IndexOfAny(digits);
+        if (consumed < 0) return -1;
+        NumberTokenizer.TryGetDigitSequence(10, source[consumed..],
+                out var value, out var digitsLength);
+        sourceMemory = sourceMemory.Slice(consumed + digitsLength);
+        return (int)value;
     }
+
+    private static ReadOnlySpan<byte> digits => "0123456789"u8;
 }
