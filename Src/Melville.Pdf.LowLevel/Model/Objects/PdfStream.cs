@@ -10,6 +10,11 @@ using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 namespace Melville.Pdf.LowLevel.Model.Objects;
 
+/// <summary>
+/// This represents a PDF stream object.  It inherits from PdfDictionary because all
+/// PDF streams are also dictionaries.  It has a few extra methods to retrieve the
+/// associated data strea,.
+/// </summary>
 public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
 {
     private readonly IStreamDataSource source;
@@ -24,9 +29,8 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
         await source.OpenRawStreamAsync(await DeclaredLengthAsync().CA()).CA();
 
     /// <summary>
-    /// The length of the stream as declared in the stream dictionary.
+    /// The on disk length of the stream as declared in the stream dictionary.
     /// </summary>
-    /// <returns></returns>
     public ValueTask<long> DeclaredLengthAsync() => 
         this.GetOrDefaultAsync(KnownNames.Length, 0L);
 

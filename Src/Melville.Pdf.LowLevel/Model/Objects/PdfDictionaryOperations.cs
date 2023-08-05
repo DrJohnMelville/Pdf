@@ -39,7 +39,6 @@ public static class PdfDictionaryOperations
     /// <summary>
     /// Get the value from a key, or a default if the item does not exist or is not the correct type
     /// </summary>
-    /// <typeparam name="T">The desired subtype of PdfObject</typeparam>
     /// <param name="dict">The dictionary</param>
     /// <param name="name">The key for the desired item</param>
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
@@ -58,7 +57,7 @@ public static class PdfDictionaryOperations
     /// <param name="defaultValue">The default value, if the item does not exist or is wrong type</param>
     /// <returns>The desired item, after resolving indirect references</returns>
     public static async ValueTask<T> GetOrDefaultAsync<T>(
-        this PdfDictionary dict, PdfDirectObject name, T defaultValue = default) =>
+        this PdfDictionary dict, PdfDirectObject name, T defaultValue) =>
         dict.TryGetValue(name, out var obj) && (await obj.CA()).TryGet(out T? definiteObj)
         ? definiteObj: defaultValue;
 
@@ -82,7 +81,7 @@ public static class PdfDictionaryOperations
     /// <param name="alternateName">The name to check if the primary key does not exist</param>
     /// <returns>Value associated with primary name if one exists, otherwise value associated with the
     /// secondary name as it exists, otherwise PdfNull</returns>
-    public static ValueTask<PdfDirectObject> GetWithAlternativeName(
+    public static ValueTask<PdfDirectObject> GetWithAlternativeNameAsync(
         this PdfDictionary dict, PdfDirectObject primaryName, PdfDirectObject alternateName) => dict switch
     {
         _ when dict.TryGetValue(primaryName, out var ret) => ret,

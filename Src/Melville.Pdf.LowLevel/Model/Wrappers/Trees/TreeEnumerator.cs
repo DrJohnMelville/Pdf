@@ -55,7 +55,7 @@ internal class TreeEnumerator: IAsyncEnumerator<PdfDirectObject>
     {
         if (await TryPushIntermediateNodeKidsAsync(node).CA()) return false;
         return RecordLeafItems(
-            (await node.GetWithAlternativeName(
+            (await node.GetWithAlternativeNameAsync(
                 KnownNames.Nums, KnownNames.Names).CA()).Get<PdfArray>());
     }
 

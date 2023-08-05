@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects;
 
 internal partial class CastedPdfArray<T> : IReadOnlyList<T>
 {
-    [FromConstructor] private PdfIndirectObject[] source;
+    [FromConstructor] private readonly PdfIndirectObject[] source;
     public IEnumerator<T> GetEnumerator()
     {
         foreach (var item in source)
@@ -23,6 +23,6 @@ internal partial class CastedPdfArray<T> : IReadOnlyList<T>
     public T this[int index] => CastToDesiredType(source[index]);
 
     private T CastToDesiredType(PdfIndirectObject item) =>
-        item.TryGetEmbeddedDirectValue(out T ret)?ret:
+        item.TryGetEmbeddedDirectValue(out T? ret)?ret:
             throw new PdfParseException("Tried to cast a PDF array to an inappropriate value");
 }

@@ -40,7 +40,7 @@ internal readonly partial struct TreeSearcher
 
     private async ValueTask<PdfDirectObject> SearchLeafAsync()
     {
-        var array = (await source. GetWithAlternativeName(KnownNames.Nums, KnownNames.Names).CA()).
+        var array = (await source. GetWithAlternativeNameAsync(KnownNames.Nums, KnownNames.Names).CA()).
             Get<PdfArray>();
         return await BinarySearchLeafAsync(array, 0, (array.Count / 2) -1).CA();
     }

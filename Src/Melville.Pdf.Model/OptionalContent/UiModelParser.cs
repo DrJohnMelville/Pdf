@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Parsing.SpanAndMemory;
 
 namespace Melville.Pdf.Model.OptionalContent;
 
@@ -18,18 +19,18 @@ internal readonly struct UiModelParser
     public async ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ParseAsync(PdfArray? order)
     {
         if (order is null or {Count:0} ) return Array.Empty<IOptionalContentDisplayGroup>();
-        var items = await order.AsDirectValues().CA();
-        return await ParseMultipleOptionDisplayGroupsAsync(new ReadOnlyMemory<PdfDirectObject>(items)).CA();
+        var items = await order.AsDirectValuesAsync().CA();
+        return await ParseMultipleOptionDisplayGroupsAsync(items).CA();
     }
 
     private async ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ParseMultipleOptionDisplayGroupsAsync(
-        ReadOnlyMemory<PdfDirectObject> items)
+        IReadOnlyList<PdfDirectObject> items)
     {
-        if (items.Length == 0) return Array.Empty<IOptionalContentDisplayGroup>();
-        var ret = new IOptionalContentDisplayGroup[items.Length];
-        for (int i = 0; i < items.Length; i++)
+        if (items.Count == 0) return Array.Empty<IOptionalContentDisplayGroup>();
+        var ret = new IOptionalContentDisplayGroup[items.Count];
+        for (int i = 0; i < items.Count; i++)
         {
-            ret[i] = await ParseUiModelElementAsync(items.Span[i]).CA();
+            ret[i] = await ParseUiModelElementAsync(items[i]).CA();
         }
         return ret;
     }
@@ -38,13 +39,13 @@ internal readonly struct UiModelParser
         item switch
         {
             var x when item.TryGet(out PdfDictionary dict) => groupStates[dict],
-            var x when item.TryGet(out PdfArray arr) => await ParseUiModelArrayAsync(await arr.AsDirectValues().CA()).CA(),
+            var x when item.TryGet(out PdfArray arr) => await ParseUiModelArrayAsync(await arr.AsDirectValuesAsync().CA()).CA(),
             _ => throw new PdfParseException("Unexpected Order member in optional content group")
         };
 
-    private async ValueTask<IOptionalContentDisplayGroup> ParseUiModelArrayAsync(PdfDirectObject[] array)
+    private async ValueTask<IOptionalContentDisplayGroup> ParseUiModelArrayAsync(IReadOnlyList<PdfDirectObject> array)
     {
-        if (array.Length< 1)
+        if (array.Count < 1)
             throw new PdfParseException("Empty Order Subarray in optional content group.");
         return array[0] switch
         {
@@ -56,6 +57,6 @@ internal readonly struct UiModelParser
         };
     }
 
-    private ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ParseChildrenAsync(PdfDirectObject[] array) =>
-        ParseMultipleOptionDisplayGroupsAsync(new ReadOnlyMemory<PdfDirectObject>(array).Slice(1));
+    private ValueTask<IReadOnlyList<IOptionalContentDisplayGroup>> ParseChildrenAsync(IReadOnlyList<PdfDirectObject> array) =>
+        ParseMultipleOptionDisplayGroupsAsync(array.Slice(1));
 }

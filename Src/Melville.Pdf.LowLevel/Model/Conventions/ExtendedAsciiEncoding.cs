@@ -33,7 +33,13 @@ public static class ExtendedAsciiEncoding
         }
     }
 
-    public static Span<byte> StripZerosAsync(this in Span<byte> source)
+    /// <summary>
+    /// Remove the zero bytes from a string and replace them with '_"
+    /// This is useful if we want to print them  for human inspection
+    /// </summary>
+    /// <param name="source">the span to remove Zeros from</param>
+    /// <returns>The source span, after the zeros are removed.</returns>
+    public static Span<byte> StripZeros(this in Span<byte> source)
     {
         for (int i = 0; i < source.Length; i++)
         {

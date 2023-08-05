@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Icc.ColorTransforms;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.SpanAndMemory;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -65,13 +67,12 @@ internal readonly struct ColorSpaceFactory
     }
 
     private async ValueTask<IColorSpace> FromArrayAsync(PdfArray array) =>
-        await FromMemoryAsync((await array.AsDirectValues().CA()).AsMemory()).CA();
+        await FromMemoryAsync(await array.AsDirectValuesAsync().CA()).CA();
 
-    private ValueTask<IColorSpace> FromMemoryAsync(Memory<PdfDirectObject> memory)
+    private ValueTask<IColorSpace> FromMemoryAsync(IReadOnlyList<PdfDirectObject> array)
     {
-        var array = memory.Span;
-        if (array.Length == 0) return new(DeviceRgb.Instance);
-        if (array.Length == 1 && array[0].TryGet(out PdfArray innerArray)) 
+        if (array.Count == 0) return new(DeviceRgb.Instance);
+        if (array.Count == 1 && array[0].TryGet(out PdfArray? innerArray)) 
             return FromArrayAsync(innerArray);
         if (array[0] is not {IsName:true} name) 
             throw new PdfParseException("'Name expected in colorspace array");
@@ -84,12 +85,12 @@ internal readonly struct ColorSpaceFactory
             var x when x.Equals(KnownNames.ICCBased) => 
                 IccProfileColorSpaceParser.ParseAsync(ColorSpaceParameterAs<PdfStream>(array)),
             var x when x.Equals(KnownNames.Indexed) => 
-                IndexedColorSpace.ParseAsync(memory, page),
+                IndexedColorSpace.ParseAsync(array, page),
             var x when x.Equals(KnownNames.Separation) => 
-                SeparationParser.ParseSeparationAsync(memory, page),
+                SeparationParser.ParseSeparationAsync(array, page),
             var x when x.Equals(KnownNames.DeviceN) => 
-                SeparationParser.ParseDeviceNAsync(memory, page),
-            var x when x.Equals(KnownNames.Pattern) => FromMemoryAsync(memory.Slice(1)),
+                SeparationParser.ParseDeviceNAsync(array, page),
+            var x when x.Equals(KnownNames.Pattern) => FromMemoryAsync(array.Slice(1)),
             var other => SpacesWithoutParametersAsync(other)
         };
     }
@@ -111,6 +112,6 @@ internal readonly struct ColorSpaceFactory
     };
         
 
-    private static T ColorSpaceParameterAs<T>(in Span<PdfDirectObject> array) =>
+    private static T ColorSpaceParameterAs<T>(in IReadOnlyList<PdfDirectObject> array) =>
         array[1].TryGet(out T ret)? ret: throw new PdfParseException("Dictionary Expected");
 }

@@ -24,7 +24,7 @@ public static class PdfObjectToListOperations
         item switch
         {
             {IsNull:true} => Array.Empty<PdfIndirectObject>(),
-            _ when item.TryGet(out PdfArray valueArray) => valueArray.RawItems,
+            _ when item.TryGet(out PdfArray? valueArray) => valueArray.RawItems,
             _ => new [] {(PdfIndirectObject)item}
         };
 }

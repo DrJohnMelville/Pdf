@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -10,23 +11,23 @@ namespace Melville.Pdf.Model.Renderers.Colors;
 
 internal static class SeparationParser
 {
-    public static ValueTask<IColorSpace> ParseSeparationAsync(in Memory<PdfDirectObject> array, IHasPageAttributes page) =>
-        array.Span[1] switch
+    public static ValueTask<IColorSpace> ParseSeparationAsync(in IReadOnlyList<PdfDirectObject> array, IHasPageAttributes page) =>
+        array[1] switch
         {
             var x when x.Equals(KnownNames.All) => new(DeviceGray.InvertedInstance),
             var x when x.Equals(KnownNames.None) => new(new InvisibleColorSpace(1)),
             _=>AlternateColorspaceAsync(array, page)
         };
 
-    private static async ValueTask<IColorSpace> AlternateColorspaceAsync(Memory<PdfDirectObject> array, IHasPageAttributes page) =>
+    private static async ValueTask<IColorSpace> AlternateColorspaceAsync(IReadOnlyList<PdfDirectObject> array, IHasPageAttributes page) =>
         new ColorSpaceCache(
         new RelativeColorSpace(
-            await new ColorSpaceFactory(page).FromNameOrArrayAsync(array.Span[2]).CA(),
-            await (array.Span[3].Get<PdfDictionary>()).CreateFunctionAsync().CA()), 10);
+            await new ColorSpaceFactory(page).FromNameOrArrayAsync(array[2]).CA(),
+            await array[3].Get<PdfDictionary>().CreateFunctionAsync().CA()), 10);
 
-    public static async ValueTask<IColorSpace> ParseDeviceNAsync(Memory<PdfDirectObject> array, IHasPageAttributes page)
+    public static async ValueTask<IColorSpace> ParseDeviceNAsync(IReadOnlyList<PdfDirectObject> array, IHasPageAttributes page)
     {
-        var nameArray = array.Span[1].Get<PdfArray>();
+        var nameArray = array[1].Get<PdfArray>();
         return (await AllNonesAsync(nameArray).CA())
             ? new InvisibleColorSpace(nameArray.Count)
             : await AlternateColorspaceAsync(array, page).CA();

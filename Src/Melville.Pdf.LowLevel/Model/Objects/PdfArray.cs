@@ -77,13 +77,23 @@ public sealed class PdfArray :
     /// <inheritdoc />
     public override string ToString() => "["+string.Join(" ", RawItems) +"]";
 
+    /// <summary>
+    /// Cast this array into an IReadOnlyList of the desired type.
+    /// Internally this resolves all the indirects and then wraps the array in
+    /// a wrapper that handles the casting operations on demand.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public async ValueTask<IReadOnlyList<T>> CastAsync<T>()
     {
         await ResolveAllIndirectElementsAsync().CA();
         return new CastedPdfArray<T>(rawItems);
     }
 
-    private async ValueTask ResolveAllIndirectElementsAsync()
+    /// <summary>
+    /// Resolve all of the indirect references in the array to an direct value
+    /// </summary>
+    public async ValueTask ResolveAllIndirectElementsAsync()
     {
         for (int i = 0; i < rawItems.Length; i++)
         {
@@ -93,4 +103,11 @@ public sealed class PdfArray :
             }
         }
     }
+
+    public async ValueTask<IReadOnlyList<PdfDirectObject>> AsDirectValuesAsync()
+    {
+        await ResolveAllIndirectElementsAsync().CA();
+        return new DirectPdfArray(rawItems);
+    }
+
 }

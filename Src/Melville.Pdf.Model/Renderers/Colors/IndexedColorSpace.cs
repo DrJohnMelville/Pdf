@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
@@ -22,11 +23,11 @@ internal partial class IndexedColorSpace: IColorSpace
     public DeviceColor SetColorFromBytes(in ReadOnlySpan<byte> newColor) =>
         this.SetColorSingleFactor(newColor, 1.0 / 255.0);
 
-    public static async ValueTask<IColorSpace> ParseAsync(Memory<PdfDirectObject> array, IHasPageAttributes page)
+    public static async ValueTask<IColorSpace> ParseAsync(IReadOnlyList<PdfDirectObject> array, IHasPageAttributes page)
     {
-        var subColorSpace = await new ColorSpaceFactory(page).FromNameOrArrayAsync(array.Span[1]).CA();
-        int length = (int) (1 + array.Span[2].Get<int>());
-        return new IndexedColorSpace(await GetValuesAsync(array.Span[3], subColorSpace, length).CA(), subColorSpace);
+        var subColorSpace = await new ColorSpaceFactory(page).FromNameOrArrayAsync(array[1]).CA();
+        int length = (int) (1 + array[2].Get<int>());
+        return new IndexedColorSpace(await GetValuesAsync(array[3], subColorSpace, length).CA(), subColorSpace);
     }
 
     private static ValueTask<DeviceColor[]> GetValuesAsync(
