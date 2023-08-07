@@ -14,7 +14,7 @@ using Melville.Postscript.Interpreter.Values;
 namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 
-public readonly partial struct PdfTokenizer
+internal readonly partial struct PdfTokenizer
 {
     [FromConstructor] private readonly IByteSource source;
 

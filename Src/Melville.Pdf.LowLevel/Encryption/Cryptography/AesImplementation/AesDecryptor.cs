@@ -17,7 +17,6 @@ internal class AesDecryptor: ICipherOperations
     public Span<byte> CryptSpan(Span<byte> input)
     {
         var blockSizeInBytes = encryptor.BlockSize / 8;
-        #warning -- get rid of the ToArray
         encryptor.IV = input[..blockSizeInBytes].ToArray();
         using var ms = new MemoryStream();
         using var cryptStream = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write);

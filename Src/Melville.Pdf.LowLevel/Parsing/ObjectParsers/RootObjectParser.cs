@@ -12,13 +12,13 @@ internal readonly struct RootObjectParser
     private readonly PdfParsingStack stack;
     private readonly PdfTokenizer tokenizer;
     
-    public RootObjectParser(IParsingReader source)
+    public RootObjectParser(ParsingReader source)
     {
         stack = new PdfParsingStack(source);
         tokenizer = new PdfTokenizer(source.Reader);
     }
 
-    public async ValueTask<PdfDirectObject> ParseTopLevelObject()
+    public async ValueTask<PdfDirectObject> ParseTopLevelObjectAsync()
     {
         stack.PushRootSignal();
         return await (await ParseAsync().CA()).LoadValueAsync().CA();
@@ -31,15 +31,15 @@ internal readonly struct RootObjectParser
         do
         {
             var token = await tokenizer.NextTokenAsync().CA();
-            await ProcessToken(token).CA();
+            await ProcessTokenAsync(token).CA();
         } while (stack.Count != 1 || stack[0].IsPdfParsingOperation());
         return stack.Pop();
     }
 
-    private ValueTask ProcessToken(PdfDirectObject token)
+    private ValueTask ProcessTokenAsync(PdfDirectObject token)
     {
         if (token.IsPdfParsingOperation())
-            return token.TryExecutePdfParseOperation(stack);
+            return token.TryExecutePdfParseOperationAsync(stack);
         if (token.IsString)
             token = DecryptString(token);
         

@@ -139,7 +139,7 @@ public class S7_5_7ObjectStreams
         var str = (await builder.CreateStreamAsync()).Get<PdfStream>();
 
         var target = new Mock<IInternalObjectTarget>();
-        await str.ReportIncludedObjects(new(target.Object, 15));
+        await str.ReportIncludedObjectsAsync(new(target.Object, 15));
 
         target.Verify(i=>i.DeclareObjectStreamObjectAsync(1, 15, 0, 8));
         target.Verify(i=>i.DeclareObjectStreamObjectAsync(2, 15, 1, 14));

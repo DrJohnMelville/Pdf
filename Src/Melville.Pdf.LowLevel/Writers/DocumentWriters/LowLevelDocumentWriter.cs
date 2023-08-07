@@ -115,7 +115,7 @@ public class LowLevelDocumentWriter
     {
         if ((await item.LoadValueAsync().CA()).TryGet(out IHasInternalIndirectObjects? hiid))
         {
-            await hiid.RegisterInternalObjects(
+            await hiid.RegisterInternalObjectsAsync(
                 new InternalObjectTargetForStream(positions, outerStreamNumber)).CA();
         }
     }

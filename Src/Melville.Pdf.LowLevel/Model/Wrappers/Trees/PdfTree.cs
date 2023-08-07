@@ -9,7 +9,6 @@ namespace Melville.Pdf.LowLevel.Model.Wrappers.Trees;
 /// <summary>
 /// This is a costume type representing string and number trees depending on the type of T.
 /// </summary>
-/// <typeparam name="T">The type of key in the tree, typically PdfString or PdfNumber.</typeparam>
 public readonly partial struct PdfTree: IAsyncEnumerable<PdfDirectObject> 
 {
     /// <summary>

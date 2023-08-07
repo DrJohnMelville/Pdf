@@ -7,6 +7,12 @@ using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Primitives;
 
+/// <summary>
+/// This wrapper converts a dictionary of direct objects into a dictionary of indirect objects.  This us useful
+/// when the podcumentcreator needs to make a PDFReader without roundtripping through a stream.  We need to create
+/// a registry of indirect objects where all of the values are already known.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public partial class IndirectRegistryWrapper<T> : IReadOnlyDictionary<T, PdfIndirectObject>
 {
 

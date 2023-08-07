@@ -51,7 +51,7 @@ internal static class PdfTrailerParser
         priorPositions.Add(xrefPosition);
     }
 
-    private static async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync(IParsingReader context)
+    private static async Task<PdfDictionary?> ReadSingleRefTrailerBlockAsync(ParsingReader context)
     {
         if (!await TokenChecker.CheckTokenAsync(context.Reader, xrefTag).CA()) return null;
         await NextTokenFinder.SkipToNextTokenAsync(context.Reader).CA();
@@ -60,7 +60,7 @@ internal static class PdfTrailerParser
         if (!await TokenChecker.CheckTokenAsync(context.Reader, trailerTag).CA())
             throw new PdfParseException("Trailer does not follow xref");
         var trailerIndirect = (await new RootObjectParser(context).ParseAsync().CA());
-        if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary trailer))
+        if (!trailerIndirect.TryGetEmbeddedDirectValue(out PdfDictionary? trailer))
             throw new PdfParseException("Trailer dictionary is invalid");
         return trailer;
     }

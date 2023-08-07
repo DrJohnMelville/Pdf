@@ -1,33 +1,17 @@
 ﻿using System.IO.Pipelines;
+using Melville.INPC;
 using Melville.Parsing.CountingReaders;
-using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
-using Melville.Pdf.LowLevel.Filters.FilterProcessing;
 using Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-internal interface IParsingReader
+internal partial class ParsingReader
 {
-    #warning == figure out if I  can share this.
-    RootObjectParser NewRootObjectParser => new RootObjectParser(this);
-    ParsingFileOwner Owner { get; }
-    IByteSourceWithGlobalPosition Reader { get; }
-    #warning need to get rid of this
-    IObjectCryptContext ObjectCryptContext();
-}
+    [FromConstructor] public ParsingFileOwner Owner { get; }
+    [FromConstructor] public IByteSourceWithGlobalPosition Reader { get; }
 
-
-internal class ParsingReader: IParsingReader
-{
-    public IObjectCryptContext ObjectCryptContext ()=> NullSecurityHandler.Instance;
-    
-    public IByteSourceWithGlobalPosition Reader { get; }
-
-    public ParsingFileOwner Owner { get; }
-
-    public ParsingReader(ParsingFileOwner owner, PipeReader reader, long lastSeek)
+    public ParsingReader(ParsingFileOwner owner, PipeReader reader, long lastSeek) :
+        this(owner, new ByteSourceWithGlobalPosition(reader, lastSeek))
     {
-        Owner = owner;
-        this.Reader = new ByteSourceWithGlobalPosition(reader, lastSeek);
     }
 }

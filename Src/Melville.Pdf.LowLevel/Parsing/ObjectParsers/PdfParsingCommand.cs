@@ -31,7 +31,7 @@ internal abstract partial class PdfParsingCommand
     private class StreamOperatorClass : PdfParsingCommand
     {
         public override ValueTask ExecuteAsync(PdfParsingStack stack) => 
-            stack.StreamOperator();
+            stack.StreamOperatorAsync();
     }
 
 #if DEBUG
@@ -53,7 +53,7 @@ internal static class PdfParsingCommandOperations
     public static bool IsPdfParsingOperation(in this PdfDirectObject value) =>
         value.TryGet<PdfParsingCommand>(out _);
 
-    public static ValueTask TryExecutePdfParseOperation(
+    public static ValueTask TryExecutePdfParseOperationAsync(
         this in PdfDirectObject value, PdfParsingStack stack) =>
-        value.TryGet(out PdfParsingCommand cmd) ? cmd.ExecuteAsync(stack) : ValueTask.CompletedTask;
+        value.TryGet(out PdfParsingCommand? cmd) ? cmd.ExecuteAsync(stack) : ValueTask.CompletedTask;
 }

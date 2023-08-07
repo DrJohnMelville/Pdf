@@ -21,8 +21,8 @@ public static class FunctionFactory
     public static ValueTask<IPdfFunction> CreateFunctionAsync(this PdfDirectObject source) =>
         source switch
         {
-            var x when x.TryGet(out PdfDictionary dict) => CreateFunctionAsync(dict),
-            var x when x.TryGet(out PdfArray arr) => FunctionFromArrayAsync(arr),
+            var x when x.TryGet(out PdfDictionary? dict) => CreateFunctionAsync(dict),
+            var x when x.TryGet(out PdfArray? arr) => FunctionFromArrayAsync(arr),
             _=> throw new PdfParseException("Cannot parse function definition")
         };
     

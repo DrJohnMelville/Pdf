@@ -23,15 +23,14 @@ internal class Rc4KeySpecializer: IKeySpecializer
 
     private byte[] ComputeHash(byte[] rootKey, int objectNumber, int generationNumber)
     {
-        var md5 = MD5.Create();
-        md5.AddData(rootKey);
+        var md5 = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+        md5.AppendData(rootKey);
         AddObjectData(objectNumber, generationNumber, md5);
-        md5.FinalizeHash();
-        return md5.Hash ?? throw new InvalidProgramException("Should have a hash here.");
+        return md5.GetCurrentHash() ?? throw new InvalidProgramException("Should have a hash here.");
     }
 
-    protected virtual void AddObjectData(int objectNumber, int generationNumber, MD5 md5) =>
-        md5.AddData(new[]
+    protected virtual void AddObjectData(int objectNumber, int generationNumber, IncrementalHash md5) =>
+        md5.AppendData(stackalloc []
         {
             (byte)objectNumber,
             (byte)(objectNumber >> 8),
@@ -47,10 +46,10 @@ internal class Rc4KeySpecializer: IKeySpecializer
 internal partial class AesKeySpecializer: Rc4KeySpecializer
 {
     private static readonly byte[] aesSalt = {0x73,0x41,0x6c,0x54 };
-    protected override void AddObjectData(int objectNumber, int generationNumber, MD5 md5)
+    protected override void AddObjectData(int objectNumber, int generationNumber, IncrementalHash md5)
     {
         base.AddObjectData(objectNumber, generationNumber, md5);
-        md5.AddData(aesSalt);
+        md5.AppendData(aesSalt);
     }
 }
 

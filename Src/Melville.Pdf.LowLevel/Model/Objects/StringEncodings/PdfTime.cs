@@ -1,41 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text;
 using Melville.Pdf.LowLevel.Model.Primitives;
-using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
-
-public static class PdfTimeExtenstions
-{
-    public static PdfTime AsPdfTime(this in PdfDirectObject value)
-    {
-        var sourceSpan = (ReadOnlySpan<byte>)value.Get<StringSpanSource>().GetSpan();
-        Span<char> decoded = stackalloc char[sourceSpan.DecodedLength()];
-        sourceSpan.FillDecodedChars(decoded);
-
-        Span<byte> reEncoded = stackalloc byte[Encoding.UTF8.GetByteCount(decoded)];
-        Encoding.UTF8.GetBytes(decoded, reEncoded);
-
-        return new PdfTimeParser(reEncoded).AsPdfTime();
-    }
-
-}
-
-public static class StringDecodingImpl
-{
-    public static int DecodedLength(this ReadOnlySpan<byte> input)
-    {
-        var (encoding, length) = ByteOrderDetector.DetectByteOrder(input);
-        return encoding.GetDecoder().GetCharCount(input[length..], true);
-    }
-
-    public static void FillDecodedChars(this ReadOnlySpan<byte> input, Span<char> output)
-    {
-        var (encoding, length) = ByteOrderDetector.DetectByteOrder(input);
-        encoding.GetDecoder().GetChars(input[length..], output, true);
-    }
-}
 
 /// <summary>
 /// Represents a date and time in a given offset from UTC

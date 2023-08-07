@@ -78,10 +78,10 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
         return false;
     }
 
-    async ValueTask IHasInternalIndirectObjects.RegisterInternalObjects(
+    async ValueTask IHasInternalIndirectObjects.RegisterInternalObjectsAsync(
         InternalObjectTargetForStream target)
     {
         if ((await this.GetOrNullAsync(KnownNames.Type).CA()).Equals(KnownNames.ObjStm))
-            await this.ReportIncludedObjects(target).CA();
+            await this.ReportIncludedObjectsAsync(target).CA();
     }
 }

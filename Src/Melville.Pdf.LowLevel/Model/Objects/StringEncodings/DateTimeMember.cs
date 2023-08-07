@@ -2,7 +2,7 @@
 
 /// <summary>
 /// The parts of a pdf date time, the value is the minimum length of a
-/// PdfString w here that value is not zero
+/// PdfString where that value is not zero
 /// </summary>
 internal enum DateTimeMember
 {

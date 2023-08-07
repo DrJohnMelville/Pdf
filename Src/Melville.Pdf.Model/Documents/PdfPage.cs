@@ -23,12 +23,9 @@ public partial class PdfPage: HasRenderableContentStream
     public async ValueTask<PdfTime?> LastModifiedAsync()
     {
         return (await LowLevel.GetOrNullAsync(KnownNames.LastModified).CA()) is {IsName:false} str
-            ? ParseToDateTime(str)
+            ? str.AsPdfTime()
             : null;
     }
-
-    private static PdfTime ParseToDateTime(PdfDirectObject str) => 
-        new PdfTimeParser(str.Get<StringSpanSource>().GetSpan()).AsPdfTime();
 
     /// <summary>
     /// Gets a C# stream that represents the content stream for this page

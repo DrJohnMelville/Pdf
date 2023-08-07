@@ -18,9 +18,9 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers;
 
 internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
 {
-    private IParsingReader Source { get; }
+    private ParsingReader Source { get; }
     private readonly LazyCryptContextBuffer cryptoBuffer;
-    public PdfParsingStack(IParsingReader source) : base(0,"")
+    public PdfParsingStack(ParsingReader source) : base(0,"")
     {
         Source = source;
         cryptoBuffer = new LazyCryptContextBuffer(source.Owner);
@@ -112,7 +112,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
             ? num
             : throw new PdfParseException("Expected two direct numbers prior to R operator");
 
-    public async ValueTask StreamOperator()
+    public async ValueTask StreamOperatorAsync()
     {
         Debug.Assert(Count == 2);
         Debug.Assert(Peek().TryGetEmbeddedDirectValue(

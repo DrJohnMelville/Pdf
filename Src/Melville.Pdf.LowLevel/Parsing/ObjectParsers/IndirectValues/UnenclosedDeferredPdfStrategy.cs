@@ -20,7 +20,7 @@ internal partial class UnenclosedDeferredPdfStrategy : IIndirectObjectSource
         var generation = memento.Int32s[1];
         var offset = memento.Int64s[1];
         var reader = await owner.RentReaderAsync(offset, objectNumber, generation).CA();
-        var result = await reader.NewRootObjectParser.ParseTopLevelObject().CA();
+        var result = await new RootObjectParser(reader).ParseTopLevelObjectAsync().CA();
         return result;
     }
 

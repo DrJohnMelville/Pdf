@@ -45,7 +45,9 @@ internal class ComputeOwnerPasswordV2: IComputeOwnerPassword
 
     protected virtual byte[] ComputeMd5Hash(Span<byte> paddedPassword)
     {
-        return MD5.HashData(paddedPassword);
+        var hasher = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+        hasher.AppendData(paddedPassword);
+        return hasher.GetCurrentHash();
     }
 
 }

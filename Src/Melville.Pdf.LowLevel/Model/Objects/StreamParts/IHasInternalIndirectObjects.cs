@@ -15,11 +15,11 @@ internal readonly partial struct InternalObjectTargetForStream
     [FromConstructor] private readonly IInternalObjectTarget target;
     [FromConstructor] private readonly int streamOuterNumber;
 
-    public ValueTask ReportObject(int objectNumber, int ordinal, int streamOffset) =>
+    public ValueTask ReportObjectAsync(int objectNumber, int ordinal, int streamOffset) =>
         target.DeclareObjectStreamObjectAsync(objectNumber, streamOuterNumber, ordinal, streamOffset);
 }
 
 internal interface IHasInternalIndirectObjects
 {
-    ValueTask RegisterInternalObjects(InternalObjectTargetForStream target);
+    ValueTask RegisterInternalObjectsAsync(InternalObjectTargetForStream target);
 }

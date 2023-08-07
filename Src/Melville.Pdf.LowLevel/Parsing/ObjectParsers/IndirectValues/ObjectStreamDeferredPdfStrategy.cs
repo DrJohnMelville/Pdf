@@ -21,24 +21,24 @@ internal partial class ObjectStreamDeferredPdfStrategy : IIndirectObjectSource
             .LookupAsync(memento.Int32s[0], 0).CA()).Get<PdfStream>();
         int desiredOrdinal = (int)memento.Int64s[1];
 
-        return await ReadObjectStream(source, desiredOrdinal).CA();
+        return await ReadObjectStreamAsync(source, desiredOrdinal).CA();
     }
 
-    private async Task<PdfDirectObject> ReadObjectStream(
+    private async Task<PdfDirectObject> ReadObjectStreamAsync(
         PdfStream source, int desiredObjectNumber)
     {
-        var ret = await TryReadExtendsStream(source, desiredObjectNumber).CA();
+        var ret = await TryReadExtendsStreamAsync(source, desiredObjectNumber).CA();
 
         var parser = await ObjectStreamParser.CreateAsync(owner, source, desiredObjectNumber).CA();
 
         return await parser.ParseAsync(ret).CA();
     }
 
-    private async Task<PdfDirectObject> TryReadExtendsStream(
+    private async Task<PdfDirectObject> TryReadExtendsStreamAsync(
         PdfStream source, int desiredObjectNumber) =>
         source.TryGetValue(KnownNames.Extends, out var task) &&
         (await task).TryGet(out PdfStream? innerStream)
-            ? await ReadObjectStream(innerStream, desiredObjectNumber).CA()
+            ? await ReadObjectStreamAsync(innerStream, desiredObjectNumber).CA()
             : default;
 
     public bool TryGetObjectReference(out int objectNumber, out int generation, MementoUnion memento)

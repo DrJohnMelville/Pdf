@@ -20,7 +20,7 @@ public static class CrossReferenceStreamParser
     {
         var context = await owner.RentReaderAsync(offset).CA();
 
-        var xRefStreamAsPdfObject = await context.NewRootObjectParser.ParseTopLevelObject().CA();
+        var xRefStreamAsPdfObject = await new RootObjectParser(context).ParseTopLevelObjectAsync().CA();
 
 
         if (!xRefStreamAsPdfObject.TryGet(out PdfStream? crossRefPdfStream)) 

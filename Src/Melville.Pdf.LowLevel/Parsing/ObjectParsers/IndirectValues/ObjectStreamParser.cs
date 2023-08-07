@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -14,7 +13,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 internal partial class ObjectStreamParser: IInternalObjectTarget
 {
     [FromConstructor] private readonly ParsingFileOwner owner;
-    [FromConstructor] private readonly SubsetParsingReader subsetReader;
+    [FromConstructor] private readonly SubsetByteSource subsetReader;
     [FromConstructor] private readonly RootObjectParser parser;
     [FromConstructor] private readonly int desiredObjectNumber;
     [FromConstructor] private readonly PdfStream source;
@@ -24,18 +23,18 @@ internal partial class ObjectStreamParser: IInternalObjectTarget
         ParsingFileOwner owner, PdfStream source, int desiredObjectNumber)
     {
         var sourceStream = await source.StreamContentAsync().CA();
-        var reader = new ParsingReader(owner, PipeReader.Create(sourceStream), 0);
-        var subsetReader = new SubsetParsingReader(reader);
-        var parser = new RootObjectParser(subsetReader);
+        var bytes = new SubsetByteSource(new ByteSource(PipeReader.Create(sourceStream)));
+        var reader = new ParsingReader(owner, bytes);
+        var parser = new RootObjectParser(reader);
 
         
-        return new(owner, subsetReader, parser, desiredObjectNumber, source);
+        return new(owner, bytes, parser, desiredObjectNumber, source);
     }
 
     public async ValueTask<PdfDirectObject> ParseAsync(PdfDirectObject priorResult)
     {
         result = priorResult;
-        await ObjectStreamOperations.ReportIncludedObjects(source,
+        await ObjectStreamOperations.ReportIncludedObjectsAsync(source,
             new InternalObjectTargetForStream(this, -1), subsetReader).CA();
         await DeclareObjectStreamObjectAsync(-1, -1, -1, int.MaxValue).CA();
         return result;
@@ -48,14 +47,14 @@ internal partial class ObjectStreamParser: IInternalObjectTarget
     {
         if (priorObjectNumber >= 0)
         {
-            await ParseSingleObject(streamOffset).CA();
+            await ParseSingleObjectAsync(streamOffset).CA();
         }
 
         priorObjectNumber = objectNumber;
         priorOffset = streamOffset;
     }
 
-    private async ValueTask ParseSingleObject(int nextOffset)
+    private async ValueTask ParseSingleObjectAsync(int nextOffset)
     {
         var obj = await ReadSingleObjectAsync(priorOffset, nextOffset).CA();
         if (priorObjectNumber == desiredObjectNumber) result = obj;

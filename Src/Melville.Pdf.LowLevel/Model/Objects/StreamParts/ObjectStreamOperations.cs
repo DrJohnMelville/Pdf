@@ -13,16 +13,16 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StreamParts;
 
 internal static class ObjectStreamOperations
 {
-    public static async ValueTask ReportIncludedObjects(
+    public static async ValueTask ReportIncludedObjectsAsync(
         this PdfStream stream, InternalObjectTargetForStream target)
     {
         await using var decoded = await stream.StreamContentAsync().CA();
         var bytes = new ByteSource(PipeReader.Create(decoded));
 
-        await ReportIncludedObjects(stream, target, bytes).CA();
+        await ReportIncludedObjectsAsync(stream, target, bytes).CA();
     }
 
-    public static async Task ReportIncludedObjects(
+    public static async Task ReportIncludedObjectsAsync(
         PdfStream stream, InternalObjectTargetForStream target, IByteSource bytes)
     {
         var firstObjectOffset = await stream.GetAsync<int>(KnownNames.First).CA();
@@ -38,7 +38,7 @@ internal static class ObjectStreamOperations
             if (objNum < 0) return;
             var offset = ParseNumber(ref numbers);
             if (offset < 0) return;
-            await target.ReportObject(objNum, i, offset + firstObjectOffset).CA();
+            await target.ReportObjectAsync(objNum, i, offset + firstObjectOffset).CA();
         }
     }
 

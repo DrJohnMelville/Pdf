@@ -74,7 +74,7 @@ internal class TreeEnumerator: IAsyncEnumerator<PdfDirectObject>
     private async Task<bool> TryPushIntermediateNodeKidsAsync(PdfDictionary node)
     {
         if (!node.TryGetValue(KnownNames.Kids, out var kidsTask)) return false;
-        if (!(await kidsTask.CA()).TryGet(out PdfArray kids)) return true;
+        if (!(await kidsTask.CA()).TryGet(out PdfArray? kids)) return true;
             
         await PushInReverseOrderAsync(kids).CA();
 

@@ -403,7 +403,7 @@ public readonly partial struct ContentStreamParser
     }
 
     private static bool IsArrayTopMarker(PostscriptValue item) => 
-        item.TryGet(out ArrayTopMarker _);
+        item.TryGet(out ArrayTopMarker? _);
 
     private static PostscriptValue CreatePdfArray(PostscriptEngine engine)
     {

@@ -3,7 +3,7 @@ using Melville.Postscript.Interpreter.Tokenizers;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
-public readonly ref struct PdfTimeParser
+internal readonly ref struct PdfTimeParser
 {
     private readonly ReadOnlySpan<byte> source;
 
