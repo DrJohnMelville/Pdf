@@ -25,7 +25,7 @@ public static class CrossReferenceStreamParser
 
         if (!xRefStreamAsPdfObject.TryGet(out PdfStream? crossRefPdfStream)) 
             throw new PdfParseException("Object pointed to by StartXref is not a stream");
-        await ReadXrefStreamDataAsync(owner, crossRefPdfStream).CA();
+        await ReadXrefStreamDataAsync(owner.NewIndirectResolver, crossRefPdfStream).CA();
         await owner.InitializeDecryptionAsync(crossRefPdfStream).CA();
 
         return crossRefPdfStream;

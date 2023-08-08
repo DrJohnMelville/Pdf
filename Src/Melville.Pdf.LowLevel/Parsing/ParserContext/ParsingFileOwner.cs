@@ -13,7 +13,7 @@ using Melville.Pdf.LowLevel.Parsing.ObjectParsers.IndirectValues;
 
 namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
-internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegistry
+internal sealed partial class ParsingFileOwner: IDisposable
 {
     private readonly MultiplexedStream source;
     private long preHeaderOffset = 0;
@@ -64,19 +64,4 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
     }
 
     public void Dispose() => source.Dispose();
-
-    public void RegisterDeletedBlock(int number, int next, int generation)
-    {
-    }
-    #warning -- should be able to get rid of this by passing an IIndirectValueregistry to the parsers
-    public void RegisterIndirectBlock(int number, int generation, long offset)
-    {
-        NewIndirectResolver.RegisterIndirectBlock(number, generation, offset);
-    }
-
-    #warning -- should be able to get rid of this by passing an IIndirectValueregistry to the parsers
-    public void RegisterObjectStreamBlock(int number, int referredStreamOrdinal, int positionInStream)
-    {
-        NewIndirectResolver.RegisterObjectStreamBlock(number, referredStreamOrdinal, positionInStream);
-    }
 }
