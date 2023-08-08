@@ -90,8 +90,17 @@ public interface IPdfObjectCreatorRegistry
     IDisposable ObjectStreamContext(DictionaryBuilder? dictionaryBuilder = null);
 }
 
+/// <summary>
+/// Additional operations on the PdfCreatorRegistry
+/// </summary>
 public static class PdfObjectCreatorRegistry
 {
+    /// <summary>
+    /// Adds value to the registry, ensuring that the return is an indirect reference to an object
+    /// </summary>
+    /// <param name="registry">The registry to add to.</param>
+    /// <param name="value">The value to add</param>
+    /// <returns>A guarenteed indirect reference to the passed value.</returns>
     public static PdfIndirectObject AddIfDirect(this IPdfObjectCreatorRegistry registry, PdfIndirectObject value) =>
         value.TryGetEmbeddedDirectValue(out var directVal) ? registry.Add(directVal) : value;
 }

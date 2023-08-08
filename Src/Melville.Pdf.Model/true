@@ -404,7 +404,14 @@
             have a content stream.  It is implemented as a record, and PdfPageTree actually depends
             on the equality members
             </summary>
-            <param name="LowLevel">The low level Dictionary representing this item.</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Melville.Pdf.Model.Documents.HasRenderableContentStream.LowLevel" -->
+        <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Create a HaRenderableContentStrem
+            </summary>
+            <param name="lowLevel">A dictionary representing this object,
+            which must not be null</param>
         </member>
         <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.GetContentBytesAsync">
             <summary>
@@ -525,6 +532,13 @@
             <summary>
             Gets a C# stream that represents the content stream for this page
             </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.PdfPage.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Auto generated constructor for PdfPage
+            </summary>
+            <param name="lowLevel">A dictionary representing this object,
+            which must not be null</param> 
         </member>
         <member name="F:Melville.Pdf.Model.OptionalContent.AllOptionalContentVisible.Instance">
             <summary>
@@ -2336,6 +2350,13 @@
             The paint type for the tile pattern.
             </summary>
             <returns>1 is for a Colored Tile Pattern, and 2 for an Uncolored Tile Pattern</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
+            <summary>
+            Auto generated constructor for PdfTilePattern
+            </summary>
+            <param name="lowLevel">A dictionary representing this object,
+            which must not be null</param> 
         </member>
         <member name="T:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.TileBrushRequest">
             <summary>

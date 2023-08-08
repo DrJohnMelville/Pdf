@@ -83,7 +83,7 @@ internal class PdfObjectWriter
         target.Advance(literal.Length);
     }
 
-    public async ValueTask CopyFromStream(Stream stream)
+    public async ValueTask CopyFromStreamAsync(Stream stream)
     {
         await target.FlushAsync().CA();
         await stream.CopyToAsync(target).CA();
@@ -95,7 +95,7 @@ internal class PdfObjectWriter
         currentIndirectObject =
             value.TryGet(out PdfDictionary? pvd) && encryptor.BlockEncryption(pvd) ? 
                 (-1,-1): (objNum, generation); ;
-        return this.WriteObjectDefinition(objNum, generation, value);
+        return this.WriteObjectDefinitionAsync(objNum, generation, value);
     }
 
     public ValueTask WriteStreamAsync(PdfStream stream) => 
@@ -109,46 +109,4 @@ internal class PdfObjectWriter
             : encryptor.ContextForObject(currentIndirectObject.ObjectNum,
                 currentIndirectObject.Generation);
     }
-
-#warning -- get rid of this comment when all the tests pass
-    /*
-    // this is an unusual situation where the methods have to not be named async to
-    //implement the interface which is defined over a valueType
-    public override ValueTask<FlushResult> Visit(PdfTokenValues item) => 
-        TokenValueWriter.WriteAsync(target, item);
-
-    public override ValueTask<FlushResult> Visit(PdfString item) => 
-        StringWriter.WriteAsync(target, item, CreateEncryptor());
-
-    public override ValueTask<FlushResult> VisitTopLevelObject(PdfIndirectObject item)
-    { 
-        if (!item.HasValue())
-            throw new InvalidOperationException("Promised indirect objects must be assigned befor writing the file");
-        currentIndirectObject = encryptor.BlockEncryption(item)?null: item;
-        return IndirectObjectWriter.WriteObjectDefinitionAsync(target, item, this);
-    }
-
-    public override ValueTask<FlushResult> Visit(PdfIndirectObject item) =>
-        IndirectObjectWriter.WriteObjectReferenceAsync(target, item);
-    public override ValueTask<FlushResult> Visit(PdfName item) =>
-        NameWriter.WriteAsync(target, item);
-    public override ValueTask<FlushResult> Visit(PdfArray item) => 
-        ArrayWriter.WriteAsync(target, this, item.RawItems);
-    public override ValueTask<FlushResult> Visit(PdfDictionary item)
-    {
-        if (encryptor.BlockEncryption(item))
-        {
-            currentIndirectObject = null;
-        }
-        return DictionaryWriter.WriteAsync(target, this, item.RawItems);
-    }
-
-    public override ValueTask<FlushResult> Visit(PdfStream item) =>
-        StreamWriter.WriteAsync(target, this, item, CreateEncryptor());
-
-    private IObjectCryptContext CreateEncryptor() =>
-        currentIndirectObject == null ? NullSecurityHandler.Instance : 
-            encryptor.ContextForObject(currentIndirectObject.ObjectNumber, currentIndirectObject.GenerationNumber);
-*/
-
 }

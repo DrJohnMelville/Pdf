@@ -12,11 +12,18 @@ namespace Melville.Pdf.Model.Documents;
 /// have a content stream.  It is implemented as a record, and PdfPageTree actually depends
 /// on the equality members
 /// </summary>
-/// <param name="LowLevel">The low level Dictionary representing this item.</param>
 public class HasRenderableContentStream : IHasPageAttributes
 {
+    /// <summary>
+    /// <param name="LowLevel">The low level Dictionary representing this item.
+    /// </summary>
     public PdfDictionary LowLevel { get; }
 
+    /// <summary>
+    /// Create a HaRenderableContentStrem
+    /// </summary>
+    /// <param name="lowLevel">A dictionary representing this object,
+    /// which must not be null</param>
     public HasRenderableContentStream(PdfDictionary lowLevel)
     {
         ArgumentNullException.ThrowIfNull(lowLevel);

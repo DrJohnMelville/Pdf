@@ -25,7 +25,7 @@ internal class ObjectStreamBuilder
         members[number] = obj;
         return true;
     }
-    private bool IsLegalWrite(PdfDirectObject value) => ! value.TryGet(out PdfStream _);
+    private bool IsLegalWrite(PdfDirectObject value) => ! value.TryGet(out PdfStream? _);
 
     public async ValueTask<PdfDirectObject> CreateStreamAsync()
     {

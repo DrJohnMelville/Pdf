@@ -13,8 +13,7 @@ internal static class ArrayWriter
             writer.Write(arr.RawItems[0]);
             for (int i = 1; i < arr.Count; i++)
             {
-                #warning -- Use NeedsLeadingSpace to eliminate some spaces;
-                writer.Write(" "u8);
+                writer.Write(" "u8); // I think  spaces are required by the spec.
                 writer.Write(arr.RawItems[i]);
             }
         }

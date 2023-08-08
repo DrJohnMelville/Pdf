@@ -61,7 +61,7 @@ internal partial class PdfObjectRegistry:
         {
             var osb = registry.objectStreamBuilder;
             registry.objectStreamBuilder = null;
-            if (osb.HasValues())
+            if (osb?.HasValues() ?? false)
                 registry.Add(new PdfDirectObject(osb, default));
         }
     }

@@ -9,13 +9,6 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
-public static class PdfTreeElementNamer
-{
-    public static PdfDirectObject FinalArrayName(bool isNumberTree) =>
-        isNumberTree? KnownNames.Nums : KnownNames.Names;
-
-}
-
 internal static class TreeCreator
 {
     public static PdfDictionary CreateNumberTree(
@@ -37,7 +30,7 @@ internal static class TreeCreator
         new TreeCreatorImpl(builder, nodeSize, KnownNames.Names).CreateTree(items);
 }
 
-public readonly partial struct TreeCreatorImpl
+internal readonly partial struct TreeCreatorImpl
 {
 
     [FromConstructor] private readonly IPdfObjectCreatorRegistry builder;

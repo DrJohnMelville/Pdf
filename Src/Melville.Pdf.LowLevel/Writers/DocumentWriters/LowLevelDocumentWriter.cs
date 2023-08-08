@@ -90,7 +90,7 @@ public class LowLevelDocumentWriter
         {
             if (item.Value.IsNull) continue;
             positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
-            var value = await ResolveValueToWrite(item).CA();
+            var value = await ResolveValueToWriteAsync(item).CA();
             await DeclareContainedObjectsAsync(item.Key.ObjectNumber, value, positions).CA();
             await objectWriter.WriteTopLevelDeclarationAsync(
                 item.Key.ObjectNumber, item.Key.GenerationNumber, value).CA();
@@ -99,7 +99,7 @@ public class LowLevelDocumentWriter
         return positions;
     }
 
-    private static async Task<PdfDirectObject> ResolveValueToWrite(KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectObject> item)
+    private static async Task<PdfDirectObject> ResolveValueToWriteAsync(KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectObject> item)
     {
         var value = await item.Value.LoadValueAsync().CA();
         if (value.TryGet(out ObjectStreamBuilder? osb))

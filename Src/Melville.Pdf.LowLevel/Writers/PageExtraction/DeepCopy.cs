@@ -81,6 +81,13 @@ public readonly partial struct DeepCopy
         return newIndirectRef;
     }
 
+    /// <summary>
+    /// Add an indirect reference with a default value to the destination mapper
+    /// this is used to break cycles in the duplicated data.
+    /// </summary>
+    /// <param name="objNum">Source object number</param>
+    /// <param name="gen">Source generation</param>
+    /// <param name="targetPromise">A temporary value to map the obj/generation to.</param>
     public void ReserveIndirectMapping(int objNum, int gen, PdfIndirectObject targetPromise) => 
         buffer[(objNum, gen)] = targetPromise;
 }

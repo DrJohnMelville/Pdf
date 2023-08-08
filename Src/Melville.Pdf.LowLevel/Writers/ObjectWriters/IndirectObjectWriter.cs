@@ -13,11 +13,11 @@ internal static class IndirectObjectWriter
         int objNum, int generation) =>
         WriteObjectHeader(writer, objNum, generation, " R"u8);
 
-    public static async ValueTask WriteObjectDefinition(this PdfObjectWriter writer,
+    public static async ValueTask WriteObjectDefinitionAsync(this PdfObjectWriter writer,
         int objNum, int generation, PdfDirectObject value)
     {
         WriteObjectHeader(writer, objNum, generation, " obj "u8);
-        if (value.TryGet(out PdfStream stream))
+        if (value.TryGet(out PdfStream? stream))
             await writer.WriteStreamAsync(stream).CA();
         else
             writer.Write(value);

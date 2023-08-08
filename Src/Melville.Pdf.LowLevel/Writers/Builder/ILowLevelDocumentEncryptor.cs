@@ -72,7 +72,6 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
     protected virtual DictionaryBuilder DictionaryItems(PdfArray id)
     {
         var dict = new DictionaryBuilder();
-        #warning ownerHash should be a span to avoid an allocation or ComputeOwnerKey could create a PdfDirectObject
         var ownerHash = ownerPasswordComputer.ComputeOwnerKey(ownerPassword,UserPassword, KeyLengthInBytes);
 
         var ep = new EncryptionParameters(
@@ -94,7 +93,6 @@ internal class ComputeEncryptionDictionary : ILowLevelDocumentEncryptor
             ? ret
             : throw new PdfParseException("Encryption dictionary must contain direct objects/");
 
-#warning -- use spans and return a PdfDirectObject
     public byte[] UserHashForPassword(in string userPassword, in EncryptionParameters parameters)
     {
         var key = keyComputer.ComputeKey(userPassword, parameters);
