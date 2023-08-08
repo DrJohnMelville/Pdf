@@ -28,7 +28,7 @@ internal readonly partial struct SingleByteEncodingParser
             case {IsName:true} name:
                 WriteCharacterSet(overrideEncoding ?? CharactersFromName(name));
                 break;
-            case var x when x.TryGet(out PdfDictionary dict):
+            case var x when x.TryGet(out PdfDictionary? dict):
                 await WriteEncodingToArrayAsync(await dict.GetOrNullAsync(KnownNames.BaseEncoding).CA()).CA();
                 if ((await dict.GetOrNullAsync<PdfArray>(KnownNames.Differences).CA()) is {} differences )
                     await WriteDifferencesAsync(differences).CA();

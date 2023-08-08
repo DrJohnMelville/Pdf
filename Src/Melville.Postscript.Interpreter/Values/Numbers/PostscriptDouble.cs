@@ -37,6 +37,7 @@ public partial class PostscriptDouble :
     private double DoubleFromMemento(in MementoUnion memento) => 
         memento.Doubles[0];
 
+    /// <inheritdoc />
     public int CompareTo(in MementoUnion memento, object otherStrategy, in MementoUnion otherMemento)
     {
         return (otherStrategy is IPostscriptValueStrategy<double> otherSpecificStrategy)?

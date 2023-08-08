@@ -38,8 +38,8 @@ internal readonly struct UiModelParser
     private async ValueTask<IOptionalContentDisplayGroup> ParseUiModelElementAsync(PdfDirectObject item) =>
         item switch
         {
-            var x when item.TryGet(out PdfDictionary dict) => groupStates[dict],
-            var x when item.TryGet(out PdfArray arr) => await ParseUiModelArrayAsync(await arr.AsDirectValuesAsync().CA()).CA(),
+            var x when item.TryGet(out PdfDictionary? dict) => groupStates[dict],
+            var x when item.TryGet(out PdfArray? arr) => await ParseUiModelArrayAsync(await arr.AsDirectValuesAsync().CA()).CA(),
             _ => throw new PdfParseException("Unexpected Order member in optional content group")
         };
 

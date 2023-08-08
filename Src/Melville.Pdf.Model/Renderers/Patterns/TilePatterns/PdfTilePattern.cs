@@ -11,11 +11,10 @@ using Melville.Pdf.Model.Documents;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.TilePatterns;
 
-[FromConstructor]
 /// <summary>
 /// This is a costume type that represents wraps a dictionary as a tile pattern.
 /// </summary>
-/// <param name="LowLevel">The PdfDictionary that represents the pattern.</param>
+[FromConstructor]
 public partial class PdfTilePattern: HasRenderableContentStream
 {
     /// <inheritdoc />

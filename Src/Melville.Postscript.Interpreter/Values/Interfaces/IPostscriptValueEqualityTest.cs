@@ -1,4 +1,6 @@
-﻿namespace Melville.Postscript.Interpreter.Values;
+﻿using Melville.Postscript.Interpreter.Values.Interfaces;
+
+namespace Melville.Postscript.Interpreter.Values;
 
 /// <summary>
 /// Test if this postscript value strategy with the given memento is equivilent to another strategy and memento.

@@ -29,9 +29,9 @@ internal partial class OptionalContentCounter: IOptionalContentCounter
 
     public async ValueTask EnterGroupAsync(
         PdfDirectObject oc, PdfDirectObject off, IHasPageAttributes attributeSource) =>
-        await EnterGroupAsync(oc, await TryGetDictionary(off, attributeSource).CA()).CA();
+        await EnterGroupAsync(oc, await TryGetDictionaryAsync(off, attributeSource).CA()).CA();
 
-    private static async Task<PdfDictionary?> TryGetDictionary(
+    private static async Task<PdfDictionary?> TryGetDictionaryAsync(
         PdfDirectObject off, IHasPageAttributes attributeSource)
     {
         var resource = await attributeSource.GetResourceAsync(ResourceTypeName.Properties, off).CA();

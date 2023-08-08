@@ -8,7 +8,7 @@ namespace Melville.Pdf.TextExtractor;
 internal partial class ExtractingFont : IRealizedFont
 {
     [FromConstructor] [DelegateTo] private readonly IRealizedFont innerFont;
-#warning -- I think this is going to cause a problem when extractingfont gets cached.
+    #warning -- I think this is going to cause a problem when extractingfont gets cached.
     [FromConstructor] private readonly IExtractedTextTarget output;
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target)

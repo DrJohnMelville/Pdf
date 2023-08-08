@@ -20,7 +20,7 @@ public static class CharacterClassifier
     /// </summary>
     /// <param name="character">Character to check</param>
     /// <returns>True if character is the comment character, false otherwise</returns>
-    public static bool IsCommentBeginChar(byte b) => b is (byte)'%';
+    public static bool IsCommentBeginChar(byte character) => character is (byte)'%';
     
     /// <summary>
     /// Decide if a character might appear in a line end sequence

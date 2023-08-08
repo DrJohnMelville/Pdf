@@ -405,7 +405,11 @@
             on the equality members
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Melville.Pdf.Model.Documents.HasRenderableContentStream.LowLevel" -->
+        <member name="P:Melville.Pdf.Model.Documents.HasRenderableContentStream.LowLevel">
+            <summary>
+            The low level Dictionary representing this item.
+            </summary>
+        </member>
         <member name="M:Melville.Pdf.Model.Documents.HasRenderableContentStream.#ctor(Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
             <summary>
             Create a HaRenderableContentStrem
@@ -522,6 +526,11 @@
         <member name="M:Melville.Pdf.Model.Documents.PdfDocument.Dispose">
             <inheritdoc />
         </member>
+        <member name="T:Melville.Pdf.Model.Documents.PdfPage">
+            <summary>
+            This record is the primary abstraction for a page in a pdf document.
+            </summary>
+        </member>
         <member name="M:Melville.Pdf.Model.Documents.PdfPage.LastModifiedAsync">
             <summary>
             Get the last modified time for a page from the page's dictionary
@@ -539,6 +548,27 @@
             </summary>
             <param name="lowLevel">A dictionary representing this object,
             which must not be null</param> 
+        </member>
+        <member name="T:Melville.Pdf.Model.Documents.SelectFromImpl">
+            <summary>
+            Extension object to select items out of an enumerable of PdfDirectObjects
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.SelectFromImpl.SelectInner``1(System.Collections.Generic.IEnumerable{Melville.Pdf.LowLevel.Model.Objects.PdfDirectObject})">
+            <summary>
+            Extract objects of a given type from an enumerable pf PdfDirectObjecs
+            </summary>
+            <typeparam name="T">The expected output type</typeparam>
+            <param name="items">The enumerable of PdfObjects to check</param>
+            <returns>The original enumerable, casted to a given type</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Documents.SelectFromImpl.SelectInnerAsync``1(System.Collections.Generic.IAsyncEnumerable{Melville.Pdf.LowLevel.Model.Objects.PdfDirectObject})">
+            <summary>
+            Extract objects of a given type from an enumerable pf PdfDirectObjecs
+            </summary>
+            <typeparam name="T">The expected output type</typeparam>
+            <param name="items">The enumerable of PdfObjects to check</param>
+            <returns>The original enumerable, casted to a given type</returns>
         </member>
         <member name="F:Melville.Pdf.Model.OptionalContent.AllOptionalContentVisible.Instance">
             <summary>
@@ -2321,6 +2351,11 @@
             </summary>
             <param name="patternDictionary">The PdfDictioanry representing the pattern.</param>
             <returns>An IShaderWriter to write the shader data</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern">
+            <summary>
+            This is a costume type that represents wraps a dictionary as a tile pattern.
+            </summary>
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.Patterns.TilePatterns.PdfTilePattern.GetContentBytesAsync">
             <inheritdoc />

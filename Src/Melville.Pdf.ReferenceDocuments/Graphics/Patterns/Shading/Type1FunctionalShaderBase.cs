@@ -10,7 +10,7 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
     {
     }
 
-    private PdfStream[] function;
+    private PdfStream[]? function;
     protected override async ValueTask SetPagePropertiesAsync(PageCreator page)
     {
         function = await BuildFunctionAsync();
@@ -31,7 +31,7 @@ public abstract class Type1FunctionalShaderBase: PatternDisplayClass
 
     protected override PdfIndirectObject CreatePattern(IPdfObjectCreatorRegistry arg) =>
         BuildPattern(arg, 
-            BuildShader(arg, function , 
+            BuildShader(arg, function ?? throw new InvalidOperationException("No function definition.") , 
                 new DictionaryBuilder()).AsDictionary(),
             new DictionaryBuilder()).AsDictionary();
 

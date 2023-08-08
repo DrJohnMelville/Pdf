@@ -17,24 +17,6 @@ internal interface IHasPageAttributes
 
 }
 
-public static class SelectFromImpl
-{
-    public static IEnumerable<T> SelectInner<T>(this IEnumerable<PdfDirectObject> items)
-    {
-        foreach (var item in items)
-        {
-            if (item.TryGet(out T casted)) yield return casted;
-        }
-    }
-    public static async IAsyncEnumerable<T> SelectInnerAsync<T>(this IAsyncEnumerable<PdfDirectObject> items)
-    {
-        await foreach (var item in items)
-        {
-            if (item.TryGet(out T casted)) yield return casted;
-        }
-    }
-}
-
 internal static class PdfPageAttributesOperations
 {
     private static async IAsyncEnumerable<PdfDirectObject> InheritedPagePropertiesAsync(IHasPageAttributes item, PdfDirectObject name)

@@ -192,7 +192,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     public async ValueTask SetFontAsync(PdfDirectObject font, double size)
     {
         var fontResource = await page.GetResourceAsync(ResourceTypeName.Font, font).CA();
-        var genericRealizedFont = fontResource.TryGet(out PdfDictionary fontDic) ?
+        var genericRealizedFont = fontResource.TryGet(out PdfDictionary? fontDic) ?
             await FontFromDictionaryAsync(fontDic).CA():
             await SystemFontFromNameAsync(font).CA();
         

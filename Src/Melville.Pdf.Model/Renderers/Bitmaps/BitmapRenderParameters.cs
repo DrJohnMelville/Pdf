@@ -13,7 +13,7 @@ internal record struct BitmapRenderParameters(PdfStream Stream, IHasPageAttribut
 {
     public async Task<IReadOnlyList<double>?> DecodeAsync() =>
         Stream.TryGetValue(KnownNames.Decode, out var arrayTask) &&
-        (await arrayTask.CA()).TryGet(out PdfArray array) 
+        (await arrayTask.CA()).TryGet(out PdfArray? array) 
             ? await array.CastAsync<double>().CA()
             : null;
 

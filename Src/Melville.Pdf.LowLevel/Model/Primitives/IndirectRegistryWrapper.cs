@@ -15,7 +15,9 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 /// <typeparam name="T"></typeparam>
 public partial class IndirectRegistryWrapper<T> : IReadOnlyDictionary<T, PdfIndirectObject>
 {
-
+    /// <summary>
+    /// The inner dictionary of direct objects.
+    /// </summary>
     [FromConstructor] [DelegateTo] private readonly IReadOnlyDictionary<T, PdfDirectObject> inner;
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

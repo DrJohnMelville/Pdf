@@ -111,6 +111,7 @@ public abstract partial class PostscriptString :
     private protected abstract RentedMemorySource InnerRentedMemorySource(MementoUnion memento);
     private protected abstract Memory<byte> ValueAsMemory(in MementoUnion memento);
 
+    /// <inheritdoc />
     public int CompareTo(in MementoUnion memento, object otherStrategy, in MementoUnion otherMemento)
     {
         if (otherStrategy is not PostscriptString otherString)

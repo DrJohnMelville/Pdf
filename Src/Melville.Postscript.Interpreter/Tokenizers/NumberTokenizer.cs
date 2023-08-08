@@ -49,6 +49,14 @@ public static class NumberTokenizer
         return ret;
     }
 
+    /// <summary>
+    /// Read a sequence of digits as a positive number
+    /// </summary>
+    /// <param name="radix">The radix, or base, of the number represented</param>
+    /// <param name="buffer">A buffer to get data from</param>
+    /// <param name="value">Receives the value of the parsed number</param>
+    /// <param name="charsConsumed">Receives the number of characters consumed.</param>
+    /// <returns></returns>
     public static byte TryGetDigitSequence(
         int radix, in ReadOnlySpan<byte> buffer, out long value, out int charsConsumed)
     {

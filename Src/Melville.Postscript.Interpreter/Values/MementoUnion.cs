@@ -107,6 +107,14 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
     public static bool operator !=(MementoUnion a, MementoUnion b) =>
         !a.Equals(b);
 
+    /// <summary>
+    /// Create a memento from two ints and a long.
+    /// </summary>
+    /// <param name="number">The first int</param>
+    /// <param name="generation">The second int</param>
+    /// <param name="offset">The long</param>
+    /// <returns>A memento union with two ints in Ints[0] and Ints[1] and a
+    /// value in Long Long[1].</returns>
     public static MementoUnion CreateFrom(int number, int generation, long offset)
     {
         var ret = new MementoUnion();

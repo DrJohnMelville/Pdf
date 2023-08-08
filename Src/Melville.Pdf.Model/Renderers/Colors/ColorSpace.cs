@@ -113,5 +113,5 @@ internal readonly struct ColorSpaceFactory
         
 
     private static T ColorSpaceParameterAs<T>(in IReadOnlyList<PdfDirectObject> array) =>
-        array[1].TryGet(out T ret)? ret: throw new PdfParseException("Dictionary Expected");
+        array[1].TryGet(out T? ret)? ret: throw new PdfParseException("Dictionary Expected");
 }

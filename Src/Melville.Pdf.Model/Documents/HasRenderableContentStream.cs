@@ -15,7 +15,7 @@ namespace Melville.Pdf.Model.Documents;
 public class HasRenderableContentStream : IHasPageAttributes
 {
     /// <summary>
-    /// <param name="LowLevel">The low level Dictionary representing this item.
+    /// The low level Dictionary representing this item.
     /// </summary>
     public PdfDictionary LowLevel { get; }
 

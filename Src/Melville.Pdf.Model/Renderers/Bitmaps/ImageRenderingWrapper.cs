@@ -55,16 +55,16 @@ internal readonly partial struct ImageRenderingWrapper
     private async ValueTask<IPdfBitmap> WrapWithHardMaskAsync(
         IPdfBitmap writer) => mask switch
         {
-            var x when x.TryGet(out PdfArray maskArr) => 
+            var x when x.TryGet(out PdfArray? maskArr) => 
                  new SelfMaskAdjuster<ColorRangeMaskType>(writer,
                      new ColorRangeMaskType(
                      await maskArr.CastAsync<int>().CA(), bitsPerComponent, colorSpace)),                
-            var x when x.TryGet(out PdfStream str) => await CreateMaskWriterAsync<HardMask>(writer, str).CA(),
+            var x when x.TryGet(out PdfStream? str) => await CreateMaskWriterAsync<HardMask>(writer, str).CA(),
             _ => writer
         };
 
     private ValueTask<IPdfBitmap> WrapWithSoftMaskAsync(
-        IPdfBitmap writer) => softMask.TryGet(out PdfStream str) ?
+        IPdfBitmap writer) => softMask.TryGet(out PdfStream? str) ?
             CreateMaskWriterAsync<SoftMask>(writer, str) :
             ValueTask.FromResult(writer);
 

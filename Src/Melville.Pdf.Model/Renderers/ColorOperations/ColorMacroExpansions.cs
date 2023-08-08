@@ -62,7 +62,7 @@ internal partial class ColorMacroExpansions : IColorOperations
 
     private async ValueTask<PdfDictionary?> GetPatternDictAsync(PdfDirectObject? patternName) =>
         patternName.HasValue && (await page.GetResourceAsync(ResourceTypeName.Pattern, patternName.Value).CA())
-        .TryGet(out PdfDictionary patternDict)
+        .TryGet(out PdfDictionary? patternDict)
             ? patternDict
             : null;
 

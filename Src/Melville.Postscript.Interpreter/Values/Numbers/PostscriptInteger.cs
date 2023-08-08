@@ -27,6 +27,7 @@ public partial class PostscriptInteger :
     double IPostscriptValueStrategy<double>.GetValue(in MementoUnion memento) => (double)LongValue(memento);
     float IPostscriptValueStrategy<float>.GetValue(in MementoUnion memento) => (float)LongValue(memento);
 
+    /// <inheritdoc />
     public int CompareTo(in MementoUnion memento, object otherStrategy, in MementoUnion otherMemento)
     {
         return (otherStrategy is IPostscriptValueStrategy<long> otherSpecificStrategy)?

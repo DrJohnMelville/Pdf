@@ -9,11 +9,10 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.Model.Documents;
 
-[FromConstructor]
 /// <summary>
 /// This record is the primary abstraction for a page in a pdf document.
 /// </summary>
-/// <param name="LowLevel"></param>
+[FromConstructor]
 public partial class PdfPage: HasRenderableContentStream
 {
     /// <summary>

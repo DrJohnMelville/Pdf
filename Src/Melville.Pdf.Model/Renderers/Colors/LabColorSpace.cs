@@ -35,7 +35,7 @@ internal class LabColorSpace : IColorSpace
     {
         var wp = await ReadWhitePointAsync(parameters).CA();
         var array = (await parameters.GetOrNullAsync(KnownNames.Range).CA())
-            .TryGet(out PdfArray arr)
+            .TryGet(out PdfArray? arr)
             ? await arr.CastAsync<double>().CA()
             : Array.Empty<double>();
         
