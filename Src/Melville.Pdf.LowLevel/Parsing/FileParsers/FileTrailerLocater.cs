@@ -15,12 +15,11 @@ internal static class FileTrailerLocater
     {
         var end = source.StreamLength;
         var start = end;
-            
-        long xrefPosition = 0;
+
         while (true)
         {
             (start, end) = ComputeSearchSegment(fileTrailerSizeHint, start, end);
-            var context = await source.RentReaderAsync(start).CA();
+            var context = source.RentReader(start);
             var reader = context.Reader;
             while (SearchForS(await reader.ReadAsync().CA(), reader, end, out var foundPos))
             {
@@ -28,6 +27,7 @@ internal static class FileTrailerLocater
                 if (await TokenChecker.CheckTokenAsync(context.Reader, StartXRef).CA())
                 {
                     await NextTokenFinder.SkipToNextTokenAsync(reader).CA();
+                    long xrefPosition = 0;
                     do { } while (reader.ShouldContinue(GetLong(await reader.ReadAsync().CA(), out xrefPosition)));
                     return xrefPosition;
                 }

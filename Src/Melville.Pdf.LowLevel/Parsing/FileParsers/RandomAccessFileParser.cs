@@ -11,7 +11,7 @@ internal static class RandomAccessFileParser
         ParsingFileOwner owner, int fileTrailerSizeHint = 30)
     {
         byte major, minor;
-        var context = await owner.RentReaderAsync(0).CA();
+        var context = owner.RentReader(0);
         owner.SetPreheaderOffset(await ConsumeInitialGarbage.CheckForOffsetAsync(context.Reader).CA());
         (major, minor) = await PdfHeaderParser.ParseHeadderAsync(context.Reader).CA();
 

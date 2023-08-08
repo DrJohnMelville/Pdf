@@ -50,9 +50,12 @@ internal readonly struct RootObjectParser
 
     private PdfDirectObject DecryptString(PdfDirectObject token)
     {
-        #warning need a shortcut for null strings to pass through quickly
+        if (token.IsNull) return token;
+        var input = token.Get<StringSpanSource>().GetSpan();
+        if (input.Length == 0) return token;
+
         var decryptedSpan = stack.CryptoContext().StringCipher().Decrypt().CryptSpan(
-            token.Get<StringSpanSource>().GetSpan());
+            input);
         return PdfDirectObject.CreateString(decryptedSpan);
     }
 }

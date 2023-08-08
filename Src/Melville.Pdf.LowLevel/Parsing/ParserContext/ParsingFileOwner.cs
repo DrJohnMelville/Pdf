@@ -33,18 +33,14 @@ internal sealed partial class ParsingFileOwner: IDisposable, IIndirectObjectRegi
 
     private long AdjustOffsetForPreHeaderBytes(long offset) => offset + preHeaderOffset;
 
-    #warning make this a synchronous method
-    public ValueTask<ParsingReader> RentReaderAsync(long offset, int objectNumber=-1, int generation = -1)
+    public ParsingReader RentReader(long offset, int objectNumber=-1, int generation = -1)
     {
-        return new(ParsingReaderForStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(offset)), offset));
+        return ParsingReaderForStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(offset)), offset);
 
     }
 
-    public ValueTask<Stream> RentStreamAsync(long position, long length)
-    {
-        var ret = new RentedStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(position)), length);
-        return new ValueTask<Stream>(ret);
-    }
+    public Stream RentStream(long position, long length) => 
+        new RentedStream(source.ReadFrom(AdjustOffsetForPreHeaderBytes(position)), length);
 
 
     public IObjectCryptContext CryptContextForObject(int objectNumber, int generation) =>

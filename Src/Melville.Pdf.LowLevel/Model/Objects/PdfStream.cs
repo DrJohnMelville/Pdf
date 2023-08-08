@@ -26,7 +26,7 @@ public class PdfStream : PdfDictionary, IHasInternalIndirectObjects
     }
 
     private async ValueTask<Stream> SourceStreamAsync() => 
-        await source.OpenRawStreamAsync(await DeclaredLengthAsync().CA()).CA();
+        source.OpenRawStream(await DeclaredLengthAsync().CA());
 
     /// <summary>
     /// The on disk length of the stream as declared in the stream dictionary.

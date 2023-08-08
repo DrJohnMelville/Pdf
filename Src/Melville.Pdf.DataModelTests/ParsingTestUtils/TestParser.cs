@@ -23,7 +23,7 @@ public static class TestParser
 
     internal static async ValueTask<PdfIndirectObject> ParseValueObjectAsync(this ParsingFileOwner source, long position = 0)
     {
-        var reader = await source.RentReaderAsync(position);
+        var reader = source.RentReader(position);
         return await new RootObjectParser(reader).ParseAsync();
     }
 
@@ -35,7 +35,7 @@ public static class TestParser
 
     internal static async ValueTask<PdfDirectObject> ParseRootObjectAsync(this ParsingFileOwner source, long position = 0)
     {
-        var reader = await source.RentReaderAsync(position);
+        var reader = source.RentReader(position);
         return await new RootObjectParser(reader).ParseTopLevelObjectAsync();
     }
 

@@ -24,10 +24,7 @@ internal class LiteralStreamSource : IStreamDataSource
         SourceFormat = sourceFormat;
     }
 
-    public ValueTask<Stream> OpenRawStreamAsync(long streamLength)
-    {
-        return new ValueTask<Stream>(source.CreateReader());
-    }
+    public Stream OpenRawStream(long streamLength) => source.CreateReader();
 
     public Stream WrapStreamWithDecryptor(Stream encryptedStream, PdfDirectObject cryptFilterName) =>
         encryptedStream;
