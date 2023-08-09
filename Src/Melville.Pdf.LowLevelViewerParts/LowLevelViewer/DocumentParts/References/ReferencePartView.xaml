@@ -8,6 +8,6 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Button FontSize="24" Click="{eventBindings:EventBinding JumpToReference}">Jump To Reference</Button>
+        <Button FontSize="24" Click="{eventBindings:EventBinding JumpToReferenceAsync}">Jump To Reference</Button>
     </Grid>
 </UserControl>

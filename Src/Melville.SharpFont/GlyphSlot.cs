@@ -71,15 +71,14 @@ namespace Melville.SharpFont
 	/// endfor  
 	/// </code>
 	/// </example>
-	public sealed class GlyphSlot
+	public readonly struct GlyphSlot
 	{
 		#region Fields
 
-		private IntPtr reference;
-		private GlyphSlotRec rec;
-
-		private Face parentFace;
-		private Library? parentLibrary;
+		private readonly IntPtr reference;
+		private readonly GlyphSlotRec rec;
+        private readonly Face parentFace;
+		private readonly Library? parentLibrary;
 
 		#endregion
 
@@ -87,7 +86,8 @@ namespace Melville.SharpFont
 
 		internal GlyphSlot(IntPtr reference, Face parentFace, Library? parentLibrary)
 		{
-			Reference = reference;
+			this.reference = reference;
+            rec = PInvokeHelper.PtrToStructure<GlyphSlotRec>(reference);
 			this.parentFace = parentFace;
 			this.parentLibrary = parentLibrary;
 		}
@@ -350,16 +350,6 @@ namespace Melville.SharpFont
 		}
 
 		/// <summary>
-		/// Gets or sets an object used to identify this instance of <see cref="GlyphSlot"/>. This object will not be
-		/// modified or accessed internally.
-		/// </summary>
-		/// <remarks>
-		/// This is a replacement for FT_Generic in FreeType. If you are retrieving the same object multiple times
-		/// from functions, this object will not appear in new copies.
-		/// </remarks>
-		public object? Tag { get; set; }
-
-		/// <summary>
 		/// Gets other data. Really wicked formats can use this pointer to present their own glyph image to client
 		/// applications. Note that the application needs to know about the image format.
 		/// </summary>
@@ -378,11 +368,6 @@ namespace Melville.SharpFont
 				return reference;
 			}
 
-			set
-			{
-				reference = value;
-				rec = PInvokeHelper.PtrToStructure<GlyphSlotRec>(reference);
-			}
 		}
 
 		#endregion

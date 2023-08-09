@@ -28,28 +28,39 @@ public static class ParseFile
     public static async ValueTask DoAsync(string fileName)
     {
         ClearLine();
-        Console.WriteLine($"{fileName}");
         await using var stream = File.OpenRead(fileName);
         await DoAsync(stream, fileName); 
     }
 
     private static async ValueTask DoAsync(FileStream source, string path)
     {
+        string fileName = Path.GetFileNameWithoutExtension(path);
+        ReportProgress(fileName, 0, 0);
         try
         {
             using var doc = await DocumentRendererFactory.CreateRendererAsync(
                 await PdfDocument.ReadAsync(source), WindowsDefaultFonts.Instance);
             int completed = 0;
             object mutex = new();
-            await Parallel.ForEachAsync(Enumerable.Range(1, doc.TotalPages), async (i,_) =>
+            var cts = new CancellationTokenSource();
+            await Parallel.ForEachAsync(Enumerable.Range(1, doc.TotalPages), cts.Token, async (i,_) =>
             {
-                await RenderPageAsync(doc, i);
+                await RenderPageAsync(doc, i, path);
                 lock (mutex)
                 {
+                    if (Console.KeyAvailable)
+                    {
+                        while (Console.KeyAvailable)
+                        {
+                            Console.ReadKey();
+                        }
+
+                        cts.Cancel();
+                        return;
+                    }
                     if (++completed % 10 == 0)
                     {
-                        ClearLine();
-                        Console.Write($" {completed}/{doc.TotalPages}");
+                        ReportProgress(fileName, completed, doc.TotalPages);
                     }
                 }
             });
@@ -61,9 +72,14 @@ public static class ParseFile
         }
     }
 
+    private static void ReportProgress(string fileName, int completed, int totalPages)
+    {
+        ClearLine();
+        Console.Write($"{fileName} ({completed}/{totalPages})");
+    }
 
 
-    private static async Task RenderPageAsync(DocumentRenderer doc, int page)
+    private static async Task RenderPageAsync(DocumentRenderer doc, int page, string path)
     {
         try
         {
@@ -71,7 +87,7 @@ public static class ParseFile
         }
         catch (Exception e)
         {
-            OutputException(e, $"Page {page}");
+            OutputException(e, $"{path}({page})");
         }
     }
     static void ClearLine(){
