@@ -12,7 +12,6 @@ namespace Melville.Pdf.LowLevel.Model.Primitives;
 /// when the podcumentcreator needs to make a PDFReader without roundtripping through a stream.  We need to create
 /// a registry of indirect objects where all of the values are already known.
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public partial class IndirectRegistryWrapper<T> : IReadOnlyDictionary<T, PdfIndirectObject>
 {
     /// <summary>

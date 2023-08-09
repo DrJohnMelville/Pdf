@@ -249,7 +249,6 @@ public readonly partial struct ContentStreamParser
         """, "EX")]
     [MacroItem("BeginInlineImage", """
         engine.Push(PostscriptValueFactory.CreateMark());
-        engine.EnablePdfArrayParsing();
         """, "BI")]
     private static IContentStreamOperations E(PostscriptEngine engine) =>
         engine.OperandStack[0].Get<IContentStreamOperations>();
@@ -350,7 +349,6 @@ public readonly partial struct ContentStreamParser
             : E(engine).BeginMarkedRangeAsync(name, dictValue.Get<PdfDictionary>());
         """, "BDC")]
     [MacroItem("ParseMarkedImage", """
-        engine.DisablePdfArrayParsing();
         return new InlineImageParser(engine, E(engine)).ParseAsync();
         """, "ID")]
     partial void AsyncMacroHolder();
@@ -389,34 +387,15 @@ public readonly partial struct ContentStreamParser
 
     private static void CreatePdfDictionary(PostscriptEngine engine)
     {
-        var builder = new DictionaryBuilder();
-        while (engine.OperandStack.TryPop(out var item) && item is { IsMark: false })
-        {
-            if (IsArrayTopMarker(item))
-            {
-                item = CreatePdfArray(engine);
-            }
-            var key = PopName(engine);
-            builder.WithItem(key, PostscriptObjectToPdfObject(item));
-        }
-        engine.OperandStack.Push(new PostscriptValue(builder.AsDictionary(), PostscriptBuiltInOperations.PushArgument,default));
+        var builder = new PdfObjectCreator(engine.OperandStack, DictionaryTranslator.None).
+            PopDictionaryBuilderFromStack();
+        engine.OperandStack.Push(
+            new PostscriptValue(builder.AsDictionary(), 
+                PostscriptBuiltInOperations.PushArgument,default));
     }
 
     private static bool IsArrayTopMarker(PostscriptValue item) => 
         item.TryGet(out ArrayTopMarker? _);
-
-    private static PostscriptValue CreatePdfArray(PostscriptEngine engine)
-    {
-        var ret = new PdfIndirectObject[engine.OperandStack.CountToMark()];
-        for (int i = ret.Length - 1; i >= 0; i--)
-        {
-            ret[i] = PostscriptObjectToPdfObject(engine.OperandStack.Pop());
-        }
-
-        PopMarkObject(engine);
-        return new PostscriptValue(new PdfArray(ret),
-            PostscriptBuiltInOperations.PushArgument, default);
-    }
 
     private static void PopMarkObject(PostscriptEngine engine)
     {
@@ -425,17 +404,11 @@ public readonly partial struct ContentStreamParser
     }
 
 
-    private static PdfDirectObject PostscriptObjectToPdfObject(PostscriptValue item) => item switch
+    private static PdfDirectObject MapSimpleValue(in PostscriptValue source)
     {
-        { IsInteger: true } or
-        { IsDouble: true } or
-        { IsString: true } or
-        { IsBoolean: true } or
-        {IsLiteralName:true} => MapSimpleValue(item),
-        var x when x.TryGet(out PdfDictionary? innerDictionary) => innerDictionary,
-        var x when x.TryGet(out PdfArray? innerArray) => innerArray,
-        _=> throw new PdfParseException("Cannot convert PostScriptToPdfObject")
-    };
+        Debug.Assert(source.ValueStrategy is PostscriptString or PostscriptDouble or PostscriptBoolean or PostscriptInteger);
+        return new PdfDirectObject(source.ValueStrategy, source.Memento);
+    }
 
     private static async ValueTask ShowSpacedStringAsync(PostscriptEngine engine)
     {
@@ -485,10 +458,4 @@ public readonly partial struct ContentStreamParser
 
     private static PdfDirectObject PopName(PostscriptEngine engine) =>
         TryPopName(engine) ?? throw new PdfParseException("Name exoected");
-
-    private static PdfDirectObject MapSimpleValue(in PostscriptValue source)
-    {
-        Debug.Assert(source.ValueStrategy is PostscriptString or PostscriptDouble or PostscriptBoolean or PostscriptInteger);
-        return new PdfDirectObject(source.ValueStrategy, source.Memento);
-    }
 }

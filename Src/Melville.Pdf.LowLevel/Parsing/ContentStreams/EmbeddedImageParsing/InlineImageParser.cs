@@ -28,34 +28,10 @@ internal readonly partial struct InlineImageParser
 
     private DictionaryBuilder PopDictionaryFromPostscriptStack()
     {
-        Span<byte> nameSpan = stackalloc byte[PostscriptString.ShortStringLimit];
-        var builder = DefaultImageDictionaryBuilder();
-        while (engine.OperandStack.TryPop(out var last) && !last.IsMark)
-        {
-            var name = PdfDirectObject.CreateName(
-                ExpandNameSynonym(engine.PopAs<StringSpanSource>().GetSpan()));
-
-            builder.WithItem(name, last.ToPdfObject());
-        }
-        return builder;
+        return new PdfObjectCreator(engine.OperandStack, DictionaryTranslator.Image)
+            .PopDictionaryBuilderFromStack(DefaultImageDictionaryBuilder());
     }
 
-    private ReadOnlySpan<byte> ExpandNameSynonym(ReadOnlySpan<byte> name) => name switch
-    {
-        [(byte)'B', (byte)'P',(byte)'C']=> "BitsPerComponent"u8,
-        [(byte)'C', (byte)'S']=> "ColorSpace"u8,
-        [(byte)'D', (byte)'P']=> "DecodeParms"u8,
-        [(byte)'I', (byte)'M']=> "ImageMask"u8,
-        [(byte)'D']=> "Decode"u8,
-        [(byte)'F']=> "Filter"u8,
-        [(byte)'H']=> "Height"u8,
-        [(byte)'I']=> "Interpolate"u8,
-        [(byte)'L']=> "Length"u8,
-        [(byte)'W']=> "Width"u8,
-        _=> name
-
-    };
- 
     private DictionaryBuilder DefaultImageDictionaryBuilder() =>
         new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.XObject)
