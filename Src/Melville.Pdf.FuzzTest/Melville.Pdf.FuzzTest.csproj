@@ -3,13 +3,16 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net7.0-Windows7.0</TargetFramework>
 		<TieredPGO>true</TieredPGO>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
-		                  PrivateAssets="all">
+	  <PackageReference Include="Melville.Linq.Statistics" Version="0.5.43" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 			<OutputItemType>Analyzer</OutputItemType>
 		</ProjectReference>

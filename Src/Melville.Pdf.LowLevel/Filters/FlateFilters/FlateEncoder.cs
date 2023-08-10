@@ -1,7 +1,9 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using Melville.Hacks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -19,19 +21,11 @@ internal class FlateCodecDefinition: ICodecDefinition
         return new DeflateStream(input, CompressionMode.Decompress);
     }
 
+    private static readonly byte[] buffer = new byte[2];
     private static async Task Skip2BytePrefixAsync(Stream input)
     {
-        var buffer = ArrayPool<byte>.Shared.Rent(2);
-        int totalRead = 0, localRead;
-        do
-        {
-            localRead = await input.ReadAsync(buffer, 0, 2 - totalRead).CA();
-            totalRead += localRead;
-        } while (NotAtEndOfPrefix(totalRead) && NotAtEndOfStream(localRead));
-
-        ArrayPool<byte>.Shared.Return(buffer);
+        await buffer.FillBufferAsync(0, 2, input).CA();
+        Debug.Assert((buffer[0] & 0x0F) == 0x08);
+        Debug.Assert(((256 * buffer[0])+buffer[1]) % 31 == 0);
     }
-
-    private static bool NotAtEndOfPrefix(int totalRead) => totalRead < 2;
-    private static bool NotAtEndOfStream(int localRead) => localRead > 0;
 }
