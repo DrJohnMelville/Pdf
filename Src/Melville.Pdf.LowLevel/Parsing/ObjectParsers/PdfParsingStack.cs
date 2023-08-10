@@ -117,7 +117,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
         Debug.Assert(Count == 2);
         Debug.Assert(Peek().TryGetEmbeddedDirectValue(
             out Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>> _));
-        AdvavancePastWhiteSpace(await Source.Reader.ReadAtLeastAsync(10).CA());
+        AdvancePastWhiteSpace(await Source.Reader.ReadAtLeastAsync(10).CA());
         Pop().TryGetEmbeddedDirectValue(out var dv);
         Pop();
         Push(new PdfStream(new  PdfFileStreamSource(
@@ -125,19 +125,21 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
                 dv.Get<Memory<KeyValuePair<PdfDirectObject, PdfIndirectObject>>>()));
     }
 
-    private void AdvavancePastWhiteSpace(ReadResult ca)
+    private void AdvancePastWhiteSpace(ReadResult ca)
     {
         var reader = new SequenceReader<byte>(ca.Buffer);
         TryEatWhiteSpace(ref reader);
-        for (int i = 0; i < 2; i++)
-        {
-            if (reader.TryPeek(out var character) &&
-                CharacterClassifier.IsLineEndChar(character))
-            {
-                reader.Advance(1);
-            }
-        }
+        TryAdvancePastChar(ref reader, (byte)'\r');
+        TryAdvancePastChar(ref reader, (byte)'\n');
         Source.Reader.AdvanceTo(reader.Position);
+    }
+
+    private static void TryAdvancePastChar(ref SequenceReader<byte> reader, byte soughtCharacter)
+    {
+        if (reader.TryPeek(out var c1) && c1 == soughtCharacter)
+        {
+            reader.Advance(1);
+        }
     }
 
     private void TryEatWhiteSpace(ref SequenceReader<byte> reader)

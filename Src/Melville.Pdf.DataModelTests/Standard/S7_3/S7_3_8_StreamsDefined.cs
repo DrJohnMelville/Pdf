@@ -28,13 +28,16 @@ public class S7_3_8_StreamsDefined
     [InlineData("                                    <</Length 6>> stream\r123456\r\nendstream")]
     public async Task ParseSimpleStreamAsync(string data)
     {
-        await RunStreamTest(data);
+        await RunStreamTestAsync(data, "123456");
     }
 
-    private static async Task RunStreamTest(string data)
+    [Theory]
+    [InlineData("<</Length 6>> stream\r\n\n12345\r\nendstream", "\n12345")]
+    [InlineData("<</Length 6>> stream\n\n12345\r\nendstream", "\n12345")]
+    public static async Task RunStreamTestAsync(string data, string expected)
     {
         var obj = await $"{ObjectPrefix}{data}\r\nendobj".ParseRootObjectAsync();
         var cSharpStream = await obj.Get<PdfStream>().StreamContentAsync();
-        Assert.Equal("123456", await new StreamReader(cSharpStream).ReadToEndAsync());
+        Assert.Equal(expected, await new StreamReader(cSharpStream).ReadToEndAsync());
     }
 }
