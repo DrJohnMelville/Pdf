@@ -21,9 +21,9 @@ public static class Program
         {
             try
             {
-                await ParseFile.DoAsync(pdf, logger).AsTask().TimeoutAfter(30_000);
+                await ParseFile.DoAsync(pdf, logger).AsTask().TimeoutAfterAsync(30_000);
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
         }
@@ -49,7 +49,7 @@ public struct VoidTypeStruct
 
 public static class TestTimeouts
 {
-        public static Task TimeoutAfter(this Task task, int millisecondsTimeout)
+        public static Task TimeoutAfterAsync(this Task task, int millisecondsTimeout)
     {
         // Short-circuit #1: infinite timeout or task already completed
         if (task.IsCompleted || (millisecondsTimeout == Timeout.Infinite))
@@ -72,8 +72,9 @@ public static class TestTimeouts
         }
 
         // Set up a timer to complete after the specified timeout period
-        Timer timer = new Timer(state => 
+        Timer timer = new Timer(state =>
         {
+            if (state is null) return;
             // Recover your state information
             var myTcs = (TaskCompletionSource<VoidTypeStruct>)state;
 
@@ -84,6 +85,7 @@ public static class TestTimeouts
         // Wire up the logic for what happens when source task completes
         task.ContinueWith((antecedent, state) =>
             {
+                if (state is null) return;
                 // Recover our state data
                 var tuple = 
                     (Tuple<Timer, TaskCompletionSource<VoidTypeStruct>>)state;
@@ -107,15 +109,15 @@ public static class TestTimeouts
         switch (source.Status)
         {
             case TaskStatus.Faulted:
-                proxy.TrySetException(source.Exception);
+                proxy.TrySetException(source.Exception!);
                 break;
             case TaskStatus.Canceled:
                 proxy.TrySetCanceled();
                 break;
             case TaskStatus.RanToCompletion:
-                Task<TResult> castedSource = source as Task<TResult>;
+                Task<TResult>? castedSource = source as Task<TResult>;
                 proxy.TrySetResult(
-                    castedSource == null ? default(TResult) : // source is a Task
+                    castedSource is null ? default(TResult)! : // source is a Task
                         castedSource.Result); // source is a Task<TResult>
                 break;
         }
