@@ -96,6 +96,15 @@ public class PostscriptValueTest
     }
 
     [Fact]
+    public void ZeroPrefixString()
+    {
+        var zeroPrefString = PostscriptValueFactory.CreateString("\u0000A"u8, StringKind.String);
+        var span = zeroPrefString.Get<StringSpanSource>().GetSpan();
+        Assert.Equal(2, span.Length);
+    }
+
+
+    [Fact]
     public void ArrayTest()
     {
         var value = PostscriptValueFactory.CreateArray(

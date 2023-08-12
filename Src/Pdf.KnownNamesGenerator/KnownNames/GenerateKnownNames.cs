@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -101,19 +99,6 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
 
             sb.AppendLine("          }");
         }
- 
-        private static (ulong lowValue, ulong highValur) TryPackNum(string value)
-        {
-            Debug.Assert(value.Length <= 18);
-            var ret = new BigInteger();
-            for (int i = value.Length -1; i >= 0; i--)
-            {
-                ret <<= 7;
-                ret |= (value[i] & 0x7F);
-            }
-
-            return ((ulong)(ret & 0XFFFF_FFFF_FFFF_FFFF), (ulong)(ret >> 64));
-        }
 
         private static IOrderedEnumerable<(string Value, string CSharpName, string type)> UniquePdfNames(List<(string Value, string CSharpName, string type)> allNames) =>
             allNames
@@ -125,17 +110,7 @@ namespace Melville.Pdf.LowLevel.Model.Conventions
             sb.AppendLine("        /// <summary>");
             sb.AppendLine($"        /// PdfDirectObject for for ({value})");
             sb.AppendLine("        /// </summary>");
-            if (value.Length <= 18)
-                CreateShortString(sb, name, value);
-            else
                 CreateLongString(sb, name, value);
-        }
-
-        private static void CreateShortString(StringBuilder sb, string name, string value)
-        {
-            var (low, high) = TryPackNum(value);
-            sb.AppendLine(
-                $"""        public static PdfDirectObject {name} => PdfDirectObject.CreateName({low},{high});""");
         }
 
         private static void CreateLongString(StringBuilder sb, string name, string value) =>

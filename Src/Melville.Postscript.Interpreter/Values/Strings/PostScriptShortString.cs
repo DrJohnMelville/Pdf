@@ -2,6 +2,7 @@
 using System.Buffers;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values.Strings;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -36,9 +37,6 @@ internal sealed partial class PostscriptShortString : PostscriptString
         return new(array.AsMemory(0, span.Length), array);
     }
 
-    private protected override Memory<byte> ValueAsMemory(in MementoUnion memento)
-    {
-        var value = GetBytes(memento, stackalloc byte[PostscriptString.ShortStringLimit]);
-        return value.ToArray();
-    }
+    private protected override Memory<byte> ValueAsMemory(in MementoUnion memento) => 
+        new StringSpanSource(this, memento).GetSpan().ToArray();
 }

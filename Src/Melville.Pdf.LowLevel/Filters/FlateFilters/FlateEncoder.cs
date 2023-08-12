@@ -22,10 +22,8 @@ internal class FlateCodecDefinition: ICodecDefinition
     }
 
     private static readonly byte[] buffer = new byte[2];
-    private static async Task Skip2BytePrefixAsync(Stream input)
+    private static Task Skip2BytePrefixAsync(Stream input)
     {
-        await buffer.FillBufferAsync(0, 2, input).CA();
-        Debug.Assert((buffer[0] & 0x0F) == 0x08);
-        Debug.Assert(((256 * buffer[0])+buffer[1]) % 31 == 0);
+        return buffer.FillBufferAsync(0, 2, input);
     }
 }
