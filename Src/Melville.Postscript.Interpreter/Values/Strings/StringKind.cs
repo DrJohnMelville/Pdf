@@ -25,12 +25,16 @@ public class StringKind
     /// <summary>
     /// Shortstringstrategy containing this kind
     /// </summary>
-    internal PostscriptShortString ShortStringStraegy { get; }
+    internal Strings.PostscriptShortString Strategy6Bit { get; }
+    internal Strings.PostscriptShortString Strategy7Bit { get; }
+    internal Strings.PostscriptShortString Strategy8Bit { get; }
 
     private StringKind(IExecutionSelector selector, bool parseAsExecutable)
     {
         ExecutionSelector = selector;
         DefaultAction = parseAsExecutable ? ExecutionSelector.Executable : ExecutionSelector.Literal;
-        ShortStringStraegy = new(this);
+        Strategy6Bit = new Strings.PostscriptShortString6Bit(this);
+        Strategy7Bit = new Strings.PostscriptShortString7Bit(this);
+        Strategy8Bit = new Strings.PostscriptShortString8Bit(this);
     }
 };

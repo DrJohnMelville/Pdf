@@ -8,6 +8,17 @@ using Melville.Postscript.Interpreter.Values.Interfaces;
 namespace Melville.Postscript.Interpreter.Values;
 
 /// <summary>
+/// A struct for getting a hashcode out of a string
+/// </summary>
+public readonly partial struct PostscriptHashCode
+{
+    /// <summary>
+    /// The hash code returned
+    /// </summary>
+    [FromConstructor] public readonly int HashCode;
+}
+
+/// <summary>
 /// Represents a string, literal name, or executable name of various leegths
 /// </summary>
 public abstract partial class PostscriptString : 
@@ -24,7 +35,8 @@ public abstract partial class PostscriptString :
     IPostscriptValueStrategy<IPostscriptComposite>,
     IPostscriptValueStrategy<IPostscriptArray>,
     IPostscriptValueStrategy<IPostscriptTokenSource>,
-    IPostscriptValueStrategy<RentedMemorySource>
+    IPostscriptValueStrategy<RentedMemorySource>,
+    IPostscriptValueStrategy<PostscriptHashCode>
 {
     /// <summary>
     /// Specifies whether this is a string, a name, or a literal name
@@ -121,4 +133,13 @@ public abstract partial class PostscriptString :
         return mySource.GetSpan().SequenceCompareTo(otherSource.GetSpan());
 
     }
+
+    PostscriptHashCode IPostscriptValueStrategy<PostscriptHashCode>.GetValue(
+        in MementoUnion memento)
+    {
+        var hc = new HashCode();
+        hc.AddBytes(new StringSpanSource(this, memento).GetSpan());
+        return new(hc.ToHashCode());
+    }
+
 }

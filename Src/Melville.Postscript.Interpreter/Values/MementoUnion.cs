@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Melville.INPC;
 
@@ -29,17 +30,19 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
 
 
 
-    [MacroItem("UInt64")]
-    [MacroItem("Int64")]
-    [MacroItem("Double")]
-    [MacroItem("UInt32")]
-    [MacroItem("Int32")]
-    [MacroItem("Single")]
+    [MacroItem("UInt64","UInt64")]
+    [MacroItem("Int64","Int64")]
+    [MacroItem("Double","Double")]
+    [MacroItem("UInt32","UInt32")]
+    [MacroItem("Int32","Int32")]
+    [MacroItem("Single","Single")]
+    [MacroItem("Bool","bool")]
+    [MacroItem("Byte","byte")]
     [MacroCode("""
         /// <summary>
         /// The value as ~0~s
         /// </summary>
-        public ReadOnlySpan<~0~> ~0~s => As<~0~>();
+        public ReadOnlySpan<~1~> ~0~s => As<~1~>();
         """)]
     private Span<T> As<T>() where T: struct =>
         MemoryMarshal.Cast<MementoUnion, T>(
@@ -74,11 +77,6 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
         span[1] = i1;
         return ret;
     }
-
-    /// <summary>
-    /// Ths structure as a readonly span of booleans
-    /// </summary>
-    public ReadOnlySpan<bool> Bools => As<bool>();
 
     /// <inheritdoc />
     public bool Equals(MementoUnion other) => UInt128.Equals(other.UInt128);
@@ -123,4 +121,16 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
         ret.As<long>()[1] = offset;
         return ret;
     }
+
+    public static MementoUnion CreateFrom(in ReadOnlySpan<byte> source)
+    {
+        var sourceLength = source.Length;
+        Debug.Assert(sourceLength is >= 0 and < 16);
+        var ret = new MementoUnion();
+        var bytes = ret.As<byte>();
+        bytes[0] = (byte)sourceLength;
+        source.CopyTo(bytes[1..]);
+        return ret;
+    }
+
 }

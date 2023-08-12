@@ -16,13 +16,6 @@ internal sealed partial class
         scoped in MementoUnion memento, scoped in Span<byte> scratch) =>
         value.Span;
 
-    public override int GetHashCode()
-    {
-        var hc = new HashCode();
-        hc.AddBytes(value.Span);
-        return hc.ToHashCode();
-    }
-
     public bool TryGet(in PostscriptValue indexOrKey, out PostscriptValue result) =>
         (indexOrKey.TryGet(out int index) && index >= 0 &&
          index < value.Length)

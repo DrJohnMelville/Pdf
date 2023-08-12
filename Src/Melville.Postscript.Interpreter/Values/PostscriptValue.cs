@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Melville.INPC;
@@ -6,6 +7,7 @@ using Melville.Postscript.Interpreter.Tokenizers;
 using Melville.Postscript.Interpreter.Values.Execution;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Melville.Postscript.Interpreter.Values.Numbers;
+using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -106,7 +108,8 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
         };
 
     /// <inheritdoc />
-    public bool Equals(PostscriptValue other) => ShallowEqual(other) || DeepEqual(other);
+    public bool Equals(PostscriptValue other) => 
+        ShallowEqual(other) || DeepEqual(other);
 
 
     private bool ShallowEqual(PostscriptValue other) =>
@@ -119,7 +122,9 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
         psc.Equals(Memento, other.ValueStrategy, other.Memento);
 
     /// <inheritdoc />
-    public override int GetHashCode() => HashCode.Combine(ValueStrategy, Memento);
+    public override int GetHashCode() => 
+        TryGet(out PostscriptHashCode code)? code.HashCode:
+        HashCode.Combine(ValueStrategy, Memento);
 
     /// <inheritdoc />
     public override string ToString() => 
@@ -181,8 +186,5 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
         TryGet(out IExecutionSelector? sel) ? sel : AlwaysLiteralSelector.Instance;
 
     internal PostscriptValue AsCopyableValue() =>
-        ValueStrategy == StringKind.String.ShortStringStraegy
-            ? PostscriptValueFactory.CreateLongString(
-                Get<Memory<byte>>(), StringKind.String)
-            : this;
+        ValueStrategy is IMakeCopyableInstance mci ? mci.AsCopyableValue(Memento) : this;
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 using Xunit;
@@ -101,6 +102,29 @@ public class PostscriptValueTest
         var zeroPrefString = PostscriptValueFactory.CreateString("\u0000A"u8, StringKind.String);
         var span = zeroPrefString.Get<StringSpanSource>().GetSpan();
         Assert.Equal(2, span.Length);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("1")]
+    [InlineData("12")]
+    [InlineData("123")]
+    [InlineData("12345678901234")]
+    [InlineData("123456789012345")]
+    [InlineData("1234567890123456")]
+    [InlineData("12345678901234567")]
+    [InlineData("123456789012345678")]
+    [InlineData("1234567890123456789012")]
+    [InlineData("12345678901234567890123")]
+    [InlineData("123456789012345678901234")]
+    public void StringComparisons(string item)
+    {
+        var str = PostscriptValueFactory.CreateString(
+            item.AsExtendedAsciiBytes(), StringKind.String);
+        var s2 = str.AsCopyableValue();
+        Assert.Equal(str.ToString(), s2.ToString());
+        Assert.Equal(str.GetHashCode(), s2.GetHashCode());
+        Assert.Equal(str, s2);
     }
 
 

@@ -202,18 +202,6 @@ public readonly partial struct PdfDirectObject: IEquatable<PdfDirectObject>,
     }
 
     /// <summary>
-    /// Create a PDF name from a low and high uint64 value.  This is used by the precomputed names
-    /// </summary>
-    /// <param name="low">The low 64 bits of the name buffer</param>
-    /// <param name="high">The high 64 bits of the name buffer</param>
-    /// <returns></returns>
-    public static PdfDirectObject CreateName(ulong low, ulong high)
-    {
-        var (strategy, memento) = StringEncoder.FromULongs(StringKind.LiteralName, low, high);
-        return new PdfDirectObject(strategy, memento);
-    }
-
-    /// <summary>
     /// Create a PdfName from a readonly span of bytes
     /// </summary>
     public static PdfDirectObject CreateName(in ReadOnlySpan<byte> name) => 

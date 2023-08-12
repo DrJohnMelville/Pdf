@@ -17,34 +17,32 @@ public static class StringEncoder
     public static (object Strategy, MementoUnion memento) PostscriptEncode(
         this in ReadOnlySpan<byte> data, StringKind kind)
     {
-        if (data.Length > PostscriptString.ShortStringLimit)
-            return AsLongString(data, kind);
-        ;
+        if (kind.Strategy8Bit.TryEncode(data, out var memento))
+            return (kind.Strategy8Bit, memento);
+        if (kind.Strategy7Bit.TryEncode(data, out memento))
+            return (kind.Strategy7Bit, memento);
+        return AsLongString(data, kind);
+    }
+
+    private static (object Strategy, MementoUnion memento) 
+        Encode8BitString(in ReadOnlySpan<byte> data, StringKind kind) =>
+        (kind.Strategy8Bit, MementoUnion.CreateFrom(data));
+
+    private static (object Strategy, MementoUnion memento) Encode7BitString(
+        ReadOnlySpan<byte> input, StringKind kind)
+    {
         UInt128 value = 0;
-        for (int i = data.Length - 1; i >= 0; i--)
+        for (int i = input.Length - 1; i >= 0; i--)
         {
-            var character = data[i];
-            if (character is 0 or > 127) return AsLongString(data, kind);
+            var character = input[i];
+            if (character is 0 or > 127) return AsLongString(input, kind);
             SevenBitStringEncoding.AddOneCharacter(ref value, character);
         }
 
-        return (kind.ShortStringStraegy, new MementoUnion(value));
-
+        return (kind.Strategy7Bit, new MementoUnion(value));
     }
 
     private static (object Strategy, MementoUnion memento) AsLongString(
         in ReadOnlySpan<byte> data, StringKind kind) =>
         new(new PostscriptLongString(kind, data.ToArray()), default);
-
-    /// <summary>
-    /// Create a Postscript string / memento pair from two ulongs.  This is
-    /// used by the generator to create the precomputed values
-    /// </summary>
-    /// <param name="kind">The stringKind</param>
-    /// <param name="low">The low order bytes</param>
-    /// <param name="high">The high order bytes</param>
-    /// <returns>The strategy and memento for the encoded string</returns>
-    public static (object Strategy, MementoUnion Memento) FromULongs(
-        StringKind kind, ulong low, ulong high) =>
-        (kind.ShortStringStraegy, MementoUnion.CreateFrom(low, high));
 }
