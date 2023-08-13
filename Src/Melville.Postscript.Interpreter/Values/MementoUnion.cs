@@ -122,7 +122,7 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
         return ret;
     }
 
-    public static MementoUnion CreateFrom(in ReadOnlySpan<byte> source)
+    public static MementoUnion CreateNameWithLength(in ReadOnlySpan<byte> source)
     {
         var sourceLength = source.Length;
         Debug.Assert(sourceLength is >= 0 and < 16);
@@ -133,4 +133,10 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
         return ret;
     }
 
+    public static MementoUnion CreateFromBytes(in ReadOnlySpan<byte> data)
+    {
+        var ret = new MementoUnion();
+        data.CopyTo(ret.As<byte>());
+        return ret;
+    }
 }

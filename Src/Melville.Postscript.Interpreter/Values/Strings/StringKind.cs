@@ -1,4 +1,5 @@
 ﻿using Melville.Postscript.Interpreter.Values.Execution;
+using Melville.Postscript.Interpreter.Values.Strings;
 
 namespace Melville.Postscript.Interpreter.Values;
 
@@ -26,15 +27,15 @@ public class StringKind
     /// Shortstringstrategy containing this kind
     /// </summary>
     internal Strings.PostscriptShortString Strategy6Bit { get; }
-    internal Strings.PostscriptShortString Strategy7Bit { get; }
     internal Strings.PostscriptShortString Strategy8Bit { get; }
+    internal Strings.PostscriptShortString Strategy16Bytes { get; }
 
     private StringKind(IExecutionSelector selector, bool parseAsExecutable)
     {
         ExecutionSelector = selector;
         DefaultAction = parseAsExecutable ? ExecutionSelector.Executable : ExecutionSelector.Literal;
-        Strategy6Bit = new Strings.PostscriptShortString6Bit(this);
-        Strategy7Bit = new Strings.PostscriptShortString7Bit(this);
-        Strategy8Bit = new Strings.PostscriptShortString8Bit(this);
+        Strategy6Bit = new PostscriptShortString6Bit(this);
+        Strategy8Bit = new PostscriptShortString8Bit(this);
+        Strategy16Bytes = new Postscript16ByteString8Bit(this);
     }
 };

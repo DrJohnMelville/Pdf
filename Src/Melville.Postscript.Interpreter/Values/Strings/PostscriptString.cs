@@ -101,7 +101,7 @@ public abstract partial class PostscriptString :
     /// The longest string which can be packed into an PostscriptValue.  Strings longer than this
     /// will be stored on the heap
     /// </summary>
-    public const int ShortStringLimit = 18;
+    public const int ShortStringLimit = 21;
 
     PostscriptLongString IPostscriptValueStrategy<PostscriptLongString>.GetValue(in MementoUnion memento) =>
         AsLongString(memento);
@@ -141,5 +141,4 @@ public abstract partial class PostscriptString :
         hc.AddBytes(new StringSpanSource(this, memento).GetSpan());
         return new(hc.ToHashCode());
     }
-
 }

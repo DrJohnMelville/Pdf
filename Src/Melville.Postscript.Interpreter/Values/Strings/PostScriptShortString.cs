@@ -33,42 +33,6 @@ internal abstract partial class PostscriptShortString : PostscriptString, IMakeC
 }
 
 [FromConstructor]
-internal sealed partial class PostscriptShortString7Bit : PostscriptShortString
-{
-    public const int MaxLength = 18;
-    internal override Span<byte> GetBytes(
-        scoped in MementoUnion memento, scoped in Span<byte> scratch)
-    {
-        UInt128 remainingChars = memento.UInt128;
-        int i;
-        for (i = 0; i < scratch.Length && remainingChars != 0; i++)
-        {
-            scratch[i] = SevenBitStringEncoding.GetNextCharacter(ref remainingChars);
-        }
-        return scratch[..i];
-    }
-
-    public override bool TryEncode(in ReadOnlySpan<byte> input, out MementoUnion memento)
-    {
-        memento = default;
-        if (input.Length > MaxLength ||
-            (input.Length > 0 && input[^1] == 0))
-            return false;
-        
-        UInt128 value = 0;
-        for (int i = input.Length - 1; i >= 0; i--)
-        {
-            var character = input[i];
-            if (character > 127) return false;
-            SevenBitStringEncoding.AddOneCharacter(ref value, character);
-        }
-
-        memento = new MementoUnion(value);
-        return true;
-    }
-}
-
-[FromConstructor]
 internal sealed partial class PostscriptShortString8Bit : PostscriptShortString
 {
     public const int MaxLength = 15;
@@ -82,8 +46,24 @@ internal sealed partial class PostscriptShortString8Bit : PostscriptShortString
     }
     public override bool TryEncode(in ReadOnlySpan<byte> input, out MementoUnion memento) =>
         input.Length <= MaxLength ? 
-            MementoUnion.CreateFrom(input).AsTrueValue(out memento) : 
+            MementoUnion.CreateNameWithLength(input).AsTrueValue(out memento) : 
             default(MementoUnion).AsFalseValue(out memento);
+}
+[FromConstructor]
+internal sealed partial class Postscript16ByteString8Bit : PostscriptShortString
+{
+    internal override Span<byte> GetBytes(scoped in MementoUnion memento, scoped in Span<byte> scratch)
+    {
+        var bytes = memento.Bytes;
+        bytes.CopyTo(scratch);
+        return scratch[..16];
+    }
+    public override bool TryEncode(in ReadOnlySpan<byte> input, out MementoUnion memento)
+    {
+        return input.Length == 16
+            ? MementoUnion.CreateFromBytes(input).AsTrueValue(out memento)
+            : default(MementoUnion).AsFalseValue(out memento);
+    }
 }
 
 [FromConstructor]
@@ -93,17 +73,47 @@ sealed partial class PostscriptShortString6Bit: PostscriptShortString
 
     internal override Span<byte> GetBytes(scoped in MementoUnion memento, scoped in Span<byte> scratch)
     {
-        throw new NotImplementedException();
+        var accumulator = memento.UInt128;
+        int i = 0;
+        for (; accumulator > 0 ; i++, accumulator >>=6)
+        {
+            scratch[i] = SixToEightBits((int)accumulator & 0b111111);
+        }
+
+        return scratch[..i];
     }
     public override bool TryEncode(in ReadOnlySpan<byte> input, out MementoUnion memento)
     {
-        throw new NotImplementedException();
+        memento = default;
+        if (input.Length is < 1 or > MaxLength || input[^1] == 0)
+            return false;
+        UInt128 accumulator = 0;
+        for (int i = input.Length-1; i >= 0; i--)
+        {
+            if (!TryEightToSixBits(input[i], out var bits)) return false;
+            accumulator = (accumulator << 6) | bits;
+
+        }
+        memento = new MementoUnion(accumulator);
+        return true;
     }
 
-    private bool TrySixBits (byte eightBits, out byte sixBits) => eightBits switch
+    private byte SixToEightBits(int value) => value switch
+    {
+        1 => (byte)'-',
+        >= 2 and <=11 => (byte)('0'-2 + value),
+        >= 12 and <=37 => (byte)('A'-12 + value),
+        >= 38 and <= 63 => (byte)('a'-38 + value),
+        _ => 0    
+    };
+
+    private bool TryEightToSixBits(byte eightBits, out byte sixBits) => eightBits switch
     {
         0 => ((byte)0).AsTrueValue(out sixBits),
-        (byte)'-' => ((byte)1).AsTrueValue(out sixBits),
-        >= (byte) '0' and <= (byte)'9'; Start here
-    }
+        (byte)'-' => ((byte)1).AsTrueValue(out sixBits), 
+        >= (byte) '0' and <= (byte)'9' => ((byte)(2+eightBits-'0')).AsTrueValue(out sixBits),
+        >= (byte) 'A' and <= (byte)'Z' => ((byte)(12+eightBits-'A')).AsTrueValue(out sixBits),
+        >= (byte) 'a' and <= (byte)'z' => ((byte)(38+eightBits-'a')).AsTrueValue(out sixBits),
+        _=> ((byte)0).AsFalseValue(out sixBits)
+    };
 }
