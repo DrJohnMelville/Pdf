@@ -229,4 +229,10 @@ public class PostscriptEngine
     {
         if (current.Equals(OpenProc)) deferredExecutionCount++;
     }
+
+    public PostscriptEngine WithImmutableStrings(bool stringsImmutable = true)
+    {
+        OperandStack.ImutableStrings = stringsImmutable;
+        return this;
+    }
 }

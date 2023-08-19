@@ -122,6 +122,11 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
         return ret;
     }
 
+    /// <summary>
+    /// Create a lenkgth delimited byte array of 1-15 bytes
+    /// </summary>
+    /// <param name="source">The bytes to store in the memento</param>
+    /// <returns>A memento containing the byte array.</returns>
     public static MementoUnion CreateNameWithLength(in ReadOnlySpan<byte> source)
     {
         var sourceLength = source.Length;
@@ -133,6 +138,11 @@ public partial struct MementoUnion: IEquatable<MementoUnion>
         return ret;
     }
 
+    /// <summary>
+    /// Create  memento from a byte array.
+    /// </summary>
+    /// <param name="data">The bytes to store in the memento</param>
+    /// <returns>The memento containing the bytes</returns>
     public static MementoUnion CreateFromBytes(in ReadOnlySpan<byte> data)
     {
         var ret = new MementoUnion();

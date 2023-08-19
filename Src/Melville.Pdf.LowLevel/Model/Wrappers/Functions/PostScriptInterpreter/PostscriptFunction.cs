@@ -14,7 +14,7 @@ internal static class SharedPostscriptParser
     private static readonly IPostscriptDictionary operations =
         PostscriptOperatorCollections.BaseLanguage();
 
-    public static PostscriptEngine BasicPostscriptEngine() => new(operations);
+    public static PostscriptEngine BasicPostscriptEngine() => new PostscriptEngine(operations).WithImmutableStrings();
 }
 
 internal class PostscriptFunction: PdfFunction

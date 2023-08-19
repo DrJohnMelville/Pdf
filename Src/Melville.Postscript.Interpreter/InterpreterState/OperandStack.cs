@@ -15,9 +15,16 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
     {
     }
 
+    /// <summary>
+    /// If true then use some performance operations that depend on not mutating short strings.
+    /// </summary>
+    public bool ImutableStrings { get; set; }
     /// <inheritdoc />
-    protected override void MakeCopyable(ref PostscriptValue value) => 
+    protected override void MakeCopyable(ref PostscriptValue value)
+    {
+        if (ImutableStrings) return;
         value = value.AsCopyableValue();
+    }
 
     internal void PushCount() => Push(Count);
 
