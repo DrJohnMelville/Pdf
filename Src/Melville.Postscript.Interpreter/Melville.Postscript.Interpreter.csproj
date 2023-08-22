@@ -20,6 +20,8 @@
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 			<OutputItemType>Analyzer</OutputItemType>
 		</ProjectReference>
+      <ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+
 		<ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
 	</ItemGroup>
 

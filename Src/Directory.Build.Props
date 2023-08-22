@@ -9,7 +9,7 @@
         <AnalysisLevel>latest</AnalysisLevel>
         <RepositoryUrl>https://github.com/DrJohnMelville/Pdf</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<!--        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     </PropertyGroup>
 
 	<ItemGroup>
