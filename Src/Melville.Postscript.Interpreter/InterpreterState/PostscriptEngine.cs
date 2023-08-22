@@ -230,6 +230,11 @@ public class PostscriptEngine
         if (current.Equals(OpenProc)) deferredExecutionCount++;
     }
 
+    /// <summary>
+    /// Allows or disallows the immutable string optimization
+    /// </summary>
+    /// <param name="stringsImmutable">True makes strings immutable, false makes mutable</param>
+    /// <returns>The postscript engine so configured</returns>
     public PostscriptEngine WithImmutableStrings(bool stringsImmutable = true)
     {
         OperandStack.ImutableStrings = stringsImmutable;

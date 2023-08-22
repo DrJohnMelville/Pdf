@@ -24,9 +24,9 @@ internal abstract partial class PostscriptShortString : PostscriptString, IMakeC
 
     public PostscriptValue AsCopyableValue(in MementoUnion memento)
     {
-        Span<byte> buffer = stackalloc byte[PostscriptString.ShortStringLimit];
-        return PostscriptValueFactory.CreateLongString(
-            GetBytes(memento, buffer).ToArray(), StringKind);
+        return StringKind.IsMutable ? 
+            new PostscriptValue(AsLongString(memento), StringKind.DefaultAction, default) : 
+            new PostscriptValue(this, StringKind.DefaultAction, memento);
     }
 
     public abstract bool TryEncode(in ReadOnlySpan<byte> input, out MementoUnion memento);
