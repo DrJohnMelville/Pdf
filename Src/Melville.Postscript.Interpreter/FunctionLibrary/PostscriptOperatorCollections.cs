@@ -43,79 +43,44 @@ public static class PostscriptOperatorCollections
     /// </summary>
     /// <param name="engine">The postscript to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithSystemTokens(this IPostscriptDictionary engine) => engine
-    .With("true"u8, true)
-    .With("false"u8, false)
-    .With("null"u8, PostscriptValueFactory.CreateNull());
-    
-    /// <summary>
-    /// Implement the stack operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithStackOperators(this IPostscriptDictionary engine) => engine
-        .With("pop"u8, PostscriptOperators.Pop)
-        .With("exch"u8, PostscriptOperators.Exchange)
-        .With("dup"u8, PostscriptOperators.Duplicate)
-        .With("copy"u8, PostscriptOperators.CopyTop)
-        .With("index"u8, PostscriptOperators.IndexOperation)
-        .With("roll"u8, PostscriptOperators.Roll)
-        .With("clear"u8, PostscriptOperators.ClearStack)
-        .With("count"u8, PostscriptOperators.CountStack)
-        .With("mark"u8, PostscriptValueFactory.CreateMark())
-        .With("cleartomark"u8, PostscriptOperators.ClearToMark)
-        .With("counttomark"u8, PostscriptOperators.CountToMark);
+    public static IPostscriptDictionary WithSystemTokens(this IPostscriptDictionary engine)
+    {
+        SystemTokens.AddOperations(engine);
+        return engine;
+    }
 
     /// <summary>
     /// Implement the stack operators in section 8.1
     /// </summary>
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithMathOperators(this IPostscriptDictionary engine) => engine
-        .With("add"u8, PostscriptOperators.Add)
-        .With("div"u8, PostscriptOperators.RealDivide)
-        .With("idiv"u8, PostscriptOperators.IntegerDivide)
-        .With("mod"u8, PostscriptOperators.Modulo)
-        .With("mul"u8, PostscriptOperators.Multiply)
-        .With("sub"u8, PostscriptOperators.Subtract)
-        .With("abs"u8, PostscriptOperators.AbsoluteValue)
-        .With("neg"u8, PostscriptOperators.Negative)
-        .With("ceiling"u8, PostscriptOperators.Ceiling)
-        .With("floor"u8, PostscriptOperators.Floor)
-        .With("round"u8, PostscriptOperators.Round)
-        .With("truncate"u8, PostscriptOperators.Truncate)
-        .With("sqrt"u8, PostscriptOperators.SquareRoot)
-        .With("atan"u8, PostscriptOperators.ArcTangent)
-        .With("sin"u8, PostscriptOperators.Sine)
-        .With("cos"u8, PostscriptOperators.Cosine)
-        .With("exp"u8, PostscriptOperators.RaiseToPower)
-        .With("log"u8, PostscriptOperators.Log10)
-        .With("ln"u8, PostscriptOperators.NaturalLog)
-        .With("srand"u8, PostscriptOperators.SetRandomSeed)
-        .With("rrand"u8, PostscriptOperators.GetRandomSeed)
-        .With("rand"u8, PostscriptOperators.GetNextRandom);
+    public static IPostscriptDictionary WithStackOperators(this IPostscriptDictionary engine)
+    {
+        StackOperators.AddOperations(engine);
+        return engine;
+    }
+
+    /// <summary>
+    /// Implement the stack operators in section 8.1
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static IPostscriptDictionary WithMathOperators(this IPostscriptDictionary engine)
+    {
+        MathOperators.AddOperations(engine);
+        return engine;
+    }
 
     /// <summary>
     /// Implement the array operators in section 8.1
     /// </summary>
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithArrayOperators(this IPostscriptDictionary engine) => engine
-        .With("array"u8, PostscriptOperators.EmptyArray)
-        .With("["u8, PostscriptValueFactory.CreateMark())
-        .With("]"u8, PostscriptOperators.ArrayFromStack)
-        .With("{"u8, PostscriptValueFactory.CreateMark())
-        .With("}"u8, PostscriptOperators.ProcFromStack)
-        .With("length"u8, PostscriptOperators.CompositeLength)
-        .With("get"u8, PostscriptOperators.CompositeGet)
-        .With("put"u8, PostscriptOperators.CompositePut)
-        .With("getinterval"u8, PostscriptOperators.GetInterval)
-        .With("putinterval"u8, PostscriptOperators.PutInterval)
-        .With("astore"u8, PostscriptOperators.AStore)
-        .With("aload"u8, PostscriptOperators.ALoad)
-        .With("currentpacking"u8, PostscriptOperators.CurrentPacking)
-        .With("setpacking"u8, PostscriptOperators.SetPacking)
-        .With("packedarray"u8, PostscriptOperators.PackedArray);
+    public static IPostscriptDictionary WithArrayOperators(this IPostscriptDictionary engine)
+    {
+        ArrayOperators.AddOperations(engine);
+        return engine;
+    }
 
     /// <summary>
     /// Implement the type conversion operators in section 8.1

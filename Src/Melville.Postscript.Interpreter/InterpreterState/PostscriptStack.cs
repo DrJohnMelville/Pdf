@@ -178,8 +178,6 @@ public partial class PostscriptStack<T>
         Push(Peek());
     }
 
-    internal void IndexOperation(int index) => Push(CollectionAsSpan()[^(1+index)]);
-
     internal void Roll(int rollPlaces, int rollSize)
     {
         while (rollPlaces < 0) rollPlaces += rollSize; 

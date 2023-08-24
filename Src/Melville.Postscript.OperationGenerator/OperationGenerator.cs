@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Melville.INPC;
+﻿using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -23,16 +21,5 @@ public class OperationGenerator: IIncrementalGenerator
     {
         if (classToGenerateFor.Key is {} key)
         context.AddSource(key.Name+".g.cs", new CodeGenerator(key, classToGenerateFor).CreateCode() );
-    }
-}
-
-public readonly partial struct CodeGenerator
-{
-    [FromConstructor] private readonly ISymbol classSymbol;
-    [FromConstructor] private readonly IEnumerable<GeneratorAttributeSyntaxContext> methods;
-
-    public string CreateCode()
-    {
-        return "// Fake code implementation";
     }
 }

@@ -4,6 +4,7 @@ using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary
 {
+    #warning will soon be obsolete
     internal abstract class IntOrBinaryOperation<T> : BuiltInFunction
     {
         public override void Execute(PostscriptEngine engine, in PostscriptValue value)
