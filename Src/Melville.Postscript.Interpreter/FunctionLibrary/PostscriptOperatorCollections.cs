@@ -87,41 +87,22 @@ public static class PostscriptOperatorCollections
     /// </summary>
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithcConversionOperators(this IPostscriptDictionary engine) => engine
-        .With("cvx"u8, PostscriptOperators.MakeExecutable)
-        .With("cvlit"u8, PostscriptOperators.MakeLitreral)
-        .With("xcheck"u8, PostscriptOperators.IsExecutable)
-        .With("executeonly"u8, PostscriptOperators.Nop)
-        .With("readonly"u8, PostscriptOperators.Nop)
-        .With("noaccess"u8, PostscriptOperators.Nop)
-        .With("rcheck"u8, PostscriptOperators.FakeAccessCheck)
-        .With("wcheck"u8, PostscriptOperators.FakeAccessCheck)
-        .With("cvi"u8, PostscriptOperators.ConvertToInt)
-        .With("cvr"u8, PostscriptOperators.ConvertToDouble)
-        .With("cvn"u8, PostscriptOperators.ConvertToName)
-        .With("cvs"u8, PostscriptOperators.ConvertToString)
-        .With("cvrs"u8, PostscriptOperators.ConvertToRadixString);
+    public static IPostscriptDictionary WithcConversionOperators(this IPostscriptDictionary engine)
+    {
+        ConversionOperators.AddOperations(engine);
+        return engine;
+    }
 
     /// <summary>
     /// Implement the control operators in section 8.1
     /// </summary>
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithcControlOperators(this IPostscriptDictionary engine) => engine
-       .With("exec"u8, PostscriptOperators.Execute)
-       .With("if"u8, PostscriptOperators.If)
-       .With("ifelse"u8, PostscriptOperators.IfElse)
-       .With("for"u8, PostscriptOperators.For)
-       .With("repeat"u8, PostscriptOperators.Repeat)
-       .With("exit"u8, PostscriptOperators.Exit)
-       .With("loop"u8, PostscriptOperators.Loop)
-       .With("forall"u8, PostscriptOperators.ForAll)
-       .With("stopped"u8, PostscriptOperators.StopRegion)
-       .With("stop"u8, PostscriptOperators.Stop)
-       .With("countexecstack"u8, PostscriptOperators.CountExecutionStack)
-       .With("execstack"u8, PostscriptOperators.ExecStack)
-       .With("quit"u8, PostscriptOperators.Quit)
-       .With("start"u8, PostscriptOperators.Start);
+    public static IPostscriptDictionary WithcControlOperators(this IPostscriptDictionary engine)
+    {
+        ControlOperators.AddOperations(engine);
+        return engine;
+    }
 
     /// <summary>
     /// Implement the Relational operators in section 8.1
@@ -129,18 +110,11 @@ public static class PostscriptOperatorCollections
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
     public static IPostscriptDictionary WithRelationalOperators(
-        this IPostscriptDictionary engine) => engine
-        .With("eq"u8, PostscriptOperators.OpEqual)
-        .With("ne"u8, PostscriptOperators.OpNotEqual)
-        .With("not"u8, PostscriptOperators.Not)
-        .With("ge"u8, PostscriptOperators.GreaterThanOrEqual)
-        .With("gt"u8, PostscriptOperators.GreaterThan)
-        .With("le"u8, PostscriptOperators.LessThanOrEqual)
-        .With("lt"u8, PostscriptOperators.LessThan)
-        .With("and"u8, PostscriptOperators.And)
-        .With("or"u8, PostscriptOperators.Or)
-        .With("xor"u8, PostscriptOperators.Xor)
-        .With("bitshift"u8, PostscriptOperators.BitShift);
+        this IPostscriptDictionary engine)
+    {
+        RelationalAndBitwiseOperators.AddOperations(engine);
+        return engine;
+    }
 
     /// <summary>
     /// Implement the Relational operators in section 8.1
@@ -148,26 +122,11 @@ public static class PostscriptOperatorCollections
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
     public static IPostscriptDictionary WithDictionaryOperators(
-        this IPostscriptDictionary engine) => engine
-        .With("dict"u8, PostscriptOperators.CreateDictionary)
-        .With("maxlength"u8, PostscriptOperators.DictCapacity)
-        .With("<<"u8, PostscriptValueFactory.CreateMark())
-        .With(">>"u8, PostscriptOperators.DictionaryFromStack)
-        .With("def"u8, PostscriptOperators.DefineInTopDict)
-        .With("load"u8, PostscriptOperators.LookupInDictStack)
-        .With("begin"u8, PostscriptOperators.PushDictionaryStack)
-        .With("end"u8, PostscriptOperators.PopDictionaryStack)
-        .With("store"u8, PostscriptOperators.DictionaryStore)
-        .With("known"u8, PostscriptOperators.DictionaryKnown)
-        .With("undef"u8, PostscriptOperators.Undefine)
-        .With("where"u8, PostscriptOperators.Where)
-        .With("currentdict"u8, PostscriptOperators.CurrentDictionary)
-        .With("userdict"u8, PostscriptOperators.UserDict)
-        .With("globaldict"u8, PostscriptOperators.GlobalDict)
-        .With("systemdict"u8, PostscriptOperators.SystemDict)
-        .With("countdictstack"u8, PostscriptOperators.CountDictStack)
-        .With("dictstack"u8, PostscriptOperators.DictStack)
-        .With("cleardictstack"u8, PostscriptOperators.ClearDictStack);
+        this IPostscriptDictionary engine)
+    {
+        DictionaryOperators.AddOperations(engine);
+        return engine;
+    }
 
     /// <summary>
     /// Implement the uniquely string operators in section 8.1
@@ -176,11 +135,11 @@ public static class PostscriptOperatorCollections
     /// </summary>
     /// <param name="engine">The postscript engine to add definitions too.</param>
     /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithStringOperators(
-        this IPostscriptDictionary engine) => engine
-        .With("anchorsearch"u8, PostscriptOperators.AnchorSearch)
-        .With("search"u8, PostscriptOperators.Search)
-        .With("token"u8, PostscriptOperators.Token)
-    ;
+    public static IPostscriptDictionary WithStringOperators(this IPostscriptDictionary engine)
+    {
+        StringSearchOperators.AddOperations(engine);
+        return engine;
+    }
+    
 
 }

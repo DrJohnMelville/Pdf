@@ -93,6 +93,8 @@ public readonly partial struct CodeGenerator
         return parameterType.ToString() switch
         {
             "Melville.Postscript.Interpreter.InterpreterState.OperandStack"=> "engine.OperandStack",
+            "Melville.Postscript.Interpreter.InterpreterState.ExecutionStack"=> "engine.ExecutionStack",
+            "Melville.Postscript.Interpreter.InterpreterState.DictionaryStack"=> "engine.DictionaryStack",
             "Melville.Postscript.Interpreter.Values.PostscriptValue" => "engine.OperandStack.Pop()",
             "Melville.Postscript.Interpreter.InterpreterState.PostscriptEngine" => "engine",
             _=> $"engine.OperandStack.Pop().Get<{parameterType}>()"
@@ -119,16 +121,23 @@ public readonly partial struct CodeGenerator
         output.AppendLine("    }");
     }
 
-    private void WriteOperatorDeclaration(GeneratorAttributeSyntaxContext method) =>
-        output.AppendLine(
-            $"""        dictionary.Put("{PostscriptName(method)}"u8, PostscriptValueFactory.Create(new {method.TargetSymbol.Name}BuiltInFunctionImpl()));""");
+    private void WriteOperatorDeclaration(GeneratorAttributeSyntaxContext method)
+    {
+        foreach (var methodAttribute in method.Attributes)
+        {
+            output.AppendLine(
+                $"""        dictionary.Put("{PostscriptName(methodAttribute)}"u8, PostscriptValueFactory.Create(new {method.TargetSymbol.Name}BuiltInFunctionImpl()));""");
+        }
+    }
 
     private string GenerateParameters(ISymbol target) =>
         target is IMethodSymbol methodSym && methodSym.Parameters.Length is not 0
             ? string.Join(", ", Enumerable.Range(0, methodSym.Parameters.Length).Select(i => $"p{i}"))
             : "";
 
-    private string PostscriptName(GeneratorAttributeSyntaxContext method) =>
-        method.Attributes.First().ConstructorArguments.First().Value?.ToString()??
-        throw new InvalidOperationException("Name is required.");
+    private static string PostscriptName(AttributeData singleAttr)
+    {
+        return singleAttr.ConstructorArguments.First().Value?.ToString() ??
+               throw new InvalidOperationException("Name is required.");
+    }
 }

@@ -5,7 +5,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 /// <summary>
 /// Defines that a method should be auto generated as a postscript operation
 /// </summary>
-[AttributeUsage(AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class PostscriptMethodAttribute : Attribute
 {
     private readonly string postScriptName;

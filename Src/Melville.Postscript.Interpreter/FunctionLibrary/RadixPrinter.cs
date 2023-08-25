@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Melville.INPC;
 using Melville.Postscript.Interpreter.Values;
@@ -21,10 +22,14 @@ internal readonly partial struct  RadixPrinter
     {
         var output = number.ToString();
         if (output.Length > target.Length)
-            throw new PostscriptException("Output too long for buffer");
+            ThrowRangeCheck();
         var length = Encoding.ASCII.GetBytes(output, target.Span);
         return SliceResult(length);
     }
+
+    [DoesNotReturn]
+    private static void ThrowRangeCheck() => 
+        throw new PostscriptNamedErrorException("Output too long for buffer", "rangecheck");
 
     private PostscriptValue SliceResult(int length)
     {
@@ -52,6 +57,7 @@ internal readonly partial struct  RadixPrinter
         if (number == 0) return 0;
         var (quotient, remainder) = long.DivRem(number, radix);
         int position = PrintDigit(quotient);
+        if (position >= target.Span.Length) ThrowRangeCheck();
         target.Span[position] = DigitFor(remainder);
         return position + 1;
     }

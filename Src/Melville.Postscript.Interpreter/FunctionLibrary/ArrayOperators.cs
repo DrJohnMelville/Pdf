@@ -10,13 +10,11 @@ internal static partial class ArrayOperators
         PostscriptValueFactory.CreateSizedArray(length);
 
     [PostscriptMethod("[")]
+    [PostscriptMethod("{")]
     private static PostscriptValue BeginArrayMark() => PostscriptValueFactory.CreateMark();
 
     [PostscriptMethod("]")]
     private static PostscriptValue ArrayFromStack(OperandStack stack) => stack.MarkedRegionToArray();
-
-    [PostscriptMethod("{")]
-    private static PostscriptValue BeginProcMark() => PostscriptValueFactory.CreateMark();
 
     [PostscriptMethod("}")]
     private static PostscriptValue ProcFromStack(OperandStack stack) => 
@@ -26,16 +24,17 @@ internal static partial class ArrayOperators
     private static long CompositeLength(IPostscriptComposite comp) => comp.Length;
 
     [PostscriptMethod("get")]
-    private static PostscriptValue CompositeGet(IPostscriptComposite comp, PostscriptValue index) =>
+    private static PostscriptValue CompositeGet(
+        IPostscriptComposite comp, in PostscriptValue index) =>
         comp.Get(index);
 
     [PostscriptMethod("put")]
     private static void CompositePut(
-        IPostscriptComposite comp, PostscriptValue index, PostscriptValue item) =>
+        IPostscriptComposite comp, in PostscriptValue index, in PostscriptValue item) =>
         comp.Put(index, item);
 
     [PostscriptMethod("getinterval")]
-    private static PostscriptValue GetInterval(PostscriptValue arr, int index, int len) =>
+    private static PostscriptValue GetInterval(in PostscriptValue arr, int index, int len) =>
         new PostscriptValue(arr.Get<IPostscriptArray>().IntervalFrom(index, len),
             arr.ExecutionStrategy, default);
 
@@ -48,7 +47,7 @@ internal static partial class ArrayOperators
         array.PushAllFrom(stack);
 
     [PostscriptMethod("aload")]
-    private static PostscriptValue LoadStackFromArray(OperandStack stack, PostscriptValue array)
+    private static PostscriptValue LoadStackFromArray(OperandStack stack, in PostscriptValue array)
     {
         array.Get<PostscriptArray>().PushAllTo(stack);
         return array;

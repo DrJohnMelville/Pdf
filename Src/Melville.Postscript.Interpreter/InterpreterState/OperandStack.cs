@@ -43,12 +43,6 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
         return ret;
     }
 
-    #warning 
-    internal void MarkedSpanToArray(bool asExecutable)
-    {
-        var postscriptValue = MarkedRegionToArray();
-        Push(asExecutable?postscriptValue.AsExecutable():postscriptValue);
-    }
 
     internal PostscriptValue MarkedRegionToArray()
     {
@@ -58,22 +52,14 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
         return postscriptValue;
     }
 
-    internal void MarkedSpanToDictionary()
+    internal PostscriptValue DictionaryFromMarkedSpan()
     {
         int count = CountToMark();
         var dict = PostscriptValueFactory.CreateDictionary(
             CollectionAsSpan()[^count..]);
-        PopMultiple(count+1);
-        Push(dict);
+        PopMultiple(count + 1);
+        return dict;
     }
-
-
-    #warning going away
-    internal void CreatePackedArray() => 
-        Push(
-            PostscriptValueFactory.CreateArray(
-                PopTopToArray(
-                    Pop().Get<int>())));
 
     internal void ClearToMark() =>
         ClearThrough(IsMark);

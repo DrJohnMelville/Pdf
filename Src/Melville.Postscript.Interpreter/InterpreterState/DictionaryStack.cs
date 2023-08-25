@@ -91,6 +91,7 @@ public partial class DictionaryStack :
 
     internal void PostscriptWhere(OperandStack stack)
     {
+        // Find the dictionary that contains a given key
         var key = stack.Pop();
         for (int i = Count - 1; i >= 0; i--)
         {
