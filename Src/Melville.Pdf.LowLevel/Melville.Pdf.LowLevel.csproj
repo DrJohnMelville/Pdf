@@ -28,6 +28,7 @@
           <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
           <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>
+      <ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
       <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
       <ProjectReference Include="..\Melville.CSJ2K\Melville.CSJ2K.csproj" />
       <ProjectReference Include="..\Melville.JBig2\Melville.JBig2.csproj" />

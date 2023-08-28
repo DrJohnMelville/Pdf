@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Xml;
 using Melville.INPC;
 using Microsoft.CodeAnalysis;
 
@@ -13,9 +14,38 @@ namespace Melville.Postscript.OperationGenerator;
 public readonly partial struct CodeGenerator
 {
     [FromConstructor] private readonly ISymbol classSymbol;
-    [FromConstructor] private readonly IEnumerable<GeneratorAttributeSyntaxContext> methods;
+    [FromConstructor] private readonly IEnumerable<GeneratorAttributeSyntaxContext> 
+        methods;
+    private readonly Dictionary<string, string> typeMapper = new();
     private readonly StringBuilder output = new();
 
+    partial void OnConstructed()
+    {
+        StandardMapping();
+        LoadMappings();
+    }
+
+    private void StandardMapping()
+    {
+        typeMapper["Melville.Postscript.Interpreter.InterpreterState.OperandStack"] = "engine.OperandStack";
+        typeMapper["Melville.Postscript.Interpreter.InterpreterState.ExecutionStack"] = "engine.ExecutionStack";
+        typeMapper["Melville.Postscript.Interpreter.InterpreterState.DictionaryStack"] = "engine.DictionaryStack";
+        typeMapper["Melville.Postscript.Interpreter.Values.PostscriptValue"] = "engine.OperandStack.Pop()";
+        typeMapper["Melville.Postscript.Interpreter.InterpreterState.PostscriptEngine"] = "engine";
+    }
+
+    private void LoadMappings()
+    {
+        foreach (var attr in classSymbol.GetAttributes())
+        {
+            if (!(attr.AttributeClass?.ToString().Equals(
+                    "Melville.Postscript.Interpreter.FunctionLibrary.TypeShortcutAttribute")
+                ?? false))
+                continue;
+            typeMapper[attr.ConstructorArguments[0].Value?.ToString()??""] =
+                attr.ConstructorArguments[1].Value?.ToString() ?? "";
+        }
+    }
 
     public string CreateCode()
     {
@@ -39,6 +69,8 @@ public readonly partial struct CodeGenerator
                             using Melville.Postscript.Interpreter.InterpreterState;
                             using Melville.Postscript.Interpreter.Values;
                             using Melville.Postscript.Interpreter.Values.Composites;
+                            using System.Threading.Tasks;
+                            using Melville.Parsing.AwaitConfiguration;
                             
                             namespace {{classSymbol.ContainingNamespace}};
 
@@ -51,28 +83,27 @@ public readonly partial struct CodeGenerator
 
     private void CreateMethodClass(IMethodSymbol item)
     {
-        output.AppendLine($$"""
-                                private sealed class {{item.Name}}BuiltInFunctionImpl: BuiltInFunction
-                                {
-                                    public override void Execute(PostscriptEngine engine, in PostscriptValue value)
-                                    {
-                            """);
-        WriteMethodDelegation(item);
+        var strategy = MethodWriter.Classify(item);
+        strategy.WriteObjectPrefix(output, item);
+        WriteMethodDelegation(item, strategy);
         output.AppendLine($$"""
                                     }
                                 }
                             """);
     }
 
-    private void WriteMethodDelegation(IMethodSymbol item)
+
+
+    private void WriteMethodDelegation(IMethodSymbol item, MethodWriter writer)
     {
         CreateParameterVariables(item.Parameters);
         var (prefix, postfix) = item.ReturnsVoid ?
-             ("            ", ";"):
-             ("            engine.OperandStack.Push(", ");");
-        output.Append(prefix);
+             ("", ";"):
+             ("engine.OperandStack.Push(", ");");
+        output.Append("            ");
+        output.Append(writer.CallPrefix());
         WriteMethodCall(item);
-        output.AppendLine(postfix);
+        output.AppendLine(writer.CallPostFix());
     }
 
     private void CreateParameterVariables(ImmutableArray<IParameterSymbol> parameters)
@@ -90,15 +121,9 @@ public readonly partial struct CodeGenerator
 
     private string VarForType(ITypeSymbol parameterType)
     {
-        return parameterType.ToString() switch
-        {
-            "Melville.Postscript.Interpreter.InterpreterState.OperandStack"=> "engine.OperandStack",
-            "Melville.Postscript.Interpreter.InterpreterState.ExecutionStack"=> "engine.ExecutionStack",
-            "Melville.Postscript.Interpreter.InterpreterState.DictionaryStack"=> "engine.DictionaryStack",
-            "Melville.Postscript.Interpreter.Values.PostscriptValue" => "engine.OperandStack.Pop()",
-            "Melville.Postscript.Interpreter.InterpreterState.PostscriptEngine" => "engine",
-            _=> $"engine.OperandStack.Pop().Get<{parameterType}>()"
-        };
+        var str = parameterType.ToString();
+        return typeMapper.TryGetValue(str, out var ret) ? ret : 
+            $"engine.OperandStack.Pop().Get<{str}>()";
     }
 
     private void WriteMethodCall(IMethodSymbol item)

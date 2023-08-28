@@ -4,6 +4,7 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
+#warning this whole class should go away
 /// <summary>
 /// Accessory methods for writing postscript operations
 /// </summary>
@@ -74,6 +75,7 @@ public static class PostScriptOperatorHelpers
         engine.PopAs(out a, out b);
     }
 
+    #warning going away?
     /// <summary>
     /// Get a span of values of the same type
     /// </summary>
@@ -88,6 +90,7 @@ public static class PostScriptOperatorHelpers
         }
     }
 
+    /*
     /// <summary>
     /// Pop two uncasted values off the stack.
     /// </summary>
@@ -99,4 +102,5 @@ public static class PostScriptOperatorHelpers
         var a = engine.OperandStack.Pop();
         return (a, b);
     }
+    */
 }

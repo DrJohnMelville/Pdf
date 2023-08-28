@@ -1,4 +1,5 @@
-﻿using Melville.Postscript.Interpreter.Values;
+﻿using System;
+using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
@@ -72,5 +73,13 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
         else
             CopyTop(topItem.Get<int>());
         
+    }
+
+    public void PopSpan<T>(Span<T> target)
+    {
+        for (int i = target.Length -1; i >= 0 ; i--)
+        {
+            target[i] = Pop().Get<T>();
+        }
     }
 }

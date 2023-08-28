@@ -58,9 +58,10 @@ public readonly partial struct ContentStreamParser
         var ret = PostscriptValueFactory
             .CreateSizedDictionary(80)
             .Get<IPostscriptDictionary>();
-        ConfigureAsyncEngine(ret);
-        ConfigureEngine(ret);
-        CreateRequiredSynonyms(ret);
+        // ConfigureAsyncEngine(ret);
+        // ConfigureEngine(ret);
+        // CreateRequiredSynonyms(ret);
+        ContentStreamParsingOperations.AddOperations(ret);
         return ret;
     }
 
@@ -355,13 +356,6 @@ public readonly partial struct ContentStreamParser
 #if DEBUG
     private static ValueTask ScratchAsync(PostscriptEngine engine)
     {
-        var phase = engine.PopAs<double>();
-        var arrayTop = engine.OperandStack.Pop();
-        Debug.Assert(IsArrayTopMarker(arrayTop));
-        var patternLen = engine.OperandStack.CountToMark();
-        Span<double> pattern = stackalloc double[patternLen];
-        engine.PopSpan(pattern);
-        E(engine).SetLineDashPattern(phase, pattern);
         return ValueTask.CompletedTask;
     }
 #endif
@@ -403,13 +397,6 @@ public readonly partial struct ContentStreamParser
         Debug.Assert(mark.IsMark);
     }
 
-
-    private static PdfDirectObject MapSimpleValue(in PostscriptValue source)
-    {
-        Debug.Assert(source.ValueStrategy is PostscriptString or PostscriptDouble or PostscriptBoolean or PostscriptInteger);
-        return new PdfDirectObject(source.ValueStrategy, source.Memento);
-    }
-
     private static async ValueTask ShowSpacedStringAsync(PostscriptEngine engine)
     {
         var arrayTop = engine.OperandStack.Pop();
@@ -446,6 +433,12 @@ public readonly partial struct ContentStreamParser
         engine.PopAs(out double wordSpace, out double charSpace);
         await E(engine).MoveToNextLineAndShowStringAsync(
             wordSpace, charSpace, strSource.Memory).CA();
+    }
+
+    private static PdfDirectObject MapSimpleValue(in PostscriptValue source)
+    {
+        Debug.Assert(source.ValueStrategy is PostscriptString or PostscriptDouble or PostscriptBoolean or PostscriptInteger);
+        return new PdfDirectObject(source.ValueStrategy, source.Memento);
     }
 
     private static PdfDirectObject? TryPopName(PostscriptEngine engine)
