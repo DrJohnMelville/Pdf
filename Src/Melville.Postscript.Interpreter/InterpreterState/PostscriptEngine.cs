@@ -35,6 +35,13 @@ public class PostscriptEngine
     /// </summary>
     public ITokenSource? TokenSource { get; private set; }
 
+    /// <summary>
+    /// The postscript engine itself never touches this value.  Various Procsets can use this
+    /// value as a "target" for the procedure.  For example, the ContentStreamParser stores the
+    /// IContentStreamOperations that iis being rendered to in this field.
+    /// </summary>
+    public object Tag { get; set; }
+
     private int deferredExecutionCount = 0;
 
     /// <summary>
@@ -53,6 +60,7 @@ public class PostscriptEngine
     /// </summary>
     public PostscriptEngine(IPostscriptDictionary builtInOperations)
     {
+        Tag = this;
         CreateStandardDictionarystack(builtInOperations);
         CreateSecondaryStandardDictionaries();
     }

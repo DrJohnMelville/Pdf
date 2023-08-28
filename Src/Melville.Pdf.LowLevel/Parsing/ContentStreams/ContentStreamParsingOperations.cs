@@ -9,7 +9,6 @@ using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
-using Melville.Pdf.LowLevel.Model.Primitives;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams.EmbeddedImageParsing;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
@@ -18,22 +17,12 @@ using Melville.Postscript.Interpreter.Values.Execution;
 
 namespace Melville.Pdf.LowLevel.Parsing.ContentStreams;
 
-internal static class NameMapper
-{
-    public static PdfDirectObject AsPdfName(this in PostscriptValue value)
-    {
-        if (!value.IsLiteralName) throw new PdfParseException("NameExpected");
-        return new PdfDirectObject(value.ValueStrategy, value.Memento);
-    }
-}
-
 [TypeShortcut("Melville.Pdf.LowLevel.Model.ContentStreams.IContentStreamOperations",
     "GetTarget(engine)")]
 internal static partial class ContentStreamParsingOperations
 {
     private static IContentStreamOperations GetTarget(PostscriptEngine engine) =>
-        engine.OperandStack[0].Get<IContentStreamOperations>();
-
+        (IContentStreamOperations)engine.Tag;
     private static void PopMarkObject(OperandStack stack)
     {
         var mark = stack.Pop();
@@ -178,7 +167,7 @@ internal static partial class ContentStreamParsingOperations
     [PostscriptMethod("SC")]
     private static void SetStrokingColor(IContentStreamOperations target, OperandStack stack)
     {
-        Span<double> color = stackalloc double[stack.Count - 1];
+        Span<double> color = stackalloc double[stack.Count];
         stack.PopSpan(color);
         target.SetStrokeColor(color);
 
@@ -187,7 +176,7 @@ internal static partial class ContentStreamParsingOperations
     [PostscriptMethod("sc")]
     private static void SetNonstrokingColor(IContentStreamOperations target, OperandStack stack)
     {
-        Span<double> color = stackalloc double[stack.Count - 1];
+        Span<double> color = stackalloc double[stack.Count];
         stack.PopSpan(color);
         target.SetNonstrokingColor(color);
     }
@@ -297,7 +286,7 @@ internal static partial class ContentStreamParsingOperations
     private static void BeginInlineImage(OperandStack stack) => stack.Push(PostscriptValueFactory.CreateMark());
 
     [PostscriptMethod("ID")]
-    private static ValueTask EndInlineImage(PostscriptEngine engine, IContentStreamOperations target) =>
+    private static ValueTask EndInlineImageAsync(PostscriptEngine engine, IContentStreamOperations target) =>
         new InlineImageParser(engine, target).ParseAsync();
 
     [PostscriptMethod("Do")]
@@ -331,7 +320,7 @@ internal static partial class ContentStreamParsingOperations
         IContentStreamOperations target, OperandStack stack)
     {
         PdfDirectObject? name = stack.Peek().IsLiteralName ? (PdfDirectObject?)stack.Pop().AsPdfName() : null;
-        Span<double> color = stackalloc double[stack.Count - 1];
+        Span<double> color = stackalloc double[stack.Count];
         stack.PopSpan(color);
         return target.SetNonstrokingColorExtendedAsync(name, color);
     }
@@ -359,7 +348,7 @@ internal static partial class ContentStreamParsingOperations
         IContentStreamOperations target, OperandStack stack)
     {
         PdfDirectObject? name = stack.Peek().IsLiteralName ? (PdfDirectObject?)stack.Pop().AsPdfName() : null;
-        Span<double> color = stackalloc double[stack.Count - 1];
+        Span<double> color = stackalloc double[stack.Count];
         stack.PopSpan(color);
         return target.SetStrokeColorExtendedAsync(name, color);
     }
@@ -377,7 +366,7 @@ internal static partial class ContentStreamParsingOperations
         MoveToNextLineAndShowStringAsync(IContentStreamOperations target, RentedMemorySource str) =>
         target.MoveToNextLineAndShowStringAsync(str.Memory);
 
-    [PostscriptMethod("\\\"")]
+    [PostscriptMethod(@"\""")]
     private static ValueTask MoveToNextLineAndShowString2Async(
         IContentStreamOperations target, double wordSpace, double charSpace, RentedMemorySource str) =>
         target.MoveToNextLineAndShowStringAsync(wordSpace, charSpace, str.Memory);
@@ -388,7 +377,7 @@ internal static partial class ContentStreamParsingOperations
     {
         Debug.Assert(IsArrayTopMarker(arrayTop));
         var builder = target.GetSpacedStringBuilder();
-        for (int i = 2; i < stack.Count; i++)
+        for (int i = 1; i < stack.Count; i++)
         {
             var item = stack[i];
             if (item.IsNumber)
@@ -400,7 +389,7 @@ internal static partial class ContentStreamParsingOperations
             }
         }
         await builder.DoneWritingAsync().CA();
-        while (stack.Count > 1) stack.Pop();
+        stack.Clear();
     }
 
     [PostscriptMethod("Tf")]

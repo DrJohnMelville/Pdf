@@ -100,7 +100,10 @@ public partial class PostscriptStack<T>
     public bool TryPop([NotNullWhen(true)] out T? ret) =>
         Count > minSize ? Pop().AsTrueValue(out ret) : default(T).AsFalseValue(out ret);
 
-    internal void Clear() => PopMultiple(Count - minSize);
+    /// <summary>
+    /// Reset the stack to its minimum size.
+    /// </summary>
+    public void Clear() => PopMultiple(Count - minSize);
 
     internal void PopMultiple(int countToRemove)
     {
