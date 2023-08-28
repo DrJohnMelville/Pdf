@@ -14,7 +14,7 @@ internal sealed partial class StringExecutionSelector: IExecutionSelector
     [StaticSingleton()]
     internal sealed partial class PushLiteralString : BuiltInFunction
     {
-        public override void Execute(PostscriptEngine engine, in PostscriptValue value) => engine.Push(value);
+        public override void Execute(PostscriptEngine engine, in PostscriptValue value) => engine.OperandStack.Push(value);
         public override string WrapTextDisplay(string text) => "(" + base.WrapTextDisplay(text)+")";
         public override bool IsExecutable => false;
     }

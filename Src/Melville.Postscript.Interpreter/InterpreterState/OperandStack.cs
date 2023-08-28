@@ -75,11 +75,16 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
         
     }
 
-    public void PopSpan<T>(Span<T> target)
+    /// <summary>
+    /// Pop a span worth of values from the stack in inverse order
+    /// </summary>
+    /// <typeparam name="T">The type to cast the popped values to</typeparam>
+    /// <param name="source">The stack to pop from.</param>
+    public void PopSpan<T>(Span<T> source)
     {
-        for (int i = target.Length -1; i >= 0 ; i--)
+        for (int i = source.Length -1; i >= 0 ; i--)
         {
-            target[i] = Pop().Get<T>();
+            source[i] = Pop().Get<T>();
         }
     }
 }
