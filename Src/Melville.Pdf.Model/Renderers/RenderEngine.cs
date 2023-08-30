@@ -224,22 +224,19 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         var font = GraphicsState.Typeface;
         using var writer = font.BeginFontWrite(this);
         var remainingI = decodedString;
+
         while (remainingI.Length > 0)
         {
-            var (character, glyph) = GetNextCharacterAndGlyph(font, ref remainingI);
+
+            var (character, bytesUsed) = font.ReadCharacter.GetNextChar(remainingI.Span);
+            remainingI = remainingI[bytesUsed..];
+            var glyph = font.MapCharacterToGlyph.GetGlyph(character);
+
             var measuredGlyphWidth = await writer.AddGlyphToCurrentStringAsync(
                 character, glyph, CharacterPositionMatrix()).CA();
             AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
         }
         writer.RenderCurrentString(GraphicsState.TextRender, CharacterPositionMatrix());
-    }
-
-    private static (uint character, uint glyph) GetNextCharacterAndGlyph(
-        IRealizedFont font, ref ReadOnlyMemory<byte> remainingI)
-    {
-        var (character, glyph, bytesUsed) = font.GetNextGlyph(remainingI.Span);
-        remainingI = remainingI[bytesUsed..];
-        return (character, glyph);
     }
 
     private Matrix3x2 CharacterPositionMatrix() => GraphicsState.GlyphTransformMatrix();

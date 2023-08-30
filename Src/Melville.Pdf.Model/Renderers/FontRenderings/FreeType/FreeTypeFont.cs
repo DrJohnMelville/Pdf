@@ -13,8 +13,8 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.FreeType;
 internal partial class FreeTypeFont : IRealizedFont, IDisposable
 {
     [FromConstructor] public Face Face { get; } // Lowlevel reader uses this property dynamically 
-    [FromConstructor] private readonly IReadCharacter characterSource;
-    [FromConstructor] private readonly IMapCharacterToGlyph characterToGlyph;
+    [FromConstructor] public IReadCharacter ReadCharacter { get; }
+    [FromConstructor] public IMapCharacterToGlyph MapCharacterToGlyph { get; }
     [FromConstructor] private readonly IFontWidthComputer fontWidthComputer;
     public void Dispose() => Face.Dispose();
 
@@ -26,12 +26,6 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
         StyleFlags: {Face.StyleFlags}
         FontFlags: {Face.FaceFlags}
         """;
-
-    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
-    {
-        var (character, consumed) = characterSource.GetNextChar(input);
-        return (character, characterToGlyph.GetGlyph(character), consumed);
-    }
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new MutexHoldingWriteOperation(this, target.CreateDrawTarget());

@@ -7,7 +7,9 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.DocumentRenderers;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.OptionalContents;
@@ -46,10 +48,8 @@ public class S9_4_2_TextPositioningOperators
             this.fw = fw;
         }
 
-        public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
-        {
-            return (input[0], input[0], 1);
-        }
+        public IReadCharacter ReadCharacter => SingleByteCharacters.Instance;
+        public IMapCharacterToGlyph MapCharacterToGlyph => IdentityCharacterToGlyph.Instance;
 
         public IFontWriteOperation BeginFontWrite(IFontTarget target)
         {

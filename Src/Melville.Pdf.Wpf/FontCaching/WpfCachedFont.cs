@@ -23,10 +23,6 @@ internal partial class WpfCachedFont : IRealizedFont
         this.inner = inner;
     }
 
-    public (uint character, uint glyph, int bytesConsumed) 
-        GetNextGlyph(in ReadOnlySpan<byte> input) =>
-        inner.GetNextGlyph(input);
-
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
         new CachedOperation(this,target);
 

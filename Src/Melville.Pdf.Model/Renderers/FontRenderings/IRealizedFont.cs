@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
@@ -8,14 +10,18 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings;
 /// <summary>
 /// This object represents a font that can map strings to glyphs and render glyphs to a target object
 /// </summary>
-public interface IRealizedFont
+public interface  IRealizedFont
 {
     /// <summary>
-    /// gather the next glyph from an input span.  This could be one or more bytes depending on the font.
+    /// A strategy to get characters from the source string
     /// </summary>
-    /// <param name="input">The input to read from.</param>
-    /// <returns>The character index, glyph index, and number of bytes consumed.</returns>
-    (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input);
+    public IReadCharacter ReadCharacter { get; }
+
+    /// <summary>
+    /// Map a single character to a glyph.
+    /// </summary>
+    public IMapCharacterToGlyph MapCharacterToGlyph { get; }
+
     /// <summary>
     /// The width, in text units, of a given character.  This is used to adjust the text matrix in a write operation.
     /// </summary>

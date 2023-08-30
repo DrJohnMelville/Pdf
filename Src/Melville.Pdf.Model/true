@@ -1248,12 +1248,15 @@
             <param name="fontFactory">IDefaultFontMapper to render fonts found within the document.</param>
             <returns></returns>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.GetNextGlyph(System.ReadOnlySpan{System.Byte}@)">
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.ReadCharacter">
             <summary>
-            gather the next glyph from an input span.  This could be one or more bytes depending on the font.
+            A strategy to get characters from the source string
             </summary>
-            <param name="input">The input to read from.</param>
-            <returns>The character index, glyph index, and number of bytes consumed.</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.MapCharacterToGlyph">
+            <summary>
+            Map a single character to a glyph.
+            </summary>
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.BlockFontDispose.CharacterWidth(System.UInt32,System.Double)">
             <summary>
@@ -1289,6 +1292,16 @@
             <summary>
             Returns true if the font rendering is invariant of the context in which is is rendered.
             Type 3 fonts can pick up different resources on different pages, so they cannot be cached.
+            </summary>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.IReadCharacter">
+            <summary>
+             Read characters from a source string in a specific encoding.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.IReadCharacter.GetNextChar(System.ReadOnlySpan{System.Byte}@)">
+            <summary>
+            Get a character from a byte string
             </summary>
         </member>
         <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.SingleByteCharacters.Instance">
@@ -1392,6 +1405,23 @@
             Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.FontWidths.NullFontWidthComputer
             </summary>
         </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.IMapCharacterToGlyph">
+            <summary>
+            Map from characters to glyphs for a given font.
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.IMapCharacterToGlyph.GetGlyph(System.UInt32)">
+            <summary>
+            Get the glyph for a given character.
+            </summary>
+            <param name="character">The character to map</param>
+            <returns>The corresponding glyph.</returns>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.IdentityCharacterToGlyph.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.IdentityCharacterToGlyph
+            </summary>
+        </member>
         <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation">
             <summary>
             This interface manages a single font writing operation.
@@ -1427,12 +1457,15 @@
             This object represents a font that can map strings to glyphs and render glyphs to a target object
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.GetNextGlyph(System.ReadOnlySpan{System.Byte}@)">
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.ReadCharacter">
             <summary>
-            gather the next glyph from an input span.  This could be one or more bytes depending on the font.
+            A strategy to get characters from the source string
             </summary>
-            <param name="input">The input to read from.</param>
-            <returns>The character index, glyph index, and number of bytes consumed.</returns>
+        </member>
+        <member name="P:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.MapCharacterToGlyph">
+            <summary>
+            Map a single character to a glyph.
+            </summary>
         </member>
         <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont.CharacterWidth(System.UInt32,System.Double)">
             <summary>

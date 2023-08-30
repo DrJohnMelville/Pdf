@@ -4,8 +4,16 @@ using Melville.INPC;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-internal interface IMapCharacterToGlyph
+/// <summary>
+/// Map from characters to glyphs for a given font.
+/// </summary>
+public interface IMapCharacterToGlyph
 {
+    /// <summary>
+    /// Get the glyph for a given character.
+    /// </summary>
+    /// <param name="character">The character to map</param>
+    /// <returns>The corresponding glyph.</returns>
     uint GetGlyph(uint character);
 }
 
@@ -20,10 +28,8 @@ internal partial class CharacterToGlyphArray: IMapCharacterToGlyph
     }
 }
 
-internal sealed class IdentityCharacterToGlyph : IMapCharacterToGlyph
+[StaticSingleton]
+internal sealed partial class IdentityCharacterToGlyph : IMapCharacterToGlyph
 {
-    public static IMapCharacterToGlyph Instance = new IdentityCharacterToGlyph();
-    private IdentityCharacterToGlyph() { }
-
     public uint GetGlyph(uint character) => character;
 }

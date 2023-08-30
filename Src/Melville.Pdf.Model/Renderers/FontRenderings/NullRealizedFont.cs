@@ -2,6 +2,8 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings;
@@ -9,7 +11,8 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings;
 [StaticSingleton]
 internal sealed partial class NullRealizedFont: IFontWriteOperation, IRealizedFont
 {
-    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input) => (0, 0, 1);
+    public IReadCharacter ReadCharacter => SingleByteCharacters.Instance;
+    public IMapCharacterToGlyph MapCharacterToGlyph => IdentityCharacterToGlyph.Instance;
 
     public ValueTask<double> AddGlyphToCurrentStringAsync(
         uint character, uint glyph, Matrix3x2 textMatrix) => new(0.0);

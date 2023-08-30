@@ -6,6 +6,8 @@ using Melville.Hacks;
 using Melville.INPC;
 using Melville.Parsing.Streams;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
@@ -28,21 +30,18 @@ public interface IFontTarget
     IDrawTarget CreateDrawTarget();
 }
 
-internal partial class RealizedType3Font : IRealizedFont
+internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph
 {
     [FromConstructor]private readonly MultiBufferStream[] characters;
     [FromConstructor]private readonly byte firstCharacter;
     [FromConstructor]private readonly Matrix3x2 fontMatrix;
     [FromConstructor]private readonly PdfDictionary rawFont;
 
-    public (uint character, uint glyph, int bytesConsumed) GetNextGlyph(in ReadOnlySpan<byte> input)
-    {
-        var character = input[0];
-        return (character, ClampToGlyphs(character), 1);
-    }
+    public IReadCharacter ReadCharacter => SingleByteCharacters.Instance;
+    public IMapCharacterToGlyph MapCharacterToGlyph => this;
 
-    private ushort ClampToGlyphs(byte input) => 
-        (ushort)(input - firstCharacter).Clamp(0, characters.Length-1);
+    public uint GetGlyph(uint character) => 
+        (uint)Math.Clamp(character - firstCharacter, 0, characters.Length-1);
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target) => new Type3Writer(this, target);
     
