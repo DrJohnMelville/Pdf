@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
@@ -14,6 +16,7 @@ using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.ColorOperations;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 using Melville.Pdf.Model.Renderers.GraphicsStates;
 using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
@@ -224,18 +227,22 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         var font = GraphicsState.Typeface;
         using var writer = font.BeginFontWrite(this);
         var remainingI = decodedString;
+        var buffer = ArrayPool<uint>.Shared.Rent(10);
 
         while (remainingI.Length > 0)
         {
-
-            var (character, bytesUsed) = font.ReadCharacter.GetNextChar(remainingI.Span);
-            remainingI = remainingI[bytesUsed..];
-            var glyph = font.MapCharacterToGlyph.GetGlyph(character);
-
-            var measuredGlyphWidth = await writer.AddGlyphToCurrentStringAsync(
-                character, glyph, CharacterPositionMatrix()).CA();
-            AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
+            var characters = font.ReadCharacter.GetCharacters(ref remainingI, buffer);
+            for (int i = 0; i < characters.Length; i++)
+            {
+                var character = characters.Span[i];
+                var glyph = font.MapCharacterToGlyph.GetGlyph(character);
+                var measuredGlyphWidth = await writer.AddGlyphToCurrentStringAsync(
+                    character, glyph, CharacterPositionMatrix()).CA();
+                AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
+            }
         }
+
+        ArrayPool<uint>.Shared.Return(buffer);
         writer.RenderCurrentString(GraphicsState.TextRender, CharacterPositionMatrix());
     }
 

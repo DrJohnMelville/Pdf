@@ -1299,10 +1299,32 @@
              Read characters from a source string in a specific encoding.
             </summary>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.IReadCharacter.GetNextChar(System.ReadOnlySpan{System.Byte}@)">
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.IReadCharacter.GetCharacters(System.ReadOnlyMemory{System.Byte}@,System.Memory{System.UInt32}@,System.Int32@)">
             <summary>
-            Get a character from a byte string
+            Get a set of characters from the input.  If the font uses a cmap, an arbitrary number
+            of input bytes could map to an arbitrary number of characters.
             </summary>
+            <param name="input">the input bytes</param>
+            <param name="scratchBuffer">A buffer that can be reused to hold the output if it
+            is big enough</param>
+            <param name="bytesConsumed">Receives the number of bytes consumed by the operation</param>
+            <returns>A memory containing the character(s) read from the input.  This can be but
+            is not required to be a portion of the scratchBuffer</returns>
+        </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.ReadCharacterOperations">
+            <summary>
+            Helper method for IReadCharacter
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.ReadCharacterOperations.GetCharacters(Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.IReadCharacter,System.ReadOnlyMemory{System.Byte}@,System.Memory{System.UInt32}@)">
+            <summary>
+            This read a character from the input, and advances the input beyond the read character
+            </summary>
+            <param name="target">The strategy to get a character from the input</param>
+            <param name="input">The input</param>
+            <param name="scratchBuffer">A buffer that may be used to hold the output.</param>
+            <returns>A memory containing the character(s) read from the input.  This can be but
+            is not required to be a portion of the scratchBuffer</returns>
         </member>
         <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.SingleByteCharacters.Instance">
             <summary>
