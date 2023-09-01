@@ -21,7 +21,7 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
     [InlineData(0, "7D", "005E" , 1)]
     [InlineData(0, "7E", "005F" , 1)]
     [InlineData(0, "7F", "000F" , 1)]
-    [InlineData(0, "8147", "0000" , 1)]
+    [InlineData(0, "8147", "0000" , 2)]
     [InlineData(0, "8148", "8149" , 2)]
     public void CMapTest(int map, string hexSource, string hexDest, int expecteDConsumed)
     {

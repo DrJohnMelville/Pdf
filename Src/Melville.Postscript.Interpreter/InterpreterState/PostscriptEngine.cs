@@ -28,6 +28,8 @@ public class PostscriptEngine
     /// </summary>
     public ExecutionStack ExecutionStack { get; } = new();
 
+    public ResourceLibrary ResourceLibrary { get; } = new();
+
     /// <summary>
     /// The ITokenSource from which we are presently reading.  Postscript
     /// operators are allowed to read directly out of the

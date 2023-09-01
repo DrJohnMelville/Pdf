@@ -20,6 +20,7 @@ internal static class CMapParser
     {
        var ranges = new List<ByteRange>();
        var parser = new PostscriptEngine(dict){Tag = ranges};
+       parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
        parser.ErrorDict.Put("undefined"u8, PostscriptValueFactory.CreateNull());
        await parser.ExecuteAsync(source).CA();
        return new CMap(ranges);
@@ -33,14 +34,6 @@ internal static class CMapParser
             "engine.OperandStack.SpanAboveMark()")]
 internal static partial class CmapParserOperations
 {
-    [PostscriptMethod("findresource")]
-    private static PostscriptValue FindResource(in StringSpanSource name, in StringSpanSource category)
-    {
-        Debug.Assert(category.GetSpan().SequenceEqual("ProcSet"u8));
-        Debug.Assert(name.GetSpan().SequenceEqual("CIDInit"u8));
-        return PostscriptValueFactory.CreateSizedDictionary(1);
-    }
-
     [PostscriptMethod("begincmap")]
     [PostscriptMethod("endcmap")]
     private static void NoOperation(){}

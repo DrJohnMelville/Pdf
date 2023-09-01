@@ -10,7 +10,7 @@ namespace Melville.Postscript.Interpreter.Values.Composites;
 public interface IPostscriptDictionary : IPostscriptComposite
 {
     /// <summary>
-    /// Remove item with a given key from the dictionaa
+    /// Remove item with a given key from the dictionary
     /// </summary>
     /// <param name="key"></param>
     public void Undefine(PostscriptValue key);

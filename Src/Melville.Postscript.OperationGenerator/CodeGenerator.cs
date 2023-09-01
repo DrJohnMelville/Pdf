@@ -30,6 +30,7 @@ public readonly partial struct CodeGenerator
         typeMapper["Melville.Postscript.Interpreter.InterpreterState.OperandStack"] = "engine.OperandStack";
         typeMapper["Melville.Postscript.Interpreter.InterpreterState.ExecutionStack"] = "engine.ExecutionStack";
         typeMapper["Melville.Postscript.Interpreter.InterpreterState.DictionaryStack"] = "engine.DictionaryStack";
+        typeMapper["Melville.Postscript.Interpreter.InterpreterState.ResourceLibrary"] = "engine.ResourceLibrary";
         typeMapper["Melville.Postscript.Interpreter.Values.PostscriptValue"] = "engine.OperandStack.Pop()";
         typeMapper["Melville.Postscript.Interpreter.InterpreterState.PostscriptEngine"] = "engine";
     }

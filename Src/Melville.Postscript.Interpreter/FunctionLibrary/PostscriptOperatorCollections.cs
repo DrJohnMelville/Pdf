@@ -5,7 +5,6 @@ using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
-
 /// <summary>
 /// This facade class loads various groups of 
 /// </summary>
@@ -18,6 +17,7 @@ namespace Melville.Postscript.Interpreter.FunctionLibrary;
 [MacroItem("RelationalAndBitwiseOperators")]
 [MacroItem("DictionaryOperators")]
 [MacroItem("StringOperators")]
+[MacroItem("ResourceOperators")]
 [MacroCode("""
     /// <summary>
     /// Implement the ~0~ in section 8.1
@@ -71,5 +71,6 @@ public static partial class PostscriptOperatorCollections
         .WithControlOperators()
         .WithRelationalAndBitwiseOperators()
         .WithDictionaryOperators()
-        .WithStringOperators();
+        .WithStringOperators()
+        .WithResourceOperators();
 }

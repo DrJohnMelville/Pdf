@@ -343,6 +343,19 @@ public class OperatorsTest
             .WithRelationalAndBitwiseOperators()
             .WithConversionOperators()));
 
+    [Theory]
+    [InlineData("/Key 12345 /Cat defineresource", "01: 12345")]
+    [InlineData("/Key 12345 /Cat defineresource pop /Key /Cat findresource", "01: 12345")]
+    [InlineData("/Key 12345 /Cat defineresource pop /Key /Cat undefineresource /Key /Cat resourcestatus", 
+        "01: false")]
+    [InlineData("/Key 12345 /Cat defineresource pop /Key /Cat resourcestatus", 
+        "01: true\r\n02: -1\r\n03: 1")]
+    public void Reources(string code, string result) =>
+        RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
+            .WithSystemTokens()
+            .WithResourceOperators()
+            .WithStackOperators()));
+
     private static void RunTestOn(string code, string result, PostscriptEngine engine)
     {
         engine.Execute(code);
