@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Melville.Postscript.Interpreter.Values.Composites;
+using System;
+using System.Collections;
+using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 

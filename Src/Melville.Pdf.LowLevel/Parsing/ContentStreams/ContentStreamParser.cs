@@ -40,15 +40,6 @@ public readonly partial struct ContentStreamParser
     }
 
     private static readonly IPostscriptDictionary contentStreamCommands =
-        CreateDictionary();
-
-
-    private static IPostscriptDictionary CreateDictionary()
-    {
-        var ret = PostscriptValueFactory
-            .CreateSizedDictionary(80)
-            .Get<IPostscriptDictionary>();
-        ContentStreamParsingOperations.AddOperations(ret);
-        return ret;
-    }
+        PostscriptValueFactory.CreateSizedDictionary(80).Get<IPostscriptDictionary>()
+            .With(ContentStreamParsingOperations.AddOperations);
 }

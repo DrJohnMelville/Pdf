@@ -1,12 +1,34 @@
-﻿using Melville.Postscript.Interpreter.Values;
+﻿using System;
+using Melville.INPC;
+using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
+
 /// <summary>
 /// This facade class loads various groups of 
 /// </summary>
-public static class PostscriptOperatorCollections
+[MacroItem("SystemTokens")]
+[MacroItem("StackOperators")]
+[MacroItem("MathOperators")]
+[MacroItem("ArrayOperators")]
+[MacroItem("ConversionOperators")]
+[MacroItem("ControlOperators")]
+[MacroItem("RelationalAndBitwiseOperators")]
+[MacroItem("DictionaryOperators")]
+[MacroItem("StringOperators")]
+[MacroCode("""
+    /// <summary>
+    /// Implement the ~0~ in section 8.1
+    /// </summary>
+    /// <param name="engine">The postscript engine to add definitions too.</param>
+    /// <returns>The engine passed in the first parameter</returns>
+    public static IPostscriptDictionary With~0~(this IPostscriptDictionary engine) =>
+        engine.With(~0~.AddOperations);
+        
+""")]
+public static partial class PostscriptOperatorCollections
 {
     /// <summary>
     /// A dictionary containing all the base postscript languae elements.
@@ -22,124 +44,32 @@ public static class PostscriptOperatorCollections
         new PostscriptLongDictionary();
 
     /// <summary>
+    /// Helper method to chain adding operator collections to a postscriptdictionary
+    /// </summary>
+    /// <param name="dict">The dictionary to add operations to</param>
+    /// <param name="content">Action to add items to the dictionary</param>
+    /// <returns>The passed in dictionary after the action is run.</returns>
+    public static IPostscriptDictionary With(
+        this IPostscriptDictionary dict, Action<IPostscriptDictionary> content)
+    {
+        content(dict);
+        return dict;
+    }
+
+
+    /// <summary>
     /// Configure a postscript engine with the base postscript language.
     /// </summary>
     /// <param name="engine">The engine to configure.</param>
-    /// <returns>Thge engine passed in, once it has been configured/</returns>
+    /// <returns>The engine passed in, once it has been configured/</returns>
     public static IPostscriptDictionary WithBaseLanguage(this IPostscriptDictionary engine) => engine
         .WithSystemTokens()
         .WithStackOperators()
         .WithMathOperators()
         .WithArrayOperators()
-        .WithcConversionOperators()
-        .WithcControlOperators()
-        .WithRelationalOperators()
+        .WithConversionOperators()
+        .WithControlOperators()
+        .WithRelationalAndBitwiseOperators()
         .WithDictionaryOperators()
         .WithStringOperators();
-
-
-    /// <summary>
-    /// Define true, false, and null tokens
-    /// </summary>
-    /// <param name="engine">The postscript to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithSystemTokens(this IPostscriptDictionary engine)
-    {
-        SystemTokens.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the stack operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithStackOperators(this IPostscriptDictionary engine)
-    {
-        StackOperators.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the stack operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithMathOperators(this IPostscriptDictionary engine)
-    {
-        MathOperators.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the array operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithArrayOperators(this IPostscriptDictionary engine)
-    {
-        ArrayOperators.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the type conversion operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithcConversionOperators(this IPostscriptDictionary engine)
-    {
-        ConversionOperators.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the control operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithcControlOperators(this IPostscriptDictionary engine)
-    {
-        ControlOperators.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the Relational operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithRelationalOperators(
-        this IPostscriptDictionary engine)
-    {
-        RelationalAndBitwiseOperators.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the Relational operators in section 8.1
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithDictionaryOperators(
-        this IPostscriptDictionary engine)
-    {
-        DictionaryOperators.AddOperations(engine);
-        return engine;
-    }
-
-    /// <summary>
-    /// Implement the uniquely string operators in section 8.1
-    /// Many string operators are actually composite or array operators that
-    /// just work for strings.
-    /// </summary>
-    /// <param name="engine">The postscript engine to add definitions too.</param>
-    /// <returns>The engine passed in the first parameter</returns>
-    public static IPostscriptDictionary WithStringOperators(this IPostscriptDictionary engine)
-    {
-        StringSearchOperators.AddOperations(engine);
-        return engine;
-    }
-    
-
 }

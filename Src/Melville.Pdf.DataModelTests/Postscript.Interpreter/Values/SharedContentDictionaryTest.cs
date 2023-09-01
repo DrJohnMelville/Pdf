@@ -7,12 +7,17 @@ namespace Melville.Pdf.DataModelTests.Postscript.Interpreter.Values;
 
 public class SharedContentDictionaryTest
 {
-    private readonly IPostscriptDictionary sut = new SharedContentDictionary(
-        new PostscriptShortDictionary(3)
-            .With("A"u8, 1)
-            .With("B"u8, 2)
-            .With("C"u8, 3)
-    );
+    private readonly IPostscriptDictionary sut;
+
+    public SharedContentDictionaryTest()
+    {
+        var dict = new PostscriptShortDictionary(3);
+        dict.Put("A"u8, 1);
+        dict.Put("B"u8, 2);
+        dict.Put("C"u8, 3);
+
+        sut = new SharedContentDictionary(dict);
+    }
 
     [Fact]
     public void AccessDefault()

@@ -3,7 +3,7 @@ using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Postscript.Interpreter.FunctionLibrary;
 
-internal static partial class StringSearchOperators
+internal static partial class StringOperators
 {
     [PostscriptMethod("anchorsearch")]
     private static void AnchorSearch(OperandStack stack, PostscriptValue seek) =>

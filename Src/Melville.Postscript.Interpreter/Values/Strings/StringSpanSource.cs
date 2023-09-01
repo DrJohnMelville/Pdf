@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using Melville.INPC;
 
@@ -29,6 +30,7 @@ public unsafe partial struct StringSpanSource
     /// Returns the given string as a span.  This might be the internal private buffer, or
     /// it might be the native span of a long string.
     /// </summary>
+    [Pure]
     public Span<byte> GetSpan() =>
         strategy.GetBytes(memento, MemoryMarshal.CreateSpan(ref buffer[0], PostscriptString.ShortStringLimit));
 }

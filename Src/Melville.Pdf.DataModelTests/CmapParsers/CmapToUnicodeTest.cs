@@ -1,95 +1,35 @@
-﻿namespace Melville.Pdf.DataModelTests.CmapParsers;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Melville.INPC;
+using Melville.Pdf.ReferenceDocuments.Utility;
+using Melville.SharpFont;
+using Xunit;
 
-public class CmapToCodeTest
+namespace Melville.Pdf.DataModelTests.CmapParsers;
+
+public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
 {
-    private const string CMapFromCmapSpec =
-        """
-        %!PS-Adobe-3.0 Resource-CMap
-        %%DocumentNeededResources: ProcSet CIDInit
-        %%IncludeResource: ProcSet CIDInit
-        %%BeginResource: CMap (CJKTypeBlogTest-UTF32-H)
-        %%Title: (CJKTypeBlogTest-UTF32-H Adobe Identity 0)
-        %%Version: 1.000
-        %%EndComments
+    [FromConstructor] private readonly ParsedCMaps maps;
 
-        /CIDInit /ProcSet findresource begin
-
-        12 dict begin
-
-        begincmap
-
-        /CIDSystemInfo 3 dict dup begin
-          /Registry (Adobe) def
-          /Ordering (Identity) def
-          /Supplement 0 def
-        end def
-
-        /CMapName /CJKTypeBlogTest-UTF32-H def
-        /CMapVersion 1.000 def
-        /CMapType 1 def
-
-        /WMode 0 def
-
-        /UUIDOffset 0 def
-        /XUID [1 10 25324] def
-
-
-        1 begincodespacerange
-          <00> <80>
-          <8140> <9ffc>
-          <a0> <df>
-          <a040> <fbfc>
-        endcodespacerange
-
-        1 beginnotdefrange
-        <00> <1f> 0
-        endnotdefrange
-
-        3 begincidrange
-        <20> <7E> 1
-        
-        endcidrange
-
-        1 begincidchar
-        <7F> 15
-        endcidchar
-
-        endcmap
-        CMapName currentdict /CMap defineresource pop
-        end
-        end
-
-        %%EndResource
-        %%EOF
-        """;
-}
-public class CmapToUnicodeTest
-{
-    //This comes from PDF 2.0 Spec section 9.10.2
-    private const string CMapFromSpec = """
-        /CIDInit /ProcSet findresource begin
-        12 dict begin
-        begincmap
-        /CIDSystemInfo
-        <</Registry (Adobe)
-        /Ordering (UCS2)
-        /Supplement 0
-        >> def
-        /CMapName /Adobe-Identity-UCS2 def
-        /CMapType 2 def
-        1 begincodespacerange
-        <0000> <FFFF>
-        endcodespacerange
-        2 beginbfrange
-        <0000> <005E> <0020>
-        <005F> <0061> [<00660066> <00660069> <00660066006C>]
-        endbfrange
-        1 beginbfchar
-        <3A51> <D840DC3E>
-        endbfchar
-        endcmap
-        CMapName currentdict /CMap defineresource pop
-        end
-        end
-        """;
+    [Theory]
+    [InlineData(0, "10", "0000" , 1)]
+    [InlineData(0, "19", "0000" , 1)]
+    [InlineData(0, "20", "0001" , 1)]
+    [InlineData(0, "21", "0002" , 1)]
+    [InlineData(0, "30", "0011" , 1)]
+    [InlineData(0, "7D", "005E" , 1)]
+    [InlineData(0, "7E", "005F" , 1)]
+    [InlineData(0, "7F", "000F" , 1)]
+    [InlineData(0, "8147", "0000" , 1)]
+    [InlineData(0, "8148", "8149" , 2)]
+    public void CMapTest(int map, string hexSource, string hexDest, int expecteDConsumed)
+    {
+        var soura = hexSource.BitsFromHex();
+        var target = new uint[10];
+        var result = maps.Maps[map].GetCharacters(soura.AsMemory(), target, out var consumed);
+        Assert.Equal(expecteDConsumed, consumed);
+        Assert.Equal(hexDest, string.Join("",
+            result.Span.ToArray().Select(i=> i.ToString("X4"))));
+    }
 }

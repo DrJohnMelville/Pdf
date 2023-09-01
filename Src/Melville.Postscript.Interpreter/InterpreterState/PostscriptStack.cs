@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Melville.INPC;
 using Melville.Postscript.Interpreter.Tokenizers;
+using Melville.Postscript.Interpreter.Values;
 using Melville.Postscript.Interpreter.Values.Interfaces;
 
 namespace Melville.Postscript.Interpreter.InterpreterState;
@@ -237,10 +239,45 @@ public partial class PostscriptStack<T>
     /// </summary>
     /// <param name="predicate">The predicate to identify the marker</param>
     /// <returns>Span of items above the marker item.</returns>
-    public Span<T> SpanAbove(Func<T, bool> predicate)
+    public DelimitedStackSegment SpanAbove(Func<T, bool> predicate)
     {
-        var size = CountAbove(predicate);
-        return CollectionAsSpan()[^size..];
+        for (int i = Count - 1; i >= 0; i--)
+        {
+            if (predicate(buffer[i])) return new DelimitedStackSegment(this, i + 1);
+        }
+
+        throw new PostscriptException("Delimiter not found on stack");
+    }
+
+    /// <summary>
+    /// A lightweight view of the top of a stack above a delimiter
+    /// </summary>
+    public readonly partial struct DelimitedStackSegment
+    {
+        [FromConstructor] private readonly PostscriptStack<T> stack;
+        [FromConstructor] private readonly int bottomPosition;
+
+        /// <summary>
+        /// Number of items in the span that would be returned by Span
+        /// </summary>
+        public int Count() => stack.Count - bottomPosition;
+
+        /// <summary>
+        /// Retrieve the span of items above the mark
+        /// </summary>
+        public ReadOnlySpan<T> Span() =>
+            stack.CollectionAsSpan()[bottomPosition..];
+
+        /// <summary>
+        /// Pop the stack back to the mark object.
+        /// </summary>
+        public void PopData() => stack.Count = bottomPosition;
+
+        /// <summary>
+        /// Pop the span and the mark off the stack.
+        /// </summary>
+        public void PopDataAndMark() => stack.Count = bottomPosition - 1;
+
     }
 
     internal void ClearAbove(Func<T, bool> predicate)

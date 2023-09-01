@@ -202,7 +202,7 @@ public class OperatorsTest
     [InlineData("0 [1 2 3] {add} forall", "01: 6")]
     public void ExecutionAndConversion(string code, string result) =>
         RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
-            .WithcConversionOperators().WithcControlOperators().WithMathOperators()
+            .WithConversionOperators().WithControlOperators().WithMathOperators()
             .WithSystemTokens().WithArrayOperators().WithStackOperators()));
 
     [Theory]
@@ -233,7 +233,7 @@ public class OperatorsTest
     [InlineData("1 { 2 { 3 quit} exec 4 } exec 5", "01: 3\r\n02: 2\r\n03: 1")]
     public void ControlOperators(string code, string result) =>
         RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
-            .WithcConversionOperators().WithcControlOperators().WithMathOperators()
+            .WithConversionOperators().WithControlOperators().WithMathOperators()
             .WithSystemTokens().WithArrayOperators().WithStackOperators()));
 
     [Theory]
@@ -289,11 +289,11 @@ public class OperatorsTest
     [InlineData("4 -2 bitshift", "01: 1")]
     public void RelationalAndBitwise(string code, string result) =>
         RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
-            .WithRelationalOperators()
+            .WithRelationalAndBitwiseOperators()
             .WithSystemTokens()
             .WithStackOperators()
             .WithArrayOperators()
-            .WithcConversionOperators()));
+            .WithConversionOperators()));
 
     [Theory]
     [InlineData("10 dict", "01: <<\r\n>>")]
@@ -336,12 +336,12 @@ public class OperatorsTest
         RunTestOn(code, result, new PostscriptEngine(PostscriptOperatorCollections.Empty()
             .WithSystemTokens()
             .WithArrayOperators()
-            .WithcControlOperators()
+            .WithControlOperators()
             .WithDictionaryOperators()
             .WithStackOperators()
             .WithMathOperators()
-            .WithRelationalOperators()
-            .WithcConversionOperators()));
+            .WithRelationalAndBitwiseOperators()
+            .WithConversionOperators()));
 
     private static void RunTestOn(string code, string result, PostscriptEngine engine)
     {
