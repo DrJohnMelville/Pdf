@@ -40,8 +40,8 @@ internal static partial class StackOperators
     private static PostscriptValue PushMark() => PostscriptValueFactory.CreateMark();
 
     [PostscriptMethod("cleartomark")]
-    private static void ClearToMark(OperandStack stack) => stack.ClearToMark();
+    private static void ClearToMark(OperandStack stack) => stack.SpanAboveMark().PopDataAndMark();
 
     [PostscriptMethod("counttomark")]
-    private static int CountToMark(OperandStack stack) => stack.CountToMark();
+    private static int CountToMark(OperandStack stack) => stack.SpanAboveMark().Count();
 }

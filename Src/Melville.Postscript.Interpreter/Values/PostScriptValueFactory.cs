@@ -141,11 +141,11 @@ public static class PostscriptValueFactory
     /// Create a dictionary 
     /// </summary>
     /// <param name="values">even numbered values are keys, odd numbered are values.</param>
-    public static PostscriptValue CreateDictionary(Span<PostscriptValue> values) =>
+    public static PostscriptValue CreateDictionary(ReadOnlySpan<PostscriptValue> values) =>
         new(WrapInDictionary(values), PostscriptBuiltInOperations.PushArgument, default);
 
     private static IPostscriptValueStrategy<string> WrapInDictionary(
-        Span<PostscriptValue> values) =>
+        ReadOnlySpan<PostscriptValue> values) =>
         values.Length switch
         {
             < 40 => ReportAllocation(new PostscriptShortDictionary(values)),
@@ -160,10 +160,11 @@ public static class PostscriptValueFactory
     public static PostscriptValue CreateLongDictionary(params PostscriptValue[] parameters) =>
         new(ConstructLongDictionary(parameters), PostscriptBuiltInOperations.PushArgument, default);
 
-    private static PostscriptLongDictionary ConstructLongDictionary(Span<PostscriptValue> parameters) =>
-        new PostscriptLongDictionary(ArrayToDictionary(parameters));
+    private static PostscriptLongDictionary ConstructLongDictionary(ReadOnlySpan<PostscriptValue> parameters) =>
+        new(ArrayToDictionary(parameters));
 
-    private static Dictionary<PostscriptValue, PostscriptValue> ArrayToDictionary(Span<PostscriptValue> parameters)
+    private static Dictionary<PostscriptValue, PostscriptValue> ArrayToDictionary(
+        ReadOnlySpan<PostscriptValue> parameters)
     {
         var dict = new Dictionary<PostscriptValue, PostscriptValue>();
         for (var i = 1; i < parameters.Length; i += 2)

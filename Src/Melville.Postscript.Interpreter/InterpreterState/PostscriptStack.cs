@@ -169,13 +169,14 @@ public partial class PostscriptStack<T>
     {
         TryExpandArray(Count + size);
         var sourceSpan = EndInPlaceSpan(size);
-        MakeCopyable(sourceSpan);
-        sourceSpan.CopyTo(buffer.AsSpan(Count));
+        sourceSpan.MakeCopyable();
+        sourceSpan.Span().CopyTo(buffer.AsSpan(Count));
         Count += size;
     }
 
 
-    private Span<T> EndInPlaceSpan(int size) => CollectionAsSpan()[^size..];
+    private DelimitedStackSegment EndInPlaceSpan(int size) => 
+       new(this, Count - size);
 
     internal void Duplicate()
     {
@@ -213,28 +214,6 @@ public partial class PostscriptStack<T>
     }
     
     /// <summary>
-    /// Make each element in the span a copyable element
-    /// </summary>
-    /// <param name="values">The span to make copyable</param>
-    protected void MakeCopyable(Span<T> values)
-    {
-        for (int i = 0; i < values.Length; i++)
-        {
-            MakeCopyable(ref values[i]);
-        }
-    }
-
-    internal int CountAbove(Func<T, bool> predicate)
-    {
-        for (int i = 0; i < Count; i++)
-        { 
-            if (predicate(CollectionAsSpan()[^(i + 1)])) return i;
-        }
-
-        return Count;
-    }
-
-    /// <summary>
     /// Span of items above the top item meeting a predicate.
     /// </summary>
     /// <param name="predicate">The predicate to identify the marker</param>
@@ -245,8 +224,7 @@ public partial class PostscriptStack<T>
         {
             if (predicate(buffer[i])) return new DelimitedStackSegment(this, i + 1);
         }
-
-        throw new PostscriptException("Delimiter not found on stack");
+        throw new PostscriptNamedErrorException("Could not find mark", "unmatchedmark");
     }
 
     /// <summary>
@@ -278,30 +256,25 @@ public partial class PostscriptStack<T>
         /// </summary>
         public void PopDataAndMark() => stack.Count = bottomPosition - 1;
 
-    }
-
-    internal void ClearAbove(Func<T, bool> predicate)
-    {
-        while (Count > 0 && predicate(Peek())) Pop();
-    }
-
-    /// <summary>
-    /// Clear the items above a given item.
-    /// </summary>
-    /// <param name="predicate">The predicate to identify the marker</param>
-    public void ClearThrough(Func<T, bool> predicate)
-    {
-        while (Count > 0 && !predicate(Pop())) {}
+        /// <summary>
+        /// Make each element in the span a copyable element
+        /// </summary>
+        public void MakeCopyable()
         {
-          // do nothing   
+            var localSpan = stack.CollectionAsSpan()[bottomPosition..];
+            for (int i = 0; i < localSpan.Length; i++)
+            {
+                stack.MakeCopyable(ref localSpan[i]);
+            }
         }
     }
 
     internal T[] PopTopToArray(int arrayLen)
     {
-        var array = CollectionAsSpan()[^arrayLen..].ToArray();
-        MakeCopyable(array);
-        PopMultiple(arrayLen);
+        var segment = EndInPlaceSpan(arrayLen); 
+        segment.MakeCopyable();
+        var array = segment.Span().ToArray();
+        segment.PopData();
         return array;
     }
 

@@ -29,6 +29,8 @@ internal static class CMapParser
 
 [TypeShortcut("Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory",
     "new Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory((System.Collections.Generic.IList<ByteRange>)engine.Tag)")]
+[TypeShortcut("Melville.Postscript.Interpreter.InterpreterState.PostscriptStack<Melville.Postscript.Interpreter.Values.PostscriptValue>.DelimitedStackSegment",
+            "engine.OperandStack.SpanAboveMark()")]
 internal static partial class CmapParserOperations
 {
     [PostscriptMethod("findresource")]
@@ -44,14 +46,42 @@ internal static partial class CmapParserOperations
     private static void NoOperation(){}
 
     [PostscriptMethod("begincodespacerange")]
-    private static PostscriptValue BeginCodespaceRange(int rangeLength) =>
+    [PostscriptMethod("beginnotdefrange")]
+    [PostscriptMethod("begincidrange")]
+    [PostscriptMethod("begincidchar")]
+    private static PostscriptValue BeginRange(int rangeLength) =>
         PostscriptValueFactory.CreateMark();
 
     [PostscriptMethod("endcodespacerange")]
-    private static void EndCodeSpaceRange(CMapFactory factory, OperandStack stack)
+    private static void EndCodeSpaceRange(
+        CMapFactory factory, PostscriptStack<PostscriptValue>.DelimitedStackSegment segment)
     {
-//        factory.AddCodespaces(stack.CountToMark());
-        
+        factory.AddCodespaces(segment.Span());
+        segment.PopDataAndMark();
+    }
+
+    [PostscriptMethod("endnotdefrange")]
+    private static void EndNotDefRange(
+        CMapFactory factory, PostscriptStack<PostscriptValue>.DelimitedStackSegment segment)
+    {
+        factory.AddNotDefRanges(segment.Span());
+        segment.PopDataAndMark();
+    }
+
+    [PostscriptMethod("endcidrange")]
+    private static void EndCidRange(
+        CMapFactory factory, PostscriptStack<PostscriptValue>.DelimitedStackSegment segment)
+    {
+        factory.AddCidRanges(segment.Span());
+        segment.PopDataAndMark();
+    }
+
+    [PostscriptMethod("endcidchar")]
+    private static void EndCidChar(
+        CMapFactory factory, PostscriptStack<PostscriptValue>.DelimitedStackSegment segment)
+    {
+        factory.AddCidChars(segment.Span());
+        segment.PopDataAndMark();
     }
 
 }

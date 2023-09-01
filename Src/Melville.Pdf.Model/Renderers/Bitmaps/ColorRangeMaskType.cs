@@ -57,4 +57,6 @@ internal readonly struct ByteRange
     }
 
     public bool IsInRange(byte value) => value >= min && value <= max;
+
+    public override string ToString() => $"{min} .. {max}";
 }

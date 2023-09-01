@@ -154,11 +154,11 @@ internal static partial class ContentStreamParsingOperations
     {
         Debug.Assert(IsArrayTopMarker(arrayTop));
 
-        var patternLen = stack.CountToMark();
-        Span<double> pattern = stackalloc double[patternLen];
+        var patternSegment = stack.SpanAboveMark();
+        Span<double> pattern = stackalloc double[patternSegment.Count()];
         stack.PopSpan(pattern);
         target.SetLineDashPattern(phase, pattern);
-        PopMarkObject(stack);
+        patternSegment.PopDataAndMark();
     }
 
     private static bool IsArrayTopMarker(PostscriptValue item) => 
@@ -319,7 +319,8 @@ internal static partial class ContentStreamParsingOperations
     private static ValueTask SetNonStrokingExtendedAsync(
         IContentStreamOperations target, OperandStack stack)
     {
-        PdfDirectObject? name = stack.Peek().IsLiteralName ? (PdfDirectObject?)stack.Pop().AsPdfName() : null;
+        PdfDirectObject? name = stack.Peek().IsLiteralName ?
+            (PdfDirectObject?)stack.Pop().AsPdfName() : null;
         Span<double> color = stackalloc double[stack.Count];
         stack.PopSpan(color);
         return target.SetNonstrokingColorExtendedAsync(name, color);

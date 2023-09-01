@@ -36,34 +36,31 @@ public sealed class OperandStack : PostscriptStack<PostscriptValue>
     /// </summary>
     /// <returns></returns>
     /// <exception cref="PostscriptNamedErrorException"></exception>
-    public int CountToMark()
-    {
-        var ret = CountAbove(IsMark);
-        if (ret == Count)
-            throw new PostscriptNamedErrorException("Could not find mark", "unmatchedmark");
-        return ret;
-    }
+    public int CountToMark() => SpanAboveMark().Count();
+
+    /// <summary>
+    /// Gets the span of the stack above the top mark object.
+    /// </summary>
+    /// <returns></returns>
+    public DelimitedStackSegment SpanAboveMark() => SpanAbove(IsMark);
 
 
     internal PostscriptValue MarkedRegionToArray()
     {
-        var array = PopTopToArray(CountToMark());
-        Pop();
-        var postscriptValue = PostscriptValueFactory.CreateArray(array);
+        var segment = SpanAboveMark();
+        segment.MakeCopyable();
+        var postscriptValue = PostscriptValueFactory.CreateArray(segment.Span().ToArray());
+        segment.PopDataAndMark();
         return postscriptValue;
     }
 
     internal PostscriptValue DictionaryFromMarkedSpan()
     {
-        int count = CountToMark();
-        var dict = PostscriptValueFactory.CreateDictionary(
-            CollectionAsSpan()[^count..]);
-        PopMultiple(count + 1);
+        var segment = SpanAboveMark();
+        var dict = PostscriptValueFactory.CreateDictionary(segment.Span());
+        segment.PopDataAndMark();
         return dict;
     }
-
-    internal void ClearToMark() =>
-        ClearThrough(IsMark);
 
     internal void PolymorphicCopy()
     {

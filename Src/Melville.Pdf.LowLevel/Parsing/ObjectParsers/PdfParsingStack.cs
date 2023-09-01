@@ -31,9 +31,10 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
 
     public void CreateArray()
     {
-        var ret = new PdfArray(SpanAbove(IdentifyPdfOperator).ToArray());
+        var arraySpan = SpanAbove(IdentifyPdfOperator);
+        var ret = new PdfArray(arraySpan.Span().ToArray());
         var priorSize = Count;
-        ClearThrough(IdentifyPdfOperator);
+        arraySpan.PopDataAndMark();
         ClearAfterPop(priorSize);
         Push(ret);
     }
@@ -51,7 +52,8 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
  
     public void CreateDictionary()
     {
-        var stackSpan = SpanAbove(IdentifyPdfOperator);
+        var stackSegment = SpanAbove(IdentifyPdfOperator);
+        var stackSpan = stackSegment.Span();
         if (stackSpan.Length % 2 == 1)
             throw new PdfParseException("Pdf Dictionary much have a even number of elements");
 
@@ -68,7 +70,7 @@ internal class PdfParsingStack : PostscriptStack<PdfIndirectObject>
         }
 
         int priorSize = Count;
-        ClearThrough(IdentifyPdfOperator);
+        stackSegment.PopDataAndMark();
         ClearAfterPop(priorSize);
         var dataMemory = dictArray.AsMemory(0, finalPos);
         Push(new(PrepareDictionary(dataMemory), (MementoUnion)default));
