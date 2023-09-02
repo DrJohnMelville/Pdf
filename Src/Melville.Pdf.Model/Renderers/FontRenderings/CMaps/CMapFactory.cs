@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Postscript.Interpreter.Values;
-using Microsoft.CodeAnalysis.Emit;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
-internal readonly partial struct CMapFactory
+
+internal partial class CMapFactory
 {
-    [FromConstructor] private readonly IList<ByteRange> data;
+    private readonly List<ByteRange> data = new();
+    [FromConstructor] private IGlyphNameMap namer;
+    [FromConstructor] private IReadCharacter innerMapper;
+
+    public CMap CreateCMap() => new CMap(data);
 
     public void AddCodespaces(ReadOnlySpan<PostscriptValue> values) => 
         values.ForEachGroup(AddSingleCodespace);
@@ -52,31 +57,51 @@ internal readonly partial struct CMapFactory
             if (range.Contains(mapper))
             {
                 range.AddMapper(mapper);
+                return;
             }
         }
     }
-}
 
-public static class SpanChunker
-{
-    public static void ForEachGroup<T>(
-        this ReadOnlySpan<T> values, Action<T, T> body)
+    public void AddBaseFontRanges(ReadOnlySpan<PostscriptValue> values) =>
+        values.ForEachGroup(CreateSingleBaseFontRange);
+
+    private void CreateSingleBaseFontRange(PostscriptValue min, PostscriptValue max, PostscriptValue value)
     {
-        Debug.Assert(values.Length % 2 == 0);
-        for (int i = 0; i < values.Length; i+=2)
-        {
-            body(values[i],values[i + 1]);
-        }
-        
+        var minCharacter = ToVbc(min);
+        var maxCharacter = ToVbc(max);
+        if (value.IsString)
+            AddRange(new BaseFontLinearMapper(minCharacter, maxCharacter, innerMapper, value));
+        else
+            ProcessBaseFontArray(minCharacter, maxCharacter, value.Get<IPostscriptArray>());
     }
-    public static void ForEachGroup<T>(
-        this ReadOnlySpan<T> values, Action<T, T, T> body)
+
+    private void ProcessBaseFontArray(
+        VariableBitChar minCharacter, VariableBitChar maxCharacter, IPostscriptArray value)
     {
-        Debug.Assert(values.Length % 3 == 0);
-        for (int i = 0; i < values.Length; i+=3)
+        var length = Math.Min(value.Length, SizeOfRange(minCharacter, maxCharacter));
+        for (int i = 0; i < length; i++)
         {
-            body(values[i],values[i + 1],values[i + 2]);
+            CreateSingleBaseFontCharacter(minCharacter + i, value.Get(i));
         }
-        
     }
+
+    private static int SizeOfRange(VariableBitChar minCharacter, VariableBitChar maxCharacter) => 
+        1+ (int)(maxCharacter - minCharacter);
+
+    public void AddBaseFontChars(ReadOnlySpan<PostscriptValue> values) =>
+        values.ForEachGroup(CreateSingleBaseFontChar);
+
+    private void CreateSingleBaseFontChar(PostscriptValue input, PostscriptValue value) => 
+        CreateSingleBaseFontCharacter(ToVbc(input), value);
+
+    private void CreateSingleBaseFontCharacter(VariableBitChar character, PostscriptValue value)
+    {
+        AddRange(
+            value.IsLiteralName ?
+                new ConstantCMapper(character, character, ValueForName(value)):
+            new BaseFontConstantMapper(character, character, innerMapper, value));
+    }
+
+    private uint ValueForName(PostscriptValue value) => 
+        namer.TryMap(value.AsPdfName(), out var ret) ? (uint)ret : 0;
 }

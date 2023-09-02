@@ -58,10 +58,10 @@ internal readonly partial struct CharacterToGlyphMapFactory
     {
         var array = new uint[256];
         var nameToGlyphMapper = new NameToGlyphMappingFactory(face).Create();
-        await new FontRenderings.GlyphMappings.SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappingsAsync().CA())
+        await new SingleByteEncodingParser(nameToGlyphMapper, array, await BuiltInFontCharMappingsAsync().CA())
             .WriteEncodingToArrayAsync(encoding.LowLevel).CA();
         WriteBackupMappings(array);
-        return new FontRenderings.GlyphMappings.CharacterToGlyphArray(array);
+        return new CharacterToGlyphArray(array);
     }
 
     private void WriteBackupMappings(uint[] array)

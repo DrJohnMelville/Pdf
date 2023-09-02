@@ -19,7 +19,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps
 
         public void AddMapper(CMapMapperBase mapper) => mappers.Add(mapper);
 
-        public override int WriteMapping(in VariableBitChar character, Span<uint> target)
+        public override int WriteMapping(in VariableBitChar character, Memory<uint> target)
         {
             AssertValidRange();
 
@@ -29,7 +29,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps
                 if (candidate.AppliesTo(character)) 
                     return candidate.WriteMapping(character, target);
             }
-            return WriteNotDefinedMapping(target);
+            return WriteNotDefinedMapping(target.Span);
         }
 
         private void AssertValidRange()

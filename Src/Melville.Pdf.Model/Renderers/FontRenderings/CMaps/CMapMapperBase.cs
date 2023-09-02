@@ -25,7 +25,7 @@ internal abstract partial class CMapMapperBase
     protected uint OffsetFor(in VariableBitChar character) => (uint)(character - minValue);
     public int ByteLength() => minValue.Length();
     
-    public abstract int WriteMapping(in VariableBitChar character, Span<uint> target);
+    public abstract int WriteMapping(in VariableBitChar character, Memory<uint> target);
 
     public override string ToString() => $"{minValue} .. {maxValue}";
 

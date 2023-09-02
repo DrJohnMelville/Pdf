@@ -14,7 +14,7 @@ internal sealed partial class TwoByteCharacters : IReadCharacter
     {
         bytesConsumed = 2;
         var inputSpan = input.Span;
-        scratchBuffer.Span[0]  = (uint)(inputSpan[0] >> 8) | inputSpan[1];
+        scratchBuffer.Span[0]  = (uint)(inputSpan[0] << 8) | inputSpan[1];
         return scratchBuffer[..1];
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.ReferenceDocuments.Utility;
-using Melville.SharpFont;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.CmapParsers;
@@ -23,6 +21,14 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
     [InlineData(0, "7F", "000F" , 1)]
     [InlineData(0, "8147", "0000" , 2)]
     [InlineData(0, "8148", "8149" , 2)]
+    [InlineData(1, "3A51", "D840DC3E" , 2)]
+    [InlineData(1, "0000", "12340020" , 2)]
+    [InlineData(1, "0001", "12340021" , 2)]
+    [InlineData(1, "0010", "12340030" , 2)]
+    [InlineData(1, "005F", "00660066" , 2)]
+    [InlineData(1, "0060", "00660069" , 2)]
+    [InlineData(1, "0061", "00660066006C" , 2)]
+    [InlineData(1, "3A52", "0397" , 2)]
     public void CMapTest(int map, string hexSource, string hexDest, int expecteDConsumed)
     {
         var soura = hexSource.BitsFromHex();

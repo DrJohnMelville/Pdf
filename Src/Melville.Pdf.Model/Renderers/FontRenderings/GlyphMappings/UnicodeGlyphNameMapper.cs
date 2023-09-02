@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-internal class UnicodeGlyphNameMapper : FontRenderings.GlyphMappings.DictionaryGlyphNameMapper
+internal class UnicodeGlyphNameMapper : DictionaryGlyphNameMapper
 {
     public UnicodeGlyphNameMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
     {

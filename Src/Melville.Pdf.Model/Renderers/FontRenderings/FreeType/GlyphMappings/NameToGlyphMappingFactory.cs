@@ -44,7 +44,7 @@ internal readonly partial struct NameToGlyphMappingFactory
     {
         var mapping = face.CharMapByInts(1, 0);
         if (mapping is null) return null;
-        return new UnicodeGlyphNameMapper(MappingToDictionary(mapping));
+        return new UnicodeViaMacMapper(MappingToDictionary(mapping));
     }
 
 }

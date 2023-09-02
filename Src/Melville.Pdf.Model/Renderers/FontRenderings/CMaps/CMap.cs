@@ -35,8 +35,8 @@ public partial class CMap: IReadCharacter
             {
                 if (byteRange.AppliesTo(character))
                 {
-                    int outputlen = byteRange.WriteMapping(character, scratchBuffer.Span);
-                    #warning handle scratch buffer overflow
+                    int outputlen = byteRange.WriteMapping(character, scratchBuffer);
+                    #warning need to handle scratch buffer overflow
                     return scratchBuffer[..outputlen];
                 }
             }

@@ -41,5 +41,8 @@ internal readonly partial struct VariableBitChar: IComparable<VariableBitChar>
     public static ulong operator -(in VariableBitChar lhs, in VariableBitChar rhs) =>
         lhs.bits - rhs.bits;
 
+    public static VariableBitChar operator +(VariableBitChar item, int delta) =>
+        new VariableBitChar(item.bits + (ulong)delta);
+
     public override string ToString() => bits.ToString("X")[1..];
 }

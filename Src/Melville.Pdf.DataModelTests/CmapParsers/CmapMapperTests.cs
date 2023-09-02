@@ -14,7 +14,7 @@ public class CmapMapperTests
     {
         var sut = new ConstantCMapper(new VariableBitChar(0x100), new VariableBitChar(0x1FF), 
             character);
-        Span<uint> output = stackalloc uint[2];
+        uint[] output = new uint[2];
         Assert.Equal(1, sut.WriteMapping(new VariableBitChar(input), output));
         Assert.Equal(character, output[0]);
     }
@@ -23,7 +23,7 @@ public class CmapMapperTests
     public void ConstantMappingFail()
     {
         var sut = new ConstantCMapper(new VariableBitChar(0x100), new VariableBitChar(0x1FF),1);
-        Assert.Equal(-1, sut.WriteMapping(SingleByteChar(12), Array.Empty<uint>().AsSpan()));
+        Assert.Equal(-1, sut.WriteMapping(SingleByteChar(12), Array.Empty<uint>()));
     }
 
     [Theory]
@@ -34,7 +34,7 @@ public class CmapMapperTests
     {
         var sut = new LinearCMapper(new VariableBitChar(0x100), new VariableBitChar(0x1FF),
             character);
-        Span<uint> output = stackalloc uint[2];
+        uint[] output = new uint[2];
         Assert.Equal(1, sut.WriteMapping(SingleByteChar(input), output));
         Assert.Equal(character+input, output[0]);
     }

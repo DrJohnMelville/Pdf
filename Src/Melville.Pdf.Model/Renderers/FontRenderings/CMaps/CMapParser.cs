@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
@@ -16,20 +18,21 @@ internal static class CMapParser
     private static readonly IPostscriptDictionary dict =
         PostscriptOperatorCollections.BaseLanguage().With(CmapParserOperations.AddOperations);
     
-    public static async ValueTask<CMap> ParseCMapAsync(Stream source)
+    public static async ValueTask<CMap> ParseCMapAsync(
+        Stream source, IGlyphNameMap names, IReadCharacter innerFontReader)
     {
-       var ranges = new List<ByteRange>();
+       var ranges = new CMapFactory(names, innerFontReader);
        var parser = new PostscriptEngine(dict){Tag = ranges};
        parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
        parser.ErrorDict.Put("undefined"u8, PostscriptValueFactory.CreateNull());
        await parser.ExecuteAsync(source).CA();
-       return new CMap(ranges);
+       return ranges.CreateCMap();
     }
 
 }
 
 [TypeShortcut("Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory",
-    "new Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory((System.Collections.Generic.IList<ByteRange>)engine.Tag)")]
+    "(Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory)engine.Tag")]
 [TypeShortcut("Melville.Postscript.Interpreter.InterpreterState.PostscriptStack<Melville.Postscript.Interpreter.Values.PostscriptValue>.DelimitedStackSegment",
             "engine.OperandStack.SpanAboveMark()")]
 internal static partial class CmapParserOperations
@@ -42,6 +45,8 @@ internal static partial class CmapParserOperations
     [PostscriptMethod("beginnotdefrange")]
     [PostscriptMethod("begincidrange")]
     [PostscriptMethod("begincidchar")]
+    [PostscriptMethod("beginbfrange")]
+    [PostscriptMethod("beginbfchar")]
     private static PostscriptValue BeginRange(int rangeLength) =>
         PostscriptValueFactory.CreateMark();
 
@@ -74,6 +79,22 @@ internal static partial class CmapParserOperations
         CMapFactory factory, PostscriptStack<PostscriptValue>.DelimitedStackSegment segment)
     {
         factory.AddCidChars(segment.Span());
+        segment.PopDataAndMark();
+    }
+
+    [PostscriptMethod("endbfrange")]
+    private static void EndBaseFontRanges(
+        CMapFactory factory, PostscriptStack<PostscriptValue>.DelimitedStackSegment segment)
+    {
+        factory.AddBaseFontRanges(segment.Span());
+        segment.PopDataAndMark();
+    }
+
+    [PostscriptMethod("endbfchar")]
+    private static void EndBaseFontChars(
+        CMapFactory factory, PostscriptStack<PostscriptValue>.DelimitedStackSegment segment)
+    {
+        factory.AddBaseFontChars(segment.Span());
         segment.PopDataAndMark();
     }
 

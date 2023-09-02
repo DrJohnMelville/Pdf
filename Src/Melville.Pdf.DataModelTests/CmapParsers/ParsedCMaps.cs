@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.SharpFont;
@@ -16,7 +17,7 @@ namespace Melville.Pdf.DataModelTests.CmapParsers
         public async Task InitializeAsync()
         {
             Maps[0] = await ParseMapAsync(CMapFromCmapSpec);
-            //Maps[1] = await ParseMapAsync(UnicodeCMapFromSpec);
+            Maps[1] = await ParseMapAsync(UnicodeCMapFromSpec);
         }
 
         public Task DisposeAsync() => Task.CompletedTask;
@@ -24,18 +25,8 @@ namespace Melville.Pdf.DataModelTests.CmapParsers
         private async ValueTask<IReadCharacter> ParseMapAsync(string text)
         {
             return await CMapParser.ParseCMapAsync(
-                new MemoryStream(Encoding.UTF8.GetBytes(text)));
-            // return new CMap(new List<ByteRange>()
-            // {
-            //     new ByteRange(new VariableBitChar(0x100), new VariableBitChar(0x180),
-            //         new ConstantCMapper(new VariableBitChar(0x100), new VariableBitChar(0x11f), 0),
-            //         new LinearCMapper(new VariableBitChar(0x120), new VariableBitChar(0x17E), 1),
-            //     new ConstantCMapper(new VariableBitChar(0x17F), new VariableBitChar(0x17F), 15)
-            //         ),
-            //     new ByteRange(new VariableBitChar(0x18148), new VariableBitChar(0x19FFC),
-            //         new LinearCMapper(new VariableBitChar(0x18148), new VariableBitChar(0x19FFC),
-            //             0x8149))
-            // });
+                new MemoryStream(Encoding.UTF8.GetBytes(text)),
+                GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance);
         }
 
         private const string CMapFromCmapSpec =
@@ -115,11 +106,13 @@ namespace Melville.Pdf.DataModelTests.CmapParsers
            <0000> <FFFF>
            endcodespacerange
            2 beginbfrange
-           <0000> <005E> <0020>
+           <0000> <005E> <12340020>
            <005F> <0061> [<00660066> <00660069> <00660066006C>]
            endbfrange
            1 beginbfchar
            <3A51> <D840DC3E>
+           %0397;Eta;GREEK CAPITAL LETTER ETA
+           <3A52> /Eta
            endbfchar
            endcmap
            CMapName currentdict /CMap defineresource pop
