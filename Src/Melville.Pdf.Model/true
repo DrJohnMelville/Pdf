@@ -1444,6 +1444,11 @@
             Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.IdentityCharacterToGlyph
             </summary>
         </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.HasNoBaseFont.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.HasNoBaseFont
+            </summary>
+        </member>
         <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.IFontWriteOperation">
             <summary>
             This interface manages a single font writing operation.

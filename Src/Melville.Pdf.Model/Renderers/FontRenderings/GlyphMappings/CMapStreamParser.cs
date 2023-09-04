@@ -15,7 +15,7 @@ internal readonly partial struct CMapStreamParser
     
     public async ValueTask<IMapCharacterToGlyph> ParseAsync()
     {
-        return new FontRenderings.GlyphMappings.CharacterToGlyphArray(await ReadListAsync().CA());
+        return new CharacterToGlyphArray(await ReadListAsync().CA());
     }
 
     private async ValueTask<IReadOnlyList<uint>> ReadListAsync()

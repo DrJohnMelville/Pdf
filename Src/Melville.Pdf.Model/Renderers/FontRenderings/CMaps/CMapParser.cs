@@ -18,7 +18,7 @@ internal static class CMapParser
     private static readonly IPostscriptDictionary dict =
         PostscriptOperatorCollections.BaseLanguage().With(CmapParserOperations.AddOperations);
     
-    public static async ValueTask<CMap> ParseCMapAsync(
+    public static async ValueTask<IReadCharacter> ParseCMapAsync(
         Stream source, IGlyphNameMap names, IReadCharacter innerFontReader)
     {
        var ranges = new CMapFactory(names, innerFontReader);

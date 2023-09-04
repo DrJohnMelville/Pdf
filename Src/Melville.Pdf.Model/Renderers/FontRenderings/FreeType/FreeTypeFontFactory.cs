@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Melville.Hacks;
+using Melville.Hacks.Reflection;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.Streams;
@@ -51,7 +52,8 @@ internal readonly partial struct FreeTypeFontFactory
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return
             new FreeTypeFont(face,
-                new FontRenderings.GlyphMappings.ReadCharacterFactory(fontDefinitionDictionary, encoding).Create(), 
+                await new FontRenderings.GlyphMappings.ReadCharacterFactory(fontDefinitionDictionary, encoding)
+                    .CreateAsync().CA(), 
                 await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary, encoding).ParseAsync().CA(), 
                 await new FontWidthParser(fontDefinitionDictionary).ParseAsync().CA());
     }
