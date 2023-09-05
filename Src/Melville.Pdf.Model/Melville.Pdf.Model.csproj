@@ -39,8 +39,10 @@
     <ItemGroup>
       <None Remove="Renderers\Colors\Profiles\Cmyk.icc" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\UniGB-UTF16-H.txt" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\unigb-utf16-v.txt" />
       <EmbeddedResource Include="Renderers\Colors\Profiles\Cmyk.icc" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\unigb-utf16-h.txt" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\unigb-utf16-v.txt" />
       <None Remove="Renderers\Colors\Profiles\AdobeSrgb.icc" />
       <None Remove="Renderers\Colors\Profiles\D65_XYZ.icc" />
     </ItemGroup>

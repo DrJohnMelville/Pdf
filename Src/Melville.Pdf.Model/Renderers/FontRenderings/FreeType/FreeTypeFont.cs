@@ -22,23 +22,25 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
     public string FamilyName => Face.FamilyName;
 
     public string Description => $"""
-        Style: {Face.StyleName}
-        StyleFlags: {Face.StyleFlags}
-        FontFlags: {Face.FaceFlags}
-        """;
+                                  Style: {Face.StyleName}
+                                  StyleFlags: {Face.StyleFlags}
+                                  FontFlags: {Face.FaceFlags}
+                                  """;
 
-    public IFontWriteOperation BeginFontWrite(IFontTarget target) => 
+    public IFontWriteOperation BeginFontWrite(IFontTarget target) =>
         new MutexHoldingWriteOperation(this, target.CreateDrawTarget());
 
 
     private double RenderGlyph(FreeTypeOutlineWriter nativeTarget, uint glyph)
     {
-        Face.LoadGlyph(glyph, LoadFlags.NoBitmap | LoadFlags.NoHinting, LoadTarget.Normal);
+        Face.LoadGlyph(glyph < Face.GlyphCount ? glyph : 0, LoadFlags.NoBitmap | LoadFlags.NoHinting,
+            LoadTarget.Normal);
+
         nativeTarget.Decompose(Face.Glyph.Outline);
-        return Face.Glyph.Advance.X/64.0;
+        return Face.Glyph.Advance.X / 64.0;
     }
 
-    public double CharacterWidth(uint character, double defaultWidth) => 
+    public double CharacterWidth(uint character, double defaultWidth) =>
         fontWidthComputer.GetWidth(character, defaultWidth);
 
     [FromConstructor]
@@ -48,13 +50,13 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
         {
             GlobalFreeTypeMutex.WaitFor();
         }
-        
-        public override void Dispose()  => GlobalFreeTypeMutex.Release();
+
+        public override void Dispose() => GlobalFreeTypeMutex.Release();
     }
 
     public bool IsCachableFont => true;
 
-    private class FreeTypeWriteOperation: IFontWriteOperation
+    private class FreeTypeWriteOperation : IFontWriteOperation
     {
         private readonly FreeTypeFont parent;
         private readonly IDrawTarget target;
@@ -75,9 +77,9 @@ internal partial class FreeTypeFont : IRealizedFont, IDisposable
             uint character, uint glyph, Matrix3x2 textMatrix)
         {
             target.SetDrawingTransform(textMatrix);
-            return new (parent.RenderGlyph(nativeTarget, glyph));
+            return new(parent.RenderGlyph(nativeTarget, glyph));
         }
-        
+
         public void RenderCurrentString(bool stroke, bool fill, bool clip, in Matrix3x2 textMatrix)
         {
             if (stroke || fill)

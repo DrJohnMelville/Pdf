@@ -1,5 +1,7 @@
-﻿using Melville.Pdf.LowLevel.Writers.ContentStreams;
+﻿using Melville.INPC;
+using Melville.Pdf.LowLevel.Writers.ContentStreams;
 using Melville.Pdf.ReferenceDocuments.Graphics;
+using Melville.SharpFont.TrueType;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.CharSet;
 
