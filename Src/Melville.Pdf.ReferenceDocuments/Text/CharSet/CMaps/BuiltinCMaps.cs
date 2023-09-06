@@ -12,6 +12,8 @@ namespace Melville.Pdf.ReferenceDocuments.Text.CharSet.CMaps
         {
         }
 
+        public class _83pv_RKSJ_H : BuiltinCMaps { }
+
         //Generic
         [MacroItem("Identity_")]
         // simplified chineses
@@ -31,11 +33,10 @@ namespace Melville.Pdf.ReferenceDocuments.Text.CharSet.CMaps
         [MacroItem("UniCNS_UCS2_")]
         [MacroItem("UniCNS_UTF16_")]
         //japanese
-        [MacroItem("_83pv_RKJS_")]
-        [MacroItem("_90ms_RKJS_")]
-        [MacroItem("_90msp_RKJS_")]
-        [MacroItem("_90pv_RKJS_")]
-        [MacroItem("Add_RKJS_")]
+        [MacroItem("_90ms_RKSJ_")]
+        [MacroItem("_90msp_RKSJ_")]
+        [MacroItem("_90pv_RKSJ_")]
+        [MacroItem("Add_RKSJ_")]
         [MacroItem("EUC_")]
         [MacroItem("Ext_RKSJ_")]
         [MacroItem("")]
@@ -46,7 +47,7 @@ namespace Melville.Pdf.ReferenceDocuments.Text.CharSet.CMaps
         [MacroItem("KSC_EUC_")]
         [MacroItem("KSCms_UHC_")]
         [MacroItem("KSCms_UHC_HW_")]
-        [MacroItem("KSCpc_EUC_HW_")] // vertical version not mentioned in spec
+        [MacroItem("KSCpc_EUC_")] // vertical version not mentioned in spec
         [MacroItem("UniKS_UCS2_")]
         [MacroItem("UniKS_UTF16_")]
         //every encoding comes in horizontal and vertical versions.

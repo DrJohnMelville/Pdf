@@ -5,6 +5,7 @@ using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.SharpFont;
+using Moq;
 using Xunit;
 using Encoding = System.Text.Encoding;
 
@@ -26,7 +27,8 @@ namespace Melville.Pdf.DataModelTests.CmapParsers
         {
             return await CMapParser.ParseCMapAsync(
                 new MemoryStream(Encoding.UTF8.GetBytes(text)),
-                GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance);
+                GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance,
+                Mock.Of<IRetrieveCmapStream>());
         }
 
         private const string CMapFromCmapSpec =

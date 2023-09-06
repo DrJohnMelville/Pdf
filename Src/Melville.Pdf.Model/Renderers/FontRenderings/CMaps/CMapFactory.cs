@@ -1,19 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
+public interface IRetrieveCmapStream
+{
+    public Stream CMapStreamFor(PdfDirectObject name);
+}
 
 internal partial class CMapFactory
 {
     private readonly List<ByteRange> data = new();
     [FromConstructor] private IGlyphNameMap namer;
     [FromConstructor] private IReadCharacter innerMapper;
+    [FromConstructor] private IRetrieveCmapStream cMapLibrary;
 
     public CMap CreateCMap() => new CMap(data);
 
@@ -104,4 +112,10 @@ internal partial class CMapFactory
 
     private uint ValueForName(PostscriptValue value) => 
         namer.TryMap(value.AsPdfName(), out var ret) ? (uint)ret : 0;
+
+    public ValueTask UseOtherCMap(PdfDirectObject name)
+    {
+        return CMapParser.ExecuteCmapDefinitionAsync(this,
+        cMapLibrary.CMapStreamFor(name));
+    }
 }

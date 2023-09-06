@@ -1,15 +1,20 @@
 ﻿using System.IO;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
+using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
+using Microsoft.VisualBasic;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps;
 
-internal static class BuiltinCmapLibrary
+[StaticSingleton]
+internal partial class BuiltinCmapLibrary: IRetrieveCmapStream
 {
-    public static Stream BuiltinCmap(PdfDirectObject name)
+    public Stream CMapStreamFor(PdfDirectObject name)
     {
         var type = typeof(BuiltinCmapLibrary);
-        return type.Assembly.GetManifestResourceStream(type, $"{name.ToString().ToLower()}.txt") ??
+        var allStreams = type.Assembly.GetManifestResourceNames();
+        return type.Assembly.GetManifestResourceStream(type, name.ToString()) ??
                throw new PdfParseException("Unknown built in CMAP name.");
     }
 }

@@ -31,8 +31,9 @@ internal readonly partial struct ReadCharacterFactory
         //{UniGB-UTF16-H}
         if (encoding.IsIdentityCdiEncoding()) return new(TwoByteCharacters.Instance);
         return CMapParser.ParseCMapAsync(
-            BuiltinCmapLibrary.BuiltinCmap(encoding.LowLevel),
-            GlyphNameToUnicodeMap.AdobeGlyphList, HasNoBaseFont.Instance);
+            BuiltinCmapLibrary.Instance.CMapStreamFor(encoding.LowLevel),
+            GlyphNameToUnicodeMap.AdobeGlyphList, HasNoBaseFont.Instance,
+            BuiltinCmapLibrary.Instance);
     }
 }
 

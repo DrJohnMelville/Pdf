@@ -1427,6 +1427,11 @@
             Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.FontWidths.NullFontWidthComputer
             </summary>
         </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps.BuiltinCmapLibrary.Instance">
+            <summary>
+            Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps.BuiltinCmapLibrary
+            </summary>
+        </member>
         <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.IMapCharacterToGlyph">
             <summary>
             Map from characters to glyphs for a given font.
