@@ -2,6 +2,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 using Melville.SharpFont;
@@ -25,10 +28,13 @@ namespace Melville.Pdf.DataModelTests.CmapParsers
 
         private async ValueTask<IReadCharacter> ParseMapAsync(string text)
         {
-            return await CMapParser.ParseCMapAsync(
-                new MemoryStream(Encoding.UTF8.GetBytes(text)),
-                GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance,
-                Mock.Of<IRetrieveCmapStream>());
+            PdfEncoding encoding = new PdfEncoding(new DictionaryBuilder()
+                .WithItem(KnownNames.Type, KnownNames.CMap)
+                .AsStream(text));
+            IRetrieveCmapStream library = Mock.Of<IRetrieveCmapStream>();
+            return await new CMapFactory(
+                GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance, library)
+                .ParseCMapAsync(encoding);
         }
 
         private const string CMapFromCmapSpec =

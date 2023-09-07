@@ -150,6 +150,8 @@ Pdf:CharProcs
 Pdf:CharSet
 Pdf:CIDSystemInfo
 Pdf:CIDToGIDMap
+Pdf:CMap
+Pdf:CMapName
 Pdf:Colors
 Pdf:ColorTransform
 Pdf:Columns

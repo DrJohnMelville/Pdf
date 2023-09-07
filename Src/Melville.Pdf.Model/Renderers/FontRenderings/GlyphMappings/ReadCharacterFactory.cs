@@ -28,12 +28,10 @@ internal readonly partial struct ReadCharacterFactory
 
     private ValueTask<IReadCharacter> ParseType0FontEncoding()
     {
-        //{UniGB-UTF16-H}
         if (encoding.IsIdentityCdiEncoding()) return new(TwoByteCharacters.Instance);
-        return CMapParser.ParseCMapAsync(
-            BuiltinCmapLibrary.Instance.CMapStreamFor(encoding.LowLevel),
-            GlyphNameToUnicodeMap.AdobeGlyphList, HasNoBaseFont.Instance,
-            BuiltinCmapLibrary.Instance);
+        return new CMapFactory(
+            GlyphNameToUnicodeMap.AdobeGlyphList, 
+            HasNoBaseFont.Instance, BuiltinCmapLibrary.Instance).ParseCMapAsync(encoding);
     }
 }
 

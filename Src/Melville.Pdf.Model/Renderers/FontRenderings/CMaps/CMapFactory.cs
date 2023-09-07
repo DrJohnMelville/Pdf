@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
+using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
+using Melville.Postscript.Interpreter.FunctionLibrary;
+using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
+using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
@@ -22,6 +27,40 @@ internal partial class CMapFactory
     [FromConstructor] private IGlyphNameMap namer;
     [FromConstructor] private IReadCharacter innerMapper;
     [FromConstructor] private IRetrieveCmapStream cMapLibrary;
+
+    public async ValueTask<IReadCharacter> ParseCMapAsync(PdfEncoding encoding)
+    {
+        await ReadFromPdfValue(encoding.LowLevel).CA();
+        return CreateCMap();
+    }
+
+    #region Cmap Sources
+    private static readonly IPostscriptDictionary dict =
+        PostscriptOperatorCollections.BaseLanguage().With(CmapParserOperations.AddOperations);
+
+    public async ValueTask ReadFromPdfValue(PdfDirectObject encoding)
+    {
+        await ReadFromCSharpStreamAsync(
+            encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
+                await PdfToCSharpStreamAsync(encoding.Get<PdfStream>()).CA()).CA();
+    }
+
+    private ValueTask<Stream> PdfToCSharpStreamAsync(PdfStream stream)
+    {
+        return stream.StreamContentAsync();
+    }
+
+    public  async ValueTask ReadFromCSharpStreamAsync(Stream source)
+    {
+        var parser = new PostscriptEngine(dict) { Tag = this };
+        parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
+        parser.ErrorDict.Put("undefined"u8, PostscriptValueFactory.CreateNull());
+        await parser.ExecuteAsync(source).CA();
+
+    }
+    #endregion
+
+    #region CMap Operators
 
     public CMap CreateCMap() => new CMap(data);
 
@@ -107,15 +146,11 @@ internal partial class CMapFactory
         AddRange(
             value.IsLiteralName ?
                 new ConstantCMapper(character, character, ValueForName(value)):
-            new BaseFontConstantMapper(character, character, innerMapper, value));
+                new BaseFontConstantMapper(character, character, innerMapper, value));
     }
 
     private uint ValueForName(PostscriptValue value) => 
         namer.TryMap(value.AsPdfName(), out var ret) ? (uint)ret : 0;
 
-    public ValueTask UseOtherCMap(PdfDirectObject name)
-    {
-        return CMapParser.ExecuteCmapDefinitionAsync(this,
-        cMapLibrary.CMapStreamFor(name));
-    }
+    #endregion
 }
