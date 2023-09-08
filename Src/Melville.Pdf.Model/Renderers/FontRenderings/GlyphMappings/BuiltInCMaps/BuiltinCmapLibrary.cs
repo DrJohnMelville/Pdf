@@ -13,7 +13,6 @@ internal partial class BuiltinCmapLibrary: IRetrieveCmapStream
     public Stream CMapStreamFor(PdfDirectObject name)
     {
         var type = typeof(BuiltinCmapLibrary);
-        var allStreams = type.Assembly.GetManifestResourceNames();
         return type.Assembly.GetManifestResourceStream(type, name.ToString()) ??
                throw new PdfParseException("Unknown built in CMAP name.");
     }

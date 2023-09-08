@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
@@ -16,11 +17,6 @@ using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
-public interface IRetrieveCmapStream
-{
-    public Stream CMapStreamFor(PdfDirectObject name);
-}
-
 internal partial class CMapFactory
 {
     private readonly List<ByteRange> data = new();
@@ -30,24 +26,27 @@ internal partial class CMapFactory
 
     public async ValueTask<IReadCharacter> ParseCMapAsync(PdfEncoding encoding)
     {
-        await ReadFromPdfValue(encoding.LowLevel).CA();
-        return CreateCMap();
+        await ReadFromPdfValueAsync(encoding.LowLevel).CA();
+        return new CMap(data);
     }
 
     #region Cmap Sources
     private static readonly IPostscriptDictionary dict =
         PostscriptOperatorCollections.BaseLanguage().With(CmapParserOperations.AddOperations);
 
-    public async ValueTask ReadFromPdfValue(PdfDirectObject encoding)
+    public async ValueTask ReadFromPdfValueAsync(PdfDirectObject encoding)
     {
         await ReadFromCSharpStreamAsync(
             encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
                 await PdfToCSharpStreamAsync(encoding.Get<PdfStream>()).CA()).CA();
     }
 
-    private ValueTask<Stream> PdfToCSharpStreamAsync(PdfStream stream)
+    private async ValueTask<Stream> PdfToCSharpStreamAsync(PdfStream stream)
     {
-        return stream.StreamContentAsync();
+        if (await stream.GetOrNullAsync(KnownNames.UseCMap).CA() is { IsNull: false } ancestor)
+            await ReadFromPdfValueAsync(ancestor).CA();
+
+        return await stream.StreamContentAsync().CA();
     }
 
     public  async ValueTask ReadFromCSharpStreamAsync(Stream source)
@@ -62,15 +61,13 @@ internal partial class CMapFactory
 
     #region CMap Operators
 
-    public CMap CreateCMap() => new CMap(data);
-
     public void AddCodespaces(ReadOnlySpan<PostscriptValue> values) => 
         values.ForEachGroup(AddSingleCodespace);
 
     private void AddSingleCodespace(PostscriptValue minValue, PostscriptValue maxValue) => 
-        data.Add(new ByteRange(ToVbc(minValue), ToVbc(maxValue)));
+        data.Add(new ByteRange(ToVariableBitCharacter(minValue), ToVariableBitCharacter(maxValue)));
 
-    private VariableBitChar ToVbc(in PostscriptValue value) => 
+    private VariableBitChar ToVariableBitCharacter(in PostscriptValue value) => 
         new(value.Get<StringSpanSource>().GetSpan());
 
     public void AddNotDefRanges(ReadOnlySpan<PostscriptValue> values) =>
@@ -78,21 +75,23 @@ internal partial class CMapFactory
 
     private void AddSingleNotDefRange(
         PostscriptValue min, PostscriptValue max, PostscriptValue value) => 
-        AddRange(new ConstantCMapper(ToVbc(min), ToVbc(max), (uint)value.Get<long>()));
+        AddRange(new ConstantCMapper(
+            ToVariableBitCharacter(min), ToVariableBitCharacter(max), (uint)value.Get<long>()));
 
     public void AddCidRanges(ReadOnlySpan<PostscriptValue> values) =>
         values.ForEachGroup(AddSingleCidRange);
 
     private void AddSingleCidRange(
         PostscriptValue min, PostscriptValue max, PostscriptValue value) => 
-        AddRange(new LinearCMapper(ToVbc(min), ToVbc(max), (uint)value.Get<long>()));
+        AddRange(new LinearCMapper(
+            ToVariableBitCharacter(min), ToVariableBitCharacter(max), (uint)value.Get<long>()));
 
     public void AddCidChars(ReadOnlySpan<PostscriptValue> values) =>
         values.ForEachGroup(AddSingleCidChar);
 
     private void AddSingleCidChar(PostscriptValue source, PostscriptValue dest)
     {
-        var sourceVbc = ToVbc(source);
+        var sourceVbc = ToVariableBitCharacter(source);
         AddRange(new ConstantCMapper(sourceVbc, sourceVbc, (uint)dest.Get<long>()));
     }
 
@@ -114,8 +113,8 @@ internal partial class CMapFactory
 
     private void CreateSingleBaseFontRange(PostscriptValue min, PostscriptValue max, PostscriptValue value)
     {
-        var minCharacter = ToVbc(min);
-        var maxCharacter = ToVbc(max);
+        var minCharacter = ToVariableBitCharacter(min);
+        var maxCharacter = ToVariableBitCharacter(max);
         if (value.IsString)
             AddRange(new BaseFontLinearMapper(minCharacter, maxCharacter, innerMapper, value));
         else
@@ -139,7 +138,7 @@ internal partial class CMapFactory
         values.ForEachGroup(CreateSingleBaseFontChar);
 
     private void CreateSingleBaseFontChar(PostscriptValue input, PostscriptValue value) => 
-        CreateSingleBaseFontCharacter(ToVbc(input), value);
+        CreateSingleBaseFontCharacter(ToVariableBitCharacter(input), value);
 
     private void CreateSingleBaseFontCharacter(VariableBitChar character, PostscriptValue value)
     {

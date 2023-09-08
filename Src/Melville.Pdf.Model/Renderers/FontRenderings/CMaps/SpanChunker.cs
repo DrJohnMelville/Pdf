@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
-public static class SpanChunker
+internal static class SpanChunker
 {
     public static void ForEachGroup<T>(
         this ReadOnlySpan<T> values, Action<T, T> body)

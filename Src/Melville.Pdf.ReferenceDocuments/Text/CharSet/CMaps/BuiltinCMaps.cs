@@ -6,63 +6,6 @@ using Melville.Pdf.ReferenceDocuments.Graphics;
 
 namespace Melville.Pdf.ReferenceDocuments.Text.CharSet.CMaps;
 
-public class ExplicitCmap : BuiltinCMaps
-{
-    protected override PdfIndirectObject CreateEncodingFromClass(IPdfObjectCreatorRegistry registry)
-    {
-        return registry.Add(new DictionaryBuilder()
-            .WithItem(KnownNames.Type, KnownNames.CMap)
-            .WithItem(KnownNames.CMapName, "JDM-H")
-            .WithItem(KnownNames.CIDSystemInfo, new DictionaryBuilder()
-                .WithItem(KnownNames.Registry, "Melville")
-                .WithItem(KnownNames.Ordering, "John")
-                .WithItem(KnownNames.Supplement, 1)
-                .AsDictionary())
-            .AsStream("""
-           %!PS-Adobe-3.0 Resource-CMap
-           %%DocumentNeededResources: ProcSet (CIDInit)
-           %%IncludeResource: ProcSet (CIDInit)
-           %%BeginResource: CMap (JDM-H)
-           %%Title: (JDM-H Invert upper and lower case)
-           
-           /CIDInit /ProcSet findresource begin
-           
-           12 dict begin
-           
-           begincmap
-           
-           /CIDSystemInfo 3 dict dup begin
-             /Registry (Melville) def
-             /Ordering (John) def
-             /Supplement 1 def
-           end def
-           
-           /CMapName /JDM-H def
-           /CMapVersion 10.006 def
-           /CMapType 1 def
-           
-           /XUID [07 28 1975] def
-           
-           /WMode 1 def
-           
-           1 begincodespacerange
-             <0000>       <80FF>
-           endcodespacerange
-           
-           1 beginnotdefrange
-           <0000> <001f> 0
-           endnotdefrange
-           
-           3 begincidrange
-           <0020> <00FF> 1
-           <0041> <005A> 66
-           <0061> <007A> 34
-           endcidrange
-           endcmap
-           """));
-    }
-}
-
 public abstract partial class BuiltinCMaps : Card3x5
 {
     protected BuiltinCMaps() : base("Show CMap")

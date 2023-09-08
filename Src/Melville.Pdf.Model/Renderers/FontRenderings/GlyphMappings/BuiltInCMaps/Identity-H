@@ -1,0 +1,45 @@
+%!PS-Adobe-3.0 Resource-CMap
+%%DocumentNeededResources: ProcSet (CIDInit)
+%%IncludeResource: ProcSet (CIDInit)
+%%BeginResource: CMap (Identity-H)
+%%Title: (Identity-H Adobe Identity 0)
+%%Version: 10.006
+%% This is not the official CMAP.  Melville.PDF implements an extension to CID Ranges in that it allows
+%% CidRangers to cross the last byte boundary.  Because of this, a much more compact representnation is 
+%% possible.
+%%EndComments
+
+/CIDInit /ProcSet findresource begin
+
+12 dict begin
+
+begincmap
+
+/CIDSystemInfo 3 dict dup begin
+  /Registry (Adobe) def
+  /Ordering (Identity) def
+  /Supplement 0 def
+end def
+
+/CMapName /Identity-H def
+/CMapVersion 10.006 def
+/CMapType 1 def
+
+/XUID [1 10 25404 9999] def
+
+/WMode 0 def
+
+1 begincodespacerange
+  <0000> <FFFF>
+endcodespacerange
+
+1 begincidrange
+<0000> <ffff> 0
+endcidrange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+
+%%EndResource
+%%EOF

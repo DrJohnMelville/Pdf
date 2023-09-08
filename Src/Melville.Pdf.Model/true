@@ -1336,6 +1336,18 @@
             Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.TwoByteCharacters
             </summary>
         </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.IRetrieveCmapStream">
+            <summary>
+            This interface is used by the CMAP parser to find the CMAP text referenced by a usecmap operator
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.IRetrieveCmapStream.CMapStreamFor(Melville.Pdf.LowLevel.Model.Objects.PdfDirectObject)">
+            <summary>
+            Loodup a CMap by name and return a stream with the source code for that CMap.
+            </summary>
+            <param name="name">The name of the desired CMap</param>
+            <returns>A stream containing the code for the CMao</returns>
+        </member>
         <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.DefaultFonts.DefaultFontReference">
             <summary>
             References a specific font, by index within a font file.

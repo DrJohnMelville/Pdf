@@ -23,10 +23,10 @@ internal readonly partial struct ReadCharacterFactory
 
     public  ValueTask<IReadCharacter> CreateAsync() =>
         KnownNames.Type0.Equals(font.SubType()) ?
-            ParseType0FontEncoding(): 
+            ParseType0FontEncodingAsync(): 
             new(SingleByteCharacters.Instance);
 
-    private ValueTask<IReadCharacter> ParseType0FontEncoding()
+    private ValueTask<IReadCharacter> ParseType0FontEncodingAsync()
     {
         if (encoding.IsIdentityCdiEncoding()) return new(TwoByteCharacters.Instance);
         return new CMapFactory(

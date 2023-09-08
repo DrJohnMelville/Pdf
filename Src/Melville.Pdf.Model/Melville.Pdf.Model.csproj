@@ -72,6 +72,8 @@
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\H" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-H" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-V" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-H" />
+      <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-V" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-H" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-V" />
       <None Remove="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-H" />
@@ -134,6 +136,8 @@
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\H" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-H" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\HKscs-B5-V" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-H" />
+      <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\Identity-V" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-H" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSC-EUC-V" />
       <EmbeddedResource Include="Renderers\FontRenderings\GlyphMappings\BuiltInCMaps\KSCms-UHC-H" />

@@ -8,7 +8,7 @@ using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
-public partial class CMap: IReadCharacter
+internal class CMap: IReadCharacter
 {
     private readonly IList<ByteRange> byteRanges;
     private readonly int minByteLen;

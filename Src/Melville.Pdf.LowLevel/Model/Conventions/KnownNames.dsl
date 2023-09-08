@@ -291,6 +291,7 @@ Pdf:Type1C
 Pdf:U
 Pdf:UE
 Pdf:Usage
+Pdf:UseCMap
 Pdf:V
 Pdf:VE
 Pdf:View
@@ -301,6 +302,7 @@ Pdf:W2
 Pdf:Width
 Pdf:Widths
 Pdf:WhitePoint
+Pdf:WMode
 Pdf:XRef
 Pdf:XStep
 Pdf:XRefStm

@@ -84,7 +84,7 @@ internal static partial class CmapParserOperations
     }
 
     [PostscriptMethod("usecmap")]
-    private static ValueTask UseExternalCMap(CMapFactory factory, PostscriptValue name) =>
-        factory.ReadFromPdfValue(name.AsPdfName());
+    private static ValueTask UseExternalCMapAsync(CMapFactory factory, PostscriptValue name) =>
+        factory.ReadFromPdfValueAsync(name.AsPdfName());
 
 }
