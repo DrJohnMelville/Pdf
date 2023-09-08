@@ -9,7 +9,7 @@ internal partial class BaseFontConstantMapper : CMapMapperBase
 {
     [FromConstructor] private readonly IReadCharacter baseFont;
     [FromConstructor] private readonly PostscriptValue mappedValue;
-    #warning mappedValue is inappropriately a postscriptLongString
+
     public override int WriteMapping(in VariableBitChar character, Memory<uint> target)
     {
         var currentPosition = 0;
