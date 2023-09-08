@@ -33,3 +33,42 @@
 %%Copyright: OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 %%Copyright: SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %%Copyright: -----------------------------------------------------------
+
+/*
+This is the code I used to encode the CMAP files
+
+void Main()
+{
+	foreach(var fullPath in Directory.GetFiles(@"C:\Users\jmelv\Documents\Scratch\CMapSource"))
+	{
+		if (Path.GetExtension(fullPath).Length > 0) continue;
+		var outputPath = Path.Combine(@"C:\Users\jmelv\Documents\Scratch\Dump", Path.GetFileName(fullPath));
+		ProcessCMapFile(fullPath, outputPath);
+	}
+}
+
+public void ProcessCMapFile(string fullPath, string outputPath)
+{
+	var rawText = File.ReadAllText(fullPath);
+	Console.WriteLine(Path.GetFileName(fullPath));
+	using var output = File.Create(outputPath);
+	using var target = new BrotliStream(output, CompressionLevel.SmallestSize);
+	WriteMinifiedCmap(rawText, target);
+}
+
+public void WriteMinifiedCmap(string rawText, Stream target)
+{
+	target.Write(Encoding.ASCII.GetBytes(MinifyCmap(rawText)));
+	target.Flush();
+}
+
+public string MinifyCmap(string rawText)
+{
+	rawText = Regex.Replace(rawText, @"\%[^\n]*\n", ""); // remove all comment lines
+	rawText = Regex.Replace(rawText, @" {2,}", " "); // collapse multiple spaces to one space
+	rawText = Regex.Replace(rawText, @"^.*(?:begin|end|def|pop|(?<!use)cmap)\s*$", "", RegexOptions.Multiline);
+	rawText = Regex.Replace(rawText, @"[\r\n]+\s*", "\n"); // eliminate indentation and use single byte end of line marks
+	rawText.Dump();
+	return rawText.Trim(); // no leading or trailing whitespace
+}
+*/

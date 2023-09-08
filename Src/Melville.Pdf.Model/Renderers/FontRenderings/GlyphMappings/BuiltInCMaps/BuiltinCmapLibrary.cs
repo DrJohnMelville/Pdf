@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.IO.Compression;
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Primitives;
@@ -13,7 +14,8 @@ internal partial class BuiltinCmapLibrary: IRetrieveCmapStream
     public Stream CMapStreamFor(PdfDirectObject name)
     {
         var type = typeof(BuiltinCmapLibrary);
-        return type.Assembly.GetManifestResourceStream(type, name.ToString()) ??
-               throw new PdfParseException("Unknown built in CMAP name.");
+        return new BrotliStream(type.Assembly.GetManifestResourceStream(type, name.ToString()) ??
+                                 throw new PdfParseException("Unknown built in CMAP name."),
+            CompressionMode.Decompress);
     }
 }
