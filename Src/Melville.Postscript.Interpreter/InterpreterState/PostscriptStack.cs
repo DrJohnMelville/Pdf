@@ -232,7 +232,13 @@ public partial class PostscriptStack<T>
     /// </summary>
     public readonly partial struct DelimitedStackSegment
     {
+        /// <summary>
+        /// The Postscript stack to get elements from.
+        /// </summary>
         [FromConstructor] private readonly PostscriptStack<T> stack;
+        /// <summary>
+        /// The position on the stack that will be the 0th element of the segment
+        /// </summary>
         [FromConstructor] private readonly int bottomPosition;
 
         /// <summary>

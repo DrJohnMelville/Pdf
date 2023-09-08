@@ -28,6 +28,9 @@ public class PostscriptEngine
     /// </summary>
     public ExecutionStack ExecutionStack { get; } = new();
 
+    /// <summary>
+    /// A collection of resources available to the interpreter.
+    /// </summary>
     public ResourceLibrary ResourceLibrary { get; } = new();
 
     /// <summary>
