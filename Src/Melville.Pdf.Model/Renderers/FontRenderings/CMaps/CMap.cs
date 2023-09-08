@@ -35,15 +35,22 @@ internal class CMap: IReadCharacter
             {
                 if (byteRange.AppliesTo(character))
                 {
-                    int outputlen = byteRange.WriteMapping(character, scratchBuffer);
-                    #warning need to handle scratch buffer overflow
-                    return scratchBuffer[..outputlen];
+                    return RenderToBuffer(scratchBuffer, byteRange, character);
                 }
             }
         }
 
         bytesConsumed = minByteLen;
+        if (scratchBuffer.Length == 0) return new uint[] { 0 };
         scratchBuffer.Span[0] = 0;
         return scratchBuffer[..1];
+    }
+
+    private static Memory<uint> RenderToBuffer(
+        Memory<uint> scratchBuffer, ByteRange byteRange, in VariableBitChar character)
+    {
+        return byteRange.WriteMapping(character, scratchBuffer) >= 0 ? 
+            scratchBuffer[..byteRange.WriteMapping(character, scratchBuffer)] : 
+            RenderToBuffer(new uint[Math.Max(128, 2 * scratchBuffer.Length)], byteRange, character);
     }
 }

@@ -38,4 +38,16 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
         Assert.Equal(hexDest, string.Join("",
             result.Span.ToArray().Select(i=> i.ToString("X4"))));
     }
+
+    [Fact]
+    public void CMapWithInsufficientBufferText()
+    {
+        var soura = "0061".BitsFromHex();
+        var target = new uint[2];
+        var result = maps.Maps[1].GetCharacters(soura.AsMemory(), target, out var consumed);
+        Assert.Equal(2, consumed);
+        Assert.Equal("00660066006C", string.Join("",
+            result.Span.ToArray().Select(i=> i.ToString("X4"))));
+
+    }
 }
