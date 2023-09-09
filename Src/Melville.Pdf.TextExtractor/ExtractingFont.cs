@@ -8,39 +8,38 @@ namespace Melville.Pdf.TextExtractor;
 internal partial class ExtractingFont : IRealizedFont
 {
     [FromConstructor] [DelegateTo] private readonly IRealizedFont innerFont;
-    #warning -- I think this is going to cause a problem when extractingfont gets cached. i can sneek a private interface ontoi the IFontWriteOperation returned from BeginFontWrite
-    [FromConstructor] private readonly IExtractedTextTarget output;
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target)
     {
-        output.BeginWrite(innerFont);
-        return new WriteOperation(this, innerFont.BeginFontWrite(target));
+        var extractedTextTarget = ((ExtractTextRender)target.RenderTarget).TextTarget;
+        extractedTextTarget.BeginWrite(this);
+        return new WriteOperation(extractedTextTarget);
     }
 
     private partial class WriteOperation : IFontWriteOperation
     {
-        [FromConstructor] private readonly ExtractingFont font;
-        [FromConstructor] [DelegateTo] private readonly IFontWriteOperation innerWriteOperation;
-    
+        [FromConstructor] private IExtractedTextTarget output;
+
         public ValueTask<double> AddGlyphToCurrentStringAsync(
             uint character, uint glyph, Matrix3x2 textMatrix)
         {
-            font.output.WriteCharacter(
+            output.WriteCharacter(
                 (char)character, textMatrix);
-            return innerWriteOperation.AddGlyphToCurrentStringAsync(
-                character, glyph, textMatrix);
+            return new(1000.0);
         }
 
         public void RenderCurrentString(
             bool stroke, bool fill, bool clip, in Matrix3x2 finalTextMatrix)
         {
-            font.output.EndWrite(finalTextMatrix);
-            innerWriteOperation.RenderCurrentString(stroke, fill, clip, finalTextMatrix);
+            output.EndWrite(finalTextMatrix);
         }
 
 
         public IFontWriteOperation CreatePeerWriteOperation(IFontTarget target) =>
-            new WriteOperation(font, innerWriteOperation.CreatePeerWriteOperation(target));
+            new WriteOperation(output);
 
+        public void Dispose()
+        {
+        }
     }
 }

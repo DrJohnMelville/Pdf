@@ -28,6 +28,12 @@ public interface IFontTarget
     /// Create a IDrawTarget that the stroked character can be drawn to.
     /// </summary>
     IDrawTarget CreateDrawTarget();
+
+    /// <summary>
+    /// The render target that will eventually be drawn to.
+    /// Fonts can use this to short circut the drawing.  (For example see Melville.Pdf.TextExtractor.ExtractingFont)
+    /// </summary>
+    IRenderTarget RenderTarget { get; }
 }
 
 internal partial class RealizedType3Font : IRealizedFont, IMapCharacterToGlyph

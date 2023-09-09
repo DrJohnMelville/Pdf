@@ -12,7 +12,6 @@ namespace Melville.Pdf.TextExtractor;
 internal partial class ExtractTextRender :
     RenderTargetBase<IExtractedTextTarget, UncoloredGraphicsState>
 {
-
     /// <inheritdoc />
     public override IDrawTarget CreateDrawTarget() => NullDrawTarget.Instance;
 
@@ -27,5 +26,7 @@ internal partial class ExtractTextRender :
 
     /// <inheritdoc />
     public override IRealizedFont WrapRealizedFont(IRealizedFont font) => 
-        new ExtractingFont(font, Target);
+        new ExtractingFont(font);
+
+    internal IExtractedTextTarget TextTarget => Target;
 }

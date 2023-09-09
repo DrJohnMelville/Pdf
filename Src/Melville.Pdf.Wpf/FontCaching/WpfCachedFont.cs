@@ -81,5 +81,7 @@ internal partial class WpfCachedFont : IRealizedFont
             new CachedOperation(parent, target);
 
         public void Dispose() => innerWriter.Dispose();
+
+        public IRenderTarget RenderTarget => fontTarget.RenderTarget;
     }
 }

@@ -65,4 +65,6 @@ internal  partial class FakeFontDrawTarget : IFontTarget
     {
         return target.CreateDrawTarget();
     }
+
+    public IRenderTarget RenderTarget => target;
 }

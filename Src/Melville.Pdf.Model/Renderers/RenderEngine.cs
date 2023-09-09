@@ -63,6 +63,8 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         pageRenderContext.OptionalContent.WrapDrawTarget(
             pageRenderContext.Target.CreateDrawTarget());
 
+    IRenderTarget IFontTarget.RenderTarget => pageRenderContext.Target;
+
     [DelegateTo]
     private IPathDrawingOperations PathDrawingOperations() =>
         pathDrawing.IsInvalid? pathDrawing.WithNewTarget(CreateDrawTarget()): pathDrawing;
