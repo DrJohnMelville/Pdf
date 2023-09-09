@@ -11,21 +11,23 @@ internal partial class ExtractingFont : IRealizedFont
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target)
     {
+        // Because ExtractedFont instances are created in ExtractTextRenderer.WrapRealizedFont,
+        // the RenderTarget must be an ExtractTextRenderer.
         var extractedTextTarget = ((ExtractTextRender)target.RenderTarget).TextTarget;
-        extractedTextTarget.BeginWrite(this);
+        extractedTextTarget.BeginWrite(innerFont);
         return new WriteOperation(extractedTextTarget);
     }
 
     private partial class WriteOperation : IFontWriteOperation
     {
-        [FromConstructor] private IExtractedTextTarget output;
+        [FromConstructor] private readonly IExtractedTextTarget output;
 
         public ValueTask<double> AddGlyphToCurrentStringAsync(
             uint character, uint glyph, Matrix3x2 textMatrix)
         {
             output.WriteCharacter(
                 (char)character, textMatrix);
-            return new(1000.0);
+            return new(10);
         }
 
         public void RenderCurrentString(
