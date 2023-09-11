@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -54,11 +55,13 @@ public interface IRenderTarget: IDisposable
     /// </summary>
     /// <param name="priorState">The previous state to duiplicate.</param>
     void CloneStateFrom(GraphicsState priorState);
+
     /// <summary>
     /// Allows the renderer to adjust or replace every IRealizedFont used in the document.  The WPF Renderer
     /// uses this methods to wrap fonts in a renderer-specific glyph caching mechanism.
     /// </summary>
     /// <param name="font">An IRealizedFont, parsed out of a font file or stream</param>
+    /// <param name="fontDeclaration">The PdfDictionary that defined the font</param>
     /// <returns>The IRealizedFont that should be used to draw characters in this font.</returns>
-    IRealizedFont WrapRealizedFont(IRealizedFont font);
+    ValueTask<IRealizedFont> WrapRealizedFontAsync(IRealizedFont font, PdfDictionary? fontDeclaration);
 }

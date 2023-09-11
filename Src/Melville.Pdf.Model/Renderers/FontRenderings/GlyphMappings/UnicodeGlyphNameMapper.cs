@@ -1,32 +1,26 @@
 ﻿using System.Collections.Generic;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 
-internal class UnicodeGlyphNameMapper : DictionaryGlyphNameMapper
+internal partial class UnicodeGlyphNameMapper : INameToGlyphMapping
 {
-    public UnicodeGlyphNameMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
-    {
-    }
+    [FromConstructor] private readonly IReadOnlyDictionary<uint, uint> mappings;
 
-    protected override uint HashForString(byte[] name) => 
-        GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
-    protected override uint HashForString(PdfDirectObject name) => 
-        GlyphNameToUnicodeMap.AdobeGlyphList.TryMap(name, out var unicode) ? (uint)unicode : 0;
+    public uint GetGlyphFor(PdfDirectObject name) => 
+        mappings.TryGetValue(NameToCharacter(name), out  var ret)?ret:0;
+
+    protected virtual uint NameToCharacter(PdfDirectObject name) => 
+        GlyphNameToUnicodeMap.AdobeGlyphList.GetGlyphFor(name);
 }
 
-internal class UnicodeViaMacMapper : UnicodeGlyphNameMapper
+[FromConstructor]
+internal partial class UnicodeViaMacMapper : UnicodeGlyphNameMapper
 {
-    public UnicodeViaMacMapper(IReadOnlyDictionary<uint, uint> mappings) : base(mappings)
-    {
-    }
-
-    protected override uint HashForString(byte[] name)
-    {
-        var unicode = base.HashForString(name);
-        return MapUnicodeToMacRoman(unicode);
-    }
+    protected override uint NameToCharacter(PdfDirectObject name) => 
+        MapUnicodeToMacRoman(base.NameToCharacter(name));
 
     private uint MapUnicodeToMacRoman(uint input) => (input switch
     {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Postscript.Interpreter.Values;
@@ -6,41 +8,34 @@ using Melville.Postscript.Interpreter.Values;
 namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;
 
 /// <summary>
-/// Maps a PDF glyph name to a 16 bit character selector -- often these are unicode
+/// This interface maps glyph names to glyph indexes in a defined codeset.
+/// This us used for both type 1 fonts that map names to indices and Unicode mapping
+/// via the adobe glyph list.
 /// </summary>
-public interface IGlyphNameMap
+public interface INameToGlyphMapping
 {
     /// <summary>
-    /// Try to find a character index for a given glyph name.  Often characters are unicode
+    /// Gets the glyph index for a given name.
     /// </summary>
-    /// <param name="input">A PdfName representing the glyph to find</param>
-    /// <param name="character">If the function returns true, this parameter receives the named character index</param>
-    /// <returns>True if the glyph name is recognized, false otherwise</returns>
-    bool TryMap(PdfDirectObject input, out char character);
-    /// <summary>
-    /// Try to find a character index for a given glyph name.  Often characters are unicode
-    /// </summary>
-    /// <param name="input">A byte array representing the glyph to find</param>
-    /// <param name="character">If the function returns true, this parameter receives the named character index</param>
-    /// <returns>True if the glyph name is recognized, false otherwise</returns>
-    bool TryMap(byte[] input, out char character);
+    /// <param name="name">Name of a glyph in the underlying font.</param>
+    /// <returns>The corresponding glyph index, or 0 if the name is undefined.</returns>
+    uint GetGlyphFor(PdfDirectObject name);
 }
 
 /// <summary>
-/// This class maps adobe glyph list names to their unicode equivilents.
+/// Maps a glyph name to a glyph index.
 /// </summary>
-public partial class GlyphNameToUnicodeMap : IGlyphNameMap
+public partial class DictionaryGlyphNameMapper: INameToGlyphMapping
 {
-    private readonly Dictionary<int, char> map;
-    private GlyphNameToUnicodeMap(Dictionary<int, char> map)
-    {
-        this.map = map;
-    }
+    /// <summary>
+    /// A dictionary mapphing FNV hash of the name to the glyph
+    /// </summary>
+    [FromConstructor] private IReadOnlyDictionary<uint, uint> mappings;
 
     /// <inheritdoc />
-    public bool TryMap(byte[] input, out char character) => 
-        map.TryGetValue(FnvHash.FnvHashAsInt(input),out character);
-    /// <inheritdoc />
-    public bool TryMap(PdfDirectObject input, out char character) => 
-        map.TryGetValue(FnvHash.FnvHashAsInt(input.Get<StringSpanSource>().GetSpan()),out character);
+    public uint GetGlyphFor(PdfDirectObject name) => 
+        mappings.TryGetValue(GetBaseEncodingForName(name), out var glyph) ? glyph : 0;
+
+    private uint GetBaseEncodingForName(PdfDirectObject name) => 
+        FnvHash.FnvHashAsUInt(name.Get<StringSpanSource>().GetSpan());
 }

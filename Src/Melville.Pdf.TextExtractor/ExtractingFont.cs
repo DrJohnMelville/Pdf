@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Melville.INPC;
 using Melville.Pdf.Model.Renderers.FontRenderings;
+using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
 using Melville.Pdf.Model.Renderers.FontRenderings.Type3;
 
 namespace Melville.Pdf.TextExtractor;
@@ -8,6 +9,7 @@ namespace Melville.Pdf.TextExtractor;
 internal partial class ExtractingFont : IRealizedFont
 {
     [FromConstructor] [DelegateTo] private readonly IRealizedFont innerFont;
+    [FromConstructor] public IReadCharacter ReadCharacter { get; }
 
     public IFontWriteOperation BeginFontWrite(IFontTarget target)
     {

@@ -201,7 +201,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
             await FontFromDictionaryAsync(fontDic).CA():
             await SystemFontFromNameAsync(font).CA();
         
-        GraphicsState.SetTypeface(await RendererSpecificFontAsync(genericRealizedFont).CA());
+        GraphicsState.SetTypeface(await GetRenderWrappedFontAsync(genericRealizedFont, fontDic).CA());
         await GraphicsState.SetFontAsync(font,size).CA();
     }
 
@@ -216,8 +216,9 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     private async ValueTask<IRealizedFont> FontFromDictionaryAsync(PdfDictionary fontDic) => 
         await CheckCacheForFontAsync(fontDic).CA();
 
-    private ValueTask<IRealizedFont> RendererSpecificFontAsync(IRealizedFont typeFace) =>
-        pageRenderContext.Renderer.Cache.GetAsync(typeFace, r=> new ValueTask<IRealizedFont>(pageRenderContext.Target.WrapRealizedFont(r)));
+    private ValueTask<IRealizedFont> GetRenderWrappedFontAsync(
+        IRealizedFont typeFace, PdfDictionary? fontDeclaration) =>
+        pageRenderContext.Renderer.Cache.GetAsync(typeFace, r=> pageRenderContext.Target.WrapRealizedFontAsync(r, fontDeclaration));
 
     private ValueTask<IRealizedFont> CheckCacheForFontAsync(PdfDictionary fontDic) =>
         pageRenderContext.Renderer.Cache.GetAsync(fontDic, async r=> BlockFontDispose.AsNonDisposableTypeface(await FontReader().DictionaryToRealizedFontAsync(r).CA()));

@@ -1336,6 +1336,48 @@
             Static singleton for Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.TwoByteCharacters
             </summary>
         </member>
+        <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory">
+            <summary>
+            The factory class to parse a CMAP from a PdfDirectObject
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory.namer">
+            <summary>
+            Strategy to map names to glyph values
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory.innerMapper">
+            <summary>
+            Strategy to read characters in the underlying font format
+            </summary>
+        </member>
+        <member name="F:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory.cMapLibrary">
+            <summary>
+            Strategy to retreive named Cmaps by name
+            </summary>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory.#ctor(Melville.Pdf.LowLevel.Model.CharacterEncoding.INameToGlyphMapping,Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.IReadCharacter)">
+            <summary>
+            Construct a CMapFactory
+            </summary>
+            <param name="namer">Strategy to map names to glyph values</param>
+            <param name="innerMapper">Strategy to read characters in the underlying font encoding</param>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory.ParseCMapAsync(Melville.Pdf.LowLevel.Model.Objects.PdfDirectObject)">
+            <summary>
+            Parwse a PdfDirectObject from the encoding member of a font dictionary to a CMAP that can read the font.
+            </summary>
+            <param name="encoding">A name of a standard CMAP or a stream containing a CMAP</param>
+            <returns>The parsed  CMAP</returns>
+        </member>
+        <member name="M:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.CMapFactory.#ctor(Melville.Pdf.LowLevel.Model.CharacterEncoding.INameToGlyphMapping,Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders.IReadCharacter,Melville.Pdf.Model.Renderers.FontRenderings.CMaps.IRetrieveCmapStream)">
+            <summary>
+            Auto generated constructor for CMapFactory
+            </summary>
+            <param name="namer">Strategy to map names to glyph values</param> 
+            <param name="innerMapper">Strategy to read characters in the underlying font format</param> 
+            <param name="cMapLibrary">Strategy to retreive named Cmaps by name</param> 
+        </member>
         <member name="T:Melville.Pdf.Model.Renderers.FontRenderings.CMaps.IRetrieveCmapStream">
             <summary>
             This interface is used by the CMAP parser to find the CMAP text referenced by a usecmap operator
@@ -2307,12 +2349,13 @@
             </summary>
             <param name="priorState">The previous state to duiplicate.</param>
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.WrapRealizedFont(Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont)">
+        <member name="M:Melville.Pdf.Model.Renderers.IRenderTarget.WrapRealizedFontAsync(Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont,Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
             <summary>
             Allows the renderer to adjust or replace every IRealizedFont used in the document.  The WPF Renderer
             uses this methods to wrap fonts in a renderer-specific glyph caching mechanism.
             </summary>
             <param name="font">An IRealizedFont, parsed out of a font file or stream</param>
+            <param name="fontDeclaration">The PdfDictionary that defined the font</param>
             <returns>The IRealizedFont that should be used to draw characters in this font.</returns>
         </member>
         <member name="T:Melville.Pdf.Model.Renderers.NullDrawTarget">
@@ -2798,7 +2841,7 @@
         <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.SetBackgroundRect(Melville.Pdf.LowLevel.Model.Wrappers.PdfRect@,System.Double,System.Double,System.Numerics.Matrix3x2@)">
             <inheritdoc />
         </member>
-        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.WrapRealizedFont(Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont)">
+        <member name="M:Melville.Pdf.Model.Renderers.RenderTargetBase`2.WrapRealizedFontAsync(Melville.Pdf.Model.Renderers.FontRenderings.IRealizedFont,Melville.Pdf.LowLevel.Model.Objects.PdfDictionary)">
             <inheritdoc />
         </member>
     </members>

@@ -286,6 +286,7 @@ Pdf:Subtype
 Pdf:Supplement
 Pdf:Text
 Pdf:TilingType
+Pdf:ToUnicode
 Pdf:Type
 Pdf:Type1C
 Pdf:U

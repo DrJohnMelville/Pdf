@@ -10,6 +10,7 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Parsing.ContentStreams;
 using Melville.Pdf.Model.Documents;
 using Melville.Pdf.Model.Renderers.FontRenderings.CharacterReaders;
+using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings.BuiltInCMaps;
 using Melville.Postscript.Interpreter.FunctionLibrary;
 using Melville.Postscript.Interpreter.InterpreterState;
 using Melville.Postscript.Interpreter.Values;
@@ -17,16 +18,41 @@ using Melville.Postscript.Interpreter.Values.Composites;
 
 namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps;
 
-internal partial class CMapFactory
+/// <summary>
+/// The factory class to parse a CMAP from a PdfDirectObject
+/// </summary>
+public partial class CMapFactory
 {
     private readonly List<ByteRange> data = new();
-    [FromConstructor] private IGlyphNameMap namer;
+    /// <summary>
+    /// Strategy to map names to glyph values
+    /// </summary>
+    [FromConstructor] private INameToGlyphMapping namer;
+    /// <summary>
+    /// Strategy to read characters in the underlying font format
+    /// </summary>
     [FromConstructor] private IReadCharacter innerMapper;
+    /// <summary>
+    /// Strategy to retreive named Cmaps by name
+    /// </summary>
     [FromConstructor] private IRetrieveCmapStream cMapLibrary;
 
-    public async ValueTask<IReadCharacter> ParseCMapAsync(PdfEncoding encoding)
+    /// <summary>
+    /// Construct a CMapFactory
+    /// </summary>
+    /// <param name="namer">Strategy to map names to glyph values</param>
+    /// <param name="innerMapper">Strategy to read characters in the underlying font encoding</param>
+    public CMapFactory(INameToGlyphMapping namer, IReadCharacter innerMapper): 
+        this(namer, innerMapper, BuiltinCmapLibrary.Instance){}
+
+    /// <summary>
+    /// Parwse a PdfDirectObject from the encoding member of a font dictionary to a CMAP that can read the font.
+    /// </summary>
+    /// <param name="encoding">A name of a standard CMAP or a stream containing a CMAP</param>
+    /// <returns>The parsed  CMAP</returns>
+    public async ValueTask<IReadCharacter> ParseCMapAsync(PdfDirectObject encoding)
     {
-        await ReadFromPdfValueAsync(encoding.LowLevel).CA();
+        await ReadFromPdfValueAsync(encoding).CA();
         return new CMap(data);
     }
 
@@ -34,7 +60,8 @@ internal partial class CMapFactory
     private static readonly IPostscriptDictionary dict =
         PostscriptOperatorCollections.BaseLanguage().With(CmapParserOperations.AddOperations);
 
-    public async ValueTask ReadFromPdfValueAsync(PdfDirectObject encoding)
+
+    internal async ValueTask ReadFromPdfValueAsync(PdfDirectObject encoding)
     {
         await ReadFromCSharpStreamAsync(
             encoding.IsName ? cMapLibrary.CMapStreamFor(encoding) :
@@ -49,7 +76,7 @@ internal partial class CMapFactory
         return await stream.StreamContentAsync().CA();
     }
 
-    public  async ValueTask ReadFromCSharpStreamAsync(Stream source)
+    private async ValueTask ReadFromCSharpStreamAsync(Stream source)
     {
         var parser = new PostscriptEngine(dict) { Tag = this }.WithImmutableStrings();
         parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
@@ -61,7 +88,7 @@ internal partial class CMapFactory
 
     #region CMap Operators
 
-    public void AddCodespaces(ReadOnlySpan<PostscriptValue> values) => 
+    internal void AddCodespaces(ReadOnlySpan<PostscriptValue> values) => 
         values.ForEachGroup(AddSingleCodespace);
 
     private void AddSingleCodespace(PostscriptValue minValue, PostscriptValue maxValue) => 
@@ -70,7 +97,7 @@ internal partial class CMapFactory
     private VariableBitChar ToVariableBitCharacter(in PostscriptValue value) => 
         new(value.Get<StringSpanSource>().GetSpan());
 
-    public void AddNotDefRanges(ReadOnlySpan<PostscriptValue> values) =>
+    internal void AddNotDefRanges(ReadOnlySpan<PostscriptValue> values) =>
         values.ForEachGroup(AddSingleNotDefRange);
 
     private void AddSingleNotDefRange(
@@ -78,7 +105,7 @@ internal partial class CMapFactory
         AddRange(new ConstantCMapper(
             ToVariableBitCharacter(min), ToVariableBitCharacter(max), (uint)value.Get<long>()));
 
-    public void AddCidRanges(ReadOnlySpan<PostscriptValue> values) =>
+    internal void AddCidRanges(ReadOnlySpan<PostscriptValue> values) =>
         values.ForEachGroup(AddSingleCidRange);
 
     private void AddSingleCidRange(
@@ -86,7 +113,7 @@ internal partial class CMapFactory
         AddRange(new LinearCMapper(
             ToVariableBitCharacter(min), ToVariableBitCharacter(max), (uint)value.Get<long>()));
 
-    public void AddCidChars(ReadOnlySpan<PostscriptValue> values) =>
+    internal void AddCidChars(ReadOnlySpan<PostscriptValue> values) =>
         values.ForEachGroup(AddSingleCidChar);
 
     private void AddSingleCidChar(PostscriptValue source, PostscriptValue dest)
@@ -108,7 +135,7 @@ internal partial class CMapFactory
         }
     }
 
-    public void AddBaseFontRanges(ReadOnlySpan<PostscriptValue> values) =>
+    internal void AddBaseFontRanges(ReadOnlySpan<PostscriptValue> values) =>
         values.ForEachGroup(CreateSingleBaseFontRange);
 
     private void CreateSingleBaseFontRange(PostscriptValue min, PostscriptValue max, PostscriptValue value)
@@ -134,7 +161,7 @@ internal partial class CMapFactory
     private static int SizeOfRange(VariableBitChar minCharacter, VariableBitChar maxCharacter) => 
         1+ (int)(maxCharacter - minCharacter);
 
-    public void AddBaseFontChars(ReadOnlySpan<PostscriptValue> values) =>
+    internal void AddBaseFontChars(ReadOnlySpan<PostscriptValue> values) =>
         values.ForEachGroup(CreateSingleBaseFontChar);
 
     private void CreateSingleBaseFontChar(PostscriptValue input, PostscriptValue value) => 
@@ -149,7 +176,7 @@ internal partial class CMapFactory
     }
 
     private uint ValueForName(PostscriptValue value) => 
-        namer.TryMap(value.AsPdfName(), out var ret) ? (uint)ret : 0;
+        namer.GetGlyphFor(value.AsPdfName());
 
     #endregion
 }

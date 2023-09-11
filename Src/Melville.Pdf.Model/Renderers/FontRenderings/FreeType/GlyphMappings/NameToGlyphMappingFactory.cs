@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.CharacterEncoding;
 using Melville.Pdf.LowLevel.Model.ShortStrings;
 using Melville.Pdf.Model.Renderers.FontRenderings.GlyphMappings;
 using Melville.SharpFont;

@@ -52,7 +52,9 @@ internal readonly partial struct FreeTypeFontFactory
         var encoding = await fontDefinitionDictionary.EncodingAsync().CA();
         return
             new FreeTypeFont(face,
-                await new FontRenderings.GlyphMappings.ReadCharacterFactory(fontDefinitionDictionary, encoding)
+                await new FontRenderings.GlyphMappings.ReadCharacterFactory(
+                        fontDefinitionDictionary, encoding,
+                        new NameToGlyphMappingFactory(face).Create())
                     .CreateAsync().CA(), 
                 await new CharacterToGlyphMapFactory(face, fontDefinitionDictionary, encoding).ParseAsync().CA(), 
                 await new FontWidthParser(fontDefinitionDictionary).ParseAsync().CA());

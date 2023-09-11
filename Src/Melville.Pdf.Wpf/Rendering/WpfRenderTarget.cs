@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
@@ -73,7 +74,7 @@ internal class WpfRenderTarget: RenderTargetBase<DrawingContext, WpfGraphicsStat
             ? BitmapScalingMode.HighQuality
             : BitmapScalingMode.NearestNeighbor;
 
-
-    public override IRealizedFont WrapRealizedFont(IRealizedFont font) => 
-        font.IsCachableFont ? new WpfCachedFont(font) : font;
+    public override ValueTask<IRealizedFont> WrapRealizedFontAsync(
+        IRealizedFont font, PdfDictionary? fontDeclaration)=> 
+        new(font.IsCachableFont ? new WpfCachedFont(font) : font);
 }

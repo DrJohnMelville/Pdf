@@ -12,7 +12,7 @@ namespace Pdf.KnownNamesGenerator.KnownNames
         private const uint offsetBasis = 0x811c9dc5;
         private const uint prime = 0x01000193;
 
-        public static int FromString(string s)
+        public static uint FromString(string s)
         {
             unchecked
             {
@@ -22,7 +22,7 @@ namespace Pdf.KnownNamesGenerator.KnownNames
                     hash = (hash * prime) ^ (uint)(character & 0xFF);
                 }
 
-                return (int)hash;
+                return hash;
                 
             }
         }

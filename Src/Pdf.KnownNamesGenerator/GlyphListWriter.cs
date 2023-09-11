@@ -3,7 +3,6 @@ using System.Text;
 using Pdf.KnownNamesGenerator.KnownNames;
 
 namespace Pdf.KnownNamesGenerator;
-
 public class GlyphListWriter
 {
     private StringBuilder output = new();
@@ -32,21 +31,24 @@ public class GlyphListWriter
 
     private void WriteSingleElement(KeyValuePair<string, string> item)
     {
-        output.AppendLine($"        {{{Fnv.FromString(item.Key)},(char)0x{item.Value}}}, // {item.Key}");
+        output.AppendLine($"        {{{Fnv.FromString(item.Key)},0x{item.Value}}}, // {item.Key}");
     }
-
+     
     private void WritePrefix()
     {
         output.AppendLine("using System.Collections.Generic;");
         output.AppendLine("namespace Melville.Pdf.LowLevel.Model.CharacterEncoding;");
         output.AppendLine();
-        output.AppendLine("public partial class GlyphNameToUnicodeMap");
+        output.AppendLine("/// <summary>");
+        output.AppendLine("/// This class maps glyph names onto their unicode equivilents.  right now Only the Adobe Glyph List is Supported.");
+        output.AppendLine("/// </summary>");
+        output.AppendLine("public static class GlyphNameToUnicodeMap");
         output.AppendLine("{");
         output.AppendLine("/// <summary>");
         output.AppendLine("/// This class converts FNV hashes of names in the Adobe Glyph list to ");
         output.AppendLine("/// the corresponding unicode code point.");
         output.AppendLine("/// </summary>");
-        output.AppendLine("    public static readonly IGlyphNameMap AdobeGlyphList = new GlyphNameToUnicodeMap(new Dictionary <int, char>()");
+        output.AppendLine("    public static readonly INameToGlyphMapping AdobeGlyphList = new DictionaryGlyphNameMapper(new Dictionary <uint, uint>()");
         output.AppendLine("    {");
         
     }

@@ -20,6 +20,7 @@ internal readonly partial struct ReadCharacterFactory
 {
     [FromConstructor] private readonly PdfFont font;
     [FromConstructor] private readonly PdfEncoding encoding;
+    [FromConstructor] private readonly INameToGlyphMapping nameMapper;
 
     public  ValueTask<IReadCharacter> CreateAsync() =>
         KnownNames.Type0.Equals(font.SubType()) ?
@@ -29,9 +30,8 @@ internal readonly partial struct ReadCharacterFactory
     private ValueTask<IReadCharacter> ParseType0FontEncodingAsync()
     {
         if (encoding.IsIdentityCdiEncoding()) return new(TwoByteCharacters.Instance);
-        return new CMapFactory(
-            GlyphNameToUnicodeMap.AdobeGlyphList, 
-            HasNoBaseFont.Instance, BuiltinCmapLibrary.Instance).ParseCMapAsync(encoding);
+        return new CMapFactory(nameMapper,HasNoBaseFont.Instance, BuiltinCmapLibrary.Instance)
+            .ParseCMapAsync(encoding.LowLevel);
     }
 }
 

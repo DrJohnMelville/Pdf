@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
+using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Wrappers;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.FontRenderings;
@@ -76,5 +77,6 @@ public abstract class RenderTargetBase<T, TState>: IRenderTarget
         in PdfRect rect, double width, double height, in Matrix3x2 transform);
 
     /// <inheritdoc />
-    public virtual IRealizedFont WrapRealizedFont(IRealizedFont font) => font;
+    public virtual ValueTask<IRealizedFont> WrapRealizedFontAsync(
+        IRealizedFont font, PdfDictionary? fontDeclaration) => new(font);
 }
