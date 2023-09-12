@@ -148,7 +148,7 @@ public partial class PostscriptStack<T>
     /// </summary>
     /// <param name="index">The value to retrience</param>
     public ref T this[int index] => ref buffer[index];
-
+    
     /// <inheritdoc />
     public override string ToString() =>
         string.Join("\r\n",

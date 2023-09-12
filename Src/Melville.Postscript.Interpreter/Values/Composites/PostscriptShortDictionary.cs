@@ -43,18 +43,9 @@ internal partial class PostscriptShortDictionary : PostscriptDictionary
 
     private int TryFindLocation(scoped in PostscriptValue key)
     {
-        // fast leg -- assumes no keys as values
-        var firstIndex = items.AsSpan(0, length*2).IndexOf(key);
-        if (firstIndex < 0) return -1;
-        if (firstIndex % 2 == 0) return firstIndex;
-        
-        // slow leg
         for (int i = 0; i < length * 2; i += 2)
         {
-            if (items[i].Equals(key))
-            {
-                return i;
-            }
+            if (items[i].Equals(key)) return i;
         }
         return -1;
     }
