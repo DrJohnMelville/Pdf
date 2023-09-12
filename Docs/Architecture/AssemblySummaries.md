@@ -20,6 +20,10 @@ required some intricate caching to get acceptable performance in text rendering.
 provides WPF controls to display a PDF.  PageDisplay will dsplay a single pdf page with no chrome.  PdfViewer
 provides minimal reader chrome to flip between pages and show optional layers in a pdf document.
 
+**Melville.Pdf.ImageExtractor** is a special renderer that extracts the images from the pages as it renders.
+
+**Melville.Pdf.TextExtractor** "renders" pdf pages to strings from the rendered page.
+
 ## The Pdf Libraries
 These assemblies implement the core of the PDF standard, and are really the heart of Melville.PDF.
 
@@ -68,6 +72,13 @@ the async pattern used throughout the remainder of the the parser.
 **Melville.JBig2** parses JBIG2 encoded streams according to ITU Recommendation T.86.  Melville.JBig2 depends
 on Melville.CCITT.
 
+**Melville.Postscript.Interpreter** implements a postscript language interpreter.  Multiple parsers including parsers for CMAPs, Type 4 Functions, and content streams are directly
+implemented as postscript interpreters.  The  main PdfObject parser borrows a lot of code from the postscript interpreter, but has its own codebase.  The Pdf object parser stores
+less information per object than postscript, and handles indirect references.
+
+**Welville.Postscript.OperationGenerator** is a code generator assembly that facilitates creating operator libraries
+for the postscript parser.
+
 ## The Testing Libraries
 
 **Performance.Playground** is a Benchmark.Net Project.  I use this project intermittently when I do 
@@ -108,6 +119,7 @@ Reference Documents, or you can load documents from the file system.
 To the right a number of renderers render the selected page of the document.  Current
 renders include the windows SDK pdf renderer, the Melville.PDF.WPF renderer using the default windows fonts,
 the Melville.Pdf.SkiaSharp renderer using the Melville.Pdf.Fontlibrary fonts, a low level view of the page,
+all the images from the page, all the text from the page,
 and a page that will invoke the system registered PDF viewer.  
 
 A PDF "REPL" feature allows you to edit content streams and immediately see the result in multiple renderers.
@@ -118,7 +130,7 @@ change invokes multiple renderers over and over again.
 
 **Melville.Pdf.LowLevelReader** views PDFs as a a set of objects.  Contrary to what its name would imply, the
 lowlevel reader actually depends on complete WPF renderer to provide previews of pages and other high level
-Pdf object.
+Pdf object.  The low level reader is a tab in the comparing reader, and a rarely use it on its own.
 
 **Melville.Pdf.LowLevelViewerParts** is a library class for the shared code between
 Melville.Pdf.ComparingReader and Melville.Pdf.LowLevelReader.  

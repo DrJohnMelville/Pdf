@@ -4,7 +4,12 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <Title>Melville.Pdf.ImageExtractor</Title>
+	  <PackageDescription>
+		  This is a renderer for Melville.PDF that extracts all of the text from a PDF page.
+	  </PackageDescription>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -139,7 +139,7 @@ public async Task ExtractImages()
 
 Notice that this sample depends on BOTH the Melville.Pdf.SkiaSharp and 
 Melville.Pdf.ImageExtractor assemblies.  Melville.PDF does not have a native PNG or
-JPEG encodeder.  Melville.Pdf.ImageExtractor extracts images to an IExtractedBitmap
+JPEG encoder.  Melville.Pdf.ImageExtractor extracts images to an IExtractedBitmap
 that extends IPdfBitmap, and contains the decoded pixel data.  The sample converts this
 to a Skia SkBitmap using a method from Melville.Pdf.SkiaSharp and then uses Skia to encode
 the image file.  Similar capabilities exist is Melville.Pdf to convert to WPF BitmapImpageSource
@@ -149,3 +149,22 @@ Te CollapseImagesFromAsync method will try to find immediately adjacent images a
 them.  Many PDFs separate images into bands.  This method stitches those back together.
 The ImagesFromAsync method does not stitch images together.  Each method takes an optional
 additional parameter to extract the images appearing on a specific page.
+
+## 5. Extract text from a file
+The TextExtractor functions as a rendering target.  Rather than painting the page, it records, and
+reassembles the text written to the page during the rendering process.  The following code will get the
+text from the first page of a PDF document.
+
+````
+public async Task ExtractImages()
+{
+    int index = 1;
+    var doc = await new PdfReader().ReadFromFile(<FileName>);
+    Console.Writeline(await doc.PageTextAsync(1));
+}
+````
+
+You can also look at the ConcatenatingTextTarget which implements IExtractedTextTarget.  If you
+IExtractedTextTarget receivesc callbacks about the render matrix for each character written to the
+pdf page.  You can implement IExtractedTextTarget if you need to process the location of the text on
+the page.

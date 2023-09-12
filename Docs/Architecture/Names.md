@@ -2,14 +2,9 @@
 
 Names are important in PDF.  In the PDF file format names are preceded by a forward slash (/) and this convention carries over to the documentation.  Names are used as indexes to dictionaries, and names are used extensively throughout the pdf standard essentially as enums.  For example the /SubType field of a font dictionary can take values /Type0, /Type1, /Type3, /MMType1, /TrueType, /OpenType, /CIDFontType0, or /CIDFontType2.
 
-Melville.Pdf uses the [flyweight](https://en.wikipedia.org/wiki/Flyweight_pattern) pattern for pdf names.  the constructors for PDF name are internal, so you should find it difficult to create them.  Most of the
-names in the PDF standard are static fields on the KnownNames class.  For names that are not pre-defined
-you can request the name from the NameDirectory class.  
-
-## Pdf Names Have Reference Identity and Unique Hashes
-NameDirectory makes sure that there is at most 1 PdfName object with a given value.  Thus reference equality is sufficient when comparing PdfNames.
-
-The GetHashCode implementation for PdfName uses the FNV hash which has the nice property that all of the standard pdf names have unique hashes under FNV.  This is useful because that means that the hash code can be used in switch statements over PdfNames very efficiently.  The KnownNameKeys class has an int constant that that is the hash for every KnownNames member of the same name.  Through the magic optimization these constants disappear during the compilation process.
+During the pre 1.0 beta period PDfObjects were C# objects, and names were implemented using a [flyweight](https://en.wikipedia.org/wiki/Flyweight_pattern) pattern.  In version 0.4
+the PdfObject became the structs PdfDirectObject and PdfIndirectObject.  Short Names (under 16-23 characters) are now stored locally int the memento field of the PdfObject structs.
+This means there is no good way to switch over PdfNames -- so we use pattern matching instead.
 
 ## Pdf Groups
 

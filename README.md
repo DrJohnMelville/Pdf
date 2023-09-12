@@ -54,12 +54,12 @@ need to control the number of people who can make an ownership claim to the sour
 - [Freetype](http://freetype.org/license.html) via [SharpFont](https://github.com/Robmaister/SharpFont) is
 used for font file parsing.  This is the only native code dependency in the project, and much as I know
 it will make portability a headache, this was a necessity.  PDF allows a lot of different font formats and
-writing parsers for them all would have added another year to the project.  This is a genuine NuGet 
-dependency.  Freetype is licensed under GPL and a BSD-style FreeType License.  SharpFont is licensed under the MIT license.
-- [JpegLibrary](https://github.com/yigolden/JpegLibrary) is the source of my JPEG parsing code.  I "forked"
+writing parsers for them all would have added another year to the project.  I forked SharpFont into the repository
+so I could fix some bugs arround finding the native DLLs.  Freetype is licensed under GPL and a BSD-style FreeType License.  SharpFont is licensed under the MIT license.
+- [JpegLibrary](https://github.com/yigolden/JpegLibrary) is the source of my JPEG parsing code.  I forked
 this library into my own codebase in Melville.JpegLibrary.  I have added some bugfixes and other features
 to this code to make it parse some of the unusual JPEG images this project had introduced me to.  JpegLibrary is licensed under the MIT License.
-- My JPEG2000 parser is another "unofficial fork" of [csj2k](https://github.com/cureos/csj2k).  I made
+- My JPEG2000 parser is another unofficial fork of [csj2k](https://github.com/cureos/csj2k).  I made
 some superficial modifications to make it library play nicer with the stream based filter paradigm which
 is fairly fundamental to PDF.  CSJ2k is licensed under th BSD license.
 
@@ -88,19 +88,16 @@ not to include so I could ship this version.
       ability to produce unusual variants of PDF syntax over anything that might
       be useful in creating real documents.  Most notably, I do not implement JPEG and JPEG2000 encoders.
 - Forms of any kind.
-- Text or Graphics extraction
 - Annotations
 - Transparency (Partial support)
 
 # What's next on the roadmap?
 
-My second release has added PDF 2.0 compliance including 256 bit encryption.  I am still considering this a beta because I have not gone through the library and made all the internal details internal.  There is a decent chance I will break some use case, so I want to do that early.  Let me know if I break something important.
-
 I have tried to keep the
 code quality high, but you will have to judge that.  I hope to continue this
 project.  Here are things I am likely to take this up next.
 
-- Text and image extraction.  I need this for another project at work.
+- Performance work.
 - Filling and extracting text from Adobe and XFA forms -- another feature I could use at work.
 - Document outline and page thumbnails
 - More work on the Wpf viewer control to support at least zoom and rotation.

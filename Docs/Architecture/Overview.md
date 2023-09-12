@@ -16,7 +16,7 @@ Roslyn, the C# compiler, supports 2 important user extensions.  Analyzers allow 
 - [Code Generators](CodeGenerators.md)
 
 ## Patterns
-Every codebase hase its idiosyncrasies.  Because it has one principal author, I am sure that Melville.Pdf
+Every codebase has its idiosyncrasies.  Because it has one principal author, I am sure that Melville.Pdf
 has more than most.  In this section I will attempt to document some of the practices I use when I write
 code, or techniques I developed for this project.
 
