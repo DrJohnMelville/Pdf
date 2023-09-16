@@ -65,14 +65,3 @@ public class RenderingTest: IClassFixture<StringTestDatabase>
         }
     }
 }
-
-public static class RenderTestHelpers
-{
-    public static async ValueTask<DocumentRenderer> ReadDocumentAsync(IPdfGenerator generator)
-    {
-        MultiBufferStream src = new();
-        await generator.WritePdfAsync(src);
-        return await new PdfReader(new ConstantPasswordSource(PasswordType.User, generator.Password))
-            .ReadFromAsync(src.CreateReader());
-    }
-}

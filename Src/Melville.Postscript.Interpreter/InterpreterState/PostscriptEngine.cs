@@ -145,6 +145,7 @@ public class PostscriptEngine
     {
         while (await ExecutionStack.NextInstructionAsync() is {} token)
         {
+            
             if (ShouldExecuteToken(token)) await ExecuteTokenAsync(token);
             CheckForOpenProcToken(token);
         }
@@ -235,12 +236,15 @@ public class PostscriptEngine
 
     private void CheckForCloseProcToken(in PostscriptValue current)
     {
-        if (current.Equals(CloseProc)) deferredExecutionCount--;
+        if (IsExecutedName(current, CloseProc)) deferredExecutionCount--;
     }
+
+    private static bool IsExecutedName(PostscriptValue current, PostscriptValue comparisonValue) => 
+        current.Equals(comparisonValue) && current.IsExecutedName;
 
     private void CheckForOpenProcToken(in PostscriptValue current)
     {
-        if (current.Equals(OpenProc)) deferredExecutionCount++;
+        if (IsExecutedName(current, OpenProc)) deferredExecutionCount++;
     }
 
     /// <summary>

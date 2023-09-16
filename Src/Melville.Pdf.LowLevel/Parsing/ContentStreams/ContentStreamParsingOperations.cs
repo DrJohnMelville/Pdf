@@ -380,7 +380,7 @@ internal static partial class ContentStreamParsingOperations
         var builder = target.GetSpacedStringBuilder();
         for (int i = 1; i < stack.Count; i++)
         {
-            var item = stack[i];
+            var item =  stack[i];
             if (item.IsNumber)
                 await builder.SpacedStringComponentAsync(item.Get<double>()).CA();
             else

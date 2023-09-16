@@ -84,7 +84,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Pdf.TextExtractor"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Postscript.Interpreter", "Melville.Postscript.Interpreter\Melville.Postscript.Interpreter.csproj", "{D3A98508-D954-4102-A697-65209A40A33A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Postscript.OperationGenerator", "Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj", "{BE39AC92-C5BD-44B2-AF11-8D3053F06B93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Postscript.OperationGenerator", "Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj", "{BE39AC92-C5BD-44B2-AF11-8D3053F06B93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeTrial", "TimeTrial\TimeTrial.csproj", "{5E33F469-89DB-4921-953C-801051213190}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -480,6 +482,18 @@ Global
 		{BE39AC92-C5BD-44B2-AF11-8D3053F06B93}.Release|arm64.Build.0 = Release|Any CPU
 		{BE39AC92-C5BD-44B2-AF11-8D3053F06B93}.Release|x86.ActiveCfg = Release|Any CPU
 		{BE39AC92-C5BD-44B2-AF11-8D3053F06B93}.Release|x86.Build.0 = Release|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Debug|arm64.Build.0 = Debug|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Debug|x86.Build.0 = Debug|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Release|arm64.ActiveCfg = Release|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Release|arm64.Build.0 = Release|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Release|x86.ActiveCfg = Release|Any CPU
+		{5E33F469-89DB-4921-953C-801051213190}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -520,6 +534,7 @@ Global
 		{A9B2DE9B-A292-490D-948A-34CEC82B4F64} = {5114C86E-5BF8-4501-894B-EE7AD0E4E47A}
 		{D3A98508-D954-4102-A697-65209A40A33A} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
 		{BE39AC92-C5BD-44B2-AF11-8D3053F06B93} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
+		{5E33F469-89DB-4921-953C-801051213190} = {A0542A96-3DD5-4831-A310-F949F6769F60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {92BF3689-00AF-4389-ADC7-0F79911E5618}

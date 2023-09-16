@@ -30,6 +30,7 @@ public partial class TextObjectOperationsParserTest : ParserTest
     private partial class TjMock : MockBase, IContentStreamOperations
     {
         [DelegateTo()] private IContentStreamOperations op = null!;
+        [FromConstructor] private string result;
 
         public ValueTask ShowStringAsync(ReadOnlyMemory<byte> input)
         {
@@ -88,21 +89,23 @@ public partial class TextObjectOperationsParserTest : ParserTest
 
         private void AssertResult(ReadOnlyMemory<byte> input, string expected)
         {
-            Assert.Equal(expected, input.Span.ExtendedAsciiString());
+            Assert.Equal(result, input.Span.ExtendedAsciiString());
             SetCalled();
         }
 
 
     }
     [Fact]
-    public Task ParseShowSyntaxStringAsync() => TestInputAsync("(ABC) Tj", new TjMock());
+    public Task ParseShowSyntaxStringAsync() => TestInputAsync("(ABC) Tj", new TjMock("ABC"));
     [Fact]
-    public Task ParseShowHexStringAsync() => TestInputAsync("<4142 43> Tj", new TjMock());
+    public Task ParseOpenCurlyBugAsync() => TestInputAsync("({) Tj", new TjMock("{"));
     [Fact]
-    public Task MoveToNextLineAndShowAsync() => TestInputAsync("(def)'", new TjMock());
+    public Task ParseShowHexStringAsync() => TestInputAsync("<4142 43> Tj", new TjMock("ABC"));
     [Fact]
-    public Task MoveToNextLineAndShow2Async() => TestInputAsync("7 8(IJK)\"", new TjMock());
+    public Task MoveToNextLineAndShowAsync() => TestInputAsync("(def)'", new TjMock("def"));
     [Fact]
-    public Task ShowSpacedStringAsync() => TestInputAsync("[(a)2(b)3(c)(s)4 5]TJ", new TjMock());
+    public Task MoveToNextLineAndShow2Async() => TestInputAsync("7 8(IJK)\"", new TjMock("IJK"));
+    [Fact]
+    public Task ShowSpacedStringAsync() => TestInputAsync("[(a)2(b)3(c)(s)4 5]TJ", new TjMock("nothing"));
     
 }

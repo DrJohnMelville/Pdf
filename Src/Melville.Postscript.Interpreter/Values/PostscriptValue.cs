@@ -67,6 +67,11 @@ public readonly partial struct PostscriptValue : IEquatable<PostscriptValue>
     public bool IsLiteralName => IsStringType(StringKind.LiteralName);
 
     /// <summary>
+    /// Returns true if the contained item is a literal name
+    /// </summary>
+    public bool IsExecutedName => IsStringType(StringKind.Name);
+
+    /// <summary>
     /// Returns true if the contained item is a string
     /// </summary>
     public bool IsString => IsStringType(StringKind.String);

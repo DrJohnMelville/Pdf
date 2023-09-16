@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.SpanAndMemory;
 using Melville.Pdf.LowLevel.Model.ContentStreams;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -294,6 +295,7 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
     }
 
     public ISpacedStringBuilder GetSpacedStringBuilder() => this;
+
     ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(double value)
     {
         var delta = GraphicsState.FontSize * value/ 1000.0;
