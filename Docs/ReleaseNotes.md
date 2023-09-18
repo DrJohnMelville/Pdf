@@ -1,5 +1,8 @@
 ﻿# Releases
 
+## 9/18/2023 0.4.1
+- Fix a bug where trying to write a string containing a single { parses incorrectly in ontent streams.
+
 ## 9/12/2023 0.4
 - ImageExtractor and TextExtractor get the images and text, respectively from PDF files.
 - A new implementation of the fundamental pdf objects significantly reduces the number of

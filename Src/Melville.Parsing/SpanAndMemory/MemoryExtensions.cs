@@ -15,14 +15,14 @@ public static class MemoryExtensions
     public static T At<T>(this ReadOnlyMemory<T> mem, int position) => mem.Span[position];
 
     /// <summary>
-    // EXpress a byte span as a string of hexadecimal digits.
+    /// EXpress a byte span as a string of hexadecimal digits.
     /// </summary>
     /// <param name="str">A span of bytes</param>
     /// <returns>A hexadevimal string</returns>
     public static string AsHex(in this Span<byte> str) =>
        ((ReadOnlySpan<byte>)str).AsHex();
     /// <summary>
-    // EXpress a byte span as a string of hexadecimal digits.
+    /// EXpress a byte span as a string of hexadecimal digits.
     /// </summary>
     /// <param name="str">A span of bytes</param>
     /// <returns>A hexadevimal string</returns>
