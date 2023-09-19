@@ -19,18 +19,14 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <None Update="lib\x64\freetype6.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\x64\msvcr120.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\x86\freetype6.dll">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\x86\msvcr120.dll">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+	  <Content Include="lib/**/*.*" copyToOutput="true">
+		  <IncludeInPackage>true</IncludeInPackage>
+		  <CopyToOutput>true</CopyToOutput>
+		  <BuildAction>Content</BuildAction>
+		  <copyToOutput>true</copyToOutput>
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  <PackageCopyToOutput>true</PackageCopyToOutput>
+	  </Content>
   </ItemGroup>
 
 </Project>

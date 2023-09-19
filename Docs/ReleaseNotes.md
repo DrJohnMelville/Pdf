@@ -1,7 +1,10 @@
 ﻿# Releases
 
+## 9/19/2023 0.4.2
+- Fix a bug that Melville.SharpFont's nuget package does not contain the needed unmanageqd binaries.
+
 ## 9/18/2023 0.4.1
-- Fix a bug where trying to write a string containing a single { parses incorrectly in ontent streams.
+- Fix a bug where trying to write a string containing a single { parses incorrectly in content streams.
 
 ## 9/12/2023 0.4
 - ImageExtractor and TextExtractor get the images and text, respectively from PDF files.
