@@ -30,7 +30,7 @@ namespace Melville.SharpFont
         };
 
         private static string PathForArchitecture(string dllPath) => 
-            Path.Combine(ThisAssemblyFolder(), "lib", dllPath);
+            Path.Combine(ThisAssemblyFolder(), "runtimes", $"win-{dllPath}", "native");
 
         private static string ThisAssemblyFolder() =>
             Path.GetDirectoryName(typeof(ArchitectureDllImport).Assembly.Location) ??

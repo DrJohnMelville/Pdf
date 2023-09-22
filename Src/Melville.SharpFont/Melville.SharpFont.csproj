@@ -18,23 +18,14 @@
 	</ItemGroup>
 
   <ItemGroup>
-	  <Content Include="lib/x64/*.*">
+	  <Content Include="runtimes/**/*.dll">
 		  <IncludeInPackage>true</IncludeInPackage>
 		  <CopyToOutput>true</CopyToOutput>
 		  <BuildAction>Content</BuildAction>
 		  <copyToOutput>true</copyToOutput>
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		  <PackageCopyToOutput>true</PackageCopyToOutput>
-		  <PackagePath>runtimes\win-x64\native</PackagePath>
-	  </Content>
-	  <Content Include="lib/x86/*.*">
-		  <IncludeInPackage>true</IncludeInPackage>
-		  <CopyToOutput>true</CopyToOutput>
-		  <BuildAction>Content</BuildAction>
-		  <copyToOutput>true</copyToOutput>
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <PackageCopyToOutput>true</PackageCopyToOutput>
-		  <PackagePath>runtimes\win-x86\native</PackagePath>
+		  <PackagePath>runtimes</PackagePath>
 	  </Content>
   </ItemGroup>
 
