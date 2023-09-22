@@ -1,5 +1,8 @@
 ﻿# Releases
 
+## 9/22/2023 0.4.3
+- Another attempt to fix the bug that version 0.4.2 did not actually fix.
+
 ## 9/19/2023 0.4.2
 - Fix a bug that Melville.SharpFont's nuget package does not contain the needed unmanageqd binaries.
 
