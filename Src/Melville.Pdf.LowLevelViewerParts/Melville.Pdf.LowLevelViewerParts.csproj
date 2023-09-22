@@ -11,16 +11,15 @@
     <ItemGroup>
       <ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
       <ProjectReference Include="..\Melville.Pdf.Wpf\Melville.Pdf.Wpf.csproj" />
-      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
-                        PrivateAssets="all">
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	      <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.MVVM.Wpf" Version="0.6.17" />
-      <PackageReference Include="Melville.WpfControls" Version="0.6.17" />
+      <PackageReference Include="Melville.MVVM.Wpf" Version="0.6.18" />
+      <PackageReference Include="Melville.WpfControls" Version="0.6.18" />
     </ItemGroup>
 
 </Project>

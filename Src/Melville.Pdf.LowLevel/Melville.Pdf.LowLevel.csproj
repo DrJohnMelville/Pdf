@@ -12,8 +12,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Hacks" Version="0.6.17" />
-      <PackageReference Include="Melville.Linq" Version="0.6.17" />
+      <PackageReference Include="Melville.Hacks" Version="0.6.18" />
+      <PackageReference Include="Melville.Linq" Version="0.6.18" />
       <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>

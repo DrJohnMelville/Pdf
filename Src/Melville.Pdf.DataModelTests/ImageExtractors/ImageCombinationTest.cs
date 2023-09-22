@@ -11,7 +11,7 @@ namespace Melville.Pdf.DataModelTests.ImageExtractors;
 public class ImageCombinationTest
 {
     [Fact]
-    public ValueTask TestBitmapFunctionAsync()
+    public Task TestBitmapFunctionAsync()
     {
         var bitmap = new TestBitmap(2, 3, 7, 8, 9, 10, 20);
         Assert.Equal(2, bitmap.Width);
@@ -22,7 +22,7 @@ public class ImageCombinationTest
         Assert.Equal(new Vector2(9, 8), bitmap.PositionTopRight);
         Assert.Equal(new Vector2(9, 10), bitmap.PositionBottomRight);
         Assert.Equal(new Vector2(7, 10), bitmap.PositionBottomLeft);
-        return bitmap.VerifyUniformAsync(2, 3, 20, 21, 22, 23, 24, 25, 26);
+        return bitmap.VerifyUniformAsync(2, 3, 20, 21, 22, 23, 24, 25, 26).AsTask();
     }
 
     [Fact]
