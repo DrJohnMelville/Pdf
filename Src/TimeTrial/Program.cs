@@ -24,8 +24,8 @@ internal class Program
         Console.WriteLine("Name,Page,Seconds");
         await foreach (var item in arg.Items())
         {
-            Console.WriteLine(await item.RunTestAsync());
-
+            var line = await item.RunTestAsync();
+            Console.WriteLine(line);
         }
     }
 }

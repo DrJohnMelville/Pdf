@@ -15,10 +15,18 @@ namespace Melville.SharpFont
         /// <param name="explicitFolder">Full folder for the current architecture, or null to pick x87 or x64 binaries</param>
         public static void LoadArchitectureDependencyDirectory(string? explicitFolder)
         {
-            var finalDllFolder = explicitFolder ?? InferredDllLocation();
+            var finalDllFolder = explicitFolder  ?? TryRootFolder() ?? InferredDllLocation();
             if (!string.IsNullOrWhiteSpace(finalDllFolder))
                 SetDllDirectory(finalDllFolder);
         }
+
+        private static string? TryRootFolder()
+        {
+            var ret = ThisAssemblyFolder();
+            var fileName = Path.Combine(ret, "freetype6.dll");
+            return (File.Exists(fileName)) ? ret : null;
+        }
+
         private static string InferredDllLocation() => RuntimeInformation.ProcessArchitecture switch
         {
             Architecture.X86 => PathForArchitecture("x86"),
