@@ -728,7 +728,7 @@ public class ICCParserTest
            "636c7574 00000000 00030002" +
            "01010100 00000000 00000000 00000000 " + // every dimension has one element
            "40a33333 40a33333>");
-        Assert.Equal(1, tag.Elements.Count);
+        Assert.Single(tag.Elements);
         var clut = (MultidimensionalLookupTable)tag.Elements[0];
         Assert.Equal(5.1, clut.Points[0],2);
         Assert.Equal(5.1, clut.Points[1],2);
@@ -740,7 +740,7 @@ public class ICCParserTest
         var tag = await ParseTagAsync<MultiProcessTag>("<6d706574 00000000 00020002 00000001 00000018 00000024" +
            "6d617466 00000000 00020002" +
            "40a33333 40a33333 40a33333 40a33333 40a33333 40a33333 >");
-        Assert.Equal(1, tag.Elements.Count);
+        Assert.Single(tag.Elements);
         var mat = (MultiProcessMatrix)tag.Elements[0];
         Assert.Equal(2, mat.Inputs);
         Assert.Equal(2, mat.Outputs);
@@ -757,7 +757,7 @@ public class ICCParserTest
     {
         var tag = await ParseTagAsync<MultiProcessTag>("<6d706574 00000000 00020002 00000001 00000018 00000010" +
                                                   name + " 00000000 00020002 00000000>");
-        Assert.Equal(1, tag.Elements.Count);
+        Assert.Single(tag.Elements);
         Assert.True(tag.Elements[0] is NullColorTransform);
         Assert.Equal(2, tag.Elements[0].Inputs);
         Assert.Equal(2, tag.Elements[0].Outputs);
@@ -773,7 +773,7 @@ public class ICCParserTest
            "70617266 00000000 00000000 40a33333 40a33333 40a33333 40a33333" + // formula part 1
            "70617266 00000000 00000000 40a33333 40a33333 40a33333 40a33333" + // formula part 2
            ">");
-        Assert.Equal(1, tag.Elements.Count);
+        Assert.Single(tag.Elements);
         var funcs = (MultiProcessCurveSet)tag.Elements[0];
         Assert.Equal(2, funcs.Inputs);
         Assert.Equal(2, funcs.Outputs);
@@ -784,7 +784,7 @@ public class ICCParserTest
 
     private void VerifyFunc(MultiProcessCurve curve)
     {
-        Assert.Equal(1, curve.BreakPoints.Count);
+        Assert.Single(curve.BreakPoints);
         Assert.Equal(5.1, curve.BreakPoints[0], 2);
         Assert.Equal(2, curve.Segments.Count);
         VerifySegment(curve.Segments[0]);

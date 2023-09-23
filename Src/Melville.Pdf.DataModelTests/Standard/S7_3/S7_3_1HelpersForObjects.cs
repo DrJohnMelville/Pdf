@@ -10,14 +10,14 @@ public class S7_3_1HelpersForObjects
     public void ObjectIsAnArray()
     {
         var ret = ((PdfDirectObject)true).ObjectAsUnresolvedList();
-        Assert.Equal(1, ret.Count);
+        Assert.Single(ret);
         Assert.Equal(true, ret[0]);
     }
     [Fact]
     public void NullIsEmptyArray()
     {
         var ret = PdfDirectObject.CreateNull().ObjectAsUnresolvedList();
-        Assert.Equal(0, ret.Count);
+        Assert.Empty(ret);
     }
     [Fact]
     public async Task ArrayIsArrayAsync()

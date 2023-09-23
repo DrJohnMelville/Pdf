@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -77,7 +78,7 @@ public partial class AllowedDependencyAnalyzerTest
     [Fact] public Task CannotDeclareProhibitedField() => RunSimpleTest("", "[|Relying|] item;");
     [Fact] public Task CannotDeclareProhibitedArray() => RunSimpleTest("", "[|Relying|][] item;");
     [Fact] public Task CannotDeclareProhibitedSpecialization() => 
-        Assert.ThrowsAsync<EqualWithMessageException>(
+        Assert.ThrowsAsync<MissingMethodException>(
             ()=> RunSimpleTest("", " Common.[|I<Relying>|] item;", "public interface I<T> {}", 2));
     [Fact] public Task CanDeclareAllowedSpecialization() => 
         RunSimpleTest("", " Common.I<int> item;", "public interface I<T> {}");

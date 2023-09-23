@@ -143,7 +143,7 @@ public class RuleParserText
             Assert.Equal(message, e.Message);
             return;
         }
-        Assert.False(true, "Failed to throw exception");
+        Assert.Fail("Failed to throw exception");
     }
 
     [Theory]

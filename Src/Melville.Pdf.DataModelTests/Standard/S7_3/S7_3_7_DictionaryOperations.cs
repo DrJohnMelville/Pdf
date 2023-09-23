@@ -37,7 +37,7 @@ public class S7_3_7_DictionaryOperations
     {
         var d = await IndirectTestDictAsync;
 
-        Assert.Equal(new []{true, false}, await AllValues<bool>(d));
+        Assert.Equal(new []{true, false}, await AllValuesAsync<bool>(d));
         Assert.Equal(new []{KnownNames.Height, KnownNames.AC},
             ((IEnumerable)d).OfType<KeyValuePair<PdfDirectObject,ValueTask<PdfDirectObject>>>().Select(i=>i.Key));
             
@@ -74,10 +74,10 @@ public class S7_3_7_DictionaryOperations
     {
         var d = await IndirectTestDictAsync;
 
-        Assert.Equal(new[] { true, false }, await AllValues<bool>(d));
+        Assert.Equal(new[] { true, false }, await AllValuesAsync<bool>(d));
     }
 
-    private async ValueTask<IEnumerable<T>> AllValues<T>(PdfDictionary d)
+    private async ValueTask<IEnumerable<T>> AllValuesAsync<T>(PdfDictionary d)
     {
         var ret = new List<T>();
         foreach (var item in d.Values)
