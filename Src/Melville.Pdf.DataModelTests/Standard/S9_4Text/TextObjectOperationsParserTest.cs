@@ -57,16 +57,16 @@ public partial class TextObjectOperationsParserTest : ParserTest
         {
             var ret = new Mock<ISpacedStringBuilder>(MockBehavior.Strict);
             var seq = new MockSequence();
-            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<Memory<byte>>()))
-                .Returns((Memory<byte> i) => CheckMemoryAsync(i, "a"u8));
+            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<ReadOnlyMemory<byte>>()))
+                .Returns((ReadOnlyMemory<byte> i) => CheckMemoryAsync(i, "a"u8));
             ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(2.0)).Returns(ValueTask.CompletedTask);
-            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<Memory<byte>>()))
-                .Returns((Memory<byte> i) => CheckMemoryAsync(i, "b"u8));
+            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<ReadOnlyMemory<byte>>()))
+                .Returns((ReadOnlyMemory<byte> i) => CheckMemoryAsync(i, "b"u8));
             ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(3.0)).Returns(ValueTask.CompletedTask);
-            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<Memory<byte>>()))
-                .Returns((Memory<byte> i) => CheckMemoryAsync(i, "c"u8));
-            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<Memory<byte>>()))
-                .Returns((Memory<byte> i) => CheckMemoryAsync(i, "s"u8));
+            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<ReadOnlyMemory<byte>>()))
+                .Returns((ReadOnlyMemory<byte> i) => CheckMemoryAsync(i, "c"u8));
+            ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(It.IsAny<ReadOnlyMemory<byte>>()))
+                .Returns((ReadOnlyMemory<byte> i) => CheckMemoryAsync(i, "s"u8));
             ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(4.0)).Returns(ValueTask.CompletedTask);
             ret.InSequence(seq).Setup(i => i.SpacedStringComponentAsync(5.0)).Returns(ValueTask.CompletedTask);
             ret.InSequence(seq).Setup(i => i.DoneWritingAsync()).Returns(FinishAsync(ret));
@@ -80,7 +80,7 @@ public partial class TextObjectOperationsParserTest : ParserTest
             return ValueTask.CompletedTask;
         }
 
-        private ValueTask CheckMemoryAsync(Memory<byte> actual, ReadOnlySpan<byte> expected)
+        private ValueTask CheckMemoryAsync(ReadOnlyMemory<byte> actual, ReadOnlySpan<byte> expected)
         {
             Assert.True(expected.SequenceEqual(actual.Span));
             return ValueTask.CompletedTask;

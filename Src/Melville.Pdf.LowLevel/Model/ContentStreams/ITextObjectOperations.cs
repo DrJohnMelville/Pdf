@@ -76,7 +76,7 @@ public interface ISpacedStringBuilder
     /// Provide a string value to the spaced string builder.
     /// </summary>
     /// <param name="value">The string value to provide.</param>
-    public ValueTask SpacedStringComponentAsync(Memory<byte> value);
+    public ValueTask SpacedStringComponentAsync(ReadOnlyMemory<byte> value);
 
     /// <summary>
     /// Indicate that no more data will be sent to the spaced string builder.

@@ -24,7 +24,7 @@ using Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
 namespace Melville.Pdf.Model.Renderers;
 
-internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpacedStringBuilder
+internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 {
     private readonly IHasPageAttributes page;
     private readonly SinglePageRenderContext pageRenderContext;
@@ -226,60 +226,16 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
      
     private FontReader FontReader() => new(pageRenderContext.Renderer.FontMapper);
 
+    public ISpacedStringBuilder GetSpacedStringBuilder() => new PdfStringWriter(this);
+
     public async ValueTask ShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
-        var font = GraphicsState.Typeface;
-        using var writer = font.BeginFontWrite(this);
-        var remainingI = decodedString;
-        var buffer = ArrayPool<uint>.Shared.Rent(10);
-
-        while (remainingI.Length > 0)
-        {
-            var characters = font.ReadCharacter.GetCharacters(ref remainingI, buffer);
-            for (int i = 0; i < characters.Length; i++)
-            {
-                var character = characters.Span[i];
-                var glyph = font.MapCharacterToGlyph.GetGlyph(character);
-                var measuredGlyphWidth = await writer.AddGlyphToCurrentStringAsync(
-                    character, glyph, CharacterPositionMatrix()).CA();
-                AdjustTextPositionForCharacter(font.CharacterWidth(character, measuredGlyphWidth), character);
-            }
-        }
-
-        ArrayPool<uint>.Shared.Return(buffer);
-        writer.RenderCurrentString(GraphicsState.TextRender, CharacterPositionMatrix());
+        var writer = GetSpacedStringBuilder();
+        await writer.SpacedStringComponentAsync(decodedString).CA();
+        await writer.DoneWritingAsync().CA();
     }
 
     private Matrix3x2 CharacterPositionMatrix() => GraphicsState.GlyphTransformMatrix();
-
-
-    private void AdjustTextPositionForCharacter(double width, uint character)
-    {
-        var delta = CharacterSpacingAdjustment(character);
-        UpdateTextPosition(width*GraphicsState.FontSize+delta);
-    }
-
-    private double CharacterSpacingAdjustment(uint character) =>
-        GraphicsState.CharacterSpacing + ApplicableWordSpacing(character);
-
-    private double ApplicableWordSpacing(uint character) => 
-        IsSpaceCharacter(character)? GraphicsState.WordSpacing:0;
-
-    private bool IsSpaceCharacter(uint character) => character == 0x20;
-
-    private void UpdateTextPosition(double width)
-    { 
-        GraphicsState.SetTextMatrix(
-            IncrementAlongActiveVector(ScaleHorizontalOffset(width))*
-            GraphicsState.TextMatrix
-        );
-    }
-
-    private double ScaleHorizontalOffset(double width) => 
-        width * GraphicsState.HorizontalTextScale;
-
-    private Matrix3x2 IncrementAlongActiveVector(double width) =>
-            Matrix3x2.CreateTranslation((float)width, 0.0f);
 
     public ValueTask MoveToNextLineAndShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
@@ -294,19 +250,6 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget, ISpa
         return MoveToNextLineAndShowStringAsync(decodedString);
     }
 
-    public ISpacedStringBuilder GetSpacedStringBuilder() => this;
-
-    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(double value)
-    {
-        var delta = GraphicsState.FontSize * value/ 1000.0;
-        UpdateTextPosition(-delta);
-        return ValueTask.CompletedTask;
-    }
-
-    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(Memory<byte> value) => 
-        ShowStringAsync(value);
-
-    ValueTask ISpacedStringBuilder.DoneWritingAsync() => ValueTask.CompletedTask;
 
     #endregion
 

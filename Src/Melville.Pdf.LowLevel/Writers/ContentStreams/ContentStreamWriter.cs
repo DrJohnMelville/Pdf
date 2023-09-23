@@ -328,7 +328,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         return ValueTask.CompletedTask;
     }
 
-    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(Memory<byte> value)
+    ValueTask ISpacedStringBuilder.SpacedStringComponentAsync(ReadOnlyMemory<byte> value)
     {
         destPipe.WriteString(value.Span);
         return ValueTask.CompletedTask;
