@@ -29,6 +29,7 @@ public partial class CmapToCodeTest: IClassFixture<ParsedCMaps>
     [InlineData(1, "0060", "00660069" , 2)]
     [InlineData(1, "0061", "00660066006C" , 2)]
     [InlineData(1, "3A52", "0397" , 2)]
+    [InlineData(2, "01", "0020" , 1)]
     public void CMapTest(int map, string hexSource, string hexDest, int expecteDConsumed)
     {
         var soura = hexSource.BitsFromHex();

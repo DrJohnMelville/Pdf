@@ -12,12 +12,13 @@ namespace Melville.Pdf.DataModelTests.CmapParsers;
 
 public class ParsedCMaps: IAsyncLifetime
 {
-    public IReadCharacter[] Maps { get; } = new IReadCharacter[2];
+    public IReadCharacter[] Maps { get; } = new IReadCharacter[3];
 
     public async Task InitializeAsync()
     {
         Maps[0] = await ParseMapAsync(CMapFromCmapSpec);
         Maps[1] = await ParseMapAsync(UnicodeCMapFromSpec);
+        Maps[2] = await ParseMapAsync(BrokenFromPdfFile);
     }
 
     public Task DisposeAsync() => Task.CompletedTask;
@@ -32,6 +33,52 @@ public class ParsedCMaps: IAsyncLifetime
                 GlyphNameToUnicodeMap.AdobeGlyphList, TwoByteCharacters.Instance, library)
             .ParseCMapAsync(encoding.LowLevel);
     }
+
+    private const string BrokenFromPdfFile = """
+         /CIDInit /ProcSet findresource begin
+         12 dict begin
+         begincmap
+         /CMapType 2 def
+         /CMapName/R100 def
+         1 begincodespacerange
+         <0000><ffff>
+         endcodespacerange
+         29 beginbfrange
+         <01><01><0020>
+         <02><02><0041>
+         <03><03><0062>
+         <04><05><0073>
+         <06><06><0072>
+         <07><07><0061>
+         <08><08><0063>
+         <09><09><003a>
+         <0a><0a><0049>
+         <0b><0c><006e>
+         <0d><0d><0064>
+         <0e><0e><0075>
+         <0f><0f><0069>
+         <10><10><0044>
+         <11><11><006d>
+         <12><12><0065>
+         <13><13><0054>
+         <14><14><0067>
+         <15><15><0066>
+         <16><16><0053>
+         <17><17><0078>
+         <18><18><006c>
+         <19><19><0079>
+         <1a><1a><0070>
+         <1b><1b><0050>
+         <1c><1c><0068>
+         <1d><1d><004c>
+         <1e><1e><0046>
+         <1f><1f><0043>
+         endbfrange
+         endcmap
+         CMapName currentdict /CMap defineresource pop
+         end end
+
+         """;
 
     private const string CMapFromCmapSpec =
         """

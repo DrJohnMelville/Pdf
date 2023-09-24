@@ -29,4 +29,5 @@ internal abstract partial class CMapMapperBase
 
     public override string ToString() => $"{minValue} .. {maxValue}";
 
+    public ByteRange MinimumContainingRange() => new(minValue, maxValue, this);
 }

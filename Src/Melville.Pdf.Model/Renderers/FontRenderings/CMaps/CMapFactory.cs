@@ -133,6 +133,13 @@ public partial class CMapFactory
                 return;
             }
         }
+
+        HandleSpecViolation_NpRangeForMapper(mapper);
+    }
+
+    private void HandleSpecViolation_NpRangeForMapper(CMapMapperBase mapper)
+    {
+        data.Add(mapper.MinimumContainingRange());
     }
 
     internal void AddBaseFontRanges(ReadOnlySpan<PostscriptValue> values) =>

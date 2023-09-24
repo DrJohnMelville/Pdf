@@ -44,9 +44,15 @@ BuiltInFont:CourierBold!Courier-Bold
 BuiltInFont:TimesOblique!Times-Oblique
 BuiltInFont:HelveticaOblique!Helvetica-Oblique
 BuiltInFont:CourierOblique!Courier-Oblique
+BuiltInFont:TimesItalic!Times-Italic
+BuiltInFont:HelveticaItalic!Helvetica-Italic
+BuiltInFont:CourierItalic!Courier-Italic
 BuiltInFont:TimesBoldOblique!Times-BoldOblique
 BuiltInFont:HelveticaBoldOblique!Helvetica-BoldOblique
 BuiltInFont:CourierBoldOblique!Courier-BoldOblique
+BuiltInFont:TimesBoldItalic!Times-BoldItalic
+BuiltInFont:HelveticaBoldItalic!Helvetica-BoldItalic
+BuiltInFont:CourierBoldItalic!Courier-BoldItalic
 
 FontEncoding:StandardEncoding
 FontEncoding:MacRomanEncoding
