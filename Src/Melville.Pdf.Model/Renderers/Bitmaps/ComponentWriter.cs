@@ -27,15 +27,15 @@ internal class ComponentWriter
             throw new PdfParseException("Incorrect number of output intervals");
     }
 
-    public unsafe void WriteComponent(ref byte* target, int[] component, byte alpha)
+    public unsafe DeviceColor WriteComponent(int[] component)
     {
         Span<double> partialColor = stackalloc double[component.Length];
         for (int i = 0; i < partialColor.Length; i++)
         {
             partialColor[i] = sourceInterval.MapTo(outputIntervals[i], component[i]);
         }
-        var color = colorSpace.SetColor(partialColor);
-        BitmapPointerMath.PushPixel(ref target, (color with{Alpha = alpha}).AsPreMultiplied());
+
+        return colorSpace.SetColor(partialColor);
     }
 
 }

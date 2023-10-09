@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  <TieredPGO>true</TieredPGO>
   </PropertyGroup>
 
   <ItemGroup>

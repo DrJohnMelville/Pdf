@@ -4,12 +4,42 @@
 /// Melville.PDF's primary objective is to render to the screen.  Screen colors are represented
 /// by four bytes representing Red, Green, Blue, and Alpha in a SRGB colorspace.
 /// </summary>
-/// <param name="RedByte">A byte representing the red component</param>
-/// <param name="GreenByte">A byte representing the green component</param>
-/// <param name="BlueByte">A byte representing the blue component</param>
-/// <param name="Alpha">A byte representing transparency 0 = fully transparent, 255 = fully opaque</param>
-public readonly record struct DeviceColor(byte RedByte, byte GreenByte, byte BlueByte, byte Alpha)
+public readonly struct DeviceColor
 {
+    // The ordering of these fields allows us to use a simple memory copy to copy device colors int
+    // bitmaps.
+    /// <summary>
+    /// The blue component of the color
+    /// </summary>
+    public readonly byte BlueByte;
+    /// <summary>
+    /// The green component of the color
+    /// </summary>
+    public readonly byte GreenByte;
+    /// <summary>
+    /// The red component of the color
+    /// </summary>
+    public readonly byte RedByte;
+    /// <summary>
+    /// The Alpha component of the color. 0 == fully transparent 255 = fully opaque.
+    /// </summary>
+    public readonly byte Alpha;
+
+    /// <summary>
+    /// Create a new device color
+    /// </summary>
+    /// <param name="redByte">The red component</param>
+    /// <param name="greenByte">The green component</param>
+    /// <param name="blueByte">The blue component</param>
+    /// <param name="alpha">The alpha component</param>
+    public DeviceColor(byte redByte, byte greenByte, byte blueByte, byte alpha)
+    {
+        RedByte = redByte;
+        GreenByte = greenByte;
+        BlueByte = blueByte;
+        Alpha = alpha;
+    }
+
     /// <summary>
     /// Create a device color using doubles in the range of 0-1 to represent the four components
     /// </summary>
