@@ -23,7 +23,7 @@ public readonly partial struct JpegStreamFactory
     /// </summary>
     /// <param name="s">A readable stream containing a JPEG image file</param>
     /// <returns>A stream that will read pixel values from the JPEG image.   Top to bottom, left to right.</returns>
-    public ValueTask<Stream> FromStreamAsync(Stream s) => FromPipeAsync(PipeReader.Create(s), s.Length);
+    public ValueTask<Stream> FromStreamAsync(Stream s) => FromPipeAsync(PipeReader.Create(s));
 
     /// <summary>
     /// Create a Jpeg stream from a pipereader.
@@ -31,9 +31,14 @@ public readonly partial struct JpegStreamFactory
     /// <param name="pipe">The pipe reader.</param>
     /// <param name="length">The length of the data</param>
     /// <returns>A stream representing the image</returns>
-    public async ValueTask<Stream> FromPipeAsync(PipeReader pipe, long length)
+    public async ValueTask<Stream> FromPipeAsync(PipeReader pipe)
     {
-        var seq = await pipe.ReadAtLeastAsync((int)length);
+        var seq = await pipe.ReadAsync();
+        while (!seq.IsCompleted)
+        {
+            pipe.AdvanceTo(seq.Buffer.Start, seq.Buffer.End);
+            seq = await pipe.ReadAsync();
+        }
         return FromReadOnlySequence(seq.Buffer);
     }
 
