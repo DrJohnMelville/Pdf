@@ -27,7 +27,7 @@ internal class ComponentWriter
             throw new PdfParseException("Incorrect number of output intervals");
     }
 
-    public unsafe DeviceColor WriteComponent(int[] component)
+    public unsafe DeviceColor ColorFromComponents(int[] component)
     {
         Span<double> partialColor = stackalloc double[component.Length];
         for (int i = 0; i < partialColor.Length; i++)

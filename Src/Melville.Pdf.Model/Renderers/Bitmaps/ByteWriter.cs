@@ -57,22 +57,37 @@ internal abstract class ByteWriter: IByteWriter
 
     private DeviceColor ComputeColor()
     {
+        ClearCacheIfTooBig();
+        return TryReadFromCache();
+    }
+
+    private DeviceColor TryReadFromCache()
+    {
+        ref DeviceColor cacheLine = ref
+            CollectionsMarshal.GetValueRefOrAddDefault(cache, HashForComponents(), out bool exists);
+        if (!exists)
+        {
+            cacheLine = componentWriter.ColorFromComponents(components);
+        }
+
+        return cacheLine;
+    }
+
+    private void ClearCacheIfTooBig()
+    {
         if (cache.Count >= maxSize) cache.Clear();
+    }
+
+    private int HashForComponents()
+    {
         var hc = new HashCode();
         foreach (var component in components)
         {
             hc.Add(component);
         }
 
-        ref DeviceColor cacheLine = ref
-            CollectionsMarshal.GetValueRefOrAddDefault(cache, hc.ToHashCode(), out bool exists);
-        if (!exists)
-        {
-            cacheLine = componentWriter.WriteComponent(components);
-        }
-
-        return cacheLine;
-
+        var hashCode = hc.ToHashCode();
+        return hashCode;
     }
 
     private Dictionary<int, DeviceColor> cache = new(maxSize);
