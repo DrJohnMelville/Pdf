@@ -1,8 +1,10 @@
 ﻿# Releases
 
-## 0.4.5 -- currently in preview
+## 10/10/2023 0.4.5
 - Fixed a bug when a JPEG stream was subsequently encoded in a flate stream.
 - Performance improvement in bitmaps that have a custom color mapping. 
+- For those who have noticed the increase in release cadence.  I am using Melville.PDF in my main project
+at work, so the releases are a little closer together as I need to have functioning software at work.
 
 ## 9/22/2023 0.4.4
 - Melville.SharpFont can find its native binaries when compressed into an architecture-specific project.

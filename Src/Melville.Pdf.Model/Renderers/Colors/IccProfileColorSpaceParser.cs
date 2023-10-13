@@ -25,7 +25,7 @@ public static class IccProfileColorSpaceParser
     /// <returns>The ICC colorspace read from the stream.</returns>
     public static async ValueTask<IColorSpace> ParseAsync(PdfStream stream)
     {
-        var altName = await ComputeAlternateColorSpaceName(stream).CA();
+        var altName = await ComputeAlternateColorSpaceNameAsync(stream).CA();
         try
         {
             if (!HasExplicitAlternateRgbColorSpace(stream, altName))
@@ -40,7 +40,7 @@ public static class IccProfileColorSpaceParser
     private static bool HasExplicitAlternateRgbColorSpace(PdfStream stream, PdfDirectObject altName) => 
         altName.Equals(KnownNames.DeviceRGB) && stream.ContainsKey(KnownNames.Alternate);
 
-    private static async ValueTask<PdfDirectObject> ComputeAlternateColorSpaceName(PdfStream stream) =>
+    private static async ValueTask<PdfDirectObject> ComputeAlternateColorSpaceNameAsync(PdfStream stream) =>
         await stream.GetOrDefaultAsync(KnownNames.Alternate,
             DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.N, 0).CA())).CA();
 
