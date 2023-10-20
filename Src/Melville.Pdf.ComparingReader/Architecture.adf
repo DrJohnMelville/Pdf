@@ -27,6 +27,8 @@ Group ExtractImages
     Melville.Pdf.ComparingReader.Viewers.ExtractedImages.*
 Group ExtractTexts
     Melville.Pdf.ComparingReader.Viewers.ExtractedTexts.*
+Group FormReader
+    Melville.Pdf.ComparingReader.Viewers.FormViewer.*
        
 MainWindow => Renderers
 MainWindow => REPL
@@ -71,3 +73,6 @@ Melville.Pdf.ComparingReader.Viewers.SkiaViewer.* ^=> Melville.Pdf.FontLibrary.*
 
 #Dependency for the ExtractedU Images Viewer
 Melville.Pdf.ComparingReader.Viewers.ExtractedImages.* => Melville.Pdf.ImageExtractor.*
+
+#Dependency for the forms viewer
+FormReader => Melville.Pdf.FormReader.*

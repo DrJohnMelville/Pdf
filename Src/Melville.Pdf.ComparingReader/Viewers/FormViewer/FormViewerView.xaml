@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Melville.Pdf.ComparingReader.Viewers.FormViewer.FormViewerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Melville.Pdf.ComparingReader.Viewers.FormViewer"
+             xmlns:formReader="clr-namespace:Melville.Pdf.FormReader;assembly=Melville.Pdf.FormReader"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.Resources>
+            <local:SelectByInterface x:Key="DTSelector">
+                <DataTemplate DataType="{x:Type formReader:IPdfSinglePick}">
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
+                                  DisplayMemberPath="Title"
+                                  SelectedItem="{Binding Value, Mode=TwoWay}"/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type formReader:IPdfCheckBox}">
+                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Content="{Binding Name}"/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type formReader:IPdfTextBox}">
+                        <TextBox Grid.Column="1" Text="{Binding StringValue, Mode=TwoWay}"/>
+                </DataTemplate>
+            </local:SelectByInterface>
+
+            <DataTemplate DataType="{x:Type formReader:IPdfFormField}" x:Key ="DataTemp">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                    <ContentPresenter Content="{Binding}" Grid.Column="1"
+                                      ContentTemplateSelector="{StaticResource DTSelector}"/>
+                </Grid>
+            </DataTemplate>
+        </Grid.Resources>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Form.Fields}"
+                          ItemTemplate="{StaticResource DataTemp}">
+
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

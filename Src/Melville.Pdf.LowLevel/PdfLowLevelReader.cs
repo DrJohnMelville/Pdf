@@ -25,8 +25,8 @@ public readonly struct PdfLowLevelReader
 
 
     /// <summary>
-    /// Weakly tyoed method to creat a low level document from a string, byte array, or streaml
-    /// </summary>1111111111
+    /// Weakly typed method to create a low level document from a string, byte array, or stream
+    /// </summary>
     /// <param name="argument">The CodeSource to read from</param>
     /// <returns> The PdfLowLevelDocument read;</returns>
     /// <exception cref="ArgumentException">If the CodeSource object is not a string, stream, oy

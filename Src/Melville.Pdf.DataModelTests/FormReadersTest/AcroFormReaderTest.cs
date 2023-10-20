@@ -1,0 +1,220 @@
+﻿using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Melville.Pdf.FormReader;
+using Melville.Pdf.FormReader.AcroForms;
+using Melville.Pdf.LowLevel;
+using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.Model.Creators;
+using Xunit;
+
+namespace Melville.Pdf.DataModelTests.FormReadersTest;
+
+public class AcroFormReaderTest
+{
+    private static async Task<IPdfForm> CreatSingleFieldFormAsync(PdfDictionary formField)
+    {
+        var builder = new PdfDocumentCreator();
+        var fieldDict = builder.LowLevelCreator.Add(formField
+        );
+
+        var acroDict = builder.LowLevelCreator.Add(new DictionaryBuilder()
+            .WithItem(KnownNames.Fields, new PdfArray(
+                fieldDict))
+            .AsDictionary());
+
+        var rootDict = builder.LowLevelCreator.Add(new DictionaryBuilder()
+            .AsDictionary()
+        );
+
+        builder.AddToRootDictionary(KnownNames.AcroForm, acroDict);
+
+        var lld = builder.CreateDocument();
+        var reader = await FormReaderFacade.ReadFormAsync(lld);
+        return reader;
+    }
+
+    [Fact]
+    public async Task ReadSingleTextFieldAsync()
+    {
+        var formField = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Annot)
+            .WithItem(KnownNames.Subtype, KnownNames.Widget)
+            .WithItem(KnownNames.FT, KnownNames.Tx)
+            .WithItem(KnownNames.Ff, 0)
+            .WithItem(KnownNames.T, "Text Field")
+            .WithItem(KnownNames.V, "Text Value")
+            .AsDictionary();
+        
+        var reader = await CreatSingleFieldFormAsync(formField);
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        reader.Fields[0].Should().BeOfType<AcroTextBox>();
+        reader.Fields[0].Name.Should().Be("Text Field");
+        reader.Fields[0].Value.Should().Be("Text Value");
+    }
+
+    [Fact]
+    public async Task ReadSingleCheckBoxAsync()
+    {
+        var formField = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Annot)
+            .WithItem(KnownNames.Subtype, KnownNames.Widget)
+            .WithItem(KnownNames.FT, KnownNames.Btn)
+            .WithItem(KnownNames.Ff, 0)
+            .WithItem(KnownNames.T, "CheckBox Field")
+            .WithItem(KnownNames.V, KnownNames.Yes)
+            .AsDictionary();
+        
+        var reader = await CreatSingleFieldFormAsync(formField);
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        reader.Fields[0].Should().BeOfType<AcroCheckBox>()
+            .Subject.IsChecked.Should().Be(true);
+        reader.Fields[0].Name.Should().Be("CheckBox Field");
+        reader.Fields[0].Value.Should().Be("Yes");
+
+    }
+
+    [Fact]
+    public async Task ReadPushButtonAsync()
+    {
+        var formField = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Annot)
+            .WithItem(KnownNames.Subtype, KnownNames.Widget)
+            .WithItem(KnownNames.FT, KnownNames.Btn)
+            .WithItem(KnownNames.Ff, (int)AcroFieldFlags.PushButton)
+            .WithItem(KnownNames.T, "Push Button")
+            .AsDictionary();
+        
+        var reader = await CreatSingleFieldFormAsync(formField);
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        reader.Fields[0].Should().BeOfType<AcroFormField>();
+        reader.Fields[0].Name.Should().Be("Push Button");
+
+    }
+
+    [Fact]
+    public void CheckBoxBool()
+    {
+        var sut = new AcroCheckBox("xx", KnownNames.OFF, PdfDirectObject.CreateNull(), PdfDictionary.Empty);
+
+        sut.IsChecked.Should().Be(false);
+        sut.IsChecked = true;
+        sut.IsChecked.Should().Be(true);
+        sut.Value.Should().Be(KnownNames.Yes);
+        sut.IsChecked = false;
+        sut.IsChecked.Should().Be(false);
+        sut.Value.Should().Be(KnownNames.OFF);
+    }
+
+    [Fact]
+    public async Task ReadRadioButtonsAsync()
+    {
+        var rb1 = new DictionaryBuilder()
+            .WithItem(KnownNames.AS, PdfDirectObject.CreateName("JDM"))
+            .AsDictionary();
+        var rb2 = new DictionaryBuilder()
+            .WithItem(KnownNames.AS, PdfDirectObject.CreateName("MDJ"))
+            .AsDictionary();
+
+        var formField = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Annot)
+            .WithItem(KnownNames.Subtype, KnownNames.Widget)
+            .WithItem(KnownNames.FT, KnownNames.Btn)
+            .WithItem(KnownNames.Ff, (int)AcroFieldFlags.Radio)
+            .WithItem(KnownNames.T, "Radio Button")
+            .WithItem(KnownNames.V, PdfDirectObject.CreateName("JDM"))
+            .WithItem(KnownNames.Kids, PdfDirectObject.FromArray(rb1, rb2))
+            .AsDictionary();
+        
+        var reader = await CreatSingleFieldFormAsync(formField);
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        var rb = reader.Fields[0].Should().BeOfType<AcroRadioButton>().Subject;
+        rb.Name.Should().Be("Radio Button");
+        rb.Value.Should().Be("/JDM");
+        rb.Options.Count.Should().Be(2);
+        rb.Options[0].Title.Should().Be("JDM");
+        rb.Options[1].Title.Should().Be("MDJ");
+        rb.Selected.Should().Be(rb.Options[0]);
+    }
+
+    [Fact]
+    public async Task ReadSingleChoiceAsync()
+    {
+
+        var formField = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Annot)
+            .WithItem(KnownNames.Subtype, KnownNames.Widget)
+            .WithItem(KnownNames.FT, KnownNames.Ch)
+            .WithItem(KnownNames.Ff, 0)
+            .WithItem(KnownNames.T, "Choice")
+            .WithItem(KnownNames.V, "Opt2Value")
+            .WithItem(KnownNames.Opt, PdfDirectObject.FromArray(
+                "JDM",
+                  PdfDirectObject.FromArray("Opt2Value", "Opt2Display"),
+                "MDJ"
+                ))
+            .AsDictionary();
+        
+        var reader = await CreatSingleFieldFormAsync(formField);
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        var rb = reader.Fields[0].Should().BeOfType<AcroSingleChoice>().Subject;
+        rb.Name.Should().Be("Choice");
+        rb.Value.Should().Be("Opt2Value");
+        rb.Options.Count.Should().Be(3);
+        rb.Options[0].Title.Should().Be("JDM");
+        rb.Options[1].Title.Should().Be("Opt2Display");
+        rb.Options[1].Value.Should().Be("Opt2Value");
+        rb.Options[2].Title.Should().Be("MDJ");
+        rb.Selected.Should().Be(rb.Options[1]);
+    }
+    [Fact]
+    public async Task ReadMultiChoiceAsync()
+    {
+
+        var formField = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Annot)
+            .WithItem(KnownNames.Subtype, KnownNames.Widget)
+            .WithItem(KnownNames.FT, KnownNames.Ch)
+            .WithItem(KnownNames.Ff, (int)AcroFieldFlags.MultiSelect)
+            .WithItem(KnownNames.T, "Choice")
+            .WithItem(KnownNames.V, PdfDirectObject.FromArray("Opt2Value", "MDJ"))
+            .WithItem(KnownNames.Opt, PdfDirectObject.FromArray(
+                "JDM",
+                  PdfDirectObject.FromArray("Opt2Value", "Opt2Display"),
+                "MDJ"
+                ))
+            .AsDictionary();
+        
+        var reader = await CreatSingleFieldFormAsync(formField);
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        var rb = reader.Fields[0].Should().BeOfType<AcroMultipleChoice>().Subject;
+        rb.Name.Should().Be("Choice");
+
+        rb.Options.Count.Should().Be(3);
+        rb.Options[0].Title.Should().Be("JDM");
+        rb.Options[1].Title.Should().Be("Opt2Display");
+        rb.Options[1].Value.Should().Be("Opt2Value");
+        rb.Options[2].Title.Should().Be("MDJ");
+
+        var sel = (await rb.Value.Get<PdfArray>().CastAsync<string>()).Should().HaveCount(2).And.Subject;
+        sel.First().Should().Be("Opt2Value");
+        sel.Last().Should().Be("MDJ");
+
+        var sel2 = rb.Selected.Should().HaveCount(2).And.Subject;
+        sel2.First().Title.Should().Be("Opt2Display");
+        sel2.Last().Title.Should().Be("MDJ");
+    }
+}

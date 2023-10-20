@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="FluentAssertions" Version="6.12.0" />
 		<PackageReference Include="Melville.FileSystem" Version="0.6.18" />
 		<PackageReference Include="Melville.Hacks" Version="0.6.18" />
 		<PackageReference Include="Meziantou.Xunit.ParallelTestFramework" Version="2.1.0" />
@@ -30,6 +31,7 @@
 			<OutputItemType>Analyzer</OutputItemType>
 		</ProjectReference>
 		<ProjectReference Include="..\Melville.Icc\Melville.Icc.csproj" />
+		<ProjectReference Include="..\Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.ImageExtractor\Melville.Pdf.ImageExtractor.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.LowLevel\Melville.Pdf.LowLevel.csproj" />
 		<ProjectReference Include="..\Melville.Pdf.Model\Melville.Pdf.Model.csproj" />
@@ -45,6 +47,7 @@
 
 	<ItemGroup>
 		<Folder Include="ImageExtractors\" />
+		<Folder Include="FormReadersTest\" />
 		<Folder Include="Postscript.Interpreter\Tokenizers\" />
 		<Folder Include="Standard\S7_6Encryption\S7_6_3_4PasswordAlgorithms\V6Algorithms\NewFolder\" />
 		<Folder Include="Standard\S9_10 TextExtraction\" />

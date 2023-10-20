@@ -128,10 +128,13 @@ Encryptor:V2
 
 
 Pdf:AC
+Pdf:AcroForm
 Pdf:Activation
 Pdf:All
 Pdf:Alternate
 Pdf:And
+Pdf:Annot
+Pdf:AS
 Pdf:Ascent
 Pdf:AuthEvent
 Pdf:Background
@@ -143,6 +146,7 @@ Pdf:BitsPerComponent
 Pdf:BitsPerSample
 Pdf:BlackIs1
 Pdf:Bounds
+Pdf:Btn
 Pdf:C0
 Pdf:C1
 Pdf:CapHeight
@@ -152,6 +156,7 @@ Pdf:CalCMYK
 Pdf:Catalog
 Pdf:CF
 Pdf:CFM
+Pdf:Ch
 Pdf:CharProcs
 Pdf:CharSet
 Pdf:CIDSystemInfo
@@ -193,6 +198,8 @@ Pdf:EndOfLine
 Pdf:EndOfBlock
 Pdf:Extend
 Pdf:Extends
+Pdf:Ff
+Pdf:Fields
 Pdf:Filter
 Pdf:First
 Pdf:FirstChar
@@ -207,6 +214,7 @@ Pdf:FontFile3
 Pdf:FontMatrix
 Pdf:FontName
 Pdf:FontWeight
+Pdf:FT
 Pdf:Function
 Pdf:Functions
 Pdf:FunctionType
@@ -245,15 +253,16 @@ Pdf:None
 Pdf:Not
 Pdf:Nums
 Pdf:O
-Pdf:OE
-Pdf:OFF
+Pdf:ObjStm
 Pdf:OC
 Pdf:OCG
 Pdf:OCGs
 Pdf:OCMD
 Pdf:OCProperties
+Pdf:OE
+Pdf:OFF
 Pdf:ON
-Pdf:ObjStm
+Pdf:Opt
 Pdf:Or
 Pdf:Order
 Pdf:Ordering
@@ -290,11 +299,13 @@ Pdf:StrF
 Pdf:StemV
 Pdf:Subtype
 Pdf:Supplement
+Pdf:T
 Pdf:Text
 Pdf:TilingType
 Pdf:ToUnicode
 Pdf:Type
 Pdf:Type1C
+Pdf:Tx
 Pdf:U
 Pdf:UE
 Pdf:Usage
@@ -304,8 +315,10 @@ Pdf:VE
 Pdf:View
 Pdf:ViewState
 Pdf:Version
+Pdf:V
 Pdf:W
 Pdf:W2
+Pdf:Widget
 Pdf:Width
 Pdf:Widths
 Pdf:WhitePoint
@@ -313,4 +326,5 @@ Pdf:WMode
 Pdf:XRef
 Pdf:XStep
 Pdf:XRefStm
+Pdf:Yes
 Pdf:YStep
