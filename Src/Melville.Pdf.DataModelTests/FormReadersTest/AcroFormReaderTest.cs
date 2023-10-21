@@ -1,12 +1,16 @@
 ﻿using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Melville.Parsing.Streams;
 using Melville.Pdf.FormReader;
 using Melville.Pdf.FormReader.AcroForms;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.Model.Creators;
+using Melville.SharpFont;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.FormReadersTest;
@@ -38,6 +42,30 @@ public class AcroFormReaderTest
     [Fact]
     public async Task ReadSingleTextFieldAsync()
     {
+        var reader = await SingleTextBoxFormAsync();
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        reader.Fields[0].Should().BeOfType<AcroTextBox>();
+        reader.Fields[0].Name.Should().Be("Text Field");
+        reader.Fields[0].Value.Should().Be("Text Value");
+    }
+
+    [Fact]
+    public static async Task ModifyTextFormAsync()
+    {
+        var frm = await SingleTextBoxFormAsync();
+        ((IPdfTextBox)frm.Fields[0]).StringValue = "FooBar";
+
+        var stream = new MultiBufferStream();
+        await frm.CreateModifiedDocument().WriteToAsync(stream);
+
+        var f2 = await FormReaderFacade.ReadFormAsync(stream.CreateReader());
+        f2.Fields[0].Value.ToString().Should().Be("FooBar");
+    }
+
+    private static async Task<IPdfForm> SingleTextBoxFormAsync()
+    {
         var formField = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Annot)
             .WithItem(KnownNames.Subtype, KnownNames.Widget)
@@ -46,14 +74,9 @@ public class AcroFormReaderTest
             .WithItem(KnownNames.T, "Text Field")
             .WithItem(KnownNames.V, "Text Value")
             .AsDictionary();
-        
-        var reader = await CreatSingleFieldFormAsync(formField);
 
-        reader.Should().NotBeNull();
-        reader.Fields.Should().HaveCount(1);
-        reader.Fields[0].Should().BeOfType<AcroTextBox>();
-        reader.Fields[0].Name.Should().Be("Text Field");
-        reader.Fields[0].Value.Should().Be("Text Value");
+        var reader = await CreatSingleFieldFormAsync(formField);
+        return reader;
     }
 
     [Fact]
@@ -137,7 +160,7 @@ public class AcroFormReaderTest
 
         reader.Should().NotBeNull();
         reader.Fields.Should().HaveCount(1);
-        var rb = reader.Fields[0].Should().BeOfType<AcroRadioButton>().Subject;
+        var rb = reader.Fields[0].Should().BeOfType<AcroSingleChoice>().Subject;
         rb.Name.Should().Be("Radio Button");
         rb.Value.Should().Be("/JDM");
         rb.Options.Count.Should().Be(2);

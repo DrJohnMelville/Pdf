@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.FormReader;
@@ -6,6 +7,7 @@ namespace Melville.Pdf.FormReader;
 public interface IPdfForm
 {
     IReadOnlyList<IPdfFormField> Fields { get; }
+    PdfLowLevelDocument CreateModifiedDocument();
 }
 
 public interface IPdfFormField

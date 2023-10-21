@@ -14,10 +14,9 @@ using Melville.Pdf.LowLevel.Writers.ObjectWriters;
 namespace Melville.Pdf.LowLevel.Writers.Builder;
 
 /// <summary>
-/// This interface allows additions and replacement of objects in a PdfLowLevelDocument
-/// Then a follow up trailer can be written that modifies a PDF document using the new or replaced objects.
+/// This is an object that holds PdfIndirectObjects 
 /// </summary>
-public interface ILowLevelDocumentModifier : IPdfObjectCreatorRegistry
+public interface ICanReplaceObjects
 {
     /// <summary>
     /// Give an indirect object reference a new value
@@ -25,6 +24,14 @@ public interface ILowLevelDocumentModifier : IPdfObjectCreatorRegistry
     /// <param name="reference">The reference to reassign</param>
     /// <param name="value">The new value</param>
     void ReplaceReferenceObject(PdfIndirectObject reference, PdfDirectObject value);
+}
+
+/// <summary>
+/// This interface allows additions and replacement of objects in a PdfLowLevelDocument
+/// Then a follow up trailer can be written that modifies a PDF document using the new or replaced objects.
+/// </summary>
+public interface ILowLevelDocumentModifier : IPdfObjectCreatorRegistry, ICanReplaceObjects
+{
     /// <summary>
     /// Append the modification trailer to a stream.
     /// </summary>

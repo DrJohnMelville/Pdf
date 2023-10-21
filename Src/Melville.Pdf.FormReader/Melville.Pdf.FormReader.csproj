@@ -20,5 +20,9 @@
 		</ProjectReference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="AcroForms\NewFolder\" />
+	</ItemGroup>
+
 
 </Project>
