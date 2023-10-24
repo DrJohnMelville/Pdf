@@ -6,6 +6,7 @@ using Melville.Pdf.FormReader;
 using Melville.Pdf.FormReader.AcroForms;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.Model.Creators;
 using Xunit;
@@ -54,7 +55,7 @@ public class AcroFormReaderTest
         await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(stream);
 
         var f2 = await FormReaderFacade.ReadFormAsync(stream.CreateReader());
-        f2.Fields[0].Value.ToString().Should().Be("FooBar");
+        f2.Fields[0].Value.DecodedString().Should().Be("FooBar");
     }
 
     private static async Task<IPdfForm> SingleTextBoxFormAsync()

@@ -22,10 +22,15 @@ internal abstract class PostscriptComposite : IPostscriptComposite,
     string IPostscriptValueStrategy<string>.GetValue(in MementoUnion memento)
     {
         if (inStringGen) return "<Blocked Recursive String write.>";
-        inStringGen = true;
-        var ret = StringRep();
-        inStringGen = false;
-        return ret;
+        try
+        {
+            inStringGen = true;
+            return StringRep();
+        }
+        finally
+        {
+            inStringGen = false;
+        }
     }
 
     private string StringRep()

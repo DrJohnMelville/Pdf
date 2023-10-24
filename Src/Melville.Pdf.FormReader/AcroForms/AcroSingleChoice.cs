@@ -13,7 +13,8 @@ internal partial class AcroSingleChoice : AcroPick, IPdfSinglePick
         set => Value = value?.Value ?? PdfDirectObject.CreateNull();
     }
 
-    protected override ValueTask UpdateAppearance(ICanReplaceObjects target) => 
-        ReplaceTextAppearance(target);
+    protected override ValueTask UpdateAppearance(
+        ICanReplaceObjects target, PdfDirectObject formAppearanceString) => 
+        ReplaceTextAppearance(target, formAppearanceString);
 
 }

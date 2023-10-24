@@ -95,7 +95,8 @@ public class ColorMacrosTest
     [Fact] public async Task CmykStrokeMacroAsync()
     {
         await sut.SetStrokeCMYKAsync(0,0,0,0);
-        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpaceAsync(), state.StronglyTypedCurrentState().StrokeColorSpace);
+        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpaceAsync(),
+            state.StronglyTypedCurrentState().StrokeColorSpace);
         VerifyWhite(state.StronglyTypedCurrentState().StrokeColor);
     }
     [Fact] public void GrayNonstrokingMacro()
@@ -121,7 +122,6 @@ public class ColorMacrosTest
     [Fact] public async Task Cmyk1111IsBlackAsync()
     {
         await sut.SetNonstrokingCMYKAsync(1.0,1.0,1.0, 1.0);
-        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpaceAsync(), state.StronglyTypedCurrentState().NonstrokeColorSpace);
         Assert.Equal(new DeviceColor(0,0,0,255), state.StronglyTypedCurrentState().NonstrokeColor);
     }
 

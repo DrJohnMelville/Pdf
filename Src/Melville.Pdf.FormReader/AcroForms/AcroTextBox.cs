@@ -6,7 +6,7 @@ using Melville.Pdf.LowLevel.Writers.Builder;
 namespace Melville.Pdf.FormReader.AcroForms;
 
 [FromConstructor]
-internal partial class AcroTextBox : AcroFormField, IPdfTextBox
+internal partial class AcroTextBox : AcroFieldWithAppearance, IPdfTextBox
 {
     public string StringValue
     {
@@ -14,6 +14,7 @@ internal partial class AcroTextBox : AcroFormField, IPdfTextBox
         set => Value =  PdfDirectObject.CreateUtf8String(value);
     }
 
-    protected override ValueTask UpdateAppearance(ICanReplaceObjects target) => 
-        ReplaceTextAppearance(target);
+    protected override ValueTask UpdateAppearance(
+        ICanReplaceObjects target, PdfDirectObject formAppearanceString) => 
+        ReplaceTextAppearance(target, formAppearanceString);
 }

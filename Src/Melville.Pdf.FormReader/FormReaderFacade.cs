@@ -1,4 +1,6 @@
-﻿using Melville.Pdf.FormReader.AcroForms;
+﻿using Melville.Hacks.Reflection;
+using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.FormReader.AcroForms;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
@@ -9,7 +11,7 @@ namespace Melville.Pdf.FormReader;
 
 public static class FormReaderFacade
 {
-    public static ValueTask<IPdfForm> ReadFormAsync(
+    public static ValueTask<IPdfForm> ReadFormFromFileAsync(
         string path, IPasswordSource? passwordSource = null) =>
         ReadFormAsync(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read), passwordSource);
 
@@ -23,6 +25,10 @@ public static class FormReaderFacade
         var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
         var acroForm = await root.GetAsync<PdfDictionary>(KnownNames.AcroForm);
         var fields =await acroForm.GetAsync<PdfArray>(KnownNames.Fields);
-        return new AcroPdfForm(doc, await AcroFieldFactory.ParseFieldsAsync(fields.RawItems));
+        return new AcroPdfForm(doc, await AcroFieldFactory.ParseFieldsAsync(fields.RawItems),
+            await GetFormAppearanceDefaultAsync(acroForm).CA());
     }
+
+    private static ValueTask<PdfDirectObject> GetFormAppearanceDefaultAsync(PdfDictionary acroForm) =>
+        acroForm.GetOrDefaultAsync(KnownNames.DA, PdfDirectObject.CreateString(""u8));
 }
