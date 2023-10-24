@@ -39,6 +39,14 @@ internal class PdfObjectWriter
         }
     }
 
+    public ValueTask WriteAsync(PdfDirectObject item)
+    {
+        if (item.TryGet(out PdfStream? stream))
+            return WriteStreamAsync(stream);
+        Write(item);
+        return ValueTask.CompletedTask;
+    }
+
     public void Write(PdfDirectObject item)
     {
         switch (item)

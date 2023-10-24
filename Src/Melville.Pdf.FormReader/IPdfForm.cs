@@ -7,7 +7,7 @@ namespace Melville.Pdf.FormReader;
 public interface IPdfForm
 {
     IReadOnlyList<IPdfFormField> Fields { get; }
-    PdfLowLevelDocument CreateModifiedDocument();
+    ValueTask<PdfLowLevelDocument> CreateModifiedDocumentAsync();
 }
 
 public interface IPdfFormField

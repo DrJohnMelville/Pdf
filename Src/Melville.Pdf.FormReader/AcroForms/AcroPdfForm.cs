@@ -1,50 +1,27 @@
 ﻿using Melville.INPC;
-using Melville.Pdf.LowLevel.Model.Conventions;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Document;
-using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
 namespace Melville.Pdf.FormReader.AcroForms;
 
 internal partial class AcroPdfForm : IPdfForm
 {
-    [FromConstructor] private readonly PdfLowLevelDocument doc;
+    [FromConstructor] public PdfLowLevelDocument document;
     [FromConstructor] public IReadOnlyList<IPdfFormField> Fields { get; }
-    public PdfLowLevelDocument CreateModifiedDocument()
+    public async ValueTask<PdfLowLevelDocument> CreateModifiedDocumentAsync()
     {
-        var ret = new ModifyableLowLevelDocument(doc);
-        WriteChangedFields(ret);
+        var ret = new ModifyableLowLevelDocument(document );
+        await WriteChangedFieldsAsync(ret).CA();
         return ret;
     }
 
-    private void WriteChangedFields(ICanReplaceObjects target)
+    private async ValueTask WriteChangedFieldsAsync(ICanReplaceObjects target)
     {
+        #warning need to pass in form level DA default
         foreach (var field in Fields.OfType<AcroFormField>())
         {
-            field.WriteChangeTo(target);
+            await field.WriteChangeTo(target);
         }
-    }
-}
-
-internal partial class AcroFormField: IPdfFormField
-{
-    [FromConstructor] public string Name { get; }
-    public PdfDirectObject Value { get; set; }
-    [FromConstructor] private readonly PdfDirectObject originalValue;
-    [FromConstructor] private readonly PdfIndirectObject indirectRef;
-    [FromConstructor] private readonly PdfDictionary sourceDictionary;
-
-    partial void OnConstructed()
-    {
-        Value = originalValue;
-    }
-
-    public void WriteChangeTo(ICanReplaceObjects target)
-    {
-        if (Value.Equals(originalValue)) return;
-        target.ReplaceReferenceObject(indirectRef, 
-            new DictionaryBuilder(sourceDictionary.RawItems)
-                .WithItem(KnownNames.V, Value)
-                .AsDictionary());
     }
 }

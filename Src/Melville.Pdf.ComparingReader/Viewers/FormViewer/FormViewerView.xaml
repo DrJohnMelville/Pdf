@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Melville.Pdf.ComparingReader.Viewers.FormViewer"
              xmlns:formReader="clr-namespace:Melville.Pdf.FormReader;assembly=Melville.Pdf.FormReader"
+             xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -13,7 +14,7 @@
                 <DataTemplate DataType="{x:Type formReader:IPdfSinglePick}">
                         <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
                                   DisplayMemberPath="Title"
-                                  SelectedItem="{Binding Value, Mode=TwoWay}"/>
+                                  SelectedItem="{Binding Selected, Mode=TwoWay}"/>
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type formReader:IPdfCheckBox}">
@@ -37,7 +38,21 @@
                 </Grid>
             </DataTemplate>
         </Grid.Resources>
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Click="{eventBindings:EventBinding WriteNewDocumentAsync}">Write New Document</Button>
+        <Button Grid.Column="1">WriteModifiedDocument</Button>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      Grid.Row="1" Grid.ColumnSpan="2">
             <ItemsControl ItemsSource="{Binding Form.Fields}"
                           ItemTemplate="{StaticResource DataTemp}">
 

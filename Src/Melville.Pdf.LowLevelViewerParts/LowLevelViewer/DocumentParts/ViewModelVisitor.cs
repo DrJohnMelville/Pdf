@@ -34,8 +34,8 @@ public class ViewModelVisitor
     {
         return directValue switch
         {
-            {IsString: true} => TerminalNode($"({directValue})"),
-            {IsName: true} => TerminalNode($"/{directValue}"),
+            {IsString: true} => new StringOrNameViewModel($"{ConsumePrefix()}({directValue})", directValue),
+            {IsName: true} => new StringOrNameViewModel($"{ConsumePrefix()}/{directValue}", directValue),
             var x when x.TryGet(out PdfArray? array) => ParseArray(array),
             var x when x.TryGet(out PdfStream? stream) => ParseStream(stream),
             var x when x.TryGet(out PdfDictionary? dictionary) => ParseDictionary(dictionary),

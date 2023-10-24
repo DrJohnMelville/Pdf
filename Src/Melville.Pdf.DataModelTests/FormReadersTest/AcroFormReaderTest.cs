@@ -1,16 +1,13 @@
 ﻿using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Parsing.Streams;
 using Melville.Pdf.FormReader;
 using Melville.Pdf.FormReader.AcroForms;
-using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 using Melville.Pdf.Model.Creators;
-using Melville.SharpFont;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.FormReadersTest;
@@ -27,10 +24,6 @@ public class AcroFormReaderTest
             .WithItem(KnownNames.Fields, new PdfArray(
                 fieldDict))
             .AsDictionary());
-
-        var rootDict = builder.LowLevelCreator.Add(new DictionaryBuilder()
-            .AsDictionary()
-        );
 
         builder.AddToRootDictionary(KnownNames.AcroForm, acroDict);
 
@@ -58,7 +51,7 @@ public class AcroFormReaderTest
         ((IPdfTextBox)frm.Fields[0]).StringValue = "FooBar";
 
         var stream = new MultiBufferStream();
-        await frm.CreateModifiedDocument().WriteToAsync(stream);
+        await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(stream);
 
         var f2 = await FormReaderFacade.ReadFormAsync(stream.CreateReader());
         f2.Fields[0].Value.ToString().Should().Be("FooBar");

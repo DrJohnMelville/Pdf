@@ -2,6 +2,7 @@
 using Melville.INPC;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.FormReader.AcroForms
 {
@@ -63,7 +64,6 @@ namespace Melville.Pdf.FormReader.AcroForms
             return options;
         }
 
-        private PdfPickOption SearchForValue(List<PdfPickOption> options) => SearchForValue(options, value);
 
         private static PdfPickOption SearchForValue(List<PdfPickOption> options, PdfDirectObject capturedValue) => 
             options.FirstOrDefault(i => i.Value.Equals(capturedValue));
@@ -76,11 +76,11 @@ namespace Melville.Pdf.FormReader.AcroForms
             {
                 if (option.TryGet(out PdfArray array) && array.Count > 1)
                 {
-                    options.Add(new((await array[1]).ToString(), await array[0]));
+                    options.Add(new((await array[1]).DecodedString(), await array[0]));
                 }
                 else
                 {
-                    options.Add(new(option.ToString(),  option));
+                    options.Add(new(option.DecodedString(),  option));
                 }
             }
 

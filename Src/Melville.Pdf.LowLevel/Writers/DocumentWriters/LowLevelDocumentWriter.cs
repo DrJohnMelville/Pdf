@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
+using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StreamParts;
@@ -89,14 +90,21 @@ public class LowLevelDocumentWriter
         foreach (var item in document.Objects)
         {
             if (item.Value.IsNull) continue;
-            positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
             var value = await ResolveValueToWriteAsync(item).CA();
+            if (IsLinearizationDict(value)) continue;
+            positions.DeclareIndirectObject(item.Key.ObjectNumber, target.BytesWritten, item.Key.GenerationNumber);
             await DeclareContainedObjectsAsync(item.Key.ObjectNumber, value, positions).CA();
             await objectWriter.WriteTopLevelDeclarationAsync(
                 item.Key.ObjectNumber, item.Key.GenerationNumber, value).CA();
             await Target.FlushAsync().CA();
         }
         return positions;
+    }
+
+    private bool IsLinearizationDict(PdfDirectObject value)
+    {
+        return value.TryGet(out PdfDictionary? dict) &&
+               dict.Any(i => i.Key.Equals(KnownNames.Linearized));
     }
 
     private static async Task<PdfDirectObject> ResolveValueToWriteAsync(KeyValuePair<(int ObjectNumber, int GenerationNumber), PdfIndirectObject> item)

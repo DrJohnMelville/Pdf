@@ -76,3 +76,4 @@ Melville.Pdf.ComparingReader.Viewers.ExtractedImages.* => Melville.Pdf.ImageExtr
 
 #Dependency for the forms viewer
 FormReader => Melville.Pdf.FormReader.*
+FormReader => Melville.Pdf.LowLevel.*

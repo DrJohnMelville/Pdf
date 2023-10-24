@@ -4,6 +4,8 @@ using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
 using Melville.Pdf.Wpf.Rendering;
+using Melville.Postscript.Interpreter.Values;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
@@ -36,4 +38,15 @@ public class ImagePartViewModel: StreamPartViewModel
         fmts.Add(new StreamDisplayFormat("Image", async p=>new ImageDisplayViewModel(
             await (await p.WrapForRenderingAsync(new DeviceColor(255,255,255, 255))).ToWpfBitmapAsync())));
     }
+}
+
+public class StringOrNameViewModel: DocumentPart
+{
+    private byte[] text;
+    public StringOrNameViewModel(string title, in PdfDirectObject item) : base(title)
+    {
+        text = item.Get<StringSpanSource>().GetSpan().ToArray();
+    }
+
+    public override object? DetailView => new ByteStringViewModel(text);
 }

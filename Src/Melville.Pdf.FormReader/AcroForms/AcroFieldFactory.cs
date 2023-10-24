@@ -1,6 +1,7 @@
 ﻿using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
+using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 
 namespace Melville.Pdf.FormReader.AcroForms;
 
@@ -22,7 +23,7 @@ internal static class AcroFieldFactory
 
     private static async Task ParseSingleField(PdfDictionary dict, PdfIndirectObject reference, List<IPdfFormField> ret)
     {
-        var name = await dict.GetAsync<string>(KnownNames.T);
+        var name = (await dict[KnownNames.T]).DecodedString();
         var value = await dict.GetOrDefaultAsync(KnownNames.V);
         var type = await dict[KnownNames.FT];
         var flags = (AcroFieldFlags)(await dict.GetOrDefaultAsync(KnownNames.Ff, 0).CA());

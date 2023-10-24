@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Security.AccessControl;
-using Melville.Pdf.FormReader.AcroForms;
+﻿using Melville.Pdf.FormReader.AcroForms;
 using Melville.Pdf.LowLevel;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Document;

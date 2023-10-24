@@ -134,6 +134,7 @@ Pdf:All
 Pdf:Alternate
 Pdf:And
 Pdf:Annot
+Pdf:AP
 Pdf:AS
 Pdf:Ascent
 Pdf:AuthEvent
@@ -174,6 +175,7 @@ Pdf:CreatorInfo
 Pdf:CryptFilterDecodeParms
 Pdf:DamagedRowsBeforeError
 Pdf:D
+Pdf:DA
 Pdf:Decode
 Pdf:DecodeParms
 Pdf:DefaultGray
@@ -243,6 +245,7 @@ Pdf:Length1
 Pdf:Length2
 Pdf:Length3
 Pdf:Limits
+Pdf:Linearized
 Pdf:Mask
 Pdf:Matrix
 Pdf:Max
