@@ -59,12 +59,12 @@ public interface ITextObjectOperations
 /// This is a spaced string builder that the parser can use to pass multiple
 /// doubles and strings to the renderer as part of a spaced string.  The parser may then
 /// call SpacedStringComponentAsync methods as many times as needed until finally calling
-/// DoneWritingAsync.  It is an error to call ISpacedStringBuilder methods after calling
-/// DoneWritingAsync, to fail to call DoneWritingAsync, or to call any other rendering method
-/// between the calls to GetSpacedStringBuilder and DoneWritingAsync.  Behavior is undefines
+/// DisposeAsync.  It is an error to call ISpacedStringBuilder methods after calling
+/// DisposeAsync, to fail to call DisposeAsync, or to call any other rendering method
+/// between the calls to GetSpacedStringBuilder and DisposeAsync.  Behavior is undefines
 /// in all of these error cases
 /// </summary>
-public interface ISpacedStringBuilder
+public interface ISpacedStringBuilder: IAsyncDisposable
 {
     /// <summary>
     /// Provide a double value to the spaced string builder.
@@ -75,13 +75,7 @@ public interface ISpacedStringBuilder
     /// <summary>
     /// Provide a string value to the spaced string builder.
     /// </summary>
-    /// <param name="value">The string value to provide.</param>
     public ValueTask SpacedStringComponentAsync(ReadOnlyMemory<byte> value);
-
-    /// <summary>
-    /// Indicate that no more data will be sent to the spaced string builder.
-    /// </summary>
-    public ValueTask DoneWritingAsync();
 }
 
 /// <summary>

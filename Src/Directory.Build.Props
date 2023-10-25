@@ -18,4 +18,9 @@
 		<InternalsVisibleTo Include="Performance.Playground"/>
 		<InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
 	</ItemGroup>
+
+	<Target Name="CopyPackage" AfterTargets="Pack">
+		<Copy SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg"
+		      DestinationFolder="$(SolutionDir)..\..\TempNuget\" />
+	</Target>
 </Project>

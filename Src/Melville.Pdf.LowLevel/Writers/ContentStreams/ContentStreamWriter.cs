@@ -334,7 +334,7 @@ public partial class ContentStreamWriter : IContentStreamOperations, ISpacedStri
         return ValueTask.CompletedTask;
     }
 
-    ValueTask ISpacedStringBuilder.DoneWritingAsync()
+    ValueTask IAsyncDisposable.DisposeAsync()
     {
         destPipe.WriteChar(']');
         destPipe.WriteOperator("TJ"u8);

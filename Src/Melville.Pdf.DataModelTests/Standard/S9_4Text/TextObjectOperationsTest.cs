@@ -120,7 +120,7 @@ public class TextObjectOperationsTest : WriterTest
             await builder.SpacedStringComponentAsync("D".AsExtendedAsciiBytes().AsMemory());
             await builder.SpacedStringComponentAsync(4);
             await builder.SpacedStringComponentAsync(5);
-            await builder.DoneWritingAsync();
+            await builder.DisposeAsync();
         }
         Assert.Equal("BT\n[(A)2 (B)3 (C)(D)4 5 ]TJ\nET\n", await WrittenTextAsync());
     }

@@ -174,7 +174,7 @@ public class S9_4_2_TextPositioningOperators
         var builder = sut.GetSpacedStringBuilder();
         await builder.SpacedStringComponentAsync("e".AsExtendedAsciiBytes());
         await builder.SpacedStringComponentAsync(1000);
-        await builder.DoneWritingAsync();
+        await builder.DisposeAsync();
         Assert.Equal(Matrix3x2.Identity,
             sut.CurrentState().TextLineMatrix);
         Assert.Equal(new Matrix3x2(1, 0, 0, 1, xPosition, 0), sut.CurrentState().TextMatrix);
