@@ -25,20 +25,28 @@ public static class IccProfileColorSpaceParser
     /// <returns>The ICC colorspace read from the stream.</returns>
     public static async ValueTask<IColorSpace> ParseAsync(PdfStream stream)
     {
+        var altName = await ComputeAlternateColorSpaceNameAsync(stream).CA();
         try
         {
-            return await ParseAsync(await stream.StreamContentAsync().CA()).CA();
+            if (!HasExplicitAlternateRgbColorSpace(stream, altName))
+              return await ParseAsync(await stream.StreamContentAsync().CA()).CA();
         }
         catch (Exception)
         {
-            return await await ParseAlternateColorSpaceAsync(stream).CA();
         }
+        return await ParseAlternateColorSpaceAsync(altName).CA();
     }
 
-    private static async Task<ConfiguredValueTaskAwaitable<IColorSpace>> ParseAlternateColorSpaceAsync(PdfStream stream) =>
+    private static bool HasExplicitAlternateRgbColorSpace(PdfStream stream, PdfDirectObject altName) => 
+        altName.Equals(KnownNames.DeviceRGB) && stream.ContainsKey(KnownNames.Alternate);
+
+    private static async ValueTask<PdfDirectObject> ComputeAlternateColorSpaceNameAsync(PdfStream stream) =>
+        await stream.GetOrDefaultAsync(KnownNames.Alternate,
+            DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.N, 0).CA())).CA();
+
+    private static ValueTask<IColorSpace> ParseAlternateColorSpaceAsync(PdfDirectObject altName) =>
         new ColorSpaceFactory(NoPageContext.Instance)
-            .FromNameOrArrayAsync(await stream.GetOrDefaultAsync(KnownNames.Alternate,
-                DefaultColorSpace(await stream.GetOrDefaultAsync(KnownNames.N, 0).CA())).CA()).CA();
+            .FromNameOrArrayAsync(altName);
 
     private static PdfDirectObject DefaultColorSpace(long n) =>
         n switch
@@ -56,6 +64,7 @@ public static class IccProfileColorSpaceParser
     /// <returns>Colorspace using the ICC profile.</returns>
     public static async ValueTask<IColorSpace> ParseAsync(Stream source)
     {
+        
         var profile = await new IccParser(PipeReader.Create(source)).ParseAsync().CA();
         return new IccColorSpace(profile.DeviceToSrgb());
     }

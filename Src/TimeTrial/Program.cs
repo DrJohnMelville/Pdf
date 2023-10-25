@@ -22,11 +22,15 @@ internal class Program
     private static async Task MainWithzOption(Options arg)
     {
         Console.WriteLine("Name,Page,Seconds");
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
         await foreach (var item in arg.Items())
         {
             var line = await item.RunTestAsync();
             Console.WriteLine(line);
         }
+        stopWatch.Stop();
+        Console.WriteLine($"Total Time: {stopWatch.Elapsed.TotalSeconds:#######0.0000}");
     }
 }
 

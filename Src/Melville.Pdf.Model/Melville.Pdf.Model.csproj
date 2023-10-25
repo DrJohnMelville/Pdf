@@ -10,7 +10,7 @@
         this one.</PackageDescription>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<DocumentationFile>true</DocumentationFile>
+		
 	</PropertyGroup>
 
     <ItemGroup>

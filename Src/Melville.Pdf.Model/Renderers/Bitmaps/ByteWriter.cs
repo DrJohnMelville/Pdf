@@ -1,4 +1,9 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Melville.Pdf.Model.Renderers.Colors;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Pdf.Model.Renderers.Bitmaps;
 
@@ -32,10 +37,60 @@ internal abstract class ByteWriter: IByteWriter
         components[currentComponent++] = numerator;
         if (currentComponent >= components.Length)
         {
-            componentWriter.WriteComponent(ref output, components, 255);
+            var color = ComputeColor();
+            PushPixel(ref output, color);
             currentComponent = 0;
         }
     }
+
+    public static unsafe void PushPixel(ref byte* output, in DeviceColor color)
+    {
+        fixed (DeviceColor* colorptr = &color)
+        {
+            *((uint*)output) = *((uint*)colorptr);
+            output += 3;
+            *(output++) = 255;
+        }
+    }
+
+    private const int maxSize = 10_000;
+
+    private DeviceColor ComputeColor()
+    {
+        ClearCacheIfTooBig();
+        return TryReadFromCache();
+    }
+
+    private DeviceColor TryReadFromCache()
+    {
+        ref DeviceColor cacheLine = ref
+            CollectionsMarshal.GetValueRefOrAddDefault(cache, HashForComponents(), out bool exists);
+        if (!exists)
+        {
+            cacheLine = componentWriter.ColorFromComponents(components);
+        }
+
+        return cacheLine;
+    }
+
+    private void ClearCacheIfTooBig()
+    {
+        if (cache.Count >= maxSize) cache.Clear();
+    }
+
+    private int HashForComponents()
+    {
+        var hc = new HashCode();
+        foreach (var component in components)
+        {
+            hc.Add(component);
+        }
+
+        var hashCode = hc.ToHashCode();
+        return hashCode;
+    }
+
+    private Dictionary<int, DeviceColor> cache = new(maxSize);
 
     public abstract int MinimumInputSize { get; }
 }
