@@ -23,6 +23,7 @@ internal static partial class ContentStreamParsingOperations
 {
     private static IContentStreamOperations GetTarget(PostscriptEngine engine) =>
         (IContentStreamOperations)engine.Tag;
+
     private static void PopMarkObject(OperandStack stack)
     {
         var mark = stack.Pop();
@@ -37,7 +38,7 @@ internal static partial class ContentStreamParsingOperations
 
     [PostscriptMethod("[")]
     [PostscriptMethod("<<")]
-    private static PostscriptValue ArrayBegin() => 
+    private static PostscriptValue ArrayBegin() =>
         PostscriptValueFactory.CreateMark();
 
     [PostscriptMethod("]")]
@@ -109,6 +110,7 @@ internal static partial class ContentStreamParsingOperations
     private static void CurveToWithoutFinalControl(IContentStreamOperations target,
         double a1, double a2, double a3, double a4) =>
         target.CurveToWithoutFinalControl(a1, a2, a3, a4);
+
     [PostscriptMethod("re")]
     private static void Rectangle(IContentStreamOperations target,
         double a1, double a2, double a3, double a4) =>
@@ -149,7 +151,7 @@ internal static partial class ContentStreamParsingOperations
         target.SetRenderIntent(new RenderIntentName(renderIntent.AsPdfName()));
 
     [PostscriptMethod("d")]
-    private static void SetLineDashPattern(IContentStreamOperations target, OperandStack stack, 
+    private static void SetLineDashPattern(IContentStreamOperations target, OperandStack stack,
         PostscriptValue arrayTop, double phase)
     {
         Debug.Assert(IsArrayTopMarker(arrayTop));
@@ -161,7 +163,7 @@ internal static partial class ContentStreamParsingOperations
         patternSegment.PopDataAndMark();
     }
 
-    private static bool IsArrayTopMarker(PostscriptValue item) => 
+    private static bool IsArrayTopMarker(PostscriptValue item) =>
         item.TryGet(out ArrayTopMarker? _);
 
     [PostscriptMethod("SC")]
@@ -170,7 +172,6 @@ internal static partial class ContentStreamParsingOperations
         Span<double> color = stackalloc double[stack.Count];
         stack.PopSpan(color);
         target.SetStrokeColor(color);
-
     }
 
     [PostscriptMethod("sc")]
@@ -194,7 +195,7 @@ internal static partial class ContentStreamParsingOperations
     private static void BeginText(IContentStreamOperations target) => target.BeginTextObject();
 
     [PostscriptMethod("ET")]
-    private static void EndText(IContentStreamOperations target) => target. EndTextObject();
+    private static void EndText(IContentStreamOperations target) => target.EndTextObject();
 
     [PostscriptMethod("Td")]
     private static void MoveTextPosition(IContentStreamOperations target, double x, double y) =>
@@ -211,7 +212,8 @@ internal static partial class ContentStreamParsingOperations
     private static void SetCharSpace(IContentStreamOperations target, double space) => target.SetCharSpace(space);
 
     [PostscriptMethod("TL")]
-    private static void SetTextLeading(IContentStreamOperations target, double leading) => target.SetTextLeading(leading);
+    private static void SetTextLeading(IContentStreamOperations target, double leading) =>
+        target.SetTextLeading(leading);
 
     [PostscriptMethod("Ts")]
     private static void SetTextRise(IContentStreamOperations target, double rise) => target.SetTextRise(rise);
@@ -220,7 +222,7 @@ internal static partial class ContentStreamParsingOperations
     private static void SetWordSpace(IContentStreamOperations target, double space) => target.SetWordSpace(space);
 
     [PostscriptMethod("Tz")]
-    private static void SetHorizontalTextScaling(IContentStreamOperations target, double scaling) => 
+    private static void SetHorizontalTextScaling(IContentStreamOperations target, double scaling) =>
         target.SetHorizontalTextScaling(scaling);
 
     [PostscriptMethod("Tr")]
@@ -245,7 +247,7 @@ internal static partial class ContentStreamParsingOperations
 
     [PostscriptMethod(">>")]
     private static PostscriptValue CreateDictionary(OperandStack stack) => new(
-        new PdfObjectCreator(stack, DictionaryTranslator.None).PopDictionaryBuilderFromStack().AsDictionary(), 
+        new PdfObjectCreator(stack, DictionaryTranslator.None).PopDictionaryBuilderFromStack().AsDictionary(),
         PostscriptBuiltInOperations.PushArgument, default);
 
     [PostscriptMethod("BX")]
@@ -258,7 +260,7 @@ internal static partial class ContentStreamParsingOperations
 
     private static int IncrementIgnoreCount(PostscriptEngine engine, int increment)
     {
-        var ret = engine.SystemDict.TryGetAs("$IgnoreCount"u8, out long val)?val:0;
+        var ret = engine.SystemDict.TryGetAs("$IgnoreCount"u8, out long val) ? val : 0;
         ret += increment;
         engine.SystemDict.Put("$IgnoreCount", ret);
         return (int)ret;
@@ -294,22 +296,24 @@ internal static partial class ContentStreamParsingOperations
         operations.DoAsync(name.AsPdfName());
 
     [PostscriptMethod("gs")]
-    private static ValueTask LoadGraphicStateDictionaryAsync(IContentStreamOperations target, in PostscriptValue dictName) =>
+    private static ValueTask LoadGraphicStateDictionaryAsync(IContentStreamOperations target,
+        in PostscriptValue dictName) =>
         target.LoadGraphicStateDictionaryAsync(dictName.AsPdfName());
 
     [PostscriptMethod("cs")]
-    private static ValueTask SetNonstrokingColorSpaceAsync(IContentStreamOperations target, in PostscriptValue csName) =>
+    private static ValueTask
+        SetNonstrokingColorSpaceAsync(IContentStreamOperations target, in PostscriptValue csName) =>
         target.SetNonstrokingColorSpaceAsync(csName.AsPdfName());
 
     [PostscriptMethod("k")]
-    private static ValueTask SetNonstrokingCmykAsync(IContentStreamOperations target, 
+    private static ValueTask SetNonstrokingCmykAsync(IContentStreamOperations target,
         double c, double m, double y, double k) =>
-        target.SetNonstrokingCMYKAsync(c,m,y,k);
+        target.SetNonstrokingCMYKAsync(c, m, y, k);
 
     [PostscriptMethod("rg")]
-    private static ValueTask SetNonstrokingRgbAsync(IContentStreamOperations target, 
+    private static ValueTask SetNonstrokingRgbAsync(IContentStreamOperations target,
         double r, double g, double b) =>
-        target.SetNonstrokingRgbAsync(r,g,b);
+        target.SetNonstrokingRgbAsync(r, g, b);
 
     [PostscriptMethod("g")]
     private static ValueTask SetNonstrokingGrayAsync(IContentStreamOperations target, double g) =>
@@ -319,8 +323,7 @@ internal static partial class ContentStreamParsingOperations
     private static ValueTask SetNonStrokingExtendedAsync(
         IContentStreamOperations target, OperandStack stack)
     {
-        PdfDirectObject? name = stack.Peek().IsLiteralName ?
-            (PdfDirectObject?)stack.Pop().AsPdfName() : null;
+        PdfDirectObject? name = stack.Peek().IsLiteralName ? (PdfDirectObject?)stack.Pop().AsPdfName() : null;
         Span<double> color = stackalloc double[stack.Count];
         stack.PopSpan(color);
         return target.SetNonstrokingColorExtendedAsync(name, color);
@@ -331,14 +334,14 @@ internal static partial class ContentStreamParsingOperations
         target.SetStrokingColorSpaceAsync(csName.AsPdfName());
 
     [PostscriptMethod("K")]
-    private static ValueTask SetStrokingCmykAsync(IContentStreamOperations target, 
+    private static ValueTask SetStrokingCmykAsync(IContentStreamOperations target,
         double c, double m, double y, double k) =>
-        target.SetStrokeCMYKAsync(c,m,y,k);
+        target.SetStrokeCMYKAsync(c, m, y, k);
 
     [PostscriptMethod("RG")]
-    private static ValueTask SetStrokingRgbAsync(IContentStreamOperations target, 
+    private static ValueTask SetStrokingRgbAsync(IContentStreamOperations target,
         double r, double g, double b) =>
-        target.SetStrokeRGBAsync(r,g,b);
+        target.SetStrokeRGBAsync(r, g, b);
 
     [PostscriptMethod("G")]
     private static ValueTask SetStrokingGrayAsync(IContentStreamOperations target, double g) =>
@@ -377,19 +380,20 @@ internal static partial class ContentStreamParsingOperations
         IContentStreamOperations target, PostscriptValue arrayTop, OperandStack stack)
     {
         Debug.Assert(IsArrayTopMarker(arrayTop));
-        var builder = target.GetSpacedStringBuilder();
-        for (int i = 1; i < stack.Count; i++)
+        await using (var builder = target.GetSpacedStringBuilder())
         {
-            var item =  stack[i];
-            if (item.IsNumber)
-                await builder.SpacedStringComponentAsync(item.Get<double>()).CA();
-            else
+            for (int i = 1; i < stack.Count; i++)
             {
-                using var text = item.Get<RentedMemorySource>();
-                await builder.SpacedStringComponentAsync(text.Memory).CA();
+                var item = stack[i];
+                if (item.IsNumber)
+                    await builder.SpacedStringComponentAsync(item.Get<double>()).CA();
+                else
+                {
+                    using var text = item.Get<RentedMemorySource>();
+                    await builder.SpacedStringComponentAsync(text.Memory).CA();
+                }
             }
         }
-        await builder.DoneWritingAsync().CA();
         stack.Clear();
     }
 

@@ -27,15 +27,16 @@ internal readonly partial struct FreeTypeFontFactory
     {
         var fontAsBytes = await UncompressToBufferAsync(source).CA();
         await GlobalFreeTypeMutex.WaitForAsync().CA();
+        Face face;
         try
         {
-            var face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(fontAsBytes, index);
-            return await FontFromFaceAsync(face).CA();
+            face = GlobalFreeTypeResources.SharpFontLibrary.NewMemoryFace(fontAsBytes, index);
         }
         finally
         {
             GlobalFreeTypeMutex.Release();
         }
+        return await FontFromFaceAsync(face).CA();
     }
 
     private static async Task<byte[]> UncompressToBufferAsync(Stream source)

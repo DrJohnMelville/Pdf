@@ -57,12 +57,11 @@ public readonly partial struct TextBlockWriter : IDisposable, ITextObjectOperati
     /// <param name="values">An array of numbers and strings to write as a spaced string.</param>
     public async ValueTask ShowSpacedStringAsync(params object[] values)
     {
-        var builder = Inner().GetSpacedStringBuilder();
+        await using var builder = Inner().GetSpacedStringBuilder();
         foreach (var value in values)
         {
             await WriteObjectAsync(value, builder).CA();
         }
-        await builder.DoneWritingAsync().CA();
     }
 
     private static ValueTask WriteObjectAsync(

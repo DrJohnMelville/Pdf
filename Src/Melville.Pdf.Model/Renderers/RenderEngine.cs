@@ -230,9 +230,8 @@ internal partial class RenderEngine: IContentStreamOperations, IFontTarget
 
     public async ValueTask ShowStringAsync(ReadOnlyMemory<byte> decodedString)
     {
-        var writer = GetSpacedStringBuilder();
+        await using var writer = GetSpacedStringBuilder();
         await writer.SpacedStringComponentAsync(decodedString).CA();
-        await writer.DoneWritingAsync().CA();
     }
 
     private Matrix3x2 CharacterPositionMatrix() => GraphicsState.GlyphTransformMatrix();
