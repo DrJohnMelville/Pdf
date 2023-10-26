@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -14,7 +15,7 @@ internal partial class AcroTextBox : AcroFieldWithAppearance, IPdfTextBox
         set => Value =  PdfDirectObject.CreateUtf8String(value);
     }
 
-    protected override ValueTask UpdateAppearance(
+    protected override ValueTask UpdateAppearanceAsync(
         ICanReplaceObjects target, PdfDirectObject formAppearanceString) => 
-        ReplaceTextAppearance(target, formAppearanceString);
+        ReplaceTextAppearanceAsync(target, formAppearanceString);
 }

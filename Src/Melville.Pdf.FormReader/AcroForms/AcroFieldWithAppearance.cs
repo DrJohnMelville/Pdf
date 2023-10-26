@@ -13,17 +13,17 @@ namespace Melville.Pdf.FormReader.AcroForms;
 [FromConstructor]
 internal partial class AcroFieldWithAppearance: AcroFormField
 {
-    protected async ValueTask ReplaceTextAppearance(ICanReplaceObjects target, PdfDirectObject formAppearanceString)
+    protected async ValueTask ReplaceTextAppearanceAsync(ICanReplaceObjects target, PdfDirectObject formAppearanceString)
     {
         if (!sourceDictionary.TryGetValue(KnownNames.AP, out var dictTask)) return;
         if ((await dictTask).TryGet(out PdfDictionary? ap) &&
             ap.RawItems.TryGetValue(KnownNames.N, out var apStreamRef))
-            await ReplaceAppearanceStream(apStreamRef,
+            await ReplaceAppearanceStreamAsync(apStreamRef,
                 await sourceDictionary.GetOrDefaultAsync(KnownNames.DA,
                     formAppearanceString), target);
     }
 
-    private async ValueTask ReplaceAppearanceStream(
+    private async ValueTask ReplaceAppearanceStreamAsync(
         PdfIndirectObject apStreamRef, PdfDirectObject appearanceString,
         ICanReplaceObjects target)
     {

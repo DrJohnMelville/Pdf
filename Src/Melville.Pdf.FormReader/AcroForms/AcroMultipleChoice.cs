@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Melville.INPC;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Objects;
 
 namespace Melville.Pdf.FormReader.AcroForms;

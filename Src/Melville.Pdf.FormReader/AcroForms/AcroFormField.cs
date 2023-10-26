@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -18,7 +19,7 @@ internal partial class AcroFormField: IPdfFormField
         Value = originalValue;
     }
 
-    public ValueTask WriteChangeTo(ICanReplaceObjects target, PdfDirectObject formAppearanceString)
+    public ValueTask WriteChangeToAsync(ICanReplaceObjects target, PdfDirectObject formAppearanceString)
     {
         if (Value.Equals(originalValue)) return ValueTask.CompletedTask;
         var builder = new DictionaryBuilder(SourceWithoutIFields())
@@ -28,14 +29,14 @@ internal partial class AcroFormField: IPdfFormField
         target.ReplaceReferenceObject(indirectRef, 
             builder.AsDictionary());
 
-        return UpdateAppearance(target, formAppearanceString);
+        return UpdateAppearanceAsync(target, formAppearanceString);
     }
 
     private IEnumerable<KeyValuePair<PdfDirectObject, PdfIndirectObject>> SourceWithoutIFields() =>
         sourceDictionary.RawItems
             .Where(i=>!i.Key.Equals(KnownNames.I));
 
-    protected virtual ValueTask UpdateAppearance(ICanReplaceObjects target, PdfDirectObject formAppearanceString)
+    protected virtual ValueTask UpdateAppearanceAsync(ICanReplaceObjects target, PdfDirectObject formAppearanceString)
     {
         return ValueTask.CompletedTask;
     }

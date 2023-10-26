@@ -4,6 +4,7 @@ using FluentAssertions;
 using Melville.Parsing.Streams;
 using Melville.Pdf.FormReader;
 using Melville.Pdf.FormReader.AcroForms;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;

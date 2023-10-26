@@ -1,5 +1,6 @@
 ﻿using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Document;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
@@ -23,7 +24,7 @@ internal partial class AcroPdfForm : IPdfForm
     {
         foreach (var field in Fields.OfType<AcroFormField>())
         {
-            await field.WriteChangeTo(target, formAppearanceString);
+            await field.WriteChangeToAsync(target, formAppearanceString);
         }
     }
 }

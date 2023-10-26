@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Melville.INPC;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Conventions;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
@@ -65,7 +66,7 @@ namespace Melville.Pdf.FormReader.AcroForms
         }
 
 
-        private static PdfPickOption SearchForValue(List<PdfPickOption> options, PdfDirectObject capturedValue) => 
+        private static PdfPickOption? SearchForValue(List<PdfPickOption> options, PdfDirectObject capturedValue) => 
             options.FirstOrDefault(i => i.Value.Equals(capturedValue));
 
         private async ValueTask CreateChoiceAsync()
@@ -74,7 +75,7 @@ namespace Melville.Pdf.FormReader.AcroForms
             var options = new List<PdfPickOption>(opts.Count);
             await foreach (var option in opts)
             {
-                if (option.TryGet(out PdfArray array) && array.Count > 1)
+                if (option.TryGet(out PdfArray? array) && array.Count > 1)
                 {
                     options.Add(new((await array[1]).DecodedString(), await array[0]));
                 }
@@ -88,12 +89,12 @@ namespace Melville.Pdf.FormReader.AcroForms
 
             target.Add(
                 (flags & AcroFieldFlags.MultiSelect) > 0 ?
-                    await ConstructMultiChoice(options):
+                    await ConstructMultiChoiceAsync(options):
                     ConstructSingleChoice(options)
             );
         }
 
-        private async ValueTask<IPdfFormField> ConstructMultiChoice(List<PdfPickOption> options)
+        private async ValueTask<IPdfFormField> ConstructMultiChoiceAsync(List<PdfPickOption> options)
         {
             var selections = new ObservableCollection<PdfPickOption>();
             foreach (var selIndirect in value.ObjectAsUnresolvedList())

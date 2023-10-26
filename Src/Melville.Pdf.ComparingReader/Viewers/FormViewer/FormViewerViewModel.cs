@@ -8,6 +8,7 @@ using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.ComparingReader.Renderers;
 using Melville.Pdf.FormReader;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Parsing.ParserContext;
 using Melville.Pdf.LowLevel.Writers.DocumentWriters;
 

@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Conventions;
 
 namespace Melville.Pdf.FormReader.AcroForms

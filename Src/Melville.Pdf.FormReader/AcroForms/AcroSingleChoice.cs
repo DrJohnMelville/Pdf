@@ -1,4 +1,5 @@
 ﻿using Melville.INPC;
+using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.LowLevel.Writers.Builder;
 
@@ -13,8 +14,8 @@ internal partial class AcroSingleChoice : AcroPick, IPdfSinglePick
         set => Value = value?.Value ?? PdfDirectObject.CreateNull();
     }
 
-    protected override ValueTask UpdateAppearance(
+    protected override ValueTask UpdateAppearanceAsync(
         ICanReplaceObjects target, PdfDirectObject formAppearanceString) => 
-        ReplaceTextAppearance(target, formAppearanceString);
+        ReplaceTextAppearanceAsync(target, formAppearanceString);
 
 }

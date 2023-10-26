@@ -29,7 +29,6 @@ public readonly partial struct JpegStreamFactory
     /// Create a Jpeg stream from a pipereader.
     /// </summary>
     /// <param name="pipe">The pipe reader.</param>
-    /// <param name="length">The length of the data</param>
     /// <returns>A stream representing the image</returns>
     public async ValueTask<Stream> FromPipeAsync(PipeReader pipe)
     {

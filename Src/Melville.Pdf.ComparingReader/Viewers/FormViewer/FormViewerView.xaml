@@ -6,27 +6,28 @@
              xmlns:local="clr-namespace:Melville.Pdf.ComparingReader.Viewers.FormViewer"
              xmlns:formReader="clr-namespace:Melville.Pdf.FormReader;assembly=Melville.Pdf.FormReader"
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
+             xmlns:interface="clr-namespace:Melville.Pdf.FormReader.Interface;assembly=Melville.Pdf.FormReader"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Resources>
             <local:SelectByInterface x:Key="DTSelector">
-                <DataTemplate DataType="{x:Type formReader:IPdfSinglePick}">
+                <DataTemplate DataType="{x:Type interface:IPdfSinglePick}">
                         <ComboBox Grid.Column="1" ItemsSource="{Binding Options}"
                                   DisplayMemberPath="Title"
                                   SelectedItem="{Binding Selected, Mode=TwoWay}"/>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type formReader:IPdfCheckBox}">
+                <DataTemplate DataType="{x:Type interface:IPdfCheckBox}">
                     <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Content="{Binding Name}"/>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type formReader:IPdfTextBox}">
+                <DataTemplate DataType="{x:Type interface:IPdfTextBox}">
                         <TextBox Grid.Column="1" Text="{Binding StringValue, Mode=TwoWay}"/>
                 </DataTemplate>
             </local:SelectByInterface>
 
-            <DataTemplate DataType="{x:Type formReader:IPdfFormField}" x:Key ="DataTemp">
+            <DataTemplate DataType="{x:Type interface:IPdfFormField}" x:Key ="DataTemp">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
