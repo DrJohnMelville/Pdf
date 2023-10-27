@@ -36,16 +36,17 @@ public partial class StreamPartViewModel : DocumentPart, ICreateView
 
     protected virtual async ValueTask AddFormatsAsync(List<StreamDisplayFormat> fmts)
     {
-        fmts.Add(new StreamDisplayFormat("Disk Representation",
-            p => LoadBytesAsync(p, StreamFormat.DiskRepresentation)));
+        var fmtList = (await Source.GetOrNullAsync(KnownNames.Filter)).ObjectAsUnresolvedList();
+        for (int i = fmtList.Count -1; i >= 0; i--)
+        {
+            var format = (StreamFormat)(i + 1);
+            fmts.Add(new StreamDisplayFormat(fmtList[i].ToString() ?? "No Name",
+                p => LoadBytesAsync(p, format)));
+        }
         fmts.Add(new StreamDisplayFormat("Implicit Encryption",
             p => LoadBytesAsync(p, StreamFormat.ImplicitEncryption)));
-        var fmtList = (await Source.GetOrNullAsync(KnownNames.Filter)).ObjectAsUnresolvedList();
-        for (int i = 0; i < fmtList.Count; i++)
-        {
-            fmts.Add(new StreamDisplayFormat(fmtList[i].ToString() ?? "No Name",
-                p => LoadBytesAsync(p, (StreamFormat)i)));
-        }
+        fmts.Add(new StreamDisplayFormat("Disk Representation",
+            p => LoadBytesAsync(p, StreamFormat.DiskRepresentation)));
     }
 
     public StreamPartViewModel(string title, IReadOnlyList<DocumentPart> children, PdfStream source) : base(title, children)

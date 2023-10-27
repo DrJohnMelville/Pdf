@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Xml;
+using System.Xml.Linq;
 using Melville.Linq;
 using Melville.MVVM.Wpf.DiParameterSources;
 using Melville.MVVM.Wpf.MvvmDialogs;
@@ -9,12 +11,27 @@ namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 public class ByteStringViewModel
 {
+    public byte[] Bytes { get; }
+    public XElement[]? XmlRepresentation { get; }
+
     public ByteStringViewModel(byte[] bytes)
     {
         Bytes = bytes;
+        XmlRepresentation = ParseXml(bytes);
     }
 
-    public byte[] Bytes { get; }
+    private XElement[]? ParseXml(byte[] bytes)
+    {
+        try
+        {
+            return new []{XElement.Load(new MemoryStream(bytes))};
+        }
+        catch (Exception)
+        {
+        }
+
+        return null;
+    }
 
     public string HexDump =>
         string.Join("\r\n", Bytes.BinaryFormat().Select((hexDump, index) => $"{index:X7}0  {hexDump}"));
@@ -34,4 +51,3 @@ public class ByteStringViewModel
             await ColorSpaceViewModelFactory.CreateAsync(new MemoryStream(Bytes)),
             800, 400, "Color Picker");
 }
-

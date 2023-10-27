@@ -6,18 +6,23 @@
              xmlns:local="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts"
              xmlns:eventBindings="clr-namespace:Melville.MVVM.Wpf.EventBindings;assembly=Melville.MVVM.Wpf"
              xmlns:streams="clr-namespace:Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams"
+             xmlns:wpfHacks="clr-namespace:Melville.MVVM.Wpf.WpfHacks;assembly=Melville.MVVM.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <TabControl>
+            <TabItem Header="Text">
+                <streams:TextBoxWithFind 
+                    IsReadOnly="True" Text="{Binding AsAsciiString, Mode=OneWay, PresentationTraceSources.TraceLevel = High}" />
+            </TabItem>
+            <TabItem Header="Xml"
+                     wpfHacks:VisibilityHack.CollapseIfNull="{Binding XmlRepresentation}">
+                <TreeView ItemsSource="{Binding XmlRepresentation}"/>
+            </TabItem>
             <TabItem Header="Hex Dump">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                     <TextBlock Text="{Binding HexDump}" FontFamily="Consolas"></TextBlock>
                 </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Text">
-                    <streams:TextBoxWithFind 
-                        IsReadOnly="True" Text="{Binding AsAsciiString, Mode=OneWay, PresentationTraceSources.TraceLevel = High}" />
             </TabItem>
         </TabControl>
         <Menu HorizontalAlignment="Right" VerticalAlignment="Top">
