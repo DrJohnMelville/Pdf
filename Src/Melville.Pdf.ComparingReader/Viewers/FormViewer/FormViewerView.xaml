@@ -50,8 +50,8 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Button Click="{eventBindings:EventBinding WriteNewDocumentAsync}">Write New Document</Button>
-        <Button Grid.Column="1">WriteModifiedDocument</Button>
+        <Button Click="{eventBindings:EventBinding WriteNewDocumentAsync}"
+                Grid.ColumnSpan="2">Write New Document</Button>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       Grid.Row="1" Grid.ColumnSpan="2">
             <ItemsControl ItemsSource="{Binding Form.Fields}"

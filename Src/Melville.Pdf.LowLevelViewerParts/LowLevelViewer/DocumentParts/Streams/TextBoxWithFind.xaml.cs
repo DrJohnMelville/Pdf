@@ -1,12 +1,16 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using Melville.INPC;
+using Melville.Pdf.LowLevel.Filters.FlateFilters;
 
 namespace Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 [GenerateDP(typeof(bool), "IsReadOnly")]
 [GenerateDP(typeof(string), "Text")]
+
 public partial class TextBoxWithFind : UserControl
 {
     public TextBoxWithFind()
@@ -14,6 +18,14 @@ public partial class TextBoxWithFind : UserControl
         InitializeComponent();
         DisplayBox.TextChanged += UpdateFooter;
         DisplayBox.SelectionChanged += UpdateFooter;
+    }
+
+    private uint hash;
+    private void OnTextChanged(string newText)
+    {
+        var comp = new Adler32Computer();
+        comp.AddData(MemoryMarshal.Cast<char, byte>(newText.AsSpan()));
+        hash = comp.GetHash();
     }
 
     private void FindNext(object sender, RoutedEventArgs e)
@@ -63,6 +75,6 @@ public partial class TextBoxWithFind : UserControl
     {
         var offset = DisplayBox.SelectionStart;
         var LineMatches = LineCounter.Matches(DisplayBox.Text[..offset]);
-        return $"Offset: 0x{offset:X} Line: {LineMatches.Count + 1}, Col: {offset - LineMatches.Select(i => i.Index).LastOrDefault(0)}";
+        return $"Offset: 0x{offset:X} Line: {LineMatches.Count + 1}, Col: {offset - LineMatches.Select(i => i.Index).LastOrDefault(0)} Hash:{hash:X}";
     }
 }

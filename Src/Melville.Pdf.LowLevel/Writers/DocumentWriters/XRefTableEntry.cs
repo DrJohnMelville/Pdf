@@ -35,6 +35,7 @@ internal readonly struct XRefTableEntry
         0 => false,
         1 => true,
         _ => throw new InvalidOperationException(
-            "Only free objects and indirect objects are allowed in an xref table")
+            "Attempting to write a file with Object Streams using an old-fashioned xref table.  Need to write the file using xref streams to " +
+            "write this file.")
     };
 }

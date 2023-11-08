@@ -25,7 +25,7 @@ public class XrefPartViewModel : StreamPartViewModel
     protected override async ValueTask AddFormatsAsync(List<StreamDisplayFormat> fmts)
     {
         await base.AddFormatsAsync(fmts);
-        fmts.Add(new StreamDisplayFormat("Xref", ParseXrefAsync));
+        fmts.Insert(0, new StreamDisplayFormat("Xref", ParseXrefAsync));
     }
 
     private async ValueTask<object> ParseXrefAsync(PdfStream arg)

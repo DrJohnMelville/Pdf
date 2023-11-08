@@ -30,8 +30,7 @@ public class AcroFormReaderTest
         builder.AddToRootDictionary(KnownNames.AcroForm, acroDict);
 
         var lld = builder.CreateDocument();
-        var reader = await FormReaderFacade.ReadFormAsync(lld);
-        return reader;
+        return await FormReaderFacade.ReadFormAsync(lld);
     }
 
     [Fact]
@@ -93,6 +92,34 @@ public class AcroFormReaderTest
         reader.Fields[0].Should().BeOfType<AcroCheckBox>()
             .Subject.IsChecked.Should().Be(true);
         reader.Fields[0].Name.Should().Be("CheckBox Field");
+        reader.Fields[0].Value.Should().Be("Yes");
+
+    }
+
+    [Fact]
+    public async Task SubFormNameAsync()
+    {
+        var formField = new DictionaryBuilder()
+            .WithItem(KnownNames.Type, KnownNames.Annot)
+            .WithItem(KnownNames.Subtype, KnownNames.Widget)
+            .WithItem(KnownNames.FT, KnownNames.Btn)
+            .WithItem(KnownNames.Ff, 0)
+            .WithItem(KnownNames.T, "CheckBox Field")
+            .WithItem(KnownNames.V, KnownNames.Yes)
+            .AsDictionary();
+
+        var formArray = new DictionaryBuilder()
+            .WithItem(KnownNames.T, "FormName")
+            .WithItem(KnownNames.Kids, PdfDirectObject.FromArray(formField))
+            .AsDictionary();
+        
+        var reader = await CreatSingleFieldFormAsync(formArray);
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        reader.Fields[0].Should().BeOfType<AcroCheckBox>()
+            .Subject.IsChecked.Should().Be(true);
+        reader.Fields[0].Name.Should().Be("FormName.CheckBox Field");
         reader.Fields[0].Value.Should().Be("Yes");
 
     }

@@ -7,11 +7,18 @@ using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Pdf.LowLevel.Filters.FlateFilters;
 
-internal class Adler32Computer
+/// <summary>
+/// Compute an Adler 32 hash.
+/// </summary>
+public class Adler32Computer
 {
     private ulong s1;
     private ulong s2;
 
+    /// <summary>
+    /// Construct the Adler32Computer
+    /// </summary>
+    /// <param name="priorAdler"></param>
     public Adler32Computer(uint priorAdler = 1)
     {
         s1 = priorAdler & 0xFFFF;
@@ -20,6 +27,10 @@ internal class Adler32Computer
     private const ulong BiggestUintPrime = 65521; /* largest prime smaller than 65536 */
     private const int minIterationstoFillUint = 5552;
 
+    /// <summary>
+    /// Add data to the hash.
+    /// </summary>
+    /// <param name="bytes">Data to add.</param>
     public void AddData(ReadOnlySpan<byte> bytes)
     {
         for (int i = 0; i < bytes.Length;)
@@ -35,8 +46,15 @@ internal class Adler32Computer
         }
     }
         
+    /// <summary>
+    /// Get the current value of the hash.
+    /// </summary>
     public uint GetHash() =>(uint) ((s2 << 16) | s1);
 
+    /// <summary>
+    /// Put the hash into the span in big endian format;
+    /// </summary>
+    /// <param name="destination">4 byte span to receive tha hash value.</param>
     public void CopyHashToBigEndianSpan(Span<byte> destination)
     {
         var checksum = GetHash();

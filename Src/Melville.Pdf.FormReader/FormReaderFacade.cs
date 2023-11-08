@@ -44,11 +44,15 @@ public static class FormReaderFacade
     /// <returns>An IPdfForm representation of the document</returns>
     public static async ValueTask<IPdfForm> ReadFormAsync(PdfLowLevelDocument doc)
     {
-        var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
-        var acroForm = await root.GetAsync<PdfDictionary>(KnownNames.AcroForm);
-        var fields =await acroForm.GetAsync<PdfArray>(KnownNames.Fields);
-        return new AcroPdfForm(doc, await AcroFieldFactory.ParseFieldsAsync(fields.RawItems),
-            await GetFormAppearanceDefaultAsync(acroForm).CA());
+        var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root).CA();
+        var acroForm = await root.GetAsync<PdfDictionary>(KnownNames.AcroForm).CA();
+
+        var builder = new AcroFieldFactory();
+        await builder.ParseAcroFieldsAsync(
+            await acroForm.GetOrDefaultAsync(KnownNames.Fields, PdfArray.Empty).CA()).CA();
+        await builder.ParseXfaFieldsAsync(
+            await acroForm.GetOrDefaultAsync(KnownNames.XFA, PdfArray.Empty).CA()).CA();
+        return builder.Build(doc, await GetFormAppearanceDefaultAsync(acroForm).CA());
     }
 
     private static ValueTask<PdfDirectObject> GetFormAppearanceDefaultAsync(PdfDictionary acroForm) =>

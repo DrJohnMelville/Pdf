@@ -192,6 +192,7 @@ Pdf:DW
 Pdf:DW2
 Pdf:EarlyChange
 Pdf:EFF
+Pdf:EmbeddedFile
 Pdf:Encode
 Pdf:EncodedByteAlign
 Pdf:Encoding
@@ -326,6 +327,7 @@ Pdf:Width
 Pdf:Widths
 Pdf:WhitePoint
 Pdf:WMode
+Pdf:XFA
 Pdf:XRef
 Pdf:XStep
 Pdf:XRefStm

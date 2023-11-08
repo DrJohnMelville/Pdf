@@ -42,6 +42,6 @@ public partial class FormViewerViewModel: IRenderer
         if (output == null || Form == null) return;
 
         await using var outputStream = await output.CreateWrite();
-        await (await Form.CreateModifiedDocumentAsync().CA()).WriteToAsync(outputStream);
+        await (await Form.CreateModifiedDocumentAsync().CA()).WriteToWithXrefStreamAsync(outputStream);
     }
 }

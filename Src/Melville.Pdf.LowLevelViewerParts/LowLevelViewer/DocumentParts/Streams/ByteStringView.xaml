@@ -17,7 +17,15 @@
             </TabItem>
             <TabItem Header="Xml"
                      wpfHacks:VisibilityHack.CollapseIfNull="{Binding XmlRepresentation}">
-                <TreeView ItemsSource="{Binding XmlRepresentation}"/>
+                <TreeView ItemsSource="{Binding XmlRepresentation}">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
             </TabItem>
             <TabItem Header="Hex Dump">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">

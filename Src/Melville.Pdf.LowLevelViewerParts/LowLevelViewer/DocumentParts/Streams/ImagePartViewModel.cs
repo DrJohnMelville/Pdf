@@ -35,7 +35,7 @@ public class ImagePartViewModel: StreamPartViewModel
     protected override async ValueTask AddFormatsAsync(List<StreamDisplayFormat> fmts)
     {
         await base.AddFormatsAsync(fmts);
-        fmts.Add(new StreamDisplayFormat("Image", async p=>new ImageDisplayViewModel(
+        fmts.Insert(0, new StreamDisplayFormat("Image", async p=>new ImageDisplayViewModel(
             await (await p.WrapForRenderingAsync(new DeviceColor(255,255,255, 255))).ToWpfBitmapAsync())));
     }
 }

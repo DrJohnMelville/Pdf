@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Buffers;
+using System.Runtime.InteropServices.Marshalling;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
@@ -36,5 +38,39 @@ public static class StringDecoder
     {
         var (encoder, length) = ByteOrderDetector.DetectByteOrder(value);
         return encoder.GetString(value[length..]);
+    }
+
+
+    public static RentedBuffer<char> DecodedBuffer(this PdfDirectObject value) =>
+        (value.Get<StringSpanSource>()).DecodedBuffer();
+
+    public static RentedBuffer<char> DecodedBuffer(this StringSpanSource value) =>
+        ((ReadOnlySpan<byte>)value.GetSpan()).DecodedBuffer();
+
+    public static RentedBuffer<char> DecodedBuffer(this ReadOnlySpan<byte> value)
+    {
+        var (encoder, tagLen) = ByteOrderDetector.DetectByteOrder(value);
+        int length = encoder.GetCharCount(value[tagLen..]);
+        var ret = new RentedBuffer<char>(length);
+        encoder.GetChars(value[tagLen..], ret.Span);
+        return ret;
+    }
+}
+
+public readonly struct RentedBuffer<T>: IDisposable
+{
+    public Memory<T> Memory { get; }
+    public Span<T> Span => Memory.Span;
+    private readonly T[] array;
+
+    public RentedBuffer(int length)
+    {
+        array = ArrayPool<T>.Shared.Rent(length);
+        Memory = array.AsMemory(0, length);
+    }
+
+    public void Dispose()
+    {
+        ArrayPool<T>.Shared.Return(array);
     }
 }
