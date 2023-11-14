@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Runtime.InteropServices.ComTypes;
+using System.Xml;
 using System.Xml.Linq;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Pdf.FormReader.Interface;
@@ -135,6 +136,7 @@ internal class AcroFieldFactory
     {
         switch (child.Name.LocalName)
         {
+            case "exclGroup" :
             case "field":
                 ParseField(xfaSubForm, child);
                 break;
@@ -164,7 +166,7 @@ internal class AcroFieldFactory
         if (name is not {Value: not null}) return;
         var fullName = parent.ChildControlName(name.Value);
 
-        var index = SearchControls(fullName);
+        var index = pdfControls.NameToFieldIndex(fullName);
 
         if (index >= 0)
         {
@@ -178,27 +180,41 @@ internal class AcroFieldFactory
         }
     }
 
-    private int SearchControls(string fullName)
-    {
-        for (int i = 0; i < pdfControls.Count; i++)
-        {
-            if (fullName.AsSpan().SameXfaNameAs(pdfControls[i].Name)) return i;
-        }
-
-        return -1;
-    }
-
     private static readonly XNamespace xfaTemplate =
         XNamespace.Get(@"http://www.xfa.org/schema/xfa-template/2.5/");
 
-    private XfaControl? CreateXfaControl(XElement field, IPdfFormField dataStore) =>
-        XfaControlType(field) switch
+    private XfaControl? CreateXfaControl(XElement field, IPdfFormField dataStore)
+    {
+        if (field.Name.LocalName == "exclGroup") return ParseExclGroup(field, dataStore);
+        return XfaControlType(field) switch
         {
             "choiceList" => ParsePick(field, dataStore),
             "checkButton" => new XfaCheckBox(dataStore),
             "button" => null,
+            "signature" => null,
+            "textEdit" => new XfaTextBox(dataStore),
+            "dateTimeEdit" => new XfaTextBox(dataStore),
             _ => new XfaTextBox(dataStore)
         };
+    }
+
+    private XfaControl ParseExclGroup(XElement field, IPdfFormField dataStore) =>
+        new XfaSinglePick(dataStore, 
+            field.Descendants(xfaTemplate+"field").Select(ParseExclField).ToList());
+
+    private PdfPickOption ParseExclField(XElement field) => 
+        new(ReadExclCaption(field), ReadExclValue(field));
+
+
+    private static string ReadExclCaption(XElement field) =>
+        ReadTypedValue(
+            field.Element(xfaTemplate + "caption")?.Element(xfaTemplate + "value"));
+
+    private static string ReadExclValue(XElement field) => ReadTypedValue(field.Element(xfaTemplate + "items"));
+
+    private static string ReadTypedValue(XElement? typeNodeParent) =>
+        typeNodeParent?.Elements().First()
+            ?.InnerText() ?? throw new PdfParseException("Cannot get value");
 
     private static string XfaControlType(XElement field) =>
         field.Element(xfaTemplate+"ui")?

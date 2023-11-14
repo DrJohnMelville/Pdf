@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Parsing.Streams;
@@ -99,6 +100,19 @@ public class AcroFormReaderTest
     [Fact]
     public async Task SubFormNameAsync()
     {
+        var reader = await CreateSubfomDocument();
+
+        reader.Should().NotBeNull();
+        reader.Fields.Should().HaveCount(1);
+        reader.Fields[0].Should().BeOfType<AcroCheckBox>()
+            .Subject.IsChecked.Should().Be(true);
+        reader.Fields[0].Name.Should().Be("FormName.CheckBox Field");
+        reader.Fields[0].Value.Should().Be("Yes");
+
+    }
+
+    private static async Task<IPdfForm> CreateSubfomDocument()
+    {
         var formField = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Annot)
             .WithItem(KnownNames.Subtype, KnownNames.Widget)
@@ -112,16 +126,26 @@ public class AcroFormReaderTest
             .WithItem(KnownNames.T, "FormName")
             .WithItem(KnownNames.Kids, PdfDirectObject.FromArray(formField))
             .AsDictionary();
-        
+
         var reader = await CreatSingleFieldFormAsync(formArray);
+        return reader;
+    }
 
-        reader.Should().NotBeNull();
-        reader.Fields.Should().HaveCount(1);
-        reader.Fields[0].Should().BeOfType<AcroCheckBox>()
-            .Subject.IsChecked.Should().Be(true);
-        reader.Fields[0].Name.Should().Be("FormName.CheckBox Field");
-        reader.Fields[0].Value.Should().Be("Yes");
-
+    [Theory]
+    [InlineData("FormName.CheckBox Field")]
+    [InlineData("FormName.CheckBox Field[0]")]
+    [InlineData("FormName[0].CheckBox Field[0]")]
+    [InlineData("FormName[0].CheckBox Field")]
+    public async Task GetFieldByNameSucceedAsync(string name)
+    {
+        (await CreateSubfomDocument()).NameToField(name).Should().BeOfType<AcroCheckBox>();
+    }
+    
+    [Fact]
+    public async Task GetFieldByNameFailAsync()
+    {
+        (await CreateSubfomDocument()).Invoking(i=>i.NameToField("ddd"))
+            .Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Fact]

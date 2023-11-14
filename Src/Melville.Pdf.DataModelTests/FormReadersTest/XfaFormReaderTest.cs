@@ -59,6 +59,77 @@ public class XfaFormReaderTest
         doc.Fields.First().Should().BeOfType<XfaTextBox>()
             .Subject.StringValue.Should().Be("FirstField Value");
     }
+    [Fact]
+    public async Task RadioButtonAsync()
+    {
+        var doc = await XfaFormAsync("""
+            <exclGroup name="rdoMedicaidEligible" y="92.087mm" x="177.8mm" xmlns="http://www.xfa.org/schema/xfa-template/2.5/">
+              <?templateDesigner itemValuesSpecified 1?>
+              <traversal>
+                <traverse ref="txtReferring[0]" />
+              </traversal>
+              <field h="9.525mm" w="12.7mm">
+                <ui>
+                  <checkButton shape="round">
+                    <border>
+                      <?templateDesigner StyleID apcb4?>
+                      <edge stroke="lowered" />
+                      <fill />
+                    </border>
+                  </checkButton>
+                </ui>
+                <font typeface="Myriad Pro" />
+                <margin leftInset="1mm" rightInset="1mm" />
+                <para vAlign="middle" />
+                <caption placement="right" reserve="5.847mm">
+                  <para vAlign="middle" />
+                  <value>
+                    <text>Yes</text>
+                  </value>
+                  <font typeface="Myriad Pro" size="11pt" />
+                </caption>
+                <items>
+                  <integer>1</integer>
+                </items>
+              </field>
+              <field h="9.525mm" w="12.7mm" x="12.7mm">
+                <ui>
+                  <checkButton shape="round">
+                    <border>
+                      <?templateDesigner StyleID apcb4?>
+                      <edge stroke="lowered" />
+                      <fill />
+                    </border>
+                  </checkButton>
+                </ui>
+                <font typeface="Myriad Pro" />
+                <margin leftInset="1mm" rightInset="1mm" />
+                <para vAlign="middle" />
+                <caption placement="right" reserve="5.53mm">
+                  <para vAlign="middle" />
+                  <value>
+                    <text>No</text>
+                  </value>
+                  <font typeface="Myriad Pro" size="11pt" />
+                </caption>
+                <items>
+                  <integer>2</integer>
+                </items>
+              </field>
+              <?templateDesigner expand 1?>
+            </exclGroup>
+            """, """<FirstField>FirstField Value</FirstField>""");
+
+        doc.Fields.Should().HaveCount(1);
+        doc.Fields.First().Name.Should().Be("rdoMedicaidEligible");
+        var pick = doc.Fields.First().Should().BeOfType<XfaSinglePick>()
+            .Subject;
+        pick.Options.Should().HaveCount(2);
+        pick.Options[0].Title.Should().Be("Yes");
+        pick.Options[0].Value.Should().Be("1");
+        pick.Options[1].Title.Should().Be("No");
+        pick.Options[1].Value.Should().Be("2");
+    }
 
     [Fact]
     public async Task ComoBoxAsync()
