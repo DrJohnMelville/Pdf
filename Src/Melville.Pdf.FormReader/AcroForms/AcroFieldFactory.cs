@@ -225,7 +225,9 @@ internal class AcroFieldFactory
     {
         var items = field.Elements(xfaTemplate + "items").ToList();
         if (items.Count is not (1 or 2))
-            throw new PdfParseException("Xfa choice list has invalid number of items elements./");
+          //  throw new PdfParseException("Xfa choice list has invalid number of items elements./");
+            return new XfaSinglePick(dataStore, Array.Empty<PdfPickOption>());
+
         var valueItems = SelectItemshild(items, false).Elements();
         var displalyItems = SelectItemshild(items, true).Elements();
         return new XfaSinglePick(dataStore,
