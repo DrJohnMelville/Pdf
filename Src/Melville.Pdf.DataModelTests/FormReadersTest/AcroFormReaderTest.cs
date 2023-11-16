@@ -100,7 +100,7 @@ public class AcroFormReaderTest
     [Fact]
     public async Task SubFormNameAsync()
     {
-        var reader = await CreateSubfomDocument();
+        var reader = await CreateSubfomDocumentAsync();
 
         reader.Should().NotBeNull();
         reader.Fields.Should().HaveCount(1);
@@ -111,7 +111,7 @@ public class AcroFormReaderTest
 
     }
 
-    private static async Task<IPdfForm> CreateSubfomDocument()
+    private static async Task<IPdfForm> CreateSubfomDocumentAsync()
     {
         var formField = new DictionaryBuilder()
             .WithItem(KnownNames.Type, KnownNames.Annot)
@@ -138,13 +138,13 @@ public class AcroFormReaderTest
     [InlineData("FormName[0].CheckBox Field")]
     public async Task GetFieldByNameSucceedAsync(string name)
     {
-        (await CreateSubfomDocument()).NameToField(name).Should().BeOfType<AcroCheckBox>();
+        (await CreateSubfomDocumentAsync()).NameToField(name).Should().BeOfType<AcroCheckBox>();
     }
     
     [Fact]
     public async Task GetFieldByNameFailAsync()
     {
-        (await CreateSubfomDocument()).Invoking(i=>i.NameToField("ddd"))
+        (await CreateSubfomDocumentAsync()).Invoking(i=>i.NameToField("ddd"))
             .Should().Throw<ArgumentOutOfRangeException>();
     }
 

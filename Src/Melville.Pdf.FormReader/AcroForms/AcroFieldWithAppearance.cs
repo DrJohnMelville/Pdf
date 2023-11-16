@@ -20,7 +20,7 @@ internal partial class AcroFieldWithAppearance: AcroFormField
             ap.RawItems.TryGetValue(KnownNames.N, out var apStreamRef))
             await ReplaceAppearanceStreamAsync(apStreamRef,
                 await sourceDictionary.GetOrDefaultAsync(KnownNames.DA,
-                    formAppearanceString), target);
+                    formAppearanceString).CA(), target).CA();
     }
 
     private async ValueTask ReplaceAppearanceStreamAsync(
@@ -29,7 +29,7 @@ internal partial class AcroFieldWithAppearance: AcroFormField
     {
         using var textValue = Value.DecodedBuffer();
 
-        var template = await apStreamRef.LoadValueAsync();
+        var template = await apStreamRef.LoadValueAsync().CA();
         if (!template.TryGet(out PdfStream? templateStream)) return;
         var builder = new DictionaryBuilder(templateStream.RawItems);
         var original = new MemoryStream(); 

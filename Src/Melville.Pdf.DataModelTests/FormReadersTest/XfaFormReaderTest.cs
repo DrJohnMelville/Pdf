@@ -162,7 +162,7 @@ public class XfaFormReaderTest
     }
 
     [Fact]
-    public async Task ComoBoxAsync2()
+    public async Task ComoBox2Async()
     {
         var doc = await XfaFormAsync("""
             <field name="FirstField">

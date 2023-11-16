@@ -19,7 +19,7 @@ public interface IPdfForm
     ValueTask<PdfLowLevelDocument> CreateModifiedDocumentAsync();
 }
 
-public static class PdfFormOperations
+internal static class PdfFormOperations
 {
     public static IPdfFormField NameToField(this IPdfForm form, string name) =>
         form.Fields[form.NameToFieldIndex(name)];

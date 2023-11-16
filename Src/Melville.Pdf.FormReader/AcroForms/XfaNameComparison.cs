@@ -1,15 +1,26 @@
 ﻿namespace Melville.Pdf.FormReader.AcroForms;
 
+/// <summary>
+/// Xfa names can optionally have a [0] at the end of each name component which the spec
+/// allows to be omitted.  This class compares characer spans while ignoring these optional
+/// elements.
+/// </summary>
 public static unsafe class XfaNameComparison
 {
-    public static bool SameXfaNameAs(this in ReadOnlySpan<char> fullName, in ReadOnlySpan<char> name)
+    /// <summary>
+    /// Compare two ReadOnlySpans while ignoring optional elements of XFA name syntax.
+    /// </summary>
+    /// <param name="spanA">The first name to compare</param>
+    /// <param name="spanB">The name to compare the first to</param>
+    /// <returns>True if the names refer to the same XFA object, false otherwise.</returns>
+    public static bool SameXfaNameAs(this in ReadOnlySpan<char> spanA, in ReadOnlySpan<char> spanB)
     {
         // This string compare method ignores [0] before a . or the end of the string
-        fixed(char* aStart = fullName)
-        fixed (char* bStart = name)
+        fixed(char* aStart = spanA)
+        fixed (char* bStart = spanB)
         {
-            char* aEnd = aStart + fullName.Length;
-            char* bEnd = bStart + name.Length;
+            char* aEnd = aStart + spanA.Length;
+            char* bEnd = bStart + spanB.Length;
             char* a = aStart;
             char* b = bStart;
 

@@ -25,7 +25,7 @@ internal partial class AcroPdfForm : IPdfForm
         await WriteChangedFieldsAsync(ret).CA();
         if (!xfaDataSet.IsNull)
         {
-            await WriteXfaDataset(ret).CA();
+            WriteXfaDataset(ret);
         }
         return ret;
     }
@@ -40,7 +40,7 @@ internal partial class AcroPdfForm : IPdfForm
 
     private static readonly XNamespace DataNs = "http://www.xfa.org/schema/xfa-data/1.0/";
 
-    private async ValueTask WriteXfaDataset(ModifyableLowLevelDocument doc)
+    private void WriteXfaDataset(ModifyableLowLevelDocument doc)
     {
         var targetXml = new XElement(DataNs + "datasets", 
             new XAttribute(XNamespace.Xmlns + "xfa", DataNs),
@@ -53,6 +53,5 @@ internal partial class AcroPdfForm : IPdfForm
                 .WithFilter(FilterName.FlateDecode)
                 .AsStream(targetXml.ToString().AsExtendedAsciiBytes())
             );
-        
     }
 }
