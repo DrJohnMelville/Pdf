@@ -412,7 +412,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					catch (System.IO.EndOfStreamException e)
 					{
 						firstPackOff[t][tp] = in_Renamed.length();
-						throw e;
+						throw ;
 					}
 					
 					pos = in_Renamed.Pos;
@@ -2135,7 +2135,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 			{
 				// Should never happen. Truncated codestream are normally found by
 				// the class constructor
-				throw e;
+				throw;
 			}
 			
 			// In truncation mode, update the number of read bytes

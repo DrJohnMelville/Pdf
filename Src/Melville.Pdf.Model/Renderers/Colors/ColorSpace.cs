@@ -55,10 +55,12 @@ internal readonly struct ColorSpaceFactory
         _ => throw new PdfParseException("Invalid Color space definition")
     };
 
-    private static IColorSpace? cmykColorSpacel;
+    private static readonly Lazy<Task<IColorSpace>> cmykColorSpacel = new (CreateCMYKInsideOfLazyAsync);
 
-    public static async ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => cmykColorSpacel ??= 
-        new IccColorspaceWithBlackDefault( (await CmykIccProfile.ReadCmykProfileAsync().CA()).DeviceToSrgb());
+    private static async Task<IColorSpace> CreateCMYKInsideOfLazyAsync() => 
+        new IccColorspaceWithBlackDefault((await CmykIccProfile.ReadCmykProfileAsync().CA()).DeviceToSrgb());
+
+    public static  ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => new(cmykColorSpacel.Value);
 
     private async ValueTask<IColorSpace> LookupInResourceDictionaryAsync(PdfDirectObject colorSpaceName)
     {

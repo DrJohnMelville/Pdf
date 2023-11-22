@@ -12,9 +12,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
-      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
-                        PrivateAssets="all">
+      <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	      <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>
