@@ -409,7 +409,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 							tilePartLen[t][tp] = in_Renamed.length() - 2 - tilePartStart;
 						}
 					}
-					catch (System.IO.EndOfStreamException e)
+					catch (System.IO.EndOfStreamException)
 					{
 						firstPackOff[t][tp] = in_Renamed.length();
 						throw ;
@@ -2131,7 +2131,7 @@ namespace Melville.CSJ2K.j2k.codestream.reader
 					}
 				}
 			}
-			catch (System.IO.EndOfStreamException e)
+			catch (System.IO.EndOfStreamException)
 			{
 				// Should never happen. Truncated codestream are normally found by
 				// the class constructor
