@@ -354,7 +354,7 @@ internal sealed class JpegHuffmanBaselineScanDecoder : JpegHuffmanScanDecoder
         int hShift = JpegMathHelper.Log2((uint)horizontalSubsamplingFactor);
         int vShift = JpegMathHelper.Log2((uint)verticalSubsamplingFactor);
 
-        ref short tempRef = ref Unsafe.As<JpegBlock8x8, short>(ref Unsafe.AsRef(tempBlock));
+        ref short tempRef = ref Unsafe.As<JpegBlock8x8, short>(ref Unsafe.AsRef(in tempBlock));
 
         for (int v = 0; v < verticalSubsamplingFactor; v++)
         {

@@ -95,7 +95,8 @@ public class ColorMacrosTest
     [Fact] public async Task CmykStrokeMacroAsync()
     {
         await sut.SetStrokeCMYKAsync(0,0,0,0);
-        Assert.Equal(await ColorSpaceFactory.CreateCmykColorSpaceAsync(),
+        Assert.Equal(
+            await ColorSpaceFactory.CreateCmykColorSpaceAsync(),
             state.StronglyTypedCurrentState().StrokeColorSpace);
         VerifyWhite(state.StronglyTypedCurrentState().StrokeColor);
     }

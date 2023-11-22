@@ -64,7 +64,7 @@ internal struct JpegBlock8x8F
 
     public static JpegBlock8x8F operator *(in JpegBlock8x8F block, float value)
     {
-        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(block);
+        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(in block);
         JpegBlock8x8F result = block;
         result.V0L = Vector4.Multiply(blockRef.V0L, value);
         result.V0R = Vector4.Multiply(blockRef.V0R, value);
@@ -87,7 +87,7 @@ internal struct JpegBlock8x8F
 
     public static JpegBlock8x8F operator /(in JpegBlock8x8F block, float value)
     {
-        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(block);
+        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(in block);
         JpegBlock8x8F result = block;
         result.V0L = Vector4.Divide(blockRef.V0L, value);
         result.V0R = Vector4.Divide(blockRef.V0R, value);
@@ -110,7 +110,7 @@ internal struct JpegBlock8x8F
 
     public static JpegBlock8x8F operator +(in JpegBlock8x8F block, float value)
     {
-        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(block);
+        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(in block);
         JpegBlock8x8F result = block;
         Vector4 valueVector = new Vector4(value);
         result.V0L = Vector4.Add(blockRef.V0L, valueVector);
@@ -134,7 +134,7 @@ internal struct JpegBlock8x8F
 
     public static JpegBlock8x8F operator -(in JpegBlock8x8F block, float value)
     {
-        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(block);
+        ref JpegBlock8x8F blockRef = ref Unsafe.AsRef(in block);
         JpegBlock8x8F result = block;
         Vector4 valueVector = new Vector4(value);
         result.V0L = Vector4.Subtract(blockRef.V0L, valueVector);

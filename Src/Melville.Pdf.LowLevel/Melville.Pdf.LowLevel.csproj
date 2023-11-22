@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Title>Melville.Pdf.LowLevel</Title>
         <PackageDescription>Reads and writes PDF files as a graph of PDF objects.</PackageDescription>
