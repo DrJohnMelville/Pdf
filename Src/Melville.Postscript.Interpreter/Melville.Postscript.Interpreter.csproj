@@ -6,7 +6,6 @@
 	  <Title>Melville.Pdf.LowLevel</Title>
 	  <PackageDescription>Reads and writes PDF files as a graph of PDF objects.</PackageDescription>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <TieredPGO>true</TieredPGO>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
