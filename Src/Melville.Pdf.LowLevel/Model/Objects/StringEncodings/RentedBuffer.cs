@@ -9,7 +9,7 @@ namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
 /// underlying array so we can return it when we are done.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public readonly struct RentedBuffer<T>: IDisposable
+public readonly struct RentedBuffer1<T>: IDisposable
 {
     /// <summary>
     /// The rented buffer as a Memory
@@ -29,7 +29,7 @@ public readonly struct RentedBuffer<T>: IDisposable
     /// than requested.
     /// </summary>
     /// <param name="length">The length of the requested buffer.</param>
-    public RentedBuffer(int length)
+    public RentedBuffer1(int length)
     {
         array = ArrayPool<T>.Shared.Rent(length);
         Memory = array.AsMemory(0, length);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices.Marshalling;
+using Melville.Hacks;
 using Melville.Postscript.Interpreter.Values;
 
 namespace Melville.Pdf.LowLevel.Model.Objects.StringEncodings;
