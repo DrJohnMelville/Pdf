@@ -2,8 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TieredPGO>true</TieredPGO>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<RootNamespace>Melville.Pdf.LowLevelViewer</RootNamespace>
 		<IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
@@ -26,8 +25,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Melville.WpfAppFramework" Version="0.6.18" />
-		<PackageReference Include="Melville.WpfControls" Version="0.6.18" />
+		<PackageReference Include="Melville.WpfAppFramework" Version="0.7.0" />
+		<PackageReference Include="Melville.WpfControls" Version="0.7.0" />
 	</ItemGroup>
 
 	<ItemGroup>

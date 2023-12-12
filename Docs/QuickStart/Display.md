@@ -168,3 +168,19 @@ You can also look at the ConcatenatingTextTarget which implements IExtractedText
 IExtractedTextTarget receivesc callbacks about the render matrix for each character written to the
 pdf page.  You can implement IExtractedTextTarget if you need to process the location of the text on
 the page.
+
+## 6. Read and write a PDF form.
+Unlike the image and text extractors mentioned above the form reader is not a renderer, if knows nothing 
+about content streams or even document level pdf concepts like pages or indexes.  The form reader uses the
+low-level document and accesses the dictionaries and streams that define PDF forms.  If you modify the values
+the form can create a modified low level document.  The modified document can be written using the WriteToWithXRefStreamAsync extension 
+method in Melville.Pdf.LowLevel.Writers.DocumentWriters.LowLevelDocumentWriterOperations.
+
+````
+public async Task ReadAndWriteForm()
+{
+    var form = await FormReaderFacade.ReadFormFromFileAsync(<FileName>);
+      // modify the form object as desired.
+    await  (await form.CreateModifiedDocumentAsync()).WriteToWithXRefStreamAsync(<output stream>);
+}
+````

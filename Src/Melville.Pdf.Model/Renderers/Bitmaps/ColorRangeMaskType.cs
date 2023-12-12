@@ -32,7 +32,7 @@ internal readonly struct ColorRangeMaskType : IMaskType
         Span<double> color = stackalloc double[colorSpace.ExpectedComponents];
         for (int i = 0; i < colorSpace.ExpectedComponents; i++)
         {
-            color[i + offset] = values[offset + 2 * i] / maxComponent;
+            color[i] = values[offset + 2 * i] / maxComponent;
         }
 
         return colorSpace.SetColor(color);

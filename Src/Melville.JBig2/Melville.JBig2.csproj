@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <Title>Melville.JBig2</Title>
@@ -11,14 +11,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
+      <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
-      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj"
-                        PrivateAssets="all">
+      <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	      <OutputItemType>Analyzer</OutputItemType>
       </ProjectReference>

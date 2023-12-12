@@ -2,13 +2,12 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
-        <TieredPGO>true</TieredPGO>        
+        <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.WpfAppFramework" Version="0.6.18" />
+      <PackageReference Include="Melville.WpfAppFramework" Version="0.7.0" />
     </ItemGroup>
 
     <ItemGroup>

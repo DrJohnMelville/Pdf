@@ -182,7 +182,7 @@ internal sealed class JpegPartialScanlineAllocator
 
     private static void WriteBlock(JpegBlockOutputWriter outputWriter, in JpegBlock8x8 block, int componentIndex, int x, int y, int horizontalSamplingFactor, int verticalSamplingFactor)
     {
-        ref short blockRef = ref Unsafe.As<JpegBlock8x8, short>(ref Unsafe.AsRef(block));
+        ref short blockRef = ref Unsafe.As<JpegBlock8x8, short>(ref Unsafe.AsRef(in block));
 
         if (horizontalSamplingFactor == 1 && verticalSamplingFactor == 1)
         {
@@ -195,7 +195,7 @@ internal sealed class JpegPartialScanlineAllocator
             int hShift = JpegMathHelper.Log2((uint)horizontalSamplingFactor);
             int vShift = JpegMathHelper.Log2((uint)verticalSamplingFactor);
 
-            ref short tempRef = ref Unsafe.As<JpegBlock8x8, short>(ref Unsafe.AsRef(tempBlock));
+            ref short tempRef = ref Unsafe.As<JpegBlock8x8, short>(ref Unsafe.AsRef(in tempBlock));
 
             for (int v = 0; v < verticalSamplingFactor; v++)
             {

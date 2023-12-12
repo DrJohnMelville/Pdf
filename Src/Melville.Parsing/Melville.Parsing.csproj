@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
@@ -12,9 +12,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Generators.INPC" Version="0.6.18" />
-      <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
-      <PackageReference Include="Melville.Hacks" Version="0.6.18" />
+      <PackageReference Include="Melville.Generators.INPC" Version="0.7.0" />
+      <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+      <PackageReference Include="Melville.Hacks" Version="0.7.0" />
 
       <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 	      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -1,5 +1,10 @@
 ﻿# Releases
 
+## 11/22/2023 0.4.6
+- Add the ability to read and write AcroForms and XfaForms.
+- Cannot display any kind of forms, can just manipulate the form data using the Melville.Pdf.FormReader assembly.
+- Adopt .Net 8.0
+
 ## 10/10/2023 0.4.5
 - Fixed a bug when a JPEG stream was subsequently encoded in a flate stream.
 - Performance improvement in bitmaps that have a custom color mapping. 
