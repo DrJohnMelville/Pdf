@@ -88,7 +88,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Postscript.Operati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTrial", "TimeTrial\TimeTrial.csproj", "{5E33F469-89DB-4921-953C-801051213190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Pdf.FormReader", "Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj", "{49A9662F-0CB5-4C4A-8152-7957E4A70486}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Pdf.FormReader", "Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj", "{49A9662F-0CB5-4C4A-8152-7957E4A70486}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

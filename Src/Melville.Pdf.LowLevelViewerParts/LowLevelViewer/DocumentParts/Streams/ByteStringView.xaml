@@ -13,7 +13,7 @@
         <TabControl>
             <TabItem Header="Text">
                 <streams:TextBoxWithFind 
-                    IsReadOnly="True" Text="{Binding AsAsciiString, Mode=OneWay, PresentationTraceSources.TraceLevel = High}" />
+                    IsReadOnly="True" Text="{Binding AsAsciiString, Mode=OneWay}" />
             </TabItem>
             <TabItem Header="Xml"
                      wpfHacks:VisibilityHack.CollapseIfNull="{Binding XmlRepresentation}">

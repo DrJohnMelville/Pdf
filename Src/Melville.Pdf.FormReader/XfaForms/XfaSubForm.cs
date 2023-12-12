@@ -11,8 +11,10 @@ internal partial class XfaSubForm: IXfaControl
     private readonly List<IXfaControl>  controls = new ();
     public void AddControl(IXfaControl? control)
     {
-        if (control != null ) controls.Add(control);
+        if (!(control is null  || NameAlreadyDefined(control)) ) controls.Add(control);
     }
+
+    private bool NameAlreadyDefined(IXfaControl control) => controls.Any(i=>i.LocalName.SequenceEqual(control.LocalName));
 
     public void WriteValues(XElement dataSet)
     {

@@ -1,5 +1,8 @@
-﻿using System.Windows.Media;
+﻿using System.Net.Mime;
+using System.Windows;
+using System.Windows.Media;
 using Melville.INPC;
+using Melville.MVVM.Wpf.ThreadSwitchers;
 using Melville.Pdf.LowLevel.Model.Objects;
 using Melville.Pdf.Model.Renderers.Bitmaps;
 using Melville.Pdf.Model.Renderers.Colors;
@@ -35,8 +38,12 @@ public class ImagePartViewModel: StreamPartViewModel
     protected override async ValueTask AddFormatsAsync(List<StreamDisplayFormat> fmts)
     {
         await base.AddFormatsAsync(fmts);
-        fmts.Insert(0, new StreamDisplayFormat("Image", async p=>new ImageDisplayViewModel(
-            await (await p.WrapForRenderingAsync(new DeviceColor(255,255,255, 255))).ToWpfBitmapAsync())));
+        fmts.Insert(0, new StreamDisplayFormat("Image", async p=>
+        {
+            await Application.Current.Dispatcher;
+            return new ImageDisplayViewModel(
+                await (await p.WrapForRenderingAsync(new DeviceColor(255, 255, 255, 255))).ToWpfBitmapAsync());
+        }));
     }
 }
 
