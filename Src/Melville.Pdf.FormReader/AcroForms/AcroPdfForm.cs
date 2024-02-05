@@ -1,6 +1,9 @@
-﻿using System.Xml.Linq;
+﻿using System.Text;
+using System.Xml;
+using System.Xml.Linq;
 using Melville.INPC;
 using Melville.Parsing.AwaitConfiguration;
+using Melville.Parsing.Streams;
 using Melville.Pdf.FormReader.Interface;
 using Melville.Pdf.FormReader.XfaForms;
 using Melville.Pdf.LowLevel.Model.Conventions;
@@ -47,11 +50,23 @@ internal partial class AcroPdfForm : IPdfForm
             new XElement(DataNs + "data", xfaForm.DataElements())
             );
 
+        var mbs = new MultiBufferStream();
+        var writer = XmlWriter.Create(mbs,
+            new XmlWriterSettings()
+            {
+                CheckCharacters = true, 
+                Encoding = new UTF8Encoding(false), 
+                CloseOutput = false, 
+                OmitXmlDeclaration=true
+            });
+        targetXml.WriteTo(writer);
+        writer.Flush();
+
         doc.ReplaceReferenceObject(xfaDataSet, 
             new DictionaryBuilder()
                 .WithItem(KnownNames.Type, KnownNames.EmbeddedFile)
                 .WithFilter(FilterName.FlateDecode)
-                .AsStream(targetXml.ToString().AsExtendedAsciiBytes())
+                .AsStream(mbs)
             );
     }
 }
