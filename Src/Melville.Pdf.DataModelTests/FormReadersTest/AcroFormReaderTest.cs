@@ -58,6 +58,18 @@ public class AcroFormReaderTest
         var f2 = await FormReaderFacade.ReadFormAsync(stream.CreateReader());
         f2.Fields[0].Value.DecodedString().Should().Be("FooBar");
     }
+    [Fact]
+    public static async Task ModifyTextFormAsyncWithProblemCharacter()
+    {
+        var frm = await SingleTextBoxFormAsync();
+        ((IPdfTextBox)frm.Fields[0]).StringValue = "Foo\x2013Bar";
+
+        var stream = new MultiBufferStream();
+        await (await frm.CreateModifiedDocumentAsync()).WriteToAsync(stream);
+
+        var f2 = await FormReaderFacade.ReadFormAsync(stream.CreateReader());
+        f2.Fields[0].Value.DecodedString().Should().Be("Foo\x2013Bar");
+    }
 
     private static async Task<IPdfForm> SingleTextBoxFormAsync()
     {
