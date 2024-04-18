@@ -72,8 +72,7 @@ public readonly partial struct JpegStreamFactory
             };
 
         if (ColorTransformExplicitlyProhibited() ||
-            ColorTransformImplicitlyProhibited(decoder)||
-            ImageIsNotSubsampled(decoder)) return new StraightCopyStream(output, bufferLength);
+            ColorTransformImplicitlyProhibited(decoder)) return new StraightCopyStream(output, bufferLength);
         
         return decoder.NumberOfComponents switch
         {
@@ -86,8 +85,6 @@ public readonly partial struct JpegStreamFactory
     private bool ColorTransformImplicitlyProhibited(JpegDecoder decoder) => 
         colorTransformFromPdf == -1 && decoder.NumberOfComponents != 3;
 
-    private bool ColorTransformExplicitlyProhibited() => colorTransformFromPdf == 0;
-
-    private bool ImageIsNotSubsampled(JpegDecoder decoder) =>
-        decoder.NumberOfComponents == 1 || decoder.GetMaximumHorizontalSampling() == 1;
+    private bool ColorTransformExplicitlyProhibited() => 
+        colorTransformFromPdf == 0;
 }
