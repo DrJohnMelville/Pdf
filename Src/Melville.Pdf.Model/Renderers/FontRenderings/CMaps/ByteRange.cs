@@ -21,8 +21,6 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps
 
         public override int WriteMapping(in VariableBitChar character, Memory<uint> target)
         {
-            AssertValidRange();
-
             for (int i = mappers.Count -1; i >= 0; i--)
             {
                 var candidate = mappers[i];
@@ -30,12 +28,6 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings.CMaps
                     return candidate.WriteMapping(character, target);
             }
             return WriteNotDefinedMapping(target.Span);
-        }
-
-        private void AssertValidRange()
-        {
-            if (mappers.Count == 0)
-                throw new InvalidDataException("Cannot have an empty byte range");
         }
 
         private static int WriteNotDefinedMapping(Span<uint> target)
