@@ -87,7 +87,7 @@ not to include so I could ship this version.
       The result, I am sure, is a PDF generation framework much more focused on
       ability to produce unusual variants of PDF syntax over anything that might
       be useful in creating real documents.  Most notably, I do not implement JPEG and JPEG2000 encoders.
-- Forms of any kind.
+- Rendering interactive forms.  (You can read and write fields, they just do not render)
 - Annotations
 - Transparency (Partial support)
 
@@ -98,7 +98,6 @@ code quality high, but you will have to judge that.  I hope to continue this
 project.  Here are things I am likely to take this up next.
 
 - Performance work.
-- Filling and extracting text from Adobe and XFA forms -- another feature I could use at work.
 - Document outline and page thumbnails
 - More work on the Wpf viewer control to support at least zoom and rotation.
 

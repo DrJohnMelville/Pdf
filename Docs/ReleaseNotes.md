@@ -1,5 +1,13 @@
 ﻿# Releases
 
+## 4/20/2023
+Not a lot done here recently.  I have been working over the past 6 months to get a release of WinId for the Web 
+ready for the for the forensic odontologists.  I have also been using the pdf renderer every day at work.  This
+release is just the bugs I ran into and fixed in 6 months of daily use at work.
+- Fixed XFA form reader consistently uses utf-8 encoding within form fields.
+- JPEGs that have no undersampling render with the correct YUV->RGB transform.
+- Character maps with empty ranges (that are forbidden by the spec) do not crash the reader.
+
 ## 11/22/2023 0.4.6
 - Add the ability to read and write AcroForms and XfaForms.
 - Cannot display any kind of forms, can just manipulate the form data using the Melville.Pdf.FormReader assembly.

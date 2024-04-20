@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Melville.FileSystem;
 using Melville.Parsing.Streams;
 using Melville.Pdf.DataModelTests.ParsingTestUtils;
@@ -32,7 +33,7 @@ public class S_7_5_8CrossReferenceStreams
         var root = await doc.TrailerDictionary.GetAsync<PdfDictionary>(KnownNames.Root);
         var pages = await root.GetAsync<PdfDictionary>(KnownNames.Pages);
         var kids = await pages.GetAsync<PdfArray>(KnownNames.Kids);
-        await Assert.Single(kids);
+        kids.Should().HaveCount(1);
     }
 
     [Fact]

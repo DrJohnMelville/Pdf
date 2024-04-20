@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.MVVM.Wpf" Version="0.7.0" />
+      <PackageReference Include="Melville.MVVM.Wpf" Version="0.7.1" />
       <PackageReference Include="Melville.WpfControls" Version="0.7.0" />
     </ItemGroup>
 

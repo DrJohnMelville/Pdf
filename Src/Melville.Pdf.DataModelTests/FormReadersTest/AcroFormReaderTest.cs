@@ -59,7 +59,7 @@ public class AcroFormReaderTest
         f2.Fields[0].Value.DecodedString().Should().Be("FooBar");
     }
     [Fact]
-    public static async Task ModifyTextFormAsyncWithProblemCharacter()
+    public static async Task ModifyTextFormAsyncWithProblemCharacterAsync()
     {
         var frm = await SingleTextBoxFormAsync();
         ((IPdfTextBox)frm.Fields[0]).StringValue = "Foo\x2013Bar";
