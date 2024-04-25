@@ -52,8 +52,15 @@ public partial class CMapFactory
     /// <returns>The parsed  CMAP</returns>
     public async ValueTask<IReadCharacter> ParseCMapAsync(PdfDirectObject encoding)
     {
-        await ReadFromPdfValueAsync(encoding).CA();
-        return new CMap(data);
+        try
+        {
+            await ReadFromPdfValueAsync(encoding).CA();
+            return new CMap(data);
+        }
+        catch (Exception )
+        {
+            return SingleByteCharacters.Instance;
+        }
     }
 
     #region Cmap Sources

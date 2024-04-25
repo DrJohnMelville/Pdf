@@ -49,7 +49,12 @@ public partial class DictionaryStack :
     public PostscriptValue Get(in PostscriptValue key)=>
         TryGet(key, out var result)
             ? result
-            : throw new KeyNotFoundException($"Cannot find key {key}.");
+            : throw KeyException(key);
+
+    private static KeyNotFoundException KeyException(PostscriptValue key)
+    {
+        return new KeyNotFoundException($"Cannot find key {key}.");
+    }
 
 
     /// <summary>
