@@ -1,20 +1,37 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.Streams;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.ParsingTestUtils;
 
+public class MultiplexMemoryTest : MultiplexedStreamTest
+{
+    protected override IMultiplexSource CreateSut(byte[] data) => 
+        new MemorySource(data.AsMemory());
+}
+
+public class MultiplexMultBufferTest : MultiplexedStreamTest
+{
+    protected override IMultiplexSource CreateSut(byte[] data) =>
+        new MultiBufferStream(data);
+}
+
 public class MultiplexedStreamTest
 {
-    private readonly MultiplexedStream sut;
+    private readonly IMultiplexSource sut;
 
     public MultiplexedStreamTest()
     {
         var data = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
-        sut = new MultiplexedStream(new MemoryStream(data));
+        sut = CreateSut(data);
     }
+
+    protected virtual IMultiplexSource CreateSut(byte[] data) => 
+        new MultiplexedStream(new MemoryStream(data));
 
     private void VerifyRead(Stream reader, params byte[] data)
     {

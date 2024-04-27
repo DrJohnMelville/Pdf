@@ -85,10 +85,17 @@ public partial class CMapFactory
 
     private async ValueTask ReadFromCSharpStreamAsync(Stream source)
     {
-        var parser = new PostscriptEngine(dict) { Tag = this }.WithImmutableStrings();
-        parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
-        parser.ErrorDict.Put("undefined"u8, PostscriptValueFactory.CreateNull());
-        await parser.ExecuteAsync(source).CA();
+        try
+        {
+            var parser = new PostscriptEngine(dict) { Tag = this }.WithImmutableStrings();
+            parser.ResourceLibrary.Put("ProcSet", "CIDInit", PostscriptValueFactory.CreateDictionary());
+            parser.ErrorDict.Put("undefined"u8, PostscriptValueFactory.CreateNull());
+            await parser.ExecuteAsync(source).CA();
+        }
+        finally
+        {
+            await source.DisposeAsync().CA();
+        }
 
     }
     #endregion

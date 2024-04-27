@@ -1,12 +1,13 @@
-﻿using Melville.Parsing.Streams.Bases;
+﻿using Melville.Parsing.MultiplexSources;
+using Melville.Parsing.Streams.Bases;
 
 namespace Melville.Parsing.Streams;
 
 /// <summary>
 /// This class acts like a memorystream, except that it uses a list of buffers instead of resizing the buffer.
 /// </summary>
-public class MultiBufferStream : DefaultBaseStream
-    {
+public class MultiBufferStream : DefaultBaseStream, IMultiplexSource
+{
         private readonly MultiBuffer multiBuffer;
         private MultiBufferPosition position;
 
@@ -76,8 +77,15 @@ public class MultiBufferStream : DefaultBaseStream
         /// <summary>
         /// Create a reader that has its own unique position pointer into the buffer.
         /// </summary>
-        /// <returns></returns>
         public MultiBufferStream CreateReader() => new MultiBufferReader(multiBuffer);
+
+        /// <inheritdoc />
+        Stream IMultiplexSource.ReadFrom(long position)
+        {
+            var ret = CreateReader();
+            ret.Seek(position, SeekOrigin.Begin);
+            return ret;
+        }
 
 
         private class MultiBufferReader : MultiBufferStream
@@ -91,5 +99,4 @@ public class MultiBufferStream : DefaultBaseStream
 
             public override bool CanWrite => false;
         }
-
     }

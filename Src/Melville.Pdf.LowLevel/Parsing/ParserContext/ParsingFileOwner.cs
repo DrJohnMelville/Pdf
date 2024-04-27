@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Melville.Parsing.AwaitConfiguration;
-using Melville.Parsing.Streams;
+using Melville.Parsing.MultiplexSources;
 using Melville.Pdf.LowLevel.Encryption.CryptContexts;
 using Melville.Pdf.LowLevel.Encryption.SecurityHandlers;
 using Melville.Pdf.LowLevel.Filters.FilterProcessing;
@@ -15,7 +15,7 @@ namespace Melville.Pdf.LowLevel.Parsing.ParserContext;
 
 internal sealed partial class ParsingFileOwner: IDisposable
 {
-    private readonly MultiplexedStream source;
+    private readonly IMultiplexSource source;
     private long preHeaderOffset = 0;
     public long StreamLength => source.Length;
     public IndirectObjectRegistry NewIndirectResolver { get; }
@@ -24,7 +24,7 @@ internal sealed partial class ParsingFileOwner: IDisposable
 
     public ParsingFileOwner(Stream source, IPasswordSource passwordSource)
     {
-        this.source = new MultiplexedStream(source);
+        this.source = MultiplexSourceFactory.Create(source);
         this.passwordSource = passwordSource;
         NewIndirectResolver = new IndirectObjectRegistry(this);
     }
