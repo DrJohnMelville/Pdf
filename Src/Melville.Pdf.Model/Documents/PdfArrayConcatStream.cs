@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Melville.Linq;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.StreamFilters;
 using Melville.Pdf.LowLevel.Model.Objects;
@@ -16,9 +17,12 @@ internal class PdfArrayConcatStream : ConcatStreamBase
 {
     private readonly IEnumerator<ValueTask<PdfDirectObject>> source;
 
+    private static readonly ValueTask<PdfDirectObject> LineEndStream =
+        new((PdfDirectObject)new DictionaryBuilder().AsStream("\n"));
+
     public PdfArrayConcatStream(PdfArray source)
     {
-        this.source = source.GetEnumerator();
+        this.source = source.Interleave(LineEndStream).GetEnumerator();
     }
 
     protected override async ValueTask<Stream?> GetNextStreamAsync()
