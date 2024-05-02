@@ -30,11 +30,11 @@ internal interface IIndexedReader
 
 }
 
-internal class IndexedReaderStream<T> : DefaultBaseStream where T : IIndexedReader
+internal class IndexedReaderStream : DefaultBaseStream
 {
-    private readonly T source;
+    private readonly IIndexedReader source;
 
-    public IndexedReaderStream(T source, long position) : base(true, false, true)
+    public IndexedReaderStream(IIndexedReader source, long position) : base(true, false, true)
     {
         this.source = source;
         Position = position;

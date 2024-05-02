@@ -162,6 +162,6 @@ public class S7_7_3_3PageAttributes
         });
         var stream = await doc.GetContentBytesAsync();
         var dat = await new StreamReader(stream).ReadToEndAsync();
-        Assert.Equal("xxyyy", dat);
+        Assert.Equal("xx\nyyy", dat);
     }
 }

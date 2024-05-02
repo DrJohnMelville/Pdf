@@ -13,13 +13,13 @@ internal class FileMultiplexer(FileStream stream) : IMultiplexSource, IIndexedRe
     }
 
     public Stream ReadFrom(long position) => 
-        new IndexedReaderStream<FileMultiplexer>(this, position);
+        new IndexedReaderStream(this, position);
 
     public long Length => stream.Length;
 
-    public int Read(long position, in Span<byte> buffer) =>
+    int IIndexedReader.Read(long position, in Span<byte> buffer) =>
         RandomAccess.Read(handle, buffer, position);
 
-    public ValueTask<int> ReadAsync(long position, Memory<byte> buffer, CancellationToken cancellationToken) =>
+    ValueTask<int> IIndexedReader.ReadAsync(long position, Memory<byte> buffer, CancellationToken cancellationToken) =>
         RandomAccess.ReadAsync(handle, buffer, position, cancellationToken);
 }

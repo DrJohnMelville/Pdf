@@ -73,5 +73,5 @@ internal sealed class MultiplexedStream : IMultiplexSource, IIndexedReader
     }
 
     /// <inheritdoc />
-    public Stream ReadFrom(long position) => new IndexedReaderStream<MultiplexedStream>(this, position);
+    public Stream ReadFrom(long position) => new IndexedReaderStream(this, position);
 }
