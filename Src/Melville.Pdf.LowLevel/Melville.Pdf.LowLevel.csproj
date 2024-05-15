@@ -11,8 +11,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Melville.Hacks" Version="0.7.1" />
-      <PackageReference Include="Melville.Linq" Version="0.7.1" />
+      <PackageReference Include="Melville.Hacks" Version="0.7.2" />
+      <PackageReference Include="Melville.Linq" Version="0.7.2" />
       <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
@@ -29,7 +29,7 @@
       </ProjectReference>
       <ProjectReference Include="..\Melville.Postscript.OperationGenerator\Melville.Postscript.OperationGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
       <ProjectReference Include="..\Melville.CCITT\Melville.CCITT.csproj" />
-      <ProjectReference Include="..\Melville.CSJ2k\Melville.CSJ2K.csproj" />
+      <ProjectReference Include="..\Melville.CSJ2k\Melville.CSJ2k.csproj" />
       <ProjectReference Include="..\Melville.JBig2\Melville.JBig2.csproj" />
       <ProjectReference Include="..\Melville.JpegLibrary\Melville.JpegLibrary.csproj" />
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
