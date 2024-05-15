@@ -62,11 +62,9 @@ internal readonly struct ColorSpaceFactory
 
     public static  ValueTask<IColorSpace> CreateCmykColorSpaceAsync() => new(cmykColorSpacel.Value);
 
-    private async ValueTask<IColorSpace> LookupInResourceDictionaryAsync(PdfDirectObject colorSpaceName)
-    {
-        var obj = await page.GetResourceAsync(ResourceTypeName.ColorSpace, colorSpaceName).CA();
-        return obj.TryGet(out PdfArray? array)? await FromArrayAsync(array).CA(): DeviceGray.Instance;
-    }
+    private async ValueTask<IColorSpace> LookupInResourceDictionaryAsync(PdfDirectObject colorSpaceName) => 
+        await FromNameOrArrayAsync(
+            await page.GetResourceAsync(ResourceTypeName.ColorSpace, colorSpaceName).CA()).CA();
 
     private async ValueTask<IColorSpace> FromArrayAsync(PdfArray array) =>
         await FromMemoryAsync(await array.AsDirectValuesAsync().CA()).CA();

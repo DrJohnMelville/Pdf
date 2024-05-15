@@ -570,3 +570,5 @@ RenderingTest.cs_wpf-KSCms_UHC_HW_V|511590385
 RenderingTest.cs_wpf-KSCpc_EUC_V|789431723
 RenderingTest.cs_wpf-UniKS_UCS2_V|3906755125
 RenderingTest.cs_wpf-UniKS_UTF16_V|1554851190
+RenderingTest.cs_wpf-CmykViaNamedReference|3256171887
+RenderingTest.cs_Skia-CmykViaNamedReference|2470567388

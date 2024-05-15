@@ -4,9 +4,13 @@ using Melville.Pdf.Model.Renderers.Colors.Profiles;
 
 namespace Melville.Pdf.ReferenceDocuments.Graphics.Colors;
 
-public class IccCMYK: ColorBars
+public class IccCMYK : ColorBars
 {
-    public IccCMYK() : base("Four different Colors from CMYK with an explicit icc profile")
+    public IccCMYK(string helpText) : base(helpText)
+    {
+    }
+
+    public IccCMYK() : this("Four different Colors from CMYK with an explicit icc profile")
     {
     }
 
@@ -16,7 +20,6 @@ public class IccCMYK: ColorBars
         page.AddResourceObject(ResourceTypeName.ColorSpace, PdfDirectObject.CreateName("CS1"),
             cr =>
             {
-
                 var strRef = cr.Add(new DictionaryBuilder()
                     .WithItem(KnownNames.N, 4)
                     .AsStream(CmykIccProfile.GetCmykProfileStream()));
@@ -31,14 +34,14 @@ public class IccCMYK: ColorBars
 
         //setting the colorspace should reset to black
         csw.SetStrokeColor(0.7);
-        
+
         await csw.SetStrokingColorSpaceAsync(PdfDirectObject.CreateName("CS1"));
         DrawLine(csw);
-        csw.SetStrokeColor(1,0,0,0);
+        csw.SetStrokeColor(1, 0, 0, 0);
         DrawLine(csw);
-        csw.SetStrokeColor(0,1,0,0);
+        csw.SetStrokeColor(0, 1, 0, 0);
         DrawLine(csw);
-        csw.SetStrokeColor(0,0,1,0);
+        csw.SetStrokeColor(0, 0, 1, 0);
         DrawLine(csw);
     }
 }
