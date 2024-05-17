@@ -20,5 +20,4 @@ public partial class HomeViewModel
         else
             Data = await file.OpenRead();
     }
-
 }

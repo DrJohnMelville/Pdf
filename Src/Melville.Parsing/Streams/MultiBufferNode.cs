@@ -5,7 +5,7 @@ internal class MultiBufferNode
     public byte[] Data { get; }
     public long InitialPosition { get; }
     private MultiBufferNode? Next { get; set; }
-    private long EndPosition => InitialPosition + Data.Length;
+    public long EndPosition => InitialPosition + Data.Length;
 
     public MultiBufferNode(byte[] data, long initialPosition)
     {

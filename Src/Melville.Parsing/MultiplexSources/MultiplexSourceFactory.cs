@@ -1,4 +1,6 @@
-﻿namespace Melville.Parsing.MultiplexSources;
+﻿using System.IO.Pipelines;
+
+namespace Melville.Parsing.MultiplexSources;
 
 /// <summary>
 /// Represents a source of PDF data.  The various streams returned from this reader are threadsafe and
@@ -35,6 +37,7 @@ public static class MultiplexSourceFactory
             IMultiplexSource ims => ims, // MultiBufferStream implements IMultiplexSource
             MemoryStream ms => new MemorySource(MemoryStreamToMemory(ms)),
             FileStream fs => new FileMultiplexer(fs),
+            {CanSeek: false} => new MultiplexedStreamBuffer(source),
             _ => new MultiplexedStream(source)
         };
 

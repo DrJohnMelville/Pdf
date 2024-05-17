@@ -1,4 +1,6 @@
-﻿namespace Melville.Parsing.Streams;
+﻿using Melville.Parsing.AwaitConfiguration;
+
+namespace Melville.Parsing.Streams;
 
 internal class MultiBuffer
 {
@@ -42,6 +44,7 @@ internal class MultiBuffer
     }
 
 
+
     public MultiBufferPosition Write(in MultiBufferPosition position, in ReadOnlySpan<byte> buffer)
     {
         SetLength(Math.Max(Length, position.StreamPosition + buffer.Length));
@@ -64,6 +67,31 @@ internal class MultiBuffer
         return new MultiBufferPosition(block, position.StreamPosition + buffer.Length);
     }
 
+    public bool ExtendStreamFrom(Stream source) => 
+        TryExtendLength(source.Read(BufferToExpandInto().Span));
+
+    private bool TryExtendLength(int bytesRead)
+    {
+        Length += bytesRead;
+        return bytesRead > 0;
+    }
+
+    private Memory<byte> BufferToExpandInto()
+    {
+        var node = GetLastNode();
+        var spaceLeft = node.EndPosition - Length;
+        return spaceLeft < 1 ? 
+            node.ForceNextNode().Data : 
+            node.Data.AsMemory()[^(int)spaceLeft..];
+    }
+
+    public async ValueTask<bool> ExtendFromAsync(
+        Stream innerStream, CancellationToken cancellationToken) =>
+        TryExtendLength(
+            await innerStream.ReadAsync(BufferToExpandInto(), cancellationToken).CA());
+
+    private MultiBufferNode GetLastNode() => head.FindPosition(Length).Node;
+
     private int CopyBytes(in ReadOnlySpan<byte> source, in Span<byte> destination)
     {
         var readLen = Math.Min(source.Length, destination.Length);
@@ -82,4 +110,5 @@ internal class MultiBuffer
             throw new ArgumentException("Invalid seek operation");
         return head.FindPosition(position);
     }
+
 }
