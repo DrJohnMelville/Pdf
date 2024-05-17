@@ -5,7 +5,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-internal class Type2AxialShading : ParametricFunctionalShader
+internal sealed class Type2AxialShading : ParametricFunctionalShader
 {
     private readonly double xBase, yBase;
     private readonly double xDelta, yDelta, denominator;

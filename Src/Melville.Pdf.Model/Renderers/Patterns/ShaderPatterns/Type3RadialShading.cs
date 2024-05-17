@@ -4,7 +4,7 @@ using Melville.Pdf.LowLevel.Model.Wrappers.Functions;
 
 namespace Melville.Pdf.Model.Renderers.Patterns.ShaderPatterns;
 
-internal class Type3RadialShading : ParametricFunctionalShader
+internal sealed class Type3RadialShading : ParametricFunctionalShader
 {
     private RadialShadingComputer computer;
 
