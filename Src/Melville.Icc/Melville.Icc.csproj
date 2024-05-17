@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-
         <Title>Melville.ICC</Title>
         <PackageDescription>Read International Color Consortium color profiles and convert colors between ICC 
             profiles.</PackageDescription>
@@ -11,20 +10,11 @@
 	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
+	<ItemGroup>
 	    <ProjectReference Include="..\Melville.AsyncAnalyzer\Melville.AsyncAnalyzer.csproj" PrivateAssets="all">
 		    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 		    <OutputItemType>Analyzer</OutputItemType>
 	    </ProjectReference>
       <ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Model\Tags\LookupTable.cs" />
-    </ItemGroup>
-
 </Project>
