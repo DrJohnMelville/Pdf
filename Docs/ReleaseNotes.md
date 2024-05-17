@@ -1,6 +1,17 @@
 ﻿# Releases
 
-## 4/20/2023
+## 5/15/2024 0.4.8
+This is still a service release working toward the WinId for the Web integration.
+- Fixed a bug parsing a JBIG file that has no global segment.
+- Fixed a hang bug in the jpeg2000 reader
+- fixed a parsing bug when a page has multiple content streams and there is no witespace between them.
+- Fixed parsing of pdf files that have an invalud CMAP
+- There are now special cases for parsing file streams, memory streams, and multibuffer streams that do 
+not use locks o acheive thread safety.  All three of these structures can be read from multiple locations
+simultaneously on different threads.  There is no API change, the parser just notices these special streams and
+reads them in a way that it does not need to lock other readers to acheive thread safety.
+
+## 4/20/2024 0.4.7
 Not a lot done here recently.  I have been working over the past 6 months to get a release of WinId for the Web 
 ready for the for the forensic odontologists.  I have also been using the pdf renderer every day at work.  This
 release is just the bugs I ran into and fixed in 6 months of daily use at work.
