@@ -90,9 +90,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTrial", "TimeTrial\Time
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Pdf.FormReader", "Melville.Pdf.FormReader\Melville.Pdf.FormReader.csproj", "{49A9662F-0CB5-4C4A-8152-7957E4A70486}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Fonts", "Melville.Fonts\Melville.Fonts.csproj", "{8B93575D-CA2C-4E44-91DE-7C85196B3E87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.Fonts", "Melville.Fonts\Melville.Fonts.csproj", "{8B93575D-CA2C-4E44-91DE-7C85196B3E87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.FontViewer", "Melville.FontViewer\Melville.FontViewer.csproj", "{C9491B8E-7E49-4FB8-9D0A-ACA8F614ED53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Melville.FontViewer", "Melville.FontViewer\Melville.FontViewer.csproj", "{C9491B8E-7E49-4FB8-9D0A-ACA8F614ED53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melville.Fonts.TableGenerator", "Melville.Fonts.TableGenerator\Melville.Fonts.TableGenerator.csproj", "{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -536,6 +538,18 @@ Global
 		{C9491B8E-7E49-4FB8-9D0A-ACA8F614ED53}.Release|arm64.Build.0 = Release|Any CPU
 		{C9491B8E-7E49-4FB8-9D0A-ACA8F614ED53}.Release|x86.ActiveCfg = Release|Any CPU
 		{C9491B8E-7E49-4FB8-9D0A-ACA8F614ED53}.Release|x86.Build.0 = Release|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Debug|arm64.Build.0 = Debug|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Release|arm64.ActiveCfg = Release|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Release|arm64.Build.0 = Release|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -580,6 +594,7 @@ Global
 		{49A9662F-0CB5-4C4A-8152-7957E4A70486} = {5114C86E-5BF8-4501-894B-EE7AD0E4E47A}
 		{8B93575D-CA2C-4E44-91DE-7C85196B3E87} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
 		{C9491B8E-7E49-4FB8-9D0A-ACA8F614ED53} = {7808232A-94F8-4390-9D4E-A9CBCC067CBB}
+		{88FCD89E-684F-4C0D-9AE5-117CFD3527BF} = {E1C428F4-9C6C-496B-B1BA-B201E8C02D52}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {92BF3689-00AF-4389-ADC7-0F79911E5618}

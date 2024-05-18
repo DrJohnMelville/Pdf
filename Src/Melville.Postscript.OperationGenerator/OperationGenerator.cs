@@ -9,7 +9,8 @@ public class OperationGenerator: IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterSourceOutput(context.SyntaxProvider.ForAttributeWithMetadataName("Melville.Postscript.Interpreter.FunctionLibrary.PostscriptMethodAttribute",
+        context.RegisterSourceOutput(context.SyntaxProvider.ForAttributeWithMetadataName(
+                "Melville.Postscript.Interpreter.FunctionLibrary.PostscriptMethodAttribute",
             (i,_)=> i is MethodDeclarationSyntax, (i,_) => i)
             .Collect()
             .SelectMany((i,_) =>

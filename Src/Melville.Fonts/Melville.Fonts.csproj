@@ -15,6 +15,8 @@
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 			<OutputItemType>Analyzer</OutputItemType>
 		</ProjectReference>
+		<ProjectReference Include="..\Melville.Fonts.TableGenerator\Melville.Fonts.TableGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+
 		<ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
 	</ItemGroup>
 

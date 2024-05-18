@@ -10,7 +10,7 @@ namespace Melville.Pdf.Model.Renderers.FontRenderings;
 /// <summary>
 /// This object represents a font that can map strings to glyphs and render glyphs to a target object
 /// </summary>
-public interface  IRealizedFont
+public interface IRealizedFont
 {
     /// <summary>
     /// A strategy to get characters from the source string
@@ -29,6 +29,7 @@ public interface  IRealizedFont
     /// <param name="defaultWidth">The measured width of the character.</param>
     /// <returns>The effective width of the character, usually taken from the PDF font definition.</returns>
     double CharacterWidth(uint character, double defaultWidth);
+
     /// <summary>
     /// Begin writing a string to a target.
     /// </summary>

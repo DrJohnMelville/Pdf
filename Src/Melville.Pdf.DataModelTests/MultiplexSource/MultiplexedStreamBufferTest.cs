@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -39,7 +40,6 @@ public class MultiplexedStreamBufferTest
     [Fact]
     public void DoNotExtendUnlessNeeded()
     {
-
         Span<byte> data = stackalloc byte[2];
         stream.Read(data).Should().Be(2);
         data.SequenceEqual<byte>([0, 1]).Should().BeTrue();
