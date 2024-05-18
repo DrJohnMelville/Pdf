@@ -30,7 +30,7 @@ internal static class FieldParser
     public static async ValueTask<T> ReadFromAsync<T>(PipeReader reader) where T : IGeneratedParsable<T>
     {
         var result = await reader.ReadAtLeastAsync(T.StaticSize);
-        LoadFrom(reader, result, out T ret);
+        LoadFrom(reader, result, out T ret); 
         await ret.LoadAsync(reader);
         return ret;
     }
@@ -41,5 +41,16 @@ internal static class FieldParser
         var seqReader = new SequenceReader<byte>(readResult.Buffer);
         result = T.LoadStatic(ref seqReader);
         reader.AdvanceTo(seqReader.Position);
+    }
+
+    public static async ValueTask ReadAsync<T>(PipeReader reader, T[] records)
+    where T: IGeneratedParsable<T>
+    {
+        for (int i = 0; i < records.Length; i++)
+        {
+            var segReader = await reader.ReadAtLeastAsync(T.StaticSize);
+            LoadFrom(reader, segReader, out records[i]);
+            await records[i].LoadAsync(reader);
+        }
     }
 }

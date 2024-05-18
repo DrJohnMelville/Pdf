@@ -36,7 +36,7 @@ public static class RootFontParser
             return new([]);
         return type switch
         {
-            openTypeFmt or ottoFmt or trueFmt or typ1Fmt => new SfntParser(src).ParseAsync(),
+            openTypeFmt or ottoFmt or trueFmt or typ1Fmt => new SfntParser(src).ParseAsync(0),
             ttcfFmt => new FontCollectionParser(src).ParseAsync(),
             _ => new([])
         };

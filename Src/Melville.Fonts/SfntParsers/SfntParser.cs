@@ -7,17 +7,18 @@ namespace Melville.Fonts.SfntParsers;
 
 internal readonly struct SfntParser(IMultiplexSource src)
 {
-    public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync(int rootPosition)
+    public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync(ulong rootPosition)
     {
-        return new SFnt();
+        var rec = await FieldParser.ReadFromAsync<TableDirectory>(
+            src.ReadPipeFrom((long)rootPosition));
+        return rec.Parse(src);
     }
 }
 
 internal readonly struct FontCollectionParser(IMultiplexSource src)
 {
-    public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync()
-    {
-        var header = await FieldParser.ReadFromAsync<FontCollectionHeader>(src.ReadPipeFrom(0));
-        var ret = new IGenericFont[header.]
-    }
+    public async ValueTask<IReadOnlyList<IGenericFont>> ParseAsync() => 
+        await (
+            await FieldParser.ReadFromAsync<FontCollectionHeader>(src.ReadPipeFrom(0)).CA())
+            .ParseAsync(src).CA();
 }
