@@ -4,15 +4,17 @@ using Melville.MVVM.Wpf.MvvmDialogs;
 using Melville.MVVM.Wpf.ViewFrames;
 using System.IO;
 using System.Windows;
+using Melville.Fonts;
+using Melville.MVVM.Wpf.RootWindows;
+using Melville.Parsing.MultiplexSources;
+using Melville.Pdf.LowLevelViewerParts.FontViewers;
 
 namespace Melville.FontViewer.Home;
 
 [OnDisplayed(nameof(LoadFile))]
-public partial class HomeViewModel
+public class HomeViewModel
 {
-    [AutoNotify] private Stream? data = null;
-
-    public async void LoadFile([FromServices] IOpenSaveFile osf)
+    public async void LoadFile([FromServices] IOpenSaveFile osf, INavigationWindow window)
     {
         var file = osf.GetLoadFile(null, "ttf", 
             "All Font Files (ttf;ttc;otf;otc;fon)|*.ttf;*.ttc;*.otf;*.otc;*.fon|" +
@@ -21,10 +23,16 @@ public partial class HomeViewModel
             "Open Type Font Files (*.otf)|*.otf|" +
             "Open Type Collections (*.otc)|*.otc|" +
             "Font files (*.fon)|*.fon", "Select File to View");
-        if (file == null) 
+        if (file == null)
+        {
             Application.Current.Shutdown();
-        else
-            Data = await file.OpenRead();
+            return;
+        }
+
+        var fonts = await 
+            RootFontParser.ParseAsync(
+                MultiplexSourceFactory.Create(await file.OpenRead()));
+        window.NavigateTo(new MultiFontViewModel(fonts));
     }
 
 }

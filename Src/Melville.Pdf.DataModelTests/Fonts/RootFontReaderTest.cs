@@ -16,9 +16,9 @@ public class RootFontReaderTest
     [InlineData("74727565 0000 0000 0000 0000", 1)]
     [InlineData("74797031 0000 0000 0000 0000", 1)]
     [InlineData("65666768 0000 0000 0000 0000", 0)]
-    [InlineData("7474636f 0001 0000 0000 0001 0000 0010" +
+    [InlineData("74746366 0001 0000 0000 0001 0000 0010" +
                 "65666768 0000 0000 0000 0000", 1)]
-    [InlineData("7474636f 0001 0000 0000 0002 00000014 00000020" +
+    [InlineData("74746366 0001 0000 0000 0002 00000014 00000020" +
                 "65666768 0000 0000 0000 0000"+
                 "65666768 0000 0000 0000 0000", 2)]
     public async Task ReadZeroElementFontAsync(string headderHex, int count)

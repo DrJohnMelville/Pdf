@@ -26,7 +26,7 @@ public static class RootFontParser
     private const uint ottoFmt = 0x4F_54_54_4F;
     private const uint trueFmt = 0x74_72_75_65;
     private const uint typ1Fmt = 0x74_79_70_31;
-    private const uint ttcfFmt = 0x74_74_63_6F;
+    private const uint ttcfFmt = 0x74_74_63_66;
 
     private static ValueTask<IReadOnlyList<IGenericFont>> ParseFontTypeAsync(
         IMultiplexSource src, ReadOnlySequence<byte> resultBuffer)
