@@ -25,6 +25,12 @@ public readonly partial struct TableRecord
     /// </summary>
     [SFntField] public UInt32 Length { get; }
 
+    /// <inheritdoc />
     public override string ToString() => 
-        $"{Tag.AsTag()} CheckSum: {Checksum:X} Offset: {Offset:X}  Length: {Length:X}";
+        $"{Tag.AsTag()} CheckSum: 0x{Checksum:X} Offset: 0x{Offset:X}  Length: 0x{Length:X}";
+
+    /// <summary>
+    /// Expresses the Tag field as a 4 character title
+    /// </summary>
+    public string TableName => Tag.AsTag();
 }

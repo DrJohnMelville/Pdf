@@ -7,7 +7,7 @@ namespace Melville.Pdf.LowLevelViewerParts.FontViewers
 
         public SfntViewModel(SFnt font) : base(font)
         {
-            Tables =[..Tables, .. font.Tables.Select(i => new TableViewModel(i))];
+            Tables =[..Tables, .. font.Tables.Select(i => new TableViewModel(font,i))];
         }
     }
 }
