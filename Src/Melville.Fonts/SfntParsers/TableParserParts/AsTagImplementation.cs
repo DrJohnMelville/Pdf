@@ -1,4 +1,4 @@
-﻿namespace Melville.Fonts.SfntParsers.TableDeclarations;
+﻿namespace Melville.Fonts.SfntParsers.TableParserParts;
 
 internal static class AsTagImplementation
 {

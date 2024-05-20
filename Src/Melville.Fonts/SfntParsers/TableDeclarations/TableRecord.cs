@@ -1,4 +1,5 @@
-﻿using Melville.INPC;
+﻿using Melville.Fonts.SfntParsers.TableParserParts;
+using Melville.INPC;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations;
 

@@ -23,7 +23,7 @@ public static class MultiplexSourceFactory
     /// <summary>
     /// Create an IMultiplexedSource from a source as optimally as possible
     /// </summary>
-    /// <param name="source">The data to be accessed</param>
+    /// <param name="fs">The data to be accessed</param>
     /// <returns>A IMultiplexedSource representing the passed in date </returns>
     public static IMultiplexSource Create(FileStream fs) => new FileMultiplexer(fs);
 

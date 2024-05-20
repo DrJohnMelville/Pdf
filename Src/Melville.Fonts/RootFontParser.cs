@@ -3,7 +3,6 @@ using Melville.Fonts.SfntParsers;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.SequenceReaders;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Melville.Fonts;
 
@@ -12,8 +11,16 @@ public interface IGenericFont
     // this is an interface that handles all of the font types
 }
 
+/// <summary>
+/// Parse a font stream and get back an IGenericFont that can render text in the font.
+/// </summary>
 public static class RootFontParser
 {
+    /// <summary>
+    /// Parse the font from the given multiplex source.
+    /// </summary>
+    /// <param name="src">An IMultiplexSource that represents the font file.</param>
+    /// <returns>A readonly list of IGenericFonts that represent the font</returns>
     public static async Task<IReadOnlyList<IGenericFont>> ParseAsync(IMultiplexSource src)
     {
         var pipe = src.ReadPipeFrom(0);

@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+﻿using Melville.Fonts.SfntParsers.TableParserParts;
 using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Fonts.SfntParsers.TableDeclarations;

@@ -13,7 +13,7 @@ public class TableGenerator: IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
          context.RegisterSourceOutput(context.SyntaxProvider.ForAttributeWithMetadataName(
-                "Melville.Fonts.SfntParsers.TableDeclarations.SFntFieldAttribute",
+                "Melville.Fonts.SfntParsers.TableParserParts.SFntFieldAttribute",
                 (i,_)=> true, (i,_) => i)
             .Collect()
             .SelectMany((i,_) =>
