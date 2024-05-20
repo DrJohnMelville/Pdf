@@ -37,7 +37,7 @@ namespace Melville.Fonts.TableGenerator
         private void GenerateLoadStatic()
         {
             output.AppendLine($"""
-                public static global::{classSymbol} LoadStatic(
+                static global::{classSymbol} {InterfaceName()}.LoadStatic(
                     ref global::System.Buffers.SequenceReader<byte> reader)=> new(ref reader);  
             """);
         }
@@ -60,28 +60,17 @@ namespace Melville.Fonts.TableGenerator
         }
 
         private void GenerateNoArraysToLoad() =>
-            output.AppendLine("""
-                    public global::System.Threading.Tasks.ValueTask LoadAsync(
-                        global::System.IO.Pipelines.PipeReader reader) =>
-                          global::System.Threading.Tasks.ValueTask.CompletedTask;
-                """);
+            GenerateLoadAsyncHeader("", "=> global::System.Threading.Tasks.ValueTask.CompletedTask;");
 
         private  void GenerateLoadSingleArray(MemberGenerator item)
         {
-            output.AppendLine($"""
-                    public global::System.Threading.Tasks.ValueTask LoadAsync(
-                        global::System.IO.Pipelines.PipeReader reader) =>
-                """);
+            GenerateLoadAsyncHeader("", "=>");
             item.LoadArrayLine(output, "", "");
         }
 
         private void GenerateLoadMultipleArrays(MemberGenerator[] arrays)
         {
-            output.AppendLine("""
-                    public async global::System.Threading.Tasks.ValueTask LoadAsync(
-                        global::System.IO.Pipelines.PipeReader reader)
-                    {
-                """);
+            GenerateLoadAsyncHeader("async ","\r\n    {");
             foreach (var item in arrays)
             {
                 item.LoadArrayLine(output, "await",".CA()");
@@ -89,10 +78,15 @@ namespace Melville.Fonts.TableGenerator
             output.AppendLine("    }");
         }
 
+        private void GenerateLoadAsyncHeader(string asyncDecl, string postfix) =>
+            output.AppendLine($"""
+                    {asyncDecl}global::System.Threading.Tasks.ValueTask {InterfaceName()}.LoadAsync(
+                    global::System.IO.Pipelines.PipeReader reader) {postfix}
+                """);
         private void GenerateReaderConstructor()
         {
             output.AppendLine(
-                $"    public {ClassSyntax().Identifier} (ref global::System.Buffers.SequenceReader<byte> reader)");
+                $"    private {ClassSyntax().Identifier} (ref global::System.Buffers.SequenceReader<byte> reader)");
             output.AppendLine("    {");
             foreach (var item in fields)
             {
@@ -102,7 +96,7 @@ namespace Melville.Fonts.TableGenerator
         }
 
         private void GenerateSizeMember() => 
-            output.AppendLine($"    public static int  StaticSize => {ComputeStaticSize()};");
+            output.AppendLine($"    static int {InterfaceName()}.StaticSize => {ComputeStaticSize()};");
 
         private string ComputeStaticSize() => fields.Select(ComputeSizeFor).Sum().ToString();
 
@@ -128,11 +122,13 @@ namespace Melville.Fonts.TableGenerator
                 using Melville.Parsing.AwaitConfiguration;
                 namespace {{classSymbol.ContainingNamespace}};
 
-                {{$"{tds.Modifiers} {tds.Keyword} {tds.Identifier}"}}: 
-                    Melville.Fonts.SfntParsers.TableParserParts.IGeneratedParsable<global::{{classSymbol}}>
+                {{$"{tds.Modifiers} {tds.Keyword} {tds.Identifier}"}}: {{InterfaceName()}}
                 {
                 """);
         }
+
+        private string InterfaceName() =>
+            $"Melville.Fonts.SfntParsers.TableParserParts.IGeneratedParsable<global::{classSymbol}>";
         
         private TypeDeclarationSyntax ClassSyntax() => 
             (TypeDeclarationSyntax)classSymbol.DeclaringSyntaxReferences[0].GetSyntax();
