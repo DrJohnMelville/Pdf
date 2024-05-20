@@ -1,6 +1,7 @@
 ﻿using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.INPC;
+using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
@@ -14,7 +15,7 @@ public partial class TableViewModel
     public string? ToolTip => Record.ToString();
 
     [AutoNotify] private object? details;
-    private object DetailsGetFilter(object inner) => details ?? LoadTable();
+    private object? DetailsGetFilter(object? inner) => details ?? LoadTable();
 
     private object LoadTable()
     {
@@ -26,8 +27,9 @@ public partial class TableViewModel
         return LoadingTableViewModel.Instance;
     }
 
-    private ValueTask LoadTableAsync()
+    private async ValueTask LoadTableAsync()
     {
-        return ValueTask.CompletedTask;
+        var bytes = await font.GetTableBytesAsync(Record);
+        Details = new ByteStringViewModel(bytes);
     }
 }
