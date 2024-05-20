@@ -1,4 +1,6 @@
-﻿using System.IO.Pipelines;
+﻿using System.ComponentModel;
+using System.IO.Pipelines;
+using Melville.INPC;
 
 namespace Melville.Parsing.MultiplexSources
 {
@@ -30,4 +32,4 @@ namespace Melville.Parsing.MultiplexSources
         /// </summary>
         long Length { get; }
     }
-}
+} 
