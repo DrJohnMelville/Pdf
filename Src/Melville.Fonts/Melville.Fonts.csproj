@@ -20,8 +20,4 @@
 		<ProjectReference Include="..\Melville.Parsing\Melville.Parsing.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="SfntParsers\TableDeclarations\CMaps\" />
-	</ItemGroup>
-
 </Project>
