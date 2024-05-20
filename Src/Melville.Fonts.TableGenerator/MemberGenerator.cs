@@ -29,12 +29,12 @@ public abstract class MemberGenerator(GeneratorAttributeSyntaxContext context)
 
     private string TryAddGlobal(string s) => s.Contains('.') ? $"global::{s}" : s;
 
-    public void LoadArrayLine(StringBuilder output)
+    public void LoadArrayLine(StringBuilder output, string prefix, string postfix)
     {
-        if (!IsArray) return;
+        Debug.Assert(IsArray);
         output.AppendLine($"""
-                    await global::Melville.Fonts.SfntParsers.TableParserParts.FieldParser.ReadAsync(
-                        reader, this.{Name}).CA();
+                    {prefix} global::Melville.Fonts.SfntParsers.TableParserParts.FieldParser.ReadAsync(
+                        reader, this.{Name}){postfix};
             """);
     }
 
