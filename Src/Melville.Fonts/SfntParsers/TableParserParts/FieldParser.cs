@@ -1,5 +1,7 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
+using System.Numerics;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts.SfntParsers.TableParserParts;
@@ -11,9 +13,22 @@ internal static class FieldParser
     public static void Read(ref SequenceReader<byte> reader, out ushort output) =>
         output = reader.ReadBigEndianUint16();
 
+    public static async ValueTask ReadAsync(PipeReader reader, byte[] offsets)
+    {
+        var buffers = await reader.ReadAtLeastAsync(offsets.Length).CA();
+        ReadFrom(reader, buffers, offsets);
+    }
+
+    private static void ReadFrom(PipeReader reader, ReadResult buffers, byte[] offsets)
+    {
+        var seqReader = new SequenceReader<byte>(buffers.Buffer);
+        seqReader.TryCopyTo(offsets);
+        reader.AdvanceTo(seqReader.Position);
+    }
+
     public static async ValueTask ReadAsync(PipeReader reader, uint[] offsets)
     {
-        var buffers = await reader.ReadAtLeastAsync(4 * offsets.Length);
+        var buffers = await reader.ReadAtLeastAsync(4 * offsets.Length).CA();
         ReadFrom(reader, buffers, offsets);
     }
 
@@ -29,9 +44,9 @@ internal static class FieldParser
 
     public static async ValueTask<T> ReadFromAsync<T>(PipeReader reader) where T : IGeneratedParsable<T>
     {
-        var result = await reader.ReadAtLeastAsync(T.StaticSize);
+        var result = await reader.ReadAtLeastAsync(T.StaticSize).CA();
         LoadFrom(reader, result, out T ret); 
-        await ret.LoadAsync(reader);
+        await ret.LoadAsync(reader).CA();
         return ret;
     }
     
@@ -48,9 +63,9 @@ internal static class FieldParser
     {
         for (int i = 0; i < records.Length; i++)
         {
-            var segReader = await reader.ReadAtLeastAsync(T.StaticSize);
+            var segReader = await reader.ReadAtLeastAsync(T.StaticSize).CA();
             LoadFrom(reader, segReader, out records[i]);
-            await records[i].LoadAsync(reader);
+            await records[i].LoadAsync(reader).CA();
         }
     }
 }

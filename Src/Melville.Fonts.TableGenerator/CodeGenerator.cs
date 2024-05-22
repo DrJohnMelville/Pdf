@@ -105,10 +105,14 @@ namespace Melville.Fonts.TableGenerator
             if (memberGenerator.IsArray) return 0;
             return memberGenerator.TypeName() switch
             {
+                "byte" => 1,
+                "sbyte" => 1,
                 "uint" => 4,
                 "int" => 4,
                 "ushort" => 2,
                 "short" => 2,
+                "ulong" => 8,
+                "long" => 8,
                 var x => throw new NotImplementedException($"cannot size type {x}")
             };
         }

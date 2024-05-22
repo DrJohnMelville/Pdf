@@ -1,10 +1,12 @@
-﻿using Melville.Fonts.SfntParsers;
+﻿using System.Globalization;
+using Melville.Fonts.SfntParsers;
 using Melville.Fonts.SfntParsers.TableDeclarations;
 using Melville.INPC;
-using Melville.Pdf.LowLevelViewerParts.LowLevelViewer.DocumentParts.Streams;
+using Melville.Parsing.CountingReaders;
 
 namespace Melville.Pdf.LowLevelViewerParts.FontViewers;
 
+[AutoNotify]
 public partial class TableViewModel
 {
     [FromConstructor] public SFnt font;
@@ -14,22 +16,9 @@ public partial class TableViewModel
     public string Title => Record.TableName;
     public string? ToolTip => Record.ToString();
 
-    [AutoNotify] private object? details;
-    private object? DetailsGetFilter(object? inner) => details ?? LoadTable();
+    private readonly LoadOnce<object> details = new(LoadingTableViewModel.Instance);
+    public object Details => details.GetValue(this, LoadTableAsync);
 
-    private object LoadTable()
-    {
-        if (!loadCalled)
-        {
-            loadCalled = true;
-            LoadTableAsync(); // not awaited, I get the result through a property set notification
-        }
-        return LoadingTableViewModel.Instance;
-    }
-
-    private async ValueTask LoadTableAsync()
-    {
-        var bytes = await font.GetTableBytesAsync(Record);
-        Details = new ByteStringViewModel(bytes);
-    }
+    private async ValueTask<object> LoadTableAsync() => 
+        await SpecialTableParser.ParseAsync(Record.Tag, await font.GetTableBytesAsync(Record));
 }

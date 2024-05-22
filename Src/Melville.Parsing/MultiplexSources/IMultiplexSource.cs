@@ -31,5 +31,14 @@ namespace Melville.Parsing.MultiplexSources
         /// The length of the represented data.
         /// </summary>
         long Length { get; }
+
+        #warning -- opportunity to optimize the memory multiplex source
+        /// <summary>
+        /// Returns a multiplex source with an offset from the current source
+        /// </summary>
+        /// <param name="offset">Number of bytes into the current source where the new
+        /// source should begin</param>
+        /// <returns>A, IMultiplexSource that shares data with this one, but with an offset</returns>
+        IMultiplexSource OffsetFrom(uint offset) => new OffsetMultiplexSource(this, offset);
     }
 } 

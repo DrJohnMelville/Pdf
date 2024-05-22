@@ -1,7 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 using Melville.Fonts.SfntParsers.TableDeclarations;
+using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Hacks;
 using Melville.INPC;
+using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 
 namespace Melville.Fonts.SfntParsers;
@@ -30,7 +32,19 @@ public partial class SFnt : ListOf1GenericFont, IDisposable
    {
        var ret = new byte[table.Length];
        await using var stream = source.ReadFrom(table.Offset);
-       await ret.FillBufferAsync(0, ret.Length, stream);
+       await ret.FillBufferAsync(0, ret.Length, stream).CA();
        return ret;
+   }
+
+   /// <inheritdoc />
+   public override ValueTask<ICMapSource> ParseCMapsAsync()
+   {
+       foreach (var table in Tables)
+       {
+           if (table.Tag is SFntTableName.CMap) return 
+               new CmapParser(source.OffsetFrom(table.Offset)).ParseCmapTableAsync();
+       }
+
+       return new(new ParsedCmap(source, []));
    }
 }

@@ -25,6 +25,7 @@ public class ByteStringViewModel
 {
     public byte[] Bytes { get; }
     public XmlRepresentationNode[]? XmlRepresentation { get; }
+    public string Title => "Raw";
 
     public ByteStringViewModel(byte[] bytes)
     {

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 
 namespace Melville.Fonts.SfntParsers;
 
@@ -21,4 +22,7 @@ public abstract class ListOf1GenericFont: IGenericFont, IReadOnlyList<IGenericFo
 
     /// <inheritdoc />
     public IGenericFont this[int index] => this;
+
+    /// <inheritdoc />
+    public abstract ValueTask<ICMapSource> ParseCMapsAsync();
 }

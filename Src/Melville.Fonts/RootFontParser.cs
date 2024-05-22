@@ -1,19 +1,11 @@
 ﻿using System.Buffers;
 using Melville.Fonts.SfntParsers;
+using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
 using Melville.Parsing.AwaitConfiguration;
 using Melville.Parsing.MultiplexSources;
 using Melville.Parsing.SequenceReaders;
 
 namespace Melville.Fonts;
-
-/// <summary>
-/// This is the generic interface that all fonts parsed by this parser return.  This is
-/// used by the renderer to render characters.
-/// </summary>
-public interface IGenericFont
-{
-    // this is an interface that handles all of the font types
-}
 
 /// <summary>
 /// Parse a font stream and get back an IGenericFont that can render text in the font.
@@ -28,9 +20,8 @@ public static class RootFontParser
     public static async Task<IReadOnlyList<IGenericFont>> ParseAsync(IMultiplexSource src)
     {
         var pipe = src.ReadPipeFrom(0);
-        var  result = await pipe.ReadAtLeastAsync(4).CA();
-        if (result.Buffer.Length < 4 ) return [];
-        return await ParseFontTypeAsync(src, result.Buffer).CA();
+        var tag = await pipe.PeekTag(4).CA();
+        return await ParseFontTypeAsync(src, tag).CA();
     }
 
     private const uint openTypeFmt = 0x00_01_00_00;
@@ -40,12 +31,9 @@ public static class RootFontParser
     private const uint ttcfFmt = 0x74_74_63_66;
 
     private static ValueTask<IReadOnlyList<IGenericFont>> ParseFontTypeAsync(
-        IMultiplexSource src, ReadOnlySequence<byte> resultBuffer)
+        IMultiplexSource src, ulong tag)
     {
-        var reader = new SequenceReader<byte>(resultBuffer);
-        if (!(reader.TryReadBigEndianUint32(out var type)))
-            return new([]);
-        return type switch
+        return tag switch
         {
             openTypeFmt or ottoFmt or trueFmt or typ1Fmt => new SfntParser(src).ParseAsync(0),
             ttcfFmt => new FontCollectionParser(src).ParseAsync(),
