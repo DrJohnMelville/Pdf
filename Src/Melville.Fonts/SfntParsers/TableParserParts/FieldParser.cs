@@ -16,6 +16,7 @@ internal static partial class FieldParser
         reader.TryReadBigEndian(out output);
 
     [MacroItem("ushort")]
+    [MacroItem("short")]
     [MacroItem("uint")]
     [MacroCode(NumberArrayReader.NumberArrayImplementation)]
     public static  ValueTask ReadAsync(PipeReader reader, Memory<byte> offsets) =>

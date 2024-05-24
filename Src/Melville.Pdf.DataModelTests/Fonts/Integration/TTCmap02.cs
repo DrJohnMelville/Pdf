@@ -1,28 +1,18 @@
-﻿using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Melville.Fonts;
 using Melville.Fonts.SfntParsers.TableDeclarations.CMaps;
-using Melville.Parsing.MultiplexSources;
 using Xunit;
 
 namespace Melville.Pdf.DataModelTests.Fonts.Integration;
 
 public class TTCmap02
 {
-    private string FontFileName([CallerFilePath] string path = null!) =>
-        path.Replace(".cs", ".ttf");
+    private static Task<IGenericFont> loadedFont = IntegrationFontLoader.LoadAsync();
 
-    private async Task<ICmapImplementation> LoadCmapByIndexAsync(int index)
-    {
-        var src = MultiplexSourceFactory.Create(
-            File.Open(FontFileName(), FileMode.Open, FileAccess.Read, FileShare.Read));
-        var font = (await RootFontParser.ParseAsync(src))[0];
-        var map = await (await font.ParseCMapsAsync()).GetByIndexAsync(index);
-        return map;
-    }
+    private async Task<ICmapImplementation?> LoadCmapByIndexAsync(int index) => 
+        await (await loadedFont).CmapByIndexAsync(index);
 
     [Fact]
     public async Task Type0CmapAsync()
